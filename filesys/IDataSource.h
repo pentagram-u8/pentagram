@@ -195,73 +195,97 @@ class IFileDataSource: public IDataSource
 
 };
 
-/* Just for 'memory' purposes. *Grin*
 
-class ODataSource
+class IBufferDataSource : public IDataSource
 {
-	public:
-		DataSource() {};
-		virtual ~DataSource() {};
+protected:
+	uint8* buf;
+	uint8* buf_ptr;
 
-		virtual void write1(uint32)=0;
-		virtual void write2(uint16)=0;
-		virtual void write2high(uint16)=0;
-		virtual void write4(uint32)=0;
-		virtual void write4high(uint32)=0;
-		virtual void write(char *str, const sint32 num_bytes)=0;
+	std::size_t size;
 
-		virtual void seek(const uint32 pos)=0;
-		virtual void skip(const sint32 delta)=0;
-		virtual uint32 getSize()=0;
-		virtual uint32 getPos()=0;
+public:
+	IBufferDataSource(uint8* data, unsigned int len) {
+		assert(data != 0 || len == 0);
+		buf = buf_ptr = data;
+		size = len;
+	}
+
+	void load(uint8* data, unsigned int len) {
+		assert(data != 0 || len == 0);
+		buf = buf_ptr = data;
+		size = len;
+	}
+
+	virtual ~IBufferDataSource() { }
+
+	virtual uint32 read1() {
+		uint8 b0;
+		b0 = *buf_ptr++;
+		return (b0);
+	}
+
+	virtual uint16 read2() {
+		uint8 b0, b1;
+		b0 = *buf_ptr++;
+		b1 = *buf_ptr++;
+		return (b0 | (b1 << 8));
+	}
+
+	virtual uint16 read2high() {
+		uint8 b0, b1;
+		b1 = *buf_ptr++;
+		b0 = *buf_ptr++;
+		return (b0 | (b1 << 8));
+	}
+
+	virtual uint32 read3() {
+		uint8 b0, b1, b2;
+		b0 = *buf_ptr++;
+		b1 = *buf_ptr++;
+		b2 = *buf_ptr++;
+		return (b0 | (b1 << 8) | (b2 << 16));
+	}
+
+	virtual uint32 read4() {
+		uint8 b0, b1, b2, b3;
+		b0 = *buf_ptr++;
+		b1 = *buf_ptr++;
+		b2 = *buf_ptr++;
+		b3 = *buf_ptr++;
+		return (b0 | (b1<<8) | (b2<<16) | (b3<<24));
+	}
+
+	virtual uint32 read4high() {
+		uint8 b0, b1, b2, b3;
+		b3 = *buf_ptr++;
+		b2 = *buf_ptr++;
+		b1 = *buf_ptr++;
+		b0 = *buf_ptr++;
+		return (b0 | (b1<<8) | (b2<<16) | (b3<<24));
+	}
+	
+	virtual void read(void *str, sint32 num_bytes) {
+		std::memcpy(str, buf_ptr, num_bytes);
+		buf_ptr += num_bytes;
+	}
+
+	virtual void seek(uint32 pos) {
+		buf_ptr = buf + pos;
+	}
+
+	virtual void skip(sint32 delta) {
+		buf_ptr += delta;
+	}
+
+	virtual uint32 getSize() {
+		return size;
+	}
+
+	virtual uint32 getPos() {
+		return (buf_ptr - buf);
+	}
 };
 
-
-class OFileDataSource: public ODataSource
-{
-	private:
-		std::ofstream *out;
-
-	public:
-	OFileDataSource(std::ofstream *data_stream)
-	{
-		out = data_stream;
-	};
-
-	virtual ~IFileDataSource()
-	{
-		FORGET_OBJECT(in);
-	};
-
-	bool good() const { return in->good(); };
-
-	virtual void write1(uint32 val)         { Write1(*out, val); };
-
-	virtual void write2(uint16 val)         { Write2(*out, val); };
-
-	virtual void write2high(uint16 val)     { Write2high(*out, val); };
-
-	virtual void write4(uint32 val)         { Write4(*out, val); };
-
-	virtual void write4high(uint32 val)     { Write4high(*out, val); };
-
-	virtual void write(char *b, sint32 len) { out->write(b, len); };
-
-	virtual void seek(uint32 pos) { in->seekg(pos); };
-
-	virtual void skip(sint32 pos) { in->seekg(pos, std::ios::cur); };
-
-	virtual uint32 getSize()
-	{
-		long pos = in->tellg();
-		in->seekg(0, std::ios::end);
-		long len = in->tellg();
-		in->seekg(pos);
-		return len;
-	};
-
-	virtual uint32 getPos() { return in->tellg(); };
-};
-*/
 
 #endif

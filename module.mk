@@ -9,6 +9,8 @@ pentagram_OBJ = \
 	pentagram.o \
 	kernel/Kernel.o \
 	kernel/Application.o \
+	usecode/UCMachine.o \
+	usecode/UCProcess.o \
 	filesys/FileSystem.o \
 	misc/Args.o \
 	misc/Console.o \

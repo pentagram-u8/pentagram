@@ -16,23 +16,19 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef APPLICATION_H
-#define APPLICATION_H
+#ifndef UCMACHINE_H
+#define UCMACHINE_H
 
-class Kernel;
+class UCProcess;
 
-// extremely simplified stub-ish Application class
-class Application {
+class UCMachine
+{
 public:
-	Application(int argc, char *argv[]);
-	virtual 		~Application();
+	UCMachine();
+	~UCMachine();
 
-	virtual void	run();
-
-protected:
-	// Kernel
-	Kernel*			kernel;
-	uint32			frame;
+	bool ExecProcess(UCProcess* proc);
 };
+
 
 #endif

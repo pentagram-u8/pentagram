@@ -1,0 +1,72 @@
+/*
+Copyright (C) 2002 The Pentagram team
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
+#ifndef UCPROCESS_H
+#define UCPROCESS_H
+
+#include "Process.h"
+#include "UCStack.h"
+#include "IDataSource.h"
+
+class Usecode;
+
+class Usecode {
+public:
+	uint8* get_classdata(uint32 classid) { return 0; }
+	uint32 get_classdatasize(uint32 classid) { return 0; }
+};
+
+
+// probably won't inherit from Process directly
+class UCProcess : public Process
+{
+	friend class UCMachine;
+
+public:
+	UCProcess(Usecode* usecode_, uint32 classid_, uint32 offset_);
+    ~UCProcess();
+
+	virtual bool Run(const uint32 framenum);
+
+protected:
+	// process id
+	uint16 pid;
+
+	// item we are assigned to
+	uint16 item_num;
+
+	uint16 type;
+
+	// stack base pointer
+	uint16 bp;
+
+	Usecode* usecode;
+
+	uint32 classid;
+
+	// code segment
+	IBufferDataSource cs;
+
+	// data stack
+	UCStack stack;
+
+	// is the thread suspended? e.g., because it's waiting for user input
+	bool suspended;
+};
+
+#endif

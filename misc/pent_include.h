@@ -40,6 +40,10 @@
 //
 #include "common_types.h"
 
+//
+// assert
+//
+#include <cassert>
 
 //
 // Strings

@@ -25,13 +25,13 @@ class Process {
 public:
 	friend class Kernel;
 
-    // returns true if screen needs to be repainted
-	virtual bool Run(uint32 framenum) = 0;
+	// returns true if screen needs to be repainted
+	virtual bool Run(const uint32 framenum) = 0;
 
 	Process() : active(false) { }
 	virtual ~Process() { }
 
-	bool is_active() { return active; }
+	bool is_active() const { return active; }
 };
 
 
