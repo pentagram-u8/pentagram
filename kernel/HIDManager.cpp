@@ -116,8 +116,8 @@ void HIDManager::loadBindings()
 
 void HIDManager::bind(const Pentagram::istring& control, const Pentagram::istring& bindingName)
 {
-	uint16 key = 0;
-	uint16 button = 1;
+	uint16 key;
+	uint16 button;
 	const char * name = 0;
 	HIDBindingMap::iterator j = bindingMap.find(bindingName);
 
@@ -133,32 +133,35 @@ void HIDManager::bind(const Pentagram::istring& control, const Pentagram::istrin
 			name = SDL_GetKeyName((SDLKey) key);
 			if (control == name)
 			{
-				pout << "Binding \"" << name
-					<< "\" to " << (*j).first.c_str() << std::endl;
-				keybindings[key] = (*j).second;
+				if (j->second)
+				{
+					pout << "Binding \"" << name
+						<< "\" to " << j->first.c_str() << std::endl;
+				}
+				keybindings[key] = j->second;
 
 				// We found the matching SDLKey. Stop searching;
-				break;
+				return;
 			}
 		}
 
-		if (key >= SDLK_LAST) // we did not find a matching SDLKey
+		// Only bind Mouse 2 and up for now
+		for (button=2; button < NUM_MOUSEBUTTONS+1; ++button)
 		{
-			// Only bind Mouse 2 and up for now
-			for (button=2; button < NUM_MOUSEBUTTONS+1; ++button)
+			name = GetMouseButtonName((MouseButton) button);
+			if (control == name)
 			{
-				name = GetMouseButtonName((MouseButton) button);
-				if (control == name)
+				if (j->second)
 				{
 					pout << "Binding \"" << name
-						<< "\" to " << (*j).first.c_str() << std::endl;
-					mousebindings[button] = (*j).second;
-
-					// We found the matching Mouse Button. Stop searching;
-					break;
+						<< "\" to " << j->first.c_str() << std::endl;
 				}
-			} 
-		}
+				mousebindings[button] = j->second;
+
+				// We found the matching Mouse Button. Stop searching;
+				return;
+			}
+		} 
 	}
 }
 

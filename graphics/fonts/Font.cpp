@@ -38,7 +38,7 @@ Font::~Font()
 static inline bool isSpace(char c)
 {
 	return (c == ' ' || c == '\t' || c == '%' || c == '\n' || c == '\r' ||
-			c == '~');			
+			c == '~' || c == '*');			
 }
 
 static inline bool isTab(char c)
@@ -48,7 +48,7 @@ static inline bool isTab(char c)
 
 static inline bool isBreak(char c)
 {
-	return (c == '\n' || c == '~');
+	return (c == '\n' || c == '~' || c == '*');
 }
 
 
@@ -93,6 +93,7 @@ void Font::getTextSize(std::string text,
 @ = bullet for conversation options
 ~ = line break
 % = tab
+* = line break on graves and plaques, possibly page break in books
 CHECKME: any others? (page breaks for books?)
 
 */

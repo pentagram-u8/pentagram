@@ -1,4 +1,12 @@
 2004-05-13  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* gumps/ReadableGump.*: A gump to handle reading graves and plaques
+	* usecode/u8intrinsics.h: Attached ReadableGump
+	* graphics/fonts/ShapeFont.cpp: set vlead to -1 to fix overlapping of
+	  some fonts. Other fonts still appear fine.
+	* graphics/fonts/Font.cpp: asterisks are handled as line breaks for now
+	* kernel/HIDManager.cpp: slight clean up
+
+2004-05-13  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* world/actors/AvatarMoverProcess.*: Running in combat switches to
 	  normal mode until right button released, and jumping occures only
 	  once per mouse click.

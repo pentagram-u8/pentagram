@@ -108,6 +108,7 @@ GUMPS = \
 	gumps/ModalGump.o \
 	gumps/PagedGump.o \
 	gumps/PaperdollGump.o \
+	gumps/ReadableGump.o \
 	gumps/ResizableGump.o \
 	gumps/ScrollGump.o \
 	gumps/ShapeViewerGump.o \

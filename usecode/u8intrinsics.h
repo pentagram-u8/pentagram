@@ -38,6 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MusicProcess.h"
 #include "ScrollGump.h"
 #include "BookGump.h"
+#include "ReadableGump.h"
 #include "TargetGump.h"
 
 // Ultima 8 Intrinsics
@@ -162,8 +163,8 @@ Intrinsic U8Intrinsics[] = {
 	BookGump::I_readBook,
 	ScrollGump::I_readScroll,
 	// 0x070
-	UCMachine::I_dummyProcess, //!! process Grave::read(word,char*)
-	UCMachine::I_dummyProcess, //!! process Plaque::read(word,char*)
+	ReadableGump::I_readGrave, //!! process Grave::read(word,char*)
+	ReadableGump::I_readPlaque, //!! process Plaque::read(word,char*)
 	Egg::I_getEggXRange,
 	Egg::I_getEggYRange,
 	Egg::I_setEggXRange,
