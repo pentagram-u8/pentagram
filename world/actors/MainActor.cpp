@@ -69,6 +69,10 @@ void MainActor::teleport(int mapnum, sint32 x, sint32 y, sint32 z)
 // all running processes
 void MainActor::teleport(int mapnum, int teleport_id)
 {
+	int oldmap = getMapNum();
+	sint32 oldx, oldy, oldz;
+	getLocation(oldx, oldy, oldz);
+
 	World* world = World::get_instance();
 	CurrentMap* currentmap = world->getCurrentMap();
 
@@ -80,6 +84,12 @@ void MainActor::teleport(int mapnum, int teleport_id)
 
 	// find destination
 	TeleportEgg* egg = currentmap->findDestination(teleport_id);
+	if (!egg) {
+		perr << "MainActor::teleport(): destination egg not found!"
+			 << std::endl;
+		teleport(oldmap, oldx, oldy, oldz);
+		return;
+	}
 	sint32 x,y,z;
 	egg->getLocation(x,y,z);
 

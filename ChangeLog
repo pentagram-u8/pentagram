@@ -1,3 +1,7 @@
+2004-04-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/MainActor.cpp: fixed crash when teleporting to
+	  non-existent destination egg
+	
 2004-04-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* docs/u8anim.txt: corrected some animation info
 	* world/Egg.*: dump egg-specific info as well in dumpInfo()
