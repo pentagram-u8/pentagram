@@ -1,4 +1,8 @@
-2004-07-04  Matthew Jimenez <mjimenez@users.sourceforge.net>
+2004-07-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Item.*: make Item::grab() also call the release event
+	* world/Item.*: added Item::hurl() function
+
+2004-07-05  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* world/actors/Animation.h: changed flag name
 	* world/actors/Actor.*: tryAnim will return END_OFF_LAND if land is
 	  not directly below when animation finishes.

@@ -220,10 +220,14 @@ public:
 	//! doesn't already have one.
 	void fall();
 
-	//! Make any items on top of this Item fall down.
+	//! Make any items on top of this Item fall down and notify any supporting
+	//! items that we're gone by calling the 'release' event.
 	//! Note that this Item has to be moved away right after calling grab(),
 	//! since otherwise the items will immediately hit this Item again.
 	void grab();
+
+	//! Hurl the item in the given direction
+	void hurl(int xs, int ys, int zs, int grav);
 
 	//! Assign a GravityProcess to this Item
 	void setGravityProcess(ProcId pid) { gravitypid = pid; }

@@ -95,6 +95,8 @@ void Item::dumpInfo()
 		 << ", m:" << getMapNum() << ", n:" << getNpcNum()
 		 << ", f:" << std::hex << getFlags() << ", ef:"
 		 << getExtFlags() << ")" << std::dec << std::endl;
+	pout << "l_prev.frame: " << l_prev.frame << ", l_next.frame: "
+		 << l_next.frame << std::endl;
 }
 
 Container *Item::getParentAsContainer() const
@@ -1316,6 +1318,8 @@ void Item::fall()
 
 void Item::grab()
 {
+	// CHECKME: is the fall/release timing correct?
+
 	UCList uclist(2);
 	LOOPSCRIPT(script, LS_TOKEN_TRUE); // we want all items
 	World* world= World::get_instance();
@@ -1328,7 +1332,37 @@ void Item::grab()
 		if (!item) continue;
 		item->fall();
 	}
+
+	uclist.free();
+
+	world->getCurrentMap()->surfaceSearch(&uclist, script, sizeof(script),
+										  this, false, true, false);
+
+	for (uint32 i = 0; i < uclist.getSize(); i++)
+	{
+		Item *item = world->getItem(uclist.getuint16(i));
+		if (!item) continue;
+		item->callUsecodeEvent_release();
+	}
+
 }
+
+
+void Item::hurl(int xs, int ys, int zs, int grav)
+{
+	GravityProcess* p = 0;
+	if (gravitypid) {
+		p = p_dynamic_cast<GravityProcess*>(
+			Kernel::get_instance()->getProcess(gravitypid));
+		assert(p);
+	} else {
+		p = new GravityProcess(this, grav);
+		Kernel::get_instance()->addProcess(p);
+		p->init();
+	}
+	p->move(xs,ys,zs);
+}
+
 
 void Item::explode()
 {
@@ -2333,17 +2367,7 @@ uint32 Item::I_hurl(const uint8* args, unsigned int /*argsize*/)
 	ARG_SINT16(grav);
 	if (!item) return 0;
 
-	GravityProcess* p = 0;
-	if (item->gravitypid) {
-		p = p_dynamic_cast<GravityProcess*>(
-			Kernel::get_instance()->getProcess(item->gravitypid));
-		assert(p);
-	} else {
-		p = new GravityProcess(item, grav);
-		Kernel::get_instance()->addProcess(p);
-		p->init();
-	}
-	p->move(xs,ys,zs);
+	item->hurl(xs, ys, zs, grav);
 
 	return item->gravitypid;
 }
