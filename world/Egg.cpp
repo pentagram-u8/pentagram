@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -42,6 +42,12 @@ uint16 Egg::hatch()
 	if (hatched) return 0;
 	hatched = true;
 	return callUsecodeEvent_hatch();
+}
+
+void Egg::dumpInfo()
+{
+	Item::dumpInfo();
+	pout << "range: " << getXRange() << "," << getYRange() << std::endl;
 }
 
 void Egg::leaveFastArea()

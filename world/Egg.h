@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -46,6 +46,8 @@ public:
 
 	//! clear the 'hatched' flag
 	void reset() { hatched = false; }
+
+	virtual void dumpInfo();
 
 	bool loadData(IDataSource* ids);
 

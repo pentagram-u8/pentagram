@@ -412,8 +412,13 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 void Actor::die()
 {
 	setHP(0);
+	setActorFlag(ACT_DEAD);
+	doAnim(Animation::die, getDir());
 
-	// TODO: implement this
+	// TODO: Lots, including, but not limited to:
+	// * for monsters, get rid of the Actor object?
+	// * replace by body container, filled with treasure if appropriate
+	// * some U8 monsters need special actions: skeletons, eyebeasts, etc...
 }
 
 int Actor::calculateAttackDamage(uint16 other, int damage, uint16 damage_type)
@@ -762,6 +767,19 @@ uint32 Actor::I_isInCombat(const uint8* args, unsigned int /*argsize*/)
 		return 0;
 }
 
+uint32 Actor::I_isEnemy(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	ARG_ACTOR_FROM_ID(other);
+	if (!actor) return 0;
+	if (!other) return 0;
+
+	if (actor->getEnemyAlignment() & other->getAlignment())
+		return 1;
+	else
+		return 0;
+}
+
 uint32 Actor::I_isDead(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ACTOR_FROM_PTR(actor);
@@ -771,6 +789,26 @@ uint32 Actor::I_isDead(const uint8* args, unsigned int /*argsize*/)
 		return 1;
 	else
 		return 0;
+}
+
+uint32 Actor::I_setDead(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	if (!actor) return 0;
+
+	actor->setActorFlag(ACT_DEAD);
+
+	return 0;
+}
+
+uint32 Actor::I_clrDead(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	if (!actor) return 0;
+
+	actor->clearActorFlag(ACT_DEAD);
+
+	return 0;
 }
 
 uint32 Actor::I_isImmortal(const uint8* args, unsigned int /*argsize*/)
@@ -784,6 +822,27 @@ uint32 Actor::I_isImmortal(const uint8* args, unsigned int /*argsize*/)
 		return 0;
 }
 
+uint32 Actor::I_setImmortal(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	if (!actor) return 0;
+
+	actor->setActorFlag(ACT_IMMORTAL);
+	actor->clearActorFlag(ACT_INVINCIBLE);
+
+	return 0;
+}
+
+uint32 Actor::I_clrImmortal(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	if (!actor) return 0;
+
+	actor->clearActorFlag(ACT_IMMORTAL);
+
+	return 0;
+}
+
 uint32 Actor::I_isWithstandDeath(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ACTOR_FROM_PTR(actor);
@@ -794,6 +853,27 @@ uint32 Actor::I_isWithstandDeath(const uint8* args, unsigned int /*argsize*/)
 	else
 		return 0;
 }
+
+uint32 Actor::I_setWithstandDeath(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	if (!actor) return 0;
+
+	actor->setActorFlag(ACT_WITHSTANDDEATH);
+
+	return 0;
+}
+
+uint32 Actor::I_clrWithstandDeath(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	if (!actor) return 0;
+
+	actor->clearActorFlag(ACT_WITHSTANDDEATH);
+
+	return 0;
+}
+
 
 uint32 Actor::I_isFeignDeath(const uint8* args, unsigned int /*argsize*/)
 {

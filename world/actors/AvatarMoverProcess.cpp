@@ -84,7 +84,7 @@ bool AvatarMoverProcess::handleCombatMode()
 	uint32 mousedir = (guiapp->getMouseDirection(mx,my)+7)%8;
 
 	// If Avatar has fallen down, stand up.
-	if (lastanim == Animation::fall || lastanim == Animation::fallBackwards) {
+	if (lastanim == Animation::die || lastanim == Animation::fallBackwards) {
 		nextanim = Animation::checkWeapon(Animation::standUp, lastanim);
 		waitFor(avatar->doAnim(nextanim, nextdir));
 		return false;
@@ -236,7 +236,7 @@ bool AvatarMoverProcess::handleNormalMode()
 	uint32 mousedir = (guiapp->getMouseDirection(mx,my)+7)%8;
 
 	// If Avatar has fallen down, stand up.
-	if (lastanim == Animation::fall || lastanim == Animation::fallBackwards) {
+	if (lastanim == Animation::die || lastanim == Animation::fallBackwards) {
 		nextanim = Animation::checkWeapon(Animation::standUp, lastanim);
 		waitFor(avatar->doAnim(nextanim, nextdir));
 		return false;

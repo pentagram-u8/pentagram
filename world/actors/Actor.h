@@ -135,9 +135,16 @@ public:
 	INTRINSIC(I_teleport);
 	INTRINSIC(I_doAnim);
 	INTRINSIC(I_isInCombat);
+	INTRINSIC(I_isEnemy);
 	INTRINSIC(I_isDead);
+	INTRINSIC(I_setDead);
+	INTRINSIC(I_clrDead);
 	INTRINSIC(I_isImmortal);
+	INTRINSIC(I_setImmortal);
+	INTRINSIC(I_clrImmortal);
 	INTRINSIC(I_isWithstandDeath);
+	INTRINSIC(I_setWithstandDeath);
+	INTRINSIC(I_clrWithstandDeath);
 	INTRINSIC(I_isFeignDeath);
 	INTRINSIC(I_isBusy);
 	INTRINSIC(I_createActor);

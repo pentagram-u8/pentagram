@@ -38,7 +38,7 @@ namespace Animation
 		//stepBackReachingWeapon = 13,
 		// I'm fairly sure this is the animation when avatar is hit.
 		stumbleBackwards = 13,
-		fall = 14,
+		die = 14,
 		combat_stand = 15,
 		prepareJump = 16,
 		jump = 17,

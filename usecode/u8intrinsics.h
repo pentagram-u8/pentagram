@@ -188,17 +188,17 @@ Intrinsic U8Intrinsics[] = {
 	Actor::I_getAlignment,
 	Actor::I_setEnemyAlignment,
 	Actor::I_getEnemyAlignment,
-	0, // Npc::isEnemy
+	Actor::I_isEnemy,
 	Actor::I_isDead,
-	0, // Npc::setDead
-	0, // Npc::clrDead
+	Actor::I_setDead,
+	Actor::I_clrDead,
 	Actor::I_isImmortal,
 	// 0x090
-	0, // Npc::setImmortal
-	0, // Npc::clrImmortal
+	Actor::I_setImmortal,
+	Actor::I_clrImmortal,
 	Actor::I_isWithstandDeath,
-	0, // Npc::setWithstandDeath
-	0, // Npc::clrWithstandDeath
+	Actor::I_setWithstandDeath,
+	Actor::I_clrWithstandDeath,
 	Actor::I_isFeignDeath,
 	0, // Npc::setFeignDeath
 	0, // Npc::clrFeignDeath
