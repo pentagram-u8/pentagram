@@ -224,11 +224,13 @@ bool Pathfinder::pathfind(std::vector<PathfindingAction>& path)
 {
 	//!! FIXME: memory leaks
 
+	pout << "Actor " << actor->getObjId();
+
 	if (targetitem) {
-		pout << "Pathfinding to item: ";
+		pout << " pathfinding to item: ";
 		targetitem->dumpInfo();
 	} else {
-		pout << "Pathfinding to (" << targetx << "," << targety << "," << targetz << ")" << std::endl;
+		pout << " pathfinding to (" << targetx << "," << targety << "," << targetz << ")" << std::endl;
 	}
 
 	path.clear();

@@ -117,6 +117,12 @@ bool PathfinderProcess::run(const uint32 framenum)
 	perr << "PathfinderProcess: trying step" << std::endl;
 
 	Actor* actor = World::get_instance()->getNPC(item_num);
+
+	// if actor is still animating for whatever reason, wait until he stopped
+	if (actor->getActorFlags() & Actor::ACT_ANIMLOCK) {
+		return false;
+	}
+
 	bool ok = actor->tryAnim(path[currentstep].action,
 							 path[currentstep].direction);
 
@@ -159,9 +165,10 @@ bool PathfinderProcess::run(const uint32 framenum)
 
 	uint16 animpid = actor->doAnim(path[currentstep].action,
 								   path[currentstep].direction);
+	perr << "PathfinderProcess(" << getPid() << "): taking step "
+		 << path[currentstep].action << "," << path[currentstep].direction
+		 << " (animpid=" << animpid << ")" << std::endl;
 	currentstep++;
-	perr << "PathfinderProcess(" << getPid() << "): taking step (pid="
-		 << animpid << ")" << std::endl;
 
 	waitFor(animpid);
 	return true;

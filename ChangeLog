@@ -1,3 +1,6 @@
+2004-06-24  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/PathfinderProcess.cpp: wait until ANIMLOCK flag unset
+	
 2004-06-23  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* misc/common_types.h: new {s,u}intptr types of same size as pointer
 	* various: amd64 fixes
