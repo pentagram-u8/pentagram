@@ -842,7 +842,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// operand order?
 			si16a = static_cast<sint16>(p->stack.pop2());
 			ui16b = static_cast<sint16>(p->stack.pop2());
-			p->stack.push2(static_cast<uint16>(si16a >> ui16b));
+			p->stack.push2(static_cast<uint16>(si16a << ui16b));
 			LOGPF(("lsh"));
 			break;
 
