@@ -218,7 +218,8 @@ void CurrentMap::loadMap(Map* map)
 
 		// Schedule
 		// CHECKME: is this the right time to pass?
-		actor->schedule(GUIApp::get_instance()->getGameTimeInSeconds()/60);
+		if (callCacheIn)
+			actor->schedule(GUIApp::get_instance()->getGameTimeInSeconds()/60);
 		
 		if (actor->getMapNum() == getNum()) {
 			addItemToEnd(actor);
