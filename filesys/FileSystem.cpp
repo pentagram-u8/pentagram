@@ -350,7 +350,7 @@ bool FileSystem::MountFileInMemory(const std::string &vpath, const uint8 *data, 
 bool FileSystem::rewrite_virtual_path(string &vfn)
 {
 	bool ret = false;
-	string::size_type pos = string::npos;
+	string::size_type pos = vfn.size();
 
 	while ((pos = vfn.rfind('/', pos)) != std::string::npos) {
 //		perr << vfn << ", " << vfn.substr(0, pos) << ", " << pos << std::endl;
@@ -378,6 +378,7 @@ bool FileSystem::rewrite_virtual_path(string &vfn)
 
 bool FileSystem::IsDir(const string &path)
 {
+#ifndef UNDER_CE
 	bool exists;
 	struct stat sbuf;
 
@@ -393,6 +394,31 @@ bool FileSystem::IsDir(const string &path)
 				return false; // exists, but not a directory
 		}
 	} while (base_to_uppercase(name, ++uppercasecount));
+#else
+
+	const TCHAR		*lpszT;
+	WIN32_FIND_DATA	fileinfo;
+	HANDLE			handle;
+
+#ifdef UNICODE
+	const char *name = path.c_str();
+	std::size_t nLen = strlen(name)+1;
+	LPTSTR lpszT2 = (LPTSTR) _alloca(nLen*2);
+	lpszT = lpszT2;
+	MultiByteToWideChar(CP_ACP, 0, name, -1, lpszT2, nLen);
+#else
+	lpszT = path.c_str();
+#endif
+
+	handle = FindFirstFile (lpszT, &fileinfo);
+
+	if (handle != INVALID_HANDLE_VALUE)
+	{
+		FindClose (handle);
+
+		if (fileinfo.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) return true;
+	}
+#endif
 
 	return false; // not found
 }

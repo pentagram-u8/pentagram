@@ -25,6 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "istring.h"
 #include "Q_strcasecmp.h"
 
+#ifndef UNDER_CE
+
 namespace Pentagram {
 
 bool ichar_traits::eq(const char_type & c1, const char_type & c2)
@@ -55,3 +57,5 @@ int ichar_traits::compare(const char_type * s1, const char_type * s2, size_t len
 }
 
 };
+
+#endif

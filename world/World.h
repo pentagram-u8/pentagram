@@ -109,7 +109,7 @@ public:
 	ObjId etherealPeek() { return ethereal.front(); }
 
 	//! remove an item from the ethereal void
-	void etherealRemove(ObjId objid) { return ethereal.remove(objid); }
+	void etherealRemove(ObjId objid) { ethereal.remove(objid); }
 
 	//! output some statistics about the world
 	void worldStats();

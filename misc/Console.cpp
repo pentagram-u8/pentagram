@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 #include "ODataSource.h"
 #include "RenderSurface.h"
+#include "util.h"
 
 #include <cstdio>
 #include <cstring>
@@ -35,11 +36,24 @@ using namespace std;
 // The console
 Console		con;
 
+
+
 // Standard Output Stream Object
+#ifndef SAFE_CONSOLE_STREAMS
 console_ostream<char>		pout;
+console_ostream<char>		*ppout = &pout;
+#else
+console_ostream<char>		*ppout = 0;
+#endif
 
 // Error Output Stream Object
+#ifndef SAFE_CONSOLE_STREAMS
 console_err_ostream<char>	perr;
+console_err_ostream<char>	*pperr = &perr;
+#else
+console_err_ostream<char>	*pperr = 0;
+#endif
+
 
 /*
 ================
@@ -188,6 +202,9 @@ Console::Console () : current(0), x(0), display(0), linewidth(-1),
 
 	std::memset (times, 0, sizeof(times));
 	
+	// Lets try adding a Console command!
+	AddConsoleCommand("CmdList", ConCmd_CmdList);
+
 	PrintInternal ("Console initialized.\n");
 }
 
@@ -522,6 +539,170 @@ void Console::ScrollConsole(sint32 lines)
 	if (display > current) display = current;
 }
 
+//
+// Console commands
+//
+
+void Console::AddConsoleCommand(const Pentagram::istring &command, Console::Function function)
+{
+	ConsoleCommands[command] = function;
+}
+
+void Console::RemoveConsoleCommand(const Pentagram::istring &command)
+{
+	ConsoleCommands[command] = 0;
+}
+
+void Console::ExecuteConsoleCommand(const Console::ArgsType &args)
+{
+	std::map<Pentagram::istring,Console::Function>::iterator it;
+	
+	Console::ArgvType argv;
+	StringToArgv(args,argv);
+
+	// Empty?!?
+	if (argv.empty()) return;
+
+	it = ConsoleCommands.find(argv[0]);
+
+	if (it != ConsoleCommands.end())
+		it->second(args, argv);
+	else
+		pout << "Unknown command: " << argv[0] << std::endl;
+}
+
+void Console::ExecuteCommandBuffer()
+{
+	if (commandBuffer.empty()) return;
+
+	Console::ArgsType args = commandBuffer;
+	commandBuffer.clear();
+
+	pout << "]" << args << std::endl;
+
+	ExecuteConsoleCommand(args);
+}
+
+void Console::AddCharacterToCommandBuffer(int ch)
+{
+	// Enter (execute command)
+	if (ch == Console::Enter) {
+
+		ExecuteCommandBuffer();
+	}
+	// Backspace
+	else if (ch == Console::Backspace) {
+
+		// There should be a better way to do this
+		if (!commandBuffer.empty()) commandBuffer.erase(commandBuffer.end()-1);
+	}
+	// Tab (command completion)
+	else if (ch == Console::Tab) {
+
+		if (!commandBuffer.empty()) {
+
+			int count = 0;
+			Pentagram::istring common;
+			std::map<Pentagram::istring,Console::Function>::iterator it;
+			std::map<Pentagram::istring,Console::Function>::iterator found = 0;
+
+			for (it = ConsoleCommands.begin(); it != ConsoleCommands.end(); ++it)
+				if (it->second) {
+					if (it->first.compare(0, commandBuffer.size(), commandBuffer))
+						continue;
+
+					if (!count)
+					{
+						common = it->first;
+						found = it;
+					}
+					else
+					{
+						Pentagram::istring::iterator it1 = common.begin();
+						Pentagram::istring::const_iterator it2 = it->first.begin();
+						int comsize = 0;
+
+						while (it1 != common.end())
+						{
+							if (!common.traits_type::eq(*it1,*it2)) break;
+							
+							comsize++;
+							++it1;
+							++it2;
+						}
+
+						common.resize(comsize);
+					}
+					count++;
+				}
+
+				if (count) 
+				{
+
+					if (count > 1) {
+						pout << "]" << commandBuffer << std::endl;
+
+						ArgsType args = "CmdList \""; 
+						args += commandBuffer;
+						args += '\"';
+							
+						ArgvType argv;
+						StringToArgv(args,argv);
+
+						ConCmd_CmdList(args,argv);
+						commandBuffer = common;
+					}
+					else 
+						commandBuffer = common + " ";
+				}
+			}
+	}
+	// Add the character to the command buffer
+	else {
+
+		commandBuffer += ch;
+	}
+}
+
+void Console::ClearCommandBuffer()
+{
+	commandBuffer.clear();
+}
+
+void Console::ConCmd_CmdList(const Console::ArgsType &args, const Console::ArgvType &argv)
+{
+	std::map<ArgsType,Function>::iterator it;
+	int i = 0;
+
+	//pout << std::endl;
+
+	if (argv.size() > 1)
+	{
+		for (std::size_t a = 1; a < argv.size(); a++)
+		{
+			const ArgsType &arg = argv[a];
+
+			for (it = con.ConsoleCommands.begin(); it != con.ConsoleCommands.end(); ++it)
+				if (it->second) {
+					if (it->first.compare(0, arg.size(), arg)) continue;
+		
+					pout << " " << it->first << std::endl;
+					i ++;
+				}
+		}
+	}
+	else
+	{
+		for (it = con.ConsoleCommands.begin(); it != con.ConsoleCommands.end(); ++it)
+			if (it->second) {
+				pout << " " << it->first << std::endl;
+				i ++;
+			}
+	}
+
+	pout << i << " commands" << std::endl;
+}
+
 /*
 ==============================================================================
 
@@ -530,7 +711,7 @@ DRAWING
 ==============================================================================
 */
 
-void Console::DrawConsole (RenderSurface *surf, int height, const char *com, int com_size)
+void Console::DrawConsole (RenderSurface *surf, int height)
 {
 	int				i, x, y;
 	int				rows;
@@ -593,7 +774,10 @@ void Console::DrawConsole (RenderSurface *surf, int height, const char *com, int
 		//putchar ('\n');
 	}
 
-	if (!com) return;
+	//if (!commandBuffer.size()) return;
+
+	const char *com = commandBuffer.c_str();
+	int com_size = commandBuffer.size();
 
 	//	prestep if horizontally scrolling
 	if (com_size >= (linewidth-1))
@@ -640,198 +824,3 @@ void Console::DrawConsoleNotify (RenderSurface *surf)
 }
 
 
-#if 0
-/*
-================
-Con_DrawNotify
-
-Draws the last few lines of output transparently over the game top
-================
-*/
-void Con_DrawNotify (void)
-{
-	int		x, v;
-	char	*text;
-	int		i;
-	int		time;
-	char	*s;
-	int		skip;
-
-	v = 0;
-	for (i= con.current-NUM_CON_TIMES+1 ; i<=con.current ; i++)
-	{
-		if (i < 0)
-			continue;
-		time = con.times[i % NUM_CON_TIMES];
-		if (time == 0)
-			continue;
-		time = cls.realtime - time;
-		if (time > con_notifytime->value*1000)
-			continue;
-		text = con.text + (i % con.totallines)*con.linewidth;
-		
-		for (x = 0 ; x < con.linewidth ; x++)
-			re.DrawChar ( (x+1)<<3, v, text[x]);
-
-		v += 8;
-	}
-
-
-	if (cls.key_dest == key_message)
-	{
-		if (chat_team)
-		{
-			DrawString (8, v, "say_team:");
-			skip = 11;
-		}
-		else
-		{
-			DrawString (8, v, "say:");
-			skip = 5;
-		}
-
-		s = chat_buffer;
-		if (chat_bufferlen > (viddef.width>>3)-(skip+1))
-			s += chat_bufferlen - ((viddef.width>>3)-(skip+1));
-		x = 0;
-		while(s[x])
-		{
-			re.DrawChar ( (x+skip)<<3, v, s[x]);
-			x++;
-		}
-		re.DrawChar ( (x+skip)<<3, v, 10+((cls.realtime>>8)&1));
-		v += 8;
-	}
-	
-const char *com, int com_size
-	if (v)
-	{
-		SCR_AddDirtyPoint (0,0);
-		SCR_AddDirtyPoint (viddef.width-1, v);
-	}
-}
-
-/*
-================
-Con_DrawConsole
-
-Draws the console with the solid background
-================
-*/
-void Con_DrawConsole (float frac)
-{
-	int				i, j, x, y, n;
-	int				rows;
-	char			*text;
-	int				row;
-	int				lines;
-	char			version[64];
-	char			dlbar[1024];
-
-	// Need to do this first
-	PrintPutchar();
-
-	lines = viddef.height * frac;
-	if (lines <= 0)
-		return;
-
-	if (lines > viddef.height)
-		lines = viddef.height;
-
-// draw the background
-	re.DrawStretchPic (0, -viddef.height+lines, viddef.width, viddef.height, "conback");
-	SCR_AddDirtyPoint (0,0);
-	SCR_AddDirtyPoint (viddef.width-1,lines-1);
-
-	Com_sprintf (version, sizeof(version), "v%4.2f", VERSION);
-	for (x=0 ; x<5 ; x++)
-		re.DrawChar (viddef.width-44+x*8, lines-12, 128 + version[x] );
-
-// draw the text
-	vislines = lines;
-	
-#if 0
-	rows = (lines-8)>>3;		// rows of text to draw
-
-	y = lines - 24;
-#else
-	rows = (lines-22)>>3;		// rows of text to draw
-
-	y = lines - 30;
-#endif
-
-// draw from the bottom up
-	if (display != current)
-	{
-	// draw arrows to show the buffer is backscrolled
-		for (x=0 ; x<linewidth ; x+=4)
-			re.DrawChar ( (x+1)<<3, y, '^');
-	
-		y -= 8;
-		rows--;
-	}
-	
-	row = display;
-	for (i=0 ; i<rows ; i++, y-=8, row--)
-	{
-		if (row < 0)
-			break;
-		if (current - row >= totallines)
-			break;		// past scrollback wrap point
-			
-		text = text + (row % totallines)*linewidth;
-
-		for (x=0 ; x<linewidth ; x++)
-			re.DrawChar ( (x+1)<<3, y, text[x]);
-	}
-
-//ZOID
-	// draw the download bar
-	// figure out width
-	if (cls.download) {
-		if ((text = strrchr(cls.downloadname, '/')) != NULL)
-			text++;
-		else
-			text = cls.downloadname;
-
-		x = linewidth - ((linewidth * 7) / 40);
-		y = x - strlen(text) - 8;
-		i = linewidth/3;
-		if (strlen(text) > i) {
-			y = x - i - 11;
-			strncpy(dlbar, text, i);
-			dlbar[i] = 0;
-			strcat(dlbar, "...");
-		} else
-			strcpy(dlbar, text);
-		strcat(dlbar, ": ");
-		i = strlen(dlbar);
-		dlbar[i++] = '\x80';
-		// where's the dot go?
-		if (cls.downloadpercent == 0)
-			n = 0;
-		else
-			n = y * cls.downloadpercent / 100;
-			
-		for (j = 0; j < y; j++)
-			if (j == n)
-				dlbar[i++] = '\x83';
-			else
-				dlbar[i++] = '\x81';
-		dlbar[i++] = '\x82';
-		dlbar[i] = 0;
-
-		sprintf(dlbar + strlen(dlbar), " %02d%%", cls.downloadpercent);
-
-		// draw it
-		y = vislines-12;
-		for (i = 0; i < strlen(dlbar); i++)
-			re.DrawChar ( (i+1)<<3, y, dlbar[i]);
-	}
-//ZOID
-
-// draw the input prompt, user text, and cursor if desired
-	Con_DrawInput ();
-}
-
-#endif

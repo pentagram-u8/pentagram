@@ -104,13 +104,13 @@ UCMachine::UCMachine(Intrinsic *iset) : avatarsName("Avatar")
 	listIDs = new idMan(1, 65534, 128);
 	stringIDs = new idMan(1, 65534, 256);
 
-	ConsoleGump::AddConsoleCommand("UCMachine::avatarsName", ConCmd_avatarsName);
+	con.AddConsoleCommand("UCMachine::avatarsName", ConCmd_avatarsName);
 }
 
 
 UCMachine::~UCMachine()
 {
-	ConsoleGump::RemoveConsoleCommand("UCMachine::avatarsName");
+	con.RemoveConsoleCommand("UCMachine::avatarsName");
 
 	ucmachine = 0;
 
@@ -2329,15 +2329,15 @@ uint32 UCMachine::I_target(const uint8* /*args*/, unsigned int /*argsize*/)
 	return Kernel::get_instance()->addProcess(new TargetProcess());
 }
 
-void UCMachine::ConCmd_avatarsName(const Pentagram::istring &args)
+void UCMachine::ConCmd_avatarsName(const Console::ArgsType &args, const Console::ArgvType &argv)
 {
 	UCMachine *uc = UCMachine::get_instance();
-	if (args.empty())
+	if (argv.size() == 1)
 	{
 		pout << "UCMachine::avatarsName = \"" << uc->avatarsName << "\"" << std::endl;
 	}
 	else
 	{
-		uc->avatarsName = args.c_str();
+		uc->avatarsName = argv[1].c_str();
 	}
 }

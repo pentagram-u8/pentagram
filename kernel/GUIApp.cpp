@@ -106,7 +106,7 @@ struct HWMouseCursor {
 #include "Q_strcasecmp.h"
 
 #include "MidiDriver.h"
-#ifdef WIN32
+#if defined(WIN32) && !defined(UNDER_CE)
 #include "WindowsMidiDriver.h"
 #endif
 #ifdef MACOSX
@@ -128,10 +128,11 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	  palettemanager(0), gamedata(0), world(0), desktopGump(0),
 	  consoleGump(0), gameMapGump(0), avatarMoverProcess(0),
 	  runGraphicSysInit(false), runSDLInit(false),
-	  frameSkip(false), frameLimit(true), interpolate(true),
+	  frameSkip(false), frameLimit(true), interpolate(false),
 	  animationRate(100), avatarInStasis(false), paintEditorItems(false),
 	  painting(false), dragging(DRAG_NOT), timeOffset(0),
-	  midi_driver(0), midi_volume(255)
+	  midi_driver(0), midi_volume(255),
+	  drawRenderStats(false)
 {
 	application = this;
 
@@ -141,30 +142,32 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 		mouseButton[i].state = MBS_HANDLED;
 	}
 
-	ConsoleGump::AddConsoleCommand("GUIApp::saveGame", ConCmd_saveGame);
-	ConsoleGump::AddConsoleCommand("GUIApp::loadGame", ConCmd_loadGame);
-	ConsoleGump::AddConsoleCommand("Kernel::processTypes",
-								   Kernel::ConCmd_processTypes);
-	ConsoleGump::AddConsoleCommand("ObjectManager::objectTypes",
+	con.AddConsoleCommand("GUIApp::saveGame", ConCmd_saveGame);
+	con.AddConsoleCommand("GUIApp::loadGame", ConCmd_loadGame);
+	con.AddConsoleCommand("Kernel::processTypes",Kernel::ConCmd_processTypes);
+	con.AddConsoleCommand("ObjectManager::objectTypes",
 								   ObjectManager::ConCmd_objectTypes);
-	ConsoleGump::AddConsoleCommand("teleport", MainActor::ConCmd_teleport);
-	ConsoleGump::AddConsoleCommand("mark", MainActor::ConCmd_mark);
-	ConsoleGump::AddConsoleCommand("recall", MainActor::ConCmd_recall);
-	ConsoleGump::AddConsoleCommand("listmarks", MainActor::ConCmd_listmarks);
-	ConsoleGump::AddConsoleCommand("quit", ConCmd_quit);	
+	con.AddConsoleCommand("teleport", MainActor::ConCmd_teleport);
+	con.AddConsoleCommand("mark", MainActor::ConCmd_mark);
+	con.AddConsoleCommand("recall", MainActor::ConCmd_recall);
+	con.AddConsoleCommand("listmarks", MainActor::ConCmd_listmarks);
+	con.AddConsoleCommand("quit", ConCmd_quit);	
+
+	con.AddConsoleCommand("GUIApp::drawRenderStats", ConCmd_drawRenderStats);
 }
 
 GUIApp::~GUIApp()
 {
-	ConsoleGump::RemoveConsoleCommand("GUIApp::saveGame");
-	ConsoleGump::RemoveConsoleCommand("GUIApp::loadGame");
-	ConsoleGump::RemoveConsoleCommand("Kernel::processTypes");
-	ConsoleGump::RemoveConsoleCommand("ObjectManager::objectTypes");
-	ConsoleGump::RemoveConsoleCommand("teleport");
-	ConsoleGump::RemoveConsoleCommand("mark");
-	ConsoleGump::RemoveConsoleCommand("recall");
-	ConsoleGump::RemoveConsoleCommand("listmarks");
-	ConsoleGump::RemoveConsoleCommand("quit");
+	con.RemoveConsoleCommand("GUIApp::saveGame");
+	con.RemoveConsoleCommand("GUIApp::loadGame");
+	con.RemoveConsoleCommand("Kernel::processTypes");
+	con.RemoveConsoleCommand("ObjectManager::objectTypes");
+	con.RemoveConsoleCommand("teleport");
+	con.RemoveConsoleCommand("mark");
+	con.RemoveConsoleCommand("recall");
+	con.RemoveConsoleCommand("listmarks");
+	con.RemoveConsoleCommand("quit");
+	con.RemoveConsoleCommand("GUIApp::drawRenderStats");
 
 	FORGET_OBJECT(objectmanager);
 	FORGET_OBJECT(hidmanager);
@@ -275,6 +278,10 @@ void GUIApp::init_midi()
 	desired.callback = sdlAudioCallback;
 	desired.userdata = 0;
 
+#ifdef UNDER_CE
+	desired.freq = 11025;
+	desired.channels = 1;
+#endif
 	pout << "Initializing Midi" << std::endl;
 
 	std::vector<const MidiDriver::MidiDriverDesc*>	midi_drivers;
@@ -290,7 +297,7 @@ void GUIApp::init_midi()
 #ifdef MACOSX
 	midi_drivers.push_back(CoreAudioMidiDriver::getDesc());
 #endif
-#ifdef WIN32
+#if defined(WIN32) && !defined(UNDER_CE)
 	midi_drivers.push_back(WindowsMidiDriver::getDesc());
 #endif
 #ifdef USE_TIMIDITY_MIDI
@@ -829,17 +836,20 @@ void GUIApp::paint()
 	int v_offset = 0;
 	int char_w = confont->width/16;
 
-	snprintf(buf, 255, "Rendering time %li ms %li FPS ", diff, 1000/diff);
-	screen->PrintTextFixed(confont, buf, dims.w-char_w*strlen(buf), v_offset);
-	v_offset += confont->height/16;
+	if (drawRenderStats)
+	{
+		snprintf(buf, 255, "Rendering time %li ms %li FPS ", diff, 1000/diff);
+		screen->PrintTextFixed(confont, buf, dims.w-char_w*strlen(buf), v_offset);
+		v_offset += confont->height/16;
 
-	snprintf(buf, 255, "Paint Gumps %li ms ", after_gumps-before_gumps);
-	screen->PrintTextFixed(confont, buf, dims.w-char_w*strlen(buf), v_offset);
-	v_offset += confont->height/16;
+		snprintf(buf, 255, "Paint Gumps %li ms ", after_gumps-before_gumps);
+		screen->PrintTextFixed(confont, buf, dims.w-char_w*strlen(buf), v_offset);
+		v_offset += confont->height/16;
 
-	snprintf(buf, 255, "t %02d:%02d gh %i ", I_getTimeInMinutes(0,0), I_getTimeInSeconds(0,0)%60, I_getTimeInGameHours(0,0));
-	screen->PrintTextFixed(confont, buf, dims.w-char_w*strlen(buf), v_offset);
-	v_offset += confont->height/16;
+		snprintf(buf, 255, "t %02d:%02d gh %i ", I_getTimeInMinutes(0,0), I_getTimeInSeconds(0,0)%60, I_getTimeInGameHours(0,0));
+		screen->PrintTextFixed(confont, buf, dims.w-char_w*strlen(buf), v_offset);
+		v_offset += confont->height/16;
+	}
 
 	// End painting
 	screen->EndPainting();
@@ -1926,11 +1936,11 @@ bool GUIApp::loadGame(std::string filename)
 	}
 	assert(desktopGump);
 	gameMapGump = p_dynamic_cast<GameMapGump*>(desktopGump->
-											   FindGump<GameMapGump>());
+											   FindGump(GameMapGump::ClassType));
 	assert(gameMapGump);
 
 	consoleGump = p_dynamic_cast<ConsoleGump*>(desktopGump->
-											   FindGump<ConsoleGump>());
+											   FindGump(ConsoleGump::ClassType));
 	assert(consoleGump);
 
 	pout << "Done" << std::endl;
@@ -1984,36 +1994,48 @@ bool GUIApp::load(IDataSource* ids)
 // Console Commands
 //
 
-void GUIApp::ConCmd_saveGame(const Pentagram::istring &args)
+void GUIApp::ConCmd_saveGame(const Console::ArgsType &args, const Console::ArgvType &argv)
 {
-	if (args.empty())
+	if (argv.size()==1)
 	{
 		pout << "Usage: GUIApp::saveGame <filename>" << std::endl;
 		return;
 	}
 
 	std::string filename = "@save/";
-	filename += args.c_str();
+	filename += argv[1].c_str();
 	GUIApp::get_instance()->saveGame(filename);
 }
 
-void GUIApp::ConCmd_loadGame(const Pentagram::istring &args)
+void GUIApp::ConCmd_loadGame(const Console::ArgsType &args, const Console::ArgvType &argv)
 {
-	if (args.empty())
+	if (argv.size()==1)
 	{
 		pout << "Usage: GUIApp::loadGame <filename>" << std::endl;
 		return;
 	}
 
 	std::string filename = "@save/";
-	filename += args.c_str();
+	filename += argv[1].c_str();
 	GUIApp::get_instance()->loadGame(filename);
 }
 
 
-void GUIApp::ConCmd_quit(const Pentagram::istring &args)
+void GUIApp::ConCmd_quit(const Console::ArgsType &args, const Console::ArgvType &argv)
 {
 	GUIApp::get_instance()->isRunning = false;
+}
+
+void GUIApp::ConCmd_drawRenderStats(const Console::ArgsType &args, const Console::ArgvType &argv)
+{
+	if (argv.size() == 1)
+	{
+		pout << "GUIApp::drawRenderStats = " << GUIApp::get_instance()->drawRenderStats << std::endl;
+	}
+	else
+	{
+		GUIApp::get_instance()->drawRenderStats = std::strtol(argv[1].c_str(), 0, 0) != 0;
+	}
 }
 
 //

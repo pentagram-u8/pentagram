@@ -23,6 +23,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 int main(int argc, char* argv[])
 {
+#ifdef SAFE_CONSOLE_STREAMS
+	console_streambuf<char> fb;
+	ppout = new console_ostream<char>(&fb);
+
+	console_err_streambuf<char> err_fb;
+	pperr = new console_err_ostream<char>(&err_fb);
+
+#endif
+
 	GUIApp* app = new GUIApp(argc, argv);
 	app->startup();
 	app->run();

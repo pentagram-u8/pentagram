@@ -22,8 +22,10 @@
 
 using std::endl;
 using std::string;
+#ifndef UNDER_CE
 using std::strtol;
 using std::strtoul;
+#endif
 
 void Args::process(const sint32 argc, const char * const * const argv)
 {

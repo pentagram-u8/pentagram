@@ -20,8 +20,6 @@
 #define CONSOLEGUMP_H_INCLUDED
 
 #include "Gump.h"
-#include "istring.h"
-#include <map>
 
 class ConsoleGump : public Gump
 {
@@ -67,21 +65,12 @@ public:
 	virtual void		OnFocus(bool /*gain*/);
 	virtual bool		OnKeyDown(int key);
 
-	bool loadData(IDataSource* ids);
-
-	static void			AddConsoleCommand(const Pentagram::istring &command, ConsoleFunction function);
-	static void			RemoveConsoleCommand(const Pentagram::istring &command);
-	static void			ExecuteConsoleCommand(const Pentagram::istring &command, const Pentagram::istring &args);
-	static void			ExecuteQueuedCommand();
-
-	static void			ConCmd_CmdList(const Pentagram::istring &args);
+	bool	loadData(IDataSource* ids);
 
 protected:
 	virtual void saveData(ODataSource* ods);
 
 private:
-	static Pentagram::istring	commandBuffer;
-	static std::map<Pentagram::istring,ConsoleGump::ConsoleFunction> ConsoleCommands;
 };
 
 #endif //CONSOLEGUMP_H_INCLUDED

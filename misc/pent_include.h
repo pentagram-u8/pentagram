@@ -28,10 +28,14 @@
 #  include <config.h>
 #endif
 
-
 // Include msvc_include under MSVC
-#ifdef _MSC_VER
+#if defined(_MSC_VER) && !defined(UNDER_CE)
 #  include "msvc_include.h"
+#endif
+
+// Include wince_include under Embedded Visual C++
+#if defined(_MSC_VER) && defined(UNDER_CE)
+#  include "wince_include.h"
 #endif
 
 

@@ -1,3 +1,12 @@
+2004-04-09  Ryan Nunn <colourles@users.sourceforge.net>
+	* misc/istring.* : New and improved istring. Hopefully it works for all
+	* misc/util.* :  StringToArgs function (handles quoted strings)
+	* various files : Changes for PocketPC 2003 compiling
+	* various files : Moving console command stuff from ConsoleGump to 
+	  Console. Console functions now have argv. Args now contains the 
+	  entire command line (including command name). Note the new function 
+	  params for console functions.
+
 2004-04-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/MiniStatsGump.*: mini stats gump
 	* gumps/PaperdollGump.cpp: open mini stats gump

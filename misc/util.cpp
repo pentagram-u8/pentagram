@@ -33,3 +33,79 @@ std::string to_uppercase(std::string s)
 	}
 	return str;
 }
+
+template<class T> void StringToArgv(const T &args, std::vector<T> &argv)
+{
+	// Clear the vector
+	argv.clear();
+
+	bool quoted = false;
+	T::const_iterator it;
+	int ch;
+	T arg;
+
+	for(it = args.begin(); it != args.end(); ++it) 
+	{
+		ch = *it;
+
+		// Toggle quoted string handling
+		if (ch == '\"')
+		{
+			quoted = !quoted;
+			continue;
+		}
+
+		// Handle \\, \", \', \n, \r, \t
+		if (ch == '\\')
+		{
+			T::const_iterator next = it+1;
+			if (next != args.end())
+			{
+				if (*next == '\\' || *next == '\"' || *next == '\'')
+				{
+					ch = *next;
+					++it;
+				}
+				else if (*next == 'n')
+				{
+					ch = '\n';
+					++it;
+				}
+				else if (*next == 'r')
+				{
+					ch = '\r';
+					++it;
+				}
+				else if (*next == 't')
+				{
+					ch = '\t';
+					++it;
+				}
+			}
+		}
+
+		// A space, a tab, line feed, carriage return
+		if (!quoted && (ch == ' ' || ch == '\t' || ch == '\n' || ch == '\r'))
+		{
+			// If we are not empty then we are at the end of the arg
+			// otherwise we will ignore the extra chars
+			if (!arg.empty())
+			{
+				argv.push_back(arg);
+				arg.clear();
+			}
+
+			continue;
+		}
+
+		// Add the charater to the string
+		arg += ch;
+	}
+
+	// Push any arg if it's left 
+	if (!arg.empty()) argv.push_back(arg);
+}
+
+template void StringToArgv<std::string>(const std::string &args, std::vector<std::string> &argv);
+template void StringToArgv<Pentagram::istring>(const Pentagram::istring &args, std::vector<Pentagram::istring> &argv);
+

@@ -28,8 +28,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IDataSource.h"
 #include "ODataSource.h"
 
-using std::memset;
-
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(MusicProcess,Process);
 
@@ -38,14 +36,14 @@ MusicProcess * MusicProcess::the_music_process = 0;
 MusicProcess::MusicProcess()
 	: current_track(0)
 {
-	memset(song_branches, -1, 128*sizeof(int));
+	std::memset(song_branches, -1, 128*sizeof(int));
 }
 
 MusicProcess::MusicProcess(MidiDriver *drv) :
 	driver(drv), state(MUSIC_NORMAL), current_track(0),
 	wanted_track(0)
 {
-	memset(song_branches, -1, 128*sizeof(int));
+	std::memset(song_branches, -1, 128*sizeof(int));
 
 	the_music_process = this;
 }

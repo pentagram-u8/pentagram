@@ -127,26 +127,31 @@ uint32 MainActor::getArmourClass()
 	return armour;
 }
 
-void MainActor::ConCmd_teleport(const Pentagram::istring& args)
+void MainActor::ConCmd_teleport(const Console::ArgsType &args, const Console::ArgvType &argv)
 {
 	MainActor* mainactor = World::get_instance()->getMainActor();
 	int curmap = mainactor->getMapNum();
 
-	int a[4];
-	int n = sscanf(args.c_str(), "%d%d%d%d", &a[0], &a[1], &a[2], &a[3]);
-
-	switch (n) {
+	switch (argv.size() - 1) {
 	case 1:
-		mainactor->teleport(curmap, a[0]);
+		mainactor->teleport(curmap, 
+							strtol(argv[1].c_str(), 0, 0));
 		break;
 	case 2:
-		mainactor->teleport(a[0], a[1]);
+		mainactor->teleport(strtol(argv[1].c_str(), 0, 0), 
+							strtol(argv[2].c_str(), 0, 0));
 		break;
 	case 3:
-		mainactor->teleport(curmap, a[0], a[1], a[2]);
+		mainactor->teleport(curmap, 
+							strtol(argv[1].c_str(), 0, 0), 
+							strtol(argv[2].c_str(), 0, 0), 
+							strtol(argv[3].c_str(), 0, 0));
 		break;
 	case 4:
-		mainactor->teleport(a[0], a[1], a[2], a[3]);
+		mainactor->teleport(strtol(argv[1].c_str(), 0, 0), 
+							strtol(argv[2].c_str(), 0, 0), 
+							strtol(argv[3].c_str(), 0, 0), 
+							strtol(argv[4].c_str(), 0, 0));
 		break;
 	default:
 		pout << "teleport usage:" << std::endl;
@@ -158,9 +163,9 @@ void MainActor::ConCmd_teleport(const Pentagram::istring& args)
 	}
 }
 
-void MainActor::ConCmd_mark(const Pentagram::istring& args)
+void MainActor::ConCmd_mark(const Console::ArgsType &args, const Console::ArgvType &argv)
 {
-	if (args.empty()) {
+	if (argv.size() == 1) {
 		pout << "Usage: mark <mark>: set named mark to this location" << std::endl;
 		return;
 	}
@@ -171,17 +176,17 @@ void MainActor::ConCmd_mark(const Pentagram::istring& args)
 	sint32 x,y,z;
 	mainactor->getLocation(x,y,z);
 
-	Pentagram::istring confkey = "config/u8marks/" + args;
+	Pentagram::istring confkey = "config/u8marks/" + argv[1];
 	char buf[100]; // large enough for 4 ints
 	sprintf(buf, "%d %d %d %d", curmap, x, y, z);
 
 	config->set(confkey, buf);
 	config->write(); //!! FIXME: clean this up
 
-	pout << "Set mark \"" << args.c_str() << "\" to " << buf << std::endl;
+	pout << "Set mark \"" << argv[1].c_str() << "\" to " << buf << std::endl;
 }
 
-void MainActor::ConCmd_recall(const Pentagram::istring& args)
+void MainActor::ConCmd_recall(const Console::ArgsType &args, const Console::ArgvType &argv)
 {
 	if (args.empty()) {
 		pout << "Usage: recall <mark>: recall to named mark" << std::endl;
@@ -190,7 +195,7 @@ void MainActor::ConCmd_recall(const Pentagram::istring& args)
 
 	Configuration* config = CoreApp::get_instance()->getConfig();	
 	MainActor* mainactor = World::get_instance()->getMainActor();
-	Pentagram::istring confkey = "config/u8marks/" + args;
+	Pentagram::istring confkey = "config/u8marks/" + argv[1];
 	std::string target;
 	config->value(confkey, target, "");
 	if (target.empty()) {
@@ -208,7 +213,7 @@ void MainActor::ConCmd_recall(const Pentagram::istring& args)
 	mainactor->teleport(t[0], t[1], t[2], t[3]);
 }
 
-void MainActor::ConCmd_listmarks(const Pentagram::istring& args)
+void MainActor::ConCmd_listmarks(const Console::ArgsType &args, const Console::ArgvType &argv)
 {
 	Configuration* config = CoreApp::get_instance()->getConfig();
 	std::set<Pentagram::istring> marks;

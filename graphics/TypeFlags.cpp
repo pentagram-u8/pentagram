@@ -120,8 +120,9 @@ void TypeFlags::loadWeaponInfo()
 
 	// load overlay shapes
 	std::set<Pentagram::istring> overlaykeys;
+	std::set<Pentagram::istring>::iterator iter;
 	overlaykeys = config->listKeys("weapons/overlays", true);	
-	for (std::set<Pentagram::istring>::iterator iter = overlaykeys.begin();
+	for (iter = overlaykeys.begin();
 		 iter != overlaykeys.end(); ++iter)
 	{
 		Pentagram::istring k = *iter;
@@ -138,7 +139,7 @@ void TypeFlags::loadWeaponInfo()
 	// load weapons
 	std::set<Pentagram::istring> weaponkeys;
 	weaponkeys = config->listKeys("weapons/weapons", true);	
-	for (std::set<Pentagram::istring>::iterator iter = weaponkeys.begin();
+	for (iter = weaponkeys.begin();
 		 iter != weaponkeys.end(); ++iter)
 	{
 		Pentagram::istring k = *iter;

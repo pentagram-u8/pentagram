@@ -256,7 +256,7 @@ void Kernel::processTypes()
 	}	
 }
 
-void Kernel::ConCmd_processTypes(const Pentagram::istring &args)
+void Kernel::ConCmd_processTypes(const Console::ArgsType &args, const Console::ArgvType &argv)
 {
 	Kernel::get_instance()->processTypes();
 }

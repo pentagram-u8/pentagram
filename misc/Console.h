@@ -22,6 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
+#include "istring.h"
+#include <map>
+#include <vector>
 #include <cstdarg>
 
 //
@@ -113,6 +116,14 @@ class Console
 	uint32		times[CON_NUM_TIMES];	// framenum the line was generated
 										// for transparent notify lines
 public:
+	enum SpecialChars
+	{
+		Tab			= '\t',
+		Backspace	= '\b',
+		Enter		= '\n'
+	};
+
+
 	Console();
 	~Console();
 
@@ -126,7 +137,7 @@ public:
 	void	CheckResize (int scrwidth);
 
 	// Draw the Console
-	void	DrawConsole (RenderSurface *surf, int height, const char *com, int com_size);
+	void	DrawConsole (RenderSurface *surf, int height);
 
 	// Draw the Console Notify Overlay
 	void	DrawConsoleNotify (RenderSurface *surf);
@@ -227,6 +238,43 @@ public:
 	void	EnableWordWrap() { wordwrap = true; }
 	void	DisableWordWrap() { wordwrap = false; }
 
+	//
+	// Console Commands
+	//
+
+	typedef Pentagram::istring ArgsType;
+	typedef std::vector<ArgsType> ArgvType;
+	typedef void (*Function)(const ArgsType &args, const ArgvType &argv);
+
+	//! Add a command to the console
+	//! \param command The command to add
+	//! \param function Function pointer for command
+	void			AddConsoleCommand(const Pentagram::istring &command, Console::Function function);
+
+	//! Remove a command from the console
+	//! \param command The command to remove
+	void			RemoveConsoleCommand(const Pentagram::istring &command);
+
+	//! Execute a specific console command
+	//! \param command The command to execute with args
+	void			ExecuteConsoleCommand(const Console::ArgsType &args);
+
+	//! Execute the currently queued console command
+	void			ExecuteCommandBuffer();
+
+	//! Add a character to the Queued Console command input buffer
+	//! \param ch Character to add. 
+	//! \note '\n' will execute the command
+	//! \note '\t' will do command completion
+	//! \note '\b' will do backspace
+	void			AddCharacterToCommandBuffer(int ch);
+
+	//! Clear the queued console command buffer
+	void			ClearCommandBuffer();
+
+	//! "CmdList" console command
+	static void		ConCmd_CmdList(const Console::ArgsType &args, const Console::ArgvType &argv);
+
 private:
 
 	// Print a text string to the console
@@ -243,6 +291,11 @@ private:
 
 	// Print the Putchar data, if possible
 	void	PrintPutchar();
+
+	// Console Commands
+	ArgsType					commandBuffer;
+	std::map<ArgsType,Function>	ConsoleCommands;
+
 };
 
 // Console object
@@ -288,10 +341,13 @@ protected:
 template<class _E, class _Tr = std::char_traits<_E> >
 class console_ostream : public std::basic_ostream<_E, _Tr>
 {
+//#ifndef SAFE_CONSOLE_STREAMS
 	console_streambuf<_E, _Tr> _Fb;
+//#endif
 
 public:	
-	console_ostream() : std::basic_ostream<_E, _Tr>(&_Fb) {}
+	console_ostream() : _Fb(), std::basic_ostream<_E, _Tr>(&_Fb) {}
+	console_ostream(console_streambuf<_E, _Tr> *Fb) : std::basic_ostream<_E, _Tr>(Fb) {}
 	virtual ~console_ostream() { }
 
 #if defined(MACOSX) && defined(__GNUC__)
@@ -312,8 +368,15 @@ public:
 //
 // Standard Output Stream Object
 //
+#ifndef SAFE_CONSOLE_STREAMS
 extern console_ostream<char>		pout;
+extern console_ostream<char>		*ppout;
+#else
+#define pout (*ppout)
+extern console_ostream<char>		*ppout;
+#endif
 
+template<> console_ostream<char>;
 
 //
 // Error Output Streambuf
@@ -349,10 +412,13 @@ protected:
 template<class _E, class _Tr = std::char_traits<_E> >
 class console_err_ostream : public std::basic_ostream<_E, _Tr>
 {
+//#ifndef SAFE_CONSOLE_STREAMS
 	console_err_streambuf<_E, _Tr> _Fb;
+//#endif
 
 public:	
-	console_err_ostream() : std::basic_ostream<_E, _Tr>(&_Fb) {}
+	console_err_ostream() : _Fb(), std::basic_ostream<_E, _Tr>(&_Fb) {}
+	console_err_ostream(console_err_streambuf<_E, _Tr> *Fb) : std::basic_ostream<_E, _Tr>(Fb) {}
 	virtual ~console_err_ostream() { }
 
 #if defined(MACOSX) && defined(__GNUC__)
@@ -374,6 +440,14 @@ public:
 //
 // Error Output Stream Object
 //
+#ifndef SAFE_CONSOLE_STREAMS
 extern console_err_ostream<char>	perr;
+extern console_err_ostream<char>	*pperr;
+#else
+#define perr (*pperr)
+extern console_err_ostream<char>	*pperr;
+#endif
+
+template<> console_err_ostream<char>;
 
 #endif // CONSOLE_H

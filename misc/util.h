@@ -20,7 +20,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define UTIL_H
 
 #include <string>
+#include <vector>
+#include "istring.h"
 
 std::string to_uppercase(std::string s);
+
+template<class T> void StringToArgv(const T &args, std::vector<T> &argv);
+
+template void StringToArgv<std::string>(const std::string &args, std::vector<std::string> &argv);
+template void StringToArgv<Pentagram::istring>(const Pentagram::istring &args, std::vector<Pentagram::istring> &argv);
+
 
 #endif

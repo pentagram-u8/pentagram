@@ -22,15 +22,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "XMidiFile.h"
 #include "IDataSource.h"
 
-using std::memset;
-using std::strncpy;
-
 MusicFlex::MusicFlex(IDataSource* ds) : Flex(ds)
 {
 	songs = new XMidiFile * [count];
 
-	memset(info,0, sizeof(SongInfo*)*128);
-	memset(songs,0, sizeof(XMidiFile*)*count);
+	std::memset(info,0, sizeof(SongInfo*)*128);
+	std::memset(songs,0, sizeof(XMidiFile*)*count);
 	loadSongInfo();
 }
 
@@ -54,8 +51,8 @@ MusicFlex::~MusicFlex()
 
 MusicFlex::SongInfo::SongInfo() : num_measures(0), loop_jump(0)
 {
-	memset(filename,0,16);
-	memset(transitions,0,128*sizeof(int*));
+	std::memset(filename,0,16);
+	std::memset(transitions,0,128*sizeof(int*));
 }
 
 MusicFlex::SongInfo::~SongInfo()
@@ -166,7 +163,7 @@ void MusicFlex::loadSongInfo()
 
 		info[num] = new SongInfo();
 
-		strncpy(info[num]->filename, name.c_str(), 16);
+		std::strncpy(info[num]->filename, name.c_str(), 16);
 		info[num]->num_measures = measures;
 		info[num]->loop_jump = loop_jump;
 	};

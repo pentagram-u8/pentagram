@@ -59,7 +59,7 @@ bool WindowsMidiDriver::doMCIError(MMRESULT mmsys_err)
 	if (mmsys_err != MMSYSERR_NOERROR)
 	{
 		char buf[512];
-		midiOutGetErrorText(mmsys_err, buf, 512);
+		midiOutGetErrorTextA(mmsys_err, buf, 512);
 		perr << buf << endl;
 		return true;
 	}

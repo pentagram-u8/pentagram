@@ -88,10 +88,12 @@ const RunTimeClassType Classname::ClassType = {							\
 																		\
 bool Classname::IsOfType(const RunTimeClassType &type)					\
 {																		\
+	typedef Parent1 P1;													\
+	typedef Parent2 P2;													\
 	if (type == ClassType) return true;									\
-	bool ret = Parent1::IsOfType(type);									\
+	bool ret = P1::IsOfType(type);										\
 	if (ret) return true;												\
-	return Parent2::IsOfType(type);										\
+	return P2::IsOfType(type);											\
 }
 
 #endif //P_RUNTIME_CLASSTYPE

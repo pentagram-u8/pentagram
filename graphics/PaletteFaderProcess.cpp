@@ -76,8 +76,9 @@ PaletteFaderProcess::PaletteFaderProcess(sint16 from[12], sint16 to[12],
 		int priority_, int frames) : priority(priority_), 
 		counter(frames), max_counter(frames)
 {
-	for (int i = 0; i < 12; i++) old_matrix[i] = from[i];
-	for (int i = 0; i < 12; i++) new_matrix[i] = to[i];
+	int i;
+	for (i = 0; i < 12; i++) old_matrix[i] = from[i];
+	for (i = 0; i < 12; i++) new_matrix[i] = to[i];
 }
 
 PaletteFaderProcess::~PaletteFaderProcess(void)
@@ -106,20 +107,23 @@ bool PaletteFaderProcess::run(const uint32)
 
 void PaletteFaderProcess::saveData(ODataSource* ods)
 {
+	unsigned int i;
+
 	ods->write2(1); //version
 	Process::saveData(ods);
 	
 	ods->write4(static_cast<uint32>(priority));
 	ods->write4(static_cast<uint32>(counter));
 	ods->write4(static_cast<uint32>(max_counter));
-	for (unsigned int i = 0; i < 12; ++i)
+	for (i = 0; i < 12; ++i)
 		ods->write2(old_matrix[i]);
-	for (unsigned int i = 0; i < 12; ++i)
+	for (i = 0; i < 12; ++i)
 		ods->write2(new_matrix[i]);
 }
 
 bool PaletteFaderProcess::loadData(IDataSource* ids)
 {
+	unsigned int i;
 	uint16 version = ids->read2();
 	if (version != 1) return false;
 	if (!Process::loadData(ids)) return false;
@@ -128,9 +132,9 @@ bool PaletteFaderProcess::loadData(IDataSource* ids)
 	counter = static_cast<int>(ids->read4());
 	max_counter = static_cast<int>(ids->read4());
 
-	for (unsigned int i = 0; i < 12; ++i)
+	for (i = 0; i < 12; ++i)
 		old_matrix[i] = ids->read2();
-	for (unsigned int i = 0; i < 12; ++i)
+	for (i = 0; i < 12; ++i)
 		new_matrix[i] = ids->read2();
 
 	fader = this; //static

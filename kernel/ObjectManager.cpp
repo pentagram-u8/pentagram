@@ -79,7 +79,9 @@ ObjectManager::~ObjectManager()
 
 void ObjectManager::reset()
 {
-	for (unsigned int i = 0; i < objects.size(); ++i) {
+	unsigned int i;
+
+	for (i = 0; i < objects.size(); ++i) {
 		if (objects[i] == 0) continue;
 #if 0
 		Item* item = p_dynamic_cast<Item*>(objects[i]);
@@ -90,7 +92,7 @@ void ObjectManager::reset()
 		delete objects[i];
 	}
 
-	for (unsigned int i = 0; i < objects.size(); ++i) {
+	for (i = 0; i < objects.size(); ++i) {
 #if 0
 		if (objects[i]) {
 			perr << i << ": " << objects[i]->GetClassType().class_name << std::endl;
@@ -111,14 +113,14 @@ void ObjectManager::reset()
 
 void ObjectManager::objectStats()
 {
-	unsigned int npccount = 0, objcount = 0;
+	unsigned int i, npccount = 0, objcount = 0;
 
 	//!constants
-	for (unsigned int i = 1; i < 256; i++) {
+	for (i = 1; i < 256; i++) {
 		if (objects[i] != 0)
 			npccount++;
 	}
-	for (unsigned int i = 256; i < objects.size(); i++) {
+	for (i = 256; i < objects.size(); i++) {
 		if (objects[i] != 0)
 			objcount++;
 	}
@@ -144,7 +146,7 @@ void ObjectManager::objectTypes()
 	}
 }
 
-void ObjectManager::ConCmd_objectTypes(const Pentagram::istring &args)
+void ObjectManager::ConCmd_objectTypes(const Console::ArgsType &args, const Console::ArgvType &argv)
 {
 	ObjectManager::get_instance()->objectTypes();
 }

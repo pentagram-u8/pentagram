@@ -58,13 +58,13 @@ public:
 	bool loadData(IDataSource* ids);
 
 	//! "teleport" console command
-	static void MainActor::ConCmd_teleport(const Pentagram::istring& args);
+	static void MainActor::ConCmd_teleport(const Console::ArgsType &args, const Console::ArgvType &argv);
 	//! "mark" console command
-	static void MainActor::ConCmd_mark(const Pentagram::istring& args);
+	static void MainActor::ConCmd_mark(const Console::ArgsType &args, const Console::ArgvType &argv);
 	//! "recall" console command
-	static void MainActor::ConCmd_recall(const Pentagram::istring& args);
+	static void MainActor::ConCmd_recall(const Console::ArgsType &args, const Console::ArgvType &argv);
 	//! "listmarks" console command
-	static void MainActor::ConCmd_listmarks(const Pentagram::istring& args);
+	static void MainActor::ConCmd_listmarks(const Console::ArgsType &args, const Console::ArgvType &argv);
 
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();

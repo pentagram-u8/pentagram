@@ -25,14 +25,36 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ODataSource.h"
 #include "FileSystem.h"
 
+#ifndef UNDER_CE
 using std::atof;
 using std::atoi;
-using std::endl;
 using std::memcmp;
 using std::memcpy;
 using std::memset;
 using std::size_t;
+#endif
 using std::string;
+using std::endl;
+
+#ifndef UNDER_CE
+#define XMidiEvent__Malloc XMidiEvent::Malloc
+#define XMidiEvent__Calloc XMidiEvent::Calloc
+#else
+
+template<class T>
+static inline T* XMidiEvent__Malloc(size_t num=1)
+{
+	return static_cast<T*>(std::malloc(num));
+}
+
+template<class T>
+static inline T* XMidiEvent__Calloc(size_t num=1,size_t sz=0)
+{
+	if(!sz) sz=sizeof(T);
+	return static_cast<T*>(std::calloc(num,sz));
+}
+
+#endif
 
 //#include "gamma.h"
 
@@ -358,7 +380,7 @@ void XMidiFile::CreateNewEvent (int time)
 {
 	if (!list)
 	{
-		list = current = XMidiEvent::Calloc<XMidiEvent>();
+		list = current = XMidiEvent__Calloc<XMidiEvent>();
 		if (time > 0)
 			current->time = time;
 		return;
@@ -366,7 +388,7 @@ void XMidiFile::CreateNewEvent (int time)
 
 	if (time < 0 || list->time > time)
 	{
-		XMidiEvent *event = XMidiEvent::Calloc<XMidiEvent>();
+		XMidiEvent *event = XMidiEvent__Calloc<XMidiEvent>();
 		event->next = list;
 		list = current = event;
 		return;
@@ -379,7 +401,7 @@ void XMidiFile::CreateNewEvent (int time)
 	{
 		if (current->next->time > time)
 		{
-			XMidiEvent *event = XMidiEvent::Calloc<XMidiEvent>();
+			XMidiEvent *event = XMidiEvent__Calloc<XMidiEvent>();
 			
 			event->next = current->next;
 			current->next = event;
@@ -391,7 +413,7 @@ void XMidiFile::CreateNewEvent (int time)
 		current = current->next;
 	}
 
-	current->next = XMidiEvent::Calloc<XMidiEvent>();
+	current->next = XMidiEvent__Calloc<XMidiEvent>();
 	current = current->next;
 	current->time = time;
 }
@@ -478,7 +500,7 @@ void XMidiFile::ApplyFirstState(first_state &fs, int chan_mask)
 
 		// Copy Patch Change Event
 		temp = patch;
-		patch = XMidiEvent::Calloc<XMidiEvent>();
+		patch = XMidiEvent__Calloc<XMidiEvent>();
 		patch->time = temp->time;
 		patch->status = channel|(MIDI_STATUS_PROG_CHANGE << 4);
 		patch->data[0] = temp->data[0];
@@ -488,7 +510,7 @@ void XMidiFile::ApplyFirstState(first_state &fs, int chan_mask)
 			vol = NULL;
 
 		temp = vol;
-		vol = XMidiEvent::Calloc<XMidiEvent>();
+		vol = XMidiEvent__Calloc<XMidiEvent>();
 		vol->status = channel|(MIDI_STATUS_CONTROLLER << 4);
 		vol->data[0] = 7;
 
@@ -508,7 +530,7 @@ void XMidiFile::ApplyFirstState(first_state &fs, int chan_mask)
 
 		temp = bank;
 		
-		bank = XMidiEvent::Calloc<XMidiEvent>();
+		bank = XMidiEvent__Calloc<XMidiEvent>();
 		bank->status = channel|(MIDI_STATUS_CONTROLLER << 4);
 
 		if (!temp)
@@ -521,7 +543,7 @@ void XMidiFile::ApplyFirstState(first_state &fs, int chan_mask)
 			pan = NULL;
 
 		temp = pan;
-		pan = XMidiEvent::Calloc<XMidiEvent>();
+		pan = XMidiEvent__Calloc<XMidiEvent>();
 		pan->status = channel|(MIDI_STATUS_CONTROLLER << 4);
 		pan->data[0] = 10;
 
@@ -532,7 +554,7 @@ void XMidiFile::ApplyFirstState(first_state &fs, int chan_mask)
 
 		if (do_reverb)
 		{
-			reverb = XMidiEvent::Calloc<XMidiEvent>();
+			reverb = XMidiEvent__Calloc<XMidiEvent>();
 			reverb->status = channel|(MIDI_STATUS_CONTROLLER << 4);
 			reverb->data[0] = 91;
 			reverb->data[1] = reverb_value;
@@ -540,7 +562,7 @@ void XMidiFile::ApplyFirstState(first_state &fs, int chan_mask)
 
 		if (do_chorus)
 		{
-			chorus = XMidiEvent::Calloc<XMidiEvent>();
+			chorus = XMidiEvent__Calloc<XMidiEvent>();
 			chorus->status = channel|(MIDI_STATUS_CONTROLLER << 4);
 			chorus->data[0] = 93;
 			chorus->data[1] = chorus_value;
@@ -1037,7 +1059,7 @@ int XMidiFile::ConvertSystemMessage (const int time, const unsigned char status,
 		return i;
 	}
 	
-	current->ex.sysex_data.buffer = XMidiEvent::Malloc<unsigned char>(current->ex.sysex_data.len);
+	current->ex.sysex_data.buffer = XMidiEvent__Malloc<unsigned char>(current->ex.sysex_data.len);
 
 	source->read (reinterpret_cast<char *>(current->ex.sysex_data.buffer), current->ex.sysex_data.len);
 
@@ -1395,10 +1417,10 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 
 		// Ok it's an XMID, so pass it to the ExtractCode
 
-		events = XMidiEvent::Calloc<XMidiEventList*>(num_tracks); //new XMidiEvent *[info.tracks];
+		events = XMidiEvent__Calloc<XMidiEventList*>(num_tracks); //new XMidiEvent *[info.tracks];
 		
 		for (i = 0; i < num_tracks; i++)
-			events[i] = XMidiEvent::Calloc<XMidiEventList>();
+			events[i] = XMidiEvent__Calloc<XMidiEventList>();
 
 		count = ExtractTracksFromXmi (source);
 
@@ -1440,11 +1462,11 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 		// Type 1 only has 1 track, even though it says it has more
 		if (type == 1) num_tracks = 1;
 
-		events = XMidiEvent::Calloc<XMidiEventList*>(num_tracks); //new XMidiEvent *[info.tracks];
+		events = XMidiEvent__Calloc<XMidiEventList*>(num_tracks); //new XMidiEvent *[info.tracks];
 		const uint32 ppqn = source->read2high();
 
 		for (i = 0; i < num_tracks; i++)
-			events[i] = XMidiEvent::Calloc<XMidiEventList>();
+			events[i] = XMidiEvent__Calloc<XMidiEventList>();
 		
 		count = ExtractTracksFromMid (source, ppqn, actual_num, type == 1);
 

@@ -90,6 +90,8 @@ static bool MatchString( const char *str, const std::string& inPat )
 
 // Need this for _findfirst, _findnext, _findclose
 #include <windows.h>
+#include <malloc.h>
+#include <tchar.h>
 
 int FileSystem::ListFiles(const std::string mask, FileList& files)
 {
@@ -106,7 +108,7 @@ int FileSystem::ListFiles(const std::string mask, FileList& files)
 #ifdef UNICODE
 	const char *name = path.c_str();
 	nLen = strlen(name)+1;
-	LPTSTR lpszT2 = (LPTSTR) alloca(nLen*2);
+	LPTSTR lpszT2 = (LPTSTR) _alloca(nLen*2);
 	lpszT = lpszT2;
 	MultiByteToWideChar(CP_ACP, 0, name, -1, lpszT2, nLen);
 #else
@@ -136,16 +138,12 @@ int FileSystem::ListFiles(const std::string mask, FileList& files)
 		do
 		{
 			nLen = std::strlen(stripped_path);
-
-#ifdef UNICODE
-			nLen2 = wcslen (fileinfo.cFileName)+1;
+			nLen2 = _tcslen (fileinfo.cFileName)+1;
 			char *filename = new char [nLen+nLen2];
 			strcpy (filename, stripped_path);
+#ifdef UNICODE
 			WideCharToMultiByte(CP_ACP, 0, fileinfo.cFileName, -1, filename+nLen, nLen2, NULL, NULL);
 #else
-			nLen2 = std::strlen (fileinfo.cFileName)+1;
-			char *filename = new char [nLen+nLen2];
-			std::strcpy (filename, stripped_path);
 			std::strcat (filename, fileinfo.cFileName);
 #endif
 
@@ -158,7 +156,8 @@ int FileSystem::ListFiles(const std::string mask, FileList& files)
 	}
 
 	if (GetLastError() != ERROR_NO_MORE_FILES) {
-		LPVOID lpMsgBuf;
+		LPTSTR lpMsgBuf;
+		char* str;
 		FormatMessage( 
 			FORMAT_MESSAGE_ALLOCATE_BUFFER | 
 			FORMAT_MESSAGE_FROM_SYSTEM | 
@@ -170,7 +169,14 @@ int FileSystem::ListFiles(const std::string mask, FileList& files)
 			0,
 			NULL 
 		);
-		perr << "FileSystem::ListFiles(): Error while listing files: " << ((char *) lpMsgBuf) << std::endl;
+#ifdef UNICODE
+		nLen2 = _tcslen (lpMsgBuf) + 1;
+		str = (char*) _alloca(nLen);
+		WideCharToMultiByte(CP_ACP, 0, lpMsgBuf, -1, str, nLen2, NULL, NULL);
+#else
+		str = lpMsgBuf;
+#endif
+		perr << "FileSystem::ListFiles(): Error while listing files: " << str << std::endl;
 		LocalFree( lpMsgBuf );
 	}
 

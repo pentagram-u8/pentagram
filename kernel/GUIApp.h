@@ -238,10 +238,14 @@ private:
 	std::list<ObjId>	textmodes;		//!< Gumps that want text mode
 
 	// Load and save games from arbitrary filenames from the console
-	static void			ConCmd_saveGame(const Pentagram::istring &args);	//!< "GUIApp::saveGame <filename>" console command
-	static void			ConCmd_loadGame(const Pentagram::istring &args);	//!< "GUIApp::loadGame <filename>" console command
+	static void			ConCmd_saveGame(const Console::ArgsType &args, const Console::ArgvType &argv);	//!< "GUIApp::saveGame <filename>" console command
+	static void			ConCmd_loadGame(const Console::ArgsType &args, const Console::ArgvType &argv);	//!< "GUIApp::loadGame <filename>" console command
 
-	static void			ConCmd_quit(const Pentagram::istring &args);		//!< "quit" console command
+	static void			ConCmd_quit(const Console::ArgsType &args, const Console::ArgvType &argv);		//!< "quit" console command
+
+	// This should be a console variable once they are implemented
+	bool				drawRenderStats;
+	static void			ConCmd_drawRenderStats(const Console::ArgsType &args, const Console::ArgvType &argv);		//!< "GUIApp::drawRenderStats" console command
 };
 
 #endif
