@@ -215,3 +215,8 @@ std::vector<std::string> XMLTree::listKeys(std::string key, bool longformat)
 
 	return keys;
 }
+
+void XMLTree::getSubkeys(KeyTypeList &ktl, std::string basekey)
+{
+	tree->searchpairs(ktl, basekey, std::string(), 0);
+}

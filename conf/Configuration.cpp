@@ -201,3 +201,32 @@ std::set<std::string> Configuration::listKeys(std::string key, bool longformat)
 	}
 	return keys;
 }
+
+void Configuration::getSubkeys(KeyTypeList &ktl, std::string basekey)
+{
+	for (std::vector<XMLTree*>::iterator tree = trees.begin();
+		 tree != trees.end(); ++tree)
+	{
+		KeyTypeList l;
+		(*tree)->getSubkeys(l, basekey);
+
+		for (KeyTypeList::iterator i = l.begin();
+			 i != l.end(); ++i)
+		{
+			bool found = false;
+			for (KeyTypeList::iterator j = ktl.begin();
+				 j != ktl.end() && !found; ++j)
+			{
+				if (j->first == i->first) {
+					// already have this subkey, so just replace the value
+					j->second = i->second;
+					found = true;
+				}
+			}
+			if (!found) {
+				// new subkey
+				ktl.push_back(*i);
+			}
+		}
+	}
+}

@@ -61,6 +61,11 @@ class XMLTree
 
 	std::vector<std::string> listKeys(std::string key, bool longformat=false);
 
+	typedef std::pair<std::string, std::string> KeyType;
+	typedef std::vector<KeyType> KeyTypeList;
+	
+	void getSubkeys(KeyTypeList &ktl, std::string basekey);
+
  private:
 	XMLNode *tree;
 	std::string filename;

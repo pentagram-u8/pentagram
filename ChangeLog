@@ -4,6 +4,7 @@
 	* bootstrap: check for /usr/local/share/aclocal
 	* conf/ConfigNode.h: added missing set() function
 	* conf/Configuration.h: some comments
+	* conf/*: getSubkeys
 
 2002-12-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* module.mk: updated
