@@ -57,6 +57,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "SliderGump.h"
 #include "UCProcess.h"
 #include "DestroyItemProcess.h"
+#include "AudioProcess.h"
 
 #include <cstdlib>
 
@@ -2099,6 +2100,16 @@ uint32 Item::I_bark(const uint8* args, unsigned int /*argsize*/)
 
 		gump->InitGump();
 		GUIApp::get_instance()->addGump(gump);
+
+		// TODO Do this properly
+		// A little hack for speech
+		AudioProcess *ap = AudioProcess::get_instance();
+		if (ap) {
+			uint32 shapenum = item->getShape();
+			if (id_item == 666) shapenum = 666;	// Hack for guardian barks
+		
+			ap->playSpeech(str,shapenum,item->getObjId());
+		}
 
 		return gump->GetNotifyProcess()->getPid();
 	}

@@ -64,7 +64,7 @@ AudioMixer::AudioMixer(int sample_rate_, bool stereo_, int num_channels_) :
 	desired.format = AUDIO_S16SYS;
 	desired.freq = sample_rate_;
 	desired.channels = stereo_?2:1;
-	desired.samples = 4096;
+	desired.samples = 1024;
 	desired.callback = sdlAudioCallback;
 	desired.userdata = reinterpret_cast<void*>(this);
 

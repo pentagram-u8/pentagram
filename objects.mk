@@ -217,7 +217,8 @@ AUDIO = \
 	audio/AudioProcess.o \
 	audio/AudioSample.o \
 	audio/SonarcAudioSample.o \
-	audio/SoundFlex.o
+	audio/SoundFlex.o \
+	audio/SpeechFlex.o
 
 MIDI = \
 	audio/midi/XMidiEventList.o \

@@ -37,13 +37,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GameInfo.h"
 #include "SettingManager.h"
 #include "SoundFlex.h"
+#include "SpeechFlex.h"
 
 GameData* GameData::gamedata = 0;
 
 
 GameData::GameData()
 	: fixed(0), mainshapes(0), mainusecode(0), globs(0), fonts(0), gumps(0),
-	  mouse(0), music(0), weaponoverlay(0), soundflex(0)
+	  mouse(0), music(0), weaponoverlay(0), soundflex(0), speech(1024)
 {
 	assert(gamedata == 0);
 	gamedata = this;
@@ -83,6 +84,13 @@ GameData::~GameData()
 	soundflex = 0;
 
 	gamedata = 0;
+
+	for (unsigned int i = 0; i < speech.size(); ++i) {
+		SpeechFlex** s = speech[i];
+		if (s) delete [] *s;
+		delete s;
+	}
+	speech.clear();
 }
 
 Glob* GameData::getGlob(uint32 glob) const
@@ -410,4 +418,37 @@ void GameData::setupTTFOverrides()
 
 		fontmanager->addTTFOverride(fontnum, fontname, col32, border);
 	}
+}
+
+SpeechFlex* GameData::getSpeechFlex(uint32 shapenum)
+{
+	if (shapenum >= speech.size()) return 0;
+
+	SpeechFlex** s = speech[shapenum];
+	if (s) return *s;
+
+	s = new SpeechFlex*; 
+	*s = 0;
+
+	FileSystem* filesystem = FileSystem::get_instance();
+
+	std::string u8_sound_ = "@u8/sound/";
+	char num_flx [32];
+	snprintf(num_flx ,32,"%i.flx", shapenum);
+
+	IDataSource* sflx = filesystem->ReadFile(u8_sound_ + 'e' + num_flx);
+
+	//!! hack alert
+	if (!sflx)
+		sflx = filesystem->ReadFile(u8_sound_ + 'g' + num_flx);
+	if (!sflx)
+		sflx = filesystem->ReadFile(u8_sound_ + 'f' + num_flx);
+
+	if (sflx) {
+		*s = new SpeechFlex(sflx);
+	}
+
+	speech[shapenum] = s;
+
+	return *s;
 }

@@ -22,20 +22,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Process.h"
 #include "intrinsics.h"
 #include <list>
+#include <string>
 
 class AudioProcess :
 	public Process
 {
 	struct SampleInfo {
-		sint32 sfxnum;
-		sint32 priority;
-		ObjId objid;
-		sint32 loops;
-		sint32 channel;
+		sint32		sfxnum;
+		sint32		priority;
+		ObjId		objid;
+		sint32		loops;
+		sint32		channel;
+		std::string barked;
 		
 		SampleInfo() : sfxnum(-1) { }
 		SampleInfo(sint32 s,sint32 p,ObjId o,sint32 l,sint32 c) : 
 			sfxnum(s),priority(p),objid(o),loops(l),channel(c) { }
+		SampleInfo(std::string &b,sint32 shpnum,ObjId o,sint32 c) : 
+			sfxnum(-1),priority(shpnum),objid(o),loops(0),channel(c),barked(b) { }
 	};
 
 	std::list<SampleInfo>	sample_info;
@@ -63,6 +67,10 @@ public:
 	void playSFX(int sfxnum, int priority, ObjId objid, int loops);
 	void stopSFX(int sfxnum, ObjId objid);
 	bool isSFXPlaying(int sfxnum);
+
+	bool playSpeech(std::string &barked, int shapenum, ObjId objid);
+	//void stopSpeech(std::string &barked, int shapenum, ObjId objid);
+	//bool isSpeechPlaying(std::string &barked, int shapenum);
 
 	// AudioProcess::playSound console command
 	//static void ConCmd_playSound(const Console::ArgsType &args, const Console::ArgvType &argv);

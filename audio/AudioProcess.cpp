@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "GameData.h"
 #include "SoundFlex.h"
+#include "SpeechFlex.h"
 #include "AudioSample.h"
 #include "AudioMixer.h"
 
@@ -79,6 +80,12 @@ void AudioProcess::saveData(ODataSource* ods)
 		ods->write2(it->priority);
 		ods->write2(it->objid);
 		ods->write2(it->loops);
+
+		if (it->sfxnum == -1)	// Speech
+		{
+			ods->write4(it->barked.size());
+			ods->write(it->barked.c_str(),it->barked.size());
+		}
 	}
 }
 
@@ -93,7 +100,22 @@ bool AudioProcess::loadData(IDataSource* ids, uint32 version)
 		sint16 priority = ids->read2();
 		sint16 objid = ids->read2();
 		sint16 loops = ids->read2();
-		playSFX(sfxnum,priority,objid,loops);
+
+
+		if (sfxnum != -1)	// SFX
+			playSFX(sfxnum,priority,objid,loops);
+
+		else {					// Speech
+			uint32 slen = ids->read4();
+
+			char* buf = new char[slen+1];
+			ids->read(buf, slen);
+			buf[slen] = 0;
+			std::string text = buf;
+			delete[] buf;
+
+			playSpeech(text,priority,objid);
+		}
 	}
 
 	return true;
@@ -101,14 +123,14 @@ bool AudioProcess::loadData(IDataSource* ids, uint32 version)
 
 void AudioProcess::playSFX(int sfxnum, int priority, ObjId objid, int loops)
 {
-	con.Printf("playSFX(%i, %i, 0x%X, %i)\n", sfxnum, priority, objid, loops);
+	//con.Printf("playSFX(%i, %i, 0x%X, %i)\n", sfxnum, priority, objid, loops);
 
 	SoundFlex *soundflx= GameData::get_instance()->getSoundFlex();
 	
 	AudioMixer *mixer = AudioMixer::get_instance();
 
 	std::list<SampleInfo>::iterator it;
-	for (it = sample_info.begin(); it != sample_info.end(); ++it) {
+	for (it = sample_info.begin(); it != sample_info.end(); ) {
 		if (it->sfxnum == sfxnum && it->objid == objid && it->loops == loops) {
 
 			// Exactly the same (and playing) so just return
@@ -118,7 +140,13 @@ void AudioProcess::playSFX(int sfxnum, int priority, ObjId objid, int loops)
 				pout << "Sound already playing" << std::endl;
 				return;
 			}
+			else {
+				it = sample_info.erase(it);
+				continue;
+			}
 		}
+
+		++it;
 	}
 
 	AudioSample *sample = soundflx->getSample(sfxnum);
@@ -145,14 +173,14 @@ void AudioProcess::playSFX(int sfxnum, int priority, ObjId objid, int loops)
 
 void AudioProcess::stopSFX(int sfxnum, ObjId objid)
 {
-	con.Printf("stopSFX(%i, 0x%X)\n", sfxnum, objid);
+	//con.Printf("stopSFX(%i, 0x%X)\n", sfxnum, objid);
 
 	AudioMixer *mixer = AudioMixer::get_instance();
 
 	std::list<SampleInfo>::iterator it;
 	for (it = sample_info.begin(); it != sample_info.end(); ) {
 		if (it->sfxnum == sfxnum && it->objid == objid) {
-			mixer->stopSample(it->channel);
+			if (mixer->isPlaying(it->channel)) mixer->stopSample(it->channel);
 			it = sample_info.erase(it);
 		}
 		else {
@@ -173,6 +201,64 @@ bool AudioProcess::isSFXPlaying(int sfxnum)
 
 	return false;
 }
+
+//
+// Speech
+//
+
+bool AudioProcess::playSpeech(std::string &barked, int shapenum, ObjId objid)
+{
+	SpeechFlex *speechflex = GameData::get_instance()->getSpeechFlex(shapenum);
+
+	if (!speechflex) return false;
+
+	AudioMixer *mixer = AudioMixer::get_instance();
+
+	std::list<SampleInfo>::iterator it;
+	for (it = sample_info.begin(); it != sample_info.end();) {
+
+		if (it->sfxnum == -1 && it->barked == barked && 
+			it->priority == shapenum && it->objid == objid) {
+
+			if (mixer->isPlaying(it->channel)) {
+				pout << "Speech already playing" << std::endl;
+				return true;
+			} 
+			else {
+				it = sample_info.erase(it);
+				continue;
+			}
+		}
+
+		++it;
+	}
+
+	int index = speechflex->getIndexForPhrase(barked);
+	if (!index) return false;
+
+	AudioSample *sample = speechflex->getSample(index);
+	if (!sample) return false;
+
+	int channel = mixer->playSample(sample,0,200);
+
+	if (channel == -1) return false;
+
+	// Erase old sample using channel (if any)
+	for (it = sample_info.begin(); it != sample_info.end(); ) {
+		if (it->channel == channel) {
+			it = sample_info.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+
+	// Update list
+	sample_info.push_back(SampleInfo(barked,shapenum,objid,channel));
+
+	return true;
+}
+
 
 //
 // Intrinsics

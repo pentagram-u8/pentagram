@@ -34,6 +34,7 @@ class MusicFlex;
 class WpnOvlayDat;
 class ShapeFrame;
 class SoundFlex;
+class SpeechFlex;
 
 class GameData
 {
@@ -56,6 +57,7 @@ public:
 	MusicFlex* getMusic() const { return music; }
 	WpnOvlayDat* getWeaponOverlay() const { return weaponoverlay; }
 	SoundFlex* getSoundFlex() const { return soundflex; }
+	SpeechFlex* getSpeechFlex(uint32 shapenum);
 
 	ShapeArchive* getShapeFlex(uint16 flexId) const;
 	Shape* getShape(FrameID frameid) const;
@@ -83,6 +85,7 @@ private:
 	WpnOvlayDat* weaponoverlay;
 
 	SoundFlex* soundflex;
+	std::vector<SpeechFlex**> speech;
 
 	static GameData* gamedata;
 };
