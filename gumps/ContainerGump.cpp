@@ -21,6 +21,7 @@
 
 #include "Shape.h"
 #include "ShapeFrame.h"
+#include "ShapeInfo.h"
 #include "Container.h"
 #include "World.h"
 #include "RenderSurface.h"
@@ -330,7 +331,29 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 		if (targetcontainer) {
 
 		} else {
-			//!! TODO: combining
+			// try to combine items
+			int family = item->getShapeInfo()->family;
+
+			// item with quantity?
+			if (family == ShapeInfo::SF_QUANTITY ||
+				family == ShapeInfo::SF_REAGENT)
+			{
+				if (targetitem->getShape() == item->getShape() &&
+					(targetitem->getFrame() == item->getFrame() ||
+					 family == ShapeInfo::SF_QUANTITY))
+				{
+					// can only combine SF_REAGENTS when frame is equal
+					// see U8's usecode FREE::2767
+					targetitem->setQuality(targetitem->getQuality() +
+										   item->getQuality());
+					targetitem->callUsecodeEvent_combine();
+
+					// combined, so delete item
+					item->destroy(); item = 0;
+					return;
+				}
+						
+			}
 		}
 	}
 

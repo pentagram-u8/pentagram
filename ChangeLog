@@ -1,3 +1,6 @@
+2003-07-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/ContainerGump.cpp: item combining
+
 2003-07-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* README: updated with new keys (changing avatar Z is now home/end)
 	* gumps/PaperdollGump.*: avatar paperdoll gump (no status yet)
