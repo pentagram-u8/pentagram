@@ -563,9 +563,9 @@ void GUIApp::handleEvent(const SDL_Event& event)
 //			lz = 8;
 
 			if (!avatarInStasis) {
-				Egg* egg = p_dynamic_cast<Egg*>(Kernel::get_instance()->getObject(21183)); // *cough*
+				Egg* egg = p_dynamic_cast<Egg*>(Kernel::get_instance()->getObject(21185)); // *cough*
 				if (!egg || egg->getQuality() != 36)
-					egg = p_dynamic_cast<Egg*>(Kernel::get_instance()->getObject(21184)); // *cough*
+					egg = p_dynamic_cast<Egg*>(Kernel::get_instance()->getObject(21186)); // *cough*
 				sint32 ix, iy, iz;
 				egg->getLocation(ix,iy,iz);
 				CameraProcess::SetCameraProcess(new CameraProcess(ix,iy,iz)); // Center on egg
@@ -576,9 +576,9 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		} break;
 		case SDLK_g: { // trigger 'execution' egg
 			if (!avatarInStasis) {
-				Egg* egg = p_dynamic_cast<Egg*>(Kernel::get_instance()->getObject(21162)); // *cough*
+				Egg* egg = p_dynamic_cast<Egg*>(Kernel::get_instance()->getObject(21164)); // *cough*
 				if (!egg || egg->getQuality() != 4)
-					egg = p_dynamic_cast<Egg*>(Kernel::get_instance()->getObject(21163)); // *cough*
+					egg = p_dynamic_cast<Egg*>(Kernel::get_instance()->getObject(21165)); // *cough*
 				Actor* avatar = World::get_instance()->getNPC(1);
 				sint32 x,y,z;
 				egg->getLocation(x,y,z);
