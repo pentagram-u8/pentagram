@@ -121,6 +121,8 @@ void MainActor::teleport(int mapnum, int teleport_id)
 	pout << "MainActor::teleport(): teleporting to map " << mapnum
 		 << ", egg " << teleport_id << std::endl;
 
+	setMapNum(mapnum);
+
 	// (attempt to) load the new map
 	if (!world->switchMap(mapnum)) {
 		perr << "MainActor::teleport(): switchMap() failed!" << std::endl;
