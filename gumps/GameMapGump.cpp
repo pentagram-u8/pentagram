@@ -299,23 +299,34 @@ bool GameMapGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 
 	if (!item) return false;
 
+	while (item->getParent()) item = item->getParent();
+
 	sint32 ix, iy, iz;
-	item->getLocationAbsolute(ix,iy,iz);
+
+	// Hacks be us. Force the item into the fast area
+	if (!(item->getExtFlags() & (Item::EXT_FAST0<<fastArea))) 
+	{
+		item->inFastArea(fastArea, framenum);
+		fastAreas[fastArea].push_back(item->getObjId());
+	}
+	item->doLerp(lerp_factor);
+	item->getLerped(ix,iy,iz);
 
 	// Get the camera's location
 	sint32 cx, cy, cz;
-	CameraProcess *cam = CameraProcess::GetCameraProcess();
+		CameraProcess *cam = CameraProcess::GetCameraProcess();
 	if (!cam) CameraProcess::GetCameraLocation(cx,cy,cz);
 	else cam->GetLerped(cx,cy,cz,lerp_factor);
-
-	ix -= cx;
-	iy -= cy;
-	iz -= cz;
 
 	// Screenspace bounding box bottom x coord (RNB x coord)
 	gx = (ix - iy)/4;
 	// Screenspace bounding box bottom extent  (RNB y coord)
 	gy = (ix + iy)/8 - iz;
+
+	// Screenspace bounding box bottom x coord (RNB x coord)
+	gx -= (cx - cy)/4;
+	// Screenspace bounding box bottom extent  (RNB y coord)
+	gy -= (cx + cy)/8 - cz;
 
 	return true;
 }

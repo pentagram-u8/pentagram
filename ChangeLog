@@ -1,4 +1,8 @@
 2003-06-20	  Ryan Nunn <colourles@users.sourceforge.net>
+	* gumps/GameMapGump.cpp : 'Fixing' GetLocationOfItem so it actually works 
+	  correctly.
+
+2003-06-20	  Ryan Nunn <colourles@users.sourceforge.net>
 	* filesys/IDataSource.h : IBufferData sources now accepts void *
 	* graphics/Palette*.*, graphics/XFormBlend.*, graphics/Texture.*, 
 	  graphics/*SoftRenderSurface.*, kernel/GUIApp.cpp : Re-working how XForm
