@@ -293,7 +293,13 @@ void World::worldStats()
 	}
 
 	pout << "World memory stats:" << std::endl;
-	pout << "Maps      : " << mapcount << "/256" << std::endl;
+	pout << "Maps        : " << mapcount << "/256" << std::endl;
+	if (currentmap && getNPC(1)) {
+		pout << "Current pos.: map " << currentmap->getNum() << ", (";
+		sint32 x,y,z;
+		getNPC(1)->getLocation(x,y,z);
+		pout << x << "," << y << "," << z << ")" << std::endl;
+	}
 }
 
 Item* World::getItem(uint16 itemid) const

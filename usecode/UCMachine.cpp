@@ -37,6 +37,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define LOGPF(X)
 //#define LOGPF(X) do { if (p->classid == 68) { pout.printf X; } } while(0)
 
+//#define DUMPHEAP
+
 enum UCSegments {
 	SEG_STACK      = 0x0000,
 	SEG_STACK_FIRST= 0x0001,
@@ -2019,12 +2021,14 @@ void UCMachine::killProcess(uint16 pid)
 void UCMachine::usecodeStats()
 {
 	pout << "Usecode Machine memory stats:" << std::endl;
-	pout << "Strings   : " << stringHeap.size() << "/65534" << std::endl;
-
+	pout << "Strings     : " << stringHeap.size() << "/65534" << std::endl;
+#ifdef DUMPHEAP
 	std::map<uint16, std::string>::iterator iter;
 	for (iter = stringHeap.begin(); iter != stringHeap.end(); ++iter)
 		pout << iter->first << ":" << iter->second << std::endl;
-	pout << "Lists     : " << listHeap.size() << "/65534" << std::endl;
+#endif
+	pout << "Lists       : " << listHeap.size() << "/65534" << std::endl;
+#ifdef DUMPHEAP
 	std::map<uint16, UCList*>::iterator iterl;
 	for (iterl = listHeap.begin(); iterl != listHeap.end(); ++iterl) {
 		if (!iterl->second) {
@@ -2033,8 +2037,10 @@ void UCMachine::usecodeStats()
 		}
 		if (iterl->second->getElementSize() == 2) {
 			pout << iterl->first << ":";
-			for (unsigned int i = 0; i < iterl->second->getSize(); ++i)
-				pout << iterl->second->getuint16(i) << ",";
+			for (unsigned int i = 0; i < iterl->second->getSize(); ++i) {
+				if (i > 0) pout << ",";
+				pout << iterl->second->getuint16(i);
+			}				
 			pout << std::endl;
 		} else {
 			pout << iterl->first << ": " << iterl->second->getSize()
@@ -2042,6 +2048,7 @@ void UCMachine::usecodeStats()
 				 << std::endl;
 		}
 	}
+#endif
 }
 
 

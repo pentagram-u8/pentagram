@@ -186,9 +186,9 @@ void Kernel::kernelStats()
 	}
 
 	pout << "Kernel memory stats:" << std::endl;
-	pout << "Processes : " << processes.size() << "/32765" << std::endl;
-	pout << "NPCs      : " << npccount << "/255" << std::endl;
-	pout << "Objects   : " << objcount << "/65279" << std::endl;
+	pout << "Processes   : " << processes.size() << "/32765" << std::endl;
+	pout << "NPCs        : " << npccount << "/255" << std::endl;
+	pout << "Objects     : " << objcount << "/65279" << std::endl;
 }
 
 
