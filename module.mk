@@ -74,9 +74,13 @@ MISC = \
 	misc/util.o
 
 GUMPS = \
+	gumps/BarkGump.o \
 	gumps/ConsoleGump.o \
+	gumps/DesktopGump.o \
 	gumps/GameMapGump.o \
 	gumps/Gump.o \
+	gumps/GumpNotifyProcess.o \
+	gumps/ItemRelativeGump.o \
 	gumps/ResizableGump.o
 
 WORLD = \
