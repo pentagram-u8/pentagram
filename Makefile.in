@@ -46,7 +46,7 @@ LDFLAGS += @LIBS@
 WARNINGS := @WARNINGS@
 
 # List of all sub modules
-# The ordre is important, be careful if you change it
+# The order is important, be careful if you change it
 MODULES := convert misc filesys tools tools/disasm
 # tools/fold tools/suc
 
