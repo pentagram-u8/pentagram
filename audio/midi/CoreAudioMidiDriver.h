@@ -30,13 +30,13 @@ class CoreAudioMidiDriver : public LowLevelMidiDriver
 	AudioUnit au_MusicDevice;
 	AudioUnit au_output;
 
-	const static MidiDriverDesc	desc;
+	static const MidiDriverDesc	desc;
 	static MidiDriver *createInstance() {
 		return new CoreAudioMidiDriver();
 	}
 
 public:
-	const static MidiDriverDesc* getDesc() { return &desc; }
+	static const MidiDriverDesc* getDesc() { return &desc; }
 
 	CoreAudioMidiDriver();
 

@@ -1,3 +1,7 @@
+2003-07-06  Max Horn <max@quendi.de>
+	* audio/midi/CoreAudioMidiDriver.*: Fixed some GCC 3.3 warnings;
+	  implemented increaseThreadPriority/yield.
+
 2003-07-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/idMan.*, kernel/Kernel.*, kernel/ObjectManager.*:
 	  an O(n^2) object loading algorithm probably wasn't such a good idea
