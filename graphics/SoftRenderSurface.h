@@ -53,7 +53,7 @@ protected:
 	int				bits_per_pixel;			// 16 or 32
 	int				format_type;			// 16, 555, 565, 32 or 888
 
-	// Dimentions
+	// Dimensions
 	uint32			w_real, h_real;			// Actual Surface width and height
 	uint32			width, height;			// Effective Width and height (after clipping)
 	uint32			pitch;					// Frame buffer pitch (bytes)
@@ -63,8 +63,8 @@ protected:
 	Rect			clip_window;
 
 	// TODO: Guardband (implementing this might be more difficult than previously expected)
-	//uint32			gl, gr;					// Guard left and right (left goes negetive)
-	//uint32			gt, gb;					// Guard top and bottom (up goes negetive)
+	//uint32			gl, gr;					// Guard left and right (left goes negative)
+	//uint32			gt, gb;					// Guard top and bottom (up goes negative)
 
 	// Locking count
 	uint32			lock_count;				// Number of locks on surface

@@ -144,7 +144,7 @@ void XMLTree::value(std::string key, int &ret,
 {
 	const XMLNode *sub = tree->subtree(key);
 	if (sub)
-		ret = atoi(sub->value().c_str());
+		ret = strtol(sub->value().c_str(), 0, 0);
 	else
 		ret = defaultvalue;
 }

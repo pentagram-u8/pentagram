@@ -25,10 +25,10 @@
 // Convert shape C
 struct ConvertShapeFormat
 {
-	const char const *	name;
+	const char * const	name;
 													//	U8		U8 Gump	U8.SKF	Cru		Cru2D	Pent
 	uint32				len_header;					//	6		6		2		6		6		8
-	const char const *	ident;						//  ""		""		""		""		""		"PSHP"
+	const char * const	ident;						//  ""		""		""		""		""		"PSHP"
 	uint32				bytes_ident;				//	0		0		0		0		0		4
 	uint32				bytes_header_unk;			//	4		4		0		4		4		0
 	uint32				bytes_num_frames;			//	2		2		2		2		2		4
