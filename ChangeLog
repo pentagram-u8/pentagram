@@ -1,4 +1,8 @@
 2004-05-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/MovieGump.*: movie gump
+	* graphics/SKFPlayer.*: u8 skf player
+
+2004-05-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/BookGump.cpp, ScrollGump.cpp: don't save text twice
 	* graphics/Shape.cpp: check shape ident string
 	* graphics/Palette*.*: allow loading palettes without xforms

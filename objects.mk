@@ -61,6 +61,7 @@ GRAPHICS = \
 	graphics/TextureBitmap.o \
 	graphics/Shape.o \
 	graphics/ShapeFrame.o \
+	graphics/SKFPlayer.o \
 	graphics/Palette.o \
 	graphics/PaletteManager.o \
 	graphics/PaletteFaderProcess.o \
@@ -106,6 +107,7 @@ GUMPS = \
 	gumps/MiniStatsGump.o \
 	gumps/MenuGump.o \
 	gumps/ModalGump.o \
+	gumps/MovieGump.o \
 	gumps/PagedGump.o \
 	gumps/PaperdollGump.o \
 	gumps/ReadableGump.o \

@@ -33,6 +33,10 @@
 #include "GumpShapeFlex.h"
 #include "DesktopGump.h"
 
+#include "FileSystem.h"
+#include "u8/ConvertShapeU8.h"
+#include "PaletteManager.h"
+
 #include "IDataSource.h"
 #include "ODataSource.h"
 
@@ -215,6 +219,24 @@ void ShapeViewerGump::U8ShapeViewer()
 	flex.first = "u8fonts";
 	flex.second = gamedata->getFonts();
 	flexes.push_back(flex);
+	FileSystem* filesys = FileSystem::get_instance();
+	IDataSource* eintro = filesys->ReadFile("@u8/static/eintro.skf");
+	if (eintro) {
+		ShapeFlex* eintroshapes = new ShapeFlex(eintro, PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game), &U8SKFShapeFormat);
+		flex.first = "eintro";
+		flex.second = eintroshapes;
+		flexes.push_back(flex);
+		// !! memory leak
+	}
+
+	IDataSource* endgame = filesys->ReadFile("@u8/static/endgame.skf");
+	if (endgame) {
+		ShapeFlex* endgameshapes = new ShapeFlex(endgame, PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game), &U8SKFShapeFormat);
+		flex.first = "endgame";
+		flex.second = endgameshapes;
+		flexes.push_back(flex);
+		// !! memory leak
+	}
 
 	Gump* desktopGump = GUIApp::get_instance()->getDesktopGump();
 	Pentagram::Rect res;

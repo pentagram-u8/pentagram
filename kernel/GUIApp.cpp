@@ -72,6 +72,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "PathfinderProcess.h"
 #include "AvatarMoverProcess.h"
 
+#include "MovieGump.h"
+
 #include "DisasmProcess.h"
 #include "CompileProcess.h"
 
@@ -157,6 +159,7 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	con.AddConsoleCommand("quit", ConCmd_quit);	
 	con.AddConsoleCommand("GUIApp::quit", ConCmd_quit);	
 	con.AddConsoleCommand("GUIApp::drawRenderStats", ConCmd_drawRenderStats);
+	con.AddConsoleCommand("MovieGump::play", MovieGump::ConCmd_play);
 }
 
 GUIApp::~GUIApp()
@@ -174,6 +177,7 @@ GUIApp::~GUIApp()
 	con.RemoveConsoleCommand("quit");
 	con.RemoveConsoleCommand("GUIApp::quit");
 	con.RemoveConsoleCommand("GUIApp::drawRenderStats");
+	con.RemoveConsoleCommand("MovieGump::play");
 
 	FORGET_OBJECT(objectmanager);
 	FORGET_OBJECT(hidmanager);
