@@ -612,6 +612,10 @@ void GUIApp::U8Playground()
 	deceiver->moveToContainer(backpack);
 	deceiver->setGumpLocation(20, 30);
 
+	Item* flamesting = ItemFactory::createItem(817, 0, 0, 0, 0, 0, 0);
+	flamesting->moveToContainer(backpack);
+	flamesting->setGumpLocation(20, 30);
+
 	// armour
 	Item* armour = ItemFactory::createItem(64, 0, 0, 0, 0, 0, 0);
 	armour->moveToContainer(backpack);
