@@ -588,10 +588,10 @@ Gump *Gump::OnMouseDown(int button, int mx, int my)
 //
 // KeyInput
 //
-bool Gump::OnKeyDown(int key)
+bool Gump::OnKeyDown(int key, int mod)
 {
 	bool handled = false;
-	if (focus_child) handled = focus_child->OnKeyDown(key);
+	if (focus_child) handled = focus_child->OnKeyDown(key, mod);
 	return handled;
 }
 

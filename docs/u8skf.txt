@@ -11,8 +11,9 @@ It contains what to play, and when to play it.
 
 It consists of 6 byte blocks, divided into 3 int16s, terminated by a
 FFFF FFFF FFFF block.
-The first int16 is the shape to display, the second int16 the type of
-action (see list below), and the third int16 a parameter to the action.
+The first int16 is the animation frame at which this action is triggered,
+the second int16 the type of action (see list below)
+and the third int16 a parameter to the action.
 
 Type 0x03 : Play Music. Data is num in music.flx
 Type 0x04 : Slow stop music

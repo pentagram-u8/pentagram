@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003 The Pentagram Team
+ *  Copyright (C) 2003-2004 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -177,4 +177,32 @@ const ConvertShapeFormat *Shape::DetectShapeFormat(const uint8* data, uint32 siz
 		return &Crusader2DShapeFormat;
 
 	return 0;
+}
+
+void Shape::getTotalDimensions(sint32& w,sint32& h,sint32& x,sint32& y) const
+{
+	if (frames.empty()) {
+		w = 0; h = 0; x = 0; y = 0;
+		return;
+	}
+
+	sint32 minx = 1000000, maxx = -1000000;
+	sint32 miny = 1000000, maxy = -1000000;
+
+	for (unsigned int i = 0; i < frames.size(); ++i) {
+		ShapeFrame* frame = frames[i];
+		if (-frame->xoff < minx)
+			minx = -frame->xoff;
+		if (-frame->yoff < miny)
+			miny = -frame->yoff;
+		if (frame->width-frame->xoff-1 > maxx)
+			maxx = frame->width-frame->xoff-1;
+		if (frame->height-frame->yoff-1 > maxy)
+			maxy = frame->height-frame->yoff-1;
+	}
+
+	w = maxx - minx + 1;
+	h = maxy - miny + 1;
+	x = -minx;
+	y = -miny;
 }

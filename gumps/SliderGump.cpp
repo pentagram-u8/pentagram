@@ -30,6 +30,7 @@
 #include "ButtonWidget.h"
 #include "UCProcess.h"
 #include "Kernel.h"
+#include "GUIApp.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -183,6 +184,26 @@ void SliderGump::DraggingChild(Gump* gump, int mx, int my)
 
 void SliderGump::StopDraggingChild(Gump* gump)
 {
+}
+
+bool SliderGump::OnKeyDown(int key, int mod)
+{
+	switch(key)
+	{
+	case SDLK_LEFT:
+		if (value > min) value--;
+		break;
+	case SDLK_RIGHT:
+		if (value < max) value++;
+		break;
+	case SDLK_RETURN:
+		Close();
+		break;
+	default:
+		break;
+	}
+
+	return true;
 }
 
 void SliderGump::setUsecodeNotify(UCProcess* ucp)

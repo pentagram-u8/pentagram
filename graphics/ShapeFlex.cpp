@@ -56,6 +56,8 @@ void ShapeFlex::cache(uint32 shapenum)
 	uint8 *data = get_object(shapenum);
 	uint32 shpsize = get_size(shapenum);
 
+	if (!data || shpsize == 0) return;
+
 	// Auto detect format
 	if (!format) format = Shape::DetectShapeFormat(data,shpsize);
 	

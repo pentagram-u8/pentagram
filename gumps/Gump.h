@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003  The Pentagram Team
+ *  Copyright (C) 2003-2004  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -214,7 +214,7 @@ public:
 	// will instead get sent to the default key handler. TextInput requires
 	// that text mode be enabled. Return true if handled, false if not.
 	// Default, returns false, unless handled by focus child
-	virtual bool		OnKeyDown(int key);
+	virtual bool		OnKeyDown(int key, int mod);
 	virtual bool		OnKeyUp(int key);
 	virtual bool		OnTextInput(int unicode);
 

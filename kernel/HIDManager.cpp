@@ -58,6 +58,7 @@ HIDManager::HIDManager()
 	bindingMap.insert( HIDBINDING_PAIR(runExecutionEgg) );
 	bindingMap.insert( HIDBINDING_PAIR(toggleFrameByFrame) );
 	bindingMap.insert( HIDBINDING_PAIR(advanceFrameByFrame) );
+	bindingMap.insert( HIDBINDING_PAIR(u8ShapeViewer) );
 
 }
 

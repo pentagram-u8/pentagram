@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram Team
+Copyright (C) 2003-2004 The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <vector>
 
 class ShapeFrame;
-namespace Pentagram { struct Palette; }
+namespace Pentagram { struct Palette; struct Rect; }
 struct ConvertShapeFormat;
 class IDataSource;
 
@@ -39,6 +39,11 @@ public:
 	const Pentagram::Palette* getPalette() const { return palette; }
 
 	unsigned int frameCount() const { return frames.size(); }
+
+	//! Returns the dimensions of all frames combined
+	//! (w,h) = size of smallest rectangle covering all frames
+	//! (x,y) = coordinates of origin relative to top-left point of rectangle
+	void getTotalDimensions(sint32& w, sint32& h, sint32& x, sint32& y) const;
 
 	ShapeFrame* getFrame(unsigned int frame)
 		{ if (frame < frames.size()) return frames[frame]; else return 0; }

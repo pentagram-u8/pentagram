@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -36,6 +36,8 @@ public:
 	virtual ~ShapeFlex();
 
 	Shape* getShape(uint32 shapenum);
+
+	virtual uint32 get_count() { return Flex::get_count(); }	
 
 	void cache(); // cache all shapes
 	void cache(uint32 shapenum); // cache one shape

@@ -71,8 +71,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "PathfinderProcess.h"
 #include "AvatarMoverProcess.h"
 
-#include "SliderGump.h"
-
 #include "DisasmProcess.h"
 #include "CompileProcess.h"
 
@@ -1294,8 +1292,9 @@ void GUIApp::handleEvent(const SDL_Event& event)
 	uint32 now = SDL_GetTicks();
 
 	// Text mode input. A few hacks here
-	if (!textmodes.empty() && (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) && 
-		event.key.keysym.sym != SDLK_BACKQUOTE && 
+	if (!textmodes.empty() &&
+		(event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) &&
+		event.key.keysym.sym != SDLK_BACKQUOTE &&
 		event.key.keysym.sym != SDLK_ESCAPE) {
 
 		Gump *gump = 0;
@@ -1311,10 +1310,15 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		if (gump) {
 
 			if (event.type == SDL_KEYDOWN) {
-				if (event.key.keysym.unicode >= ' ' && event.key.keysym.unicode <= 255)
+				if (event.key.keysym.unicode >= ' ' &&
+					event.key.keysym.unicode <= 255)
+				{
 					gump->OnTextInput(event.key.keysym.unicode);
-				else
-					gump->OnKeyDown(event.key.keysym.sym);
+				}
+
+				gump->OnKeyDown(event.key.keysym.sym, event.key.keysym.mod);
+			} else {
+				gump->OnKeyUp(event.key.keysym.sym);
 			}
 
 			return;

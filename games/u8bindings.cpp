@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "LoopScript.h"
 #include "CameraProcess.h"
 #include "CurrentMap.h"
+#include "ShapeViewerGump.h"
 
 namespace HIDBindings {
 
@@ -205,4 +206,16 @@ bool toggleCombat(const SDL_Event& event)
 	return handled;
 }
 
-};
+bool u8ShapeViewer(const SDL_Event& event)
+{
+	switch (event.type) {
+	case HID_DOWN:
+		ShapeViewerGump::U8ShapeViewer();
+		return true;
+	default:
+		return false;
+	}
+}
+
+
+}; // namespace HIDBindings

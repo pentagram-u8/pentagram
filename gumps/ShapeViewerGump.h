@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004  The Pentagram Team
+ *  Copyright (C) 2004  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,55 +16,51 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef SLIDERGUMP_H
-#define SLIDERGUMP_H
+#ifndef SHAPEVIEWERGUMP_H
+#define SHAPEVIEWERGUMP_H
 
 #include "ModalGump.h"
 
-class UCProcess;
+#include <vector>
 
-class SliderGump : public ModalGump
+class ShapeFlex;
+
+
+class ShapeViewerGump : public ModalGump
 {
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	SliderGump();
-	SliderGump(int x, int y, sint16 min, sint16 max,
-			   sint16 value, sint16 delta=1);
-	virtual ~SliderGump(void);
+	ShapeViewerGump();
+	ShapeViewerGump(int width, int height,
+					std::vector<std::pair<std::string,ShapeFlex*> >& flexes,
+					uint32 _Flags = 0, sint32 layer = LAYER_MODAL);
+	virtual ~ShapeViewerGump(void);
 
+	// Init the gump, call after construction
 	virtual void InitGump();
-	virtual void PaintThis(RenderSurface* surf, sint32 lerp_factor);
-	virtual void Close(bool no_del = false);	
-	virtual void ChildNotify(Gump *child, uint32 message);
 
-	void setUsecodeNotify(UCProcess* ucp);
-
-	// Dragging
-	virtual bool StartDraggingChild(Gump* gump, int mx, int my);
-	virtual void DraggingChild(Gump* gump, int mx, int my);
-	virtual void StopDraggingChild(Gump* gump);
+	// Paint the Gump
+	virtual void PaintThis(RenderSurface*, sint32 lerp_factor);
 
 	virtual bool OnKeyDown(int key, int mod);
+	virtual bool OnTextInput(int unicode);
+
+	static void U8ShapeViewer();
 
 	bool loadData(IDataSource* ids);
 protected:
 	virtual void saveData(ODataSource* ods);
 
-	sint16 min;
-	sint16 max;
-	sint16 delta;
-	sint16 value;
+	std::vector<std::pair<std::string,ShapeFlex*> > flexes;	
+	unsigned int curflex;
+	ShapeFlex* flex;
+	uint32 curshape;
+	uint32 curframe;
 
-	int sliderMouseOffset;
+	uint32 background;
 
-	uint16 slidergid;
-	uint16 okbuttongid;
-	uint16 usecodeNotifyPID;
-	
-	int getSliderPos();
-	void setValue(int sliderx);
-	void drawText(RenderSurface* surf);
+	sint32 shapew,shapeh,shapex,shapey;
 };
 
 #endif

@@ -105,6 +105,7 @@ GUMPS = \
 	gumps/PaperdollGump.o \
 	gumps/ResizableGump.o \
 	gumps/ScrollGump.o \
+	gumps/ShapeViewerGump.o \
 	gumps/SliderGump.o \
 	gumps/TargetGump.o
 

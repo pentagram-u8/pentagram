@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -43,9 +43,13 @@ bool runExecutionEgg(const SDL_Event& event);
 // ! \see HIDBinding
 bool runFirstEgg(const SDL_Event& event);
 
-// ! toogles the avatar combat readiness
+// ! toggles the avatar combat readiness
 // ! \see HIDBinding
 bool toggleCombat(const SDL_Event& event);
+
+// ! U8 shape viewer
+// ! \see HIDBinding
+bool u8ShapeViewer(const SDL_Event& event);
 
 };
 

@@ -1,3 +1,13 @@
+2004-05-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/ModalGump.*: grab keyboard when initializing a modal gump
+	* gumps/ShapeViewerGump.*: shape viewer gump (F11 open, backsp. close)
+	* kernel/GUIApp.cpp: always send KeyDown events in textmode
+	* gumps/*: pass modifiers to KeyDown events
+	* gumps/SliderGump.*: arrow keys
+	* shape/Shape.*: getTotalDimensions gets shape's bounding box
+	* shape/ShapeFlex.*: fixed crash when caching invalid shapes
+	* docs/u8skf.txt: updated SKF format docs
+
 2004-05-02  Dominik Reichardt <dominus@users.sourceforge.net>
 	* Readme: updated with new config system
 

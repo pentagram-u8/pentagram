@@ -121,6 +121,7 @@ void PaperdollGump::PaintStats(RenderSurface* surf, sint32 lerp_factor)
 	// text: English: STR,INT,DEX,ARMR,HITS,MANA,WGHT
 	//       French : FORCE,INTEL,DEXT,ARMR,COUPS,MAGIE,POIDS
     //       German : KRAFT,INTELL.,GESCH.,R\"UST.,TREFF.,MANA,LAST
+	//       Spanish: FUE,INT,DES,ARMR,PNTS,MANA,PESO
 
 	ShapeFont* font = GameData::get_instance()->getFonts()->getFont(statfont);
 	ShapeFont* descfont = GameData::get_instance()->

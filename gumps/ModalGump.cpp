@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003  The Pentagram Team
+ *  Copyright (C) 2003-2004  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,7 +18,9 @@
 
 #include "pent_include.h"
 #include "ModalGump.h"
+
 #include "Kernel.h"
+#include "GUIApp.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -47,7 +49,8 @@ void ModalGump::InitGump()
 {
 	Gump::InitGump();
 
-	// lock keyboard here?
+	// lock keyboard
+	GUIApp::get_instance()->enterTextMode(this);
 
 	Kernel::get_instance()->pause();
 }
@@ -75,7 +78,8 @@ uint16 ModalGump::TraceObjId(int mx, int my)
 
 void ModalGump::Close(bool no_del)
 {
-	// free keyboard here?
+	// free keyboard
+	GUIApp::get_instance()->leaveTextMode(this);
 
 	Kernel::get_instance()->unpause();
 
