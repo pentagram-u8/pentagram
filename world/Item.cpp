@@ -1225,8 +1225,8 @@ void Item::leaveFastArea()
 			(flags & FLG_FASTAREA))
 		callUsecodeEvent_leaveFastArea();
 
-	// If we have a gump open, close it
-	if (flags & FLG_GUMP_OPEN) 
+	// If we have a gump open, close it (unless we're in a container)
+	if (!parent && (flags & FLG_GUMP_OPEN)) 
 	{
 		Gump *g = GUIApp::get_instance()->getGump(gump);
 		if (g) g->Close();

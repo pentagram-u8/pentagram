@@ -14,6 +14,7 @@
 	* kernel/Process.cpp: don't kill processes of type 1 when failing
 	* world/actors/LoiterProcess.*: loiter
 	* gumps/ContainerGump.*: don't let position depend on parent's Gump
+	* gumps/PaperdollGump.*: don't close backpack when closing paperdoll
 
 2004-09-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/SplitItemProcess.cpp: fixed double-terminate

@@ -118,6 +118,33 @@ void PaperdollGump::InitGump()
 	AddChild(widget);
 }
 
+void PaperdollGump::Close(bool no_del)
+{
+	// NOTE: this does _not_ call its direct parent's Close function
+	// because we do not want to close the Gumps of our contents
+
+	// close any gumps belonging to contents
+	// and make every item leave the fast area
+	Container* c = p_dynamic_cast<Container*>
+		(World::get_instance()->getItem(owner));
+
+	if (!c) return; // Container gone!?
+
+	std::list<Item*>& contents = c->contents;
+	std::list<Item*>::iterator iter = contents.begin();
+	while(iter != contents.end()) {
+		Item* item = *iter;
+		++iter;
+		item->leaveFastArea();	// Can destroy the item
+	}
+
+	Item* o = World::get_instance()->getItem(owner);
+	if (o)
+		o->clearGump(); //!! is this the appropriate place?
+
+	ItemRelativeGump::Close(no_del);
+}
+
 void PaperdollGump::PaintStat(RenderSurface* surf, unsigned int n,
 							  std::string text, int val)
 {

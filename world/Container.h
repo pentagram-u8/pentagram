@@ -30,6 +30,7 @@ class Container : public Item
 {
 	friend class ItemFactory;
 	friend class ContainerGump;
+	friend class PaperdollGump;
 public:
 	Container();
 	virtual ~Container();
