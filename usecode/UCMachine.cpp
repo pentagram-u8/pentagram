@@ -116,7 +116,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// pop 16 bit int, and assign LS 8 bit int into bp+xx
 			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.pop2();
-			p->stack.assign1(p->bp+si8a, ui16a);
+			p->stack.assign1(p->bp+si8a, static_cast<uint8>(ui16a));
 			LOGPF(("pop byte\t%s = %02Xh", print_bp(si8a), ui16a));
 			break;
 
@@ -1635,6 +1635,7 @@ void UCMachine::freeStringList(uint16 l)
 	}	
 }
 
+//static
 uint32 UCMachine::listToPtr(uint16 l)
 {
 	uint32 ptr = SEG_LIST;
@@ -1643,6 +1644,7 @@ uint32 UCMachine::listToPtr(uint16 l)
 	return ptr;
 }
 
+//static
 uint32 UCMachine::stringToPtr(uint16 s)
 {
 	uint32 ptr = SEG_STRING;
@@ -1651,6 +1653,7 @@ uint32 UCMachine::stringToPtr(uint16 s)
 	return ptr;
 }
 
+//static
 uint32 UCMachine::stackToPtr(uint16 pid, uint16 offset)
 {
 	uint32 ptr = SEG_STACK + pid;
@@ -1659,6 +1662,7 @@ uint32 UCMachine::stackToPtr(uint16 pid, uint16 offset)
 	return ptr;
 }
 
+//static
 uint32 UCMachine::globalToPtr(uint16 offset)
 {
 	uint32 ptr = SEG_GLOBAL;
@@ -1667,6 +1671,7 @@ uint32 UCMachine::globalToPtr(uint16 offset)
 	return ptr;
 }
 
+//static
 uint32 UCMachine::objectToPtr(uint16 objID)
 {
 	uint32 ptr = SEG_OBJ;
