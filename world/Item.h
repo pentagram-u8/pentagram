@@ -267,6 +267,8 @@ public:
 	uint32 callUsecodeEvent_AvatarStoleSomething(uint16 unk);	// event 14
 	uint32 callUsecodeEvent_guardianBark(sint16 unk);			// event 15
 
+	uint32 use();
+
 	//! Get lerped location.
 	inline void getLerped(sint32& x, sint32& y, sint32& z) const
 		{ x = ix; y = iy; z = iz; }

@@ -425,6 +425,7 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 
 	// TODO: accumulate strength for avatar kicks
 	// TODO: accumulate dexterity for avatar hits
+	// TODO: make us hostile to whoever attacked?
 
 	if (getActorFlags() & (ACT_IMMORTAL | ACT_INVINCIBLE))
 		return; // invincible
@@ -450,11 +451,13 @@ void Actor::die()
 {
 	setHP(0);
 	setActorFlag(ACT_DEAD);
+
+	Kernel::get_instance()->killProcesses(getObjId(), 6); // CONSTANT!
+
 	doAnim(Animation::die, getDir());
 
 	// TODO: Lots, including, but not limited to:
-	// * for monsters, get rid of the Actor object?
-	// * replace by body container, filled with treasure if appropriate
+	// * fill with treasure if appropriate
 	// * some U8 monsters need special actions: skeletons, eyebeasts, etc...
 }
 

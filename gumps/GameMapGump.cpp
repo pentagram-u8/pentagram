@@ -318,7 +318,7 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 			} else {
 				item->destroy();
 			}
-#else
+#elif 0
 			UCList uclist(2);
 			LOOPSCRIPT(script, LS_TOKEN_TRUE); // we want all items
 			World* world= World::get_instance();
@@ -331,6 +331,8 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 				if (!item2) continue;
 				item2->setExtFlag(Item::EXT_HIGHLIGHT);
 			}
+#else
+			item->receiveHit(1, 0, 0, 0);
 #endif
 		}
 	}
@@ -362,7 +364,7 @@ void GameMapGump::OnMouseDouble(int button, int mx, int my)
 			//!! need to check range
 			
 			// call the 'use' event
-			item->callUsecodeEvent_use();
+			item->use();
 		}
 		break;
 	}

@@ -266,7 +266,7 @@ void ContainerGump::OnMouseDouble(int button, int mx, int my)
 			item->dumpInfo();
 			
 			// call the 'use' event
-			item->callUsecodeEvent_use();
+			item->use();
 		}		
 	}
 }

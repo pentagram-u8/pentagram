@@ -1028,6 +1028,24 @@ uint32 Item::callUsecodeEvent_guardianBark(sint16 unk)			// event 15
 	return callUsecodeEvent(0x15, arg_stack.access(), 2); // CONSTANT 0x15
 }
 
+uint32 Item::use()
+{
+	Actor* actor = p_dynamic_cast<Actor*>(this);
+	if (actor) {
+		if (actor->getActorFlags() & Actor::ACT_DEAD) {
+			// dead actor, so open/close the dead-body-gump
+			if (getFlags() & FLG_GUMP_OPEN) {
+				closeGump();
+			} else {
+				openGump(12); // CONSTANT!!
+			}
+			return 0;
+		}
+	}
+
+	return callUsecodeEvent_use();
+}
+
 void Item::destroy()
 {
 	if (flags & FLG_ETHEREAL) {
@@ -1180,7 +1198,15 @@ void Item::enterFastArea()
 	if (shape == 0x2c8) return;
 
 	// Call usecode
-	if (!(flags & FLG_FASTAREA)) callUsecodeEvent_enterFastArea();
+	if (!(flags & FLG_FASTAREA)) {
+
+		Actor* actor = p_dynamic_cast<Actor*>(this);
+		if (actor && (actor->getActorFlags() & Actor::ACT_DEAD)) {
+			// dead actor, don't call the usecode
+		} else {
+			callUsecodeEvent_enterFastArea();
+		}
+	}
 
 	// We're fast!
 	flags |= FLG_FASTAREA;

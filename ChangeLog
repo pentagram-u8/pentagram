@@ -1,3 +1,8 @@
+2004-07-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Item.*, gumps/GameMapGump.cpp, gumps/ContainerGump.cpp:
+	  added dead NPC special case to Item::use
+	* world/actors/Actor.cpp: kill all of actor's processes when killed
+
 2004-07-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/ActorAnimProcess.*: don't play anim outside of fastarea
 
