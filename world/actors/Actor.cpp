@@ -347,15 +347,9 @@ Animation::Result Actor::tryAnim(Animation::Sequence anim, int dir, PathfindingS
 	start[0] = end[0]; start[1] = end[1]; start[2] = end[2];
 	end[2] -= 8;
 	hit.clear();
-	currentmap->sweepTest(start, end, dims, getObjId(), true, &hit);
-
-	std::list<CurrentMap::SweepItem>::iterator iter;
-	for (iter = hit.begin(); iter != hit.end(); ++iter) {
-		Item * item = World::get_instance()->getItem(iter->item);
-		if (item->getShapeInfo()->is_solid())
-		{
+	if (currentmap->sweepTest(start, end, dims, getObjId(), true, &hit))
+	{
 			return Animation::SUCCESS;
-		}
 	}
 
 	return Animation::INDETERMINATE;
