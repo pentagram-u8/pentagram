@@ -45,7 +45,7 @@ WORLD_OBJS=world/Container.o world/CurrentMap.o world/Glob.o world/GlobEgg.o wor
 
 ACTORS_OBJS=world/actors/Actor.o world/actors/MainActor.o
 
-all: amf2mod.exe disasm.exe fold.exe shapeconv.exe pentagram.exe
+all: pentagram.exe
 
 amf2mod.exe : tools/amf2mod/amf2mod.o
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
@@ -68,14 +68,22 @@ PENTAGRAM_OBJS=$(CONF_OBJS) $(CONVERT_OBJS) $(FILESYS_OBJS) $(GRAPHICS_OBJS) $(G
 pentagram.exe: $(PENTAGRAM_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ $(LIBS)
 
-clean:
-	rm -f $(CONF_OBJS) $(CONVERT_OBJS) $(FILESYS_OBJS) $(GRAPHICS_OBJS) $(KERNEL_OBJS) $(MISC_OBJS) $(USECODE_OBJS) $(FOLD_OBJCS)
-	rm -f pentagram.o tools/amf2mod/amf2mod.o tools/disasm/Disasm.o tools/fold/Fold.o tools/shapeconv/ShapeConv.o *.exe
+tools: amf2mod.exe disasm.exe fold.exe shapeconv.exe 
 
-install: all
+clean:
+	rm -f $(PENTAGRAM_OBJS) pentagram.o
+
+toolsclean:
+	rm -f tools/amf2mod/amf2mod.o tools/disasm/Disasm.o tools/fold/Fold.o tools/shapeconv/ShapeConv.o *.exe
+
+install: pentagram.exe
 	mkdir -p $(U8PATH)
-	mkdir -p $(U8PATH)/tools
 	strip pentagram.exe -o $(U8PATH)/pentagram.exe
+	mkdir -p $(U8PATH)/data
+	cp data/fixedfont.tga $(U8PATH)/data/
+
+toolsinstall: tools
+	mkdir -p $(U8PATH)/tools
 	strip amf2mod.exe -o $(U8PATH)/tools/amf2mod.exe
 	strip disasm.exe -o $(U8PATH)/tools/disasm.exe
 	strip fold.exe -o $(U8PATH)/tools/fold.exe
@@ -100,3 +108,11 @@ dist:   install
 	cp docs/u8usecode.txt $(U8PATH)/tools
 	cp docs/u8weapon.txt $(U8PATH)/tools
 	u2d $(U8PATH)/*.txt
+
+toolsdist: toolsinstall
+
+allclean: clean toolsclean
+
+allinstall: install toolsinstall
+
+alldist: dist toolsdist
