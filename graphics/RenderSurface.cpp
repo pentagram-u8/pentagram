@@ -85,6 +85,12 @@ RenderSurface *RenderSurface::SetVideoMode(uint32 width,		// Width of desired mo
 	// Get Current Video Mode details
 	const SDL_VideoInfo *vinfo = SDL_GetVideoInfo();
 
+	if (!vinfo)
+	{
+		pout << "SDL_GetVideoInfo() failed: " << SDL_GetError() << std::endl;
+		return 0;
+	}
+
 	// Specific Windowed code
 	if (!fullscreen) 
 	{

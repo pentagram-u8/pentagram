@@ -1,6 +1,7 @@
 2004-06-23  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* misc/common_types.h: new {s,u}intptr types of same size as pointer
 	* various: amd64 fixes
+	* graphics/RenderSurface.cpp: check if SDL_GetVideoInfo() failed
 
 2004-06-20  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* FAQ, docs/xml/faq.xml: added anti-piracy stance
