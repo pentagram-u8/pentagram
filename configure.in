@@ -91,11 +91,10 @@ case "$host_os" in
 		dnl is of course lacking Cocoa. For now I am lazy and do not add 
 		dnl proper detection code.
 		
-		WINDOWING_SYSTEM="-DCOCOA"
-		AC_DEFINE(MACOSX, 1, [Compiling on MacOSX])
-		AC_MSG_RESULT(Cocoa (MacOS X))
+		WINDOWING_SYSTEM="-DMACOSX"
+		AC_DEFINE(MACOSX, 1, [Compiling on Mac OS X])
+		AC_MSG_RESULT(Mac OS X)
 		LIBS="$LIBS -framework QuickTime"
-		CXXFLAGS="$CXXFLAGS -fpascal-strings"
 		ARCH=macosx
 		;;
 	*)

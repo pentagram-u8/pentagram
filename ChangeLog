@@ -1,3 +1,8 @@
+2002-10-31  Max Horn <max@quendi.de>
+	* bootstrap: changed to be POSIX compliant (and work on OS X)
+	* configure.in: cleaned up OS X section
+	* misc/Console.h: changed to allow compilation on OS X
+
 2002-10-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* bootstrap: removed Makefiles from convert/u8 convert/crusader
 	* configure.in: removed kmid, fixed some cosmetic errors
