@@ -65,6 +65,7 @@ SliderGump::~SliderGump()
 
 static const int gumpshape = 41;
 static const int gumpframe = 0;
+static const int okshape = 42;
 static const int slidershape = 45;
 static const int sliderframe = 0;
 static const int slidery = 17;
@@ -130,10 +131,11 @@ void SliderGump::InitGump()
 	widget->InitGump();
 	AddChild(widget);
 
-	Shape* okshape = GameData::get_instance()->getGumps()->getShape(42);
+	FrameID button_up(GameData::GUMPS, okshape, 0);
+	FrameID button_down(GameData::GUMPS, okshape, 1);
 
 //	widget = new ButtonWidget(20, 17, "OK", labelfont);
-	widget = new ButtonWidget(14, 17, okshape, 0, okshape, 1);
+	widget = new ButtonWidget(14, 17, button_up, button_down);
 	widget->InitGump();
 	okbuttongid = widget->getObjId();
 	AddChild(widget);

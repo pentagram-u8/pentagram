@@ -99,6 +99,107 @@ ShapeFlex* GameData::getShapeFlex(uint16 flexId) const
 	return 0;
 }
 
+Shape* GameData::getShape(FrameID f) const
+{
+	ShapeFlex* sf = getShapeFlex(f.flexid);
+	if (!sf) return 0;
+	Shape* shape = sf->getShape(f.shapenum);
+	return shape;
+}
+
+ShapeFrame* GameData::getFrame(FrameID f) const
+{
+	Shape* shape = getShape(f);
+	if (!shape) return 0;
+	ShapeFrame* frame = shape->getFrame(f.framenum);
+	return frame;
+}
+
+void GameData::loadTranslation()
+{
+	ConfigFileManager* config = ConfigFileManager::get_instance();
+	std::string translationfile;
+
+	if (gameinfo.type == GameInfo::GAME_U8) {
+		switch (gameinfo.language) {
+		case GameInfo::GAMELANG_ENGLISH:
+			// default. Don't need to do anything
+			break;
+		case GameInfo::GAMELANG_FRENCH:
+			translationfile = "u8french.ini";
+			break;
+		case GameInfo::GAMELANG_GERMAN:
+			translationfile = "u8german.ini";
+			break;
+		case GameInfo::GAMELANG_SPANISH:
+			translationfile = "u8spanish.ini";
+			break;
+		default:
+			perr << "Unknown language." << std::endl;
+			break;
+		}
+
+		if (!translationfile.empty()) {
+			translationfile = "@data/" + translationfile;
+
+			pout << "Loading translation: " << translationfile << std::endl;
+
+			config->readConfigFile(translationfile, "language", true);
+		}
+	}
+}
+
+std::string GameData::translate(std::string text)
+{
+	// TODO: maybe cache these lookups? config calls may be expensive
+
+	ConfigFileManager* config = ConfigFileManager::get_instance();
+	Pentagram::istring key = "language/text/" + text;
+	if (!config->exists(key))
+		return text;
+
+	std::string trans;
+	config->get(key, trans);
+	return trans;
+}
+
+FrameID GameData::translate(FrameID f)
+{
+	// TODO: maybe cache these lookups? config calls may be expensive
+	// TODO: add any non-gump shapes when applicable
+	// TODO: allow translations to be in another shapeflex
+
+	ConfigFileManager* config = ConfigFileManager::get_instance();
+	Pentagram::istring key = "language/";
+	switch (f.flexid) {
+	case GUMPS:
+		key += "gumps/";
+		break;
+	default:
+		return f;
+	}
+
+	char buf[100];
+	sprintf(buf, "%d,%d", f.shapenum, f.framenum);
+
+	key += buf;
+	if (!config->exists(key))
+		return f;
+
+	std::string trans;
+	config->get(key, trans);
+
+	FrameID t;
+	t.flexid = f.flexid;
+	int n = sscanf(trans.c_str(), "%d,%d", &t.shapenum, &t.framenum);
+	if (n != 2) {
+		perr << "Invalid shape translation: " << trans << std::endl;
+		return f;
+	}
+
+	return t;
+}
+
 
 void GameData::loadU8Data()
 {
@@ -235,4 +336,6 @@ void GameData::loadU8Data()
 		std::exit(-1);
 	}
 	music = new MusicFlex(mf);
+
+	loadTranslation();
 }

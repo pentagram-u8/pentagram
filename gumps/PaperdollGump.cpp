@@ -108,11 +108,11 @@ void PaperdollGump::InitGump()
 {
 	ContainerGump::InitGump();
 
-	Shape* childshape = GameData::get_instance()->getGumps()->
-		getShape(statbuttonshape);
+	FrameID button_up(GameData::GUMPS, statbuttonshape, 0);
+	FrameID button_down(GameData::GUMPS, statbuttonshape, 1);
 
 	Gump *widget = new ButtonWidget(statbuttonx, statbuttony,
-									childshape, 0, childshape, 1);
+									button_up, button_down);
 	statbuttongid = widget->getObjId();
 	widget->InitGump();
 	AddChild(widget);
@@ -155,13 +155,13 @@ void PaperdollGump::PaintStats(RenderSurface* surf, sint32 lerp_factor)
     //       German : KRAFT,INTELL.,GESCH.,R\"UST.,TREFF.,MANA,LAST
 	//       Spanish: FUE,INT,DES,ARMR,PNTS,MANA,PESO
 
-	PaintStat(surf, 0, "STR", a->getStr());
-	PaintStat(surf, 1, "INT", a->getInt());
-	PaintStat(surf, 2, "DEX", a->getDex());
-	PaintStat(surf, 3, "ARMR", a->getArmourClass());
-	PaintStat(surf, 4, "HITS", a->getHP());
-	PaintStat(surf, 5, "MANA", a->getMana());
-	PaintStat(surf, 6, "WGHT", a->getTotalWeight());
+	PaintStat(surf, 0, _TL_("STR"), a->getStr());
+	PaintStat(surf, 1, _TL_("INT"), a->getInt());
+	PaintStat(surf, 2, _TL_("DEX"), a->getDex());
+	PaintStat(surf, 3, _TL_("ARMR"), a->getArmourClass());
+	PaintStat(surf, 4, _TL_("HITS"), a->getHP());
+	PaintStat(surf, 5, _TL_("MANA"), a->getMana());
+	PaintStat(surf, 6, _TL_("WGHT"), a->getTotalWeight());
 }
 
 void PaperdollGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)

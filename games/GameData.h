@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <vector>
 #include "GameInfo.h"
+#include "FrameID.h"
 
 class Flex;
 class MainShapeFlex;
@@ -32,6 +33,7 @@ class Glob;
 class Shape;
 class MusicFlex;
 class WpnOvlayDat;
+class ShapeFrame;
 
 class GameData
 {
@@ -52,7 +54,14 @@ public:
 	Shape* getMouse() const { return mouse; }
 	MusicFlex* getMusic() const { return music; }
 	WpnOvlayDat* getWeaponOverlay() const { return weaponoverlay; }
+
 	ShapeFlex* getShapeFlex(uint16 flexId) const;
+	Shape* getShape(FrameID frameid) const;
+	ShapeFrame* getFrame(FrameID frameid) const;
+
+	void setGameInfo(GameInfo& info) { gameinfo = info; }
+	std::string translate(std::string text);
+	FrameID translate(FrameID frame);
 
 	enum ShapeFlexId {
 		OTHER		= 0,
@@ -60,6 +69,8 @@ public:
 		GUMPS		= 2
 	};
 private:
+	void loadTranslation();
+
 	Flex* fixed;
 	MainShapeFlex* mainshapes;
 	Usecode* mainusecode;
@@ -75,5 +86,7 @@ private:
 	static GameData* gamedata;
 };
 
+#define _TL_(x) (GameData::get_instance()->translate(x))
+#define _TL_SHP_(x) (GameData::get_instance()->translate(x))
 
 #endif

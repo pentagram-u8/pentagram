@@ -231,6 +231,8 @@ void GUIApp::startup()
 	kernel->addProcessLoader("GumpNotifyProcess",
 							 ProcessLoader<GumpNotifyProcess>::load);
 
+	gamedata = new GameData();
+
 	pout << "Create ObjectManager" << std::endl;
 	objectmanager = new ObjectManager();
 
@@ -240,6 +242,7 @@ void GUIApp::startup()
 	pout << "Loading HIDBindings" << std::endl;
 	GameInfo info;
 	getGameInfo(game, &info);
+	gamedata->setGameInfo(info);
 
 	if (info.type == GameInfo::GAME_U8) {
 		// system-wide config
@@ -504,7 +507,6 @@ void GUIApp::U8Playground()
 	delete pf;
 
 	pout << "Load GameData" << std::endl;
-	gamedata = new GameData();
 	gamedata->loadU8Data();
 
 #if defined(WIN32) && defined(I_AM_COLOURLESS_EXPERIMENTING_WITH_HW_CURSORS)

@@ -52,15 +52,16 @@ void PagedGump::InitGump()
 	dims.w = sf->width;
 	dims.h = sf->height;
 
-	Shape* s = GameData::get_instance()->getGumps()->getShape(pageOverShape);
+	FrameID buttonleft(GameData::GUMPS, pageOverShape, 0);
+	FrameID buttonright(GameData::GUMPS, pageOverShape, 1);
 
 	//!! Hardcoded gump
-	nextButton = new ButtonWidget(0, 0, s, 1, s, 1);
+	nextButton = new ButtonWidget(0, 0, buttonright, buttonright);
 	nextButton->InitGump();
 	AddChild(nextButton);
 	nextButton->setRelativePosition(TOP_RIGHT, rightOff, topOff);
 
-	prevButton = new ButtonWidget(0, 0, s, 0, s, 0);
+	prevButton = new ButtonWidget(0, 0, buttonleft, buttonleft);
 	prevButton->InitGump();
 	AddChild(prevButton);
 	prevButton->setRelativePosition(TOP_LEFT, leftOff, topOff);

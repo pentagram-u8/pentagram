@@ -45,12 +45,13 @@ ButtonWidget::ButtonWidget(int X, int Y, std::string txt, int font,
 	textwidget = widget->getObjId();
 }
 
-ButtonWidget::ButtonWidget(int X, int Y, Shape* shape_up_, uint32 framenum_up_,
-						   Shape* shape_down_, uint32 framenum_down_) :
-	Gump(X,Y,5,5), shape_up(shape_up_), framenum_up(framenum_up_),
-	shape_down(shape_down_), framenum_down(framenum_down_), textwidget(0)
+ButtonWidget::ButtonWidget(int X, int Y, FrameID frame_up, FrameID frame_down)
+	: Gump(X,Y,5,5), textwidget(0)
 {
-
+	shape_up = GameData::get_instance()->getShape(frame_up);
+	shape_down = GameData::get_instance()->getShape(frame_down);
+	framenum_up = frame_up.framenum;
+	framenum_down = frame_down.framenum;
 }
 
 

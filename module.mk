@@ -14,6 +14,7 @@ pentagram_OBJ = \
 	$(USECODE) \
 	$(FILESYS) \
 	$(GAMES) \
+	$(GAMES2) \
 	$(GRAPHICS) \
 	$(FONTS) \
 	$(MISC) \
@@ -36,6 +37,7 @@ llc_OBJ = \
 	$(USECODE) \
 	$(FILESYS) \
 	$(GAMES) \
+	$(GAMES2) \
 	$(GRAPHICS) \
 	$(FONTS) \
 	$(MISC) \

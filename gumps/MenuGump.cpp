@@ -71,20 +71,17 @@ void MenuGump::InitGump()
 	logo->InitGump();
 	AddChild(logo);
 
-	Shape* entryShape = GameData::get_instance()->getGumps()->getShape(menuEntryShape);
-	sf = shape->getFrame(0);
-	assert(sf);
-
-	// Language offset = currently 0, english only
-	int lang = 0;
-
 	int x = dims.w / 2 + 14;
 	int y = 18;
 	Gump * widget;
 	Pentagram::Rect rect;
 	for (int i = 0; i < 8; ++i)
 	{
-		widget = new ButtonWidget(x, y, entryShape, i * 2 + lang, entryShape, i * 2 + 1 + lang);
+		FrameID frame_up(GameData::GUMPS, menuEntryShape, i * 2);
+		FrameID frame_down(GameData::GUMPS, menuEntryShape, i * 2);
+		frame_up = _TL_SHP_(frame_up);
+		frame_down = _TL_SHP_(frame_down);
+		widget = new ButtonWidget(x, y, frame_up, frame_down);
 		widget->InitGump();
 		AddChild(widget);
 		entryGumps[i] = widget->getObjId();

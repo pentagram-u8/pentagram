@@ -1,4 +1,11 @@
 2004-05-23  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* data/u8{french,german,spanish}.ini: translations
+	* graphics/FrameID.*: a FrameID class for easy addressing of a frame
+	* gumps/widgets/ButtonWidget.*, gumps/*: use FrameID
+	* games/GameData.*: some translation functions/macros
+	* gumps/QuitGump.cpp, gumps/MenuGump.cpp: translations
+
+2004-05-23  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* games/Game*: moved kernel/Game* to games/
 
 2004-05-22  Matthew Jimenez <mjimenez@users.sourceforge.net>

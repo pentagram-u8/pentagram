@@ -10,6 +10,7 @@ fold_OBJ = \
 	$(MISC) \
 	$(CONF) \
 	$(KERNEL) \
+	$(GAMES) \
 	filesys/FileSystem.o \
 	filesys/Flex.o \
 	tools/fold/Fold.o \

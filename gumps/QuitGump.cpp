@@ -60,27 +60,35 @@ void QuitGump::InitGump()
 	dims.w = sf->width;
 	dims.h = sf->height;
 
-	Shape* askShape = GameData::get_instance()->getGumps()->getShape(askShapeId);
-	sf = askShape->getFrame(0);
+	FrameID askshape(GameData::GUMPS, askShapeId, 0);
+	askshape = _TL_SHP_(askshape);
+
+	Shape* askShape = GameData::get_instance()->getShape(askshape);
+	sf = askShape->getFrame(askshape.framenum);
 	assert(sf);
 
-	// Language offset = currently 0, english only
-	int lang = 0;
-
 	Gump * ask = new Gump(6, 6, sf->width, sf->height);
-	ask->SetShape(askShape, lang);
+	ask->SetShape(askShape, askshape.framenum);
 	ask->InitGump();
 	AddChild(ask);
 
- 	askShape = GameData::get_instance()->getGumps()->getShape(yesShapeId + lang);
+	FrameID yesbutton_up(GameData::GUMPS, yesShapeId, 0);
+	FrameID yesbutton_down(GameData::GUMPS, yesShapeId, 1);
+	yesbutton_up = _TL_SHP_(yesbutton_up);
+	yesbutton_down = _TL_SHP_(yesbutton_down);
+
 	Gump * widget;
-	widget = new ButtonWidget(16, 38, askShape, 0, askShape, 1);
+	widget = new ButtonWidget(16, 38, yesbutton_up, yesbutton_down);
 	widget->InitGump();
 	AddChild(widget);
 	yesWidget = widget->getObjId();
 
- 	askShape = GameData::get_instance()->getGumps()->getShape(noShapeId + lang);
-	widget = new ButtonWidget(dims.w / 2 + 8, 38, askShape, 0, askShape, 1);
+	FrameID nobutton_up(GameData::GUMPS, noShapeId, 0);
+	FrameID nobutton_down(GameData::GUMPS, noShapeId, 1);
+	nobutton_up = _TL_SHP_(nobutton_up);
+	nobutton_down = _TL_SHP_(nobutton_down);
+
+	widget = new ButtonWidget(dims.w / 2 + 8, 38, nobutton_up, nobutton_down);
 	widget->InitGump();
 	AddChild(widget);
 	noWidget = widget->getObjId();
@@ -125,20 +133,14 @@ void QuitGump::ChildNotify(Gump *child, uint32 message)
 
 bool QuitGump::OnTextInput(int unicode)
 {
-	switch (unicode)
-	{
-	case 'y': case 'Y':
-	{
-		GUIApp::get_instance()->ForceQuit();
-	} break;
-	case 'n': case 'N':
-	{
-		Close();
-	} break;
-	default:
-		break;
+	if (!(unicode & 0xFF80)) {
+		char c = unicode & 0x7F;
+		if (_TL_("Yy").find(c) != std::string::npos) {
+			GUIApp::get_instance()->ForceQuit();
+		} else if (_TL_("Nn").find(c) != std::string::npos) {
+			Close();
+		}
 	}
-
 	return true;
 }
 

@@ -44,8 +44,10 @@ CONF = \
 	conf/SettingManager.o
 
 GAMES = \
+	games/GameDetector.o
+
+GAMES2 = \
 	games/GameData.o \
-	games/GameDetector.o \
 	games/u8bindings.o \
 	games/stdbindings.o
 
@@ -53,6 +55,7 @@ GRAPHICS = \
 	graphics/AnimDat.o \
 	graphics/RenderSurface.o \
 	graphics/BaseSoftRenderSurface.o \
+	graphics/FrameID.o \
 	graphics/GumpShapeFlex.o \
 	graphics/SoftRenderSurface.o \
 	graphics/Texture.o \

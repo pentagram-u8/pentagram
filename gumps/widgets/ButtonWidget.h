@@ -20,6 +20,7 @@
 #define BUTTONWIDGET_H_INCLUDED
 
 #include "Gump.h"
+#include "FrameID.h"
 
 class ButtonWidget : public Gump
 {
@@ -30,8 +31,7 @@ public:
 	ButtonWidget();
 	ButtonWidget(int X, int Y, std::string txt, int font,
 				 int width = 0, int height = 0);
-	ButtonWidget(int X, int Y, Shape* shape_up, uint32 framenum_up,
-				 Shape* shape_down, uint32 framenum_down);
+	ButtonWidget(int X, int Y, FrameID frame_up, FrameID frame_down);
 	virtual ~ButtonWidget(void);
 
 	// Init the gump, call after construction
