@@ -75,7 +75,6 @@ public:
 	bool loadStrings(IDataSource* ids);
 	bool loadLists(IDataSource* ids);
 
-	INTRINSIC(I_target);
 	INTRINSIC(I_true);
 	INTRINSIC(I_dummyProcess);
 	INTRINSIC(I_getName);

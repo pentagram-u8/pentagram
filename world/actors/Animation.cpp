@@ -34,8 +34,9 @@ bool Animation::isCombatAnim(const Sequence anim)
 		case startblock:
 		case stopblock:
 			return true;
+		default:
+			return false;
 	}
-	return false;
 }
 
 /** determines if we need to ready or unready our weapon */

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004  The Pentagram Team
+ *  Copyright (C) 2004  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,35 +16,38 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef MODALGUMP_H
-#define MODALGUMP_H
+#ifndef TARGETGUMP_H
+#define TARGETGUMP_H
 
-#include "Gump.h"
+#include "ModalGump.h"
+#include "intrinsics.h"
 
-class ModalGump : public Gump
+class UCProcess;
+
+class TargetGump : public ModalGump
 {
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	ModalGump();
-	ModalGump(int x, int y, int width, int height, uint16 owner = 0,
-			  uint32 _Flags = 0, sint32 layer = LAYER_MODAL);
+	TargetGump();
+	TargetGump(int x, int y);
 
-	~ModalGump();
-
-	virtual void InitGump();
-
-	virtual void Close(bool no_del = false);
+	virtual ~TargetGump(void);
 
 	virtual bool PointOnGump(int mx, int my);
-	virtual Gump* FindGump(int mx, int my);
-	virtual uint16 TraceObjId(int mx, int my);
+	virtual void InitGump();
+	virtual void Close(bool no_del = false);
+	virtual void PaintThis(RenderSurface* surf, sint32 lerp_factor);
+	virtual void OnMouseUp(int button, int mx, int my);
 
-	virtual Gump* OnMouseDown(int button, int mx, int my);
+	INTRINSIC(I_target);
 
 	bool loadData(IDataSource* ids);
 protected:
 	virtual void saveData(ODataSource* ods);
+
+private:
+	bool target_tracing;
 };
 
 #endif

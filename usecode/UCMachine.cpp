@@ -2301,34 +2301,6 @@ uint32 UCMachine::I_rndRange(const uint8* args, unsigned int /*argsize*/)
 
 
 
-// major hack number 2
-
-uint16 targetObject = 0;
-class TargetProcess : public Process
-{
-public:
-	virtual bool run(const uint32 /*framenum*/) {
-		if (targetObject != 0) {
-			result = targetObject;
-			// we're leaking strings and memory here... (not that I care)
-			pout << "Target result = " << result << std::endl;
-			terminate();
-		}
-		return false;
-	}
-};
-
-
-uint32 UCMachine::I_target(const uint8* /*args*/, unsigned int /*argsize*/)
-{
-	targetObject = 0;
-
-	pout << std::endl << std::endl << "Target: (select an object)"
-		 << std::endl;
-
-	return Kernel::get_instance()->addProcess(new TargetProcess());
-}
-
 void UCMachine::ConCmd_avatarsName(const Console::ArgsType &args, const Console::ArgvType &argv)
 {
 	UCMachine *uc = UCMachine::get_instance();

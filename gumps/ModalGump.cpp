@@ -60,6 +60,11 @@ Gump* ModalGump::FindGump(int mx, int my)
 	return ret;
 }
 
+bool ModalGump::PointOnGump(int mx, int my)
+{
+	return true; // we take all mouse input
+}
+
 uint16 ModalGump::TraceObjId(int mx, int my)
 {
 	uint16 objid = Gump::TraceObjId(mx, my);

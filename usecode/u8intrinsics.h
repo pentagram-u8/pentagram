@@ -37,11 +37,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "SpriteProcess.h"
 #include "MusicProcess.h"
 #include "ScrollGump.h"
+#include "TargetGump.h"
 
 // Ultima 8 Intrinsics
 Intrinsic U8Intrinsics[] = {
 	// 0x000
-	UCMachine::I_target,
+	TargetGump::I_target,
 	0, //U
 	Item::I_touch,
 	Item::I_getX,

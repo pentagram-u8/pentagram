@@ -237,8 +237,6 @@ void ContainerGump::OnMouseClick(int button, int mx, int my)
 		World *world = World::get_instance();
 		Item *item = world->getItem(objID);
 		if (item) {
-			extern uint16 targetObject; // major hack number 2
-			targetObject = objID;
 			item->dumpInfo();
 			
 			// call the 'look' event

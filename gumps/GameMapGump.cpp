@@ -292,8 +292,6 @@ void GameMapGump::OnMouseUp(int button, int mx, int my)
 
 void GameMapGump::OnMouseClick(int button, int mx, int my)
 {
-	extern uint16 targetObject; // major hack number 2
-
 	switch (button) {
 	case BUTTON_LEFT:
 	{
@@ -302,15 +300,12 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 		if (GUIApp::get_instance()->isAvatarInStasis()) {
 			pout << "Can't: avatarInStasis" << std::endl;
 			uint16 objID = TraceObjId(mx, my); //!! hack
-			targetObject = objID;
 			break;
 		}
 
 		uint16 objID = TraceObjId(mx, my);
 		Item *item = World::get_instance()->getItem(objID);
 		if (item) {
-			targetObject = objID; //!! hack
-
 			sint32 x,y,z;
 			item->getLocation(x,y,z);
 			item->dumpInfo();
@@ -334,7 +329,11 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 			PathfinderProcess* pfp = new PathfinderProcess(devon, x, y, z);
 			Kernel::get_instance()->addProcess(pfp);
 #elif 0
-			item->explode();
+			if (p_dynamic_cast<Actor*>(item)) {
+				p_dynamic_cast<Actor*>(item)->die();
+			} else {
+				item->destroy();
+			}
 #else
 			UCList uclist(2);
 			LOOPSCRIPT(script, LS_TOKEN_TRUE); // we want all items

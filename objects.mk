@@ -105,7 +105,8 @@ GUMPS = \
 	gumps/PaperdollGump.o \
 	gumps/ResizableGump.o \
 	gumps/ScrollGump.o \
-	gumps/SliderGump.o
+	gumps/SliderGump.o \
+	gumps/TargetGump.o
 
 WIDGETS = \
 	gumps/widgets/ButtonWidget.o \
