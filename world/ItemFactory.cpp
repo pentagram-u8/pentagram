@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Container.h"
 
 Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
-							  uint32 flags, uint32 mapnum)
+							  uint32 flags, uint32 npcnum, uint32 mapnum)
 {
 	// check what class to create
 	ShapeInfo *info = MainShapeFlex::get_instance()->getShapeInfo(shape);
@@ -40,13 +40,14 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 	case ShapeInfo::SF_BREAKABLE:
 	case ShapeInfo::SF_REAGENT:
 	{
-		// simple item
+		// 'simple' item
 
 		Item* item = new Item();
 		item->shape = shape;
 		item->frame = frame;
 		item->quality = quality;
 		item->flags = flags;
+		item->npcnum = npcnum;
 		item->mapnum = mapnum;
 		return item;
 	}
@@ -60,9 +61,36 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 		container->frame = frame;
 		container->quality = quality;
 		container->flags = flags;
+		container->npcnum = npcnum;
 		container->mapnum = mapnum;
 		return container;
 	}
+
+	case ShapeInfo::SF_GLOBEGG:
+	{
+		// glob
+		return 0;
+	}
+
+	case ShapeInfo::SF_UNKEGG:
+	{
+
+		return 0;
+	}
+
+	case ShapeInfo::SF_MONSTEREGG:
+	{
+
+		return 0;
+	}
+
+	case ShapeInfo::SF_TELEPORTEGG:
+	{
+
+		return 0;
+	}
+
+
 	default:
 		return 0;
 	}

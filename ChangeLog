@@ -1,3 +1,6 @@
+2003-03-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/*.*: item loading from fixed/nonfixed (and untested itemcach)
+
 2003-03-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/World.*: main World class. (Just some comments, for now)
 

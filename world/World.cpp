@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "World.h"
+#include "Map.h"
 
 World* World::world = 0;
 
@@ -31,5 +32,17 @@ World::World()
 
 World::~World()
 {
+	clear();
+
 	world = 0;
+}
+
+
+void World::clear()
+{
+	for (unsigned int i = 0; i < maps.size(); ++i) {
+		delete maps[i];
+	}
+
+	maps.clear();
 }

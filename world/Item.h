@@ -34,6 +34,7 @@ public:
 	ENABLE_DYNAMIC_CAST(Item);
 
 	Container* getParent() const { return parent; }
+	void setLocation(sint32 x, sint32 y, sint32 z);
 
 protected:
 	uint32 shape;

@@ -30,10 +30,33 @@ public:
 	Map();
 	~Map();
 
-	void loadObjects(IDataSource* ds);
+	void clear();
+
+	// load items from something formatted like 'fixed.dat'
+	void loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds);
+
+	// load items from itemcach/npcdata
+	void loadItemCachObjects(std::list<Item*>& itemlist,
+							 IDataSource* itemcach,
+							 IDataSource* npcdata,
+							 unsigned int start, unsigned int end);
 private:
-	std::list<Item*> globs;
-	std::list<Item*> items;
+
+	// Q: How should we store the items in a map.
+	// It might make things more efficient if we order them by 'chunk'
+	// (512x512). This would mean we need about 128x128 item lists.
+
+	// It would probably be overkill to permanently maintain all these lists
+	// for all maps, so we could only set them up for the current map.
+	// (which makes me wonder if there should be a separate class for the
+	// active map?)
+
+	// (Note that we probably won't even have all items permanently stored,
+	// since fixed items will be cached out most of the time)
+
+
+	std::list<Item*> fixeditems;
+	std::list<Item*> dynamicitems;
 };
 
 

@@ -52,6 +52,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // A clear/reset function would also be useful. (All singletons that store
 //  game data need this, actually.)
 
+#include <vector>
+
+class Map;
+
 class World
 {
 public:
@@ -60,9 +64,12 @@ public:
 
 	static World* get_instance() { return world; }
 
+	void clear();
 
 private:
 	static World *world;
+
+	std::vector<Map*> maps;
 
 };
 

@@ -37,6 +37,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "XFormBlend.h"
 #include "World.h"
 
+#include "Map.h" // temp
+
 #include <SDL.h>
 #include <cstdlib>
 
@@ -107,6 +109,7 @@ Application::Application(int argc, char *argv[])
 	shape->setPalette(palettemanager->getPalette(PaletteManager::Pal_Game));
 
 	// Initialize world
+	pout << "Initialize World" << std::endl;
 	world = new World();
 
 	// Load confont
@@ -122,6 +125,25 @@ Application::Application(int argc, char *argv[])
 	}
 	delete cf;
 	con.SetConFont(confont);
+
+	IDataSource *fd = filesystem->ReadFile("@u8/static/fixed.dat");
+	Flex *ffd = new Flex(fd);
+	uint32 mapsize = ffd->get_size(3);
+	uint8* mapdata = ffd->get_object(3);
+	IBufferDataSource *mds = new IBufferDataSource(mapdata, mapsize);
+	Map* m = new Map();
+	std::list<Item*> itemlist;
+	pout << "Loading fixed from map 3" << std::endl;
+	pout << "----------------------------------------------" << std::endl;
+	m->loadFixedFormatObjects(itemlist, mds);
+	IDataSource *nfd = filesystem->ReadFile("@u8/gamedat/nonfixed.dat");
+	Flex *fnfd = new Flex(nfd);
+	mapsize = fnfd->get_size(3);
+	mapdata = fnfd->get_object(3);
+	pout << "Loading nonfixed from map 3" << std::endl;
+	pout << "----------------------------------------------" << std::endl;
+	IBufferDataSource *nmds = new IBufferDataSource(mapdata, mapsize);
+	m->loadFixedFormatObjects(itemlist, nmds);
 
 	// Create console gump
 	//pout << "Create Graphics Console" << std::endl;

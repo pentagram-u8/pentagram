@@ -45,3 +45,10 @@ Item::~Item()
 {
 
 }
+
+void Item::setLocation(sint32 X, sint32 Y, sint32 Z)
+{
+	x = X;
+	y = Y;
+	z = Z;
+}
