@@ -19,22 +19,34 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef PALETTE_H
 #define PALETTE_H
 
-#include "XFormBlend.h"
-
 class IDataSource;
 
 struct Palette
 {
-	void load(IDataSource& ds, const xformBlendFuncType *xff);
+	void load(IDataSource& ds, IDataSource& xformds);
 
 	// 256 rgb entries
 	uint8 palette[768];
 
-	// native format palette. Created by the RenderSurface
+	// Untransformed native format palette. Created by the RenderSurface
+	uint32 native_untransformed[256];
+
+	// Transformed native format palette. Created by the RenderSurface
 	uint32 native[256];
 
-	// xform functions
-	const xformBlendFuncType	*xform_funcs;
+	// Untransformed XFORM ARGB palette
+	uint32 xform_untransformed[256];
+
+	// Transformed XFORM ARGB palette. Created by the RenderSurface
+	uint32 xform[256];
+
+	// Colour transformation matrix (for fades, hue shifts)
+	// Applied by the RenderSurface
+	// R = R*matrix[0] + G*matrix[1] + B*matrix[2]  + matrix[3];
+	// G = R*matrix[4] + G*matrix[5] + B*matrix[6]  + matrix[7];
+	// B = R*matrix[8] + G*matrix[9] + B*matrix[10] + matrix[11];
+	// A = A;
+	float matrix[12];
 };
 
 

@@ -845,7 +845,7 @@ uint32 Item::I_getQuality(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
-	if (item->getFamily() != ShapeInfo::SF_GENERIC)
+	if (item->getFamily() == ShapeInfo::SF_QUALITY)
 		return item->getQuality();
 	else
 		return 0;
@@ -1027,7 +1027,8 @@ uint32 Item::I_bark(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM_FROM_PTR(item);
 	ARG_STRING(str);
-	if (!item) return 0;
+	if (id_item == 666) item = World::get_instance()->getItem(1);
+	if (!item) return 0;	// Hack!
 
 	GUIApp *app = p_dynamic_cast<GUIApp*>(GUIApp::get_instance());
 
@@ -1645,4 +1646,13 @@ uint32 Item::I_closeGump(const uint8* args, unsigned int /*argsize*/)
 	item->clearGump();
 
 	return 0;
+}
+
+uint32 Item::I_guardianBark(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM_FROM_PTR(item);
+	ARG_UINT16(num);
+	if (!item) return 0;
+
+	return item->callUsecodeEvent_guardianBark(num);
 }

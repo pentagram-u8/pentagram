@@ -18,8 +18,28 @@
 
 #include "pent_include.h"
 #include "XFormBlend.h"
-#include "BaseSoftRenderSurface.h"
+#include "Texture.h"
 
+const uint8 U8XFormPal[1024] = {
+	0,	0,	0,	0,
+	0,	0,	0,	0,
+	0,	0,	0,	0,
+	0,	0,	0,	0,
+	0,	0,	0,	0,
+	0,	0,	0,	0,
+	0,	0,	0,	0,
+	0,	0,	0,	0,
+	48,	48,	48,	80,	// (green->dark grey)
+	24,	24,	24,	80,	// (black->vdark grey)
+	64,	64,	24,	64,	// (yellow)
+	80,	80,	80,	80,	// (white->grey)
+	180,90,	0,	80,	// (red->orange)
+	0,	0,	252,40,	// (blue)
+	0,	0,	104,40,	// (blue)
+	0,	0,	0,	0
+};
+
+#if 0
 //
 // XFORM Blend Funcs
 //
@@ -153,4 +173,5 @@ const xformBlendFuncType	U8XFormFuncs[256] = {
 	0									// 15
 };
 
+#endif
 

@@ -228,7 +228,8 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 				fast->push_back(item->getObjId());
 				item->doLerp(lerp_factor);
 
-				if (item->getZ() >= zlimit) continue;
+				if (item->getZ() >= zlimit && !item->getShapeInfo()->is_draw())
+					continue;
 				if (paintEditorItems && item->getShapeInfo()->is_editor())
 					continue;
 				display_list->AddItem(item);

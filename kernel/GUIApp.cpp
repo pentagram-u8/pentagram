@@ -58,6 +58,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "resource.h"
 #endif
 
+#include "XFormBlend.h"
+
+#ifdef COLOURLESS_IS_TESTING_MUSIC
+#include "win_midiout.h"
+#include "XMIDI.h"
+#endif
+
 using std::string;
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(GUIApp,CoreApp);
@@ -69,7 +76,7 @@ GUIApp::GUIApp(const int argc, const char * const * const argv)
 	  runGraphicSysInit(false), runSDLInit(false),
 	  frameSkip(false), frameLimit(true), interpolate(true),
 	  animationRate(33), avatarInStasis(false), paintEditorItems(false),
-	  painting(false), dragging(false), timeOffset(0)
+	  painting(false), dragging(false), timeOffset(0), song(0)
 {
 	// Set the console to auto paint, till we have finished initing
 	con.SetAutoPaint(conAutoPaint);
@@ -82,6 +89,10 @@ GUIApp::GUIApp(const int argc, const char * const * const argv)
 	postInit(argc, argv);
 
 	GraphicSysInit();
+
+#ifdef COLOURLESS_IS_TESTING_MUSIC
+	midi_driver = new Windows_MidiOut();
+#endif
 
 	U8Playground();
 
@@ -163,6 +174,7 @@ void GUIApp::run()
 			handleEvent(event);
 		}
 		handleDelayedEvents();
+		SDL_Delay(1);
 
 		// Paint Screen
 		paint();
@@ -183,7 +195,10 @@ void GUIApp::U8Playground()
 		std::exit(-1);
 	}
 	pf->seek(4); // seek past header
-	palettemanager->load(PaletteManager::Pal_Game, *pf, U8XFormFuncs);
+
+	IBufferDataSource xfds(U8XFormPal,1024);
+	palettemanager->load(PaletteManager::Pal_Game, *pf, xfds);
+	delete pf;
 
 	pout << "Load GameData" << std::endl;
 	gamedata = new GameData();
@@ -540,6 +555,7 @@ public:
 		}
 
 		avatar->move(x+dx,y+dy,z+dz);
+		avatar->callUsecodeEvent_justMoved();
 		return true;
 	}
 
@@ -976,6 +992,40 @@ uint32 GUIApp::I_setTimeInGameHours(const uint8* args,
 	sint32	absolute = newhour*27000;
 	get_instance()->timeOffset = absolute-get_instance()->getFrameNum();
 
+	return 0;
+}
+
+uint32 GUIApp::I_playMusic(const uint8* args,
+										unsigned int /*argsize*/)
+{
+	ARG_UINT8(song);
+
+	pout << "Playing song: " << (int)song << std::endl;
+	if (song == GUIApp::get_instance()->song) return 0;
+	GUIApp::get_instance()->song = song;
+
+	Flex *music = GameData::get_instance()->getMusic();
+	IDataSource *ds = music->get_datasource(song);
+	if (!ds)
+	{
+		I_musicStop(0,0);
+		return 0;
+	}
+#ifdef COLOURLESS_IS_TESTING_MUSIC
+	XMIDI x(ds,XMIDI_CONVERT_NOCONVERSION);
+	GUIApp::get_instance()->midi_driver->start_stream(0,x.GetEventList(0),true,true,255);
+#endif
+	delete ds;
+	return 0;
+}
+
+uint32 GUIApp::I_musicStop(const uint8* args,
+										unsigned int /*argsize*/)
+{
+	GUIApp::get_instance()->song = 0;
+#ifdef COLOURLESS_IS_TESTING_MUSIC
+	GUIApp::get_instance()->midi_driver->stop_stream(0);
+#endif
 	return 0;
 }
 

@@ -258,22 +258,22 @@ protected:
 	}
 
 public:
-	IBufferDataSource(const uint8* data, unsigned int len, bool is_text = false) {
+	IBufferDataSource(const void* data, unsigned int len, bool is_text = false) {
 		assert(data != 0 || len == 0);
-		buf = buf_ptr = data;
+		buf = buf_ptr = static_cast<const uint8 *>(data);
 		size = len;
 		free_buffer = false;
 
 		if (is_text) ConvertTextBuffer();
 	}
 
-	virtual void load(const uint8* data, unsigned int len, bool is_text = false) {
+	virtual void load(const void* data, unsigned int len, bool is_text = false) {
 		if (free_buffer && buf) delete [] const_cast<uint8 *>(buf);
 		free_buffer = false;
 		buf = buf_ptr = 0;
 
 		assert(data != 0 || len == 0);
-		buf = buf_ptr = data;
+		buf = buf_ptr = static_cast<const uint8 *>(data);
 		size = len;
 		free_buffer = false;
 

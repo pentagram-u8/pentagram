@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef PALETTEMANAGER_H
 #define PALETTEMANAGER_H
 
-#include "XFormBlend.h"
 #include <vector>
 
 struct Palette;
@@ -38,8 +37,44 @@ public:
 		Pal_Game = 0
 	};
 
-	void load(PalIndex index, IDataSource& ds, const xformBlendFuncType *xff);
+	enum PalTransforms {
+		// Normal untransformed palette
+		Transform_None		= 0,	
+		
+		// O[i] = I[r]*0.375 + I[g]*0.5 + I[b]*0.125;
+		Transform_Greyscale	= 1,	
+
+		// O[r] = 0;
+		Transform_NoRed		= 2,	
+
+		// O[i] = (I[i] + Grey)*0.25 + 0.1875;
+		Transform_RainStorm	= 3,	
+
+		// O[r] = (I[r] + Grey)*0.5 + 0.1875; 
+		// O[g] = I[g]*0.5 + Grey*0.25; 
+		// O[b] = I[b]*0.5;
+		Transform_FireStorm	= 4,
+
+		// O[i] = I[i]*2 -Grey;
+		Transform_Saturate	= 5,	
+
+		// O[g] = I[r]; O[b] = I[g]; O[r] = I[b];
+		Transform_GBR		= 6,	
+
+		// O[b] = I[r]; O[r] = I[g]; O[g] = I[b];
+		Transform_BRG		= 7		
+	};
+
+	void load(PalIndex index, IDataSource& ds, IDataSource &xformds);
 	Palette* getPalette(PalIndex index);
+	void transformPalette(PalIndex index, float matrix[12]);
+
+	// Get a TransformMatrix from a PalTransforms value 
+	static void getTransformMatrix(float matrix[12], PalTransforms trans);
+
+	// Create a custom Transform Matrix from RGBA col32. 
+	// Alpha will set how much of original palette to keep. 0 = keep none
+	static void getTransformMatrix(float matrix[12], uint32 col32);	
 
 private:
 	std::vector<Palette*> palettes;

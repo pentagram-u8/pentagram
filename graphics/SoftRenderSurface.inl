@@ -63,9 +63,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifdef XFORM_SHAPES
 
 #ifdef XFORM_CONDITIONAL
-#define USE_XFORM_FUNC ((XFORM_CONDITIONAL) && xf_func != 0)
+#define USE_XFORM_FUNC ((XFORM_CONDITIONAL) && xform_pal[*linedata])
 #else
-#define USE_XFORM_FUNC (xf_func != 0)
+#define USE_XFORM_FUNC (xform_pal[*linedata])
 #endif
 
 //
@@ -173,8 +173,7 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 
 	
 #ifdef XFORM_SHAPES
-	const xformBlendFuncType	*xform_funcs = s->getPalette()->xform_funcs;
-	xformBlendFuncType			xf_func;
+	const uint32	*xform_pal		= &(s->getPalette()->xform[0]);
 #endif
 
 	sint32 width = frame->width;
@@ -216,10 +215,9 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 						if (NOT_CLIPPED_X) 
 						{
 							#ifdef XFORM_SHAPES
-							xf_func = xform_funcs[*linedata];
 							if (USE_XFORM_FUNC) 
 							{
-								*pixptr = CUSTOM_BLEND(xf_func(*pixptr));
+								*pixptr = CUSTOM_BLEND(BlendPreModulated(xform_pal[*linedata],*pixptr));
 							}
 							else 
 							#endif
@@ -234,12 +232,12 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 				else 
 				{
 					#ifdef XFORM_SHAPES
-					xf_func = xform_funcs[*linedata];
+					pix = xform_pal[*linedata];
 					if (USE_XFORM_FUNC) 
 					{
 						while (pixptr != endrun) 
 						{
-							if (NOT_CLIPPED_X) *pixptr = CUSTOM_BLEND(xf_func(*pixptr));
+							if (NOT_CLIPPED_X) *pixptr = CUSTOM_BLEND(BlendPreModulated(xform_pal[*linedata],*pixptr));
 							pixptr += XNEG(1);
 						}
 					} 
@@ -292,10 +290,9 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 					if (NOT_CLIPPED_X) 
 					{
 						#ifdef XFORM_SHAPES
-						xf_func = xform_funcs[*linedata];
 						if (USE_XFORM_FUNC) 
 						{
-							*pixptr = CUSTOM_BLEND(xf_func(*pixptr));
+							*pixptr = CUSTOM_BLEND(BlendPreModulated(xform_pal[*linedata],*pixptr));
 						}
 						else 
 						#endif

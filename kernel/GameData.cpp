@@ -188,4 +188,14 @@ void GameData::loadU8Data()
 	}
 	gumps->loadGumpage(gumpageds);
 	delete gumpageds;
+
+
+	IDataSource *mf = filesystem->ReadFile("@u8/sound/music.flx");
+	if (!fd) {
+		perr << "Unable to load sound/music.flx. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	music = new Flex(mf);
+	//! we're leaking mf here
+
 }

@@ -213,6 +213,7 @@ public:
 	INTRINSIC(I_fall);
 	INTRINSIC(I_getFamilyOfType);
 	INTRINSIC(I_getEtherealTop);
+	INTRINSIC(I_guardianBark);
 
 protected:
 	const uint32 shape;	// DO NOT modify this directly! Always use setShape()!

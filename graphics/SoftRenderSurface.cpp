@@ -29,6 +29,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Font.h"
 #include "memset_n.h"
 
+#include "XFormBlend.h"
+
 ///////////////////////
 //                   //
 // SoftRenderSurface //
@@ -372,18 +374,6 @@ template<class uintX> void SoftRenderSurface<uintX>::PaintMirrored(Shape* s, uin
 // Desc: Standard shape drawing functions. Invisible, Clips, and conditionally Flips and Xforms
 //
 
-// This does the invisible blending. I've set it to about 40%
-static inline uint32 P_FASTCALL BlendInvisible(uint32 src, uint32 dst)
-{
-	uint32 sr, sg, sb;
-	uint32 dr, dg, db;
-	UNPACK_RGB8(src,sr,sg,sb);
-	UNPACK_RGB8(dst,dr,dg,db);
-	return PACK_RGB16(sr*100+dr*156,
-						sg*100+dg*156,
-						sb*100+db*156);
-}
-
 template<class uintX> void SoftRenderSurface<uintX>::PaintInvisible(Shape* s, uint32 framenum, sint32 x, sint32 y, bool trans, bool mirrored)
 {
 #define FLIP_SHAPES
@@ -408,14 +398,6 @@ template<class uintX> void SoftRenderSurface<uintX>::PaintInvisible(Shape* s, ui
 // Desc: Standard shape drawing functions. Highlights, Clips, and conditionally Flips and Xforms
 //
 
-// This does the red highlight blending. 
-static inline uint32 P_FASTCALL BlendHighlight(uint32 src, uint32 cr, uint32 cg, uint32 cb, uint32 ca, uint32 ica)
-{
-	uint32 sr, sg, sb;
-	UNPACK_RGB8(src,sr,sg,sb);
-	return PACK_RGB16(sr*ica+cr*ca, sg*ica+cg*ca, sb*ica+cb*ca);
-}
-
 template<class uintX> void SoftRenderSurface<uintX>::PaintHighlight(Shape* s, uint32 framenum, sint32 x, sint32 y, bool trans, bool mirrored, uint32 col32)
 {
 #define FLIP_SHAPES
@@ -425,7 +407,7 @@ template<class uintX> void SoftRenderSurface<uintX>::PaintHighlight(Shape* s, ui
 #define BLEND_SHAPES(src,dst) BlendHighlight(src,cr,cg,cb,ca,255-ca)
 
 	uint32 ca = (col32>>24)&0xFF;
-	uint32 cr = (col32>>24)&0xFF;
+	uint32 cr = (col32>>16)&0xFF;
 	uint32 cg = (col32>>8)&0xFF;
 	uint32 cb = (col32>>0)&0xFF;
 

@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Egg.h"
 #include "MonsterEgg.h"
 #include "CurrentMap.h"
+#include "PaletteFaderProcess.h"
 
 // Ultima 8 Intrinsics
 Intrinsic U8Intrinsics[] = {
@@ -152,7 +153,7 @@ Intrinsic U8Intrinsics[] = {
 	0, //U
 	0, //U
 	0, //U
-	UCMachine::I_dummyProcess, //!! process Item::guardianBark(word)
+	Item::I_guardianBark,
 	UCMachine::I_dummyProcess, //!! process Book::read(char*)
 	UCMachine::I_dummyProcess, //!! process Scroll::read(char*)
 	// 0x070
@@ -235,7 +236,7 @@ Intrinsic U8Intrinsics[] = {
 	0, // castGrantPeaceSpell
 	UCMachine::I_numToStr,
 	0, //U
-	0, // playMusic
+	GUIApp::I_playMusic, // playMusic
 	UCMachine::I_getName, //temp
 	0, // igniteChaos
 	CameraProcess::I_setCenterOn,
@@ -272,13 +273,13 @@ Intrinsic U8Intrinsics[] = {
 	GUIApp::I_setTimeInGameHours, // SetTimeInGameHours
 	0, // SetTimeInMinutes
 	0, // SetTimeInSeconds
-	UCMachine::I_dummyProcess, //!! process FadeToBlack()
-	UCMachine::I_dummyProcess, //!! process FadeFromBlack()
+	PaletteFaderProcess::I_fadeToBlack,
+	PaletteFaderProcess::I_fadeFromBlack,
 	// 0x0E0
-	UCMachine::I_dummyProcess, //!! process FadeToPalette(word, word)
-	UCMachine::I_dummyProcess, //!! process LightningBolt()
-	UCMachine::I_dummyProcess, //!! process FadeToWhite()
-	UCMachine::I_dummyProcess, //!! process FadeFromWhite()
+	PaletteFaderProcess::I_fadeToPaletteTransform,
+	PaletteFaderProcess::I_lightningBolt,
+	PaletteFaderProcess::I_fadeToWhite,
+	PaletteFaderProcess::I_fadeFromWhite,
 	0, // playEndgame
 	0, // FeedAvatar
 	0, // AccumulateStrength
@@ -300,7 +301,7 @@ Intrinsic U8Intrinsics[] = {
 	0, // stopSFX
 	0, //U
 	0, //U
-	0, // musicStop
+	GUIApp::I_musicStop, // musicStop
 	0, //U
 	0, //U
 	0, // TonysBalls

@@ -64,7 +64,9 @@ public:
 	INTRINSIC(I_getTimeInMinutes);
 	INTRINSIC(I_getTimeInSeconds);
 	INTRINSIC(I_setTimeInGameHours);
-	
+	INTRINSIC(I_playMusic);
+	INTRINSIC(I_musicStop);
+
 	void setAvatarInStasis(bool stat) { avatarInStasis = stat; }
 	bool isAvatarInStasis() const { return avatarInStasis; }
 	bool isPaintEditorItems() const { return paintEditorItems; }
@@ -128,6 +130,12 @@ private:
 	uint16 dragging_objid;
 
 	sint32 timeOffset;
+
+	uint16		song;
+#ifdef COLOURLESS_IS_TESTING_MUSIC
+	class Windows_MidiOut	*midi_driver;
+#endif
+
 public:
 	enum MouseButton { //!! change this
 		BUTTON_LEFT = 1,

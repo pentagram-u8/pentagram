@@ -1,3 +1,18 @@
+2003-06-20	  Ryan Nunn <colourles@users.sourceforge.net>
+	* filesys/IDataSource.h : IBufferData sources now accepts void *
+	* graphics/Palette*.*, graphics/XFormBlend.*, graphics/Texture.*, 
+	  graphics/*SoftRenderSurface.*, kernel/GUIApp.cpp : Re-working how XForm
+	  works. Added Palette transformations.
+	* kernel/GameData.* : Loads music.flx. This is for a few tests I'm doing.
+	* graphics/PaletteFaderProcess.*, usecode/u8intrinsics.h : Added a bunch of
+	  palette effect functions.
+	* world/Item.*, usecode/u8intrinsics.h : Added I_guardianBark. I_getQuality
+	  only return q IF the family is SF_QUALITY
+	* world/ItemSorter.cpp : Fixing silly problem
+	* gumps/GameMapGump.cpp : Don't roof pop items with DRAW type flag
+	* kernel/Kernel.cpp : ObjID 666 is reserved (it's used in a nasty hack for
+	  guardianBark, and I don't want it used by anything else)
+	
 2003-06-19  Dominik Reichardt <dominus@users.sourceforge.net> 
 	* README: added section of games/versions supported by pentagram, and 'c', 'h' and
 	  shift key
