@@ -1,0 +1,258 @@
+Saving:
+
+
+Object:
+	objid
+
+Item : Object:
+	uint32 shape, frame
+	sint32 x,y,z
+	uint16 flags, q, npcnum, mapnum
+	uint32 extendedflags
+	uint16 gump
+	uint16 gravitypid
+	uint16 glob_next
+
+	reconstruct:
+		Container* parent
+
+	reset:
+		Shape* cachedShape
+		ShapeInfo* cachedShapeInfo
+		Lerped l_prev, l_next
+		sint32 ix, iy, iz
+		uint32 last_setup
+
+Container : Item:
+	reconstruct:
+		std::list<Item*> contents
+
+Actor : Container:
+	uint16 strength, dexterity, intelligence
+	uint16 hitpoints, mana
+	uint16 lastanim, lastdirection
+	uint32 actorflags
+
+MainActor : Actor:
+	bool justTeleported
+	int accumStr, accumDex, accumInt
+
+Egg: Item:
+	bool hatched
+
+MonsterEgg: Egg:
+
+TeleportEgg: Egg:
+
+GlobEgg: Item:
+	uint16 contents
+
+Gump: Object:
+	uint16 owner
+	sint32 x,y
+	Rect dims
+	uint32 flags
+	sint32 layer
+	Shape* shape!!
+	uint32 framenum
+	Gump* focus_child!!
+	GumpNotifyProcess* notifier!!
+	uint32 process_result
+
+	reconstruct:
+		Gump* parent
+		std::list<Gump*> children
+
+ConsoleGump: Gump:
+	ConsoleScrollState scroll_state
+
+DesktopGump: Gump:
+	int fastArea
+
+	reconstruct:
+		std::vector<uint16> fastAreas[2]
+
+	reset:
+		ItemSorter* display_list
+		bool display_dragging
+		uint32 dragging_shape, dragging_frame
+		uint32 dragging_flags
+		sint32 dragging_x, dragging_y, dragging_z
+
+ItemRelativeGump: Gump:
+	reconstruct:
+		sint32 ix, iy
+
+AskGump: ItemRelativeGump:
+	UCList* answers
+
+BarkGump: ItemRelativeGump:
+	std::string barked
+	sint32 counter
+
+ContainerGump: ItemRelativeGump:
+	Rect itemarea (or reconstruct?)
+
+	reset:
+		bool display_dragging
+		uint32 dragging_shape, dragging_frame
+		uint32 dragging_flags
+		sint32 dragging_x, dragging_y
+
+ResizableGump: Gump:
+
+SimpleTextWidget: Gump:
+	std::string text
+	int fontnum
+
+ButtonWidget: Gump:
+	bool down (?)
+
+
+CoreApp:
+	uint32 framenum
+
+	reset:
+		everything else
+
+GUIApp:
+	bool avatarInStasis
+	bool paintEditorItems
+	sint32 timeOffset
+	uint16 song
+
+	reset:
+		everything else
+
+
+Process:
+	uint16 pid
+	bool active
+	bool suspended
+	bool terminated
+	bool terminate_deferred
+	uint16 item_num
+	uint16 type
+	uint32 result
+	std::vector<uint16> waiting
+
+
+ActorAnimProcess: Process:
+	AnimAction* animaction!!
+	uint32 dir
+	uint32 currentindex
+
+AvatarMoverProcess: Process:
+	let's ignore this for now :-)
+
+CameraProcess: Process:
+	sint32 sx, sy, sz
+	sint32 ex, ey, ez
+	sint32 time
+	sint32 elapsed
+	uint16 itemnum
+
+	reset:
+		uint32 last_framenum (I think?)
+
+DelayProcess: Process:
+	int count
+
+EggHatcherProcess: Process:
+	reconstruct:
+		std::vector<uint16> eggs (we could maybe save this instead)
+
+GravityProcess: Process:
+	int gravity
+	int xspeed, yspeed, zspeed
+
+GumpNotifyProcess: Process:
+	Gump* gump!!
+
+
+MissileProcess: Process:
+	too broken right now
+
+PaletteFaderProcess: Process:
+	int priority
+	int counter
+	int max_counter
+	float old_matrix[12]
+	float new_matrix[12]
+
+SpriteProcess: Process:
+	int frame, first_frame, last_frame
+	int repeats
+	int delay, delay_counter
+
+TargetProcess: Process:
+	too broken right now
+	(and shouldn't be running while saving?)
+
+TeleportToEggProcess: Process:
+	int mapnum, teleport_id
+
+	(shouldn't be running while saving?)
+
+UCProcess: Process:
+	uint16 bp
+	Usecode* usecode!!
+	uint16 classid
+	uint16 ip
+	uint32 temp32
+	UCStack stack
+	std::list<std::pair<uint16, int> > freeonterminate;
+	(and probably some loop stuff too)
+
+UCMachine:
+	std::map<uint16, UCList*> listHeap
+	std::map<uint16, std::string> stringHeap
+	UCStack globals
+	uint16 loop_list, uint32 loop_index (should be moved to UCProcess)
+
+	reconstruct:
+		ConvertUsecode* convuse
+		Intrinsic* intrinsics
+
+UCStack:
+	the data
+	SP
+
+UCList:
+	std::vector<uint8> elements
+	unsigned int elementsize
+	unsigned int size
+
+Kernel:
+	std::list<Process*> processes
+	std::list<Process*>::iterator current_process
+
+	reconstruct:
+		idMan *pIDs
+		std::vector<Object*> objects
+		idMan* objIDs
+		idMan* actorIDs
+
+
+World:
+	std::stack<uint16> ethereal
+
+	reconstruct:
+		std::vector<Map*> maps
+		CurrentMap* currentmap
+
+
+CurrentMap:
+	std::list<Item*>** items (only which items; not necessarily per list)
+
+	reconstruct:
+		Map* current_map
+		EggHatcherProcess* egghatcher
+
+Map:
+	std::list<Item*> dynamicitems
+
+	reconstruct:
+		uint32 mapnum
+	reset:
+		std::list<Item*> fixeditems
