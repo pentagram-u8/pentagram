@@ -131,5 +131,5 @@ struct ECode
 #define P_MEMORY_ALLOC_ERRO					(-3)
 
 
-#endif //BASEERRORS_H_INCLUDED
+#endif // ERRORS_H_INCLUDED
 
