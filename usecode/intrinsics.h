@@ -36,7 +36,7 @@ typedef uint32 (*Intrinsic)(const uint8* args, unsigned int argsize);
 
 #define ARG_OBJECT(x) ARG_UINT32(ucptr_##x); \
                       uint16 id_##x = UCMachine::ptrToObject(ucptr_##x); \
-                      Object* x = World::get_instance()->getObject(id_##x);
+                      Object* x = Kernel::get_instance()->getObject(id_##x);
 #define ARG_ITEM(x)   ARG_OBJECT(obj_##x); \
                       Item* x = p_dynamic_cast<Item*>(obj_##x);
 #define ARG_CONTAINER(x) ARG_OBJECT(obj_##x); \

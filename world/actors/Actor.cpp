@@ -46,7 +46,7 @@ Actor::~Actor()
 uint16 Actor::assignObjId()
 {
 	if (objid == 0xFFFF)
-		objid = World::get_instance()->assignActorObjId(this);
+		objid = Kernel::get_instance()->assignActorObjId(this);
 
 	std::list<Item*>::iterator iter;
 	for (iter = contents.begin(); iter != contents.end(); ++iter) {

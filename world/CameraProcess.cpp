@@ -86,21 +86,15 @@ CameraProcess::CameraProcess(uint16 _itemnum) :
 
 	if (itemnum)
 	{
-		Object *obj = World::get_instance()->getObject(itemnum);
-
+		Item *item = World::get_instance()->getItem(itemnum);
+	
 		// Got it
-		if (obj) 
+		if (item)
 		{
-			Item *item = p_dynamic_cast<Item*>(obj);
-
-			// Got it
-			if (item)
-			{
-				item->getLocation(ex,ey,ez);
-				ez += 20;
-			}
-			return;
+			item->getLocation(ex,ey,ez);
+			ez += 20;
 		}
+		return;
 	}
 
 	// No item
@@ -176,22 +170,15 @@ void CameraProcess::GetLerped(sint32 &x, sint32 &y, sint32 &z, sint32 factor)
 
 			if (itemnum)
 			{
-				Object *obj = World::get_instance()->getObject(itemnum);
-
+				Item *item = World::get_instance()->getItem(itemnum);
 				// Got it
-				if (obj) 
+				if (item)
 				{
-					Item *item = p_dynamic_cast<Item*>(obj);
-
-					// Got it
-					if (item)
-					{
-						sx = ex;
-						sy = ey;
-						sz = ez;
-						item->getLocation(ex,ey,ez);
-						ez += 20;
-					}
+					sx = ex;
+					sy = ey;
+					sz = ez;
+					item->getLocation(ex,ey,ez);
+					ez += 20;
 				}
 			}
 		}

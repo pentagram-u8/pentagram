@@ -21,11 +21,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <list>
 #include <map>
+#include <vector>
 
 #include "intrinsics.h"
 
 class Process;
 class idMan;
+class Object;
+class Actor;
 
 class Kernel {
 public:
@@ -39,17 +42,30 @@ public:
 	bool runProcesses(uint32 framenum);
 	Process* getProcess(uint16 pid);
 
+	void setNextProcess(Process *proc);
+
 	// only UCProcesses; objid = 0 means any object, type = 6 means any type
 	uint32 getNumProcesses(uint16 objid, uint16 processtype);
 	void killProcesses(uint16 objid, uint16 processtype);
 
 	void kernelStats();
 
+	uint16 assignObjId(Object* obj);
+	uint16 assignActorObjId(Actor* obj, uint16 id=0xFFFF);
+	void clearObjId(uint16 objid);
+	Object* getObject(uint16 objid) const;
+
 	INTRINSIC(I_getNumProcesses);
 	INTRINSIC(I_resetRef);
 private:
 	std::list<Process*> processes;
 	idMan	*pIDs;
+
+	std::list<Process*>::iterator current_process;
+
+	std::vector<Object*> objects;
+	idMan* objIDs;
+	idMan* actorIDs;
 
 	static Kernel* kernel;
 };

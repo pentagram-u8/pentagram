@@ -95,9 +95,10 @@ GUIApp::GUIApp(const int argc, const char * const * const argv)
 	// Unset the console auto paint, since we have finished initing
 	con.SetAutoPaint(0);
 
-	for (int i = 0; i < 5; ++i) {
+	for (int i = 0; i < NUM_MOUSEBUTTONS+1; ++i) {
 		mouseDownGump[i] = 0;
 		lastMouseDown[i] = 0;
+		mouseState[i] = MBS_HANDLED;
 	}
 }
 
@@ -168,6 +169,7 @@ void GUIApp::run()
 		while (isRunning && SDL_PollEvent(&event)) {
 			handleEvent(event);
 		}
+		handleDelayedEvents();
 
 		// Paint Screen
 		paint();
@@ -399,6 +401,7 @@ void GUIApp::LoadConsoleFont()
 void GUIApp::handleEvent(const SDL_Event& event)
 {
 	extern int userchoice; // major hack... see Item::I_ask
+	uint32 now = SDL_GetTicks();
 
 	switch (event.type) {
 	case SDL_QUIT:
@@ -422,13 +425,20 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		int button = event.button.button;
 		int mx = event.button.x;
 		int my = event.button.y;
-		uint32 now = SDL_GetTicks();
-		assert(button >= 0 && button < 5);
+		assert(button >= 0 && button <= NUM_MOUSEBUTTONS);
 
-		mouseDownGump[button] = desktopGump->OnMouseDown(button, mx, my);
+		mouseDownGump[button] =
+			desktopGump->OnMouseDown(button, mx, my)->getObjId();
+		mouseDownX[button] = mx;
+		mouseDownY[button] = my;
+		mouseState[button] |= MBS_DOWN;
+		mouseState[button] &= ~MBS_HANDLED;
 
 		if (now - lastMouseDown[button] < 200) { //!! constant
-			mouseDownGump[button]->OnMouseDouble(button, mx, my);
+			Gump* gump = getGump(mouseDownGump[button]);
+			if (gump)
+				gump->OnMouseDouble(button, mx, my);
+			mouseState[button] |= MBS_HANDLED;
 		}
 		lastMouseDown[button] = now;
 	}
@@ -439,11 +449,13 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		int button = event.button.button;
 		int mx = event.button.x;
 		int my = event.button.y;
+		assert(button >= 0 && button <= NUM_MOUSEBUTTONS);
 
-		if (mouseDownGump[button]) {
-			mouseDownGump[button]->OnMouseUp(button, mx, my);
-			mouseDownGump[button] = 0;
-		}
+		mouseState[button] &= ~MBS_DOWN;
+
+		Gump* gump = getGump(mouseDownGump[button]);
+		if (gump)
+			gump->OnMouseUp(button, mx, my);
 	}
 	break;
 
@@ -551,9 +563,9 @@ void GUIApp::handleEvent(const SDL_Event& event)
 //			lz = 8;
 
 			if (!avatarInStasis) {
-				Egg* egg = p_dynamic_cast<Egg*>(World::get_instance()->getObject(21183)); // *cough*
+				Egg* egg = p_dynamic_cast<Egg*>(Kernel::get_instance()->getObject(21183)); // *cough*
 				if (!egg || egg->getQuality() != 36)
-					egg = p_dynamic_cast<Egg*>(World::get_instance()->getObject(21184)); // *cough*
+					egg = p_dynamic_cast<Egg*>(Kernel::get_instance()->getObject(21184)); // *cough*
 				sint32 ix, iy, iz;
 				egg->getLocation(ix,iy,iz);
 				CameraProcess::SetCameraProcess(new CameraProcess(ix,iy,iz)); // Center on egg
@@ -564,9 +576,9 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		} break;
 		case SDLK_g: { // trigger 'execution' egg
 			if (!avatarInStasis) {
-				Egg* egg = p_dynamic_cast<Egg*>(World::get_instance()->getObject(21162)); // *cough*
+				Egg* egg = p_dynamic_cast<Egg*>(Kernel::get_instance()->getObject(21162)); // *cough*
 				if (!egg || egg->getQuality() != 4)
-					egg = p_dynamic_cast<Egg*>(World::get_instance()->getObject(21163)); // *cough*
+					egg = p_dynamic_cast<Egg*>(Kernel::get_instance()->getObject(21163)); // *cough*
 				Actor* avatar = World::get_instance()->getNPC(1);
 				sint32 x,y,z;
 				egg->getLocation(x,y,z);
@@ -588,7 +600,29 @@ void GUIApp::handleEvent(const SDL_Event& event)
 	}
 }
 
+void GUIApp::handleDelayedEvents()
+{
+	uint32 now = SDL_GetTicks();
+	for (int button = 0; button <= NUM_MOUSEBUTTONS; ++button) {
+		if (!(mouseState[button] & (MBS_HANDLED | MBS_DOWN)) &&
+			now - lastMouseDown[button] > 200) // !constant
+		{
+			Gump* gump = getGump(mouseDownGump[button]);
+			if (gump)
+				gump->OnMouseClick(button, mouseDownX[button],
+								   mouseDownY[button]);
 
+			mouseDownGump[button] = 0;
+			mouseState[button] &= ~MBS_HANDLED;
+		}
+	}
+
+}
+
+Gump* GUIApp::getGump(uint16 gumpid)
+{
+	return p_dynamic_cast<Gump*>(Kernel::get_instance()->getObject(gumpid));
+}
 
 uint32 GUIApp::I_getCurrentTimerTick(const uint8* /*args*/,
 										unsigned int /*argsize*/)

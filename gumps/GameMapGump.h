@@ -53,27 +53,9 @@ public:
 	virtual bool		GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 										  sint32 lerp_factor = 256);
 
-	// Return Gump that handled event
 	virtual Gump *		OnMouseDown(int button, int mx, int my);
-	virtual void		OnMouseUp(int  button, int mx, int my);
+	virtual void		OnMouseClick(int button, int mx, int my);
 	virtual void		OnMouseDouble(int button, int mx, int my);
-
-protected:
-	// input-related vars/functions
-
-	// maybe change these vars into arrays index by button#
-	uint32 last_left_down, last_right_down;
-	int last_left_state, last_right_state;
-	enum MouseButtonState {
-		MBS_DOWN = 0,
-		MBS_UP = 1,
-		MBS_HANDLED = 2
-	};
-	int last_left_mx, last_left_my;
-	int last_right_mx, last_right_my;
-
-	void handleMouseClick(int button, int mx, int my);
-	void handleMouseDoubleClick(int button, int mx, int my);
 };
 
 #endif //GameMapGUMP_H_INCLUDED

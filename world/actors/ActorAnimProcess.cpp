@@ -104,7 +104,7 @@ bool ActorAnimProcess::run(const uint32 framenum)
 	int framecount = currentindex % animaction->framerepeat;
 
 	AnimFrame& f = animaction->frames[dir][frameindex];
-	Actor *a = p_dynamic_cast<Actor*>(World::get_instance()->getObject(item_num));
+	Actor *a = World::get_instance()->getNPC(item_num);
 
 	if (!a) {
 		// actor gone
@@ -171,7 +171,7 @@ bool ActorAnimProcess::run(const uint32 framenum)
 
 void ActorAnimProcess::terminate()
 {
-	Actor *a = p_dynamic_cast<Actor*>(World::get_instance()->getObject(item_num));
+	Actor *a = World::get_instance()->getNPC(item_num);
 	if (a) {
 		if (animaction) { // if we were really animating...
 			a->clearActorFlag(Actor::ACT_ANIMLOCK);

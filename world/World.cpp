@@ -41,20 +41,12 @@ World::World()
 {
 	assert(world == 0);
 	world = this;
-
-	objects.resize(65536);
-
-	//!CONSTANTS
-	objIDs = new idMan(256,65534);	// Want range of 256 to 65534
-	actorIDs = new idMan(1,255);
 }
 
 
 World::~World()
 {
 	clear();
-	delete objIDs;
-	delete actorIDs;
 
 	world = 0;
 }
@@ -74,17 +66,6 @@ void World::clear()
 
 	if (currentmap)
 		delete currentmap;
-
-	//! Need to check the object delete policy
-	// If everything works out, there shouldn't be any objects left
-	// (maybe NPCs? Ethereals?)
-	for (i = 0; i < objects.size(); ++i) {
-		objects[i] = 0;
-	}
-
-	// Clear all the objIDs
-	objIDs->clearAll();
-	actorIDs->clearAll();
 }
 
 void World::initMaps()
@@ -150,7 +131,7 @@ bool World::switchMap(uint32 newmap)
 	// get rid of any remaining ethereal items
 	while (!etherealEmpty()) {
 		uint16 eth = etherealPop();
-		Object* o = getObject(eth);
+		Object* o = Kernel::get_instance()->getObject(eth);
 		if (o) {
 			o->clearObjId();
 			delete o;
@@ -169,16 +150,17 @@ bool World::switchMap(uint32 newmap)
 
 		maps[oldmap]->unloadFixed();
 
+#if 0
+		// no longer valid now that gumps get objIDs too
+
 		//! constant
 		for (unsigned int i = 256; i < objects.size(); ++i) {
-//			assert(objects[i] == 0);
+			assert(objects[i] == 0);
 			if (objects[i] != 0)
 				objects[i]->clearObjId();
 		}
+#endif
 	}
-
-	// Clear all the objIDs
-	objIDs->clearAll();
 
 	pout << "Loading Fixed items in map " << newmap << std::endl;
 	IDataSource *items = GameData::get_instance()->getFixed()
@@ -291,8 +273,7 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 		actor->setLastAnim(npcds->read1());
 		// TODO: (decode and) read rest of npcdata.dat...
 
-		objects[i] = actor;
-		actorIDs->reserveID(i);
+		Kernel::get_instance()->assignActorObjId(actor, i);
 	}
 
 	delete itemcachflex;
@@ -302,53 +283,9 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 }
 
 
-uint16 World::assignObjId(Object* obj)
-{
-	uint16 new_objid = objIDs->getNewID();
-	// failure???
-	if (new_objid != 0) {
-		assert(objects[new_objid] == 0);
-		objects[new_objid] = obj;
-	}
-	return new_objid;
-}
-
-uint16 World::assignActorObjId(Actor* actor)
-{
-	uint16 new_objid = actorIDs->getNewID();
-	// failure???
-	if (new_objid != 0) {
-		assert(objects[new_objid] == 0);
-		objects[new_objid] = actor;
-	}
-	return new_objid;
-}
-
-void World::clearObjId(uint16 objid)
-{
-	// need to make this assert check only permanent NPCs
-//	assert(objid >= 256); // !constant
-	if (objid >= 256) // !constant
-		objIDs->clearID(objid);
-	else
-		actorIDs->clearID(objid);
-
-	objects[objid] = 0;
-}
-
 void World::worldStats()
 {
-	unsigned int i, npccount = 0, objcount = 0, mapcount = 0;
-
-	//!constants
-	for (i = 1; i < 256; i++) {
-		if (objects[i] != 0)
-			npccount++;
-	}
-	for (i = 256; i < objects.size(); i++) {
-		if (objects[i] != 0)
-			objcount++;
-	}
+	unsigned int i, mapcount = 0;
 
 	for (i = 0; i < maps.size(); i++) {
 		if (maps[i] != 0)
@@ -356,23 +293,16 @@ void World::worldStats()
 	}
 
 	pout << "World memory stats:" << std::endl;
-	pout << "NPCs    : " << npccount << "/255" << std::endl;
-	pout << "Objects : " << objcount << "/65279" << std::endl;
 	pout << "Maps    : " << mapcount << "/256" << std::endl;
-}
-
-Object* World::getObject(uint16 objid) const
-{
-	return objects[objid];
 }
 
 Item* World::getItem(uint16 itemid) const
 {
-	return p_dynamic_cast<Item*>(objects[itemid]);
+	return p_dynamic_cast<Item*>(Kernel::get_instance()->getObject(itemid));
 }
 
 Actor* World::getNPC(uint16 npcid) const
 {
-	return p_dynamic_cast<Actor*>(objects[npcid]);
+	return p_dynamic_cast<Actor*>(Kernel::get_instance()->getObject(npcid));
 }
 

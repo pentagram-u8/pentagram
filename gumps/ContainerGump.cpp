@@ -24,8 +24,10 @@
 #include "Container.h"
 #include "World.h"
 #include "RenderSurface.h"
+#include "GUIApp.h"
 
 //! see comments in Paint()
+//! (these need to be read from gumpage.dat)
 static const int itemx_offset = 20;
 static const int itemy_offset = 18; 
 
@@ -126,8 +128,8 @@ uint16 ContainerGump::TraceObjID(int mx, int my)
 		}
 	}
 
-	// didn't find anything
-	return 0;
+	// didn't find anything, so return self
+	return getObjId();
 }
 
 // get item coords relative to self
@@ -179,4 +181,64 @@ void ContainerGump::Close(bool no_del)
 		o->clearGump(); //!! is this the appropriate place?
 
 	ItemRelativeGump::Close(no_del);
+}
+
+Gump* ContainerGump::OnMouseDown(int button, int mx, int my)
+{
+	// only interested in left clicks
+	if (button == GUIApp::BUTTON_LEFT)
+		return this;
+
+	return 0;
+}
+
+void ContainerGump::OnMouseClick(int button, int mx, int my)
+{
+	if (button == GUIApp::BUTTON_LEFT)
+	{
+		if (GUIApp::get_instance()->isAvatarInStasis()) {
+			pout << "Can't: avatarInStasis" << std::endl; 
+			return;
+		}
+		
+		uint16 objID = TraceObjID(mx, my);
+
+		World *world = World::get_instance();
+		Item *item = world->getItem(objID);
+		if (item) {
+			extern uint16 targetObject; // major hack number 2
+			targetObject = objID;
+
+			pout << "Found item " << objID << " (shape " << item->getShape() << ", " << item->getFrame() << ", q:" << item->getQuality() << ", m:" << item->getMapNum() << ", n:" << item->getNpcNum() << ")" << std::endl;
+			
+			// call the 'look' event
+			item->callUsecodeEvent(0);	// CONSTANT
+		}
+	}
+}
+
+void ContainerGump::OnMouseDouble(int button, int mx, int my)
+{
+	if (button == GUIApp::BUTTON_LEFT)
+	{
+		if (GUIApp::get_instance()->isAvatarInStasis()) {
+			pout << "Can't: avatarInStasis" << std::endl; 
+			return;
+		}
+		
+		uint16 objID = TraceObjID(mx, my);
+
+		if (objID == getObjId()) {
+			objID = owner; // use container when double click on self
+		}
+
+		World *world = World::get_instance();
+		Item *item = world->getItem(objID);
+		if (item) {
+			pout << "Found item " << objID << " (shape " << item->getShape() << ", " << item->getFrame() << ", q:" << item->getQuality() << ", m:" << item->getMapNum() << ", n:" << item->getNpcNum() << ")" << std::endl;
+			
+			// call the 'use' event
+			item->callUsecodeEvent(1);	// CONSTANT
+		}		
+	}
 }

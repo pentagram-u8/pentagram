@@ -1,3 +1,9 @@
+2003-06-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/Kernel.*: moved objects from World to Kernel
+	* lots: adjusted for above change
+	* kernel/GUIApp.*, gumps/*: changed gump mouse input handling again
+	* kernel/Kernel.*: new/signalled processes are run immediately
+
 2003-06-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GUIApp.h: made GUIApp::get_instance() return a GUIApp*
 	* kernel/GUIApp.*, gumps/*: mouse events

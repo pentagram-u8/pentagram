@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Egg.h"
 #include "UCMachine.h"
-#include "World.h"
+#include "Kernel.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(Egg,Item);
 

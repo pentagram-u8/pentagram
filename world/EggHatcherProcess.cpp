@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MainActor.h"
 #include "World.h"
 #include "TeleportEgg.h"
+#include "Kernel.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(EggHatcherProcess,Process);
 
@@ -56,7 +57,8 @@ bool EggHatcherProcess::run(const uint32 framenum)
 
 	for (unsigned int i = 0; i < eggs.size(); i++) {
 		uint16 eggid = eggs[i];
-		Egg* egg=p_dynamic_cast<Egg*>(World::get_instance()->getObject(eggid));
+		Egg* egg = p_dynamic_cast<Egg*>(Kernel::get_instance()->
+										getObject(eggid));
 		if (!egg) continue; // egg gone
 
 		sint32 x,y,z;

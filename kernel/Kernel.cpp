@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "UCMachine.h" // only for usecodeStats.
 #include "World.h" // only for worldStats
+#include "Actor.h"
 
 typedef std::list<Process *>::iterator ProcessIterator;
 
@@ -36,11 +37,22 @@ Kernel::Kernel()
 	assert(kernel == 0);
 	kernel = this;
 	pIDs = new idMan(1,32767);
+	current_process = processes.end();
+
+	objects.resize(65536);
+
+	//!CONSTANTS
+	objIDs = new idMan(256,65534);	// Want range of 256 to 65534
+	actorIDs = new idMan(1,255);
 }
 
 Kernel::~Kernel()
 {
 	kernel = 0;
+
+	delete pIDs;
+	delete objIDs;
+	delete actorIDs;
 }
 
 uint16 Kernel::addProcess(Process* proc)
@@ -53,11 +65,14 @@ uint16 Kernel::addProcess(Process* proc)
 	// Get a pID
 	proc->pid = pIDs->getNewID();
 
+#if 0
 	perr << "[Kernel] Adding process " << proc
 		 << ", pid = " << proc->pid << std::endl;
+#endif
 
-	processes.push_back(proc);
-	proc->active = true;
+//	processes.push_back(proc);
+	setNextProcess(proc);
+//	proc->active = true;
 
 	return proc->pid;
 }
@@ -104,14 +119,14 @@ bool Kernel::runProcesses(uint32 framenum)
 	}
 
 	bool dirty = false;
-	ProcessIterator it = processes.begin();
-	while (it != processes.end()) {
-		Process* p = *it;
+	current_process = processes.begin();
+	while (current_process != processes.end()) {
+		Process* p = *current_process;
 		if (!p->terminated)
 			if (p->run(framenum)) dirty = true;
 		if (p->terminated) {
 			// process is killed, so remove it from the list
-			it = processes.erase(it);
+			current_process = processes.erase(current_process);
 
 			// Clear pid
 			pIDs->clearID(p->pid);
@@ -120,10 +135,36 @@ bool Kernel::runProcesses(uint32 framenum)
 			delete p;
 		}
 		else
-			++it;
+			++current_process;
 	}
 
 	return dirty;
+}
+
+void Kernel::setNextProcess(Process* proc)
+{
+	if (current_process != processes.end() && *current_process == proc) return;
+
+	if (proc->active) {
+		for (ProcessIterator it = processes.begin();
+			 it != processes.end(); ++it) {
+			if (*it == proc) {
+				processes.erase(it);
+				break;
+			}
+		}
+	} else {
+		proc->active = true;
+	}
+
+	if (current_process == processes.end()) {
+		processes.push_front(proc);
+	} else {
+		ProcessIterator t = current_process;
+		++t;
+
+		processes.insert(t, proc);
+	}
 }
 
 Process* Kernel::getProcess(uint16 pid)
@@ -138,8 +179,22 @@ Process* Kernel::getProcess(uint16 pid)
 
 void Kernel::kernelStats()
 {
+	unsigned int npccount = 0, objcount = 0;
+
+	//!constants
+	for (unsigned int i = 1; i < 256; i++) {
+		if (objects[i] != 0)
+			npccount++;
+	}
+	for (unsigned int i = 256; i < objects.size(); i++) {
+		if (objects[i] != 0)
+			objcount++;
+	}
+
 	pout << "Kernel memory stats:" << std::endl;
 	pout << "Processes : " << processes.size() << "/32765" << std::endl;
+	pout << "NPCs    : " << npccount << "/255" << std::endl;
+	pout << "Objects : " << objcount << "/65279" << std::endl;
 }
 
 
@@ -172,6 +227,49 @@ void Kernel::killProcesses(uint16 objid, uint16 processtype)
 			(processtype == 6 || processtype == p->type))
 			p->terminate();
 	}
+}
+
+uint16 Kernel::assignObjId(Object* obj)
+{
+	uint16 new_objid = objIDs->getNewID();
+	// failure???
+	if (new_objid != 0) {
+		assert(objects[new_objid] == 0);
+		objects[new_objid] = obj;
+	}
+	return new_objid;
+}
+
+uint16 Kernel::assignActorObjId(Actor* actor, uint16 new_objid)
+{
+	if (new_objid == 0xFFFF)
+		new_objid = actorIDs->getNewID();
+	else
+		actorIDs->reserveID(new_objid);
+
+	// failure???
+	if (new_objid != 0) {
+		assert(objects[new_objid] == 0);
+		objects[new_objid] = actor;
+	}
+	return new_objid;
+}
+
+void Kernel::clearObjId(uint16 objid)
+{
+	// need to make this assert check only permanent NPCs
+//	assert(objid >= 256); // !constant
+	if (objid >= 256) // !constant
+		objIDs->clearID(objid);
+	else
+		actorIDs->clearID(objid);
+
+	objects[objid] = 0;
+}
+
+Object* Kernel::getObject(uint16 objid) const
+{
+	return objects[objid];
 }
 
 uint32 Kernel::I_getNumProcesses(const uint8* args, unsigned int /*argsize*/)

@@ -55,7 +55,7 @@ bool ItemMoveProcess::run(const uint32 framenum)
 	// without main timing I can't really determine how many 'ticks' 
 	// each frame should last.
 
-	Item *it = p_dynamic_cast<Item*>(World::get_instance()->getObject(item));
+	Item *it = World::get_instance()->getItem(item);
 
 	if (!it) {
 		// item gone

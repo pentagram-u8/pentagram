@@ -173,6 +173,7 @@ public:
 	// Return Gump that handled event
 	virtual Gump *		OnMouseDown(int button, int mx, int my);
 	virtual void		OnMouseUp(int  button, int mx, int my) { }
+	virtual void		OnMouseClick(int button, int mx, int my) { }
 	virtual void		OnMouseDouble(int button, int mx, int my) { }
 
 	// Keyboard input gets sent to the FocusGump. Or if there isn't one, it

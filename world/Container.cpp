@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Container.h"
 
-#include "World.h"
+#include "Kernel.h"
 #include "UCMachine.h"
 
 // p_dynamic_cast stuff

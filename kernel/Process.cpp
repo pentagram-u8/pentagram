@@ -46,6 +46,8 @@ void Process::wakeUp(uint32 result_)
 	result = result_;
 
 	suspended = false;
+
+	Kernel::get_instance()->setNextProcess(this);
 }
 
 void Process::waitFor(uint16 pid_)

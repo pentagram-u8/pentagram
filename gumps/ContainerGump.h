@@ -50,6 +50,10 @@ public:
 	virtual bool GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 								   sint32 lerp_factor = 256);
 
+
+	virtual Gump* OnMouseDown(int button, int mx, int my);
+	virtual void OnMouseClick(int button, int mx, int my);
+	virtual void OnMouseDouble(int button, int mx, int my);
 };
 
 #endif

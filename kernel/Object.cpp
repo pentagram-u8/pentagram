@@ -32,13 +32,13 @@ DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(Object);
 Object::~Object()
 {
 	if (objid != 0xFFFF)
-		World::get_instance()->clearObjId(objid);
+		Kernel::get_instance()->clearObjId(objid);
 }
 
 uint16 Object::assignObjId()
 {
 	if (objid == 0xFFFF)
-		objid = World::get_instance()->assignObjId(this);
+		objid = Kernel::get_instance()->assignObjId(this);
 	return objid;
 }
 
@@ -48,7 +48,7 @@ void Object::clearObjId()
 	Kernel::get_instance()->killProcesses(objid, 6);
 
 	if (objid != 0xFFFF)
-		World::get_instance()->clearObjId(objid);
+		Kernel::get_instance()->clearObjId(objid);
 	objid = 0xFFFF;
 }
 

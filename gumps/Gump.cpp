@@ -34,7 +34,7 @@ Gump::Gump(int _X, int _Y, int Width, int Height, uint16 _Owner,
 	framenum(0), children(), focus_child(0), notifier(0),
 	process_result(0)
 {
-//	assignObjId(); // gumps always get an objid
+	assignObjId(); // gumps always get an objid
 }
 
 Gump::~Gump()
@@ -53,7 +53,6 @@ Gump::~Gump()
 		it = children.erase(it);
 		delete g;
 	}
-
 }
 
 void Gump::InitGump()
@@ -345,7 +344,7 @@ uint16 Gump::TraceObjID(int mx, int my)
 	}
 
 	if (!objid || objid == 65535)
-		objid = getObjId();	// Ha, yeah right, we don't assign objId's yet :-)
+		objid = getObjId();
 
 	return objid;
 }

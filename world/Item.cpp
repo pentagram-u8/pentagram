@@ -1508,7 +1508,7 @@ uint32 Item::I_openGump(const uint8* args, unsigned int /*argsize*/)
 								   Gump::FLAG_ITEM_DEPENDANT);
 	item->gump->InitGump();
 	GUIApp *app = GUIApp::get_instance();
-	app->getDesktopGump()->FindGump<GameMapGump>()->AddChild(item->gump);
+	app->getDesktopGump()->AddChild(item->gump);
 	item->flags |= FLG_GUMP_OPEN;
 
 	return 0;

@@ -60,8 +60,6 @@ class CurrentMap;
 class IDataSource;
 class Actor;
 class Flex;
-class Object;
-class idMan;
 class Item;
 class Actor;
 
@@ -84,11 +82,6 @@ public:
 
 	bool switchMap(uint32 newmap);
 
-	uint16 assignObjId(Object* obj);
-	uint16 assignActorObjId(Actor* obj);
-	void clearObjId(uint16 objid);
-
-	Object* getObject(uint16 objid) const;
 	Item* getItem(uint16 itemid) const;
 	Actor* getNPC(uint16 npcid) const;
 
@@ -107,10 +100,6 @@ private:
 	CurrentMap* currentmap;
 
 	std::stack<uint16> ethereal;
-
-	std::vector<Object*> objects;
-	idMan* objIDs;
-	idMan* actorIDs;
 };
 
 #endif

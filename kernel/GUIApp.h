@@ -35,6 +35,8 @@ class PaletteManager;
 class GameData;
 class World;
 
+const int NUM_MOUSEBUTTONS = 5;
+
 // extremely simplified stub-ish Application class
 class GUIApp : public CoreApp
 {
@@ -64,6 +66,7 @@ class GUIApp : public CoreApp
 
 		GameMapGump *getGameMapMapGump() { return gameMapGump; }
 		Gump *getDesktopGump() { return desktopGump; }
+		Gump* getGump(uint16 gumpid);
 
 	private:
 		
@@ -81,6 +84,8 @@ class GUIApp : public CoreApp
 		// called depending upon command line arguments
 		void GraphicSysInit(); // starts the graphics subsystem
 		void LoadConsoleFont(); // loads the console font
+
+		void handleDelayedEvents();
 
 		// Various dependancy flags
 		bool runGraphicSysInit;
@@ -105,8 +110,19 @@ class GUIApp : public CoreApp
 		static void	conAutoPaint(void);
 
 		// mouse input state
-		Gump* mouseDownGump[5]; // how many mouse buttons are there?
-		uint32 lastMouseDown[5];
+		uint16 mouseDownGump[NUM_MOUSEBUTTONS+1];
+		uint32 lastMouseDown[NUM_MOUSEBUTTONS+1];
+		int mouseDownX[NUM_MOUSEBUTTONS+1], mouseDownY[NUM_MOUSEBUTTONS+1];
+		int mouseState[NUM_MOUSEBUTTONS+1];
+		enum MouseButtonState {
+			MBS_DOWN = 0x1,
+			MBS_HANDLED = 0x2
+		};
+public:
+		enum MouseButton { //!! change this
+			BUTTON_LEFT = 1,
+			BUTTON_RIGHT = 2
+		};
 };
 
 #endif

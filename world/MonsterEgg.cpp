@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "MonsterEgg.h"
+#include "Kernel.h"
 #include "World.h"
 #include "UCMachine.h"
 #include "Actor.h"
