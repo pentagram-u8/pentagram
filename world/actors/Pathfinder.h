@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <vector>
 #include <queue>
+#include <list>
 #include "Animation.h"
 
 class Actor;
@@ -73,8 +74,10 @@ protected:
 	Actor* actor;
 	sint32 targetx, targety, targetz;
 	Item* targetitem;
-	std::vector<PathfindingState> visited;
+	std::list<PathfindingState> visited;
 	std::priority_queue<PathNode*,std::vector<PathNode*>,PathNodeCmp> nodes;
+
+	std::list<PathNode*> nodelist;
 
 	bool alreadyVisited(sint32 x, sint32 y, sint32 z);
 	void expandNode(PathNode* node);

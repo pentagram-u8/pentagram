@@ -85,7 +85,14 @@ Pathfinder::Pathfinder()
 
 Pathfinder::~Pathfinder()
 {
-	//TODO: clean up nodes
+	pout << "~Pathfinder: " << nodelist.size() << " nodes, "
+		 << visited.size() << " visited states. " << std::endl;
+
+	// clean up nodes
+	std::list<PathNode*>::iterator iter;
+	for (iter = nodelist.begin(); iter != nodelist.end(); ++iter)
+		delete *iter;
+	nodelist.clear();
 }
 
 void Pathfinder::init(Actor* actor_, PathfindingState* state)
@@ -125,15 +132,13 @@ bool Pathfinder::canReach()
 
 bool Pathfinder::alreadyVisited(sint32 x, sint32 y, sint32 z)
 {
-	//! this needs optimization
+	//! this may need optimization
 
-	for (unsigned int i = 0; i < visited.size(); ++i)
-	{
-		if (visited[i].checkPoint(x,y,z,8,0))
-		{
+	std::list<PathfindingState>::iterator iter;
+
+	for (iter = visited.begin(); iter != visited.end(); ++iter)
+		if (iter->checkPoint(x,y,z,8,0))
 			return true;
-		}
-	}
 
 	return false;
 }
@@ -189,6 +194,7 @@ void Pathfinder::expandNode(PathNode* node)
 
 		if (ok) {
 			PathNode* newnode = new PathNode();
+			nodelist.push_back(newnode);
 			newnode->state = state;
 			newnode->parent = node;
 
@@ -224,8 +230,6 @@ void Pathfinder::expandNode(PathNode* node)
 
 bool Pathfinder::pathfind(std::vector<PathfindingAction>& path)
 {
-	//!! FIXME: memory leaks
-
 	pout << "Actor " << actor->getObjId();
 
 	if (targetitem) {
@@ -241,7 +245,7 @@ bool Pathfinder::pathfind(std::vector<PathfindingAction>& path)
 	startnode->state = start;
 	startnode->cost = 0;
 	startnode->parent = 0;
-
+	nodelist.push_back(startnode);
 	nodes.push(startnode);
 
 	unsigned int expandednodes = 0;
