@@ -808,12 +808,6 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 					{
 						if (A_min==B_max || A_max==B_min) touch = true;
 
-						// HACK: if not moving in x/y dir, allow overlap of 1
-						// necessary for ascending platforms in Shrine of
-						// Ancient Ones (u8 map 54), around (12991,7111,8)
-						if (i != 2 && (A_min+1==B_max || A_max==B_min+1))
-							touch = true;
-
 						u_0[i] = 0;
 						u_1[i] = 0x4000;
 					}

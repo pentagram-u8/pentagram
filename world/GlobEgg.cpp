@@ -51,17 +51,19 @@ void GlobEgg::enterFastArea()
 		if (!glob) return;
 
 		std::vector<GlobItem>::iterator iter;
-		for (iter = glob->contents.begin(); iter != glob->contents.end(); ++iter)
+		for (iter = glob->contents.begin(); iter!=glob->contents.end(); ++iter)
 		{
 			GlobItem& globitem = *iter;
-			Item* item = ItemFactory::createItem(globitem.shape, globitem.frame, 
-								0, FLG_DISPOSABLE|FLG_FAST_ONLY, 0, 0, 0);
+			Item* item = ItemFactory::createItem(globitem.shape,globitem.frame,
+												 0,
+												 FLG_DISPOSABLE|FLG_FAST_ONLY,
+												 0, 0, 0);
 
 			item->assignObjId();
 
 			// calculate object's world position
-			sint32 itemx = (x & ~0x1FF) + 2 * globitem.x;
-			sint32 itemy = (y & ~0x1FF) + 2 * globitem.y;
+			sint32 itemx = (x & ~0x1FF) + 2 * globitem.x + 1;
+			sint32 itemy = (y & ~0x1FF) + 2 * globitem.y + 1;
 			sint32 itemz = z + globitem.z;
 
 			item->move(itemx, itemy, itemz);
