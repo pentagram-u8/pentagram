@@ -332,7 +332,7 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 				item2->setExtFlag(Item::EXT_HIGHLIGHT);
 			}
 #else
-			item->receiveHit(1, 0, 0, 0);
+			item->receiveHit(1, 0, 1024, 0);
 #endif
 		}
 	}
@@ -398,6 +398,9 @@ bool GameMapGump::DraggingItem(Item* item, int mx, int my)
 	display_dragging = true;
 	// determine target location and set dragging_x/y/z
 
+	sint32 dxd,dyd,dzd;
+	item->getFootpadWorld(dxd,dyd,dzd);
+
 	dragging_shape = item->getShape();
 	dragging_frame = item->getFrame();
 	dragging_flags = item->getFlags();
@@ -406,12 +409,48 @@ bool GameMapGump::DraggingItem(Item* item, int mx, int my)
 	sint32 cx, cy, cz;
 	GetCameraLocation(cx, cy, cz);
 
-	//!! hack...
-	dragging_z = 128;
-	dragging_x = 2*mx + 4*(my+128) + cx - 4*cz;
-	dragging_y = -2*mx + 4*(my+128) + cy - 4*cz;
+	ItemSorter::HitFace face;
+	ObjId trace = display_list->Trace(mx,my,&face);
+	
+	Item* hit = World::get_instance()->getItem(trace);
+	if (!hit) // strange...
+		return false;
 
-	//TODO: determine if item can be dropped here
+	sint32 hx,hy,hz;
+	sint32 hxd,hyd,hzd;
+	hit->getLocation(hx,hy,hz);
+	hit->getFootpadWorld(hxd,hyd,hzd);
+
+	// mx = (dragging_x-cx-dragging_y+cy)/4
+	// my = (dragging_x-cx+dragging_y-cy)/8 - dragging_z + cz
+
+	// the below expressions solve these eqns for (dragging_x,dragging_y),
+	// (dragging_y, dragging_z) and (dragging_x, dragging_z), resp.
+
+	// TODO: it might be nice to move these to a separate function sometime
+	// (one or three?)
+	switch (face) {
+	case ItemSorter::Z_FACE:
+		dragging_z = hz+hzd;
+		dragging_x = 2*mx + 4*(my+dragging_z) + cx - 4*cz;
+		dragging_y = -2*mx + 4*(my+dragging_z) + cy - 4*cz;
+		break;
+	case ItemSorter::X_FACE:
+		dragging_x = hx+dxd;
+		dragging_y = -4*mx + dragging_x - cx + cy;
+		dragging_z = -my + dragging_x/4 - mx/2 - cx/4 + cz;
+		break;
+	case ItemSorter::Y_FACE:
+		dragging_y = hy+dyd;
+		dragging_x = 4*mx + dragging_y + cx - cy;
+		dragging_z = -my + mx/2 + dragging_y/4 - cy/4 + cz;
+		break;
+	}
+
+	// determine if item can be dropped here
+	if (!item->canExistAt(dragging_x, dragging_y, dragging_z))
+		return false;
+
 
 	return true;
 }
@@ -438,68 +477,10 @@ void GameMapGump::DropItem(Item* item, int mx, int my)
 	CurrentMap *map = world->getCurrentMap();
 	display_dragging = false;
 	Actor * avatar = world->getMainActor();
-	bool movetoavatar = false;
 
 	// add item to world 
 
 	//!! TODO: throw item if too far, etc...
-
-	// hackety-hack
-	sint32 cx, cy, cz;
-	GetCameraLocation(cx, cy, cz);
-
-	sint32 top[3];
-	sint32 bottom[3];
-	sint32 dims[3];
-	
-	top[2] = 128;
-	top[0] = 2*mx + 4*(my + top[2]) + cx - 4*cz;
-	top[1] = -2*mx + 4*(my + top[2]) + cy - 4*cz;
-	
-	bottom[2] = 0;
-	bottom[0] = 2*mx + 4*(my + bottom[2]) + cx - 4*cz;
-	bottom[1] = -2*mx + 4*(my + bottom[2]) + cy - 4*cz;
-
-	item->getFootpadWorld(dims[0], dims[1], dims[2]);
-
-	dragging_z = avatar->getZ() + 8;
-
-	std::list<CurrentMap::SweepItem> collisions;
-	std::list<CurrentMap::SweepItem>::iterator it;
-	if (map->sweepTest(top, bottom, dims, 0, false, &collisions))
-	{
-		for (it=collisions.begin(); it != collisions.end(); ++it)
-		{
-			it->GetInterpolatedCoords(dims, top, bottom);
-			
-			sint32 iz = dims[2] + 8;
-			if (iz > dragging_z)
-			{
-				dragging_z = iz;
-				Item * targetitem = world->getItem(it->item);
-				if (targetitem && targetitem == avatar)
-					movetoavatar = true;
-				else
-					movetoavatar = false;
-			}
-		}
-	}
-
-	if (movetoavatar)
-	{
-		Container* backpack = p_dynamic_cast<Container*>(
-			World::get_instance()->getItem(avatar->getEquip(7))); // constant!
-
-		if (backpack)
-		{
-			item->moveToContainer(backpack);
-			// TODO: find a better place
-			item->setGumpLocation(0, 0);
-			return;
-		}
-	}
-	dragging_x = 2*mx + 4*(my + dragging_z) + cx - 4*cz;
-	dragging_y = -2*mx + 4*(my + dragging_z) + cy - 4*cz;
 
 	perr << "Dropping item at (" << dragging_x << "," << dragging_y 
 		 << "," << dragging_z << ")" << std::endl;

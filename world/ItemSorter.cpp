@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -1049,6 +1049,8 @@ uint16 ItemSorter::Trace(sint32 x, sint32 y, HitFace* face)
 
 	for (;it != end;++it)
 	{
+		if (!it->item_num) continue;
+
 		// Doesn't Overlap
 		if (x < it->sx || x >= it->sx2 || y < it->sy || y >= it->sy2) continue;
 
