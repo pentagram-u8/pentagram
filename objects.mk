@@ -67,6 +67,7 @@ GRAPHICS = \
 	graphics/TypeFlags.o
 
 MISC = \
+	misc/istring.o \
 	misc/Console.o \
 	misc/Q_strcasecmp.o \
 	misc/idMan.o \
