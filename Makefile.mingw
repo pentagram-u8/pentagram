@@ -40,27 +40,28 @@ CONF_OBJS=conf/Configuration.o conf/XMLNode.o conf/XMLTree.o
 
 KERNEL_OBJS=kernel/Kernel.o kernel/Application.o kernel/Object.o kernel/Process.o kernel/GameData.o kernel/idMan.o
 
-USECODE_OBJS=usecode/UCList.o usecode/UCMachine.o usecode/UCProcess.o usecode/UsecodeFlex.o usecode/Usecode.o
+USECODE_OBJS=usecode/UCList.o usecode/UCMachine.o usecode/UCProcess.o usecode/Usecode.o usecode/UsecodeFlex.o
 
-WORLD_OBJS=world/Container.o world/CurrentMap.o world/Egg.o world/Glob.o world/GlobEgg.o world/Item.o world/ItemFactory.o \
-	world/ItemSorter.o world/Map.o world/World.o world/ItemMoveProcess.o world/CameraProcess.o
+WORLD_OBJS=world/CameraProcess.o world/Container.o world/CurrentMap.o world/Egg.o world/Glob.o world/GlobEgg.o \
+	world/Item.o world/ItemFactory.o world/ItemMoveProcess.o world/ItemSorter.o world/Map.o world/World.o
 
-ACTORS_OBJS=world/actors/Actor.o world/actors/MainActor.o world/actors/ActorAnimProcess.o
+ACTORS_OBJS=world/actors/Actor.o world/actors/ActorAnimProcess.o world/actors/MainActor.o
 
-TOOLS_OBJS=tools/compile/CompileProcess.o tools/disasm/DisasmProcess.o
+TOOLS_OBJS=tools/compile/Compile.o tools/compile/CompileProcess.o tools/disasm/DisasmProcess.o tools/compile/llcLexer.o
 
 all: pentagram.exe
 
 amf2mod.exe : tools/amf2mod/amf2mod.o
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
-FOLD_OBJCS= tools/fold/CallNodes.o tools/fold/Folder.o tools/fold/FuncNodes.o tools/fold/IfNode.o \
-	tools/fold/OperatorNodes.o tools/fold/Type.o tools/fold/VarNodes.o
+FOLD_OBJCS=filesys/FileSystem.o misc/Args.o misc/Console.o misc/Q_strcasecmp.o tools/fold/CallNodes.o tools/fold/Folder.o \
+	tools/fold/FuncNodes.o tools/fold/IfNode.o tools/fold/OperatorNodes.o tools/fold/Type.o \
+	tools/fold/VarNodes.o
 
-disasm.exe : tools/disasm/Disasm.o $(FOLD_OBJCS) $(FILESYS_OBJS) $(MISC_OBJS)
+disasm.exe : tools/disasm/Disasm.o $(FOLD_OBJCS)
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
-fold.exe : tools/fold/Fold.o $(FOLD_OBJCS) $(FILESYS_OBJS) $(MISC_OBJS)
+fold.exe : tools/fold/Fold.o $(FOLD_OBJCS)
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
 shapeconv.exe : tools/shapeconv/ShapeConv.o $(CONVERT_OBJS) $(FILESYS_OBJS) $(MISC_OBJS)
