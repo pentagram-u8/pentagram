@@ -18,7 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/fmopl.cpp,v 1.1 2003/07/03 18:56:46 colourles Exp $
+ * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/fmopl.cpp,v 1.2 2003/07/05 19:01:32 colourles Exp $
  *
  * LGPL licensed version of MAMEs fmopl (V0.37a modified) by
  * Tatsuyuki Satoh. Included from LGPL'ed AdPlug.
@@ -35,6 +35,8 @@
 #include <cmath>
 #include <iostream>
 #include "fmopl.h"
+
+namespace Pentagram {
 
 using std::malloc;
 using std::free;
@@ -1201,4 +1203,7 @@ int OPLTimerOver(FM_OPL *OPL,int c)
 	return OPL->status>>7;
 }
 
+};
+
 #endif //USE_FMOPL_MIDI
+

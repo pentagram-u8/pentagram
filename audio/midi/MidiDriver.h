@@ -26,6 +26,14 @@ class IDataSource;
 class	MidiDriver
 {
 public:
+	//! Midi driver desription
+	struct MidiDriverDesc {
+		MidiDriverDesc(const char * const n, MidiDriver * (*c)()) :
+			name(n), createInstance(c) { }
+		const char * const name;			//!< Name of the driver (for config, dialogs)
+		MidiDriver * (*createInstance)();	//!< Pointer to a function to create an instance
+	};
+
 	//! Initialize the driver
 	//! \arg sample_rate The sample rate for software synths
 	//! \arg stereo Specifies if a software synth must produce stero sound

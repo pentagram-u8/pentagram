@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 #include "Q_strcasecmp.h"
 
+namespace Pentagram {
 
 int Q_strncasecmp (const char *s1, const char *s2, uint32 length)
 {
@@ -54,3 +55,5 @@ int Q_strcasecmp (const char *s1, const char *s2)
 {
 	return Q_strncasecmp (s1, s2, 99999);
 }
+
+};

@@ -39,7 +39,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define MMNOMIXER       // No Mixer support
 #define MMNOTIMER       // No Timer support
 #define MMNOJOY         // No Joystick support
-#define MMNOMCI         // No MCI support
 #define MMNOMMIO        // No Multimedia file I/O support
 
 #include <windows.h>
@@ -53,7 +52,14 @@ class WindowsMidiDriver : public LowLevelMidiDriver
 #ifdef WIN32_USE_DUAL_MIDIDRIVERS
 	HMIDIOUT			midi_port2;
 #endif
-public:	
+
+	const static MidiDriverDesc	desc;
+	static MidiDriver *createInstance() {
+		return new WindowsMidiDriver();
+	}
+
+public:
+	const static MidiDriverDesc* getDesc() { return &desc; }
 	WindowsMidiDriver();
 
 protected:

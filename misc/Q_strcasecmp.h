@@ -23,8 +23,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef Q_STRCASECMP_H
 #define	Q_STRCASECMP_H
 
+namespace Pentagram {
+
 int Q_strcasecmp (const char *s1, const char *s2);
 int Q_strncasecmp (const char *s1, const char *s2, uint32 length);
+
+};
 
 #endif //Q_STRCASECMP_H
 

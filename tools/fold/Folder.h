@@ -36,7 +36,7 @@ class Unit
 		void print_extern_unk(Console &o, const uint32 isize) const;
 		void print_unk(Console &o, const uint32 isize) const;
 		void print_asm(Console &o) const;
-		void print_bin(OBufferDataSource &o) const;
+		void print_bin(ODequeDataSource &o) const;
 		
 		std::string name; // the cannonical name of the unit
 		
@@ -84,7 +84,7 @@ class Folder
 
 		void print_unk(Console &o) const;
 		void print_asm(Console &o) const;
-		void print_bin(OBufferDataSource &o) const;
+		void print_bin(ODequeDataSource &o) const;
 
 		inline void NewUnit()
 		{

@@ -18,7 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/FMOplMidiDriver.cpp,v 1.1 2003/07/03 18:56:46 colourles Exp $
+ * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/FMOplMidiDriver.cpp,v 1.2 2003/07/05 19:01:32 colourles Exp $
  */
 
 #include "pent_include.h"
@@ -33,33 +33,20 @@
 
 #include <cmath>
 
+const MidiDriver::MidiDriverDesc FMOplMidiDriver::desc = 
+		MidiDriver::MidiDriverDesc ("FMOplMidiDriver", createInstance);
+
 //#define LUCAS_MODE
 
 // We fudge with the velocity. If it's 16, it complies to AIL 2.0 Specs
 #define VEL_FUDGE 2
-
-/* retrieve a string representation of an error code */
-const char *FMOplMidiDriver::get_error_name(int error_code)
-{
-	static const char *const midi_errors[] = {
-		"No error",
-		"Cannot connect",
-		"Streaming not available",
-		"Device not available",
-		"Driver already open"
-	};
-
-	if ((uint32) error_code >= sizeof(midi_errors))
-		return "Unknown Error";
-	return midi_errors[error_code];
-}
 
 /* This is the internal emulated MIDI driver using the included OPL2 sound chip 
  * FM instrument definitions below borrowed from the Allegro library by
  * Phil Hassey, <philhassey@hotmail.com> (www.imitationpickles.org)
  */
 
-static unsigned char midi_fm_instruments_table[128][11] = {
+const unsigned char FMOplMidiDriver::midi_fm_instruments_table[128][11] = {
 	/* This set of GM instrument patches was provided by Jorrit Rouwe...
 	 */
 	{0x21, 0x21, 0x8f, 0x0c, 0xf2, 0xf2, 0x45, 0x76, 0x00, 0x00, 0x08},	/* Acoustic Grand */
@@ -194,7 +181,7 @@ static unsigned char midi_fm_instruments_table[128][11] = {
 };
 
 /* logarithmic relationship between midi and FM volumes */
-static int my_midi_fm_vol_table[128] = {
+const int FMOplMidiDriver::my_midi_fm_vol_table[128] = {
 	0, 11, 16, 19, 22, 25, 27, 29, 32, 33, 35, 37, 39, 40, 42, 43,
 	45, 46, 48, 49, 50, 51, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62,
 	64, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 75, 76, 77,
@@ -207,21 +194,16 @@ static int my_midi_fm_vol_table[128] = {
 };
 
 /* lucas move volume table */
-static int lucas_fm_vol_table[128];
+int FMOplMidiDriver::lucas_fm_vol_table[128];
 
-static unsigned char adlib_opadd[] = { 0x00, 0x01, 0x02, 0x08, 0x09, 0x0A, 0x10, 0x11, 0x12 };
+const unsigned char FMOplMidiDriver::adlib_opadd[9] = { 
+	0x00, 0x01, 0x02, 0x08, 0x09, 0x0A, 0x10, 0x11, 0x12 
+};
 
 //
 // Constructor
 //
 FMOplMidiDriver::FMOplMidiDriver() : LowLevelMidiDriver()
-{
-}
-
-//
-// Destructor
-//
-FMOplMidiDriver::~FMOplMidiDriver()
 {
 }
 
@@ -274,7 +256,7 @@ int FMOplMidiDriver::open()
 	}
 	delete timbres;
 
-	_opl = OPLCreate(OPL_TYPE_YM3812, 3579545, sample_rate);
+	opl = Pentagram::OPLCreate(OPL_TYPE_YM3812, 3579545, sample_rate);
 
 	return 0;
 }
@@ -285,10 +267,10 @@ int FMOplMidiDriver::open()
 void FMOplMidiDriver::close()
 {
 	// Destroy the Opl device
-	if (_opl) OPLDestroy(_opl);
+	if (opl) Pentagram::OPLDestroy(opl);
 
 	// Reset the relevant members
-	_opl = 0;
+	opl = 0;
 
 	// Clear the xmidibanks
 	for (int i = 0; i < 128; i++) {
@@ -303,12 +285,12 @@ void FMOplMidiDriver::close()
 //
 void FMOplMidiDriver::lowLevelProduceSamples(sint16 *samples, uint32 num_samples)
 {
-	if (!_opl)
+	if (!opl)
 		memset(samples, 0, num_samples * sizeof(sint16) * stereo?2:1);
 	else if (stereo)
-		YM3812UpdateOne_Stereo(_opl, samples, num_samples);
+		Pentagram::YM3812UpdateOne_Stereo(opl, samples, num_samples);
 	else
-		YM3812UpdateOne_Mono(_opl, samples, num_samples);
+		Pentagram::YM3812UpdateOne_Mono(opl, samples, num_samples);
 }
 
 int FMOplMidiDriver::midi_calc_volume(int channel, int vel)
@@ -562,8 +544,8 @@ void FMOplMidiDriver::send(uint32 b)
 
 void FMOplMidiDriver::midi_write_adlib(unsigned int reg, unsigned char val)
 {
-	OPLWrite(_opl, 0, reg);
-	OPLWrite(_opl, 1, val);
+	Pentagram::OPLWrite(opl, 0, reg);
+	Pentagram::OPLWrite(opl, 1, val);
 	adlib_data[reg] = val;
 }
 
@@ -656,15 +638,17 @@ void FMOplMidiDriver::midi_fm_volume(int voice, int volume)
 									 (unsigned char)((63 - volume) | (adlib_data[0x43 + adlib_opadd[voice]] & 0xc0)));
 }
 
-static int fnums[] =
-	{ 0x16b, 0x181, 0x198, 0x1b0, 0x1ca, 0x1e5, 0x202, 0x220, 0x241, 0x263, 0x287, 0x2ae };
+const int FMOplMidiDriver::fnums[12] =
+	{	0x16b, 0x181, 0x198, 0x1b0, 
+		0x1ca, 0x1e5, 0x202, 0x220, 
+		0x241, 0x263, 0x287, 0x2ae };
 
 /* These tables 'borrowed' from Timidity tables.c
 
    Copyright (C) 1999-2001 Masanao Izumo <mo@goice.co.jp>
    Copyright (C) 1995 Tuukka Toivonen <tt@cgs.fi>
 */
-double bend_fine[256] = {
+const double FMOplMidiDriver::bend_fine[256] = {
 	1.0, 1.0002256593050698, 1.0004513695322617, 1.0006771306930664,
 	1.0009029427989777, 1.0011288058614922, 1.0013547198921082, 1.0015806849023274,
 	1.0018067009036538, 1.002032767907594, 1.0022588859256572, 1.0024850549693551,
@@ -731,7 +715,7 @@ double bend_fine[256] = {
 	1.0585073227945128, 1.0587461848213857, 1.058985100749698, 1.0592240705916123
 };
 
-double bend_coarse[128] = {
+const double FMOplMidiDriver::bend_coarse[128] = {
 	1.0, 1.0594630943592953, 1.122462048309373, 1.189207115002721,
 	1.2599210498948732, 1.3348398541700344, 1.4142135623730951, 1.4983070768766815,
 	1.5874010519681994, 1.681792830507429, 1.7817974362806785, 1.8877486253633868,

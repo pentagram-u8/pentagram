@@ -57,27 +57,22 @@ MusicProcess::~MusicProcess()
 
 void MusicProcess::playMusic(int track)
 {
-	if (!driver) return;
-	else if (track < 0 || track > 128)
+	if (track < 0 || track > 128)
 	{
 		playMusic(0);
 		return;
 	}
 
 	// No current track if not playing
-	if (!driver->isSequencePlaying(0))
+	if (driver && !driver->isSequencePlaying(0))
 		wanted_track = current_track = 0;
-
-	// No current track if not playing
-	if (!driver->isSequencePlaying(0))
-		current_track = 0;
 
 	// It's already playing and we are not transitioning
 	if (current_track == track && state == MUSIC_NORMAL)
 	{
 		return;
 	}
-	else if (current_track == 0 || state != MUSIC_NORMAL)
+	else if (current_track == 0 || state != MUSIC_NORMAL || !driver)
 	{
 		wanted_track = track;
 		state = MUSIC_PLAY_WANTED;
@@ -134,18 +129,20 @@ void MusicProcess::playMusic(int track)
 
 bool MusicProcess::run(const uint32)
 {
-	if (!driver) return false;
-
 	switch (state)
 	{
 	case MUSIC_NORMAL:
 		// If it's stopped playing, we aren't playing anything anymore
-		if (!driver->isSequencePlaying(0)) 
+		if (driver && !driver->isSequencePlaying(0)) 
 			current_track = wanted_track = 0;
 		break;
 
 	case MUSIC_TRANSITION:
-		if (!driver->isSequencePlaying(1))
+		if (!driver)
+		{
+			state = MUSIC_PLAY_WANTED;
+		}
+		else if (!driver->isSequencePlaying(1))
 		{
 			state = MUSIC_PLAY_WANTED;
 			driver->pauseSequence(0);
@@ -155,12 +152,22 @@ bool MusicProcess::run(const uint32)
 
 	case MUSIC_PLAY_WANTED:
 		{
-			driver->finishSequence(0);
-			driver->finishSequence(1);
+			if (driver)
+			{
+				driver->finishSequence(0);
+				driver->finishSequence(1);
+			}
 		
 			XMidiFile *xmidi = 0;
-			int xmidi_index = driver->isFMSynth()?wanted_track+128:wanted_track;
-			if (wanted_track) xmidi = GameData::get_instance()->getMusic()->getXMidi(xmidi_index);
+			if (wanted_track) 
+			{
+				int xmidi_index = wanted_track;
+				if (driver && driver->isFMSynth()) 
+					xmidi_index += 128;
+
+				xmidi = GameData::get_instance()->getMusic()->getXMidi(xmidi_index);
+			}
+
 			if (xmidi)
 			{
 				XMidiEventList *list = xmidi->GetEventList(0);
@@ -170,7 +177,8 @@ bool MusicProcess::run(const uint32)
 					if (!event) song_branches[wanted_track] = 0;
 				}
 
-				driver->startSequence(0, list, true, 255, song_branches[wanted_track]);
+				if (driver)
+					driver->startSequence(0, list, true, 255, song_branches[wanted_track]);
 				current_track = wanted_track;
 				song_branches[wanted_track]++;
 			}

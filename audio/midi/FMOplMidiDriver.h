@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef FMOPLDRV_H
-#define FMOPLDRV_H
+#ifndef FMOPLMIDIDRIVER_H_INCLUDED
+#define FMOPLMIDIDRIVER_H_INCLUDED
 
 #ifdef USE_FMOPL_MIDI
 
@@ -31,41 +31,16 @@ class IDataSource;
 //
 class FMOplMidiDriver : public LowLevelMidiDriver
 {
+	const static MidiDriverDesc	desc;
+	static MidiDriver *createInstance() {
+		return new FMOplMidiDriver();
+	}
 
 public:
+	const static MidiDriverDesc* getDesc() { return &desc; }
+	FMOplMidiDriver();
 
-	/* error codes returned by open.
-	 * can be converted to a string with get_error_name()
-	 */
-	enum {
-		MERR_CANNOT_CONNECT = 1,
-		MERR_STREAMING_NOT_AVAILABLE = 2,
-		MERR_DEVICE_NOT_AVAILABLE = 3,
-		MERR_ALREADY_OPEN = 4,
-	};
-
-	// Modulation Registers
-	#define INDEX_AVEKM_M	0
-	#define INDEX_KSLTL_M	2
-	#define INDEX_AD_M		4
-	#define INDEX_SR_M		6
-	#define INDEX_WAVE_M	8
-
-	// Carrier Registers
-	#define INDEX_AVEKM_C	1
-	#define INDEX_KSLTL_C	3
-	#define INDEX_AD_C		5
-	#define INDEX_SR_C		7
-	#define INDEX_WAVE_C	9
-
-	#define INDEX_FB_C		10
-	#define INDEX_PERC		11
-
-	#define CHP_CHAN		0
-	#define CHP_NOTE		1
-	#define CHP_COUNTER		2
-	#define CHP_VEL			3
-
+protected:
 	// LowLevelMidiDriver implementation
 	virtual int			open();
 	virtual void		close();
@@ -76,13 +51,16 @@ public:
 	virtual bool		isSampleProducer() { return true; }
 	virtual bool		isFMSynth() { return true; }
 
-	/* retrieve a string representation of an error code */
-	static const char *get_error_name(int error_code);
-
-	FMOplMidiDriver();
-	virtual ~FMOplMidiDriver();
-
 private:
+
+	static const unsigned char midi_fm_instruments_table[128][11];
+	static const int my_midi_fm_vol_table[128];
+	static int lucas_fm_vol_table[128];
+	static const unsigned char adlib_opadd[9];
+	static const int fnums[12];
+	static const double bend_fine[256];
+	static const double bend_coarse[128];
+
 	struct midi_channel {
 		int inum;
 		unsigned char ins[12];
@@ -118,7 +96,7 @@ private:
 	xmidibank		*xmidibanks[128];
 	void			loadAdlibTimbres(IDataSource *ds);
 
-	FM_OPL *_opl;
+	Pentagram::FM_OPL *opl;
 	midi_channel ch[16];
 };
 

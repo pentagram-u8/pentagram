@@ -95,7 +95,7 @@ void DCCallPostfixNode::print_asm(Console &o) const
 	}
 }
 
-void DCCallPostfixNode::print_bin(OBufferDataSource &o) const
+void DCCallPostfixNode::print_bin(ODequeDataSource &o) const
 {
 	switch(ptype)
 	{
@@ -176,7 +176,7 @@ void DCCallMutatorNode::print_asm(Console &o) const
 	}
 }
 
-void DCCallMutatorNode::print_bin(OBufferDataSource &o) const
+void DCCallMutatorNode::print_bin(ODequeDataSource &o) const
 {
 	switch(mtype)
 	{
@@ -408,7 +408,7 @@ void DCCallNode::print_asm(Console &o) const
 	}
 }
 
-void DCCallNode::print_bin(OBufferDataSource &o) const
+void DCCallNode::print_bin(ODequeDataSource &o) const
 {
 	print_linenum_bin(o);
 	switch(ctype)

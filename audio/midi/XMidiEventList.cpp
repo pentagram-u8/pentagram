@@ -44,7 +44,7 @@ int XMidiEventList::write (ODataSource *dest)
 	
 	if (!events)
 	{
-		perr << "No midi data in loaded." << endl;
+		perr << "No midi data loaded." << endl;
 		return 0;
 	}
 

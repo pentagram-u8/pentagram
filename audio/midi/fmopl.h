@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/fmopl.h,v 1.1 2003/07/03 18:56:46 colourles Exp $
+ * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/fmopl.h,v 1.2 2003/07/05 19:01:32 colourles Exp $
  *
  * LGPL licensed version of MAMEs fmopl (V0.37a modified) by
  * Tatsuyuki Satoh. Included from LGPL'ed AdPlug.
@@ -28,11 +28,35 @@
 
 #ifdef USE_FMOPL_MIDI
 
+namespace Pentagram {
+
 typedef void (*OPL_TIMERHANDLER)(int channel,double interval_Sec);
 typedef void (*OPL_IRQHANDLER)(int param,int irq);
 typedef void (*OPL_UPDATEHANDLER)(int param,int min_interval_us);
 
 #define OPL_TYPE_WAVESEL   0x01  /* waveform select    */
+
+// Modulation Registers
+#define INDEX_AVEKM_M	0
+#define INDEX_KSLTL_M	2
+#define INDEX_AD_M		4
+#define INDEX_SR_M		6
+#define INDEX_WAVE_M	8
+
+// Carrier Registers
+#define INDEX_AVEKM_C	1
+#define INDEX_KSLTL_C	3
+#define INDEX_AD_C		5
+#define INDEX_SR_C		7
+#define INDEX_WAVE_C	9
+
+#define INDEX_FB_C		10
+#define INDEX_PERC		11
+
+#define CHP_CHAN		0
+#define CHP_NOTE		1
+#define CHP_COUNTER		2
+#define CHP_VEL			3
 
 /* Saving is necessary for member of the 'R' mark for suspend/resume */
 /* ---------- OPL one of slot  ---------- */
@@ -168,6 +192,7 @@ void OPLWriteReg(FM_OPL *OPL, int r, int v);
 void YM3812UpdateOne_Mono(FM_OPL *OPL, sint16 *buffer, int length);
 void YM3812UpdateOne_Stereo(FM_OPL *OPL, sint16 *buffer, int length);
 
+};
 
 #endif //USE_FMOPL_MIDI
 

@@ -53,7 +53,7 @@ class DCCallPostfixNode : public Node
 		void print() const {};
 		void print_unk(Console &o, const uint32 isize) const;
 		void print_asm(Console &o) const;
-		void print_bin(OBufferDataSource &o) const;
+		void print_bin(ODequeDataSource &o) const;
 
 		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
 
@@ -95,7 +95,7 @@ class DCCallMutatorNode : public BinNode
 
 		void print_unk(Console &o, const uint32 isize) const;
 		void print_asm(Console &o) const;
-		void print_bin(OBufferDataSource &o) const;
+		void print_bin(ODequeDataSource &o) const;
 
 		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
 
@@ -135,7 +135,7 @@ class DCCallNode : public ColNode
 		void print_extern_unk(Console &o, const uint32 isize) const;
 		void print_unk(Console &o, const uint32 isize) const;
 		void print_asm(Console &o) const;
-		void print_bin(OBufferDataSource &o) const;
+		void print_bin(ODequeDataSource &o) const;
 
 		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
 

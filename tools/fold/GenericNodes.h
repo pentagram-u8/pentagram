@@ -107,13 +107,13 @@ class Node
 		// outputs nothing interesting...
 		virtual void print_mac(Console &o) const;
 		// outputs raw binary code
-		virtual void print_bin(OBufferDataSource &o) const=0;
+		virtual void print_bin(ODequeDataSource &o) const=0;
 		
 		inline void fold_linenum(std::deque<Node *> &nodes);
 		
 		inline void print_linenum_unk(Console &o, const uint32 isize) const;
 		inline void print_linenum_asm(Console &o) const;
-		inline void print_linenum_bin(OBufferDataSource &o) const;
+		inline void print_linenum_bin(ODequeDataSource &o) const;
 
 		//enum NodeType { IS_ERROR=0, IS_CALL, IS_FUNC
 		//const NodeType isA() const=0;
@@ -162,7 +162,7 @@ inline void Node::print_linenum_asm(Console &o) const
 	}
 }
 
-inline void Node::print_linenum_bin(OBufferDataSource &o) const
+inline void Node::print_linenum_bin(ODequeDataSource &o) const
 {
 	if(linenum!=0) linenum->print_bin(o);
 }

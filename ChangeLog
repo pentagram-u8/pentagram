@@ -1,3 +1,25 @@
+2003-07-05  Ryan Nunn <colourles@users.sourceforge.net>
+	* filesys/ODataSource.h, tools/fold/*.* : Deque'ing the
+	  OBufferDataSource. Changed it to ODequeDataSource. Added a real 
+	  OBufferDataSource and also added OAutoBufferDataSource.
+	* audio/midi/TimidityMidiDriver.*, audio/midi/timidity/*.* : Adding 
+	  Timidity so we can use it natively. You will need USE_TIMIDITY_MIDI
+	  defined.
+	* kernel/GUIApp.*, audio/midi/*MidiDriver.* : Added some Midi driver
+	  selection code. You can now select which driver you want with the
+	  config key "config/audio/midi_driver". Just enter the class name.
+	  If you set that to "disabled" midi with be disabled. Also, SDL_Mixer
+	  is no longer required for FMOpl.
+	* audio/MusicProcess.cpp : Making it so it remembers which song it 
+	  should be playing if there is no midi driver.
+	* audio/midi/XMidiEventList.cpp, audio/midi/XMidiFile.cpp : Fixing up
+	  a few problems.
+	* filesys/SavegameWriter.* : Now uses a OAutoBufferData source instead 
+	  of ODequeDataSource
+	* misc/Q_strcasecmp.*, audio/midi/fmopl.* : Just being paranoid with 
+	  namespaces.
+	* usecode/UCMachine.cpp : Getting rid of a stupid warning
+	
 2003-07-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCMachine.cpp: some error checks
 

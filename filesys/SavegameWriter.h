@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define SAVEGAMEWRITER_H
 
 class ODataSource;
-class OBufferDataSource;
+class OAutoBufferDataSource;
 
 class SavegameWriter
 {
@@ -41,12 +41,12 @@ public:
 	//! \param name name of the file
 	//! \param data the data
 	//! \param size (in bytes) of data
-	virtual void writeFile(const char* name, uint8* data, uint32 size);
+	virtual void writeFile(const char* name, const uint8* data, uint32 size);
 
 	//! write a file to the savegame from an OBufferDataSource
 	//! \param name name of the file
 	//! \param buf the OBufferDataSource to save
-	void writeFile(const char* name, OBufferDataSource* buf);
+	void writeFile(const char* name, OAutoBufferDataSource* buf);
 
 	//! write the written number of files into the savegame header,
 	//! if necessary

@@ -67,7 +67,7 @@ void FuncMutatorNode::print_asm(Console &o) const
 	}
 }
 
-void FuncMutatorNode::print_bin(OBufferDataSource &o) const
+void FuncMutatorNode::print_bin(ODequeDataSource &o) const
 {
 	assert(rtype().type()==Type::T_INVALID);
 	Node::print_linenum_bin(o);
@@ -136,7 +136,7 @@ void DCFuncNode::print_asm(Console &o) const
 	}
 }
 
-void DCFuncNode::print_bin(OBufferDataSource &o) const
+void DCFuncNode::print_bin(ODequeDataSource &o) const
 {
 	for(std::deque<Node *>::const_iterator i=funcnodes.begin(); i!=funcnodes.end(); ++i)
 	{

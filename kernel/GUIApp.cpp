@@ -75,6 +75,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MusicProcess.h"
 #include "MusicFlex.h"
 
+#include "Q_strcasecmp.h"
+
 #include "MidiDriver.h"
 #ifdef WIN32
 #include "WindowsMidiDriver.h"
@@ -83,8 +85,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CoreAudioMidiDriver.h"
 #endif
 #ifdef USE_FMOPL_MIDI
-#include <SDL_mixer.h>
 #include "FMOplMidiDriver.h"
+#endif
+#ifdef USE_TIMIDITY_MIDI
+#include "TimidityMidiDriver.h"
 #endif
 
 using std::string;
@@ -172,81 +176,132 @@ void GUIApp::startup()
 	con.SetAutoPaint(0);
 }
 
-#ifdef USE_FMOPL_MIDI
-void SDL_mixer_music_hook(void *udata, Uint8 *stream, int len)
-{
-	GUIApp *app = GUIApp::get_instance();
-	MidiDriver *drv = static_cast<MidiDriver*>(udata);
-	drv->produceSamples(reinterpret_cast<sint16*>(stream), len);
-}
-#endif
 
-#define TRY_MIDI_DRIVER(MidiDriver,rate,stereo) \
-		if (!midi_driver) {	\
-			pout << "Trying `" << #MidiDriver << "'" << std::endl; \
-			midi_driver = new MidiDriver; \
-			if (midi_driver->initMidiDriver(rate,stereo)) { \
-				delete midi_driver; \
-				midi_driver = 0; \
-			} \
-			else \
-				pout << "Using `" << #MidiDriver << "'" << std::endl; \
-		}
+void GUIApp::sdlAudioCallback(void *userdata, Uint8 *stream, int len)
+{
+	GUIApp *app = app->get_instance();
+	MidiDriver *drv = app->getMidiDriver();
+	if (drv && drv->isSampleProducer())
+		drv->produceSamples(reinterpret_cast<sint16*>(stream), len);
+}
 
 void GUIApp::init_midi()
 {
-	int sample_rate = 22050;	// Good enough
-	int channels = 1;			// Only mono for now
-	Uint16 format = AUDIO_S16SYS;
+	MidiDriver * new_driver = 0;
+	SDL_AudioSpec desired, obtained;
+
+	desired.format = AUDIO_S16SYS;
+	desired.freq = 22050;
+	desired.channels = 2;
+	desired.samples = 4096;
+	desired.callback = sdlAudioCallback;
+	desired.userdata = 0;
 
 	pout << "Initializing Midi" << std::endl;
 
+	std::vector<const MidiDriver::MidiDriverDesc*>	midi_drivers;
+
 #if 1
-	// Only the FMOPL Midi driver 'requires' SDL_mixer, and I don't 
-	// want to force it on everyone at the moment.
-#ifdef USE_FMOPL_MIDI
+	// Open SDL Audio (even though we may not need it)
 	SDL_InitSubSystem(SDL_INIT_AUDIO);
-	Mix_OpenAudio(sample_rate, format, channels, 4096);
-	Mix_QuerySpec(&sample_rate, &format, &channels);
-#endif
-	// Create the driver
-#ifdef WIN32
-	TRY_MIDI_DRIVER(WindowsMidiDriver,sample_rate,channels==2);
-#endif
+	SDL_OpenAudio(&desired, &obtained);
+
+	// Now, add the drivers in order of priority.
+	// Do OS Native drivers first, then then Timidity, then FMOpl
+
 #ifdef MACOSX
-	TRY_MIDI_DRIVER(CoreAudioMidiDriver,sample_rate,channels==2);
+	midi_drivers.push_back(CoreAudioMidiDriver::getDesc());
+#endif
+#ifdef WIN32
+	midi_drivers.push_back(WindowsMidiDriver::getDesc());
+#endif
+#ifdef USE_TIMIDITY_MIDI
+	midi_drivers.push_back(TimidityMidiDriver::getDesc());
 #endif
 #ifdef USE_FMOPL_MIDI
-	TRY_MIDI_DRIVER(FMOplMidiDriver,sample_rate,channels==2);
+	midi_drivers.push_back(FMOplMidiDriver::getDesc());
 #endif
 
+	// First thing attempt to find the Midi driver as specified in the config
+	std::string desired_driver;
+	config->value("config/audio/midi_driver", desired_driver, "default");
+	const char * drv = desired_driver.c_str();
+
+	// Has the config file specified disabled midi?
+	if (Pentagram::Q_strcasecmp(drv, "disabled"))
+	{
+		std::vector<const MidiDriver::MidiDriverDesc*>::iterator it;
+
+		// Ok, it hasn't so search for the driver
+		for (it = midi_drivers.begin(); it < midi_drivers.end(); it++) {
+
+			// Found it (case insensitive)
+			if (!Pentagram::Q_strcasecmp(drv, (*it)->name)) {
+
+				pout << "Trying config specified Midi driver: `" << (*it)->name << "'" << std::endl;
+
+				new_driver = (*it)->createInstance();
+				if (new_driver) {
+
+					if (new_driver->initMidiDriver(obtained.freq,obtained.channels==2)) {
+						delete new_driver;
+						new_driver = 0; 
+					} 
+				}
+			}
+		}
+
+		// Uh oh, we didn't manage to load a driver! 
+		// Search for the first working one
+		if (!new_driver) for (it = midi_drivers.begin(); it < midi_drivers.end(); it++) {
+
+			pout << "Trying: `" << (*it)->name << "'" << std::endl;
+
+			new_driver = (*it)->createInstance();
+			if (new_driver) {
+
+				// Got it
+				if (!new_driver->initMidiDriver(obtained.freq,obtained.channels==2)) 
+					break;
+
+				// Oh well, try the next one
+				delete new_driver;
+				new_driver = 0; 
+			}
+		}
+	}
+	else
+	{
+		new_driver = 0; // silence :-)
+	}
+
 #else
-	midi_driver = 0; // silence :-)
+	new_driver = 0; // silence :-)
 #endif
 
 	// If the driver is a 'sample' producer we need to hook it to SDL_mixer
-	if (midi_driver)
+	if (new_driver)
 	{
-#ifdef USE_FMOPL_MIDI
-		if (midi_driver->isSampleProducer())
-			Mix_HookMusic(SDL_mixer_music_hook, midi_driver);
-#endif
+		new_driver->setGlobalVolume(midi_volume);
 
-		midi_driver->setGlobalVolume(midi_volume);
+		SDL_LockAudio();
+		midi_driver = new_driver;
+		SDL_UnlockAudio();
 	}
 
+	// GO GO GO!
+	SDL_PauseAudio(0);
+
 	// Create the Music Process
-	Process *mp = new MusicProcess(midi_driver);
+	Process *mp = new MusicProcess(new_driver);
 	kernel->addProcess(mp);
 
 }
 
 void GUIApp::deinit_midi()
 {
-#ifdef USE_FMOPL_MIDI
-	Mix_HookMusic(0,0);
-	Mix_CloseAudio();
-#endif
+
+	SDL_CloseAudio();
 
 	if (midi_driver)  midi_driver->destroyMidiDriver();
 
@@ -1194,7 +1249,8 @@ bool GUIApp::saveGame(std::string filename)
 	sgw->start(9); // 8 files + version
 	sgw->writeVersion(1);
 
-	OBufferDataSource buf;
+	// We'll make it 2KB intially
+	OAutoBufferDataSource buf(2048);
 
 	kernel->save(&buf);
 	sgw->writeFile("KERNEL", &buf);

@@ -314,8 +314,8 @@ const char XMidiFile::mt32asgs[256] = {
 //GammaTable<unsigned char> XMidiFile::VolumeCurve(128);
 
 // Constructor
-XMidiFile::XMidiFile(IDataSource *source, int pconvert) : events(NULL),
-						convert_type(pconvert),
+XMidiFile::XMidiFile(IDataSource *source, int pconvert) : num_tracks(0),
+						events(NULL), convert_type(pconvert),
 						do_reverb(false), do_chorus(false)
 {
 	std::memset(bank127,0,sizeof(bank127));

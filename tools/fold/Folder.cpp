@@ -73,7 +73,7 @@ void Unit::print_asm(Console &o) const
 	}
 }
 
-void Unit::print_bin(OBufferDataSource &o) const
+void Unit::print_bin(ODequeDataSource &o) const
 {
 	for(std::deque<DCFuncNode *>::const_iterator i=functions.begin(); i!=functions.end(); ++i)
 	{
@@ -98,7 +98,7 @@ const bool DCUnit::fold(Node *n)
 	{
 		print_asm(con);
 		print_unk(con, 0);
-		OBufferDataSource o;
+		ODequeDataSource o;
 		//print_bin(o);
 		print_extern_unk(con, 0);
 
@@ -254,7 +254,7 @@ void Folder::print_asm(Console &o) const
 	}
 }
 
-void Folder::print_bin(OBufferDataSource &o) const
+void Folder::print_bin(ODequeDataSource &o) const
 {
 	for(std::deque<DCUnit *>::const_iterator i=units.begin(); i!=units.end(); ++i)
 	{

@@ -2118,6 +2118,7 @@ uint16 UCMachine::ptrToObject(uint32 ptr)
 	else if (segment == SEG_GLOBAL)
 	{
 		CANT_HAPPEN_MSG("pointers to globals not implemented yet");
+		return 0;
 	}
 	else
 	{

@@ -63,7 +63,7 @@ class FuncMutatorNode : public Node
 
 		void print_unk(Console &o, const uint32 isize) const;
 		void print_asm(Console &o) const;
-		void print_bin(OBufferDataSource &o) const;
+		void print_bin(ODequeDataSource &o) const;
 		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
 
 	protected:
@@ -87,7 +87,7 @@ class DCFuncNode : public ColNode
 
 		void print_unk(Console &o, const uint32 isize) const;
 		void print_asm(Console &o) const;
-		void print_bin(OBufferDataSource &o) const;
+		void print_bin(ODequeDataSource &o) const;
 		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
 		void addEnd(Node *n) { assert(n!=0); funcnodes.push_back(n); };
 		

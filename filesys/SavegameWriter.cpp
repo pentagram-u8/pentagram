@@ -43,7 +43,7 @@ void SavegameWriter::start(uint32 count)
 	writtencount = count;
 }
 
-void SavegameWriter::writeFile(const char* name, uint8* data, uint32 size)
+void SavegameWriter::writeFile(const char* name, const uint8* data, uint32 size)
 {
 	uint32 namelen = strlen(name);
 	ds->write4(namelen);
@@ -55,19 +55,9 @@ void SavegameWriter::writeFile(const char* name, uint8* data, uint32 size)
 	realcount++;
 }
 
-void SavegameWriter::writeFile(const char* name, OBufferDataSource* ods)
+void SavegameWriter::writeFile(const char* name, OAutoBufferDataSource* ods)
 {
-	const std::deque<char>& buf = ods->buf();
-	unsigned int size = buf.size();
-
-	uint8* tmp = new uint8[size];
-	for (unsigned int i = 0; i < size; ++i) {
-		tmp[i] = buf[i];
-	}
-
-	writeFile(name, tmp, size);
-
-	delete[] tmp;
+	writeFile(name, ods->getBuf(), ods->getSize());
 }
 
 	//! write the written number of files into the savegame header

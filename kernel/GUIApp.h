@@ -167,6 +167,7 @@ private:
 	int			midi_volume;
 	void		init_midi();
 	void		deinit_midi();
+	static void	sdlAudioCallback(void *userdata, Uint8 *stream, int len);
 
 public:
 	enum MouseButton { //!! change this

@@ -16,42 +16,42 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef COREAUDIOMIDIDRIVER_H_INCLUDED
-#define COREAUDIOMIDIDRIVER_H_INCLUDED
+#ifndef TIMIDITYMIDIDRIVER_H_INCLUDED
+#define TIMIDITYMIDIDRIVER_H_INCLUDED
 
-#ifdef MACOSX
+#ifdef USE_TIMIDITY_MIDI
 
 #include "LowLevelMidiDriver.h"
 
-#include <AudioUnit/AudioUnit.h>
-
-class CoreAudioMidiDriver : public LowLevelMidiDriver
+//
+// The Internal OplDriver. Only slightly modified for exult
+//
+class TimidityMidiDriver : public LowLevelMidiDriver
 {
-	AudioUnit au_MusicDevice;
-	AudioUnit au_output;
+
+	bool	used_inst[128];
+	bool	used_drums[128];
 
 	const static MidiDriverDesc	desc;
-	static MidiDriver *CoreAudioMidiDriver() {
-		return new FMOplMidiDriver();
+	static MidiDriver *createInstance() {
+		return new TimidityMidiDriver();
 	}
 
 public:
-	const static MidiDriverDesc* getDesc() { return &desc; }
-
-	CoreAudioMidiDriver();
+	static const MidiDriverDesc* getDesc() { return &desc; }
+	TimidityMidiDriver();
 
 protected:
-	static MidiDriver *createInstance() {
-		return new CoreAudioMidiDriver();
-	}
-
+	// LowLevelMidiDriver implementation
 	virtual int			open();
 	virtual void		close();
-	virtual void		send(uint32 message);
-	virtual void		increaseThreadPriority();
-	virtual void		yield();
+	virtual void		send(uint32 b);
+	virtual void		lowLevelProduceSamples(sint16 *samples, uint32 num_samples);
+
+	// MidiDriver overloads
+	virtual bool		isSampleProducer() { return true; }
 };
 
-#endif //MACOSX
+#endif //USE_TIMIDITY_MIDI
 
-#endif //COREAUDIOMIDIDRIVER_H_INCLUDED
+#endif //TIMIDITYMIDIDRIVER_H_INCLUDED
