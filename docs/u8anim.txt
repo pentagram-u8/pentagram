@@ -36,8 +36,8 @@ byte 2: change in Z coordinate
 byte 3: SFX# to play (zero for none?)
 byte 4: movement in 'main' direction. (* 4 units)
 byte 5:	bit 0: unknown (only used when moving backwards?)
-	bit 1: on-the-ground?
-	bit 2-4: unknown (attack-range?)
+	bit 1: on the ground
+	bit 2-4: attack range
 	bit 5: flipped
 	bits 6-7: unused
 
