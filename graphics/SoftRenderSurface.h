@@ -121,6 +121,9 @@ public:
 	// Blit a region from a Texture (Alpha == 0 -> skipped)
 	virtual void Blit(Texture *, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy);
 
+	// Blit a region from a Texture with a Colour blend (AlphaTex == 0 -> skipped. AlphaCol32 -> Blend Factors)
+	virtual void FadedBlit(Texture *, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy, uint32 col32);
+
 	// Blit a region from a Texture with 3D Alpha Blending Function (Alpha == 0 -> skipped)
 	// TODO: virtual void AlphaBlit(Texture *, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy);
 

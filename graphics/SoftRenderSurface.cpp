@@ -330,6 +330,98 @@ template<class uintX> void SoftRenderSurface<uintX>::Blit(Texture *tex, sint32 s
 
 
 //
+// void SoftRenderSurface::FadedBlit(Texture *, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy, uint32 col32)
+//
+// Desc: Blit a region from a Texture (Alpha == 0 -> skipped)
+//
+template<class uintX> void SoftRenderSurface<uintX>::FadedBlit(Texture *tex, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy, uint32 col32)
+{
+	// Clamp or wrap or return?
+	if (w > static_cast<sint32>(tex->width)) 
+		return;
+	
+	// Clamp or wrap or return?
+	if (h > static_cast<sint32>(tex->height)) 
+		return;
+	
+	// Clip to window
+	int px = dx, py = dy;
+	clip_window.IntersectOther(dx,dy,w,h);
+	if (!w || !h) return;
+
+	// Adjust source x and y
+	if (px != dx) sx += dx - px;
+	if (py != dy) sy += dy - py;
+
+	uint8 *pixel = pixels + dy * pitch + dx * sizeof(uintX);
+	uint8 *line_end = pixel + w*sizeof(uintX);
+	uint8 *end = pixel + h * pitch;
+	int diff = pitch - w*sizeof(uintX);
+	
+	uint32 a = TEX32_A(col32);
+	uint32 ia = 256-a;
+	uint32 r = (TEX32_R(col32)*a);
+	uint32 g = (TEX32_G(col32)*a);
+	uint32 b = (TEX32_B(col32)*a);
+
+	if (tex->format == TEX_FMT_STANDARD)
+	{
+		uint32 *texel = tex->buffer + (sy * tex->width + sx);
+		int tex_diff = tex->width - w;
+
+		while (pixel != end)
+		{
+			while (pixel != line_end)
+			{
+				if (*texel & TEX32_A_MASK)
+				{
+					*(reinterpret_cast<uintX*>(pixel)) = static_cast<uintX>(
+						PACK_RGB8( 
+							(TEX32_R(*texel)*ia+r)>>8, 
+							(TEX32_G(*texel)*ia+g)>>8, 
+							(TEX32_B(*texel)*ia+b)>>8 
+							)
+						);
+				}
+				pixel+=sizeof(uintX);
+				texel++;
+			}
+
+			line_end += pitch;
+			pixel += diff;
+			texel+= tex_diff;
+		}
+	}
+	else if (tex->format == TEX_FMT_NATIVE)
+	{
+		uintX *texel = reinterpret_cast<uintX*>(tex->buffer) + (sy * tex->width + sx);
+		int tex_diff = tex->width - w;
+
+		while (pixel != end)
+		{
+			while (pixel != line_end)
+			{
+				// Uh, not supported right now
+				//if (*texel & RenderSurface::a_mask)
+				{
+					*(reinterpret_cast<uintX*>(pixel)) = BlendHighlight(*texel, r, g, b, 1, ia);
+				}
+				pixel+=sizeof(uintX);
+				texel++;
+			}
+
+			line_end += pitch;
+			pixel += diff;
+			texel+= tex_diff;
+		}
+	}
+
+}
+
+
+
+
+//
 // SoftRenderSurface::PrintCharFixed(Texture *, char character, int x, int y)
 //
 // Desc: Draw a fixed width character from a Texture buffer
