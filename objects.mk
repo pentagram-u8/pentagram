@@ -5,6 +5,7 @@ KERNEL = \
 	kernel/idMan.o \
 	kernel/GameDetector.o
 
+
 KERNEL2 = \
 	kernel/GameData.o \
 	kernel/Object.o
@@ -111,3 +112,13 @@ ACTORS = \
 	world/actors/MainActor.o
 
 
+AUDIO = \
+	audio/MusicFlex.o \
+	audio/MusicProcess.o
+
+MIDI = \
+	audio/midi/XMidiEventList.o \
+	audio/midi/XMidiFile.o \
+	audio/midi/XMidiSequence.o \
+	audio/midi/LowLevelMidiDriver.o \
+	audio/midi/WindowsMidiDriver.o

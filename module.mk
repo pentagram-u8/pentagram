@@ -22,8 +22,10 @@ pentagram_OBJ = \
 	$(WORLD) \
 	$(ACTORS) \
 	$(ARGS) \
+	$(AUDIO) \
+	$(MIDI) \
 	kernel/GUIApp.o \
-	pentagram.o 
+	pentagram.o
 
 llc_OBJ = \
 	$(KERNEL) \
@@ -41,6 +43,8 @@ llc_OBJ = \
 	$(COMPILE) \
 	$(DISASM) \
 	$(ARGS) \
+	$(AUDIO) \
+	$(MIDI) \
 	kernel/GUIApp.o \
 	kernel/ConApp.o \
 	tools/compile/llc.o
