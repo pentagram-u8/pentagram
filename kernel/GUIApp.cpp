@@ -227,6 +227,7 @@ void GUIApp::U8Playground()
 //	av->teleport(3, 11391, 1727, 64); // docks, near gate
 //	av->teleport(39, 16240, 15240, 64); // West Tenebrae
 //	av->teleport(41, 12000, 15000, 64); // East Tenebrae
+	av->teleport(8, 14462, 15178, 48); // before entrance to Mythran's house
 
 	if (av)
 		world->switchMap(av->getMapNum());

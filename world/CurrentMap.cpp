@@ -355,27 +355,41 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 
 				ShapeInfo* si = item->getShapeInfo();
 				//!! need to check is_sea() and is_land() maybe?
-//				if (!si->is_solid() && !si->is_roof())
-//					continue; // not an interesting item
+				if (!si->is_solid() && !si->is_roof())
+					continue; // not an interesting item
 
 				sint32 ix, iy, iz, ixd, iyd, izd;
 				item->getLocation(ix, iy, iz);
 				item->getFootpad(ixd, iyd, izd);
 				ixd *= 32; iyd *= 32; izd *= 8; //!! constants
 
+#if 0
+				if (item->getShape() == 145) {
+					perr << "Shape 145: (" << ix-ixd << "," << iy-iyd << ","
+						 << iz << ")-(" << ix << "," << iy << "," << iz+izd
+						 << ")" << std::endl;
+					if (!si->is_solid()) perr << "not solid" << std::endl;
+				}
+#endif
+
 				// check overlap
 				if (si->is_solid() &&
-					!(x < ix - ixd || x - xd > ix ||
-					  y < iy - iyd || y - yd > iy ||
-					  z + zd < iz || z < iz + izd))
+					!(x <= ix - ixd + 1 || x - xd >= ix ||
+					  y <= iy - iyd || y - yd >= iy ||
+					  z + zd <= iz || z >= iz + izd))
 				{
 					// overlapping a solid item. Invalid position
+#if 0
+					if (item->getShape() == 145) {
+						perr << "Hit!" << std::endl;
+					}
+#endif
 					valid = false;
 				}
 
 				// check xy overlap
-				if (!(x < ix - ixd || x - xd > ix ||
-					  y < iy - iyd || y - yd > iy))
+				if (!(x <= ix - ixd || x - xd >= ix ||
+					  y <= iy - iyd || y - yd >= iy))
 				{
 					// check support
 					if (support == 0 && si->is_solid() &&

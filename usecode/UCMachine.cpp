@@ -280,10 +280,14 @@ bool UCMachine::execProcess(UCProcess* p)
 
 				// !constants
 				if (func >= 0x100 || intrinsics[func] == 0) {
-//					p->temp32 = addProcess(new DelayProcess(4));
 					p->temp32 = 0;
 					perr << "Unhandled intrinsic \'" << convuse->intrinsics()[func] << "\' (" << std::hex << func << std::dec << ") called" << std::endl;
 				} else {
+					//!! hackish
+					if (intrinsics[func] == UCMachine::I_dummyProcess ||
+						intrinsics[func] == UCMachine::I_true) {
+						perr << "Unhandled intrinsic \'" << convuse->intrinsics()[func] << "\' (" << std::hex << func << std::dec << ") called" << std::endl;
+					}
 					uint8 *argbuf = new uint8[arg_bytes];
 					p->stack.pop(argbuf, arg_bytes);
 					p->stack.addSP(-arg_bytes); // don't really pop the args
@@ -2021,13 +2025,13 @@ void UCMachine::killProcess(uint16 pid)
 void UCMachine::usecodeStats()
 {
 	pout << "Usecode Machine memory stats:" << std::endl;
-	pout << "Strings     : " << stringHeap.size() << "/65534" << std::endl;
+	pout << "Strings    : " << stringHeap.size() << "/65534" << std::endl;
 #ifdef DUMPHEAP
 	std::map<uint16, std::string>::iterator iter;
 	for (iter = stringHeap.begin(); iter != stringHeap.end(); ++iter)
 		pout << iter->first << ":" << iter->second << std::endl;
 #endif
-	pout << "Lists       : " << listHeap.size() << "/65534" << std::endl;
+	pout << "Lists      : " << listHeap.size() << "/65534" << std::endl;
 #ifdef DUMPHEAP
 	std::map<uint16, UCList*>::iterator iterl;
 	for (iterl = listHeap.begin(); iterl != listHeap.end(); ++iterl) {

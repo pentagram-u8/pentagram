@@ -82,6 +82,7 @@ public:
 	bool overlaps(Item& item2) const;
 	bool overlapsxy(Item& item2) const;
 	bool isOn(Item& item2) const;
+	bool canExistAt(sint32 x, sint32 y, sint32 z) const;
 
 	virtual uint32 getTotalWeight(); // weight including contents (if any)
 	bool checkLoopScript(const uint8* script, uint32 scriptsize);
@@ -187,6 +188,7 @@ public:
 	INTRINSIC(I_popToEnd);
 	INTRINSIC(I_destroy);
 	INTRINSIC(I_move);
+	INTRINSIC(I_legalMoveToPoint);
 	INTRINSIC(I_shoot);
 	INTRINSIC(I_getFamilyOfType);
 	INTRINSIC(I_getEtherealTop);

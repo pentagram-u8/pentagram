@@ -293,12 +293,16 @@ void World::worldStats()
 	}
 
 	pout << "World memory stats:" << std::endl;
-	pout << "Maps        : " << mapcount << "/256" << std::endl;
-	if (currentmap && getNPC(1)) {
-		pout << "Current pos.: map " << currentmap->getNum() << ", (";
+	pout << "Maps       : " << mapcount << "/256" << std::endl;
+	Actor* av = getNPC(1);
+	pout << "Avatar pos.: ";
+	if (av) {
+		pout << "map " << av->getMapNum() << ", (";
 		sint32 x,y,z;
-		getNPC(1)->getLocation(x,y,z);
+		av->getLocation(x,y,z);
 		pout << x << "," << y << "," << z << ")" << std::endl;
+	} else {
+		pout << "missing (null)" << std::endl;
 	}
 }
 

@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "World.h"
 #include "TeleportEgg.h"
 #include "CurrentMap.h"
+#include "Process.h"
+#include "Kernel.h"
 
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(MainActor,Actor);
@@ -52,9 +54,8 @@ void MainActor::teleport(int mapnum, sint32 x, sint32 y, sint32 z)
 }
 
 // teleport to TeleportEgg
-//NB: This is _not_ suitable for the teleportToEgg intrinsic,
-// as it will kill all running UCProcesses
-// (maybe we shouldn't kill currently running processes in switchMap()?)
+// NB: be careful when calling this from a process, as it might kill
+// all running processes
 void MainActor::teleport(int mapnum, int teleport_id)
 {
 	World* world = World::get_instance();
@@ -76,4 +77,45 @@ void MainActor::teleport(int mapnum, int teleport_id)
 	Actor::teleport(mapnum, x, y, z);
 
 	justTeleported = true;
+}
+
+
+
+class TeleportToEggProcess : public Process
+{
+public:
+	TeleportToEggProcess(int mapnum_, int teleport_id_)
+		: mapnum(mapnum_), teleport_id(teleport_id_)
+	{ }
+
+	// p_dynamic_cast stuff
+	ENABLE_RUNTIME_CLASSTYPE();
+
+	virtual bool run(const uint32 framenum)
+	{
+		MainActor *av = p_dynamic_cast<MainActor*>(
+			World::get_instance()->getNPC(1));
+
+		// NB: the following call might terminate us
+		av->teleport(mapnum, teleport_id);
+
+		terminate();
+		return true;
+	}
+
+private:
+	int mapnum;
+	int teleport_id;
+};
+DEFINE_RUNTIME_CLASSTYPE_CODE(TeleportToEggProcess,Process);
+
+
+uint32 MainActor::I_teleportToEgg(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_UINT16(mapnum);
+	ARG_UINT16(teleport_id);
+	ARG_UINT16(unknown); // 0/1
+
+	return Kernel::get_instance()->addProcess(
+		new TeleportToEggProcess(mapnum, teleport_id));
 }

@@ -230,6 +230,22 @@ bool Item::isOn(Item& item2) const
 	return false;
 }
 
+bool Item::canExistAt(sint32 x, sint32 y, sint32 z) const
+{
+	sint32 xd, yd, zd;
+	getFootpad(xd, yd, zd);
+	xd *= 32; yd *= 32; zd *= 8; //!! constants
+	CurrentMap* cm = World::get_instance()->getCurrentMap();
+#if 0
+	if (getShape() == 264) { // spiky sphere
+		perr << "Spiky Sphere: Trying (" << x-xd << "," << y-yd << "," << z 
+			 << ")-(" << x << "," << y << "," << z+zd << ")" << std::endl;
+	}
+#endif
+	return cm->isValidPosition(x, y, z, xd, yd, zd, getObjId(), 0, 0);
+}
+
+
 ShapeInfo* Item::getShapeInfo()
 {
 	if (!cachedShapeInfo) cachedShapeInfo = GameData::get_instance()->getMainShapes()->getShapeInfo(shape);
@@ -1349,6 +1365,38 @@ uint32 Item::I_move(const uint8* args, unsigned int /*argsize*/)
 	item->move(x,y,z);
 	return 0;
 }
+
+uint32 Item::I_legalMoveToPoint(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_UINT32(ptr);
+	ARG_UINT16(unknown1); // 0/1
+	ARG_UINT16(unknown2); // always 0
+
+	//! haven't checked if this does what it should do.
+	// Currently: check if item can exist at point. If so, move it there
+	// and return true. If not, return false.
+
+	uint8 buf[5];
+	if (!UCMachine::get_instance()->dereferencePointer(ptr, buf, 5)) {
+		perr << "Illegal WorldPoint pointer passed to I_legalCreateAtPoint."
+			 << std::endl;
+		return 0;
+	}
+
+	uint16 x = buf[0] + (buf[1]<<8);
+	uint16 y = buf[2] + (buf[3]<<8);
+	uint16 z = buf[4];
+
+	if (item->canExistAt(x, y, z)) {
+		item->move(x, y, z);
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+
 
 uint32 Item::I_getEtherealTop(const uint8* args, unsigned int /*argsize*/)
 {

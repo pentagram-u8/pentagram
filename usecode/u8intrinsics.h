@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UCMachine.h"
 #include "Container.h"
 #include "Actor.h"
+#include "MainActor.h"
 #include "Kernel.h"
 #include "CameraProcess.h"
 #include "GUIApp.h"
@@ -104,7 +105,7 @@ Intrinsic U8Intrinsics[] = {
 	Item::I_move,
 	0, //U
 	// 0x040
-	0, // Item::legal_move
+	Item::I_legalMoveToPoint,
 	0, // Item::legal_move
 	Actor::I_isNPC,
 	0, //U
@@ -252,7 +253,7 @@ Intrinsic U8Intrinsics[] = {
 	0, //U
 	Kernel::I_getNumProcesses,
 	Kernel::I_resetRef,
-	UCMachine::I_dummyProcess, //!! process teleportToEgg(word, word, ubyte)
+	MainActor::I_teleportToEgg,
 	Kernel::I_resetRef,
 	0, // setRef
 	GUIApp::I_getAvatarInStasis,

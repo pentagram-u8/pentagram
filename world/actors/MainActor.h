@@ -36,6 +36,8 @@ public:
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 
+	INTRINSIC(I_teleportToEgg);
+
 private:
 	bool justTeleported;
 };
