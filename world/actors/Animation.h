@@ -90,8 +90,7 @@ namespace Animation
 	enum Result {
 		FAILURE = 0,
 		SUCCESS = 1,
-		// Animation completed but possible not safe
-		INDETERMINATE = 2
+		END_OFF_LAND = 2
 	};
 
 	bool isCombatAnim(const Sequence anim);

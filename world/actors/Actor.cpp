@@ -323,7 +323,7 @@ Animation::Result Actor::tryAnim(Animation::Sequence anim, int dir, PathfindingS
 			else
 				f = 0;
 		}
-			
+		
 	}
 
 	// animation ok. Update state
@@ -342,17 +342,26 @@ Animation::Result Actor::tryAnim(Animation::Sequence anim, int dir, PathfindingS
 		state->z = end[2];
 	}
 	
-
 	//check if the animation completes on solid ground
 	start[0] = end[0]; start[1] = end[1]; start[2] = end[2];
 	end[2] -= 8;
 	hit.clear();
 	if (currentmap->sweepTest(start, end, dims, getObjId(), true, &hit))
 	{
-			return Animation::SUCCESS;
+		std::list<CurrentMap::SweepItem>::iterator iter;
+		for (iter = hit.begin(); iter != hit.end(); ++iter) {
+			if (!iter->touching)
+			{
+				Item * item = World::get_instance()->getItem(iter->item);
+				if (item->getShapeInfo()->is_land())
+				{
+					return Animation::SUCCESS;
+				}
+			}
+		}
 	}
 
-	return Animation::INDETERMINATE;
+	return Animation::END_OFF_LAND;
 }
 
 uint32 Actor::getArmourClass()
