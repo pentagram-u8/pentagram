@@ -42,12 +42,12 @@ APP: (v1)
 uint16 version
 uint8 avatarInStasis (boolean)
 sint32 timeOffset (FIXME!)
-uint32 framenum
 uint16 avatarMoverProcess (pid)
 sint16 palette_transform_matrix[12]
 
-PROCESSES: (v1)
-uint16 version			processes savegame version
+KERNEL: (v1)
+uint16 version			kernel savegame version
+uint32 framenum
 idMan pids
 uint32 processcount
 [processcount processes, from front to back of list]
@@ -214,6 +214,12 @@ uint32 process_result
 uint32 childcount
 [childcount gumps, in order]
 
+
+ModalGump: (v1)
+uint16 version
+<Gump>
+
+
 DesktopGump: (v1)
 uint16 version
 <Gump>
@@ -258,6 +264,19 @@ sint32 itemarea.w
 sint32 itemarea.h
 
 
+SliderGump: (v1)
+uint16 version
+<ModalGump>
+sint16 min
+sint16 max
+sint16 value
+sint16 delta
+uint16 slidergid
+uint16 okbuttongid
+uint16 usecodeNotifyPID
+
+
+
 SimpleTextWidget: (v1)
 uint16 version
 <Gump>
@@ -265,10 +284,20 @@ sint32 fontnum
 uint32 strlen
 char text[strlen]
 
+
 ButtonWidget: (v1)
 uint16 version
-<SimpleTextWidget>
+<Gump>
+uint32 shape_up			!!! TODO
+uint32 framenum_up
+uint32 shape_down		!!! TODO
+uint32 framenum_down
+uint16 textwidget
 
+
+SlidingWidget: (v1)
+uint16 version
+<Gump>
 
 
 Individual Processes:

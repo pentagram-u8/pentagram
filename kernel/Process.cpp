@@ -61,12 +61,14 @@ void Process::wakeUp(uint32 result_)
 
 void Process::waitFor(uint16 pid_)
 {
-	Kernel *kernel = Kernel::get_instance();
-
-	// add this process to waiting list of process pid_
-	Process *p = kernel->getProcess(pid_);
-	assert(p);
-	p->waiting.push_back(pid);
+	if (pid_) {
+		Kernel *kernel = Kernel::get_instance();
+		
+		// add this process to waiting list of process pid_
+		Process *p = kernel->getProcess(pid_);
+		assert(p);
+		p->waiting.push_back(pid);
+	}
 
 	suspended = true;
 }

@@ -31,9 +31,8 @@
 DEFINE_RUNTIME_CLASSTYPE_CODE(Gump,Object);
 
 Gump::Gump()
-	: Object(), parent(0), children()
+	: Object(), parent(0), children(), moveOffsetX(0), moveOffsetY(0)
 {
-
 }
 
 Gump::Gump(int inX, int inY, int Width, int Height, uint16 inOwner,
@@ -41,7 +40,7 @@ Gump::Gump(int inX, int inY, int Width, int Height, uint16 inOwner,
 	Object(), owner(inOwner), parent(0), x(inX), y(inY),
 	dims(0,0,Width,Height), flags(inFlags), layer(inLayer), index(-1),
 	shape(0), framenum(0), children(), focus_child(0), notifier(0),
-	process_result(0)
+	process_result(0), moveOffsetX(0), moveOffsetY(0)
 {
 	assignObjId(); // gumps always get an objid
 }
@@ -66,9 +65,6 @@ Gump::~Gump()
 
 void Gump::InitGump()
 {
-	// Not yet...
-	// assignObjId();
-
 	if (owner) CreateNotifier();
 }
 
@@ -300,17 +296,18 @@ Gump* Gump::FindGump(int mx, int my)
 
 bool Gump::PointOnGump(int mx, int my)
 {
-	ParentToGump(mx,my);
+	int gx = mx, gy = my;
+	ParentToGump(gx,gy);
 
 	// First check again rectangle
-	if (!dims.InRect(mx,my)) {
+	if (!dims.InRect(gx,gy)) {
 		return false;
 	}
 
 	if (shape) {
 		ShapeFrame* sf = shape->getFrame(framenum);
 		assert(sf);
-		if (!sf->hasPoint(mx, my)) {
+		if (!sf->hasPoint(gx, gy)) {
 			return false;
 		}
 	}
@@ -367,7 +364,8 @@ void Gump::GumpToParent(int &gx, int &gy)
 uint16 Gump::TraceObjID(int mx, int my)
 {
 	// Convert to local coords
-	ParentToGump(mx,my);
+	int gx = mx,gy = my;
+	ParentToGump(gx,gy);
 
 	uint16 objid = 0;
 
@@ -381,14 +379,14 @@ uint16 Gump::TraceObjID(int mx, int my)
 		if (g->flags & FLAG_CLOSING) continue;
 
 		// It's got the point
-		if (g->PointOnGump(mx,my)) objid = g->TraceObjID(mx, my);
+		if (g->PointOnGump(gx,gy)) objid = g->TraceObjID(gx, gy);
 
 		if (objid && objid != 65535) break;
 	}
 
-
 //	if (!objid || objid == 65535)
-//		objid = getObjId();
+//		if (PointOnGump(mx,my))
+//			objid = getObjId();
 
 	return objid;
 }
@@ -537,10 +535,11 @@ Gump * Gump::GetRootGump()
 }
 
 
-void Gump::StartDraggingChild(Gump* gump, int mx, int my)
+bool Gump::StartDraggingChild(Gump* gump, int mx, int my)
 {
 	gump->ParentToGump(mx, my);
 	gump->SetMoveOffset(mx, my);
+	return true;
 }
 
 void Gump::DraggingChild(Gump* gump, int mx, int my)

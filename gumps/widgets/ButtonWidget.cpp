@@ -20,21 +20,36 @@
 #include "ButtonWidget.h"
 #include "SimpleTextWidget.h"
 #include "GUIApp.h"
+#include "ShapeFrame.h"
+#include "Shape.h"
+
 #include "IDataSource.h"
 #include "ODataSource.h"
 
 // p_dynamic_class stuff 
-DEFINE_RUNTIME_CLASSTYPE_CODE(ButtonWidget,SimpleTextWidget);
+DEFINE_RUNTIME_CLASSTYPE_CODE(ButtonWidget,Gump);
 
 ButtonWidget::ButtonWidget()
-	: SimpleTextWidget()
+	: Gump()
 {
 }
 
-ButtonWidget::ButtonWidget(int X, int Y, std::string txt, int font, int w, int h) :
-	SimpleTextWidget(X,Y,txt,font,w,h)
+ButtonWidget::ButtonWidget(int X, int Y, std::string txt, int font,
+						   int w, int h) :
+	Gump(X,Y,w,h), shape_up(0), shape_down(0)
 {
+	SimpleTextWidget* widget = new SimpleTextWidget(0,0,txt,font,w,h);
+	textwidget = widget->getObjId();
 }
+
+ButtonWidget::ButtonWidget(int X, int Y, Shape* shape_up_, uint32 framenum_up_,
+						   Shape* shape_down_, uint32 framenum_down_) :
+	Gump(X,Y,5,5), shape_up(shape_up_), framenum_up(framenum_up_),
+	shape_down(shape_down_), framenum_down(framenum_down_), textwidget(0)
+{
+	
+}
+
 
 ButtonWidget::~ButtonWidget(void)
 {
@@ -42,25 +57,63 @@ ButtonWidget::~ButtonWidget(void)
 
 void ButtonWidget::InitGump()
 {
-	SimpleTextWidget::InitGump();
+	if (textwidget != 0) {
+		Gump* widget = GUIApp::get_instance()->getGump(textwidget);
+		assert(widget);
+		widget->InitGump();
+
+		widget->GetDims(dims); // transfer child dimension to self
+		AddChild(widget);
+		widget->Move(0,dims.y); // move it to the correct height
+	} else {
+		assert(shape_up != 0);
+		assert(shape_down != 0);
+
+		shape = shape_up;
+		framenum = framenum_up;
+
+		ShapeFrame* sf = shape->getFrame(framenum);
+		assert(sf);
+		dims.w = sf->width;
+		dims.h = sf->height;
+	}
 }
 
 Gump *ButtonWidget::OnMouseDown(int button, int mx, int my)
 {
-	Gump *ret = SimpleTextWidget::OnMouseDown(button,mx,my);
+	Gump *ret = Gump::OnMouseDown(button,mx,my);
 	if (ret) return ret;
-	if (button == GUIApp::BUTTON_LEFT) return this;
+	if (button == GUIApp::BUTTON_LEFT)
+	{
+		// CHECKME: change dimensions or not?
+		shape = shape_down;
+		framenum = framenum_down;
+		return this;
+    }
 	return 0;
 }
 
+uint16 ButtonWidget::TraceObjID(int mx, int my)
+{
+	if (PointOnGump(mx, my))
+		return getObjId();
+	else
+		return 0;
+}
+
+
 void ButtonWidget::OnMouseUp(int button, int mx, int my)
 {
-	parent->ChildNotify(this,BUTTON_UP);
+	if (button == GUIApp::BUTTON_LEFT) {
+		shape = shape_up;
+		framenum = framenum_up;
+		parent->ChildNotify(this,BUTTON_UP);
+	}
 }
 
 void ButtonWidget::OnMouseClick(int button, int mx, int my)
 {
-	parent->ChildNotify(this,BUTTON_DOWN);
+	parent->ChildNotify(this,BUTTON_CLICK);
 }
 
 void ButtonWidget::OnMouseDouble(int button, int mx, int my)
@@ -71,14 +124,26 @@ void ButtonWidget::OnMouseDouble(int button, int mx, int my)
 void ButtonWidget::saveData(ODataSource* ods)
 {
 	ods->write2(1); //version
-	SimpleTextWidget::saveData(ods);
+	Gump::saveData(ods);
+
+	ods->write4(0); //TODO: shape_up
+	ods->write4(framenum_up);
+	ods->write4(0); //TODO: shape_down
+	ods->write4(framenum_down);
+	ods->write2(textwidget);
 }
 
 bool ButtonWidget::loadData(IDataSource* ids)
 {
 	uint16 version = ids->read2();
 	if (version != 1) return false;
-	if (!SimpleTextWidget::loadData(ids)) return false;
+	if (!Gump::loadData(ids)) return false;
+
+	shape_up = 0; ids->read4(); // TODO
+	framenum_up = ids->read4();
+	shape_down = 0; ids->read4(); // TODO
+	framenum_down = ids->read4();
+	textwidget = ids->read2();
 
 	return true;
 }

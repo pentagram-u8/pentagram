@@ -19,6 +19,7 @@
 #include "pent_include.h"
 #include "BarkGump.h"
 #include "SimpleTextWidget.h"
+#include "Kernel.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -46,7 +47,7 @@ void BarkGump::InitGump()
 {
 	ItemRelativeGump::InitGump();
 
-	// OK, this is a bit of a hack, but it's how it's has to be
+	// OK, this is a bit of a hack, but it's how it has to be
 	int	fontnum;
 	if (owner == 1) fontnum = 6;
 	else if (owner > 256) fontnum = 8;
@@ -85,7 +86,9 @@ bool BarkGump::Run(const uint32 framenum)
 	Gump::Run(framenum);
 
 	// Auto close
-	if (!--counter) Close();
+	if (!Kernel::get_instance()->isPaused()) {
+		if (!--counter) Close();
+	}
 	return true;	// Always repaint, even though we really could just try to detect it
 }
 

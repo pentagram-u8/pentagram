@@ -49,7 +49,7 @@ DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(CoreApp);
 CoreApp* CoreApp::application = 0;
 
 CoreApp::CoreApp(int argc_, const char* const* argv_)
-	: isRunning(false), framenum(0), kernel(0), filesystem(0), config(0),
+	: isRunning(false), kernel(0), filesystem(0), config(0),
 	  argc(argc_), argv(argv_), oHelp(false), oQuiet(false), oVQuiet(false)
 {
 	assert(application == 0);

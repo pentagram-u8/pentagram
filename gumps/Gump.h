@@ -134,7 +134,7 @@ public:
 
 protected:
 
-	//! Overloadable method to Paint just this Gumps
+	//! Overloadable method to Paint just this Gump
 	//! (RenderSurface is relative to this)
 	// \param surf The RenderSurface to paint to
 	// \param lerp_factor The lerp_factor to paint at (0-256)
@@ -155,7 +155,8 @@ public:
 	bool				IsClosing() { return (flags&FLAG_CLOSING)!=0; }
 
 	//! Move this gump
-	virtual void		Move(int x_, int y_) { x = x_; y = y_; }
+	virtual void		Move(int x_, int y_)
+		{ x = x_ - moveOffsetX; y = y_ - moveOffsetY; }
 
 	//
 	// Points and Coords
@@ -259,7 +260,9 @@ public:
 	sint32				GetIndex() { return index; }
 
 	// Dragging
-	virtual void		StartDraggingChild(Gump* gump, int mx, int my);
+	//! Called when a child gump starts to be dragged.
+	//! \return false if the child isn't allowed to be dragged.
+	virtual bool		StartDraggingChild(Gump* gump, int mx, int my);
 	virtual void		DraggingChild(Gump* gump, int mx, int my);
 	virtual void		StopDraggingChild(Gump* gump);
 
@@ -321,6 +324,7 @@ public:
 		LAYER_GAMEMAP		= -8,		// Layer for the World Gump
 		LAYER_NORMAL		= 0,		// Layer for Normal gumps
 		LAYER_ABOVE_NORMAL	= 8,		// Layer for Always on top Gumps
+		LAYER_MODAL         = 12,		// Layer for Modal Gumps
 		LAYER_CONSOLE		= 16		// Layer for the console
 	};
 

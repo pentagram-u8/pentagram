@@ -27,10 +27,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ODataSource.h"
 #include "ItemFactory.h"
 
-#include "Actor.h"
-
-#include "CoreApp.h" // only for getFrameNum
-
 //#define DUMP_PROCESSTYPES
 
 #ifdef DUMP_PROCESSTYPES
@@ -48,6 +44,9 @@ Kernel::Kernel() : loading(false)
 	kernel = this;
 	pIDs = new idMan(1,32767,128);
 	current_process = processes.end();
+	framenum = 0;
+	paused = 0;
+	runningprocess = 0;
 }
 
 Kernel::~Kernel()
@@ -66,6 +65,9 @@ void Kernel::reset()
 	current_process = processes.begin();
 
 	pIDs->clearAll();
+
+	paused = 0;
+	runningprocess = 0;
 }
 
 uint16 Kernel::assignPID(Process* proc)
@@ -120,7 +122,10 @@ uint16 Kernel::addProcessExec(Process* proc)
 	processes.push_back(proc);
 	proc->active = true;
 
-	proc->run(CoreApp::get_instance()->getFrameNum());
+	Process* oldrunning = runningprocess; runningprocess = proc;
+	proc->run(framenum);
+	runningprocess = oldrunning;
+
 	return proc->pid;
 }
 
@@ -151,16 +156,19 @@ void Kernel::removeProcess(Process* proc)
 
 
 //Q: is returning a 'dirty' flag really useful?
-bool Kernel::runProcesses(uint32 framenum)
+bool Kernel::runProcesses()
 {
+	if (paused) return false;
+
+	framenum++;
+
 	if (processes.size() == 0) {
-		return true;//
+		return true;
 		perr << "Process queue is empty?! Aborting.\n";
 
 		//! do this in a cleaner way
 		exit(0);
 	}
-
 	bool dirty = false;
 	current_process = processes.begin();
 	while (current_process != processes.end()) {
@@ -168,8 +176,13 @@ bool Kernel::runProcesses(uint32 framenum)
 
 		if (p->terminate_deferred)
 			p->terminate();
-		if (!p->terminated && !p->suspended)
-			if (p->run(framenum)) dirty = true;
+		if (!p->terminated && !p->suspended) {
+			runningprocess = p;
+			bool ret = p->run(framenum);
+			runningprocess = 0;
+
+			if (ret) dirty = true;
+		}
 		if (p->terminated) {
 			// process is killed, so remove it from the list
 			current_process = processes.erase(current_process);
@@ -292,6 +305,7 @@ void Kernel::killObjectProcesses()
 void Kernel::save(ODataSource* ods)
 {
 	ods->write2(1); // kernel savegame version 1
+	ods->write4(framenum);
 	pIDs->save(ods);
 	ods->write4(processes.size());
 	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it)
@@ -304,6 +318,8 @@ bool Kernel::load(IDataSource* ids)
 {
 	uint16 version = ids->read2();
 	if (version != 1) return false;
+
+	framenum = ids->read4();
 
 	if (!pIDs->load(ids)) return false;
 

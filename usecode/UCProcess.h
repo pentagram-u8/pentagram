@@ -48,6 +48,8 @@ public:
 
 	void freeOnTerminate(uint16 index, int type);
 
+	void setReturnValue(uint32 retval) { temp32 = retval; }
+
 	bool loadData(IDataSource* ids);
 protected:
 	virtual void saveData(ODataSource* ods);

@@ -44,6 +44,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "PaperdollGump.h"
 #include "SimpleTextWidget.h"
 #include "ButtonWidget.h"
+#include "SliderGump.h"
+#include "SlidingWidget.h"
 
 //#define DUMP_OBJECTTYPES
 
@@ -293,4 +295,6 @@ void ObjectManager::setupLoaders()
 	addObjectLoader("PaperdollGump", ObjectLoader<PaperdollGump>::load);
 	addObjectLoader("SimpleTextWidget", ObjectLoader<SimpleTextWidget>::load);
 	addObjectLoader("ButtonWidget", ObjectLoader<ButtonWidget>::load);
+	addObjectLoader("SliderGump", ObjectLoader<SliderGump>::load);
+	addObjectLoader("SlidingWidget", ObjectLoader<SlidingWidget>::load);
 }	

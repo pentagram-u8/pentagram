@@ -35,7 +35,7 @@ HIDManager::HIDManager()
 
 	for (uint16 key=0; key < SDLK_LAST; ++key)
 	{
-		keybindings[key] = NULL;
+		keybindings[key] = 0;
 	}
 
 	bindingMap.insert( HIDBINDING_PAIR(quickSave) );
@@ -60,7 +60,7 @@ HIDManager::~HIDManager()
 
 HIDBinding HIDManager::getBinding(const SDL_Event& event)
 {
-	HIDBinding binding = NULL;
+	HIDBinding binding = 0;
 	switch (event.type) {
 	case SDL_KEYUP: case SDL_KEYDOWN:
 	{

@@ -21,7 +21,6 @@
 #include "GameMapGump.h"
 #include "RenderSurface.h"
 
-#include "CoreApp.h"
 #include "Kernel.h"
 
 #include "World.h"
@@ -149,7 +148,7 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 
 	display_list->BeginDisplayList(surf, lx, ly, lz);
 
-	uint32 gametick = CoreApp::get_instance()->getFrameNum();
+	uint32 gametick = Kernel::get_instance()->getFrameNum();
 
 	bool paintEditorItems = GUIApp::get_instance()->isPaintEditorItems();
 
@@ -222,7 +221,7 @@ bool GameMapGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 	sint32 ix, iy, iz;
 
 	// Hacks be us. Force the item into the fast area
-	item->setupLerp(CoreApp::get_instance()->getFrameNum());
+	item->setupLerp(Kernel::get_instance()->getFrameNum());
 	item->doLerp(lerp_factor);
 	item->getLerped(ix,iy,iz);
 

@@ -101,7 +101,7 @@ void AskGump::InitGump()
 
 void AskGump::ChildNotify(Gump *child, uint32 message)
 {
-	if (message == ButtonWidget::BUTTON_DOWN) 
+	if (message == ButtonWidget::BUTTON_CLICK) 
 	{
 		uint16 s = answers->getStringIndex(child->GetIndex());
 		process_result = s;

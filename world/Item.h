@@ -353,6 +353,7 @@ public:
 	INTRINSIC(I_use);
 	INTRINSIC(I_enterFastArea);
 	INTRINSIC(I_ask);
+	INTRINSIC(I_getSliderInput);
 	INTRINSIC(I_openGump);
 	INTRINSIC(I_closeGump);
 	INTRINSIC(I_create);

@@ -70,6 +70,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "PathfinderProcess.h"
 #include "AvatarMoverProcess.h"
 
+#include "SliderGump.h"
+
 #include "DisasmProcess.h"
 #include "CompileProcess.h"
 
@@ -377,9 +379,8 @@ void GUIApp::run()
 		if (!frameLimit) {
 			repaint = false;
 			
-			if (kernel->runProcesses(framenum)) repaint = true;
-			desktopGump->Run(framenum);
-			framenum++;
+			if (kernel->runProcesses()) repaint = true;
+			desktopGump->Run(kernel->getFrameNum());
 			inBetweenFrame = false;
 			next_ticks = animationRate + SDL_GetTicks()*3;
 			lerpFactor = 256;
@@ -392,9 +393,8 @@ void GUIApp::run()
 
 			while (diff < 0) {
 				next_ticks += animationRate;
-				if (kernel->runProcesses(framenum)) repaint = true;
-				desktopGump->Run(framenum);
-				framenum++;
+				if (kernel->runProcesses()) repaint = true;
+				desktopGump->Run(kernel->getFrameNum());
 #if 0
 				perr << "--------------------------------------" << std::endl;
 				perr << "NEW FRAME" << std::endl;
@@ -1199,17 +1199,16 @@ static int volumelevel = 255;
 void GUIApp::handleEvent(const SDL_Event& event)
 {
 	uint32 now = SDL_GetTicks();
-	HIDBinding binding = hidmanager->getBinding(event);
-	bool handled = false;
 
-	if (binding)
-	{
-		handled = binding(event);
-	}
+	if (dragging == DRAG_NOT) {
 
-	if (handled)
-	{
-		return;
+		HIDBinding binding = hidmanager->getBinding(event);
+
+		if (binding) {
+			bool handled = binding(event);
+			if (handled)
+				return;
+		}
 	}
 	
 	// Old style input begins here
@@ -1252,10 +1251,12 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		mouseState[button] &= ~MBS_HANDLED;
 
 		if (now - lastMouseDown[button] < 200) { //!! constant
-			Gump* gump = getGump(mouseDownGump[button]);
-			if (gump)
-				gump->OnMouseDouble(button, mx, my);
-			mouseState[button] |= MBS_HANDLED;
+			if (dragging == DRAG_NOT) {
+				Gump* gump = getGump(mouseDownGump[button]);
+				if (gump)
+					gump->OnMouseDouble(button, mx, my);
+				mouseState[button] |= MBS_HANDLED;
+			}
 		}
 		lastMouseDown[button] = now;
 	}
@@ -1275,9 +1276,11 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			break;
 		}
 
-		Gump* gump = getGump(mouseDownGump[button]);
-		if (gump)
-			gump->OnMouseUp(button, mx, my);
+		if (dragging == DRAG_NOT) {
+			Gump* gump = getGump(mouseDownGump[button]);
+			if (gump)
+				gump->OnMouseUp(button, mx, my);
+		}
 	}
 	break;
 
@@ -1306,6 +1309,8 @@ void GUIApp::handleEvent(const SDL_Event& event)
 
 	case SDL_KEYDOWN:
 	{
+		if (dragging != DRAG_NOT) break;
+
 		switch (event.key.keysym.sym) {
 			case SDLK_LSHIFT: 
 			case SDLK_RSHIFT: {
@@ -1384,6 +1389,11 @@ void GUIApp::handleEvent(const SDL_Event& event)
 				pout << "Midi Volume is now: " << midi_volume << std::endl; 
 				if (midi_driver) midi_driver->setGlobalVolume(midi_volume);
 			} break;
+			case SDLK_F12: {
+			    SliderGump* sg = new SliderGump(100, 100, 0, 100, 50);
+				sg->InitGump();
+				desktopGump->AddChild(sg);
+			} break;
 			default:
 				break;
 		}
@@ -1392,6 +1402,8 @@ void GUIApp::handleEvent(const SDL_Event& event)
 
 	case SDL_KEYUP:
 	{
+		if (dragging != DRAG_NOT) break;
+
 		switch (event.key.keysym.sym) {
 		case SDLK_LSHIFT: 
 		case SDLK_RSHIFT: {
@@ -1507,13 +1519,6 @@ void GUIApp::handleDelayedEvents()
 void GUIApp::startDragging(int startx, int starty)
 {
 	dragging_objid = desktopGump->TraceObjID(startx, starty);
-	perr << "Dragging object " << dragging_objid << std::endl;
-	
-	dragging = DRAG_OK;
-	pushMouseCursor();
-	setMouseCursor(MOUSE_NORMAL);
-	
-	//!! need to pause the kernel
 	
 	Gump *gump = getGump(dragging_objid);
 	Item *item= World::get_instance()->getItem(dragging_objid);
@@ -1525,7 +1530,12 @@ void GUIApp::startDragging(int startx, int starty)
 		assert(parent); // can't drag root gump
 		int px = startx, py = starty;
 		parent->ScreenSpaceToGump(px, py);
-		parent->StartDraggingChild(gump, px, py);
+		if (parent->StartDraggingChild(gump, px, py))
+			dragging = DRAG_OK;
+		else {
+			dragging_objid = 0;
+			return;
+		}
 	} else
 	// for an Item, notify the gump the item is in that we started dragging
 	if (item) {
@@ -1549,6 +1559,14 @@ void GUIApp::startDragging(int startx, int starty)
 	} else {
 		dragging = DRAG_INVALID;
 	}
+
+	Object* obj = ObjectManager::get_instance()->getObject(dragging_objid);
+	perr << "Dragging object " << dragging_objid << " (class=" << (obj ? obj->GetClassType().class_name : "NULL") << ")" << std::endl;
+	pushMouseCursor();
+	setMouseCursor(MOUSE_NORMAL);
+	
+	// pause the kernel
+	kernel->pause();
 	
 	mouseState[BUTTON_LEFT] |= MBS_HANDLED;
 
@@ -1633,6 +1651,8 @@ void GUIApp::stopDragging(int mx, int my)
 	}
 
 	dragging = DRAG_NOT;
+
+	kernel->unpause();
 
 	popMouseCursor();
 }
@@ -1836,7 +1856,6 @@ void GUIApp::save(ODataSource* ods)
 	uint8 s = (avatarInStasis ? 1 : 0);
 	ods->write1(s);
 	ods->write4(static_cast<uint32>(timeOffset)); //!! FIXME
-	ods->write4(framenum);
 	ods->write2(avatarMoverProcess->getPid());
 
 	Pentagram::Palette *pal = PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game);
@@ -1851,7 +1870,6 @@ bool GUIApp::load(IDataSource* ids)
 
 	avatarInStasis = (ids->read1() != 0);
 	timeOffset = static_cast<sint32>(ids->read4());
-	framenum = ids->read4();
 
 	uint16 amppid = ids->read2();
 	avatarMoverProcess = p_dynamic_cast<AvatarMoverProcess*>(Kernel::get_instance()->getProcess(amppid));
@@ -1871,7 +1889,7 @@ uint32 GUIApp::I_getCurrentTimerTick(const uint8* /*args*/,
 										unsigned int /*argsize*/)
 {
 	// number of ticks of a 60Hz timer, with the default animrate of 30Hz
-	return get_instance()->getFrameNum()*2;
+	return Kernel::get_instance()->getFrameNum()*2;
 }
 
 uint32 GUIApp::I_setAvatarInStasis(const uint8* args, unsigned int /*argsize*/)
@@ -1893,21 +1911,21 @@ uint32 GUIApp::I_getTimeInGameHours(const uint8* /*args*/,
 										unsigned int /*argsize*/)
 {
 	// 1 game hour per every 27000 frames
-	return (get_instance()->getFrameNum()+get_instance()->timeOffset)/27000;
+	return (Kernel::get_instance()->getFrameNum()+get_instance()->timeOffset)/27000;
 }
 
 uint32 GUIApp::I_getTimeInMinutes(const uint8* /*args*/,
 										unsigned int /*argsize*/)
 {
 	// 1 minute per every 1800 frames
-	return (get_instance()->getFrameNum()+get_instance()->timeOffset)/1800;
+	return (Kernel::get_instance()->getFrameNum()+get_instance()->timeOffset)/1800;
 }
 
 uint32 GUIApp::I_getTimeInSeconds(const uint8* /*args*/,
 										unsigned int /*argsize*/)
 {
 	// 1 second per every 30 frames
-	return (get_instance()->getFrameNum()+get_instance()->timeOffset)/30;
+	return (Kernel::get_instance()->getFrameNum()+get_instance()->timeOffset)/30;
 }
 
 uint32 GUIApp::I_setTimeInGameHours(const uint8* args,
@@ -1917,7 +1935,7 @@ uint32 GUIApp::I_setTimeInGameHours(const uint8* args,
 
 	// 1 game hour per every 27000 frames
 	sint32	absolute = newhour*27000;
-	get_instance()->timeOffset = absolute-get_instance()->getFrameNum();
+	get_instance()->timeOffset = absolute-Kernel::get_instance()->getFrameNum();
 
 	return 0;
 }

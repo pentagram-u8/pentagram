@@ -47,12 +47,13 @@ public:
 	uint16 addProcessExec(Process *proc); 
 
 	void removeProcess(Process *proc);
-	bool runProcesses(uint32 framenum);
+	bool runProcesses();
 	Process* getProcess(uint16 pid);
 
 	uint16 assignPID(Process* proc);
 
 	void setNextProcess(Process *proc);
+	Process* getRunningProcess() const { return runningprocess; }
 
 	// only UCProcesses; objid = 0 means any object, type = 6 means any type
 	uint32 getNumProcesses(uint16 objid, uint16 processtype);
@@ -64,9 +65,15 @@ public:
 	void save(ODataSource* ods);
 	bool load(IDataSource* ids);
 
+	void pause() { paused++; }
+	void unpause() { if (paused > 0) paused--; }
+	bool isPaused() const { return paused > 0; }
+
 	void addProcessLoader(std::string classname, ProcessLoadFunc func)
 		{ processloaders[classname] = func; }
 
+	uint32 getFrameNum() const { return framenum; };
+	
 	INTRINSIC(I_getNumProcesses);
 	INTRINSIC(I_resetRef);
 private:
@@ -80,6 +87,11 @@ private:
 	std::map<std::string, ProcessLoadFunc> processloaders;
 
 	bool loading;
+
+	uint32 framenum;
+	unsigned int paused;
+
+	Process* runningprocess;
 
 	static Kernel* kernel;
 };

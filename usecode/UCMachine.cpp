@@ -37,15 +37,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Container.h"
 
-//#define WATCH_CLASS 1200
-//#define WATCH_ITEM 19
+//#define WATCH_CLASS 836
+//#define WATCH_ITEM 121
 
 #ifdef WATCH_CLASS
 #define LOGPF(X) do { if (p->classid == WATCH_CLASS) { pout.printf X; } } while(0)
 #define SHOWSTART (p->classid == WATCH_CLASS)
 #elif defined WATCH_ITEM
-#define LOGPF(X) do { if (p->item_num == ITEM) { pout.printf X; } } while(0)
-#define SHOWSTART (p->item_num == ITEM)
+#define LOGPF(X) do { if (p->item_num == WATCH_ITEM) { pout.printf X; } } while(0)
+#define SHOWSTART (p->item_num == WATCH_ITEM)
 #endif
 
 //#define LOGPF(X) pout.printf X
@@ -1842,6 +1842,8 @@ bool UCMachine::execProcess(UCProcess* p)
 
 		// write back IP
 		p->ip = static_cast<uint16>(cs.getPos());	// TRUNCATES!
+
+		cede |= p->suspended; // check if we suspended ourselves
 
 	} // while(!cede && !error && !p->terminated)
 

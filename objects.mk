@@ -92,11 +92,14 @@ GUMPS = \
 	gumps/Gump.o \
 	gumps/GumpNotifyProcess.o \
 	gumps/ItemRelativeGump.o \
+	gumps/ModalGump.o \
 	gumps/PaperdollGump.o \
-	gumps/ResizableGump.o
+	gumps/ResizableGump.o \
+	gumps/SliderGump.o
 
 WIDGETS = \
 	gumps/widgets/ButtonWidget.o \
+	gumps/widgets/SlidingWidget.o \
 	gumps/widgets/SimpleTextWidget.o
 
 WORLD = \

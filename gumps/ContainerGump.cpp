@@ -26,6 +26,7 @@
 #include "World.h"
 #include "RenderSurface.h"
 #include "GUIApp.h"
+#include "Kernel.h"
 #include "GameData.h"
 #include "MainShapeFlex.h"
 
@@ -95,7 +96,7 @@ void ContainerGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 	}
 
 	std::list<Item*>& contents = c->contents;
-	sint32 gametick = CoreApp::get_instance()->getFrameNum();
+	sint32 gametick = Kernel::get_instance()->getFrameNum();
 
 	//!! TODO: check these painting commands (flipped? translucent?)
 

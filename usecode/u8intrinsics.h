@@ -119,7 +119,7 @@ Intrinsic U8Intrinsics[] = {
 	0, //U
 	Item::I_bark,
 	Item::I_ask,
-	0, // Item::getSliderInput
+	Item::I_getSliderInput,
 	Item::I_openGump,
 	Item::I_closeGump,
 	0, //U

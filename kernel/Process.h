@@ -41,6 +41,8 @@ public:
 
 	virtual void terminate();	// Terminate NOW!
 	void terminateDeferred() { terminate_deferred = true; } // Terminate next frame
+
+	//! suspend until process 'pid' returns. If pid is 0, suspend indefinitely
 	void waitFor(uint16 pid);
 	void wakeUp(uint32 result);
 

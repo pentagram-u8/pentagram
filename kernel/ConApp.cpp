@@ -101,7 +101,7 @@ void ConApp::run()
 		//    ...
 		// ...
 
-		if (kernel->runProcesses(framenum++)) repaint = true;
+		if (kernel->runProcesses()) repaint = true;
 	
 		if(kernel->getNumProcesses(0, 6)==0)
 			isRunning=false;

@@ -53,8 +53,6 @@ public:
 	//! Startup the application. This will prepare the application for run().
 	//! Should call parent class' startup().
 	void startup();
-
-	uint32 getFrameNum() const { return framenum; };
 	
 	virtual void helpMe();
 	
@@ -81,8 +79,6 @@ protected:
 	void setupGamePaths(std::string& game, GameInfo* gameinfo);
 
 	bool isRunning;
-	
-	uint32 framenum;
 	
 	std::string game;
 	

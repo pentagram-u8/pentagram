@@ -53,6 +53,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ODataSource.h"
 #include "CameraProcess.h"
 #include "SpriteProcess.h"
+#include "SliderGump.h"
+#include "UCProcess.h"
 
 #include <cstdlib>
 
@@ -2269,6 +2271,30 @@ uint32 Item::I_grab(const uint8* args, unsigned int /*argsize*/)
 	if (!item) return 0;
 
 	item->grab();
+
+	return 0;
+}
+
+uint32 Item::I_getSliderInput(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM_FROM_PTR(item);
+	ARG_SINT16(minval);
+	ARG_SINT16(maxval);
+	ARG_SINT16(step);
+
+	UCProcess* current = p_dynamic_cast<UCProcess*>(Kernel::get_instance()->getRunningProcess());
+	assert(current);
+
+	pout << "SliderGump: min=" << minval << ", max=" << maxval << ", step=" << step << std::endl;
+
+	SliderGump* gump = new SliderGump(100, 100, minval, maxval, minval, step);
+	gump->InitGump(); // modal gump
+	gump->setUsecodeNotify(current);
+
+	GUIApp *app = GUIApp::get_instance();
+	app->getDesktopGump()->AddChild(gump);
+
+	current->waitFor(0); // suspend
 
 	return 0;
 }
