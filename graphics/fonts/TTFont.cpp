@@ -33,12 +33,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 DEFINE_RUNTIME_CLASSTYPE_CODE(TTFont,Pentagram::Font);
 
 
-TTFont::TTFont(IDataSource* font, uint32 rgb, int pointsize)
+TTFont::TTFont(IDataSource* font, uint32 rgb_, int pointsize)
 {
 	// open font using SDL_RWops.
 	// Note: The RWops and IDataSource will be deleted by the TTF_Font
 	ttf_font = TTF_OpenFontRW(font->getRWops(), 1, pointsize);
-	this->rgb = PACK_RGB8( (rgb>>16)&0xFF , (rgb>>8)&0xFF , rgb&0xFF );
+//	rgb = PACK_RGB8( (rgb_>>16)&0xFF , (rgb_>>8)&0xFF , rgb_&0xFF );
+	// This should be performed by PACK_RGB8, but it is not initialized at this point.
+	rgb = (rgb_>>16)&0xFF | ((rgb_>>8)&0xFF)<<8 | (rgb_&0xFF)<<16;
 }
 
 TTFont::~TTFont()
