@@ -1,3 +1,28 @@
+2003-07-03  Ryan Nunn <colourles@users.sourceforge.net>
+	* audio/midi/MidiDriver.h : Added some extra functions. 
+	  setSequenceSpeed() and a few for the FMOplMidiDriver (and could 
+	  probably be used by others, but probably wont be). Also added 
+	  destroyMidiDriver function. Init now returns 0 on success and an
+	  driver specific non zero error code on failure.
+	* audio/midi/LowLevelMidiDriver.* : Changes so FMOplMidiDriver can 
+	  inherir this. What I've done isn't the most 'oo' way of doing things,
+	  but I don't care at the moment.
+	* audio/midi/XMidiSequence.* : Speed changing, and fixing a few bugs.
+	* audio/midi/fmopl.* : The emulated OPL2 device
+	* audio/midi/FMOplMidiDriver.* : The Midi Driver for the Emulated OPL2
+	  device. To use it, you need to define USE_FMOPL_MIDI and link to 
+	  SDL Mixer.
+	* audio/MusicFlex.h : Changing the adlib timbre function
+	* audio/MusicProcess.cpp : Hacking the speed of the fades to 200% (the
+	  original did do this too)
+	* kernel/GUIApp.* : Added improved Midi Initialization code. Put it in
+	  it's own function. Added code to deinit the midi devices. Added 
+	  FMOplMidiDriver to the list of supported Midi devices. Added some 
+	  basic SDL Mixer initializtion code. Made it so The Keypad + and -
+	  keys adjust the volume.
+	* usecode/UCMachine.*, kernel/Object.cpp : Getting rid of the 
+	  UCMachine::addProcess() and UCMachine::killProcess() functions.
+
 2003-07-02  Max Horn <max@quendi.de>
 	* misc/Rect.h: Moved struct Rect into namespace Pentagram (it conflicts
 	  with a struct in the Mac OS X system headers); removed xr/yb members

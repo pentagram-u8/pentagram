@@ -144,6 +144,9 @@ private:
 
 	// Should probably go somewhere else.... perhaps in some 'audio manager'
 	MidiDriver *midi_driver;
+	int			midi_volume;
+	void		init_midi();
+	void		deinit_midi();
 
 public:
 	enum MouseButton { //!! change this

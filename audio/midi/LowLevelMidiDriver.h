@@ -46,7 +46,8 @@ public:
 	virtual ~LowLevelMidiDriver();
 
 	// MidiDriver Implementation
-	virtual void		initMidiDriver();
+	virtual int			initMidiDriver(uint32 sample_rate, bool stereo);
+	virtual void		destroyMidiDriver();
 	virtual int			maxSequences();
 	virtual void		setGlobalVolume(int vol);
 
@@ -55,10 +56,17 @@ public:
 	virtual void		pauseSequence(int seq_num);
 	virtual void		unpauseSequence(int seq_num);
 	virtual void		setSequenceVolume(int seq_num, int vol);
+	virtual void		setSequenceSpeed(int seq_num, int speed);
 	virtual bool		isSequencePlaying(int seq_num);
 	virtual uint32		getSequenceCallbackData(int seq_num);
 
+	virtual void		produceSamples(sint16 *samples, uint32 bytes);
+
 protected:
+
+	// Will be wanted by software drivers
+	uint32			sample_rate;
+	bool			stereo;
 
 	//! Open the Midi Device
 	//! \return 0 on sucess. Non zero on failure.
@@ -72,6 +80,9 @@ protected:
 
 	//! Increate the Thread Priority of the Play (current) thread
 	virtual void		increaseThreadPriority() { };
+
+	//! Allows LowLevelMidiDrivers to produce samples
+	virtual void		lowLevelProduceSamples(sint16 *samples, uint32 num_samples) { };
 
 	//! Yield execution of the current thread
 	virtual void		yield() { SDL_Delay(1); }
@@ -97,11 +108,21 @@ private:
 			struct {
 				int				level;
 			} volume;
+
+			struct {
+				int				percentage;
+			} speed;
+
+			struct {
+				int				code;
+			} init_failed;
+
 		} data;
 	};
 
+	sint32			initalizied;
+
 	// Communications
-	sint32			is_available;					// Only set by thread
 	bool			playing[LLMD_NUM_SEQ];			// Only set by thread
 	sint32			callback_data[LLMD_NUM_SEQ];	// Only set by thread
 	ComMessage		message;						// Set by both
@@ -112,39 +133,41 @@ private:
 	void			lockComMessage();
 	void			unlockComMessage();
 
-	// Thread Only Data
-	SDL_Thread		*thread;
+	// Shared Data
 	int				global_volume;
 	uint32			xmidi_clock;					// Xmidi clock, returned by getTickCount
 	int				chan_locks[16];					// Which seq a chan has been locked by
 	int				chan_map[LLMD_NUM_SEQ][16];		// Maps from locked logical chan to phyiscal
 	XMidiSequence	*sequences[LLMD_NUM_SEQ];
 
+	// Software Synth only Data
+	uint32			total_seconds;					// xmidi_clock = total_seconds*6000 
+	uint32			samples_this_second;			//		+ samples_this_second*6000/sample_rate;
+	uint32			samples_per_iteration;
+
+	// Thread Based Only Data
+	SDL_Thread		*thread;
+
+	// Shared Methods
+
+	//! Play all sequences, handle communications requests
+	//! /return true if terminating
+	bool			playSequences();
+
 	// Thread Methods
-	static int		threadStart(void *data);
+	int				initThreadedSynth();
+	void			destroyThreadedSynth();
+	static int		threadMain_Static(void *data);
 	int				threadMain();
-	void			threadPlay();
+
+	// Software methods
+	int				initSoftwareSynth();
+	void			destroySoftwareSynth();
 
 	// XMidiSequenceHandler implementation
 	virtual void	sequenceSendEvent(uint16 sequence_id, uint32 message);
 	virtual uint32	getTickCount(uint16 sequence_id);
 	virtual void	handleCallbackTrigger(uint16 sequence_id, uint8 data);
-/*
-	//! Allocate a channel for sequence and channel
-	//! \arg sequence_id Sequence to allocate the channel for
-	//! \arg chan Logical Channel number to allocate
-	//! \return The physical channel number allocated. -1 if unable
-	int				allocateChannel(uint16 sequence_id, int chan);
-
-	//! Allocate a channel
-	//! \arg take Specify whether to take a channel from an inactive sequence
-	//! \return The physical channel number allocated. -1 if unable
-	int				allocateChannel(bool take);
-
-	//! Deallocate the channels used by a sequence
-	//! \arg sequence The sequence to deallocate the channels from
-	void			deallocateChannels(int sequence);
-*/
 
 	int				protectChannel(uint16 sequence_id, int chan, bool protect);
 	int				lockChannel(uint16 sequence_id, int chan, bool lock);

@@ -81,10 +81,12 @@ void MusicProcess::playMusic(int track)
 
 		// Get transition info
 		int trans = info->transitions[track][measure];
+		bool speed_hack = false;
 
 		if (trans < 0)
 		{
 			trans = (-trans)-1;
+			speed_hack = true;
 		}
 		else
 		{
@@ -93,13 +95,18 @@ void MusicProcess::playMusic(int track)
 		}
 
 		// Now get the transition midi
-		XMidiFile *xmidi = GameData::get_instance()->getMusic()->getXMidi(258);
+		int xmidi_index = driver->isFMSynth()?260:258;
+		XMidiFile *xmidi = GameData::get_instance()->getMusic()->getXMidi(xmidi_index);
 		XMidiEventList *list;
 
 		if (xmidi) list = xmidi->GetEventList(trans);
 		else list = 0;
 
-		if (list) driver->startSequence(1, list, false, 255, song_branches[track]);
+		if (list)
+		{
+			driver->startSequence(1, list, false, 255, song_branches[track]);
+			if (speed_hack) driver->setSequenceSpeed(1,200);
+		}
 		else driver->finishSequence(1);
 		wanted_track = track;
 
@@ -131,7 +138,8 @@ bool MusicProcess::run(const uint32)
 			driver->finishSequence(1);
 		
 			XMidiFile *xmidi = 0;
-			if (wanted_track) xmidi = GameData::get_instance()->getMusic()->getXMidi(wanted_track);
+			int xmidi_index = driver->isFMSynth()?wanted_track+128:wanted_track;
+			if (wanted_track) xmidi = GameData::get_instance()->getMusic()->getXMidi(xmidi_index);
 			if (xmidi)
 			{
 				XMidiEventList *list = xmidi->GetEventList(0);
@@ -161,7 +169,7 @@ uint32 MusicProcess::I_playMusic(const uint8* args,
 										unsigned int /*argsize*/)
 {
 	ARG_UINT8(song);
-	if (the_music_process) the_music_process->playMusic(song);
+	if (the_music_process) the_music_process->playMusic(song&0x7F);
 	return 0;
 }
 

@@ -38,7 +38,7 @@ XMidiSequence::XMidiSequence(XMidiSequenceHandler *Handler, uint16 seq_id, XMidi
 						bool Repeat, int volume, int branch) :
 	handler(Handler), sequence_id(seq_id), evntlist(events), event(0), 
 	repeat(Repeat),  notes_on(), last_tick(0), loop_num(-1), vol_multi(volume),
-	paused(false)
+	paused(false), speed(100)
 {
 	std::memset(loop_event,0,XMIDI_MAX_FOR_LOOP_COUNT*sizeof(int));
 	std::memset(loop_count,0,XMIDI_MAX_FOR_LOOP_COUNT*sizeof(int));
@@ -47,6 +47,7 @@ XMidiSequence::XMidiSequence(XMidiSequenceHandler *Handler, uint16 seq_id, XMidi
 	for (int i = 0; i < 16; i++)
 	{
 		shadows[i].reset();
+		handler->sequenceSendEvent(sequence_id, i | (MIDI_STATUS_CONTROLLER << 4) | (XMIDI_CONTROLLER_BANK_CHANGE << 8));
 	}
 
 	// Jump to branch
@@ -120,6 +121,9 @@ void XMidiSequence::ChannelShadow::reset()
 
 	// Chorus
 	chorus = 0;
+
+	// Xmidi Bank 
+	xbank = 0;
 }
 
 sint32 XMidiSequence::playEvent()
@@ -131,9 +135,8 @@ sint32 XMidiSequence::playEvent()
 		handler->sequenceSendEvent(sequence_id, note->status + (note->data[0] << 8));
 
 	// Play all waiting notes;
-	sint32 aim = (event->time-last_tick)*50;
+	sint32 aim = ((event->time-last_tick)*5000)/speed;
 	sint32 diff = aim - getTime ();
-	bool next_break = false;
 
 	if (diff > 5) return diff/6;	// Yes, this this 'will' return 0 if diff is small
 
@@ -168,7 +171,6 @@ sint32 XMidiSequence::playEvent()
 			{
 				loop_num--;
 			}
-			next_break = true;
 		}
 		else
 		{
@@ -181,7 +183,6 @@ sint32 XMidiSequence::playEvent()
 				loop_num = 0;
 				loop_count[loop_num] = 1;
 				loop_event[loop_num] = branch;
-				next_break = true;
 			}
 		}
 		event = NULL;
@@ -196,36 +197,38 @@ sint32 XMidiSequence::playEvent()
 	}
 
 	// If we've got another note, play that next
-	if (event) 
-	{
-		event = event->next;
-	}
-	// If not and  we are not repeating, then return saying we are end
-	else if (!repeat && !next_break) 
-	{
-		return -1;
-	}
-	// Or, if we are repeating, but there hasn't been any for loop events,
-	// repeat from the start
-	else if (loop_num == -1 && !next_break) 
-	{
-		last_tick = 0;
-		event = evntlist->events;
-	}
-	// Finally, if we have for loop events, follow them
-	else
-	{
-		event = loop_event[loop_num]->next;
-		last_tick = loop_event[loop_num]->time;
+	if (event) event = event->next;
 
-		if (loop_count[loop_num])
-			if (!--loop_count[loop_num])
-				loop_num--;
+	// Now, handle what to do when we are at the end
+	if (!event)
+	{
+		// If we have for loop events, follow them
+		if (loop_num != -1)
+		{
+			event = loop_event[loop_num]->next;
+			last_tick = loop_event[loop_num]->time;
+
+			if (loop_count[loop_num])
+				if (!--loop_count[loop_num])
+					loop_num--;
+		}
+		// Or, if we are repeating, but there hasn't been any for loop events,
+		// repeat from the start
+		else if (repeat)
+		{
+			last_tick = 0;
+			event = evntlist->events;
+		}
+		// If we are not repeating, then return saying we are end
+		else
+		{
+			return -1;
+		}
 	}
 
 	if (!event) return -1;
 
-	aim = (event->time-last_tick)*50;
+	aim = ((event->time-last_tick)*5000)/speed;
 	diff = aim - getTime ();
 
 	if (diff < 0) return 0;
@@ -286,6 +289,10 @@ void XMidiSequence::updateShadowForEvent(XMidiEvent *event)
 		// chorus
 		else if (event->data[0] == 93) {
 			shadows[chan].chorus = event->data[1];
+		}
+		// XMidi bank
+		else if (event->data[0] == XMIDI_CONTROLLER_BANK_CHANGE) {
+			shadows[chan].xbank = event->data[1];
 		}
 	}
 	else if (type == MIDI_STATUS_PROG_CHANGE)
@@ -375,6 +382,9 @@ void XMidiSequence::applyShadow(int i)
 
 	// Chorus
 	handler->sequenceSendEvent(sequence_id, i | (MIDI_STATUS_CONTROLLER << 4) | (93 << 8) | (shadows[i].chorus << 16));
+
+	// XMidi Bank
+	handler->sequenceSendEvent(sequence_id, i | (MIDI_STATUS_CONTROLLER << 4) | (XMIDI_CONTROLLER_BANK_CHANGE << 8) | (shadows[i].xbank << 16));
 
 	// Bank Select
 	handler->sequenceSendEvent(sequence_id, i | (MIDI_STATUS_PROG_CHANGE << 4) | (shadows[i].program << 8));

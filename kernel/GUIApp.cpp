@@ -61,6 +61,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "XFormBlend.h"
 
 #include "MusicProcess.h"
+#include "MusicFlex.h"
 
 #include "MidiDriver.h"
 #ifdef WIN32
@@ -68,6 +69,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #endif
 #ifdef MACOSX
 #include "CoreAudioMidiDriver.h"
+#endif
+#ifdef USE_FMOPL_MIDI
+#include <SDL_mixer.h>
+#include "FMOplMidiDriver.h"
 #endif
 
 using std::string;
@@ -81,7 +86,8 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	  runGraphicSysInit(false), runSDLInit(false),
 	  frameSkip(false), frameLimit(true), interpolate(true),
 	  animationRate(100), avatarInStasis(false), paintEditorItems(false),
-	  painting(false), dragging(DRAG_NOT), timeOffset(0)
+	  painting(false), dragging(DRAG_NOT), timeOffset(0), midi_driver(0),
+	  midi_volume(255)
 {
 	application = this;
 
@@ -94,9 +100,9 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 
 GUIApp::~GUIApp()
 {
+	deinit_midi();
 	FORGET_OBJECT(ucmachine);
 	FORGET_OBJECT(palettemanager);
-	// TODO: shouldn't the midi_driver be free'd, too?
 }
 
 void GUIApp::startup()
@@ -112,26 +118,91 @@ void GUIApp::startup()
 
 	GraphicSysInit();
 
-	// Create the driver
-#ifdef WIN32
-	midi_driver = new WindowsMidiDriver();
-#elif defined(MACOSX)
-	midi_driver = new CoreAudioMidiDriver();
-#else
-	midi_driver = 0;
+	U8Playground();
+
+	// This Must be AFTER U8Playground() cause it might need gamedata
+	init_midi();
+
+	// Unset the console auto paint, since we have finished initing
+	con.SetAutoPaint(0);
+}
+
+#ifdef USE_FMOPL_MIDI
+void SDL_mixer_music_hook(void *udata, Uint8 *stream, int len)
+{
+	GUIApp *app = GUIApp::get_instance();
+	MidiDriver *drv = static_cast<MidiDriver*>(udata);
+	drv->produceSamples(reinterpret_cast<sint16*>(stream), len);
+}
 #endif
 
-	// Init the driver
-	if (midi_driver) midi_driver->initMidiDriver();
+#define TRY_MIDI_DRIVER(MidiDriver,rate,stereo) \
+		if (!midi_driver) {	\
+			pout << "Trying `" << #MidiDriver << "'" << std::endl; \
+			midi_driver = new MidiDriver; \
+			if (midi_driver->initMidiDriver(rate,stereo)) { \
+				delete midi_driver; \
+				midi_driver = 0; \
+			} \
+			else \
+				pout << "Using `" << #MidiDriver << "'" << std::endl; \
+		}
+
+void GUIApp::init_midi()
+{
+	int sample_rate = 22050;	// Good enough
+	int channels = 1;			// Only mono for now
+	Uint16 format = AUDIO_S16SYS;
+
+	pout << "Initializing Midi" << std::endl;
+
+	// Only the FMOPL Midi driver 'requires' SDL_mixer, and I don't 
+	// want to force it on everyone at the moment.
+#ifdef USE_FMOPL_MIDI
+	SDL_Init(SDL_INIT_AUDIO);
+	Mix_OpenAudio(sample_rate, format, channels, 4096);
+	Mix_QuerySpec(&sample_rate, &format, &channels);
+#endif
+
+	// Create the driver
+#ifdef WIN32
+	TRY_MIDI_DRIVER(WindowsMidiDriver,sample_rate,channels==2);
+#endif
+#ifdef MACOSX
+	TRY_MIDI_DRIVER(CoreAudioMidiDriver,sample_rate,channels==2);
+#endif
+#ifdef USE_FMOPL_MIDI
+	TRY_MIDI_DRIVER(FMOplMidiDriver,sample_rate,channels==2);
+#endif
+
+	// If the driver is a 'sample' producer we need to hook it to SDL_mixer
+	if (midi_driver)
+	{
+#ifdef USE_FMOPL_MIDI
+		if (midi_driver->isSampleProducer())
+			Mix_HookMusic(SDL_mixer_music_hook, midi_driver);
+#endif
+
+		midi_driver->setGlobalVolume(midi_volume);
+	}
 
 	// Create the Music Process
 	Process *mp = new MusicProcess(midi_driver);
 	kernel->addProcess(mp);
 
-	U8Playground();
+}
 
-	// Unset the console auto paint, since we have finished initing
-	con.SetAutoPaint(0);
+void GUIApp::deinit_midi()
+{
+#ifdef USE_FMOPL_MIDI
+	Mix_HookMusic(0,0);
+	Mix_CloseAudio();
+#endif
+
+	if (midi_driver)  midi_driver->destroyMidiDriver();
+
+	delete midi_driver;
+	midi_driver = 0;
 }
 
 void GUIApp::DeclareArgs()
@@ -892,6 +963,18 @@ void GUIApp::handleEvent(const SDL_Event& event)
 				} else { 
 					pout << "Can't: avatarInStasis" << std::endl; 
 				}
+			} break;
+			case SDLK_KP_PLUS: {
+				midi_volume+=8;
+				if (midi_volume>255) midi_volume =255;
+				pout << "Midi Volume is now: " << midi_volume << std::endl; 
+				if (midi_driver) midi_driver->setGlobalVolume(midi_volume);
+			} break;
+			case SDLK_KP_MINUS: {
+				midi_volume-=8;
+				if (midi_volume<0) midi_volume = 0;
+				pout << "Midi Volume is now: " << midi_volume << std::endl; 
+				if (midi_driver) midi_driver->setGlobalVolume(midi_volume);
 			} break;
 			default:
 				break;

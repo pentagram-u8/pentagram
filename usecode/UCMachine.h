@@ -48,10 +48,6 @@ public:
 	void freeStringList(uint16 l);
 	void freeList(uint16 l);
 
-	uint16 addProcess(Process *p);
-	void killProcess(Process *p);
-	void killProcess(uint16 pid);
-
 	uint16 duplicateString(uint16 str);
 
 	void usecodeStats();

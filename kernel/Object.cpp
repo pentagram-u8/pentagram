@@ -56,7 +56,7 @@ uint16 Object::callUsecode(uint16 classid, uint16 offset, Usecode* u, const uint
 {
 	uint32 objptr = UCMachine::objectToPtr(getObjId());
 	UCProcess* p = new UCProcess(u);
-	uint16 pid = UCMachine::get_instance()->addProcess(p);
+	uint16 pid = Kernel::get_instance()->addProcess(p);
 
 	p->load(classid, offset, objptr, 2, args, argsize);
 

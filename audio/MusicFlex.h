@@ -56,9 +56,10 @@ public:
 	}
 
 	//! Get the Adlib Timbres (index 259)
-	uint8 * getAdlibTimbres() 
+	IDataSource * getAdlibTimbres() 
 	{ 
-		return get_object(259); 
+		Flex::cache(259);
+		return get_datasource(259); 
 	}
 
 	//! Loads all data into memory

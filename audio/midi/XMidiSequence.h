@@ -53,6 +53,10 @@ public:
 	//! \return the current volume level (0-255)
 	int					getVolume() { return vol_multi; }
 
+	//! Set the speed of playback
+	//! \arg new_speed the new playback speed (percentage)
+	void				setSpeed(int new_speed) { speed = new_speed; }
+
 	//! Called when the XMidiSequenceHandler is taking a channel from this sequence
 	//! The XMidiSequence will gracefully reset the state of the channel
 	//! \arg c the channel being lost
@@ -98,6 +102,7 @@ private:
 	int						loop_num;		//!< The level of the loop we are currently in
 	int						vol_multi;		//!< Volume multiplier (0-255)
 	bool					paused;			//!< Is the sequence paused
+	int						speed;			//!< Percentage of speed to playback at
 
 	//! The for loop event that triggered the loop per level
 	XMidiEvent *			loop_event[XMIDI_MAX_FOR_LOOP_COUNT];
@@ -126,6 +131,7 @@ private:
 		int		effects;		// 91
 		int		chorus;			// 93
 
+		int		xbank;
 		void reset();
 	} shadows[16];
 

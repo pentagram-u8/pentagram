@@ -1194,7 +1194,7 @@ bool UCMachine::execProcess(UCProcess* p)
 					   arg_bytes, this_size, classid, offset));
 
 				UCProcess* newproc = new UCProcess(p->usecode);
-				p->temp32 = addProcess(newproc);
+				p->temp32 = Kernel::get_instance()->addProcess(newproc);
 
 				newproc->load(classid, offset, thisptr, this_size,
 							  p->stack.access(), arg_bytes);
@@ -1236,7 +1236,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				UCProcess* newproc = new UCProcess(p->usecode);
 
 				uint32 thisptr = stackToPtr(p->pid, p->bp+6);
-				uint16 newpid = addProcess(newproc);
+				uint16 newpid = Kernel::get_instance()->addProcess(newproc);
 
 				newproc->load(classid, offset + delta, thisptr, this_size);
 
@@ -1800,7 +1800,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		perr << "Process " << p->pid << " caused an error. Killing process."
 			 << std::endl;
 
-		killProcess(p);
+		p->terminateDeferred();
 	}
 
 
@@ -2065,26 +2065,6 @@ uint16 UCMachine::ptrToObject(uint32 ptr)
 	}
 }
 
-
-uint16 UCMachine::addProcess(Process* p)
-{
-	return Kernel::get_instance()->addProcess(p);
-}
-
-void UCMachine::killProcess(Process* p)
-{
-	p->terminate();
-}
-
-void UCMachine::killProcess(uint16 pid)
-{
-	Kernel* k = Kernel::get_instance();
-
-	Process* p = k->getProcess(pid);
-	if (p)
-		p->terminate();
-}
-
 void UCMachine::usecodeStats()
 {
 	pout << "Usecode Machine memory stats:" << std::endl;
@@ -2126,7 +2106,7 @@ uint32 UCMachine::I_true(const uint8* /*args*/, unsigned int /*argsize*/)
 
 uint32 UCMachine::I_dummyProcess(const uint8* /*args*/, unsigned int /*argsize*/)
 {
-	return UCMachine::get_instance()->addProcess(new DelayProcess(4));
+	return Kernel::get_instance()->addProcess(new DelayProcess(4));
 }
 
 uint32 UCMachine::I_getName(const uint8* /*args*/, unsigned int /*argsize*/)
@@ -2139,7 +2119,7 @@ uint32 UCMachine::I_numToStr(const uint8* args, unsigned int /*argsize*/)
 	ARG_SINT16(num);
 
 	char buf[16]; // a 16 bit int should easily fit
-	sprintf(buf, "%d", num);
+	snprintf(buf, 16, "%d", num);
 
 	return UCMachine::get_instance()->assignString(buf);
 }
@@ -2193,5 +2173,5 @@ uint32 UCMachine::I_target(const uint8* /*args*/, unsigned int /*argsize*/)
 	pout << std::endl << std::endl << "Target: (select an object)"
 		 << std::endl;
 
-	return UCMachine::get_instance()->addProcess(new TargetProcess());
+	return Kernel::get_instance()->addProcess(new TargetProcess());
 }
