@@ -102,7 +102,7 @@ If you ever played Ultima 8 or actually bought the game when it came out, then y
 
 
 2.3. Do you accept donations?
-No the Pentagram team will not accept donations. For us there are greater legal matters involved, which none of us particularly want to explore. We do not want to risk the wrath of EA for directly profiting off Pentagram. If you want to donate to anyone, donate to Sourceforge. We wouldn't be here if it weren't for them.
+No, the Pentagram team will not accept donations. For us there are greater legal matters involved, which none of us particularly want to explore. We do not want to risk the wrath of EA for directly profiting off Pentagram. If you want to donate to anyone, donate to Sourceforge. We wouldn't be here if it weren't for them.
 
 
 2.4. Does Origin support Pentagram?
@@ -123,13 +123,13 @@ Daily Windows CVS snapshots binaries (by Travis Howell) and the CVS snapshot sou
 
 2.8. Binary, snapshot, source tree - what are you talking about?
 First of all, if you are running Windows and you just want to run/play Pentagram, download the CVS Snapshot binary called Windows Binary.
-Source is the code of Pentagram and is only useful for programers that want to look at it, compile it or, hopefully, want to contribute to the project. Once you compile the code you get a binary or in other words the actual program. If you want to run Pentagram you need this. CVS snapshots are the newest source code. Whenever we change some code, Travis makes a new snapshot the next day. As we currently have no releases, snapshots are the only way for you to run Pentagram.
+Source is the code of Pentagram and is only useful for programmers that want to look at it, compile it or, hopefully, want to contribute to the project. Once you compile the code you get a binary or in other words the actual program. CVS snapshots are the newest source code. Whenever we change some code, Travis makes a new snapshot the next day. As we currently have no releases, snapshots are the only way for you to run Pentagram.
 
 
 2.9. And what is that old snapshot supposed to be?
-For that you'll have to take a look at Pentagram's history. The project started out as a pet project by some of the Exult programers. We tried to figure out the various file formats and used a sub tree of the Exult source code space. For example ee developed a map viewer, a shapes viewer (shapes are the graphic files of Ultima 8) and many other tools. Only when the code of Pentagram became more mature we decided to make it a separate project. The code developed so far was taken over to the new project space as the "old" module but we still worked on it. Since the code that was written was meant for small viewer programs and not for a full game engine, we decided to start from scratch on Pentagram itself.
+For that you'll have to take a look at Pentagram's history. The project started out as a pet project by some of the Exult programers. We tried to figure out the various file formats and used a sub tree of the Exult source code space. For example we developed a map viewer, a shapes viewer (shapes are the graphic files of Ultima 8) and many other tools. Only when the code of Pentagram became more mature we decided to make it a separate project. The code developed so far was taken over to the new project space as the "old" module but we still worked on it. Since the code that was written was meant for small viewer programs and not for a full game engine, we decided to start from scratch on Pentagram itself.
 Some of the tools in the old snapshot are not yet ported over to the actual Pentagram code and therefore users and programers might find it still useful. A listing of the tools follows.
-* unpackshp the most useful tool now. If you don't have u8shapes.flx in the static subdirectory, you have to use this tool on u8shapes.cmp to have it decompressed.
+* unpackshp The most useful tool now. If you don't have u8shapes.flx in the static subdirectory, you have to use this tool on u8shapes.cmp to have it decompressed.
 * dcmpsound Sound and Voice effects in Ultima 8 were compressed with Sonarc. Dcmpsound uses u8.exe of the original game to decompress the sfx into something we can use. For dcmpsound to find u8.exe and the sfx flex files you have to edit pentagram.cfg.
 * dcmpsound2 Same purpose as dcmpsound, only it doesn't use u8.exe to decompress the sfx.
 * u8extract Extracts the archives Ultima 8 used to store its files. Their file ending is .flx and are called flex files.
@@ -160,7 +160,7 @@ Yes and no. Most of the plot works and we had a report of someone who managed to
 
 3.3. Does Pentagram work with all versions of Ultima 8?
 Ultima 8 was released in English, French, German and Spanish. As of now only the first three run in Pentagram because the Spanish version had a slightly different graphics file format.
-On a side not, we heard that the Spanish version was not actually finish able. At some point inthe game you are supposed to get the tear of seas from Devon but the conversation option is not there.
+On a side note, we heard that the Spanish version was not actually finishable. At some point in the game you are supposed to get the tear of seas from Devon but the conversation option is not there.
 
 
 3.4. Will the Lost Vale run on Pentagram?
