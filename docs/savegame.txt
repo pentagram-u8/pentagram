@@ -252,6 +252,7 @@ BarkGump: (v1)
 uint16 version
 <ItemRelativeGump>
 sint32 counter
+uint16 textwidget
 uint32 strlen
 char barked[strlen]
 
@@ -278,10 +279,14 @@ uint16 usecodeNotifyPID
 
 
 
-SimpleTextWidget: (v1)
+TextWidget: (v1)
 uint16 version
 <Gump>
 sint32 fontnum
+sint32 current_start
+sint32 current_end
+sint32 targetwidth
+sint32 targetheight
 uint32 strlen
 char text[strlen]
 

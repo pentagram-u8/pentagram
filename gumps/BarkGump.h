@@ -25,6 +25,7 @@ class BarkGump : public ItemRelativeGump
 {
 	std::string	barked;
 	sint32 counter;
+	ObjId textwidget;
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
@@ -41,6 +42,10 @@ public:
 	// Init the gump, call after construction
 	virtual void		InitGump();
 
+protected:
+	void NextText(); 
+
+public:
 	bool loadData(IDataSource* ids);
 protected:
 	virtual void saveData(ODataSource* ods);

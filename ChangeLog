@@ -1,4 +1,8 @@
 2004-01-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/widgets/TextWidget.*: renamed SimpleTextWidget to TextWidget
+	* BarkGump.*, TextWidget.*: added support for scrolling to next text
+
+2004-01-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* */module.mk, Makefile.in, common.mk: fixed configuring/building
 	  from outside of the source directory
 

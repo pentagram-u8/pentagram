@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003  The Pentagram Team
+ *  Copyright (C) 2003-2004  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,8 +18,9 @@
 
 #include "pent_include.h"
 #include "BarkGump.h"
-#include "SimpleTextWidget.h"
+#include "TextWidget.h"
 #include "Kernel.h"
+#include "GUIApp.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -65,10 +66,11 @@ void BarkGump::InitGump()
 			break;
 	}
 
-	// Create the WrappedTextWidget
-	Gump *widget = new SimpleTextWidget(0,0,barked,fontnum);
-
+	// Create the TextWidget
+	Gump *widget = new TextWidget(0,0,barked,fontnum,180,50);
 	widget->InitGump();
+
+	textwidget = widget->getObjId();
 
 	// Add it to us
 	AddChild(widget);
@@ -81,13 +83,30 @@ void BarkGump::InitGump()
 	dims.w = d.w;
 }
 
+void BarkGump::NextText()
+{
+	TextWidget *widget = dynamic_cast<TextWidget*>
+		(GUIApp::get_instance()->getGump(textwidget));
+	assert(widget);
+	if (widget->setupNextText()) {
+		// This is just a hack
+		Pentagram::Rect d;
+		widget->GetDims(d);
+		counter = d.h*5; //! constant
+		dims.h = d.h;
+		dims.w = d.w;
+	} else {
+		Close();
+	}
+}
+
 bool BarkGump::Run(const uint32 framenum)
 {
 	Gump::Run(framenum);
 
 	// Auto close
 	if (!Kernel::get_instance()->isPaused()) {
-		if (!--counter) Close();
+		if (!--counter) NextText();
 	}
 	return true;	// Always repaint, even though we really could just try to detect it
 }
@@ -97,8 +116,8 @@ Gump *BarkGump::OnMouseDown(int button, int mx, int my)
 	Gump *g = ItemRelativeGump::OnMouseDown(button,mx,my);
 	if (g) return g;
 
-	// Close us.
-	Close();
+	// Scroll to next text, if possible
+	NextText();
 	return this;
 }
 
@@ -108,6 +127,7 @@ void BarkGump::saveData(ODataSource* ods)
 	ItemRelativeGump::saveData(ods);
 
 	ods->write4(static_cast<uint32>(counter));
+	ods->write2(textwidget);
 	ods->write4(barked.size());
 	ods->write(barked.c_str(), barked.size());
 }
@@ -119,6 +139,7 @@ bool BarkGump::loadData(IDataSource* ids)
 	if (!ItemRelativeGump::loadData(ids)) return false;
 
 	counter = static_cast<sint32>(ids->read4());
+	textwidget = ids->read2();
 	uint32 slen = ids->read4();
 	if (slen > 0) {
 		char* buf = new char[slen+1];

@@ -108,7 +108,7 @@ GUMPS = \
 WIDGETS = \
 	gumps/widgets/ButtonWidget.o \
 	gumps/widgets/SlidingWidget.o \
-	gumps/widgets/SimpleTextWidget.o
+	gumps/widgets/TextWidget.o
 
 WORLD = \
 	world/CameraProcess.o \

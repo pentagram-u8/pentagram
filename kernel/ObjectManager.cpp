@@ -42,7 +42,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "BarkGump.h"
 #include "ContainerGump.h"
 #include "PaperdollGump.h"
-#include "SimpleTextWidget.h"
+#include "TextWidget.h"
 #include "ButtonWidget.h"
 #include "SliderGump.h"
 #include "SlidingWidget.h"
@@ -293,7 +293,7 @@ void ObjectManager::setupLoaders()
 	addObjectLoader("BarkGump", ObjectLoader<BarkGump>::load);
 	addObjectLoader("ContainerGump", ObjectLoader<ContainerGump>::load);
 	addObjectLoader("PaperdollGump", ObjectLoader<PaperdollGump>::load);
-	addObjectLoader("SimpleTextWidget", ObjectLoader<SimpleTextWidget>::load);
+	addObjectLoader("TextWidget", ObjectLoader<TextWidget>::load);
 	addObjectLoader("ButtonWidget", ObjectLoader<ButtonWidget>::load);
 	addObjectLoader("SliderGump", ObjectLoader<SliderGump>::load);
 	addObjectLoader("SlidingWidget", ObjectLoader<SlidingWidget>::load);
