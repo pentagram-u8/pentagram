@@ -33,7 +33,7 @@ AC_EXEEXT
 
 AC_DEFINE(HAVE_MIDI, 1, [Do we have midi support?])
 
-# Path to an empty file (will be overriden for windows)
+# Path to an empty file (will be overridden for windows)
 EMPTY_FILE=/dev/null
 AC_SUBST(EMPTY_FILE)
 

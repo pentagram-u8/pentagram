@@ -94,7 +94,7 @@ public:
 	void getFootpadWorld(sint32& x, sint32& y, sint32& z) const;
 
 	//! Get the size of this item's 3D bounding box, scaled as in the datafiles
-    //! (i.e., the dimensions are not in the same unit as world coordinates!)
+	//! (i.e., the dimensions are not in the same unit as world coordinates!)
 	void getFootpadData(sint32& x, sint32& y, sint32& z) const;
 
 	//! Get flags

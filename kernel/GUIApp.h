@@ -36,12 +36,13 @@ class PaletteManager;
 class GameData;
 class World;
 class ObjectManager;
+class HIDManager;
 class MidiDriver;
 class AvatarMoverProcess;
 class IDataSource;
 class ODataSource;
 
-const int NUM_MOUSEBUTTONS = 5;
+const int NUM_MOUSEBUTTONS = 10;
 
 // Hack alert
 struct HWMouseCursor;
@@ -80,7 +81,9 @@ public:
 
 	void setAvatarInStasis(bool stat) { avatarInStasis = stat; }
 	bool isAvatarInStasis() const { return avatarInStasis; }
+	void toggleAvatarInStasis() { avatarInStasis = !avatarInStasis; }
 	bool isPaintEditorItems() const { return paintEditorItems; }
+	void togglePaintEditorItems() { paintEditorItems = !paintEditorItems; }
 	
 	GameMapGump *getGameMapMapGump() { return gameMapGump; }
 	Gump *getDesktopGump() { return desktopGump; }
@@ -151,6 +154,7 @@ private:
 	
 	// full system
 	ObjectManager* objectmanager;
+	HIDManager* hidmanager;
 	UCMachine* ucmachine;
 	RenderSurface *screen;
 	PaletteManager *palettemanager;

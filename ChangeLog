@@ -1,3 +1,6 @@
+2003-12-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* various: merged rest of patch #857366
+
 2003-12-19  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* misc/istring.*: case-insensitive string (patch #857366)
 

@@ -13,6 +13,7 @@ pentagram_OBJ = \
 	$(KERNEL2) \
 	$(USECODE) \
 	$(FILESYS) \
+	$(GAMES) \
 	$(GRAPHICS) \
 	$(MISC) \
 	$(CONVERT) \
@@ -33,6 +34,7 @@ llc_OBJ = \
 	$(KERNEL2) \
 	$(USECODE) \
 	$(FILESYS) \
+	$(GAMES) \
 	$(GRAPHICS) \
 	$(MISC) \
 	$(CONVERT) \

@@ -27,6 +27,9 @@ Pentagram needs a pentagram.cfg file to point it to the game data files.
 In Linux, this has to be in a ~/.pentagram directory.
 In Windows, it has to be in the current directory.
 
+Pentagram also needs a u8bindings.cfg file to load the keybindings 
+for Ultima 8. The default u8bindings.cfg is in the data directory.
+
 A sample pentagram.cfg is included below:
 
 <config>
@@ -80,6 +83,8 @@ KEYBOARD COMMANDS
 
 These commands are likely to change in the future so keep an eye on CHANGELOG
 as well.
+
+Many of these can be changed in your u8bindings.cfg file.
 
 ~		: hides/restores console
 page up/down	: scrolls console

@@ -7,6 +7,7 @@ KERNEL = \
 
 KERNEL2 = \
 	kernel/GameData.o \
+	kernel/HIDManager.o \
 	kernel/ObjectManager.o \
 	kernel/Object.o
 
@@ -43,6 +44,10 @@ CONF = \
 	conf/Configuration.o \
 	conf/XMLTree.o \
 	conf/XMLNode.o
+
+GAMES = \
+	games/u8bindings.o \
+	games/stdbindings.o
 
 GRAPHICS = \
 	graphics/AnimDat.o \
