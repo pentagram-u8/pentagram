@@ -1,3 +1,11 @@
+2004-11-14  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* kernel/HIDBinding.h: Add HID_Event to replace SDL_Event for bindings
+	* kernel/HIDManager.*: Add "do" command to execut bindings and add
+	  method to build HID_Events from SDL_Events
+	* kernel/GUIApp.cpp: Add new console command and use HID_Events
+	* games/u8bindings.*: switch to HID_Event
+	* games/stdbindings.*: switch to HID_Event
+
 2004-11-14  Ryan Nunn <colourles@users.sourceforge.net>
 	* games/U8Game.cpp : Activate Music Egg on new game
 

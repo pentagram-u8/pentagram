@@ -163,6 +163,7 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	con.AddConsoleCommand("HIDManager::listbinds",
 						  HIDManager::ConCmd_listbinds);
 	con.AddConsoleCommand("HIDManager::save", HIDManager::ConCmd_save);
+	con.AddConsoleCommand("HIDManager::do", HIDManager::ConCmd_do);
 	con.AddConsoleCommand("Kernel::processTypes", Kernel::ConCmd_processTypes);
 	con.AddConsoleCommand("Kernel::listItemProcesses",
 						  Kernel::ConCmd_listItemProcesses);
@@ -189,6 +190,7 @@ GUIApp::~GUIApp()
 	con.RemoveConsoleCommand("HIDManager::unbind");
 	con.RemoveConsoleCommand("HIDManager::listbinds");
 	con.RemoveConsoleCommand("HIDManager::save");
+	con.RemoveConsoleCommand("HIDManager::do");
 	con.RemoveConsoleCommand("Kernel::processTypes");
 	con.RemoveConsoleCommand("Kernel::listItemProcesses");
 	con.RemoveConsoleCommand("ObjectManager::objectTypes");
@@ -1277,7 +1279,10 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		HIDBinding binding = hidmanager->getBinding(event);
 
 		if (binding) {
-			handled = binding(event);
+			HID_Event hidEvent;
+			hidmanager->buildEvent(hidEvent, event);
+
+			handled = binding(hidEvent);
 			if (handled)
 				return;
 		}

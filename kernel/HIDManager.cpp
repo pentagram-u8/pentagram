@@ -125,6 +125,65 @@ HIDBinding HIDManager::getBinding(const SDL_Event& event)
 	return binding;
 }
 
+HIDBinding HIDManager::getBinding(const Pentagram::istring& bindingName)
+{
+	HIDBinding binding = 0;
+	HIDBindingMap::iterator j = bindingMap.find(bindingName);
+	if (j != bindingMap.end())
+	{
+		binding = j->second;
+	}
+	return binding;
+}
+
+void HIDManager::buildEvent(HID_Event& hidEvent, const SDL_Event& sdlEvent)
+{
+	hidEvent.xrel = 0;
+	hidEvent.yrel = 0;
+	hidEvent.value = 0;
+
+	switch (sdlEvent.type) {
+		case SDL_MOUSEBUTTONUP:
+			hidEvent.type = HID_UP;
+			hidEvent.device = HID_MOUSE;
+			break;
+		case SDL_KEYUP:
+			hidEvent.type = HID_UP;
+			hidEvent.device = HID_KEYBOARD;
+			break;
+		case SDL_JOYBUTTONUP:
+			hidEvent.type = HID_UP;
+			hidEvent.device = HID_JOYSTICK;
+			break;
+		case SDL_MOUSEBUTTONDOWN:
+			hidEvent.type = HID_DOWN;
+			hidEvent.device = HID_MOUSE;
+			break;
+		case SDL_KEYDOWN:
+			hidEvent.type = HID_DOWN;
+			hidEvent.device = HID_KEYBOARD;
+			break;
+		case SDL_JOYBUTTONDOWN:
+			hidEvent.type = HID_DOWN;
+			hidEvent.device = HID_JOYSTICK;
+			break;
+		case SDL_MOUSEMOTION:
+			hidEvent.type = HID_MOTION;
+			hidEvent.device = HID_MOUSE;
+			hidEvent.xrel = sdlEvent.motion.xrel;
+			hidEvent.yrel = sdlEvent.motion.yrel;
+			break;
+		case SDL_JOYAXISMOTION:
+			hidEvent.type = HID_MOTION;
+			hidEvent.device = HID_JOYSTICK;
+			hidEvent.value = sdlEvent.jaxis.value;
+			break;
+		default:
+			hidEvent.type = HID_UNHANDLED;
+			hidEvent.device = HID_OTHER;
+	}
+}
+
 void HIDManager::loadBindings()
 {
 	SettingManager* settings = SettingManager::get_instance();
@@ -146,7 +205,7 @@ void HIDManager::loadBindings()
 
 	while (i != keys.end())
 	{
-		Pentagram::istring bindingName = (*i).second.c_str();
+		Pentagram::istring bindingName = i->second.c_str();
 		bind((*i).first, bindingName);
 		++i;
 	}
@@ -300,7 +359,7 @@ void HIDManager::unbind(const Pentagram::istring& control)
 			{	// We will not allow these keys to be rebound
 				++key; 
 			}
-			if (keybindings[key] == (*j).second)
+			if (keybindings[key] == j->second)
 			{
 				keybindings[key] = 0;
 			}
@@ -308,7 +367,7 @@ void HIDManager::unbind(const Pentagram::istring& control)
 
 		for (button=2; button < NUM_MOUSEBUTTONS+1; ++button)
 		{
-			if (mousebindings[button] == (*j).second)
+			if (mousebindings[button] == j->second)
 			{
 				mousebindings[button] = 0;
 			}
@@ -318,7 +377,7 @@ void HIDManager::unbind(const Pentagram::istring& control)
 		{
 			for (button=0; button < NUM_MOUSEBUTTONS; ++button)
 			{
-				if (joybindings[js][button] == (*j).second)
+				if (joybindings[js][button] == j->second)
 				{
 					joybindings[js][button] = 0;
 				}
@@ -399,7 +458,7 @@ void HIDManager::ConCmd_listbinds(const Console::ArgsType &args, const Console::
 	HIDManager * hidmanager = HIDManager::get_instance();
 	hidmanager->listBindings();
 }
-	
+
 void HIDManager::ConCmd_save(const Console::ArgsType &args, const Console::ArgvType &argv)
 {
 	HIDManager * hidmanager = HIDManager::get_instance();
@@ -407,6 +466,34 @@ void HIDManager::ConCmd_save(const Console::ArgsType &args, const Console::ArgvT
 
 	SettingManager* settings = SettingManager::get_instance();
 	settings->write();
+}
+
+void HIDManager::ConCmd_do(const Console::ArgsType &args, const Console::ArgvType &argv)
+{
+	if (argv.size() < 2)
+	{
+		if (! argv.empty())
+			pout << "Usage: " << argv[0] <<
+				" <action> [\"HID_DOWN\" | \"HID_UP\"]: performs an action using the key up or down event (defaults to HID_DOWN)" << std::endl;
+		return;
+	}
+	HID_Event event;
+	event.xrel = 0;
+	event.yrel = 0;
+	event.value = 0;
+	event.device = HID_OTHER;
+	event.type = HID_DOWN;
+
+	if (argv.size() > 2)
+	{
+		if (argv[2] == "HID_UP")
+			event.type = HID_UP;
+	}
+
+	HIDManager * hidmanager = HIDManager::get_instance();
+	HIDBinding binding = hidmanager->getBinding(argv[1]);
+	if (binding)
+		binding(event);
 }
 
 void HIDManager::listBindings()

@@ -25,35 +25,39 @@ namespace HIDBindings {
 
 // ! opens the Avatar's backback
 // ! \see HIDBinding
-bool openBackpack(const SDL_Event& event);
+bool openBackpack(const HID_Event& event);
 
 // ! opens the Avatar's Inventory Panel
 // ! \see HIDBinding
-bool openInventory(const SDL_Event& event);
+bool openInventory(const HID_Event& event);
 
 // ! Activates recall
 // ! \see HIDBinding
-bool recall(const SDL_Event& event);
+bool recall(const HID_Event& event);
 
 // ! run the execution scene at the docks
 // ! \see HIDBinding
-bool runExecutionEgg(const SDL_Event& event);
+bool runExecutionEgg(const HID_Event& event);
 
 // ! run the begining scene 
 // ! \see HIDBinding
-bool runFirstEgg(const SDL_Event& event);
+bool runFirstEgg(const HID_Event& event);
 
 // ! toggles the avatar combat readiness
 // ! \see HIDBinding
-bool toggleCombat(const SDL_Event& event);
+bool toggleCombat(const HID_Event& event);
 
 // ! U8 shape viewer
 // ! \see HIDBinding
-bool u8ShapeViewer(const SDL_Event& event);
+bool u8ShapeViewer(const HID_Event& event);
 
 // ! U8 game menu
 // ! \see HIDBinding
-bool showMenu(const SDL_Event& event);
+bool showMenu(const HID_Event& event);
+
+// ! open gump with item shortcuts
+// ! \see HIDBinding
+bool openQuickItemGump(const HID_Event& event);
 
 };
 

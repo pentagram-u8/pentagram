@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 namespace HIDBindings {
 
-bool avatarInStatis(const SDL_Event& event)
+bool avatarInStatis(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -44,14 +44,15 @@ bool avatarInStatis(const SDL_Event& event)
 		GUIApp * g = GUIApp::get_instance();
 		g->toggleAvatarInStasis();
 		pout << "avatarInStasis = " << g->isAvatarInStasis() << std::endl;
-	}
-	break;
+	} break;
 
+	default:
+		break;
 	}
 	return handled;
 }
 
-bool engineStats(const SDL_Event& event)
+bool engineStats(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -62,14 +63,15 @@ bool engineStats(const SDL_Event& event)
 		ObjectManager::get_instance()->objectStats();
 		UCMachine::get_instance()->usecodeStats();
 		World::get_instance()->worldStats();
-	}
-	break;
+	} break;
 
+	default:
+		break;
 	}
 	return handled;
 }
 
-bool itemLocator(const SDL_Event& event)
+bool itemLocator(const HID_Event& event)
 {
 	bool handled = false;
 	int itemNumber = 19204;
@@ -86,14 +88,15 @@ bool itemLocator(const SDL_Event& event)
 		sint32 x,y,z;
 		item->getLocation(x,y,z);
 		pout << itemNumber << ": (" << x << "," << y << "," << z << ")" << std::endl;
-	}
-	break;
+	} break;
 
+	default:
+		break;
 	}
 	return handled;
 }
 
-bool paintEditorItems(const SDL_Event& event)
+bool paintEditorItems(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -103,14 +106,15 @@ bool paintEditorItems(const SDL_Event& event)
 		GUIApp * g = GUIApp::get_instance();
 		g->togglePaintEditorItems();
 		pout << "paintEditorItems = " << g->isPaintEditorItems() << std::endl;
-	}
-	break;
+	} break;
 
+	default:
+		break;
 	}
 	return handled;
 }
 
-bool showTouchingItems(const SDL_Event& event)
+bool showTouchingItems(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -120,14 +124,15 @@ bool showTouchingItems(const SDL_Event& event)
 		GUIApp * g = GUIApp::get_instance();
 		g->toggleShowTouchingItems();
 		pout << "ShowTouchingItems = " << g->isShowTouchingItems() << std::endl;
-	}
-	break;
+	} break;
 
+	default:
+		break;
 	}
 	return handled;
 }
 
-bool quickLoad(const SDL_Event& event)
+bool quickLoad(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -135,14 +140,15 @@ bool quickLoad(const SDL_Event& event)
 	{
 		handled = true;
 		GUIApp::get_instance()->loadGame("@save/quicksave");
-	}
-	break;
+	} break;
 
+	default:
+		break;
 	}
 	return handled;
 }
 
-bool quickSave(const SDL_Event& event)
+bool quickSave(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -150,14 +156,15 @@ bool quickSave(const SDL_Event& event)
 	{
 		handled = true;
 		GUIApp::get_instance()->saveGame("@save/quicksave");
-	}
-	break;
+	} break;
 
+	default:
+		break;
 	}
 	return handled;
 }
 
-bool toggleFrameByFrame(const SDL_Event& event)
+bool toggleFrameByFrame(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -172,14 +179,15 @@ bool toggleFrameByFrame(const SDL_Event& event)
 			kernel->pause();
 		else
 			kernel->unpause();
-	}
-	break;
+	} break;
 
+	default:
+		break;
 	}
 	return handled;
 }
 
-bool advanceFrameByFrame(const SDL_Event& event)
+bool advanceFrameByFrame(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -191,14 +199,15 @@ bool advanceFrameByFrame(const SDL_Event& event)
 			kernel->unpause();
 			pout << "FrameByFrame: Next Frame" << std::endl;
 		}
-	}
-	break;
+	} break;
 
+	default:
+		break;
 	}
 	return handled;
 }
 
-bool quit(const SDL_Event& event)
+bool quit(const HID_Event& event)
 {
 	switch (event.type) {
 	case HID_DOWN:
@@ -209,7 +218,7 @@ bool quit(const SDL_Event& event)
 	}
 }
 
-bool toggleConsole(const SDL_Event& event)
+bool toggleConsole(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -225,7 +234,7 @@ bool toggleConsole(const SDL_Event& event)
 	return handled;
 }
 
-bool quickMoveUp(const SDL_Event& event)
+bool quickMoveUp(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -252,7 +261,7 @@ bool quickMoveUp(const SDL_Event& event)
 	return handled;
 }
 
-bool quickMoveDown(const SDL_Event& event)
+bool quickMoveDown(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -279,7 +288,7 @@ bool quickMoveDown(const SDL_Event& event)
 	return handled;
 }
 
-bool quickMoveLeft(const SDL_Event& event)
+bool quickMoveLeft(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -306,7 +315,7 @@ bool quickMoveLeft(const SDL_Event& event)
 	return handled;
 }
 
-bool quickMoveRight(const SDL_Event& event)
+bool quickMoveRight(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -333,7 +342,7 @@ bool quickMoveRight(const SDL_Event& event)
 	return handled;
 }
 
-bool quickMoveAscend(const SDL_Event& event)
+bool quickMoveAscend(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -360,7 +369,7 @@ bool quickMoveAscend(const SDL_Event& event)
 	return handled;
 }
 
-bool quickMoveDescend(const SDL_Event& event)
+bool quickMoveDescend(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -387,7 +396,7 @@ bool quickMoveDescend(const SDL_Event& event)
 	return handled;
 }
 
-bool quickMoveQuarterSpeed(const SDL_Event& event)
+bool quickMoveQuarterSpeed(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -409,7 +418,7 @@ bool quickMoveQuarterSpeed(const SDL_Event& event)
 	return handled;
 }
 
-bool quickMoveClipping(const SDL_Event& event)
+bool quickMoveClipping(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {

@@ -43,6 +43,11 @@ public:
 	//! loads the keybindings from the configuration
 	void loadBindings();
 
+	//! Builds a HID_Event from ta SDL_Event
+	//! \param hidEvent a blank HID_Event
+	//! \param sdlEvent the SDL_Event to transfer
+	void buildEvent(HID_Event& hidEvent, const SDL_Event& sdlEvent);
+
 	//! saves the keybindings to the configuration
 	void saveBindings();
 
@@ -66,13 +71,22 @@ public:
 
 	//! "save" console command
 	static void ConCmd_save(const Console::ArgsType &args, const Console::ArgvType &argv);
-	
+
+	//! "do" console command
+	static void ConCmd_do(const Console::ArgsType &args, const Console::ArgvType &argv);
+
 	//! stores the names of all controls bond to bindingName in a vector
 	//! \param bindingName name of a HIDBinding
 	//! \param controls vector to store the controls attached to bindingName
 	void getBindings(const Pentagram::istring& bindingName, std::vector<const char *>& controls);
 private:
 	void HIDManager::listBindings();
+
+	//! obtain the HIDBinding by name
+	//! \param bindingName name of a HIDBinding
+	//! \return a HIDBinding or null if no binding was present
+	HIDBinding getBinding(const Pentagram::istring& bindingName);
+
 	HIDBindingMap bindingMap;
 	HIDBinding keybindings[SDLK_LAST];
 	HIDBinding mousebindings[NUM_MOUSEBUTTONS+1];

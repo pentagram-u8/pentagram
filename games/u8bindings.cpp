@@ -31,10 +31,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "ShapeViewerGump.h"
 #include "MenuGump.h"
+#include "QuickItemGump.h"
 
 namespace HIDBindings {
 
-bool openBackpack(const SDL_Event& event)
+bool openBackpack(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -50,14 +51,14 @@ bool openBackpack(const SDL_Event& event)
 		Item* backpack = World::get_instance()->getItem(av->getEquip(7));
 		if (backpack)
 			backpack->callUsecodeEvent_use();
-	}
-	break;
-
+	} break;
+	default:
+		break;
 	}
 	return handled;
 }
 
-bool openInventory(const SDL_Event& event)
+bool openInventory(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -71,14 +72,15 @@ bool openInventory(const SDL_Event& event)
 		}
 		MainActor* av = World::get_instance()->getMainActor();
 		av->callUsecodeEvent_use();
-	}
-	break;
+	} break;
+	default:
+		break;
 
 	}
 	return handled;
 }
 
-bool recall(const SDL_Event& event)
+bool recall(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -101,14 +103,15 @@ bool recall(const SDL_Event& event)
 		uint16 objid = uclist.getuint16(0);
 		Item* item = World::get_instance()->getItem(objid);
 		item->callUsecodeEvent_use();
-	}
-	break;
+	} break;
+	default:
+		break;
 
 	}
 	return handled;
 }
 
-bool runExecutionEgg(const SDL_Event& event)
+bool runExecutionEgg(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -140,14 +143,15 @@ bool runExecutionEgg(const SDL_Event& event)
 		egg->getLocation(x,y,z);
 		avatar->collideMove(x,y,z,true,true);
 		egg->hatch();
-	}
-	break;
+	} break;
+	default:
+		break;
 
 	}
 	return handled;
 }
 
-bool runFirstEgg(const SDL_Event& event)
+bool runFirstEgg(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -179,14 +183,15 @@ bool runFirstEgg(const SDL_Event& event)
 		// Center on egg
 		CameraProcess::SetCameraProcess(new CameraProcess(ix,iy,iz));
 		egg->hatch();
-	}
-	break;
+	} break;
+	default:
+		break;
 
 	}
 	return handled;
 }
 
-bool toggleCombat(const SDL_Event& event)
+bool toggleCombat(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -200,14 +205,15 @@ bool toggleCombat(const SDL_Event& event)
 		}
 		MainActor* av = World::get_instance()->getMainActor();
 		av->toggleInCombat();
-	}
-	break;
+	} break;
+	default:
+		break;
 
 	}
 	return handled;
 }
 
-bool u8ShapeViewer(const SDL_Event& event)
+bool u8ShapeViewer(const HID_Event& event)
 {
 	switch (event.type) {
 	case HID_DOWN:
@@ -218,11 +224,22 @@ bool u8ShapeViewer(const SDL_Event& event)
 	}
 }
 
-bool showMenu(const SDL_Event& event)
+bool showMenu(const HID_Event& event)
 {
 	switch (event.type) {
 	case HID_DOWN:
 		MenuGump::showMenu();
+		return true;
+	default:
+		return false;
+	}
+}
+
+bool openQuickItemGump(const HID_Event& event)
+{
+	switch (event.type) {
+	case HID_DOWN:
+		QuickItemGump::openGump();
 		return true;
 	default:
 		return false;
