@@ -117,6 +117,9 @@ void MainActor::teleport(int mapnum, int teleport_id)
 	World* world = World::get_instance();
 	CurrentMap* currentmap = world->getCurrentMap();
 
+	pout << "MainActor::teleport(): teleporting to map " << mapnum
+		 << ", egg " << teleport_id << std::endl;
+
 	// (attempt to) load the new map
 	if (!world->switchMap(mapnum)) {
 		perr << "MainActor::teleport(): switchMap() failed!" << std::endl;
@@ -134,7 +137,8 @@ void MainActor::teleport(int mapnum, int teleport_id)
 	sint32 x,y,z;
 	egg->getLocation(x,y,z);
 
-	perr << "Found destination: " << x << "," << y << "," << z << std::endl;
+	pout << "Found destination: " << x << "," << y << "," << z << std::endl;
+	egg->dumpInfo();
 
 	Actor::teleport(mapnum, x, y, z);
 	justTeleported = true;

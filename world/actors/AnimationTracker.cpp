@@ -100,6 +100,15 @@ unsigned int AnimationTracker::getNextFrame(unsigned int frame)
 	return frame;
 }
 
+bool AnimationTracker::stepFrom(sint32 x_, sint32 y_, sint32 z_)
+{
+	x = x_;
+	y = y_;
+	z = z_;
+
+	return step();
+}
+
 bool AnimationTracker::step()
 {
 	if (done) return false;

@@ -162,7 +162,9 @@ bool ActorAnimProcess::run(const uint32 framenum)
 	bool result = true;
 	if (repeatcounter == 0) {
 		// next step:
-		result = tracker->step();
+		sint32 x,y,z;
+		a->getLocation(x,y,z);
+		result = tracker->stepFrom(x,y,z);
 		tracker->updateActorFlags();
 
 		if (!result) {

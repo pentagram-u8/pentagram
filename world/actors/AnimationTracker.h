@@ -47,6 +47,11 @@ public:
 	//! caller must decide if animation should continue after a 'false'
 	bool step();
 
+	//! do a single step of the animation, starting at (x,y,z)
+	//! returns true if everything ok, false if not
+	//! caller must decide if animation should continue after a 'false'
+	bool stepFrom(sint32 x, sint32 y, sint32 z);
+
 	//! update the PathfindingState with latest coordinates and flags
 	void updateState(PathfindingState& state);
 
