@@ -74,6 +74,7 @@ case "$host_os" in
 		WINDOWING_SYSTEM="-DWIN32"
 		AC_DEFINE(CYGWIN, 1, [Compiling using Cygwin])
 		AC_MSG_RESULT(Win32 (cygwin))
+		CXXFLAGS="$CXXFLAGS -mno-cygwin"
 		LIBS="$LIBS -lwinmm"
 		enable_timidity="no"
 		EMPTY_FILE=nul
