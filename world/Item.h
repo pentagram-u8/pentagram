@@ -446,7 +446,8 @@ public:
 		EXT_INCURMAP	= 0x0002,	//!< Item is in a CurrentMap display list
 		EXT_LERP_NOPREV	= 0x0008,	//!< Item can't be lerped this frame
 		EXT_HIGHLIGHT	= 0x0010,	//!< Item should be Painted highlighted
-		EXT_CAMERA		= 0x0020	//!< Item is being followed by the camera
+		EXT_CAMERA		= 0x0020,	//!< Item is being followed by the camera
+		EXT_SPRITE		= 0x0040	//!< Item is a sprite
 	};
 };
 

@@ -428,6 +428,7 @@ void CurrentMap::areaSearch(UCList* itemlist, const uint8* loopscript,
 				Item* item = *iter;
 
 				if (item == check) continue;
+				if (item->getExtFlags() & Item::EXT_SPRITE) continue;
 
 				// check if item is in range?
 				sint32 ix, iy, iz;
@@ -507,6 +508,7 @@ void CurrentMap::surfaceSearch(UCList* itemlist, const uint8* loopscript,
 				Item* item = *iter;
 
 				if (item == check) continue;
+				if (item->getExtFlags() & Item::EXT_SPRITE) continue;
 
 				// check if item is in range?
 				sint32 ix, iy, iz;
@@ -604,6 +606,7 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 			{
 				Item* item = *iter;
 				if (item->getObjId() == item_) continue;
+				if (item->getExtFlags() & Item::EXT_SPRITE) continue;
 
 				ShapeInfo* si = item->getShapeInfo();
 				//!! need to check is_sea() and is_land() maybe?
@@ -739,6 +742,7 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 			{
 				Item* other_item = *iter;
 				if (other_item->getObjId()==item) continue;
+				if (other_item->getExtFlags() & Item::EXT_SPRITE) continue;
 
 				// This WILL hit everything and return them unless solid_only 
 				// is set

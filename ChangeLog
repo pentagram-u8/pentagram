@@ -1,5 +1,7 @@
 2003-11-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AvatarMoverProcess.*: retreating/running in combat
+	* world/Item.h, world/SpriteProcess.cpp, world/CurrentMap.cpp:
+	  EXT_SPRITE flag
 
 2003-11-30	Darke  <darkepaw@users.sf.net>
 	Committing patch by Matthew Jimenez:

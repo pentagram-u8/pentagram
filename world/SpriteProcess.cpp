@@ -43,7 +43,7 @@ SpriteProcess::SpriteProcess(int Shape, int Frame, int LastFrame,
 {
 
 	Item *item = ItemFactory::createItem(Shape, Frame, 
-						0, Item::FLG_DISPOSABLE, 0, 0, 0);
+						0, Item::FLG_DISPOSABLE, 0, 0, Item::EXT_SPRITE);
 	item->assignObjId();
 	item->move(X,Y,Z);
 	setItemNum(item->getObjId());
