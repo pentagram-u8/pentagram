@@ -100,6 +100,7 @@ bool World::switchMap(uint32 newmap)
 
 	// Map switching procedure:
 	// write back CurrentMap to the old map
+	// clear all objIDs
 	// swap out fixed items in old map?
 	// make sure fixed items in the new map are loaded
 	// assign objIDs to fixed items
@@ -119,6 +120,8 @@ bool World::switchMap(uint32 newmap)
 
 		current_map->writeback();
 		maps[oldmap]->unloadFixed();
+
+		// TODO: clear objIDs
 	}
 
 	pout << "Loading Fixed items in map " << newmap << std::endl;
