@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002,2003 The Pentagram team
+Copyright (C) 2002-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -38,11 +38,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Container.h"
 
-//#define WATCH_CLASS 109
+//#define WATCH_CLASS 589
 //#define WATCH_ITEM 121
 
 #ifdef WATCH_CLASS
-#define LOGPF(X) do { if (p->classid == WATCH_CLASS) { pout.printf X; } } while(0)
+#define LOGPF(X) do { if (thisclassid == WATCH_CLASS) { pout.printf X; } } while(0)
 #define SHOWSTART (p->classid == WATCH_CLASS)
 #elif defined WATCH_ITEM
 #define LOGPF(X) do { if (p->item_num == WATCH_ITEM) { pout.printf X; } } while(0)
@@ -160,8 +160,12 @@ bool UCMachine::execProcess(UCProcess* p)
 
 		uint8 opcode = cs.read1();
 
-		LOGPF(("sp = %02X; %04X: %02X\t",
-			   p->stack.stacksize(), p->ip, opcode));
+#ifdef WATCH_CLASS
+		uint16 thisclassid = p->classid;
+#endif
+
+		LOGPF(("sp = %02X; %04X:%04X: %02X\t",
+			   p->stack.stacksize(), p->classid, p->ip, opcode));
 
 		sint8 si8a, si8b;
 		uint8 ui8a;
@@ -964,8 +968,8 @@ bool UCMachine::execProcess(UCProcess* p)
 				if (getList(ui16b)) {
 					l->copyList(*getList(ui16b));
 				} else {
-					// trying to push non-existant list. Error or not?
-					perr << "Pushing non-existant slist" << std::endl;
+					// trying to push non-existent list. Error or not?
+					perr << "Pushing non-existent slist" << std::endl;
 					// error = true;
 				}
 				p->stack.push2(assignList(l));
@@ -986,9 +990,9 @@ bool UCMachine::execProcess(UCProcess* p)
 				if (getList(ui16b)) {
 					l->copyStringList(*getList(ui16b));
 				} else {
-					// trying to push non-existant list. Error or not?
+					// trying to push non-existent list. Error or not?
 					// (Devon's talk code seems to use it; so no error for now)
-					perr << "Pushing non-existant slist" << std::endl;
+					perr << "Pushing non-existent slist" << std::endl;
 					// error = true;
 				}
 				p->stack.push2(assignList(l));
@@ -1130,7 +1134,6 @@ bool UCMachine::execProcess(UCProcess* p)
 				// return value is going to be stored somewhere,
 				// and some other process is probably waiting for it.
 				// So, we can't delete ourselves just yet.
-				// Question is of course when we can...
 			} else {
 				LOGPF(("ret\t\tto %04X:%04X", p->classid, p->ip));
 
@@ -1210,15 +1213,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				if (proc && proc2) {
 					proc->waitFor(ui16a);
 				} else {
-
-					// There seem to be cases where a process has terminated
-					// before the caller has had the time to wait for it.
-					// Does that mean we had to wait longer with terminating
-					// the process? For now, just ignore the error.
-
-					// (Example: AVATAR::Look(), the spawn FREE:29D8)
-
-					perr << "Non-existant process PID (";
+					perr << "Non-existent process PID (";
 					if (!proc && !proc2) {
 						perr << ui16a << "," << ui16b;
 					} else if (!proc) {
@@ -1227,7 +1222,7 @@ bool UCMachine::execProcess(UCProcess* p)
 						perr << ui16a;
 					}
 					perr << ") in implies" << std::endl;
-//					error = true;
+					error = true;
 				}
 			}
 			break;
@@ -1256,13 +1251,11 @@ bool UCMachine::execProcess(UCProcess* p)
 												   p->stack.access(),
 												   arg_bytes);
 				p->temp32 = Kernel::get_instance()->addProcessExec(newproc);
-				//!! CHECKME
-				//!! is order of execution of this process and the new one
-				//!! relevant? It might be, since 0x6C and freeing opcodes
-				//!! might be executed in the wrong order otherwise.
-				//!! Currently, the spawned processes is added to the front
-				//!! of the execution list, so it's guaranteed to be run
-				//!! before the current process
+
+				// Note: order of execution of this process and the new one is
+				// relevant. Currently, the spawned processes is executed once
+				// immediately, after which the current process resumes
+
 
 				// cede = true;
 			}
@@ -1275,9 +1268,6 @@ bool UCMachine::execProcess(UCProcess* p)
 			// tt = size of this pointer
 			// uu = unknown (occuring values: 00, 02, 05)
 
-			//! What to do with this new process?
-			//! The inlined code does use 'var06' (this) sometimes, so
-			//! maybe it should copy the this pointer from the current proc?
 			{
 				uint16 classid = cs.read2();
 				uint16 offset = cs.read2();
@@ -1295,6 +1285,9 @@ bool UCMachine::execProcess(UCProcess* p)
 												   thisptr, this_size);
 
 				uint16 newpid= Kernel::get_instance()->addProcessExec(newproc);
+
+				// as with 'spawn', run execute the spawned process once
+				// immediately
 
 				p->stack.push2(newpid); //! push pid of newproc?
 
@@ -1852,7 +1845,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 		cede |= p->suspended; // check if we suspended ourselves
 
-	} // while(!cede && !error && !p->terminated)
+	} // while(!cede && !error && !p->terminated && !p->terminate_deferred)
 
 	if (error) {
 		perr << "Process " << p->pid << " caused an error. Killing process."

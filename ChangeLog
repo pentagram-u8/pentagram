@@ -1,3 +1,9 @@
+2004-04-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/UCMachine.cpp: fixed some outdated comments, typos
+	* usecode/UCMachine.cpp: fixed return messages with WATCH_CLASS
+	* usecode/UCMachine.cpp: re-enabled some errors (they were disabled
+	  to workaround bugs which should now be fixed properly.)
+
 2004-04-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/MainActor.cpp: fixed crash when teleporting to
 	  non-existent destination egg
