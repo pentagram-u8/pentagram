@@ -101,12 +101,18 @@ public:
 			uint32 pos_y, pos_x;
 			uint32 end_y = dh;
 			uint32 dst_y = 0;
+			uint8* block_start = 0;
+			uint8* next_line = pixel;
+			uint8* next_block = 0;
 
 			// Src Loop Y
 			while (texel != tex_end)
 			{
 				uint32 end_x = dw;
 				uint32 dst_x = 0;
+
+				next_block = next_line;
+				next_line = 0;
 
 				// Src Loop X
 				while (texel != tline_end)
@@ -119,24 +125,30 @@ public:
 					//
 					// Inner loops
 					//
+					block_start = next_block;
+					next_block = 0;
 
 					// Dest Loop Y
 					while (pos_y < end_y)
 					{
 						pos_x = dst_x;
+						pixel = block_start;
 
 						// Dest Loop X
 						while (pos_x < end_x)
 						{
-							//*(reinterpret_cast<uintX*>(pixel)) = p;
-							uint8 *dp = pixel + ((pos_y/sh) * pitch + (pos_x/sw)*sizeof(uintX));
-							*(reinterpret_cast<uintX*>(dp)) = p;
+							*(reinterpret_cast<uintX*>(pixel)) = p;
 
-							//pixel+=sizeof(uintX);
+							pixel+=sizeof(uintX);
 							pos_x += sw;
 						}
+						if (!next_block) next_block = pixel;
+						block_start += pitch;
+
 						pos_y += sh;
 					}
+
+					if (!next_line) next_line = block_start;
 
 					dst_x = pos_x;
 					end_x += dw;

@@ -1,3 +1,7 @@
+2005-02-20  Ryan Nunn <colourles@users.sourceforge.net>
+	* graphics/scalers/PointScaler.h : Optimized the arbitrary scaler a 
+	  little. It is now significantly faster 
+	  	  
 2005-02-19  Ryan Nunn <colourles@users.sourceforge.net>
 	* graphics/RenderSurface.* : StretchBlit function sort of implemented
 	* graphics/SoftRenderSurface.* : Point scaling for StretchBlit
