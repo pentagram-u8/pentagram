@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define APPLICATION_H
 
 class Kernel;
+class UCMachine;
 
 // extremely simplified stub-ish Application class
 class Application {
@@ -33,6 +34,8 @@ protected:
 	// Kernel
 	Kernel*			kernel;
 	uint32			frame;
+
+	UCMachine*      ucmachine;
 };
 
 #endif

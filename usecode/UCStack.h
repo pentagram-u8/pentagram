@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // A little-endian stack for use with usecode
 
-class UCStack : public IBufferDataSource
+class UCStack : protected IBufferDataSource
 {
 public:
 	UCStack(unsigned int len=0x1000) :
@@ -39,6 +39,10 @@ public:
 
 	inline uint32 stacksize() const {
 		return buf+size-buf_ptr;
+	}
+
+	uint32 getSize() {
+		return IBufferDataSource::getSize();
 	}
 
 	inline void addSP(const sint32 offset) {
@@ -110,6 +114,9 @@ public:
 	}
 	inline const uint8* access(const uint32 offset) const {		
 		return buf+offset;
+	}
+	inline const uint8* access() const {
+		return buf_ptr;
 	}
 
 	//

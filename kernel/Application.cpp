@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Application.h"
 #include "Kernel.h"
 
+#include "UCMachine.h"
 #include "UCProcess.h"
 #include "Usecode.h"
 
@@ -28,6 +29,7 @@ Application::Application(int argc, char *argv[])
 {
 	// Create the kernel
 	kernel = new Kernel;
+	ucmachine = new UCMachine;
 }
 
 Application::~Application()

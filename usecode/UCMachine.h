@@ -19,7 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef UCMACHINE_H
 #define UCMACHINE_H
 
+#include <map>
+
 #include "UCStack.h"
+#include "UCList.h"
 
 class UCProcess;
 
@@ -38,6 +41,16 @@ private:
 	// this technically isn't a stack, but UCStack supports the access 
 	// functions we need
 	UCStack globals;
+
+	// this probably won't be the final way of storing these
+	std::map<uint16, UCList*> listHeap;
+	std::map<uint16, std::string> stringHeap;
+
+	uint16 assignString(const char* str);
+	uint16 assignList(UCList* l);
+
+	void freeString(uint16 s);
+	void freeList(uint16 l);
 
 	static UCMachine* ucmachine;
 };

@@ -1,3 +1,8 @@
+2002-12-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/UCList.h: usecode list
+	* usecode/*: more opcodes, minor structure changes
+	* kernel/Application: create UCMachine in Application
+
 2002-12-13  Ryan Nunn <colourles@users.sourceforge.net>
 	* tools/disasm/Disasm.cpp : Undoing my damage
 

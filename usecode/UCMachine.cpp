@@ -41,7 +41,7 @@ UCMachine::~UCMachine()
 {
 }
 
-static const char *print_bp(const sint8 offset)
+static const char *print_bp(const sint16 offset)
 {
 	static char str[32];
 	std::snprintf(str, 32, "[BP%c%02Xh]", offset<0?'-':'+', 
@@ -49,6 +49,13 @@ static const char *print_bp(const sint8 offset)
 	return str;
 }
 
+static const char *print_sp(const sint16 offset)
+{
+	static char str[32];
+	std::snprintf(str, 32, "[SP%c%02Xh]", offset<0?'-':'+', 
+				  offset<0?-offset:offset);
+	return str;
+}
 
 bool UCMachine::execProcess(UCProcess* p)
 {
@@ -56,7 +63,11 @@ bool UCMachine::execProcess(UCProcess* p)
 
 	assert(p);
 
-	//! check if process is suspended?
+	//! check if process is suspended? (or do that in UCProcess::run?)
+
+	// It might be a good idea to move cs from UCProcess to in here,
+	// and only store the IP in UCProcess. This would make swapping out
+	// usecode functions easier, I think
 
 	pout << "running process " << p->pid << ", class " << p->classid << ", offset " << p->cs.getPos() << std::endl;
 
@@ -74,7 +85,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		LOGPF(("sp = %02X; %04X: %02X\t", p->stack.stacksize(),
 			   offset, opcode));
 
-		sint8 si8a;
+		sint8 si8a, si8b;
 		uint16 ui16a, ui16b;
 		uint32 ui32a, ui32b;
 		sint16 si16a, si16b;
@@ -128,17 +139,33 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x08:
 			// 08
 			// pop 16bits into result register
+			//! what is this result register exactly??
 			printf("pop res");
 			break;
 		case 0x09:
-			// 09 xx yy zz
-			// pop yy bytes into an element of list bp+xx (or slist if zz is set).
-			// (pop index first, then actual data?)
-			i0 = read1(in); i1 = read1(in); i2 = read1(in);
-			printf("pop element\t%s (%02X) slist==%02X", print_bp(i0), i1, i2);
-			break;
+
 */
 
+		case 0x09:
+			// 09 xx yy zz
+			// pop yy bytes into an element of list bp+xx (or slist if zz set)
+			si8a = static_cast<sint8>(p->cs.read1());
+			ui32a = p->cs.read1();
+			si8b = static_cast<sint8>(p->cs.read1());
+			LOGPF(("assign element\t%s (%02X) (%02X)",
+				   print_bp(si8a), si8b, si8b));
+			ui16a = p->stack.pop2(); // index
+			ui16b = p->stack.access2(p->bp+si8a);
+			if (si8b) { // slist?
+				// what special behaviour do we need here?
+				if (ui32a != 2) error = true; // um?
+				listHeap[ui16b]->assign(ui16a, p->stack.access());
+				p->stack.pop2(); // advance SP
+			} else {
+				listHeap[ui16b]->assign(ui16a, p->stack.access());
+				p->stack.moveSP(ui32a);
+			}
+			break;
 
 		// PUSH opcodes
 
@@ -166,37 +193,53 @@ bool UCMachine::execProcess(UCProcess* p)
 			LOGPF(("push dword\t%08Xh", ui32a));
 			break;
 
-/*
 		case 0x0D:
 			// 0D xx xx yy ... yy 00
 			// push string (yy ... yy) of length xx xx onto the stack
-			i0 = read2(in);
-			str0 = "";
-			while ((i1 = read1(in))) str0 += static_cast<char>(i1);
-			printf("push string\t\"%s\"", str0.c_str());
+			{
+				ui16a = p->cs.read2();
+				char *str = new char[ui16a];
+				p->cs.read(str, ui16a);
+				LOGPF(("push string\t\"%s\"", str));
+				ui16b = p->cs.read1();
+				if (ui16b != 0) error = true;
+				p->stack.push2(assignString(str));
+				delete[] str;
+			}
 			break;
+
 		case 0x0E:
 			// 0E xx yy
-			// pop yy values of size xx from the stack and push the resulting list
-			i0 = read1(in);
-			i1 = read1(in);
-			printf("create list\t%02X (%02X)", i1, i0);
+			// pop yy values of size xx and push the resulting list
+			{
+				ui16a = p->cs.read1();
+				ui16b = p->cs.read1();
+				UCList* l = new UCList(ui16a, ui16b);
+				for (unsigned int i = 0; i < ui16b; i++) {
+					l->append(p->stack.access());
+					p->stack.addSP(ui16a);
+				}
+				p->stack.push2(assignList(l));
+				LOGPF(("create list\t%02X (%02X)", ui16b, ui16a));
+			}
 			break;
-*/
 
 		// Usecode function and intrinsic calls
+
 
 		case 0x0F:
 			// 0F xx yyyy
 			// intrinsic call. xx is number of argument bytes
 			// (includes this pointer, if present)
+			// NB: do not actually pop these argument bytes
 			{
-				// TODO
+				//! TODO
 				uint16 arg_bytes = p->cs.read1();
 				uint16 func = p->cs.read2();
 				LOGPF(("!calli\t\t%04Xh (%02Xh arg bytes)", func, arg_bytes));
 			}
 			break;
+
 
 		case 0x11:
 			// 11 xx xx yy yy
@@ -230,6 +273,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x12:
 			// 12
 			// pop 16bits into temp register
+			//! what is the temp register exactly?
 			printf("pop\t\ttemp");
 			break;
 */
@@ -254,41 +298,64 @@ bool UCMachine::execProcess(UCProcess* p)
 			LOGPF(("add long"));
 			break;
 
-/*
+
 		case 0x16:
 			// 16
 			// pop two strings from the stack and push the concatenation
-			// (keeping both originals intact?)
-			printf("concat");
+			// (free the originals? order?)
+			ui16a = p->stack.pop2();
+			ui16b = p->stack.pop2();
+			stringHeap[ui16b] += stringHeap[ui16a];
+			freeString(ui16a);
+			p->stack.push2(ui16b);
+			LOGPF(("concat\t\t= %s", stringHeap[ui16b].c_str()));
 			break;
+
 		case 0x17:
 			// 17
 			// pop two lists from the stack and push the 'sum' of the lists
-			// (keep duplicates, overwriting the one first pushed?)
-			printf("append");
+			// (free the originals? order?)
+			ui16a = p->stack.pop2();
+			ui16b = p->stack.pop2();
+			listHeap[ui16b]->appendList(*listHeap[ui16a]);
+			freeList(ui16a);
+			p->stack.push2(ui16b);
+			LOGPF(("append"));
 			break;
+
+/*
 		case 0x19:
 			// 19 02
 			// add two stringlists
-			// (remove duplicates, overwriting the one first pushed?)
+			// (free the originals?, remove duplicates)
 			i0 = read1(in);
 			printf("append slist\t(%02X)", i0);
 			break;
+
 		case 0x1A:
 			// 1A
 			// pop two string lists from the stack and remove the 2nd from the 1st
-			// (overwriting the first one)
+			// (free the originals?)
+			// NB: this one takes a length parameter in crusader. (not in u8)
 			i0 = read1(in);
 			printf("remove slist\t(%02X)", i0);
 			break;
-		case 0x1B:
-			// 1B
-			// pop two lists from the stack and remove the 2nd from the 1st
-			// (overwriting the first one)
-			i0 = read1(in);
-			printf("remove list\t(%02X)", i0);
-			break;
+
 */
+		case 0x1B:
+			// 1B xx
+			// pop two lists from the stack and remove the 2nd from the 1st
+			// (free the originals? order?)
+			// why do we need elementsize?
+			// only occurs in crusader.
+			ui32a = p->cs.read1(); // elementsize
+			ui16a = p->stack.pop2();
+			ui16b = p->stack.pop2();
+			listHeap[ui16b]->substractList(*listHeap[ui16a]);
+			freeList(ui16a);
+			p->stack.push2(ui16b);
+			LOGPF(("remove list\t(%02X)", ui32a));
+			break;
 
 		case 0x1C:
 			// 1C
@@ -411,13 +478,22 @@ bool UCMachine::execProcess(UCProcess* p)
 			LOGPF(("cmp long"));
 			break;
 
-/*
+
 		case 0x26:
 			// 26
 			// compare two strings
-			printf("strcmp");
+			//! delete strings?
+			ui16a = p->stack.pop2();
+			ui16b = p->stack.pop2();
+			if (stringHeap[ui16b] == stringHeap[ui16a])
+				p->stack.push2(1);
+			else
+				p->stack.push2(0);
+			freeString(ui16a);
+			freeString(ui16b);
+			LOGPF(("strcmp"));
 			break;
-*/
+
 
 		case 0x28:
 			// 28
@@ -626,14 +702,32 @@ bool UCMachine::execProcess(UCProcess* p)
 			LOGPF(("ne long"));
 			break;
 
-/*
+
 		case 0x38:
 			// 38 xx yy
-			// searches for an element in list xx (or slist if yy is true)
-			i0 = read1(in); i1 = read1(in);
-			printf("in list\t\t%s slist==%02X", print_bp(i0), i1);
+			// is element (size xx) in list? (or slist if yy is true)
+
+			// 0583(FIRESPEL):2ADB: create list. Where is this list deleted?
+			// would this mean that we're supposed to destroy the list here?
+			// I guess it would make sense if 'push list' duplicates a list
+
+			ui16a = p->cs.read1();
+			ui32a = p->cs.read1();
+			ui16b = p->stack.pop2();
+			if (ui32a) { // stringlist
+				//! TODO
+			} else {
+				bool found = listHeap[ui16b]->inList(p->stack.access());
+				p->stack.addSP(ui16a);
+				if (found)
+					p->stack.push2(1);
+				else
+					p->stack.push2(0);
+
+				freeList(ui16b);
+			}
+			LOGPF(("in list\t\t%s slist==%02X", print_bp(ui16a), ui32a));
 			break;
-*/
 
 		case 0x39:
 			// 39
@@ -709,21 +803,38 @@ bool UCMachine::execProcess(UCProcess* p)
 			LOGPF(("push dword\t%s = %08Xh", print_bp(si8a), ui32a));
 			break;
 
-/*
 		case 0x41:
 			// 41 xx
 			// push the string local var xx
-			printf("push string\t%s", print_bp(read1(in)));
+			// duplicating the string?
+			{
+				si8a = static_cast<sint8>(p->cs.read1());
+				ui16a = p->stack.access2(p->bp+si8a);
+				p->stack.push2(assignString(stringHeap[ui16a].c_str()));
+				LOGPF(("push string\t%s", print_bp(si8a)));
+			}
 			break;
+
 		case 0x42:
 			// 42 xx yy
 			// push the list (with yy size elements) at BP+xx
-			i0 = read1(in); i1 = read1(in);
-			printf("push list\t%s (%02X)", print_bp(i0), i1);
+			// duplicating the list?
+			{
+				si8a = static_cast<sint8>(p->cs.read1());
+				ui16a = p->cs.read1();
+				ui16b = p->stack.access2(p->bp+si8a);
+				UCList* l = new UCList(ui16a);
+				l = listHeap[ui16b];
+				p->stack.push2(assignList(l));
+				LOGPF(("push string\t%s", print_bp(si8a)));
+			}
 			break;
+
+/*
 		case 0x43:
 			// 43 xx
 			// push the stringlist local var xx
+			// duplicating the list? duplicating the strings in the list??
 			printf("push slist\t%s", print_bp(read1(in)));
 			break;
 		case 0x44:
@@ -732,6 +843,11 @@ bool UCMachine::execProcess(UCProcess* p)
 			// (a list/slist), indexed by the last element pushed onto the list
 			// (a byte/word). XX is the size of the types contained in the list
 			// YY is true if it's a slist (for garbage collection)
+
+			// duplicate string if YY? hard to tell... yy = 1 only occurs
+			// in two places in U8: once it pops into temp afterwards,
+			// once it is indeed freed. What is temp exactly?
+
 			i0 = read1(in); i1 = read1(in);
 			printf("push element\t%s slist==%02X", print_bp(i0), i1);
 			break;
@@ -960,91 +1076,116 @@ bool UCMachine::execProcess(UCProcess* p)
 			break;
 
 /*
+		case 0x63:
+			// 63 xx
+			// free the stringlist in var BP+xx
+			si8a = static_cast<sint8>(p->cs.read1());
+			ui16a = p->stack.access2(p->bp+si8a);
+			freeStringList(ui16a);
+			LOGPF(("free slist\t%s", print_bp(si8a)));
+			break;
 
-                case 0x63:
-                        // 63 xx
-                        // free the list in var BP+xx
-                        // (This one seems to be similar to 0x64 but only used for lists
-                        //  of strings?)
-                        printf("free slist\t%s", print_bp(read1(in)));
-                        break;
-                case 0x64:
-                        // 64 xx
-                        // free the list in var BP+xx
-                        printf("free list\t%s", print_bp(read1(in)));
-                        break;
-                case 0x65:
-                        // 65 xx
-                        // free string at SP+xx
-                        printf("free string\t%s", print_sp(read1(in)));
-                        break;
-                case 0x66:
-                        // 66 xx
-                        // free the list at SP+xx
-                        printf("free list\t%s", print_sp(read1(in)));
-                        break;
-                case 0x67:
-                        // 66 xx
-                        // free the string list at SP+xx
-                        printf("free slist\t%s", print_sp(read1(in)));
-                        break;
-                case 0x69:
-                        // 69 xx
-                        // push the string in var BP+xx as 32 bit pointer
-                        printf("push strptr\t%s", print_bp(read1(in)));
-                        break;
-                case 0x6B:
-                        // 6B
-                        // pop a string and push 32 bit pointer to string
-                        printf("str to ptr");
-                        break;
-                case 0x6D:
-                        // 6D
-                        // push result of process
-                        printf("push dword\tprocess result");
-                        break;
+*/
+		case 0x64:
+			// 64 xx
+			// free the list in var BP+xx
+			si8a = static_cast<sint8>(p->cs.read1());
+			ui16a = p->stack.access2(p->bp+si8a);
+			freeList(ui16a);
+			LOGPF(("free list\t%s", print_bp(si8a)));
+			break;
+				  
+/*
+		case 0x65:
+			// 65 xx
+			// free the string at SP+xx
+			// sometimes the 32-bit string pointer at SP+xx????
+			si8a = static_cast<sint8>(p->cs.read1());
+			ui16a = p->stack.access2(p->stack.getSP()+si8a);
+			freeString(ui16a);
+			LOGPF(("free string\t%s", print_sp(si8a)));
+			break;
+*/
+
+		case 0x66:
+			// 66 xx
+			// free the list at SP+xx
+			si8a = static_cast<sint8>(p->cs.read1());
+			ui16a = p->stack.access2(p->stack.getSP()+si8a);
+			freeList(ui16a);
+			LOGPF(("free list\t%s", print_sp(si8a)));
+			break;
+
+/*
+		case 0x67:
+			// 67 xx
+			// free the string list at SP+xx
+			si8a = static_cast<sint8>(p->cs.read1());
+			ui16a = p->stack.access2(p->stack.getSP()+si8a);
+			freeStringList(ui16a);
+			LOGPF(("free slist\t%s", print_sp(si8a)));
+			break;
+
+		case 0x69:
+			// 69 xx
+			// push the string in var BP+xx as 32 bit pointer
+			printf("push strptr\t%s", print_bp(read1(in)));
+			break;
+		case 0x6B:
+			// 6B
+			// pop a string and push 32 bit pointer to string
+			printf("str to ptr");
+			break;
+		case 0x6D:
+			// 6D
+			// push result of process
+			printf("push dword\tprocess result");
+			break;
 */
 
 		case 0x6E:
 			// 6E xx
-			// add xx to stack pointer
+			// substract xx from stack pointer
+			// (effect on SP is the same as popping xx bytes)
 			si8a = static_cast<sint8>(p->cs.read1());
 			p->stack.addSP(-si8a);
-			LOGPF(("add sp\t\t%s%02Xh", si8a<0?"-":"", si8a<0?-si8a:si8a));
+			LOGPF(("move sp\t\t%s%02Xh", si8a<0?"-":"", si8a<0?-si8a:si8a));
 			break;
 
 /*
-                case 0x6F:
-                        // 6F xx
-                        // push 32 pointer address of SP-xx
-                        printf("push addr\t%s", print_sp(0x100 - read1(in)));
-                        break;
+		case 0x6F:
+			// 6F xx
+			// push 32 pointer address of SP-xx
+			printf("push addr\t%s", print_sp(0x100 - read1(in)));
+			break;
 
-                // loop-related opcodes
-                // Theory: put a 'container object' on the stack, and this will
-                // loop over the objects in there. The 'loopscript' determines
-                // which objects are selected. (By a simple 'shape == x, frame == y'
-                // thing, it seems)
-                // See the abacus code (function 375) for a simple example
+		// loop-related opcodes
+		// Theory: put a 'container object' on the stack, and this will
+		// loop over the objects in there. The 'loopscript' determines
+		// which objects are selected. (By a simple 'shape == x, frame == y'
+		// thing, it seems)
 
-                case 0x70:
-                        // 70 xx yy zz
-                        // loop something. Stores 'current object' in var xx
-                        // yy == num bytes in string
-                        // zz == type
-                        i0 = read1(in); i1 = read1(in); i2 = read1(in);
-                        printf("loop\t\t%s %02X %02X", print_bp(i0), i1, i2);
-                        break;
-                case 0x73:
-                        // 73
-                        // next loop object? pushes false if end reached
-                        printf("loopnext");
-                        break;
-                case 0x74:
-                        // 74 xx
-                        // add xx to the current 'loopscript'
-                        i0 = read1(in);
-                        printf("loopscr\t\t%02X \"%c\"", i0, static_cast<char>(i0));
+		// See the abacus code (function 375) for a simple example
+
+		case 0x70:
+			// 70 xx yy zz
+			// loop something. Stores 'current object' in var xx
+			// yy == num bytes in string
+			// zz == type
+			i0 = read1(in); i1 = read1(in); i2 = read1(in);
+			printf("loop\t\t%s %02X %02X", print_bp(i0), i1, i2);
+			break;
+		case 0x73:
+			// 73
+			// next loop object? pushes false if end reached
+			printf("loopnext");
+			break;
+		case 0x74:
+			// 74 xx
+			// add xx to the current 'loopscript'
+			i0 = read1(in);
+			printf("loopscr\t\t%02X \"%c\"", i0, static_cast<char>(i0));
+
 
 		// 75 appears to have something to do with lists, looks like an enum/next from u7...
 		case 0x75:
@@ -1113,4 +1254,51 @@ bool UCMachine::execProcess(UCProcess* p)
 
 
 	return false;
+}
+
+
+uint16 UCMachine::assignString(const char* str)
+{
+	static int count = 0;
+
+	// I'm not exactly sure if this is the most efficient way to do this
+
+	// find unassigned element
+	while (stringHeap.find(count) != stringHeap.end())
+		count++;
+
+	stringHeap[count] = str;
+
+	return count++;
+}
+
+uint16 UCMachine::assignList(UCList* l)
+{
+	static int count = 0;
+
+	// I'm not exactly sure if this is the most efficient way to do this
+
+	// find unassigned element
+	while (listHeap.find(count) != listHeap.end())
+		count++;
+
+	listHeap[count] = l;
+
+	return count++;
+}
+
+void UCMachine::freeString(uint16 s)
+{
+	std::map<uint16, std::string>::iterator iter = stringHeap.find(s);
+	if (iter != stringHeap.end())
+		stringHeap.erase(iter);
+}
+
+void UCMachine::freeList(uint16 l)
+{
+	std::map<uint16, UCList*>::iterator iter = listHeap.find(l);
+	if (iter != listHeap.end()) {
+		delete iter->second; // free the list
+		listHeap.erase(iter);
+	}
 }

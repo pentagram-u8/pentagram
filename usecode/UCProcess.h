@@ -53,7 +53,7 @@ protected:
 
 	uint32 classid;
 
-	// code segment
+	// code segment (IBufferDS isn't the right class for this; only temp.)
 	IBufferDataSource cs;
 
 	// data stack
