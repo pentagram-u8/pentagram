@@ -63,7 +63,7 @@ bool LoiterProcess::run(const uint32 framenum)
 	PathfinderProcess* pfp = new PathfinderProcess(a,x,y,z);
 	Kernel::get_instance()->addProcess(pfp);
 
-	DelayProcess* dp = new DelayProcess(30);
+	DelayProcess* dp = new DelayProcess(120);
 	Kernel::get_instance()->addProcess(dp);
 	dp->waitFor(pfp);
 
