@@ -517,7 +517,8 @@ void GameMapGump::DropItem(Item* item, int mx, int my)
 
 	pout << "Dropping item at (" << dragging_pos[0] << "," << dragging_pos[1]
 		 << "," << dragging_pos[2] << ")" << std::endl;
-	item->move(dragging_pos[0],dragging_pos[1],dragging_pos[2]); // move
+	item->collideMove(dragging_pos[0], dragging_pos[1], dragging_pos[2],
+					  true, true); // teleport item
 	item->fall();
 }
 

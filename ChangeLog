@@ -1,3 +1,6 @@
+2004-08-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/GameMapGump.cpp: properly hit/release when dragging an item
+
 2004-08-15  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* world/actors/AnimationTracker.cpp: Hack to make jumping down act a
 	  little nicer
