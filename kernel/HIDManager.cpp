@@ -144,8 +144,8 @@ void HIDManager::bind(const Pentagram::istring& control, const Pentagram::istrin
 
 		if (key >= SDLK_LAST) // we did not find a matching SDLKey
 		{
-			// Only bind Mouse 3 and up for now
-			for (button=3; button < NUM_MOUSEBUTTONS+1; ++button)
+			// Only bind Mouse 2 and up for now
+			for (button=2; button < NUM_MOUSEBUTTONS+1; ++button)
 			{
 				name = GetMouseButtonName((MouseButton) button);
 				if (control == name)
