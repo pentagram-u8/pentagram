@@ -1,0 +1,62 @@
+# Pentagram makefile for use in Windows with mingw using GCC 3.2 and msys shell
+# It may require a little tweaking. (paths)
+
+# Where is Ultima 8 installed
+U8PATH=C:/Ultima8
+
+# Base of the pentagram source
+SRC=.
+VPATH=$(SRC):$(SRC)/convert:$(SRC)/filesys:$(SRC)/graphics:$(SRC)/misc:$(SRC)/tools:$(SRC)/tools/disasm
+
+### Modify these paths
+SDL_CFLAGS=-I$(SRC)/sdl/include
+SDL_LIBS=-L$(SRC)/sdl/lib -lSDL_mixer -lSDLmain -lSDL
+
+# NOTE: make's builtin implicit rules are used for .cc => .o
+# mingw automatically defines WIN32
+CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -I$(SRC)/convert -I$(SRC)/filesys \
+	-I$(SRC)/graphics -I$(SRC)/misc
+CXXFLAGS=-O2 -Wno-long-long
+CXX=g++
+
+LFLAGS=-mwindows
+LIBS=-lmingw32 $(SDL_LIBS) -lwinmm -lopengl32
+
+FILESYS_OBJS=FileSystem.o
+
+GRAPHICS_OBJS=MD3_Model.o Texture.o TextureBitmap.o TextureTarga.o
+
+MISC_OBJS=Args.o Console.o Q_strcasecmp.o 
+
+all: disasm.exe
+
+disasm.exe : Disasm.o $(FILESYS_OBJS) $(MISC_OBJS)
+	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
+
+clean:
+	rm -f $(DISASM_OBJS) disasm.exe
+
+install: disasm.exe
+	mkdir -p $(U8PATH)
+	mkdir -p $(U8PATH)/tools
+	strip disasm.exe -o $(U8PATH)/tools/disasm.exe
+
+dist:   install
+	cp docs/maps.txt $(U8PATH)/tools
+	cp docs/musiceggs.txt $(U8PATH)/tools
+	cp docs/musicflx.txt $(U8PATH)/tools
+	cp docs/shapes.cmp.txt $(U8PATH)/tools
+	cp docs/snippets.txt $(U8PATH)/tools
+	cp docs/u8anim.txt $(U8PATH)/tools
+	cp docs/u8cheat.txt $(U8PATH)/tools
+	cp docs/u8fonts.txt $(U8PATH)/tools
+	cp docs/u8gfxfmt.txt $(U8PATH)/tools
+	cp docs/u8mapfmt.txt $(U8PATH)/tools
+	cp docs/u8npc.txt $(U8PATH)/tools
+	cp docs/u8savfmt.txt $(U8PATH)/tools
+	cp docs/u8sfxfmt.txt $(U8PATH)/tools
+	cp docs/u8skf.txt $(U8PATH)/tools
+	cp docs/u8typeflag.txt $(U8PATH)/tools
+	cp docs/u8usecode.txt $(U8PATH)/tools
+	cp docs/u8weapon.txt $(U8PATH)/tools
+	u2d $(U8PATH)/*.txt

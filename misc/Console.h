@@ -108,6 +108,7 @@ class console_streambuf : public std::basic_streambuf<_E, _Tr>
 public:
 	console_streambuf() : std::basic_streambuf<_E, _Tr>() { }
 	virtual ~console_streambuf() { }
+	typedef typename _Tr::int_type int_type;
 
 protected:
 
@@ -153,6 +154,7 @@ class console_err_streambuf : public std::basic_streambuf<_E, _Tr>
 public:
 	console_err_streambuf() : std::basic_streambuf<_E, _Tr>() { }
 	virtual ~console_err_streambuf() { }
+	typedef typename _Tr::int_type int_type;
 
 protected:
 
