@@ -60,7 +60,7 @@ bool XMLTree::readConfigFile(std::string fname)
 	if (!f) return false;
 
 	std::string sbuf, line;
-	while (f->getPos() < f->getSize()) {
+	while (!f->eof()) {
 		f->readline(line);
 		sbuf += line;
 	}
