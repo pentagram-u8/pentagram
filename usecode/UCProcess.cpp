@@ -39,7 +39,7 @@ UCProcess::~UCProcess()
 }
 
 void UCProcess::load(uint16 classid_, uint16 offset_, uint32 this_ptr,
-					 uint32 thissize, const uint8* args, uint32 argsize)
+					 int thissize, const uint8* args, int argsize)
 {
 	if (usecode->get_class_size(classid_) == 0)
 		perr << "Class is empty..." << std::endl;

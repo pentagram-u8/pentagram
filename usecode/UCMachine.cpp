@@ -1144,8 +1144,8 @@ bool UCMachine::execProcess(UCProcess* p)
 			// only remove the this pointer from stack (4 bytes)
 			// put PID of spawned process in temp			
 			{
-				uint32 arg_bytes = cs.read1();
-				uint32 this_size = cs.read1();
+				int arg_bytes = cs.read1();
+				int this_size = cs.read1();
 				uint16 classid = cs.read2();
 				uint16 offset = cs.read2();
 
@@ -1185,7 +1185,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				uint16 classid = cs.read2();
 				uint16 offset = cs.read2();
 				uint16 delta = cs.read2();
-				uint32 this_size = cs.read1(); // relevance?
+				int this_size = cs.read1(); // relevance?
 				uint32 unknown = cs.read1(); // ??
 				
 				LOGPF(("spawn inline\t%04X:%04X+%04X=%04X %02X %02X",
