@@ -1,5 +1,5 @@
 Pentagram F.A.Q. (frequently asked questions)
-last changed: 20 June 2004 (GMT)
+last changed: 30 November 2004 (GMT)
 
 The latest version of this document can be found at http://pentagram.sourceforge.net/faq.php
 
@@ -16,15 +16,34 @@ The latest version of this document can be found at http://pentagram.sourceforge
 1.9. Why doesn't feature X work properly?
 1.10. Why isn't feature Y implemented?
 
-2. Ultima 8: Pagan
-2.1. Where can I obtain a copy of Ultima 8?
-2.2. Can you give me a copy or tell me where to download Ultima 8?
-2.3. But isn't Ultima 8 abandonware?
-2.4. Why does the Pentagram team feel so strongly on the issue of piracy?
+2. Introduction Part II
+2.1. What is Pentagram?
+2.2. Why is it called Pentagram - are you satanists or something?
+2.3. Do you accept donations?
+2.4. Does Origin support Pentagram?
+2.5. Will Pentagram support other Ultimas?
+2.6. Will Pentagram ever be multiplayer?
+2.7. Where can you download Pentagram?
+2.8. Binary, snapshot, source tree - what are you talking about?
+2.9. And what is that old snapshot supposed to be?
+2.10. Why has there not been a release yet?
 
-3. Changes to the FAQ
-3.1. - 20 June 2004
-3.2. - 19 June 2004
+3. Ultima 8: Pagan
+3.1. Do I need Ultima 8?
+3.2. Is Ultima 8 playable?
+3.3. Does Pentagram work with all versions of Ultima 8?
+3.4. Will the Lost Vale run on Pentagram?
+3.5. Do save games from the original work in Pentagram?
+3.6. Do Pentagram savegames work on all Operating Systems?
+3.7. Where can I obtain a copy of Ultima 8?
+3.8. Can you give me a copy or tell me where to download Ultima 8?
+3.9. But isn't Ultima 8 abandonware?
+3.10. Why does the Pentagram team feel so strongly on the issue of piracy?
+
+4. Changes to the FAQ
+4.1. - 30 November 2004
+4.2. - 20 June 2004
+4.3. - 19 June 2004
 
 
 --------------------------------------------------------------------------------
@@ -59,7 +78,7 @@ You don't need to know what they are, since we don't support them. QED.
 
 
 1.8. Will we finish The Lost Vale?
-See the answer to 1.5..
+See the answer to 2.10..
 
 
 1.9. Why doesn't feature X work properly?
@@ -73,23 +92,105 @@ It's better this way. Trust us.
 
 --------------------------------------------------------------------------------
 
-2. Ultima 8: Pagan
-2.1. Where can I obtain a copy of Ultima 8?
+2. Introduction Part II
+2.1. What is Pentagram?
+Pentagram is a game engine for running Ultima 8 on modern operating systems. Since a modified version of the Ultima 8 engine also powered the two Crusader games (Crusader: No Remorse and Crusader: No Regret) our ultimate goal is to be able to run those two as well. Right now we don't support them but you will be the first to know when we do.
+
+
+2.2. Why is it called Pentagram - are you satanists or something?
+If you ever played Ultima 8 or actually bought the game when it came out, then you will have noticed the big pentagram on the game box and the intro. That is the sole reason for this name.
+
+
+2.3. Do you accept donations?
+No the Pentagram team will not accept donations. For us there are greater legal matters involved, which none of us particularly want to explore. We do not want to risk the wrath of EA for directly profiting off Pentagram. If you want to donate to anyone, donate to Sourceforge. We wouldn't be here if it weren't for them.
+
+
+2.4. Does Origin support Pentagram?
+First of all, Origin has been owned by EA for a long time now and from recent developments it seems that Origin only exists now to maintain Ultima Online. Furthermore since we never managed to make contact with EA or Origin while working on Exult we didn't even try to contact them this time. So, no, Origin or EA does not support Pentagram and will most likely just ignore questions about us.
+
+
+2.5. Will Pentagram support other Ultimas?
+No. All Ultimas are so different it wouldn't make sense to support them with the Pentagram engine. However, for most Ultimas engines are being developed tailored exactly for each Ultima's need.
+
+
+2.6. Will Pentagram ever be multiplayer?
+There are no plans to ever make Pentagram a multiplayer engine. And it really wouldn't make sense for Ultima 8 to be played by more than one person. However a deathmatch scenario for the Crusader games would be fun (in Dominus' opinion at least) and once we support these two games, people are welcome to develop a multiplayer version.
+
+
+2.7. Where can you download Pentagram?
+Daily Windows CVS snapshots binaries (by Travis Howell) and the CVS snapshot source tree can be found at http://pentagram.sourceforge.net/download.php.
+
+
+2.8. Binary, snapshot, source tree - what are you talking about?
+First of all, if you are running Windows and you just want to run/play Pentagram, download the CVS Snapshot binary called Windows Binary.
+Source is the code of Pentagram and is only useful for programers that want to look at it, compile it or, hopefully, want to contribute to the project. Once you compile the code you get a binary or in other words the actual program. If you want to run Pentagram you need this. CVS snapshots are the newest source code. Whenever we change some code, Travis makes a new snapshot the next day. As we currently have no releases, snapshots are the only way for you to run Pentagram.
+
+
+2.9. And what is that old snapshot supposed to be?
+For that you'll have to take a look at Pentagram's history. The project started out as a pet project by some of the Exult programers. We tried to figure out the various file formats and used a sub tree of the Exult source code space. For example ee developed a map viewer, a shapes viewer (shapes are the graphic files of Ultima 8) and many other tools. Only when the code of Pentagram became more mature we decided to make it a separate project. The code developed so far was taken over to the new project space as the "old" module but we still worked on it. Since the code that was written was meant for small viewer programs and not for a full game engine, we decided to start from scratch on Pentagram itself.
+Some of the tools in the old snapshot are not yet ported over to the actual Pentagram code and therefore users and programers might find it still useful. A listing of the tools follows.
+* unpackshp the most useful tool now. If you don't have u8shapes.flx in the static subdirectory, you have to use this tool on u8shapes.cmp to have it decompressed.
+* dcmpsound Sound and Voice effects in Ultima 8 were compressed with Sonarc. Dcmpsound uses u8.exe of the original game to decompress the sfx into something we can use. For dcmpsound to find u8.exe and the sfx flex files you have to edit pentagram.cfg.
+* dcmpsound2 Same purpose as dcmpsound, only it doesn't use u8.exe to decompress the sfx.
+* u8extract Extracts the archives Ultima 8 used to store its files. Their file ending is .flx and are called flex files.
+* u8savextract Used to extract savegames. The initial game is also a savegame and to actually start the game we needed to figure the savegame format out. And no, apart from the initial savegame, you can't run other savegames from the original.
+* dequote Shows you the content of the quotes files (quotes.dat and ecredit.dat).
+* shpdisp Lets you browse through the graphics of the game. See the readme that comes with it for more details.
+* animdisp Lets you browse through the animations of the game. See the readme that comes with it for more details.
+* globdisp Lets you browse through the globs of the game. See the readme that comes with it for more details.
+* mapdisp Lets you browse through the maps of the game. See the readme that comes with it for more details.
+
+
+
+2.10. Why has there not been a release yet?
+Pentagram is not yet in a state we want to officially release. Whenever we do feel like Pentagram is ready we will make an official release.
+
+
+
+--------------------------------------------------------------------------------
+
+3. Ultima 8: Pagan
+3.1. Do I need Ultima 8?
+Yes, without the original files you can't play Ultima 8 with Pentagram.
+
+
+3.2. Is Ultima 8 playable?
+Yes and no. Most of the plot works and we had a report of someone who managed to play through Ultima 8 already. But there are thousands of things not yet working at all or only partially.
+
+
+3.3. Does Pentagram work with all versions of Ultima 8?
+Ultima 8 was released in English, French, German and Spanish. As of now only the first three run in Pentagram because the Spanish version had a slightly different graphics file format.
+On a side not, we heard that the Spanish version was not actually finish able. At some point inthe game you are supposed to get the tear of seas from Devon but the conversation option is not there.
+
+
+3.4. Will the Lost Vale run on Pentagram?
+Unfortunately the add-on for Ultima 8, called the Lost Vale was never released. Rumor has it that it was actually finished but Origin/EA decided there was no market for it and lost it.
+
+
+3.5. Do save games from the original work in Pentagram?
+Although we did figure out the savegame format and are able to run the initial one, we can't load other savegames from the original. The way the original saved processes prevents us from loading them, only the initial savegame has no processes running.
+
+
+3.6. Do Pentagram savegames work on all Operating Systems?
+Pentagram savegames are compatible on all supported Operating Systems. For example a game saved on Mac OSX works on Windows XP as well.
+
+
+3.7. Where can I obtain a copy of Ultima 8?
 If you do not already own a legal copy of Ultima 8, the Pentagram team highly suggests you buy a copy. We suggest searching for Ultima 8 on sites such as Ebay or used software sites. Stores which sale used games are often are good places to try as well.
 You also might want to look for the Ultima Collection, which contain all the previous Ultima games as well.
 
 
-2.2. Can you give me a copy or tell me where to download Ultima 8?
+3.8. Can you give me a copy or tell me where to download Ultima 8?
 No! The Pentagram team does not and never will support piracy.
 Members of the Pentagram team will likely ignore, flame, or even banish you to another world where no one has ever heard of the Avatar if you ask them for a pirated copy of any Ultima.
 
 
-2.3. But isn't Ultima 8 abandonware?
+3.9. But isn't Ultima 8 abandonware?
 No, if a entity still exists to claim the rights over a piece of software (EA in the case of Ultima 8), and the company has not openly given away those right to make the software free, then the software does not fall under the term abandonware or freeware.
 Any copies of Ultima 8 you find on the Internet that claim to be abandoned or free are neither, and downloading them will be considered piracy.
 
 
-2.4. Why does the Pentagram team feel so strongly on the issue of piracy?
+3.10. Why does the Pentagram team feel so strongly on the issue of piracy?
 First, we understand the amount of work that goes into making a game like Ultima 8. If we put ourselves into the same position as the original programmers and artists, we would be against the piracy of our work and feel that something has be stolen from us directly when piracy occurs.
 Second, the Pentagram team does not want to alienate any former or current members of Origin or EA. Some have been helpful in the past in informing us, and we have a great deal of respect for them. We also wish to avoid any possible legal issues which could threaten to end the Pentagram project.
 
@@ -97,12 +198,18 @@ Second, the Pentagram team does not want to alienate any former or current membe
 
 --------------------------------------------------------------------------------
 
-3. Changes to the FAQ
-3.1. - 20 June 2004
+4. Changes to the FAQ
+4.1. - 30 November 2004
+* 2. Introduction Part II added a more serious section
+* 3. Ultima 8: Pagan also added a couple of more U8 specific Questions
+
+
+
+4.2. - 20 June 2004
 Added questions regarding obtaining Ultima 8 and the Pentagram team's stance against piracy.
 
 
-3.2. - 19 June 2004
+4.3. - 19 June 2004
 No changes yet, first xml-generated version
 
 

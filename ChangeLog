@@ -1,3 +1,6 @@
+2004-11-30  Dominik Reichardt <dominus@users.sourceforge.net>
+	* FAQ, docs/xml/faq.xml: added some more questions and answers
+	
 2004-11-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/CombatProcess.*: make monster turn to face target
 	* world/actors/AnimationTracker.cpp: silenced hit checks

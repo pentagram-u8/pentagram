@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE faqs SYSTEM "docs.dtd">
-<faqs title="Pentagram" changed="20 June 2004 (GMT)">
+<faqs title="Pentagram" changed="30 November 2004 (GMT)">
 	<section title="Introduction">
 		<sub name="pent_is">
 			<header>What is <Pent/>?</header>
 			<body>
 				<para>
-					<Pent/> is not Exult. Any similarities between <Pent/> and Exult are purely coincidental.
+					<Pent/> is not Exult. Any similarities between 
+					<Pent/> and Exult are purely coincidental.
 				</para>
 			</body>
 		</sub>
@@ -14,7 +15,8 @@
 			<header>Is it Exult for Ultima 8?</header>
 			<body>
 				<para>
-					Of course not. As stated in <ref target="pent_is"/> "<Pent/> is not Exult". Anyway, what sort of fool 
+					Of course not. As stated in <ref target="pent_is"/> 
+					"<Pent/> is not Exult". Anyway, what sort of fool 
 					would attempt such a thing anyway.
 				</para>
 			</body>
@@ -55,7 +57,8 @@
 			<header>But what _are_ TGWDS/TGYDS?</header>
 			<body>
 				<para>
-					You don't need to know what they are, since we don't support them. QED.
+					You don't need to know what they are, since we 
+					don't support them. QED.
 				</para>
 			</body>
 		</sub>
@@ -84,7 +87,249 @@
 			</body>
 		</sub>
 	</section>
+	<section title="Introduction Part II">
+		<sub name="pent_is_2">
+			<header>What is <Pent/>?</header>
+			<body>
+				<para>
+					<Pent/> is a game engine for running Ultima 8 on modern 
+					operating systems. Since a modified version of the 
+					Ultima 8 engine also powered the two Crusader games 
+					(Crusader: No Remorse and Crusader: No Regret) our ultimate 
+					goal is to be able to run those two as well. Right now 
+					we don't support them but you will be the first to know 
+					when we do.
+				</para>
+			</body>
+		</sub>
+		<sub name="name_origin">
+			<header>Why is it called <Pent/> - are you satanists or something?</header>
+			<body>
+				<para>
+					If you ever played Ultima 8 or actually bought the game 
+					when it came out, then you will have noticed the big 
+					pentagram on the game box and the intro. That is the sole 
+					reason for this name.
+				</para>
+			</body>
+		</sub>
+		<sub name="donations">
+			<header>Do you accept donations?</header>
+			<body>
+				<para>
+					No the <Pent/> team will not accept donations. For us there 
+					are greater legal matters involved, which none of us 
+					particularly want to explore. We do not want to risk the wrath 
+					of EA for directly profiting off Pentagram. If you want to donate 
+					to anyone, donate to Sourceforge. We wouldn't be here if it 
+					weren't for them.
+				</para>
+			</body>
+		</sub>
+		<sub name="origin_support">
+			<header>Does Origin support <Pent/>?</header>
+			<body>
+				<para>
+					First of all, Origin has been owned by EA for a long time now and 
+					from recent developments it seems that Origin only exists now to 
+					maintain Ultima Online. Furthermore since we never managed to make 
+					contact with EA or Origin while working on Exult we didn't even try 
+					to contact them this time. So, no, Origin or EA does not support 
+					<Pent/> and will most likely just ignore questions about us.
+				</para>
+			</body>
+		</sub>
+		<sub name="support_Ultimas">
+			<header>Will <Pent/> support other Ultimas?</header>
+			<body>
+				<para>
+					No. All Ultimas are so different it wouldn't make sense to support 
+					them with the <Pent/> engine. However, for most Ultimas engines are 
+					being developed tailored exactly for each Ultima's need.
+				</para>
+			</body>
+		</sub>
+		<sub name="multiplayer">
+			<header>Will <Pent/> ever be multiplayer?</header>
+			<body>
+				<para>
+					There are no plans to ever make <Pent/> a multiplayer engine. And it 
+					really wouldn't make sense for Ultima 8 to be played by more than one 
+					person.<br/>
+					However a deathmatch scenario for the Crusader games would be fun (in 
+					Dominus' opinion at least) and once we support these two games, people 
+					are welcome to develop a multiplayer version.
+				</para>
+			</body>
+		</sub>
+		<sub name="dl_pent">
+			<header>Where can you download <Pent/>?</header>
+			<body>
+				<para>
+					Daily Windows CVS snapshots binaries (by Travis Howell) and the CVS 
+					snapshot source tree can be found at 
+					<extref target="http://pentagram.sourceforge.net/download.php"/>.
+				</para>
+			</body>
+		</sub>
+		<sub name="snapshot">
+			<header>Binary, snapshot, source tree - what are you talking about?</header>
+			<body>
+				<para>
+					First of all, if you are running Windows and you just want to run/play 
+					<Pent/>, download the CVS Snapshot binary called 
+					<strong>Windows Binary</strong>.
+				</para>
+				<para>
+					Source is the code of Pentagram and is only useful for programers that 
+					want to look at it, compile it or, hopefully, want to contribute to the 
+					project. Once you compile the code you get a binary or in other words 
+					the actual program. If you want to run <Pent/> you need this. CVS 
+					snapshots are the newest source code. Whenever we change some code, 
+					Travis makes a new snapshot the next day. As we currently have no 
+					releases, snapshots are the only way for you to run <Pent/>.
+				</para>
+			</body>
+		</sub>
+		<sub name="old_snapshot">
+			<header>And what is that old snapshot supposed to be?</header>
+			<body>
+				<para>
+					For that you'll have to take a look at <Pent/>'s history.<br/> 
+					The project started out as a pet project by some of the Exult programers. 
+					We tried to figure out the various file formats and used a sub tree of the 
+					Exult source code space. For example ee developed a map viewer, a shapes 
+					viewer (shapes are the graphic files of Ultima 8) and many other tools.<br/>
+					Only when the code of <Pent/> became more mature we decided to make it a 
+					separate project. The code developed so far was taken over to the new project 
+					space as the "old" module but we still worked on it.<br/>
+					Since the code that was written was meant for small viewer programs and not 
+					for a full game engine, we decided to start from scratch on <Pent/> itself.
+				</para>
+				<para>
+					Some of the tools in the old snapshot are not yet ported over to the actual 
+					Pentagram code and therefore users and programers might find it still useful. 
+					A listing of the tools follows.
+				</para>
+				<ul>
+					<li><strong>unpackshp</strong><br/>
+					the most useful tool now. If you don't have u8shapes.flx in the static 
+					subdirectory, you have to use this tool on u8shapes.cmp to have it decompressed.
+					</li>
+					<li><strong>dcmpsound</strong><br/>
+					Sound and Voice effects in Ultima 8 were compressed with Sonarc. Dcmpsound uses 
+					u8.exe of the original game to decompress the sfx into something we can use. 
+					For dcmpsound to find u8.exe and the sfx flex files you have to edit 
+					pentagram.cfg.
+					</li>
+					<li><strong>dcmpsound2</strong><br/>
+					Same purpose as dcmpsound, only it doesn't use u8.exe to decompress the sfx.
+					</li>
+					<li><strong>u8extract</strong><br/>
+					Extracts the archives Ultima 8 used to store its files. Their file ending is 
+					.flx and are called flex files.
+					</li>
+					<li><strong>u8savextract</strong><br/>
+					Used to extract savegames. The initial game is also a savegame and to actually 
+					start the game we needed to figure the savegame format out. And no, apart from 
+					the initial savegame, you can't run other savegames from the original.
+					</li>
+					<li><strong>dequote</strong><br/>
+					Shows you the content of the quotes files (quotes.dat and ecredit.dat).
+					</li>
+					<li><strong>shpdisp</strong><br/>
+					Lets you browse through the graphics of the game. See the readme that comes with 
+					it for more details.
+					</li>
+					<li><strong>animdisp</strong><br/>
+					Lets you browse through the animations of the game. See the readme that comes with 
+					it for more details.
+					</li>
+					<li><strong>globdisp</strong><br/>
+					Lets you browse through the globs of the game. See the readme that comes with it 
+					for more details.
+					</li>
+					<li><strong>mapdisp</strong><br/>
+					Lets you browse through the maps of the game. See the readme that comes with it for 
+					more details.
+					</li>
+				</ul>
+			</body>
+		</sub>
+		<sub name="no_release">
+			<header>Why has there not been a release yet?</header>
+			<body>
+				<para>
+					<Pent/> is not yet in a state we want to officially release. Whenever we do feel 
+					like <Pent/> is ready we will make an official release.
+				</para>
+			</body>
+		</sub>
+	</section>
 	<section title="Ultima 8: Pagan">
+		<sub name="need_u8">
+			<header>Do I need Ultima 8?</header>
+			<body>
+				<para>
+					Yes, without the original files you can't play Ultima 8 with <Pent/>.
+				</para>
+			</body>
+		</sub>
+		<sub name="u8_playable">
+			<header>Is Ultima 8 playable?</header>
+			<body>
+				<para>
+					Yes and no. Most of the plot works and we had a report of someone who managed to 
+					play through Ultima 8 already. But there are thousands of things not yet working 
+					at all or only partially.
+				</para>
+			</body>
+		</sub>
+		<sub name="u8_versions">
+			<header>Does <Pent/> work with all versions of Ultima 8?</header>
+			<body>
+				<para>
+					Ultima 8 was released in English, French, German and Spanish. As of now only the 
+					first three run in <Pent/> because the Spanish version had a slightly different 
+					graphics file format.
+				</para>
+				<para>
+					On a side not, we heard that the Spanish version was not actually finish able. At 
+					some point inthe game you are supposed to get the tear of seas from Devon but the 
+					conversation option is not there.
+				</para>				
+			</body>
+		</sub>
+		<sub name="lost_vale2">
+			<header>Will the Lost Vale run on <Pent/>?</header>
+			<body>
+				<para>
+					Unfortunately the add-on for Ultima 8, called the Lost Vale was never released. 
+					Rumor has it that it was actually finished but Origin/EA decided there was no 
+					market for it and lost it.
+				</para>
+			</body>
+		</sub>
+		<sub name="old_saves">
+			<header>Do save games from the original work in <Pent/>?</header>
+			<body>
+				<para>
+					Although we did figure out the savegame format and are able to run the initial 
+					one, we can't load other savegames from the original. The way the original 
+					saved processes prevents us from loading them, only the initial savegame has 
+					no processes running.
+				</para>
+			</body>
+		</sub>
+		<sub name="save_compat">
+			<header>Do <Pent/> savegames work on all Operating Systems?</header>
+			<body>
+				<para>
+					<Pent/> savegames are compatible on all supported Operating Systems. For 
+					example a game saved on Mac OSX works on Windows XP as well.
+				</para>
+			</body>
+		</sub>
 		<sub name="obtain_u8">
 			<header>Where can I obtain a copy of Ultima 8?</header>
 			<body>
@@ -169,6 +414,17 @@
 		</sub>
 	</section>
 	<section title="Changes to the FAQ">
+		<sub name="30112004">
+			<header>- 30 November 2004</header>
+			<body>
+				<ul>
+					<li><section_ref target="Introduction Part II"/> 
+					added a more serious section</li>
+					<li><section_ref target="Ultima 8: Pagan"/> 
+					also added a couple of more U8 specific Questions</li>
+				</ul>
+			</body>
+		</sub>		
 		<sub name="20062004">
 			<header>- 20 June 2004</header>
 			<body>
