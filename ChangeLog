@@ -1,4 +1,7 @@
 2004-10-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* games/U8Game.cpp: put avatar in stasis at the beginning
+
+2004-10-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/PaperdollGump.cpp, gumps/SliderGump.cpp: use FontManager
 
 2004-10-07  Matthew Jimenez <mjimenez@users.sourceforge.net>

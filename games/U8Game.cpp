@@ -35,6 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "LoopScript.h"
 #include "ObjectManager.h"
 #include "CameraProcess.h"
+#include "GUIApp.h"
 
 U8Game::U8Game() : Game()
 {
@@ -242,6 +243,8 @@ bool U8Game::startGame()
 
 bool U8Game::startInitialUsecode()
 {
+	GUIApp::get_instance()->setAvatarInStasis(true);
+
 	CurrentMap* currentmap = World::get_instance()->getCurrentMap();
 	UCList uclist(2);
 	// (shape == 73 && quality == 36)
