@@ -71,10 +71,9 @@ void Item::setLocation(sint32 X, sint32 Y, sint32 Z)
 
 void Item::move(sint32 X, sint32 Y, sint32 Z)
 {
-	//! constant
-
-	if ((flags & (FLG_CONTAINED | FLG_EQUIPPED | FLG_ETHEREAL))
-		&& (x / 512 != X / 512) || (y / 512 != Y / 512)) {
+	//! constants
+	if (!(flags & (FLG_CONTAINED | FLG_EQUIPPED | FLG_ETHEREAL))
+		&& ((x / 512 != X / 512) || (y / 512 != Y / 512))) {
 
 		// if item isn't contained or equipped, it's in CurrentMap
 
