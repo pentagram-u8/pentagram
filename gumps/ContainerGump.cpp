@@ -98,11 +98,16 @@ void ContainerGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 	sint32 gametick = Kernel::get_instance()->getFrameNum();
 
 	//!! TODO: check these painting commands (flipped? translucent?)
+	bool paintEditorItems = GUIApp::get_instance()->isPaintEditorItems();
 
 	std::list<Item*>::iterator iter;
 	for (iter = contents.begin(); iter != contents.end(); ++iter) {
 		Item* item = *iter;
 		item->setupLerp(gametick);
+
+		if (!paintEditorItems && item->getShapeInfo()->is_editor())
+			continue;
+
 		sint32 itemx,itemy;
 		item->getGumpLocation(itemx,itemy);
 
@@ -140,11 +145,16 @@ uint16 ContainerGump::TraceObjId(int mx, int my)
 
 	if (!c) return 0; // Container gone!?
 
+	bool paintEditorItems = GUIApp::get_instance()->isPaintEditorItems();
+
 	std::list<Item*>& contents = c->contents;
 	std::list<Item*>::reverse_iterator iter;
 	// iterate backwards, since we're painting from begin() to end()
 	for (iter = contents.rbegin(); iter != contents.rend(); ++iter) {
 		Item* item = *iter;
+		if (!paintEditorItems && item->getShapeInfo()->is_editor())
+			continue;
+
 		sint32 itemx,itemy;
 		item->getGumpLocation(itemx,itemy);
 		Shape* s = item->getShapeObject();

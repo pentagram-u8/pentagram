@@ -1,4 +1,7 @@
-2004-08-29  Matthew Jimenez <mjimenez@users.sourceforge.net>
+2004-09-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/ContainerGump.cpp: don't paint editor items
+
+2004-09-02  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* kernel/GUIApp.cpp: Separated the QuickAvatarMoverProcess from GUIApp
 	* world/actors/QuickAvatarMoverProcess.*: new Quick Mover
 
