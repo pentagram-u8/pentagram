@@ -69,9 +69,13 @@ void Item::getLocation(sint32& X, sint32& Y, sint32 &Z) const
 
 uint32 Item::callUsecodeEvent(uint32 event)
 {
-	Usecode* u = GameData::get_instance()->getMainUsecode();
+	uint32	class_id = shape;
 
-	return callUsecode(shape, u->get_class_event(shape, event), u);
+	// Ok, for Permanent npcs we do it differnetly. they use NPC num + 1024
+	if (npcnum && !(flags & FLG_DISPOSABLE)) class_id = npcnum + 1024;
+
+	Usecode* u = GameData::get_instance()->getMainUsecode();
+	return callUsecode(class_id, u->get_class_event(class_id, event), u);
 }
 
 

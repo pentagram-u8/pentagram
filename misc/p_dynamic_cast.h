@@ -24,6 +24,7 @@
 // The Pentagram dynamic cast
 template<class A, class B> inline A p_dynamic_cast (B *object)
 {
+	if (!object) return 0;
 	return static_cast<A>( object->DoDynamicCast(& ((static_cast<A>(0))->ClassTypeConstant) ) );
 }
 

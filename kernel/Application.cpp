@@ -571,13 +571,19 @@ void Application::handleEvent(const SDL_Event& event)
 			screen->GetSurfaceDims(dims);
 	
 			// We will assume the display_list has all the items in it
-			uint16 item = display_list->Trace(event.button.x - dims.w/2,
+			uint16 objID = display_list->Trace(event.button.x - dims.w/2,
 							event.button.y - dims.h/2);
 
-			if (!item)
+			if (!objID)
 				pout << "Didn't find an item" << std::endl;
-			else
-				pout << "Found item " << item << std::endl;
+			else 
+			{
+				World *world = World::get_instance();
+				Item *item = p_dynamic_cast<Item*>(world->getObject(objID));
+
+				pout << "Found item " << objID << std::endl;
+				if (item) item->callUsecodeEvent(0);	// CONSTANT
+			}
 		}
 
 	}
