@@ -1,7 +1,6 @@
 # TODO - it would be nice if LPATH could be set by the Makefile that
 # includes us, since that has to know our path anyway.
 LPATH := tools/disasm
-CXXFLAGS += -I../../..
 
 LSRC := $(wildcard $(LPATH)/*.cpp)
 LPRODUCTS := disasm

@@ -52,7 +52,7 @@ MODULES := convert misc filesys tools tools/disasm
 
 # look for include files in
 #   each of the modules
-CXXFLAGS += $(patsubst %,-I$(top_srcdir)/%,$(MODULES)) -I. -Iheaders
+CXXFLAGS += $(patsubst %,-I$(top_srcdir)/%,$(MODULES)) -I.
 
 # list of all .deps subdirs
 DEPDIRS = $(patsubst %,%/$(top_builddir)/$(DEPDIR),$(MODULES))

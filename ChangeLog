@@ -1,3 +1,7 @@
+2002-11-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* tools/disasm/module.mk: removed weird -I flag
+	* Makefile.in: we don't have headers/ anymore
+
 2002-11-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* Makefile.in: tweaked dependency generation a bit
 
