@@ -143,8 +143,7 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 		egg->xrange = (npcnum >> 4) & 0xF;
 		egg->yrange = npcnum & 0xF;
 		egg->teleport_id = (quality & 0xFF);
-		egg->teleporter = (frame == 0);
-		//! what's the other quality byte?
+		egg->teleporter = ((quality & 0xFF00) != 0);
 		return egg;
 	}
 
