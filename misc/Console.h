@@ -25,7 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 // The Console
 //
-#define		CON_TEXTSIZE	32768
+#define		CON_TEXTSIZE		32768
+#define		CON_PUTCHAR_SIZE	256
 
 class Console
 {
@@ -38,6 +39,12 @@ class Console
 	int		totallines;				// total lines in console scrollback
 
 	int		vislines;
+
+	bool	wordwrap;				// Enable/Disable word wrapping
+	bool	cr;						// Line feed marker
+
+	int		putchar_count;			// Number of characters that have been putchar'd
+	char	putchar_buf[CON_PUTCHAR_SIZE];	// The Characters that have been putchar'd
 
 public:
 	Console();
@@ -66,6 +73,9 @@ public:
 	// putchar, and output to stdout
 	void	Putchar (int c);
 
+	// Print a text string to the console, and output to stdout
+	void	PrintRaw (const char *txt, int n);
+
 
 	//
 	// STDERR Methods
@@ -80,14 +90,30 @@ public:
 	// putchar, and output to stderr
 	void	Putchar_err (int c);
 
+	// Print a text string to the console, and output to stderr
+	void	PrintRaw_err (const char *txt, int n);
+
+
+	// Enable/Disable word wrapping
+	void	EnableWordWrap() { wordwrap = true; }
+	void	DisableWordWrap() { wordwrap = false; }
+
 private:
 
 	// Print a text string to the console
 	void	PrintInternal (const char *txt);
 
+	// Print a text string to the console
+	void	PrintRawInternal (const char *txt, int n);
+
+	// Put char
+	void	PutcharInternal (int c);
+
 	// Add a linefeed to the buffer
 	void	Linefeed ();
 
+	// Print the Putchar data, if possible
+	void	PrintPutchar();
 };
 
 // Console object
@@ -117,6 +143,12 @@ protected:
 	{
 		if (!_Tr::eq_int_type(_Tr::eof(), _C)) con.Putchar(_Tr::to_char_type(_C));
 		return (_Tr::not_eof(_C));
+	}
+
+	virtual std::streamsize xsputn(const char_type *ptr, std::streamsize count)
+	{
+		con.PrintRaw(ptr, count);
+		return count;
 	}
 
 	// Flush
@@ -163,6 +195,12 @@ protected:
 	{
 		if (!_Tr::eq_int_type(_Tr::eof(), _C)) con.Putchar_err(_Tr::to_char_type(_C));
 		return (_Tr::not_eof(_C));
+	}
+
+	virtual std::streamsize xsputn(const char_type *ptr, std::streamsize count)
+	{
+		con.PrintRaw_err(ptr, count);
+		return count;
 	}
 
 	// Flush

@@ -46,6 +46,7 @@ Con_Clear_f
 void Console::Clear ()
 {
 	std::memset (text, ' ', CON_TEXTSIZE);
+	putchar_count = 0;
 }
 
 						
@@ -62,6 +63,9 @@ void Console::Dump (const char *name)
 	char	*line;
 	FILE	*f;
 	char	buffer[1024];
+
+	// Need to do this first
+	PrintPutchar();
 
 	Printf ("Dumped console text to %s.\n", name);
 	f = std::fopen (name, "wa");
@@ -117,6 +121,9 @@ void Console::CheckResize (int scrwidth)
 	int		i, j, width, oldwidth, oldtotallines, numlines, numchars;
 	char	tbuf[CON_TEXTSIZE];
 
+	// Need to do this first
+	PrintPutchar();
+
 	width = (scrwidth >> 3) - 2;
 
 	if (width == linewidth)
@@ -163,8 +170,12 @@ void Console::CheckResize (int scrwidth)
 	display = current;
 }
 
+//
 // Constructor
-Console::Console ()
+//
+Console::Console () : current(0), x(0), display(0), linewidth(-1),
+					 totallines(0), vislines(0), wordwrap(true), cr(false),
+					 putchar_count(0)
 {
 	linewidth = -1;
 
@@ -173,9 +184,13 @@ Console::Console ()
 	PrintInternal ("Console initialized.\n");
 }
 
+//
 // Destructor
+//
 Console::~Console()
 {
+	// Need to do this first
+	PrintPutchar();
 }
 
 
@@ -188,18 +203,22 @@ void Console::PrintInternal (const char *txt)
 {
 	int		y;
 	int		c, l;
-	static int	cr;
+
+	// Need to do this first
+	PrintPutchar();
 
 	while ( (c = *txt) )
 	{
-	// count word length
-		for (l=0 ; l< linewidth ; l++)
-			if ( txt[l] <= ' ')
-				break;
+		if (wordwrap) {
+			// count word length
+			for (l=0 ; l< linewidth ; l++)
+				if ( txt[l] <= ' ')
+					break;
 
-	// word wrap
-		if (l != linewidth && (x + l > linewidth) )
-			x = 0;
+			// word wrap
+			if (l != linewidth && (x + l > linewidth) )
+				x = 0;
+		}
 
 		txt++;
 
@@ -219,7 +238,62 @@ void Console::PrintInternal (const char *txt)
 
 		case '\r':
 			x = 0;
-			cr = 1;
+			cr = true;
+			break;
+
+		default:	// display character and advance
+			y = current % totallines;
+			text[y*linewidth+x] = c;
+			x++;
+			if (x >= linewidth) x = 0;
+			break;
+		}
+		
+	}
+}
+
+// Print a text string to the console
+void Console::PrintRawInternal (const char *txt, int n)
+{
+	int		y;
+	int		c, l;
+
+	// Need to do this first
+	PrintPutchar();
+
+	for ( int i = 0; i < n; i++ )
+	{
+		c = *txt;
+
+		if (wordwrap) {
+			// count word length
+			for (l=0 ; l < linewidth && l < n; l++)
+				if ( txt[l] <= ' ') break;
+
+			// word wrap
+			if (l != linewidth && (x + l > linewidth) )
+				x = 0;
+		}
+
+		txt++;
+
+		if (cr)
+		{
+			current--;
+			cr = false;
+		}
+		
+		if (!x) Linefeed ();
+
+		switch (c)
+		{
+		case '\n':
+			x = 0;
+			break;
+
+		case '\r':
+			x = 0;
+			cr = true;
 			break;
 
 		default:	// display character and advance
@@ -242,6 +316,38 @@ void Console::Linefeed (void)
 	std::memset (&text[(current%totallines)*linewidth], ' ', linewidth);
 }
 
+// Print a text string to the console
+void Console::PutcharInternal (int c)
+{
+	// Add the character
+	putchar_buf[putchar_count] = c;
+
+	// Increment the counter
+	putchar_count++;
+
+	// If it was a space or less, or we've hit the limit we'll add it to the
+	// actual buffer
+	if (c <= ' ' || putchar_count == (CON_PUTCHAR_SIZE-1)) PrintPutchar();
+}
+
+// Print the Putchar data, if possible
+void Console::PrintPutchar()
+{
+	if (!putchar_count) return;
+
+	// Get the count
+	int count = putchar_count;
+	
+	// Terminate the string
+	putchar_buf[putchar_count] = 0;
+
+	// Clear the counter
+	putchar_count = 0;
+
+	// Print it
+	PrintInternal(putchar_buf);
+
+}
 
 //
 // STDOUT Methods
@@ -270,12 +376,18 @@ int Console::Printf (const char *fmt, ...)
 	return count;
 }
 
+// Print a text string to the console, and output to stdout
+void Console::PrintRaw (const char *txt, int n)
+{
+	std::fwrite(txt,n,1,stdout);
+	PrintRawInternal (txt, n);
+}
+
 // putchar, and output to stdout
 void Console::Putchar (int c)
 {
-	char t[2] = {c,0};
 	fputc(c, stdout);
-	PrintInternal(t);
+	PutcharInternal(c);
 }
 
 
@@ -306,12 +418,18 @@ int Console::Printf_err (const char *fmt, ...)
 	return count;
 }
 
+// Print a text string to the console, and output to stdout
+void Console::PrintRaw_err (const char *txt, int n)
+{
+	std::fwrite(txt,n,1,stdout);
+	PrintRawInternal (txt, n);
+}
+
 // putchar, and output to stdout
 void Console::Putchar_err (int c)
 {
-	char t[2] = {c,0};
 	fputc(c, stderr);
-	PrintInternal(t);
+	PutcharInternal(c);
 }
 
 /*
@@ -340,6 +458,9 @@ void Con_DrawConsole (float frac)
 	int				lines;
 	char			version[64];
 	char			dlbar[1024];
+
+	// Need to do this first
+	PrintPutchar();
 
 	lines = viddef.height * frac;
 	if (lines <= 0)

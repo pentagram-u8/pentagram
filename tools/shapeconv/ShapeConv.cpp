@@ -53,7 +53,7 @@ void ConvertFlexes(IFileDataSource *readfile, OFileDataSource *writefile)
 	for (i = 0x58; i < write_offset; i++)  writefile->write1(0);
 
 	// Convert shapes
-	printf ("Convering %i shapes...\n", num_entries);
+	con.Printf ("Convering %i shapes...\n", num_entries);
 	for (int s = 0; s < num_entries; s++)
 	{
 		// Get the read offset and size
@@ -64,12 +64,12 @@ void ConvertFlexes(IFileDataSource *readfile, OFileDataSource *writefile)
 		if (!read_size) continue;
 
 		// Read shape
-		printf ("Reading shape %i...\n", s);
+		con.Printf ("Reading shape %i...\n", s);
 		readfile->seek(read_offset);
 		shape.Read(readfile, read_format, read_size);
 
 		// Write shape
-		printf ("Writing shape %i...\n", s);
+		con.Printf ("Writing shape %i...\n", s);
 		writefile->seek(write_offset);
 		uint32 write_size;
 		shape.Write(writefile, write_format, write_size);
@@ -82,7 +82,7 @@ void ConvertFlexes(IFileDataSource *readfile, OFileDataSource *writefile)
 		// Update the write_offset
 		write_offset += write_size;
 	}
-	printf ("Done!\n");
+	pout << "Done!" << std::endl;
 }
 
 int main(int argc, char **argv)
@@ -94,13 +94,13 @@ int main(int argc, char **argv)
 
 	if (argc >= 4 && ~Q_strcasecmp(argv[3], "-u8tocru"))
 	{
-		perr << "Converting Ultima8 shapes to Crusader Format" << endl;
+		pout << "Converting Ultima8 Format shapes in '"<< argv[1] << "' to Crusader Format in '"<< argv[2] << "'" << std::endl;
 		read_format = &U8ShapeFormat;
 		write_format = &CrusaderShapeFormat;
 	}
 	else
 	{
-		printf ("Converting Crusader shapes in %s to Ultima8 Format in %s\n", argv[1], argv[2]);
+		pout << "Converting Crusader Format shapes in '"<< argv[1] << "' to Ultima8 Format in '"<< argv[2] << "'" << std::endl;
 	}
 
 	// Create filesystem object
@@ -112,7 +112,7 @@ int main(int argc, char **argv)
 	// Uh oh, couldn't load it
 	if(readfile==0)
 	{
-		perr << "Error reading file \"" << argv[1] << "\"" << endl;
+		perr << "Error reading file '" << argv[1] << "'" << endl;
 		return 1;
 	}
 
@@ -122,7 +122,7 @@ int main(int argc, char **argv)
 	// Uh oh, couldn't load it
 	if(writefile==0)
 	{
-		perr << "Error writing file \"" << argv[2] << "\"" << endl;
+		perr << "Error writing file '" << argv[2] << "'" << endl;
 		return 1;
 	}
 

@@ -1,3 +1,14 @@
+2002-10-29  Ryan Nunn <colourles@users.sourceforge.net>
+	* filesys/FileSystem.cpp : The functions will no longer throw 
+	  exceptions
+
+	* misc/Console.* : Word Wrapping can now be toggled (not that the
+	  feature is that useful currently). cour and cerr will now also be
+	  word wrapped.
+
+	* tools/shapeconv/ShapeConv.cpp : Correcting (my own) misuse of printf
+	  instead of con.Printf().
+
 2002-10-28  Ryan Nunn <colourles@users.sourceforge.net>
 	* convert/ConvertShape.*, convert/crusader/ConvertShapeCrusader.*
 	  convert/crusader/ConvertShapeCrusader.* : Shape Conversion

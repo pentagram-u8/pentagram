@@ -61,16 +61,13 @@ bool FileSystem::rawopen
 		// problems when re-using stream objects
 		in.clear();
 		try {
-			in.open(name.c_str(), mode);		// Try to open
+			in.open(name.c_str(), mode);			// Try to open
 		} catch (std::exception &)
 		{}
-		if (in.good() && !in.fail())
-			return true; // found it!
+		if (in.good() && !in.fail()) return true;	// found it!
 	} while (base_to_uppercase(name, ++uppercasecount));
 
 	// file not found.
-	//throw (file_open_exception(fname/*get_system_path(fname)*/));
-	throw file_open_exception(fname);
 	return false;
 }
 
@@ -109,14 +106,11 @@ bool FileSystem::rawopen
 	int uppercasecount = 0;
 	do {
 		out.open(name.c_str(), mode);		// Try to open
-		if (out.good())
-			return true; // found it!
-		out.clear();	// Forget ye not
+		if (out.good()) return true;		// found it!
+		out.clear();						// Forget ye not
 	} while (base_to_uppercase(name, ++uppercasecount));
 
 	// file not found.
-//	throw (file_open_exception(fname/*get_system_path(fname)*/));
-	throw file_open_exception(fname);
 	return false;
 }
 
