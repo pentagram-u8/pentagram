@@ -53,6 +53,7 @@ GRAPHICS = \
 	graphics/ShapeFrame.o \
 	graphics/Palette.o \
 	graphics/PaletteManager.o \
+	graphics/PaletteFaderProcess.o \
 	graphics/ShapeFlex.o \
 	graphics/ShapeInfo.o \
 	graphics/MainShapeFlex.o \
