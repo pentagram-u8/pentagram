@@ -1840,7 +1840,7 @@ void GUIApp::save(ODataSource* ods)
 	ods->write2(avatarMoverProcess->getPid());
 
 	Pentagram::Palette *pal = PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game);
-	for (int i = 0; i < 16; i++) ods->write2(pal->matrix[i]);
+	for (int i = 0; i < 12; i++) ods->write2(pal->matrix[i]);
 	ods->write2(pal->transform);
 }
 
@@ -1856,8 +1856,8 @@ bool GUIApp::load(IDataSource* ids)
 	uint16 amppid = ids->read2();
 	avatarMoverProcess = p_dynamic_cast<AvatarMoverProcess*>(Kernel::get_instance()->getProcess(amppid));
 
-	sint16 matrix[16];
-	for (int i = 0; i < 16; i++)
+	sint16 matrix[12];
+	for (int i = 0; i < 12; i++)
 		matrix[i] = ids->read2();
 
 	PaletteManager::get_instance()->transformPalette(PaletteManager::Pal_Game, matrix);
