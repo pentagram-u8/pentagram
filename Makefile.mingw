@@ -7,7 +7,8 @@ U8PATH=C:/Ultima8
 # Base of the pentagram source
 SRC=.
 VPATH=$(SRC):$(SRC)/convert:$(SRC)/convert/crusader:$(SRC)/convert/u8:$(SRC)/filesys:$(SRC)/graphics:$(SRC)/misc: \
-$(SRC)/tools:$(SRC)/tools/amf2mod:$(SRC)/tools/disasm:$(SRC)/tools/shapeconv
+$(SRC)/tools:$(SRC)/tools/amf2mod:$(SRC)/tools/disasm:$(SRC)/tools/shapeconv: \
+$(SRC)/conf:$(SRC)/usecode:$(SRC)/kernel
 
 ### Modify these paths
 SDL_CFLAGS=-I$(SRC)/sdl/include
@@ -25,13 +26,20 @@ LIBS=-lmingw32 $(SDL_LIBS) -lwinmm -lopengl32
 
 CONVERT_OBJS=ConvertShape.o ConvertShapeCrusader.o ConvertShapeU8.o
 
-FILESYS_OBJS=FileSystem.o
+FILESYS_OBJS=FileSystem.o Flex.o
 
-GRAPHICS_OBJS=MD3_Model.o Texture.o TextureBitmap.o TextureTarga.o
+GRAPHICS_OBJS=Texture.o TextureBitmap.o TextureTarga.o RenderSurface.o SoftRenderSurface.o
+#MD3_Model.o
 
-MISC_OBJS=Args.o Console.o Q_strcasecmp.o 
+MISC_OBJS=Args.o Console.o Q_strcasecmp.o pent_include.o
 
-all: amf2mod.exe disasm.exe shapeconv.exe
+CONF_OBJS=Configuration.o XMLTree.o XMLNode.o
+
+KERNEL_OBJS=Kernel.o Application.o
+
+USECODE_OBJS=UCMachine.o UCProcess.o UsecodeFlex.o UCList.o
+
+all: amf2mod.exe disasm.exe shapeconv.exe pentagram.exe
 
 amf2mod.exe : amf2mod.o
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
@@ -41,6 +49,8 @@ disasm.exe : Disasm.o $(FILESYS_OBJS) $(MISC_OBJS)
 
 shapeconv.exe : ShapeConv.o $(CONVERT_OBJS) $(FILESYS_OBJS) $(MISC_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
+
+pentagram.exe: $(FILESYS_OBJS) $(MISC_OBJS) $(GRAPHICS_OBJS) $(KERNEL_OBJS) $(USECODE_OBJS) pentagram.o
 
 clean:
 	rm -f $(CONVERT_OBJS) $(FILESYS_OBJS) $(GRAPHICS_OBJS) $(MISC_OBJS) amf2mod.exe disasm.exe shapeconv.exe
