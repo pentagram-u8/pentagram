@@ -15,9 +15,9 @@ GTK_INCLUDES = `pkg-config --cflags gtk+-win32-2.0`
 GTK_LIBS = `pkg-config --libs gtk+-win32-2.0`
 
 # If this doesn't work, insert output of 'pkg-config --cflags gimp-2.0' manually
-GIMP_INCLUDES = `pkg-config --cflags gimp-2.0`
+GIMP_INCLUDES = `pkg-config --cflags gimpui-2.0`
 # If this doesn't work, insert output of 'pkg-config --libs gimp-2.0' manually
-GIMP_LIBS = `pkg-config --libs gimp-2.0`
+GIMP_LIBS = `pkg-config --libs gimpui-2.0`
 
 ### Modify these paths
 SDL_CFLAGS=-I$(SRC)/sdl/include
