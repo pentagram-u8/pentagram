@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003 The Pentagram Team
+ *  Copyright (C) 2003-2004 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 
 #include "TypeFlags.h"
 #include "IDataSource.h"
+#include "Configuration.h"
+#include "CoreApp.h"
 
 TypeFlags::TypeFlags()
 {
@@ -94,7 +96,80 @@ void TypeFlags::load(IDataSource *ds)
 		si.weight = data[6];
 
 		si.volume = data[7];
+
+		si.weaponinfo = 0;
 		
 		shapeInfo[i] = si;
+	}
+
+	loadWeaponInfo();
+}
+
+
+// load weapon info from the 'weapons' config root
+void TypeFlags::loadWeaponInfo()
+{
+	std::vector<uint32> overlay_shapes;
+
+	Configuration* config = CoreApp::get_instance()->getConfig();
+
+	// load overlay shapes
+	std::set<Pentagram::istring> overlaykeys;
+	overlaykeys = config->listKeys("weapons/overlays", true);	
+	for (std::set<Pentagram::istring>::iterator iter = overlaykeys.begin();
+		 iter != overlaykeys.end(); ++iter)
+	{
+		Pentagram::istring k = *iter;
+		int overlay_type, overlay_shape;
+		config->value(k + "/type", overlay_type);
+		config->value(k + "/shape", overlay_shape);
+
+		if ((unsigned int)overlay_type >= overlay_shapes.size())
+			overlay_shapes.resize(overlay_type+1);
+		overlay_shapes[overlay_type] = static_cast<uint32>(overlay_shape);
+	}
+
+
+	// load weapons
+	std::set<Pentagram::istring> weaponkeys;
+	weaponkeys = config->listKeys("weapons/weapons", true);	
+	for (std::set<Pentagram::istring>::iterator iter = weaponkeys.begin();
+		 iter != weaponkeys.end(); ++iter)
+	{
+		Pentagram::istring k = *iter;
+		WeaponInfo* wi = new WeaponInfo;
+
+		int val;
+
+		config->value(k + "/shape", val);
+		wi->shape = static_cast<uint32>(val);
+
+		config->value(k + "/overlay", val);
+		wi->overlay_type = static_cast<uint8>(val);
+
+		assert(wi->overlay_type < overlay_shapes.size());
+
+		wi->overlay_shape = overlay_shapes[wi->overlay_type];
+
+		config->value(k + "/damage_mod", val);
+		wi->damage_modifier = static_cast<uint8>(val);
+
+		config->value(k + "/base_damage", val);
+		wi->base_damage = static_cast<uint8>(val);
+
+		config->value(k + "/attack_dex", val);
+		wi->dex_attack_bonus = static_cast<uint8>(val);
+
+		config->value(k + "/defend_dex", val);
+		wi->dex_defend_bonus = static_cast<uint8>(val);
+
+		config->value(k + "/armour", val);
+		wi->armour_bonus = static_cast<uint8>(val);
+
+		config->value(k + "/damage_type", val);
+		wi->damage_type = static_cast<uint16>(val);
+
+		assert(wi->shape < shapeInfo.size());
+		shapeInfo[wi->shape].weaponinfo = wi;
 	}
 }

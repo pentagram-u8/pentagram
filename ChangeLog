@@ -3,6 +3,7 @@
 	* graphics/WpnOvlayDat.*, kernel/GameData.*: load wpnovlay.dat
 	* world/actors/Actor.*: store current animation frame
 	* data/u8weapons.cfg: u8 weapon data
+	* graphics/ShapeInfo.h, graphics/TypeFlags.*: load weapon data
 
 2004-03-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/World.cpp: updated comments a bit

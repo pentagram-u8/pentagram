@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,27 +16,22 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef TYPEFLAGS_H
-#define TYPEFLAGS_H
+#ifndef WEAPONINFO_H
+#define WEAPONINFO_H
 
-#include <vector>
-#include "ShapeInfo.h"
 
-class IDataSource;
-
-class TypeFlags
-{
-public:
-	TypeFlags();
-	~TypeFlags();
-
-	void load(IDataSource* ds);
-	ShapeInfo* getShapeInfo(uint32 shape);
-
-private:
-	void loadWeaponInfo();
-
-	std::vector<ShapeInfo> shapeInfo;
+struct WeaponInfo {
+	uint32 shape;
+	uint8 overlay_type;
+	uint32 overlay_shape;
+	uint8 damage_modifier;
+	uint8 base_damage;
+	uint8 dex_attack_bonus;
+	uint8 dex_defend_bonus;
+	uint8 armour_bonus;
+	uint16 damage_type; // 0x02 = blade, 0x04 = blunt, 0x08 = fire?
+	                    // 0x10 = anti-undead?, 0x20 = fire?, 0x40 = slayer?
 };
+
 
 #endif

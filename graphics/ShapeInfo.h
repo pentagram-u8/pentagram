@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -18,6 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifndef SHAPEINFO_H
 #define SHAPEINFO_H
+
+#include "WeaponInfo.h"
 
 class ShapeInfo
 {
@@ -73,6 +75,8 @@ public:
 	uint32 unknown;
 	uint32 weight, volume;
 
+	WeaponInfo* weaponinfo;
+
 	inline bool is_fixed() const { return (flags & SI_FIXED) != 0; }
 	inline bool is_solid() const { return (flags & SI_SOLID) != 0; }
 	inline bool is_sea() const { return (flags & SI_SEA) != 0; }
@@ -89,6 +93,11 @@ public:
 	inline bool is_explode() const { return (flags & SI_EXPLODE) != 0; }
 
 	bool getTypeFlag(int typeflag);
+
+	~ShapeInfo() {
+		delete weaponinfo;
+	}
+
 };
 
 

@@ -31,6 +31,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Shape.h"
 #include "MusicFlex.h"
 #include "WpnOvlayDat.h"
+#include "CoreApp.h"
+#include "Configuration.h"
 
 GameData* GameData::gamedata = 0;
 
@@ -118,6 +120,10 @@ void GameData::loadU8Data()
 		std::exit(-1);
 	}
 	mainshapes = new MainShapeFlex(sf, PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
+
+	// Load weapon info
+	Configuration* config = CoreApp::get_instance()->getConfig();
+	config->readConfigFile("@data/u8weapons.cfg", "weapons", true);
 
 	// Load typeflags
 	IDataSource *tfs = filesystem->ReadFile("@u8/static/typeflag.dat");
