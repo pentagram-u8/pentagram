@@ -34,14 +34,27 @@ public:
 
 	virtual bool run(const uint32 framenum);
 
-	ObjId getTarget() const { return target; }
-	void setTarget(ObjId target_) { target = target_; }
+	ObjId getTarget();
+	void setTarget(ObjId target_);
+
+	virtual void dumpInfo();
 
 	bool loadData(IDataSource* ids);
 protected:
 	virtual void saveData(ODataSource* ods);
 
+	bool isValidTarget(Actor* target);
+	bool isEnemy(Actor* target);
+	ObjId seekTarget();
+	bool inAttackRange();
+
 	ObjId target;
+	ObjId fixedTarget;
+
+	enum CombatMode {
+		CM_WAIT = 0,
+		CM_ATTACK
+	};
 };
 
 

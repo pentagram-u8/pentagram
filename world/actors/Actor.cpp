@@ -405,7 +405,8 @@ uint16 Actor::cSetActivity(int activity)
 		return Kernel::get_instance()->addProcess(new DelayProcess(1));
 		break;
 	case 1: // combat
-		// TODO: implement (set combat and let AI handle the rest?)
+		setInCombat();
+		return 0;
 	case 2: // stand
 		// NOTE: temporary fall-throughs!
 		return doAnim(Animation::stand, 8);
@@ -796,7 +797,8 @@ void Actor::dumpInfo()
 	pout << "hp: " << hitpoints << ", mp: " << mana << ", str: " << strength
 		 << ", dex: " << dexterity << ", int: " << intelligence
 		 << ", ac: " << getArmourClass() << ", defense: " << std::hex
-		 << getDefenseType() << std::dec << std::endl;
+		 << getDefenseType() << " align: " << getAlignment() << " enemy: "
+		 << getEnemyAlignment() << std::dec << std::endl;
 }
 
 void Actor::saveData(ODataSource* ods)
