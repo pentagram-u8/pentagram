@@ -93,7 +93,7 @@ class IDataSource
 		void readline(std::string &str)
 		{
 			str.erase();
-			while (getPos() < getSize())
+			while (!eof())
 			{
 				char character =  static_cast<char>(read1());
 
@@ -108,6 +108,7 @@ class IDataSource
 		virtual void skip(sint32 delta)=0;
 		virtual uint32 getSize()=0;
 		virtual uint32 getPos()=0;
+		virtual bool eof()=0;
 
 		virtual std::ifstream *GetRawIfstream() { 
 			return 0; 
@@ -205,6 +206,8 @@ class IFileDataSource: public IDataSource
 	}
 
 	virtual uint32 getPos() { return in->tellg(); }
+
+	virtual bool eof() { in->get(); bool ret = in->eof(); if (!ret) in->unget(); return ret; }
 
 	virtual std::ifstream *GetRawIfstream() {
 		return in; 
@@ -349,6 +352,8 @@ public:
 	virtual uint32 getPos() {
 		return (buf_ptr - buf);
 	}
+
+	virtual bool eof() { return ((uint32)(buf_ptr-buf))>=size; }
 
 };
 

@@ -1,4 +1,7 @@
 2003-06-03	  Ryan Nunn <colourles@users.sourceforge.net>
+	* filesys/IDataSource.h : Theoretically fixing the readline() problem. 
+	
+2003-06-03	  Ryan Nunn <colourles@users.sourceforge.net>
 	* kernel/Process.h : A few new useful methods
 	* kernel/Object.cpp : When an ObjID is cleared, all processes belonging to
 	  that ObjID are now terminated.
