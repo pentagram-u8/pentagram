@@ -299,6 +299,8 @@ void ActorAnimProcess::saveData(ODataSource* ods)
 
 	uint8 ff = firstframe ? 1 : 0;
 	ods->write1(ff);
+	uint8 ab = aborted ? 1 : 0;
+	ods->write1(ab);
 	ods->write4(dir);
 	ods->write4(currentindex);
 	if (animaction) {
@@ -317,6 +319,7 @@ bool ActorAnimProcess::loadData(IDataSource* ids)
 	if (!Process::loadData(ids)) return false;
 
 	firstframe = (ids->read1() != 0);
+	aborted = (ids->read1() != 0);
 	dir = ids->read4();
 	currentindex = ids->read4();
 
