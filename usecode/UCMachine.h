@@ -108,14 +108,17 @@ private:
 	static void		ConCmd_setGlobal(const Console::ArgsType &args, const Console::ArgvType &argv);
 
 
+#ifdef DEBUG
 	// tracing
 	bool tracing_enabled;
+	bool trace_all;
 	std::set<ObjId> trace_ObjIDs;
 	std::set<ProcId> trace_PIDs;
 	std::set<uint16> trace_classes;
 
 	inline bool trace_show(ProcId pid, ObjId objid, uint16 ucclass) {
 		if (!tracing_enabled) return false;
+		if (trace_all) return true;
 		if (trace_ObjIDs.find(objid) != trace_ObjIDs.end()) return true;
 		if (trace_PIDs.find(pid) != trace_PIDs.end()) return true;
 		if (trace_classes.find(ucclass) != trace_classes.end()) return true;
@@ -125,8 +128,9 @@ private:
 	static void		ConCmd_tracePID(const Console::ArgsType &args, const Console::ArgvType &argv);
 	static void		ConCmd_traceObjID(const Console::ArgsType &args, const Console::ArgvType &argv);
 	static void		ConCmd_traceClass(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void		ConCmd_traceAll(const Console::ArgsType &args, const Console::ArgvType &argv);
 	static void		ConCmd_stopTrace(const Console::ArgsType &args, const Console::ArgvType &argv);
-
+#endif
 };
 
 #endif

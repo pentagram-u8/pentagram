@@ -1,3 +1,9 @@
+2005-01-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* data/u8bindings.ini: set c to combat mode, insert to clipping
+	* usecode/UCMachine.*: UCMachine::traceAll intrinsic
+	* world/Item.*: EXT_PERMANENT_NPC flag to mark NPCs with a fixed ObjId
+	* world/Item.cpp: only use usecode class (1024+ObjId) for perm. NPCs
+
 2005-01-24  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: s/statis/stasis/
 

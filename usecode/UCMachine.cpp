@@ -97,6 +97,7 @@ UCMachine::UCMachine(Intrinsic *iset)
 	con.AddConsoleCommand("UCMachine::traceObjID", ConCmd_traceObjID);
 	con.AddConsoleCommand("UCMachine::tracePID", ConCmd_tracePID);
 	con.AddConsoleCommand("UCMachine::traceClass", ConCmd_traceClass);
+	con.AddConsoleCommand("UCMachine::traceAll", ConCmd_traceAll);
 	con.AddConsoleCommand("UCMachine::stopTrace", ConCmd_stopTrace);
 #endif
 }
@@ -110,6 +111,7 @@ UCMachine::~UCMachine()
 	con.RemoveConsoleCommand("UCMachine::traceObjID");
 	con.RemoveConsoleCommand("UCMachine::tracePID");
 	con.RemoveConsoleCommand("UCMachine::traceClass");
+	con.RemoveConsoleCommand("UCMachine::traceAll");
 	con.RemoveConsoleCommand("UCMachine::stopTrace");
 #endif
 
@@ -150,8 +152,9 @@ bool UCMachine::execProcess(UCProcess* p)
 #ifdef DEBUG
 	if (trace_show(p->pid, p->item_num, p->classid)) {
 		pout << std::hex << "running process " << p->pid
-			 << ", item " << p->item_num << ", class " << p->classid
-			 << ", offset " << p->ip << std::dec << std::endl;
+			 << ", item " << p->item_num << ", type " << p->type
+			 << ", class " << p->classid << ", offset " << p->ip
+			 << std::dec << std::endl;
 	}
 #endif
 
@@ -1298,8 +1301,9 @@ bool UCMachine::execProcess(UCProcess* p)
 #ifdef DEBUG
 				if (trace_show(p->pid, p->item_num, p->classid)) {
 					pout << std::hex << "(still) running process " << p->pid
-						 << ", item " << p->item_num << ", class " <<p->classid
-						 << ", offset " << p->ip << std::dec << std::endl;
+						 << ", item " << p->item_num << ", type " << p->type
+						 << ", class " << p->classid << ", offset " << p->ip
+						 << std::dec << std::endl;
 				}
 #endif
 
@@ -2432,6 +2436,18 @@ void UCMachine::ConCmd_traceClass(const Console::ArgsType &/*args*/,
 	pout << "UCMachine: tracing class " << ucclass << std::endl;
 }
 
+void UCMachine::ConCmd_traceAll(const Console::ArgsType &/*args*/,
+								const Console::ArgvType &argv)
+{
+	UCMachine *uc = UCMachine::get_instance();
+	uc->tracing_enabled = true;
+	uc->trace_all = true;
+
+	pout << "UCMachine: tracing all usecode" << std::endl;
+}
+
+
+
 void UCMachine::ConCmd_stopTrace(const Console::ArgsType &/*args*/,
 								 const Console::ArgvType &/*argv*/)
 {
@@ -2440,4 +2456,5 @@ void UCMachine::ConCmd_stopTrace(const Console::ArgsType &/*args*/,
 	uc->trace_PIDs.clear();
 	uc->trace_classes.clear();
 	uc->tracing_enabled = false;
+	uc->trace_all = false;
 }

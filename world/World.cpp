@@ -256,13 +256,16 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 
 		Actor *actor = ItemFactory::createActor(shape,frame,quality,
 												flags|Item::FLG_IN_NPC_LIST,
-												npcnum,mapnum, 0);
+												npcnum,mapnum,
+												Item::EXT_PERMANENT_NPC);
 		if (!actor) {
 #ifdef DUMP_ITEMS
 			pout << "Couldn't create actor" << std::endl;
 #endif
 			continue;
 		}
+		ObjectManager::get_instance()->assignActorObjId(actor, i);
+
 		actor->setLocation(x,y,z);
 
 		// read npcdata:
@@ -294,8 +297,6 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 		actor->setActorFlag(flags30 << 16);
 
 		// TODO: decode and use rest of npcdata.dat
-
-		ObjectManager::get_instance()->assignActorObjId(actor, i);
 	}
 
 	delete itemds;

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -500,13 +500,14 @@ public:
 	};
 
 	enum extflags {
-		EXT_FIXED		= 0x0001,	//!< Item came from FIXED
-		EXT_INCURMAP	= 0x0002,	//!< Item is in a CurrentMap display list
-		EXT_LERP_NOPREV	= 0x0008,	//!< Item can't be lerped this frame
-		EXT_HIGHLIGHT	= 0x0010,	//!< Item should be Painted highlighted
-		EXT_CAMERA		= 0x0020,	//!< Item is being followed by the camera
-		EXT_SPRITE		= 0x0040,	//!< Item is a sprite
-		EXT_TRANSPARENT = 0x0080    //!< Item should be painted transparent
+		EXT_FIXED		 = 0x0001,	//!< Item came from FIXED
+		EXT_INCURMAP	 = 0x0002,	//!< Item is in a CurrentMap display list
+		EXT_LERP_NOPREV	 = 0x0008,	//!< Item can't be lerped this frame
+		EXT_HIGHLIGHT	 = 0x0010,	//!< Item should be Painted highlighted
+		EXT_CAMERA		 = 0x0020,	//!< Item is being followed by the camera
+		EXT_SPRITE		 = 0x0040,	//!< Item is a sprite
+		EXT_TRANSPARENT  = 0x0080,  //!< Item should be painted transparent
+		EXT_PERMANENT_NPC= 0x0100	//!< Item is a permanent NPC
 	};
 };
 

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -956,12 +956,23 @@ uint32 Item::callUsecodeEvent(uint32 event, const uint8* args, int argsize)
 {
 	uint32	class_id = shape;
 
-	// Non monster NPCs use objid/npcnum + 1024
-	// A monster NPC is specified with the FAST_ONLY flag
-	if (objid < 256 && !(flags & FLG_FAST_ONLY)) class_id = objid + 1024;
+	// Non-monster NPCs use objid/npcnum + 1024
+	// Note: in the original, a non-monster NPC is specified with
+	// the FAST_ONLY flag. However, this causes some summoned monster which
+	// do not receive the FAST_ONLY flag to behave strangely. (Confirmed that
+	// happens in the original as well.) -wjp 20050128
+	if (objid < 256 && (extendedflags & EXT_PERMANENT_NPC))
+		class_id = objid + 1024;
+
+	// CHECKME: to make Pentagram behave as much like the original as possible,
+	// don't call any usecode if the original would call the wrong class
+	if (objid < 256 && !(extendedflags & EXT_PERMANENT_NPC) &&
+		!(flags & FLG_FAST_ONLY))
+		return 0;
 
 	// UnkEggs have quality+0x47F
-	if (getFamily() == ShapeInfo::SF_UNKEGG) class_id = quality + 0x47F;
+	if (getFamily() == ShapeInfo::SF_UNKEGG)
+		class_id = quality + 0x47F;
 
 	Usecode* u = GameData::get_instance()->getMainUsecode();
 	uint32 offset = u->get_class_event(class_id, event);
@@ -2368,6 +2379,9 @@ uint32 Item::I_create(const uint8* args, unsigned int /*argsize*/)
 		return 0;
 	}
 	uint16 objID = newitem->assignObjId();
+
+	pout << "Item::create: created item " << objID << " (" << shape
+		 << "," << frame << ")" << std::endl;
 
 	newitem->moveToEtherealVoid();
 

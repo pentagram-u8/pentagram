@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -481,7 +481,9 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 	if (getActorFlags() & ACT_DEAD)
 		return; // already dead, so don't bother
 
-	pout << "Actor " << getObjId() << " received hit from " << other << ". ";
+	pout << "Actor " << getObjId() << " received hit from " << other
+		 << " (dmg=" << damage << ",type=" << std::hex << damage_type
+		 << std::dec << "). ";
 
 	Item* hitter = World::get_instance()->getItem(other);
 	Actor* attacker = World::get_instance()->getNPC(other);
@@ -835,6 +837,9 @@ bool Actor::loadData(IDataSource* ids, uint32 version)
 	animframe = ids->read2();
 	direction = ids->read2();
 	actorflags = ids->read4();
+
+	//! TODO: get rid of this hack sometime in the future -wjp 20050128
+	if (objid < 62) extendedflags |= Item::EXT_PERMANENT_NPC;
 
 	return true;
 }
