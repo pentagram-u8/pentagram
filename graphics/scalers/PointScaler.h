@@ -92,6 +92,64 @@ public:
 			}
 
 		}
+		// Arbitrary scaling X and Y
+		//
+		//
+		//
+		else 
+		{
+			uint32 pos_y, pos_x;
+			uint32 end_y = dh;
+			uint32 dst_y = 0;
+
+			// Src Loop Y
+			while (texel != tex_end)
+			{
+				uint32 end_x = dw;
+				uint32 dst_x = 0;
+
+				// Src Loop X
+				while (texel != tline_end)
+				{
+					pos_y = dst_y;
+
+					uintX p = Manip::copy(*texel);
+					texel++;
+
+					//
+					// Inner loops
+					//
+
+					// Dest Loop Y
+					while (pos_y < end_y)
+					{
+						pos_x = dst_x;
+
+						// Dest Loop X
+						while (pos_x < end_x)
+						{
+							//*(reinterpret_cast<uintX*>(pixel)) = p;
+							uint8 *dp = pixel + ((pos_y/sh) * pitch + (pos_x/sw)*sizeof(uintX));
+							*(reinterpret_cast<uintX*>(dp)) = p;
+
+							//pixel+=sizeof(uintX);
+							pos_x += sw;
+						}
+						pos_y += sh;
+					}
+
+					dst_x = pos_x;
+					end_x += dw;
+				}
+
+				dst_y = pos_y;
+				end_y += dh;
+
+				texel += tex_diff;
+				tline_end += tpitch;
+			}
+		}
+
 
 		return true;
 	}
