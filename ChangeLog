@@ -5,6 +5,7 @@
 	* world/Item.h: changed 'shape' from const to private. We'll just need
 	  to make sure we always use setShape in Item.
 	* docs/scratch/saving: a what-to-save list
+	* world/GlobEgg.*: use objid for contents
 
 2003-06-24  Max Horn <max@quendi.de>
 	* various: fixed strict GCC 3.3 warnings

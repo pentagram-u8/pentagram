@@ -76,7 +76,7 @@ void GlobEgg::expand()
 		if (previous)
 			previous->setGlobNext(item);
 		else
-			contents = item;
+			contents = item->getObjId();
 		previous = item;
 	}
 }

@@ -386,6 +386,7 @@ private:
 	//! Call a Usecode Event. Use the separate functions instead!
 	uint32 callUsecodeEvent(uint32 event, const uint8* args=0, int argsize=0);
 
+	// Note that this glob linked list isn't being used currently;
 	uint16 glob_next; // next item in glob
 
 	// The frame setupLerp was last called on

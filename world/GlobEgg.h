@@ -37,7 +37,7 @@ public:
 	void unexpand(); // delete the expanded contents
 
 protected:
-	Item* contents;
+	uint16 contents;
 };
 
 
