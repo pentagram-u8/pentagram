@@ -34,14 +34,16 @@ In Windows, it has to be in the current directory.
 A sample pentagram.cfg is included below:
 
 <config>
- <paths>
-  <u8>
+ <u8>
+  <path>
    /path/to/u8
-  </u8>
+  </path>
+ </u8>
+ <general>
   <data>
    /path/to/pentagram/data
   </data>
- </paths>
+ </general>
 </config>
 
 Replace '/path/to/u8' with the directory containing 'u8.exe'.
