@@ -43,6 +43,7 @@ public:
 
 	bool hasPoint(sint32 x, sint32 y) const;	// Check to see if a point is in the frame
 
+	uint8 getPixelAtPoint(sint32 x, sint32 y) const;	// Get the pixel at the point 
 protected:
 
 	// This will load a u8 style shape 'optimzed'.

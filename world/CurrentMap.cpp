@@ -939,6 +939,66 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 	return hit && hit->size();
 }
 
+
+Item *CurrentMap::traceTopItem(sint32 x, sint32 y, sint32 ztop, sint32 zbot, ObjId ignore, uint32 shflags)
+{
+	Item* top = 0;
+
+	if (ztop < zbot) {
+		sint32 temp = ztop;
+		ztop = zbot;
+		zbot = ztop;
+	}
+
+	int minx, miny, maxx, maxy;
+	minx = (x/MAP_CHUNK_SIZE) - 1;
+	maxx = (x/MAP_CHUNK_SIZE) + 1;
+	miny = (y/MAP_CHUNK_SIZE) - 1;
+	maxy = (y/MAP_CHUNK_SIZE) + 1;
+	if (minx < 0) minx = 0;
+	if (maxx >= MAP_NUM_CHUNKS) maxx = MAP_NUM_CHUNKS-1;
+	if (miny < 0) miny = 0;
+	if (maxy >= MAP_NUM_CHUNKS) maxy = MAP_NUM_CHUNKS-1;
+
+	for (int cx = minx; cx <= maxx; cx++) {
+		for (int cy = miny; cy <= maxy; cy++) {
+			item_list::iterator iter;
+			for (iter = items[cx][cy].begin();
+				 iter != items[cx][cy].end(); ++iter)
+			{
+				Item* item = *iter;
+				if (item->getObjId() == ignore) continue;
+				if (item->getExtFlags() & Item::EXT_SPRITE) continue;
+
+				ShapeInfo* si = item->getShapeInfo();
+				if (!(si->flags & shflags)) continue;
+
+				if (si->is_editor() || si->is_translucent()) continue;
+
+				sint32 ix, iy, iz, ixd, iyd, izd;
+				item->getLocation(ix, iy, iz);
+				item->getFootpadWorld(ixd, iyd, izd);
+
+				if ((ix-ixd) >= x || ix <= x) continue;
+				if ((iy-iyd) >= y || iy <= y) continue;
+				if (iz >= ztop || (iz+izd) <= zbot) continue;
+
+				if (top) {
+					sint32 tix, tiy, tiz, tixd, tiyd, tizd;
+					top->getLocation(tix, tiy, tiz);
+					top->getFootpadWorld(tixd, tiyd, tizd);
+
+					if ((tiz+tizd) < (iz+izd)) top = 0;
+				}
+
+				if (!top) top = item;
+			}
+		}
+	}
+	return top;
+}
+
+
 void CurrentMap::save(ODataSource* ods)
 {
 	for (unsigned int i = 0; i < MAP_NUM_CHUNKS; ++i) {

@@ -163,3 +163,51 @@ bool ShapeFrame::hasPoint(sint32 x, sint32 y) const
 
 	return false;
 }
+
+// Get the pixel at the point 
+uint8 ShapeFrame::getPixelAtPoint(sint32 x, sint32 y) const
+{
+	// Add the offset
+	x += xoff;
+	y += yoff;
+
+	// First gross culling based on dims
+	if (x < 0 || y < 0 || x >= width || y >= height) return 0xFF;
+
+	//
+	// This is all pretty simple.
+	//
+	// All we do is decompress the line the check is on. Then we see if there 
+	// is a pixel at the location. And if there is, return it
+	// 
+
+	sint32 xpos = 0;
+	const uint8 * linedata = rle_data + line_offsets[y];
+
+	do {
+		xpos += *linedata++;
+	  
+		if (xpos == width) break;
+
+		sint32 dlen = *linedata++;
+		int type = 0;
+		
+		if (compressed) 
+		{
+			type = dlen & 1;
+			dlen >>= 1;
+		}
+
+		if (x >= xpos && x < (xpos+dlen))
+		{
+			if (!type) linedata+=x-xpos;
+			return *linedata;
+		}
+		xpos += dlen;
+		if (!type) linedata+=dlen;
+		else linedata++;
+
+	} while (xpos < width);
+
+	return 0xFF;
+}

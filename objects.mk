@@ -147,7 +147,8 @@ GUMPS = \
 	gumps/SliderGump.o \
 	gumps/TargetGump.o \
 	gumps/QuitGump.o \
-	gumps/FastAreaVisGump.o
+	gumps/FastAreaVisGump.o \
+	gumps/MiniMapGump.o
 
 WIDGETS = \
 	gumps/widgets/ButtonWidget.o \

@@ -162,6 +162,9 @@ public:
 		return (fast[cy][cx/32]&(1<<(cx&31))) != 0;
 	}
 
+	// A simple trace to find the top item at a specific xy point
+	Item *traceTopItem(sint32 x, sint32 y, sint32 ztop, sint32 zbot, ObjId ignore, uint32 shflags);
+
 	void save(ODataSource* ods);
 	bool load(IDataSource* ids, uint32 version);
 
