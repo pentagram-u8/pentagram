@@ -57,6 +57,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <cstdlib>
 
 #include "DisasmProcess.h"
+#include "CompileProcess.h"
 
 using std::string;
 
@@ -70,7 +71,7 @@ Application::Application(int argc, char *argv[])
 	  console(0), screen(0), palettemanager(0), gamedata(0), world(0),
 	  display_list(0),
 	  runMinimalSysInit(false), runGraphicSysInit(false), runSDLInit(false),
-	  weAreDisasming(false),
+	  weAreDisasming(false), weAreCompiling(false),
 	  isRunning(false)
 {
 	assert(application == 0);
@@ -83,6 +84,12 @@ Application::Application(int argc, char *argv[])
 		pout << "We Are Disassembling..." << std::endl;
 		MinimalSysInit();
 		kernel->addProcess(new DisasmProcess());
+	}
+	else if(weAreCompiling==true)
+	{
+		pout << "We Are Compiling..." << std::endl;
+		MinimalSysInit();
+		kernel->addProcess(new CompileProcess());
 	}
 	else
 	{
@@ -388,6 +395,9 @@ void Application::loadConfig()
 	// Do we reload the config files if that path differs from the
 	// hardcoded data path? (since the system-wide config file is in @data)
 
+	/**********
+	  load pentagram specific data path
+	 **********/
 	std::string data;
 	pout << "Reading \"config/general/data\" config key." << std::endl;
 	config->value("config/general/data", data, "");
@@ -399,11 +409,32 @@ void Application::loadConfig()
 		pout << "Key not found. Data path set to default." << std::endl;
 	}
 
+	/**********
+	  load main game data path
+	 **********/
 	std::string u8;
 	pout << "Reading \"config/" << game << "/path\" config key." << std::endl;
 	config->value(string("config/")+game+"/path", u8, ".");
 	filesystem->AddVirtualPath("@u8", u8);
 	pout << "U8 Path: " << u8 << std::endl;
+
+	/**********
+	  load work path. Default is $(HOME)/.pentagram/game-work
+	  where 'game' in the above is the specified 'game' loaded (default 'u8')
+	 **********/
+	std::string home;
+#ifdef HAVE_HOME
+	home = getenv("HOME");
+	home += "/.pentagram";
+#else
+	// TODO: what to do on systems without $HOME?
+	home = ".";
+#endif
+	std::string work(home+"/"+game+"-work");
+	pout << "Reading \"config/" << game << "/work\" config key." << std::endl;
+	config->value(string("config/")+game+"/work", work, string(home+"/"+game+"-work").c_str());
+	filesystem->AddVirtualPath("@work", work, true); // force creation if it doesn't exist
+	pout << "U8 Workdir: " << work << std::endl;
 }
 
 void Application::ParseArgs(int argc, char *argv[])
@@ -412,8 +443,9 @@ void Application::ParseArgs(int argc, char *argv[])
 
 	Args parameters;
 
-	parameters.declare("--disasm", &weAreDisasming, true);
-	parameters.declare("--game",   &game,           "u8");
+	parameters.declare("--disasm",  &weAreDisasming, true);
+	parameters.declare("--compile", &weAreCompiling, true);
+	parameters.declare("--game",    &game,           "u8");
 	//parameters.declare("--singlefile",	&singlefile, true);
 
 	parameters.process(argc, argv);

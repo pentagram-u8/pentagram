@@ -110,7 +110,7 @@ class FileSystem
 	// Open a streaming file as readable. Streamed (0 on failure)
 	OFileDataSource *WriteFile(const std::string &vfn, bool is_text=false);
 
-	bool AddVirtualPath(const std::string &vpath, const std::string &realpath);
+	bool AddVirtualPath(const std::string &vpath, const std::string &realpath, bool create=false);
 	bool RemoveVirtualPath(const std::string &vpath);
 	
 	bool rawopen
@@ -132,6 +132,7 @@ class FileSystem
 	bool base_to_uppercase(std::string& str, int count);
 
 	bool IsDir(const std::string& path);
+	int  MkDir(const std::string& path);
 
 	static FileSystem* filesystem;
 

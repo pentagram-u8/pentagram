@@ -25,7 +25,7 @@ using std::string;
 using std::strtol;
 using std::strtoul;
 
-void Args::process(sint32 argc, char **argv)
+void Args::process(const sint32 argc, const char * const *argv)
 {
 	for(sint32 i=1; i<argc; ++i)
 	{

@@ -66,7 +66,8 @@ pentagram_OBJ = \
 	conf/Configuration.o \
 	conf/XMLTree.o \
 	conf/XMLNode.o \
-	tools/disasm/DisasmProcess.o
+	tools/disasm/DisasmProcess.o \
+	tools/compile/CompileProcess.o
 
 # Common rules
 include common.mk

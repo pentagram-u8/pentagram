@@ -102,7 +102,7 @@ bool FileSystem::rawopen
 	if (!is_text) mode |= std::ios::binary;
 #endif
 	switch_slashes(name);
-	
+
 	int uppercasecount = 0;
 	do {
 		// We first "clear" the stream object. This is done to prevent
@@ -224,7 +224,7 @@ bool FileSystem::base_to_uppercase(string& str, int count)
 					// Go backwards.
 	string::reverse_iterator X;
 	for(X = str.rbegin(); X != str.rend(); ++X)
-		{
+	{
 					// Stop at separator.
 		if (*X == '/' || *X == '\\' || *X == ':')
 			todo--;
@@ -244,7 +244,7 @@ bool FileSystem::base_to_uppercase(string& str, int count)
 	return (todo <= 0);
 }
 
-bool FileSystem::AddVirtualPath(const string &vpath, const string &realpath)
+bool FileSystem::AddVirtualPath(const string &vpath, const string &realpath, const bool create)
 {
 	string vp = vpath, rp = realpath;
 
@@ -264,9 +264,14 @@ bool FileSystem::AddVirtualPath(const string &vpath, const string &realpath)
 	string fullpath = rp;
 	rewrite_virtual_path(fullpath);
 	if (!IsDir(fullpath)) {
-		perr << "Error mounting virtual path \"" << vp << "\": "
-			 << "directory not found: " << fullpath << std::endl;
-		return false;
+		if(!create) {
+			perr << "Error mounting virtual path \"" << vp << "\": "
+				 << "directory not found: " << fullpath << std::endl;
+			return false;
+		}
+		else {
+			MkDir(fullpath);
+		}
 	}
 
 	virtualpaths[vp] = rp;
@@ -301,12 +306,12 @@ bool FileSystem::rewrite_virtual_path(string &vfn)
 //		perr << vfn << ", " << vfn.substr(0, pos) << ", " << pos << std::endl;
 		std::map<string, string>::iterator p = virtualpaths.find(
 			vfn.substr(0, pos));
-		
+
 		if (p != virtualpaths.end()) {
 			ret = true;
 			// rewrite first part of path
 			vfn = p->second + vfn.substr(pos);
-			pos = string::npos; 
+			pos = string::npos;
 		} else {
 			if (pos == 0)
 				break;
@@ -341,3 +346,30 @@ bool FileSystem::IsDir(const string &path)
 
 	return false; // not found
 }
+
+/*
+ *	Create a directory
+ */
+
+int FileSystem::MkDir(const string &path)
+{
+	string name = path;
+#if (defined(MACOSX) || defined(BEOS))
+	// remove any trailing slashes
+	string::size_type pos = name.find_last_not_of('/');
+	if (pos != string::npos)
+	  name.resize(pos+1);
+#endif
+#if defined(WIN32) && defined(UNICODE)
+	const char *n = name.c_str();
+	int nLen = std::strlen(n)+1;
+	LPTSTR lpszT = (LPTSTR) alloca(nLen*2);
+	MultiByteToWideChar(CP_ACP, 0, n, -1, lpszT, nLen);
+	return CreateDirectory(lpszT, NULL);
+#elif defined(WIN32)
+	return mkdir(name.c_str());
+#else
+	return mkdir(name.c_str(), 0750); // Create dir. if not already there.
+#endif
+}
+

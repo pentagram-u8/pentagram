@@ -5,6 +5,24 @@
 	* */.cvsignore: Added CVSROOT/cvsignore, so removed all .deps/Makefile
 	  entries and entire files if that's all they held.
 
+	* filesys/FileSystem.*: Add ability for it to create directories on request
+	  should they not exist.
+	* kernel/Applications.*: Added 'work' directory stuff. Directory gets
+	  mounted on @work, and is defined either by the config file:
+	  <config>
+	      <u8>
+	           <path> /path/to/u8 </>
+	           <work> /path/to/u8/work/dir </>
+	      </>
+	  </>
+	  Default value is (under linux at least) $HOME/.pentagram/u8-work
+	  or $HOME/.pentagram/gamename-work for a game named 'gamename'.
+	  Also has yet-another --param option too, that doesn't exist.
+	* misc/Args.*: Constness.
+	* tools/compile/*: Doesn't exist. You're imaging there's something there
+	  that does nothing. There's nothing there, and it most certainly does
+	  nothing.
+	
 2003-05-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/World.*, kernel/GameData.*: moved fixed from World to GameData
 	* item/Item.h: added FLG_FASTAREA

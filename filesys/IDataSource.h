@@ -82,7 +82,7 @@ class IDataSource
 			else if (exponent) 
 				mantissa |= 0x400000;
 			// Denormalized - Set the exponent to 1
-			else 
+			else
 				exponent = 1;
 
 			float f = std::ldexp(mantissa/8388608.0,exponent-127);
@@ -99,6 +99,8 @@ class IDataSource
 
 class IFileDataSource: public IDataSource
 {
+	friend std::ifstream *GetRawIfstream(IFileDataSource *ifds);
+
 	private:
 		std::ifstream *in;
 
@@ -190,6 +192,10 @@ class IFileDataSource: public IDataSource
 
 };
 
+inline std::ifstream *GetRawIfstream(IFileDataSource *ifds)
+{
+	return ifds->in;
+}
 
 class IBufferDataSource : public IDataSource
 {

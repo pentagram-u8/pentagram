@@ -89,6 +89,7 @@ private:
 	std::string game;
 	// various temporary state flags, to be moved somewhere more appropriate in time.
 	bool weAreDisasming;
+	bool weAreCompiling;
 	bool weAreWeAreWeAreTheMany; // false for the time being. *grin*
 
 	bool isRunning;

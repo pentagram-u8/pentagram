@@ -90,7 +90,7 @@ class Args
 	inline void declare(const char *option_cstr, uint32 *value, const uint32 defaultvalue=0)
 	{ options.push_back(Option(option_cstr, value, defaultvalue)); };
 
-	void process(sint32 argc, char **argv);
+	void process(const sint32 argc, const char * const *argv);
 };
 
 #endif
