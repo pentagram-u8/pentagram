@@ -21,6 +21,7 @@
 #include "GUIApp.h"
 #include "World.h"
 #include "CurrentMap.h"
+#include "RenderSurface.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(FastAreaVisGump,Gump);
 
