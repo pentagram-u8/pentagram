@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Process.h"
 
 class Actor;
-class AnimAction;
+struct AnimAction;
 
 class ActorAnimProcess : public Process
 {
