@@ -1290,12 +1290,12 @@ void GUIApp::leaveTextMode(Gump *gump)
 void GUIApp::handleEvent(const SDL_Event& event)
 {
 	uint32 now = SDL_GetTicks();
+	bool handled = false;
 
 	// Text mode input. A few hacks here
 	if (!textmodes.empty() &&
 		(event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) &&
-		event.key.keysym.sym != SDLK_BACKQUOTE &&
-		event.key.keysym.sym != SDLK_ESCAPE) {
+		event.key.keysym.sym != SDLK_BACKQUOTE) {
 
 		Gump *gump = 0;
 
@@ -1322,17 +1322,6 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			}
 
 			return;
-		}
-	}
-
-	if (dragging == DRAG_NOT) {
-
-		HIDBinding binding = hidmanager->getBinding(event);
-
-		if (binding) {
-			bool handled = binding(event);
-			if (handled)
-				return;
 		}
 	}
 	
@@ -1366,7 +1355,10 @@ void GUIApp::handleEvent(const SDL_Event& event)
 
 		Gump *mousedowngump = desktopGump->OnMouseDown(button, mx, my);
 		if (mousedowngump)
+		{
 			mouseButton[button].downGump = mousedowngump->getObjId();
+			handled = true;
+		}
 		else
 			mouseButton[button].downGump = 0;
 
@@ -1399,13 +1391,17 @@ void GUIApp::handleEvent(const SDL_Event& event)
 
 		if (button == BUTTON_LEFT && dragging != DRAG_NOT) {
 			stopDragging(mx, my);
+			handled = true;
 			break;
 		}
 
 		if (dragging == DRAG_NOT) {
 			Gump* gump = getGump(mouseButton[button].downGump);
 			if (gump)
+			{
 				gump->OnMouseUp(button, mx, my);
+				handled = true;
+			}
 		}
 	}
 	break;
@@ -1491,10 +1487,6 @@ void GUIApp::handleEvent(const SDL_Event& event)
 					pout << "Can't: avatarInStasis" << std::endl; 
 				}
 			} break;
-			case SDLK_l: {
-				pout << "Flushing fast area" << std::endl; 
-				//gameMapGump->FlushFastArea();
-			} break;
 			case SDLK_END: {
 				if (!avatarInStasis) { 
 					Process *p = new QuickAvatarMoverProcess(0,0,-8,5);
@@ -1515,9 +1507,6 @@ void GUIApp::handleEvent(const SDL_Event& event)
 				pout << "Midi Volume is now: " << midi_volume << std::endl; 
 				if (midi_driver) midi_driver->setGlobalVolume(midi_volume);
 			} break;
-			case SDLK_p: {
-				kernel->pause();
-			} break;
 			default:
 				break;
 		}
@@ -1529,6 +1518,11 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		if (dragging != DRAG_NOT) break;
 
 		switch (event.key.keysym.sym) {
+		case SDLK_q: // Quick quit
+		{
+			if (event.key.keysym.mod & KMOD_CTRL)
+				ForceQuit();
+		} break;
 		case SDLK_LSHIFT: 
 		case SDLK_RSHIFT: {
 			QuickAvatarMoverProcess::quarter = false;
@@ -1553,13 +1547,9 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			if (QuickAvatarMoverProcess::amp[5]) QuickAvatarMoverProcess::amp[5]->terminate();
 		} break;
 
-		case SDLK_BACKQUOTE: {
-			consoleGump->ToggleConsole();
-			break;
-		}
 		case SDLK_LEFTBRACKET: gameMapGump->IncSortOrder(-1); break;
 		case SDLK_RIGHTBRACKET: gameMapGump->IncSortOrder(+1); break;
-		case SDLK_ESCAPE: case SDLK_q: isRunning = false; break;
+
 		case SDLK_KP1: case SDLK_KP2: case SDLK_KP3:
 		case SDLK_KP4: case SDLK_KP6: case SDLK_KP7:
 		case SDLK_KP8: case SDLK_KP9: { // quick animation test
@@ -1589,17 +1579,6 @@ void GUIApp::handleEvent(const SDL_Event& event)
 				pout << "Can't: avatarInStasis" << std::endl; 
 			} 
 		} break;
-		case SDLK_F3: {
-			if (!avatarInStasis) { 
-                MainActor* av = World::get_instance()->getMainActor();
-				if (!av->tryAnim(Animation::walk, 2)) {
-					perr << "tryAnim: failed!" << std::endl;
-				}
-				av->doAnim(Animation::walk, 2);
-			} else { 
-				pout << "Can't: avatarInStasis" << std::endl; 
-			} 
-		} break;
 		default: break;
 		}
 	}
@@ -1609,6 +1588,17 @@ void GUIApp::handleEvent(const SDL_Event& event)
 
 	default:
 		break;
+	}
+
+	if (dragging == DRAG_NOT && ! handled) {
+
+		HIDBinding binding = hidmanager->getBinding(event);
+
+		if (binding) {
+			handled = binding(event);
+			if (handled)
+				return;
+		}
 	}
 
 }

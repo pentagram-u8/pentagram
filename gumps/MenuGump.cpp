@@ -28,6 +28,8 @@
 #include "ButtonWidget.h"
 #include "TextWidget.h"
 #include "QuitGump.h"
+#include "BindGump.h"
+#include "ControlsGump.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -108,7 +110,7 @@ bool MenuGump::OnKeyDown(int key, int mod)
 {
 	switch (key)
 	{
-	case SDLK_BACKSPACE:
+	case SDLK_ESCAPE:
 	{
 		Close();
 	} break;
@@ -127,9 +129,12 @@ bool MenuGump::OnKeyDown(int key, int mod)
 	} break;	
 	case SDLK_4:
 	{	// Options
+		ControlsGump::showMenu();
+		BindGump::askBinding(this);
 	} break;
 	case SDLK_5:
 	{	// Credits
+		BindGump::askBinding(this);
 	} break;
 	case SDLK_6:
 	{	// Quit
@@ -174,9 +179,11 @@ void MenuGump::ChildNotify(Gump *child, uint32 message)
 				} break;	
 				case 4:
 				{	// Options
+					ControlsGump::showMenu();
 				} break;
 				case 5:
 				{	// Credits
+					BindGump::askBinding(this);
 				} break;
 				case 6:
 				{	// Quit

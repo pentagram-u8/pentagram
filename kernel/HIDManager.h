@@ -49,6 +49,12 @@ public:
 
 	//! "bind" console command
 	static void HIDManager::ConCmd_bind(const Console::ArgsType &args, const Console::ArgvType &argv);
+	
+	//! stores the names of all controls bond to bindingName in a vector
+	//! \param bindingName name of a HIDBinding
+	//! \param controls vector to store the controls attached to bindingName
+	void getBindings(const Pentagram::istring& bindingName, std::vector<const char *>& controls);
+
 private:
 	HIDBindingMap bindingMap; 
 	HIDBinding keybindings[SDLK_LAST];

@@ -163,7 +163,9 @@ public:
 		TOP_LEFT = 2,
 		TOP_RIGHT = 3,
 		BOTTOM_LEFT = 4,
-		BOTTOM_RIGHT = 5
+		BOTTOM_RIGHT = 5,
+		TOP_CENTER = 6,
+		BOTTOM_CENTER = 7
 	};
 
 	//! Moves this gump to a relative location on the parent gump

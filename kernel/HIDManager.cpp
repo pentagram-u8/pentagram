@@ -60,7 +60,11 @@ HIDManager::HIDManager()
 	bindingMap.insert( HIDBINDING_PAIR(advanceFrameByFrame) );
 	bindingMap.insert( HIDBINDING_PAIR(u8ShapeViewer) );
 	bindingMap.insert( HIDBINDING_PAIR(showMenu) );
+	bindingMap.insert( HIDBINDING_PAIR(quit) );
+	bindingMap.insert( HIDBINDING_PAIR(toggleConsole) );
 
+	keybindings[SDLK_ESCAPE] = &HIDBindings::quit;
+	keybindings[SDLK_BACKQUOTE] = &HIDBindings::toggleConsole;
 }
 
 HIDManager::~HIDManager()
@@ -122,6 +126,10 @@ void HIDManager::bind(const Pentagram::istring& control, const Pentagram::istrin
 
 		for (key=0; key < SDLK_LAST; ++key)
 		{
+			if (key == SDLK_ESCAPE || key == SDLK_BACKQUOTE)
+			{	// We will not allow these keys to be rebound
+				++key; 
+			}
 			name = SDL_GetKeyName((SDLKey) key);
 			if (control == name)
 			{
@@ -136,7 +144,8 @@ void HIDManager::bind(const Pentagram::istring& control, const Pentagram::istrin
 
 		if (key >= SDLK_LAST) // we did not find a matching SDLKey
 		{
-			for (button=1; button < NUM_MOUSEBUTTONS+1; ++button)
+			// Only bind Mouse 3 and up for now
+			for (button=3; button < NUM_MOUSEBUTTONS+1; ++button)
 			{
 				name = GetMouseButtonName((MouseButton) button);
 				if (control == name)
@@ -167,4 +176,29 @@ void HIDManager::ConCmd_bind(const Console::ArgsType &args, const Console::ArgvT
 	Pentagram::istring bindingName(argv[2]);
 
 	hidmanager->bind(control, bindingName);
+}
+
+void HIDManager::getBindings(const Pentagram::istring& bindingName, std::vector<const char *>& controls)
+{
+	controls.clear();
+	HIDBindingMap::iterator j = bindingMap.find(bindingName);
+	if (j != bindingMap.end())
+	{
+
+		for (uint16 key=0; key < SDLK_LAST; ++key)
+		{
+			if (keybindings[key] == (*j).second)
+			{
+				controls.push_back(SDL_GetKeyName((SDLKey) key));
+			}
+		}
+
+		for (uint16 button=1; button < NUM_MOUSEBUTTONS+1; ++button)
+		{
+			if (mousebindings[button] == (*j).second)
+			{
+				controls.push_back(GetMouseButtonName((MouseButton) button));
+			}
+		}
+	}	
 }

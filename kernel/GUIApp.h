@@ -86,6 +86,7 @@ public:
 	void togglePaintEditorItems() { paintEditorItems = !paintEditorItems; }
 	
 	GameMapGump *getGameMapMapGump() { return gameMapGump; }
+	ConsoleGump *getConsoleGump() { return consoleGump; }
 	Gump *getDesktopGump() { return desktopGump; }
 	Gump* getGump(uint16 gumpid);
 

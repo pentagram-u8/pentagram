@@ -93,8 +93,10 @@ ARGS = \
 GUMPS = \
 	gumps/AskGump.o \
 	gumps/BarkGump.o \
+	gumps/BindGump.o \
 	gumps/ConsoleGump.o \
 	gumps/ContainerGump.o \
+	gumps/ControlsGump.o \
 	gumps/DesktopGump.o \
 	gumps/GameMapGump.o \
 	gumps/Gump.o \

@@ -96,7 +96,7 @@ bool QuitGump::OnKeyDown(int key, int mod)
 {
 	switch (key)
 	{
-	case SDLK_BACKSPACE:
+	case SDLK_ESCAPE:
 	{
 		Close();
 	} break;

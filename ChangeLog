@@ -1,3 +1,13 @@
+2004-05-06  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* games/stdbindings.*: Quit and toggleConsole added.
+	* gumps/BindGump.*: simple gump to ask for a key or button
+	* gumps/ControlsGump.*: displays the current bindings, will use BindGump in future to change them
+	* gumps/*: Close gump chaged from backspace to escape for some gumps
+	* kernel/GUIApp.*: Gumps handled before HIDBindings for mouse buttons.
+	  CTRL-Q to quick quit. Normal quit handled in HIDManager
+	* kernel/HIDManager.*: added method to get the current controls for one
+	  HIDBinding. Quit and toggleConsole added.
+
 2004-05-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/PaperdollGump.cpp: use setRelativePosition to put MiniStatsGump
 	  in the bottom-right corner

@@ -113,6 +113,7 @@ uint32 ScrollGump::I_readScroll(const uint8* args, unsigned int /*argsize*/)
 	Gump *gump = new ScrollGump(item->getObjId(), str);
 	gump->InitGump();
 	desktop->AddChild(gump);
+	gump->setRelativePosition(CENTER);
 	
 	return gump->GetNotifyProcess()->getPid();
 }

@@ -166,7 +166,7 @@ bool ShapeViewerGump::OnKeyDown(int key, int mod)
 		curshape = 0;
 		curframe = 0;
 	} break;
-	case SDLK_BACKSPACE:
+	case SDLK_ESCAPE:
 	{
 		Close();
 	} break;

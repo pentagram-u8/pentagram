@@ -55,6 +55,14 @@ bool toggleFrameByFrame(const SDL_Event& event);
 // ! \see HIDBinding
 bool advanceFrameByFrame(const SDL_Event& event);
 
+// ! binding to ask if the user wishes to quit
+// ! \see HIDBinding
+bool quit(const SDL_Event& event);
+
+// ! toggles the console up and down
+// ! \see HIDBinding
+bool toggleConsole(const SDL_Event& event);
+
 };
 
 #endif

@@ -27,6 +27,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Item.h"
 #include "GUIApp.h"
 
+#include "Gump.h"
+#include "QuitGump.h"
+#include "ConsoleGump.h"
+
 namespace HIDBindings {
 
 bool avatarInStatis(const SDL_Event& event)
@@ -172,6 +176,33 @@ bool advanceFrameByFrame(const SDL_Event& event)
 	}
 	break;
 
+	}
+	return handled;
+}
+
+bool quit(const SDL_Event& event)
+{
+	switch (event.type) {
+	case HID_DOWN:
+		QuitGump::verifyQuit();
+		return true;
+	default:
+		return false;
+	}
+}
+
+bool toggleConsole(const SDL_Event& event)
+{
+	bool handled = false;
+	switch (event.type) {
+	case HID_DOWN:
+	{
+		ConsoleGump * consoleGump = GUIApp::get_instance()->getConsoleGump();
+		consoleGump->ToggleConsole();
+		handled = true;
+	} break;
+	default:
+		break;
 	}
 	return handled;
 }
