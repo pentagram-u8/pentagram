@@ -39,9 +39,6 @@ void Type::print_unk(Console &o) const
 	DataType
  ****************************************************************************/
 
-//DELconst char * const print_bp(const sint32 offset);
-//DELconst char * const print_sp(const sint32 offset);
-
 void DataType::print_value_unk(Console &o) const
 {
 	switch(_dtype)
@@ -63,12 +60,13 @@ void DataType::print_value_unk(Console &o) const
 		case DT_SP:        o.Printf("%s", print_sp(value));            break;
 		case DT_SPADDR:    o.Printf("addressof(%s)", print_sp(value)); break;
 		case DT_CHARS:     o.Printf("\"%s\"", strval.c_str());         break;*/
-		case DT_PID:        o.Printf("pid");                            break;
+		case DT_PID:       o.Printf("pid");                            break;
 		/*case DT_PRESULT:   o.Printf("presult");                        break;
 		case DT_RESULT:    o.Printf("result");                         break;
 		case DT_GLOBAL:    o.Printf("global %s(%04X, %02X)",
 			GlobalNames[global_offset].name.c_str(), global_offset, global_size); break;*/
-		default:        assert(false); /* can't happen */         break;
+		case DT_TEMP:      o.Printf("temp");                      break;
+		default:           assert(false); /* can't happen */      break;
 	}
 }
 
@@ -102,6 +100,7 @@ void DataType::print_value_asm(Console &o) const
 			}
 			break;
 		case DT_PID:
+		case DT_TEMP:
 			//do nothing, I think...
 			break;
 			
@@ -139,6 +138,7 @@ void DataType::print_value_bin(ODequeDataSource &o) const
 			}
 			break;
 		case DT_PID:
+		case DT_TEMP:
 			// do nothing, I think...
 			break;
 		default: assert(false);

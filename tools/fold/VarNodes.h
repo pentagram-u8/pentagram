@@ -37,6 +37,20 @@ class PopVarNode : public UniNode
 				case 0x01: // popping a word var (2 bytes)
 					dtype = DataType(Type::T_WORD, DataType::DT_BP, newValue);
 					break;
+				default: assert(false);
+			}
+			rtype(dtype.type());
+		};
+		PopVarNode(const uint32 opcode, const uint32 offset)
+			: UniNode(opcode, offset)
+		{
+			assert(acceptOp(opcode, 0x12));
+			switch(opcode)
+			{
+				case 0x12: // popping a word into temp
+					dtype = DataType(Type::T_WORD, DataType::DT_TEMP);
+					break;
+				default: assert(false);
 			}
 			rtype(dtype.type());
 		};

@@ -51,10 +51,11 @@ class FuncMutatorNode : public Node
 		FuncMutatorNode(const uint32 opcode, const uint32 offset)
 			: Node(opcode, offset, Type(Type::T_INVALID))
 			{
-				assert(acceptOp(opcode, 0x50, 0x7A));
+				assert(acceptOp(opcode, 0x50, 0x53, 0x7A));
 				switch(opcode)
 				{
 					case 0x50: mtype = RET; break;
+					case 0x53: mtype = SUSPEND; break;
 					case 0x7A: mtype = END; break;
 					default: assert(false);
 				}
@@ -67,7 +68,7 @@ class FuncMutatorNode : public Node
 		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
 
 	protected:
-		enum mutatortype { RET, INIT, LINE_NUMBER, SYMBOL_INFO, END } mtype;
+		enum mutatortype { RET, INIT, LINE_NUMBER, SYMBOL_INFO, SUSPEND, END } mtype;
 
 	private:
 		uint32 _initsize; // init

@@ -44,6 +44,7 @@ void FuncMutatorNode::print_unk(Console &o, const uint32 isize) const
 			#endif
 			break;
 		case SYMBOL_INFO: o.Printf("symbol_info_NOPRINT(0x%04X, \"%s\")", _symboloffset, _classname.c_str()); break;
+		case SUSPEND:     o.Printf("suspend"); break;
 		case END:         o.Printf("end_NOPRINT()"); break;
 		default: assert(print_assert(this)); // can't happen
 	}
@@ -62,6 +63,7 @@ void FuncMutatorNode::print_asm(Console &o) const
 		case INIT:        o.Printf("init\t\t%02X", _initsize); break;
 		case LINE_NUMBER: o.Printf("line number\t%i (%04Xh)", _linenum, _linenum); break;
 		case SYMBOL_INFO: o.Printf("symbol info\toffset %04Xh = \"%s\"", _symboloffset, _classname.c_str()); break;
+		case SUSPEND:     o.Printf("suspend"); break;
 		case END:         o.Printf("end"); break;
 		default: assert(print_assert(this)); // can't happen
 	}
@@ -77,6 +79,7 @@ void FuncMutatorNode::print_bin(ODequeDataSource &o) const
 		case INIT:        o.write1(0x5A); o.write1(_initsize); break;
 		case LINE_NUMBER: o.write1(0x5B); o.write2(_linenum); break;
 		case SYMBOL_INFO: o.write1(0x5C); o.write2(_symboloffset - _offset - 3); o.write(_classname.c_str(), _classname.size(), 9); break;
+		case SUSPEND:     o.write1(0x53); break;
 		case END:         o.write1(0x7A); break;
 		default: assert(print_assert(this)); // can't happen
 	}

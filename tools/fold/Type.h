@@ -80,7 +80,7 @@ class DataType
 {
 	public:
 		enum datatype { DT_NULL, DT_BYTES, DT_BP, DT_BPLIST, DT_BPADDR, DT_BPSTRPTR,
-			DT_SP, DT_SPADDR, DT_CHARS, DT_PID, DT_PRESULT, DT_RESULT, DT_GLOBAL };
+			DT_SP, DT_SPADDR, DT_CHARS, DT_PID, DT_PRESULT, DT_RESULT, DT_GLOBAL, DT_TEMP };
 		
 		DataType(const Type &newVType=Type::T_VOID, const datatype newDType=DT_NULL, const sint32 newValue=0)
 			: _vtype(newVType), _dtype(newDType), _value(newValue) {};

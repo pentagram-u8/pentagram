@@ -852,6 +852,9 @@ Node *ConvertUsecode::readOpGeneric(IDataSource *ucfile, uint32 &dbg_symbol_offs
 				n = new DCCallNode(opcode, offset, tint, read2(ucfile));
 			}
 			break;
+		case 0x12: // pop temp
+			n = new PopVarNode(opcode, offset);
+			break;
 		case 0x14: // add
 		case 0x24: // cmp
 		case 0x28: // lt
@@ -885,6 +888,9 @@ Node *ConvertUsecode::readOpGeneric(IDataSource *ucfile, uint32 &dbg_symbol_offs
 			break;
 		case 0x52: // jmp
 			n = new EndNode(opcode, offset, offset + 3 + static_cast<uint16>(read2(ucfile)));
+			break;
+		case 0x53: // suspend
+			n = new FuncMutatorNode(opcode, offset);
 			break;
 		case 0x54: // implies
 			{ // we'll read and ignore the two parameters to implies, since they're always 01 01

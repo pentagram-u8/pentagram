@@ -5,6 +5,9 @@
 	* As above: Added 'spawn' and 'implies' to fold, cheating a little on
 	  the latter. *grin*
 
+	* As above: Added 'pop temp' and 'suspend'. Spawn function calls should
+	  completely work now... hopefully.
+	  
 2003-08-23	Darke  <darkepaw@users.sf.net>
 	* convert/Convert.h, tools/fold/*: Fixed Maximally Annoying Bug(tm),
 	  and a few other minor things.

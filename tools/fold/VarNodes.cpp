@@ -99,6 +99,13 @@ void PopVarNode::print_asm(Console &o) const
 				default: assert(false);
 			}
 			break;
+		case DataType::DT_TEMP:
+			switch(dtype.type().type())
+			{
+				case Type::T_WORD:  o.Printf("pop\t\ttemp"); break;
+				default: assert(false);
+			}
+			break;
 		default: assert(false);
 	}
 }
@@ -114,6 +121,13 @@ void PopVarNode::print_bin(ODequeDataSource  &o) const
 			switch(dtype.type().type())
 			{
 				case Type::T_WORD:  o.write1(0x01); dtype.print_value_bin(o); break;
+				default: assert(false);
+			}
+			break;
+		case DataType::DT_TEMP:
+			switch(dtype.type().type())
+			{
+				case Type::T_WORD:  o.write1(0x12); break;
 				default: assert(false);
 			}
 			break;
