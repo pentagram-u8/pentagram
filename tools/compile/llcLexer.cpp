@@ -940,19 +940,19 @@ static yyconst flex_int32_t yy_rule_can_match_eol[118] =
 
 static yyconst flex_int16_t yy_rule_linenum[117] =
     {   0,
-       53,   55,   58,   59,   60,   61,   62,   69,   71,   73,
-       75,   77,   83,   89,   90,   92,   94,   95,  100,  101,
-      102,  104,  108,  109,  113,  114,  115,  121,  122,  123,
-      124,  125,  126,  127,  128,  129,  130,  131,  133,  134,
-      136,  137,  139,  141,  142,  144,  150,  151,  152,  153,
-      159,  160,  161,  162,  163,  164,  165,  167,  168,  169,
-      170,  171,  172,  173,  175,  181,  182,  183,  184,  185,
-      186,  188,  189,  190,  191,  192,  193,  195,  196,  197,
-      198,  199,  201,  202,  208,  209,  211,  212,  214,  220,
-      221,  222,  223,  224,  225,  226,  227,  228,  229,  238,
+       52,   54,   57,   58,   59,   60,   61,   68,   70,   72,
+       74,   76,   82,   88,   89,   91,   93,   94,   99,  100,
+      101,  103,  107,  108,  112,  113,  114,  120,  121,  122,
+      123,  124,  125,  126,  127,  128,  129,  130,  132,  133,
+      135,  136,  138,  140,  141,  143,  149,  150,  151,  152,
+      158,  159,  160,  161,  162,  163,  164,  166,  167,  168,
+      169,  170,  171,  172,  174,  180,  181,  182,  183,  184,
+      185,  187,  188,  189,  190,  191,  192,  194,  195,  196,
+      197,  198,  200,  201,  207,  208,  210,  211,  213,  219,
+      220,  221,  222,  223,  224,  225,  226,  227,  228,  237,
 
-      239,  245,  246,  247,  248,  249,  255,  257,  263,  266,
-      267,  268,  269,  270,  273,  282
+      238,  244,  245,  246,  247,  248,  254,  256,  262,  265,
+      266,  267,  268,  269,  272,  281
     } ;
 
 #define YY_TRAILING_MASK 0x2000
@@ -973,7 +973,6 @@ goto find_rule; \
 #define YY_RESTORE_YY_MORE_OFFSET
 #line 1 "tools/compile/llcLexer.l"
 #line 2 "tools/compile/llcLexer.l"
-#include "pent_include.h"
 #include "llcTokens.h"
 
 // just to 'simply' things
@@ -983,7 +982,7 @@ goto find_rule; \
 // enable start state stacks (say *that* three times fast!)
 
 // needs to handle 'escape quoting' of '\\\"' in the string
-#line 986 "tools/compile/llcLexer.cpp"
+#line 985 "tools/compile/llcLexer.cpp"
 
 #define INITIAL 0
 #define CCOMMENT 1
@@ -1138,14 +1137,14 @@ YY_DECL
 	register int yy_act;
     
 /* %% [7.0] user's declarations go here */
-#line 47 "tools/compile/llcLexer.l"
+#line 46 "tools/compile/llcLexer.l"
 
 
  /***************************************************************************
 	Comment handling
   ***************************************************************************/
 
-#line 1148 "tools/compile/llcLexer.cpp"
+#line 1147 "tools/compile/llcLexer.cpp"
 
 	if ( (yy_init) )
 		{
@@ -1297,40 +1296,40 @@ do_action:	/* This label is used only to access EOF actions. */
 case 1:
 /* rule 1 can match eol */
 YY_RULE_SETUP
-#line 53 "tools/compile/llcLexer.l"
+#line 52 "tools/compile/llcLexer.l"
 { }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 55 "tools/compile/llcLexer.l"
+#line 54 "tools/compile/llcLexer.l"
 { BEGIN(CCOMMENT);		}
 	YY_BREAK
 
 case 3:
 YY_RULE_SETUP
-#line 58 "tools/compile/llcLexer.l"
+#line 57 "tools/compile/llcLexer.l"
 { }
 	YY_BREAK
 case 4:
 /* rule 4 can match eol */
 YY_RULE_SETUP
-#line 59 "tools/compile/llcLexer.l"
+#line 58 "tools/compile/llcLexer.l"
 { }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 60 "tools/compile/llcLexer.l"
+#line 59 "tools/compile/llcLexer.l"
 { }
 	YY_BREAK
 case 6:
 /* rule 6 can match eol */
 YY_RULE_SETUP
-#line 61 "tools/compile/llcLexer.l"
+#line 60 "tools/compile/llcLexer.l"
 { }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 62 "tools/compile/llcLexer.l"
+#line 61 "tools/compile/llcLexer.l"
 { BEGIN(INITIAL); }
 	YY_BREAK
 
@@ -1339,29 +1338,29 @@ YY_RULE_SETUP
   ***************************************************************************/
 case 8:
 YY_RULE_SETUP
-#line 69 "tools/compile/llcLexer.l"
+#line 68 "tools/compile/llcLexer.l"
 { return LLC_INTEGER;	}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 71 "tools/compile/llcLexer.l"
+#line 70 "tools/compile/llcLexer.l"
 { return LLC_INTEGER;	}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 73 "tools/compile/llcLexer.l"
+#line 72 "tools/compile/llcLexer.l"
 { return LLC_INTEGER;	}
 	YY_BREAK
 case 11:
 /* rule 11 can match eol */
 YY_RULE_SETUP
-#line 75 "tools/compile/llcLexer.l"
+#line 74 "tools/compile/llcLexer.l"
 { return LLC_STRING;	}
 	YY_BREAK
 case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
-#line 77 "tools/compile/llcLexer.l"
+#line 76 "tools/compile/llcLexer.l"
 { return LLC_CSTRING;	}
 	YY_BREAK
 /***************************************************************************
@@ -1370,7 +1369,7 @@ YY_RULE_SETUP
 case 13:
 /* rule 13 can match eol */
 YY_RULE_SETUP
-#line 83 "tools/compile/llcLexer.l"
+#line 82 "tools/compile/llcLexer.l"
 { }
 	YY_BREAK
 /***************************************************************************
@@ -1378,76 +1377,76 @@ YY_RULE_SETUP
   ***************************************************************************/
 case 14:
 YY_RULE_SETUP
-#line 89 "tools/compile/llcLexer.l"
+#line 88 "tools/compile/llcLexer.l"
 { return LLC_WORD;		}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 90 "tools/compile/llcLexer.l"
+#line 89 "tools/compile/llcLexer.l"
 { return LLC_WORD;		}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 92 "tools/compile/llcLexer.l"
+#line 91 "tools/compile/llcLexer.l"
 { return LLC_WORD;		}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 94 "tools/compile/llcLexer.l"
+#line 93 "tools/compile/llcLexer.l"
 { return LLC_WORD;		}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 95 "tools/compile/llcLexer.l"
+#line 94 "tools/compile/llcLexer.l"
 { return LLC_DWORD;		}
 	YY_BREAK
 /* Unsure if the default 'number' should be WORD or DWORD, shall find out soon enough
     we shall... */
 case 19:
 YY_RULE_SETUP
-#line 100 "tools/compile/llcLexer.l"
+#line 99 "tools/compile/llcLexer.l"
 { return LLC_WORD;		}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 101 "tools/compile/llcLexer.l"
+#line 100 "tools/compile/llcLexer.l"
 { return LLC_WORD;		}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 102 "tools/compile/llcLexer.l"
+#line 101 "tools/compile/llcLexer.l"
 { return LLC_WORD;		}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 104 "tools/compile/llcLexer.l"
+#line 103 "tools/compile/llcLexer.l"
 { return LLC_STRING;	}
 	YY_BREAK
 /* Postfix modifiers... */
 case 23:
 YY_RULE_SETUP
-#line 108 "tools/compile/llcLexer.l"
+#line 107 "tools/compile/llcLexer.l"
 { return LLC_LIST;		}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 109 "tools/compile/llcLexer.l"
+#line 108 "tools/compile/llcLexer.l"
 { return LLC_POINTER;	}
 	YY_BREAK
 /* Prefix modifiers... */
 case 25:
 YY_RULE_SETUP
-#line 113 "tools/compile/llcLexer.l"
+#line 112 "tools/compile/llcLexer.l"
 { return LLC_CONST;		}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 114 "tools/compile/llcLexer.l"
+#line 113 "tools/compile/llcLexer.l"
 { return LLC_CONST;		}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 115 "tools/compile/llcLexer.l"
+#line 114 "tools/compile/llcLexer.l"
 { return LLC_REALLY;	}
 	YY_BREAK
 /***************************************************************************
@@ -1455,97 +1454,97 @@ YY_RULE_SETUP
   ***************************************************************************/
 case 28:
 YY_RULE_SETUP
-#line 121 "tools/compile/llcLexer.l"
+#line 120 "tools/compile/llcLexer.l"
 { return LLC_OPEN_BRACE;		}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 122 "tools/compile/llcLexer.l"
+#line 121 "tools/compile/llcLexer.l"
 { return LLC_CLOSE_BRACE;		}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 123 "tools/compile/llcLexer.l"
+#line 122 "tools/compile/llcLexer.l"
 { return LLC_OPEN_PAREN;		}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 124 "tools/compile/llcLexer.l"
+#line 123 "tools/compile/llcLexer.l"
 { return LLC_CLOSE_PAREN;		}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 125 "tools/compile/llcLexer.l"
+#line 124 "tools/compile/llcLexer.l"
 { return LLC_DOT;				}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 126 "tools/compile/llcLexer.l"
+#line 125 "tools/compile/llcLexer.l"
 { return LLC_COMMA;				}
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 127 "tools/compile/llcLexer.l"
+#line 126 "tools/compile/llcLexer.l"
 { return LLC_SEMICOLON;			}
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 128 "tools/compile/llcLexer.l"
+#line 127 "tools/compile/llcLexer.l"
 { return LLC_COLON;				}
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 129 "tools/compile/llcLexer.l"
+#line 128 "tools/compile/llcLexer.l"
 { return LLC_DCOLON;			}
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 130 "tools/compile/llcLexer.l"
+#line 129 "tools/compile/llcLexer.l"
 { return LLC_OPEN_REFERENCE;	}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 131 "tools/compile/llcLexer.l"
+#line 130 "tools/compile/llcLexer.l"
 { return LLC_CLOSE_REFERENCE;	}
 	YY_BREAK
 case 39:
 YY_RULE_SETUP
-#line 133 "tools/compile/llcLexer.l"
+#line 132 "tools/compile/llcLexer.l"
 { return LLC_RETURN;			}
 	YY_BREAK
 case 40:
 YY_RULE_SETUP
-#line 134 "tools/compile/llcLexer.l"
+#line 133 "tools/compile/llcLexer.l"
 { return LLC_SUSPEND;			}
 	YY_BREAK
 case 41:
 YY_RULE_SETUP
-#line 136 "tools/compile/llcLexer.l"
+#line 135 "tools/compile/llcLexer.l"
 { return LLC_ROUTINE;			}
 	YY_BREAK
 case 42:
 YY_RULE_SETUP
-#line 137 "tools/compile/llcLexer.l"
+#line 136 "tools/compile/llcLexer.l"
 { return LLC_PROCESS;			}
 	YY_BREAK
 case 43:
 YY_RULE_SETUP
-#line 139 "tools/compile/llcLexer.l"
+#line 138 "tools/compile/llcLexer.l"
 { return LLC_EXCLUDE;			}
 	YY_BREAK
 case 44:
 YY_RULE_SETUP
-#line 141 "tools/compile/llcLexer.l"
+#line 140 "tools/compile/llcLexer.l"
 { return LLC_OVERLOAD;			}
 	YY_BREAK
 case 45:
 YY_RULE_SETUP
-#line 142 "tools/compile/llcLexer.l"
+#line 141 "tools/compile/llcLexer.l"
 { return LLC_OVERLOAD;			}
 	YY_BREAK
 case 46:
 YY_RULE_SETUP
-#line 144 "tools/compile/llcLexer.l"
+#line 143 "tools/compile/llcLexer.l"
 { return LLC_RESULT;			}
 	YY_BREAK
 /***************************************************************************
@@ -1553,22 +1552,22 @@ YY_RULE_SETUP
   ***************************************************************************/
 case 47:
 YY_RULE_SETUP
-#line 150 "tools/compile/llcLexer.l"
+#line 149 "tools/compile/llcLexer.l"
 { return LLC_LEFT_SHIFT;			}
 	YY_BREAK
 case 48:
 YY_RULE_SETUP
-#line 151 "tools/compile/llcLexer.l"
+#line 150 "tools/compile/llcLexer.l"
 { return LLC_RIGHT_SHIFT;			}
 	YY_BREAK
 case 49:
 YY_RULE_SETUP
-#line 152 "tools/compile/llcLexer.l"
+#line 151 "tools/compile/llcLexer.l"
 { return LLC_LEFT_SHIFT_EQUALS;		}
 	YY_BREAK
 case 50:
 YY_RULE_SETUP
-#line 153 "tools/compile/llcLexer.l"
+#line 152 "tools/compile/llcLexer.l"
 { return LLC_RIGHT_SHIFT_EQUALS;	}
 	YY_BREAK
 /***************************************************************************
@@ -1576,77 +1575,77 @@ YY_RULE_SETUP
   ***************************************************************************/
 case 51:
 YY_RULE_SETUP
-#line 159 "tools/compile/llcLexer.l"
+#line 158 "tools/compile/llcLexer.l"
 { return LLC_MUL;				}
 	YY_BREAK
 case 52:
 YY_RULE_SETUP
-#line 160 "tools/compile/llcLexer.l"
+#line 159 "tools/compile/llcLexer.l"
 { return LLC_DIV;				}
 	YY_BREAK
 case 53:
 YY_RULE_SETUP
-#line 161 "tools/compile/llcLexer.l"
+#line 160 "tools/compile/llcLexer.l"
 { return LLC_ADD;				}
 	YY_BREAK
 case 54:
 YY_RULE_SETUP
-#line 162 "tools/compile/llcLexer.l"
+#line 161 "tools/compile/llcLexer.l"
 { return LLC_SUB;				}
 	YY_BREAK
 case 55:
 YY_RULE_SETUP
-#line 163 "tools/compile/llcLexer.l"
+#line 162 "tools/compile/llcLexer.l"
 { return LLC_MOD;				}
 	YY_BREAK
 case 56:
 YY_RULE_SETUP
-#line 164 "tools/compile/llcLexer.l"
+#line 163 "tools/compile/llcLexer.l"
 { return LLC_MOD;				}
 	YY_BREAK
 case 57:
 YY_RULE_SETUP
-#line 165 "tools/compile/llcLexer.l"
+#line 164 "tools/compile/llcLexer.l"
 { return LLC_EXCLUSIVE_ADD;		}
 	YY_BREAK
 case 58:
 YY_RULE_SETUP
-#line 167 "tools/compile/llcLexer.l"
+#line 166 "tools/compile/llcLexer.l"
 { return LLC_MUL_EQ;			}
 	YY_BREAK
 case 59:
 YY_RULE_SETUP
-#line 168 "tools/compile/llcLexer.l"
+#line 167 "tools/compile/llcLexer.l"
 { return LLC_DIV_EQ;			}
 	YY_BREAK
 case 60:
 YY_RULE_SETUP
-#line 169 "tools/compile/llcLexer.l"
+#line 168 "tools/compile/llcLexer.l"
 { return LLC_ADD_EQ;			}
 	YY_BREAK
 case 61:
 YY_RULE_SETUP
-#line 170 "tools/compile/llcLexer.l"
+#line 169 "tools/compile/llcLexer.l"
 { return LLC_SUB_EQ;			}
 	YY_BREAK
 case 62:
 YY_RULE_SETUP
-#line 171 "tools/compile/llcLexer.l"
+#line 170 "tools/compile/llcLexer.l"
 { return LLC_EXCLUSIVE_ADD_EQ;	}
 	YY_BREAK
 case 63:
 YY_RULE_SETUP
-#line 172 "tools/compile/llcLexer.l"
+#line 171 "tools/compile/llcLexer.l"
 { return LLC_INC;				}
 	YY_BREAK
 case 64:
 YY_RULE_SETUP
-#line 173 "tools/compile/llcLexer.l"
+#line 172 "tools/compile/llcLexer.l"
 { return LLC_DEC;				}
 	YY_BREAK
 case 65:
 YY_RULE_SETUP
-#line 175 "tools/compile/llcLexer.l"
+#line 174 "tools/compile/llcLexer.l"
 { return LLC_EQUALS;			}
 	YY_BREAK
 /***************************************************************************
@@ -1654,97 +1653,97 @@ YY_RULE_SETUP
   ***************************************************************************/
 case 66:
 YY_RULE_SETUP
-#line 181 "tools/compile/llcLexer.l"
+#line 180 "tools/compile/llcLexer.l"
 { return LLC_AND;			}
 	YY_BREAK
 case 67:
 YY_RULE_SETUP
-#line 182 "tools/compile/llcLexer.l"
+#line 181 "tools/compile/llcLexer.l"
 { return LLC_AND;			}
 	YY_BREAK
 case 68:
 YY_RULE_SETUP
-#line 183 "tools/compile/llcLexer.l"
+#line 182 "tools/compile/llcLexer.l"
 { return LLC_OR;			}
 	YY_BREAK
 case 69:
 YY_RULE_SETUP
-#line 184 "tools/compile/llcLexer.l"
+#line 183 "tools/compile/llcLexer.l"
 { return LLC_OR;			}
 	YY_BREAK
 case 70:
 YY_RULE_SETUP
-#line 185 "tools/compile/llcLexer.l"
+#line 184 "tools/compile/llcLexer.l"
 { return LLC_NOT;			}
 	YY_BREAK
 case 71:
 YY_RULE_SETUP
-#line 186 "tools/compile/llcLexer.l"
+#line 185 "tools/compile/llcLexer.l"
 { return LLC_NOT;			}
 	YY_BREAK
 case 72:
 YY_RULE_SETUP
-#line 188 "tools/compile/llcLexer.l"
+#line 187 "tools/compile/llcLexer.l"
 { return LLC_LT;			}
 	YY_BREAK
 case 73:
 YY_RULE_SETUP
-#line 189 "tools/compile/llcLexer.l"
+#line 188 "tools/compile/llcLexer.l"
 { return LLC_LE;			}
 	YY_BREAK
 case 74:
 YY_RULE_SETUP
-#line 190 "tools/compile/llcLexer.l"
+#line 189 "tools/compile/llcLexer.l"
 { return LLC_GT;			}
 	YY_BREAK
 case 75:
 YY_RULE_SETUP
-#line 191 "tools/compile/llcLexer.l"
+#line 190 "tools/compile/llcLexer.l"
 { return LLC_GE;			}
 	YY_BREAK
 case 76:
 YY_RULE_SETUP
-#line 192 "tools/compile/llcLexer.l"
+#line 191 "tools/compile/llcLexer.l"
 { return LLC_NE;			}
 	YY_BREAK
 case 77:
 YY_RULE_SETUP
-#line 193 "tools/compile/llcLexer.l"
+#line 192 "tools/compile/llcLexer.l"
 { return LLC_NE;			}
 	YY_BREAK
 case 78:
 YY_RULE_SETUP
-#line 195 "tools/compile/llcLexer.l"
+#line 194 "tools/compile/llcLexer.l"
 { return LLC_BIT_AND;		}
 	YY_BREAK
 case 79:
 YY_RULE_SETUP
-#line 196 "tools/compile/llcLexer.l"
+#line 195 "tools/compile/llcLexer.l"
 { return LLC_BIT_OR;		}
 	YY_BREAK
 case 80:
 YY_RULE_SETUP
-#line 197 "tools/compile/llcLexer.l"
+#line 196 "tools/compile/llcLexer.l"
 { return LLC_BIT_NOT;		}
 	YY_BREAK
 case 81:
 YY_RULE_SETUP
-#line 198 "tools/compile/llcLexer.l"
+#line 197 "tools/compile/llcLexer.l"
 { return LLC_BIT_AND_EQ;	}
 	YY_BREAK
 case 82:
 YY_RULE_SETUP
-#line 199 "tools/compile/llcLexer.l"
+#line 198 "tools/compile/llcLexer.l"
 { return LLC_BIT_OR_EQ;		}
 	YY_BREAK
 case 83:
 YY_RULE_SETUP
-#line 201 "tools/compile/llcLexer.l"
+#line 200 "tools/compile/llcLexer.l"
 { return LLC_TRUE;			}
 	YY_BREAK
 case 84:
 YY_RULE_SETUP
-#line 202 "tools/compile/llcLexer.l"
+#line 201 "tools/compile/llcLexer.l"
 { return LLC_FALSE;			}
 	YY_BREAK
 /***************************************************************************
@@ -1752,27 +1751,27 @@ YY_RULE_SETUP
   ***************************************************************************/
 case 85:
 YY_RULE_SETUP
-#line 208 "tools/compile/llcLexer.l"
+#line 207 "tools/compile/llcLexer.l"
 { return LLC_LIST_OPEN;		}
 	YY_BREAK
 case 86:
 YY_RULE_SETUP
-#line 209 "tools/compile/llcLexer.l"
+#line 208 "tools/compile/llcLexer.l"
 { return LLC_LIST_CLOSE;	}
 	YY_BREAK
 case 87:
 YY_RULE_SETUP
-#line 211 "tools/compile/llcLexer.l"
+#line 210 "tools/compile/llcLexer.l"
 { return LLC_OPEN_INDEX;	}
 	YY_BREAK
 case 88:
 YY_RULE_SETUP
-#line 212 "tools/compile/llcLexer.l"
+#line 211 "tools/compile/llcLexer.l"
 { return LLC_CLOSE_INDEX;	}
 	YY_BREAK
 case 89:
 YY_RULE_SETUP
-#line 214 "tools/compile/llcLexer.l"
+#line 213 "tools/compile/llcLexer.l"
 { return LLC_IN;			}
 	YY_BREAK
 /***************************************************************************
@@ -1781,54 +1780,54 @@ YY_RULE_SETUP
 case 90:
 /* rule 90 can match eol */
 YY_RULE_SETUP
-#line 220 "tools/compile/llcLexer.l"
+#line 219 "tools/compile/llcLexer.l"
 { return LLC_HASHIF;	}
 	YY_BREAK
 case 91:
 /* rule 91 can match eol */
 YY_RULE_SETUP
-#line 221 "tools/compile/llcLexer.l"
+#line 220 "tools/compile/llcLexer.l"
 { return LLC_IF;		}
 	YY_BREAK
 case 92:
 YY_RULE_SETUP
-#line 222 "tools/compile/llcLexer.l"
+#line 221 "tools/compile/llcLexer.l"
 { return LLC_ELSE;		}
 	YY_BREAK
 case 93:
 /* rule 93 can match eol */
 YY_RULE_SETUP
-#line 223 "tools/compile/llcLexer.l"
+#line 222 "tools/compile/llcLexer.l"
 { return LLC_WHILE;		}
 	YY_BREAK
 case 94:
 YY_RULE_SETUP
-#line 224 "tools/compile/llcLexer.l"
+#line 223 "tools/compile/llcLexer.l"
 { return LLC_FOREACH;	}
 	YY_BREAK
 case 95:
 YY_RULE_SETUP
-#line 225 "tools/compile/llcLexer.l"
+#line 224 "tools/compile/llcLexer.l"
 { return LLC_RECURSIVE;	}
 	YY_BREAK
 case 96:
 YY_RULE_SETUP
-#line 226 "tools/compile/llcLexer.l"
+#line 225 "tools/compile/llcLexer.l"
 { return LLC_CASE;		}
 	YY_BREAK
 case 97:
 YY_RULE_SETUP
-#line 227 "tools/compile/llcLexer.l"
+#line 226 "tools/compile/llcLexer.l"
 { return LLC_DEFAULT;	}
 	YY_BREAK
 case 98:
 YY_RULE_SETUP
-#line 228 "tools/compile/llcLexer.l"
+#line 227 "tools/compile/llcLexer.l"
 { return LLC_BREAK;		}
 	YY_BREAK
 case 99:
 YY_RULE_SETUP
-#line 229 "tools/compile/llcLexer.l"
+#line 228 "tools/compile/llcLexer.l"
 { return LLC_CONTINUE;	}
 	YY_BREAK
 /***************************************************************************
@@ -1838,12 +1837,12 @@ YY_RULE_SETUP
 	get put together... */
 case 100:
 YY_RULE_SETUP
-#line 238 "tools/compile/llcLexer.l"
+#line 237 "tools/compile/llcLexer.l"
 { return LLC_OF_LOOK;	}
 	YY_BREAK
 case 101:
 YY_RULE_SETUP
-#line 239 "tools/compile/llcLexer.l"
+#line 238 "tools/compile/llcLexer.l"
 { return LLC_OF_USE;	}
 	YY_BREAK
 /***************************************************************************
@@ -1851,29 +1850,29 @@ YY_RULE_SETUP
   ***************************************************************************/
 case 102:
 YY_RULE_SETUP
-#line 245 "tools/compile/llcLexer.l"
+#line 244 "tools/compile/llcLexer.l"
 { return LLC_CLASS;			}
 	YY_BREAK
 case 103:
 YY_RULE_SETUP
-#line 246 "tools/compile/llcLexer.l"
+#line 245 "tools/compile/llcLexer.l"
 { return LLC_INHERITS;		}
 	YY_BREAK
 case 104:
 /* rule 104 can match eol */
 YY_RULE_SETUP
-#line 247 "tools/compile/llcLexer.l"
+#line 246 "tools/compile/llcLexer.l"
 { return LLC_IS_A;			}
 	YY_BREAK
 case 105:
 YY_RULE_SETUP
-#line 248 "tools/compile/llcLexer.l"
+#line 247 "tools/compile/llcLexer.l"
 { return LLC_ARE;			}
 	YY_BREAK
 case 106:
 /* rule 106 can match eol */
 YY_RULE_SETUP
-#line 249 "tools/compile/llcLexer.l"
+#line 248 "tools/compile/llcLexer.l"
 { return LLC_ADDRESS_OF;	}
 	YY_BREAK
 /***************************************************************************
@@ -1882,12 +1881,12 @@ YY_RULE_SETUP
 case 107:
 /* rule 107 can match eol */
 YY_RULE_SETUP
-#line 255 "tools/compile/llcLexer.l"
+#line 254 "tools/compile/llcLexer.l"
 { return LLC_FUNC_IDENT;	}
 	YY_BREAK
 case 108:
 YY_RULE_SETUP
-#line 257 "tools/compile/llcLexer.l"
+#line 256 "tools/compile/llcLexer.l"
 { return LLC_IDENT;			}
 	YY_BREAK
 /***************************************************************************
@@ -1895,42 +1894,42 @@ YY_RULE_SETUP
   ***************************************************************************/
 case 109:
 YY_RULE_SETUP
-#line 263 "tools/compile/llcLexer.l"
+#line 262 "tools/compile/llcLexer.l"
 { BEGIN(HASH_EXPECT);		}
 	YY_BREAK
 
 case 110:
 YY_RULE_SETUP
-#line 266 "tools/compile/llcLexer.l"
+#line 265 "tools/compile/llcLexer.l"
 { return LLC_XWARN;			}
 	YY_BREAK
 case 111:
 YY_RULE_SETUP
-#line 267 "tools/compile/llcLexer.l"
+#line 266 "tools/compile/llcLexer.l"
 { return LLC_XFAIL;			}
 	YY_BREAK
 case 112:
 YY_RULE_SETUP
-#line 268 "tools/compile/llcLexer.l"
+#line 267 "tools/compile/llcLexer.l"
 { return LLC_XPASS;			}
 	YY_BREAK
 case 113:
 /* rule 113 can match eol */
 YY_RULE_SETUP
-#line 269 "tools/compile/llcLexer.l"
+#line 268 "tools/compile/llcLexer.l"
 { 							}
 	YY_BREAK
 case 114:
 /* rule 114 can match eol */
 YY_RULE_SETUP
-#line 270 "tools/compile/llcLexer.l"
+#line 269 "tools/compile/llcLexer.l"
 { BEGIN(INITIAL);			}
 	YY_BREAK
 /* ignore everything else, since this really isn't a 'user' function lacking
  	random warnings isn't a problem */
 case 115:
 YY_RULE_SETUP
-#line 273 "tools/compile/llcLexer.l"
+#line 272 "tools/compile/llcLexer.l"
 { }
 	YY_BREAK
 
@@ -1940,20 +1939,20 @@ YY_RULE_SETUP
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(CCOMMENT):
 case YY_STATE_EOF(HASH_EXPECT):
-#line 280 "tools/compile/llcLexer.l"
+#line 279 "tools/compile/llcLexer.l"
 { return LLC_EOF;	}
 	YY_BREAK
 case 116:
 YY_RULE_SETUP
-#line 282 "tools/compile/llcLexer.l"
+#line 281 "tools/compile/llcLexer.l"
 { return LLC_ERROR;	}
 	YY_BREAK
 case 117:
 YY_RULE_SETUP
-#line 284 "tools/compile/llcLexer.l"
+#line 283 "tools/compile/llcLexer.l"
 YY_FATAL_ERROR( "flex scanner jammed" );
 	YY_BREAK
-#line 1956 "tools/compile/llcLexer.cpp"
+#line 1955 "tools/compile/llcLexer.cpp"
 
 	case YY_END_OF_BUFFER:
 		{
@@ -2962,7 +2961,7 @@ void llcfree (void * ptr )
 #undef YY_DECL_IS_OURS
 #undef YY_DECL
 #endif
-#line 284 "tools/compile/llcLexer.l"
+#line 283 "tools/compile/llcLexer.l"
 
 
 
