@@ -11,6 +11,7 @@
 	  divided by 3). If a scale factor number is negetive, then it is taken
 	  to mean an absolute size (positive of course). Same with factors over
 	  100. Non integer scaling factors WILL be supported.
+	* gumps/ItemRelativeGump.cpp : Fixing prob with relative gump positions
 
 2005-02-14	Darke  <darkepaw@users.sf.net>
 	* audio/midi/fmopl.cpp: cast pedantification.

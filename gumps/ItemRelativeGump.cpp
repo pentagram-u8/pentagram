@@ -114,6 +114,7 @@ void ItemRelativeGump::GetItemLocation(sint32 lerp_factor)
 
 	// Convert the GumpSpaceCoord relative to the world/item gump
 	// into screenspace coords
+	gy = gy-it->getShapeInfo()->z*8-16;
 	gump->GumpToScreenSpace(gx,gy);
 
 	// Convert the screenspace coords into the coords of us
@@ -121,7 +122,8 @@ void ItemRelativeGump::GetItemLocation(sint32 lerp_factor)
 
 	// Set x and y, and center us over it
 	ix = gx-dims.w/2;
-	iy = gy-dims.h-it->getShapeInfo()->z*8-16;
+//	iy = gy-dims.h-it->getShapeInfo()->z*8-16;
+	iy = gy-dims.h;
 }
 
 void ItemRelativeGump::Move(int x_, int y_)
