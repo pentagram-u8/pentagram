@@ -542,6 +542,7 @@ bool LowLevelMidiDriver::playSequences ()
 						unlockAndUnprotectChannel(i);
 					}
 				}
+				unlockComMessage();
 				return true;
 
 			case LLMD_MSG_SET_VOLUME:

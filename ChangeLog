@@ -1,3 +1,7 @@
+2004-03-07  Max Horn <max@quendi.de>
+	* audio/midi/LowLevelMidiDriver.cpp: Fix deadlock on quit (Ryan told me
+	  this fix a long time ago, but for some reasons it was never committed)
+
 2004-03-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/WeaponOverlay.h: weapon overlay info
 	* graphics/WpnOvlayDat.*, kernel/GameData.*: load wpnovlay.dat
