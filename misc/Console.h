@@ -180,6 +180,8 @@ public:
 	virtual ~console_streambuf() { }
 	typedef typename _Tr::int_type int_type;
 
+	typedef typename _Tr::int_type int_type;
+
 protected:
 
 	// Output a character
@@ -233,6 +235,8 @@ class console_err_streambuf : public std::basic_streambuf<_E, _Tr>
 public:
 	console_err_streambuf() : std::basic_streambuf<_E, _Tr>() { }
 	virtual ~console_err_streambuf() { }
+	typedef typename _Tr::int_type int_type;
+
 	typedef typename _Tr::int_type int_type;
 
 protected:

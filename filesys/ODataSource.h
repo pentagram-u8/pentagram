@@ -22,6 +22,7 @@
 #define ODATASOURCE_H
 
 #include "common_types.h"
+#include <fstream>
 
 class ODataSource
 {

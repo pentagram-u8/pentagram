@@ -1109,7 +1109,7 @@ void printfunc(const uint32 func, const uint32 nameoffset, IFileDataSource *ucfi
 	
 	convert->readheader(ucfile, uch, curOffset);
 
-	con_Printf("Usecode function %d (%04X %s)\n", func, func, namebuf);
+	con_Printf("Usecode class %d (%04X %s)\n", func, func, namebuf);
 
 	convert->readevents(ucfile, uch);
 

@@ -47,7 +47,7 @@ class ConvertUsecodeU8 : public ConvertUsecode
 
 const char* const ConvertUsecodeU8::_intrinsics[] = {
 	// 0000
-	"target()",	
+	"target()",
 	"Item::getNext()",							// Unused
 	"Item::touch()",
 	"short Item::getX()",
@@ -58,8 +58,8 @@ const char* const ConvertUsecodeU8::_intrinsics[] = {
 	"short Item::getCZ()",
 	"short Item::getGumpX()",					// Unused
 	"short Item::getGumpY()",					// Unused
-	"void Item::setGumpXY(short x,short y)",	// Unused
-	"Item::getPoint(WorldPoint&)",				
+	"void Item::setGumpXY(short x, short y)",	// Unused
+	"Item::getPoint(WorldPoint&)",
 	"ushort Item::getType()",
 	"void Item::setType(ushort type)",
 	"ushort Item::getFrame()",
@@ -84,7 +84,7 @@ const char* const ConvertUsecodeU8::_intrinsics[] = {
 	"short Item::getStatus()",					// Get Status Flags
 	"void Item::orStatus(short mask)",			// Status |= mask;
 	"void Item::andStatus(short mask)",			// Status &= mask;
-	"Item::getFootpad(short&,short&,short&)",
+	"Item::getFootpad(short&, short&, short&)",
 	"Item::touches(ushort)",					// Unused
 	"Item::overlaps(ushort)",
 	"Item::overlapsXY(ushort)",					// Unused
@@ -99,12 +99,12 @@ const char* const ConvertUsecodeU8::_intrinsics[] = {
 	"Item::getVolume()",						// Unused
 	// 0030
 	"Item::getCapacity()",						// Unuses
-	"Item::legal_create(ushort,ushort,ushort,ushort,ushort)",
-	"Item::create(ushort,ushort)",
-	"Item::legal_create(ushort,ushort,WorldPoint&)",
-	"Item::legal_create(ushort,ushort,ushort,short)",
+	"Item::legal_create(ushort, ushort, ushort, ushort, ushort)",
+	"Item::create(ushort, ushort)",
+	"Item::legal_create(ushort, ushort, WorldPoint&)",
+	"Item::legal_create(ushort, ushort, ushort, short)",
 	"Item::push()",
-	"Item::pop(ushort,ushort,uchar)",
+	"Item::pop(ushort, ushort, uchar)",
 	"Item::pop(ushort)",
 	"Item::pop()",
 	"Item::popToEnd(ushort)",
@@ -112,18 +112,18 @@ const char* const ConvertUsecodeU8::_intrinsics[] = {
 	"Item::removeContents()",
 	"Item::destroyContents()",
 	"Item::isExplosive()",
-	"Item::move(ushort,ushort,uchar)",
+	"Item::move(ushort, ushort, uchar)",
 	"Item::move(WorldPoint&)",					// Unused
 	// 0040
-	"Item::legal_move(WorldPoint&,ushort,ushort)",
-	"Item::legal_move(ushort&,ushort)",
+	"Item::legal_move(WorldPoint&, ushort, ushort)",
+	"Item::legal_move(ushort&, ushort)",
 	"Item::isNpc()",
 	"Item::isInNpc()",							// Unused
-	"Item::hurl(short,short,short,short)",
-	"Item::shoot(WorldPoint&,short,short)",
+	"Item::hurl(short, short, short, short)",
+	"Item::shoot(WorldPoint&, short, short)",
 	"Item::fall()",
 	"Item::grab()",
-	"Item::findTarget(int,int)",				// Unused
+	"Item::findTarget(int, int)",				// Unused
 	"process Item::bark(char* str)",
 	"strptr process Item::ask(ushort slist)",
 	"int Item::getSliderInput(int min, int max, int step)",
@@ -135,33 +135,33 @@ const char* const ConvertUsecodeU8::_intrinsics[] = {
 	"Item::getMapArray()",
 	"Item::setNpcArray(short)",					// Unused
 	"Item::setMapArray(short)",
-	"Item::receiveHit(ushort,char,short,ushort)",
+	"Item::receiveHit(ushort, char, short, ushort)",
 	"Item::explode()",
-	"Item::canReach(ushort,short)",
+	"Item::canReach(ushort, short)",
 	"Item::getRange(ushort)",
-	"Item::getRange(ushort,ushort,ushort)",		// Unused
-	"Item::getDirToCoords(ushort,ushort)",
-	"Item::getDirFromCoords(ushort,ushort)",
+	"Item::getRange(ushort, ushort, ushort)",	// Unused
+	"Item::getDirToCoords(ushort, ushort)",
+	"Item::getDirFromCoords(ushort, ushort)",
 	"Item::getDirToItem(ushort)",
 	"Item::getDirFromItem(ushort)",
 	"process Item::look()",						// Call event 0x0
 	"process Item::use()",						// Call event 0x1
-	"Item::anim()",								// Unused 
+	"Item::anim()",								// Unused
 	"Item::cachein()",							// Unused
 	// 0060
-	"Item::hit(ushort,short)",					// Unused 
-	"process Item::gotHit(ushort,short)",		// Call event ???
-	"Item::release()",							// Unused 
-	"Item::equip()",							// Unused 
-	"Item::unequip()",							// Unused 
-	"Item::combine()",							// Unused 
-	"Item::calledFromAnim()",					// Unused 
+	"Item::hit(ushort, short)",					// Unused
+	"process Item::gotHit(ushort, short)",		// Call event ???
+	"Item::release()",							// Unused
+	"Item::equip()",							// Unused
+	"Item::unequip()",							// Unused
+	"Item::combine()",							// Unused
+	"Item::calledFromAnim()",					// Unused
 	"process Item::enterFastArea()",			// Call event 0xF
-	"Item::leaveFastArea()",					// Unused 
-	"Item::cast(ushort)",						// Unused 
-	"Item::justMoved()",						// Unused 
-	"Item::AvatarStoleSomething(ushort)",		// Unused 
-	"Item::animGetHit(ushort)",					// Unused 
+	"Item::leaveFastArea()",					// Unused
+	"Item::cast(ushort)",						// Unused
+	"Item::justMoved()",						// Unused
+	"Item::AvatarStoleSomething(ushort)",		// Unused
+	"Item::animGetHit(ushort)",					// Unused
 	"process Item::guardianBark(int)",			// Call even 0x15
 	"Book::read(char*)",
 	"Scroll::read(char*)",
@@ -214,12 +214,12 @@ const char* const ConvertUsecodeU8::_intrinsics[] = {
 	"Npc::freeNpcSlot()",						// Unused
 	"Npc::getDir()",
 	"Npc::getMap()",
-	"Npc::teleport(ushort,ushort,uchar,uchar)",
-	"Npc::doAnim(AnimSet,short,short,uchar)",
+	"Npc::teleport(ushort, ushort, uchar, uchar)",
+	"Npc::doAnim(AnimSet, short, short, uchar)",
 	// 00A0
 	"Npc::getLastAnimSet()",
-	"Npc::pathfind(ushort,ushort,ushort,ushort)",
-	"Npc::pathfind(ushort,ushort)",
+	"Npc::pathfind(ushort, ushort, ushort, ushort)",
+	"Npc::pathfind(ushort, ushort)",
 	"char Npc::getStr()",
 	"char Npc::getInt()",
 	"char Npc::getDex()",
@@ -230,28 +230,28 @@ const char* const ConvertUsecodeU8::_intrinsics[] = {
 	"void Npc::setDex(char dex)",
 	"void Npc::setHp(uchar hp)",
 	"void Npc::setMana(short mana)",
-	"Npc::create(ushort,ushort)",
+	"Npc::create(ushort, ushort)",
 	"Npc::cSetActivity(Activity)",
 	"Npc::setAirWalkEnabled(uchar)",
 	// 00B0
 	"Npc::getAirWalkEnabled()",
 	"Npc::schedule(ulong)",
 	"Npc::getEquip(short)",
-	"Npc::setEquip(short,ushort)",
+	"Npc::setEquip(short, ushort)",
 	"closeAllGumps()",
-	"Camera::scrollTo(ushort,ushort,uchar,int)",
+	"Camera::scrollTo(ushort, ushort, uchar, int)",
 	"urandom(int)",
 	"rndRange(short,short)",
 	"castGrantPeaceSpell()",
 	"numToStr(ushort)",
 	"strToNum(char*)",							// Unused
 	"playMusic(char)",
-	"getName()",
-	"igniteChaos(ushort,ushort,uchar)",
+	"getName()",								// Returns the Avatar's name
+	"igniteChaos(ushort, ushort, uchar)",
 	"Camera::setCenterOn(ushort)",
-	"Camera::move_to(ushort,ushort,uchar,short)",
+	"Camera::move_to(ushort, ushort, uchar, short)",
 	// 00C0
-	"Camera::move_rel(int,int,int)",			// Unused
+	"Camera::move_rel(int, int, int)",			// Unused
 	"Camera::set_roof(short)",					// Unused
 	"Camera::roof()",							// Unused
 	"Camera::getX()",							// Unused
@@ -261,20 +261,20 @@ const char* const ConvertUsecodeU8::_intrinsics[] = {
 	"Camera::stopQuake()",
 	"Camera::invertScreen(uchar)",
 	"U8MousePointer::getDir()",					// Unused
-	"Kernel::getNumProcesses(ushort,ProcessType)",
-	"Kernel::resetRef(ushort,ProcessType)",
-	"teleportToEgg(short,int,uchar)",
-	"resetRef(ushort,ushort)",
-	"setRef(ushort,ushort,ushort)",
+	"Kernel::getNumProcesses(ushort, ProcessType)",
+	"Kernel::resetRef(ushort, ProcessType)",
+	"teleportToEgg(short, int, uchar)",
+	"resetRef(ushort, ushort)",
+	"setRef(ushort, ushort, ushort)",
 	"getAvatarInStasis()",
 	// 00D0
 	"setAvatarInStasis(short)",
 	"getEtherealTop()",
 	"getCurrentTimerTick()",
-	"canGetThere(ushort,ushort,ushort)",		// Unused
-	"canExistAt(ushort,ushort,ushort,ushort,uchar,ushort,short)",
-	"createSprite(short,short,short,short,short,short,ushort,ushort,uchar)",
-	"createSprite(short,short,short,short,ushort,ushort,uchar)",
+	"canGetThere(ushort, ushort, ushort)",		// Unused
+	"canExistAt(ushort, ushort, ushort, ushort, uchar, ushort, short)",
+	"createSprite(short, short, short, short, short, short, ushort, ushort, uchar)",
+	"createSprite(short, short, short, short, ushort, ushort, uchar)",
 	"short getFamilyOfType(ushort type)",
 	"TimeInGameHours()",
 	"TimeInMinutes()",
@@ -285,7 +285,7 @@ const char* const ConvertUsecodeU8::_intrinsics[] = {
 	"FadeToBlack()",
 	"FadeFromBlack()",
 	// 00E0
-	"FadeToPalette(short,short)",
+	"FadeToPalette(short, short)",
 	"LightningBolt()",
 	"FadeToWhite()",
 	"FadeFromWhite()",
@@ -298,22 +298,22 @@ const char* const ConvertUsecodeU8::_intrinsics[] = {
 	"SetAvatarInCombat()",
 	"IsAvatarInCombat()",						// Unused
 	"playSFX(int)",
-	"playSFX(int,uchar)",
-	"playSFX(int,int,ushort)",
+	"playSFX(int, uchar)",
+	"playSFX(int, int, ushort)",
 	"playAmbientSFX(int)",						// Unused
 	// 00F0
-	"playAmbientSFX(int,int)",					// Unused
-	"playAmbientSFX(int,int,ushort)",
+	"playAmbientSFX(int, int)",					// Unused
+	"playAmbientSFX(int, int, ushort)",
 	"isSFXPlaying(int)",
-	"setVolumeSFX(int,int)",
+	"setVolumeSFX(int, int)",
 	"stopSFX(int)",
-	"stopSFX(int,ushort)",
-	"soundInit(int,int,int)",					// Unused
+	"stopSFX(int, ushort)",
+	"soundInit(int, int, int)",					// Unused
 	"soundDeInit()",							// Unused
 	"musicStop()",
 	"musicSlowStop()",							// Unused
 	"musicPlay(int)",							// Unused
-	"TonysBalls(short,short,ushort,ushort,ushort)",
+	"TonysBalls(short, short, ushort, ushort, ushort)",
 	"AvatarCanCheat()",
 	"MakeAvatarACheater()",
 	"isGameRunning()",
