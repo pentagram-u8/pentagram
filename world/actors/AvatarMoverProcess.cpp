@@ -174,6 +174,10 @@ bool AvatarMoverProcess::handleCombatMode()
 
 			waitFor(avatar->doAnim(Animation::attack, mousedir));
 			lastAttack = 0xFFFFFFFF;
+
+			// attacking gives str/dex
+			avatar->accumulateStr(1+(std::rand()%2));
+			avatar->accumulateDex(2+(std::rand()%2));
 		}
 
 		return false;
@@ -202,13 +206,17 @@ bool AvatarMoverProcess::handleCombatMode()
 			
 			waitFor(avatar->doAnim(Animation::kick, mousedir));
 			lastAttack = 0xFFFFFFFF;
+
+			// kicking gives str/dex
+			avatar->accumulateStr(1+(std::rand()%2));
+			avatar->accumulateDex(2+(std::rand()%2));
 		}
 
 		return false;
 	}
 
 	if ((mouseButton[1].state & MBS_DOWN) &&
-		(mouseButton[1].state & MBS_HANDLED))
+		(mouseButton[1].state & MBS_HANDLED) && mouseButton[1].lastDown > 0)
 	{
 		// right mouse button is down long enough to act on it
 		// if facing right direction, walk
@@ -396,6 +404,10 @@ bool AvatarMoverProcess::handleNormalMode()
 				jump(nextanim, direction);
 				return false;
 			}
+
+			// climbing gives str/dex
+			avatar->accumulateStr(2+nextanim-Animation::climb16);
+			avatar->accumulateDex(2*(2+nextanim-Animation::climb16));
 
 			nextanim = Animation::checkWeapon(nextanim, lastanim);
 			waitFor(avatar->doAnim(nextanim, direction));

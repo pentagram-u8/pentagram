@@ -458,6 +458,7 @@ void MainActor::accumulateStr(int n)
 		accumStr = 0;
 		AudioProcess* audioproc = AudioProcess::get_instance();
 		if (audioproc) audioproc->playSFX(0x36, 0x60, 1, 0); //constants!!
+		pout << "Gained strength!" << std::endl;
 	}
 }
 
@@ -472,6 +473,7 @@ void MainActor::accumulateDex(int n)
 		accumDex = 0;
 		AudioProcess* audioproc = AudioProcess::get_instance();
 		if (audioproc) audioproc->playSFX(0x36, 0x60, 1, 0); //constants!!
+		pout << "Gained dexterity!" << std::endl;
 	}
 }
 
@@ -486,6 +488,7 @@ void MainActor::accumulateInt(int n)
 		accumInt = 0;
 		AudioProcess* audioproc = AudioProcess::get_instance();
 		if (audioproc) audioproc->playSFX(0x36, 0x60, 1, 0); //constants!!
+		pout << "Gained intelligence!" << std::endl;
 	}
 }
 

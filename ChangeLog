@@ -12,6 +12,8 @@
 	* world/actors/AvatarMoverProcess.cpp: wait when doing animation
 	* world/actors/ActorAnimProcess.cpp: terminateDeferred instead of
 	  terminate when AnimLock set 
+	* world/actors/AvatarMoverProcess.cpp, world/actors/Actor.cpp:
+	  gain stats when attacking/hitting/climbing
 
 2005-04-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/MainActor.cpp: play SFX when stats increase

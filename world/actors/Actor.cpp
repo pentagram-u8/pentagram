@@ -44,6 +44,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CombatProcess.h"
 #include "AudioProcess.h"
 #include "SpriteProcess.h"
+#include "MainActor.h"
 
 #include "ItemFactory.h"
 #include "LoopScript.h"
@@ -501,6 +502,12 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 		damage_type = hitter->getDamageType();
 	}
 
+	if (other == 1 && attacker->getLastAnim() != Animation::kick) {
+		// strength for kicks is accumulated in AvatarMoverProcess
+		MainActor* av = World::get_instance()->getMainActor();
+		av->accumulateStr(damage/4);
+	}
+
 	pout << "Actor " << getObjId() << " received hit from " << other
 		 << " (dmg=" << damage << ",type=" << std::hex << damage_type
 		 << std::dec << "). ";
@@ -509,14 +516,9 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 
 	if (!damage) {
 		pout << "No damage." << std::endl;
-		return; // attack missed
 	} else {
 		pout << "Damage: " << damage << std::endl;
 	}
-
-	// TODO: accumulate strength for avatar kicks
-	// TODO: accumulate dexterity for avatar hits
-	// TODO: make us hostile to whoever attacked?
 
 	if (getActorFlags() & (ACT_IMMORTAL | ACT_INVINCIBLE))
 		return; // invincible
@@ -856,6 +858,14 @@ int Actor::calculateAttackDamage(uint16 other, int damage, uint16 damage_type)
 
 		// TODO: give avatar an extra chance to hit monsters
 		//       with defense_type DMG_PIERCE
+
+		if (hit && other == 1) {
+			MainActor* av = World::get_instance()->getMainActor();
+			if (attackdex > defenddex)
+				av->accumulateDex(2*(attackdex-defenddex));
+			else
+				av->accumulateDex(2);
+		}
 
 		if (!hit) {
 			damage = 0;
