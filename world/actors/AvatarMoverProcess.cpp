@@ -289,8 +289,7 @@ bool AvatarMoverProcess::handleNormalMode()
 		}
 	}
 
-	if ((mouseButton[0].state & MBS_DOWN) &&
-		!(mouseButton[0].state & MBS_HANDLED))
+	if (!(mouseButton[0].state & MBS_HANDLED))
 	{
 		mouseButton[0].state |= MBS_HANDLED;
 		mouseButton[1].state |= MBS_HANDLED;
