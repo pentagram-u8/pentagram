@@ -222,6 +222,14 @@ private:
 	uint16 dragging_item_startgump;
 	uint16 dragging_item_lastgump;
 
+	int dragging_offsetX, dragging_offsetY;
+public:
+	void setDraggingOffset(int x, int y)
+		{ dragging_offsetX = x; dragging_offsetY = y; }
+	void getDraggingOffset(int& x, int& y)
+		{ x = dragging_offsetX; y = dragging_offsetY; }
+
+private:
 	void startDragging(int mx, int my);
 	void moveDragging(int mx, int my);
 	void stopDragging(int mx, int my);

@@ -143,9 +143,9 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	  runGraphicSysInit(false), runSDLInit(false),
 	  frameSkip(false), frameLimit(true), interpolate(false),
 	  animationRate(100), avatarInStasis(false), paintEditorItems(false),
-	  painting(false), dragging(DRAG_NOT), timeOffset(0),
-	  midi_driver(0), midi_volume(255),
-	  drawRenderStats(false)
+	  painting(false), dragging(DRAG_NOT),
+	  dragging_offsetX(0), dragging_offsetY(0), timeOffset(0),
+	  midi_driver(0), midi_volume(255), drawRenderStats(false)
 {
 	application = this;
 
@@ -1710,6 +1710,8 @@ void GUIApp::handleDelayedEvents()
 
 void GUIApp::startDragging(int startx, int starty)
 {
+	setDraggingOffset(0,0); // initialize
+
 	dragging_objid = desktopGump->TraceObjId(startx, starty);
 	
 	Gump *gump = getGump(dragging_objid);

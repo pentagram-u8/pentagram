@@ -19,6 +19,7 @@
 #include "pent_include.h"
 #include "DesktopGump.h"
 #include "RenderSurface.h"
+#include "GUIApp.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
 
@@ -48,18 +49,20 @@ void DesktopGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 bool DesktopGump::StartDraggingChild(Gump* gump, int mx, int my)
 {
 	gump->ParentToGump(mx, my);
-	gump->SetMoveOffset(mx, my);
+	GUIApp::get_instance()->setDraggingOffset(mx, my);
 	return true;
 }
 
 void DesktopGump::DraggingChild(Gump* gump, int mx, int my)
 {
-	gump->Move(mx, my);
+	int dx, dy;
+	GUIApp::get_instance()->getDraggingOffset(dx, dy);
+	gump->Move(mx - dx, my - dy);
 }
 
 void DesktopGump::StopDraggingChild(Gump* gump)
 {
-	gump->SetMoveOffset(0, 0);
+
 }
 
 void DesktopGump::saveData(ODataSource* ods)

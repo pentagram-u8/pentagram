@@ -213,7 +213,7 @@ bool SliderGump::StartDraggingChild(Gump* gump, int mx, int my)
 {
 	if (gump->GetIndex() == SLIDER_INDEX) {
 		gump->ParentToGump(mx, my);
-		sliderMouseOffset = mx;
+		GUIApp::get_instance()->setDraggingOffset(mx, 0);
 		return true;
 	}
 
@@ -223,7 +223,9 @@ bool SliderGump::StartDraggingChild(Gump* gump, int mx, int my)
 void SliderGump::DraggingChild(Gump* gump, int mx, int my)
 {
 	if (gump->GetIndex() == SLIDER_INDEX) {
-		setValueFromSlider(mx-sliderMouseOffset);
+		int dox, doy;
+		GUIApp::get_instance()->getDraggingOffset(dox, doy);
+		setValueFromSlider(mx-dox);
 		gump->Move(getSliderPos(), slidery);
 	}
 }

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003  The Pentagram Team
+ *  Copyright (C) 2003-2004  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -64,10 +64,11 @@ public:
 	virtual uint16		TraceObjId(int mx, int my);
 
 	// Trace a click, return ObjId, and the coordinates of the mouse click
-	virtual uint16		TraceCoordinates(int mx, int my,
-				sint32 coords[3], Item* item = 0);
+	virtual uint16		TraceCoordinates(int mx, int my, sint32 coords[3],
+										 int offsetx = 0, int offsety = 0,
+										 Item* item = 0);
 
-	// Get the location of an item in the gump (coords reletive to this).
+	// Get the location of an item in the gump (coords relative to this).
 	// Returns false on failure
 	virtual bool		GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 										  sint32 lerp_factor = 256);

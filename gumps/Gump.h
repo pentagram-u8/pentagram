@@ -155,8 +155,7 @@ public:
 	bool				IsClosing() { return (flags&FLAG_CLOSING)!=0; }
 
 	//! Move this gump
-	virtual void		Move(int x_, int y_)
-		{ x = x_ - moveOffsetX; y = y_ - moveOffsetY; }
+	virtual void		Move(int x_, int y_) { x = x_; y = y_; }
 
 	enum Position {
 		CENTER = 1,
@@ -309,12 +308,6 @@ public:
 	//! if a DraggingItem there returned true.
 	virtual void		DropItem(Item* item, int mx, int my) { }
 
-	//! the MoveOffset is the point relative to which Move() will move the gump
-	void				SetMoveOffset(int mx, int my)
-		{ moveOffsetX = mx; moveOffsetY = my; }
-protected:
-	int moveOffsetX, moveOffsetY;
-
 public:
 
 	//
@@ -328,7 +321,8 @@ public:
 		FLAG_ITEM_DEPENDANT	= 0x10		// When set, the gump will be deleted on MapChange
 	};
 
-	inline bool			IsHidden() { return (flags&FLAG_HIDDEN) != 0; }
+	inline bool			IsHidden()
+		{ return (flags&FLAG_HIDDEN) || (parent && parent->IsHidden()); }
 	virtual void		HideGump() { flags |= FLAG_HIDDEN; }
 	virtual void		UnhideGump() { flags &= ~FLAG_HIDDEN; }
 

@@ -33,7 +33,7 @@
 DEFINE_RUNTIME_CLASSTYPE_CODE(Gump,Object);
 
 Gump::Gump()
-	: Object(), parent(0), children(), moveOffsetX(0), moveOffsetY(0)
+	: Object(), parent(0), children()
 {
 }
 
@@ -42,7 +42,7 @@ Gump::Gump(int inX, int inY, int Width, int Height, uint16 inOwner,
 	Object(), owner(inOwner), parent(0), x(inX), y(inY),
 	dims(0,0,Width,Height), flags(inFlags), layer(inLayer), index(-1),
 	shape(0), framenum(0), children(), focus_child(0), notifier(0),
-	process_result(0), moveOffsetX(0), moveOffsetY(0)
+	process_result(0)
 {
 	assignObjId(); // gumps always get an objid
 }
@@ -79,6 +79,8 @@ void Gump::InitGump()
 
 void Gump::CreateNotifier()
 {
+	assert(notifier == 0);
+
 	// Create us a GumpNotifyProcess
 	GumpNotifyProcess *p = new GumpNotifyProcess(owner);
 	p->setGump(this);

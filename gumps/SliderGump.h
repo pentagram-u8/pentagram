@@ -56,8 +56,6 @@ protected:
 	sint16 delta;
 	sint16 value;
 
-	int sliderMouseOffset;
-
 	uint16 usecodeNotifyPID;
 	
 	int getSliderPos();

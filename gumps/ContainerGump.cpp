@@ -275,12 +275,23 @@ bool ContainerGump::StartDraggingItem(Item* item, int mx, int my)
 	// probably don't need to check if item can be moved, since it shouldn't
 	// be in a container otherwise
 
+	sint32 itemx,itemy;
+	item->getGumpLocation(itemx,itemy);
+
+	itemx += itemarea.x;
+	itemy += itemarea.y;
+
+	GUIApp::get_instance()->setDraggingOffset(mx - itemx, my - itemy);
+
 	//TODO: do need to check if the container the item is in, is in range
 	return true;
 }
 
 bool ContainerGump::DraggingItem(Item* item, int mx, int my)
 {
+	int dox, doy;
+	GUIApp::get_instance()->getDraggingOffset(dox, doy);	
+
 	display_dragging = true;
 
 	dragging_shape = item->getShape();
@@ -289,8 +300,8 @@ bool ContainerGump::DraggingItem(Item* item, int mx, int my)
 
 	// determine target location and set dragging_x/y
 
-	dragging_x = mx - itemarea.x;
-	dragging_y = my - itemarea.y;
+	dragging_x = mx - itemarea.x - dox;
+	dragging_y = my - itemarea.y - doy;
 
 	if (dragging_x < 0 || dragging_x >= itemarea.w ||
 		dragging_y < 0 || dragging_y >= itemarea.h) {
@@ -443,8 +454,11 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 	}
 
 	//!! TODO: this is nonsense when not adding to this container
-	dragging_x = mx - itemarea.x;
-	dragging_y = my - itemarea.y;
+
+	int dox, doy;
+	GUIApp::get_instance()->getDraggingOffset(dox, doy);
+	dragging_x = mx - itemarea.x - dox;
+	dragging_y = my - itemarea.y - doy;
 	item->setGumpLocation(dragging_x, dragging_y);
 }
 

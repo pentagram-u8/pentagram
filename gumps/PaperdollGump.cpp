@@ -278,7 +278,18 @@ bool PaperdollGump::StartDraggingItem(Item* item, int mx, int my)
 		return false;
 	}
 
-	return ContainerGump::StartDraggingItem(item, mx, my);
+	bool ret = ContainerGump::StartDraggingItem(item, mx, my);
+
+	// set dragging offset to center of item
+	Shape* s = item->getShapeObject();
+	assert(s);
+	ShapeFrame* frame = s->getFrame(item->getFrame());
+	assert(frame);
+	
+	GUIApp::get_instance()->setDraggingOffset(frame->width/2-frame->xoff,
+											  frame->height/2-frame->yoff);
+
+	return ret;
 }
 
 

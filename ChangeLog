@@ -1,4 +1,8 @@
 2004-08-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/*, kernel/GUIApp.*: fix item dragging offset; cleanup
+	* gumps/Gump.h: gump is also hidden if parent is hidden
+
+2004-08-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/SplitItemProcess.*: process to split up a stack of items
 	* gumps/ContainerGump.cpp: ask how to split up stacks when dragging
 

@@ -211,7 +211,7 @@ uint16 GameMapGump::TraceObjId(int mx, int my)
 }
 
 uint16 GameMapGump::TraceCoordinates(int mx, int my, sint32 coords[3],
-		Item * item)
+									 int offsetx, int offsety, Item* item)
 {
 	sint32 dxd = 0,dyd = 0,dzd = 0;
 	if (item)
@@ -231,6 +231,10 @@ uint16 GameMapGump::TraceCoordinates(int mx, int my, sint32 coords[3],
 	sint32 hxd,hyd,hzd;
 	hit->getLocation(hx,hy,hz);
 	hit->getFootpadWorld(hxd,hyd,hzd);
+
+	// adjust mx (if dragged item wasn't 'picked up' at its origin)
+	mx -= offsetx;
+	my -= offsety;
 
 	// mx = (coords[0]-cx-coords[1]+cy)/4
 	// my = (coords[0]-cx+coords[1]-cy)/8 - coords[2] + cz
@@ -437,7 +441,12 @@ bool GameMapGump::StartDraggingItem(Item* item, int mx, int my)
 	if (si->is_fixed()) return false;
 	//!! need more checks here
 
-	// check if item is in range
+	// TODO: check if item is in range
+	
+	// get item offset
+	int itemx, itemy;
+	GetLocationOfItem(item->getObjId(), itemx, itemy);
+	GUIApp::get_instance()->setDraggingOffset(mx - itemx, my - itemy);
 
 	return true;
 }
@@ -445,13 +454,15 @@ bool GameMapGump::StartDraggingItem(Item* item, int mx, int my)
 bool GameMapGump::DraggingItem(Item* item, int mx, int my)
 {
 	// determine target location and set dragging_x/y/z
+	int dox, doy;
+	GUIApp::get_instance()->getDraggingOffset(dox, doy);
 
 	dragging_shape = item->getShape();
 	dragging_frame = item->getFrame();
 	dragging_flags = item->getFlags();
 	display_dragging = true;
 
-	if (!TraceCoordinates(mx, my, dragging_pos, item))
+	if (!TraceCoordinates(mx, my, dragging_pos, dox, doy, item))
 		return false;
 
 	// determine if item can be dropped here
@@ -480,12 +491,15 @@ void GameMapGump::StopDraggingItem(Item* item, bool moved)
 
 void GameMapGump::DropItem(Item* item, int mx, int my)
 {
+	int dox, doy;
+	GUIApp::get_instance()->getDraggingOffset(dox, doy);
+
 	World *world = World::get_instance();
 	CurrentMap *map = world->getCurrentMap();
 	display_dragging = false;
 	Actor* avatar = world->getMainActor();
 
-	ObjId trace = TraceCoordinates(mx, my, dragging_pos, item);
+	ObjId trace = TraceCoordinates(mx, my, dragging_pos, dox, doy, item);
 	if (trace == 1) { // dropping on self
 		ObjId bp = avatar->getEquip(7); // !! constant
 		Container* backpack = p_dynamic_cast<Container*>(
