@@ -150,11 +150,6 @@ void PaperdollGump::PaintStats(RenderSurface* surf, sint32 lerp_factor)
 	Actor* a = World::get_instance()->getNPC(owner);
 	assert(a);
 
-	// text: English: STR,INT,DEX,ARMR,HITS,MANA,WGHT
-	//       French : FORCE,INTEL,DEXT,ARMR,COUPS,MAGIE,POIDS
-    //       German : KRAFT,INTELL.,GESCH.,R\"UST.,TREFF.,MANA,LAST
-	//       Spanish: FUE,INT,DES,ARMR,PNTS,MANA,PESO
-
 	PaintStat(surf, 0, _TL_("STR"), a->getStr());
 	PaintStat(surf, 1, _TL_("INT"), a->getInt());
 	PaintStat(surf, 2, _TL_("DEX"), a->getDex());

@@ -18,7 +18,5 @@ flexpack_OBJ = \
 	tools/flexpack/FlexWriter.o \
 	tools/flexpack/FlexPack.o
 
-
-# ../../filesys/Flex.o
 # Common rules
 include $(srcdir)/common.mk

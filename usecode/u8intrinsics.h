@@ -163,8 +163,8 @@ Intrinsic U8Intrinsics[] = {
 	BookGump::I_readBook,
 	ScrollGump::I_readScroll,
 	// 0x070
-	ReadableGump::I_readGrave, //!! process Grave::read(word,char*)
-	ReadableGump::I_readPlaque, //!! process Plaque::read(word,char*)
+	ReadableGump::I_readGrave,
+	ReadableGump::I_readPlaque,
 	Egg::I_getEggXRange,
 	Egg::I_getEggYRange,
 	Egg::I_setEggXRange,
