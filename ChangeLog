@@ -1,4 +1,7 @@
 2003-05-20  Ryan Nunn <colourles@users.sourceforge.net>
+	* world/actors/ActorAnimProcess.cpp : Avoiding problems with bounds.
+
+2003-05-20  Ryan Nunn <colourles@users.sourceforge.net>
 	* usecode/UCMachine.cpp : 1 Based lists
 	* kernel/Application.cpp : A hack to support 'different' versions of U8 with 
 	  f and g keys
