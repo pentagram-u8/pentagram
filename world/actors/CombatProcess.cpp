@@ -77,7 +77,20 @@ bool CombatProcess::run(const uint32 /*framenum*/)
 		pout << "[COMBAT " << item_num << "] target in range" << std::endl;
 
 		// attack
-		waitFor(a->doAnim(Animation::attack, a->getDir()));
+		ProcId attackanim = a->doAnim(Animation::attack, a->getDir());
+
+		// wait a while, depending on dexterity, before attacking again
+		int dex = a->getDex();
+		if (dex < 25) {
+			int recoverytime = 3 * (25 - dex);
+			Process* waitproc = new DelayProcess(recoverytime);
+			ProcId waitpid = Kernel::get_instance()->addProcess(waitproc);
+			waitproc->waitFor(attackanim);
+			waitFor(waitpid);
+		} else {
+			waitFor(attackanim);
+		}
+
 		return false;
 	}
 

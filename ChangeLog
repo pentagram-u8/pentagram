@@ -1,3 +1,6 @@
+2004-11-24  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/CombatProcess.cpp: slow down attacks depending on dex
+
 2004-11-23  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AnimationTracker.*: track attacks as well
 	* world/actors/ActorAnimProcess.*: let tracker handle weapon checks
