@@ -1289,7 +1289,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		int mx = event.button.x;
 		int my = event.button.y;
 		mouseX = mx; mouseY = my;
-		if (dragging == DRAG_NOT && !avatarInStasis) {
+		if (dragging == DRAG_NOT) {
 			if (mouseState[BUTTON_LEFT] & MBS_DOWN) {
 				int startx = mouseDownX[BUTTON_LEFT];
 				int starty = mouseDownY[BUTTON_LEFT];

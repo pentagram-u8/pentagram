@@ -1,4 +1,7 @@
 2003-12-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/GUIApp.cpp: allow dragging of gumps when in stasis
+
+2003-12-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/ModalGump.*: modal gump base class (not entirely done yet)
 	* gumps/SliderGump.*: slider gump
 	* gumps/widgets/SlidingWidget.*: sliding widget of a slider gump
