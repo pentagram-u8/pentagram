@@ -158,6 +158,7 @@ ACTORS = \
 	world/actors/QuickAvatarMoverProcess.o \
 	world/actors/ClearFeignDeathProcess.o \
 	world/actors/DeleteActorProcess.o \
+	world/actors/LoiterProcess.o \
 	world/actors/MainActor.o \
 	world/actors/Pathfinder.o \
 	world/actors/PathfinderProcess.o \

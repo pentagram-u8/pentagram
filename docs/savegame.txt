@@ -526,3 +526,8 @@ if (!targetitem) uint16 targetx, targety, targetz
 uint16 currentstep
 uint16 pathsize
 (uint16 action,uint16 direction) path[pathsize]
+
+
+LoiterProcess: Process (v1)
+uint16 version
+<Process>

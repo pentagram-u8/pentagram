@@ -40,6 +40,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ClearFeignDeathProcess.h"
 #include "PathfinderProcess.h"
 #include "Shape.h"
+#include "LoiterProcess.h"
 
 #include "ItemFactory.h"
 #include "LoopScript.h"
@@ -399,7 +400,8 @@ uint16 Actor::cSetActivity(int activity)
 {
 	switch (activity) {
 	case 0: // loiter
-		// TODO: implement (pathfind to random points?)
+		return Kernel::get_instance()->addProcess(new LoiterProcess(this));
+		break;
 	case 1: // combat
 		// TODO: implement (set combat and let AI handle the rest?)
 	case 2: // stand
