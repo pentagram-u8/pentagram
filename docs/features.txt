@@ -25,4 +25,4 @@ Matthew Jimenez
 - Graphic Scalers
 - Layered Graphic Scalers (be able to scale gumps differently than the map)
 - Joystick movement for Avatar or Cursor - gameplay option
-
+- Force NPC's to spawn off screen and walk to the original spawn point.

@@ -347,7 +347,7 @@ uint32 action
 uint32 prevx, prevy, prevz
 uint32 x,y,z
 uint16 mode
-if (mode == TargetMode) uint32 target_dx, target_dy, target_dz
+if (mode == TargetMode) uint32 target_dx, target_dy
 uint8 firststep (boolean)
 uint8 flipped (boolean)
 uint32 shapeframe
