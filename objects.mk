@@ -136,6 +136,7 @@ WORLD = \
 	world/CameraProcess.o \
 	world/Egg.o \
 	world/EggHatcherProcess.o \
+	world/FireballProcess.o \
 	world/Item.o \
 	world/Container.o \
 	world/ItemFactory.o \

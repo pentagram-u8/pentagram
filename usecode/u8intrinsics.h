@@ -41,6 +41,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ReadableGump.h"
 #include "TargetGump.h"
 #include "GrantPeaceProcess.h"
+#include "FireballProcess.h"
 
 // Ultima 8 Intrinsics
 Intrinsic U8Intrinsics[] = {
@@ -311,7 +312,7 @@ Intrinsic U8Intrinsics[] = {
 	MusicProcess::I_musicStop,
 	0, //U
 	0, //U
-	0, // TonysBalls
+	FireballProcess::I_TonysBalls,
 	UCMachine::I_true, // AvatarCanCheat
 	0, // MakeAvatarACheater
 	UCMachine::I_true, // isGameRunning

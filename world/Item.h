@@ -217,11 +217,14 @@ public:
 	//!        destination
 	//! \param force force the object to get to the destination without being
 	//!        blocked by solid objects
+	//! \param hititem if non-NULL, this is set to (one of) the item(s)
+	//!        blocking the movement, or to zero if nothing blocked it
 	//! \returns 0-0x4000 representing how far it got.
 	//!          0 = didn't move
 	//!          0x4000 = reached destination
 	//! \note This can destroy the object
-	sint32 collideMove(sint32 x,sint32 y,sint32 z, bool teleport, bool force);
+	sint32 collideMove(sint32 x,sint32 y,sint32 z, bool teleport, bool force,
+					   ObjId* hititem=0);
 
 	//! Make the item move up (delta>0) or down (delta<0),
 	//! including any items on top of it

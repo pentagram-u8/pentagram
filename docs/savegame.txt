@@ -498,12 +498,27 @@ uint16 version
 <Process>
 
 
-AvatarDeathProcess::Process (v1)
+AvatarDeathProcess: Process (v1)
 uint16 version
 <Process>
 
 
-CombatProcess::Process (v1)
+CombatProcess: Process (v1)
 uint16 version
 <Process>
 uint16 target
+
+
+GrantPeaceProcess: Process (v1)
+uint16 version
+<Process>
+uint8 havetarget (boolean)
+
+
+FireballProcess: Process (v1)
+uint16 version
+<Process>
+sint32 xspeed, yspeed
+uint16 target
+uint16 tail[3]
+uint16 age

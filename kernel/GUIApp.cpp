@@ -82,6 +82,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "LoiterProcess.h"
 #include "AvatarDeathProcess.h"
 #include "GrantPeaceProcess.h"
+#include "CombatProcess.h"
+#include "FireballProcess.h"
 
 #include "MovieGump.h"
 
@@ -270,6 +272,10 @@ void GUIApp::startup()
 							 ProcessLoader<AvatarDeathProcess>::load);
 	kernel->addProcessLoader("GrantPeaceProcess",
 							 ProcessLoader<GrantPeaceProcess>::load);
+	kernel->addProcessLoader("CombatProcess",
+							 ProcessLoader<CombatProcess>::load);
+	kernel->addProcessLoader("FireballProcess",
+							 ProcessLoader<FireballProcess>::load);
 
 	gamedata = new GameData();
 

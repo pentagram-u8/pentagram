@@ -738,11 +738,13 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 }
 
 
-sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool force)
+sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool force, ObjId* hititem)
 {
 	GUIApp *guiapp = GUIApp::get_instance();
 	World *world = World::get_instance();
 	CurrentMap *map = world->getCurrentMap();
+
+	if (hititem) *hititem = 0;
 
 	sint32 end[3] = { dx, dy, dz };
 
@@ -787,8 +789,10 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 				ShapeInfo *info = item->getShapeInfo();
 
 				// Uh oh, we hit something, can't move
-				if (info->is_solid()) return 0;
-
+				if (info->is_solid()) {
+					if (hititem) *hititem = it->item;
+					return 0;
+				}
 			}
 		}
 
@@ -851,6 +855,7 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 				// Uh oh, we hit something
 				if (info->is_solid())
 				{
+					if (hititem) *hititem = it->item;
 					hit = it->hit_time;
 					break;
 				}

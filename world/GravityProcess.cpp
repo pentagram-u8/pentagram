@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -43,7 +43,7 @@ GravityProcess::GravityProcess(Item* item, int gravity_)
 	gravity = gravity_;
 	item_num = item->getObjId();
 
-	//TODO: process type?
+	type = 0x203; // CONSTANT!
 }
 
 void GravityProcess::init()
@@ -51,7 +51,7 @@ void GravityProcess::init()
 	Item* item = World::get_instance()->getItem(item_num);
 	assert(item);
 
-	// we're bouncing (I guess...)
+	// FIXME: wrong use of bouncing flag, probably
 	item->setFlag(Item::FLG_BOUNCING);
 
 	item->setGravityProcess(getPid());
