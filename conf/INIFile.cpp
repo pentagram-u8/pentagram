@@ -104,7 +104,7 @@ bool INIFile::readConfigFile(string fname)
 	string sbuf, line;
 	while (!f->eof()) {
 		f->readline(line);
-		unsigned int pos = line.find_first_of("\n\r");
+		string::size_type pos = line.find_first_of("\n\r");
 		if (pos != string::npos) {
 			sbuf += line.substr(0, pos) + "\n";
 		} else {
@@ -125,7 +125,7 @@ bool INIFile::readConfigFile(string fname)
 
 static void rtrim(string& s)
 {
-    unsigned int pos = s.find_last_not_of(" \t");
+    string::size_type pos = s.find_last_not_of(" \t");
 	if (pos != string::npos) {
 		if (pos+1 < s.size())
 			s.erase(pos+1);
@@ -136,7 +136,7 @@ static void rtrim(string& s)
 
 static void ltrim(string& s)
 {
-	unsigned int pos = s.find_first_not_of(" \t");
+	string::size_type pos = s.find_first_not_of(" \t");
 	if (pos != string::npos) {
 		if (pos > 0)
 			s.erase(0, pos-1);
@@ -163,7 +163,7 @@ bool INIFile::readConfigString(string config)
 	{
 		lineno++;
 
-		unsigned int pos = config.find('\n');
+		string::size_type pos = config.find('\n');
 		if (pos != string::npos) {
 			line = config.substr(0, pos);
 			config.erase(0, pos+1);
@@ -235,7 +235,7 @@ bool INIFile::readConfigString(string config)
 			}
 
 			// Split string at '=' into 'key' and 'value'.
-			unsigned int p = line.find('=');
+			string::size_type p = line.find('=');
 			if (p == string::npos || p == 0) {
 				perr << "Config file buggy: Junk found in line " << lineno
 					 << ": '" << line << "'" << std::endl;
@@ -316,7 +316,7 @@ void INIFile::write()
 
 bool INIFile::stripRoot(istring& key)
 {
-	unsigned int pos = key.find('/');
+	string::size_type pos = key.find('/');
 	if (pos == istring::npos) return false;
 
 	istring keyroot = key.substr(0, pos);
@@ -342,7 +342,7 @@ bool INIFile::splitKey(istring key, istring& section, istring& sectionkey)
 {
 	// TODO: more sanity checks might be nice
 
-	unsigned int pos = key.find('/');
+	string::size_type pos = key.find('/');
 	if (pos == istring::npos || pos+1 >= key.size()) return false;
 
 	section = key.substr(0, pos);
