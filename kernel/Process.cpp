@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(Process);
 
-Process::Process(uint16 it, uint16 ty)
+Process::Process(ObjId it, uint16 ty)
 	: pid(0xFFFF), active(false), suspended(false), terminated(false),
 	terminate_deferred(false), item_num(it), type(ty), result(0)
 {
@@ -38,7 +38,7 @@ void Process::terminate()
 	Kernel *kernel = Kernel::get_instance();
 
 	// wake up waiting processes
-	for (std::vector<uint16>::iterator i = waiting.begin();
+	for (std::vector<ProcId>::iterator i = waiting.begin();
 		 i != waiting.end(); ++i)
 	{
 		Process *p = kernel->getProcess(*i);
@@ -59,7 +59,7 @@ void Process::wakeUp(uint32 result_)
 	Kernel::get_instance()->setNextProcess(this);
 }
 
-void Process::waitFor(uint16 pid_)
+void Process::waitFor(ProcId pid_)
 {
 	if (pid_) {
 		Kernel *kernel = Kernel::get_instance();

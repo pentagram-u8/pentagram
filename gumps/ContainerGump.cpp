@@ -129,9 +129,9 @@ void ContainerGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 
 // Find object (if any) at (mx,my)
 // (mx,my) are relative to parent
-uint16 ContainerGump::TraceObjID(int mx, int my)
+uint16 ContainerGump::TraceObjId(int mx, int my)
 {
-	uint16 objid = Gump::TraceObjID(mx,my);
+	uint16 objid = Gump::TraceObjId(mx,my);
 	if (objid && objid != 65535) return objid;
 
 	ParentToGump(mx,my);
@@ -169,7 +169,7 @@ bool ContainerGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 									  sint32 lerp_factor)
 {
 	Item* item = World::get_instance()->getItem(itemid);
-	Item* parent = item->getParent();
+	Item* parent = item->getParentAsContainer();
 	if (!parent) return false;
 	if (parent->getObjId() != owner) return false;
 
@@ -228,7 +228,7 @@ void ContainerGump::OnMouseClick(int button, int mx, int my)
 			return;
 		}
 		
-		uint16 objID = TraceObjID(mx, my);
+		uint16 objID = TraceObjId(mx, my);
 
 		World *world = World::get_instance();
 		Item *item = world->getItem(objID);
@@ -252,7 +252,7 @@ void ContainerGump::OnMouseDouble(int button, int mx, int my)
 			return;
 		}
 		
-		uint16 objID = TraceObjID(mx, my);
+		uint16 objID = TraceObjId(mx, my);
 
 		if (objID == getObjId()) {
 			objID = owner; // use container when double click on self
@@ -330,7 +330,7 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 	int px = mx, py = my;
 	GumpToParent(px, py);
 	// see what the item is being dropped on
-	Item* targetitem = World::get_instance()->getItem(TraceObjID(px, py));
+	Item* targetitem = World::get_instance()->getItem(TraceObjId(px, py));
 	Container* targetcontainer = 0;
 	if (targetitem) {
 		targetcontainer = p_dynamic_cast<Container*>(targetitem);

@@ -31,7 +31,7 @@ public:
 	// returns true if screen needs to be repainted
 	virtual bool run(const uint32 framenum) = 0;
 
-	Process(uint16 item_num=0, uint16 type=0);
+	Process(ObjId item_num=0, uint16 type=0);
 	virtual ~Process() { }
 
 	// p_dynamic_cast stuff
@@ -43,13 +43,13 @@ public:
 	void terminateDeferred() { terminate_deferred = true; } // Terminate next frame
 
 	//! suspend until process 'pid' returns. If pid is 0, suspend indefinitely
-	void waitFor(uint16 pid);
+	void waitFor(ProcId pid);
 	void wakeUp(uint32 result);
 
-	void setItemNum(uint16 it) { item_num = it; }
+	void setItemNum(ObjId it) { item_num = it; }
 	void setType(uint16 ty) { type = ty; }
 
-	uint16 getPid() { return pid; }
+	ProcId getPid() { return pid; }
 
 	//! save this process
 	void save(ODataSource* ods);
@@ -64,7 +64,7 @@ protected:
 	void writeProcessHeader(ODataSource* ods);
 
 	//! process id
-	uint16 pid;
+	ProcId pid;
 
 	bool active; //!< is the process in the run-list?
 	bool suspended; //!< suspended? (because it's waiting for something)
@@ -74,7 +74,7 @@ protected:
 	bool terminate_deferred;	//!< automatically call terminate next frame
 
 	//! item we are assigned to
-	uint16 item_num;
+	ObjId item_num;
 	uint16 type;
 
 	//! process result
@@ -82,7 +82,7 @@ protected:
 
 	//! Processes waiting for this one to finish.
 	//! When this process terminates, awaken them and pass them the result val.
-	std::vector<uint16> waiting;
+	std::vector<ProcId> waiting;
 };
 
 

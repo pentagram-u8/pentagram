@@ -26,7 +26,7 @@ class ODataSource;
 
 //
 // idMan. Used to allocate and keep track of unused ids.
-// Supposed to be used by Kernel and World for pID and ObjID
+// Supposed to be used by Kernel and World for pID and ObjId
 //
 // The idMan itself uses a nifty linked list that is also an array.
 // As such it has the advantages of both. Adds and removals are fast,

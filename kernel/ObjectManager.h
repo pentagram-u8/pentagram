@@ -40,10 +40,10 @@ public:
 
 	void reset();
 
-	uint16 assignObjId(Object* obj, uint16 id=0xFFFF);
-	uint16 assignActorObjId(Actor* obj, uint16 id=0xFFFF);
-	void clearObjId(uint16 objid);
-	Object* getObject(uint16 objid) const;
+	uint16 assignObjId(Object* obj, ObjId id=0xFFFF);
+	uint16 assignActorObjId(Actor* obj, ObjId id=0xFFFF);
+	void clearObjId(ObjId objid);
+	Object* getObject(ObjId objid) const;
 
 	void objectStats();
 

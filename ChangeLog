@@ -1,3 +1,15 @@
+2004-01-04  Ryan Nunn <colourles@users.sourceforge.net>
+	* First commit of the new year for 2 years running! 
+	* misc/common_types.h : Added ObjId and ProcId typedefs.
+	* world/Item.*, world/Container.*, world/actors/Actor.*, some other 
+	  files : Make 'Item::parent' an ObjId instead of a Container*. Means 
+	  some things now work slightly differently. Item::parent will now be 
+	  'undefined' for items that are in maps that are not loaded since the
+	  parent Container wont have a ObjId.
+  	* world/Item.* : Contained or Equiped items that are sent to the 
+	  Ethereal void can now be returned to their previous parent.
+	* Various files : Updated to use ObjId or ProcId. 
+
 2003-12-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GUIApp.cpp: allow dragging of gumps when in stasis
 

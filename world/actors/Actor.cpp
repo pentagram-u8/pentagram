@@ -64,6 +64,7 @@ uint16 Actor::assignObjId()
 	std::list<Item*>::iterator iter;
 	for (iter = contents.begin(); iter != contents.end(); ++iter) {
 		(*iter)->assignObjId();
+		(*iter)->setParent(objid);
 	}
 
 	return objid;
@@ -74,7 +75,7 @@ bool Actor::CanAddItem(Item* item, bool checkwghtvol)
 	const unsigned int backpack_shape = 529; //!! *cough* constant
 
 	if (!Container::CanAddItem(item, checkwghtvol)) return false;
-	if (item->getParent() == this) return true; // already in here
+	if (item->getParent() == objid) return true; // already in here
 
 	// now check 'equipment slots'
 	// we can have one item of each equipment type, plus one backpack
@@ -207,8 +208,8 @@ bool Actor::tryAnim(int anim, int dir, PathfindingState* state)
 
 	if (state == 0) {
 		getLocation(end[0], end[1], end[2]);
-		flipped = (getFlags() & Item::FLG_FLIPPED);
-		firststep = (getActorFlags() & Actor::ACT_FIRSTSTEP);
+		flipped = (getFlags() & Item::FLG_FLIPPED) != 0;
+		firststep = (getActorFlags() & Actor::ACT_FIRSTSTEP) != 0;
 	} else {
 		end[0] = state->x;
 		end[1] = state->y;
@@ -221,7 +222,7 @@ bool Actor::tryAnim(int anim, int dir, PathfindingState* state)
 
 	// getFootpad gets the footpad of the _current_ item, so curflipped
 	// is also set to the flipped-state of the current item.
-	bool curflipped = (getFlags() & Item::FLG_FLIPPED);
+	bool curflipped = (getFlags() & Item::FLG_FLIPPED) != 0;
  
 	unsigned int startframe, endframe;
 	animaction->getAnimRange(this, dir, startframe, endframe);
@@ -588,7 +589,7 @@ uint32 Actor::I_isFeignDeath(const uint8* args, unsigned int /*argsize*/)
 uint32 Actor::I_pathfindToItem(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ACTOR_FROM_PTR(actor);
-	ARG_UINT16(id2);
+	ARG_OBJID(id2);
 	Item* item = World::get_instance()->getItem(id2);
 	if (!actor) return 0;
 	if (!item) return 0;

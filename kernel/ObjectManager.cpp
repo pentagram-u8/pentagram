@@ -147,7 +147,7 @@ void ObjectManager::objectStats()
 #endif
 }
 
-uint16 ObjectManager::assignObjId(Object* obj, uint16 new_objid)
+uint16 ObjectManager::assignObjId(Object* obj, ObjId new_objid)
 {
 	if (new_objid == 0xFFFF)
 		new_objid = objIDs->getNewID();
@@ -162,7 +162,7 @@ uint16 ObjectManager::assignObjId(Object* obj, uint16 new_objid)
 	return new_objid;
 }
 
-uint16 ObjectManager::assignActorObjId(Actor* actor, uint16 new_objid)
+uint16 ObjectManager::assignActorObjId(Actor* actor, ObjId new_objid)
 {
 	if (new_objid == 0xFFFF)
 		new_objid = actorIDs->getNewID();
@@ -177,7 +177,7 @@ uint16 ObjectManager::assignActorObjId(Actor* actor, uint16 new_objid)
 	return new_objid;
 }
 
-void ObjectManager::clearObjId(uint16 objid)
+void ObjectManager::clearObjId(ObjId objid)
 {
 	// need to make this assert check only permanent NPCs
 //	assert(objid >= 256); // !constant
@@ -189,7 +189,7 @@ void ObjectManager::clearObjId(uint16 objid)
 	objects[objid] = 0;
 }
 
-Object* ObjectManager::getObject(uint16 objid) const
+Object* ObjectManager::getObject(ObjId objid) const
 {
 	return objects[objid];
 }

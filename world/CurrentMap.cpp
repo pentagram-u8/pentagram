@@ -574,11 +574,11 @@ TeleportEgg* CurrentMap::findDestination(uint16 id)
 
 bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 								 int xd, int yd, int zd,
-								 uint16 item_, uint16* support_, uint16* roof_)
+								 ObjId item_, uint16* support_, uint16* roof_)
 {
 	bool valid = true;
-	uint16 support = 0;
-	uint16 roof = 0;
+	ObjId support = 0;
+	ObjId roof = 0;
 	sint32 roofz = 1 << 24; //!! semi-constant
 
 	int minx, miny, maxx, maxy;
@@ -674,7 +674,7 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 // end is set to the colision point
 bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 						   const sint32 dims[3],
-						   uint16 item, bool solid_only,
+						   ObjId item, bool solid_only,
 						   std::list<SweepItem> *hit)
 {
 

@@ -1518,7 +1518,7 @@ void GUIApp::handleDelayedEvents()
 
 void GUIApp::startDragging(int startx, int starty)
 {
-	dragging_objid = desktopGump->TraceObjID(startx, starty);
+	dragging_objid = desktopGump->TraceObjId(startx, starty);
 	
 	Gump *gump = getGump(dragging_objid);
 	Item *item= World::get_instance()->getItem(dragging_objid);

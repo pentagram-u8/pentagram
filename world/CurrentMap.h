@@ -48,6 +48,7 @@ public:
 	//! (Should only be used for loading.)
 	void setMap(Map* map) { current_map = map; }
 
+	//! Get the map number of the CurrentMap
 	uint32 getNum() const;
 
 	//! Add an item to the beginning of the item list
@@ -89,14 +90,14 @@ public:
 	// z coordinate that's over the box, or 0 if there is no roof above box.
 	// NB: isValidPosition doesn't consider item 'item'.
 	bool isValidPosition(sint32 x, sint32 y, sint32 z,
-						 int xd, int yd, int zd, uint16 item,
-						 uint16* support=0, uint16* roof=0);
+						 int xd, int yd, int zd, ObjId item,
+						 ObjId* support=0, ObjId* roof=0);
 
 	struct SweepItem {
-		SweepItem(uint16 it, sint32 ht, sint32 et, bool touch) : 
+		SweepItem(ObjId it, sint32 ht, sint32 et, bool touch) : 
 			item(it), hit_time(ht), end_time(et), touching(touch) { }
 
-		uint16	item;		// Item that was hit
+		ObjId	item;		// Item that was hit
 
 		//
 		// The time values here are 'normalized' fixed point values
@@ -124,7 +125,7 @@ public:
 	//! \param start Start point to sweep from.
 	//! \param end End point to sweep to.
 	//! \param dims Bounding size of item to check.
-	//! \param item ObjID of the item being checked. This will allow item to
+	//! \param item ObjId of the item being checked. This will allow item to
 	//!             be skipped from being tested against. Use 0 for no item.
 	//! \param solid_only If true, only test solid items.
 	//! \param hit Pointer to a list to fill with items hit. Items are sorted
@@ -132,7 +133,7 @@ public:
 	//! \return false if no items were hit.
 	//!         true if any items were hit.
 	bool sweepTest(const sint32 start[3], const sint32 end[3], const sint32 dims[3],
-			uint16 item, bool solid_only, std::list<SweepItem> *hit);
+			ObjId item, bool solid_only, std::list<SweepItem> *hit);
 
 	TeleportEgg* findDestination(uint16 id);
 
@@ -168,7 +169,7 @@ private:
 	// items[x][y]
 	std::list<Item*>** items;
 
-	uint16 egghatcher;
+	ProcId egghatcher;
 
 	// Fast area bit masks -> fast[ry][rx/32]&(1<<(rx&31));
 	uint32** fast;	

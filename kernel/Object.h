@@ -33,11 +33,11 @@ public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
 	//! get this Object's objID
-	uint16 getObjId() const { return objid; }
+	ObjId getObjId() const { return objid; }
 
 	//! Assign self and contents (if any) an objID
 	//! \return the assiged ID
-	virtual uint16 assignObjId();
+	virtual ObjId assignObjId();
 
 	//! Clear objID of self and contents (if any)
 	virtual void clearObjId();
@@ -52,7 +52,7 @@ public:
 	//! \param args Optional arguments to the spawned process
 	//! \param argsize The size (in bytes) of the optional arguments
 	//! \return the PID of the spawned process
-	uint16 callUsecode(uint16 classid, uint16 offset,
+	ProcId callUsecode(uint16 classid, uint16 offset,
 					   const uint8* args=0, int argsize=0);
 
 	bool loadData(IDataSource* ids);
@@ -63,7 +63,7 @@ protected:
 	//! save the actual Object data 
 	virtual void saveData(ODataSource* ods);
 
-	uint16 objid;
+	ObjId objid;
 };
 
 #endif

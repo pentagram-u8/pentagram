@@ -95,21 +95,21 @@ public:
 	//! \return true if successful
 	bool switchMap(uint32 newmap);
 
-	Item* getItem(uint16 itemid) const;
-	Actor* getNPC(uint16 npcid) const;
+	Item* getItem(ObjId itemid) const;
+	Actor* getNPC(ObjId npcid) const;
 	MainActor* getMainActor() const;
 
 	//! push an item onto the ethereal void
-	void etherealPush(uint16 objid) { ethereal.push_front(objid); }
+	void etherealPush(ObjId objid) { ethereal.push_front(objid); }
 
 	//! check if the the ethereal void is empty
 	bool etherealEmpty() { return ethereal.empty(); }
 
 	//! return (but don't remove) the top item from the ethereal void
-	uint16 etherealPeek() { return ethereal.front(); }
+	ObjId etherealPeek() { return ethereal.front(); }
 
-	//! remove and item from the ethereal void
-	void etherealRemove(uint16 objid) { return ethereal.remove(objid); }
+	//! remove an item from the ethereal void
+	void etherealRemove(ObjId objid) { return ethereal.remove(objid); }
 
 	//! output some statistics about the world
 	void worldStats();
@@ -132,7 +132,7 @@ private:
 	std::vector<Map*> maps;
 	CurrentMap* currentmap;
 
-	std::list<uint16> ethereal;
+	std::list<ObjId> ethereal;
 };
 
 #endif

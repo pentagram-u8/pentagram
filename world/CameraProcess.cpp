@@ -352,7 +352,7 @@ uint32 CameraProcess::I_move_to(const uint8* args, unsigned int /*argsize*/)
 //	"Camera::setCenterOn(uword)",
 uint32 CameraProcess::I_setCenterOn(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_UINT16(itemnum);
+	ARG_OBJID(itemnum);
 	CameraProcess::SetCameraProcess(new CameraProcess(itemnum));
 	return 0;
 }

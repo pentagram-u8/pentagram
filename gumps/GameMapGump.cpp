@@ -199,10 +199,10 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 	display_list->PaintDisplayList();
 }
 
-// Trace a click, and return ObjID
-uint16 GameMapGump::TraceObjID(int mx, int my)
+// Trace a click, and return ObjId
+uint16 GameMapGump::TraceObjId(int mx, int my)
 {
-	uint16 objid = Gump::TraceObjID(mx,my);
+	uint16 objid = Gump::TraceObjId(mx,my);
 	if (objid && objid != 65535) return objid;
 
 	ParentToGump(mx,my);
@@ -216,7 +216,7 @@ bool GameMapGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 
 	if (!item) return false;
 
-	while (item->getParent()) item = item->getParent();
+	while (item->getParentAsContainer()) item = item->getParentAsContainer();
 
 	sint32 ix, iy, iz;
 
@@ -297,12 +297,12 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 
 		if (GUIApp::get_instance()->isAvatarInStasis()) {
 			pout << "Can't: avatarInStasis" << std::endl;
-			uint16 objID = TraceObjID(mx, my); //!! hack
+			uint16 objID = TraceObjId(mx, my); //!! hack
 			targetObject = objID;
 			break;
 		}
 
-		uint16 objID = TraceObjID(mx, my);
+		uint16 objID = TraceObjId(mx, my);
 		Item *item = World::get_instance()->getItem(objID);
 		if (item) {
 			targetObject = objID; //!! hack
@@ -318,7 +318,7 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 	}
 	case GUIApp::BUTTON_MIDDLE:
 	{
-		uint16 objID = TraceObjID(mx, my);
+		uint16 objID = TraceObjId(mx, my);
 		Item *item = World::get_instance()->getItem(objID);
 		if (item) {
 			sint32 x,y,z;
@@ -362,7 +362,7 @@ void GameMapGump::OnMouseDouble(int button, int mx, int my)
 			break;
 		}
 
-		uint16 objID = TraceObjID(mx, my);
+		uint16 objID = TraceObjId(mx, my);
 		Item *item = World::get_instance()->getItem(objID);
 		if (item) {
 			sint32 x,y,z;

@@ -25,45 +25,47 @@ typedef uint32 (*Intrinsic)(const uint8* args, unsigned int argsize);
 
 // TODO: range checking on args
 
-#define ARG_UINT8(x)  uint8  x = (*args++);
-#define ARG_UINT16(x) uint16 x = (*args++); x += ((*args++) << 8);
-#define ARG_UINT32(x) uint32 x = (*args++); x += ((*args++) << 8); \
-                     x+= ((*args++) << 16); x += ((*args++) << 24);
-#define ARG_SINT8(x)  sint8  x = (*args++);
-#define ARG_SINT16(x) sint16 x = (*args++); x += ((*args++) << 8);
-#define ARG_SINT32(x) sint32 x = (*args++); x += ((*args++) << 8); \
-                     x+= ((*args++) << 16); x += ((*args++) << 24);
-#define ARG_UC_PTR(x) uint32 x = (*args++); x += ((*args++) << 8); \
-                     x+= ((*args++) << 16); x += ((*args++) << 24);
+#define ARG_UINT8(x)   uint8  x = (*args++);
+#define ARG_UINT16(x)  uint16 x = (*args++); x += ((*args++) << 8);
+#define ARG_UINT32(x)  uint32 x = (*args++); x += ((*args++) << 8); \
+                      x+= ((*args++) << 16); x += ((*args++) << 24);
+#define ARG_SINT8(x)   sint8  x = (*args++);
+#define ARG_SINT16(x)  sint16 x = (*args++); x += ((*args++) << 8);
+#define ARG_SINT32(x)  sint32 x = (*args++); x += ((*args++) << 8); \
+                      x+= ((*args++) << 16); x += ((*args++) << 24);
+#define ARG_UC_PTR(x)  uint32 x = (*args++); x += ((*args++) << 8); \
+                      x+= ((*args++) << 16); x += ((*args++) << 24);
+#define ARG_OBJID(x)  ObjId   x = (*args++); x += ((*args++) << 8);
+#define ARG_PROCID(x) ProcId  x = (*args++); x += ((*args++) << 8);
 
 #define ARG_OBJECT_FROM_PTR(x) ARG_UC_PTR(ucptr_##x); \
                       uint16 id_##x = UCMachine::ptrToObject(ucptr_##x); \
                       Object* x = ObjectManager::get_instance()->getObject(id_##x);
-#define ARG_OBJECT_FROM_ID(x) ARG_UINT16(id_##x); \
+#define ARG_OBJECT_FROM_ID(x) ARG_OBJID(id_##x); \
                       Object* x = ObjectManager::get_instance()->getObject(id_##x);
 
 #define ARG_ITEM_FROM_PTR(x) ARG_UC_PTR(ucptr_##x); \
                       uint16 id_##x = UCMachine::ptrToObject(ucptr_##x); \
                       Item* x = p_dynamic_cast<Item*>(ObjectManager::get_instance()->getObject(id_##x));
-#define ARG_ITEM_FROM_ID(x)   ARG_UINT16(id_##x); \
+#define ARG_ITEM_FROM_ID(x)   ARG_OBJID(id_##x); \
                       Item* x = p_dynamic_cast<Item*>(ObjectManager::get_instance()->getObject(id_##x));
 
 #define ARG_CONTAINER_FROM_PTR(x) ARG_UC_PTR(ucptr_##x); \
                       uint16 id_##x = UCMachine::ptrToObject(ucptr_##x); \
                       Container* x = p_dynamic_cast<Container*>(ObjectManager::get_instance()->getObject(id_##x));
-#define ARG_CONTAINER_FROM_ID(x) ARG_UINT16(id_##x); \
+#define ARG_CONTAINER_FROM_ID(x) ARG_OBJID(id_##x); \
                       Container* x = p_dynamic_cast<Container*>(ObjectManager::get_instance()->getObject(id_##x));
 
 #define ARG_ACTOR_FROM_PTR(x) ARG_UC_PTR(ucptr_##x); \
                       uint16 id_##x = UCMachine::ptrToObject(ucptr_##x); \
                       Actor* x = p_dynamic_cast<Actor*>(ObjectManager::get_instance()->getObject(id_##x));
-#define ARG_ACTOR_FROM_ID(x)  ARG_UINT16(id_##x); \
+#define ARG_ACTOR_FROM_ID(x)  ARG_OBJID(id_##x); \
                       Actor* x = p_dynamic_cast<Actor*>(ObjectManager::get_instance()->getObject(id_##x));
 
 #define ARG_EGG_FROM_PTR(x) ARG_UC_PTR(ucptr_##x); \
                       uint16 id_##x = UCMachine::ptrToObject(ucptr_##x); \
                       Egg* x = p_dynamic_cast<Egg*>(ObjectManager::get_instance()->getObject(id_##x));
-#define ARG_EGG_FROM_ID(x)    ARG_UINT16(id_##x); \
+#define ARG_EGG_FROM_ID(x)    ARG_OBJID(id_##x); \
                       Egg* x = p_dynamic_cast<Egg*>(ObjectManager::get_instance()->getObject(id_##x));
 
 #define ARG_STRING(x) ARG_UC_PTR(ucptr_##x); \

@@ -81,9 +81,8 @@ void Pathfinder::setTarget(sint32 x, sint32 y, sint32 z)
 void Pathfinder::setTarget(Item* item)
 {
 	targetitem = item;
-	while (targetitem->getParent()) {
-		targetitem = targetitem->getParent();
-	}
+	while (targetitem->getParentAsContainer())
+		targetitem = targetitem->getParentAsContainer();
 
 	// set target to centre of item for the cost heuristic
 	item->getCentre(targetx, targety, targetz);

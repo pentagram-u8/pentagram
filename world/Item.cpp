@@ -97,6 +97,21 @@ void Item::dumpInfo()
 		 << getExtFlags() << ")" << std::dec << std::endl;
 }
 
+Container *Item::getParentAsContainer() const
+{
+	// No parent, no container
+	if (!parent) return 0;
+
+	Container *p = p_dynamic_cast<Container*>(ObjectManager::get_instance()->getObject(parent));
+
+	if (!p) {
+		perr << "Item " << getObjId() << " parent (" << parent << ") is an invalid Container ObjID" << std::endl;
+		CANT_HAPPEN();
+	}
+
+	return p;
+}
+
 void Item::setLocation(sint32 X, sint32 Y, sint32 Z)
 {
 	x = X;
@@ -109,19 +124,28 @@ void Item::move(sint32 X, sint32 Y, sint32 Z)
 	bool no_lerping = false;
 	CurrentMap * map = World::get_instance()->getCurrentMap();
 
+	// It's currently in the ethereal void, remove it from there
+	if (flags & FLG_ETHEREAL) {
+
+		// Remove us from the ethereal void
+		World::get_instance()->etherealRemove(objid);
+	}
+
 	// Remove from container (if contained or equiped)
 	if (flags & (FLG_CONTAINED|FLG_EQUIPPED))
 	{
-		if (parent)
-			parent->removeItem(this);
+		if (parent) {
+			// If we are flagged as Ethereal, we are already removed 
+			if (!(flags & FLG_ETHEREAL)) {
+				Container *p = getParentAsContainer();
+				if (p) p->removeItem(this);
+			}
+		}
 		else
 			perr << "Item " << getObjId() << " FLG_CONTAINED or FLG_EQUIPPED set but item has no parent" << std::endl;
 
 		// Clear our owner. 
 		parent = 0;
-
-		// Unset us contained
-		flags &= ~(FLG_CONTAINED|FLG_EQUIPPED);
 
 		// No lerping when going from a container to somewhere else
 		no_lerping = true;
@@ -135,16 +159,9 @@ void Item::move(sint32 X, sint32 Y, sint32 Z)
 		// Remove us from the map
 		map->removeItem(this);
 	}
-	// It's currently in the ethereal void
-	else if (flags & FLG_ETHEREAL) {
 
-		// Remove us from the ethereal void
-		World::get_instance()->etherealRemove(objid);
-
-		// Unset ethereal
-		flags &= ~FLG_ETHEREAL;
-	}
-
+	// Unset all the various flags that no longer apply
+	flags &= ~(FLG_CONTAINED|FLG_EQUIPPED|FLG_ETHEREAL);
 
 	// Set the location
 	x = X;
@@ -203,25 +220,39 @@ bool Item::moveToContainer(Container *container, bool checkwghtvol)
 		return false;
 	}
 
-	// Already there, do nothing
-	if (container == parent) return true;
+	// Already there, do nothing, but only if not ethereal
+	bool ethereal_same = false;
+	if ( container->getObjId() == parent ) {
+		// If we are ethereal we'd like to know if we are just being moved back
+		if (flags & FLG_ETHEREAL) ethereal_same = true;
+		else return true;
+	}
 
 	// Eh, can't do it
 	if (!container->CanAddItem(this,checkwghtvol)) return false;
 
+	// It's currently in the ethereal void
+	if (flags & FLG_ETHEREAL) {
+
+		// Remove us from the ethereal void
+		World::get_instance()->etherealRemove(objid);
+	}
+
 	// Remove from container (if contained or equiped)
 	if (flags & (FLG_CONTAINED|FLG_EQUIPPED))
 	{
-		if (parent)
-			parent->removeItem(this);
+		if (parent) {
+			// If we are flagged as Ethereal, we are already removed 
+			if (!(flags & FLG_ETHEREAL)) {
+				Container *p = getParentAsContainer();
+				if (p) p->removeItem(this);
+			}
+		}
 		else
 			perr << "Item " << getObjId() << " FLG_CONTAINED or FLG_EQUIPPED set but item has no parent" << std::endl;
 
 		// Clear our owner. 
 		parent = 0;
-
-		// Unset us contained
-		flags &= ~(FLG_CONTAINED|FLG_EQUIPPED);
 	}
 	// Item needs to be removed if it in the map
 	else if (extendedflags & EXT_INCURMAP) {
@@ -229,25 +260,19 @@ bool Item::moveToContainer(Container *container, bool checkwghtvol)
 		// Remove us from the map
 		World::get_instance()->getCurrentMap()->removeItem(this);
 	}
-	// It's currently in the ethereal void
-	else if (flags & FLG_ETHEREAL) {
 
-		// Remove us from the ethereal void
-		World::get_instance()->etherealRemove(objid);
+	// Unset all the various flags that no longer apply
+	flags &= ~(FLG_CONTAINED|FLG_EQUIPPED|FLG_ETHEREAL);
 
-		// Unset ethereal
-		flags &= ~FLG_ETHEREAL;
-	}
-
-	// Set location to 0,0,0
-	x = y = z = 0;
+	// Set location to 0,0,0 if we aren't an ethereal item moving back
+	if (!ethereal_same) x = y = z = 0;
 
 	// Add the item, don't bother with checking weight or vol since we already
 	// know if it will fit or not
 	container->addItem(this, false);
 	
 	// Set our owner. 
-	parent = container;
+	parent = container->getObjId();
 
 	// Set us contained
 	flags |= FLG_CONTAINED;
@@ -281,21 +306,16 @@ void Item::moveToEtherealVoid()
 	// Add it to the ethereal void
 	World::get_instance()->etherealPush(objid);
 
-	// It's owned by something
+	// It's owned by something removed it from the something, but keep flags
 	if (flags & (FLG_CONTAINED|FLG_EQUIPPED)) {
+
 		if (parent)
-			parent->removeItem(this);
+		{
+			Container *p = getParentAsContainer();
+			if (p) p->removeItem(this);
+		}
 		else
 			perr << "Item " << getObjId() << " FLG_CONTAINED or FLG_EQUIPPED set but item has no parent" << std::endl;
-
-		// Clear our owner. 
-		parent = 0;
-
-		// Unset us contained
-		flags &= ~(FLG_CONTAINED|FLG_EQUIPPED);
-
-		// No lerping when going from a container to somewhere else
-		extendedflags |= EXT_LERP_NOPREV;
 	}
 	else if (extendedflags & EXT_INCURMAP) {
 		World::get_instance()->getCurrentMap()->removeItem(this);
@@ -303,6 +323,28 @@ void Item::moveToEtherealVoid()
 
 	// Set the ETHEREAL Flag
 	flags |=  FLG_ETHEREAL;
+}
+
+void Item::returnFromEtherealVoid()
+{
+	// It's not Ethereal
+	if (!(flags & FLG_ETHEREAL)) return;
+
+	// Ok, we can do 2 things here
+	// If an item has the contained or Equipped flags set, we return it to it's owner
+	if (flags & (FLG_CONTAINED|FLG_EQUIPPED)) {
+		Container *p = getParentAsContainer();
+		if (!p) {
+			perr << "Item " << getObjId() << " FLG_CONTAINED or FLG_EQUIPPED set but item has no valid parent" << std::endl;
+			CANT_HAPPEN();
+		}
+		moveToContainer(p);
+	}
+	// or we return it to the world
+	else {
+		move(x,y,z);
+	}
+
 }
 
 void Item::getLocation(sint32& X, sint32& Y, sint32& Z) const
@@ -319,14 +361,18 @@ sint32 Item::getZ() const
 
 void Item::getLocationAbsolute(sint32& X, sint32& Y, sint32& Z) const
 {
-	if (parent) 
-		parent->getLocationAbsolute(X,Y,Z);
-	else
-	{
-		X = x;
-		Y = y;
-		Z = z;
+	if (parent) {
+		Item *p = getParentAsContainer();
+
+		if (p) {
+			p->getLocationAbsolute(X,Y,Z);
+			return;
+		}
 	}
+
+	X = x;
+	Y = y;
+	Z = z;
 }
 
 void Item::getGumpLocation(sint32& X, sint32& Y) const
@@ -973,17 +1019,18 @@ uint32 Item::callUsecodeEvent_guardianBark(sint16 unk)			// event 15
 
 void Item::destroy()
 {
-	if (parent) {		
+	if (flags & FLG_ETHEREAL) {
+		// Remove us from the ether
+		World::get_instance()->etherealRemove(objid);
+	}
+	else if (parent) {		
 		// we're in a container, so remove self from parent
 		//!! need to make sure this works for equipped items too...
-		parent->removeItem(this);
+		Container *p = getParentAsContainer();
+		if (p) p->removeItem(this);
 	} else if (extendedflags & EXT_INCURMAP) {
 		// remove self from CurrentMap
 		World::get_instance()->getCurrentMap()->removeItemFromList(this,x,y);
-	}
-	else if (flags & FLG_ETHEREAL) {
-		// Remove us from the ether
-		World::get_instance()->etherealRemove(objid);
 	}
 		
 
@@ -1341,6 +1388,8 @@ void Item::saveData(ODataSource* ods)
 		ods->write2(gump);
 		ods->write2(gravitypid);
 	}
+	if ((flags & FLG_ETHEREAL) && (flags & (FLG_CONTAINED|FLG_EQUIPPED)))
+		ods->write2(parent);
 }
 
 bool Item::loadData(IDataSource* ids)
@@ -1366,6 +1415,11 @@ bool Item::loadData(IDataSource* ids)
 	} else {
 		gump = gravitypid = 0;
 	}
+
+	if ((flags & FLG_ETHEREAL) && (flags & (FLG_CONTAINED|FLG_EQUIPPED)))
+		parent = ids->read2();
+	else
+		parent = 0;
 
 	//!! hackish...
 	if (extendedflags & EXT_INCURMAP) {
@@ -1549,13 +1603,11 @@ uint32 Item::I_getContainer(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
-	Container *parent = item->getParent();
-
 	//! What do we do if item has no parent?
 	//! What do we do with equipped items?
 
-	if (parent)
-		return parent->getObjId();
+	if (item->getParent())
+		return item->getParent();
 	else
 		return 0;
 }
@@ -1565,15 +1617,15 @@ uint32 Item::I_getRootContainer(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
-	Container *parent = item->getParent();
+	Container *parent = item->getParentAsContainer();
 
 	//! What do we do if item has no parent?
 	//! What do we do with equipped items?
 
 	if (!parent) return 0;
 
-	while (parent->getParent()) {
-		parent = parent->getParent();
+	while (parent->getParentAsContainer()) {
+		parent = parent->getParentAsContainer();
 	}
 
 	return parent->getObjId();
@@ -1998,12 +2050,10 @@ uint32 Item::I_pop(const uint8* args, unsigned int /*argsize*/)
 		return 0; // top item was invalid
 	}
 
-	sint32 x, y, z;
-	item->getLocation(x,y,z);
-	item->move(x, y, z);
+	item->returnFromEtherealVoid();
 
 #if 0
-	perr << "Popping item into map: " << item->getShape() << "," << item->getFrame() << " at (" << x << "," << y << "," << z << ")" << std::endl;
+	perr << "Popping item to original location: " << item->getShape() << "," << item->getFrame() << std::endl;
 #endif
 
 	//! Anything else?
@@ -2107,6 +2157,8 @@ uint32 Item::I_move(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(z);
 	if (!item) return 0;
 
+	//! What should this do to ethereal items?
+
 	item->move(x,y,z);
 	//item->collideMove(x, y, z, true, true);
 	return 0;
@@ -2118,6 +2170,8 @@ uint32 Item::I_legalMoveToPoint(const uint8* args, unsigned int /*argsize*/)
 	ARG_WORLDPOINT(point);
 	ARG_UINT16(force); // 0/1
 	ARG_UINT16(unknown2); // always 0
+
+	//! What should this do to ethereal items?
 
 	//! haven't checked if this does what it should do.
 	// Currently: check if item can exist at point. If so, move it there

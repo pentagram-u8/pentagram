@@ -60,8 +60,8 @@ public:
 		xy_limit = (sy_limit+sx_limit)/2;
 	}
 
-	// Trace a click, and return ObjID
-	virtual uint16		TraceObjID(int mx, int my);
+	// Trace a click, and return ObjId
+	virtual uint16		TraceObjId(int mx, int my);
 
 	// Get the location of an item in the gump (coords reletive to this).
 	// Returns false on failure

@@ -76,7 +76,7 @@ public:
 
 	//! Assign self and contents an objID
 	//! \return the assiged ID
-	virtual uint16 assignObjId();
+	virtual ObjId assignObjId();
 
 	//! Clear objIDs of self and contents
 	virtual void clearObjId();

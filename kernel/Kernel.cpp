@@ -70,7 +70,7 @@ void Kernel::reset()
 	runningprocess = 0;
 }
 
-uint16 Kernel::assignPID(Process* proc)
+ProcId Kernel::assignPID(Process* proc)
 {
 	// to prevent new processes from getting a PID while loading
 	if (loading) return 0xFFFF;
@@ -81,7 +81,7 @@ uint16 Kernel::assignPID(Process* proc)
 	return proc->pid;
 }
 
-uint16 Kernel::addProcess(Process* proc)
+ProcId Kernel::addProcess(Process* proc)
 {
 #if 0
 	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it) {
@@ -103,7 +103,7 @@ uint16 Kernel::addProcess(Process* proc)
 	return proc->pid;
 }
 
-uint16 Kernel::addProcessExec(Process* proc)
+ProcId Kernel::addProcessExec(Process* proc)
 {
 #if 0
 	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it) {
@@ -226,7 +226,7 @@ void Kernel::setNextProcess(Process* proc)
 	}
 }
 
-Process* Kernel::getProcess(uint16 pid)
+Process* Kernel::getProcess(ProcId pid)
 {
 	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it) {
 		Process* p = *it;
@@ -257,7 +257,7 @@ void Kernel::kernelStats()
 }
 
 
-uint32 Kernel::getNumProcesses(uint16 objid, uint16 processtype)
+uint32 Kernel::getNumProcesses(ObjId objid, uint16 processtype)
 {
 	if(objid==0 && processtype==6)
 		return processes.size();
@@ -279,7 +279,7 @@ uint32 Kernel::getNumProcesses(uint16 objid, uint16 processtype)
 	return count;
 }
 
-void Kernel::killProcesses(uint16 objid, uint16 processtype)
+void Kernel::killProcesses(ObjId objid, uint16 processtype)
 {
 	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it)
 	{
@@ -364,7 +364,7 @@ Process* Kernel::loadProcess(IDataSource* ids)
 
 uint32 Kernel::I_getNumProcesses(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_UINT16(item);
+	ARG_OBJID(item);
 	ARG_UINT16(type);
 
 	return Kernel::get_instance()->getNumProcesses(item, type);
@@ -372,7 +372,7 @@ uint32 Kernel::I_getNumProcesses(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Kernel::I_resetRef(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_UINT16(item);
+	ARG_OBJID(item);
 	ARG_UINT16(type);
 
 	Kernel::get_instance()->killProcesses(item, type);

@@ -40,24 +40,24 @@ public:
 
 	void reset();
 
-	uint16 addProcess(Process *proc); // returns pid of new process
+	ProcId addProcess(Process *proc); // returns pid of new process
 
 	//! add a process and run it immediately
 	//! \return pid of process
-	uint16 addProcessExec(Process *proc); 
+	ProcId addProcessExec(Process *proc); 
 
 	void removeProcess(Process *proc);
 	bool runProcesses();
-	Process* getProcess(uint16 pid);
+	Process* getProcess(ProcId pid);
 
-	uint16 assignPID(Process* proc);
+	ProcId assignPID(Process* proc);
 
 	void setNextProcess(Process *proc);
 	Process* getRunningProcess() const { return runningprocess; }
 
 	// only UCProcesses; objid = 0 means any object, type = 6 means any type
-	uint32 getNumProcesses(uint16 objid, uint16 processtype);
-	void killProcesses(uint16 objid, uint16 processtype);
+	uint32 getNumProcesses(ObjId objid, uint16 processtype);
+	void killProcesses(ObjId objid, uint16 processtype);
 	void killObjectProcesses();
 
 	void kernelStats();

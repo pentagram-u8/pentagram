@@ -38,7 +38,7 @@ Object::~Object()
 		ObjectManager::get_instance()->clearObjId(objid);
 }
 
-uint16 Object::assignObjId()
+ObjId Object::assignObjId()
 {
 	if (objid == 0xFFFF)
 		objid = ObjectManager::get_instance()->assignObjId(this);
@@ -55,7 +55,7 @@ void Object::clearObjId()
 	objid = 0xFFFF;
 }
 
-uint16 Object::callUsecode(uint16 classid, uint16 offset,
+ProcId Object::callUsecode(uint16 classid, uint16 offset,
 						   const uint8* args, int argsize)
 {
 	uint32 objptr = UCMachine::objectToPtr(getObjId());

@@ -39,11 +39,14 @@ public:
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	//! Get the Container this Item is in, if any. (NULL if not in a Container)
-	Container* getParent() const { return parent; }
+	//! Get the Container this Item is in, if any. (0 if not in a Container)
+	ObjId getParent() const { return parent; }
 
 	//! Set the parent container of this item.
-	void setParent(Container* p) { parent = p; }
+	void setParent(ObjId p) { parent = p; }
+
+	//! Get the Container this Item is in, if any. (NULL if not in a Container)
+	Container *Item::getParentAsContainer() const;
 
 	//! Set item location. This strictly sets the location, and does not
 	//! even update CurrentMap
@@ -63,6 +66,10 @@ public:
 
 	//! Move an item to the Ethereal Void
 	void moveToEtherealVoid();
+
+	//! Move an item out of the Ethereal Void to where it originally was
+	//! \note This can destroy the object
+	void returnFromEtherealVoid();
 
 	//! Get the location of the top-most container this Item is in, or
 	//! this Item's location if not in a container.
@@ -170,11 +177,11 @@ public:
 	uint16 getFamily();
 
 	//! Get the open ContainerGump for this Item, if any. (NULL if not open.)
-	uint16 getGump() { return gump; }
+	ObjId getGump() { return gump; }
 	//! Call this to notify the Item's open Gump has closed.
 	void clearGump(); // set gump to 0 and clear the GUMP_OPEN flag
 	//! Open a gump with the given shape for this Item
-	uint16 openGump(uint32 gumpshape);
+	ObjId openGump(uint32 gumpshape);
 	//! Close this Item's gump, if any
 	void closeGump();
 
@@ -216,7 +223,7 @@ public:
 	void grab();
 
 	//! Assign a GravityProcess to this Item
-	void setGravityProcess(uint16 pid) { gravitypid = pid; }
+	void setGravityProcess(ProcId pid) { gravitypid = pid; }
 
 	//! Get the weight of this Item and its contents, if any
 	virtual uint32 getTotalWeight();
@@ -229,7 +236,7 @@ public:
 	//! \param dir The direction the hit is coming from (or inverse? CHECKME!)
 	//! \param damage The force of the hit (not sure in which unit. CHECKME!)
 	//! \param type The type of damage done (not sure of the meaning. CHECKME!)
-	virtual void receiveHit(uint16 other, int dir, int damage, uint16 type);
+	virtual void receiveHit(ObjId other, int dir, int damage, uint16 type);
 
 	//! Check this Item against the given loopscript
 	//! \param script The loopscript to run
@@ -241,8 +248,8 @@ public:
 	uint32 callUsecodeEvent_use();								// event 1
 	uint32 callUsecodeEvent_anim();								// event 2
 	uint32 callUsecodeEvent_cachein();							// event 4
-	uint32 callUsecodeEvent_hit(uint16 hitted, sint16 unk);		// event 5
-	uint32 callUsecodeEvent_gotHit(uint16 hitter, sint16 unk);	// event 6
+	uint32 callUsecodeEvent_hit(ObjId hitted, sint16 unk);		// event 5
+	uint32 callUsecodeEvent_gotHit(ObjId hitter, sint16 unk);	// event 6
 	uint32 callUsecodeEvent_hatch();							// event 7
 	uint32 callUsecodeEvent_schedule();							// event 8
 	uint32 callUsecodeEvent_release();							// event 9
@@ -394,7 +401,7 @@ protected:
 
 	uint32 extendedflags; // pentagram's own flags
 
-	Container* parent; // container this item is in (or 0 for top-level items)
+	ObjId parent; // objid container this item is in (or 0 for top-level items)
 
 	Shape *cachedShape;
 	ShapeInfo *cachedShapeInfo;
@@ -410,8 +417,8 @@ protected:
 	Lerped	l_next;			// Next (current) state (relative to camera)
 	sint32	ix,iy,iz;		// Interpolated position in camera space
 
-	uint16 gump;			// Item's gump
-	uint16 gravitypid;		// Item's GravityTracker (or 0)
+	ObjId gump;			// Item's gump
+	ProcId gravitypid;		// Item's GravityTracker (or 0)
 
 	//! save the actual Item data 
 	virtual void saveData(ODataSource* ods);

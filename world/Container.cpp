@@ -55,13 +55,14 @@ Container::~Container()
 }
 
 
-uint16 Container::assignObjId()
+ObjId Container::assignObjId()
 {
-	uint16 id = Item::assignObjId();
+	ObjId id = Item::assignObjId();
 
 	std::list<Item*>::iterator iter;
 	for (iter = contents.begin(); iter != contents.end(); ++iter) {
 		(*iter)->assignObjId();
+		(*iter)->setParent(id);
 	}
 
 	return id;
@@ -81,7 +82,7 @@ void Container::clearObjId()
 bool Container::CanAddItem(Item* item, bool checkwghtvol)
 {
 	if (!item) return false;
-	if (item->getParent() == this) return true; // already in here
+	if (item->getParent() == this->getObjId()) return true; // already in here
 
 	Container *c = p_dynamic_cast<Container*>(item);
 	if (c) {
@@ -90,7 +91,7 @@ bool Container::CanAddItem(Item* item, bool checkwghtvol)
 		do {
 			if (p == c)
 				return false;
-		} while ((p = p->getParent()) != 0);
+		} while ((p = p->getParentAsContainer()) != 0);
 	}
 
 	if (checkwghtvol) {
@@ -104,7 +105,7 @@ bool Container::CanAddItem(Item* item, bool checkwghtvol)
 bool Container::addItem(Item* item, bool checkwghtvol)
 {
 	if (!CanAddItem(item, checkwghtvol)) return false;
-	if (item->getParent() == this) return true; // already in here
+	if (item->getParent() == objid) return true; // already in here
 
 	contents.push_back(item);
 	return true;
@@ -221,7 +222,7 @@ bool Container::loadData(IDataSource* ids)
 		if (!item) return false;
 
 		addItem(item);
-		item->setParent(this);
+		item->setParent(objid);
 	}
 
 	return true;

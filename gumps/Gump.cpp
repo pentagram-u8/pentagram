@@ -361,7 +361,7 @@ void Gump::GumpToParent(int &gx, int &gy)
 	gy += y;
 }
 
-uint16 Gump::TraceObjID(int mx, int my)
+uint16 Gump::TraceObjId(int mx, int my)
 {
 	// Convert to local coords
 	int gx = mx,gy = my;
@@ -379,7 +379,7 @@ uint16 Gump::TraceObjID(int mx, int my)
 		if (g->flags & FLAG_CLOSING) continue;
 
 		// It's got the point
-		if (g->PointOnGump(gx,gy)) objid = g->TraceObjID(gx, gy);
+		if (g->PointOnGump(gx,gy)) objid = g->TraceObjId(gx, gy);
 
 		if (objid && objid != 65535) break;
 	}

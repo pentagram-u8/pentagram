@@ -85,7 +85,7 @@ void ItemRelativeGump::GetItemLocation(sint32 lerp_factor)
 		return;
 	}
 
-	while ((next = it->getParent()) != 0)
+	while ((next = it->getParentAsContainer()) != 0)
 	{
 		prev = it;
 		it = next;

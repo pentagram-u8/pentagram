@@ -181,8 +181,8 @@ public:
 	virtual void		GumpToParent(int &gx, int &gy);
 
 
-	//! Trace a click, and return ObjID
-	virtual uint16		TraceObjID(int mx, int my);
+	//! Trace a click, and return ObjId
+	virtual uint16		TraceObjId(int mx, int my);
 
 	//! Get the location of an item in the gump (coords relative to this).
 	//! \return false on failure

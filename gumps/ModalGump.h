@@ -37,7 +37,7 @@ public:
 	virtual void		Close(bool no_del = false);
 
 	virtual Gump* FindGump(int mx, int my);
-	virtual uint16 TraceObjID(int mx, int my);
+	virtual uint16 TraceObjId(int mx, int my);
 
 	virtual Gump* OnMouseDown(int button, int mx, int my);
 

@@ -36,7 +36,7 @@ public:
 
 	// Init the gump, call after construction
 	virtual void InitGump();
-	virtual uint16 TraceObjID(int mx, int my);
+	virtual uint16 TraceObjId(int mx, int my);
 
 	virtual Gump* OnMouseDown(int button, int mx, int my);
 	virtual void OnMouseUp(int  button, int mx, int my);

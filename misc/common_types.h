@@ -71,5 +71,13 @@ typedef	signed EX_TYPE_INT32	sint32;
 #endif //BeOS
 
 
+// ObjId and ProcId
+
+//! 16-Bit ID of an Object
+typedef uint16 ObjId;
+
+//! 16-Bit ID of a Process
+typedef uint16 ProcId;
+
 #endif
 

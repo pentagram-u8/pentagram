@@ -60,9 +60,9 @@ Gump* ModalGump::FindGump(int mx, int my)
 	return ret;
 }
 
-uint16 ModalGump::TraceObjID(int mx, int my)
+uint16 ModalGump::TraceObjId(int mx, int my)
 {
-	uint16 objid = Gump::TraceObjID(mx, my);
+	uint16 objid = Gump::TraceObjId(mx, my);
 	if (!objid) objid = getObjId();
 
 	return objid;

@@ -113,9 +113,9 @@ void PaperdollGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 
 // Find object (if any) at (mx,my)
 // (mx,my) are relative to parent
-uint16 PaperdollGump::TraceObjID(int mx, int my)
+uint16 PaperdollGump::TraceObjId(int mx, int my)
 {
-	uint16 objid = Gump::TraceObjID(mx,my);
+	uint16 objid = Gump::TraceObjId(mx,my);
 	if (objid && objid != 65535) return objid;
 
 	ParentToGump(mx,my);
@@ -160,7 +160,7 @@ bool PaperdollGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 {
 
 	Item* item = World::get_instance()->getItem(itemid);
-	Item* parent = item->getParent();
+	Item* parent = item->getParentAsContainer();
 	if (!parent) return false;
 	if (parent->getObjId() != owner) return false;
 

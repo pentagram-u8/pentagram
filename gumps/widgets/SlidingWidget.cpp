@@ -52,7 +52,7 @@ void SlidingWidget::InitGump()
 	dims.h = sf->height;
 }
 
-uint16 SlidingWidget::TraceObjID(int mx, int my)
+uint16 SlidingWidget::TraceObjId(int mx, int my)
 {
 	if (PointOnGump(mx, my))
 		return getObjId();

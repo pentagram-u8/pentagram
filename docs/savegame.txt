@@ -149,6 +149,7 @@ uint16 shape, frame
 uint16 x,y,z
 uint16 quality, npcnum, mapnum
 if (objid != 0xFFFF) uint16 gump, gravity_pid
+if (ETHEREAL && (CONTAINED || EQUIPPED)) uint16 parent
 
 Container: (v1)
 uint16 version

@@ -93,7 +93,7 @@ Gump *ButtonWidget::OnMouseDown(int button, int mx, int my)
 	return 0;
 }
 
-uint16 ButtonWidget::TraceObjID(int mx, int my)
+uint16 ButtonWidget::TraceObjId(int mx, int my)
 {
 	if (PointOnGump(mx, my))
 		return getObjId();
