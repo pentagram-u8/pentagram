@@ -27,6 +27,19 @@
 #include <string>
 using	std::string;
 
+FileSystem* FileSystem::filesystem;
+
+FileSystem::FileSystem()
+{
+	filesystem = this;
+}
+
+FileSystem::~FileSystem()
+{
+
+}
+
+
 /*
  *	Open a file for input,
  *	trying the original name (lower case), and the upper case version

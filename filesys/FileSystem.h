@@ -97,44 +97,49 @@ significant overhead.
 
 class FileSystem
 {
-	public:
+ public:
+	FileSystem();
+	~FileSystem();
 
-		// Open a streaming file as readable. Streamed (0 on failure)
-		IFileDataSource *ReadFile(const std::string &vfn, const bool is_text=false)
-		{
-			std::ifstream *f = new std::ifstream();
-			if(!rawopen(*f, vfn, is_text))
-				return 0;
-			return new IFileDataSource(f);
-		};
+	static FileSystem* get_instance() { return filesystem; }
 
-		// Open a streaming file as readable. Streamed (0 on failure)
-		OFileDataSource *WriteFile(const std::string &vfn, const bool is_text=false)
-		{
-			std::ofstream *f = new std::ofstream();
-			if(!rawopen(*f, vfn, is_text))
-				return 0;
-			return new OFileDataSource(f);
-		};
+	// Open a streaming file as readable. Streamed (0 on failure)
+	IFileDataSource *ReadFile(const std::string &vfn, bool is_text=false)
+	{
+		std::ifstream *f = new std::ifstream();
+		if(!rawopen(*f, vfn, is_text))
+			return 0;
+		return new IFileDataSource(f);
+	}
 
-		bool rawopen
-		(
-		std::ifstream& in,			// Input stream to open.
-		const std::string &fname,	// May be converted to upper-case.
-		bool is_text = false		// Should the file be opened in text mode
-		);
+	// Open a streaming file as readable. Streamed (0 on failure)
+	OFileDataSource *WriteFile(const std::string &vfn,const bool is_text=false)
+	{
+		std::ofstream *f = new std::ofstream();
+		if(!rawopen(*f, vfn, is_text))
+			return 0;
+		return new OFileDataSource(f);
+	}
+
+	bool rawopen
+	(
+	std::ifstream& in,			// Input stream to open.
+	const std::string &fname,	// May be converted to upper-case.
+	bool is_text = false		// Should the file be opened in text mode
+	);
 		
-		bool rawopen
-		(
-		std::ofstream& out,			// Output stream to open.
-		const std::string &fname,	// May be converted to upper-case.
-		bool is_text = false		// Should the file be opened in text mode
-		);
+	bool rawopen
+	(
+	std::ofstream& out,			// Output stream to open.
+	const std::string &fname,	// May be converted to upper-case.
+	bool is_text = false		// Should the file be opened in text mode
+	);
 	
-	private:
-		void FileSystem::switch_slashes(std::string &name);
-		bool FileSystem::base_to_uppercase(std::string& str, const int count);
-		
+ private:
+	void switch_slashes(std::string &name);
+	bool base_to_uppercase(std::string& str, const int count);
+
+	static FileSystem* filesystem;	
 };
 
 

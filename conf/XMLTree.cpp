@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IDataSource.h"
 #include "FileSystem.h"
 
+#include "util.h"
+
 XMLTree::XMLTree()
 	: tree(new XMLNode("config")), root("config"), is_file(false),
 	  readonly(false)
@@ -54,35 +56,20 @@ void XMLTree::clear(std::string root_)
 
 bool XMLTree::readConfigFile(std::string fname)
 {
-#warning fixme: non-FileSystem file access!
-#if 0
-	IFileDataSource* ds = filesystem->ReadFile(fname, true); // open as text
+	std::ifstream f;
 
-	if (!ds)
+	if (!FileSystem::get_instance()->rawopen(f, fname, true))
 		return false;
-
-	std::string sbuf, line;
-	while (ds->getline(line))
-	{
-		sbuf += line + "\n";
-	}
-
-	delete ds;
-
-	if (!readConfigString(sbuf))
-		return false;
-
-#else
-	std::ifstream f(fname.c_str());
 	std::string sbuf, line;
 	while (f.good()) {
 		std::getline(f, line);
 		sbuf += line;
 	}
+
+	f.close();
+
 	if (!readConfigString(sbuf))
 		return false;
-
-#endif
 
 	is_file = true; // readConfigString sets is_file = false
 	filename = fname;
@@ -117,20 +104,14 @@ void XMLTree::write()
 {
 	if (!is_file || readonly)
 		return;
-#warning fixme: non-FileSystem file access!
-#if 0
-	OFileDataSource ds = filesystem->WriteFile(filename);
-	if (!ds) {
-		PERR("Error writing config file")
-		return;
-	}
 
-	ds->write(dump());
-	delete ds;
-#else
-	std::ofstream f(filename.c_str());
+	std::ofstream f;
+	if (!FileSystem::get_instance()->rawopen(f, filename, true))
+		return;
+
 	f << dump();
-#endif
+
+	f.close();
 }
 
 bool XMLTree::hasNode(std::string key) const
@@ -171,14 +152,11 @@ void XMLTree::value(std::string key, int &ret,
 void XMLTree::value(std::string key, bool &ret,
 					bool defaultvalue) const
 {
-#warning fixme: get to_uppercase function!
-#if 0
 	const XMLNode *sub = tree->subtree(key);
 	if (sub)
 		ret = (to_uppercase(sub->value()) == "YES");
 	else
 		ret = defaultvalue;
-#endif
 }
 
 void XMLTree::set(std::string key, std::string value)

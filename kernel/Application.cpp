@@ -98,6 +98,7 @@ Application::~Application()
 	delete kernel;
 	delete ucmachine;
 	delete filesystem;
+	delete config;
 }
 
 void Application::run()
@@ -108,8 +109,8 @@ void Application::run()
 	if (classid != -1) {
 		p = new UCProcess(u, classid, offset);
 	} else {
-		p = new UCProcess(u, 0xD0, 0x80);
-// p = new UCProcess(u, 0x581, 0x28F9);
+//		p = new UCProcess(u, 0xD0, 0x80);
+		p = new UCProcess(u, 0x581, 0x28F9);
 	}
 
     ucmachine->addProcess(p);

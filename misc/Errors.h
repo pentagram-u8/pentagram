@@ -34,8 +34,8 @@ struct ECode
 	ECode() : error(0) { }
 	ECode(sint32 _e) : error(_e) { }
 
-	bool failed() { return error != 0; }
-	bool succeded() { return error == 0; }
+	bool failed() const { return error != 0; }
+	bool succeded() const { return error == 0; }
 
 	ECode &operator = (sint32 &_e)
 	{

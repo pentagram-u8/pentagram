@@ -19,6 +19,7 @@ pentagram_OBJ = \
 	misc/Console.o \
 	misc/Q_strcasecmp.o \
 	misc/pent_include.o \
+	misc/util.o \
 	graphics/RenderSurface.o \
 	graphics/SoftRenderSurface.o \
 	graphics/Texture.o \

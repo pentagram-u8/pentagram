@@ -27,8 +27,8 @@
 class IDataSource
 {
 	public:
-		IDataSource() {};
-		virtual ~IDataSource() {};
+		IDataSource() {}
+		virtual ~IDataSource() {}
 
 		virtual uint32 read1()=0;
 		virtual uint16 read2()=0;
@@ -121,20 +121,20 @@ class IFileDataSource: public IDataSource
 	IFileDataSource(std::ifstream *data_stream)
 	{
 		in = data_stream;
-	};
+	}
 
 	virtual ~IFileDataSource()
 	{
 		FORGET_OBJECT(in);
-	};
+	}
 
-	bool good() const { return in->good(); };
+	bool good() const { return in->good(); }
 	
 	//	Read a byte value
 	virtual uint32 read1()
 	{
 		return static_cast<uint8>(in->get());
-	};
+	}
 
 	//	Read a 2-byte value, lsb first.
 	virtual uint16 read2()
@@ -143,7 +143,7 @@ class IFileDataSource: public IDataSource
 		val |= static_cast<uint16>(in->get());
 		val |= static_cast<uint16>(in->get()<<8);
 		return val;
-	};
+	}
 
 	//	Read a 2-byte value, hsb first.
 	virtual uint16 read2high()
@@ -152,7 +152,7 @@ class IFileDataSource: public IDataSource
 		val |= static_cast<uint16>(in->get()<<8);
 		val |= static_cast<uint16>(in->get());
 		return val;
-	};
+	}
 
 	//	Read a 3-byte value, lsb first.
 	virtual uint32 read3()
@@ -162,7 +162,7 @@ class IFileDataSource: public IDataSource
 		val |= static_cast<uint32>(in->get()<<8);
 		val |= static_cast<uint32>(in->get()<<16);
 		return val;
-	};
+	}
 
 	//	Read a 4-byte long value, lsb first.
 	virtual uint32 read4()
@@ -173,7 +173,7 @@ class IFileDataSource: public IDataSource
 		val |= static_cast<uint32>(in->get()<<16);
 		val |= static_cast<uint32>(in->get()<<24);
 		return val;
-	};
+	}
 
 	//	Read a 4-byte long value, hsb first.
 	virtual uint32 read4high()
@@ -184,13 +184,13 @@ class IFileDataSource: public IDataSource
 		val |= static_cast<uint32>(in->get()<<8);
 		val |= static_cast<uint32>(in->get());
 		return val;
-	};
+	}
 
-	void read(void *b, sint32 len) { in->read(static_cast<char *>(b), len); };
+	void read(void *b, sint32 len) { in->read(static_cast<char *>(b), len); }
 
-	virtual void seek(uint32 pos)  { in->seekg(pos); };
+	virtual void seek(uint32 pos)  { in->seekg(pos); }
 
-	virtual void skip(sint32 pos)  { in->seekg(pos, std::ios::cur); };
+	virtual void skip(sint32 pos)  { in->seekg(pos, std::ios::cur); }
 
 	virtual uint32 getSize()
 	{
@@ -199,9 +199,9 @@ class IFileDataSource: public IDataSource
 		long len = in->tellg();
 		in->seekg(pos);
 		return len;
-	};
+	}
 
-	virtual uint32 getPos() { return in->tellg(); };
+	virtual uint32 getPos() { return in->tellg(); }
 
 };
 

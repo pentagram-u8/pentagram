@@ -1,4 +1,11 @@
 2002-12-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* various: minor cosmetic changes
+	* filesys/*: added get_instance()
+	* misc/util.*: added. (with to_uppercase function)
+	* conf/XMLTree.cc: properly access files through filesystem
+
+
+2002-12-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* conf/*: added Configuration classes
 	* kernel/Application.*: create Configuration
 	* bootstrap: check for /usr/local/share/aclocal
