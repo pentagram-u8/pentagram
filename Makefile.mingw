@@ -42,12 +42,12 @@ FOLD_OBJCS = \
 
 FLEXPACK_OBJCS = \
 	filesys/FileSystem.o filesys/Flex.o misc/Console.o misc/istring.o misc/pent_include.o misc/util.o \
-	tools/flexpack/FlexWriter.o
+	tools/flexpack/FlexPack.o tools/flexpack/FlexWriter.o
 
 disasm.exe : tools/disasm/Disasm.o $(FOLD_OBJCS)
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
-flexpack.exe: tools/flexpack/FlexPack.o $(FLEXPACK_OBJCS)
+flexpack.exe: $(FLEXPACK_OBJCS)
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
 fold.exe : tools/fold/Fold.o $(FOLD_OBJCS)
@@ -71,7 +71,7 @@ clean:
 	rm -f $(PENTAGRAM_OBJS) pentagram.o
 
 toolsclean:
-	rm -f tools/amf2mod/amf2mod.o tools/disasm/Disasm.o tools/flexpack/FlexPack.o $(FLEXPACK_OBJCS) tools/fold/Fold.o $(FOLD_OBJCS) tools/shapeconv/ShapeConv.o *.exe
+	rm -f tools/amf2mod/amf2mod.o tools/disasm/Disasm.o $(FLEXPACK_OBJCS) tools/fold/Fold.o $(FOLD_OBJCS) tools/shapeconv/ShapeConv.o *.exe
 
 install: pentagram.exe
 	mkdir -p $(U8PATH)
