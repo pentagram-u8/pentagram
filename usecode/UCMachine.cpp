@@ -1186,7 +1186,9 @@ bool UCMachine::execProcess(UCProcess* p)
 					   classid,offset,delta,offset+delta,this_size, unknown));
 
 				UCProcess* newproc = new UCProcess(p->usecode, classid,
-												   offset + delta);
+												   offset + delta,
+												   p->stack.access4(p->bp+6));
+
 				p->stack.push2(addProcess(newproc)); //! push pid of newproc?
 			}
 			cede = true;

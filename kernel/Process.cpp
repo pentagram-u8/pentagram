@@ -33,6 +33,7 @@ void Process::terminate()
 		if (p)
 			p->wakeUp(result);
 	}
+	waiting.clear();
 
 	terminated = true;
 }

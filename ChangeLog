@@ -1,3 +1,7 @@
+2003-01-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/UCMachine.cpp: pass this pointer to inline processes
+	* kernel/Process.cpp: clear 'waiting' list after notifying
+
 2003-01-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/*: added waitFor to processes
 	* usecode/*: implemented implies
