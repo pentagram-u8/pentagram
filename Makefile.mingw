@@ -6,60 +6,64 @@ U8PATH=C:/Ultima8
 
 # Base of the pentagram source
 SRC=.
-VPATH=$(SRC):$(SRC)/convert:$(SRC)/convert/crusader:$(SRC)/convert/u8:$(SRC)/filesys:$(SRC)/graphics:$(SRC)/misc: \
-$(SRC)/tools:$(SRC)/tools/amf2mod:$(SRC)/tools/disasm:$(SRC)/tools/shapeconv: \
-$(SRC)/conf:$(SRC)/usecode:$(SRC)/kernel
 
 ### Modify these paths
 SDL_CFLAGS=-I$(SRC)/sdl/include
 SDL_LIBS=-L$(SRC)/sdl/lib -lSDL_mixer -lSDLmain -lSDL
 
-# NOTE: make's builtin implicit rules are used for .cc => .o
-# mingw automatically defines WIN32
-CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -I$(SRC)/convert -I$(SRC)/filesys \
-	-I$(SRC)/graphics -I$(SRC)/misc
+CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -I$(SRC)/conf -I$(SRC)/convert \
+	-I$(SRC)/filesys -I$(SRC)/graphics -I$(SRC)/gumps -I$(SRC)/misc \
+	-I$(SRC)/tools/disasm -I$(SRC)/tools/fold -I$(SRC)/usecode $(SDL_CFLAGS)
 CXXFLAGS=-O2 -Wno-long-long
 CXX=g++
 
 LFLAGS=-mwindows
-LIBS=-lmingw32 $(SDL_LIBS) -lwinmm -lopengl32
+LIBS=-lmingw32 $(SDL_LIBS) -lwinmm $(SDL_LIBS)
 
-CONVERT_OBJS=ConvertShape.o ConvertShapeCrusader.o ConvertShapeU8.o
+CONVERT_OBJS=convert/ConvertShape.o convert/crusader/ConvertShapeCrusader.o convert/u8/ConvertShapeU8.o
 
-FILESYS_OBJS=FileSystem.o Flex.o
+FILESYS_OBJS=filesys/FileSystem.o filesys/Flex.o
 
-GRAPHICS_OBJS=Texture.o TextureBitmap.o TextureTarga.o RenderSurface.o SoftRenderSurface.o
-#MD3_Model.o
+GRAPHICS_OBJS=graphics/Texture.o graphics/TextureBitmap.o graphics/TextureTarga.o graphics/RenderSurface.o \
+	graphics/SoftRenderSurface.o
 
-MISC_OBJS=Args.o Console.o Q_strcasecmp.o pent_include.o
+MISC_OBJS=misc/Args.o misc/Console.o misc/Q_strcasecmp.o misc/pent_include.o
 
-CONF_OBJS=Configuration.o XMLTree.o XMLNode.o
+CONF_OBJS=conf/Configuration.o conf/XMLTree.o conf/XMLNode.o
 
-KERNEL_OBJS=Kernel.o Application.o
+KERNEL_OBJS=kernel/Kernel.o kernel/Application.o
 
-USECODE_OBJS=UCMachine.o UCProcess.o UsecodeFlex.o UCList.o
+USECODE_OBJS=usecode/UCMachine.o usecode/UCProcess.o usecode/UsecodeFlex.o usecode/UCList.o
 
 all: amf2mod.exe disasm.exe shapeconv.exe pentagram.exe
 
-amf2mod.exe : amf2mod.o
+amf2mod.exe : tools/amf2mod/amf2mod.o
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
-disasm.exe : Disasm.o $(FILESYS_OBJS) $(MISC_OBJS)
+FOLD_OBJCS= tools/fold/FuncNodes.o tools/fold/OperatorNodes.o tools/fold/Type.o tools/fold/VarNodes.o \
+	tools/fold/CallNodes.o tools/fold/Folder.o tools/fold/IfNode.o
+
+disasm.exe : tools/disasm/Disasm.o $(FOLD_OBJCS) $(FILESYS_OBJS) $(MISC_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
-shapeconv.exe : ShapeConv.o $(CONVERT_OBJS) $(FILESYS_OBJS) $(MISC_OBJS)
+fold.exe : tools/fold/Fold.o $(FOLD_OBJCS) $(FILESYS_OBJS) $(MISC_OBJS)
+	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
+
+shapeconv.exe : tools/shapeconv/ShapeConv.o $(CONVERT_OBJS) $(FILESYS_OBJS) $(MISC_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
 pentagram.exe: $(FILESYS_OBJS) $(MISC_OBJS) $(GRAPHICS_OBJS) $(KERNEL_OBJS) $(USECODE_OBJS) pentagram.o
 
 clean:
-	rm -f $(CONVERT_OBJS) $(FILESYS_OBJS) $(GRAPHICS_OBJS) $(MISC_OBJS) amf2mod.exe disasm.exe shapeconv.exe
+	rm -f $(CONVERT_OBJS) $(FILESYS_OBJS) $(GRAPHICS_OBJS) $(KERNEL_OBJS) $(MISC_OBJS) $(USECODE_OBJS) $(FOLD_OBJCS)
+	rm -f pentagram.o tools/amf2mod/amf2mod.o tools/disasm/Disasm.o tools/fold/Fold.o tools/shapeconv/ShapeConv.o *.exe
 
-install: amf2mod.exe disasm.exe shapeconv.exe
+install: amf2mod.exe disasm.exe fold.exe shapeconv.exe
 	mkdir -p $(U8PATH)
 	mkdir -p $(U8PATH)/tools
 	strip amf2mod.exe -o $(U8PATH)/tools/amf2mod.exe
 	strip disasm.exe -o $(U8PATH)/tools/disasm.exe
+	strip fold.exe -o $(U8PATH)/tools/fold.exe
 	strip shapeconv.exe -o $(U8PATH)/tools/shapeconv.exe
 
 dist:   install

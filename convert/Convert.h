@@ -24,7 +24,7 @@
 #include "Console.h"
 #include <vector>
 #include <string>
-#include "tools/fold/GenericNodes.h"
+#include "GenericNodes.h"
 
 class DebugSymbol
 {
@@ -802,11 +802,11 @@ and that the child threads are indeed placed infront of the parent thread.
 		op.nextoffset=curOffset;
 }
 
-#include "tools/fold/FuncNodes.h"
-#include "tools/fold/VarNodes.h"
-#include "tools/fold/CallNodes.h"
-#include "tools/fold/OperatorNodes.h"
-#include "tools/fold/IfNode.h"
+#include "FuncNodes.h"
+#include "VarNodes.h"
+#include "CallNodes.h"
+#include "OperatorNodes.h"
+#include "IfNode.h"
 
 /* This needs to be shuffled into two different readOp() functions, one in Convert*Crusader, and
 	the other in Convert*U8 */

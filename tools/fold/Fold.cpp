@@ -37,7 +37,7 @@ bool print_disasm=false;
 
 void initfolding();
 
-#include "tools/disasm/Disasm.cpp"
+#include "Disasm.cpp"
 
 #include "Folder.h"
 

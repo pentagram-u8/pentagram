@@ -20,7 +20,6 @@
 
 #include "pent_include.h"
 
-#include <SDL.h>
 #include <fstream>
 #include <cstdio>
 
@@ -302,7 +301,7 @@ string functionaddresstostring(const sint32 i0, const sint32 i1, IFileDataSource
 // should be passed to readfunction, except that would make it dependaing upon Fold.cpp
 // which is not what I'm intending atm.
 #ifdef FOLD
-#include "tools/fold/Folder.h"
+#include "Folder.h"
 Folder *folder = new Folder();
 #endif
 
