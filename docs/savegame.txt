@@ -391,3 +391,8 @@ sint32 priority
 sint32 counter, max_counter
 sint16 old_matrix[12]
 sint16 new_matrix[12]
+
+
+AvatarMoverProcess: Process (v1)
+uint16 version
+<Process>
