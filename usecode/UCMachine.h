@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UCStack.h"
 #include "UCList.h"
 
+class Process;
 class UCProcess;
 
 class UCMachine
@@ -44,8 +45,8 @@ public:
 	void freeStringList(uint16 l);
 	void freeList(uint16 l);
 
-	uint16 addProcess(UCProcess *p);
-	void killProcess(UCProcess *p);
+	uint16 addProcess(Process *p);
+	void killProcess(Process *p);
 	void killProcess(uint16 pid);
 
 	uint16 duplicateString(uint16 str);

@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GraphicsErrors.h"
 
 struct Texture;
+class Shape;
+struct Palette;
 
 //
 // RenderSurface
@@ -86,6 +88,8 @@ public:
 	// Get The Surface Palette
 	// TODO: virtual void GetPalette(uint8 palette[768]) = 0;
 
+	virtual void CreateNativePalette(Palette* palette) = 0;
+
 
 	//
 	// Surface Filling
@@ -112,6 +116,7 @@ public:
 
 	// Paint a Shape
 	// TODO: virtual void Paint(CachedShape* s, uint32 frame, sint32 x, sint32 y) = 0;
+	virtual void Paint(Shape*s, uint32 frame, sint32 x, sint32 y)=0;
 
 	// Paint a Translucent Shape. 
 	// TODO: virtual void PaintTranslucent(CachedShape* s, uint32 frame, sint32 x, sint32 y) = 0;

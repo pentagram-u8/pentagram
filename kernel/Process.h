@@ -46,6 +46,8 @@ protected:
 
 	bool active; // is the process in the run-list?
 	bool suspended; // suspended? (because it's waiting for something)
+	                //! (this may have to be a count instead, if a process
+	                //! is waiting for more than one others)
 	bool terminated;
 
 	// process result

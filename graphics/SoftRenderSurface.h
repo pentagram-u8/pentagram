@@ -169,6 +169,7 @@ public:
 
 	// Paint a Shape
 	// TODO: virtual void Paint(CachedShape* s, uint32 frame, sint32 x, sint32 y);
+	virtual void Paint(Shape*s, uint32 frame, sint32 x, sint32 y);
 
 	// Paint a Translucent Shape. 
 	// TODO: virtual void PaintTranslucent(CachedShape* s, uint32 frame, sint32 x, sint32 y);
@@ -220,6 +221,8 @@ public:
 
 	// Blit a stretched region from a Texture with 3D Alpha Blending Function (Alpha == 0 -> skipped)
 	// TODO: virtual void StretchAlphaBlit(Texture *, sint32 sx, sint32 sy, sint32 sw, sint32 sh, sint32 dx, sint32 dy, sint32 dw, sint32 dh);
+
+	virtual void CreateNativePalette(Palette* palette);
 
 
 	////////////////////////////////////////

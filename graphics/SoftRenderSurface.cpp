@@ -23,6 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Texture.h"
 #include <SDL.h>
 
+#include "Shape.h"
+#include "ShapeFrame.h"
+#include "Palette.h"
+
 
 ///////////////////////
 //                   //
@@ -337,6 +341,105 @@ template<class uintX> void U8SoftRenderSurface<uintX>::PrintTextFixed(Texture *t
 	}
 }
 
+template<class uintX> void U8SoftRenderSurface<uintX>::CreateNativePalette(Palette* palette)
+{
+	for (int i = 0; i < 256; i++)
+	{
+		palette->native[i] = SDL_MapRGB(sdl_surf->format,
+										palette->palette[i*3],
+										palette->palette[i*3+1],
+										palette->palette[i*3+2]);
+	}
+}
+
+template<class uintX> void U8SoftRenderSurface<uintX>::Paint(Shape*s, uint32 framenum, sint32 x, sint32 y)
+{
+
+	// Sanity check
+	if (framenum >= s->frameCount()) return;
+	if (s->getPalette() == 0) return;
+
+	ShapeFrame*	frame = s->getFrame(framenum);
+
+	const uint8 *data = frame->data;
+	uint32 width = frame->width;
+	uint32 height = frame->height;
+	x -= frame->xoffset;
+	y -= frame->yoffset;
+
+	const uint32* pal = &(s->getPalette()->native[0]);
+
+	unsigned int xpos;
+	unsigned int linepos;
+	unsigned int dlen;
+	const uint8* linedata;
+	uintX* line_start;
+	uintX* pixptr;
+	uintX* endrun;
+	uintX pix;
+
+	if (frame->compressed != 0)
+	{
+		// compressed
+		for (unsigned int i = 0; i < height; i++)
+		{
+			linepos = data[i*2] + (data[i*2+1]<<8) + i*2;
+			linedata = data + linepos;
+			xpos = 0;
+
+			line_start = (uintX*)((uint8*)pixels + pitch*(y+i));
+
+			do {
+				xpos += *linedata++;
+				
+				if (xpos == width) break;
+				
+				dlen = *linedata++;
+				int type = dlen & 1;
+				dlen >>= 1;
+				
+				pixptr= line_start+x+xpos;
+				endrun = pixptr + dlen;
+				
+				if (!type) {
+					while (pixptr != endrun) *pixptr++ = pal[*linedata++];
+				} else {
+					pix = pal[*linedata++];
+					while (pixptr != endrun) *pixptr++ = pix;
+				}
+				
+				xpos += dlen;
+				
+			} while (xpos < width);			
+		}
+	} else {
+		// not compressed
+		for (unsigned int i = 0; i < height; i++)
+		{
+			linepos = data[i*2] + (data[i*2+1]<<8) + i*2;
+			linedata = data + linepos;
+			xpos = 0;
+
+			line_start = (uintX*)((uint8*)pixels + pitch*(y+i));
+
+			do {
+				xpos += *linedata++;
+				
+				if (xpos == width) break;
+				
+				dlen = *linedata++;
+				
+				pixptr= line_start+x+xpos;
+				endrun = pixptr + dlen;
+				
+				while (pixptr != endrun) *pixptr++ = pal[*linedata++];
+								
+				xpos += dlen;
+				
+			} while (xpos < width);			
+		}		
+	}
+}
 
 //
 // Instantiate the U8SoftRenderSurface Class

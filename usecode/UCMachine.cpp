@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UCProcess.h"
 #include "Usecode.h"
 #include "Kernel.h"
+#include "DelayProcess.h"
 
 #define LOGPF(X) pout.printf X
 
@@ -250,7 +251,10 @@ bool UCMachine::execProcess(UCProcess* p)
 				uint16 arg_bytes = cs.read1();
 				uint16 func = cs.read2();
 				LOGPF(("!calli\t\t%04Xh (%02Xh arg bytes)", func, arg_bytes));
-				temp32 = 0x11223344; //!
+
+				temp32 = addProcess(new DelayProcess(4));
+
+//				temp32 = 0x11223344; //!
 			}
 			break;
 
@@ -960,7 +964,8 @@ bool UCMachine::execProcess(UCProcess* p)
 				{
 					perr << "Trying to access segment " << std::hex
 						 << segment << std::dec << std::endl;
-					error = true;
+//					error = true;
+					p->stack.push0(ui16a); //!
 				}
 				LOGPF(("push indirect\t%02Xh bytes", ui16a));
 			}
@@ -1667,12 +1672,12 @@ uint32 UCMachine::objectToPtr(uint16 objID)
 	return ptr;
 }
 
-uint16 UCMachine::addProcess(UCProcess* p)
+uint16 UCMachine::addProcess(Process* p)
 {
 	return Kernel::get_instance()->addProcess(p);
 }
 
-void UCMachine::killProcess(UCProcess* p)
+void UCMachine::killProcess(Process* p)
 {
 	p->terminate();
 }

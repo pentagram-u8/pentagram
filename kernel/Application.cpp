@@ -30,6 +30,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "RenderSurface.h"
 #include "Texture.h"
 //#include "ConsoleGump.h"
+#include "Shape.h"
+#include "Palette.h"
 
 #include <SDL.h>
 
