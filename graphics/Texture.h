@@ -90,7 +90,7 @@ struct Texture
 	uint32			gl_tex;
 	Texture			*next;
 
-	Texture() : buffer(0), gl_tex(0), next(0)
+	Texture() : buffer(0), format(TEX_FMT_STANDARD), gl_tex(0), next(0)
 	{
 	}
 
