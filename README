@@ -73,6 +73,8 @@ a,z				: moves Avatar vertically
 s				: toggles "avatarInStasis"
 t				: outputs kernel/usecode/world/location stats to the console
 e				: toggles editor items
+h				: highlights any item you are "hitting", colliding with
+c				: enables clipping
 ESC,q			: quits pentagram
 [,]				: first ] clears the screen, multiple presses of ]
 				  show the paint order. [ "steps" backward.
@@ -80,10 +82,19 @@ left mouse		: look at item/npc
 right mouse		: use item/talk to npc
 middle mouse	: feature test button :-) likely to change very often.
 				  At the moment it is an object "hurler"
-
+shift			: quarter speed mode. needs to be held down.
 
 HACKS TO SHOW OFF
 =================
 
 f				: plays first scene (Avatar standing up, speaking to Devon)
 g				: plays execution scene
+
+
+SUPPORTED GAMES AND VERSIONS
+============================
+
+At the moment we only support the English version of Ultima 8 regardless of the
+game version. Other languages might work but we can't be sure.
+
+The games we don't support are defined in the FAQ.

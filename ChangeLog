@@ -1,3 +1,7 @@
+2003-06-19  Dominik Reichardt <dominus@users.sourceforge.net> 
+	* README: added section of games/versions supported by pentagram, and 'c', 'h' and
+	  shift key
+
 2003-06-19  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/SoftRenderSurface.cpp, graphics/Font.cpp: fixed crash
 	  with French version of U8
@@ -11,7 +15,7 @@
 2003-06-18	  Ryan Nunn <colourles@users.sourceforge.net>
 	* graphics/*RenderSurface.*, graphics/XFormBlend.*, world/Item.h,
 	  world/ItemSorter.* : Added a funky highlighted shape mode. Set shapes
-	  extFlag EXT_HIGHLIGHT to set it. 
+	  extFlag EXT_HIGHLIGHT to set it.
 	* world/CurrentMap.*, kernel/GUIApp.cpp : Rewrote much of the sweepTest
 	  code. Updated the gotHit hack to reflect the changes. Now also call
 	  Release when you step off/away from an item you have hit. Any items
@@ -19,8 +23,8 @@
 	  ('h'). This is purely a debug thing.
 
 2003-06-18	  Ryan Nunn <colourles@users.sourceforge.net>
-	* gumps/ContainerGump.cpp, gumps/GameMapGump.*, kernel/Object.*, 
-	  world/Egg.cpp, world/Item.* : Changed things so callUsecodeEvent is 
+	* gumps/ContainerGump.cpp, gumps/GameMapGump.*, kernel/Object.*,
+	  world/Egg.cpp, world/Item.* : Changed things so callUsecodeEvent is
 	  private. Added separate functions to call each event. Added functions
 	  for all usecode events, including hit, gotHit, cast,
 	  AvatarStoleSomething and guardianBark that push args to the stack.
@@ -29,7 +33,7 @@
 	  accurate collision detection. It will detect things that are being
 	  touched, even if aren't trying to pass through it.
 	* kernel/GUIApp.cpp : Hacked in the calling gotHit when the avatar
-	  moves. By default this is OFF cause falling into water is annoying. 
+	  moves. By default this is OFF cause falling into water is annoying.
 	  Toggle with 'h'.
 
 2003-06-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
@@ -56,7 +60,7 @@
 	* usecode/u8intrinsics.h, kernel/GUIApp.* : Added some getTimeIn???
 	  instrinsics. These will not be the final versions of these. They are
 	  purely place holders for now.
-	* usecode/UCMachine.cpp, kernel/Kernel.cpp, kernel/Process.h : 
+	* usecode/UCMachine.cpp, kernel/Kernel.cpp, kernel/Process.h :
 	  Deferred process termination. This fixes problems with processes
 	  terminating before implies is called.
 	* world/CurrentMap.cpp : Execute NPC schedule funcs on map load. Also
@@ -68,7 +72,7 @@
 	* kernel/GUIApp.*, usecode/u8intrinsics.h : Added
 	  I_setTimeInGameHours() so beds now work. Also added time
 	  (minutes + seconds) and gamehour display.
-	  	
+
 2003-06-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/MainActor.*: teleportToEgg intrinsic
 	* world/Item.*: legalMoveToPoint intrinsic
@@ -87,12 +91,12 @@
 	  to show the u8 instrinsic names.
 	* gumps/GameMapGump.* : Sort order debugging
 	* gumps/Gump.* : Minor changes
-	* gumps/GumpNotifyProcess.*, gumps/widgets/SimpleTextWidget.* : 
+	* gumps/GumpNotifyProcess.*, gumps/widgets/SimpleTextWidget.* :
 	  p_dynamic_cast stuff
 	* gumps/AskGump.*, kernel/GUIApp.cpp, world/Item.cpp : Ask Gump. No
 	  more I_ask() hacks required.
 	* gumps/widgets/ButtonWidget.* : This really isn't a button yet. All it
-	  really is at the moment is a SimpleTextWidget that responds to mouse 
+	  really is at the moment is a SimpleTextWidget that responds to mouse
 	  events.
 	* kernel/GUIApp.cpp : 'a' and 'z' keys can now be used to move the
 	  avatar vertically. '[' and ']' work again. 's' can now be used to
@@ -107,7 +111,7 @@
 2003-06-15	  Ryan Nunn <colourles@users.sourceforge.net>
 	* world/ItemSorter.cpp : Fixing the positively absolutely busted
 	  ItemSorter
-	
+
 2003-06-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/ItemSorter.cpp: invisible items don't occlude
 	* graphics/AnimDat.cpp: deltaz is (of course) signed
@@ -128,7 +132,7 @@
 2003-06-14	  Ryan Nunn <colourles@users.sourceforge.net>
 	* gump/widgets/SimpleTextWidget.* : I can't quite remember, but i think
 	  I just added something called the SimpleTextWidget.
-	* gumps/BarkGump.* : Removed old text hack, added new hacks that use 
+	* gumps/BarkGump.* : Removed old text hack, added new hacks that use
 	  SimpleTextWidget. Sometime in the future it will correctly use
 	  something with a name like MultiPageTextWidget
 	* gumps/Gump.h : Added some forward looking stuff aka a way for widget
@@ -189,7 +193,7 @@
 	  you're not going to notice much. I'm getting there slowly...
 	  *grin*
 	* filesys/IDataSource.h: Fixed casting warning.
-	
+
 2003-06-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/ItemSorter.*, gumps/GameMapGump.*: move camera-related
 	  calculations to the end of the rendering 'pipeline' to prevent
@@ -204,14 +208,14 @@
 
 2003-06-03	  Ryan Nunn <colourles@users.sourceforge.net>
 	* filesys/IDataSource.h : Theoretically fixing the readline()
-	  problem. 
-	
+	  problem.
+
 2003-06-03	  Ryan Nunn <colourles@users.sourceforge.net>
 	* kernel/Process.h : A few new useful methods
 	* kernel/Object.cpp : When an ObjID is cleared, all processes
 	  belonging to that ObjID are now terminated.
 	* graphics/Font.*, graphics/SoftRenderSurface.cpp : Added
-	  Baseline, hlead and vlead stuff. 
+	  Baseline, hlead and vlead stuff.
 	* gumps/* : Changed SetupLerp to 'run'. Improved item dependant
 	  gump handling. Any item dependant gump will now have a
 	  GumpNotifyProcess owned by the item the gump is dependant on.
@@ -228,7 +232,7 @@
 	* world/EggHatcherProcess.cpp : Correcting egg range.
 	* world/Item.* : Fixing animation speeds. Fixing busted lerping.
 	* world/World.cpp : Call MapChanged() on gumps
-	
+
 2003-06-03	Darke <darkepaw@users.sf.net>
 	* objects.mk, module.mk, tools/disasm/module/mk,
 	  tools/fold/module.mk: Shuffled the lists of objects into their
@@ -255,12 +259,12 @@
 	  I under linux! *grin*
 
 2003-06-02  Ryan Nunn <colourles@users.sourceforge.net>
-	* gumps/Gump.* : Fixing invalid focus_chlid problems 
+	* gumps/Gump.* : Fixing invalid focus_chlid problems
 	* kernel/CoreApp.h, kernel/GUIApp.h, misc/Console.cpp : Console
 	  no longer dependant on GUIApp.
-	  
+
 2003-06-02  Ryan Nunn <colourles@users.sourceforge.net>
-	* Almost every single file being committed here : Changes the 
+	* Almost every single file being committed here : Changes the
 	  p_dynamic_cast macros. Just check P_dynamic_cast.h for the new
 	  macros to use. Also made the macros define some new functions.
 	  These are:
@@ -270,13 +274,13 @@
 	  2) GetClassType(), which gets the ClassType for an object
 	   virtually so it always gets the ClassType for the class the
 	   object was created with.
-	    	
+
 	* Changes due to filesystem: No more raw accesses. Added readline
 	  to IDataSource. Getting the ifstream from an IFileDataSource is
 	  no longer such a hack. Added 'memory files'. Not entirely
 	  feature complete, but what I've done lets me play with using
 	  Windows Resources for data files.
-	  
+
 	* docs/scratch/quotes.txt : Some long overdue quotes that were
 	  supposed to be added but I held off. And no Darke, there are no
 	  toys here ;-)
@@ -288,13 +292,13 @@
 	  have no idea if input handling will work anything near
 	  correctly. All the old input hacks are still in place. Added
 	  ItemRelativeGump. Added BarkGump. It's not entirely finished
-	  because it should use a TextWidget or some such rather than 
+	  because it should use a TextWidget or some such rather than
 	  having all the code to handle text drawing in it. Got
 	  Item::I_ask to create a BarkGump to list the choices. Of course
 	  that is in no way a correct solution. Added u8gumps.flx to
 	  GameData. It's just of type ShapeFlex for now but I don't think
 	  it needs any changes, not now anyway
-	
+
 	* Font related: Added some hacks that only allow the length of a
 	  line of text to be about 160 pixels. This is a hack to force
 	  word wrapping with BarkGumps. Added a getHeight() method that
@@ -331,7 +335,7 @@
 	* graphics/*ShapeFlex*: default palette for a ShapeFlex
 	* graphics/*RenderSurface*: PrintChar
 	* graphics/*RenderSurface*: a very very basic PrintText
-	
+
 2003-05-29	Darke <darkepaw@users.sf.net>
 	* configure.ac: Adding semi-b0rk3n support for linking into a
 	  seperate console-only binary. Almost completely useless, overly
@@ -346,7 +350,7 @@
 	  was bored at work. *grin*
 	* usecode/UCMachine.*: Minor additional abstraction.
 	* kernel/ConApp.*,llc.cpp: Console application abstraction.
-	
+
 2003-05-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* configure.ac: 'sed' is one of the standard utilities configure
 	uses, so checking for it won't help. Things will break horribly
@@ -356,21 +360,21 @@
 2003-05-28	Darke <darkepaw@users.sf.net>
 	* configure.ac: Checks for `sed` and reports a warning if it's
 	  lacking.
-	* tools/compile/module.mk: Runs a few sed scripts so that it 
+	* tools/compile/module.mk: Runs a few sed scripts so that it
 	  shouldn't  be necessary to hack-make a correct FlexLexer.h or
 	  prepend a #include "pent_include.h"
 	* tools/compile/llcLexer.cpp: The updated 'should work' file.
 	  Of course this needs a little testing on a system that's just
 	  slightly more broken then mine. *grin*
-	
+
 2003-05-27	Darke <darkepaw@users.sf.net>
 	* kernel/CoreApp.*, kernel/GUIApp.*: Split up Application into a
 	  'Core' base class and a 'GUI' subsystem, and removed the
 	  original kernel/Application.* files.
 	* module.mk, pentagram.cpp, tools/compile/Compile.cpp,
-	  tools/compile/CompileProcess.cpp, 
+	  tools/compile/CompileProcess.cpp,
 	  tools/disasm/DisasmProcess.cpp, usecode/UCMachine.cpp,
-	  usecode/u8intrinsics.h, world/CameraProcess.cpp, 
+	  usecode/u8intrinsics.h, world/CameraProcess.cpp,
 	  world/Item.cpp: Flow on effect from above.
 
 2003-05-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
@@ -382,7 +386,7 @@
 2003-05-26  Ryan Nunn <colourles@users.sourceforge.net>
 	* kernel/Application.cpp, world/CameraProcess.* : A tweek to the
 	  lerping when following an item.
-	  
+
 2003-05-26	Darke <darkepaw@users.sf.net>
 	* configure.ac: Couple of relevant only to the usecode compiler
 	  config flags.
@@ -392,8 +396,8 @@
 	* tools/compile/*: More compiler stuff, still doesn't do anything
 	  really.
 	* world/Item.cpp: Removal of old-style casts.
-	
-	* tools/compile/llcLexer.cpp: Added 'cause flex2.5.4 hasn't 
+
+	* tools/compile/llcLexer.cpp: Added 'cause flex2.5.4 hasn't
 	  really been maintained in the last 7 years...
 
 2003-05-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
@@ -415,14 +419,14 @@
 
 2003-05-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Application.cpp: getCurrentTimerTick
-	
+
 2003-05-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCProcess.cpp: don't push this pointer if it's zero
 
 2003-05-25	Darke <darkepaw@users.sf.net>
 	* configure.ac: Removed dependancy on awk and yacc, since we use
 	neither, and added flex dependancy since we're now using it.
-	* module.mk: Started cleaning it up a little so we might, 
+	* module.mk: Started cleaning it up a little so we might,
 	  someday, be able to compile an application without dragging
 	  *everything* in...
 	* tools/compile/module.mk: Added handling of .l files.
@@ -446,7 +450,7 @@
 	* usecode/UCMachine.cpp : 1 Based lists
 	* kernel/Application.cpp : A hack to support 'different' versions
 	  of U8 with f and g keys
-	  
+
 2003-05-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/ActorAnimProcess.cpp: smoothen repeating animations
 
@@ -513,7 +517,7 @@
 	* tools/compile/*: Doesn't exist. You're imaging there's something
 	  there that does nothing. There's nothing there, and it most certainly
 	  does nothing.
-	
+
 2003-05-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/World.*, kernel/GameData.*: moved fixed from World to GameData
 	* item/Item.h: added FLG_FASTAREA
@@ -521,7 +525,7 @@
 
 2003-05-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/*: check for invalid direction in animations
-	
+
 2003-05-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/ActorAnimProcess.*: forgot p_dynamic_cast
 	* world/*: marked some issues with equipped items
@@ -531,7 +535,7 @@
 2003-05-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.cpp: got rid of some unused vars
 	* world/actors/*: only allow one simultaneous animation per actor
-	
+
 2003-05-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* docs/design/items.txt: some notes about Item
 	* world/CurrentMap.*, world/Item.*: move items somewhat more correctly
@@ -539,7 +543,7 @@
 
 2003-05-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/*, graphics/AnimDat.*: read/play animations
-	* kernel/Application.cpp: press 't' to make Devon walk a bit	
+	* kernel/Application.cpp: press 't' to make Devon walk a bit
 
 2003-05-15  Ryan Nunn <colourles@users.sourceforge.net>
 	* world/Map.cpp, world/World.cpp : Fixing 'lamp' problem (coords must
@@ -557,13 +561,13 @@
 2003-05-14  Ryan Nunn <colourles@users.sourceforge.net>
 	* Lots of files: Getting rid of warning due to type conversion, unused
 	  args and other such stuff.
-	
-	* convert/u8/ConvertUsecodeU8.h : Marking processes, and fixing a few 
+
+	* convert/u8/ConvertUsecodeU8.h : Marking processes, and fixing a few
 	  miskates.
-	  
+
 	* graphics/ShapeInfo.h, graphics/TypeFlags.cpp : Added some new unknown
 	  typeflags.
-	  
+
 	* kernel/Application.cpp, misc/Console.* : Clicking an item will return
 	  its quality. Added ability to scroll console with Pageup and Pagedown
 
@@ -571,12 +575,12 @@
 	  since npcs aren't the only items to have somehing in npcnum. Fixed up
 	  I_getTypeFlag which was seriously broken. The new code is horrible
 	  to look at.
-	  
-	* world/Item.h : Added FLG_MONSTER_NPC. But, I'm not sure if that is 
+
+	* world/Item.h : Added FLG_MONSTER_NPC. But, I'm not sure if that is
 	  correct.
-	  
+
 	* world/ItemSorter.cpp : Added a few consts. A few other minor changes.
-	
+
 	* usecode/u8intrinsics.h : All unimplemented processes should now be
 	  dummy processes.
 
@@ -587,7 +591,7 @@
 2003-05-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Application.cpp: arrows scroll map; esc/q quit
 	* kernel/Application.cpp: backtick/tilde hides console
-	
+
 2003-05-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCMachine.*: cleaned up pointer dereferencing
 	* world/Item.*: intrinsics
@@ -619,7 +623,7 @@
 	* usecode/*: minor changes
 	* world/Item.cpp, kernel/Application.cpp: hacked in the Ask intrinsic
 	* graphics/ShapeInfo.h, world/ItemFactory.cpp: added unknown family 15
-	
+
 2003-05-11  Darke <darkepaw@users.sf.net>
 	* tools/disasm/DisasmProcess.*: New disassembler process files.
 	* kernel/Application.*: Added stub of disassembler process; parameter
@@ -637,11 +641,11 @@
 
 2003-05-11  Ryan Nunn <colourles@users.sourceforge.net>
 	* misc/memset_n.h : Added generic memset_32 and memset_16 functions.
-	  Additionally added optimized memset_32 funcs (which are used by 
+	  Additionally added optimized memset_32 funcs (which are used by
 	  memset_16). These might be useful in other places than in Fill32().
 
-	* graphics/*RenderSurface.* : Added PaintInvisible methods. This is 
-	  used for shapes with the Invisible flag. Changed the asm Fill32() 
+	* graphics/*RenderSurface.* : Added PaintInvisible methods. This is
+	  used for shapes with the Invisible flag. Changed the asm Fill32()
 	  funcs to use memset_16 and memset_32
 
 	* graphics/XFormBlend.* : Invisibility blending.
@@ -652,7 +656,7 @@
 	* misc/Console.h : Added GetConFont() method.
 
 	* kernel/Application.cpp : Frame timing info is no longer printf'd. It
-	  is now snprintf'd and is drawn to the screen using 
+	  is now snprintf'd and is drawn to the screen using
 	  RenderSurface::PrintTextFixed().
 
 2003-05-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
@@ -670,12 +674,12 @@
 	* kernel/Application.cpp : Spawn Look process on click trace
 
 2003-05-10  Ryan Nunn <colourles@users.sourceforge.net>
-	* graphics/*RenderSurface.* : Implemented functions to set clipping 
+	* graphics/*RenderSurface.* : Implemented functions to set clipping
 	  region. Added function to move the effective origin position.
 
-	* graphics/SoftRenderSurface.inl, kernel/Application.cpp, 
+	* graphics/SoftRenderSurface.inl, kernel/Application.cpp,
 	  world/ItemSorter.* : Slightly changed the way the screen coords work.
-	  The world is now drawn with the origin set to the centre of the 
+	  The world is now drawn with the origin set to the centre of the
 	  screen instead of at the top left.
 
 	* graphics/ShapeFrame.* : Added hasPoint()
@@ -699,11 +703,11 @@
 	* configuration.ac: Added --enable-random-optimisations which currently
 	  only adds -O3, and updated the warnings list used by
 	  --endable-paranoid-warnings.
-	
+
 	Obviously Colourless' fault: *grin*
-	
+
 	* graphics/*RenderSurface.cpp : Double Buffering and Hardware surfaces
-	* kernel/Application.cpp : Fullscreen can now be set with 
+	* kernel/Application.cpp : Fullscreen can now be set with
 	  config/video/fullscreen setting.
 
 2003-05-04  Ryan Nunn <colourles@users.sourceforge.net>
@@ -717,15 +721,15 @@
 2003-05-03 Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/*: add NPCs to CurrentMap's item lists
 	* world/Egg.*: stub egg class
-	
+
 2003-05-03  Ryan Nunn <colourles@users.sourceforge.net>
 	* kernel/Application.cpp : More info about rendering times
 
 2003-05-03  Ryan Nunn <colourles@users.sourceforge.net>
-	* kernel/Kernel.cpp : Uh oh, changed it so the kernel will NOT 
+	* kernel/Kernel.cpp : Uh oh, changed it so the kernel will NOT
 	  terminate when there are no more processes.
 
-	* kernel/Application.cpp : Pressing a key will now quit Pentagram. The 
+	* kernel/Application.cpp : Pressing a key will now quit Pentagram. The
 	  World will now be displayed as the background. This is temporary
 
 	* world/ItemSorter.* : Added ItemSorter. Not completely finished
@@ -735,20 +739,20 @@
 
 	 * world/Item.* : Status flags, and some interpolation stuff
 
-	 * misc/Rect.h : Added operator == 
+	 * misc/Rect.h : Added operator ==
 
 	 * world/World.* : Adding items to display list. Doing it like this is
 	   temporary
 
-	* filesys/IDataSource.h : Adding an unhack for the float stuff. Not 
+	* filesys/IDataSource.h : Adding an unhack for the float stuff. Not
 	  usable yet.
 
-	* graphics/*RenderSurface.* : Adding a clipping check function. 
+	* graphics/*RenderSurface.* : Adding a clipping check function.
 	  Slightly optimized text rendering.
 
-	* misc/pent_include.h : Added another CANT_HAPPEN macro. This one in 
-	  theory allows a string to be passed to the Macro that 'should' be 
-	  displayed when the assertion fails. However that is going to be 
+	* misc/pent_include.h : Added another CANT_HAPPEN macro. This one in
+	  theory allows a string to be passed to the Macro that 'should' be
+	  displayed when the assertion fails. However that is going to be
 	  compiler and runtime dependant
 
 2003-04-30 Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
@@ -865,17 +869,17 @@
 2003-03-08  Ryan Nunn <colourles@users.sourceforge.net>
 	* convert/ConvertShape.*, convert/crusader/ConvertShapeCrusader.*,
 	  convert/u8/ConvertShapeU8.* : Fixing a problem with SKF shapes.
-	  Improved Auto detection speed. Added second faster, less safe, 
+	  Improved Auto detection speed. Added second faster, less safe,
 	  auto detection function. Tweaking of Pentagram shape format
 
-	* filesys/FileSystem.* : Added option to allow full access to system 
+	* filesys/FileSystem.* : Added option to allow full access to system
 	  paths. I did this so the various command line tools wont require
 	  virtual paths to be set.
 
 	* filesys/IDataSource.h : Added signed readXS method.
 
-	* graphics/*RenderSurface.* : Moved and renamed SoftRenderSurface to 
-	  BaseSoftRenderSurface, and renamed U8SoftRenderSurface to 
+	* graphics/*RenderSurface.* : Moved and renamed SoftRenderSurface to
+	  BaseSoftRenderSurface, and renamed U8SoftRenderSurface to
 	  SoftRenderSurface. Implemented all shape drawing methods. Commented
 	  out some palette stuff that doesn't look like it's going to be used.
 
@@ -883,13 +887,13 @@
 	  and more comments. Oh, this contains the shape drawing code if you
 	  really needed to know.
 
-	* graphics/Palette.*, graphics/PaletteManager.* : Some changes to 
+	* graphics/Palette.*, graphics/PaletteManager.* : Some changes to
 	  support xforming.
 
-	* graphics/Shape.*, graphics/ShapeFlex.*, graphics/ShapeFrame.* : 
+	* graphics/Shape.*, graphics/ShapeFlex.*, graphics/ShapeFrame.* :
 	  Changed things so all the shape formats can be loaded and used.
 	  As things currently are, the shape formats will be autodetected.
-	  Using shapes converted to the Pentagram Shape Format should be 
+	  Using shapes converted to the Pentagram Shape Format should be
 	  fastest.
 
 	* graphics/XFormBlend.cpp : XFormBlending functions. Only have U8Xform
@@ -898,14 +902,14 @@
 	* gumps/*.* : Some near-stub gump classes. Nothing much here, except a
 	  start. Thought I would just commit this.
 
-	* kernel/Application.cpp : Added an 'avatar' to the centre of the 
+	* kernel/Application.cpp : Added an 'avatar' to the centre of the
 	  screen, as a test.
-	
+
 	* kernel/Object.cpp : Added for p_dynamic_cast support
 
 	* misc/pent_include.h : 2003
 
-	* kernel/Object.*, world/Container.*, world/Item.* : Added 
+	* kernel/Object.*, world/Container.*, world/Item.* : Added
 	  p_dynamic_cast support.
 
 	* kernel/Process.*,  usecode/UCMachine.cpp, usecode/UCProcess.* : Also
@@ -926,7 +930,7 @@
 	  methods to not be inlined.
 
 2003-02-24  Ryan Nunn <colourles@users.sourceforge.net>
-	* misc/pent_include.h, misc/p_dynamic_cast.h : Adding p_dynamic_cast 
+	* misc/pent_include.h, misc/p_dynamic_cast.h : Adding p_dynamic_cast
 	  stuff. If we use it... we use it. If we don't... it doesn't matter.
 
 2003-02-24  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
@@ -965,13 +969,13 @@
 	* convert/ConvertShape.h: compile error
 	* conf/XMLTree.cpp: allow 0xHEX constants as integers
 	* graphics/SoftRenderSurface.h: typo
-	
+
 2003-01-02  Ryan Nunn <colourles@users.sourceforge.net>
 	* AUTHORS : Changed my email address
 
 	* conf/XMLTree.cpp : Fixed the infinte loop.
 
-	* convert/ConvertShape.*, convert/crusader/ConvertShapeCrusader.*, 
+	* convert/ConvertShape.*, convert/crusader/ConvertShapeCrusader.*,
 	  convert/u8/ConvertShapeU8.* : Expanded the ConvertShapeFormat
 	  structure. Defined a Pentagram shape format. Added ConvertShapeFormat
 	  definitions for U8 Gumps/Mouse, U8 SKF Shapes and Crusader
@@ -1013,7 +1017,7 @@
 
 	* graphics/RenderSurface.* : RenderSurface Interface
 
-	* graphics/SoftRenderSurface.* : SoftRenderSurface Implementation of 
+	* graphics/SoftRenderSurface.* : SoftRenderSurface Implementation of
 	  RenderSurface
 
 	* misc/Rect.h : The useful Rect class
@@ -1028,7 +1032,7 @@
 	* kernel/Process.h : Explicitly set 'terminated' to false as you can't
 	  assume that all compilers will zero the memory. *cough* I'm looking
 	  at you gcc users. *cough*
-	  
+
 	* misc/Console.* : Console Drawing
 
 	* misc/pent_include.h : Minor update
@@ -1060,7 +1064,7 @@
 	* usecode/Usecode.h: abstract Usecode class
 	* usecode/UsecodeFlex.*: Usecode Flex reader
 	* kernel/Application.*: added FileSystem, load eusecode.flx
-	
+
 2002-12-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCList.h: usecode list
 	* usecode/*: more opcodes, minor structure changes
@@ -1111,7 +1115,7 @@
 	* tools/disasm/module.mk, module.mk, tools/fold/module.mk: Updated for
 	  fold.
 	* tools/fold: Added kinda-working decompiler. Yay!
-	
+
 2002-11-04  Darke  <darkepaw@users.sf.net>
 	* convert/u8/ConvertUsecodeU8.h: Tidying function names.
 	* filesys/ODataSource.h: Fixed compiler error.
@@ -1121,7 +1125,7 @@
 	* misc/Console.h: Fixed a fix, that wasn't a fix.
 
 2002-11-04  Ryan Nunn <colourles@users.sourceforge.net>
-	* misc/Console.* : Added methods for Console output redirection and 
+	* misc/Console.* : Added methods for Console output redirection and
 	  flags to enable/disable output to stdout and stderr. Added printf()
 	  methods to pout and perr. Added vPrintf() methods to Console.
 
@@ -1135,7 +1139,7 @@
 	* filesys/IDataSource.h: #include <fstream>
 	* tools/shapeconv/ShapeConv.cpp: std::endl
 	* various: added convert/u8 convert/crusader to modules list
-	
+
 2002-11-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* Makefile.in: tweaked dependency generation a bit
 
@@ -1164,7 +1168,7 @@
 	  I found. Source should be platform portable.
 
 2002-10-29  Ryan Nunn <colourles@users.sourceforge.net>
-	* filesys/FileSystem.cpp : The functions will no longer throw 
+	* filesys/FileSystem.cpp : The functions will no longer throw
 	  exceptions
 
 	* misc/Console.* : Word Wrapping can now be toggled (not that the
@@ -1195,7 +1199,7 @@
 	* misc/Console.h : Output Console
 
 	* graphics/MD3_Model.*, graphics/TextureBitmap.cpp, misc/Args.cpp
-	  misc/pent_include.h, convert/crusader/ConvertUsecodeCrusader.h, 
+	  misc/pent_include.h, convert/crusader/ConvertUsecodeCrusader.h,
 	  tools/disasm/Disasm.cpp, convert/u8/ConvertUsecodeU8.h :
 	  Changes to use Output Console functions/streams instead  of standard
 	  outout functions/streams
@@ -1209,7 +1213,7 @@
 	* tools/disasm/Disasm.cpp : use Q_strcasecmp() instead of stricmp()
 
 2002-10-26  Ryan Nunn <colourles@users.sourceforge.net>
-	* misc/pent_include.* : File to the included at the top of every 
+	* misc/pent_include.* : File to the included at the top of every
 	  source file (this is not an option, it must be included). It will
 	  include config.h. It will also include common_type.h and define some
 	  useful things. It can double as a pre-compiled header for those
@@ -1222,7 +1226,7 @@
 
 	* filesys/IDataSource.h: : Fixing a few virtual function issues
 
-	* convert/Convert.h,  convert/crusader/ConvertUsecodeCrusader.h, 
+	* convert/Convert.h,  convert/crusader/ConvertUsecodeCrusader.h,
 	  convert/u8/ConvertUsecodeU8.h : Changes for TGWDS
 
 	* tools/disasm/Disasm.cpp : Getting to compile in MSVC. Changes for
@@ -1249,7 +1253,7 @@
 	  is rather bare and not completely correct, but good enough to use
 	  it's basic features.
 	* tools/disasm/*: Updated disasm to use the new DataSource classes.
-	
+
 
 2002-09-08  Darke  <darkepaw@users.sf.net>
 	* tools/disasm/Disasm.cpp: All opcodes known, yay! Now we just have
