@@ -75,10 +75,10 @@ public:
 	virtual void				InitGump();
 
 	// Find a gump of the specified type (this or child). 2 ways of doing it:
-	// gump->FindChild(ChildGump::ClassType, recursive, no_inhertance);
-	// gump->FindChild<ChildGump>(recursive, no_inhertance);
-	virtual Gump *				FindGump(const RunTimeClassType& t, bool recursive=true, bool no_inhertance=false);
-	template<class T> Gump *	FindGump(bool recursive=true, bool no_inhertance=false) { return FindGump(T::ClassType, recursive, no_inhertance); }
+	// gump->FindChild(ChildGump::ClassType, recursive, no_inheritance);
+	// gump->FindChild<ChildGump>(recursive, no_inheritance);
+	virtual Gump *				FindGump(const RunTimeClassType& t, bool recursive=true, bool no_inheritance=false);
+	template<class T> Gump *	FindGump(bool recursive=true, bool no_inheritance=false) { return FindGump(T::ClassType, recursive, no_inheritance); }
 
 	// Get the mouse cursor for position mx, my relative to parents position
 	// Returns true if this gump wants to set the cursor. If false, the gump list

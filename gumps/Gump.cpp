@@ -341,11 +341,11 @@ bool Gump::GetLocationOfItem(uint16 itemid, int &gx, int &gy, sint32 lerp_factor
 }
 
 // Find a child gump of the specified type
-Gump* Gump::FindGump(const RunTimeClassType &t, bool recursive, bool no_inhertance)
+Gump* Gump::FindGump(const RunTimeClassType &t, bool recursive, bool no_inheritance)
 {
 	// If that is our type, then return us!
 	if (GetClassType() == t) return this;
-	else if (!no_inhertance && IsOfType(t)) return this;
+	else if (!no_inheritance && IsOfType(t)) return this;
 
 	// Iterate all children
 	std::list<Gump*>::iterator	it = children.begin();
@@ -359,7 +359,7 @@ Gump* Gump::FindGump(const RunTimeClassType &t, bool recursive, bool no_inhertan
 		if (g->flags & FLAG_CLOSING) continue;
 
 		if (g->GetClassType() == t) return g;
-		else if (!no_inhertance && g->IsOfType(t)) return g;
+		else if (!no_inheritance && g->IsOfType(t)) return g;
 	}
 
 	if (!recursive) return 0;
@@ -375,7 +375,7 @@ Gump* Gump::FindGump(const RunTimeClassType &t, bool recursive, bool no_inhertan
 		// Not if closing
 		if (g->flags & FLAG_CLOSING) continue;
 
-		g = g->FindGump(t,recursive,no_inhertance);
+		g = g->FindGump(t,recursive,no_inheritance);
 
 		if (g) return g;
 	}
