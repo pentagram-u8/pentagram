@@ -289,8 +289,7 @@ bool readfunction(ifstream& in, const char *name)
 	bool done = false;
 	while (!done) {
 		short s0;
-		sint32 i0=0, i1=0, i2=0, i3=0, i4=0, i5=0;
-		//sint32 flag;
+		sint32 i0=0, i1=0, i2=0, i3=0, i4=0;
 		std::string str0;
 		
 		#ifdef FOLD
@@ -746,6 +745,15 @@ bool readfunction(ifstream& in, const char *name)
 			printf("suspend");
 			break;
 
+		case 0x54:
+			// 54 xx yy
+			// implies
+			// this seems to link two processes, 'implying' that if one terminates,
+			// the other does also, but it's mostly a guess. *grin*
+			i0 = read1(in); i1 = read1(in);
+			printf("implies\t\t%02X %02X", i0, i1);
+			break;
+
 		case 0x57:
 			// 57 aa tt xx xx yy yy
 			// spawn process function yyyy in class xxxx
@@ -763,9 +771,9 @@ bool readfunction(ifstream& in, const char *name)
 			// uu = unknown
 			i0 = read2(in); i1 = read2(in);
 			i2 = read2(in);
-			i4 = read1(in); i5 = read1(in);
+			i3 = read1(in); i4 = read1(in);
 			printf("spawn inline\t%04X:%04X+%04X=%04X %02X %02X (%s+%04X)",
-				   i0, i1, i2, i1+i2, i4, i5,functionaddresstostring(i0, i1).c_str(), i2);
+				   i0, i1, i2, i1+i2, i3, i4, functionaddresstostring(i0, i1).c_str(), i2);
 			break;
 		case 0x59:
 			// 59
@@ -878,6 +886,78 @@ bool readfunction(ifstream& in, const char *name)
 			// pop a string and push 32 bit pointer to string
 			printf("str to ptr");
 			break;
+
+// Just my ramblings on 0x6C. It's a bit of a mess since it's taken from an irc log
+// but it's the best documentation we have on it at the moment. *grin*
+
+/* Anyway, the number at the end (01 in the above example) means the type of
+pointer the offset points to. 01==string ptr, 02==string list ptr, 03==list
+ptr. 01 and 03 are verified, 02 is an educated guess, and I'm pretty sure it's
+a BP+xxh value too from looking at the usecode.
+ *lightbulb* It looks like it may have been used for pointer/reference
+stuff. For example:
+ When a 'string' type is created, the actual string is stored in a Yamm
+class instantiation local to the current thread, only the reference to it is
+stored on the stack.
+ When a pointer to this string is passed to another newly created thread,
+the data pointed to in the original thread's Yamm needs to be copied to the
+newly constructed thread, incase the original thread terminates, (or the
+function just returns destroying the data), before the spawned thread uses it.
+ This is where Mr 0x6C comes in. He takes a pointer to the
+oritinal variable, copies the data from the Parent Yamm to it's (the Child's)
+Yamm.
+ Eg: The call in Class 007C:
+     371F: 59    push            pid
+     3720: 42    push list       [BP-0Ah] (02)
+     3723: 42    push list       [BP-0Ch] (02)
+     3726: 42    push list       [BP-0Eh] (02)
+     3729: 41    push string     [BP-02h]
+     372B: 40    push dword      [BP+06h]
+     372D: 57    spawn           08 02 007C:3757 (unknown)
+     3734: 66    free list       [SP+06h]
+     3736: 66    free list       [SP+04h]
+     3738: 66    free list       [SP+02h]
+     373A: 65    free string     [SP+00h]
+     373C: 6E    add sp          -08h
+     373E: 5E    push            retval
+ Then the start of the newly spawned function:
+ Func_3757:
+     3757: 5A    init            0D
+     3759: 6C    6C              [BP+0Ah] 01
+     375C: 6C    6C              [BP+0Ch] 03
+     375F: 6C    6C              [BP+0Eh] 03
+     3762: 6C    6C              [BP+10h] 03
+     3765: 0A    push byte       01h
+ The type value (01/02/03) at the end tells the opcode what type of data
+it's copying or reconstructing. And if you look closely, you'll note there's a
+'tiny' flaw in this opcode. In all the other list (not string list) related
+opcodes another value is passed, the size of the datatype stored in the array.
+This opcode lacks that value, and thus assumes that all datatypes for 03
+(list) are 2 bytes wide.
+ Of course, this also tells us something about how the processes were
+executed and/or queued. Either:
+ 1) When a new thread is created by a spawn, it is immediately executed
+until it hits the first opcode that 'sleeps' it until the next cycle, and that
+the 'init' and 0x6C opcodes are not 'sleep' inducing opcodes.
+ Or 2) The 'spawn' is a 'sleep' inducing opcode, and the new process is
+scheduled to be executed before the 'current' thread in the queue (whether it
+just be inserted before, or first, who knows *grin*). That way upon the next
+awakening of all the threads, the spawned thread gets the chance to copy all
+the relevant data from it's parent thread, before it's parent has a chance to
+terminate.
+ Also in the second case, as in the first case, the 'init' and
+'0x6C' opcodes aren't 'sleep' inducing.
+
+The general consensus is that the new threads are executed instantly upon creation,
+and that the child threads are indeed placed infront of the parent thread.
+*/
+		case 0x6C:
+			// 6C xx yy
+			// looks to be a BP+XX function... maybe not
+			i0 = read1(in); i1 = read1(in);
+			printf("param pid change\t\t%s %02X", print_bp(i0), i1);
+			break;
+
 		case 0x6D:
 			// 6D
 			// push result of process
@@ -947,10 +1027,18 @@ bool readfunction(ifstream& in, const char *name)
 		case 0x77:
 			// 77
 			// set info
-			// assigns item number and ProcessType 
+			// assigns item number and ProcessType, both values popped from the stack
 			printf("set info");
 			break;
 
+		case 0x78:
+			// 78
+			// process exclude
+			// sets a flag on the object target of the 'current' function call that said function call has
+			// exclusive use of the object until the call returns.
+			printf("process exclude");
+			break;
+			
 		case 0x79:
 			// 79
 			// end of function
@@ -981,19 +1069,7 @@ bool readfunction(ifstream& in, const char *name)
 		// these are some opcodes of which I've been able to guess
 		// the length, but not the function (yet)
 
-		case 0x78:
-			printf("%02X", opcode);
-			break;
-		case 0x54:
-			i0 = read1(in); i1 = read1(in);
-			printf("%02X\t\t%02X %02X", opcode, i0, i1);
-			break;
-		// 6C xx yy
-		// looks to be a BP+XX function... maybe not
-		case 0x6C:
-			i0 = read1(in); i1 = read1(in);
-			printf("%02X\t\t%s %02X", opcode, print_bp(i0), i1);
-			break;
+		// can't happen.
 		default:
 			printf("db\t\t%02x", opcode);
 			assert(false);
@@ -1001,7 +1077,7 @@ bool readfunction(ifstream& in, const char *name)
 		printf("\n");
 		
 		#ifdef FOLD
-		foldops.push_back(FoldOp(startOffset, opcode, curOffset, i0, i1, i2, i3, i4, i5, str0));
+		foldops.push_back(FoldOp(startOffset, opcode, curOffset, i0, i1, i2, i3, i4, str0));
 		#endif
 	}
 	return true;
