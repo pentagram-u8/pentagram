@@ -1159,6 +1159,15 @@ bool UCMachine::execProcess(UCProcess* p)
 			LOGPF(("long to int"));
 			break;
 
+		case 0x62:
+			// 62 xx
+			// free the string in var BP+xx
+			si8a = static_cast<sint8>(cs.read1());
+			ui16a = p->stack.access2(p->bp+si8a);
+			freeString(ui16a);
+			LOGPF(("free string\t%s", print_bp(si8a)));
+			break;
+
 		case 0x63:
 			// 63 xx
 			// free the stringlist in var BP+xx
