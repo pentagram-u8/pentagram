@@ -20,7 +20,7 @@
 #include "Gump.h"
 
 Gump::Gump(int X, int Y, int Width, int Height) : Object(), parent(0), gump_flags(0), 
-	x(X), y(Y), dims(0,0,Width,Height), layer(GUMP_LAYER_NORMAL)
+	x(X), y(Y), layer(GUMP_LAYER_NORMAL), dims(0,0,Width,Height)
 {
 }
 

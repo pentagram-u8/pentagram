@@ -331,7 +331,7 @@ bool FileSystem::IsDir(const string &path)
 	do {
 		exists = (stat(name.c_str(), &sbuf) == 0);
 		if (exists) {
-			if (sbuf.st_mode & _S_IFDIR)
+			if (S_ISDIR(sbuf.st_mode))
 				return true;  // exists, and is a directory
 			else
 				return false; // exists, but not a directory

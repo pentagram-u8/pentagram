@@ -1,3 +1,7 @@
+2003-03-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* */*: minor tweaks/warnings
+	* module.mk: added new object files
+
 2003-03-08  Ryan Nunn <colourles@users.sourceforge.net>
 	* convert/ConvertShape.*, convert/crusader/ConvertShapeCrusader.*,
 	  convert/u8/ConvertShapeU8.* : Fixing a problem with SKF shapes.

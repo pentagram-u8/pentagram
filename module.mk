@@ -11,6 +11,7 @@ pentagram_OBJ = \
 	kernel/Kernel.o \
 	kernel/Application.o \
 	kernel/Process.o \
+	kernel/Object.o \
 	usecode/UCMachine.o \
 	usecode/UCProcess.o \
 	usecode/UsecodeFlex.o \
@@ -23,6 +24,7 @@ pentagram_OBJ = \
 	misc/pent_include.o \
 	misc/util.o \
 	graphics/RenderSurface.o \
+	graphics/BaseSoftRenderSurface.o \
 	graphics/SoftRenderSurface.o \
 	graphics/Texture.o \
 	graphics/TextureTarga.o \
@@ -32,11 +34,19 @@ pentagram_OBJ = \
 	graphics/Palette.o \
 	graphics/PaletteManager.o \
 	graphics/ShapeFlex.o \
+	graphics/XFormBlend.o \
+	gumps/ConsoleGump.o \
+	gumps/GameMapGump.o \
+	gumps/Gump.o \
+	gumps/ResizableGump.o \
 	world/Item.o \
 	world/Container.o \
 	world/ItemFactory.o \
 	world/Map.o \
 	world/Glob.o \
+	convert/ConvertShape.o \
+	convert/u8/ConvertShapeU8.o \
+	convert/crusader/ConvertShapeCrusader.o \
 	conf/Configuration.o \
 	conf/XMLTree.o \
 	conf/XMLNode.o
