@@ -1,28 +1,97 @@
-Update by Colourless Dragon 8th April 2002
+Below is a description of the (possibly modified) Sonarc algorithm used
+to compress u8's audio. A working decompression implementation is in
+Pentagram's CVS (in the 'old' module).
 
-The sounds are indeed compressed with Sonarc. dcmpsound (included with 
-pentagram) can be used to decompress the sounds. This is done by calling the
-DCMP8 function within U8.EXE and getting it to decompress the sounds for us.
+---------------
 
----- Old Contents ----
+U8 uses the common technique of combining a linear predictive coding scheme
+combined with an entropy coding scheme for the error terms to provide lossless
+compression of SFX/speech.
 
-In U8.exe there is some mention of sonarc.c and therefore it seems that the
-sfx was compressed using a shareware tool named sonarc
-(http://www.firstpr.com.au/audiocomp/lossless/sonarc/). But unfortunately
-it seems Origin used a modified version to the shareware one. The author of
-the sfx is not availlable anymore (email address doesn't exist anymore and
-Google doesn't find him in any other way) and therefore there is no way to
-decompress the sfx for now (and play them any other way than through the
-game).
 
-Josef Drexler aka Aquamarine Dragon helped me to figure this out.
-Unfortunately he reached a dead end:
+The predictive linear coding algorithm used has order 10.
+To decode it, compute each following sample s[i] by:
 
-"... a better person [than the sonarc developer] to talk to would be someone
-who worked on U8 as opposed to the sonarc person.  Anyway, I didn't find out
-anything useful, I tried to do some reverse engineering but because of U8's
-weird memory management I didn't get anywhere.  Sorry, but unless someone has
-a brilliant idea I don't think this is going anywhere (though I suppose it
-couldn't hurt to ask in rgcud if anyone know sonarc, or maybe
-comp.compression too.)"
+s[i] = s[i] - ((s'[i-9]*f[0] + s'[i-8]*f[1] +...+ s'[i-1]*f(9) + 0x800) >> 12)
 
+where f[0]-f[9] are the best-fit factors computed by the compression algorithm
+and s'[j] = s[j]^0x80;
+These samples should be interpreted as signed 8 bit values. They are
+substracted from the "error terms" (minor abuse of the word) which typically
+are close to 0x80 (which is silence in the unsigned 8 bit audio format used).
+
+ (Note that the '+0x800' puts the average of the sample range on 0x80
+instead of on 0x80 - 1/2)
+
+
+The basic idea behind the entropy coding scheme is the following: (similar to
+the idea behind Golomb/Rice coding)
+To store a number n consisting of q bits, we can first output (q-1) ones,
+followed by a zero. After this, output the bits of n.
+
+
+This is implemented as follows:
+
+The (unsigned 8 bit) "error terms" are centered around 0x80, so we first
+substract 0x80 to get (signed 8 bit) numbers centered around 0.
+We then represent numbers by the minimum number of bits required including
+the sign bit. So 0 becomes 0, -1 => 1, 1 => 01, 2 => 010, -2 => 10, 3 => 011,
+-3 => 101, etc...
+
+There are 2*7 modes of operation. Modes 0-6 work as follows. (Modes 7-13
+are derived from modes 0-6 and explained below). Let the mode number be m.
+
+Let n be the (signed 8 bit) number we want to encode. First represent it
+as above. If necessary, pad each representation to m+1 bits by duplicating
+the sign bit as many times as required. Let q be the length of this
+representation.
+
+The output is now as follows:
+If q = m+1 (the minimum value), write a zero followed by the q bits.
+If m+1 < q < 8, write q-(m+1) ones followed by a zero. Then, write the q bits,
+ but skip the sign bit. The reason for this is that for signed numbers that
+ need _exactly_ q bits the sign bit is always the inverse of the MS bit after
+ the sign bit so it can be reconstructed.
+If q = 8, write 8-(m+1) ones followed by the 8 bits, again skipping the sign.
+
+
+The other 7 modes work identically, but they encode 0 (or 0x80) by
+a single 0. The other encodings are then prefixed by an extra 1.
+
+
+Examples: (the prefixed ones and zeroes are added on the right (LS) side.
+The actual bits representing the number are written with MS->LS, right-to-left,
+ as usual)
+
+Mode 0:
+
+0 is represented as 0, so q = 1. Output: 00
+-1 is represented as 1, so q = 1. Output: 10
+1 is represented as 01, so q = 2. Output (note the missing sign!): 101
+-2 is represented as 10, so q = 2. Output: 001
+2 is represented as 010, so q = 3. Output: 10011
+-3 is represented as 101, so q = 3. Output: 01011
+13 is represented as 01101, so q = 5. Output: 110101111
+-9 is represented as 10111, so q = 5. Output: 011101111
+78 is represented as 01001110, so q = 8.
+      Output (note the missing separating zero!): 10011101111111
+
+Mode 3:
+
+0 is represented as 0000, so q = 4. Output: 00000
+3 is represented as 0011, so q = 4. Output: 00110
+-5 is represented as 1011, so q = 4. Output: 10110
+17 is represented as 010001, so q = 6. Output: 10001011
+
+Mode 7:
+
+0 is special. Output: 0
+2 is 10011 in mode 7-7=0, so output: 100111
+-9 is 011101111 in mode 0, so output: 0111011111
+
+
+
+To decode, invert this process. This comes down to counting the number
+of consecutive ones on the LS side, which determines the number of data bits.
+Then copy the data bits and reconstruct the sign bit if necessary. Then
+sign-extend the resulting number to 8 bits.
