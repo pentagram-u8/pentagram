@@ -60,6 +60,8 @@ enum LLCToken
 	LLC_ADDRESS_OF,
 	// idenfitiers
 	LLC_FUNC_IDENT, LLC_IDENT,
+	// debugging
+	LLC_XWARN, LLC_XFAIL, LLC_XPASS,
 	// eof
 	LLC_EOF,
 	// error

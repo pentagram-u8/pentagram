@@ -25,8 +25,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Kernel.h"
 
-ConApp::ConApp(const int argc, const char * const * const argv)
-	: CoreApp(argc, argv, true), weAreDisasming(false), weAreCompiling(false)
+ConApp::ConApp(const int argc, const char * const * const argv, const std::string _defaultGame)
+	: CoreApp(argc, argv, _defaultGame, true), weAreDisasming(false), weAreCompiling(false)
+	// FIXME! Need a 'console' intrinsic set instead of the 0 above!
 {
 	application = this;
 
@@ -47,7 +48,9 @@ ConApp::ConApp(const int argc, const char * const * const argv)
 	}
 	else
 	{
-		assert(false);
+		// we'll presume we're testing for the moment, but we really need to have a proper testing target in the future...
+		kernel->addProcess(new CompileProcess(filesystem));
+		//assert(false);
 	}
 
 }
@@ -79,6 +82,9 @@ void ConApp::run()
 		// ...
 
 		if (kernel->runProcesses(framenum++)) repaint = true;
+	
+		if(kernel->getNumProcesses(0, 6)==0)
+			isRunning=false;
 
 		// get & handle all events in queue
 		while (isRunning && SDL_PollEvent(&event)) {

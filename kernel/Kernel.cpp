@@ -145,6 +145,9 @@ void Kernel::kernelStats()
 
 uint32 Kernel::getNumProcesses(uint16 objid, uint16 processtype)
 {
+	if(objid==0 && processtype==6)
+		return processes.size();
+	
 	uint32 count = 0;
 
 	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it)

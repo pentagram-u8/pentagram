@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 int main(int argc, char* argv[])
 {
-	ConApp* app = new ConApp(argc, argv);
+	ConApp* app = new ConApp(argc, argv, "test-warn");
 	app->run();
 
 	delete app;

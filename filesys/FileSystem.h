@@ -92,6 +92,7 @@ significant overhead.
 #include <fstream>
 #include <string>
 #include <map>
+#include <list>
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -99,6 +100,8 @@ significant overhead.
 class FileSystem
 {
  public:
+	typedef std::list<std::string> FileList;
+
 	FileSystem(bool noforcedvpaths = false);
 	~FileSystem();
 
@@ -114,6 +117,9 @@ class FileSystem
 	bool RemoveVirtualPath(const std::string &vpath);
 	
 	bool MountFileInMemory(const std::string &vpath, const uint8 *data, const uint32 len);
+
+	int  MkDir(const std::string& path); // can handle both paths and vpaths
+	int ListFiles(const std::string mask, FileList& files);
 
  private:
 	void switch_slashes(std::string &name);
@@ -134,7 +140,6 @@ class FileSystem
 	);
 	
 	bool IsDir(const std::string& path);
-	int  MkDir(const std::string& path);
 
 	static FileSystem* filesystem;
 

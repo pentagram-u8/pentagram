@@ -29,7 +29,7 @@
 class ConApp : public CoreApp
 {
 	public:
-		ConApp(const int argc, const char * const * const argv);
+		ConApp(const int argc, const char * const * const argv, const std::string _defaultGame);
 		virtual ~ConApp();
 		
 		virtual void run();

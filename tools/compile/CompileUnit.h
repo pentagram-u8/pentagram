@@ -33,16 +33,9 @@ class llcFlexLexer;
 class CompileUnit
 {
 	public:
-		enum CState { CSTATE_NEW, CSTATE_FAIL, CSTATE_WORKING, CSTATE_FINISHED };
+		enum CState { CSTATE_NEW, CSTATE_FAIL, CSTATE_WORKING, CSTATE_FINISHED, CSTATE_WARNED };
 
-		CompileUnit(FileSystem *filesystem) : currclass(0), ifile(0), idatasource(0),
-			parser(0), filesys(filesystem), _state(CSTATE_NEW)
-			#ifdef COMPILER_TEST
-			,testidx(0)
-			#endif
-		{
-			setState(CSTATE_NEW);
-		}
+		CompileUnit(FileSystem *filesystem);
 
 		~CompileUnit()
 		{}
@@ -57,7 +50,11 @@ class CompileUnit
 		// state handling
 		CState state() const { return _state; };
 		bool setState(const CState cs);
-
+	
+		LLCToken expect() const { return _expect; };
+		bool warned() const { return _warned; };
+		bool compileComplete() const { if((state()==CSTATE_FINISHED) && (filelist.size()==0)) return true; return false; };
+		
 	private:
 		// internal print stuff
 		void debugPrintHead(std::ostream &o, CompileNode *n=0) const;
@@ -94,6 +91,12 @@ class CompileUnit
 		FileSystem * const filesys; // the filesystem from Application
 
 		CState _state; // the current state of the compile
+		bool _ccomplete; // have we compiled all possible files?
+		
+		FileSystem::FileList filelist; // the remaining files we need to compile
+		
+		LLCToken _expect; // the expect state
+		bool _warned; // have we warned?
 		#ifdef COMPILER_TEST
 		uint32 testidx;
 		#endif

@@ -85,11 +85,11 @@ class TempOp
 
 uint32 curOffset;
 
-inline uint32 read1(IFileDataSource *ucfile) { curOffset+=1; return ucfile->read1(); };
-inline uint32 read2(IFileDataSource *ucfile) { curOffset+=2; return ucfile->read2(); };
-inline uint32 read4(IFileDataSource *ucfile) { curOffset+=4; return ucfile->read4(); };
+inline uint32 read1(IDataSource *ucfile) { curOffset+=1; return ucfile->read1(); };
+inline uint32 read2(IDataSource *ucfile) { curOffset+=2; return ucfile->read2(); };
+inline uint32 read4(IDataSource *ucfile) { curOffset+=4; return ucfile->read4(); };
 /* read string until null terninator */
-inline std::string readstr(IFileDataSource *ucfile)
+inline std::string readstr(IDataSource *ucfile)
 {
 	string s;
 	while(char c = static_cast<char>(read1(ucfile)))
@@ -100,7 +100,7 @@ inline std::string readstr(IFileDataSource *ucfile)
 	return s;
 }
 /* read 'n' characters into a string */
-inline std::string readnstr(IFileDataSource *ucfile, uint32 n)
+inline std::string readnstr(IDataSource *ucfile, uint32 n)
 {
 	string s;
 	while(n-->0)
@@ -162,7 +162,7 @@ ConvertUsecode *convert = new ConvertUsecodeU8();
 
 
 // Overload Table
-void printoverloads(IFileDataSource *ucfile, uint32 endpos);
+void printoverloads(IDataSource *ucfile, uint32 endpos);
 
 
 class GlobalName
@@ -189,7 +189,7 @@ bool	print_globals=false;
 
 bool crusader=false;
 
-void readglobals(IFileDataSource *ucfile)
+void readglobals(IDataSource *ucfile)
 {
 	char buf[60];
 	char c;
@@ -229,7 +229,7 @@ void printglobals()
    convert the class:offset pair into a string, and strcmping against them.
    So instead of having a 2*O(N) operation at read, and a 2*O(1)*O(logN) at search. We've got
    a O(N) operation at read, and a O(N)*O(logN) for _each_ search. */
-string functionaddresstostring(const sint32 i0, const sint32 i1, IFileDataSource *ucfile)
+string functionaddresstostring(const sint32 i0, const sint32 i1, IDataSource *ucfile)
 {
 	char buf[10];
 	std::map<string, string>::iterator funcoffset = FuncNames.find(buf);
@@ -306,8 +306,8 @@ string functionaddresstostring(const sint32 i0, const sint32 i1, IFileDataSource
 Folder *folder = new Folder();
 #endif
 
-void just_print(TempOp &op, IFileDataSource *ucfile);
-bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader &uch)
+void just_print(TempOp &op, IDataSource *ucfile);
+bool readfunction(IDataSource *ucfile, const char *name, const UsecodeHeader &uch)
 {
 	std::string str;
 
@@ -338,7 +338,8 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 	
 	while (!done)
 	{
-		if (!ucfile->good())
+		//if (!ucfile->good())
+		if(ucfile->getPos()>=ucfile->getSize())
 			return false;
 
 		TempOp op;
@@ -355,7 +356,7 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 	return true;
 }
 
-void just_print(TempOp &op, IFileDataSource *ucfile)
+void just_print(TempOp &op, IDataSource *ucfile)
 {
 		// point to the location of the opcode we just grabbed
 		con_Printf("    %04X:", op.offset);
@@ -729,7 +730,7 @@ void just_print(TempOp &op, IFileDataSource *ucfile)
 }
 
 
-void printfunc(const uint32 func, const uint32 nameoffset, IFileDataSource *ucfile)
+void printfunc(const uint32 func, const uint32 nameoffset, IDataSource *ucfile)
 {
 	ucfile->seek(0x80 + 8*(func+2));
 	uint32 offset = read4(ucfile);
@@ -854,7 +855,7 @@ int main(int argc, char **argv)
 	FileSystem filesys(true);
 
 	// Load usecode file
-	IFileDataSource *ucfile = filesys.ReadFile(argv[1]);
+	IDataSource *ucfile = filesys.ReadFile(argv[1]);
 
 	// Uh oh, couldn't load it
 	if(ucfile==0)
@@ -1024,7 +1025,7 @@ int main(int argc, char **argv)
 }
 
 // Overload Table
-void printoverloads(IFileDataSource *ucfile, uint32 endpos)
+void printoverloads(IDataSource *ucfile, uint32 endpos)
 {
 	con.Printf ("Overload Table:\n");
 

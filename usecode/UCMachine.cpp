@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "World.h"
 
-#include "u8intrinsics.h"
+#include "Container.h"
 
 #define LOGPF(X) pout.printf X
 //#define LOGPF(X)
@@ -45,7 +45,7 @@ enum UCSegments {
 
 UCMachine* UCMachine::ucmachine = 0;
 
-UCMachine::UCMachine() :
+UCMachine::UCMachine(Intrinsic *iset) :
 	globals(0x1000)
 {
 	assert(ucmachine == 0);
@@ -57,7 +57,7 @@ UCMachine::UCMachine() :
 	loop_list = 0;
 	loop_index = 0;
 
-	loadIntrinsics(U8Intrinsics); //!...
+	loadIntrinsics(iset); //!...
 }
 
 

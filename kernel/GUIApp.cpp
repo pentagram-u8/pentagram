@@ -53,6 +53,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ActorAnimProcess.h"
 #include "Font.h"
 #include "FontShapeFlex.h"
+#include "u8intrinsics.h"
 #include "Egg.h"
 
 #include <SDL.h>
@@ -70,8 +71,8 @@ using std::string;
 DEFINE_RUNTIME_CLASSTYPE_CODE(GUIApp,CoreApp);
 
 GUIApp::GUIApp(const int argc, const char * const * const argv)
-	: CoreApp(argc, argv, true), desktopGump(0), consoleGump(0), gameMapGump(0),
-	  screen(0), palettemanager(0), gamedata(0), world(0),
+	: CoreApp(argc, argv, "u8", true), desktopGump(0),
+	  consoleGump(0), gameMapGump(0), ucmachine(0), screen(0), palettemanager(0), gamedata(0), world(0),
 	  runGraphicSysInit(false), runSDLInit(false),
 	  frameSkip(false), frameLimit(true), interpolate(true),
 	  animationRate(33), avatarInStasis(false), painting(false)
@@ -80,6 +81,9 @@ GUIApp::GUIApp(const int argc, const char * const * const argv)
 	con.SetAutoPaint(true);
 
 	application = this;
+
+	pout << "Create UCMachine" << std::endl;
+	ucmachine = new UCMachine(U8Intrinsics);
 
 	postInit(argc, argv);
 
@@ -93,6 +97,7 @@ GUIApp::GUIApp(const int argc, const char * const * const argv)
 
 GUIApp::~GUIApp()
 {
+	FORGET_OBJECT(ucmachine);
 	FORGET_OBJECT(palettemanager);
 }
 
@@ -233,7 +238,7 @@ void GUIApp::U8Playground()
 	// Create GameMapGump
 	Rect dims;
 	screen->GetSurfaceDims(dims);
-
+	
 	pout << "Create GameMapGump" << std::endl;
 	gameMapGump = new GameMapGump(0, 0, dims.w, dims.h);
 	gameMapGump->InitGump();
@@ -617,15 +622,16 @@ uint32 GUIApp::I_getCurrentTimerTick(const uint8* /*args*/,
 uint32 GUIApp::I_setAvatarInStasis(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_SINT16(statis);
-	static_cast<GUIApp *>(get_instance())->setAvatarInStasis(statis!=0);
+	getGUIInstance()->setAvatarInStasis(statis!=0);
 	return 0;
 }
 
 uint32 GUIApp::I_getAvatarInStasis(const uint8* /*args*/, unsigned int /*argsize*/)
 {
-	if (static_cast<GUIApp *>(get_instance())->avatarInStasis)
+	if (getGUIInstance()->avatarInStasis)
 		return 1;
 	else
 		return 0;
 }
+
 

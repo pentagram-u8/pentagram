@@ -45,19 +45,28 @@ bool CompileProcess::run(const uint32 /*framenum*/)
 	if(cu->state()!=CompileUnit::CSTATE_FINISHED)
 		cu->parse();
 
-	if(cu->state()==CompileUnit::CSTATE_FAIL)
+	if(cu->state()==CompileUnit::CSTATE_FAIL && cu->expect()!=LLC_XFAIL)
 		CoreApp::get_instance()->ForceQuit();
 
 	if(cu->state()==CompileUnit::CSTATE_FINISHED)
 	{
-		terminate(); //FIXME: Needs to handle multiple files and such...
-		CoreApp::get_instance()->ForceQuit();
+		if(!(cu->expect()==LLC_XPASS || cu->expect()==LLC_NONE))
+		{
+			pout << "Error: Parse failed where expected to succeed." << std::endl;
+			pout << cu->expect() << std::endl;
+		}
+		
+		if(cu->compileComplete())
+			terminate(); //FIXME: Needs to handle multiple files and such...
+		else
+			cu->parse();
+		//CoreApp::get_instance()->ForceQuit();
 	}
 	
-	if(termCounter==0)
-		CoreApp::get_instance()->ForceQuit();
+	//if(termCounter==0)
+	//	CoreApp::get_instance()->ForceQuit();
 
-	pout << "Countdown to Term...: " << termCounter << std::endl;
+	//pout << "Countdown to Term...: " << termCounter << std::endl;
 	termCounter--;
 
 	// if we need to redraw the screen (aka, we've done something), we need to return true;

@@ -37,6 +37,8 @@
 #include <string>
 using	std::string;
 
+#include "ListFiles.h"
+
 FileSystem* FileSystem::filesystem = 0;
 
 FileSystem::FileSystem(bool noforced) : noforcedvpaths(noforced)
@@ -397,6 +399,9 @@ bool FileSystem::IsDir(const string &path)
 int FileSystem::MkDir(const string &path)
 {
 	string name = path;
+	if(name[0]=='@')
+		rewrite_virtual_path(name);
+
 #if (defined(MACOSX) || defined(BEOS))
 	// remove any trailing slashes
 	string::size_type pos = name.find_last_not_of('/');
@@ -415,4 +420,5 @@ int FileSystem::MkDir(const string &path)
 	return mkdir(name.c_str(), 0750); // Create dir. if not already there.
 #endif
 }
+
 

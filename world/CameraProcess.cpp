@@ -140,7 +140,7 @@ bool CameraProcess::run(const uint32 /* framenum */)
 		if (ex == ax && ey == ay && ez == (az+20))
 		{
 			pout << "Hack to scroll with Avatar" << std::endl;
-			static_cast<GUIApp *>(CoreApp::get_instance())->SetCameraProcess(new CameraProcess(1));
+			getGUIInstance()->SetCameraProcess(new CameraProcess(1));
 		}
 		else 
 		*/

@@ -50,6 +50,10 @@ const char *UNKNOWN_ERR = "Unknown Expression.";
 const char * const random_generic_errors[] =
 {
 	"Ugh! That's got to be the sickest thing I've ever seen!\n ...next to that poncy git there.\n\t--Giants: Citizen Kabuto",
+	"Hark! Is that the sweet song of lamentation I hear?\n\t-- The Guardian, Ultima 8",
+	"I do so enjoy the cries of torment.\n\t-- The Guardian, Ultima 8",
+	"Ouch! -That- must have hurt, Avatar!\n\t-- The Guardian, Ultima 8",
+	
 	""
 };
 
@@ -73,6 +77,27 @@ MsgType msg(const MsgType msgType, const char * const msgDetails, CompileUnit *c
 
 // Compile Unit **************************************************************
 #include "CompileUnit.h"
+
+CompileUnit::CompileUnit(FileSystem *filesystem) : currclass(0), ifile(0), idatasource(0),
+	parser(0), filesys(filesystem), _state(CSTATE_NEW), _ccomplete(false),
+	_expect(LLC_NONE), _warned(false)
+	#ifdef COMPILER_TEST
+	, testidx(0)
+	#endif
+{
+	setState(CSTATE_NEW);
+	filesys->ListFiles("@work/usecode/src/*", filelist);
+	for(FileSystem::FileList::iterator i=filelist.begin(); i!=filelist.end(); i++)
+		pout << "FILE: " << *i << std::endl;
+
+	#ifdef COMPILER_TEST
+	//filelist.push_back("@data/test-err/invalid-class-2.llc");
+	//filelist.push_back("@data/test-err/invalid-block.llc");
+	filelist.push_back("@work/usecode/src/nothing.llc");
+	//filelist.push_back("@data/test-err/invalid-class-3.llc");
+	filelist.push_back("@work/usecode/src/empty-class.llc");
+	#endif
+}
 
 // Wheeee! Debugging stuff...
 void CompileUnit::debugPrint(std::ostream &o, CompileNode *n) const
@@ -110,23 +135,13 @@ void CompileUnit::debugPrintBody(std::ostream &o) const
 
 #ifdef COMPILER_TEST
 
-enum TestX { TEST_END=0, TEST_XFAIL, TEST_XPASS, TEST_XWARN };
+/*enum TestX { TEST_END=0, TEST_XFAIL, TEST_XPASS, TEST_XWARN };
 
 struct CTestS
 {
 	const char * filename;
 	TestX xpect;
-};
-
-CTestS ctests[] = {
-	{ "@data/test-warn/empty-class.llc",	TEST_XPASS },
-	{ "@data/test-err/invalid-class-3.llc",	TEST_XFAIL },
-	{ "@data/test-warn/nothing.llc",		TEST_XWARN },
-	{ "@data/test-err/invalid-block.llc", 	TEST_XFAIL },
-	{ "@data/test-err/invalid-class-2.llc",	TEST_XFAIL },
-
-	{ "", TEST_END },
-};
+};*/
 
 #endif
 
@@ -145,17 +160,17 @@ bool CompileUnit::parse()
 	CTRACE("CompileUnit::parse()");
 
 	std::string fname;
-	//fname = "@data/test-warn/empty-class.llc";
-	//fname = "@data/test-warn/nothing.llc";
-	//fname = "@data/test-err/invalid-block.llc";
-	//fname = "@data/test-err/invalid-class-2.llc"; // should err, doesn't
-
-	if(!parser)
+	
+	if(!parser || state()==CSTATE_FINISHED)
 	{
 		#ifdef COMPILER_TEST
-		fname = ctests[testidx].filename;
-		pout << "Testing: " << fname << "..." << std::endl;
+		//fname = ctests[testidx].filename;
+		//pout << "Testing: " << fname << "..." << std::endl;
 		#endif
+		assert(filelist.size());
+		fname = filelist.back();
+		filelist.pop_back();
+		pout << "Opening... " << fname << std::endl;
 
 		idatasource = filesys->ReadFile(fname.c_str());
 		assert(idatasource!=0); // FIXME: Error checking!
@@ -170,6 +185,12 @@ bool CompileUnit::parse()
 	sint32 token=parser->yylex();
 	switch(token)
 	{
+		// #expect cases
+		case LLC_XFAIL: _expect=LLC_XFAIL; return true; break;
+		case LLC_XPASS: _expect=LLC_XPASS; return true; break;
+		case LLC_XWARN: _expect=LLC_XWARN; return true; break;
+	
+		// more normal cases...
 		case LLC_CLASS:
 			nodes.push_back(new ClassNode(parser->lineno()));
 			break;
@@ -205,7 +226,7 @@ bool CompileUnit::parse()
 			return true;
 			break;
 		default:
-			con.Printf("%d\n", token);
+			con.Printf("\n%d\n", token);
 			return false;
 	}
 
@@ -329,12 +350,17 @@ bool CompileUnit::setState(const CState cs)
 			FORGET_OBJECT(idatasource); // delete our data stream...
 			ifile=0; // ... and our ifstream should have been clobbered also
 			FORGET_OBJECT(parser); // blow away our parser. technically not needed and should be 'fixed' later... FIXME:
+			_warned=false;
+			_expect=LLC_NONE;
 			_state=cs;
 			break;
 		case CSTATE_FINISHED:
 		case CSTATE_FAIL:
 		case CSTATE_WORKING:
 			_state=cs;
+			break;
+		case CSTATE_WARNED: // doesn't actually change the state, but sets a flag instead...
+			_warned=true;
 			break;
 		default:
 			CANT_HAPPEN();
@@ -356,6 +382,7 @@ MsgType msg(const MsgType msgType, const char * const msgDetails, CompileUnit *c
 		case MT_WARN:
 			if(cu!=0) cu->debugPrint(pout);
 			con.Printf_err("Warning: %s\n", msgDetails);
+			cu->setState(CompileUnit::CSTATE_WARNED);
 			break;
 		case MT_ERR:
 			assert(cu!=0);

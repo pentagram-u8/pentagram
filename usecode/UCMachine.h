@@ -33,7 +33,7 @@ class UCProcess;
 class UCMachine
 {
 public:
-	UCMachine();
+	UCMachine(Intrinsic *iset);
 	~UCMachine();
 
 	static UCMachine* get_instance() { return ucmachine; }

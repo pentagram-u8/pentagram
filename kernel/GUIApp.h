@@ -47,9 +47,6 @@ class GUIApp : public CoreApp
 		virtual void run();
 		virtual void handleEvent(const SDL_Event& event);
 
-		//virtual void loadConfig();
-		//virtual void setupVirtualPaths();
-
 		void U8Playground();
 		virtual void paint();
 		virtual bool isPainting() { return painting; }
@@ -65,8 +62,9 @@ class GUIApp : public CoreApp
 		Gump *getDestkopGump() { return desktopGump; }
 
 	private:
-
+		
 		// full system
+		UCMachine* ucmachine;
 		RenderSurface *screen;
 		PaletteManager *palettemanager;
 		GameData *gamedata;

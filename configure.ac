@@ -248,11 +248,9 @@ if test x$enable_paranoid_warnings = xyes; then
 		# -Wunreachable-code
 #       DEBUG_FLAGS="$DEBUG_FLAGS -Wall -O -Wunused -Wuninitialized -Woverloaded-virtual -Wpointer-arith -Wcast-qual -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -Winline"
         WARNING_LEVEL="Paranoid"
-#	echo pwarn
 else
         WARNINGS="-Wall"
         WARNING_LEVEL="Normal"
-#	echo nwarn
 fi
 
 # ------------------

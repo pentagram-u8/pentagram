@@ -31,12 +31,12 @@ class UCMachine;
 class FileSystem;
 class Configuration;
 
-class CoreApp // will eventually be renamed Application again, once everything is fully rearranged.
+class CoreApp
 {
 	public:
 		ENABLE_RUNTIME_CLASSTYPE();
-
-		CoreApp(const int argc, const char * const * const argv, bool delayPostInit=false);
+		CoreApp(const int argc, const char * const * const argv,
+			const std::string _defaultGame, bool delayPostInit=false);
 		virtual ~CoreApp();
 		
 		// if delayPostInit is true, it deferrs to the child class to do the post
@@ -63,10 +63,9 @@ class CoreApp // will eventually be renamed Application again, once everything i
 		uint32 framenum;
 	
 		std::string game;
-	
+
 		// minimal system
 		Kernel* kernel;
-		UCMachine* ucmachine;
 		FileSystem* filesystem;
 		Configuration* config;
 
@@ -75,7 +74,8 @@ class CoreApp // will eventually be renamed Application again, once everything i
 		static CoreApp* application; // derived classes need to override this
 		
 	private:
-
+		std::string defaultGame;
+		
 		void SDLInit(); // start sdl
 		virtual void sysInit();
 		

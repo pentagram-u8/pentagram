@@ -43,8 +43,10 @@ DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(CoreApp);
 
 CoreApp* CoreApp::application = 0;
 
-CoreApp::CoreApp(const int argc, const char * const * const argv, bool delayPostInit)
-	: isRunning(false), framenum(0), kernel(0), ucmachine(0), filesystem(0), config(0)
+CoreApp::CoreApp(const int argc, const char * const * const argv,
+	const string _defaultGame, bool delayPostInit)
+	: isRunning(false), framenum(0), kernel(0), filesystem(0), config(0),
+		defaultGame(_defaultGame)
 {
 	assert(application == 0);
 	application = this;
@@ -58,7 +60,6 @@ CoreApp::CoreApp(const int argc, const char * const * const argv, bool delayPost
 CoreApp::~CoreApp()
 {
 	FORGET_OBJECT(kernel);
-	FORGET_OBJECT(ucmachine);
 	FORGET_OBJECT(filesystem);
 	FORGET_OBJECT(config);
 
@@ -95,8 +96,6 @@ void CoreApp::sysInit()
 	pout << "Create Configuration" << std::endl;
 	config = new Configuration;
 
-	pout << "Create UCMachine" << std::endl;
-	ucmachine = new UCMachine;
 }
 
 void CoreApp::setupVirtualPaths()
@@ -160,6 +159,7 @@ void CoreApp::loadConfig()
 	/**********
 	  load pentagram specific data path
 	 **********/
+	//addPath("config/general/data","@data", "Data Path");
 	std::string data;
 	pout << "Reading \"config/general/data\" config key." << std::endl;
 	config->value("config/general/data", data, "");
@@ -174,11 +174,11 @@ void CoreApp::loadConfig()
 	/**********
 	  load main game data path
 	 **********/
-	std::string u8;
+	std::string gpath;
 	pout << "Reading \"config/" << game << "/path\" config key." << std::endl;
-	config->value(string("config/")+game+"/path", u8, ".");
-	filesystem->AddVirtualPath("@u8", u8);
-	pout << "U8 Path: " << u8 << std::endl;
+	config->value(string("config/")+game+"/path", gpath, ".");
+	filesystem->AddVirtualPath("@u8", gpath);
+	pout << "Game Path: " << gpath << std::endl;
 
 	/**********
 	  load work path. Default is $(HOME)/.pentagram/game-work
@@ -197,13 +197,19 @@ void CoreApp::loadConfig()
 	config->value(string("config/")+game+"/work", work, string(home+"/"+game+"-work").c_str());
 	filesystem->AddVirtualPath("@work", work, true); // force creation if it doesn't exist
 	pout << "U8 Workdir: " << work << std::endl;
+
+	// make sure we've got a minimal sane filesystem under there...
+	filesystem->MkDir("@work/usecode");
+	filesystem->MkDir("@work/usecode/obj");
+	filesystem->MkDir("@work/usecode/src");
+	filesystem->MkDir("@work/usecode/asm");
 }
 
 void CoreApp::ParseArgs(const int argc, const char * const * const argv)
 {
 	pout << "Parsing Args" << std::endl;
 
-	parameters.declare("--game",    &game,           "u8");
+	parameters.declare("--game", &game, defaultGame.c_str());
 	//parameters.declare("--singlefile",	&singlefile, true);
 
 	parameters.process(argc, argv);

@@ -5,10 +5,12 @@ LPATH := tools/fold
 LSRC := $(wildcard $(LPATH)/*.cpp)
 LPRODUCTS := fold
 
-fold_OBJ = misc/Args.o \
+fold_OBJ = \
+	$(ARGS) \
+	$(MISC) \
+	$(CONF) \
+	$(KERNEL) \
 	filesys/FileSystem.o \
-	misc/Console.o \
-	misc/Q_strcasecmp.o \
 	tools/fold/Fold.o \
 	tools/fold/Folder.o \
 	tools/fold/Type.o \

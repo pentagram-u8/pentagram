@@ -1,3 +1,27 @@
+2003-05-30	Darke <darkepaw@users.sf.net>
+	* objects.mk, module.mk, tools/disasm/module/mk, tools/fold/module.mk:
+	  Shuffled the lists of objects into their own file so I could 'easily'
+	  link the other stand alone apps.
+	* tools/disasm/Disasm.cpp: Updating to get it working again.
+	* tools/compile/llcTokens.h, tools/compile/llcLexer.*,
+	  tools/compile/CompileUnit.h, tools/compile/CompileProcess.cpp,
+	  tools/compile/Compil.cpp: Some updates to support loading usecode from
+	  proper directories, etc, kind of half finished since Colourless' big
+	  commit interrupted it a little. *grin*
+	* tools/kernel/Kernel.cpp: Added obvious optimisation.
+	* usecode/UCMachine.*, usecode/Usecode.h, tools/compile/llc.cpp,
+	  kernel/[GUI|Core|Con]App.*: Suffled the usecode machine out of CoreApp,
+	  given it's dependancy on... well... *everything* there's no real way to
+	  abstract it enough atm, since things are still in half-built stages.
+	  Soon though... *muhahahahaha!*
+	* filesys/FileSystem.*, filesys/ListFiles.h: Added preliminary support
+	  for getting a list of files inside a dir. Still needs a bit of
+	  work (doesn't correctly translate raw paths, back to our sandboxed
+	  @paths...)  and it only 'works' correctly under linux/unix (I think,
+	  mingw might work though... and everything else is #error-ed). So if
+	  Colourless is quick, he might be able to get a completely working
+	  version working under 'doze before I under linux! *grin*
+	
 2003-06-02  Ryan Nunn <colourles@users.sourceforge.net>
 	* gumps/Gump.* : Fixing invalid focus_chlid problems 
 	* kernel/CoreApp.h, kernel/GUIApp.h, misc/Console.cpp : Console no longer 

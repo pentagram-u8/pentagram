@@ -1,24 +1,34 @@
 %{
 #include "pent_include.h"
-//#include <cctype>
 #include "llcTokens.h"
 
 %}
 
- // just to 'simply' things
+	// just to 'simply' things
 %option never-interactive
 %option noyywrap
 %option c++
+%option 8bit
+%option ansi-definitions
+%option ansi-prototypes
+%option warn
 
- // to make things easier I hope. *grin*
+	// spits out a short performance warning
+%option perf-report
+
+	// to make things easier I hope. *grin*
 %option yylineno
 
- // only for debugging
+	// only for debugging
 %option debug
+%option nodefault
+
+	// enable start state stacks (say *that* three times fast!)
+%option stack
 
 %option prefix="llc"
 
-%x CCOMMENT
+%x CCOMMENT HASH_EXPECT
 
 WS [[:space:]]+
 
@@ -30,7 +40,7 @@ FunctionIdentifier  ({Letter}({Letter}|[[:digit:]])*)[[:space:]]*\(
 BinaryConst ("0b"|"0B")[01]+
 DecimalConst "-"?[[:digit:]]+
 HexConst ("0x"|"0X")[[:xdigit:]]+
-	 // needs to handle 'escape quoting' of '\\\"' in the string
+	// needs to handle 'escape quoting' of '\\\"' in the string
 StringConst "\""[^\"]*"\""
 CStringConst "\'"[^\']*"\'"
 
@@ -43,11 +53,14 @@ CStringConst "\'"[^\']*"\'"
 {LineComment}		{ }
 
 "/*"				{ BEGIN(CCOMMENT);		}
-<CCOMMENT>[^*\n]+	{ }
-<CCOMMENT>\n		{ }
-<CCOMMENT>"*"		{ }
-<CCOMMENT>"*/"		{ BEGIN(INITIAL);		}
-<CCOMMENT>"*/".*\n	{ BEGIN(INITIAL);		}
+
+<CCOMMENT>{
+[^*\n]*				{ }
+[^*\n]*\n			{ }
+"*"+[^*/\n]*		{ }
+"*"+[^*/\n]*\n		{ }
+"*"+"/"				{ BEGIN(INITIAL); }
+}
 
  /***************************************************************************
 	Constants
@@ -242,6 +255,23 @@ CStringConst "\'"[^\']*"\'"
 {FunctionIdentifier}	{ return LLC_FUNC_IDENT;	}
 
 {VariableIdentifier}	{ return LLC_IDENT;			}
+
+ /***************************************************************************
+ 	Debugging/Regression Testing
+  ***************************************************************************/
+
+"#expect"		{ BEGIN(HASH_EXPECT);		}
+
+<HASH_EXPECT>{
+"XWARN"			{ return LLC_XWARN;			}
+"XFAIL"			{ return LLC_XFAIL;			}
+"XPASS"			{ return LLC_XPASS;			}
+{WS}			{ 							}
+\n				{ BEGIN(INITIAL);			}
+ /* ignore everything else, since this really isn't a 'user' function lacking
+ 	random warnings isn't a problem */
+.				{ }
+}
 
  /***************************************************************************
 	Catch All

@@ -5,11 +5,14 @@ LPATH := tools/disasm
 LSRC := $(wildcard $(LPATH)/*.cpp)
 LPRODUCTS := disasm
 
+include objects.mk
+
 disasm_OBJ = \
-	misc/Args.o \
+	$(ARGS) \
+	$(MISC) \
+	$(CONF) \
+	$(KERNEL) \
 	filesys/FileSystem.o \
-	misc/Console.o \
-	misc/Q_strcasecmp.o \
 	tools/disasm/Disasm.o \
 	tools/fold/Type.o \
 	tools/fold/IfNode.o \
