@@ -29,6 +29,9 @@ public:
 	MainActor();
 	virtual ~MainActor();
 
+	virtual bool CanAddItem(Item* item, bool checkwghtvol=false);
+	virtual bool addItem(Item* item, bool checkwghtvol=false);
+
 	//! teleport to the given location on the given map
 	virtual void teleport(int mapnum, sint32 x, sint32 y, sint32 z);
 

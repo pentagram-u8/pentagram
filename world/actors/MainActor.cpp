@@ -50,6 +50,47 @@ MainActor::~MainActor()
 
 }
 
+bool MainActor::CanAddItem(Item* item, bool checkwghtvol)
+{
+	const unsigned int backpack_shape = 529; //!! *cough* constant
+
+	if (!Actor::CanAddItem(item, checkwghtvol)) return false;
+	if (item->getParent() == objid) return true; // already in here
+
+	// now check 'equipment slots'
+	// we can have one item of each equipment type, plus one backpack
+
+	uint32 equiptype = item->getShapeInfo()->equiptype;
+	bool backpack = (item->getShape() == backpack_shape);
+
+	// valid item type?
+	if (equiptype == ShapeInfo::SE_NONE && !backpack) return false;
+
+	std::list<Item*>::iterator iter;
+	for (iter = contents.begin(); iter != contents.end(); ++iter)
+	{
+		uint32 cet = (*iter)->getShapeInfo()->equiptype;
+		bool cbackpack = ((*iter)->getShape() == backpack_shape);
+
+		// already have an item with the same equiptype
+		if (cet == equiptype || (cbackpack && backpack)) return false;
+	}
+
+	return true;
+}
+
+bool MainActor::addItem(Item* item, bool checkwghtvol)
+{
+	if (!Actor::addItem(item, checkwghtvol)) return false;
+
+	item->setFlag(FLG_EQUIPPED);
+
+	uint32 equiptype = item->getShapeInfo()->equiptype;
+	item->setZ(equiptype);
+
+	return true;
+}
+
 void MainActor::teleport(int mapnum, sint32 x, sint32 y, sint32 z)
 {
 	World* world = World::get_instance();

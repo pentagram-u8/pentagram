@@ -116,26 +116,31 @@ bool Actor::loadMonsterStats()
 	return true;
 }
 
+bool Actor::removeItem(Item* item)
+{
+	if (!Container::removeItem(item)) return false;
 
-bool Actor::CanAddItem(Item* item, bool checkwghtvol)
+	item->clearFlag(FLG_EQUIPPED); // unequip if necessary
+
+	return true;
+}
+
+bool Actor::setEquip(Item* item, bool checkwghtvol)
 {
 	const unsigned int backpack_shape = 529; //!! *cough* constant
-
-	if (!Container::CanAddItem(item, checkwghtvol)) return false;
-	if (item->getParent() == objid) return true; // already in here
-
-	// now check 'equipment slots'
-	// we can have one item of each equipment type, plus one backpack
-
 	uint32 equiptype = item->getShapeInfo()->equiptype;
 	bool backpack = (item->getShape() == backpack_shape);
 
 	// valid item type?
 	if (equiptype == ShapeInfo::SE_NONE && !backpack) return false;
 
+	// now check 'equipment slots'
+	// we can have one item of each equipment type, plus one backpack
 	std::list<Item*>::iterator iter;
 	for (iter = contents.begin(); iter != contents.end(); ++iter)
 	{
+		if ((*iter)->getObjId() == item->getObjId()) continue;
+
 		uint32 cet = (*iter)->getShapeInfo()->equiptype;
 		bool cbackpack = ((*iter)->getShape() == backpack_shape);
 
@@ -143,26 +148,10 @@ bool Actor::CanAddItem(Item* item, bool checkwghtvol)
 		if (cet == equiptype || (cbackpack && backpack)) return false;
 	}
 
-	return true;
-}
-
-bool Actor::addItem(Item* item, bool checkwghtvol)
-{
 	if (!Container::addItem(item, checkwghtvol)) return false;
 
 	item->setFlag(FLG_EQUIPPED);
-
-	uint32 equiptype = item->getShapeInfo()->equiptype;
 	item->setZ(equiptype);
-
-	return true;
-}
-
-bool Actor::removeItem(Item* item)
-{
-	if (!Container::removeItem(item)) return false;
-
-	item->clearFlag(FLG_EQUIPPED);
 
 	return true;
 }
@@ -177,8 +166,11 @@ uint16 Actor::getEquip(uint32 type)
 		uint32 cet = (*iter)->getShapeInfo()->equiptype;
 		bool cbackpack = ((*iter)->getShape() == backpack_shape);
 
-		if (cet == type || (cbackpack && type == 7)) // !! constant
+		if (((*iter)->getFlags() & FLG_EQUIPPED) &&
+			(cet == type || (cbackpack && type == 7))) // !! constant
+		{
 			return (*iter)->getObjId();
+		}
 	}
 
 	return 0;
@@ -1087,11 +1079,8 @@ uint32 Actor::I_setEquip(const uint8* args, unsigned int /*argsize*/)
 	if (!actor) return 0;
 	if (!item) return 0;
 
-	if (actor->getEquip(type+1))
-		return 0; // already something equipped
-
-	if (!actor->addItem(item, false))
-		return 0; // can't add it
+	if (!actor->setEquip(item, false))
+		return 0;
 
 	// check it was added to the right slot
 	assert(item->getZ() == type+1);
