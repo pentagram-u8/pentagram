@@ -103,23 +103,24 @@ bool World::switchMap(uint32 newmap)
 		return false; // no such map
 
 	// Map switching procedure:
+
+	// get rid of camera
+	// notify all gumps of a map change
+	// delete any ethereal objects
 	// write back CurrentMap to the old map, which
-	//   un-expands GlobEggs (delete EXT_INGLOB items, reset contents fields)
-	// clear all objIDs
-	// swap out fixed items in old map?
-	// make sure fixed items in the new map are loaded
+	//   deletes all disposable items
+	//   deletes the EggHatcher
+	//   resets all eggs
+	// swap out fixed items in old map
+	// kill all processes attached to items
+	// load fixed items in new map
 	// load new map into CurrentMap, which also
-	//   expands GlobEggs
 	//   assigns objIDs to fixed items
 	//   assigns objIDs to nonfixed items
+	//   creates an EggHatcher and notifies it of all eggs
+	//   sets up all NPCs in the new map
+	// reset camera
 
-	// NB: not only World has to perform actions on a map switch
-	// other things that should/could also happen:
-	// - processes have to be terminated (all processes?)
-	// - autosave?
-	// - camera reset?
-	// - kill gumps?
-	// - ...?
 
 	// kill camera
 	CameraProcess::ResetCameraProcess();

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -36,6 +36,7 @@ struct AnimFrame
 	};
 
 	inline bool is_flipped() { return (flags & AFF_FLIPPED) != 0; }
+	inline int attack_range() { return ((flags >> 2) & 0x07); }
 };
 
 struct AnimAction {
@@ -57,6 +58,7 @@ struct AnimAction {
 
 	enum AnimActionFlags {
 		AAF_TWOSTEP = 0x01,
+		AAF_ATTACK  = 0x02,
 		AAF_LOOPING = 0x04,
 		AAF_HANGING = 0x80
 	};
