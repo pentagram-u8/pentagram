@@ -63,7 +63,12 @@ MusicFlex::SongInfo::~SongInfo()
 void MusicFlex::cache(uint32 index)
 {
 	if (index >= count) return;
-	if (!songs) songs = new XMidiFile * [count];
+
+	if (!songs) 
+	{
+		songs = new XMidiFile * [count];
+		std::memset(songs, 0, sizeof (XMidiFile *) * count);
+	}
 
 	if (songs[index]) return;
 

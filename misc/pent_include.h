@@ -145,7 +145,7 @@ extern const std::string c_empty_string;
 #include "FileSystem.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
-#include "ShapeFlex.h"
+#include "ShapeArchive.h"
 #include "Shape.h"
 #include "ShapeFrame.h"
 #include "RenderSurface.h"
