@@ -142,6 +142,11 @@ void CombatProcess::setTarget(ObjId newtarget)
 bool CombatProcess::isValidTarget(Actor* target)
 {
 	assert(target);
+	Actor* a = World::get_instance()->getNPC(item_num);
+	if (!a) return false; // uh oh
+
+	// don't target self
+	if (target == a) return false;
 
 	// not in the fastarea
 	if (!(target->getFlags() & Item::FLG_FASTAREA)) return false;
@@ -151,9 +156,6 @@ bool CombatProcess::isValidTarget(Actor* target)
 
 	// feign death only works on undead and demons
 	if (target->getActorFlags() & Actor::ACT_FEIGNDEATH) {
-
-		Actor* a = World::get_instance()->getNPC(item_num);
-		if (!a) return false; // uh oh
 
 		if ((a->getDefenseType() & WeaponInfo::DMG_UNDEAD) || 
 			(a->getShape() == 96)) return false; // CONSTANT!

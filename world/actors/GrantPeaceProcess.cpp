@@ -108,6 +108,7 @@ bool GrantPeaceProcess::run(const uint32 /*framenum*/)
 		for (unsigned int i = 0; i < itemlist.getSize(); ++i) {
 			Actor *t = World::get_instance()->getNPC(itemlist.getuint16(i));
 			if (!t) continue;
+			if (t == caster) continue;
 
 			if (t->getFlags() & Actor::ACT_DEAD) continue;
 

@@ -765,6 +765,7 @@ bool Actor::areEnemiesNear()
 	for (unsigned int i = 0; i < uclist.getSize(); ++i) {
 		Actor *npc = World::get_instance()->getNPC(uclist.getuint16(i));
 		if (!npc) continue;
+		if (npc == this) continue;
 
 		if (npc->getActorFlags() & (ACT_DEAD | ACT_FEIGNDEATH)) continue;
 		if (!(npc->getActorFlags() & ACT_INCOMBAT)) continue;

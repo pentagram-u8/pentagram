@@ -443,7 +443,6 @@ void CurrentMap::areaSearch(UCList* itemlist, const uint8* loopscript,
 
 				Item* item = *iter;
 
-				if (item == check) continue;
 				if (item->getExtFlags() & Item::EXT_SPRITE) continue;
 
 				// check if item is in range?
