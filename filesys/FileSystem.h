@@ -102,8 +102,7 @@ class FileSystem
 		IFileDataSource *ReadFile(const std::string &vfn, const bool is_text=false)
 		{
 			std::ifstream *f = new std::ifstream();
-			rawopen(*f, vfn, is_text);
-			if(f==0)
+			if(!rawopen(*f, vfn, is_text))
 				return 0;
 			return new IFileDataSource(f);
 		};

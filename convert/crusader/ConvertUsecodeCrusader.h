@@ -29,7 +29,8 @@ class ConvertUsecodeCrusader : public ConvertUsecode
 		const char* const *intrinsics()  { return _intrinsics;  };
 		const char* const *event_names() { return _event_names; };
 		void readheader(IFileDataSource *ucfile, UsecodeHeader &uch, uint32 &curOffset);
-		void readevents(IFileDataSource *ucfile) { /* crusader doesn't have inline events */ };
+		void readevents(IFileDataSource * /*ucfile*/)
+		{ /* crusader doesn't have inline events */ };
 		
 	private:
 		static const char* const _intrinsics[];

@@ -1,4 +1,8 @@
 2002-09-22  Darke  <darkepaw@users.sf.net>
+	* convert/crusader/ConvertUsecodeCrusader.h, filesys/FileSystem.h,
+	  tools/disasm/Disasm.cpp: Docs & code cleanup.
+
+2002-09-22  Darke  <darkepaw@users.sf.net>
 	* convert/*,tools/disasm/*: Moved more of the game specific usecode
 	  handling to convert; Fixed up a couple of the opcode's docs.
 

@@ -50,7 +50,8 @@ using	std::string;
 class UsecodeHeader
 {
 	public:
-		UsecodeHeader() : routines(0), maxOffset(0), offset(0), externTable(0), fixupTable(0) {};
+		UsecodeHeader()
+		: routines(0), maxOffset(0), offset(0), externTable(0), fixupTable(0) {};
 
 		uint32 routines;
 		uint32 maxOffset;
@@ -58,6 +59,9 @@ class UsecodeHeader
 		uint32 externTable;
 		uint32 fixupTable;
 };
+
+/* curOffset is the current offset from the start of the current data section
+   thus the specialised read functions */
 
 uint32 curOffset;
 
@@ -89,15 +93,22 @@ ConvertUsecode *convert = new ConvertUsecodeU8();
 
 const string c_empty_string;
 
-/* GlobalName.find().first == the offset into the char[]
-	GlobalName.find().second.first == the number of bytes stored in the global
-	GlobalName.find().second.second == the name of the global
-	Additional note: The maximum size of the globals array would be 64k.
-*/
-map<uint32, pair<uint32, std::string> > GlobalName;
+class GlobalName
+{
+	public:
+		GlobalName(const uint32 _offset=0, const uint32 _size=0,
+			const string _name=string())
+		: offset(_offset), size(_size), name(_name) {};
+
+		uint32	offset; //the offset into the char[]
+		uint32	size; //the number of bytes stored in the global
+		string	name; //the name of the global
+};
+
+/* Additional note: The maximum size of the globals array would be 64k. */
+map<uint32, GlobalName> GlobalNames;
+
 map<string, string> FuncNames;
-//uint32 maxOffset;
-Args parameters;
 
 string	gamelanguage;
 string	gametype;
@@ -120,7 +131,7 @@ void readglobals(IFileDataSource *ucfile)
 		sint32 i = 0;
 		do {
 			c = read1(ucfile);
-			curoff++;
+			++curoff;
 			buf[i++] = c;
 		} while (c != 0);
 		uint32 i0 = read1(ucfile);
@@ -130,20 +141,25 @@ void readglobals(IFileDataSource *ucfile)
 		curoff+=4;
 
 		uint32 flag = i0 + (i1<<8);
-		GlobalName[flag] = pair<uint32, std::string>(i2, std::string(buf));
+		GlobalNames[flag] = GlobalName(flag, i2, buf);
 	}
 }
 
 void printglobals()
 {
-	for(std::map<uint32, pair<uint32, std::string> >::iterator i=GlobalName.begin(); i!=GlobalName.end(); ++i)
-		printf("[%04X %02X] (%s)\n", i->first, i->second.first, i->second.second.c_str());
+	for(map<uint32, GlobalName>::iterator i=GlobalNames.begin(); i!=GlobalNames.end(); ++i)
+		printf("[%04X %02X] (%s)\n", i->first, i->second.size, i->second.name.c_str());
 }
 
-std::string functionaddresstostring(sint32 i0, sint32 i1)
+/* This looks _real_ dubious. Instead of loading all the offsets from the files and converting
+   them to pair<uint32, uint32>, we're storing them in memory as strings, then having to
+   convert the class:offset pair into a string, and strcmping against them.
+   So instead of having a 2*O(N) operation at read, and a 2*O(1)*O(logN) at search. We've got
+   a O(N) operation at read, and a O(N)*O(logN) for _each_ search. */
+string functionaddresstostring(const sint32 i0, const sint32 i1)
 {
 	char buf[10];
-	std::map<std::string, std::string>::iterator funcoffset = FuncNames.find(buf);
+	map<string, string>::iterator funcoffset = FuncNames.find(buf);
 
 	std::snprintf(buf, 10, "%04X:%04X", i0, i1);
 	funcoffset = FuncNames.find(buf);
@@ -153,17 +169,17 @@ std::string functionaddresstostring(sint32 i0, sint32 i1)
 		return funcoffset->second;
 }
 
-char *print_bp(sint32 offset)
+const char * const print_bp(const sint32 offset)
 {
 	static char str[32];
-	std::snprintf(str, 32, "[BP%c%02Xh]", offset>0x7F?'-':'+', offset>0x7F?0x100-offset:offset);
+	snprintf(str, 32, "[BP%c%02Xh]", offset>0x7F?'-':'+', offset>0x7F?0x100-offset:offset);
 	return str;
 }
 
-char *print_sp(sint32 offset)
+const char * const print_sp(const sint32 offset)
 {
 	static char str[32];
-	std::snprintf(str, 32, "[SP%c%02Xh]", offset>0x7F?'-':'+', offset>0x7F?0x100-offset:offset);
+	snprintf(str, 32, "[SP%c%02Xh]", offset>0x7F?'-':'+', offset>0x7F?0x100-offset:offset);
 	return str;
 }
 
@@ -184,8 +200,10 @@ uint32 read_dbg_symbols(IFileDataSource *ucfile)
 		uint32 unknown3 = read1(ucfile);
 		std::string s;
 		uint32 tchar;
-		while ((tchar = read1(ucfile))) s += static_cast<char>(tchar);
-		printf("%02X: %02X type=%02X (%c) %s (%02X) %02X %s\n", i, unknown1, type, type, print_bp(unknown2), unknown2, unknown3, s.c_str());
+		while ((tchar = read1(ucfile)))
+			s += static_cast<char>(tchar);
+		printf("%02X: %02X type=%02X (%c) %s (%02X) %02X %s\n",
+			i, unknown1, type, type, print_bp(unknown2), unknown2, unknown3, s.c_str());
 	}
 	count = read1(ucfile);
 	assert(count==0x7a); //end
@@ -628,14 +646,14 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 			// push global xx xx size yy
 			i0 = read2(ucfile); i1 = read1(ucfile);
 			printf("push\t\tglobal [%04X %02X] (%s)", i0, i1,
-				GlobalName[i0].second.c_str());
+				GlobalNames[i0].name.c_str());
 			break;
 		case 0x4F:
 			// 4F xx xx yy
 			// pop value into global xx xx size yy
 			i0 = read2(ucfile); i1 = read1(ucfile);
 			printf("pop\t\tglobal [%04X %02X] (%s)", i0, i1,
-				GlobalName[i0].second.c_str());
+				GlobalNames[i0].name.c_str());
 			break;
 
 		case 0x50:
@@ -724,7 +742,7 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 			i0 = read2(ucfile);
 			i0 = curOffset + (static_cast<short>(i0));
 			str0 = "";
-			for (uint32 i=0; i < 8; i++)
+			for (uint32 i=0; i < 8; ++i)
 			 str0 += static_cast<char>(read1(ucfile));
 			if(read1(ucfile)!=0) assert(false); // trailing 0
 			printf("symbol info\toffset %04x = \"%s\"", i0, str0.c_str());
@@ -925,23 +943,29 @@ and that the child threads are indeed placed infront of the parent thread.
 			printf("loopscr\t\t%02X \"%c\"", i0, static_cast<char>(i0));
 			break;
 
-		/* 75 appears to have something to do with lists, looks like an enum/next from u7... */
+		// 75 appears to have something to do with lists, looks like an enum/next from u7...
 		case 0x75:
 			// 75 xx yy zz zz
-			// xx appears to be the location to store 'current' value from the list (BP+xx)
-			// yy is the 'datasize' of the list, identical to the second parameter of the create list/slist opcodes
-			// zzzz appears to be the offset to jump to after it's finished the iteration, the opcode before is
-			// a 'jmp' to the original position of the opcode.
-			// (all guesses from Remorse1.21 usecode, _may_ be different in u8, unlikely though)
-			// the way it appears to operate is it pops a 'word' off the stack (maximum number of items to
-			// iterate through? No idea, I've only seen 0xFFFF pushed before it (in Remorse1.21)), then pops
-			// the 'list' off to iterate through
+			// xx appears to be the location to store 'current' value from the
+			//   list (BP+xx)
+			// yy is the 'datasize' of the list, identical to the second parameter
+			//   of the create list/slist opcodes
+			// zzzz appears to be the offset to jump to after it's finished the
+			//   iteration, the opcode before is a 'jmp' to the original position
+			//   of the opcode.
+			// (all guesses from Remorse1.21 usecode, _may_ be different in u8,
+			//   unlikely though)
+			// the way it appears to operate is it pops a 'word' off the stack
+			//   (maximum number of items to iterate through? No idea, I've only
+			//   seen 0xFFFF pushed before it (in Remorse1.21)), then pops
+			//   the 'list' off to iterate through
 			i0 = read1(ucfile); i1 = read1(ucfile); i2 = read2(ucfile);
 			printf("foreach list\t%s (%02X) %04X", print_bp(i0), i1, i2);
 			break;
 
 		/* 76 appears to be identical to 0x75, except it operates on slists */
 		case 0x76:
+			// 75 xx yy zz zz
 			i0 = read1(ucfile); i1 = read1(ucfile); i2 = read2(ucfile);
 			printf("foreach slist\t%s (%02X) %04X", print_bp(i0), i1, i2);
 			break;
@@ -956,8 +980,9 @@ and that the child threads are indeed placed infront of the parent thread.
 		case 0x78:
 			// 78
 			// process exclude
-			// sets a flag on the object target of the 'current' function call that said function call has
-			// exclusive use of the object until the call returns.
+			// sets a flag on the object target of the 'current' function call that
+			// said function call has exclusive use of the object until the call
+			// returns.
 			printf("process exclude");
 			break;
 
@@ -987,9 +1012,6 @@ and that the child threads are indeed placed infront of the parent thread.
 
 			done = true;
 			break;
-
-		// these are some opcodes of which I've been able to guess
-		// the length, but not the function (yet)
 
 		// can't happen.
 		default:
@@ -1057,7 +1079,7 @@ void readfunctionnames(void)
 		{
 			for(std::string::iterator i=functionaddress.begin(); i!=functionaddress.end(); ++i)
 				std::toupper(*i);
-//			std::transform(functionaddress.begin(),functionaddress.end(),functionaddress.begin(),std::toupper);
+//			std::transform(functionaddress.begin(), functionaddress.end(), functionaddress.begin(), std::toupper);
 			FuncNames[functionaddress] = *it;
 		}
 		it++;
@@ -1076,6 +1098,8 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
+	Args parameters;
+	
 	parameters.declare("--lang",    &gamelanguage,  "unknown");
 	parameters.declare("--game",    &gametype,      "u8");
 	parameters.declare("--globals", &print_globals, true);
@@ -1143,7 +1167,7 @@ int main(int argc, char **argv)
 		cout.setf(std::ios::uppercase);
 
 		sint32 actual_num = 0;
-		for(uint32 func = 0; func < entries; func++)
+		for(uint32 func = 0; func < entries; ++func)
 		{
 			ucfile->seek(0x80 + 8*(func+2));
 			sint32 offset = read4(ucfile);
@@ -1155,8 +1179,9 @@ int main(int argc, char **argv)
 
 			if (length == 0) continue;
 
-			cout << "Usecode function " << func << " (0x" << std::hex << func << std::dec << ") (" << namebuf << ")" << endl;
-			actual_num ++;
+			cout << "Usecode function " << func << " (0x" << std::hex << func
+				<< std::dec << ") (" << namebuf << ")" << endl;
+			++actual_num;
 		}
 		cout << endl << actual_num << " Usecode functions" << endl;
 		return 0;
