@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -33,7 +33,7 @@ public:
 	//! \param y Y coordinate of target. This will be the top baseline.
 	virtual void draw(RenderSurface* surface, int x, int y)=0;
 
-	//! Draw self to a rendersurface blended (0xAARRGGBB, alpha is blend level)
+	//! Draw self to a rendersurface blended (0xAABBGGRR, alpha is blend level)
 	virtual void drawBlended(RenderSurface* surface, int x, int y, uint32 col)=0;
 
 	//! Get dimensions.
