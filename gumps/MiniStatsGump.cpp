@@ -124,7 +124,8 @@ Gump* MiniStatsGump::OnMouseDown(int button, int mx, int my)
 
 void MiniStatsGump::OnMouseDouble(int button, int mx, int my)
 {
-	// TODO: open paperdoll gump if not already open
+	// NOTE: the original U8 did not open a PaperdollGump on double-click,
+	// but just closed the MiniStatsGump
 
 	// check if there already is an open PaperdollGump
 	MainActor* av = World::get_instance()->getMainActor();
