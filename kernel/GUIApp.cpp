@@ -1521,7 +1521,7 @@ bool GUIApp::saveGame(std::string filename, bool ignore_modals)
 	// Don't allow saving when avatar is dead.
 	// (Avatar is flagged dead by usecode when you finish the game as well.)
 	MainActor* av = world->getMainActor();
-	if (!av || (av->getActorFlags() && Actor::ACT_DEAD)) {
+	if (!av || (av->getActorFlags() & Actor::ACT_DEAD)) {
 		pout << "Can't save: Avatar is dead or game is over." << std::endl;
 		return false;
 	}
