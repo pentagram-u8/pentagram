@@ -75,8 +75,9 @@ bool EggHatcherProcess::run(const uint32 framenum)
 
 		// get avatar location
 		sint32 ax,ay,az;
+		sint32 axs,ays,azs;
 		av->getLocation(ax,ay,az);
-
+		av->getFootpadWorld(axs,ays,azs);
 
 		// 'justTeleported':
 		// if the avatar teleports, set the 'justTeleported' flag.
@@ -84,8 +85,7 @@ bool EggHatcherProcess::run(const uint32 framenum)
 		// unset it when you're out of range of any teleport eggs
 		TeleportEgg* tegg = p_dynamic_cast<TeleportEgg*>(egg);
 
-		// note that this prevents eggs with XRange==0||YRange==0 from hatching
-		if (x1 <= ax && ax < x2 && y1 <= ay && ay < y2) {
+		if (x1 <= ax && ax-axs < x2 && y1 <= ay && ay-ays < y2) {
 			if (tegg && tegg->isTeleporter()) nearteleporter = true;
 
 			if (tegg && av->hasJustTeleported()) continue;

@@ -1,3 +1,6 @@
+2004-04-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/EggHatcherProcess.cpp: consider avatar dimensions
+
 2004-04-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: compile errors
 	* data/u8monsters.cfg: monster data
