@@ -17,7 +17,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #ifndef LOITERPROCESS_H
-#define DELETEACTORPROCESS_H
+#define LOITERPROCESS_H
 
 #include "Process.h"
 
