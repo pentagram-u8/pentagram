@@ -166,7 +166,7 @@ class NPC : public Item
 Graphics/Shape Classes
 ----------------------
 
-class DisplayManger
+class DisplayManager
  - Generates, sorts and paints the display list
  - Used to trace mouse clicks
  - Sorting is doing using a tree. Leafs in the tree are the objects which
