@@ -227,6 +227,8 @@ public:
 	INTRINSIC(I_getFamilyOfType);
 	INTRINSIC(I_getEtherealTop);
 	INTRINSIC(I_guardianBark);
+	INTRINSIC(I_getSurfaceWeight);
+	INTRINSIC(I_isExplosive);
 
 protected:
 	const uint32 shape;	// DO NOT modify this directly! Always use setShape()!

@@ -5,6 +5,8 @@
 	  whenever possible since is will properly call all the hit and wasHit 
 	  functions.
 	* usecode/UCMachine.cpp, world/CurrentMap.* : Surface Search
+	* usecode/u8intrinsics.h, world/Item.* : I_getSurfaceWeight and
+	  I_isExplosive
 	
 2003-06-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/ConsoleGump.h: PointOnGump always returns false

@@ -86,7 +86,7 @@ Intrinsic U8Intrinsics[] = {
 	0, // Item::ascend
 	Item::I_getWeight,
 	Item::I_getWeightIncludingContents,
-	0, // Item::getSurfaceWeight
+	Item::I_getSurfaceWeight,
 	0, //U
 	// 0x030
 	0, //U
@@ -102,7 +102,7 @@ Intrinsic U8Intrinsics[] = {
 	Item::I_destroy,
 	Container::I_removeContents,
 	Container::I_destroyContents,
-	0, // Item::isExplosive
+	Item::I_isExplosive,
 	Item::I_move,
 	0, //U
 	// 0x040

@@ -44,6 +44,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GameMapGump.h"
 #include "WorldPoint.h"
 #include "GravityProcess.h"
+#include "LoopScript.h"
 
 #include <cstdlib>
 
@@ -302,20 +303,24 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 
 	while (i < scriptsize) {
 		switch(script[i]) {
-		case 0: // false
+		case LS_TOKEN_FALSE: // false
 			stack.push2(0); break;
-		case 1: // true
+
+		case LS_TOKEN_TRUE: // true
 			stack.push2(1); break;
-		case '$': // end
+
+		case LS_TOKEN_END: // end
 			ui16a = stack.pop2();
 			return (ui16a != 0);
-		case '%': // int
+
+		case LS_TOKEN_INT: // int
 			//! check for i out of bounds
 			ui16a = script[i+1] + (script[i+2]<<8);
 			stack.push2(ui16a);
 			i += 2;
 			break;
-		case '&': // and
+
+		case LS_TOKEN_AND: // and
 			ui16a = stack.pop2();
 			ui16b = stack.pop2();
 			if (ui16a != 0 && ui16b != 0)
@@ -323,7 +328,8 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 			else
 				stack.push2(0);
 			break;
-		case '+': // or
+
+		case LS_TOKEN_OR: // or
 			ui16a = stack.pop2();
 			ui16b = stack.pop2();
 			if (ui16a != 0 || ui16b != 0)
@@ -331,23 +337,28 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 			else
 				stack.push2(0);
 			break;			
-		case '!': // not
+
+		case LS_TOKEN_NOT: // not
 			ui16a = stack.pop2();
 			if (ui16a != 0)
 				stack.push2(0);
 			else
 				stack.push2(1);
 			break;
-		case '?': // item status
+
+		case LS_TOKEN_STATUS: // item status
 			stack.push2(getFlags());
 			break;
-		case '*': // item quality
+
+		case LS_TOKEN_Q: // item quality
 			stack.push2(getQuality());
 			break;
-		case '#': // npc num
+
+		case LS_TOKEN_NPCNUM: // npc num
 			stack.push2(getNpcNum());
 			break;
-		case '=': // equal
+
+		case LS_TOKEN_EQUAL: // equal
 			ui16a = stack.pop2();
 			ui16b = stack.pop2();
 			if (ui16a == ui16b)
@@ -355,7 +366,8 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 			else
 				stack.push2(0);
 			break;
-		case '>': // greater than
+
+		case LS_TOKEN_GREATER: // greater than
 			ui16a = stack.pop2();
 			ui16b = stack.pop2();
 			if (ui16b > ui16a)
@@ -363,7 +375,8 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 			else
 				stack.push2(0);
 			break;
-		case '<': // less than
+
+		case LS_TOKEN_LESS: // less than
 			ui16a = stack.pop2();
 			ui16b = stack.pop2();
 			if (ui16b < ui16a)
@@ -371,7 +384,8 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 			else
 				stack.push2(0);
 			break;
-		case ']': // greater or equal
+
+		case LS_TOKEN_GEQUAL: // greater or equal
 			ui16a = stack.pop2();
 			ui16b = stack.pop2();
 			if (ui16b >= ui16a)
@@ -379,7 +393,8 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 			else
 				stack.push2(0);
 			break;
-		case '[': // smaller or equal
+
+		case LS_TOKEN_LEQUAL: // smaller or equal
 			ui16a = stack.pop2();
 			ui16b = stack.pop2();
 			if (ui16b <= ui16a)
@@ -387,12 +402,15 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 			else
 				stack.push2(0);
 			break;
-		case ':': // item family
+
+		case LS_TOKEN_FAMILY: // item family
 			stack.push2(getFamily());
 			break;
-		case '@': // item shape
+
+		case LS_TOKEN_SHAPE: // item shape
 			stack.push2(static_cast<uint16>(getShape()));
 			break;
+
 		case 'A': case 'B': case 'C': case 'D': case 'E':
 		case 'F': case 'G': case 'H': case 'I': case 'J':
 		case 'K': case 'L': case 'M': case 'N': case 'O':
@@ -413,9 +431,11 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 				stack.push2(0);
 		}
 		break;
-		case '`': // item frame
+
+		case LS_TOKEN_FRAME: // item frame
 			stack.push2(static_cast<uint16>(getFrame()));
 			break;
+
 		case 'a': case 'b': case 'c': case 'd': case 'e':
 		case 'f': case 'g': case 'h': case 'i': case 'j':
 		case 'k': case 'l': case 'm': case 'n': case 'o':
@@ -436,6 +456,7 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 				stack.push2(0);
 		}
 		break;
+
 		default:
 			perr.printf("Unknown loopscript opcode %02X\n", script[i]);
 		}
@@ -1853,3 +1874,34 @@ uint32 Item::I_guardianBark(const uint8* args, unsigned int /*argsize*/)
 
 	return item->callUsecodeEvent_guardianBark(num);
 }
+
+uint32 Item::I_getSurfaceWeight(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM_FROM_PTR(item);
+	if (!item) return 0;
+
+	UCList uclist(2);
+	LOOPSCRIPT(script, LS_TOKEN_TRUE);
+	World* world= World::get_instance();
+	world->getCurrentMap()->surfaceSearch(&uclist, script, sizeof(script), item, 
+			true, false, true);
+
+	uint32 weight = 0; 
+	for (uint32 i = 0; i < uclist.getSize(); i++)
+	{
+		Item *other = world->getItem(uclist.getuint16(i));
+		if (!other) continue;
+		weight += other->getTotalWeight();
+	}
+
+	return weight;
+
+}
+
+uint32 Item::I_isExplosive(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM_FROM_PTR(item);
+	if (!item) return 0;
+	return item->getShapeInfo()->is_explode()?1:0;
+}
+
