@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Process.h"
 #include "Kernel.h"
 
+#include "UCMachine.h" // only for memStats.
+
 typedef std::list<Process *>::iterator ProcessIterator;
 
 Kernel* Kernel::kernel = 0;
@@ -62,6 +64,8 @@ bool Kernel::runProcesses(uint32 framenum)
 {
 	if (processes.size() == 0) {
 		perr << "Process queue is empty?! Aborting.\n";
+
+		UCMachine::get_instance()->memStats();
 
 		//! do this in a cleaner way
 		exit(0);

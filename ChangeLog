@@ -1,3 +1,7 @@
+2002-12-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/*: bugfixes
+	* kernel/Kernel.cpp: output UCMachine mem.stats on exit
+
 2002-12-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/*: basic call/ret support
 	* usecode/*: function return values

@@ -827,7 +827,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			{
 				si8a = static_cast<sint8>(cs.read1());
 				ui16a = p->stack.access2(p->bp+si8a);
-				p->stack.push2(assignString(stringHeap[ui16a].c_str()));
+				p->stack.push2(duplicateString(ui16a));
 				LOGPF(("push string\t%s", print_bp(si8a)));
 			}
 			break;
@@ -853,7 +853,8 @@ bool UCMachine::execProcess(UCProcess* p)
 			// duplicating the list, duplicating the strings in the list
 			{
 				si8a = static_cast<sint8>(cs.read1());
-				ui16a = cs.read1();
+//!U8				ui16a = cs.read1();
+				ui16a = 2;
 				ui16b = p->stack.access2(p->bp+si8a);
 				UCList* l = new UCList(ui16a);
 				l->copyStringList(*listHeap[ui16b]);
@@ -1406,13 +1407,19 @@ uint16 UCMachine::assignString(const char* str)
 	// find unassigned element
 	while (stringHeap.find(count) != stringHeap.end()) {
 		count++;
-		if (count > 65000) count = 1;
+		if (count > 0xFFFE) count = 1;
 	}
 
 	stringHeap[count] = str;
 
 	return count++;
 }
+
+uint16 UCMachine::duplicateString(uint16 str)
+{
+	return assignString(stringHeap[str].c_str());
+}
+
 
 uint16 UCMachine::assignList(UCList* l)
 {
@@ -1425,7 +1432,7 @@ uint16 UCMachine::assignList(UCList* l)
 	// find unassigned element
 	while (listHeap.find(count) != listHeap.end()) {
 		count++;
-		if (count > 65000) count = 1;
+		if (count > 0xFFFE) count = 1;
 	}
 
 	listHeap[count] = l;
@@ -1447,9 +1454,14 @@ uint16 UCMachine::getNewPID()
 
 void UCMachine::freeString(uint16 s)
 {
+	//! There's still a semi-bug in some places that string 0 can be assigned
+	//! (when something accesses stringHeap[0])
+	//! This may not be desirable, but OTOH the created string will be
+	//! empty, so not too much of a problem.
 	std::map<uint16, std::string>::iterator iter = stringHeap.find(s);
-	if (iter != stringHeap.end())
+	if (iter != stringHeap.end()) {
 		stringHeap.erase(iter);
+	}
 }
 
 void UCMachine::freeList(uint16 l)
@@ -1525,4 +1537,18 @@ void UCMachine::killProcess(uint16 pid)
 		iter->second->terminate();
 		processes.erase(iter);
 	}
+}
+
+void UCMachine::memStats()
+{
+	pout << "Usecode Machine memory stats:" << std::endl;
+	pout << "Processes: " << processes.size() << "/32766" << std::endl;
+	pout << "Strings  : " << stringHeap.size() << "/65534" << std::endl;
+
+	std::map<uint16, std::string>::iterator iter;
+	for (iter = stringHeap.begin(); iter != stringHeap.end(); ++iter)
+		pout << iter->first << ":" << iter->second << std::endl;
+	pout << "Lists    : " << listHeap.size() << "/65534" << std::endl;
+
+
 }

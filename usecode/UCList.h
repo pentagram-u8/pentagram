@@ -46,14 +46,16 @@ class UCList
 
  public:
 	UCList(unsigned int elementsize_, unsigned int capacity=0) : 
-		elementsize(elementsize_)
+		elementsize(elementsize_), size(0)
 	{
 		if (capacity > 0)
 			elements.reserve(elementsize * capacity);
 	}
 
 	~UCList() {
-		// slight problem: we don't know if we're a stringlist
+		// Slight problem: we don't know if we're a stringlist.
+		// So we need to hope something else has ensured any strings
+		// are already freed.
 		free();
 	}
 
@@ -63,7 +65,7 @@ class UCList
 	}
 
 	void append(const uint8* e) {
-		elements.reserve((size + 1) * elementsize);
+		elements.resize((size + 1) * elementsize);
 		for (unsigned int i = 0; i < elementsize; i++)
 			elements[size*elementsize + i] = e[i];
 		size++;
@@ -106,6 +108,7 @@ class UCList
 	}
 	void unionList(UCList& l) { // like append, but remove duplicates
 		// need to check if elementsizes match...
+		elements.reserve(elementsize * (size + l.size));
 		for (unsigned int i = 0; i < l.size; i++)
 			if (!inList(l[i]))
 				append(l[i]);

@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 uint16 UCList::getStringIndex(uint32 index)
 {
-	return elements[index*2] + (elements[index*2]<<8);
+	return elements[index*2] + (elements[index*2+1]<<8);
 }
 
 std::string& UCList::getString(uint32 index)
@@ -46,7 +46,7 @@ void UCList::copyStringList(UCList& l)
 {
 	UCMachine *ucm = UCMachine::get_instance();
 	freeStrings();
-	for (unsigned int i = 0; i < size; i++) {
+	for (unsigned int i = 0; i < l.size; i++) {
 		uint16 s = ucm->duplicateString(l.getStringIndex(i));
 		uint8 tmp[2]; // ugly...
 		tmp[0] = s & 0xFF;

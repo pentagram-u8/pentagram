@@ -48,9 +48,9 @@ public:
 	void killProcess(UCProcess *p);
 	void killProcess(uint16 pid);
 
-	uint16 duplicateString(uint16 str) {
-		return assignString(stringHeap[str].c_str());
-	}
+	uint16 duplicateString(uint16 str);
+
+	void memStats();
 
 private:
 
