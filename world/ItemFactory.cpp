@@ -51,7 +51,7 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 		// 'simple' item
 
 		Item* item = new Item();
-		item->shape = shape;
+		item->setShape(shape);
 		item->frame = frame;
 		item->quality = quality;
 		item->flags = flags;
@@ -66,7 +66,7 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 		// container
 
 		Container* container = new Container();
-		container->shape = shape;
+		container->setShape(shape);
 		container->frame = frame;
 		container->quality = quality;
 		container->flags = flags;
@@ -81,7 +81,7 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 		// glob egg
 
 		GlobEgg* globegg = new GlobEgg();
-		globegg->shape = shape;
+		globegg->setShape(shape);
 		globegg->frame = frame;
 		globegg->quality = quality;
 		globegg->flags = flags;
@@ -97,7 +97,7 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 	{
 		// this obviously isn't quite correct yet :-)
 		Egg* egg = new Egg();
-		egg->shape = shape;
+		egg->setShape(shape);
 		egg->frame = frame;
 		egg->quality = quality;
 		egg->flags = flags;
@@ -128,7 +128,7 @@ Actor* ItemFactory::createActor(uint32 shape, uint32 frame, uint16 quality,
 		// Main Actor
 
 		MainActor* actor = new MainActor();
-		actor->shape = shape;
+		actor->setShape(shape);
 		actor->frame = frame;
 		actor->quality = quality;
 		actor->flags = flags;
@@ -141,7 +141,7 @@ Actor* ItemFactory::createActor(uint32 shape, uint32 frame, uint16 quality,
 
 	// 'normal' Actor/NPC
 	Actor* actor = new Actor();
-	actor->shape = shape;
+	actor->setShape(shape);
 	actor->frame = frame;
 	actor->quality = quality;
 	actor->flags = flags;

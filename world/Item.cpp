@@ -29,12 +29,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Kernel.h"
 
 #include "MainShapeFlex.h"
+#include "Shape.h"
 #include "ShapeInfo.h"
 #include "ItemFactory.h"
 #include "CurrentMap.h"
 #include "UCStack.h"
 #include "Direction.h"
 #include "ItemMoveProcess.h"
+
+#include <cstdlib>
 
 /*
 My current idea on how to construct items: an ItemFactory class that
@@ -52,7 +55,9 @@ DEFINE_DYNAMIC_CAST_CODE(Item,Object);
 Item::Item()
 	: shape(0), frame(0), x(0), y(0), z(0),
 	  flags(0), quality(0), npcnum(0), mapnum(0),
-	  extendedflags(0), parent(0), glob_next(0)
+	  extendedflags(0), parent(0), 
+	  cachedShape(0), cachedShapeInfo(0),
+	  glob_next(0)
 {
 
 }
@@ -94,17 +99,34 @@ void Item::getLocation(sint32& X, sint32& Y, sint32& Z) const
 	Z = z;
 }
 
+void Item::getCentre(sint32& X, sint32& Y, sint32& Z) const
+{
+	ShapeInfo *shapeinfo = getShapeInfoNoCache();
+	if (flags & FLG_FLIPPED)
+	{
+		X = x - shapeinfo->y * 16;
+		Y = y - shapeinfo->x * 16;
+	}
+	else
+	{
+		X = x - shapeinfo->x * 16;
+		Y = y - shapeinfo->y * 16;
+	}
+
+	Z = z + shapeinfo->z * 4;
+}
+
 // note that this is in different units than location
 void Item::getFootpad(sint32& X, sint32& Y, sint32& Z) const
 {
-	Z = getShapeInfo()->z;
+	Z = getShapeInfoNoCache()->z;
 
 	if (getFlags() & Item::FLG_FLIPPED) {
-		X = getShapeInfo()->y;
-		Y = getShapeInfo()->x;
+		X = getShapeInfoNoCache()->y;
+		Y = getShapeInfoNoCache()->x;
 	} else {
-		X = getShapeInfo()->x;
-		Y = getShapeInfo()->y;
+		X = getShapeInfoNoCache()->x;
+		Y = getShapeInfoNoCache()->y;
 	}
 	
 }
@@ -177,12 +199,31 @@ bool Item::isOn(Item& item2) const
 	return false;
 }
 
-ShapeInfo* Item::getShapeInfo() const
+ShapeInfo* Item::getShapeInfo()
 {
+	if (!cachedShapeInfo) cachedShapeInfo = GameData::get_instance()->getMainShapes()->getShapeInfo(shape);
+	return cachedShapeInfo;
+}
+
+ShapeInfo* Item::getShapeInfoNoCache() const
+{
+	if (cachedShapeInfo) return cachedShapeInfo;
 	return GameData::get_instance()->getMainShapes()->getShapeInfo(shape);
 }
 
-uint16 Item::getFamily() const
+Shape* Item::getShapeObject()
+{
+	if (!cachedShape) cachedShape = GameData::get_instance()->getMainShapes()->getShape(shape);
+	return cachedShape;
+}
+
+Shape* Item::getShapeObjectNoCache() const
+{
+	if (cachedShape) return cachedShape;
+	return GameData::get_instance()->getMainShapes()->getShape(shape);
+}
+
+uint16 Item::getFamily()
 {
 	return (uint16)(getShapeInfo()->family);
 }
@@ -387,23 +428,124 @@ void Item::destroy()
 }
 
 //
-// Item::setupLerp(uint32 factor)
+// Item::setupLerp()
 //
 // Desc: Setup the lerped info for this frame
 //
-// factor: Range 0 (prev) to 256 (next)
-// camera: Camera object
-//
-void Item::setupLerp(sint32 cx, sint32 cy, sint32 cz)
+void Item::setupLerp()
 {
-	// Setup prev values
-	l_prev = l_next;
+	// Setup prev values, but only if fast
+	if (flags & FLG_FASTAREA) l_prev = l_next;
 
-	l_next.x = ix = x - cx;
-	l_next.y = iy = y - cy;
-	l_next.z = iz = z - cz;
+	l_next.x = ix = x;
+	l_next.y = iy = y;
+	l_next.z = iz = z;
 	l_next.shape = shape;
 	l_next.frame = frame;
+
+	// Setup prev values, if not fast
+	if (!(flags & FLG_FASTAREA)) l_prev = l_next;
+}
+
+// Animate the item
+void Item::animateItem(int even_odd)
+{
+	ShapeInfo *info = getShapeInfo();
+	Shape *shp = getShapeObject();
+
+	int anim_type = info->animtype; 
+	if (!anim_type) return;
+
+	int anim_data = info->animdata; 
+	bool dirty = false;
+
+	switch(info->animtype) {
+	case 2:
+		// 50 % chance
+		if (std::rand() & 1) break;
+
+	case 1:
+	case 3:
+		// 50 % chance
+		if (anim_data == 1 && (std::rand() & 1) ) break;
+		frame ++;
+		if (anim_data < 2) {
+			if (shp && frame == shp->frameCount()) frame = 0;
+		}
+		else {
+			int num = (frame-1) / anim_data;
+			if (frame == ((num+1)*anim_data)) frame = num*anim_data;
+		}
+		dirty = true;
+		break;
+
+	case 4:
+		if (!(std::rand() % anim_data)) break;
+		frame ++;
+		if (shp && frame == shp->frameCount()) frame = 0;
+		dirty = true;
+		break;
+
+
+	case 5:
+		callUsecodeEvent(0x02);	// CONSTANT!
+		dirty = true;
+		break;
+
+	case 6:
+		if (anim_data < 2) {
+			if (frame == 0) break;
+			frame ++;
+			if (shp && frame == shp->frameCount()) frame = 1;
+		}
+		else {
+			if (!(frame % anim_data)) break;
+			frame ++;
+			int num = (frame-1) / anim_data;
+			if (frame == ((num+1)*anim_data)) frame = num*anim_data+1;
+		}
+		dirty = true;
+		break;
+
+	default:
+		pout <<"type " << anim_type << " data " << anim_data  << std::endl;
+		break;
+	}
+	//return dirty;
+}
+
+
+// Called when an item has entered the fast area
+void Item::inFastArea(int even_odd)
+{
+	extendedflags &= ~(EXT_FAST0|EXT_FAST1);
+	extendedflags |= EXT_FAST0<<even_odd;
+
+	setupLerp();
+	animateItem(even_odd);
+
+	// Only do it if not already fast
+	if (flags & FLG_FASTAREA) return;
+
+	flags |= FLG_FASTAREA;
+
+	// Call usecode here
+	callUsecodeEvent(0x0F);		// CONSTANT!
+}
+
+// Called when an item is leaving the fast area
+void Item::leavingFastArea()
+{
+	// Clear the fast area flags
+	extendedflags &= ~(EXT_FAST0|EXT_FAST1);
+
+	// Only do it if fast
+	if (!(flags & FLG_FASTAREA)) return;
+
+	flags &= ~FLG_FASTAREA;
+
+	// Call usecode here
+	callUsecodeEvent(0x10);		// CONSTANT!
 }
 
 uint32 Item::I_getX(const uint8* args, unsigned int /*argsize*/)

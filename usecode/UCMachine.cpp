@@ -950,7 +950,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 45 xx yy
 			// push huge of size yy from BP+xx
 			si8a = static_cast<sint8>(cs.read1());
-			ui16b = cs.read2();
+			ui16b = cs.read1();
 			p->stack.push(p->stack.access(p->bp+si8a), ui16b);
 			LOGPF(("push huge\t%s %02X", print_bp(si8a), ui16b));
 			break;

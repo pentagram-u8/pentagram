@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "intrinsics.h"
 class Container;
 class ShapeInfo;
+class Shape;
 
 class Item : public Object
 {
@@ -40,6 +41,7 @@ public:
 	void setLocation(sint32 x, sint32 y, sint32 z); // this only sets the loc.
 	void move(sint32 x, sint32 y, sint32 z); // move also handles item lists
 	void getLocation(sint32& x, sint32& y, sint32& z) const;
+	void getCentre(sint32& x, sint32& y, sint32& z) const;
 	void getFootpad(sint32& x, sint32& y, sint32& z) const;
 	uint16 getFlags() const { return flags; }
 	void setFlag(uint32 mask) { flags |= mask; }
@@ -47,7 +49,8 @@ public:
 	void setExtFlags(uint32 f) { extendedflags = f; }
 	uint32 getExtFlags() const { return extendedflags; }
 	uint32 getShape() const { return shape; }
-	void setShape(uint32 shape_) { shape = shape_; }
+	// Hack Alert!
+	void setShape(uint32 shape_) { *const_cast<uint32*>(&shape) = shape_; cachedShapeInfo = 0; cachedShape = 0; }
 	uint32 getFrame() const { return frame; }
 	void setFrame(uint32 frame_) { frame = frame_; }
 	uint16 getQuality() const { return quality; }
@@ -55,8 +58,11 @@ public:
 	uint16 getNpcNum() const { return npcnum; }
 	uint16 getMapNum() const { return mapnum; }
 	void setMapNum(uint16 mapnum_) { mapnum = mapnum_; }
-	ShapeInfo* getShapeInfo() const;
-	uint16 getFamily() const;
+	ShapeInfo* getShapeInfo();
+	ShapeInfo* getShapeInfoNoCache() const;
+	Shape* getShapeObject();
+	Shape* getShapeObjectNoCache() const;
+	uint16 getFamily();
 
 	Item* getGlobNext() const { return glob_next; }
 	void setGlobNext(Item* i) { glob_next = i; }
@@ -71,41 +77,45 @@ public:
 	bool checkLoopScript(const uint8* script, uint32 scriptsize);
 	uint32 callUsecodeEvent(uint32 event);
 
-	void setupLerp(sint32 cx, sint32 cy, sint32 cz);	// Setup the lerped info for this frame
-
 	inline void getLerped(sint32& x, sint32& y, sint32& z) const // Get lerped location
 		{ x = ix; y = iy; z = iz; }
 
-	inline void doLerp(uint32 factor) 		// Does lerping for an in between frame (0-256)
+	inline void doLerp(sint32 camx, sint32 camy, sint32 camz, sint32 factor) 		// Does lerping for an in between frame (0-256)
 	{
 		// Should be noted that this does indeed limit us to 'only' 24bit coords
+		// not that it matters because on disk they are unsigned 16 bit
 		if (factor == 256)
 		{
-			ix = l_next.x;
-			iy = l_next.y;
-			iz = l_next.z;
+			ix = l_next.x - camx;
+			iy = l_next.y - camy;
+			iz = l_next.z - camz;
 		}
 		else if (factor == 0)
 		{
-			ix = l_prev.x;
-			iy = l_prev.y;
-			iz = l_prev.z;
+			ix = l_prev.x - camx;
+			iy = l_prev.y - camy;
+			iz = l_prev.z - camz;
 		}
 		else
 		{
 #if 1
 			// This way while possibly slower is more accurate
-			ix = (l_prev.x*(256-factor) + l_next.x*factor)>>8;
-			iy = (l_prev.y*(256-factor) + l_next.y*factor)>>8;
-			iz = (l_prev.z*(256-factor) + l_next.z*factor)>>8;
+			ix = ((l_prev.x*(256-factor) + l_next.x*factor)>>8) - camx;
+			iy = ((l_prev.y*(256-factor) + l_next.y*factor)>>8) - camy;
+			iz = ((l_prev.z*(256-factor) + l_next.z*factor)>>8) - camz;
 #else
-			ix = l_prev.x + (((l_next.x-l_prev.x)*factor)>>8);
-			iy = l_prev.y + (((l_next.y-l_prev.y)*factor)>>8);
-			iz = l_prev.z + (((l_next.z-l_prev.z)*factor)>>8);
-
+			ix = l_prev.x + (((l_next.x-l_prev.x)*factor)>>8) - cx;
+			iy = l_prev.y + (((l_next.y-l_prev.y)*factor)>>8) - cy;
+			iz = l_prev.z + (((l_next.z-l_prev.z)*factor)>>8) - cz;
 #endif
 		}
 	}
+
+	// fastArea Handling. Note that these are intended to call the usecode funcs,
+	// and do other stuff
+	void inFastArea(int even_odd);		// Called when an item has entered or is in the fast area
+	void leavingFastArea();				// Called when an item is leaving the fast area
+
 
 	// Intrinsics
 	INTRINSIC(I_getX);
@@ -165,7 +175,7 @@ public:
 	INTRINSIC(I_getEtherealTop);
 
 protected:
-	uint32 shape;
+	const uint32 shape;	// DO NOT modify this directly! Always use setShape()!
 	uint32 frame;
 
 	sint32 x,y,z; // world coordinates
@@ -178,11 +188,14 @@ protected:
 
 	Container* parent; // container this item is in (or 0 for top-level items)
 
+	Shape *cachedShape;
+	ShapeInfo *cachedShapeInfo;
+
 	// This is stuff that is used for displaying and interpolation
 	struct Lerped
 	{
 		sint32 x,y,z;
-		uint32 shape,frame;
+		sint32 shape,frame;
 	};
 	
 	Lerped	l_prev;			// Previous state (relative to camera)
@@ -191,6 +204,12 @@ protected:
 
 private:
 	Item* glob_next; // next item in glob
+
+	// Animate the item (called by inFastArea)
+	void animateItem(int even_odd);
+
+	// Setup the lerped info for this frame (called by inFastArea)
+	void setupLerp();		
 
 public:
 	enum {
@@ -211,9 +230,12 @@ public:
 	} statusflags;
 
 	enum {
-		EXT_FIXED    = 0x0001, // item came from FIXED
-		EXT_INGLOB   = 0x0002, // item is part of a glob
-		EXT_NOTINMAP = 0x0004  // item isn't part of the map itself (e.g. NPCs)
+		EXT_FIXED     = 0x0001, // item came from FIXED
+		EXT_INGLOB    = 0x0002, // item is part of a glob
+		EXT_NOTINMAP  = 0x0004, // item isn't part of the map itself (e.g. NPCs)
+
+		EXT_FAST0	  = 0x0008,	// Special stuff for detecting an item leaving the fast area
+		EXT_FAST1	  = 0x0010	// They are mutually exclusive
 	} extflags;
 };
 

@@ -1,3 +1,17 @@
+2003-05-25  Ryan Nunn <colourles@users.sourceforge.net>
+	* kernel/Application.* : Timing and interpolation, Fast Area, Camera,
+	  avatarInStatis
+	* kernel/Kernel.cpp : Fixing erase bug
+	* usecode/u8intrinsics.h : Camera, avatarInStatis
+	* usecode/UCMachine.cpp : Fixing huge bug
+	* world/CameraProcess.* : Camera
+	* world/Item.* : Interpolation changes. Fast Area, Animate, Added some 
+	  optimzations for getting a Shape and ShapeInfo. Consequently the 'shape'
+	  member is now const and needs to be set with setShape() (yes this is a bit
+	  of a hack)
+	* world/ItemFactory.cpp : use setShape()
+	* world/ItemSorter.cpp : An optimization
+
 2003-05-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Application.cpp: getCurrentTimerTick
 	

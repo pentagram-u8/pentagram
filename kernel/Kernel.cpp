@@ -104,7 +104,8 @@ bool Kernel::runProcesses(uint32 framenum)
 	}
 
 	bool dirty = false;
-	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it) {
+	ProcessIterator it = processes.begin();
+	while (it != processes.end()) {
 		Process* p = *it;
 		if (!p->terminated)
 			if (p->run(framenum)) dirty = true;
@@ -118,6 +119,8 @@ bool Kernel::runProcesses(uint32 framenum)
 			//! is this the right place to delete processes?
 			delete p;
 		}
+		else
+			++it;
 	}
 
 	return dirty;

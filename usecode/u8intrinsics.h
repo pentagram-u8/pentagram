@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Container.h"
 #include "Actor.h"
 #include "Kernel.h"
+#include "CameraProcess.h"
 #include "Application.h"
 
 // Ultima 8 Intrinsics
@@ -224,7 +225,7 @@ Intrinsic U8Intrinsics[] = {
 	0, // Npc::getEquip
 	0, // Npc::setEquip
 	0, // closeAllGumps
-	UCMachine::I_dummyProcess, //!! process Camera::scrollTo(uword, uword, ubyte, word)
+	CameraProcess::I_scrollTo, //!! process Camera::scrollTo(uword, uword, ubyte, word)
 	UCMachine::I_urandom,
 	UCMachine::I_rndRange,
 	0, // castGrantPeaceSpell
@@ -233,8 +234,8 @@ Intrinsic U8Intrinsics[] = {
 	0, // playMusic
 	UCMachine::I_getName, //temp
 	0, // igniteChaos
-	0, // Camera::setCenterOn
-	0, // Camera::move_to
+	0,//CameraProcess::I_setCenterOn,
+	0,//CameraProcess::I_move_to,
 	// 0x0C0
 	0, // .........
 	0,
@@ -253,7 +254,7 @@ Intrinsic U8Intrinsics[] = {
 	0,
 	0,
 	// 0x0D0
-	0,
+	Application::I_setAvatarInStasis,
 	Item::I_getEtherealTop,
 	Application::I_getCurrentTimerTick,
 	0,

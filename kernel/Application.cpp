@@ -41,12 +41,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Map.h" // temp
 #include "U8Save.h"
 
-// TODO MOVE THIS STUFF TO GameMapGump
+// TODO MOVE THIS STUFF TO GameMapGump or somewhere else
 #include "Item.h"
 #include "Actor.h"
 #include "ItemSorter.h"
 #include "CurrentMap.h"
 #include "Rect.h"
+#include "CameraProcess.h"
 // END TODO
 
 // just for testing
@@ -61,7 +62,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using std::string;
 
-sint32 lx=-1, ly=-1, lz=-1; // yes, yes, globals...
 bool showconsole=true; // yes, yes, more of them :-)
 
 Application* Application::application = 0;
@@ -72,7 +72,9 @@ Application::Application(const int argc, const char * const * const argv)
 	  display_list(0),
 	  runMinimalSysInit(false), runGraphicSysInit(false), runSDLInit(false),
 	  weAreDisasming(false), weAreCompiling(false),
-	  isRunning(false), framenum(0)
+	  isRunning(false), framenum(0),
+	  frameSkip(false), frameLimit(true), interpolate(true), animationRate(100),
+  	  fastArea(0), avatarInStasis(false), camera(0)
 {
 	assert(application == 0);
 	application = this;
@@ -89,7 +91,11 @@ Application::Application(const int argc, const char * const * const argv)
 	{
 		pout << "We Are Compiling..." << std::endl;
 		MinimalSysInit();
+#ifndef WIN32
 		kernel->addProcess(new CompileProcess(filesystem));
+#else
+		pout << "Then again, maybe not" << std::endl;
+#endif
 	}
 	else
 	{
@@ -116,6 +122,12 @@ void Application::run()
 {
 	isRunning = true;
 
+	sint32 next_ticks = SDL_GetTicks();	// Next time is right now!
+	
+	// Ok, the theory is that if this is set to true then we must do a repaint
+	// At the moment only it's ignored
+	bool repaint;
+
 	SDL_Event event;
 	while (isRunning) {
 		// this needs some major changes, including possibly:
@@ -127,7 +139,45 @@ void Application::run()
 		//    ...
 		// ...
 
-		kernel->runProcesses(framenum++);
+		inBetweenFrame = true;	// Will get set false if it's not an inBetweenFrame
+
+		if (!frameLimit) {
+			repaint = false;
+			
+			if (kernel->runProcesses(framenum++)) repaint = true;
+			inBetweenFrame = false;
+			next_ticks = animationRate + SDL_GetTicks();
+			lerpFactor = 0;
+		}
+		else 
+		{
+			sint32 ticks = SDL_GetTicks();
+			sint32 diff = next_ticks - ticks;
+			repaint = false;
+
+			while (diff < 0) {
+				next_ticks += animationRate;
+				if (kernel->runProcesses(framenum++)) repaint = true;
+	
+				inBetweenFrame = false;
+
+				ticks = SDL_GetTicks();
+
+				// If frame skipping is off, we will only recalc next ticks IF the frames are
+				// taking up 'way' too much time. 
+				if (!frameSkip && diff <= -animationRate*2) next_ticks = animationRate + ticks;
+
+				diff = next_ticks - ticks;
+				if (!frameSkip) break;
+			}
+
+			// Calcualte the lerp_factor
+			lerpFactor = ((animationRate-diff)*256)/animationRate;
+			//pout << "lerpFactor: " << lerpFactor << " framenum: " << framenum << std::endl;
+			if (lerpFactor > 256) lerpFactor = 256;
+		}
+
+		repaint = true;
 
 		// get & handle all events in queue
 		while (isRunning && SDL_PollEvent(&event)) {
@@ -193,13 +243,15 @@ void Application::U8Playground()
 	delete saveds;
 
 	Actor* av = world->getNPC(1);
+	//av->teleport(40, 16240, 15240, 64);
 	if (av)
 		world->switchMap(av->getMapNum());
 	else
 		world->switchMap(3);
+
 	// some testing...
 	//world->switchMap(3);
-	//world->switchMap(40);
+
 	//world->switchMap(43);
   	//world->switchMap(3);
 
@@ -209,8 +261,41 @@ void Application::U8Playground()
 
 	// Clear Screen
 	pout << "Paint Inital display" << std::endl;
+	inBetweenFrame = 0;
+	lerpFactor = 256;
+	SetCameraProcess(new CameraProcess(1)); // Follow Avatar
 	paint();
+}
 
+uint16 Application::SetCameraProcess(CameraProcess *cam)
+{
+	if (!cam) cam = new CameraProcess();
+	if (camera) camera->terminate();
+	camera = cam;
+	return kernel->addProcess(camera);
+}
+
+void Application::GetCamera(sint32 &x, sint32 &y, sint32 &z)
+{
+	if (!camera) {
+
+		CurrentMap *map = world->getCurrentMap();
+		int map_num = map->getNum();
+		Actor* av = world->getNPC(1);
+		
+		if (!av || av->getMapNum() != map_num)
+		{
+			x = 8192;
+			y = 8192;
+			z = 64;
+		}
+		else
+			av->getLocation(x,y,z);
+	}
+	else
+	{
+		camera->GetLerped(x, y, z, 256);
+	}
 }
 
 void Application::SetupDisplayList()
@@ -247,8 +332,16 @@ void Application::SetupDisplayList()
 	sint32 xy_limit = (sy_limit+sx_limit)/2;
 	CurrentMap *map = world->getCurrentMap();
 
+	std::vector<uint16> *prev_fast = &fastAreas[1-fastArea];
+	std::vector<uint16> *fast = &fastAreas[fastArea];
+	if (!inBetweenFrame) 
+	{
+		fast->erase(fast->begin(), fast->end());
+	}
+
 	// Get the initial camera location
-	if (lx == -1 && ly == -1 && lz == -1) {
+	int lx, ly, lz;
+	if (!camera) {
 
 		int map_num = map->getNum();
 		Actor* av = world->getNPC(1);
@@ -262,10 +355,13 @@ void Application::SetupDisplayList()
 		else
 			av->getLocation(lx,ly,lz);
 	}
+	else
+	{
+		camera->GetLerped(lx, ly, lz, lerpFactor);
+	}
 
 	sint32 gx = lx/512;
 	sint32 gy = ly/512;
-
 
 	// Get all the required items and sort
 	for (int y = -xy_limit; y <= xy_limit; y++)
@@ -286,16 +382,49 @@ void Application::SetupDisplayList()
 			std::list<Item*>::const_iterator end = items->end();
 			for (; it != end; ++it)
 			{
-				if (!(*it)) continue;
+				Item *item = *it;
+				if (!item) continue;
 
-				(*it)->setupLerp(lx,ly,lz);
-				display_list->AddItem(*it);
+				if (!inBetweenFrame) 
+				{
+					item->inFastArea(fastArea);
+					fast->push_back(item->getObjId());
+				}
+				item->doLerp(lx,ly,lz,lerpFactor);
+				display_list->AddItem(item);
 			}
-
 		}
 	}
-}
 
+	// Now handle leaving the fast area
+	if (!inBetweenFrame) 
+	{
+		std::vector<uint16>::iterator it  = prev_fast->begin();
+		std::vector<uint16>::iterator end  = prev_fast->end();
+
+		for (;it != end; ++it)
+		{
+			Object *obj = world->getObject(*it);
+
+			// No object, continue
+			if (!obj) continue;
+
+			Item *item = p_dynamic_cast<Item*>(obj);
+
+			// Not an item, continue
+			if (!item) continue;
+
+			// If the fast area for the item is the current one, continue
+			if (item->getExtFlags() & (Item::EXT_FAST0<<fastArea)) continue;
+
+			// Ok, we must leave te Fast area
+			item->leavingFastArea();
+		}
+
+		// Flip the fast area
+		fastArea=1-fastArea;
+	}
+}
 
 // Paint the screen
 void Application::paint()
@@ -609,6 +738,11 @@ void Application::handleEvent(const SDL_Event& event)
 		// Ok, a bit of a hack for now
 		if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
 		{
+			if (avatarInStasis) {
+				pout << "Can't: avatarInStatus" << std::endl; 
+				break;
+			}
+
 			pout << std::endl << "Tracing mouse click: ";
 
 			Rect dims;
@@ -670,10 +804,46 @@ void Application::handleEvent(const SDL_Event& event)
 		case SDLK_c: userchoice = 12; break;
 		case SDLK_d: userchoice = 13; break;
 		case SDLK_e: userchoice = 14; break;
-		case SDLK_UP: lx -= 512; ly -= 512; break;
-		case SDLK_DOWN: lx += 512; ly += 512; break;
-		case SDLK_LEFT: lx -= 512; ly += 512; break;
-		case SDLK_RIGHT: lx += 512; ly -= 512; break;
+		case SDLK_UP: {
+			if (!avatarInStasis) { 
+				Actor* avatar = World::get_instance()->getNPC(1);
+				sint32 x,y,z;
+				avatar->getLocation(x,y,z);
+				avatar->move(x-512,y-512,z);
+			} else { 
+				pout << "Can't: avatarInStatus" << std::endl; 
+			}
+		} break;
+		case SDLK_DOWN: {
+			if (!avatarInStasis) { 
+				Actor* avatar = World::get_instance()->getNPC(1);
+				sint32 x,y,z;
+				avatar->getLocation(x,y,z);
+				avatar->move(x+512,y+512,z);
+			} else { 
+				pout << "Can't: avatarInStatus" << std::endl; 
+			}
+		} break;
+		case SDLK_LEFT: {
+			if (!avatarInStasis) { 
+				Actor* avatar = World::get_instance()->getNPC(1);
+				sint32 x,y,z;
+				avatar->getLocation(x,y,z);
+				avatar->move(x-512,y+512,z);
+			} else { 
+				pout << "Can't: avatarInStatus" << std::endl; 
+			}
+		} break;
+		case SDLK_RIGHT: {
+			if (!avatarInStasis) { 
+				Actor* avatar = World::get_instance()->getNPC(1);
+				sint32 x,y,z;
+				avatar->getLocation(x,y,z);
+				avatar->move(x+512,y-512,z);
+			} else { 
+				pout << "Can't: avatarInStatus" << std::endl; 
+			}
+		} break;
 		case SDLK_BACKQUOTE: showconsole = !showconsole; break;
 		case SDLK_ESCAPE: case SDLK_q: isRunning = false; break;
 		case SDLK_PAGEUP: if (showconsole) con.ScrollConsole(-3); break;
@@ -681,30 +851,45 @@ void Application::handleEvent(const SDL_Event& event)
 		case SDLK_LEFTBRACKET: display_list->DecSortLimit(); break;
 		case SDLK_RIGHTBRACKET: display_list->IncSortLimit(); break;
 		case SDLK_t: { // quick animation test
-			Actor* devon = World::get_instance()->getNPC(2);
-			Process* p = new ActorAnimProcess(devon, 0, 2);
-			Kernel::get_instance()->addProcess(p);
+
+			if (!avatarInStasis) { 
+                Actor* devon = World::get_instance()->getNPC(2);
+				Process* p = new ActorAnimProcess(devon, 0, 2);
+				Kernel::get_instance()->addProcess(p);
+			} else { 
+				pout << "Can't: avatarInStatus" << std::endl; 
+			} 
 		} break;
 		case SDLK_f: { // trigger 'first' egg
 //			lx = 14527 + 3*512;
 //			ly = 5887 + 3*512;
 //			lz = 8;
 
-			Item* item = p_dynamic_cast<Item*>(World::get_instance()->getObject(21183)); // *cough*
-			if (item->getQuality() != 36)
-				item = p_dynamic_cast<Item*>(World::get_instance()->getObject(21184)); // *cough*
-			item->callUsecodeEvent(7);
+			if (!avatarInStasis) {
+				Item* item = p_dynamic_cast<Item*>(World::get_instance()->getObject(21183)); // *cough*
+				if (item->getQuality() != 36)
+					item = p_dynamic_cast<Item*>(World::get_instance()->getObject(21184)); // *cough*
+				sint32 ix, iy, iz;
+				item->getLocation(ix,iy,iz);
+				SetCameraProcess(new CameraProcess(ix,iy,iz)); // Center on egg
+				item->callUsecodeEvent(7);
+			} else { 
+				pout << "Can't: avatarInStatus" << std::endl; 
+			} 
 		} break;
 		case SDLK_g: { // trigger 'execution' egg
-			Item* item = p_dynamic_cast<Item*>(World::get_instance()->getObject(21162)); // *cough*
-			if (item->getQuality() != 4)
-				item = p_dynamic_cast<Item*>(World::get_instance()->getObject(21163)); // *cough*
-			Actor* avatar = p_dynamic_cast<Actor*>(World::get_instance()->getObject(1));
-			sint32 x,y,z;
-			item->getLocation(x,y,z);
-			avatar->move(x,y,z);
-			lx = x; ly = y; lz = z;
-			item->callUsecodeEvent(7);
+			if (!avatarInStasis) {
+				Item* item = p_dynamic_cast<Item*>(World::get_instance()->getObject(21162)); // *cough*
+				if (item->getQuality() != 4)
+					item = p_dynamic_cast<Item*>(World::get_instance()->getObject(21163)); // *cough*
+				Actor* avatar = World::get_instance()->getNPC(1);
+				sint32 x,y,z;
+				item->getLocation(x,y,z);
+				avatar->move(x,y,z);
+				item->callUsecodeEvent(7);
+			} else { 
+				pout << "Can't: avatarInStatus" << std::endl; 
+			} 
 		} break;
 		default: break;
 		}
@@ -723,5 +908,13 @@ void Application::handleEvent(const SDL_Event& event)
 uint32 Application::I_getCurrentTimerTick(const uint8* /*args*/,
 										unsigned int /*argsize*/)
 {
-	return get_instance()->getFrameNum();
+	return get_instance()->getFrameNum()*8;
 }
+
+uint32 Application::I_setAvatarInStasis(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_SINT16(statis);
+	get_instance()->setAvatarInStasis(statis!=0);
+	return 0;
+}
+

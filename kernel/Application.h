@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
+#include <vector>
+
 #include "SDL_events.h"
 #include "intrinsics.h"
 
@@ -33,6 +35,7 @@ class PaletteManager;
 class GameData;
 class World;
 class ItemSorter;	// TODO MOVE THIS TO GameMapGump
+class CameraProcess;
 
 // extremely simplified stub-ish Application class
 class Application {
@@ -56,9 +59,16 @@ public:
 	uint32 getFrameNum() const { return framenum; }
 
 	INTRINSIC(I_getCurrentTimerTick);
+	INTRINSIC(I_setAvatarInStasis);
 
 	// Bad Darke! *pawslap!* Will make this private again soon.
 	static Application* application;
+
+	// To be moved 'somewhere' else
+	void GetCamera(sint32 &x, sint32 &y, sint32 &z);
+	uint16 SetCameraProcess(CameraProcess *);	// Set the current camera process. Adds process. Return PID
+	void setAvatarInStasis(bool stat) { avatarInStasis = stat; }
+
 private:
 	// minimal system
 	Kernel* kernel;
@@ -98,7 +108,26 @@ private:
 
 	bool isRunning;
 
+	// Timing stuff
 	uint32 framenum;
+	sint32 lerpFactor;			// Interpolation factor for this frame (0-256)
+	bool inBetweenFrame;		// Set true if we are doing an inbetween frame
+
+	bool frameSkip;				// Set to true to enable frame skipping (default false)
+	bool frameLimit;			// Set to true to enable frame limiting (default true)
+	bool interpolate;			// Set to true to enable interpolation (default true)
+	sint32 animationRate;		// The animation rate in ms. Affects all processes! (default 100)
+
+	// fastArea stuff. Move somewhere else
+	std::vector<uint16>			fastAreas[2];
+	int							fastArea;	// 0 or 1
+
+	// Sort of Camera Related Stuff, move somewhere else
+
+	bool avatarInStasis;	// If this is set to true, Avatar can't move, 
+							// nor can Avatar start more usecode
+
+	CameraProcess	 *camera;
 };
 
 #endif

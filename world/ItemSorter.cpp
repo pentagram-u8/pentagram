@@ -573,11 +573,11 @@ void ItemSorter::AddItem(Item *add)
 	uint32 shape_num = add->getShape();
 
 	si->item_num = add->getObjId();
-	si->shape = shapes->getShape(shape_num);
+	si->shape = add->getShapeObject();
 	si->frame = add->getFrame();
 	ShapeFrame *frame = si->shape->getFrame(si->frame);
 
-	ShapeInfo *info = shapes->getShapeInfo(shape_num);
+	ShapeInfo *info = add->getShapeInfo();
 
 	//if (info->is_editor && !show_editor_items) return;
 	//if (info->z > shape_max_height) return;
