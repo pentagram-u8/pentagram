@@ -87,7 +87,7 @@ GameData::~GameData()
 
 	for (unsigned int i = 0; i < speech.size(); ++i) {
 		SpeechFlex** s = speech[i];
-		if (s) delete [] *s;
+		if (s) delete *s;
 		delete s;
 	}
 	speech.clear();
