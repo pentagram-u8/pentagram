@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003  The Pentagram Team
+ *  Copyright (C) 2003-2004  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -537,19 +537,17 @@ Gump * Gump::GetRootGump()
 
 bool Gump::StartDraggingChild(Gump* gump, int mx, int my)
 {
-	gump->ParentToGump(mx, my);
-	gump->SetMoveOffset(mx, my);
-	return true;
+	return false;
 }
 
 void Gump::DraggingChild(Gump* gump, int mx, int my)
 {
-	gump->Move(mx, my);
+	CANT_HAPPEN();
 }
 
 void Gump::StopDraggingChild(Gump* gump)
 {
-	gump->SetMoveOffset(0, 0);
+	CANT_HAPPEN();
 }
 
 //

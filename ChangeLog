@@ -1,4 +1,9 @@
-2004-01-24  Ryan Nunn <colourles@users.sourceforge.net>
+2004-01-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/Gump.*: don't allow child gumps to be dragged by default
+	* gumps/DesktopGump.*: allow children of DesktopGump to be dragged
+	* gumps/GameMapGump.*: fix paintEditorItems (it was inverted)
+
+2004-01-25  Ryan Nunn <colourles@users.sourceforge.net>
 	* gumps/Gump.cpp, gumps/ConsoleGump.*, kernel/GUIApp.*, misc/Console.*,
 	  usecode/UCMachine.* : Added text input mode for gumps. Added Console
 	  commands. Do a "cmdList" in the console to see all the currently 

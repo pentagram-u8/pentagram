@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003  The Pentagram Team
+ *  Copyright (C) 2003-2004  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,6 +31,10 @@ public:
 	virtual ~DesktopGump(void);
 
 	virtual void PaintThis(RenderSurface *surf, sint32 lerp_factor);
+
+	virtual bool StartDraggingChild(Gump* gump, int mx, int my);
+	virtual void DraggingChild(Gump* gump, int mx, int my);
+	virtual void StopDraggingChild(Gump* gump);
 
 	bool loadData(IDataSource* ids);
 

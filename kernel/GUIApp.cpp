@@ -953,7 +953,8 @@ void GUIApp::GraphicSysInit()
 	TTF_Init();
 	atexit(TTF_Quit);
 	//HACK;
-	IDataSource* fontids = FileSystem::get_instance()->ReadFile("@data/verdanab.ttf");
+//	IDataSource* fontids = FileSystem::get_instance()->ReadFile("@data/verdanab.ttf");
+	IDataSource* fontids = FileSystem::get_instance()->ReadFile("@data/VeraBd.ttf");
 	ttffont = new TTFont(fontids, 10);
 #endif
 

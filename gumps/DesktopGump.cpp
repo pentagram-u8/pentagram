@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003  The Pentagram Team
+ *  Copyright (C) 2003-2004  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -43,6 +43,23 @@ void DesktopGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 {
 	// Just fill it
 	surf->Fill32(0x3f3f3f, 0, 0, dims.w, dims.h);
+}
+
+bool DesktopGump::StartDraggingChild(Gump* gump, int mx, int my)
+{
+	gump->ParentToGump(mx, my);
+	gump->SetMoveOffset(mx, my);
+	return true;
+}
+
+void DesktopGump::DraggingChild(Gump* gump, int mx, int my)
+{
+	gump->Move(mx, my);
+}
+
+void DesktopGump::StopDraggingChild(Gump* gump)
+{
+	gump->SetMoveOffset(0, 0);
 }
 
 void DesktopGump::saveData(ODataSource* ods)
