@@ -72,7 +72,8 @@ public:
 	void		clearID(uint16 id);
 
 	//! check if an ID is in use
-	bool		isIDUsed(uint16 id) { return ids[id] == 0 && id != last; }
+	bool		isIDUsed(uint16 id)
+		{ return id <= end && ids[id] == 0 && id != last; }
 
 	void save(ODataSource* ods);
 	bool load(IDataSource* ids);
