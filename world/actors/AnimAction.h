@@ -28,7 +28,7 @@ struct AnimFrame
 	int deltadir;
 	int flags;
 
-	inline bool is_flipped() { return (flags & 32); }
+	inline bool is_flipped() { return (flags & 32) != 0; }
 };
 
 struct AnimAction {
