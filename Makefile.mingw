@@ -41,7 +41,7 @@ FOLD_OBJCS = \
 	tools/fold/VarNodes.o tools/fold/LoopScriptNodes.o
 
 FLEXPACK_OBJCS = \
-	filesys/FileSystem.o filesys/Flex.o misc/Console.o misc/istring.o misc/util.o \
+	filesys/FileSystem.o filesys/Flex.o misc/Console.o misc/istring.o misc/pent_include.o misc/util.o \
 	tools/flexpack/FlexWriter.o
 
 disasm.exe : tools/disasm/Disasm.o $(FOLD_OBJCS)
@@ -65,7 +65,7 @@ PENTAGRAM_OBJS = \
 pentagram.exe: $(PENTAGRAM_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ $(LIBS)
 
-tools: amf2mod.exe disasm.exe fold.exe shapeconv.exe
+tools: amf2mod.exe disasm.exe flexpack.exe fold.exe shapeconv.exe
 
 clean:
 	rm -f $(PENTAGRAM_OBJS) pentagram.o
