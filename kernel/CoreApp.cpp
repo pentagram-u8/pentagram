@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IDataSource.h"
 #include "Args.h"
 #include "GameInfo.h"
+#include "GameDetector.h"
 
 #include <SDL.h>
 
@@ -197,8 +198,28 @@ void CoreApp::loadConfig()
 	pout << "Scanning config file for games:" << std::endl;
 	std::set<std::string>::iterator iter;
 	for (iter = games.begin(); iter != games.end(); ++iter) {
-		pout << *iter << std::endl;
-		//!! output some version info or something
+		std::string game = *iter;
+		GameInfo info;
+		bool detected = getGameInfo(game, &info);
+		pout << game << ": ";
+		if (detected) {
+			if (info.type == GameInfo::GAME_U8) {
+				pout << "U8, ";
+			} /* else...*/
+
+			if (info.language == GameInfo::GAMELANG_ENGLISH) {
+				pout << "English";
+			} else if (info.language == GameInfo::GAMELANG_FRENCH) {
+				pout << "French";
+			} else if (info.language == GameInfo::GAMELANG_GERMAN) {
+				pout << "German";
+			} else if (info.language == GameInfo::GAMELANG_SPANISH) {
+				pout << "Spanish";
+			} /* else...*/
+		} else {
+			pout << "(unknown)";
+		}
+		pout << std::endl;
 	}
 
 	if (game == "") {
@@ -232,7 +253,10 @@ void CoreApp::loadConfig()
 		exit(1);
 	}
 
-	setupGamePaths(game, 0);
+	//!! use GameData's info
+	GameInfo info;
+	getGameInfo(game, &info);
+	setupGamePaths(game, &info);
 }
 
 bool CoreApp::getGameInfo(std::string& game, GameInfo* gameinfo)
@@ -242,7 +266,7 @@ bool CoreApp::getGameInfo(std::string& game, GameInfo* gameinfo)
 
 	gameinfo->type = GameInfo::GAME_UNKNOWN;
 	gameinfo->version = 0;
-	gameinfo->language = GameInfo::LANG_UNKNOWN;
+	gameinfo->language = GameInfo::GAMELANG_UNKNOWN;
 
 	std::string gamekey = "config/games/"+game;
 
@@ -264,18 +288,30 @@ bool CoreApp::getGameInfo(std::string& game, GameInfo* gameinfo)
 	//!! TODO: version parsing
 
 	if (language == "english") {
-		gameinfo->language = GameInfo::LANG_ENGLISH;
+		gameinfo->language = GameInfo::GAMELANG_ENGLISH;
 	} else if (language == "french") {
-		gameinfo->language = GameInfo::LANG_FRENCH;
+		gameinfo->language = GameInfo::GAMELANG_FRENCH;
 	} else if (language == "german") {
-		gameinfo->language = GameInfo::LANG_GERMAN;
+		gameinfo->language = GameInfo::GAMELANG_GERMAN;
 	} else if (language == "spanish") {
-		gameinfo->language = GameInfo::LANG_SPANISH;
+		gameinfo->language = GameInfo::GAMELANG_SPANISH;
 	}
 
-	//!! TODO: game detection
+	if (gameinfo->type == GameInfo::GAME_UNKNOWN ||
+		/* gameinfo->version == 0 || */
+		gameinfo->language == GameInfo::GAMELANG_UNKNOWN)
+	{
+		std::string path;
+		config->value(gamekey+"/path", path, "");
 
-	return false;
+		if (path == "") return false;
+
+		return GameDetector::detect(path, gameinfo);
+	}
+		
+	//!! TODO: game detection
+		
+	return true;
 }
 
 void CoreApp::setupGamePaths(std::string& game, GameInfo* gameinfo)

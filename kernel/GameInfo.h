@@ -32,14 +32,14 @@ struct GameInfo {
 	int version;
 
 	enum GameLanguage {
-		LANG_UNKNOWN = 0,
-		LANG_ENGLISH,
-		LANG_FRENCH,
-		LANG_GERMAN,
-		LANG_SPANISH
+		GAMELANG_UNKNOWN = 0,
+		GAMELANG_ENGLISH,
+		GAMELANG_FRENCH,
+		GAMELANG_GERMAN,
+		GAMELANG_SPANISH
 	} language;
 
-	GameInfo() : type(GAME_UNKNOWN), version(0), language(LANG_UNKNOWN) { }
+	GameInfo() : type(GAME_UNKNOWN), version(0), language(GAMELANG_UNKNOWN) { }
 };
 
 #endif

@@ -2,7 +2,8 @@ KERNEL = \
 	kernel/Kernel.o \
 	kernel/CoreApp.o \
 	kernel/Process.o \
-	kernel/idMan.o 
+	kernel/idMan.o \
+	kernel/GameDetector.o
 
 KERNEL2 = \
 	kernel/GameData.o \
