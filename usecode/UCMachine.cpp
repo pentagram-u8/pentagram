@@ -1290,7 +1290,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 				uint32 thisptr = 0;
 				if (this_size > 0)
-					uint32 thisptr = p->stack.access4(p->bp+6);
+					thisptr = p->stack.access4(p->bp+6);
 				UCProcess* newproc = new UCProcess(classid, offset + delta,
 												   thisptr, this_size);
 
