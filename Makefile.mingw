@@ -9,39 +9,40 @@ SRC=.
 
 ### Modify these paths
 SDL_CFLAGS=-I$(SRC)/sdl/include
-SDL_LIBS=-L$(SRC)/sdl/lib -lSDL_mixer -lSDLmain -lSDL
+SDL_LIBS=-L$(SRC)/sdl/lib -lSDLmain -lSDL
 
 CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -I$(SRC)/conf -I$(SRC)/convert \
-	-I$(SRC)/filesys -I$(SRC)/graphics -I$(SRC)/gumps -I$(SRC)/misc \
+	-I$(SRC)/filesys -I$(SRC)/graphics -I$(SRC)/gumps -I$(SRC)/kernel -I$(SRC)/misc \
 	-I$(SRC)/tools/disasm -I$(SRC)/tools/fold -I$(SRC)/usecode $(SDL_CFLAGS)
-CXXFLAGS=-O2 -Wno-long-long
+CXXFLAGS=-O2
 CXX=g++
 
 LFLAGS=-mwindows
-LIBS=-lmingw32 $(SDL_LIBS) -lwinmm $(SDL_LIBS)
+LIBS=-lmingw32 $(SDL_LIBS)
 
 CONVERT_OBJS=convert/ConvertShape.o convert/crusader/ConvertShapeCrusader.o convert/u8/ConvertShapeU8.o
 
 FILESYS_OBJS=filesys/FileSystem.o filesys/Flex.o
 
-GRAPHICS_OBJS=graphics/Texture.o graphics/TextureBitmap.o graphics/TextureTarga.o graphics/RenderSurface.o \
-	graphics/SoftRenderSurface.o
+GRAPHICS_OBJS=graphics/Palette.o graphics/PaletteManager.o graphics/RenderSurface.o \
+  	graphics/Shape.o graphics/ShapeFlex.o graphics/ShapeFrame.o graphics/SoftRenderSurface.o \
+	graphics/Texture.o graphics/TextureBitmap.o graphics/TextureTarga.o
 
-MISC_OBJS=misc/Args.o misc/Console.o misc/Q_strcasecmp.o misc/pent_include.o
+MISC_OBJS=misc/Args.o misc/Console.o misc/pent_include.o misc/Q_strcasecmp.o misc/util.o
 
-CONF_OBJS=conf/Configuration.o conf/XMLTree.o conf/XMLNode.o
+CONF_OBJS=conf/Configuration.o conf/XMLNode.o conf/XMLTree.o 
 
-KERNEL_OBJS=kernel/Kernel.o kernel/Application.o
+KERNEL_OBJS=kernel/Kernel.o kernel/Application.o kernel/Process.o
 
 USECODE_OBJS=usecode/UCMachine.o usecode/UCProcess.o usecode/UsecodeFlex.o usecode/UCList.o
 
-all: amf2mod.exe disasm.exe shapeconv.exe pentagram.exe
+all: amf2mod.exe disasm.exe fold.exe shapeconv.exe pentagram.exe
 
 amf2mod.exe : tools/amf2mod/amf2mod.o
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
-FOLD_OBJCS= tools/fold/FuncNodes.o tools/fold/OperatorNodes.o tools/fold/Type.o tools/fold/VarNodes.o \
-	tools/fold/CallNodes.o tools/fold/Folder.o tools/fold/IfNode.o
+FOLD_OBJCS= tools/fold/CallNodes.o tools/fold/Folder.o tools/fold/FuncNodes.o tools/fold/IfNode.o \
+	tools/fold/OperatorNodes.o tools/fold/Type.o tools/fold/VarNodes.o
 
 disasm.exe : tools/disasm/Disasm.o $(FOLD_OBJCS) $(FILESYS_OBJS) $(MISC_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
@@ -52,15 +53,19 @@ fold.exe : tools/fold/Fold.o $(FOLD_OBJCS) $(FILESYS_OBJS) $(MISC_OBJS)
 shapeconv.exe : tools/shapeconv/ShapeConv.o $(CONVERT_OBJS) $(FILESYS_OBJS) $(MISC_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
-pentagram.exe: $(FILESYS_OBJS) $(MISC_OBJS) $(GRAPHICS_OBJS) $(KERNEL_OBJS) $(USECODE_OBJS) pentagram.o
+PENTAGRAM_OBJS=$(CONF_OBJS) $(FILESYS_OBJS) $(GRAPHICS_OBJS) $(KERNEL_OBJS) $(MISC_OBJS) $(USECODE_OBJS) pentagram.o
+
+pentagram.exe: $(PENTAGRAM_OBJS)
+	$(CXX) $(LFLAGS) -o $@ $+ $(LIBS)
 
 clean:
-	rm -f $(CONVERT_OBJS) $(FILESYS_OBJS) $(GRAPHICS_OBJS) $(KERNEL_OBJS) $(MISC_OBJS) $(USECODE_OBJS) $(FOLD_OBJCS)
+	rm -f $(CONF_OBJS) $(CONVERT_OBJS) $(FILESYS_OBJS) $(GRAPHICS_OBJS) $(KERNEL_OBJS) $(MISC_OBJS) $(USECODE_OBJS) $(FOLD_OBJCS)
 	rm -f pentagram.o tools/amf2mod/amf2mod.o tools/disasm/Disasm.o tools/fold/Fold.o tools/shapeconv/ShapeConv.o *.exe
 
-install: amf2mod.exe disasm.exe fold.exe shapeconv.exe
+install: all
 	mkdir -p $(U8PATH)
 	mkdir -p $(U8PATH)/tools
+	strip pentagram.exe -o $(U8PATH)/pentagram.exe
 	strip amf2mod.exe -o $(U8PATH)/tools/amf2mod.exe
 	strip disasm.exe -o $(U8PATH)/tools/disasm.exe
 	strip fold.exe -o $(U8PATH)/tools/fold.exe
