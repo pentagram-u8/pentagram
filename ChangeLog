@@ -1,3 +1,8 @@
+2004-09-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/UCList.h: fixed CopyList
+	* usecode/UCMachine.cpp: fixed listHeap corruption bug
+	* usecode/UCMachine.cpp: output some extra info for a few list opcodes
+
 2004-08-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/GlobEgg.cpp: fix glob expansion coordinates
 	* world/CurrentMap.cpp: removed wrong fix for ascending platforms

@@ -108,8 +108,6 @@ class UCList
 		unsigned int lsize = l.size;
 		for (unsigned int i = 0; i < lsize; i++)
 			append(l[i]);
-		l.free(); // NB: if l is a stringlist, do _not_ free the strings in l,
-		          // since all strings are now in this
 	}
 	void unionList(UCList& l) { // like append, but remove duplicates
 		// need to check if elementsizes match...

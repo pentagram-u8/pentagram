@@ -38,7 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Container.h"
 
-//#define WATCH_CLASS 1163
+//#define WATCH_CLASS 124
 //#define WATCH_ITEM 6637
 
 #ifdef WATCH_CLASS
@@ -444,7 +444,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x17:
 			// 17
 			// pop two lists from the stack and push the 'sum' of the lists
-			// (free the originals? order?)
+			// (freeing the originals)
 		{
 			ui16a = p->stack.pop2();
 			ui16b = p->stack.pop2();
@@ -461,7 +461,8 @@ bool UCMachine::execProcess(UCProcess* p)
 					listB->appendList(*listA);
 				}
 				// CHECKME: do we allow appending a list to itself?
-				if (ui16a != ui16b) freeList(ui16a);
+				assert(ui16a != ui16b);
+				freeList(ui16a);
 				p->stack.push2(ui16b);
 			} else {
 				// at least one of the lists didn't exist. Error or not?
@@ -998,8 +999,10 @@ bool UCMachine::execProcess(UCProcess* p)
 					// perr << "Pushing non-existent list" << std::endl;
 					// error = true;
 				}
-				p->stack.push2(assignList(l));
-				LOGPF(("push list\t%s\n", print_bp(si8a)));
+				uint16 newlistid = assignList(l);
+				p->stack.push2(newlistid);
+				LOGPF(("push list\t%s (%04X, copy %04X, %d elements)\n",
+					   print_bp(si8a), ui16b, newlistid, l->getSize()));
 			}
 			break;
 
@@ -1396,7 +1399,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.access2(p->bp+si8a);
 			freeString(ui16a);
-			LOGPF(("free string\t%s\n", print_bp(si8a)));
+			LOGPF(("free string\t%s = %04X\n", print_bp(si8a), ui16a));
 			break;
 
 		case 0x63:
@@ -1405,7 +1408,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.access2(p->bp+si8a);
 			freeStringList(ui16a);
-			LOGPF(("free slist\t%s\n", print_bp(si8a)));
+			LOGPF(("free slist\t%s = %04X\n", print_bp(si8a), ui16a));
 			break;
 
 		case 0x64:
@@ -1414,7 +1417,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.access2(p->bp+si8a);
 			freeList(ui16a);
-			LOGPF(("free list\t%s\n", print_bp(si8a)));
+			LOGPF(("free list\t%s = %04X\n", print_bp(si8a), ui16a));
 			break;
 	
 		case 0x65:
@@ -1425,7 +1428,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.access2(p->stack.getSP()+si8a);
 			freeString(ui16a);
-			LOGPF(("free string\t%s\n", print_sp(si8a)));
+			LOGPF(("free string\t%s = %04X\n", print_sp(si8a), ui16a));
 			break;
 
 		case 0x66:
@@ -1434,7 +1437,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.access2(p->stack.getSP()+si8a);
 			freeList(ui16a);
-			LOGPF(("free list\t%s\n", print_sp(si8a)));
+			LOGPF(("free list\t%s = %04X\n", print_sp(si8a), ui16a));
 			break;
 
 		case 0x67:
@@ -1443,7 +1446,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.access2(p->stack.getSP()+si8a);
 			freeStringList(ui16a);
-			LOGPF(("free slist\t%s\n", print_sp(si8a)));
+			LOGPF(("free slist\t%s = %04x\n", print_sp(si8a), ui16a));
 			break;
 
 		case 0x69:
@@ -1488,7 +1491,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				int elementsize = l->getElementSize();
 				UCList* l2 = new UCList(elementsize);
 				l2->copyList(*l);
-				ui16b = assignList(l);
+				ui16b = assignList(l2);
 			} break;
 			default:
 				ui16b = 0;
@@ -1791,7 +1794,7 @@ bool UCMachine::execProcess(UCProcess* p)
 					print_bp(si8a), ui32a, si16a));
 			}
 			
-			// Intcrement the counter
+			// Increment the counter
 			if (ui16a == 0xFFFF) ui16a = 0;
 			else ui16a++;
 			
