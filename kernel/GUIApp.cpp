@@ -1451,6 +1451,13 @@ void GUIApp::stopDragging(int mx, int my)
 			Gump *startgump = getGump(dragging_item_startgump);
 			assert(startgump); // can't have disappeared
 			bool moved = (dragging == DRAG_OK);
+
+			if (dragging != DRAG_OK) {
+				Gump *last = getGump(dragging_item_lastgump);
+				if (last && last != startgump)
+					last->DraggingItemLeftGump(item);
+			}
+
 			startgump->StopDraggingItem(item, moved);
 		}
 		
