@@ -138,7 +138,6 @@ void ButtonWidget::OnMouseUp(int button, int mx, int my)
 void ButtonWidget::OnMouseClick(int button, int mx, int my)
 {
 	int gx = mx, gy = my;
-	parent->ScreenSpaceToGump(gx,gy);
 	if (PointOnGump(gx, gy))
 		parent->ChildNotify(this,BUTTON_CLICK);
 }

@@ -167,7 +167,7 @@ uint16 ContainerGump::TraceObjId(int mx, int my)
 							my - (itemy + itemarea.y)))
 		{
 			// found it
-			return item->getObjId();
+				return item->getObjId();
 		}
 	}
 
@@ -224,6 +224,7 @@ void ContainerGump::GetItemLocation(sint32 lerp_factor)
 
 	// Convert the GumpSpaceCoord relative to the world/item gump
 	// into screenspace coords
+	gy = gy-it->getShapeInfo()->z*8-16;
 	gump->GumpToScreenSpace(gx,gy);
 
 	// Convert the screenspace coords into the coords of us
@@ -231,7 +232,7 @@ void ContainerGump::GetItemLocation(sint32 lerp_factor)
 
 	// Set x and y, and center us over it
 	ix = gx-dims.w/2;
-	iy = gy-dims.h-it->getShapeInfo()->z*8-16;
+	iy = gy-dims.h;
 }
 
 void ContainerGump::Close(bool no_del)

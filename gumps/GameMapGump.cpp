@@ -206,7 +206,7 @@ uint16 GameMapGump::TraceObjId(int mx, int my)
 	uint16 objid = Gump::TraceObjId(mx,my);
 	if (objid && objid != 65535) return objid;
 
-	ScreenSpaceToGump(mx,my);
+	ParentToGump(mx,my);
 	return display_list->Trace(mx,my,0,highlightItems);
 }
 
@@ -301,6 +301,7 @@ bool GameMapGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 Gump* GameMapGump::OnMouseDown(int button, int mx, int my)
 {
 	int sx = mx, sy = my;
+	ParentToGump(sx, sy);
 	GumpToScreenSpace(sx, sy);
 
 	AvatarMoverProcess* amp = GUIApp::get_instance()->getAvatarMoverProcess();

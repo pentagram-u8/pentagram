@@ -60,10 +60,10 @@ public:
 		xy_limit = (sy_limit+sx_limit)/2;
 	}
 
-	// Trace a click, and return ObjId
+	// Trace a click, and return ObjId (parent coord space)
 	virtual uint16		TraceObjId(int mx, int my);
 
-	// Trace a click, return ObjId, and the coordinates of the mouse click
+	// Trace a click, return ObjId, and the coordinates of the mouse click (gump coord space)
 	virtual uint16		TraceCoordinates(int mx, int my, sint32 coords[3],
 										 int offsetx = 0, int offsety = 0,
 										 Item* item = 0);

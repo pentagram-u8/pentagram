@@ -549,7 +549,7 @@ void AvatarMoverProcess::jump(Animation::Sequence action, int direction)
 	sint32 coords[3];
 	GameMapGump * gameMap = guiapp->getGameMapMapGump();
 	// We need the Gump's x/y for TraceCoordinates
-	gameMap->ParentToGump(mx,my);
+	gameMap->ScreenSpaceToGump(mx,my);
 	ObjId targetId = gameMap->TraceCoordinates(mx,my,coords);
 	Item * target = World::get_instance()->getItem(targetId);
 	

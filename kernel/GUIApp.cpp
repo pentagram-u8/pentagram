@@ -1200,7 +1200,12 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			if (dragging == DRAG_NOT) {
 				Gump* gump = getGump(mouseButton[button].downGump);
 				if (gump)
-					gump->OnMouseDouble(button, mx, my);
+				{
+					int mx2 = mx, my2 = my;
+					Gump *parent = gump->GetParent();
+					if (parent) parent->ScreenSpaceToGump(mx2,my2);
+					gump->OnMouseDouble(button, mx2, my2);
+				}
 				mouseButton[button].state |= MBS_HANDLED;
 				mouseButton[button].lastDown = 0;
 			}
@@ -1227,7 +1232,10 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		Gump* gump = getGump(mouseButton[button].downGump);
 		if (gump)
 		{
-			gump->OnMouseUp(button, mx, my);
+			int mx2 = mx, my2 = my;
+			Gump *parent = gump->GetParent();
+			if (parent) parent->ScreenSpaceToGump(mx2,my2);
+			gump->OnMouseUp(button, mx2, my2);
 			handled = true;
 		}
 
@@ -1344,8 +1352,13 @@ void GUIApp::handleDelayedEvents()
 		{
 			Gump* gump = getGump(mouseButton[button].downGump);
 			if (gump)
-				gump->OnMouseClick(button, mouseButton[button].downX,
-								   mouseButton[button].downY);
+			{
+				int mx = mouseButton[button].downX;
+				int my = mouseButton[button].downY;
+				Gump *parent = gump->GetParent();
+				if (parent) parent->ScreenSpaceToGump(mx,my);
+				gump->OnMouseClick(button, mx, my);
+			}
 
 			mouseButton[button].downGump = 0;
 			mouseButton[button].state |= MBS_HANDLED;
