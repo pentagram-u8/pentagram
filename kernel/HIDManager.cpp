@@ -72,6 +72,7 @@ HIDBinding HIDManager::getBinding(const SDL_Event& event)
 		uint16 key = event.key.keysym.sym;
 		binding = keybindings[key];
 	}
+	break;
 	case SDL_MOUSEBUTTONDOWN: case SDL_MOUSEBUTTONUP:
 	{
 		uint16 button = event.button.button;

@@ -1,3 +1,6 @@
+2004-01-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/HIDManager.cpp: added missing break
+
 2004-01-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: input handling cleanup (patch #873100)
 
