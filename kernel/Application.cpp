@@ -54,8 +54,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 Application* Application::application = 0;
 
-int classid, offset; // only temporary, don't worry :-)
-
 Application::Application(int argc, char *argv[])
 	: kernel(0), ucmachine(0), filesystem(0), config(0), desktop(0),
 	  console(0), screen(0), palettemanager(0), gamedata(0), world(0),
@@ -88,18 +86,6 @@ Application::~Application()
 
 void Application::run()
 {
-	UCProcess* p;
-	Usecode* u = GameData::get_instance()->getMainUsecode();
-	if (classid != -1) {
-		p = new UCProcess(u, classid, offset);
-	} else {
-//		p = new UCProcess(u, 0xD0, 0x80);
-		p = new UCProcess(u, 0x581, 0x28F9);
-	}
-
-    ucmachine->addProcess(p);
-
-
 	isRunning = true;
 
 	uint32 framenum = 0;
@@ -197,12 +183,6 @@ void Application::U8Playground(int argc, char *argv[])
 	// Clear Screen
 	pout << "Paint Inital display" << std::endl;
 	paint();
-
-	classid = offset = -1;
-	if (argc == 3) {
-		classid = std::strtol(argv[1], 0, 16);
-		offset = std::strtol(argv[2], 0, 16);
-	}
 }
 
 void Application::SetupDisplayList()

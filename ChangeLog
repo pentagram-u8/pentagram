@@ -1,5 +1,6 @@
 2003-05-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/*: some error checking
+	* kernel/Application.cpp: removed usecode call on startup
 
 2003-05-10  Ryan Nunn <colourles@users.sourceforge.net>
 	* world/World.cpp : Fixing assignObjId();
