@@ -35,8 +35,8 @@ public:
 	};
 
 	//! Initialize the driver
-	//! \arg sample_rate The sample rate for software synths
-	//! \arg stereo Specifies if a software synth must produce stero sound
+	//! \param sample_rate The sample rate for software synths
+	//! \param stereo Specifies if a software synth must produce stero sound
 	//! \return Non zero on failure
 	virtual int			initMidiDriver(uint32 sample_rate, bool stereo) = 0;
 
@@ -48,54 +48,54 @@ public:
 	virtual int			maxSequences() = 0;
 
 	//! Set the global volume level
-	//! \arg vol The new global volume level (0-255)
+	//! \param vol The new global volume level (0-255)
 	virtual void		setGlobalVolume(int vol) = 0;
 
 	//! Start playing a sequence
-	//! \arg seq_num The Sequence number to use.
-	//! \arg list The XMidiEventList to play
-	//! \arg repeat If true, endlessly repeat the track
-	//! \arg activate If true, set the sequence as active
-	//! \arg vol The volume level to start playing the sequence at (0-255)
+	//! \param seq_num The Sequence number to use.
+	//! \param list The XMidiEventList to play
+	//! \param repeat If true, endlessly repeat the track
+	//! \param activate If true, set the sequence as active
+	//! \param vol The volume level to start playing the sequence at (0-255)
 	virtual void		startSequence(int seq_num, XMidiEventList *list, bool repeat, int vol, int branch = -1) = 0;
 
 	//! Finish playing a sequence, and free the data
-	//! \arg seq_num The Sequence number to stop
+	//! \param seq_num The Sequence number to stop
 	virtual void		finishSequence(int seq_num) = 0;
 
 	//! Pause the playback of a sequence
-	//! \arg seq_num The Sequence number to pause
+	//! \param seq_num The Sequence number to pause
 	virtual void		pauseSequence(int seq_num) = 0;
 
 	//! Unpause the playback of a sequence
-	//! \arg seq_num The Sequence number to unpause
+	//! \param seq_num The Sequence number to unpause
 	virtual void		unpauseSequence(int seq_num) = 0;
 
 	//! Set the volume of a sequence
-	//! \arg seq_num The Sequence number to set the volume for
-	//! \arg vol The new volume level for the sequence (0-255)
+	//! \param seq_num The Sequence number to set the volume for
+	//! \param vol The new volume level for the sequence (0-255)
 	virtual void		setSequenceVolume(int seq_num, int vol) = 0;
 
 	//! Set the speed of a sequence
-	//! \arg seq_num The Sequence number to change it's speed
-	//! \arg speed The new speed for the sequence (percentage)
+	//! \param seq_num The Sequence number to change it's speed
+	//! \param speed The new speed for the sequence (percentage)
 	virtual void		setSequenceSpeed(int seq_num, int speed) = 0;
 
 	//! Check to see if a sequence is playing (doesn't check for pause state)
-	//! \arg seq_num The Sequence number to check
+	//! \param seq_num The Sequence number to check
 	//! \return true is sequence is playing, false if not playing
 	virtual bool		isSequencePlaying(int seq_num) = 0;
 
 	//! Get the callback data for a specified sequence
-	//! \arg seq_num The Sequence to get callback data from
+	//! \param seq_num The Sequence to get callback data from
 	virtual uint32		getSequenceCallbackData(int seq_num) { return 0; }
 
 	//! Is this a Software Synth/Sample producer
 	virtual bool		isSampleProducer() { return false; }
 
 	//! Produce Samples when doing Software Synthesizing
-	//! \arg samples The buffer to fill with samples
-	//! \arg bytes The number of bytes of music to produce
+	//! \param samples The buffer to fill with samples
+	//! \param bytes The number of bytes of music to produce
 	virtual void		produceSamples(sint16 *samples, uint32 bytes) { }
 
 	//! Is this a FM Synth and should use the Adlib Tracks?

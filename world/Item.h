@@ -50,10 +50,19 @@ public:
 	void setLocation(sint32 x, sint32 y, sint32 z); // this only sets the loc.
 
 	//! Move an item. This moves an item to the new location, and updates
-	//! CurrentMap if necessary.
-	//! \param forcemapupdate if set, will force updating the item lists in
-	//!                       CurrentMap
-	void move(sint32 x, sint32 y, sint32 z, bool forcemapupdate=false);
+	//! CurrentMap and fastArea if necessary.
+	//! \note This can destroy the object
+	void move(sint32 x, sint32 y, sint32 z);
+
+	//! Move an item. This moves an item to a container and  updates
+	//! CurrentMap and fastArea if necessary.
+	//! \param container The container this item should be placed in
+	//! \return true if item was moved, false if failed
+	//! \note This can destroy the object
+	bool moveToContainer(Container *container, bool checkwghtvol=false);
+
+	//! Move an item to the Ethereal Void
+	void moveToEtherealVoid();
 
 	//! Get the location of the top-most container this Item is in, or
 	//! this Item's location if not in a container.
@@ -167,11 +176,6 @@ public:
 	void closeGump();
 
 
-	//! Get the next Item in the Glob this Item belongs to
-	uint16 getGlobNext() const { return glob_next; }
-	//! Set the next Item in the Glob this Item belongs to.
-	void setGlobNext(Item* i) { glob_next = i->getObjId(); }
-
 	//! Destroy self.
 	virtual void destroy();
 
@@ -195,6 +199,7 @@ public:
 	//! \returns 0-0x4000 representing how far it got.
 	//!          0 = didn't move
 	//!          0x4000 = reached destination
+	//! \note This can destroy the object
 	sint32 collideMove(sint32 x,sint32 y,sint32 z, bool teleport, bool force);
 
 	//! Make the item fall down.
@@ -275,18 +280,15 @@ public:
 		}
 	}
 
+	//! Setup the lerped info for this gametick and animate the item
+	void setupLerp(sint32 gametick);		
 
-	// fastArea Handling. Note that these are intended to call the usecode
-	// funcs, and do other stuff
+	//! The item has entered the fast area
+	virtual void enterFastArea(); 
 
-	//! This is called when an item has entered or is in the fast area
-	//! \param even_odd Used internally for tracking when items enter/leave
-	//!        the fast area.
-	//! \param framenum The current framenum.
-	void inFastArea(int even_odd, int framenum); 
-
-	//! This is called when an item is leaving the fast area
-	void leavingFastArea();
+	//! The item has left the fast area
+	//! \note This can destroy the object
+	virtual void leaveFastArea();
 
 	bool loadData(IDataSource* ids);
 
@@ -400,49 +402,36 @@ private:
 	//! Call a Usecode Event. Use the separate functions instead!
 	uint32 callUsecodeEvent(uint32 event, const uint8* args=0, int argsize=0);
 
-	// Note that this glob linked list isn't being used currently;
-	uint16 glob_next; // next item in glob
+	//! The gametick setupLerp was last called on
+	sint32	last_setup;	
 
-	// The frame setupLerp was last called on
-	uint32	last_setup;	
-
-	//! Animate the item (called by inFastArea)
+	//! Animate the item (called by setupLerp)
 	void animateItem();
-
-	//! Setup the lerped info for this frame (called by inFastArea)
-	void setupLerp(bool post);		
 
 public:
 	enum statusflags {
-		FLG_DISPOSABLE	 = 0x0002,
-		FLG_OWNED		 = 0x0004,
-		FLG_CONTAINED	 = 0x0008,
-		FLG_INVISIBLE	 = 0x0010,
-		FLG_FLIPPED		 = 0x0020,
-		FLG_IN_NPC_LIST	 = 0x0040,
-		FLG_MONSTER_NPC	 = 0x0080,	// Maybe... i'm not entirely sure that this is what this is
-		FLG_GUMP_OPEN	 = 0x0100,
-		FLG_EQUIPPED	 = 0x0200,
-		FLG_BOUNCING	 = 0x0400,
-		FLG_ETHEREAL	 = 0x0800,
-		FLG_HANGING		 = 0x1000,
-		FLG_FASTAREA     = 0x2000,
-		FLG_LOW_FRICTION = 0x4000
+		FLG_DISPOSABLE	 = 0x0002,	//!< Item is discarded on map change
+		FLG_OWNED		 = 0x0004,	//!< Item is owned by someone (can't be stolen)
+		FLG_CONTAINED	 = 0x0008,	//!< Item is in a container
+		FLG_INVISIBLE	 = 0x0010,	//!< Item is invisible
+		FLG_FLIPPED		 = 0x0020,	//!< Item is flipped horizontally
+		FLG_IN_NPC_LIST	 = 0x0040,	//!< Item is a NPC
+		FLG_FAST_ONLY	 = 0x0080,	//!< Item is discarded when leaving fast area
+		FLG_GUMP_OPEN	 = 0x0100,	//!< Item has a gump open
+		FLG_EQUIPPED	 = 0x0200,	//!< Item is equiped
+		FLG_BOUNCING	 = 0x0400,	//!< Item has bounced
+		FLG_ETHEREAL	 = 0x0800,	//!< Item is in the ethereal list
+		FLG_HANGING		 = 0x1000,	//!< Item is suspended in the air
+		FLG_FASTAREA     = 0x2000,	//!< Item is in the fast area
+		FLG_LOW_FRICTION = 0x4000	//!< Item has low friction
 	};
 
 	enum extflags {
-		EXT_FIXED     = 0x0001, // item came from FIXED
-		EXT_INGLOB    = 0x0002, // item is part of a glob
-		EXT_NOTINMAP  = 0x0004, // item isn't part of the map itself (e.g., NPCs)
-
-		EXT_FAST0	  = 0x0008,	// Special stuff for detecting an item leaving the fast area
-		EXT_FAST1	  = 0x0010,	// They are mutually exclusive
-
-		EXT_HIGHLIGHT = 0x0020,	// Paint the item highlighted
-		EXT_INCURMAP  = 0x0040, // item is in a CurrentMap display list
-		EXT_SAVE_GLOBSKIP = 0x0080  // only when saving: unchanged glob item
-
-
+		EXT_FIXED		= 0x0001,	//!< Item came from FIXED
+		EXT_INCURMAP	= 0x0002,	//!< Item is in a CurrentMap display list
+		EXT_LERP_NOPREV	= 0x0008,	//!< Item can't be lerped this frame
+		EXT_HIGHLIGHT	= 0x0010,	//!< Item should be Painted highlighted
+		EXT_CAMERA		= 0x0020	//!< Item is being followed by the camera
 	};
 };
 

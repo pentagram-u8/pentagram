@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class XMidiEventList;
 class XMidiSequence;
 
+#include <queue>
 #include <SDL.h>
 #include <SDL_thread.h>
 
@@ -90,6 +91,24 @@ protected:
 private:
 
 	struct ComMessage {
+
+		ComMessage(int T) : type(T) { }
+
+		ComMessage(const ComMessage &other)
+		{
+			type = other.type;
+			sequence = other.sequence;
+			std::memcpy (&data, &other.data, sizeof(data));
+		}
+
+		ComMessage & operator = (const ComMessage &other)
+		{
+			type = other.type;
+			sequence = other.sequence;
+			std::memcpy (&data, &other.data, sizeof(data));
+			return  *this;
+		}
+
 		int				type;
 		int				sequence;
 		union
@@ -123,59 +142,62 @@ private:
 	sint32			initialized;
 
 	// Communications
-	bool			playing[LLMD_NUM_SEQ];			// Only set by thread
-	sint32			callback_data[LLMD_NUM_SEQ];	// Only set by thread
-	ComMessage		message;						// Set by both
+	std::queue<ComMessage>	messages;
+	SDL_mutex				*mutex;
+	SDL_mutex				*cbmutex;
+	sint32					peekComMessageType();
+	void					sendComMessage(ComMessage& message);
+	void					waitTillNoComMessages();
+	void					lockComMessage();
+	void					unlockComMessage();
 
-	SDL_mutex		*mutex;
-	SDL_mutex		*cbmutex;
-	sint32			getComMessage(sint32 *val);
-	void			lockComMessage();
-	void			unlockComMessage();
+	// State
+	bool					playing[LLMD_NUM_SEQ];			// Only set by thread
+	sint32					callback_data[LLMD_NUM_SEQ];	// Only set by thread
 
 	// Shared Data
-	int				global_volume;
-	uint32			xmidi_clock;					// Xmidi clock, returned by getTickCount
-	int				chan_locks[16];					// Which seq a chan has been locked by
-	int				chan_map[LLMD_NUM_SEQ][16];		// Maps from locked logical chan to phyiscal
-	XMidiSequence	*sequences[LLMD_NUM_SEQ];
+	int						global_volume;
+	uint32					xmidi_clock;					// Xmidi clock, returned by getTickCount
+	int						chan_locks[16];					// Which seq a chan has been locked by
+	int						chan_map[LLMD_NUM_SEQ][16];		// Maps from locked logical chan to phyiscal
+	XMidiSequence			*sequences[LLMD_NUM_SEQ];
 
 	// Software Synth only Data
-	uint32			total_seconds;					// xmidi_clock = total_seconds*6000 
-	uint32			samples_this_second;			//		+ samples_this_second*6000/sample_rate;
-	uint32			samples_per_iteration;
+	uint32					total_seconds;					// xmidi_clock = total_seconds*6000 
+	uint32					samples_this_second;			//		+ samples_this_second*6000/sample_rate;
+	uint32					samples_per_iteration;
 
 	// Thread Based Only Data
-	SDL_Thread		*thread;
+	SDL_Thread				*thread;
 
 	// Shared Methods
 
 	//! Play all sequences, handle communications requests
 	//! /return true if terminating
-	bool			playSequences();
+	bool					playSequences();
 
 	// Thread Methods
-	int				initThreadedSynth();
-	void			destroyThreadedSynth();
-	static int		threadMain_Static(void *data);
-	int				threadMain();
+	int						initThreadedSynth();
+	void					destroyThreadedSynth();
+	static int				threadMain_Static(void *data);
+	int						threadMain();
 
 	// Software methods
-	int				initSoftwareSynth();
-	void			destroySoftwareSynth();
+	int						initSoftwareSynth();
+	void					destroySoftwareSynth();
 
 	// XMidiSequenceHandler implementation
-	virtual void	sequenceSendEvent(uint16 sequence_id, uint32 message);
-	virtual uint32	getTickCount(uint16 sequence_id);
-	virtual void	handleCallbackTrigger(uint16 sequence_id, uint8 data);
+	virtual void			sequenceSendEvent(uint16 sequence_id, uint32 message);
+	virtual uint32			getTickCount(uint16 sequence_id);
+	virtual void			handleCallbackTrigger(uint16 sequence_id, uint8 data);
 
-	int				protectChannel(uint16 sequence_id, int chan, bool protect);
-	int				lockChannel(uint16 sequence_id, int chan, bool lock);
+	int						protectChannel(uint16 sequence_id, int chan, bool protect);
+	int						lockChannel(uint16 sequence_id, int chan, bool lock);
 
-	int				unlockAndUnprotectChannel(uint16 sequence_id);
+	int						unlockAndUnprotectChannel(uint16 sequence_id);
 
 	//! Mute all phyisical channels
-	void			muteAllChannels();
+	void					muteAllChannels();
 };
 
 #endif //LOWLEVELMIDIDRIVER_H_INCLUDED

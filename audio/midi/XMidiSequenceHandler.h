@@ -24,18 +24,18 @@ class XMidiSequenceHandler
 {
 public:
 	//! An event sent from a sequence to play
-	//! \arg sequence_id The id of the sequence that is attempting to send the event
-	//! \arg message The Event being sent
+	//! \param sequence_id The id of the sequence that is attempting to send the event
+	//! \param message The Event being sent
 	virtual void	sequenceSendEvent(uint16 sequence_id, uint32 message) = 0;
 
 	//! An event sent from a sequence to play
-	//! \arg sequence_id The id of the sequence requesting the tick count
+	//! \param sequence_id The id of the sequence requesting the tick count
 	//! \return Number of ticks, in 6000ths of a second
 	virtual uint32	getTickCount(uint16 sequence_id) = 0;
 
 	//! Handle an XMIDI Callback Trigger Event
-	//! \arg sequence_id The id of the sequence doing the callback
-	//! \arg data data[1] of the XMIDI_CONTROLLER_CALLBACK_TRIG event
+	//! \param sequence_id The id of the sequence doing the callback
+	//! \param data data[1] of the XMIDI_CONTROLLER_CALLBACK_TRIG event
 	virtual void	handleCallbackTrigger(uint16 sequence_id, uint8 data) = 0;
 };
 

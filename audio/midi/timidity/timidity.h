@@ -121,7 +121,7 @@ extern void Timidity_GenerateSamples(void *stream, int samples);
 /* Make envelopes twice as fast. Saves ~20% CPU time (notes decay
    faster) and sounds more like a GUS. There is now a command line
    option to toggle this as well. */
-#define FAST_DECAY
+//#define FAST_DECAY
 
 /* How many bits to use for the fractional part of sample positions.
    This affects tonal accuracy. The entire position counter must fit

@@ -18,7 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/FMOplMidiDriver.cpp,v 1.3 2003/07/06 15:17:01 wjpalenstijn Exp $
+ * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/FMOplMidiDriver.cpp,v 1.4 2003/07/16 17:35:35 colourles Exp $
  */
 
 #include "pent_include.h"
@@ -235,6 +235,7 @@ int FMOplMidiDriver::open()
 		ch[i].nshift = -13;//-13;
 		ch[i].on = 1;
 		ch[i].pitchbend = 0x2000;
+		ch[i].pan = 64;
 	}
 
 	/* General init */
@@ -378,6 +379,8 @@ void FMOplMidiDriver::send(uint32 b)
 				// Send note on
 				midi_fm_playnote(on, note + ch[channel].nshift, nv * 2, ch[channel].pitchbend);
 
+				Pentagram::OPLSetPan(opl,on,ch[channel].pan);
+
 				// Update the shadows
 				chp[on][CHP_CHAN] = channel;
 				chp[on][CHP_NOTE] = note;
@@ -420,8 +423,10 @@ void FMOplMidiDriver::send(uint32 b)
 				midi_update_volume(channel);
 				break;
 			case 0x0A:								/* Pan */
-				/* This is not a warning as we do not support OPL3 => no stereo anyway 
-				   debug(1, "MIDI sub-command 0xB0 (Control Change) case %02X (Pan) not handled in MIDIEMU driver.", ctrl); */
+				ch[channel].pan = vel;
+				for (i = 0; i < 9; i++)
+					if (chp[i][CHP_CHAN] == channel)
+						Pentagram::OPLSetPan(opl,i,ch[channel].pan);
 				break;
 			case 0x0B:								/* Expression */
 				ch[channel].expression = vel;

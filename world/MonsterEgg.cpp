@@ -50,8 +50,8 @@ uint16 MonsterEgg::hatch()
 	int shape = getMonsterShape();
 
 	Actor* newactor = ItemFactory::createActor(shape, 0, 0,
-											   Item::FLG_MONSTER_NPC, 0, 0,
-											   Item::EXT_NOTINMAP);
+								FLG_FAST_ONLY|FLG_DISPOSABLE|FLG_IN_NPC_LIST, 
+								0, 0, 0);
 	if (!newactor) {
 		perr << "MonsterEgg::hatch failed to create actor (" << shape
 			 <<	")." << std::endl;
@@ -61,8 +61,7 @@ uint16 MonsterEgg::hatch()
 
 	newactor->setMapNum(getMapNum());
 	newactor->setNpcNum(objID);
-	newactor->setLocation(x,y,z);
-	World::get_instance()->getCurrentMap()->addItem(newactor);
+	newactor->move(x,y,z);
 
 	return objID;
 }

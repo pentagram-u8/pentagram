@@ -57,7 +57,7 @@ float
     master_volume;
 
 sint32 drumchannels=DEFAULT_DRUMCHANNELS;
-int adjust_panning_immediately=0;
+int adjust_panning_immediately=1;
 
 struct MidiSong {
 	sint32 samples;

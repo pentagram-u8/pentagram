@@ -65,7 +65,7 @@ Palette* PaletteManager::getPalette(PalIndex index)
 	return palettes[index];
 }
 
-void PaletteManager::transformPalette(PalIndex index, float matrix[12])
+void PaletteManager::transformPalette(PalIndex index, sint16 matrix[12])
 {
 	Palette *pal = getPalette(index);
 
@@ -75,16 +75,16 @@ void PaletteManager::transformPalette(PalIndex index, float matrix[12])
 	rendersurface->CreateNativePalette(pal); // convert to native format
 }
 
-void PaletteManager::getTransformMatrix(float matrix[12], PalTransforms trans)
+void PaletteManager::getTransformMatrix(sint16 matrix[12], PalTransforms trans)
 {
 	switch (trans)
 	{
 		// Normal untransformed palette
 	case Transform_None:
 		{
-			matrix[0] = 1;	matrix[1] = 0;	matrix[2]  = 0;	matrix[3]  = 0;
-			matrix[4] = 0;	matrix[5] = 1;	matrix[6]  = 0;	matrix[7]  = 0;
-			matrix[8] = 0;	matrix[9] = 0;	matrix[10] = 1;	matrix[11] = 0;
+			matrix[0] = 0x800;	matrix[1] = 0;		matrix[2]  = 0;		matrix[3]  = 0;
+			matrix[4] = 0;		matrix[5] = 0x800;	matrix[6]  = 0;		matrix[7]  = 0;
+			matrix[8] = 0;		matrix[9] = 0;		matrix[10] = 0x800;	matrix[11] = 0;
 		}
 		break;
 
@@ -93,9 +93,9 @@ void PaletteManager::getTransformMatrix(float matrix[12], PalTransforms trans)
 		{
 			for (int i = 0; i < 3; i++)
 			{
-				matrix[i*4+0] = 0.375F;	
-				matrix[i*4+1] = 0.5F;	
-				matrix[i*4+2] = 0.125F;	
+				matrix[i*4+0] = 0x0300;	
+				matrix[i*4+1] = 0x0400;	
+				matrix[i*4+2] = 0x0100;	
 				matrix[i*4+3] = 0;
 			}
 		}
@@ -104,9 +104,9 @@ void PaletteManager::getTransformMatrix(float matrix[12], PalTransforms trans)
 		// O[r] = 0;
 	case Transform_NoRed:
 		{
-			matrix[0] = 0;	matrix[1] = 0;	matrix[2]  = 0;	matrix[3]  = 0;
-			matrix[4] = 0;	matrix[5] = 1;	matrix[6]  = 0;	matrix[7]  = 0;
-			matrix[8] = 0;	matrix[9] = 0;	matrix[10] = 1;	matrix[11] = 0;
+			matrix[0] = 0;	matrix[1] = 0;		matrix[2]  = 0;		matrix[3]  = 0;
+			matrix[4] = 0;	matrix[5] = 0x800;	matrix[6]  = 0;		matrix[7]  = 0;
+			matrix[8] = 0;	matrix[9] = 0;		matrix[10] = 0x800;	matrix[11] = 0;
 		}
 		break;
 
@@ -115,38 +115,38 @@ void PaletteManager::getTransformMatrix(float matrix[12], PalTransforms trans)
 		{
 			for (int i = 0; i < 3; i++)
 			{
-				matrix[i*4+0] = 0.375F*0.25F;
-				matrix[i*4+1] = 0.5F  *0.25F;	
-				matrix[i*4+2] = 0.125F*0.25F;	
+				matrix[i*4+0] = (0x0300*0x0200)>>11;
+				matrix[i*4+1] = (0x0400*0x0200)>>11;	
+				matrix[i*4+2] = (0x0100*0x0200)>>11;	
 
-				matrix[i*4+i]+= 0.25;
+				matrix[i*4+i]+= 0x0200;
 
-				matrix[i*4+3] = 0.1875F;
+				matrix[i*4+3] = 0x0180;
 			}
 		}
 		break;
 
-		// O[r] = (I[r] + Grey)*0.5 + 0.1875; 
+		// O[r] = I[r]*0.5 + Grey*0.5  + 0.1875; 
 		// O[g] = I[g]*0.5 + Grey*0.25; 
 		// O[b] = I[b]*0.5;
 	case Transform_FireStorm:
 		{
-			// O[r] = (I[r] + Grey)*0.5 + 0.1875; 
-			matrix[0]  = 0.375F*0.5F + 0.5F;	
-			matrix[1]  = 0.5F  *0.5F;	
-			matrix[2]  = 0.125F*0.5F;	
-			matrix[3]  = 0.1875F;
+			// O[r] = I[r]*0.5 + Grey*0.5 + 0.1875; 
+			matrix[0] =((0x0300*0x0400)>>11) + 0x0400;
+			matrix[1] = (0x0400*0x0400)>>11;	
+			matrix[2] = (0x0100*0x0400)>>11;	
+			matrix[3]  = 0x0180;
 
 			// O[g] = I[g]*0.5 + Grey*0.25; 
-			matrix[4]  = 0.375F*0.25F;	
-			matrix[5]  = 0.5F  *0.25F + 0.5F;	
-			matrix[6]  = 0.125F*0.25F;	
+			matrix[4] = (0x0300*0x0200)>>11;
+			matrix[5] =((0x0400*0x0200)>>11) + 0x0400;	
+			matrix[6] = (0x0100*0x0200)>>11;	
 			matrix[7]  = 0;
 
 			// O[b] = I[b]*0.5;
 			matrix[8]  = 0;	
 			matrix[9]  = 0;	
-			matrix[10] = 0.5F;	
+			matrix[10] = 0x0400;	
 			matrix[11] = 0;
 		}
 		break;
@@ -156,11 +156,11 @@ void PaletteManager::getTransformMatrix(float matrix[12], PalTransforms trans)
 		{
 			for (int i = 0; i < 3; i++)
 			{
-				matrix[i*4+0] = -0.375F;	
-				matrix[i*4+1] = -0.5F;	
-				matrix[i*4+2] = -0.125F;	
+				matrix[i*4+0] = -0x0300;	
+				matrix[i*4+1] = -0x0400;	
+				matrix[i*4+2] = -0x0100;	
 				matrix[i*4+3] = 0;
-				matrix[i*4+i] += 2;	
+				matrix[i*4+i] += 0x1000;	
 			}
 		}
 		break;
@@ -168,18 +168,18 @@ void PaletteManager::getTransformMatrix(float matrix[12], PalTransforms trans)
 		// O[b] = I[r]; O[r] = I[g]; O[g] = I[b];
 	case Transform_BRG:
 		{
-			matrix[0] = 0;	matrix[1] = 1;	matrix[2]  = 0;	matrix[3]  = 0;
-			matrix[4] = 0;	matrix[5] = 0;	matrix[6]  = 1;	matrix[7]  = 0;
-			matrix[8] = 1;	matrix[9] = 0;	matrix[10] = 0;	matrix[11] = 0;
+			matrix[0] = 0;		matrix[1] = 0x800;	matrix[2]  = 0;		matrix[3]  = 0;
+			matrix[4] = 0;		matrix[5] = 0;		matrix[6]  = 0x800;	matrix[7]  = 0;
+			matrix[8] = 0x800;	matrix[9] = 0;		matrix[10] = 0;		matrix[11] = 0;
 		}
 		break;
 
 		// O[g] = I[r]; O[b] = I[g]; O[r] = I[b];
 	case Transform_GBR:
 		{
-			matrix[0] = 0;	matrix[1] = 0;	matrix[2]  = 1;	matrix[3]  = 0;
-			matrix[4] = 1;	matrix[5] = 0;	matrix[6]  = 0;	matrix[7]  = 0;
-			matrix[8] = 0;	matrix[9] = 1;	matrix[10] = 0;	matrix[11] = 0;
+			matrix[0] = 0;		matrix[1] = 0;		matrix[2]  = 0x800;	matrix[3]  = 0;
+			matrix[4] = 0x800;	matrix[5] = 0;		matrix[6]  = 0;		matrix[7]  = 0;
+			matrix[8] = 0;		matrix[9] = 0x800;	matrix[10] = 0;		matrix[11] = 0;
 		}
 		break;
 
@@ -187,29 +187,29 @@ void PaletteManager::getTransformMatrix(float matrix[12], PalTransforms trans)
 	default:
 		{
 			perr << "Unknown Palette Transformation: " << trans << std::endl;
-			matrix[0] = 1;	matrix[1] = 0;	matrix[2]  = 0;	matrix[3]  = 0;
-			matrix[4] = 0;	matrix[5] = 1;	matrix[6]  = 0;	matrix[7]  = 0;
-			matrix[8] = 0;	matrix[9] = 0;	matrix[10] = 1;	matrix[11] = 0;
+			matrix[0] = 0x800;	matrix[1] = 0;		matrix[2]  = 0;		matrix[3]  = 0;
+			matrix[4] = 0;		matrix[5] = 0x800;	matrix[6]  = 0;		matrix[7]  = 0;
+			matrix[8] = 0;		matrix[9] = 0;		matrix[10] = 0x800;	matrix[11] = 0;
 		}
 		break;
 	}
 }
 
 
-void PaletteManager::getTransformMatrix(float matrix[12], uint32 col32)
+void PaletteManager::getTransformMatrix(sint16 matrix[12], uint32 col32)
 {
-	matrix[0]  = TEX32_A(col32)/255.0F;	
+	matrix[0]  = (static_cast<sint32>(TEX32_A(col32))*0x800)/255;	
 	matrix[1]  = 0;	
 	matrix[2]  = 0;	
-	matrix[3]  = TEX32_R(col32)/255.0F;
+	matrix[3]  = (static_cast<sint32>(TEX32_R(col32))*0x800)/255;
 
 	matrix[4]  = 0;	
-	matrix[5]  = TEX32_A(col32)/255.0F;	
+	matrix[5]  = (static_cast<sint32>(TEX32_A(col32))*0x800)/255;	
 	matrix[6]  = 0;	
-	matrix[7]  = TEX32_G(col32)/255.0F;
+	matrix[7]  = (static_cast<sint32>(TEX32_G(col32))*0x800)/255;
 
 	matrix[8]  = 0;	
 	matrix[9]  = 0;	
-	matrix[10] = TEX32_A(col32)/255.0F;	
-	matrix[11] = TEX32_B(col32)/255.0F;
+	matrix[10] = (static_cast<sint32>(TEX32_A(col32))*0x800)/255;	
+	matrix[11] = (static_cast<sint32>(TEX32_B(col32))*0x800)/255;
 }

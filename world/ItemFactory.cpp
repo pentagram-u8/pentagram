@@ -42,6 +42,9 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 		getShapeInfo(shape);
 	if (info == 0) return 0;
 
+	// New item, no lerping
+	extendedflags |= Item::EXT_LERP_NOPREV;
+
 	uint32 family = info->family;
 
 	switch (family) {
@@ -155,6 +158,8 @@ Actor* ItemFactory::createActor(uint32 shape, uint32 frame, uint16 quality,
 	if (npcnum == 0) // or do monsters have npcnum 0? we'll see...
 		return 0;
 */
+	// New actor, no lerping
+	extendedflags |= Item::EXT_LERP_NOPREV;
 
 	if (npcnum == 1) {
 		// Main Actor

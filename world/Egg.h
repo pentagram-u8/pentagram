@@ -41,6 +41,9 @@ public:
 	//! hatch the egg
 	virtual uint16 hatch();
 
+	//! The item has left the fast area
+	virtual void leaveFastArea();
+
 	//! clear the 'hatched' flag
 	void reset() { hatched = false; }
 

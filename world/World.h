@@ -99,18 +99,17 @@ public:
 	Actor* getNPC(uint16 npcid) const;
 	MainActor* getMainActor() const;
 
-	//! push an item onto the ethereal stack
-	void etherealPush(uint16 objid) { ethereal.push(objid); }
+	//! push an item onto the ethereal void
+	void etherealPush(uint16 objid) { ethereal.push_front(objid); }
 
-	//! check if the the ethereal stack is empty
+	//! check if the the ethereal void is empty
 	bool etherealEmpty() { return ethereal.empty(); }
 
-	//! pop an item from the ethereal stack
-	uint16 etherealPop()
-		{ uint16 id = ethereal.top(); ethereal.pop(); return id; }
+	//! return (but don't remove) the top item from the ethereal void
+	uint16 etherealPeek() { return ethereal.front(); }
 
-	//! return (but don't remove) the top item from the ethereal stack
-	uint16 etherealPeek() { return ethereal.top(); }
+	//! remove and item from the ethereal void
+	void etherealRemove(uint16 objid) { return ethereal.remove(objid); }
 
 	//! output some statistics about the world
 	void worldStats();
@@ -133,7 +132,7 @@ private:
 	std::vector<Map*> maps;
 	CurrentMap* currentmap;
 
-	std::stack<uint16> ethereal;
+	std::list<uint16> ethereal;
 };
 
 #endif

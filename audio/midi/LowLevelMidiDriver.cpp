@@ -22,24 +22,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "LowLevelMidiDriver.h"
 #include "XMidiSequence.h"
 
-// Ok, leaving this commented out is probably best
-// It slighly changes how inactive streams are handled
-// If enabled, it will cause channels to continue to
-// play sliently in the background. However, things are
-// done well enough that there isn't a noticable difference
-//#define LLMD_ALLOW_INACTIVE_TO_SEND
-
-#define LLMD_COM_READY					0
-#define LLMD_COM_PLAY					1
-#define LLMD_COM_FINISH					2
-#define LLMD_COM_PAUSE					3
-#define LLMD_COM_SET_VOLUME				4
-#define LLMD_COM_SET_SPEED				5
+#define LLMD_MSG_PLAY					1
+#define LLMD_MSG_FINISH					2
+#define LLMD_MSG_PAUSE					3
+#define LLMD_MSG_SET_VOLUME				4
+#define LLMD_MSG_SET_SPEED				5
 
 // These are only used by thread
-#define LLMD_COM_THREAD_INIT			-1	
-#define LLMD_COM_THREAD_INIT_FAILED		-2
-#define LLMD_COM_THREAD_EXIT			-3
+#define LLMD_MSG_THREAD_INIT			-1	
+#define LLMD_MSG_THREAD_INIT_FAILED		-2
+#define LLMD_MSG_THREAD_EXIT			-3
 
 //#define DO_SMP_TEST
 
@@ -57,7 +49,6 @@ LowLevelMidiDriver::LowLevelMidiDriver() :
 	initialized(false), mutex(0), cbmutex(0), 
 	global_volume(255), thread(0)
 {
-	message.type = LLMD_COM_THREAD_INIT;
 }
 
 LowLevelMidiDriver::~LowLevelMidiDriver()
@@ -70,6 +61,10 @@ LowLevelMidiDriver::~LowLevelMidiDriver()
 	}
 	thread = 0;
 }
+
+//
+// MidiDriver API
+//
 
 int LowLevelMidiDriver::initMidiDriver(uint32 samp_rate, bool is_stereo)
 {
@@ -103,19 +98,18 @@ int LowLevelMidiDriver::initMidiDriver(uint32 samp_rate, bool is_stereo)
 		thread = 0;
 		mutex = 0;
 		cbmutex = 0;
-		return code;
 	}
 	else
 		initialized = true;
 
-	return 0;
+	return code;
 }
 
 void LowLevelMidiDriver::destroyMidiDriver()
 {
 	if (!initialized) return;
 
-	while (getComMessage(&message.type) != LLMD_COM_READY) yield();
+	waitTillNoComMessages();
 
 	if (isSampleProducer()) destroySoftwareSynth();
 	else destroyThreadedSynth();
@@ -130,12 +124,152 @@ void LowLevelMidiDriver::destroyMidiDriver()
 	giveinfo();
 }
 
-sint32 LowLevelMidiDriver::getComMessage(sint32 *val)
+int LowLevelMidiDriver::maxSequences()
+{
+	return LLMD_NUM_SEQ;
+}
+
+void LowLevelMidiDriver::startSequence(int seq_num, XMidiEventList *eventlist, bool repeat, int vol, int branch)
+{
+	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
+
+	if (!initialized)
+		return;
+
+	eventlist->incerementCounter();
+
+	ComMessage message(LLMD_MSG_PLAY);
+	message.sequence = seq_num;
+	message.data.play.list = eventlist;
+	message.data.play.repeat = repeat;
+	message.data.play.volume = vol;
+	message.data.play.branch = branch;
+
+	sendComMessage(message);
+}
+
+void LowLevelMidiDriver::finishSequence(int seq_num)
+{
+	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
+	if (!initialized) return;
+
+	ComMessage message(LLMD_MSG_FINISH);
+	message.sequence = seq_num;
+	messages.push(message);
+
+	sendComMessage(message);
+}
+
+void LowLevelMidiDriver::setSequenceVolume(int seq_num, int vol)
+{
+	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
+	if (vol < 0 || vol > 255) return;
+	if (!initialized) return;
+
+	ComMessage message(LLMD_MSG_SET_VOLUME);
+	message.sequence = seq_num;
+	message.data.volume.level = vol;
+	messages.push(message);
+
+	sendComMessage(message);
+}
+
+void LowLevelMidiDriver::setGlobalVolume(int vol)
+{
+	if (vol < 0 || vol > 255) return;
+	if (!initialized) return;
+
+	ComMessage message(LLMD_MSG_SET_VOLUME);
+	message.sequence = -1;
+	message.data.volume.level = vol;
+
+	sendComMessage(message);
+}
+
+void LowLevelMidiDriver::setSequenceSpeed(int seq_num, int speed)
+{
+	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
+	if (speed < 0) return;
+	if (!initialized) return;
+
+	ComMessage message(LLMD_MSG_SET_SPEED);
+	message.sequence = seq_num;
+	message.data.speed.percentage = speed;
+
+	sendComMessage(message);
+}
+
+bool LowLevelMidiDriver::isSequencePlaying(int seq_num)
+{
+	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return false;
+
+	waitTillNoComMessages();
+	
+	lockComMessage();
+	bool ret = playing[seq_num];
+	unlockComMessage();
+
+	return ret;
+}
+
+void LowLevelMidiDriver::pauseSequence(int seq_num)
+{
+	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
+	if (!initialized) return;
+
+	ComMessage message(LLMD_MSG_PAUSE);
+	message.sequence = seq_num;
+	message.data.pause.paused = true;
+
+	sendComMessage(message);
+}
+
+void LowLevelMidiDriver::unpauseSequence(int seq_num)
+{
+	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
+	if (!initialized) return;
+
+	ComMessage message(LLMD_MSG_PAUSE);
+	message.sequence = seq_num;
+	message.data.pause.paused = false;
+
+	sendComMessage(message);
+}
+
+uint32 LowLevelMidiDriver::getSequenceCallbackData(int seq_num)
+{
+	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return 0;
+
+	SDL_mutexP(cbmutex);
+	uint32 ret = callback_data[seq_num];
+	SDL_mutexV(cbmutex);
+
+	return ret;
+}
+
+//
+// Communications
+// 
+
+sint32 LowLevelMidiDriver::peekComMessageType()
 {
 	lockComMessage();
-	sint32 ret = *val;
+	sint32 ret = 0;
+	if (messages.size()) ret = messages.front().type;
 	unlockComMessage();
 	return ret;
+}
+
+void LowLevelMidiDriver::sendComMessage(ComMessage& message)
+{
+	lockComMessage();
+	messages.push(message);
+	unlockComMessage();
+}
+
+void LowLevelMidiDriver::waitTillNoComMessages()
+{
+	while (peekComMessageType()) yield ();
 }
 
 void LowLevelMidiDriver::lockComMessage()
@@ -156,28 +290,35 @@ int LowLevelMidiDriver::initThreadedSynth()
 {
 	// Create the therad
 	giveinfo();
-	message.type = LLMD_COM_THREAD_INIT;
+	
+	ComMessage message(LLMD_MSG_THREAD_INIT);
+	sendComMessage(message);
 
 	thread = SDL_CreateThread (threadMain_Static, static_cast<void*>(this));
 
-	while (getComMessage(&message.type) == LLMD_COM_THREAD_INIT) 
+	while (peekComMessageType() == LLMD_MSG_THREAD_INIT) 
 		yield ();
 
-	if (getComMessage(&message.type) == LLMD_COM_THREAD_INIT_FAILED) 
-	{
-		return getComMessage(&message.data.init_failed.code);
-	}
+	int code = 0;
 
-	return 0;
+	lockComMessage();
+	{
+		while (!messages.empty()) 
+		{
+			if (messages.front().type == LLMD_MSG_THREAD_INIT_FAILED)
+				code = messages.front().data.init_failed.code;
+			messages.pop();
+		}
+	}
+	unlockComMessage();
+
+	return code;
 }
 
 void LowLevelMidiDriver::destroyThreadedSynth()
 {
-	lockComMessage();
-	{
-		message.type = LLMD_COM_THREAD_EXIT;
-	}
-	unlockComMessage();
+	ComMessage message(LLMD_MSG_THREAD_EXIT);
+	sendComMessage(message);
 
 	int count = 0;
 	
@@ -185,7 +326,7 @@ void LowLevelMidiDriver::destroyThreadedSynth()
 	{
 		giveinfo();
 		// Wait 1 MS before trying again
-		if (getComMessage(&message.type) == LLMD_COM_THREAD_EXIT)
+		if (peekComMessageType() == LLMD_MSG_THREAD_EXIT)
 			yield ();
 		else break;
 		
@@ -193,8 +334,16 @@ void LowLevelMidiDriver::destroyThreadedSynth()
 	}
 
 	// We waited a while and it still didn't terminate
-	if (count == 100 && getComMessage(&message.type) == LLMD_COM_THREAD_EXIT)
+	if (count == 100 && peekComMessageType() == LLMD_MSG_THREAD_EXIT)
 		SDL_KillThread (thread);
+
+	lockComMessage();
+	{
+		// Get rid of all the messages
+		while (!messages.empty()) messages.pop();
+	}
+	unlockComMessage();
+
 }
 
 int LowLevelMidiDriver::threadMain_Static(void *data)
@@ -211,52 +360,46 @@ int LowLevelMidiDriver::threadMain()
 
 	// Open the device
 	int code = open();
-	if (code)
-	{
-		lockComMessage();
-		{
-			message.type = LLMD_COM_THREAD_INIT_FAILED;
-			message.data.init_failed.code = code;
-		}
-		unlockComMessage();
-		return code;
-	}
 
-	// Increase the thread priority, IF possible
-	giveinfo();
-	increaseThreadPriority();
-	giveinfo();
-
-	// Say we are ready to go
 	lockComMessage();
 	{
-		message.type = LLMD_COM_READY;
+		// Pop all the messages
+		while(!messages.empty()) messages.pop();
+
+		// If we have an error code, push it to the message queue then return
+		// else we are ok to go
+		if (code)
+		{
+			ComMessage message(LLMD_MSG_THREAD_INIT_FAILED);
+			message.data.init_failed.code = code;
+			messages.push(message);
+		}
 	}
 	unlockComMessage();
-	
+
+	if (code) return code;
+
+	// Increase the thread priority, IF possible
+	increaseThreadPriority();
+
 	// Execute the play loop
-	giveinfo();
 	for (;;)
 	{
 		xmidi_clock = SDL_GetTicks()*6;
 		if (playSequences()) break;
 		yield();
 	}
-	giveinfo();
 
 	// Close the device
-	giveinfo();
 	close();
-	giveinfo();
 
-	// Say we are no longer available
 	lockComMessage();
 	{
-		message.type = LLMD_COM_READY;
+		// Pop all messages
+		while(!messages.empty()) messages.pop();
 	}
 	unlockComMessage();
 
-	giveinfo();
 	return 0;
 }
 
@@ -294,8 +437,6 @@ int LowLevelMidiDriver::initSoftwareSynth()
 		// Try to see if it can be 120 times/second
 		if (!(samples_per_iteration&1)) samples_per_iteration>>=1;
 	}
-
-	message.type = LLMD_COM_READY;
 
 	return 0;
 }
@@ -357,7 +498,7 @@ bool LowLevelMidiDriver::playSequences ()
 	{
 		int seq = i;
 
-		while (sequences[seq] && getComMessage(&message.type) == LLMD_COM_READY)
+		while (sequences[seq] && !peekComMessageType())
 		{
 			sint32 time_till_next = sequences[seq]->playEvent();
 
@@ -376,100 +517,106 @@ bool LowLevelMidiDriver::playSequences ()
 	// Did we get issued a music command?
 	lockComMessage();
 	{
-		switch (message.type)
+		while (!messages.empty()) 
 		{
-		case LLMD_COM_FINISH:
-			{
-				delete sequences[message.sequence]; 
-				sequences[message.sequence] = 0;
-				playing[message.sequence] = false;
-				unlockAndUnprotectChannel(message.sequence);
-			}
-			break;
+			ComMessage &message = messages.front();
 
-		case LLMD_COM_THREAD_EXIT:
+			switch (message.type)
 			{
-				for (i = 0; i < LLMD_NUM_SEQ; i++)
+			case LLMD_MSG_FINISH:
 				{
-					delete sequences[i]; 
-					sequences[i] = 0;
-					playing[i] = false;
-					unlockAndUnprotectChannel(i);
+					delete sequences[message.sequence]; 
+					sequences[message.sequence] = 0;
+					playing[message.sequence] = false;
+					unlockAndUnprotectChannel(message.sequence);
 				}
-			}
-			return true;
+				break;
 
-		case LLMD_COM_SET_VOLUME:
-			{
-				if (message.sequence == -1)
+			case LLMD_MSG_THREAD_EXIT:
 				{
-					global_volume = message.data.volume.level;
 					for (i = 0; i < LLMD_NUM_SEQ; i++)
-						if (sequences[i])
-							sequences[i]->setVolume(sequences[i]->getVolume());
+					{
+						delete sequences[i]; 
+						sequences[i] = 0;
+						playing[i] = false;
+						unlockAndUnprotectChannel(i);
+					}
 				}
-				else if (sequences[message.sequence]) 
-					sequences[message.sequence]->setVolume(message.data.volume.level);
-			}
-			break;
+				return true;
 
-		case LLMD_COM_SET_SPEED:
-			{
-				if (sequences[message.sequence]) 
-					sequences[message.sequence]->setSpeed(message.data.speed.percentage);
-			}
-			break;
-
-		case LLMD_COM_PAUSE:
-			{
-				if (sequences[message.sequence]) 
+			case LLMD_MSG_SET_VOLUME:
 				{
-					if (!message.data.pause.paused) sequences[message.sequence]->unpause();
-					else sequences[message.sequence]->pause();
+					if (message.sequence == -1)
+					{
+						global_volume = message.data.volume.level;
+						for (i = 0; i < LLMD_NUM_SEQ; i++)
+							if (sequences[i])
+								sequences[i]->setVolume(sequences[i]->getVolume());
+					}
+					else if (sequences[message.sequence]) 
+						sequences[message.sequence]->setVolume(message.data.volume.level);
 				}
-			}
-			break;
+				break;
 
-		case LLMD_COM_PLAY:
-			{
-				// Kill the previous stream
-				delete sequences[message.sequence]; 
-				sequences[message.sequence] = 0;
-				playing[message.sequence] = false;
-				unlockAndUnprotectChannel(message.sequence);
-
-				giveinfo();
-
-				if (message.data.play.list) 
+			case LLMD_MSG_SET_SPEED:
 				{
-					sequences[message.sequence] = new XMidiSequence(
-										this, 
-										message.sequence,
-										message.data.play.list, 
-										message.data.play.repeat, 
-										message.data.play.volume,
-										message.data.play.branch);
-
-					playing[message.sequence] = true;
-
-					uint16 mask = sequences[message.sequence]->getChanMask();
-
-					// Allocate some channels
-					/*
-					for (i = 0; i < 16; i++)
-						if (mask & (1<<i)) allocateChannel(message.sequence, i);
-					*/
+					if (sequences[message.sequence]) 
+						sequences[message.sequence]->setSpeed(message.data.speed.percentage);
 				}
+				break;
 
+			case LLMD_MSG_PAUSE:
+				{
+					if (sequences[message.sequence]) 
+					{
+						if (!message.data.pause.paused) sequences[message.sequence]->unpause();
+						else sequences[message.sequence]->pause();
+					}
+				}
+				break;
+
+			case LLMD_MSG_PLAY:
+				{
+					// Kill the previous stream
+					delete sequences[message.sequence]; 
+					sequences[message.sequence] = 0;
+					playing[message.sequence] = false;
+					unlockAndUnprotectChannel(message.sequence);
+
+					giveinfo();
+
+					if (message.data.play.list) 
+					{
+						sequences[message.sequence] = new XMidiSequence(
+											this, 
+											message.sequence,
+											message.data.play.list, 
+											message.data.play.repeat, 
+											message.data.play.volume,
+											message.data.play.branch);
+
+						playing[message.sequence] = true;
+
+						uint16 mask = sequences[message.sequence]->getChanMask();
+
+						// Allocate some channels
+						/*
+						for (i = 0; i < 16; i++)
+							if (mask & (1<<i)) allocateChannel(message.sequence, i);
+						*/
+					}
+
+				}
+				break;
+
+				// Uh we have no idea what it is
+			default:
+				break;
 			}
-			break;
 
-			// Uh we have no idea what it is
-		default:
-			break;
+			// Pop it
+			messages.pop();
 		}
-
-		message.type = LLMD_COM_READY;
 	}
 	unlockComMessage();
 
@@ -684,200 +831,6 @@ int LowLevelMidiDriver::unlockAndUnprotectChannel(uint16 sequence_id)
 		}
 	}
 	return 0;
-}
-
-//
-// MidiDriver API
-//
-
-int LowLevelMidiDriver::maxSequences()
-{
-	return LLMD_NUM_SEQ;
-}
-
-void LowLevelMidiDriver::startSequence(int seq_num, XMidiEventList *eventlist, bool repeat, int vol, int branch)
-{
-	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
-
-	if (!initialized)
-		return;
-
-	giveinfo();
-	while (getComMessage(&message.type) != LLMD_COM_READY) yield ();
-	
-	giveinfo();
-	eventlist->incerementCounter();
-
-	lockComMessage();
-
-	giveinfo();
-	{
-		message.type = LLMD_COM_PLAY;
-		message.sequence = seq_num;
-		message.data.play.list = eventlist;
-		message.data.play.repeat = repeat;
-		message.data.play.volume = vol;
-		message.data.play.branch = branch;
-	}
-	unlockComMessage();
-	giveinfo();
-}
-
-void LowLevelMidiDriver::finishSequence(int seq_num)
-{
-	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
-	if (!initialized) return;
-
-	giveinfo();
-	while (getComMessage(&message.type) != LLMD_COM_READY) yield ();
-	giveinfo();
-
-	lockComMessage();
-	{
-		message.type = LLMD_COM_FINISH;
-		message.sequence = seq_num;
-	}
-	unlockComMessage();
-
-	giveinfo();
-	while (getComMessage(&message.type) != LLMD_COM_READY) yield ();
-	giveinfo();
-}
-
-void LowLevelMidiDriver::setSequenceVolume(int seq_num, int vol)
-{
-	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
-	if (vol < 0 || vol > 255) return;
-	if (!initialized) return;
-
-	giveinfo();
-	while (getComMessage(&message.type) != LLMD_COM_READY) yield ();
-	
-	giveinfo();
-
-
-	lockComMessage();
-	{
-		giveinfo();
-		message.type = LLMD_COM_SET_VOLUME;
-		message.sequence = seq_num;
-		message.data.volume.level = vol;
-	}
-	unlockComMessage();
-	giveinfo();
-}
-
-void LowLevelMidiDriver::setGlobalVolume(int vol)
-{
-	if (vol < 0 || vol > 255) return;
-	if (!initialized) return;
-
-	giveinfo();
-	while (getComMessage(&message.type) != LLMD_COM_READY) yield ();
-	
-	giveinfo();
-
-	lockComMessage();
-	{
-		giveinfo();
-		message.type = LLMD_COM_SET_VOLUME;
-		message.sequence = -1;
-		message.data.volume.level = vol;
-	}
-	unlockComMessage();
-	giveinfo();
-}
-
-void LowLevelMidiDriver::setSequenceSpeed(int seq_num, int speed)
-{
-	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
-	if (speed < 0) return;
-	if (!initialized) return;
-
-	giveinfo();
-	while (getComMessage(&message.type) != LLMD_COM_READY) yield ();
-	
-	giveinfo();
-
-
-	lockComMessage();
-	{
-		giveinfo();
-		message.type = LLMD_COM_SET_SPEED;
-		message.sequence = seq_num;
-		message.data.speed.percentage = speed;
-	}
-	unlockComMessage();
-	giveinfo();
-}
-
-bool LowLevelMidiDriver::isSequencePlaying(int seq_num)
-{
-	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return false;
-
-	giveinfo();
-	while (getComMessage(&message.type) != LLMD_COM_READY) yield ();
-	
-	lockComMessage();
-	bool ret = playing[seq_num];
-	unlockComMessage();
-
-	return ret;
-}
-
-void LowLevelMidiDriver::pauseSequence(int seq_num)
-{
-	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
-	if (!initialized) return;
-
-	giveinfo();
-	while (getComMessage(&message.type) != LLMD_COM_READY) yield ();
-	
-	giveinfo();
-
-	lockComMessage();
-
-	giveinfo();
-	{
-		message.type = LLMD_COM_PAUSE;
-		message.sequence = seq_num;
-		message.data.pause.paused = true;
-	}
-	unlockComMessage();
-	giveinfo();
-}
-
-void LowLevelMidiDriver::unpauseSequence(int seq_num)
-{
-	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
-	if (!initialized) return;
-
-	giveinfo();
-	while (getComMessage(&message.type) != LLMD_COM_READY) yield ();
-	
-	giveinfo();
-
-	lockComMessage();
-
-	giveinfo();
-	{
-		message.type = LLMD_COM_PAUSE;
-		message.sequence = seq_num;
-		message.data.pause.paused = false;
-	}
-	unlockComMessage();
-	giveinfo();
-}
-
-uint32 LowLevelMidiDriver::getSequenceCallbackData(int seq_num)
-{
-	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return 0;
-
-	SDL_mutexP(cbmutex);
-	uint32 ret = callback_data[seq_num];
-	SDL_mutexV(cbmutex);
-
-	return ret;
 }
 
 

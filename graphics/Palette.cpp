@@ -40,7 +40,9 @@ void Palette::load(IDataSource& ds, IDataSource& xformds)
 		xform_untransformed[i] = xformds.read4();
 
 	// Setup the transformation matrix
-	matrix[0] = 1;	matrix[1] = 0;	matrix[2] = 0;	matrix[3] = 0;
-	matrix[4] = 0;	matrix[5] = 1;	matrix[6] = 0;	matrix[7] = 0;
-	matrix[8] = 0;	matrix[9] = 0;	matrix[10] = 1;	matrix[11] = 0;
+	matrix[0] = 0x800;	matrix[1] = 0;		matrix[2] = 0;		matrix[3] = 0;
+	matrix[4] = 0;		matrix[5] = 0x800;	matrix[6] = 0;		matrix[7] = 0;
+	matrix[8] = 0;		matrix[9] = 0;		matrix[10] = 0x800;	matrix[11] = 0;
+
+	transform=PaletteManager::Transform_None;
 }

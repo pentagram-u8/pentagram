@@ -109,6 +109,7 @@ CameraProcess::CameraProcess(uint16 _itemnum) :
 		// Got it
 		if (item)
 		{
+			item->setExtFlag(Item::EXT_CAMERA);
 			item->getLocation(ex,ey,ez);
 			ez += 20; //!!constant
 		}
@@ -122,18 +123,29 @@ CameraProcess::CameraProcess(uint16 _itemnum) :
 
 // Stay over point
 CameraProcess::CameraProcess(sint32 _x, sint32 _y, sint32 _z) : 
-	ex(_x), ey(_y), ez(_z), time(0), elapsed(0), itemnum(0)
+	ex(_x), ey(_y), ez(_z), time(0), elapsed(0), itemnum(0), last_framenum(0)
 {
 	GetCameraLocation(sx,sy,sz);
 }
 
 // Scroll
 CameraProcess::CameraProcess(sint32 _x, sint32 _y, sint32 _z, sint32 _time) : 
-	ex(_x), ey(_y), ez(_z), time(_time), elapsed(0), itemnum(0)
+	ex(_x), ey(_y), ez(_z), time(_time), elapsed(0), itemnum(0), last_framenum(0)
 {
 	GetCameraLocation(sx,sy,sz);
 	pout << "Scrolling from (" << sx << "," << sy << "," << sz << ") to (" <<
 		ex << "," << ey << "," << ez << ") in " << time << " frames" << std::endl;
+}
+
+void CameraProcess::terminate()
+{
+	if (itemnum)
+	{
+		Item *item = World::get_instance()->getItem(itemnum);
+		if (item) item->clearExtFlag(Item::EXT_CAMERA);
+	}
+
+	Process::terminate();
 }
 
 bool CameraProcess::run(const uint32 /* framenum */)
@@ -161,20 +173,38 @@ bool CameraProcess::run(const uint32 /* framenum */)
 	return true;
 }
 
+void CameraProcess::ItemMoved()
+{
+	if (itemnum)
+	{
+		Item *item = World::get_instance()->getItem(itemnum);
+
+		// We only update for now if lerping has been disabled
+		if (item && (item->getExtFlags() & Item::EXT_LERP_NOPREV))
+		{
+			item->getLocation(ex,ey,ez);
+			sx = ex;
+			sy = ey;
+			sz = ez += 20;
+
+			World::get_instance()->getCurrentMap()->updateFastArea(sx,sy,ex,ey);
+		}
+	}
+}
+
 void CameraProcess::GetLerped(sint32 &x, sint32 &y, sint32 &z, sint32 factor)
 {
-	bool inBetween = true;
-
-	uint32 game_framenum = CoreApp::get_instance()->getFrameNum();
-
-	if (game_framenum != last_framenum)
-	{
-		last_framenum = game_framenum;
-		inBetween = false;
-	}
-
 	if (time == 0)
 	{
+		bool inBetween = true;
+
+		if (last_framenum != elapsed)
+		{
+			// No lerping if we missed a frame
+			if ((elapsed-last_framenum)>1) factor = 256;
+			last_framenum = elapsed;
+			inBetween = false;
+		}
 		
 		if (!inBetween)
 		{
@@ -195,6 +225,8 @@ void CameraProcess::GetLerped(sint32 &x, sint32 &y, sint32 &z, sint32 factor)
 					ez += 20; //!!constant
 				}
 			}
+			// Update the fast area
+			World::get_instance()->getCurrentMap()->updateFastArea(sx,sy,ex,ey);
 		}
 
 		if (factor == 256)
@@ -215,7 +247,7 @@ void CameraProcess::GetLerped(sint32 &x, sint32 &y, sint32 &z, sint32 factor)
 	}
 	else
 	{
-		// Do a quadratic interpolation here of velocity, but not yet
+		// Do a quadratic interpolation here of velocity (maybe), but not yet 
 		sint32 sfactor = elapsed;
 		sint32 efactor = elapsed+1;
 
@@ -229,6 +261,9 @@ void CameraProcess::GetLerped(sint32 &x, sint32 &y, sint32 &z, sint32 factor)
 		sint32 lex = ((sx*(time-efactor) + ex*efactor)/time);
 		sint32 ley = ((sy*(time-efactor) + ey*efactor)/time);
 		sint32 lez = ((sz*(time-efactor) + ez*efactor)/time);
+
+		// Update the fast area
+		World::get_instance()->getCurrentMap()->updateFastArea(lsx,lsy,lex,ley);
 
 		// This way while possibly slower is more accurate
 		x = ((lsx*(256-factor) + lex*factor)>>8);
@@ -250,8 +285,11 @@ uint16 CameraProcess::FindRoof(sint32 factor)
 	earthquake = 0;
 	GetLerped(x,y,z,factor);
 	earthquake = earthquake_old;
+	Item *avatar = World::get_instance()->getItem(1);
+	sint32 dx,dy,dz;
+	avatar->getFootpad(dx,dy,dz);
 	uint16 roofid;
-	World::get_instance()->getCurrentMap()->isValidPosition(x, y, z, 32, 32, 8, 1, 0, &roofid);
+	World::get_instance()->getCurrentMap()->isValidPosition(x, y, z-10, dx*16, dy*16, dz*4, 1, 0, &roofid);
 	return roofid;
 }
 
@@ -333,14 +371,14 @@ uint32 CameraProcess::I_scrollTo(const uint8* args, unsigned int /*argsize*/)
 uint32 CameraProcess::I_startQuake(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_UINT16(strength);
-	earthquake = strength;
+	SetEarthquake(strength);
 	return 0;
 }
 
 //	Camera::stopQuake()
 uint32 CameraProcess::I_stopQuake(const uint8* args, unsigned int /*argsize*/)
 {
-	earthquake = 0;
+	SetEarthquake(0);
 	return 0;
 }
 

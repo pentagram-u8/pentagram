@@ -42,12 +42,11 @@ SpriteProcess::SpriteProcess(int Shape, int Frame, int LastFrame,
 	repeats(Repeats), delay(Delay*2), delay_counter(0)
 {
 
-	Item *item = ItemFactory::createItem(Shape, Frame, 0, 0, 0, 0, 0);
+	Item *item = ItemFactory::createItem(Shape, Frame, 
+						0, Item::FLG_DISPOSABLE, 0, 0, 0);
 	item->assignObjId();
-	item->setLocation(X,Y,Z);
-	World::get_instance()->getCurrentMap()->addItem(item);
+	item->move(X,Y,Z);
 	setItemNum(item->getObjId());
-	item->setFlag(Item::FLG_DISPOSABLE);
 }
 
 SpriteProcess::~SpriteProcess(void)

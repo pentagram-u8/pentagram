@@ -30,9 +30,6 @@ class GameMapGump : public Gump
 protected:
 	ItemSorter		*display_list;
 
-	std::vector<uint16>			fastAreas[2];
-	int							fastArea;	// 0 or 1
-
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
@@ -40,16 +37,28 @@ public:
 	GameMapGump(int x, int y, int w, int h);
 	virtual ~GameMapGump();
 
-	void				FlushFastArea();
-
 	virtual bool		Run(const uint32 framenum);
-
-	virtual void		MapChanged();
 
 	virtual void		PaintThis(RenderSurface *surf, sint32 lerp_factor);
 
 	void				GetCameraLocation(sint32& x, sint32& y, sint32& z,
 										  int lerp_factor=256);
+
+	//! Calculate the fastArea limits from the resolution
+	//! \param sx_limit The Screenspace X limit for the chunks
+	//! \param sy_limit The Screenspace y limit for the chunks
+	//! \param xy_limit The worldspace XY limit for the chunks
+	inline void calcFastAreaLimits( sint32 &sx_limit, 
+											sint32 &sy_limit, 
+											sint32 &xy_limit)
+	{
+		// By default the fastArea is the screensize plus a border of no more
+		// than 256 pixels wide and 384 pixels high
+		// dims.w and dims.h need to be divided by 2 for crusader
+		sx_limit = dims.w/256 + 3;
+		sy_limit = dims.h/128 + 7;
+		xy_limit = (sy_limit+sx_limit)/2;
+	}
 
 	// Trace a click, and return ObjID
 	virtual uint16		TraceObjID(int mx, int my);

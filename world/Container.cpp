@@ -99,29 +99,23 @@ bool Container::CanAddItem(Item* item, bool checkwghtvol)
 	return true;
 }
 
-bool Container::AddItem(Item* item, bool checkwghtvol)
+bool Container::addItem(Item* item, bool checkwghtvol)
 {
 	if (!CanAddItem(item, checkwghtvol)) return false;
 	if (item->getParent() == this) return true; // already in here
 
 	contents.push_back(item);
-
-	item->setFlag(Item::FLG_CONTAINED);
-	item->setParent(this);
-
 	return true;
 }
 
 
-bool Container::RemoveItem(Item* item)
+bool Container::removeItem(Item* item)
 {
 	std::list<Item*>::iterator iter;
 
 	for (iter = contents.begin(); iter != contents.end(); ++iter) {
 		if (*iter == item) {
 			contents.erase(iter);
-			item->clearFlag(Item::FLG_CONTAINED);
-			item->setParent(0);
 			return true;
 		}
 	}
@@ -138,7 +132,9 @@ void Container::destroyContents()
 {
 	while (contents.begin() != contents.end()) {
 		Item *item = *(contents.begin());
-		item->destroy(); // this (should) remove(s) item from contents
+		Container *cont = p_dynamic_cast<Container*>(item);
+		if (cont) cont->destroyContents();
+		item->destroy(); 
 	}
 }
 
@@ -215,7 +211,7 @@ bool Container::loadData(IDataSource* ids)
 		Item* item = p_dynamic_cast<Item*>(obj);
 		if (!item) return false;
 
-		AddItem(item);
+		addItem(item);
 	}
 
 	return true;

@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/fmopl.h,v 1.2 2003/07/05 19:01:32 colourles Exp $
+ * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/fmopl.h,v 1.3 2003/07/16 17:35:36 colourles Exp $
  *
  * LGPL licensed version of MAMEs fmopl (V0.37a modified) by
  * Tatsuyuki Satoh. Included from LGPL'ed AdPlug.
@@ -106,6 +106,7 @@ typedef struct fm_opl_channel {
 	uint32  fc;			/* Freq. Increment base				*/
 	uint32  ksl_base;		/* KeyScaleLevel Base step			*/
 	uint8 keyon;		/* key on/off flag					*/
+	uint8 PAN;			/* pan								*/
 } OPL_CH;
 
 /* OPL state */
@@ -188,6 +189,7 @@ int OPLWrite(FM_OPL *OPL,int a,int v);
 unsigned char OPLRead(FM_OPL *OPL,int a);
 int OPLTimerOver(FM_OPL *OPL,int c);
 void OPLWriteReg(FM_OPL *OPL, int r, int v);
+void OPLSetPan(FM_OPL *OPL,int c, int pan);
 
 void YM3812UpdateOne_Mono(FM_OPL *OPL, sint16 *buffer, int length);
 void YM3812UpdateOne_Stereo(FM_OPL *OPL, sint16 *buffer, int length);

@@ -101,10 +101,40 @@ bool GravityProcess::run(uint32 framenum)
 	ty = iy + yspeed;
 	tz = iz + zspeed;
 
-	sint32 dist = item->collideMove(tx,ty,tz, false, false);
+	bool clipped = false;
+
+	// Clip to region
+	if (tx < 0 && ix >= 0) 
+	{
+		sint32 scale = (ix - tx)>>0x8;
+		tx = 0;
+		ty = iy + ((yspeed*scale)>>0x2000);
+		tz = iz + ((zspeed*scale)>>0x2000);
+		clipped = true;
+	}
+	if (ty < 0 && iy >= 0) 
+	{
+		sint32 scale = (iy - ty)>>0x8;
+		tx = ix + ((xspeed*scale)>>0x2000);
+		ty = 0;
+		tz = iz + ((zspeed*scale)>>0x2000);
+		clipped = true;
+	}
+	if (tz < 0 && iz >= 0) 
+	{
+		sint32 scale = (iz - tz)>>0x8;
+		tx = ix + ((xspeed*scale)>>0x2000);
+		ty = iy + ((yspeed*scale)>>0x2000);
+		tz = 0;
+		clipped = true;
+	}
+
+	sint32 dist = item->collideMove(tx,ty,tz,  false, false);
 	
-	if (dist == 0) terminate();
-	else zspeed -= gravity;
+	if (dist == 0 || clipped)
+		terminateDeferred();
+	else 
+		zspeed -= gravity;
 
 #if 0
 

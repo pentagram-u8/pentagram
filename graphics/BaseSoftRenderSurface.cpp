@@ -164,7 +164,7 @@ void BaseSoftRenderSurface::CreateNativePalette(Palette* palette)
 {
 	for (int i = 0; i < 256; i++)
 	{
-		float r,g,b;
+		sint32 r,g,b;
 
 		// Normal palette
 		palette->native_untransformed[i] = SDL_MapRGB(sdl_surf->format,
@@ -177,27 +177,27 @@ void BaseSoftRenderSurface::CreateNativePalette(Palette* palette)
 			palette->matrix[2] * palette->palette[i*3+2] +
 			palette->matrix[3] * 255;
 		if (r < 0) r = 0;
-		if (r > 255) r = 255;
+		if (r > 0x7F800) r = 0x7F800;
 
 		g = palette->matrix[4] * palette->palette[i*3+0] +
 			palette->matrix[5] * palette->palette[i*3+1] +
 			palette->matrix[6] * palette->palette[i*3+2] +
 			palette->matrix[7] * 255;
 		if (g < 0) g = 0;
-		if (g > 255) g = 255;
+		if (g > 0x7F800) g = 0x7F800;
 
 		b = palette->matrix[8] * palette->palette[i*3+0] +
 			palette->matrix[9] * palette->palette[i*3+1] +
 			palette->matrix[10] * palette->palette[i*3+2] +
 			palette->matrix[11] * 255;
 		if (b < 0) b = 0;
-		if (b > 255) b = 255;
+		if (b > 0x7F800) b = 0x7F800;
 
 		// Transformed normal palette
 		palette->native[i] = SDL_MapRGB(sdl_surf->format,
-										static_cast<uint8>(r),
-										static_cast<uint8>(g),
-										static_cast<uint8>(b));
+										static_cast<uint8>(r>>11),
+										static_cast<uint8>(g>>11),
+										static_cast<uint8>(b>>11));
 
 		// Transformed XFORM palette (Uses the TEX32 format)
 		if (TEX32_A(palette->xform_untransformed[i]))
@@ -207,25 +207,25 @@ void BaseSoftRenderSurface::CreateNativePalette(Palette* palette)
 				palette->matrix[2] * TEX32_B(palette->xform_untransformed[i]) +
 				palette->matrix[3] * 255;
 			if (r < 0) r = 0;
-			if (r > 255) r = 255;
+			if (r > 0x7F800) r = 0x7F800;
 
 			g = palette->matrix[4] * TEX32_R(palette->xform_untransformed[i]) +
 				palette->matrix[5] * TEX32_G(palette->xform_untransformed[i]) +
 				palette->matrix[6] * TEX32_B(palette->xform_untransformed[i]) +
 				palette->matrix[7] * 255;
 			if (g < 0) g = 0;
-			if (g > 255) g = 255;
+			if (g > 0x7F800) g = 0x7F800;
 
 			b = palette->matrix[8] * TEX32_R(palette->xform_untransformed[i]) +
 				palette->matrix[9] * TEX32_G(palette->xform_untransformed[i]) +
 				palette->matrix[10] * TEX32_B(palette->xform_untransformed[i]) +
 				palette->matrix[11] * 255;
 			if (b < 0) b = 0;
-			if (b > 255) b = 255;
+			if (b > 0x7F800) b = 0x7F800;
 
-			palette->xform[i] = TEX32_PACK_RGBA(static_cast<uint8>(r),
-												static_cast<uint8>(g),
-												static_cast<uint8>(b),
+			palette->xform[i] = TEX32_PACK_RGBA(static_cast<uint8>(r>>11),
+												static_cast<uint8>(g>>11),
+												static_cast<uint8>(b>>11),
 								TEX32_A(palette->xform_untransformed[i]));
 		}
 		else

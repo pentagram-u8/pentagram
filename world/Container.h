@@ -43,16 +43,16 @@ public:
 	//! \return true if item can be added, false if not
 	virtual bool CanAddItem(Item* item, bool checkwghtvol=false);
 
-	//! Add an item to the container
+	//! Add an item to the container. This does NOT update item. 
 	//! \param item The item to add
 	//! \param checkwghtvol Need to check weight and volume?
 	//! \return true if item was added, false if failed
-	virtual bool AddItem(Item* item, bool checkwghtvol=false);
+	virtual bool addItem(Item* item, bool checkwghtvol=false);
 
-	//! Remove an item from the container
+	//! Remove an item from the container. This does NOT update item.
 	//! \param item The item to remove
 	//! \return true if succesful, false if item wasn't in container
-	virtual bool RemoveItem(Item* item);
+	virtual bool removeItem(Item* item);
 
 	//! Remove all contents, moving them to this container's
 	//! parent. (Or into the world if this container has no parent.)

@@ -90,12 +90,11 @@ bool Actor::CanAddItem(Item* item, bool checkwghtvol)
 	return true;
 }
 
-bool Actor::AddItem(Item* item, bool checkwghtvol)
+bool Actor::addItem(Item* item, bool checkwghtvol)
 {
-	if (!Container::AddItem(item, checkwghtvol)) return false;
+	if (!Container::addItem(item, checkwghtvol)) return false;
 
 	item->setFlag(FLG_EQUIPPED);
-	item->setExtFlag(EXT_NOTINMAP);
 
 	uint32 equiptype = item->getShapeInfo()->equiptype;
 	item->setZ(equiptype);
@@ -103,12 +102,11 @@ bool Actor::AddItem(Item* item, bool checkwghtvol)
 	return true;
 }
 
-bool Actor::RemoveItem(Item* item)
+bool Actor::removeItem(Item* item)
 {
-	if (!Container::RemoveItem(item)) return false;
+	if (!Container::removeItem(item)) return false;
 
 	item->clearFlag(FLG_EQUIPPED);
-	item->clearExtFlag(EXT_NOTINMAP);
 
 	return true;
 }
@@ -132,19 +130,24 @@ uint16 Actor::getEquip(uint32 type)
 
 void Actor::teleport(int newmap, sint32 newx, sint32 newy, sint32 newz)
 {
-	CurrentMap* currentmap = World::get_instance()->getCurrentMap();
-
-	if (getMapNum() == currentmap->getNum()) {
-		// need to remove npc from item lists
-		World::get_instance()->getCurrentMap()->removeItemFromList(this,x,y);
-	}
-
+	// Set the mapnum
 	setMapNum(newmap);
-	setLocation(newx, newy, newz);
 
-	if (getMapNum() == currentmap->getNum()) {
-		// need to add npc to item lists
-		currentmap->addItem(this);
+	// Put it in the void
+	moveToEtherealVoid();
+
+	// Move it to this map
+	if (newmap == World::get_instance()->getCurrentMap()->getNum())
+	{
+		move(newx, newy, newz);
+	}
+	// Move it to another map
+	else
+	{
+		World::get_instance()->etherealRemove(objid);
+		x = newx;
+		y = newy;
+		z = newz;
 	}
 } 
 
@@ -470,7 +473,7 @@ uint32 Actor::I_createActor(const uint8* args, unsigned int /*argsize*/)
 
 	//!! do we need to flag actor as temporary somehow?
 
-	Actor* newactor = ItemFactory::createActor(shape, 0, 0, 0, 0, 0, Item::EXT_NOTINMAP);
+	Actor* newactor = ItemFactory::createActor(shape, 0, 0, Item::FLG_IN_NPC_LIST, 0, 0, 0);
 	if (!newactor) {
 		perr << "I_createActor failed to create actor (" << shape
 			 <<	")." << std::endl;

@@ -51,7 +51,7 @@ GameMapGump::GameMapGump() :
 
 GameMapGump::GameMapGump(int X, int Y, int Width, int Height) :
 	Gump(X,Y,Width,Height, 0, 0, LAYER_GAMEMAP),
-	display_list(0), fastArea(0), display_dragging(false)
+	display_list(0), display_dragging(false)
 {
 	// Offset us the gump. We want 0,0 to be the centre
 	dims.x -= dims.w/2;
@@ -92,34 +92,6 @@ bool GameMapGump::Run(const uint32 framenum)
 
 	return true; // Always repaint, even though we really could just
 	             // try to detect it
-}
-
-void GameMapGump::MapChanged()
-{
-	Gump::MapChanged();
-
-	World *world = World::get_instance();
-	if (!world) return;	// Is it possible the world doesn't exist?
-
-	// All items leave the fast area on close
-	std::vector<uint16>::iterator it  = fastAreas[fastArea].begin();
-	std::vector<uint16>::iterator end  = fastAreas[fastArea].end();
-
-	for (;it != end; ++it)
-	{
-		Item *item = world->getItem(*it);
-
-		// Not an item, continue
-		if (!item) continue;
-
-		// set the Fast area left
-		item->clearFlag(Item::FLG_FASTAREA);
-		item->clearExtFlag(Item::EXT_FAST0|Item::EXT_FAST1);
-	}
-
-	// Clear the fast areas
-	fastAreas[0].clear();
-	fastAreas[1].clear();
 }
 
 void GameMapGump::GetCameraLocation(sint32& lx, sint32& ly, sint32& lz,
@@ -175,63 +147,22 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 
 	display_list->BeginDisplayList(surf, lx, ly, lz);
 
-
-	sint32 resx = dims.w, resy = dims.h;
-
-	/*
-	at 640x480, with u8 sizes
-	sint32 sx_limit = 4;
-	sint32 sy_limit = 8;
-	sint32 xy_limit = 6;
-
-	at 320x240, with u8 sizes
-	sint32 sx_limit = 3;
-	sint32 sy_limit = 7;
-	sint32 xy_limit = 4;
-
-	for tgwds use half the resolution
-	*/
-
-	//if (tgwds)
-	//{
-	//	resx/=2;
-	//	resy/=2;
-	//}
-
-	// By default the fastArea is the screensize plus a border of no more
-	// than 256 pixels wide and 384 pixels high
-
-	sint32 sx_limit = resx/256 + 3;
-	sint32 sy_limit = resy/128 + 7;
-	sint32 xy_limit = (sy_limit+sx_limit)/2;
-
-	// Flip the fast area
-	fastArea=1-fastArea;
-
-	std::vector<uint16> *prev_fast = &fastAreas[1-fastArea];
-	std::vector<uint16> *fast = &fastAreas[fastArea];
-	fast->erase(fast->begin(), fast->end());
-
-	sint32 gx = lx/512;
-	sint32 gy = ly/512;
-
-	uint32 framenum = CoreApp::get_instance()->getFrameNum();
+	uint32 gametick = CoreApp::get_instance()->getFrameNum();
 
 	bool paintEditorItems = GUIApp::get_instance()->isPaintEditorItems();
 
 	// Get all the required items
-	for (int y = -xy_limit; y <= xy_limit; y++)
+	for (int cy = 0; cy < MAP_NUM_CHUNKS; cy++)
 	{
-		for (int x = -xy_limit; x <= xy_limit; x++)
+		for (int cx = 0; cx < MAP_NUM_CHUNKS; cx++)
 		{
 			sint32 sx = x - y;
 			sint32 sy = x + y;
 
-			if (sx < -sx_limit || sx > sx_limit ||
-				sy < -sy_limit || sy > sy_limit)
-				continue;
+			// Not fast, ignore
+			if (!map->isChunkFast(cx,cy)) continue;
 
-			const std::list<Item*>* items = map->getItemList(gx+x,gy+y);
+			const std::list<Item*>* items = map->getItemList(cx,cy);
 
 			if (!items) continue;
 
@@ -242,8 +173,7 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 				Item *item = *it;
 				if (!item) continue;
 
-				item->inFastArea(fastArea, framenum);
-				fast->push_back(item->getObjId());
+				item->setupLerp(gametick);
 				item->doLerp(lerp_factor);
 
 				if (item->getZ() >= zlimit && !item->getShapeInfo()->is_draw())
@@ -254,25 +184,6 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 			}
 		}
 	}
-
-	// Now handle leaving the fast area
-	std::vector<uint16>::iterator it  = prev_fast->begin();
-	std::vector<uint16>::iterator end  = prev_fast->end();
-
-	for (;it != end; ++it)
-	{
-		Item *item = world->getItem(*it);
-
-		// Not an item, continue
-		if (!item) continue;
-
-		// If the fast area for the item is the current one, continue
-		if (item->getExtFlags() & (Item::EXT_FAST0<<fastArea)) continue;
-
-		// Ok, we must leave te Fast area
-		item->leavingFastArea();
-	}
-
 
 	// Dragging:
 
@@ -285,28 +196,6 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 
 
 	display_list->PaintDisplayList();
-}
-
-void GameMapGump::FlushFastArea()
-{
-	World *world = World::get_instance();
-	std::vector<uint16> *prev_fast = &fastAreas[fastArea];
-
-	// Now handle leaving the fast area
-	std::vector<uint16>::iterator it  = prev_fast->begin();
-	std::vector<uint16>::iterator end  = prev_fast->end();
-
-	for (;it != end; ++it)
-	{
-		Item *item = world->getItem(*it);
-
-		// Not an item, continue
-		if (!item) continue;
-
-		// Ok, we must leave te Fast area
-		item->leavingFastArea();
-	}
-	prev_fast->clear();
 }
 
 // Trace a click, and return ObjID
@@ -331,11 +220,7 @@ bool GameMapGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 	sint32 ix, iy, iz;
 
 	// Hacks be us. Force the item into the fast area
-	if (!(item->getExtFlags() & (Item::EXT_FAST0<<fastArea))) 
-	{
-		item->inFastArea(fastArea, framenum);
-		fastAreas[fastArea].push_back(item->getObjId());
-	}
+	item->setupLerp(CoreApp::get_instance()->getFrameNum());
 	item->doLerp(lerp_factor);
 	item->getLerped(ix,iy,iz);
 
@@ -516,9 +401,6 @@ void GameMapGump::StopDraggingItem(Item* item, bool moved)
 
 	// make items on top of item fall
 	item->grab();
-	// remove item from world
-	CurrentMap* cm = World::get_instance()->getCurrentMap();
-	cm->removeItem(item);
 }
 
 void GameMapGump::DropItem(Item* item, int mx, int my)
@@ -539,9 +421,7 @@ void GameMapGump::DropItem(Item* item, int mx, int my)
 	perr << "Dropping item at (" << dragging_x << "," << dragging_y 
 		 << "," << dragging_z << ")" << std::endl;
 		
-
-	item->move(dragging_x,dragging_y,dragging_z, true); // move, and force
-	                                                    // map update
+	item->move(dragging_x,dragging_y,dragging_z); // move
 	item->fall();
 }
 
@@ -549,16 +429,6 @@ void GameMapGump::saveData(ODataSource* ods)
 {
 	ods->write2(1); //version
 	Gump::saveData(ods);
-
-	ods->write4(static_cast<uint32>(fastArea));
-	ods->write4(fastAreas[0].size());
-	for (unsigned int i = 0; i < fastAreas[0].size(); ++i) {
-		ods->write2(fastAreas[0][i]);
-	}
-	ods->write4(fastAreas[1].size());
-	for (unsigned int i = 0; i < fastAreas[1].size(); ++i) {
-		ods->write2(fastAreas[1][i]);
-	}
 }
 
 bool GameMapGump::loadData(IDataSource* ids)
@@ -566,18 +436,6 @@ bool GameMapGump::loadData(IDataSource* ids)
 	uint16 version = ids->read2();
 	if (version != 1) return false;
 	if (!Gump::loadData(ids)) return false;
-
-	fastArea = static_cast<int>(ids->read4());
-	unsigned int fastcount = ids->read4();
-	fastAreas[0].resize(fastcount);
-	for (unsigned int i = 0; i < fastcount; ++i) {
-		fastAreas[0][i] = ids->read2();
-	}
-	fastcount = ids->read4();
-	fastAreas[1].resize(fastcount);
-	for (unsigned int i = 0; i < fastcount; ++i) {
-		fastAreas[1][i] = ids->read2();
-	}
 
 	return true;
 }

@@ -72,10 +72,10 @@ struct EquipCoords {
 
 const Pentagram::Rect backpack_rect(49, 25, 10, 25);
 
-void PaperdollGump::Paint(RenderSurface* surf, sint32 lerp_factor)
+void PaperdollGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 {
 	// paint self
-	ItemRelativeGump::Paint(surf, lerp_factor);
+	ItemRelativeGump::PaintThis(surf, lerp_factor);
 
 	Actor* a = World::get_instance()->getNPC(owner);
 
@@ -95,7 +95,6 @@ void PaperdollGump::Paint(RenderSurface* surf, sint32 lerp_factor)
 		itemy = equipcoords[i].y;
 		itemx += itemarea.x;
 		itemy += itemarea.y;
-		GumpToParent(itemx,itemy);
 		Shape* s = item->getShapeObject();
 		assert(s);
 		surf->Paint(s, frame, itemx, itemy);
@@ -105,7 +104,6 @@ void PaperdollGump::Paint(RenderSurface* surf, sint32 lerp_factor)
 		sint32 itemx, itemy;
 		itemx = dragging_x + itemarea.x;
 		itemy = dragging_y + itemarea.y;
-		GumpToParent(itemx,itemy);
 		Shape* s = GameData::get_instance()->getMainShapes()->
 			getShape(dragging_shape);
 		assert(s);
@@ -263,9 +261,9 @@ void PaperdollGump::DropItem(Item* item, int mx, int my)
 
 	int equiptype = item->getShapeInfo()->equiptype;
 	if (!over_backpack && equiptype) {
-		a->AddItem(item);
+		item->moveToContainer(a);
 	} else {
-		backpack->AddItem(item);
+		item->moveToContainer(backpack);
 
 		// TODO: find a better place
 		item->setGumpLocation(0, 0);

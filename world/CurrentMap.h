@@ -28,6 +28,9 @@ class UCList;
 class TeleportEgg;
 class EggHatcherProcess;
 
+#define MAP_NUM_CHUNKS	64
+#define MAP_CHUNK_SIZE	512
+
 class CurrentMap
 {
 	friend class World;
@@ -45,9 +48,17 @@ public:
 
 	uint32 getNum() const;
 
+	//! Add an item to the beginning of the item list
 	void addItem(Item* item);
+
+	//! Add an item to the end of the item list
+	void addItemToEnd(Item* item);
+
 	void removeItemFromList(Item* item, sint32 oldx, sint32 oldy);
 	void removeItem(Item* item);
+
+	//! Update the fast area for the cameras position
+	void updateFastArea(sint32 from_x, sint32 from_y, sint32 to_x, sint32 to_y);
 
 	//! search an area for items matching a loopscript
 	//! \param itemlist the list to return objids in
@@ -127,8 +138,17 @@ public:
 	const std::list<Item*>* getItemList (sint32 gx, sint32 gy)
 	{
 		// CONSTANTS!
-		if (gx < 0 || gy < 0 || gx >= 128 || gy >= 128) return 0;
+		if (gx < 0 || gy < 0 || gx >= MAP_NUM_CHUNKS || gy >= MAP_NUM_CHUNKS) 
+			return 0;
 		return &items[gx][gy];
+	}
+
+	bool isChunkFast(sint32 cx, sint32 cy)
+	{
+		// CONSTANTS!
+		if (cx < 0 || cy < 0 || cx >= MAP_NUM_CHUNKS || cy >= MAP_NUM_CHUNKS) 
+			return false;
+		return (fast[cy][cx/32]&(1<<(cx&31))) != 0;
 	}
 
 	INTRINSIC(I_canExistAt);
@@ -144,6 +164,13 @@ private:
 	std::list<Item*>** items;
 
 	uint16 egghatcher;
+
+	// Fast area bit masks -> fast[ry][rx/32]&(1<<(rx&31));
+	uint32** fast;	
+	sint32 fast_x_min, fast_y_min, fast_x_max, fast_y_max;
+
+	void setChunkFast(sint32 cx, sint32 cy);
+	void unsetChunkFast(sint32 cx, sint32 cy);
 };
 
 #endif

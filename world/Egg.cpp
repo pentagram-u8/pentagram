@@ -44,6 +44,12 @@ uint16 Egg::hatch()
 	return callUsecodeEvent_hatch();
 }
 
+void Egg::leaveFastArea()
+{
+	reset();
+	Item::leaveFastArea();
+}
+
 void Egg::saveData(ODataSource* ods)
 {
 	ods->write2(1); //version

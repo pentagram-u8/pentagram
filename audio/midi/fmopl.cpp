@@ -18,7 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/fmopl.cpp,v 1.2 2003/07/05 19:01:32 colourles Exp $
+ * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/fmopl.cpp,v 1.3 2003/07/16 17:35:36 colourles Exp $
  *
  * LGPL licensed version of MAMEs fmopl (V0.37a modified) by
  * Tatsuyuki Satoh. Included from LGPL'ed AdPlug.
@@ -1004,6 +1004,8 @@ void YM3812UpdateOne_Stereo(FM_OPL *OPL, sint16 *buffer, int length)
 {
     int i;
 	int data;
+	int left;
+	int right;
 	sint16 *buf = buffer;
 	uint32 amsCnt  = OPL->amsCnt;
 	uint32 vibCnt  = OPL->vibCnt;
@@ -1033,17 +1035,35 @@ void YM3812UpdateOne_Stereo(FM_OPL *OPL, sint16 *buffer, int length)
 		/* LFO */
 		ams = ams_table[(amsCnt+=amsIncr)>>AMS_SHIFT];
 		vib = vib_table[(vibCnt+=vibIncr)>>VIB_SHIFT];
-		outd[0] = 0;
+		left = 0;
+		right = 0;
 		/* FM part */
 		for(CH=S_CH ; CH < R_CH ; CH++)
+		{
+			outd[0] = 0;
 			OPL_CALC_CH(CH);
+			if (CH->PAN <= 64) left += outd[0];
+			else left += (outd[0]>>6)*(127-CH->PAN);
+			if (CH->PAN >= 64) right += outd[0];
+			else right += (outd[0]>>6)*(CH->PAN);
+		}
 		/* Rythn part */
 		if(rythm)
+		{
+			outd[0] = 0;
 			OPL_CALC_RH(S_CH);
+			left += outd[0];
+			right += outd[0];
+		}
 		/* limit check */
-		data = Limit( outd[0] , OPL_MAXOUT, OPL_MINOUT );
+		data = Limit( left , OPL_MAXOUT, OPL_MINOUT );
 		/* store to sound buffer */
-		buf[i*2] = buf[i*2+1] = data >> OPL_OUTSB;
+		buf[i*2] = data >> OPL_OUTSB;
+
+		/* limit check */
+		data = Limit( right , OPL_MAXOUT, OPL_MINOUT );
+		/* store to sound buffer */
+		buf[i*2+1] = data >> OPL_OUTSB;
 	}
 
 	OPL->amsCnt = amsCnt;
@@ -1069,7 +1089,7 @@ void OPLResetChip(FM_OPL *OPL)
 	for( c = 0 ; c < OPL->max_ch ; c++ )
 	{
 		OPL_CH *CH = &OPL->P_CH[c];
-		/* OPL->P_CH[c].PAN = OPN_CENTER; */
+		OPL->P_CH[c].PAN = 64;
 		for(s = 0 ; s < 2 ; s++ )
 		{
 			/* wave table */
@@ -1201,6 +1221,12 @@ int OPLTimerOver(FM_OPL *OPL,int c)
 	/* reload timer */
 	if (OPL->TimerHandler) (OPL->TimerHandler)(OPL->TimerParam+c,(double)OPL->T[c]*OPL->TimerBase);
 	return OPL->status>>7;
+}
+
+void OPLSetPan(FM_OPL *OPL,int c, int pan)
+{
+	if (c > 0 && c < OPL->max_ch)
+		OPL->P_CH[c].PAN = pan;
 }
 
 };

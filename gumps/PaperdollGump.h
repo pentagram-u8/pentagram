@@ -34,9 +34,8 @@ public:
 	// Init the gump, call after construction
 	virtual void InitGump();
 
-	// Paint the Gump (RenderSurface is relative to parent).
-	// Calls PaintThis and PaintChildren
-	virtual void Paint(RenderSurface*, sint32 lerp_factor);
+	// Paint this Gump
+	virtual void PaintThis(RenderSurface*, sint32 lerp_factor);
 
 	// Trace a click, and return ObjID
 	virtual uint16 TraceObjID(int mx, int my);

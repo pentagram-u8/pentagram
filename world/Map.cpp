@@ -141,7 +141,8 @@ void Map::loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds,
 		item->setLocation(x,y,z);
 
 		if (contdepth > 0) {
-			cont.top()->AddItem(item);	
+			cont.top()->addItem(item);	
+			item->setParent(cont.top());
 		} else {
 			itemlist.push_back(item);
 		}

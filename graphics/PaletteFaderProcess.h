@@ -26,10 +26,10 @@
 class PaletteFaderProcess : public Process
 {
 	int							priority;
-	int							counter;
-	int							max_counter;
-	float						old_matrix[12];
-	float						new_matrix[12];
+	sint32						counter;
+	sint32						max_counter;
+	sint16						old_matrix[12];	// Fixed point -4.11
+	sint16						new_matrix[12];
 public:
 	static PaletteFaderProcess	*fader;
 
@@ -37,8 +37,8 @@ public:
 	ENABLE_RUNTIME_CLASSTYPE();
 	PaletteFaderProcess();
 	PaletteFaderProcess(PaletteManager::PalTransforms trans, int priority, int frames);
-	PaletteFaderProcess(uint32 rgba, bool from, int priority, int frames);
-	PaletteFaderProcess(float from[12], float to[12], int priority, int frames);
+	PaletteFaderProcess(uint32 rgba, bool from, int priority, int frames, bool current);
+	PaletteFaderProcess(sint16 from[12], sint16 to[12], int priority, int frames);
 	virtual ~PaletteFaderProcess(void);
 
 	virtual bool run(const uint32 framenum);

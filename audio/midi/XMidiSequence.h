@@ -29,12 +29,12 @@ class XMidiSequence
 public:
 
 	//! Create the XXMidiSequence object
-	//! \arg handler XMidiSequenceHandler object that the events are to be sent to
-	//! \arg sequence_id The id num for this sequence
-	//! \arg events The Midi event list that is to be played
-	//! \arg repeat Specifies if repeating is enabled or disabled
-	//! \arg volume Volume level to play at
-	//! \arg branch The Branch index to start playing at
+	//! \param handler XMidiSequenceHandler object that the events are to be sent to
+	//! \param sequence_id The id num for this sequence
+	//! \param events The Midi event list that is to be played
+	//! \param repeat Specifies if repeating is enabled or disabled
+	//! \param volume Volume level to play at
+	//! \param branch The Branch index to start playing at
 	XMidiSequence(XMidiSequenceHandler *handler, uint16 sequence_id, XMidiEventList *events, 
 						bool repeat, int volume, int branch);
 
@@ -46,7 +46,7 @@ public:
 	sint32				playEvent();
 
 	//! Set a new volume to use
-	//! \arg new_vol the new volume level (0-255)
+	//! \param new_vol the new volume level (0-255)
     void				setVolume(int new_vol);
 
 	//! Get the current volume level
@@ -54,21 +54,21 @@ public:
 	int					getVolume() { return vol_multi; }
 
 	//! Set the speed of playback
-	//! \arg new_speed the new playback speed (percentage)
+	//! \param new_speed the new playback speed (percentage)
 	void				setSpeed(int new_speed) { speed = new_speed; }
 
 	//! Called when the XMidiSequenceHandler is taking a channel from this sequence
 	//! The XMidiSequence will gracefully reset the state of the channel
-	//! \arg c the channel being lost
+	//! \param c the channel being lost
 	void				loseChannel(int c);
 
 	//! Called when the XMidiSequenceHandler is giving a channel to this sequence
 	//! The XMidiSequence will update the state of the channel to what is stored in the shadow
-	//! \arg c the channel being gained
+	//! \param c the channel being gained
 	void				gainChannel(int c);
 
 	//! Apply a shadow state
-	//! \arg c the channel to apply the shadow for
+	//! \param c the channel to apply the shadow for
 	void				applyShadow(int c);
 
 	//! Get the channel used mask
@@ -85,7 +85,7 @@ public:
 	bool				isPaused() { return paused; }
 
 	//! Count the number of notes on for a chan
-	//! \arg chan The channel to count for
+	//! \param chan The channel to count for
 	//! \return the number of notes on
 	int					countNotesOn(int chan);
 

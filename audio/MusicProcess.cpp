@@ -133,8 +133,8 @@ bool MusicProcess::run(const uint32)
 	{
 	case MUSIC_NORMAL:
 		// If it's stopped playing, we aren't playing anything anymore
-		if (driver && !driver->isSequencePlaying(0)) 
-			current_track = wanted_track = 0;
+		//if (driver && !driver->isSequencePlaying(0)) 
+		//	current_track = wanted_track = 0;
 		break;
 
 	case MUSIC_TRANSITION:

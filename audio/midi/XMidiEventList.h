@@ -52,7 +52,7 @@ public:
 	void			decerementCounter ();
 
 	//! Find the Sequence Branch Event for the index 
-	//! \arg index The index to search for
+	//! \param index The index to search for
 	//! \return The event found, or 0
 	XMidiEvent *	findBranchEvent(int index) {
 

@@ -67,14 +67,16 @@ public:
 
 	void load(PalIndex index, IDataSource& ds, IDataSource &xformds);
 	Palette* getPalette(PalIndex index);
-	void transformPalette(PalIndex index, float matrix[12]);
 
-	// Get a TransformMatrix from a PalTransforms value 
-	static void getTransformMatrix(float matrix[12], PalTransforms trans);
+	// Apply a transform matrix to a palette (-4.11 fixed)
+	void transformPalette(PalIndex index, sint16 matrix[12]);
 
-	// Create a custom Transform Matrix from RGBA col32. 
+	// Get a TransformMatrix from a PalTransforms value (-4.11 fixed)
+	static void getTransformMatrix(sint16 matrix[12], PalTransforms trans);
+
+	// Create a custom Transform Matrix from RGBA col32. (-4.11 fixed)
 	// Alpha will set how much of original palette to keep. 0 = keep none
-	static void getTransformMatrix(float matrix[12], uint32 col32);	
+	static void getTransformMatrix(sint16 matrix[12], uint32 col32);	
 
 private:
 	std::vector<Palette*> palettes;

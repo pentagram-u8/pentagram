@@ -219,6 +219,9 @@ uint32 Kernel::getNumProcesses(uint16 objid, uint16 processtype)
 	{
 		Process* p = *it;
 
+		// Don't count us, were are not really here
+		if (p->terminate_deferred) continue;
+
 		if ((objid == 0 || objid == p->item_num) &&
 			(processtype == 6 || processtype == p->type))
 			count++;

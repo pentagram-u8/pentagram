@@ -63,6 +63,15 @@ public:
 	static uint16			SetCameraProcess(CameraProcess *);	// Set the current camera process. Adds process. Return PID
 	static void				ResetCameraProcess();
 
+	static void				SetEarthquake(sint32 e) { 
+		earthquake = e; 
+		if (!e)  eq_x = eq_y = 0;
+	}
+
+	void					ItemMoved();
+
+	virtual void terminate();	// Terminate NOW!
+
 	bool loadData(IDataSource* ids);
 private:
 	virtual void saveData(ODataSource* ods);
@@ -73,7 +82,7 @@ private:
 	sint32 elapsed;
 	uint16 itemnum;
 
-	uint32 last_framenum;
+	sint32 last_framenum;
 
 	static CameraProcess	*camera;
 	static sint32 earthquake;

@@ -65,7 +65,7 @@ void World::clear()
 	maps.clear();
 
 	while (!ethereal.empty())
-		ethereal.pop();
+		ethereal.pop_front();
 
 	if (currentmap)
 		delete currentmap;
@@ -133,10 +133,11 @@ bool World::switchMap(uint32 newmap)
 	}
 
 	// get rid of any remaining ethereal items
-	while (!etherealEmpty()) {
-		uint16 eth = etherealPop();
-		Object* o = ObjectManager::get_instance()->getObject(eth);
-		delete o;
+	while (!ethereal.empty()) {
+		uint16 eth = ethereal.front();
+		ethereal.pop_front();
+		Item* i = getItem(eth);
+		if(i) i->destroy();
 	}
 
 	uint32 oldmap = currentmap->getNum();
@@ -167,6 +168,7 @@ bool World::switchMap(uint32 newmap)
 
 	// reset camera
 	CameraProcess::SetCameraProcess(new CameraProcess(1));
+	CameraProcess::SetEarthquake(0);
 
 	return true;
 }
@@ -248,9 +250,8 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 		pout << shape << "," << frame << ":\t(" << x << "," << y << "," << z << "),\t" << std::hex << flags << std::dec << ", " << quality << ", " << npcnum << ", " << mapnum << ", " << next << std::endl;
 #endif
 
-		Actor *actor = ItemFactory::createActor(shape,frame,quality,flags,
-												npcnum,mapnum,
-												Item::EXT_NOTINMAP);
+		Actor *actor = ItemFactory::createActor(shape,frame,quality,flags|Item::FLG_IN_NPC_LIST,
+												npcnum,mapnum, 0);
 		if (!actor) {
 #ifdef DUMP_ITEMS
 			pout << "Couldn't create actor" << std::endl;
@@ -337,14 +338,14 @@ void World::save(ODataSource* ods)
 
 	// empty stack and refill it again
 	uint16* e = new uint16[es];
+	std::list<uint16>::iterator it = ethereal.begin();
 	for (unsigned int i = 0; i < es; ++i) {
-		e[es-i] = ethereal.top();
-		ethereal.pop();
+		e[es-i] = *it;
+		++it;
 	}
 
 	for (unsigned int i = 0; i < es; ++i) {
 		ods->write2(e[i]);
-		ethereal.push(e[i]);
 	}
 	delete[] e;
 }
@@ -362,7 +363,7 @@ bool World::load(IDataSource* ids)
 
 	uint32 etherealcount = ids->read4();
 	for (unsigned int i = 0; i < etherealcount; ++i) {
-		ethereal.push(ids->read2());
+		ethereal.push_front(ids->read2());
 	}
 
 	return true;

@@ -198,14 +198,6 @@ void ObjectManager::save(ODataSource* ods)
 	objIDs->save(ods);
 	actorIDs->save(ods);
 
-	// first, have all GlobEggs check if their contents changed:
-	for (unsigned int i = 0; i < objects.size(); ++i) {
-		GlobEgg* egg = p_dynamic_cast<GlobEgg*>(objects[i]);
-		if (!egg) continue;
-		egg->checkContents();
-	}
-
-
 	for (unsigned int i = 0; i < objects.size(); ++i) {
 		Object* object = objects[i];
 		if (!object) continue;
@@ -223,6 +215,8 @@ void ObjectManager::save(ODataSource* ods)
 
 	ods->write2(0);
 }
+#include <SDL.h>
+
 
 bool ObjectManager::load(IDataSource* ids)
 {
@@ -242,17 +236,8 @@ bool ObjectManager::load(IDataSource* ids)
 		if (!obj) return false;
 	} while(true);
 
-	// finally, have all GlobEggs restore any unsaved contents
-	for (unsigned int i = 0; i < objects.size(); ++i) {
-		GlobEgg* egg = p_dynamic_cast<GlobEgg*>(objects[i]);
-		if (!egg) continue;
-		egg->restoreContents();
-	}
-
-
 	return true;
 }
-
 
 Object* ObjectManager::loadObject(IDataSource* ids)
 {

@@ -1,3 +1,18 @@
+2003-07-16  Ryan Nunn <colourles@users.sourceforge.net>
+	* audio/midi/*.* : Fixing doxygen comments
+	* audio/midi/fmpopl*.* : Added stereo support to FMOpl. Doesn't make a
+	  huge difference, but it was trivial to add so I did it.
+	* audio/midi/LowLevelMidiDriver.* : Changed the way the coms work. It
+	  wont stall anymore when attempting to stop a track.
+	* audio/midi/WindowsMidiDriver.* : Moved the #define NO lines to the 
+	  cpp file because they could confict with other things
+	* audio/midi/timidity/*.* : Correct support for Win32 paths, and some
+	  tweaks
+	* graphics/*.* : Make the palette transform matrix use fixed point 
+	  rather than floating point
+	* Like every other file i'm committing: Changes for new Item::move 
+	  methods and fastArea
+
 2003-07-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GUIApp.*: mouse cursor
 	* kernel/GUIApp.*: cleaned up dragging a bit

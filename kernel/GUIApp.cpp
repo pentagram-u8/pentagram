@@ -31,6 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "RenderSurface.h"
 #include "Texture.h"
 #include "PaletteManager.h"
+#include "Palette.h"
 #include "GameData.h"
 #include "World.h"
 #include "Direction.h"
@@ -178,7 +179,6 @@ void GUIApp::startup()
 	con.SetAutoPaint(0);
 }
 
-
 void GUIApp::sdlAudioCallback(void *userdata, Uint8 *stream, int len)
 {
 	GUIApp *app = app->get_instance();
@@ -297,16 +297,12 @@ void GUIApp::init_midi()
 	// Create the Music Process
 	Process *mp = new MusicProcess(new_driver);
 	kernel->addProcess(mp);
-
 }
 
 void GUIApp::deinit_midi()
 {
-
 	SDL_CloseAudio();
-
 	if (midi_driver)  midi_driver->destroyMidiDriver();
-
 	delete midi_driver;
 	midi_driver = 0;
 }
@@ -450,68 +446,51 @@ void GUIApp::U8Playground()
 
 	// avatar needs a backpack ... CONSTANTs and all that
 	Container* backpack = p_dynamic_cast<Container*>(
-		ItemFactory::createItem(529, 0, 0, 0, 0, 0, Item::EXT_NOTINMAP));
+		ItemFactory::createItem(529, 0, 0, 0, 0, 0, 0));
 
 	// a little bonus :-)
-	Item* money = ItemFactory::createItem(143, 7, 500, 0,
-										  0, 0, Item::EXT_NOTINMAP);
-	backpack->AddItem(money);
+	Item* money = ItemFactory::createItem(143, 7, 500, 0, 0, 0, 0);
+	money->moveToContainer(backpack);
 	money->setGumpLocation(40, 20);
 
 	// skull of quakes
-	Item *skull = ItemFactory::createItem(814, 0, 0, 0, 0, 0,
-										  Item::EXT_NOTINMAP);
-	backpack->AddItem(skull);
+	Item *skull = ItemFactory::createItem(814, 0, 0, 0, 0, 0, 0);
+	skull->moveToContainer(backpack);  
 	skull->setGumpLocation(60, 20);
 
 	// recall item
-	Item *recall = ItemFactory::createItem(833, 0, 0, 0, 0, 0,
-										   Item::EXT_NOTINMAP);
-	backpack->AddItem(recall);
+	Item *recall = ItemFactory::createItem(833, 0, 0, 0, 0, 0, 0);
+	recall->moveToContainer(backpack);
 	recall->setGumpLocation(20, 20);
 
 	// sword
-	Item* sword = ItemFactory::createItem(420, 0, 0, 0, 0, 0,
-										  Item::EXT_NOTINMAP);
-	backpack->AddItem(sword);
+	Item* sword = ItemFactory::createItem(420, 0, 0, 0, 0, 0, 0);
+	sword->moveToContainer(backpack);
 	sword->setGumpLocation(20, 30);
 
 	// armour
-	Item* armour = ItemFactory::createItem(64, 0, 0, 0, 0, 0,
-										   Item::EXT_NOTINMAP);
-	backpack->AddItem(armour);
+	Item* armour = ItemFactory::createItem(64, 0, 0, 0, 0, 0, 0);
+	armour->moveToContainer(backpack);
 	armour->setGumpLocation(30, 30);
 
-	armour = ItemFactory::createItem(532, 0, 0, 0, 0, 0,
-										   Item::EXT_NOTINMAP);
-	backpack->AddItem(armour);
+	armour = ItemFactory::createItem(532, 0, 0, 0, 0, 0, 0);
+	armour->moveToContainer(backpack);
 	armour->setGumpLocation(40, 30);
 
-	armour = ItemFactory::createItem(539, 0, 0, 0, 0, 0,
-										   Item::EXT_NOTINMAP);
-	backpack->AddItem(armour);
+	armour = ItemFactory::createItem(539, 0, 0, 0, 0, 0, 0);
+	armour->moveToContainer(backpack);
 	armour->setGumpLocation(50, 30);
 
-	armour = ItemFactory::createItem(530, 0, 0, 0, 0, 0,
-										   Item::EXT_NOTINMAP);
-	backpack->AddItem(armour);
+	armour = ItemFactory::createItem(530, 0, 0, 0, 0, 0, 0);
+	armour->moveToContainer(backpack);
 	armour->setGumpLocation(10, 40);
 
-	armour = ItemFactory::createItem(531, 0, 0, 0, 0, 0,
-										   Item::EXT_NOTINMAP);
-	backpack->AddItem(armour);
+	armour = ItemFactory::createItem(531, 0, 0, 0, 0, 0, 0);
+	armour->moveToContainer(backpack);
 	armour->setGumpLocation(20, 40);
 
 	backpack->assignObjId();
-	av->AddItem(backpack);
-
-//	av->teleport(40, 16240, 15240, 64); // central Tenebrae
-//	av->teleport(3, 11391, 1727, 64); // docks, near gate
-//	av->teleport(39, 16240, 15240, 64); // West Tenebrae
-//	av->teleport(41, 12000, 15000, 64); // East Tenebrae
-//	av->teleport(8, 14462, 15178, 48); // before entrance to Mythran's house
-//	av->teleport(40, 13102,9474,48); // entrance to Mordea's throne room
-//	av->teleport(54, 14783,5759,8); // shrine of the Ancient Ones; Hanoi
+	backpack->moveToContainer(av);
 
 	if (av)
 		world->switchMap(av->getMapNum());
@@ -529,6 +508,15 @@ void GUIApp::U8Playground()
 
 	pout << "Create Camera" << std::endl;
 	CameraProcess::SetCameraProcess(new CameraProcess(1)); // Follow Avatar
+
+//	av->teleport(40, 16240, 15240, 64); // central Tenebrae
+//	av->teleport(3, 11391, 1727, 64); // docks, near gate
+//	av->teleport(39, 16240, 15240, 64); // West Tenebrae
+//	av->teleport(41, 12000, 15000, 64); // East Tenebrae
+//	av->teleport(8, 14462, 15178, 48); // before entrance to Mythran's house
+//	av->teleport(40, 13102,9474,48); // entrance to Mordea's throne room
+//	av->teleport(54, 14783,5759,8); // shrine of the Ancient Ones; Hanoi
+//	av->teleport(5, 5104,22464,48); // East road (tenebrae end)
 
 	pout << "Paint Inital display" << std::endl;
 	consoleGump->HideConsole();
@@ -1116,7 +1104,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			} break;
 			case SDLK_l: {
 				pout << "Flushing fast area" << std::endl; 
-				gameMapGump->FlushFastArea();
+				//gameMapGump->FlushFastArea();
 			} break;
 			case SDLK_END: {
 				if (!avatarInStasis) { 
@@ -1639,6 +1627,10 @@ void GUIApp::save(ODataSource* ods)
 	ods->write1(s);
 	ods->write4(static_cast<uint32>(timeOffset));
 	ods->write4(framenum);
+
+	Palette *pal = PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game);
+	for (int i = 0; i < 16; i++) ods->write2(pal->matrix[i]);
+	ods->write2(pal->transform);
 }
 
 bool GUIApp::load(IDataSource* ids)
@@ -1649,6 +1641,14 @@ bool GUIApp::load(IDataSource* ids)
 	avatarInStasis = (ids->read1() != 0);
 	timeOffset = static_cast<sint32>(ids->read4());
 	framenum = ids->read4();
+
+	sint16 matrix[16];
+	for (int i = 0; i < 16; i++)
+		matrix[i] = ids->read2();
+
+	PaletteManager::get_instance()->transformPalette(PaletteManager::Pal_Game, matrix);
+	Palette *pal = PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game);
+	pal->transform = static_cast<PaletteManager::PalTransforms>(ids->read2());
 
 	return true;
 }

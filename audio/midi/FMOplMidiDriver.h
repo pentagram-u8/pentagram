@@ -68,6 +68,7 @@ private:
 		int nshift;
 		int on;
 		int pitchbend;
+		int pan;
 	};
 	struct xmidibank {
 		unsigned char	insbank[128][12];

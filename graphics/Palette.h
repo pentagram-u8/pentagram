@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef PALETTE_H
 #define PALETTE_H
 
+#include "PaletteManager.h"
+
 class IDataSource;
 
 struct Palette
@@ -41,12 +43,15 @@ struct Palette
 	uint32 xform[256];
 
 	// Colour transformation matrix (for fades, hue shifts)
-	// Applied by the RenderSurface
+	// Applied by the RenderSurface (fixed -4.11)
 	// R = R*matrix[0] + G*matrix[1] + B*matrix[2]  + matrix[3];
 	// G = R*matrix[4] + G*matrix[5] + B*matrix[6]  + matrix[7];
 	// B = R*matrix[8] + G*matrix[9] + B*matrix[10] + matrix[11];
 	// A = A;
-	float matrix[12];
+	sint16 matrix[12];
+
+	// The current palette transform
+	PaletteManager::PalTransforms transform;
 };
 
 

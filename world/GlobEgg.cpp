@@ -31,7 +31,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 DEFINE_RUNTIME_CLASSTYPE_CODE(GlobEgg,Item);
 
 GlobEgg::GlobEgg()
-	: contents(0)
 {
 
 }
@@ -42,175 +41,32 @@ GlobEgg::~GlobEgg()
 }
 
 
-// expand contents of glob.
-// needs to assign an objID, and also needs to add them to the CurrentMap
-void GlobEgg::expand()
+// Called when an item has entered the fast area
+void GlobEgg::enterFastArea()
 {
-	Glob* glob = GameData::get_instance()->getGlob(quality);
-	if (!glob) return;
-
-	Item* previous = 0;
-
-	std::vector<GlobItem>::iterator iter;
-	for (iter = glob->contents.begin(); iter != glob->contents.end(); ++iter)
+	// Expand it
+	if (!(flags & FLG_FASTAREA)) 
 	{
-		GlobItem& globitem = *iter;
-		Item* item = ItemFactory::createItem(globitem.shape, globitem.frame, 
-											 0, 0, 0, 0, Item::EXT_INGLOB);
-		// Q: do we need to set any flags?
+		Glob* glob = GameData::get_instance()->getGlob(quality);
+		if (!glob) return;
 
-
-
-		// calculate object's world position
-		sint32 itemx = (x & ~0x1FF) + 2 * globitem.x;
-		sint32 itemy = (y & ~0x1FF) + 2 * globitem.y;
-		sint32 itemz = z + globitem.z;
-
-		item->setLocation(itemx, itemy, itemz);
-
-		item->assignObjId();
-
-		// add item to map
-		World::get_instance()->getCurrentMap()->addItem(item);
-
-
-		// link item to glob's linked list
-		if (previous)
-			previous->setGlobNext(item);
-		else
-			contents = item->getObjId();
-		previous = item;
-	}
-}
-
-void GlobEgg::checkContents()
-{
-	Glob* glob = GameData::get_instance()->getGlob(quality);
-	if (!glob) return;
-
-	Item* item = World::get_instance()->getItem(contents);
-
-	std::vector<GlobItem>::iterator iter;
-	for (iter = glob->contents.begin(); iter != glob->contents.end(); ++iter)
-	{
-		assert(item); // if not, globnext linked list was corrupted
-
-		GlobItem& globitem = *iter;
-
-		// calculate object's world position
-		sint32 gix = (x & ~0x1FF) + 2 * globitem.x;
-		sint32 giy = (y & ~0x1FF) + 2 * globitem.y;
-		sint32 giz = z + globitem.z;
-
-		sint32 ix, iy, iz;
-		item->getLocation(ix, iy, iz);
-
-		if (gix == ix && giy == iy && giz == iz &&
-			item->getShape() == globitem.shape &&
-			item->getFrame() == globitem.frame &&
-			item->getQuality() == 0 &&
-			item->getNpcNum() == 0 &&
-			item->getMapNum() == 0)
+		std::vector<GlobItem>::iterator iter;
+		for (iter = glob->contents.begin(); iter != glob->contents.end(); ++iter)
 		{
-			item->setExtFlag(Item::EXT_SAVE_GLOBSKIP);
-		} else {
-			item->clearFlag(Item::EXT_SAVE_GLOBSKIP);
-		}
-			
-		item = World::get_instance()->getItem(item->getGlobNext());
-	}
-}
-
-void GlobEgg::restoreContents()
-{
-	Glob* glob = GameData::get_instance()->getGlob(quality);
-	if (!glob) return;
-
-	Item* item = World::get_instance()->getItem(contents);
-
-	std::vector<GlobItem>::iterator iter;
-	for (iter = glob->contents.begin(); iter != glob->contents.end(); ++iter)
-	{
-		assert(item); // if not, globnext linked list was corrupted
-
-		if (item->getExtFlags() & Item::EXT_SAVE_GLOBSKIP)
-		{
-		
 			GlobItem& globitem = *iter;
-			
+			Item* item = ItemFactory::createItem(globitem.shape, globitem.frame, 
+								0, FLG_DISPOSABLE|FLG_FAST_ONLY, 0, 0, 0);
+
+			item->assignObjId();
+
 			// calculate object's world position
-			sint32 gix = (x & ~0x1FF) + 2 * globitem.x;
-			sint32 giy = (y & ~0x1FF) + 2 * globitem.y;
-			sint32 giz = z + globitem.z;
-			
-			item->setLocation(gix, giy, giz);
-			
-			item->setShape(globitem.shape);
-			item->setFrame(globitem.frame);
-			item->setQuality(0);
-			item->setMapNum(0);
-			item->setNpcNum(0);
-			
-			item->clearExtFlag(Item::EXT_SAVE_GLOBSKIP);
+			sint32 itemx = (x & ~0x1FF) + 2 * globitem.x;
+			sint32 itemy = (y & ~0x1FF) + 2 * globitem.y;
+			sint32 itemz = z + globitem.z;
 
-			//!! hackish...
-			if (item->getExtFlags() & EXT_INCURMAP) {
-				World::get_instance()->getCurrentMap()->addItem(item);
-			}
-
+			item->move(itemx, itemy, itemz);
 		}
-		
-		item = World::get_instance()->getItem(item->getGlobNext());
 	}
-}
 
-
-// delete expanded contents.
-// needs to clear objIDs, but doesn't need to remove pointer from CurrentMap
-// (since we're probably iterating over object lists in CurrentMap when called)
-void GlobEgg::unexpand()
-{
-	contents = 0;
-
-	// New idea: just leave all objects be.
-	// They'll be deleted in CurrentMap::writeBack()
-
-#if 0
-	Item* item = contents;
-
-	while (item) {
-		Item* next = item->getGlobNext();
-
-		// Q: Need to think this through sometime. We can't really delete the
-		// item here (since it's still in currentmap's object list), so maybe
-		// we need to mark this item 'to be deleted' somehow
-
-		//! currently a memory leak here...
-
-		item->clearObjId();
-
-		item = next;
-	}
-	contents = 0;
-#endif
-}
-
-
-void GlobEgg::saveData(ODataSource* ods)
-{
-	ods->write2(1); //version
-	Item::saveData(ods);
-
-	ods->write2(contents);
-}
-
-bool GlobEgg::loadData(IDataSource* ids)
-{
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Item::loadData(ids)) return false;
-
-	contents = ids->read2();
-
-	return true;
+	Item::enterFastArea();
 }

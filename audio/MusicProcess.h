@@ -42,7 +42,7 @@ public:
 	INTRINSIC(I_musicStop);
 
 	//! Play a music track
-	//! \arg track The track number to play. Pass 0 to stop music
+	//! \param track The track number to play. Pass 0 to stop music
 	void playMusic(int track);
 
 	virtual bool run(const uint32 framenum);

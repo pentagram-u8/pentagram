@@ -34,17 +34,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Kernel.h"
 #include "GameData.h"
 #include "MainShapeFlex.h"
+#include "GUIApp.h"
+#include "GameMapGump.h"
 
 using std::list; // too messy otherwise
 using Pentagram::Rect;
 typedef list<Item*> item_list;
 
 CurrentMap::CurrentMap()
-	: current_map(0), egghatcher(0)
+	: current_map(0), egghatcher(0),
+		fast_x_min(-1), fast_y_min(-1), fast_x_max(-1), fast_y_max(-1)
 {
-	items = new list<Item*>*[128]; //! get rid of constants
-	for (unsigned int i = 0; i < 128; i++) {
-		items[i] = new list<Item*>[128];
+	items = new list<Item*>*[MAP_NUM_CHUNKS];
+	fast = new uint32*[MAP_NUM_CHUNKS];
+	for (unsigned int i = 0; i < MAP_NUM_CHUNKS; i++) {
+		items[i] = new list<Item*>[MAP_NUM_CHUNKS];
+		fast[i] = new uint32[MAP_NUM_CHUNKS/32];
+		std::memset(fast[i],false,sizeof(uint32)*MAP_NUM_CHUNKS/32);
 	}
 }
 
@@ -54,7 +60,7 @@ CurrentMap::~CurrentMap()
 //	clear();
 
 	//! get rid of constants
-	for (unsigned int i = 0; i < 128; i++) {
+	for (unsigned int i = 0; i < MAP_NUM_CHUNKS; i++) {
 		delete[] items[i];
 	}
 	delete[] items;
@@ -63,8 +69,8 @@ CurrentMap::~CurrentMap()
 void CurrentMap::clear()
 {
 	//! get rid of constants
-	for (unsigned int i = 0; i < 128; i++) {
-		for (unsigned int j = 0; j < 128; j++) {
+	for (unsigned int i = 0; i < MAP_NUM_CHUNKS; i++) {
+		for (unsigned int j = 0; j < MAP_NUM_CHUNKS; j++) {
 			item_list::iterator iter;
 			for (iter = items[i][j].begin(); iter != items[i][j].end(); ++iter)
 				delete *iter;
@@ -106,8 +112,8 @@ void CurrentMap::writeback()
 
 	//! constants
 
-	for (unsigned int i = 0; i < 128; i++) {
-		for (unsigned int j = 0; j < 128; j++) {
+	for (unsigned int i = 0; i < MAP_NUM_CHUNKS; i++) {
+		for (unsigned int j = 0; j < MAP_NUM_CHUNKS; j++) {
 			item_list::iterator iter;
 			for (iter = items[i][j].begin(); iter != items[i][j].end(); ++iter)
 			{
@@ -116,24 +122,12 @@ void CurrentMap::writeback()
 				// item is being removed from the CurrentMap item lists
 				item->clearExtFlag(Item::EXT_INCURMAP);
 
-				// delete items inside globs
-				if (item->getExtFlags() & Item::EXT_INGLOB) {
-					delete item;
-					continue;
-				}
-
-				// delete all monsters and disposable items
-				if ((item->getFlags() & Item::FLG_MONSTER_NPC) ||
+				// delete all fast only and disposable items
+				if ((item->getFlags() & Item::FLG_FAST_ONLY) ||
 					(item->getFlags() & Item::FLG_DISPOSABLE))
 				{
 					delete item;
 					continue;
-				}
-
-				// unexpand all globeggs (note that this doesn't do much)
-				GlobEgg* globegg = p_dynamic_cast<GlobEgg*>(item);
-				if (globegg) {
-					globegg->unexpand();
 				}
 
 				// Reset the egg
@@ -143,7 +137,7 @@ void CurrentMap::writeback()
 				}
 
 				// this item isn't from the Map. (like NPCs)
-				if (item->getExtFlags() & Item::EXT_NOTINMAP)
+				if (item->getFlags() & Item::FLG_IN_NPC_LIST)
 					continue;
 
 				item->clearObjId();
@@ -174,16 +168,13 @@ void CurrentMap::loadItems(list<Item*> itemlist)
 
 		item->assignObjId();
 
-		// add item to internal object list
-		addItem(item);
-		
-		// Cachein (do for expanded objects too?)
-		item->callUsecodeEvent_cachein();
+		// No fast area for you!
+		item->clearFlag(Item::FLG_FASTAREA);
 
-		GlobEgg* globegg = p_dynamic_cast<GlobEgg*>(item);
-		if (globegg) {
-			globegg->expand();
-		}
+		// add item to internal object list
+		addItemToEnd(item);
+		
+		item->callUsecodeEvent_cachein();
 	}
 }
 
@@ -192,6 +183,15 @@ void CurrentMap::loadMap(Map* map)
 	current_map = map;
 
 	createEggHatcher();
+
+	// Clear fast area
+	for (unsigned int i = 0; i < MAP_NUM_CHUNKS; i++) {
+		std::memset(fast[i],false,sizeof(uint32)*MAP_NUM_CHUNKS/32);
+	}
+	fast_x_min = -1;
+	fast_y_min = -1;
+	fast_x_max = -1;
+	fast_y_max = -1;
 
 	loadItems(map->fixeditems);
 	loadItems(map->dynamicitems);
@@ -209,7 +209,7 @@ void CurrentMap::loadMap(Map* map)
 		if (actor) actor->callUsecodeEvent_schedule();
 
 		if (actor && actor->getMapNum() == getNum()) {
-			addItem(actor);
+			addItemToEnd(actor);
 
 			// Cachein
 			actor->callUsecodeEvent_cachein();
@@ -224,14 +224,43 @@ void CurrentMap::addItem(Item* item)
 	item->getLocation(ix, iy, iz);
 
 	//! constants
-	if (ix < 0 || iy < 0 || ix >= 512*128 || iy >= 512*128) {
+	if (ix < 0 || ix >= MAP_CHUNK_SIZE*MAP_NUM_CHUNKS || 
+		iy < 0 || iy >= MAP_CHUNK_SIZE*MAP_NUM_CHUNKS) {
 		perr << "Skipping item: out of range (" 
 			 << ix << "," << iy << ")" << std::endl;
 		return;
 	}
 
-	sint32 cx = ix / 512;
-	sint32 cy = iy / 512;
+	sint32 cx = ix / MAP_CHUNK_SIZE;
+	sint32 cy = iy / MAP_CHUNK_SIZE;
+
+	items[cx][cy].push_front(item);
+	item->setExtFlag(Item::EXT_INCURMAP);
+
+	Egg* egg = p_dynamic_cast<Egg*>(item);
+	if (egg) {
+		EggHatcherProcess* ehp = p_dynamic_cast<EggHatcherProcess*>(Kernel::get_instance()->getProcess(egghatcher));
+		assert(ehp);
+		ehp->addEgg(egg);
+	}
+}
+
+void CurrentMap::addItemToEnd(Item* item)
+{
+	sint32 ix, iy, iz;
+
+	item->getLocation(ix, iy, iz);
+
+	//! constants
+	if (ix < 0 || ix >= MAP_CHUNK_SIZE*MAP_NUM_CHUNKS || 
+		iy < 0 || iy >= MAP_CHUNK_SIZE*MAP_NUM_CHUNKS) {
+		perr << "Skipping item: out of range (" 
+			 << ix << "," << iy << ")" << std::endl;
+		return;
+	}
+
+	sint32 cx = ix / MAP_CHUNK_SIZE;
+	sint32 cy = iy / MAP_CHUNK_SIZE;
 
 	items[cx][cy].push_back(item);
 	item->setExtFlag(Item::EXT_INCURMAP);
@@ -261,17 +290,106 @@ void CurrentMap::removeItemFromList(Item* item, sint32 oldx, sint32 oldy)
 	// or something, but let's see how it turns out
 
 	//! constants
-	if (oldx < 0 || oldy < 0 || oldx >= 512*128 || oldy >= 512*128) {
+	if (oldx < 0 || oldx >= MAP_CHUNK_SIZE*MAP_NUM_CHUNKS || 
+		oldy < 0 || oldy >= MAP_CHUNK_SIZE*MAP_NUM_CHUNKS) {
 		perr << "Skipping item: out of range (" 
 			 << oldx << "," << oldy << ")" << std::endl;
 		return;
 	}
 
-	sint32 cx = oldx / 512;
-	sint32 cy = oldy / 512;
+	sint32 cx = oldx / MAP_CHUNK_SIZE;
+	sint32 cy = oldy / MAP_CHUNK_SIZE;
 
 	items[cx][cy].remove(item);
 	item->clearExtFlag(Item::EXT_INCURMAP);
+}
+
+void CurrentMap::updateFastArea(sint32 from_x, sint32 from_y, sint32 to_x, sint32 to_y)
+{
+	from_x /= MAP_CHUNK_SIZE;
+	from_y /= MAP_CHUNK_SIZE;
+	to_x /= MAP_CHUNK_SIZE;
+	to_y /= MAP_CHUNK_SIZE;
+
+	int x_min = from_x;
+	int x_max = to_x;
+
+	if (x_max < x_min)  {
+		x_min = to_x;
+		x_max = from_x;
+	}
+
+	int y_min = from_y;
+	int y_max = to_y;
+
+	if (y_max < y_min)  {
+		y_min = to_y;
+		y_max = from_y;
+	}
+
+	// Don't do anything IF the regions are the same
+	if (fast_x_min == x_min && fast_y_min == y_min &&
+		fast_x_max == x_max && fast_y_max == y_max)
+		return;
+
+	// Update the saved region
+	fast_x_min = x_min;
+	fast_y_min = y_min;
+	fast_x_max = x_max;
+	fast_y_max = y_max;
+
+	// Get Limits
+	sint32 sx_limit;
+	sint32 sy_limit;
+	sint32 xy_limit;
+
+	GUIApp::get_instance()->getGameMapMapGump()->
+			calcFastAreaLimits(sx_limit, sy_limit, xy_limit);
+
+	x_min -= xy_limit;
+	x_max += xy_limit;
+	y_min -= xy_limit;
+	y_max += xy_limit;
+
+	for (sint32 cy = 0; cy < MAP_NUM_CHUNKS; cy++) {
+		for (sint32 cx = 0; cx < MAP_NUM_CHUNKS; cx++) {
+
+			bool want_fast = cx>=x_min && cx<=x_max && cy>=y_min && cy<=y_max;
+			bool currently_fast = isChunkFast(cx,cy);
+
+			// Don't do anything, they are the same
+			if (want_fast == currently_fast) continue;
+
+			// leave fast area
+			if (!want_fast) unsetChunkFast(cx,cy);
+			// Enter fast area
+			else setChunkFast(cx,cy);
+		}
+	}
+}
+
+void CurrentMap::setChunkFast(sint32 cx, sint32 cy)
+{
+	fast[cy][cx/32] |= 1<<(cx&31);
+
+	item_list::iterator iter;
+	for (iter = items[cx][cy].begin();
+			iter != items[cx][cy].end(); ++iter) {
+				(*iter)->enterFastArea();
+			}
+}
+
+void CurrentMap::unsetChunkFast(sint32 cx, sint32 cy)
+{
+	fast[cy][cx/32] &= ~(1<<(cx&31));
+
+	item_list::iterator iter = items[cx][cy].begin();
+	while (iter != items[cx][cy].end())
+	{
+		Item* item = *iter;
+		++iter;
+		item->leaveFastArea();	// Can destroy the item
+	}
 }
 
 void CurrentMap::areaSearch(UCList* itemlist, const uint8* loopscript,
@@ -290,14 +408,14 @@ void CurrentMap::areaSearch(UCList* itemlist, const uint8* loopscript,
 	int minx, miny, maxx, maxy;
 
 	//! constants
-	minx = ((x-range)/512) - 1;
-	maxx = ((x+range)/512) + 1;
-	miny = ((y-range)/512) - 1;
-	maxy = ((y+range)/512) + 1;
+	minx = ((x-range)/MAP_CHUNK_SIZE) - 1;
+	maxx = ((x+range)/MAP_CHUNK_SIZE) + 1;
+	miny = ((y-range)/MAP_CHUNK_SIZE) - 1;
+	maxy = ((y+range)/MAP_CHUNK_SIZE) + 1;
 	if (minx < 0) minx = 0;
-	if (maxx > 127) maxx = 127;
+	if (maxx >= MAP_NUM_CHUNKS) maxx = MAP_NUM_CHUNKS-1;
 	if (miny < 0) miny = 0;
-	if (miny > 127) maxy = 127;
+	if (maxy >= MAP_NUM_CHUNKS) maxy = MAP_NUM_CHUNKS-1;
 
 	for (int cx = minx; cx <= maxx; cx++) {
 		for (int cy = miny; cy <= maxy; cy++) {
@@ -369,14 +487,14 @@ void CurrentMap::surfaceSearch(UCList* itemlist, const uint8* loopscript,
 	int minx, miny, maxx, maxy;
 
 	//! constants
-	minx = ((x-xd)/512) - 1;
-	maxx = ((x)/512) + 1;
-	miny = ((y-yd)/512) - 1;
-	maxy = ((y)/512) + 1;
+	minx = ((x-xd)/MAP_CHUNK_SIZE) - 1;
+	maxx = ((x)/MAP_CHUNK_SIZE) + 1;
+	miny = ((y-yd)/MAP_CHUNK_SIZE) - 1;
+	maxy = ((y)/MAP_CHUNK_SIZE) + 1;
 	if (minx < 0) minx = 0;
-	if (maxx > 127) maxx = 127;
+	if (maxx >= MAP_NUM_CHUNKS) maxx = MAP_NUM_CHUNKS-1;
 	if (miny < 0) miny = 0;
-	if (miny > 127) maxy = 127;
+	if (maxy >= MAP_NUM_CHUNKS) maxy = MAP_NUM_CHUNKS-1;
 
 	for (int cx = minx; cx <= maxx; cx++) {
 		for (int cy = miny; cy <= maxy; cy++) {
@@ -438,8 +556,8 @@ void CurrentMap::surfaceSearch(UCList* itemlist, const uint8* loopscript,
 TeleportEgg* CurrentMap::findDestination(uint16 id)
 {
 	//! constants
-	for (unsigned int i = 0; i < 128; i++) {
-		for (unsigned int j = 0; j < 128; j++) {
+	for (unsigned int i = 0; i < MAP_NUM_CHUNKS; i++) {
+		for (unsigned int j = 0; j < MAP_NUM_CHUNKS; j++) {
 			item_list::iterator iter;
 			for (iter = items[i][j].begin();
 				 iter != items[i][j].end(); ++iter)
@@ -467,14 +585,14 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 	int minx, miny, maxx, maxy;
 
 	//! constants
-	minx = ((x-xd)/512) - 1;
-	maxx = (x/512) + 1;
-	miny = ((y-yd)/512) - 1;
-	maxy = (y/512) + 1;
+	minx = ((x-xd)/MAP_CHUNK_SIZE) - 1;
+	maxx = (x/MAP_CHUNK_SIZE) + 1;
+	miny = ((y-yd)/MAP_CHUNK_SIZE) - 1;
+	maxy = (y/MAP_CHUNK_SIZE) + 1;
 	if (minx < 0) minx = 0;
-	if (maxx > 127) maxx = 127;
+	if (maxx >= MAP_NUM_CHUNKS) maxx = MAP_NUM_CHUNKS-1;
 	if (miny < 0) miny = 0;
-	if (maxy > 127) maxy = 127;
+	if (maxy >= MAP_NUM_CHUNKS) maxy = MAP_NUM_CHUNKS-1;
 
 	for (int cx = minx; cx <= maxx; cx++) {
 		for (int cy = miny; cy <= maxy; cy++) {
@@ -564,18 +682,18 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3], const sin
 
 	//! constants
 	int minx, miny, maxx, maxy;
-	minx = ((start[0]-dims[0])/512) - 1;
-	maxx = (start[0]/512) + 1;
-	miny = ((start[1]-dims[1])/512) - 1;
-	maxy = (start[1]/512) + 1;
+	minx = ((start[0]-dims[0])/MAP_CHUNK_SIZE) - 1;
+	maxx = (start[0]/MAP_CHUNK_SIZE) + 1;
+	miny = ((start[1]-dims[1])/MAP_CHUNK_SIZE) - 1;
+	maxy = (start[1]/MAP_CHUNK_SIZE) + 1;
 
 	{
 		//! constants
 		int dminx, dminy, dmaxx, dmaxy;
-		dminx = ((end[0]-dims[0])/512) - 1;
-		dmaxx = (end[0]/512) + 1;
-		dminy = ((end[1]-dims[1])/512) - 1;
-		dmaxy = (end[1]/512) + 1;
+		dminx = ((end[0]-dims[0])/MAP_CHUNK_SIZE) - 1;
+		dmaxx = (end[0]/MAP_CHUNK_SIZE) + 1;
+		dminy = ((end[1]-dims[1])/MAP_CHUNK_SIZE) - 1;
+		dmaxy = (end[1]/MAP_CHUNK_SIZE) + 1;
 		if (dminx < minx) minx = dminx;
 		if (dmaxx > maxx) maxx = dmaxx;
 		if (dminy < miny) miny = dminy;
@@ -583,9 +701,9 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3], const sin
 	}
 
 	if (minx < 0) minx = 0;
-	if (maxx > 127) maxx = 127;
+	if (maxx >= MAP_NUM_CHUNKS) maxx = MAP_NUM_CHUNKS-1;
 	if (miny < 0) miny = 0;
-	if (maxy > 127) maxy = 127;
+	if (maxy >= MAP_NUM_CHUNKS) maxy = MAP_NUM_CHUNKS-1;
 
 	// Get velocity of item
 	sint32 vel[3];
@@ -731,7 +849,6 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3], const sin
 
 	return hit && hit->size();
 }
-
 
 uint32 CurrentMap::I_canExistAt(const uint8* args, unsigned int /*argsize*/)
 {

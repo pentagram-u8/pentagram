@@ -338,7 +338,7 @@ void XMidiSequence::sendEvent()
 			handler->sequenceSendEvent(sequence_id, event->status | (data<<8));
 			event->ex.note_on.actualvel = event->data[1];
 
-			notes_on.Push (event, event->ex.note_on.duration * 50 + getStart());
+			notes_on.Push (event, ((event->ex.note_on.duration-1)*5000/speed) + getStart());
 		}
 		// Only send IF the channel has been marked enabled
 		else 

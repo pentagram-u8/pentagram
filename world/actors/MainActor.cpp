@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Process.h"
 #include "Kernel.h"
 #include "TeleportToEggProcess.h"
+#include "CameraProcess.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -53,7 +54,6 @@ void MainActor::teleport(int mapnum, sint32 x, sint32 y, sint32 z)
 	}
 
 	Actor::teleport(mapnum, x, y, z);
-
 	justTeleported = true;
 }
 
@@ -79,7 +79,6 @@ void MainActor::teleport(int mapnum, int teleport_id)
 	perr << "Found destination: " << x << "," << y << "," << z << std::endl;
 
 	Actor::teleport(mapnum, x, y, z);
-
 	justTeleported = true;
 }
 

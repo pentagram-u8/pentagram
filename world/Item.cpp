@@ -50,6 +50,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "LoopScript.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
+#include "CameraProcess.h"
 
 #include <cstdlib>
 
@@ -61,7 +62,7 @@ Item::Item()
 	  flags(0), quality(0), npcnum(0), mapnum(0),
 	  extendedflags(0), parent(0), 
 	  cachedShape(0), cachedShapeInfo(0), gump(0), gravitypid(0),
-	  glob_next(0),last_setup(0)
+	  last_setup(0)
 {
 
 }
@@ -79,25 +80,205 @@ void Item::setLocation(sint32 X, sint32 Y, sint32 Z)
 	z = Z;
 }
 
-void Item::move(sint32 X, sint32 Y, sint32 Z, bool forcemapupdate)
+void Item::move(sint32 X, sint32 Y, sint32 Z)
 {
-	//constant
-	if (!(flags & (FLG_CONTAINED | FLG_EQUIPPED | FLG_ETHEREAL))
-		&& (forcemapupdate || (x / 512 != X / 512) || (y / 512 != Y / 512))) {
+	bool no_lerping = false;
+	CurrentMap * map = World::get_instance()->getCurrentMap();
 
-		// if item isn't contained or equipped, it's in CurrentMap
-
-		World::get_instance()->getCurrentMap()->removeItemFromList(this,x,y);
-		setLocation(X, Y, Z);
-		World::get_instance()->getCurrentMap()->addItem(this);
-	}
-	else
+	// Remove from container (if contained or equiped)
+	if (flags & (FLG_CONTAINED|FLG_EQUIPPED))
 	{
-    	setLocation(X, Y, Z);
+		if (parent)
+			parent->removeItem(this);
+		else
+			perr << "Item " << getObjId() << " FLG_CONTAINED or FLG_EQUIPPED set but item has no parent" << std::endl;
+
+		// Clear our owner. 
+		parent = 0;
+
+		// Unset us contained
+		flags &= ~(FLG_CONTAINED|FLG_EQUIPPED);
+
+		// No lerping when going from a container to somewhere else
+		no_lerping = true;
+	}
+	// Item needs to be removed if it in the map, and it is moving to a 
+	// different chunk
+	else if ((extendedflags & EXT_INCURMAP) && 
+			((x / MAP_CHUNK_SIZE != X / MAP_CHUNK_SIZE) || 
+			(y / MAP_CHUNK_SIZE != Y / MAP_CHUNK_SIZE))) {
+
+		// Remove us from the map
+		map->removeItem(this);
+	}
+	// It's currently in the ethereal void
+	else if (flags & FLG_ETHEREAL) {
+
+		// Remove us from the ethereal void
+		World::get_instance()->etherealRemove(objid);
+
+		// Unset ethereal
+		flags &= ~FLG_ETHEREAL;
+	}
+
+
+	// Set the location
+	x = X;
+	y = Y;
+	z = Z;
+
+	// Add it to the map if needed
+	if (!(extendedflags & EXT_INCURMAP))
+	{
+		// Disposable fast only items get put at the end
+		// While normal items get put at start
+		if (flags & (FLG_DISPOSABLE|FLG_FAST_ONLY))
+			map->addItemToEnd(this);
+		else
+			map->addItem(this);
 	}
 
 	// Call just moved
 	callUsecodeEvent_justMoved();
+
+	// Are we moving somewhere fast
+	bool dest_fast = map->isChunkFast(X/MAP_CHUNK_SIZE, Y/MAP_CHUNK_SIZE);
+
+	// No lerping for this move
+	if (no_lerping) extendedflags |= EXT_LERP_NOPREV;
+
+	// If the destination is not in the fast area, and we are in
+	// the fast area, we need to call leaveFastArea, as long as we aren't
+	// being followed by the camera. We also disable lerping in such a case
+	if (!dest_fast && (flags & Item::FLG_FASTAREA)) {
+		extendedflags |= EXT_LERP_NOPREV;
+		if (extendedflags & EXT_CAMERA) 
+			CameraProcess::GetCameraProcess()->ItemMoved();
+		else
+			leaveFastArea();	// Can destroy the item
+
+		return; //we are done
+	}
+	// Or if the dest is fast, and we are not, we need to call enterFastArea
+	else if (dest_fast && !(flags & Item::FLG_FASTAREA)) {
+		extendedflags |= EXT_LERP_NOPREV;
+		enterFastArea();
+	}
+
+	// If we are being followed, notify the camera that we moved
+	// Note that we don't need to 
+	if (extendedflags & EXT_CAMERA)
+		CameraProcess::GetCameraProcess()->ItemMoved();
+}
+
+bool Item::moveToContainer(Container *container, bool checkwghtvol)
+{
+	// Null container, report an error message
+	if (!container) {
+		perr << "NULL container passed to Item::moveToContainer" << std::endl;
+		return false;
+	}
+
+	// Already there, do nothing
+	if (container == parent) return true;
+
+	// Eh, can't do it
+	if (!container->CanAddItem(this,checkwghtvol)) return false;
+
+	// Remove from container (if contained or equiped)
+	if (flags & (FLG_CONTAINED|FLG_EQUIPPED))
+	{
+		if (parent)
+			parent->removeItem(this);
+		else
+			perr << "Item " << getObjId() << " FLG_CONTAINED or FLG_EQUIPPED set but item has no parent" << std::endl;
+
+		// Clear our owner. 
+		parent = 0;
+
+		// Unset us contained
+		flags &= ~(FLG_CONTAINED|FLG_EQUIPPED);
+	}
+	// Item needs to be removed if it in the map
+	else if (extendedflags & EXT_INCURMAP) {
+
+		// Remove us from the map
+		World::get_instance()->getCurrentMap()->removeItem(this);
+	}
+	// It's currently in the ethereal void
+	else if (flags & FLG_ETHEREAL) {
+
+		// Remove us from the ethereal void
+		World::get_instance()->etherealRemove(objid);
+
+		// Unset ethereal
+		flags &= ~FLG_ETHEREAL;
+	}
+
+	// Set location to 0,0,0
+	x = y = z = 0;
+
+	// Add the item, don't bother with checking weight or vol since we already
+	// know if it will fit or not
+	container->addItem(this, false);
+	
+	// Set our owner. 
+	parent = container;
+
+	// Set us contained
+	flags |= FLG_CONTAINED;
+	
+	// No lerping when moving to a container
+	extendedflags |= EXT_LERP_NOPREV;
+
+	// Call just moved
+	callUsecodeEvent_justMoved();
+
+	// For a container, it's fast if it's got a gump open
+	bool dest_fast = (container->flags & FLG_GUMP_OPEN)!=0;
+
+	// If the destination is not in the fast area, and we are in
+	// the fast area, we need to call leaveFastArea
+	if (!dest_fast && (flags & Item::FLG_FASTAREA))
+		leaveFastArea();
+	// Or if the dest is fast, and we are not, we need to call enterFastArea
+	else if (dest_fast && !(flags & Item::FLG_FASTAREA))
+		enterFastArea();
+
+	// Done
+	return true;
+}
+
+void Item::moveToEtherealVoid()
+{
+	// It's already Ethereal
+	if (flags & FLG_ETHEREAL) return;
+
+	// Add it to the ethereal void
+	World::get_instance()->etherealPush(objid);
+
+	// It's owned by something
+	if (flags & (FLG_CONTAINED|FLG_EQUIPPED)) {
+		if (parent)
+			parent->removeItem(this);
+		else
+			perr << "Item " << getObjId() << " FLG_CONTAINED or FLG_EQUIPPED set but item has no parent" << std::endl;
+
+		// Clear our owner. 
+		parent = 0;
+
+		// Unset us contained
+		flags &= ~(FLG_CONTAINED|FLG_EQUIPPED);
+
+		// No lerping when going from a container to somewhere else
+		extendedflags |= EXT_LERP_NOPREV;
+	}
+	else if (extendedflags & EXT_INCURMAP) {
+		World::get_instance()->getCurrentMap()->removeItem(this);
+	}
+
+	// Set the ETHEREAL Flag
+	flags |=  FLG_ETHEREAL;
 }
 
 void Item::getLocation(sint32& X, sint32& Y, sint32& Z) const
@@ -553,9 +734,6 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 		// Call release on us
 		if (we_were_released) callUsecodeEvent_release();
 
-		// Remove us from our parent
-		if (parent) parent->RemoveItem(this);
-
 		// Move US!
 		move(end[0], end[1], end[2]);
 
@@ -653,7 +831,8 @@ uint32 Item::callUsecodeEvent(uint32 event, const uint8* args, int argsize)
 	uint32	class_id = shape;
 
 	// Non monster NPCs use objid/npcnum + 1024
-	if (objid < 256 && !(flags & FLG_MONSTER_NPC)) class_id = objid + 1024;
+	// A monster NPC is specified with the FAST_ONLY flag
+	if (objid < 256 && !(flags & FLG_FAST_ONLY)) class_id = objid + 1024;
 
 	// UnkEggs have quality+0x47F
 	if (getFamily() == ShapeInfo::SF_UNKEGG) class_id = quality + 0x47F;
@@ -763,19 +942,22 @@ uint32 Item::callUsecodeEvent_guardianBark(sint16 unk)			// event 15
 
 void Item::destroy()
 {
-	if (extendedflags & EXT_INGLOB) {
-		perr << "Trying to destroy an in-glob item" << std::endl;
-		return; // don't touch glob contents
-	}
-
 	if (parent) {		
 		// we're in a container, so remove self from parent
 		//!! need to make sure this works for equipped items too...
-		parent->RemoveItem(this);
-	} else if (!(flags & FLG_ETHEREAL)) {
+		parent->removeItem(this);
+	} else if (extendedflags & EXT_INCURMAP) {
 		// remove self from CurrentMap
 		World::get_instance()->getCurrentMap()->removeItemFromList(this,x,y);
 	}
+	else if (flags & FLG_ETHEREAL) {
+		// Remove us from the ether
+		World::get_instance()->etherealRemove(objid);
+	}
+		
+
+	if (extendedflags & Item::EXT_CAMERA)
+		CameraProcess::SetCameraProcess(0);
 
 	clearObjId();
 	delete this; // delete self.
@@ -786,19 +968,49 @@ void Item::destroy()
 //
 // Desc: Setup the lerped info for this frame
 //
-void Item::setupLerp(bool post)
+void Item::setupLerp(sint32 gametick)
 {
-	// Setup prev values, but only if fast
-	if (!post) l_prev = l_next;
+	// Don't need to set us up
+	if (last_setup && gametick == last_setup)
+		return;
 
-	l_next.x = ix = x;
-	l_next.y = iy = y;
-	l_next.z = iz = z;
+	// Are we lerping or are we not? Default we lerp.
+	bool no_lerp = false;
+
+	// No lerping this frame if Shape Changed, or No lerp is set, 
+	// or no last setup, or last setup more than 1 tick ago
+	if ((l_next.shape != shape) || (extendedflags & EXT_LERP_NOPREV) ||
+		(last_setup == 0) || (gametick-last_setup)>1 || flags & FLG_CONTAINED)
+		no_lerp = true;
+
+	// Update the time we were just setup
+	last_setup = gametick;
+
+	// Clear the flag
+	extendedflags &= ~EXT_LERP_NOPREV;
+
+	// Animate it, if needed
+	if ((gametick%3) == (objid%3)) animateItem();
+
+	// Setup the prev values for lerping
+	if (!no_lerp) l_prev = l_next;
+
+	// Setup next
+	if (flags & FLG_CONTAINED) {
+		l_next.x = ix = y & 0xFF;
+		l_next.y = iy = (y >> 8) & 0xFF;
+		l_next.z = iz = 0;
+	}
+	else {
+		l_next.x = ix = x;
+		l_next.y = iy = y;
+		l_next.z = iz = z;
+	}
 	l_next.shape = shape;
 	l_next.frame = frame;
 
-	// Setup prev values, if not fast
-	if (post) l_prev = l_next;
+	// Setup prev values for not lerping
+	if (no_lerp) l_prev = l_next;
 }
 
 // Animate the item
@@ -872,44 +1084,50 @@ void Item::animateItem()
 
 
 // Called when an item has entered the fast area
-void Item::inFastArea(int even_odd, int framenum)
+void Item::enterFastArea()
 {
-	extendedflags &= ~(EXT_FAST0|EXT_FAST1);
-	extendedflags |= EXT_FAST0<<even_odd;
-
-	if (!last_setup || framenum != (int)last_setup || !(flags & FLG_FASTAREA))
-	{
-		setupLerp(!last_setup || (framenum-last_setup)>1 || !(flags & FLG_FASTAREA));
-		last_setup = framenum;
-		if ((framenum%3) == (objid%3)) animateItem();
-	}
-
-	// Only do it if not already fast
-	if (flags & FLG_FASTAREA) return;
-
-	flags |= FLG_FASTAREA;
-
-
 	//!! HACK to get rid of endless SFX loops
 	if (shape == 0x2c8) return;
 
-	// Call usecode here
-	callUsecodeEvent_enterFastArea();
+	// Call usecode
+	if (!(flags & FLG_FASTAREA)) callUsecodeEvent_enterFastArea();
+
+	// We're fast!
+	flags |= FLG_FASTAREA;
 }
 
 // Called when an item is leaving the fast area
-void Item::leavingFastArea()
+void Item::leaveFastArea()
 {
-	// Clear the fast area flags
-	extendedflags &= ~(EXT_FAST0|EXT_FAST1);
+	// Call usecode
+	if ((!(flags & FLG_FAST_ONLY) || getShapeInfo()->is_noisy()) && 
+			(flags & FLG_FASTAREA))
+		callUsecodeEvent_leaveFastArea();
 
-	// Only do it if fast
-	if (!(flags & FLG_FASTAREA)) return;
+	// If we have a gump open, close it
+	if (flags & FLG_GUMP_OPEN) 
+	{
+		Gump *g = GUIApp::get_instance()->getGump(gump);
+		if (g) g->Close();
+	}
 
+	// Unset the flag
 	flags &= ~FLG_FASTAREA;
 
-	// Call usecode here
-	callUsecodeEvent_leaveFastArea();
+	// Kill us if we are fast only
+	if (flags & FLG_FAST_ONLY) 
+		destroy();
+	// If we have a gravity process, move us to the ground
+	else if (gravitypid)
+	{
+		Process *p = Kernel::get_instance()->getProcess(gravitypid);
+		if (p) { 
+			p->terminateDeferred();
+			gravitypid = 0;
+			collideMove(x,y,0,true,false);
+		}
+	}
+
 }
 
 uint16 Item::openGump(uint32 gumpshape)
@@ -1004,26 +1222,18 @@ void Item::saveData(ODataSource* ods)
 	Object::saveData(ods);
 	ods->write2(static_cast<uint16>(extendedflags));
 	ods->write2(flags);
-	if (!(extendedflags & EXT_SAVE_GLOBSKIP)) {
-		ods->write2(static_cast<uint16>(shape));
-		ods->write2(static_cast<uint16>(frame));
-		ods->write2(static_cast<uint16>(x));
-		ods->write2(static_cast<uint16>(y));
-		ods->write2(static_cast<uint16>(z));
-		ods->write2(quality);
-		ods->write2(npcnum);
-		ods->write2(mapnum);
-		if (getObjId() != 0xFFFF) {
-			// these only make sense in currently loaded items
-			ods->write2(gump);
-			ods->write2(gravitypid);
-		}
-	} else {
-		assert(gump == 0);
-		assert(gravitypid == 0);
-	}
+	ods->write2(static_cast<uint16>(shape));
+	ods->write2(static_cast<uint16>(frame));
+	ods->write2(static_cast<uint16>(x));
+	ods->write2(static_cast<uint16>(y));
+	ods->write2(static_cast<uint16>(z));
+	ods->write2(quality);
+	ods->write2(npcnum);
+	ods->write2(mapnum);
 	if (getObjId() != 0xFFFF) {
-		ods->write2(glob_next);
+		// these only make sense in currently loaded items
+		ods->write2(gump);
+		ods->write2(gravitypid);
 	}
 }
 
@@ -1035,34 +1245,25 @@ bool Item::loadData(IDataSource* ids)
 
 	extendedflags = ids->read2();
 	flags = ids->read2();
-	if (!(extendedflags & EXT_SAVE_GLOBSKIP)) {
-		shape = ids->read2();
-		frame = ids->read2();
-		x = ids->read2();
-		y = ids->read2();
-		z = ids->read2();
+	shape = ids->read2();
+	frame = ids->read2();
+	x = ids->read2();
+	y = ids->read2();
+	z = ids->read2();
 
-		quality = ids->read2();
-		npcnum = ids->read2();
-		mapnum = ids->read2();
-		if (getObjId() != 0xFFFF) {
-			gump = ids->read2();
-			gravitypid = ids->read2();
-		} else {
-			gump = gravitypid = 0;
-		}
-
-		//!! hackish...
-		if (extendedflags & EXT_INCURMAP) {
-			World::get_instance()->getCurrentMap()->addItem(this);
-		}
-		// if EXT_SAVE_GLOBSKIP is set, this item will be added to 
-		// CurrentMap by GlobEgg::restoreContents()
-	}
+	quality = ids->read2();
+	npcnum = ids->read2();
+	mapnum = ids->read2();
 	if (getObjId() != 0xFFFF) {
-		glob_next = ids->read2();
+		gump = ids->read2();
+		gravitypid = ids->read2();
 	} else {
-		glob_next = 0;
+		gump = gravitypid = 0;
+	}
+
+	//!! hackish...
+	if (extendedflags & EXT_INCURMAP) {
+		World::get_instance()->getCurrentMap()->addItem(this);
 	}
 
 	return true;
@@ -1474,9 +1675,8 @@ uint32 Item::I_legalCreateAtPoint(const uint8* args, unsigned int /*argsize*/)
 			 <<	"," << frame << ")." << std::endl;
 		return 0;
 	}
-	newitem->setLocation(point.getX(), point.getY(), point.getZ());
 	uint16 objID = newitem->assignObjId();
-	World::get_instance()->getCurrentMap()->addItem(newitem);
+	newitem->move(point.getX(), point.getY(), point.getZ());
 
 	uint8 buf[2];
 	buf[0] = static_cast<uint8>(objID);
@@ -1505,9 +1705,8 @@ uint32 Item::I_legalCreateAtCoords(const uint8* args, unsigned int /*argsize*/)
 			 <<	"," << frame << ")." << std::endl;
 		return 0;
 	}
-	newitem->setLocation(x, y, z);
 	uint16 objID = newitem->assignObjId();
-	World::get_instance()->getCurrentMap()->addItem(newitem);
+	newitem->move(x, y, z);
 
 	uint8 buf[2];
 	buf[0] = static_cast<uint8>(objID);
@@ -1541,7 +1740,7 @@ uint32 Item::I_legalCreateInCont(const uint8* args, unsigned int /*argsize*/)
 	}
 
 	// also need to check weight, volume maybe??
-	if (container->AddItem(newitem)) {
+	if (newitem->moveToContainer(container)) {
 		uint16 objID = newitem->assignObjId();
 
 		uint8 buf[2];
@@ -1563,7 +1762,7 @@ uint32 Item::I_legalCreateInCont(const uint8* args, unsigned int /*argsize*/)
 uint32 Item::I_destroy(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM_FROM_PTR(item);
-	if (!item) return 0;
+	if (!item || item->getObjId() == 1) return 0;
 
 	item->destroy();
 
@@ -1649,15 +1848,7 @@ uint32 Item::I_push(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
-	//! do we need to check if item is already ethereal?
-	//! can equipped or contained items become ethereal?
-	if (item->getFlags() & (FLG_CONTAINED | FLG_EQUIPPED | FLG_ETHEREAL))
-		return 0;
-
-	World::get_instance()->etherealPush(item->getObjId());
-	World::get_instance()->getCurrentMap()->
-		removeItemFromList(item, item->x, item->y);
-	item->setFlag(FLG_ETHEREAL);
+	item->moveToEtherealVoid();
 
 	return 0;
 }
@@ -1676,8 +1867,7 @@ uint32 Item::I_create(const uint8* args, unsigned int /*argsize*/)
 	}
 	uint16 objID = newitem->assignObjId();
 
-	newitem->setFlag(FLG_ETHEREAL);
-	World::get_instance()->etherealPush(objID);
+	newitem->moveToEtherealVoid();
 
 	uint8 buf[2];
 	buf[0] = static_cast<uint8>(objID);
@@ -1695,16 +1885,18 @@ uint32 Item::I_pop(const uint8* args, unsigned int /*argsize*/)
 
 	if (w->etherealEmpty()) return 0; // no items left on stack
 
-	uint16 objid = w->etherealPop();
+	uint16 objid = w->etherealPeek();
 	Item* item = w->getItem(objid);
-	if (!item) return 0; // top item was invalid
+	if (!item) {
+		w->etherealRemove(objid);
+		return 0; // top item was invalid
+	}
 
-	item->clearFlag(FLG_ETHEREAL);
-	w->getCurrentMap()->addItem(item);
+	sint32 x, y, z;
+	item->getLocation(x,y,z);
+	item->move(x, y, z);
 
 #if 0
-	sint32 x,y,z;
-	item->getLocation(x,y,z);
 	perr << "Popping item into map: " << item->getShape() << "," << item->getFrame() << " at (" << x << "," << y << "," << z << ")" << std::endl;
 #endif
 
@@ -1724,13 +1916,15 @@ uint32 Item::I_popToCoords(const uint8* args, unsigned int /*argsize*/)
 
 	if (w->etherealEmpty()) return 0; // no items left on stack
 
-	uint16 objid = w->etherealPop();
+	uint16 objid = w->etherealPeek();
 	Item* item = w->getItem(objid);
-	if (!item) return 0; // top item was invalid
+	if (!item) {
+		w->etherealRemove(objid);
+		return 0; // top item was invalid
+	}
 
-	item->setLocation(x, y, z);
-	item->clearFlag(FLG_ETHEREAL);
-	w->getCurrentMap()->addItem(item);
+	item->move(x, y, z);
+
 #if 0
 	perr << "Popping item into map: " << item->getShape() << "," << item->getFrame() << " at (" << x << "," << y << "," << z << ")" << std::endl;
 #endif
@@ -1754,12 +1948,14 @@ uint32 Item::I_popToContainer(const uint8* args, unsigned int /*argsize*/)
 
 	if (w->etherealEmpty()) return 0; // no items left on stack
 
-	uint16 objid = w->etherealPop();
+	uint16 objid = w->etherealPeek();
 	Item* item = w->getItem(objid);
-	if (!item) return 0; // top item was invalid
+	if (!item) {
+		w->etherealRemove(objid);
+		return 0; // top item was invalid
+	}
 
-	item->clearFlag(FLG_ETHEREAL);
-	container->AddItem(item);
+	item->moveToContainer(container);
 
 	//! Anything else?
 
@@ -1780,12 +1976,14 @@ uint32 Item::I_popToEnd(const uint8* args, unsigned int /*argsize*/)
 
 	if (w->etherealEmpty()) return 0; // no items left on stack
 
-	uint16 objid = w->etherealPop();
+	uint16 objid = w->etherealPeek();
 	Item* item = w->getItem(objid);
-	if (!item) return 0; // top item was invalid
+	if (!item) {
+		w->etherealRemove(objid);
+		return 0; // top item was invalid
+	}
 
-	item->clearFlag(FLG_ETHEREAL);
-	container->AddItem(item);
+	item->moveToContainer(container);
 
 	//! Anything else?
 
@@ -1812,7 +2010,7 @@ uint32 Item::I_legalMoveToPoint(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM_FROM_PTR(item);
 	ARG_WORLDPOINT(point);
-	ARG_UINT16(unknown1); // 0/1
+	ARG_UINT16(force); // 0/1
 	ARG_UINT16(unknown2); // always 0
 
 	//! haven't checked if this does what it should do.
@@ -1823,7 +2021,7 @@ uint32 Item::I_legalMoveToPoint(const uint8* args, unsigned int /*argsize*/)
 //		item->move(point.getX(), point.getY(), point.getZ());
 //		return 1;
 //	} else {
-	return item->collideMove(point.getX(), point.getY(), point.getZ(), true, false) == 0x4000;
+	return item->collideMove(point.getX(), point.getY(), point.getZ(), true, force==1) != 0;
 //	}
 }
 

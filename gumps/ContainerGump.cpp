@@ -64,14 +64,26 @@ void ContainerGump::InitGump()
 	dims.w = sf->width;
 	dims.h = sf->height;
 
+	// make every item enter the fast area
+	Container* c = p_dynamic_cast<Container*>
+		(World::get_instance()->getItem(owner));
+
+	if (!c) return; // Container gone!?
+
+	std::list<Item*>& contents = c->contents;
+	std::list<Item*>::iterator iter;
+	for (iter = contents.begin(); iter != contents.end(); ++iter) {
+		(*iter)->enterFastArea();
+	}
+
 	// Position isn't like in the original
 	// U8 puts a container gump slightly to the left of an object
 }
 
-void ContainerGump::Paint(RenderSurface* surf, sint32 lerp_factor)
+void ContainerGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 {
 	// paint self
-	ItemRelativeGump::Paint(surf, lerp_factor);
+	ItemRelativeGump::PaintThis(surf, lerp_factor);
 
 	Container* c = p_dynamic_cast<Container*>
 		(World::get_instance()->getItem(owner));
@@ -83,19 +95,19 @@ void ContainerGump::Paint(RenderSurface* surf, sint32 lerp_factor)
 	}
 
 	std::list<Item*>& contents = c->contents;
-
+	sint32 gametick = CoreApp::get_instance()->getFrameNum();
 
 	//!! TODO: check these painting commands (flipped? translucent?)
 
 	std::list<Item*>::iterator iter;
 	for (iter = contents.begin(); iter != contents.end(); ++iter) {
 		Item* item = *iter;
+		item->setupLerp(gametick);
 		sint32 itemx,itemy;
 		item->getGumpLocation(itemx,itemy);
 
 		itemx += itemarea.x;
 		itemy += itemarea.y;
-		GumpToParent(itemx,itemy);
 		Shape* s = item->getShapeObject();
 		assert(s);
 		surf->Paint(s, item->getFrame(), itemx, itemy);
@@ -106,7 +118,6 @@ void ContainerGump::Paint(RenderSurface* surf, sint32 lerp_factor)
 		sint32 itemx, itemy;
 		itemx = dragging_x + itemarea.x;
 		itemy = dragging_y + itemarea.y;
-		GumpToParent(itemx,itemy);
 		Shape* s = GameData::get_instance()->getMainShapes()->
 			getShape(dragging_shape);
 		assert(s);
@@ -173,19 +184,22 @@ bool ContainerGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 void ContainerGump::Close(bool no_del)
 {
 	// close any gumps belonging to contents
+	// and make every item leave the fast area
 	Container* c = p_dynamic_cast<Container*>
 		(World::get_instance()->getItem(owner));
 
 	if (!c) return; // Container gone!?
 
 	std::list<Item*>& contents = c->contents;
-	std::list<Item*>::iterator iter;
-	for (iter = contents.begin(); iter != contents.end(); ++iter) {
+	std::list<Item*>::iterator iter = contents.begin();
+	while(iter != contents.end()) {
 		Item* item = *iter;
+		++iter;
 		Gump* g = GUIApp::get_instance()->getGump(item->getGump());
 		if (g) {
 			g->Close(); //!! what about no_del?
 		}
+		item->leaveFastArea();	// Can destroy the item
 	}
 
 	Item* o = World::get_instance()->getItem(owner);
@@ -307,12 +321,6 @@ void ContainerGump::DraggingItemLeftGump(Item* item)
 void ContainerGump::StopDraggingItem(Item* item, bool moved)
 {
 	if (!moved) return; // nothing to do
-
-	// remove item from container
-	Container* c = p_dynamic_cast<Container*>
-		(World::get_instance()->getItem(owner));
-	assert(c);
-	c->RemoveItem(item);
 }
 
 void ContainerGump::DropItem(Item* item, int mx, int my)
@@ -361,7 +369,7 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 	}
 	// add item to container
 	assert(targetcontainer);
-	targetcontainer->AddItem(item);
+	item->moveToContainer(targetcontainer);
 
 	//!! TODO: this is nonsense when not adding to this container
 	dragging_x = mx - itemarea.x;

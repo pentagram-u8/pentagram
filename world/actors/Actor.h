@@ -59,8 +59,8 @@ public:
 	virtual void teleport(int mapnum, sint32 x, sint32 y, sint32 z);
 
 	virtual bool CanAddItem(Item* item, bool checkwghtvol=false);
-	virtual bool AddItem(Item* item, bool checkwghtvol=false);
-	virtual bool RemoveItem(Item* item);
+	virtual bool addItem(Item* item, bool checkwghtvol=false);
+	virtual bool removeItem(Item* item);
 
 	uint16 getEquip(uint32 type);
 

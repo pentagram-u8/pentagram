@@ -150,7 +150,11 @@ FILE *open_file(const char *name, int decompress, int noise_mode)
     }
 #endif
   
+#ifndef __WIN32__
   if (name[0] != PATH_SEP)
+#else
+  if (name[0] != '\\' && name[0] != '/' && name[1] != ':')
+#endif
     while (plp)  /* Try along the path then */
       {
 	*current_filename=0;
@@ -158,7 +162,11 @@ FILE *open_file(const char *name, int decompress, int noise_mode)
 	if(l)
 	  {
 	    strcpy(current_filename, plp->path);
+#ifndef __WIN32__
 	    if(current_filename[l-1]!=PATH_SEP)
+#else
+	    if(current_filename[l-1]!='\\' && current_filename[l-1]!='/')
+#endif
 	      strcat(current_filename, PATH_STRING);
 	  }
 	strcat(current_filename, name);
