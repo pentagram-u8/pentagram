@@ -1,3 +1,6 @@
+2004-11-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/MissileProcess.cpp: don't force-collideMove; fall when done
+
 2004-11-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Kernel.*: added terminate/fail switch to killProcess calls
 	* kernel/Object.cpp: fail processes when destroying owner after all
