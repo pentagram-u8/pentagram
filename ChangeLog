@@ -2,6 +2,7 @@
 	* usecode/*: basic call/ret support
 	* usecode/*: function return values
 	* usecode/*: stringlists
+	* usecode/*: basic pointer opcodes, bugfixes
 
 2002-12-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* filesys/IDataSource.h, usecode/UCStack.h: const changes

@@ -27,12 +27,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UsecodeFlex.h"
 #include "IDataSource.h"
 
+int classid, offset; // only temporary, don't worry :-)
+
 Application::Application(int argc, char *argv[])
 {
 	// Create the kernel
 	kernel = new Kernel;
 	ucmachine = new UCMachine;
 	filesystem = new FileSystem;
+
+	classid = offset = -1;
+	if (argc == 3) {
+		classid = std::strtol(argv[1], 0, 16);
+		offset = std::strtol(argv[2], 0, 16);
+	}
+
 }
 
 Application::~Application()
@@ -47,9 +56,14 @@ void Application::run()
 
 	IDataSource* ds = filesystem->ReadFile("eusecode.flx");
 	Usecode* u = new UsecodeFlex(ds);
-//	UCProcess* p = new UCProcess(u, 0x581, 0x28F9);
-	UCProcess* p = new UCProcess(u, 0xD0, 0x80);
-	perr << p << std::endl;
+	UCProcess* p;
+	if (classid != -1) {
+		p = new UCProcess(u, classid, offset);
+	} else {
+		p = new UCProcess(u, 0xD0, 0x80);
+// p = new UCProcess(u, 0x581, 0x28F9);
+	}
+
 	kernel->addProcess(p);
 	uint32 framenum = 0;
 	while (1) {

@@ -25,6 +25,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #define LOGPF(X) pout.printf X
 
+enum UCSegments {
+	SEG_STRING = 0x8000,
+	SEG_LIST   = 0x8001
+};
+
 UCMachine* UCMachine::ucmachine = 0;
 
 UCMachine::UCMachine() :
@@ -198,8 +203,9 @@ bool UCMachine::execProcess(UCProcess* p)
 			// push string (yy ... yy) of length xx xx onto the stack
 			{
 				ui16a = cs.read2();
-				char *str = new char[ui16a];
+				char *str = new char[ui16a+1];
 				cs.read(str, ui16a);
+				str[ui16a] = 0;
 				LOGPF(("push string\t\"%s\"", str));
 				ui16b = cs.read1();
 				if (ui16b != 0) error = true;
@@ -1145,17 +1151,24 @@ bool UCMachine::execProcess(UCProcess* p)
 			LOGPF(("free slist\t%s", print_sp(si8a)));
 			break;
 
-/*
 		case 0x69:
 			// 69 xx
-			// push the string in var BP+xx as 32 bit pointer
-			printf("push strptr\t%s", print_bp(read1(in)));
+			// push the string in var BP+xx as 32 bit pointer			
+			si8a = static_cast<sint8>(cs.read1());
+			ui16a = p->stack.access2(p->bp+si8a);
+			p->stack.push4(stringToPtr(ui16a));
+			LOGPF(("str to ptr\t%s", print_bp(si8a)));
 			break;
+
 		case 0x6B:
 			// 6B
 			// pop a string and push 32 bit pointer to string
-			printf("str to ptr");
+			ui16a = p->stack.pop2();
+			p->stack.push4(stringToPtr(ui16a));
+			LOGPF(("str to ptr"));
 			break;
+
+/*
 		case 0x6D:
 			// 6D
 			// push result of process
@@ -1255,26 +1268,26 @@ bool UCMachine::execProcess(UCProcess* p)
 			error = true;
 			break;
 
-		case 0x08:
+		case 0x08: // pop result
 			p->stack.pop4();
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
-		case 0x4B:
+		case 0x4B: // push address of BP+XX
 			cs.read1();
 			p->stack.push4(0);
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
-		case 0x4C:
+		case 0x4C: // indirect push
 			p->stack.pop4();
 			p->stack.addSP(-cs.read1());
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
-		case 0x4D:
+		case 0x4D: // indirect pop
 			p->stack.pop4();
 			p->stack.addSP(cs.read1());
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
-		case 0x54:
+		case 0x54: // implies
 			cs.read1();
 			cs.read1();
 			p->stack.pop2();
@@ -1282,40 +1295,32 @@ bool UCMachine::execProcess(UCProcess* p)
 			p->stack.push2(0);
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
-		case 0x57:
+		case 0x57: // spawn
 			p->stack.pop4();
 			cs.read4();
 			cs.read2();
 			temp32 = 0x11223344;
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
-		case 0x58:
+		case 0x58: // spawn inline
 			p->stack.pop4();
 			cs.read4();
 			cs.read4();
 			temp32 = 0x11223344;
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
-		case 0x69:
+		case 0x6D: // push process result 
+			p->stack.push4(0);
+			perr.printf("unhandled opcode %02X\n", opcode);
+			break;
+		case 0x6F: // push address of SP-xx
 			cs.read1();
 			p->stack.push4(0);
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
-		case 0x6B:
-			p->stack.pop2();
-			p->stack.push4(0);
-			perr.printf("unhandled opcode %02X\n", opcode);
-			break;
-		case 0x6D:
-			p->stack.push4(0);
-			perr.printf("unhandled opcode %02X\n", opcode);
-			break;
-		case 0x6F:
-			cs.read1();
-			p->stack.push4(0);
-			perr.printf("unhandled opcode %02X\n", opcode);
-			break;
-		case 0x70: case 0x73: case 0x74: case 0x75: case 0x76:
+		case 0x6C: // parameter passing?
+		case 0x70: case 0x73: case 0x74: case 0x75: case 0x76: // loops
+		case 0x78: // process exclude
 			error = true;
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
@@ -1348,13 +1353,15 @@ bool UCMachine::execProcess(UCProcess* p)
 
 uint16 UCMachine::assignString(const char* str)
 {
-	static int count = 0;
+	static uint16 count = 1; // 0 is reserved
 
 	// I'm not exactly sure if this is the most efficient way to do this
 
 	// find unassigned element
-	while (stringHeap.find(count) != stringHeap.end())
+	while (stringHeap.find(count) != stringHeap.end()) {
 		count++;
+		if (count > 65000) count = 1;
+	}
 
 	stringHeap[count] = str;
 
@@ -1363,13 +1370,15 @@ uint16 UCMachine::assignString(const char* str)
 
 uint16 UCMachine::assignList(UCList* l)
 {
-	static int count = 0;
+	static uint16 count = 1; // 0 is reserved
 
 	// I'm not exactly sure if this is the most efficient way to do this
 
 	// find unassigned element
-	while (listHeap.find(count) != listHeap.end())
+	while (listHeap.find(count) != listHeap.end()) {
 		count++;
+		if (count > 65000) count = 1;
+	}
 
 	listHeap[count] = l;
 
@@ -1401,4 +1410,20 @@ void UCMachine::freeStringList(uint16 l)
 		delete iter->second;
 		listHeap.erase(iter);
 	}	
+}
+
+uint32 UCMachine::listToPtr(uint16 l)
+{
+	uint32 ptr = SEG_LIST;
+	ptr <<= 16;
+	ptr += l;
+	return ptr;
+}
+
+uint32 UCMachine::stringToPtr(uint16 s)
+{
+	uint32 ptr = SEG_STRING;
+	ptr <<= 16;
+	ptr += s;
+	return ptr;
 }

@@ -64,6 +64,9 @@ private:
 	uint16 assignString(const char* str);
 	uint16 assignList(UCList* l);
 
+	uint32 listToPtr(uint16 l);
+	uint32 stringToPtr(uint16 s);
+
 	static UCMachine* ucmachine;
 };
 
