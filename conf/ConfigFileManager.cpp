@@ -36,6 +36,7 @@ ConfigFileManager::ConfigFileManager()
 
 ConfigFileManager::~ConfigFileManager()
 {
+	clear();
 	configfilemanager = 0;
 }
 
