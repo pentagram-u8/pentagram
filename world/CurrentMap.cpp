@@ -31,6 +31,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "TeleportEgg.h"
 #include "EggHatcherProcess.h"
 #include "Kernel.h"
+#include "GameData.h"
+#include "MainShapeFlex.h"
 
 using std::list; // too messy otherwise
 typedef list<Item*> item_list;
@@ -358,7 +360,7 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 				sint32 ix, iy, iz, ixd, iyd, izd;
 				item->getLocation(ix, iy, iz);
 				item->getFootpad(ixd, iyd, izd);
-				ixd *= 32; iyd *= 32; izd *= 8;
+				ixd *= 32; iyd *= 32; izd *= 8; //!! constants
 
 				// check overlap
 				if (si->is_solid() &&
@@ -397,4 +399,31 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 		*roof_ = roof;
 
 	return valid;
+}
+
+uint32 CurrentMap::I_canExistAt(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_UINT16(shape);
+	ARG_UINT16(x);
+	ARG_UINT16(y);
+	ARG_UINT16(z);
+	//!! TODO: figure these out
+	ARG_UINT16(unk1); // is either 1 or 4
+	ARG_UINT16(unk2); // looks like it could be an objid
+	ARG_UINT16(unk3); // always zero
+
+	int xd, yd, zd;
+	ShapeInfo* si = GameData::get_instance()->
+		getMainShapes()->getShapeInfo(shape);
+	//!! constants
+	xd = si->x * 32;
+	yd = si->y * 32;
+	zd = si->z * 32;
+
+	CurrentMap* cm = World::get_instance()->getCurrentMap();
+	bool valid = cm->isValidPosition(x, y, z, xd, yd, zd, 0, 0, 0);
+	if (valid)
+		return 1;
+	else
+		return 0;
 }

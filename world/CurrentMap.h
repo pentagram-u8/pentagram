@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define CURRENTMAP_H
 
 #include <list>
+#include "intrinsics.h"
 
 class Map;
 class Item;
@@ -66,6 +67,8 @@ public:
 		if (gx < 0 || gy < 0 || gx >= 128 || gy >= 128) return 0;
 		return &items[gx][gy];
 	}
+
+	INTRINSIC(I_canExistAt);
 
 private:
 	void loadItems(std::list<Item*> itemlist);

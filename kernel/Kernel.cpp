@@ -24,8 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "UCProcess.h"
 
-#include "UCMachine.h" // only for usecodeStats.
-#include "World.h" // only for worldStats
 #include "Actor.h"
 
 typedef std::list<Process *>::iterator ProcessIterator;
@@ -110,10 +108,6 @@ bool Kernel::runProcesses(uint32 framenum)
 		return true;//
 		perr << "Process queue is empty?! Aborting.\n";
 
-		kernelStats();
-		UCMachine::get_instance()->usecodeStats();
-		World::get_instance()->worldStats();
-
 		//! do this in a cleaner way
 		exit(0);
 	}
@@ -193,8 +187,8 @@ void Kernel::kernelStats()
 
 	pout << "Kernel memory stats:" << std::endl;
 	pout << "Processes : " << processes.size() << "/32765" << std::endl;
-	pout << "NPCs    : " << npccount << "/255" << std::endl;
-	pout << "Objects : " << objcount << "/65279" << std::endl;
+	pout << "NPCs      : " << npccount << "/255" << std::endl;
+	pout << "Objects   : " << objcount << "/65279" << std::endl;
 }
 
 

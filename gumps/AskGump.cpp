@@ -35,6 +35,7 @@ AskGump::AskGump(uint16 owner, UCList *answers_) :
 
 AskGump::~AskGump()
 {
+	answers->freeStrings();
 	delete answers;
 }
 
@@ -94,7 +95,10 @@ void AskGump::ChildNotify(Gump *child, uint32 message)
 {
 	if (message == ButtonWidget::BUTTON_DOWN) 
 	{
-		process_result = answers->getStringIndex(child->GetIndex());
+		uint16 s = answers->getStringIndex(child->GetIndex());
+		process_result = s;
+		answers->removeString(s); //!! assuming that answers doesn't
+                                  //!! contain two identical strings
 		Close();
 	}
 }

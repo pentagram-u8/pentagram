@@ -127,6 +127,7 @@ class UCList
 
 	void free() { elements.clear(); size = 0; }
 	uint32 getSize() const { return size; }
+	unsigned int getElementSize() const { return elementsize; }
 
 	void assign(uint32 index, const uint8* e) {
 		// need to check that index isn't out-of-bounds? (or grow list?)

@@ -300,19 +300,22 @@ Gump* GameMapGump::OnMouseDown(int button, int mx, int my)
 
 void GameMapGump::OnMouseClick(int button, int mx, int my)
 {
+	extern uint16 targetObject; // major hack number 2
+
 	switch (button) {
 	case SDL_BUTTON_LEFT:
 	{
 		if (GUIApp::get_instance()->isAvatarInStasis()) {
-			pout << "Can't: avatarInStasis" << std::endl; 
+			pout << "Can't: avatarInStasis" << std::endl;
+			uint16 objID = TraceObjID(mx, my); //!! hack
+			targetObject = objID;
 			break;
 		}
 
 		uint16 objID = TraceObjID(mx, my);
 		Item *item = World::get_instance()->getItem(objID);
 		if (item) {
-			extern uint16 targetObject; // major hack number 2
-			targetObject = objID;
+			targetObject = objID; //!! hack
 
 			sint32 x,y,z;
 			item->getLocation(x,y,z);

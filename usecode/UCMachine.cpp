@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "World.h"
 
-#define HACK_TO_INCLUDE_CONVERTUSECODEU8_THIS_IN_UCMACHINE_WITHOUT_BRINGING_IN_FOLD
+#define INCLUDE_CONVERTUSECODEU8_WITHOUT_BRINGING_IN_FOLD
 #include "u8/ConvertUsecodeU8.h"
 
 #include "Container.h"
@@ -555,7 +555,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x26:
 			// 26
 			// compare two strings
-			//! delete strings?
+			// (delete strings)
 			ui16a = p->stack.pop2();
 			ui16b = p->stack.pop2();
 			if (stringHeap[ui16b] == stringHeap[ui16a])
@@ -2019,15 +2019,29 @@ void UCMachine::killProcess(uint16 pid)
 void UCMachine::usecodeStats()
 {
 	pout << "Usecode Machine memory stats:" << std::endl;
-//	pout << "Processes: " << processes.size() << "/32766" << std::endl;
-	pout << "Strings  : " << stringHeap.size() << "/65534" << std::endl;
+	pout << "Strings   : " << stringHeap.size() << "/65534" << std::endl;
 
 	std::map<uint16, std::string>::iterator iter;
 	for (iter = stringHeap.begin(); iter != stringHeap.end(); ++iter)
 		pout << iter->first << ":" << iter->second << std::endl;
-	pout << "Lists    : " << listHeap.size() << "/65534" << std::endl;
-
-
+	pout << "Lists     : " << listHeap.size() << "/65534" << std::endl;
+	std::map<uint16, UCList*>::iterator iterl;
+	for (iterl = listHeap.begin(); iterl != listHeap.end(); ++iterl) {
+		if (!iterl->second) {
+			pout << iterl->first << ": <null>" << std::endl;
+			continue;
+		}
+		if (iterl->second->getElementSize() == 2) {
+			pout << iterl->first << ":";
+			for (unsigned int i = 0; i < iterl->second->getSize(); ++i)
+				pout << iterl->second->getuint16(i) << ",";
+			pout << std::endl;
+		} else {
+			pout << iterl->first << ": " << iterl->second->getSize()
+				 << " elements of size " << iterl->second->getElementSize()
+				 << std::endl;
+		}
+	}
 }
 
 

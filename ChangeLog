@@ -1,27 +1,33 @@
+2003-06-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/AskGump.cpp: Free strings. Still some leaks remaining.
+	* world/CurrentMap.*: canExistAt intrinsic
+	* kernel/GUIApp.cpp: 't' outputs kernel/usecode/world stats
+
 2003-06-15	  Ryan Nunn <colourles@users.sourceforge.net>
-	* convert/u8/ConvertUsecodeU8.h, usecode/UCMachine.* : Some nasty hacks to
-	  show the u8 instrinsic names.
+	* convert/u8/ConvertUsecodeU8.h, usecode/UCMachine.* : Some nasty hacks
+	  to show the u8 instrinsic names.
 	* gumps/GameMapGump.* : Sort order debugging
 	* gumps/Gump.* : Minor changes
 	* gumps/GumpNotifyProcess.*, gumps/widgets/SimpleTextWidget.* : 
 	  p_dynamic_cast stuff
-	* gumps/AskGump.*, kernel/GUIApp.cpp, world/Item.cpp : Ask Gump. No more 
-	  I_ask() hacks required.
-	* gumps/widgets/ButtonWidget.* : This really isn't a button yet. All it 
+	* gumps/AskGump.*, kernel/GUIApp.cpp, world/Item.cpp : Ask Gump. No
+	  more I_ask() hacks required.
+	* gumps/widgets/ButtonWidget.* : This really isn't a button yet. All it
 	  really is at the moment is a SimpleTextWidget that responds to mouse 
 	  events.
-	* kernel/GUIApp.cpp : 'a' and 'z' keys can now be used to move the avatar
-	  vertically. '[' and ']' work again. 's' can now be used to toggle 
-	  avatarInStatis.
-	* world/TeleportEgg.h : Use framenum to determine if it is a teleporter or 
-	  a dest.
+	* kernel/GUIApp.cpp : 'a' and 'z' keys can now be used to move the
+	  avatar vertically. '[' and ']' work again. 's' can now be used to
+	  toggle avatarInStatis.
+	* world/TeleportEgg.h : Use framenum to determine if it is a teleporter
+	  or a dest.
 
 2003-06-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCMachine.cpp: fixed jumps
 	* world/Item.cpp: fixed legalCreateInContainer
 
 2003-06-15	  Ryan Nunn <colourles@users.sourceforge.net>
-	* world/ItemSorter.cpp : Fixing the positively absolutely busted ItemSorter
+	* world/ItemSorter.cpp : Fixing the positively absolutely busted
+	  ItemSorter
 	
 2003-06-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/ItemSorter.cpp: invisible items don't occlude

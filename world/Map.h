@@ -37,6 +37,9 @@ public:
 	void loadFixed(IDataSource* ds);
 	void unloadFixed();
 
+	bool isEmpty()
+		{ return fixeditems.size() == 0 && dynamicitems.size() == 0; }
+
 private:
 
 	// load items from something formatted like 'fixed.dat'

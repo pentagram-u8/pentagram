@@ -677,20 +677,15 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			if (!consoleGump->IsHidden()) con.ScrollConsole(3); 
 			break;
 		}
-		case SDLK_t: { // quick animation test
-
-			if (!avatarInStasis) { 
-                Actor* devon = World::get_instance()->getNPC(2);
-				Process* p = new ActorAnimProcess(devon, 0, 2);
-				Kernel::get_instance()->addProcess(p);
-			} else { 
-				pout << "Can't: avatarInStasis" << std::endl; 
-			} 
-		} break;
 		case SDLK_s: { // toggle avatarInStasis
 
 			avatarInStasis = !avatarInStasis;
 			pout << "avatarInStasis = " << avatarInStasis << std::endl; 
+		} break;
+		case SDLK_t: { // engine stats
+			Kernel::get_instance()->kernelStats();
+			UCMachine::get_instance()->usecodeStats();
+			World::get_instance()->worldStats();
 		} break;
 		case SDLK_f: { // trigger 'first' egg
 			if (avatarInStasis) {

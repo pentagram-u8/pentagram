@@ -288,12 +288,12 @@ void World::worldStats()
 	unsigned int i, mapcount = 0;
 
 	for (i = 0; i < maps.size(); i++) {
-		if (maps[i] != 0)
+		if (maps[i] != 0 && !maps[i]->isEmpty())
 			mapcount++;
 	}
 
 	pout << "World memory stats:" << std::endl;
-	pout << "Maps    : " << mapcount << "/256" << std::endl;
+	pout << "Maps      : " << mapcount << "/256" << std::endl;
 }
 
 Item* World::getItem(uint16 itemid) const

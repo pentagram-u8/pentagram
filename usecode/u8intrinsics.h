@@ -31,6 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GUIApp.h"
 #include "Egg.h"
 #include "MonsterEgg.h"
+#include "CurrentMap.h"
 
 // Ultima 8 Intrinsics
 Intrinsic U8Intrinsics[] = {
@@ -259,8 +260,8 @@ Intrinsic U8Intrinsics[] = {
 	GUIApp::I_setAvatarInStasis,
 	Item::I_getEtherealTop,
 	GUIApp::I_getCurrentTimerTick,
-	0, // canGetThere
-	0, // canExistAt
+	UCMachine::I_true, // canGetThere
+	CurrentMap::I_canExistAt,
 	0, // createSprite
 	0, // createSprite
 	Item::I_getFamilyOfType,
