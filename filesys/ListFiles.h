@@ -379,17 +379,49 @@ int U7ListFiles(const std::string mask, FileList& files)
 int FileSystem::ListFiles(const std::string mask, FileList& files)
 
 {
+	if(mask[0]!='@')
+	{
+		perr << "Warning: FileSystem sandbox violation when accessing:" << std::endl
+			<< "\t" << mask << std::endl
+			<< "Exiting now..." << std::endl;
+		exit(-1);
+	}
+	
 	glob_t globres;
 	std::string name(mask);
-	if(name[0]=='@')
-		rewrite_virtual_path(name);
+	
+	// get the 'root' (@u8 or whatever) stub
+	const std::string rootpath(name.substr(0, name.find('/')));
 
+	// munge the path to a 'real' one.
+	rewrite_virtual_path(name);
+	
+	#if 0
+	pout << "Root: " << rootpath << std::endl;
+	pout << name << "\t" << name.size() << std::endl;
+	pout << mask << '\t' << mask.size() << std::endl;
+	#endif
+	
+	// calculate the difference in length between the real path, the original path, and the root @whatever
+	uint32 newplen = name.size() - mask.size() + rootpath.size();
+	
 	int err = glob(name.c_str(), GLOB_NOSORT, 0, &globres);
 
 	switch (err) {
 		case 0:  //OK
 			for(uint32 i=0; i<globres.gl_pathc; i++)
-				files.push_back(globres.gl_pathv[i]);
+			{
+				std::string newfname(globres.gl_pathv[i]);
+				#if 0
+				pout << newfname << std::endl;
+				#endif
+				newfname = rootpath + newfname.substr(newplen);
+				// If the OS uses anything other then / as a path seperator, they probably need to swap it back here...
+				#if 0
+				pout << newfname << std::endl;
+				#endif
+				files.push_back(newfname);
+			}
 			globfree(&globres);
 			return 0;               
 		case 3:  //no matches

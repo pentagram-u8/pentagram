@@ -1,3 +1,6 @@
+2003-06-03	Darke <darkepaw@users.sf.net>
+	* filesys/ListFiles.h: A quick update to properly re-munge the filenames.
+
 2003-06-03	  Ryan Nunn <colourles@users.sourceforge.net>
 	* filesys/IDataSource.h : Theoretically fixing the readline() problem. 
 	
@@ -22,7 +25,7 @@
 	* world/Item.* : Fixing animation speeds. Fixing busted lerping.
 	* world/World.cpp : Call MapChanged() on gumps
 	
-2003-05-30	Darke <darkepaw@users.sf.net>
+2003-06-03	Darke <darkepaw@users.sf.net>
 	* objects.mk, module.mk, tools/disasm/module/mk, tools/fold/module.mk:
 	  Shuffled the lists of objects into their own file so I could 'easily'
 	  link the other stand alone apps.
@@ -45,7 +48,7 @@
 	  mingw might work though... and everything else is #error-ed). So if
 	  Colourless is quick, he might be able to get a completely working
 	  version working under 'doze before I under linux! *grin*
-	
+
 2003-06-02  Ryan Nunn <colourles@users.sourceforge.net>
 	* gumps/Gump.* : Fixing invalid focus_chlid problems 
 	* kernel/CoreApp.h, kernel/GUIApp.h, misc/Console.cpp : Console no longer 
