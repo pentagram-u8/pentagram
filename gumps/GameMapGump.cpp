@@ -158,9 +158,6 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 	{
 		for (int cx = 0; cx < MAP_NUM_CHUNKS; cx++)
 		{
-			sint32 sx = x - y;
-			sint32 sy = x + y;
-
 			// Not fast, ignore
 			if (!map->isChunkFast(cx,cy)) continue;
 
