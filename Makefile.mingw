@@ -13,7 +13,7 @@ SDL_LIBS=-L$(SRC)/sdl/lib -lSDLmain -lSDL
 
 CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -I$(SRC)/conf -I$(SRC)/convert \
 	-I$(SRC)/filesys -I$(SRC)/graphics -I$(SRC)/gumps -I$(SRC)/kernel -I$(SRC)/misc -I$(SRC)/tools/compile\
-	-I$(SRC)/tools/disasm -I$(SRC)/tools/fold -I$(SRC)/usecode -I$(SRC)/world -I$(SRC)/world/actors \
+	-I$(SRC)/tools/disasm -I$(SRC)/tools/fold -I$(SRC)/usecode -I$(SRC)/world -I$(SRC)/world/actors -I$(SRC)/gumps/widgets \
 	$(SDL_CFLAGS) -DHAVE_SYS_STAT_H -DHAVE_SYS_TYPES_H -DHAVE_UNISTD_H
 CXXFLAGS=-O2
 CXX=g++
@@ -34,6 +34,8 @@ GRAPHICS_OBJS=graphics/Font.o graphics/FontShapeFlex.o graphics/Texture.o graphi
 
 GUMPS_OBJS=gumps/ConsoleGump.o gumps/GameMapGump.o gumps/Gump.o gumps/ResizableGump.o gumps/BarkGump.o \
 	gumps/DesktopGump.o gumps/GumpNotifyProcess.o gumps/ItemRelativeGump.o gumps/ContainerGump.o
+
+WIDGETS_OBJS=gumps/widgets/SimpleTextWidget.o
 
 MISC_OBJS=misc/Args.o misc/Console.o misc/pent_include.o misc/Q_strcasecmp.o misc/util.o
 
@@ -71,7 +73,7 @@ shapeconv.exe : tools/shapeconv/ShapeConv.o $(CONVERT_OBJS) $(FILESYS_OBJS) $(MI
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
 PENTAGRAM_OBJS=$(CONF_OBJS) $(CONVERT_OBJS) $(FILESYS_OBJS) $(GRAPHICS_OBJS) $(GUMPS_OBJS) $(KERNEL_OBJS) $(MISC_OBJS) \
-	$(USECODE_OBJS) $(WORLD_OBJS) $(ACTORS_OBJS) $(TOOLS_OBJS) pentagram.o
+	$(USECODE_OBJS) $(WORLD_OBJS) $(ACTORS_OBJS) $(TOOLS_OBJS) $(WIDGETS_OBJS) pentagram.o
 
 pentagram.exe: $(PENTAGRAM_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ $(LIBS)

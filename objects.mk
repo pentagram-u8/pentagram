@@ -76,7 +76,8 @@ GUMPS = \
 	gumps/Gump.o \
 	gumps/GumpNotifyProcess.o \
 	gumps/ItemRelativeGump.o \
-	gumps/ResizableGump.o
+	gumps/ResizableGump.o \
+	gumps/widgets/SimpleTextWidget.o
 
 WORLD = \
 	world/CameraProcess.o \
