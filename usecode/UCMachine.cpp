@@ -49,7 +49,7 @@ UCMachine::~UCMachine()
 static const char *print_bp(const sint16 offset)
 {
 	static char str[32];
-	std::snprintf(str, 32, "[BP%c%02Xh]", offset<0?'-':'+', 
+	snprintf(str, 32, "[BP%c%02Xh]", offset<0?'-':'+', 
 				  offset<0?-offset:offset);
 	return str;
 }
@@ -57,7 +57,7 @@ static const char *print_bp(const sint16 offset)
 static const char *print_sp(const sint16 offset)
 {
 	static char str[32];
-	std::snprintf(str, 32, "[SP%c%02Xh]", offset<0?'-':'+', 
+	snprintf(str, 32, "[SP%c%02Xh]", offset<0?'-':'+', 
 				  offset<0?-offset:offset);
 	return str;
 }
