@@ -267,6 +267,10 @@ MiniStatsGump: (v1)
 <Gump>
 
 
+MiniMapGump: (v1)
+<Gump>
+
+
 TextWidget: (v1)
 <Gump>
 sint32 fontnum
@@ -291,6 +295,7 @@ uint32 framenum_down
 uint16 textwidget
 uint32 mouseOverBlendCol
 uint8 mouseOver (boolean)
+
 
 SlidingWidget: (v1)
 <Gump>
@@ -365,6 +370,17 @@ static sint32 eq_x, eq_y
 MusicProcess: Process (v1)
 <Process>
 sint32 wanted_track
+
+
+AudioProcess: Process (v1)
+<Process>
+uint8 samplecount
+followed by, per sample:
+	 uint16 sfxnum
+	 uint16 priority
+	 uint16 objid
+	 uint16 loops
+	 if (sfxnum == -1) uint32 strlen; char text[strlen]
 
 
 UCProcess: Process (v1)
