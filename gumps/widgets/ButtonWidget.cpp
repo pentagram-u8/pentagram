@@ -18,7 +18,7 @@
 
 #include "pent_include.h"
 #include "ButtonWidget.h"
-#include "SimpleTextWidget.h"
+#include "TextWidget.h"
 #include "GUIApp.h"
 #include "ShapeFrame.h"
 #include "Shape.h"
@@ -39,7 +39,7 @@ ButtonWidget::ButtonWidget(int X, int Y, std::string txt, int font,
 						   int w, int h) :
 	Gump(X,Y,w,h), shape_up(0), shape_down(0)
 {
-	SimpleTextWidget* widget = new SimpleTextWidget(0,0,txt,font,w,h);
+	TextWidget* widget = new TextWidget(0,0,txt,font,w,h);
 	textwidget = widget->getObjId();
 }
 
