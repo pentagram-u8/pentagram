@@ -132,7 +132,7 @@ Intrinsic U8Intrinsics[] = {
 	0,
 	// 0x060
 	0,
-	0,
+	UCMachine::I_dummyProcess, //!!
 	0,
 	0,
 	0,
@@ -144,7 +144,7 @@ Intrinsic U8Intrinsics[] = {
 	0,
 	0,
 	0,
-	0,
+	UCMachine::I_dummyProcess, //!!
 	0,
 	0,
 	// 0x070

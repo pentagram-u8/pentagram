@@ -351,9 +351,23 @@ bool UCMachine::execProcess(UCProcess* p)
 			// (free the originals? order?)
 			ui16a = p->stack.pop2();
 			ui16b = p->stack.pop2();
-			listHeap[ui16b]->appendList(*listHeap[ui16a]);
-			freeList(ui16a);
-			p->stack.push2(ui16b);
+			if (getList(ui16b) && getList(ui16a)) {
+				getList(ui16b)->appendList(*getList(ui16a));
+				freeList(ui16a);
+				p->stack.push2(ui16b);
+			} else {
+				// at least one of the lists didn't exist. Error or not?
+				// for now: if one exists, push that one.
+				// if neither exists, push 0.
+
+				if (getList(ui16a)) {
+					p->stack.push2(ui16a);
+				} else if (getList(ui16b)) {
+					p->stack.push2(ui16b);
+				} else {
+					p->stack.push2(0);
+				}
+			}
 			LOGPF(("append"));
 			break;
 
@@ -374,7 +388,8 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 1A
 			// substract string list
 			// NB: this one takes a length parameter in crusader. (not in U8)!!
-//!!		ui32a = cs.read1(); // elementsize
+			// (or rather, it seems it takes one after all? -wjp,20030511)
+			ui32a = cs.read1(); // elementsize
 			ui32a = 2;
 			ui16a = p->stack.pop2();
 			ui16b = p->stack.pop2();
@@ -867,7 +882,13 @@ bool UCMachine::execProcess(UCProcess* p)
 				ui16a = cs.read1();
 				ui16b = p->stack.access2(p->bp+si8a);
 				UCList* l = new UCList(ui16a);
-				l->copyList(*listHeap[ui16b]);
+				if (getList(ui16b)) {
+					l->copyList(*getList(ui16b));
+				} else {
+					// trying to push non-existant list. Error or not?
+					perr << "Pushing non-existant slist" << std::endl;
+					// error = true;
+				}
 				p->stack.push2(assignList(l));
 				LOGPF(("push list\t%s", print_bp(si8a)));
 			}
@@ -883,7 +904,14 @@ bool UCMachine::execProcess(UCProcess* p)
 				ui16a = 2;
 				ui16b = p->stack.access2(p->bp+si8a);
 				UCList* l = new UCList(ui16a);
-				l->copyStringList(*listHeap[ui16b]);
+				if (getList(ui16b)) {
+					l->copyStringList(*getList(ui16b));
+				} else {
+					// trying to push non-existant list. Error or not?
+					// (Devon's talk code seems to use it; so no error for now)
+					perr << "Pushing non-existant slist" << std::endl;
+					// error = true;
+				}
 				p->stack.push2(assignList(l));
 				LOGPF(("push slist\t%s", print_bp(si8a)));
 			}
@@ -1131,9 +1159,9 @@ bool UCMachine::execProcess(UCProcess* p)
 			// often ignored. It looks like it's a pid, but which one?
 
 			// additionally, it is possible that 'implies' puts the result
-			// of a process in the 'process result' variable
+			// of a process in the 'process result' variable,
 			// or more likely, when a process finishes, it sets the result
-			// value of the processes that were waiting for it
+			// value of the processes that were waiting for it.
 			// 0x6D (push process result) only seems to occur soon after
 			// an 'implies'
 
@@ -1642,7 +1670,7 @@ void UCMachine::freeString(uint16 s)
 void UCMachine::freeList(uint16 l)
 {
 	std::map<uint16, UCList*>::iterator iter = listHeap.find(l);
-	if (iter != listHeap.end()) {
+	if (iter != listHeap.end() && iter->second) {
 		iter->second->free();
 		delete iter->second;
 		listHeap.erase(iter);
@@ -1652,7 +1680,7 @@ void UCMachine::freeList(uint16 l)
 void UCMachine::freeStringList(uint16 l)
 {
 	std::map<uint16, UCList*>::iterator iter = listHeap.find(l);
-	if (iter != listHeap.end()) {
+	if (iter != listHeap.end() && iter->second) {
 		iter->second->freeStrings();
 		delete iter->second;
 		listHeap.erase(iter);

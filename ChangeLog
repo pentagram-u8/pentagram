@@ -1,4 +1,9 @@
 2003-05-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/Application.cpp: right-click uses an item
+	* usecode/UCMachine.cpp: bugfixes
+	* usecode/u8intrinsics.h: 'process' intrinsics return a dummy process
+
+2003-05-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/*: minor changes
 	* world/Item.cpp, kernel/Application.cpp: hacked in the Ask intrinsic
 	* graphics/ShapeInfo.h, world/ItemFactory.cpp: added unknown family 15

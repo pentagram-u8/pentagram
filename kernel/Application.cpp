@@ -573,7 +573,7 @@ void Application::handleEvent(const SDL_Event& event)
 	case SDL_MOUSEBUTTONUP:
 	{
 		// Ok, a bit of a hack for now
-		if (event.button.button == SDL_BUTTON_LEFT)
+		if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
 		{
 			pout << std::endl << "Tracing left mouse click: ";
 
@@ -592,7 +592,11 @@ void Application::handleEvent(const SDL_Event& event)
 				Item *item = p_dynamic_cast<Item*>(world->getObject(objID));
 
 				pout << "Found item " << objID << " (shape " << item->getShape() << ", " << item->getFrame() << ")" << std::endl;
-				if (item) item->callUsecodeEvent(0);	// CONSTANT
+				if (event.button.button == SDL_BUTTON_LEFT) {
+					if (item) item->callUsecodeEvent(0);	// CONSTANT
+				} else {
+					if (item) item->callUsecodeEvent(1);	// CONSTANT
+				}
 			}
 		}
 
