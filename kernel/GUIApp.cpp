@@ -659,6 +659,40 @@ void GUIApp::U8Playground()
 	reagents->moveToContainer(bag);
 	reagents->setGumpLocation(60, 30);
 
+	// theurgy foci
+	bagitem = ItemFactory::createItem(637, 0, 0, 0, 0, 0, 0);
+	bag = p_dynamic_cast<Container*>(bagitem);
+	bagitem->moveToContainer(backpack);
+	bagitem->setGumpLocation(0, 30);
+
+	Item* focus = ItemFactory::createItem(396, 8, 0, 0, 0, 0, 0);
+	focus->moveToContainer(bag);
+	focus->setGumpLocation(10, 10);
+	focus = ItemFactory::createItem(396, 9, 0, 0, 0, 0, 0);
+	focus->moveToContainer(bag);
+	focus->setGumpLocation(25, 10);
+	focus = ItemFactory::createItem(396, 10, 0, 0, 0, 0, 0);
+	focus->moveToContainer(bag);
+	focus->setGumpLocation(40, 10);
+	focus = ItemFactory::createItem(396, 11, 0, 0, 0, 0, 0);
+	focus->moveToContainer(bag);
+	focus->setGumpLocation(55, 10);
+	focus = ItemFactory::createItem(396, 12, 0, 0, 0, 0, 0);
+	focus->moveToContainer(bag);
+	focus->setGumpLocation(70, 10);
+	focus = ItemFactory::createItem(396, 13, 0, 0, 0, 0, 0);
+	focus->moveToContainer(bag);
+	focus->setGumpLocation(10, 30);
+	focus = ItemFactory::createItem(396, 14, 0, 0, 0, 0, 0);
+	focus->moveToContainer(bag);
+	focus->setGumpLocation(30, 30);
+	focus = ItemFactory::createItem(396, 15, 0, 0, 0, 0, 0);
+	focus->moveToContainer(bag);
+	focus->setGumpLocation(50, 30);	
+	focus = ItemFactory::createItem(396, 17, 0, 0, 0, 0, 0);
+	focus->moveToContainer(bag);
+	focus->setGumpLocation(70, 30);	
+
 	// oil flasks
 	Item* flask = ItemFactory::createItem(579, 0, 0, 0, 0, 0, 0);
 	flask->moveToContainer(backpack);
