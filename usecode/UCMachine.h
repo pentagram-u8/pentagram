@@ -75,6 +75,7 @@ private:
 	uint32 stringToPtr(uint16 s);
 	uint32 stackToPtr(uint16 pid, uint16 offset);
 	uint32 globalToPtr(uint16 offset);
+	uint32 objectToPtr(uint16 objID);
 
 
 	static UCMachine* ucmachine;

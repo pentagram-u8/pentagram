@@ -33,7 +33,7 @@ class UCProcess : public Process
 
 public:
 	UCProcess(Usecode* usecode_, uint32 classid_,
-			  uint32 offset_, uint32 this_ptr = 0xA1A1A1A1);
+			  uint32 offset_, uint32 this_ptr = 0);
     ~UCProcess();
 
 	virtual bool run(const uint32 framenum);

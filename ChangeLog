@@ -1,6 +1,7 @@
 2002-12-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/*: bugfixes
 	* kernel/Kernel.cpp: output UCMachine mem.stats on exit
+	* usecode/*: indirect push/pop
 
 2002-12-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/*: basic call/ret support

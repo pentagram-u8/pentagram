@@ -26,11 +26,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define LOGPF(X) pout.printf X
 
 enum UCSegments {
-	SEG_STACK  = 0x0000,
-	SEG_STRING = 0x8000,
-	SEG_LIST   = 0x8001, // I don't think this is used
-	SEG_OBJ    = 0x8002,
-	SEG_GLOBAL = 0x8003
+	SEG_STACK      = 0x0000,
+	SEG_STACK_FIRST= 0x0001,
+	SEG_STACK_LAST = 0x7FFE,
+	SEG_STRING     = 0x8000,
+	SEG_LIST       = 0x8001, // I don't think this is used
+	SEG_OBJ        = 0x8002,
+	SEG_GLOBAL     = 0x8003
 };
 
 UCMachine* UCMachine::ucmachine = 0;
@@ -904,40 +906,97 @@ bool UCMachine::execProcess(UCProcess* p)
 			LOGPF(("push addr\t%s", print_bp(si8a)));
 			break;
 
-/*
 		case 0x4C:
 			// 4C xx
 			// indirect push,
 			// pops a 32 bit pointer off the stack and pushes xx bytes
 			// from the location referenced by the pointer
+
+			// this one is a bit tricky. There's no way we can support
+			// all possible pointers, so we're just going to do a few:
+			// * stack pointers
+			// * object pointers, as long as xx == 02. (i.e., push objref)
 			{
-				// TODO
-				uint8 count = ds.read1();
-				uint16 offset = stack.pop2();
-				uint16 segment = stack.pop2();
-				// Push the bytes
-				if (count == 2) stack.push2(0xCCCC);
-				else stack.push0(count);
-				LOGPF(("!push indirect\t%02Xh bytes", count));
-			}
-			break;
-		case 0x4D:
-			// 4D xx
-			// indirect pop,
-			// pops a 32 bit pointer off the stack and then pops xx bytes
-			// into the location referenced by the pointer
-			{
-				// TODO
-				uint8 count = ds.read1();
-				uint16 offset = stack.pop2();
-				uint16 segment = stack.pop2();
-				// Pop the bytes
-				stack.addSP(count);
-				LOGPF(("!pop indirect\t%02Xh bytes", count));
+				ui16a = cs.read1();
+				ui32a = p->stack.pop4();
+				uint16 segment = ui32a >> 16;
+				uint16 offset = ui32a;
+
+				if (segment >= SEG_STACK_FIRST && segment <= SEG_STACK_LAST)
+				{
+					// reference to the stack of pid 'segment'
+					if (processes.find(segment) == processes.end()) {
+						// segfault :-)
+						perr << "Trying to access stack of non-existent "
+							 << "process (pid: " << std::hex << segment
+							 << std::dec << ")" << std::endl;
+						error = true;
+					} else {
+						p->stack.push(processes[segment]->stack.access(offset),
+									  ui16a);
+					}
+				}
+				else if (segment == SEG_OBJ)
+				{
+					if (ui16a != 2) {
+						perr << "Trying to read other than 2 bytes from objptr"
+							 << std::endl;
+						error = true;
+					} else {
+						// push objref
+						p->stack.push2(offset);
+					}
+				}
+				else
+				{
+					perr << "Trying to access segment " << std::hex
+						 << segment << std::dec << std::endl;
+					error = true;
+				}
+				LOGPF(("push indirect\t%02Xh bytes", ui16a));
 			}
 			break;
 
-*/ 
+		case 0x4D:
+			// 4D xx
+			// indirect pop
+			// pops a 32 bit pointer off the stack and pushes xx bytes
+			// from the location referenced by the pointer
+
+			// like 0x4C, this one is tricky
+			// only support writing to SEG_STACK for now
+			{
+				ui16a = cs.read1();
+				ui32a = p->stack.pop4();
+				uint16 segment = ui32a >> 16;
+				uint16 offset = ui32a;
+
+				if (segment >= SEG_STACK_FIRST && segment <= SEG_STACK_LAST)
+				{
+					// reference to the stack of pid 'segment'
+					if (processes.find(segment) == processes.end()) {
+						// segfault :-)
+						perr << "Trying to access stack of non-existent "
+							 << "process (pid: " << std::hex << segment
+							 << std::dec << ")" << std::endl;
+						error = true;
+					} else {
+						processes[segment]->stack.assign(offset,
+														 p->stack.access(),
+														 ui16a);
+						p->stack.addSP(ui16a);
+					}
+				}
+				else
+				{
+					perr << "Trying to access segment " << std::hex
+						 << segment << std::dec << std::endl;
+					error = true;
+				}
+				LOGPF(("pop indirect\t%02Xh bytes", ui16a));
+			}
+			break;
+
 		case 0x4E:
 			// 4E xx xx yy
 			// push global xxxx size yy
@@ -994,10 +1053,10 @@ bool UCMachine::execProcess(UCProcess* p)
 			ui16b = p->stack.pop2();
 			if (!ui16b) {
 				cs.skip(si16a);
-				LOGPF(("jne\t\t%04Xh\t(to %04X) (taken)", si16a,
+				LOGPF(("jne\t\t%04hXh\t(to %04X) (taken)", si16a,
 					   cs.getPos()));
 			} else {
-				LOGPF(("jne\t\t%04Xh\t(to %04X) (not taken)", si16a,
+				LOGPF(("jne\t\t%04hXh\t(to %04X) (not taken)", si16a,
 					   cs.getPos()));
 			}
 			break;
@@ -1007,7 +1066,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// relative jump to xxxx
 			si16a = static_cast<sint16>(cs.read2());
 			cs.skip(si16a);
-			LOGPF(("jmp\t\t%04Xh\t(to %04X)", si16a, cs.getPos()));
+			LOGPF(("jmp\t\t%04hXh\t(to %04X)", si16a, cs.getPos()));
 			break;
 
 		case 0x53:
@@ -1349,16 +1408,6 @@ bool UCMachine::execProcess(UCProcess* p)
 			p->stack.pop4();
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
-		case 0x4C: // indirect push
-			p->stack.pop4();
-			p->stack.addSP(-cs.read1());
-			perr.printf("unhandled opcode %02X\n", opcode);
-			break;
-		case 0x4D: // indirect pop
-			p->stack.pop4();
-			p->stack.addSP(cs.read1());
-			perr.printf("unhandled opcode %02X\n", opcode);
-			break;
 		case 0x6D: // push process result 
 			p->stack.push4(0);
 			perr.printf("unhandled opcode %02X\n", opcode);
@@ -1447,7 +1496,10 @@ uint16 UCMachine::getNewPID()
 	// I'm not exactly sure if this is the most efficient way to do this
 
 	// find unused PID
-	//! TODO
+	while (processes.find(count) != processes.end()) {
+		count++;
+		if (count > 0x7FFE) count = 1;
+	}
 
 	return count++;
 }
@@ -1513,6 +1565,14 @@ uint32 UCMachine::globalToPtr(uint16 offset)
 	uint32 ptr = SEG_GLOBAL;
 	ptr <<= 16;
 	ptr += offset;
+	return ptr;
+}
+
+uint32 UCMachine::objectToPtr(uint16 objID)
+{
+	uint32 ptr = SEG_OBJ;
+	ptr <<= 16;
+	ptr += objID;
 	return ptr;
 }
 
