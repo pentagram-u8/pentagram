@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Kernel.h"
 #include "CameraProcess.h"
 #include "GUIApp.h"
+#include "Egg.h"
 
 // Ultima 8 Intrinsics
 Intrinsic U8Intrinsics[] = {
@@ -154,12 +155,12 @@ Intrinsic U8Intrinsics[] = {
 	// 0x070
 	UCMachine::I_dummyProcess, //!! process Grave::read(word,char*)
 	UCMachine::I_dummyProcess, //!! process Plaque::read(word,char*)
-	0, // Egg::getEggXRange
-	0, // Egg::getEggYRange
-	0, // Egg::setEggXRange
-	0, // Egg::setEggYRange
-	0, // Egg::getEggId
-	0, // Egg::setEggId
+	Egg::I_getEggXRange,
+	Egg::I_getEggYRange,
+	Egg::I_setEggXRange,
+	Egg::I_setEggYRange,
+	Egg::I_getEggId,
+	Egg::I_setEggId,
 	0, //U
 	0, // MonsterEgg::hatch
 	0, // MonsterEgg::getMonId

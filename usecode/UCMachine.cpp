@@ -52,7 +52,6 @@ UCMachine::UCMachine() :
 
 	// zero globals
 	globals.push0(globals.getSize());
-	pout << "Flag 5A: " << static_cast<int>(globals.access1(0x5A)) << std::endl;
 
 	loop_list = 0;
 	loop_index = 0;
@@ -584,7 +583,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			} else {
 				p->stack.push2(0);
 			}
-			LOGPF(("cmp long"));
+			LOGPF(("lt long"));
 			break;
 
 		case 0x2A:
@@ -982,6 +981,8 @@ bool UCMachine::execProcess(UCProcess* p)
 										const_cast<uint8*>(p->stack.access()),
 										ui16a))
 					error = true;
+
+				LOGPF(("push indirect\t%02Xh bytes", ui16a));
 			}
 			break;
 
@@ -999,6 +1000,8 @@ bool UCMachine::execProcess(UCProcess* p)
 				} else {
 					error = true;
 				}
+
+				LOGPF(("pop indirect\t%02Xh bytes", ui16a));
 			}
 			break;
 

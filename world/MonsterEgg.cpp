@@ -16,34 +16,25 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef EGG_H
-#define EGG_H
+#include "pent_include.h"
 
-#include "Item.h"
+#include "MonsterEgg.h"
 
-#include "intrinsics.h"
+DEFINE_DYNAMIC_CAST_CODE(MonsterEgg,Egg);
 
-class Egg : public Item
+MonsterEgg::MonsterEgg()
 {
-	friend class ItemFactory;
-public:
-	Egg();
-	virtual ~Egg();
 
-	ENABLE_DYNAMIC_CAST(Egg);
-
-	INTRINSIC(I_getEggXRange);
-	INTRINSIC(I_getEggYRange);
-	INTRINSIC(I_setEggXRange);
-	INTRINSIC(I_setEggYRange);
-	INTRINSIC(I_getEggId);
-	INTRINSIC(I_setEggId);
-
-	virtual uint16 hatch();
-
-protected:
-	int xrange, yrange;
-};
+}
 
 
-#endif
+MonsterEgg::~MonsterEgg()
+{
+
+}
+
+uint16 MonsterEgg::hatch()
+{
+	// create monster...
+	return 0;
+}

@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class Map;
 class Item;
 class UCList;
+class TeleportEgg;
 
 class CurrentMap
 {
@@ -42,6 +43,8 @@ public:
 
 	void areaSearch(UCList* itemlist, const uint8* loopscript,
 					uint32 scriptsize, Item* item, uint16 range, bool recurse);
+
+	TeleportEgg* findDestination(uint16 id);
 
 	// Not allowed to modify the list. Remember to use const_iterator
 	const std::list<Item*>* getItemList (sint32 gx, sint32 gy)

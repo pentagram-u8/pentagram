@@ -19,6 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "Egg.h"
+#include "UCMachine.h"
+#include "World.h"
+
+DEFINE_DYNAMIC_CAST_CODE(Egg,Item);
 
 Egg::Egg()
 {
@@ -29,4 +33,64 @@ Egg::Egg()
 Egg::~Egg()
 {
 
+}
+
+uint16 Egg::hatch()
+{
+	return callUsecodeEvent(7); //! constant
+}
+
+uint32 Egg::I_getEggXRange(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_EGG(egg);
+	if (!egg) return 0;
+
+	return static_cast<uint32>(egg->xrange);
+}
+
+uint32 Egg::I_getEggYRange(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_EGG(egg);
+	if (!egg) return 0;
+
+	return static_cast<uint32>(egg->yrange);
+}
+
+uint32 Egg::I_setEggXRange(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_EGG(egg);
+	ARG_UINT16(xr);
+	if (!egg) return 0;
+
+	egg->xrange = static_cast<uint16>(xr);
+	return 0;
+}
+
+uint32 Egg::I_setEggYRange(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_EGG(egg);
+	ARG_UINT16(yr);
+	if (!egg) return 0;
+
+	egg->yrange = static_cast<uint16>(yr);
+	return 0;
+}
+
+uint32 Egg::I_getEggId(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_EGG(egg);
+	if (!egg) return 0;
+
+	return egg->getMapNum();
+}
+
+uint32 Egg::I_setEggId(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_EGG(egg);
+	ARG_UINT16(eggid);
+	if (!egg) return 0;
+
+	egg->setMapNum(eggid);
+	
+	return 0;
 }

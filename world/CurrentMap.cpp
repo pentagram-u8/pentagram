@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Container.h"
 #include "UCList.h"
 #include "ShapeInfo.h"
+#include "TeleportEgg.h"
 
 using std::list; // too messy otherwise
 typedef list<Item*> item_list;
@@ -274,4 +275,24 @@ void CurrentMap::areaSearch(UCList* itemlist, const uint8* loopscript,
 			}
 		}
 	}
+}
+
+TeleportEgg* CurrentMap::findDestination(uint16 id)
+{
+	//! constants
+	for (unsigned int i = 0; i < 128; i++) {
+		for (unsigned int j = 0; j < 128; j++) {
+			item_list::iterator iter;
+			for (iter = items[i][j].begin();
+				 iter != items[i][j].end(); ++iter)
+			{
+				TeleportEgg* egg = p_dynamic_cast<TeleportEgg*>(*iter);
+				if (egg) {
+					if (egg->isTeleporter() && egg->getTeleportId() == id)
+						return egg;
+				}
+			}
+		}
+	}
+	return 0;
 }

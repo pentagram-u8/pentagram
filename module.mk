@@ -87,9 +87,11 @@ WORLD = \
 	world/ItemFactory.o \
 	world/ItemSorter.o \
 	world/Map.o \
+	world/MonsterEgg.o \
 	world/CurrentMap.o \
 	world/Glob.o \
 	world/GlobEgg.o \
+	world/TeleportEgg.o \
 	world/World.o \
 	world/ItemMoveProcess.o \
 	world/actors/Actor.o \

@@ -46,6 +46,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ActorAnimProcess.h"
 #include "Font.h"
 #include "FontShapeFlex.h"
+#include "Egg.h"
 
 #include <SDL.h>
 
@@ -204,17 +205,11 @@ void GUIApp::U8Playground()
 	delete saveds;
 
 	Actor* av = world->getNPC(1);
-	//av->teleport(40, 16240, 15240, 64);
+//	av->teleport(40, 16240, 15240, 64);
 	if (av)
 		world->switchMap(av->getMapNum());
 	else
 		world->switchMap(3);
-
-	// some testing...
-	//world->switchMap(3);
-
-	//world->switchMap(43);
-  	//world->switchMap(3);
 
 	// Create console gump
 	//pout << "Create Graphics Console" << std::endl;
@@ -427,6 +422,9 @@ void GUIApp::paint()
 	snprintf(buf, 255, "Rendering time %li ms %li FPS - Sort %li ms  Paint %li ms  Fill %li ms", diff, 1000/diff, after_sort-before_sort, after_paint-after_sort, after_fill-before_fill);
 	screen->PrintTextFixed(con.GetConFont(), buf, 8, dims.h-16);
 
+	Font *f = GameData::get_instance()->getFonts()->getFont(5);
+	screen->PrintText(f, "Test!", 100, 100);
+
 	// End painting
 	screen->EndPainting();
 }
@@ -568,7 +566,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 				World *world = World::get_instance();
 				Item *item = p_dynamic_cast<Item*>(world->getObject(objID));
 
-				pout << "Found item " << objID << " (shape " << item->getShape() << ", " << item->getFrame() << ", q:" << item->getQuality() << ")" << std::endl;
+				pout << "Found item " << objID << " (shape " << item->getShape() << ", " << item->getFrame() << ", q:" << item->getQuality() << ", m:" << item->getMapNum() << ", n:" << item->getNpcNum() << ")" << std::endl;
 				if (event.button.button == SDL_BUTTON_LEFT) {
 					if (item) item->callUsecodeEvent(0);	// CONSTANT
 				} else {
@@ -672,27 +670,27 @@ void GUIApp::handleEvent(const SDL_Event& event)
 //			lz = 8;
 
 			if (!avatarInStasis) {
-				Item* item = p_dynamic_cast<Item*>(World::get_instance()->getObject(21183)); // *cough*
-				if (item->getQuality() != 36)
-					item = p_dynamic_cast<Item*>(World::get_instance()->getObject(21184)); // *cough*
+				Egg* egg = p_dynamic_cast<Egg*>(World::get_instance()->getObject(21183)); // *cough*
+				if (!egg || egg->getQuality() != 36)
+					egg = p_dynamic_cast<Egg*>(World::get_instance()->getObject(21184)); // *cough*
 				sint32 ix, iy, iz;
-				item->getLocation(ix,iy,iz);
+				egg->getLocation(ix,iy,iz);
 				SetCameraProcess(new CameraProcess(ix,iy,iz)); // Center on egg
-				item->callUsecodeEvent(7);
+				egg->hatch();
 			} else { 
 				pout << "Can't: avatarInStasis" << std::endl; 
 			} 
 		} break;
 		case SDLK_g: { // trigger 'execution' egg
 			if (!avatarInStasis) {
-				Item* item = p_dynamic_cast<Item*>(World::get_instance()->getObject(21162)); // *cough*
-				if (item->getQuality() != 4)
-					item = p_dynamic_cast<Item*>(World::get_instance()->getObject(21163)); // *cough*
+				Egg* egg = p_dynamic_cast<Egg*>(World::get_instance()->getObject(21162)); // *cough*
+				if (!egg || egg->getQuality() != 4)
+					egg = p_dynamic_cast<Egg*>(World::get_instance()->getObject(21163)); // *cough*
 				Actor* avatar = World::get_instance()->getNPC(1);
 				sint32 x,y,z;
-				item->getLocation(x,y,z);
+				egg->getLocation(x,y,z);
 				avatar->move(x,y,z);
-				item->callUsecodeEvent(7);
+				egg->hatch();
 			} else { 
 				pout << "Can't: avatarInStasis" << std::endl; 
 			} 

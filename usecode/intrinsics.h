@@ -43,7 +43,8 @@ typedef uint32 (*Intrinsic)(const uint8* args, unsigned int argsize);
                       Container* x = p_dynamic_cast<Container*>(obj_##x);
 #define ARG_ACTOR(x)  ARG_OBJECT(obj_##x); \
                       Actor* x = p_dynamic_cast<Actor*>(obj_##x);
-
+#define ARG_EGG(x)    ARG_OBJECT(obj_##x); \
+                      Egg* x = p_dynamic_cast<Egg*>(obj_##x);
 
 #define ARG_STRING(x) ARG_UINT32(ucptr_##x); \
                       uint16 id_##x = UCMachine::ptrToObject(ucptr_##x); \

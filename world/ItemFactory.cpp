@@ -28,6 +28,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MainActor.h"
 #include "GlobEgg.h"
 #include "Egg.h"
+#include "MonsterEgg.h"
+#include "TeleportEgg.h"
 
 Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 							  uint16 flags, uint16 npcnum, uint16 mapnum,
@@ -92,10 +94,7 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 	}
 
 	case ShapeInfo::SF_UNKEGG:
-	case ShapeInfo::SF_MONSTEREGG:
-	case ShapeInfo::SF_TELEPORTEGG:
 	{
-		// this obviously isn't quite correct yet :-)
 		Egg* egg = new Egg();
 		egg->setShape(shape);
 		egg->frame = frame;
@@ -104,6 +103,48 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 		egg->npcnum = npcnum;
 		egg->mapnum = mapnum;
 		egg->extendedflags = extendedflags;
+
+		egg->xrange = (npcnum >> 4) & 0xF;
+		egg->yrange = npcnum & 0xF;
+		return egg;
+	}
+
+	case ShapeInfo::SF_MONSTEREGG:
+	{
+		// this obviously isn't quite correct yet :-)
+		MonsterEgg* egg = new MonsterEgg();
+		egg->setShape(shape);
+		egg->frame = frame;
+		egg->quality = quality;
+		egg->flags = flags;
+		egg->npcnum = npcnum;
+		egg->mapnum = mapnum;
+		egg->extendedflags = extendedflags;
+
+		egg->xrange = (npcnum >> 4) & 0xF;
+		egg->yrange = npcnum & 0xF;
+		egg->prob = (quality >> 12) & 0xF;
+		egg->monstershape = quality & 0x7FF;
+		return egg;
+	}
+
+	case ShapeInfo::SF_TELEPORTEGG:
+	{
+//		perr.printf("TeleportEgg: %d,%d,%d,%d,%d\n", shape, frame, quality, npcnum, mapnum);
+		TeleportEgg* egg = new TeleportEgg();
+		egg->setShape(shape);
+		egg->frame = frame;
+		egg->quality = quality;
+		egg->flags = flags;
+		egg->npcnum = npcnum;
+		egg->mapnum = mapnum;
+		egg->extendedflags = extendedflags;
+
+		egg->xrange = (npcnum >> 4) & 0xF;
+		egg->yrange = npcnum & 0xF;
+		egg->teleport_id = (quality & 0xFF);
+		egg->teleporter = (frame == 0);
+		//! what's the other quality byte?
 		return egg;
 	}
 
