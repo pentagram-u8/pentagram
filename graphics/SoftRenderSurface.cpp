@@ -420,6 +420,27 @@ template<class uintX> void SoftRenderSurface<uintX>::FadedBlit(Texture *tex, sin
 
 
 
+//
+// void SoftRenderSurface::StretchBlit(Texture *, sint32 sx, sint32 sy, sint32 sw, sint32 sh, sint32 dx, sint32 dy, sint32 dw, sint32 dh, bool bilinear)
+//
+// Desc: Blit a region from a Texture, and arbitrarily stretch it to fit the dest region
+//
+//
+template<class uintX> void SoftRenderSurface<uintX>::StretchBlit(Texture *texture, 
+								sint32 sx, sint32 sy, sint32 sw, sint32 sh, 
+								sint32 dx, sint32 dy, sint32 dw, sint32 dh, 
+								bool bilinear)
+{
+
+	// Nothing we can do
+	if ((sh <= 0) || (dh <= 0) || (sw <= 0) || (dw <= 0)) return;
+
+	// First detect integer up scalings, since they are 'easy'
+	bool x_intscale = ((dw / sw) * sw) == dw;
+	bool y_intscale = ((dh / sh) * sh) == dh;
+
+
+}
 
 //
 // SoftRenderSurface::PrintCharFixed(Texture *, char character, int x, int y)
@@ -574,10 +595,10 @@ template<class uintX> void SoftRenderSurface<uintX>::PaintHighlight(Shape* s, ui
 #define XFORM_CONDITIONAL trans
 #define BLEND_SHAPES(src,dst) BlendHighlight(src,cr,cg,cb,ca,255-ca)
 
-	uint32 ca = (col32>>24)&0xFF;
-	uint32 cr = (col32>>16)&0xFF;
-	uint32 cg = (col32>>8)&0xFF;
-	uint32 cb = (col32>>0)&0xFF;
+	uint32 ca = TEX32_A(col32);
+	uint32 cr = TEX32_R(col32);
+	uint32 cg = TEX32_G(col32);
+	uint32 cb = TEX32_B(col32);
 
 	#include "SoftRenderSurface.inl"
 

@@ -1,3 +1,8 @@
+2005-01-30  Ryan Nunn <colourles@users.sourceforge.net>
+	* world/ItemSorter.cpp, graphics/*RenderSurface.* : 
+	  RenderSurface::PaintHighlight() is now ABGR to match FadedBlit. Also 
+	  added and uncommented stub for the StretchBlit() function.
+
 2005-01-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/fonts/TTF*: added bordersize parameter to TTF rendering
 	* kernel/GUIApp.cpp: override book/scroll font with TTF as well,

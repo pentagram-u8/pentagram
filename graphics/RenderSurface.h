@@ -214,8 +214,8 @@ public:
 	// Blit a region from a Texture with 3D Alpha Blending Function (Alpha == 0 -> skipped)
 	// TODO: virtual void AlphaBlit(Texture *, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy) = 0;
 
-	// Blit a stretched region from a Texture (Alpha == 0 -> skipped)
-	// TODO: virtual void StretchBlit(Texture *, sint32 sx, sint32 sy, sint32 sw, sint32 sh, sint32 dx, sint32 dy, sint32 dw, sint32 dh) = 0;
+	// Blit a stretched region from a Texture (Alpha == 0 -> skipped???)
+	virtual void StretchBlit(Texture *, sint32 sx, sint32 sy, sint32 sw, sint32 sh, sint32 dx, sint32 dy, sint32 dw, sint32 dh, bool bilinear = false) = 0;
 
 	// Blit a stretched region from a Texture with 3D Alpha Blending Function (Alpha == 0 -> skipped)
 	// TODO: virtual void StretchAlphaBlit(Texture *, sint32 sx, sint32 sy, sint32 sw, sint32 sh, sint32 dx, sint32 dy, sint32 dw, sint32 dh) = 0;
