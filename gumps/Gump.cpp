@@ -167,7 +167,8 @@ bool Gump::GetMouseCursor(int mx, int my, Shape &shape, sint32 &frame)
 		if (g->flags & FLAG_CLOSING) continue;
 
 		// It's got the point
-		if (g->PointOnGump(mx,my)) ret = g->GetMouseCursor(mx, my, shape, frame);
+		if (g->PointOnGump(mx,my))
+			ret = g->GetMouseCursor(mx, my, shape, frame);
 
 		if (ret) break;
 	}
@@ -372,7 +373,8 @@ uint16 Gump::TraceObjID(int mx, int my)
 	return objid;
 }
 
-bool Gump::GetLocationOfItem(uint16 itemid, int &gx, int &gy, sint32 lerp_factor)
+bool Gump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
+							 sint32 lerp_factor)
 {
 	gx = 0;
 	gy = 0;
@@ -380,7 +382,8 @@ bool Gump::GetLocationOfItem(uint16 itemid, int &gx, int &gy, sint32 lerp_factor
 }
 
 // Find a child gump of the specified type
-Gump* Gump::FindGump(const RunTimeClassType &t, bool recursive, bool no_inheritance)
+Gump* Gump::FindGump(const RunTimeClassType &t, bool recursive,
+					 bool no_inheritance)
 {
 	// If that is our type, then return us!
 	if (GetClassType() == t) return this;
@@ -454,7 +457,7 @@ void Gump::AddChild(Gump *gump, bool take_focus)
 {
 	if (!gump) return;
 
-	// Remove it if requrietd
+	// Remove it if required
 	Gump *old_parent = gump->GetParent();
 	if (old_parent) old_parent->RemoveChild(gump);
 
@@ -469,8 +472,10 @@ void Gump::AddChild(Gump *gump, bool take_focus)
 		// Why don't we check for FLAG_CLOSING here?
 		// Because we want to make sure that the sort order is always valid
 
-		// If we are same layer as focus and we wont take it, we will not be placed in front of it
-		if (!take_focus && other == focus_child && other->layer == gump->layer) break;
+		// If we are same layer as focus and we wont take it, we will not be
+		// placed in front of it
+		if (!take_focus && other == focus_child && other->layer == gump->layer)
+			break;
 
 		// Lower layers get placed before higher layers
 		if (other->layer > gump->layer) break;

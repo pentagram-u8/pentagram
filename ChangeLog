@@ -4,6 +4,7 @@
 	* world/Item.*, gumps/GameMapGump.*: Made items fall down when
 	  supporting item is dragged away. Implemented I_grab().
 	* world/CurrentMap.cpp: clear FLG_MONSTER_NPC items on map change
+	* gumps/Gump.*: converted some comments to doxygen comments
 
 2003-06-21	  Ryan Nunn <colourles@users.sourceforge.net>
 	* world/CurrentMap.cpp : Fixing the searches

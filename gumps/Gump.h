@@ -53,8 +53,8 @@ protected:
 	Shape				*shape;			// The gumps shape (always painted at 0,0)
 	uint32				framenum;
 
-	// The Gump list for this gump. This will contain all child gumps,
-	// as well as all gump widgets. 
+	//! The Gump list for this gump. This will contain all child gumps,
+	//! as well as all gump widgets. 
 	std::list<Gump*>	children;		// List of all gumps
 	Gump *				focus_child;	// The child that has focus
 
@@ -72,31 +72,43 @@ public:
 	virtual void				CreateNotifier();
 	inline GumpNotifyProcess*	GetNotifyProcess() { return notifier; }
 
+	//! Set the Gump's shape/frame
 	inline void					SetShape(Shape *_shape, uint32 _framenum)
 		{ shape = _shape; framenum = _framenum; }
+
+	//! Set the Gump's frame
 	inline void					SetFramenum(uint32 _framenum)
 		{ framenum = _framenum; }
 
-	// Init the gump, call after construction
+	//! Init the gump, call after construction
 	virtual void				InitGump();
 
-	// Find a gump of the specified type (this or child). 2 ways of doing it:
-	// gump->FindChild(ChildGump::ClassType, recursive, no_inheritance);
-	// gump->FindChild<ChildGump>(recursive, no_inheritance);
+	//! Find a gump of the specified type (this or child)
+	//! \param t Type of gump to look for
+	//! \param recursive Recursively search through children?
+	//! \param no_inheritance Exactly this type, or is a subclass also allowed?
+	//! \return the desired Gump, or NULL if not found
 	virtual Gump *				FindGump(const RunTimeClassType& t,
 										 bool recursive=true,
 										 bool no_inheritance=false);
+
+	//! Find a gump of the specified type (this or child)
+	//! \param T Type of gump to look for
+	//! \param recursive Recursively search through children?
+	//! \param no_inheritance Exactly this type, or is a subclass also allowed?
+	//! \return the desired Gump, or NULL if not found
 	template<class T> Gump *	FindGump(bool recursive=true,
 										 bool no_inheritance=false)
 		{ return FindGump(T::ClassType, recursive, no_inheritance); }
 
-	// Find gump (this, child or NULL) at parent coordinates
+	//! Find gump (this, child or NULL) at parent coordinates (mx,my)
+	//! \return the Gump at these coordinates, or NULL if none
 	virtual Gump *		FindGump(int mx, int my);
 
-	// Get the mouse cursor for position mx, my relative to parents
-	// position. Returns true if this gump wants to set the cursor.
-	// If false, the gump list will attempt to get the cursor shape from
-	// the next lower gump.
+	//! Get the mouse cursor for position mx, my relative to parents position.
+	//! If this gump doesn't want to set the cursor, the gump list will
+	//! attempt to get the cursor shape from the next lower gump.
+	//! \return true if this gump wants to set the cursor, false otherwise
 	virtual bool		GetMouseCursor(int mx, int my, Shape &shape,
 									   sint32 &frame);
 
@@ -104,63 +116,70 @@ public:
 	//  only needed for scaled gumps).
 	//virtual bool		DeviceChanged();
 
-
-	// Run the gump (returns true if repaint required)
+	//! Run the gump
+	//! \return true if repaint required
 	virtual bool		Run(const uint32 framenum);
 
-	// Called when there is a map change (so the gumps can self terminate
-	// among other things)
+	//! Called when there is a map change (so the gumps can self terminate
+	//! among other things)
 	virtual void		MapChanged(void);
 
-	// Paint the Gump (RenderSurface is relative to parent).
-	// Calls PaintThis and PaintChildren
-	virtual void		Paint(RenderSurface*, sint32 lerp_factor);
+	//! Paint the Gump (RenderSurface is relative to parent).
+	//! Calls PaintThis and PaintChildren
+	// \param surf The RenderSurface to paint to
+	// \param lerp_factor The lerp_factor to paint at (0-256)
+	virtual void		Paint(RenderSurface* surf, sint32 lerp_factor);
 
 protected:
 
-	// Overloadable method to Paint just this Gumps
-	// (RenderSurface is relative to this)
-	virtual void		PaintThis(RenderSurface*, sint32 lerp_factor);
+	//! Overloadable method to Paint just this Gumps
+	//! (RenderSurface is relative to this)
+	// \param surf The RenderSurface to paint to
+	// \param lerp_factor The lerp_factor to paint at (0-256)
+	virtual void		PaintThis(RenderSurface* surf, sint32 lerp_factor);
 
-	// Paint the Gumps Children (RenderSurface is relative to this)
-	virtual void		PaintChildren(RenderSurface*, sint32 lerp_factor);
+	//! Paint the Gumps Children (RenderSurface is relative to this)
+	// \param surf The RenderSurface to paint to
+	// \param lerp_factor The lerp_factor to paint at (0-256)
+	virtual void		PaintChildren(RenderSurface* surf, sint32 lerp_factor);
 
 public:
 
-	// Close the gump
+	//! Close the gump
+	//! \param no_del If true, do not delete after closing
 	virtual void		Close(bool no_del = false);
 
-	// Move this gump
+	//! Move this gump
 	virtual void		Move(int x_, int y_) { x = x_; y = y_; }
 
 	//
 	// Points and Coords
 	//
 
-	// Get the dims
+	//! Get the dims
 	virtual void		GetDims(Rect &d) { d = dims; }
 
-	// Used to detect if a point is on the gump
+	//! Detect if a point is on the gump
 	virtual bool		PointOnGump(int mx, int my);
 
-	// Convert a screen space point to a gump point
+	//! Convert a screen space point to a gump point
 	virtual void		ScreenSpaceToGump(int &sx, int &sy);
 
-	// Convert a gump point to a screen space point
+	//! Convert a gump point to a screen space point
 	virtual void		GumpToScreenSpace(int &gx, int &gy);
 
-	// Convert a parent relative point to a gump point
+	//! Convert a parent relative point to a gump point
 	virtual void		ParentToGump(int &px, int &py);
 
-	// Convert a gump point to parent relative point
+	//! Convert a gump point to parent relative point
 	virtual void		GumpToParent(int &gx, int &gy);
 
 
-	// Trace a click, and return ObjID
+	//! Trace a click, and return ObjID
 	virtual uint16		TraceObjID(int mx, int my);
 
-	// Get the location of an item in the gump (coords relative to this).
-	// Returns false on failure
+	//! Get the location of an item in the gump (coords relative to this).
+	//! \return false on failure
 	virtual bool		GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 										  sint32 lerp_factor = 256);
 
@@ -216,20 +235,20 @@ public:
 	// Child gump related
 	//
 
-	// Add a gump to the list. 
+	//! Add a gump to the child list. 
 	virtual void		AddChild(Gump *, bool take_focus = true);
 
-	// Remove a gump from the list
+	//! Remove a gump from the child list
 	virtual void		RemoveChild(Gump *);	
 
-	// Get the parent
+	//! Get the parent
 	inline Gump *		GetParent() { return parent; }
 
-	// Get the root gump (or self)
+	//! Get the root gump (or self)
 	Gump *				GetRootGump();
 
-	// This function is used by our children to notifty us of 'something'
-	// Think of it as a generic call back function
+	//! This function is used by our children to notifty us of 'something'
+	//! Think of it as a generic call back function
 	virtual void		ChildNotify(Gump *child, uint32 message) { }
 	void				SetIndex(sint32 i) { index = i; }
 	sint32				GetIndex() { return index; }
@@ -239,33 +258,34 @@ public:
 	virtual void		DraggingChild(Gump* gump, int mx, int my);
 	virtual void		StopDraggingChild(Gump* gump);
 
-	// This will be called when an item in this gump starts to be dragged.
-	// Return false if the item isn't allowed to be dragged.
+	//! This will be called when an item in this gump starts to be dragged.
+	//! \return false if the item isn't allowed to be dragged.
 	virtual bool		StartDraggingItem(Item* item, int mx, int my)
 		{ return false; }
 
-	// Called when an item is being dragged over the gump.
-	// Note that this may be called on a different gump than StartDraggingItem.
-	// Return false if the item can't be dragged to this location.
+	//! Called when an item is being dragged over the gump.
+	//! Note: this may be called on a different gump than StartDraggingItem.
+	//! \return false if the item can't be dragged to this location.
 	virtual bool		DraggingItem(Item* item, int mx, int my)
 		{ return false; }
 
-	// Called when an item that was being dragged over the gump left the gump
+	//! Called when an item that was being dragged over the gump left the gump
 	virtual void		DraggingItemLeftGump(Item* item) { }
 
-	// Called when a drag operation finished. If moved the item was
-	// actually dragged somewhere else. If !moved, the drag was cancelled.
-	// This is called on the same gump that received StartDraggingItem
+	//! Called when a drag operation finished.
+	//! This is called on the same gump that received StartDraggingItem
+	//! \param moved If true, the item was actually dragged somewhere else.
+	//!              If false, the drag was cancelled.
 	virtual void		StopDraggingItem(Item* item, bool moved) { }
 
-	// Called when an item has been dropped on a gump.
-	// This is called after StopDraggingItem has been called, but possibly
-	// on a different gump.
-	// It's guaranteed that a gump will only receive a DropItem at a location
-	//  if a DraggingItem there returned true.
+	//! Called when an item has been dropped on a gump.
+	//! This is called after StopDraggingItem has been called, but possibly
+	//! on a different gump.
+	//! It's guaranteed that a gump will only receive a DropItem at a location
+	//! if a DraggingItem there returned true.
 	virtual void		DropItem(Item* item, int mx, int my) { }
 
-	// the MoveOffset is the point relative to which Move() will move the gump
+	//! the MoveOffset is the point relative to which Move() will move the gump
 	void				SetMoveOffset(int mx, int my)
 		{ moveOffsetX = mx; moveOffsetY = my; }
 protected:
