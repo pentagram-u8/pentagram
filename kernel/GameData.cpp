@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UsecodeFlex.h"
 #include "MainShapeFlex.h"
 #include "FontShapeFlex.h"
+#include "GumpShapeFlex.h"
 #include "Flex.h"
 #include "Glob.h"
 #include "PaletteManager.h"
@@ -170,6 +171,14 @@ void GameData::loadU8Data()
 		perr << "Unable to load static/u8gumps.flx. Exiting" << std::endl;
 		std::exit(-1);
 	}
-	gumps = new ShapeFlex(gumpds, PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
+	gumps = new GumpShapeFlex(gumpds, PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
 	//! we're leaking gumpds here
+
+	IDataSource *gumpageds = filesystem->ReadFile("@u8/static/gumpage.dat");
+	if (!gumpageds) {
+		perr << "Unable to load static/gumpage.dat. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	gumps->loadGumpage(gumpageds);
+	delete gumpageds;
 }

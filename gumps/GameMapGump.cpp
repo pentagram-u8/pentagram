@@ -292,7 +292,7 @@ bool GameMapGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 
 Gump* GameMapGump::OnMouseDown(int button, int mx, int my)
 {
-	if (button == SDL_BUTTON_LEFT || button == SDL_BUTTON_RIGHT)
+//	if (button == SDL_BUTTON_LEFT || button == SDL_BUTTON_RIGHT)
 		return this;
 
 	return 0;
@@ -326,6 +326,21 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 			item->callUsecodeEvent(0);	// CONSTANT
 		}
 		break;
+	}
+	case SDL_BUTTON_MIDDLE:
+	{
+		uint16 objID = TraceObjID(mx, my);
+		Item *item = World::get_instance()->getItem(objID);
+		if (item) {
+			sint32 x,y,z;
+			item->getLocation(x,y,z);
+			pout << "Found item " << objID << " (shape " << item->getShape()
+				 << ", " << item->getFrame() << ", (" << x << "," << y << ","
+				 << z << ") q:" << item->getQuality() << ", m:"
+				 << item->getMapNum() << ", n:" << item->getNpcNum()
+				 << ")" << std::endl;
+			item->setFlag(Item::FLG_INVISIBLE);
+		}
 	}
 	default:
 		break;

@@ -27,7 +27,7 @@ CONVERT_OBJS=convert/ConvertShape.o convert/crusader/ConvertShapeCrusader.o conv
 
 FILESYS_OBJS=filesys/FileSystem.o filesys/Flex.o filesys/U8Save.o
 
-GRAPHICS_OBJS=graphics/Font.o graphics/FontShapeFlex.o graphics/Texture.o graphics/TextureBitmap.o \
+GRAPHICS_OBJS=graphics/Font.o graphics/FontShapeFlex.o graphics/GumpShapeFlex.o graphics/Texture.o graphics/TextureBitmap.o \
 	graphics/TextureTarga.o graphics/AnimDat.o graphics/BaseSoftRenderSurface.o graphics/MainShapeFlex.o \
 	graphics/Palette.o graphics/PaletteManager.o graphics/RenderSurface.o graphics/Shape.o graphics/ShapeFlex.o \
 	graphics/ShapeFrame.o graphics/ShapeInfo.o graphics/SoftRenderSurface.o graphics/TypeFlags.o graphics/XFormBlend.o

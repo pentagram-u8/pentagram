@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Kernel.h"
 
 #include "MainShapeFlex.h"
+#include "GumpShapeFlex.h"
 #include "Shape.h"
 #include "ShapeInfo.h"
 #include "ItemFactory.h"
@@ -1495,7 +1496,8 @@ uint32 Item::I_shoot(const uint8* args, unsigned int /*argsize*/)
 	uint16 y = buf[2] + (buf[3]<<8);
 	uint16 z = buf[4];
 
-	return Kernel::get_instance()->addProcess(new ItemMoveProcess(item,x,y,z,unk1,true));
+	return Kernel::get_instance()->addProcess(new ItemMoveProcess(item,x,y,z,
+																  unk1,true));
 }
 
 uint32 Item::I_openGump(const uint8* args, unsigned int /*argsize*/)
@@ -1509,12 +1511,18 @@ uint32 Item::I_openGump(const uint8* args, unsigned int /*argsize*/)
 
 	Shape* shape = GameData::get_instance()->getGumps()->getShape(gumpshape);
 
-	item->gump = new ContainerGump(shape, 0, item->getObjId(),
-								   Gump::FLAG_ITEM_DEPENDANT);
-	item->gump->InitGump();
+	ContainerGump* cgump = new ContainerGump(shape, 0, item->getObjId(),
+											 Gump::FLAG_ITEM_DEPENDANT);
+	//!!TODO: clean up the way this is set
+	//!! having the itemarea associated with the shape through the 
+	//!! GumpShapeFlex maybe
+	cgump->setItemArea(GameData::get_instance()->
+					   getGumps()->getGumpItemArea(gumpshape));
+	cgump->InitGump();
 	GUIApp *app = GUIApp::get_instance();
-	app->getDesktopGump()->AddChild(item->gump);
+	app->getDesktopGump()->AddChild(cgump);
 	item->flags |= FLG_GUMP_OPEN;
+	item->gump = cgump;
 
 	return 0;
 }

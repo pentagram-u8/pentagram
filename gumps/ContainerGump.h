@@ -22,6 +22,7 @@
 #include "ItemRelativeGump.h"
 
 class Shape;
+struct Rect;
 
 class ContainerGump : public ItemRelativeGump
 {
@@ -31,6 +32,8 @@ public:
 	ContainerGump(Shape* shape, uint32 framenum, uint16 owner,
 				  uint32 _Flags = 0, sint32 layer = LAYER_NORMAL);
 	virtual ~ContainerGump(void);
+
+	void setItemArea(Rect* itemarea_) { itemarea = *itemarea_; }
 
 	// Close the gump
 	virtual void Close(bool no_del = false);
@@ -54,6 +57,9 @@ public:
 	virtual Gump* OnMouseDown(int button, int mx, int my);
 	virtual void OnMouseClick(int button, int mx, int my);
 	virtual void OnMouseDouble(int button, int mx, int my);
+
+protected:
+	Rect itemarea;
 };
 
 #endif

@@ -44,6 +44,7 @@ GRAPHICS = \
 	graphics/BaseSoftRenderSurface.o \
 	graphics/Font.o \
 	graphics/FontShapeFlex.o \
+	graphics/GumpShapeFlex.o \
 	graphics/SoftRenderSurface.o \
 	graphics/Texture.o \
 	graphics/TextureTarga.o \

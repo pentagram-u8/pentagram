@@ -25,11 +25,7 @@
 #include "World.h"
 #include "RenderSurface.h"
 #include "GUIApp.h"
-
-//! see comments in Paint()
-//! (these need to be read from gumpage.dat)
-static const int itemx_offset = 20;
-static const int itemy_offset = 18; 
+#include "GameData.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(ContainerGump,ItemRelativeGump);
 
@@ -81,15 +77,9 @@ void ContainerGump::Paint(RenderSurface* surf, sint32 lerp_factor)
 		Item* item = *iter;
 		sint32 itemx,itemy;
 		item->getGumpLocation(itemx,itemy);
-		// Where do we need to paint his item?
-		// It looks like(itemx,itemy) isn't entirely correct;
-		// it seems to need an extra offset.
-		//   (20,14) seems to be correct for a basket, but a barrel
-        //   needs (20,18)
-		// Using constant 'itemx_offset', 'itemy_offset' currently.
-		// Need to change these to variables.
-		itemx += itemx_offset;
-		itemy += itemy_offset;
+
+		itemx += itemarea.x;
+		itemy += itemarea.y;
 		GumpToParent(itemx,itemy);
 		Shape* s = item->getShapeObject();
 		assert(s);
@@ -123,8 +113,8 @@ uint16 ContainerGump::TraceObjID(int mx, int my)
 		assert(s);
 		ShapeFrame* frame = s->getFrame(item->getFrame());
 
-		if (frame->hasPoint(mx - (itemx + itemx_offset),
-							my - (itemy + itemy_offset)))
+		if (frame->hasPoint(mx - (itemx + itemarea.x),
+							my - (itemy + itemarea.y)))
 		{
 			// found it
 			return item->getObjId();
@@ -153,8 +143,8 @@ bool ContainerGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 		if (item->getObjId() == itemid) {
 			// found it
 			item->getGumpLocation(gx,gy);
-			gx += itemx_offset;
-			gy += itemy_offset;
+			gx += itemarea.x;
+			gy += itemarea.y;
 			return true;
 		}
 	}
