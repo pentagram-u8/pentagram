@@ -126,9 +126,9 @@ struct Rect {
 
 	bool 	Overlaps(const Rect& o)
 	{
-		Rect tmp = o;
-		IntersectOther(tmp.x, tmp.y, tmp.w, tmp.h);
-		return tmp.IsValid();
+		if (xr <= o.x || o.xr <= x) return false;
+		if (yb <= o.y || o.yb <= y) return false;
+		return true;
 	}
 
 	// Operator +=

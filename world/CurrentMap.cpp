@@ -212,6 +212,7 @@ void CurrentMap::areaSearch(UCList* itemlist, const uint8* loopscript,
 	sint32 x,y,z;
 	item->getLocation(x,y,z);
 
+	//!! do the dimensions of item have to be included too?
 	Rect searchrange(x-range,y-range,2*range,2*range);
 
 	int minx, miny, maxx, maxy;

@@ -40,6 +40,7 @@ public:
 	void setLocation(sint32 x, sint32 y, sint32 z); // this only sets the loc.
 	void move(sint32 x, sint32 y, sint32 z); // move also handles item lists
 	void getLocation(sint32& x, sint32& y, sint32& z) const;
+	void getFootpad(sint32& x, sint32& y, sint32& z) const;
 	uint16 getFlags() const { return flags; }
 	void setFlag(uint32 mask) { flags |= mask; }
 	void clearFlag(uint32 mask) { flags &= ~mask; }
@@ -53,20 +54,20 @@ public:
 	void setQuality(uint16 quality_) { quality = quality_; }
 	uint16 getNpcNum() const { return npcnum; }
 	uint16 getMapNum() const { return mapnum; }
-
-	virtual uint32 getTotalWeight(); // weight including contents (if any)
-
-	uint16 getFamily() const;
-
 	ShapeInfo* getShapeInfo() const;
+	uint16 getFamily() const;
 
 	Item* getGlobNext() const { return glob_next; }
 	void setGlobNext(Item* i) { glob_next = i; }
 
 	virtual void destroy();
 
-	bool checkLoopScript(const uint8* script, uint32 scriptsize);
+	bool overlaps(Item& item2) const;
+	bool overlapsxy(Item& item2) const;
+	bool isOn(Item& item2) const;
 
+	virtual uint32 getTotalWeight(); // weight including contents (if any)
+	bool checkLoopScript(const uint8* script, uint32 scriptsize);
 	uint32 callUsecodeEvent(uint32 event);
 
 	void setupLerp(sint32 cx, sint32 cy, sint32 cz);	// Setup the lerped info for this frame
@@ -132,6 +133,9 @@ public:
 	INTRINSIC(I_orStatus);
 	INTRINSIC(I_andStatus);
 	INTRINSIC(I_getFootpad);
+	INTRINSIC(I_overlaps);
+	INTRINSIC(I_overlapsXY);
+	INTRINSIC(I_isOn);
 	INTRINSIC(I_getWeight);
 	INTRINSIC(I_getWeightIncludingContents);
 	INTRINSIC(I_getVolume);
@@ -154,6 +158,7 @@ public:
 	INTRINSIC(I_popToContainer);
 	INTRINSIC(I_popToEnd);
 	INTRINSIC(I_destroy);
+	INTRINSIC(I_move);
 	INTRINSIC(I_shoot);
 	INTRINSIC(I_getFamilyOfType);
 	INTRINSIC(I_getEtherealTop);

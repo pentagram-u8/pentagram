@@ -1,3 +1,6 @@
+2003-05-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Item.*: some more functions and corresponding intrinsics
+
 2003-05-19  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.cpp: changed create item intrinsics a bit
 	* world/ItemMoveProcess.*: process that moves items around

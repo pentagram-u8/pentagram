@@ -87,11 +87,94 @@ void Item::move(sint32 X, sint32 Y, sint32 Z)
 	setLocation(X, Y, Z);
 }
 
-void Item::getLocation(sint32& X, sint32& Y, sint32 &Z) const
+void Item::getLocation(sint32& X, sint32& Y, sint32& Z) const
 {
 	X = x;
 	Y = y;
 	Z = z;
+}
+
+// note that this is in different units than location
+void Item::getFootpad(sint32& X, sint32& Y, sint32& Z) const
+{
+	Z = getShapeInfo()->z;
+
+	if (getFlags() & Item::FLG_FLIPPED) {
+		X = getShapeInfo()->y;
+		Y = getShapeInfo()->x;
+	} else {
+		X = getShapeInfo()->x;
+		Y = getShapeInfo()->y;
+	}
+	
+}
+
+bool Item::overlaps(Item& item2) const
+{
+	sint32 x1a,y1a,z1a,x1b,y1b,z1b;
+	sint32 x2a,y2a,z2a,x2b,y2b,z2b;
+	getLocation(x1b,y1b,z1a);
+	item2.getLocation(x2b,y2b,z2a);
+
+	sint32 xd,yd,zd;
+	getFootpad(xd,yd,zd);
+	x1a = x1b - 32 * xd;
+	y1a = y1b - 32 * yd;
+	z1b = z1a + 8 * zd;
+
+	item2.getFootpad(xd,yd,zd);
+	x2a = x2b - 32 * xd;
+	y2a = y2b - 32 * yd;
+	z2b = z2a + 8 * zd;
+
+	if (x1b <= x2a || x2b <= x1a) return false;
+	if (y1b <= y2a || y2b <= y1a) return false;
+	if (z1b <= z2a || z2b <= z1a) return false;
+	return true;
+}
+
+bool Item::overlapsxy(Item& item2) const
+{
+	sint32 x1a,y1a,z1a,x1b,y1b;
+	sint32 x2a,y2a,z2a,x2b,y2b;
+	getLocation(x1b,y1b,z1a);
+	item2.getLocation(x2b,y2b,z2a);
+
+	sint32 xd,yd,zd;
+	getFootpad(xd,yd,zd);
+	x1a = x1b - 32 * xd;
+	y1a = y1b - 32 * yd;
+
+	item2.getFootpad(xd,yd,zd);
+	x2a = x2b - 32 * xd;
+	y2a = y2b - 32 * yd;
+
+	if (x1b <= x2a || x2b <= x1a) return false;
+	if (y1b <= y2a || y2b <= y1a) return false;
+	return true;
+}
+
+bool Item::isOn(Item& item2) const
+{
+	sint32 x1a,y1a,z1a,x1b,y1b;
+	sint32 x2a,y2a,z2a,x2b,y2b,z2b;
+	getLocation(x1b,y1b,z1a);
+	item2.getLocation(x2b,y2b,z2a);
+
+	sint32 xd,yd,zd;
+	getFootpad(xd,yd,zd);
+	x1a = x1b - 32 * xd;
+	y1a = y1b - 32 * yd;
+
+	item2.getFootpad(xd,yd,zd);
+	x2a = x2b - 32 * xd;
+	y2a = y2b - 32 * yd;
+	z2b = z2a + 8 * zd;
+
+	if (x1b <= x2a || x2b <= x1a) return false;
+	if (y1b <= y2a || y2b <= y1a) return false;
+	if (z2b == z1a) return true;
+	return false;
 }
 
 ShapeInfo* Item::getShapeInfo() const
@@ -824,17 +907,8 @@ uint32 Item::I_getFootpad(const uint8* args, unsigned int /*argsize*/)
 	if (!item) return 0;
 
 	uint8 buf[2];
-	uint32 x;
-	uint32 y;
-	uint32 z = item->getShapeInfo()->z;
-
-	if (item->getFlags() & Item::FLG_FLIPPED) {
-		x = item->getShapeInfo()->y;
-		y = item->getShapeInfo()->x;
-	} else {
-		x = item->getShapeInfo()->x;
-		y = item->getShapeInfo()->y;
-	}
+	sint32 x,y,z;
+	item->getFootpad(x,y,z);
 
 	buf[0] = static_cast<uint8>(x);
 	buf[1] = static_cast<uint8>(x >> 8);
@@ -849,6 +923,48 @@ uint32 Item::I_getFootpad(const uint8* args, unsigned int /*argsize*/)
 	UCMachine::get_instance()->assignPointer(zptr, buf, 2);
 
 	return 0;
+}
+
+uint32 Item::I_overlaps(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_UINT16(id2);
+	Item* item2 = p_dynamic_cast<Item*>(World::get_instance()->getObject(id2));
+	if (!item) return 0;
+	if (!item2) return 0;
+
+	if (item->overlaps(*item2))
+		return 1;
+	else
+		return 0;
+}
+
+uint32 Item::I_overlapsXY(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_UINT16(id2);
+	Item* item2 = p_dynamic_cast<Item*>(World::get_instance()->getObject(id2));
+	if (!item) return 0;
+	if (!item2) return 0;
+
+	if (item->overlapsxy(*item2))
+		return 1;
+	else
+		return 0;
+}
+
+uint32 Item::I_isOn(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_UINT16(id2);
+	Item* item2 = p_dynamic_cast<Item*>(World::get_instance()->getObject(id2));
+	if (!item) return 0;
+	if (!item2) return 0;
+
+	if (item->isOn(*item2))
+		return 1;
+	else
+		return 0;
 }
 
 uint32 Item::I_getFamilyOfType(const uint8* args, unsigned int /*argsize*/)
@@ -999,6 +1115,17 @@ uint32 Item::I_popToEnd(const uint8* args, unsigned int /*argsize*/)
 	//! how exactly?
 
 	return objid;
+}
+
+uint32 Item::I_move(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_UINT16(x);
+	ARG_UINT16(y);
+	ARG_UINT16(z);
+	if (!item) return 0;
+
+	item->move(x,y,z);
 }
 
 uint32 Item::I_getEtherealTop(const uint8* args, unsigned int /*argsize*/)
