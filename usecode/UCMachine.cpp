@@ -279,7 +279,7 @@ bool UCMachine::execProcess(UCProcess* p)
 					l->append(p->stack.access());
 					p->stack.addSP(-ui16a);
 				}
-				p->stack.addSP(ui16a * ui16b);
+				p->stack.addSP(ui16a * (ui16b + 1));
 				p->stack.push2(assignList(l));
 				LOGPF(("create list\t%02X (%02X)", ui16b, ui16a));
 			}
