@@ -14,7 +14,7 @@ SDL_CFLAGS=-I$(SRC)/sdl/include
 SDL_LIBS=-L$(SRC)/sdl/lib -lSDLmain -lSDL -lSDL_ttf
 
 CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -DSIZEOF_INTP=4 -I$(SRC)/conf -I$(SRC)/convert -I$(SRC)/filesys \
-	-I$(SRC)/graphics -I$(SRC)/graphics/fonts -I$(SRC)/gumps -I$(SRC)/kernel \
+	-I$(SRC)/filesys/zip -I$(SRC)/graphics -I$(SRC)/graphics/fonts -I$(SRC)/gumps -I$(SRC)/kernel \
 	-I$(SRC)/misc -I$(SRC)/tools/compile -I$(SRC)/tools/disasm \
 	-I$(SRC)/tools/flexpack -I$(SRC)/tools/fold -I$(SRC)/usecode -I$(SRC)/world \
 	-I$(SRC)/world/actors -I$(SRC)/gumps/widgets -I$(SRC)/games \
@@ -27,7 +27,7 @@ CFLAGS=-O2
 CC=gcc
 
 LFLAGS=-mwindows
-LIBS=-lmingw32 -lwinmm $(SDL_LIBS)
+LIBS=-lmingw32 -lwinmm -lz $(SDL_LIBS)
 
 include objects.mk
 
@@ -43,23 +43,25 @@ FOLD_OBJCS = \
 	tools/fold/VarNodes.o tools/fold/LoopScriptNodes.o
 
 FLEXPACK_OBJCS = \
-	filesys/FileSystem.o filesys/Flex.o misc/Console.o misc/istring.o misc/pent_include.o misc/util.o \
-	tools/flexpack/FlexPack.o tools/flexpack/FlexWriter.o
+	filesys/FileSystem.o filesys/RawArchive.o filesys/Archive.o filesys/ArchiveFile.o filesys/FlexFile.o \
+	filesys/ZipFile.o filesys/U8SaveFile.o filesys/DirFile.o filesys/zip/ioapi.o filesys/zip/unzip.o \
+	misc/Console.o misc/istring.o misc/pent_include.o misc/util.o tools/flexpack/FlexPack.o \
+	tools/flexpack/FlexWriter.o
 
 disasm.exe : tools/disasm/Disasm.o $(FOLD_OBJCS)
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
 flexpack.exe: $(FLEXPACK_OBJCS)
-	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
+	$(CXX) $(LFLAGS) -o $@ $+ -lz -mconsole
 
 fold.exe : tools/fold/Fold.o $(FOLD_OBJCS)
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
-shapeconv.exe : tools/shapeconv/ShapeConv.o $(CONVERT) $(FILESYS) $(MISC) $(ARGS)
-	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
+shapeconv.exe : tools/shapeconv/ShapeConv.o $(CONVERT) $(FILESYS) $(UNZIP) $(MISC) $(ARGS)
+	$(CXX) $(LFLAGS) -o $@ $+ -lz -mconsole
 
 PENTAGRAM_OBJS = \
-	$(KERNEL) $(KERNEL2) $(USECODE) $(FILESYS) $(CONVERT) $(CONF)\
+	$(KERNEL) $(KERNEL2) $(USECODE) $(FILESYS) $(UNZIP) $(CONVERT) $(CONF)\
 	$(GRAPHICS) $(MISC) $(ARGS) $(GUMPS) $(WIDGETS) $(WORLD) $(ACTORS)\
 	$(COMPILE) $(DISASM) $(AUDIO) $(MIDI) $(TIMIDITY) $(GAMES) $(GAMES2) \
 	$(FONTS) kernel/GUIApp.o misc/version.o pentagram.o
