@@ -114,7 +114,7 @@ void SKFPlayer::paint(RenderSurface* surf, int lerp)
 {
 	if (!buffer) return;
 
-	Texture* tex = buffer->GetSurfaceAsTetxture();
+	Texture* tex = buffer->GetSurfaceAsTexture();
 
 	if (!fadelevel)
 		surf->Blit(tex, 0, 0, width, height, 0, 0);

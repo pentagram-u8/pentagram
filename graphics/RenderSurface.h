@@ -83,7 +83,7 @@ public:
 	// Do not delete the texture. 
 	// Do not assume anything about the contents of the Texture object.
 	// It should only be used with Painting and Blitting methods.
-	virtual Texture *GetSurfaceAsTetxture() = 0;
+	virtual Texture *GetSurfaceAsTexture() = 0;
 
 	//
 	// Surface Properties

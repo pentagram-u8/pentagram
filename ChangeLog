@@ -1,3 +1,6 @@
+2004-07-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* various: fixed tetxture typo
+
 2004-07-22  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* gumps/GameMapGump.h: moved position calculation in dragging to
 	  a new function for other use later.

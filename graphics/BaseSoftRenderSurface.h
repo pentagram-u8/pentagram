@@ -95,7 +95,7 @@ public:
 	virtual ECode EndPainting();
 
 	// Get the surface as a Texture. Only valid for SecondaryRenderSurfaces
-	virtual Texture *GetSurfaceAsTetxture();
+	virtual Texture *GetSurfaceAsTexture();
 
 
 	//

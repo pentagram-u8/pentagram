@@ -287,15 +287,15 @@ ECode BaseSoftRenderSurface::EndPainting()
 }
 
 //
-// Texture *BaseSoftRenderSurface::GetSurfaceAsTetxture()
+// Texture *BaseSoftRenderSurface::GetSurfaceAsTexture()
 //
 // Desc: Get the surface as a Texture. Only valid for SecondaryRenderSurfaces
 //
-Texture *BaseSoftRenderSurface::GetSurfaceAsTetxture()
+Texture *BaseSoftRenderSurface::GetSurfaceAsTexture()
 { 
 	if (!rtt_tex)
 	{
-		perr << "Error: GetSurfaceAsTetxture(): Surface doesn't render-to-texture" << std::endl;
+		perr << "Error: GetSurfaceAsTexture(): Surface doesn't render-to-texture" << std::endl;
 	}
 
 	return rtt_tex; 
