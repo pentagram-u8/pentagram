@@ -410,6 +410,8 @@ uint16 Actor::cSetActivity(int activity)
 		perr << "Actor::cSetActivity: invalid activity (" << activity << ")"
 			 << std::endl;
 	}
+
+	return 0;
 }
 
 uint32 Actor::getArmourClass()
@@ -605,7 +607,6 @@ void Actor::die(uint16 damageType)
 
 int Actor::calculateAttackDamage(uint16 other, int damage, uint16 damage_type)
 {
-	Item* hitter = World::get_instance()->getItem(other);
 	Actor* attacker = World::get_instance()->getNPC(other);
 
 	uint16 defense_type = getDefenseType();
