@@ -1,8 +1,14 @@
+2005-03-20  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* pentagram.cpp: GUIApp no longer dynamically allocated.
+	* kernel/Segmented*: rename Simple* and use a simple list instead of
+	  the array used to track free nodes.
+	* kernel/MemoryManager.*: switch to SegmentedAllocator
+
 2005-03-14  Ryan Nunn <colourles@users.sourceforge.net>
 	* gumps/MiniMapGump.*, kernel/ObjectManager.cpp, kernel/GUIApp.cpp :
 	  Making the MiniMapGump savable
 	* world/DestroyItemProcess.*, world/Container.*, world/Item.*,
-	  world/actors/Actor.cpp : Added defered Item deleting. 	   
+	  world/actors/Actor.cpp : Added defered Item deleting.
 	* world/actors/DeleteActorProcess.* : Removed this now unneeded
 	  process
 

@@ -75,6 +75,9 @@ public:
 	//! "MemoryManager::MemInfo" console command
 	static void ConCmd_MemInfo(const Console::ArgsType &args, const Console::ArgvType &argv);
 
+	//! "MemoryManager::test" console command
+//	static void ConCmd_test(const Console::ArgsType &args, const Console::ArgvType &argv);
+
 private:
 	Allocator* allocators[3];
 

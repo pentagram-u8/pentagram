@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 int main(int argc, char* argv[])
 {
+	GUIApp app(argc, argv);
+
 #ifdef SAFE_CONSOLE_STREAMS
 	console_streambuf<char> fb;
 	ppout = new console_ostream<char>(&fb);
@@ -38,10 +40,8 @@ int main(int argc, char* argv[])
 	pout << "Optional features: " << PentagramVersion::features << std::endl;
 	pout << std::endl;
 
-	GUIApp* app = new GUIApp(argc, argv);
-	app->startup();
-	app->run();
+	app.startup();
+	app.run();
 
-	delete app;
 	return 0;
 }

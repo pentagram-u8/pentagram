@@ -16,18 +16,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SIMPLE_ALLOCATOR_H
-#define SIMPLE_ALLOCATOR_H
+#ifndef SEGMENTED_ALLOCATOR_H
+#define SEGMENTED_ALLOCATOR_H
 
 #include "Allocator.h"
-#include "SimplePool.h"
+#include "SegmentedPool.h"
 #include <vector>
 
-class SimpleAllocator: public Allocator
+class SegmentedAllocator: public Allocator
 {
 public:
-	SimpleAllocator(size_t nodeCapacity, uint32 nodes);
-	virtual ~SimpleAllocator();
+	SegmentedAllocator(size_t nodeCapacity, uint32 nodes);
+	virtual ~SegmentedAllocator();
 
 	ENABLE_RUNTIME_CLASSTYPE();
 
@@ -38,7 +38,7 @@ public:
 	size_t getNodeCapacity() {return nodeCapacity;}
 
 private:
-	std::vector<SimplePool *> pools;
+	std::vector<SegmentedPool *> pools;
 
 	size_t nodeCapacity;
 	uint32 nodes;

@@ -17,21 +17,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "pent_include.h"
 
-#include "SimpleAllocator.h"
+#include "SegmentedAllocator.h"
 
-DEFINE_RUNTIME_CLASSTYPE_CODE(SimpleAllocator,Allocator);
+DEFINE_RUNTIME_CLASSTYPE_CODE(SegmentedAllocator,Allocator);
 
-SimpleAllocator::SimpleAllocator(size_t nodeCapacity_, uint32 nodes_): Allocator(), nodes(nodes_)
+SegmentedAllocator::SegmentedAllocator(size_t nodeCapacity_, uint32 nodes_): Allocator(), nodes(nodes_)
 {
-	pools.push_back(new SimplePool(nodeCapacity_, nodes_));
+	pools.push_back(new SegmentedPool(nodeCapacity_, nodes_));
 	nodeCapacity = pools[0]->getNodeCapacity();
 //	pout << "Initial Pool Created: Nodes - " << nodes << ", Node Capacity - "
 //		<< nodeCapacity << std::endl;
 }
 
-SimpleAllocator::~SimpleAllocator()
+SegmentedAllocator::~SegmentedAllocator()
 {
-	std::vector<SimplePool *>::iterator i;
+	std::vector<SegmentedPool *>::iterator i;
 	for (i = pools.begin(); i != pools.end(); ++i)
 	{
 		delete *i;
@@ -40,10 +40,10 @@ SimpleAllocator::~SimpleAllocator()
 	pools.clear();
 }
 
-void * SimpleAllocator::allocate(size_t size)
+void * SegmentedAllocator::allocate(size_t size)
 {
-	std::vector<SimplePool *>::iterator i;
-	SimplePool * p;
+	std::vector<SegmentedPool *>::iterator i;
+	SegmentedPool * p;
 
 	if (size > nodeCapacity)
 		return 0;
@@ -55,7 +55,7 @@ void * SimpleAllocator::allocate(size_t size)
 	}
 
 	// else we need a new pool
-	p = new SimplePool(nodeCapacity, nodes);
+	p = new SegmentedPool(nodeCapacity, nodes);
 	if (p)
 	{
 //		pout << "New Pool Created: Nodes - " << nodes << ", Node Capacity - "
@@ -69,9 +69,9 @@ void * SimpleAllocator::allocate(size_t size)
 	return 0;
 }
 
-Pool * SimpleAllocator::findPool(void * ptr)
+Pool * SegmentedAllocator::findPool(void * ptr)
 {
-	std::vector<SimplePool *>::iterator i;
+	std::vector<SegmentedPool *>::iterator i;
 	for (i = pools.begin(); i != pools.end(); ++i)
 	{
 		if ((*i)->inPool(ptr))

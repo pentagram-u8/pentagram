@@ -4,9 +4,9 @@ KERNEL = \
 	kernel/CoreApp.o \
 	kernel/MemoryManager.o \
 	kernel/Allocator.o \
-	kernel/SimpleAllocator.o \
+	kernel/SegmentedAllocator.o \
 	kernel/Pool.o \
-	kernel/SimplePool.o \
+	kernel/SegmentedPool.o \
 	kernel/Process.o
 
 KERNEL2 = \

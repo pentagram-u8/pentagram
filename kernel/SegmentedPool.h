@@ -16,40 +16,47 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef SIMPLE_POOL_H
-#define SIMPLE_POOL_H
+#ifndef SEGMENTED_POOL_H
+#define SEGMENTED_POOL_H
 
 #include "Pool.h"
 // Think about adding magic to the front of the
 // PoolNode to identify them.
 
-class SimplePool;
+class SegmentedPool;
 
-struct SimplePoolNode
+struct SegmentedPoolNode
 {
-	SimplePool * pool;
+	SegmentedPool * pool;
+	SegmentedPoolNode * nextFree;
 	size_t size;
 };
 
-class SimplePool: public Pool
+/**
+ * A pool with memory broken into even length segments.
+ * SegmentedPool only allocate memory one segment at a time.
+ * If the requested memory is larger than a segment, allocation will fail
+ * and return 0.
+ */
+class SegmentedPool: public Pool
 {
 public:
-	SimplePool(size_t nodeCapacity, uint32 nodes);
-	virtual ~SimplePool();
+	SegmentedPool(size_t nodeCapacity, uint32 nodes);
+	virtual ~SegmentedPool();
 
 	ENABLE_RUNTIME_CLASSTYPE();
 
 	virtual void * allocate(size_t size);
 	virtual void deallocate(void * ptr);
 
-	virtual bool isFull() {return freeNodePos == 0;}
-	virtual bool isEmpty() {return freeNodePos == nodes;}
+	virtual bool isFull() {return freeNodeCount == 0;}
+	virtual bool isEmpty() {return freeNodeCount == nodes;}
 
 	virtual bool inPool(void * ptr) {return (ptr > startOfPool && ptr < endOfPool);}
 
 	size_t getNodeCapacity() {return nodeCapacity;}
 
-	SimplePoolNode* getPoolNode(void * ptr);
+	SegmentedPoolNode* getPoolNode(void * ptr);
 private:
 	uint8 * startOfPool;
 	uint8 * endOfPool;
@@ -57,10 +64,10 @@ private:
 	size_t nodeOffset;
 	size_t nodeCapacity;
 	uint32 nodes;
+	uint32 freeNodeCount;
 
-	// Array stack to hold pointers to free nodes
-	SimplePoolNode** freeNodes;
-	uint32 freeNodePos;
+	SegmentedPoolNode* firstFree;
+	SegmentedPoolNode* lastFree;
 };
 
 #endif

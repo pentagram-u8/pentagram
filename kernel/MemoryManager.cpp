@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MemoryManager.h"
 
 #include "Object.h"
-#include "SimpleAllocator.h"
+#include "SegmentedAllocator.h"
 
 MemoryManager* MemoryManager::memorymanager = 0;
 
@@ -30,9 +30,9 @@ MemoryManager::MemoryManager()
 	assert(memorymanager == 0);
 	memorymanager = this;
 
-	allocators[objectAllocator] = new SimpleAllocator(256, 10000);
-	allocators[processAllocator] = new SimpleAllocator(256, 10000);
-	allocators[UCProcessAllocator] = new SimpleAllocator(4224, 10);
+	allocators[objectAllocator] = new SegmentedAllocator(256, 10000);
+	allocators[processAllocator] = new SegmentedAllocator(256, 10000);
+	allocators[UCProcessAllocator] = new SegmentedAllocator(4224, 10);
 }
 
 MemoryManager::~MemoryManager()
@@ -80,3 +80,75 @@ void MemoryManager::ConCmd_MemInfo(const Console::ArgsType &args, const Console:
 {
 	//! Todo: Write this!
 }
+
+#if 0
+// Test classes purely here to check the speed of Allocators vs. normal allocation
+class TestClassOne
+{
+public:
+	TestClassOne()
+	{
+	}
+
+	virtual ~TestClassOne()
+	{
+	}
+
+	ENABLE_RUNTIME_CLASSTYPE();
+private:
+	int arr[32];
+};
+
+DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(TestClassOne);
+
+class TestClassTwo: public TestClassOne
+{
+public:
+	TestClassTwo()
+	{
+	}
+
+	virtual ~TestClassTwo()
+	{
+	}
+
+	ENABLE_RUNTIME_CLASSTYPE();
+	ENABLE_CUSTOM_MEMORY_ALLOCATION();
+private:
+	int arr[32];
+};
+
+DEFINE_RUNTIME_CLASSTYPE_CODE(TestClassTwo, TestClassOne);
+DEFINE_CUSTOM_MEMORY_ALLOCATION(TestClassTwo, MemoryManager::objectAllocator);
+
+void MemoryManager::ConCmd_test(const Console::ArgsType &args, const Console::ArgvType &argv)
+{
+	int i;
+	TestClassOne * test[10000];
+
+	// Un pooled
+	for (i = 0; i < 10000; ++i)
+	{
+		test[i] = new TestClassOne();
+	}
+
+	for (i = 0; i < 10000; ++i)
+	{
+		delete test[i];
+	}
+
+	// pooled with the objectAllocator
+	for (i = 0; i < 10000; ++i)
+	{
+		test[i] = new TestClassTwo();
+	}
+
+	for (i = 0; i < 10000; ++i)
+	{
+		delete test[i];
+	}
+
+	delete twoAllocator;
+}
+#endif
+
