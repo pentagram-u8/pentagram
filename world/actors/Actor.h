@@ -93,14 +93,16 @@ public:
 
 	//! calculate the damage an attack against this Actor does.
 	//! \param other the attacker (can be zero)
-	//! \param damage base damage, or zero to use attacker's  default
-	//! \param type damage type, or zero to use attacker's default
+	//! \param damage base damage
+	//! \param type damage type
 	//! \return the amount of damage to be applied. Zero if attack missed.
 	int calculateAttackDamage(uint16 other, int damage, uint16 type);
 
+	//! \param damage base damage (or zero to use attacker's default damage)
+	//! \param type damage type (or zero to use attacker's default type)
 	virtual void receiveHit(uint16 other, int dir, int damage, uint16 type);
 
-	virtual void die();
+	virtual void die(uint16 damageType);
 
 	//! check if NPCs are near which are in combat mode and hostile
 	bool areEnemiesNear();

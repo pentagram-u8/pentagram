@@ -289,9 +289,9 @@ void MainActor::receiveHit(uint16 other, int dir, int damage,
 	}
 }
 
-void MainActor::die()
+void MainActor::die(uint16 damageType)
 {
-	Actor::die();
+	Actor::die(damageType);
 
 	// TODO: implement this
 }

@@ -457,6 +457,18 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 
 	pout << "Actor " << getObjId() << " received hit from " << other << ". ";
 
+	Item* hitter = World::get_instance()->getItem(other);
+	Actor* attacker = World::get_instance()->getNPC(other);
+
+	if (damage == 0 && attacker) {
+		damage = attacker->getDamageAmount();
+	}
+
+	if (damage_type == 0 && hitter) {
+		damage_type = hitter->getDamageType();
+	}
+
+
 	damage = calculateAttackDamage(other, damage, damage_type);
 
 	if (!damage) {
@@ -483,14 +495,14 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 			// TODO: SFX
 			clearActorFlag(ACT_WITHSTANDDEATH);
 		} else {
-			die();
+			die(damage_type);
 		}
 	} else {
 		setHP(static_cast<uint16>(hitpoints - damage));
 	}
 }
 
-void Actor::die()
+void Actor::die(uint16 damageType)
 {
 	setHP(0);
 	setActorFlag(ACT_DEAD);
@@ -510,7 +522,7 @@ void Actor::die()
 	MonsterInfo* mi = 0;
 	if (shapeinfo) mi = shapeinfo->monsterinfo;
 
-	if (mi && mi->resurrection) {
+	if (mi && mi->resurrection && !(damageType & WeaponInfo::DMG_FIRE)) {
 		// this monster will be resurrected after a while
 
 		pout << "Actor::die: scheduling resurrection" << std::endl;
@@ -578,14 +590,6 @@ int Actor::calculateAttackDamage(uint16 other, int damage, uint16 damage_type)
 {
 	Item* hitter = World::get_instance()->getItem(other);
 	Actor* attacker = World::get_instance()->getNPC(other);
-
-	if (damage == 0 && attacker) {
-		damage = attacker->getDamageAmount();
-	}
-
-	if (damage_type == 0 && hitter) {
-		damage_type = hitter->getDamageType();
-	}
 
 	uint16 defense_type = getDefenseType();
 
