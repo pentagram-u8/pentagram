@@ -119,6 +119,9 @@ bool PathfinderProcess::run(const uint32 framenum)
 	Actor* actor = World::get_instance()->getNPC(item_num);
 
 	// if actor is still animating for whatever reason, wait until he stopped
+	// FIXME: this should happen before the pathfinder is actually called,
+	// since the running animation may move the actor, which could break
+	// the found path.
 	if (actor->getActorFlags() & Actor::ACT_ANIMLOCK) {
 		return false;
 	}
