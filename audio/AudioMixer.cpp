@@ -218,7 +218,7 @@ void AudioMixer::MixAudio(sint16 *stream, uint32 bytes)
 {
 	if (!audio_ok) return;
 
-	if (midi_driver->isSampleProducer())
+	if (midi_driver && midi_driver->isSampleProducer())
 		midi_driver->produceSamples(stream, bytes);
 
 	if (channels) for (int i=0;i<num_channels;i++)
