@@ -72,12 +72,13 @@ The contents of GlobEggs are not stored here.
 
 
 
-push/pop
-----------
+Ethereal items
+----------------
 
-The Item::create(), Item::push(), Item::pop(), Item::popToEnd() intrinsics use
-a stack of items. Its use appears to be doing things with items without
-risking them being displayed, or conditionally deleting an item.
+The Item::create(), Item::push(), Item::pop(), Item::popToEnd(),
+getEtherealTop() intrinsics use a stack of items. Its use appears to be doing
+things with items without risking them being displayed, or conditionally
+deleting an item. 
 (e.g., when transforming an item: Push old item; try to create new item;
 if succesful, pop new item and destroy old item; if not, pop old item)
 
@@ -87,4 +88,5 @@ it will have to be saved.
 
 Items on the stack have an object ID. They are not actually in the world,
 though.
-QUESTION: how do we mark items that are on the stack? Use an extended flag?
+
+Items on this stack are called ethereal and have FLG_ETHEREAL set.
