@@ -1565,6 +1565,7 @@ void GUIApp::resetEngine()
 	pushMouseCursor();
 
 	timeOffset = -(sint32)Kernel::get_instance()->getFrameNum();
+	inversion = 0;
 }
 
 void GUIApp::setupCoreGumps()

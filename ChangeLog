@@ -1,3 +1,6 @@
+2004-12-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/GUIApp.cpp: properly reset inversion state
+
 2004-12-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/InverterGump.*, graphics/InverterProcess.*: screen inversion
 
