@@ -44,6 +44,7 @@ CreditsGump::CreditsGump(const std::string& text_, int parskip_,
 	timer = 0;
 	title = 0;
 	nexttitle = 0;
+	state = CS_PLAYING;
 }
 
 CreditsGump::~CreditsGump()
@@ -97,7 +98,8 @@ void CreditsGump::extractLine(std::string& text,
 		return;
 	}
 
-	if (text[0] == '+' || text[0] == '&' || text[0] == '}' || text[0] == '~')
+	if (text[0] == '+' || text[0] == '&' || text[0] == '}' || text[0] == '~' ||
+		text[0] == '@')
 	{
 		modifier = text[0];
 		text.erase(0,1);
@@ -123,182 +125,196 @@ bool CreditsGump::Run(const uint32 framenum)
 		return false;
 	}
 
-	timer = 2;
+	if (state == CS_CLOSING) {
+		// pout << "CreditsGump: closing" << std::endl;
+		Close();
+		return true;
+	}
 
-	if (!text.empty()) {
+	timer = 1;
 
-		int available = scrollheight[currentsurface] - currenty;
-		int nextblock = -1;
-		for (int i = 1; i < 4; i++) {
-			available += scrollheight[(currentsurface+i)%4];
-			if (nextblock == -1 && scrollheight[(currentsurface+i)%4] == 0)
-				nextblock = (currentsurface+i)%4;
-		}
-		if (available == 0) nextblock = 0;
+	int available = scrollheight[currentsurface] - currenty;
+	int nextblock = -1;
+	for (int i = 1; i < 4; i++) {
+		available += scrollheight[(currentsurface+i)%4];
+		if (nextblock == -1 && scrollheight[(currentsurface+i)%4] == 0)
+			nextblock = (currentsurface+i)%4;
+	}
+	if (available == 0) nextblock = 0;
 
-		if (available <= 160) {
-			// time to render next block
+	if (state == CS_FINISHING && available <= 156) {
+		// pout << "CreditsGump: waiting before closing" << std::endl;
+		timer = 120;
+		state = CS_CLOSING;
+		return true;
+	}
 
-			scroll[nextblock]->Fill32(0xFF000000,0,0,256,200);
-			// scroll[nextblock]->Fill32(0xFFFFFFFF,0,0,256,5); // block marker
-			scrollheight[nextblock] = 0;
+	if (state == CS_PLAYING && available <= 160) {
+		// time to render next block
 
-			Pentagram::Font *redfont, *yellowfont;
-
-			redfont = FontManager::get_instance()->getFont(6, true);
-			yellowfont = FontManager::get_instance()->getFont(8, true);
-
-			bool done = false;
-			bool firstline = true;
-			while (!text.empty() && !done) {
-				std::string::size_type endline = text.find('\n');
-				std::string line = text.substr(0, endline);
-
-				if (line.empty()) {
-					text.erase(0, 1);
+		scroll[nextblock]->Fill32(0xFF000000,0,0,256,200);
+		// scroll[nextblock]->Fill32(0xFFFFFFFF,0,0,256,5); // block marker
+		scrollheight[nextblock] = 0;
+		
+		Pentagram::Font *redfont, *yellowfont;
+		
+		redfont = FontManager::get_instance()->getFont(6, true);
+		yellowfont = FontManager::get_instance()->getFont(8, true);
+		
+		bool done = false;
+		bool firstline = true;
+		while (!text.empty() && !done) {
+			std::string::size_type endline = text.find('\n');
+			std::string line = text.substr(0, endline);
+			
+			if (line.empty()) {
+				text.erase(0, 1);
+				continue;
+			}
+			
+			// pout << "Rendering paragraph: " << line << std::endl;
+			
+			if (line[0] == '+') {
+				// set title
+				if (!firstline) {
+					// if this isn't the first line of the block,
+					// postpone setting title until next block
+					done = true;
 					continue;
 				}
+				
+				std::string titletext;
+				char modifier;
+				
+				extractLine(line, modifier, titletext);
+				
+				unsigned int remaining;
+				nexttitle = redfont->renderText(titletext, remaining, 192, 0,
+												Pentagram::Font::TEXT_CENTER);
+				
+				if (!title) {
+					title = nexttitle;
+					nexttitle = 0;
+				} else {
+					nexttitlesurf = nextblock;
+					scrollheight[nextblock] = 160; // skip some space
+				}
+				
+			} else {
+				
+				int height = 0;
+				
+				Pentagram::Font* font = redfont;
+				Pentagram::Font::TextAlign align = Pentagram::Font::TEXT_LEFT;
+				int indent = 0;
+				
+				while (!line.empty()) {
+					std::string outline;
+					char modifier;
+					unsigned int remaining;
+					extractLine(line, modifier, outline);
+					
+					// pout << "Rendering line: " << outline << std::endl;
+					
+					switch (modifier) {
+					case '&':
+						font = yellowfont;
+						align = Pentagram::Font::TEXT_CENTER;
+						break;
+					case '}':
+						font = redfont;
+						align = Pentagram::Font::TEXT_CENTER;
+						break;
+					case '~':
+						font = yellowfont;
+						align = Pentagram::Font::TEXT_LEFT;
+						indent = 32;
+						break;
+					case '@':
+						// pout << "CreditsGump: done, finishing" << std::endl;
+						state = CS_FINISHING;
+						break;
+					default:
+						break;
+					}
 
-				// pout << "Rendering paragraph: " << line << std::endl;
-
-				if (line[0] == '+') {
-					// set title
-					if (!firstline) {
-						// if this isn't the first line of the block,
-						// postpone setting title until next block
-						done = true;
+					if (!modifier && outline.empty()) {
+						height += 48;
 						continue;
 					}
 
-					std::string titletext;
-					char modifier;
-
-					extractLine(line, modifier, titletext);
-
-					unsigned int remaining;
-					nexttitle = redfont->
-						renderText(titletext, remaining, 192, 0,
-								   Pentagram::Font::TEXT_CENTER);
-
-					if (!title) {
-						title = nexttitle;
-						nexttitle = 0;
-					} else {
-						nexttitlesurf = nextblock;
-						scrollheight[nextblock] = 160; // skip some space
-					}
-
-				} else {
-
-					int height = 0;
-
-					Pentagram::Font* font = redfont;
-					Pentagram::Font::TextAlign align =
-						Pentagram::Font::TEXT_LEFT;
-					int indent = 0;
-
-					while (!line.empty()) {
-						std::string outline;
-						char modifier;
-						unsigned int remaining;
-						extractLine(line, modifier, outline);
-
-						// pout << "Rendering line: " << outline << std::endl;
-
-						if (outline.empty()) {
-							height += 8;
-							continue;
-						}
-
-						switch (modifier) {
-						case '&':
-							font = yellowfont;
-							align = Pentagram::Font::TEXT_CENTER;
-							break;
-						case '}':
-							font = redfont;
-							align = Pentagram::Font::TEXT_CENTER;
-							break;
-						case '~':
-							font = yellowfont;
-							align = Pentagram::Font::TEXT_LEFT;
-							indent = 32;
-							break;
-						default:
-							break;
-						}
-
-						if (outline[0] == '&') { 
-							// horizontal line
-
-							if (scrollheight[nextblock]+height+7 > 200) {
-								done = true;
-								break;
-							}
-
-							int linewidth = outline.size() * 8;
-							if (linewidth > 192) linewidth = 192;
-
-							scroll[nextblock]->
-								Fill32(0xFFD43030,128-(linewidth/2),
-									   scrollheight[nextblock]+height+3,
-									   linewidth,1);
-							height += 7;
-							continue;
-						}
-
-						RenderedText* rt = font->renderText(outline, remaining,
-															256-indent, 0,
-															align);
-						int xd,yd;
-						rt->getSize(xd,yd);
-
-						if (scrollheight[nextblock]+height+yd > 200) {
-							delete rt;
+					if (outline[0] == '&') { 
+						// horizontal line
+						
+						if (scrollheight[nextblock]+height+7 > 200) {
 							done = true;
 							break;
 						}
-
-						rt->draw(scroll[nextblock], indent,
-								 scrollheight[nextblock]+height+
-								 font->getBaseline());
-
-						height += yd + rt->getVlead();
-
+						
+						int linewidth = outline.size() * 8;
+						if (linewidth > 192) linewidth = 192;
+						
+						scroll[nextblock]->
+							Fill32(0xFFD43030,128-(linewidth/2),
+								   scrollheight[nextblock]+height+3,
+								   linewidth,1);
+						height += 7;
+						continue;
+					}
+					
+					RenderedText* rt = font->renderText(outline, remaining,
+														256-indent, 0,
+														align);
+					int xd,yd;
+					rt->getSize(xd,yd);
+					
+					if (scrollheight[nextblock]+height+yd > 200) {
 						delete rt;
+						done = true;
+						break;
 					}
-
-					height += parskip;
-					if (scrollheight[nextblock] + height > 200) {
-						if (firstline) {
-							height = 200 - scrollheight[nextblock];
-							assert(height >= 0);
-						} else {
-							done = true;
-						}
-					}
-
-					if (done) break; // no room
-
-					scrollheight[nextblock] += height;
+					
+					rt->draw(scroll[nextblock], indent,
+							 scrollheight[nextblock]+height+
+							 font->getBaseline());
+					
+					height += yd + rt->getVlead();
+					
+					delete rt;
 				}
+				
+				if (state == CS_PLAYING)
+					height += parskip;
 
-
-				if (endline != std::string::npos) endline++;
-				text.erase(0, endline);
-
-				firstline = false;
+				if (scrollheight[nextblock] + height > 200) {
+					if (firstline) {
+						height = 200 - scrollheight[nextblock];
+						assert(height >= 0);
+					} else {
+						done = true;
+					}
+				}
+				
+				if (done) break; // no room
+				
+				scrollheight[nextblock] += height;
 			}
+			
+			
+			if (endline != std::string::npos) endline++;
+			text.erase(0, endline);
+			
+			firstline = false;
 		}
 	}
 
 	currenty++;
 
-	if (currenty == scrollheight[currentsurface]) {
+	if (currenty >= scrollheight[currentsurface]) {
 		// next surface
+		currenty -= scrollheight[currentsurface];
 		scrollheight[currentsurface] = 0;
 		currentsurface = (currentsurface+1)%4;
-		currenty = 0;
 
 		if (nexttitle && currentsurface == nexttitlesurf) {
 			delete title;
@@ -321,7 +337,8 @@ void CreditsGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 	Texture* tex = scroll[currentsurface]->GetSurfaceAsTexture();
 	int h = scrollheight[currentsurface] - currenty;
 	if (h > 156) h = 156;
-	surf->Blit(tex, 0, currenty, 256, h, 32, 44);
+	if (h > 0)
+		surf->Blit(tex, 0, currenty, 256, h, 32, 44);
 
 	int y = h;
 	for (int i = 1; i < 4; i++) {

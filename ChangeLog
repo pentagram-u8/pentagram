@@ -1,3 +1,6 @@
+2005-03-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/CreditsGump.*: fix ending of quotes/credits
+
 2005-03-24  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/MovieGump.*: made MovieGump modal
 	* gumps/CreditsGump.*: gump for playing credits/quotes

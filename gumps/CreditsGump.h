@@ -52,6 +52,12 @@ protected:
 	std::string text;
 	int parskip;
 
+	enum CreditsState {
+		CS_PLAYING,
+		CS_FINISHING,
+		CS_CLOSING
+	} state;
+
 	int timer;
 
 	RenderedText* title;
