@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003  The Pentagram Team
+ *  Copyright (C) 2003-2004  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,11 +32,15 @@
 
 #include "Gump.h"
 
+class RenderedText;
+
 class SimpleTextWidget : public Gump
 {
 protected:
 	std::string		text;
 	int				fontnum;
+
+	RenderedText* cached_text;
 
 public:
 	ENABLE_RUNTIME_CLASSTYPE();

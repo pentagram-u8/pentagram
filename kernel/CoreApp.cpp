@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2003 The Pentagram team
+Copyright (C) 2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GameInfo.h"
 #include "GameDetector.h"
 
-#include <SDL.h>
+#include "SDL.h"
 
 #if defined(WIN32) && defined(WIN32_USE_MY_DOCUMENTS)
 #include <shlobj.h>

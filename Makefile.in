@@ -49,8 +49,9 @@ WARNINGS := @WARNINGS@
 # The order is important, be careful if you change it
 MODULES := convert convert/u8 convert/crusader misc filesys \
 	tools tools/disasm tools/compile tools/fold tools/shapeconv \
-	kernel games graphics audio audio/midi audio/midi/timidity usecode \
-	world world/actors gumps gumps/widgets conf .
+	kernel games graphics graphics/fonts audio audio/midi \
+	audio/midi/timidity usecode world world/actors gumps \
+	gumps/widgets conf .
 
 # look for include files in
 #   each of the modules
@@ -98,5 +99,6 @@ $(srcdir)/configure: $(srcdir)/configure.ac $(top_srcdir)/aclocal.m4
 	cd $(srcdir) && $(AUTOCONF)
 $(top_srcdir)/aclocal.m4: $(srcdir)/configure.ac
 	cd $(srcdir) && $(ACLOCAL)
+# fixme: rebuilding misc/config.h.in and misc/config.h
 
 .PHONY: all clean distclean
