@@ -94,9 +94,10 @@ void Map::loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds,
 
 	for (uint32 i = 0; i < itemcount; ++i)
 	{
-		sint32 x = static_cast<sint32>(ds->readXS(2));
-		sint32 y = static_cast<sint32>(ds->readXS(2));
-		sint32 z = static_cast<sint32>(ds->readXS(1));
+		// These are ALL unsigned on disk
+		sint32 x = static_cast<sint32>(ds->readX(2));
+		sint32 y = static_cast<sint32>(ds->readX(2));
+		sint32 z = static_cast<sint32>(ds->readX(1));
 
 		uint32 shape = ds->read2();
 		uint32 frame = ds->read1();

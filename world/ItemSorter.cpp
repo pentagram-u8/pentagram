@@ -344,28 +344,28 @@ inline bool SortItem::operator<(const SortItem& si2) const
 	}
 
 	// Biased Clearly in z
-	if (si1.ztop-4 <= si2.z) return true;
-	else if (si1.z >= si2.ztop-4) return false;
+	if ((si1.ztop+si1.z)/2 <= si2.z) return true;
+	else if (si1.z >= (si2.ztop+si2.z)/2) return false;
 
 	// Biased Clearly X
-	if (si1.x-4 <= si2.xleft) return true;
-	else if (si1.xleft >= si2.x-4) return false;
+	if ((si1.x+si1.xleft)/2 <= si2.xleft) return true;
+	else if (si1.xleft >= (si2.x+si2.xleft)/2) return false;
 
 	// Biased Clearly Y
-	if (si1.y-4 <= si2.yfar) return true;
-	else if (si1.yfar >= si2.y-4) return false;
+	if ((si1.y+si1.yfar)/2 <= si2.yfar) return true;
+	else if (si1.yfar >= (si2.y+si2.yfar)/2) return false;
 
 	// Partial in X + Y front
-//	if (si1.x + si1.y != si1.x + si2.y) return (si1.x + si1.y < si2.x + si2.y);
+	if (si1.x + si1.y != si1.x + si2.y) return (si1.x + si1.y < si2.x + si2.y);
 
 	// Partial in X + Y back
-//	if (si1.xleft + si1.yfar != si1.xleft + si2.yfar) return (si1.xleft + si1.yfar < si2.xleft + si2.yfar);
+	if (si1.xleft + si1.yfar != si1.xleft + si2.yfar) return (si1.xleft + si1.yfar < si2.xleft + si2.yfar);
 
 	// Partial in x?
-//	if (si1.x != si2.x) return si1.x < si2.x;
+	if (si1.x != si2.x) return si1.x < si2.x;
 
 	// Partial in y?
-//	if (si1.y != si2.y) return si1.y < si2.y;
+	if (si1.y != si2.y) return si1.y < si2.y;
 
 	// Just sort by shape number - not a number any more (is a pointer)
 	if (si1.shape != si2.shape) return si1.shape < si2.shape;
@@ -379,7 +379,7 @@ inline bool SortItem::operator<(const SortItem& si2) const
 //
 
 ItemSorter::ItemSorter(int Max_Items) : 
-		shapes(0), surf(0), max_items(Max_Items), num_items(0)
+		shapes(0), surf(0), max_items(Max_Items), num_items(0), sort_limit(0)
 {
 	if (max_items <= 0) max_items = Max_Items = 2048;
 	items = new SortItem [max_items];
@@ -767,6 +767,8 @@ bool ItemSorter::PaintSortItem(SortItem	*si)
 		surf->Paint(si->shape, si->frame, si->sxbot, si->sybot);
 		
 //	if (wire) si->info->draw_box_front(s, dispx, dispy, 255);
+
+	if (sort_limit && order_counter == sort_limit) return true;
 
 	return false;
 }

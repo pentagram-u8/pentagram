@@ -211,12 +211,13 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 
 	for (uint32 i = 1; i < 256; ++i) // Get rid of constants?
 	{
+		// These are ALL unsigned on disk
 		itemds->seek(0x00000+i*2);
-		sint32 x = static_cast<sint32>(itemds->readXS(2));
+		sint32 x = static_cast<sint32>(itemds->readX(2));
 		itemds->seek(0x04800+i*2);
-		sint32 y = static_cast<sint32>(itemds->readXS(2));
+		sint32 y = static_cast<sint32>(itemds->readX(2));
 		itemds->seek(0x09000+i*1);
-		sint32 z = static_cast<sint32>(itemds->readXS(1));
+		sint32 z = static_cast<sint32>(itemds->readX(1));
 
 		itemds->seek(0x0B400+i*2);
 		uint32 shape = itemds->read2();

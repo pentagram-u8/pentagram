@@ -1,3 +1,9 @@
+2003-05-15  Ryan Nunn <colourles@users.sourceforge.net>
+	* world/Map.cpp, world/World.cpp : Fixing 'lamp' problem (coords must be 
+	  read as unsigned)
+	* kernel/Application.cpp, world/ItemSorter.* : Sort debugging ([ and ]) and
+	  fixing a few incorrect sort order problems.
+
 2003-05-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Application.cpp, usecode/UCMachine.*: target intrinsic hack
 	* world/Item.*: some item creation intrinsics

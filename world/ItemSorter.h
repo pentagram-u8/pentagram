@@ -36,6 +36,7 @@ class ItemSorter
 	uint32		max_items;
 	uint32		num_items;
 	SortItem	*items;
+	sint32		sort_limit;
 
 	sint32		order_counter;
 
@@ -50,6 +51,9 @@ public:
 
 	void PaintDisplayList();				// Finishes the display list and Paints
 	uint16 Trace(sint32 x, sint32 y);		// Trace and find an object. Returns objid 
+
+	void IncSortLimit() { sort_limit++; }
+	void DecSortLimit() { if (sort_limit > 0) sort_limit--; }
 
 private:
 	bool PaintSortItem(SortItem	*);

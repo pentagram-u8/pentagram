@@ -650,6 +650,8 @@ void Application::handleEvent(const SDL_Event& event)
 		case SDLK_ESCAPE: case SDLK_q: isRunning = false; break;
 		case SDLK_PAGEUP: if (showconsole) con.ScrollConsole(-3); break;
 		case SDLK_PAGEDOWN: if (showconsole) con.ScrollConsole(3); break;
+		case SDLK_LEFTBRACKET: display_list->DecSortLimit(); break;
+		case SDLK_RIGHTBRACKET: display_list->IncSortLimit(); break;
 		default: break;
 		}
 	}
