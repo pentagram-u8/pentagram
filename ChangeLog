@@ -2,6 +2,7 @@
 	* gumps/MovieGump.*: made MovieGump modal
 	* gumps/CreditsGump.*: gump for playing credits/quotes
 	* games/U8Game.*: play Ultima 8's credits/quotes from the menu
+	* kernel/ObjectManager.cpp: extra sanity check while loading
 
 2005-03-23  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/fonts/*RenderedText.*, gumps/widgets/*Widget.*: pass vlead

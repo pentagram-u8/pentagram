@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2004 The Pentagram team
+Copyright (C) 2002-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -335,8 +335,19 @@ Object* ObjectManager::loadObject(IDataSource* ids, std::string classname,
 	}
 	uint16 objid = obj->getObjId();
 
-	if (objid != 0xFFFF)
+	if (objid != 0xFFFF) {
 		objects[objid] = obj;
+		bool used;
+		if (objid >= 256)
+			used = objIDs->isIDUsed(objid);
+		else
+			used = actorIDs->isIDUsed(objid);
+		if (!used) {
+			perr << "Error: object ID " << objid
+				 << " used but marked available. " << std::endl;
+			return 0;
+		}
+	}
 
 	return obj;
 }
