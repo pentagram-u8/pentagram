@@ -811,7 +811,7 @@ void Application::handleEvent(const SDL_Event& event)
 				avatar->getLocation(x,y,z);
 				avatar->move(x-512,y-512,z);
 			} else { 
-				pout << "Can't: avatarInStatus" << std::endl; 
+				pout << "Can't: avatarInStasis" << std::endl; 
 			}
 		} break;
 		case SDLK_DOWN: {
@@ -821,7 +821,7 @@ void Application::handleEvent(const SDL_Event& event)
 				avatar->getLocation(x,y,z);
 				avatar->move(x+512,y+512,z);
 			} else { 
-				pout << "Can't: avatarInStatus" << std::endl; 
+				pout << "Can't: avatarInStasis" << std::endl; 
 			}
 		} break;
 		case SDLK_LEFT: {
@@ -831,7 +831,7 @@ void Application::handleEvent(const SDL_Event& event)
 				avatar->getLocation(x,y,z);
 				avatar->move(x-512,y+512,z);
 			} else { 
-				pout << "Can't: avatarInStatus" << std::endl; 
+				pout << "Can't: avatarInStasis" << std::endl; 
 			}
 		} break;
 		case SDLK_RIGHT: {
@@ -841,7 +841,7 @@ void Application::handleEvent(const SDL_Event& event)
 				avatar->getLocation(x,y,z);
 				avatar->move(x+512,y-512,z);
 			} else { 
-				pout << "Can't: avatarInStatus" << std::endl; 
+				pout << "Can't: avatarInStasis" << std::endl; 
 			}
 		} break;
 		case SDLK_BACKQUOTE: showconsole = !showconsole; break;
@@ -857,7 +857,7 @@ void Application::handleEvent(const SDL_Event& event)
 				Process* p = new ActorAnimProcess(devon, 0, 2);
 				Kernel::get_instance()->addProcess(p);
 			} else { 
-				pout << "Can't: avatarInStatus" << std::endl; 
+				pout << "Can't: avatarInStasis" << std::endl; 
 			} 
 		} break;
 		case SDLK_f: { // trigger 'first' egg
@@ -874,7 +874,7 @@ void Application::handleEvent(const SDL_Event& event)
 				SetCameraProcess(new CameraProcess(ix,iy,iz)); // Center on egg
 				item->callUsecodeEvent(7);
 			} else { 
-				pout << "Can't: avatarInStatus" << std::endl; 
+				pout << "Can't: avatarInStasis" << std::endl; 
 			} 
 		} break;
 		case SDLK_g: { // trigger 'execution' egg
@@ -888,7 +888,7 @@ void Application::handleEvent(const SDL_Event& event)
 				avatar->move(x,y,z);
 				item->callUsecodeEvent(7);
 			} else { 
-				pout << "Can't: avatarInStatus" << std::endl; 
+				pout << "Can't: avatarInStasis" << std::endl; 
 			} 
 		} break;
 		default: break;
