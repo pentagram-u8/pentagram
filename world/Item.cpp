@@ -34,6 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "UCStack.h"
 #include "Direction.h"
+#include "ItemMoveProcess.h"
 
 /*
 My current idea on how to construct items: an ItemFactory class that
@@ -699,7 +700,7 @@ uint32 Item::I_ask(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_legalCreateAtPoint(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_NULL32(); // ARG_ITEM(item); // unused?
+	ARG_UINT32(itemptr); // need to store the item id at *itemptr
 	ARG_UINT16(shape);
 	ARG_UINT16(frame);
 	ARG_UINT32(ptr);
@@ -729,12 +730,16 @@ uint32 Item::I_legalCreateAtPoint(const uint8* args, unsigned int /*argsize*/)
 	uint16 objID = newitem->assignObjId();
 	World::get_instance()->getCurrentMap()->addItem(newitem);
 
+	buf[0] = static_cast<uint8>(objID);
+	buf[1] = static_cast<uint8>(objID >> 8);
+	UCMachine::get_instance()->assignPointer(itemptr, buf, 2);
+
 	return objID;
 }
 
 uint32 Item::I_legalCreateAtCoords(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_NULL32(); // ARG_ITEM(item); // unused?
+	ARG_UINT32(itemptr); // need to store the item id at *itemptr
 	ARG_UINT16(shape);
 	ARG_UINT16(frame);
 	ARG_UINT16(x);
@@ -755,12 +760,17 @@ uint32 Item::I_legalCreateAtCoords(const uint8* args, unsigned int /*argsize*/)
 	uint16 objID = newitem->assignObjId();
 	World::get_instance()->getCurrentMap()->addItem(newitem);
 
+	uint8 buf[2];
+	buf[0] = static_cast<uint8>(objID);
+	buf[1] = static_cast<uint8>(objID >> 8);
+	UCMachine::get_instance()->assignPointer(itemptr, buf, 2);
+
 	return objID;
 }
 
 uint32 Item::I_legalCreateInCont(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_NULL32(); // ARG_ITEM(item); // unused?
+	ARG_UINT32(itemptr); // need to store the item id at *itemptr
 	ARG_UINT16(shape);
 	ARG_UINT16(frame);
 	ARG_CONTAINER(container);
@@ -777,13 +787,18 @@ uint32 Item::I_legalCreateInCont(const uint8* args, unsigned int /*argsize*/)
 		return 0;
 	}
 
+	// also need to check weight, volume maybe??
 	if (container->AddItem(newitem)) {
 		uint16 objID = newitem->assignObjId();
 
+		uint8 buf[2];
+		buf[0] = static_cast<uint8>(objID);
+		buf[1] = static_cast<uint8>(objID >> 8);
+		UCMachine::get_instance()->assignPointer(itemptr, buf, 2);
+
 		return objID;
 	} else {
-		// failed to add (weight, volume, ...)
-		// clean up
+		// failed to add; clean up
 		delete newitem;
 
 		return 0;
@@ -864,7 +879,7 @@ uint32 Item::I_push(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_create(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_NULL32(); // ARG_ITEM(item); // unused
+	ARG_UINT32(itemptr); // need to store the item id at *itemptr (????)
 	ARG_UINT16(shape);
 	ARG_UINT16(frame);
 
@@ -878,6 +893,12 @@ uint32 Item::I_create(const uint8* args, unsigned int /*argsize*/)
 
 	newitem->setFlag(FLG_ETHEREAL);
 	World::get_instance()->etherealPush(objID);
+
+	uint8 buf[2];
+	buf[0] = static_cast<uint8>(objID);
+	buf[1] = static_cast<uint8>(objID >> 8);
+	UCMachine::get_instance()->assignPointer(itemptr, buf, 2);
+
 	return objID;
 }
 
@@ -1029,3 +1050,25 @@ uint32 Item::I_getDirFromItem(const uint8* args, unsigned int /*argsize*/)
 	return Get_WorldDirection(item->y - item2->y, item->x - item2->x);
 }
 
+
+uint32 Item::I_shoot(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_UINT32(ptr);
+	ARG_UINT16(unk1);
+	ARG_UINT16(unk2);
+	if (!item) return 0;
+
+	uint8 buf[5];
+	if (!UCMachine::get_instance()->dereferencePointer(ptr, buf, 5)) {
+		perr << "Illegal WorldPoint pointer passed to I_shoot."
+			 << std::endl;
+		return 0;
+	}
+
+	uint16 x = buf[0] + (buf[1]<<8);
+	uint16 y = buf[2] + (buf[3]<<8);
+	uint16 z = buf[4];
+
+	return Kernel::get_instance()->addProcess(new ItemMoveProcess(item,x,y,z,unk1));
+}

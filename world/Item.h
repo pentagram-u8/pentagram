@@ -154,6 +154,7 @@ public:
 	INTRINSIC(I_popToContainer);
 	INTRINSIC(I_popToEnd);
 	INTRINSIC(I_destroy);
+	INTRINSIC(I_shoot);
 	INTRINSIC(I_getFamilyOfType);
 	INTRINSIC(I_getEtherealTop);
 

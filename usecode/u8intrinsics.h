@@ -104,7 +104,7 @@ Intrinsic U8Intrinsics[] = {
 	Actor::I_isNPC,
 	0,
 	0,
-	0,
+	Item::I_shoot,
 	0,
 	0,
 	0,
