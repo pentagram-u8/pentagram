@@ -484,34 +484,43 @@ void CurrentMap::surfaceSearch(UCList* itemlist, const uint8* loopscript,
 					uint32 scriptsize, Item* check, bool above, bool below,
 					bool recurse)
 {
-	sint32 x,y,z;
-	sint32 xd,yd,zd;
-	check->getLocation(x,y,z);
-	check->getFootpadWorld(xd,yd,zd);
+	sint32 origin[3];
+	sint32 dims[3];
+	check->getLocation(origin[0], origin[1], origin[2]);
+	check->getFootpadWorld(dims[0], dims[1], dims[2]);
+	surfaceSearch(itemlist, loopscript, scriptsize, check->getObjId(),
+				origin, dims, above, below, recurse);
+}
 
-	Rect searchrange(x-xd,y-yd,xd,yd);
+void CurrentMap::surfaceSearch(UCList* itemlist, const uint8* loopscript,
+					uint32 scriptsize, ObjId check,
+					sint32 origin[3], sint32 dims[3],
+					bool above, bool below, bool recurse)
+{
+	Rect searchrange(origin[0] - dims[0], origin[1] - dims[1],
+					dims[0], dims[1]);
 
-	int minx, miny, maxx, maxy;
+	sint32 minx, miny, maxx, maxy;
 
 	//! constants
-	minx = ((x-xd)/MAP_CHUNK_SIZE) - 1;
-	maxx = ((x)/MAP_CHUNK_SIZE) + 1;
-	miny = ((y-yd)/MAP_CHUNK_SIZE) - 1;
-	maxy = ((y)/MAP_CHUNK_SIZE) + 1;
+	minx = ((origin[0] - dims[0])/MAP_CHUNK_SIZE) - 1;
+	maxx = ((origin[0])/MAP_CHUNK_SIZE) + 1;
+	miny = ((origin[1] - dims[1])/MAP_CHUNK_SIZE) - 1;
+	maxy = ((origin[1])/MAP_CHUNK_SIZE) + 1;
 	if (minx < 0) minx = 0;
 	if (maxx >= MAP_NUM_CHUNKS) maxx = MAP_NUM_CHUNKS-1;
 	if (miny < 0) miny = 0;
 	if (maxy >= MAP_NUM_CHUNKS) maxy = MAP_NUM_CHUNKS-1;
 
-	for (int cx = minx; cx <= maxx; cx++) {
-		for (int cy = miny; cy <= maxy; cy++) {
+	for (sint32 cx = minx; cx <= maxx; cx++) {
+		for (sint32 cy = miny; cy <= maxy; cy++) {
 			item_list::iterator iter;
 			for (iter = items[cx][cy].begin();
 				 iter != items[cx][cy].end(); ++iter) {
 
 				Item* item = *iter;
 
-				if (item == check) continue;
+				if (item->getObjId() == check) continue;
 				if (item->getExtFlags() & Item::EXT_SPRITE) continue;
 
 				// check if item is in range?
@@ -526,19 +535,19 @@ void CurrentMap::surfaceSearch(UCList* itemlist, const uint8* loopscript,
 
 				bool ok = false;
 				
-				if (above && iz == (z + zd)) 
+				if (above && iz == (origin[2] + dims[2]))
 				{
 					ok = true;
 					// Only recursive if tops aren't same (i.e. NOT flat)
-					if (recurse && (izd+iz != zd+z) )
+					if (recurse && (izd+iz != origin[2] + dims[2]) )
 						surfaceSearch(itemlist, loopscript, scriptsize, item, true, false, true);
 				}
 				
-				if (below && z == (iz + izd)) 
+				if (below && origin[2] == (iz + izd))
 				{
 					ok = true;
 					// Only recursive if bottoms aren't same (i.e. NOT flat)
-					if (recurse && (izd != zd) )
+					if (recurse && (izd != dims[2]) )
 						surfaceSearch(itemlist, loopscript, scriptsize, item, false, true, true);
 				}
 
@@ -550,7 +559,7 @@ void CurrentMap::surfaceSearch(UCList* itemlist, const uint8* loopscript,
 					uint8 buf[2];
 					buf[0] = static_cast<uint8>(objid);
 					buf[1] = static_cast<uint8>(objid >> 8);
-					itemlist->append(buf);				
+					itemlist->append(buf);
 				}
 			}
 		}

@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ObjectManager.h"
 #include "Kernel.h"
 #include "UCMachine.h"
+#include "UCList.h"
 #include "World.h"
 #include "ActorAnimProcess.h"
 #include "CurrentMap.h"
@@ -39,6 +40,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Shape.h"
 
 #include "ItemFactory.h"
+#include "LoopScript.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
 
@@ -345,23 +347,19 @@ Animation::Result Actor::tryAnim(Animation::Sequence anim, int dir, PathfindingS
 	}
 	
 	//check if the animation completes on solid ground
-	start[0] = end[0]; start[1] = end[1]; start[2] = end[2];
-	end[2] -= 8;
-	hit.clear();
-	if (currentmap->sweepTest(start, end, dims, getObjId(), true, &hit))
+	UCList uclist(2);
+	LOOPSCRIPT(script, LS_TOKEN_TRUE); // we want all items
+	currentmap->surfaceSearch(&uclist, script, sizeof(script),
+										  getObjId(), end, dims,
+										  false, true, false);
+
+	for (uint32 i = 0; i < uclist.getSize(); i++)
 	{
-		std::list<CurrentMap::SweepItem>::iterator iter;
-		for (iter = hit.begin(); iter != hit.end(); ++iter) {
-			if (!iter->touching)
-			{
-				Item * item = World::get_instance()->getItem(iter->item);
-				if (item->getShapeInfo()->is_land())
-				{
-					return Animation::SUCCESS;
-				}
-			}
-		}
+		Item *item = World::get_instance()->getItem(uclist.getuint16(i));
+		if (item->getShapeInfo()->is_land())
+			return Animation::SUCCESS;
 	}
+
 
 	return Animation::END_OFF_LAND;
 }

@@ -82,6 +82,12 @@ public:
 					uint32 scriptsize, Item* item, bool above, bool below,
 					bool recurse=false);
 
+	// Surface search: Search above and below an item.
+	void surfaceSearch(UCList* itemlist, const uint8* loopscript,
+					uint32 scriptsize, ObjId id,
+					sint32 origin[3], sint32 dims[2],
+					bool above, bool below, bool recurse=false);
+
 	// Collision detection. Returns true if the box [x,y,z]-[x-xd,y-yd,z+zd]
 	// does not collide with any solid items.
 	// Additionally, if support is not NULL, *support is set to the item

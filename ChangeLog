@@ -1,3 +1,9 @@
+2004-07-05  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* world/CurrentMap.*: second version of surfaceSearch added
+	* world/actors/Actor.cpp: use surfaceSearch for END_OFF_LAND test
+	* world/actors/AvatarMoverProcess.cpp: keepBalance before stepping off
+	  cliffs.
+
 2004-07-07  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* data/u8monsters.ini: mark seeker as exploding
 	* world/actors/Actor.cpp: let seekers explode on death

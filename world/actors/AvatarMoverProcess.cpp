@@ -382,6 +382,14 @@ bool AvatarMoverProcess::handleNormalMode()
 		//!! TODO: check if you can actually take this step
 
 		nextanim = Animation::step;
+
+		//Not perfect, but don't think anyone will ever notice or care.
+		if ((avatar->tryAnim(nextanim, nextdir) == Animation::END_OFF_LAND) &&
+			(lastanim != Animation::keepBalance))
+		{
+			nextanim = Animation::keepBalance;
+		}
+
 		if (mouselength == 1)
 			nextanim = Animation::walk;
 
