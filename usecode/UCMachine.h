@@ -69,6 +69,7 @@ public:
 
 	INTRINSIC(I_target);
 	INTRINSIC(I_AvatarCanCheat);
+	INTRINSIC(I_isGameRunning);
 	INTRINSIC(I_dummyProcess);
 	INTRINSIC(I_getName);
 	INTRINSIC(I_urandom);

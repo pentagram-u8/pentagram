@@ -147,7 +147,6 @@ bool World::switchMap(uint32 newmap)
 		if (desktop) desktop->MapChanged();
 	}
 
-#if 0
 	// get rid of any remaining ethereal items
 	while (!etherealEmpty()) {
 		uint16 eth = etherealPop();
@@ -157,7 +156,6 @@ bool World::switchMap(uint32 newmap)
 			delete o;
 		}
 	}
-#endif
 
 	uint32 oldmap = currentmap->getNum();
 	if (oldmap != 0) {

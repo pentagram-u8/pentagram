@@ -26,8 +26,9 @@
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(ItemRelativeGump,Gump);
 
-ItemRelativeGump::ItemRelativeGump(int x, int y, int width, int height, uint16 owner, uint32 _Flags, sint32 _Layer) :
-	Gump(x, y, width, height, owner, _Flags, _Layer), ix(0), iy(0)
+ItemRelativeGump::ItemRelativeGump(int x, int y, int width, int height,
+								   uint16 owner, uint32 _Flags, sint32 _Layer)
+	: Gump(x, y, width, height, owner, _Flags, _Layer), ix(0), iy(0)
 {
 	int num_lines = 0;
 }
@@ -36,7 +37,8 @@ ItemRelativeGump::~ItemRelativeGump(void)
 {
 }
 
-// Paint the Gump (RenderSurface is relative to parent). Calls PaintThis and PaintChildren
+// Paint the Gump (RenderSurface is relative to parent).
+// Calls PaintThis and PaintChildren
 void ItemRelativeGump::Paint(RenderSurface*surf, sint32 lerp_factor)
 {
 	GetItemLocation(lerp_factor);
@@ -69,8 +71,9 @@ void ItemRelativeGump::GetItemLocation(sint32 lerp_factor)
 
 	it = World::get_instance()->getItem(owner);
 
-	if (!it) // This shouldn't ever happen, the GumpNotifyProcess should close us before we get here
-	{
+	if (!it) {
+		// This shouldn't ever happen, the GumpNotifyProcess should
+		// close us before we get here
 		Close();
 		return;
 	}
@@ -90,7 +93,8 @@ void ItemRelativeGump::GetItemLocation(sint32 lerp_factor)
 		gump = GetRootGump()->FindGump<GameMapGump>();
 
 		if (!gump) {
-			perr << "ItemRelativeGump::GetItemLocation(): Unable to find GameMapGump!?!?" << std::endl;
+			perr << "ItemRelativeGump::GetItemLocation(): "
+				 << "Unable to find GameMapGump!?!?" << std::endl;
 			return;
 		}
 
@@ -103,7 +107,8 @@ void ItemRelativeGump::GetItemLocation(sint32 lerp_factor)
 		return;
 	}
 
-	// Convert the GumpSpaceCoord relative to the world/item gump into screenspace coords
+	// Convert the GumpSpaceCoord relative to the world/item gump
+	// into screenspace coords
 	gump->GumpToScreenSpace(gx,gy);
 
 	// Convert the screenspace coords into the coords of us

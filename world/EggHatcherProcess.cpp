@@ -62,7 +62,7 @@ bool EggHatcherProcess::run(const uint32 framenum)
 		sint32 x,y,z;
 		egg->getLocation(x,y,z);
 
-		//! constants (is 8 the right scale?)
+		//! constants
 		sint32 x1 = x - 32 * egg->getXRange();
 		sint32 x2 = x + 32 * egg->getXRange();
 		sint32 y1 = y - 32 * egg->getYRange();

@@ -115,8 +115,8 @@ Intrinsic U8Intrinsics[] = {
 	Item::I_bark,
 	Item::I_ask,
 	0, // Item::getSliderInput
-	0, // Item::openGump
-	0, // Item::closeGump
+	Item::I_openGump,
+	Item::I_closeGump,
 	0, //U
 	0, //U
 	// 0x050
@@ -304,7 +304,7 @@ Intrinsic U8Intrinsics[] = {
 	0,
 	UCMachine::I_AvatarCanCheat,
 	0,
-	0,
+	UCMachine::I_isGameRunning,
 	0,
 	// 0x100
 	0,

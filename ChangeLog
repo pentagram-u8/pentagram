@@ -1,52 +1,61 @@
+2003-06-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/ContainerGump.*: a container gump. No interaction yet.
+
 2003-06-06	Darke <darkepaw@users.sf.net>
-	* misc/Console.*: Added support for a basic message filtering system for
-	  output. Basicly instead of your normal con.Printf(...) call, you instead
-	  call `con.Printf(MM_INFO, ...)` (or whatever mask you want other then
-	  MM_INFO...) and depending upon what the global mask is set to allow,
-	  it will be appropriately printed or not. The default is to print
-	  everything.
-	  For details as to what the general masks mean, see the MsgMask enum in
-	  misc/Console.h. Most of the examples are currently in kernel/CoreApp.cpp.
+	* misc/Console.*: Added support for a basic message filtering
+	  system for output. Basicly instead of your normal
+	  con.Printf(...) call, you instead call
+	  `con.Printf(MM_INFO, ...)` (or whatever mask you want other
+	  than MM_INFO...) and depending upon what the global mask is set
+	  to allow, it will be appropriately printed or not. The default
+	  is to print everything. For details as to what the general
+	  masks mean, see the MsgMask enum in misc/Console.h. Most of the
+	  examples are currently in kernel/CoreApp.cpp.
 	* filesys/FileSystem.cpp: Added message filtering stuff.
-	* kernel/CoreApp.*, kernel/ConApp.cpp: Added message filtering stuff, and
-	  a basic 'help' command line message (triggered on -h flag), only useful
-	  in llc at the moment, since support needs to be added in the derived
-	  class.
-	  Also added '-q' and '-qq' flags for 'quiet' and 'very quiet' output,
-	  but since most of the GUIApp and related output hasn't been correctly
-	  setup according to the new setup in Console, you're not going to notice
-	  much. I'm getting there slowly... *grin*
+	* kernel/CoreApp.*, kernel/ConApp.cpp: Added message filtering
+	  stuff, and a basic 'help' command line message (triggered on -h
+	  flag), only useful in llc at the moment, since support needs to
+	  be added in the derived class.
+	  Also added '-q' and '-qq' flags for 'quiet' and 'very quiet'
+	  output, but since most of the GUIApp and related output hasn't
+	  been correctly setup according to the new setup in Console,
+	  you're not going to notice much. I'm getting there slowly...
+	  *grin*
 	* filesys/IDataSource.h: Fixed casting warning.
 	
 2003-06-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/ItemSorter.*, gumps/GameMapGump.*: move camera-related
-	calculations to the end of the rendering 'pipeline' to prevent some
-	tearing between items
+	  calculations to the end of the rendering 'pipeline' to prevent
+	  some tearing between items
 
 2003-06-03	  Ryan Nunn <colourles@users.sourceforge.net>
 	* gump/ItemRelativeGump.* : Fixing broken ItemRelativeGump
 
 2003-06-03	Darke <darkepaw@users.sf.net>
-	* filesys/ListFiles.h: A quick update to properly re-munge the filenames.
+	* filesys/ListFiles.h: A quick update to properly re-munge the
+	  filenames.
 
 2003-06-03	  Ryan Nunn <colourles@users.sourceforge.net>
-	* filesys/IDataSource.h : Theoretically fixing the readline() problem. 
+	* filesys/IDataSource.h : Theoretically fixing the readline()
+	  problem. 
 	
 2003-06-03	  Ryan Nunn <colourles@users.sourceforge.net>
 	* kernel/Process.h : A few new useful methods
-	* kernel/Object.cpp : When an ObjID is cleared, all processes belonging to
-	  that ObjID are now terminated.
-	* graphics/Font.*, graphics/SoftRenderSurface.cpp : Added Baseline, hlead 
-	  and vlead stuff. 
-	* gumps/* : Changed SetupLerp to 'run'. Improved item dependant gump 
-	  handling. Any item dependant gump will now have a GumpNotifyProcess owned
-	  by the item the gump is dependant on. When the process is terminated, it 
-	  will close the gump. Added MapChanged() methods, so the gumps can do 
-	  verious maintenance duties when changing maps.
+	* kernel/Object.cpp : When an ObjID is cleared, all processes
+	  belonging to that ObjID are now terminated.
+	* graphics/Font.*, graphics/SoftRenderSurface.cpp : Added
+	  Baseline, hlead and vlead stuff. 
+	* gumps/* : Changed SetupLerp to 'run'. Improved item dependant
+	  gump handling. Any item dependant gump will now have a
+	  GumpNotifyProcess owned by the item the gump is dependant on.
+	  When the process is terminated, it will close the gump. Added
+	  MapChanged() methods, so the gumps can do various maintenance
+	  duties when changing maps.
 	* gumps/BarkGump.* : Improved font stuff
 	* misc/Console.* : Removed dependencies from even CoreApp.
-	* kernel/GUIApp.* : Changes to get around forcing Console to be dependant 
-	  on an App. Changed where the new desktop->Run(framenum) is called
+	* kernel/GUIApp.* : Changes to get around forcing Console to be
+	  dependant on an App. Changed where the new
+	  desktop->Run(framenum) is called
 	* graphics/Shape.* : Added new constructor (from IDataSource)
 	* kernel/GameData.* : Mouse shape (not yet used)
 	* world/EggHatcherProcess.cpp : Correcting egg range.
@@ -54,69 +63,77 @@
 	* world/World.cpp : Call MapChanged() on gumps
 	
 2003-06-03	Darke <darkepaw@users.sf.net>
-	* objects.mk, module.mk, tools/disasm/module/mk, tools/fold/module.mk:
-	  Shuffled the lists of objects into their own file so I could 'easily'
-	  link the other stand alone apps.
+	* objects.mk, module.mk, tools/disasm/module/mk,
+	  tools/fold/module.mk: Shuffled the lists of objects into their
+	  own file so I could 'easily' link the other stand alone apps.
 	* tools/disasm/Disasm.cpp: Updating to get it working again.
 	* tools/compile/llcTokens.h, tools/compile/llcLexer.*,
 	  tools/compile/CompileUnit.h, tools/compile/CompileProcess.cpp,
-	  tools/compile/Compil.cpp: Some updates to support loading usecode from
-	  proper directories, etc, kind of half finished since Colourless' big
-	  commit interrupted it a little. *grin*
+	  tools/compile/Compil.cpp: Some updates to support loading
+	  usecode from proper directories, etc, kind of half finished
+	  since Colourless' big commit interrupted it a little. *grin*
 	* tools/kernel/Kernel.cpp: Added obvious optimisation.
 	* usecode/UCMachine.*, usecode/Usecode.h, tools/compile/llc.cpp,
-	  kernel/[GUI|Core|Con]App.*: Suffled the usecode machine out of CoreApp,
-	  given it's dependancy on... well... *everything* there's no real way to
-	  abstract it enough atm, since things are still in half-built stages.
-	  Soon though... *muhahahahaha!*
-	* filesys/FileSystem.*, filesys/ListFiles.h: Added preliminary support
-	  for getting a list of files inside a dir. Still needs a bit of
-	  work (doesn't correctly translate raw paths, back to our sandboxed
-	  @paths...)  and it only 'works' correctly under linux/unix (I think,
-	  mingw might work though... and everything else is #error-ed). So if
-	  Colourless is quick, he might be able to get a completely working
-	  version working under 'doze before I under linux! *grin*
+	  kernel/[GUI|Core|Con]App.*: Suffled the usecode machine out of
+	  CoreApp, given it's dependancy on... well... *everything*
+	  there's no real way to abstract it enough atm, since things are
+	  still in half-built stages. Soon though... *muhahahahaha!*
+	* filesys/FileSystem.*, filesys/ListFiles.h: Added preliminary
+	  support for getting a list of files inside a dir. Still needs a
+	  bit of work (doesn't correctly translate raw paths, back to our
+	  sandboxed @paths...)  and it only 'works' correctly under
+	  linux/unix (I think, mingw might work though... and everything
+	  else is #error-ed). So if Colourless is quick, he might be able
+	  to get a completely working version working under 'doze before
+	  I under linux! *grin*
 
 2003-06-02  Ryan Nunn <colourles@users.sourceforge.net>
 	* gumps/Gump.* : Fixing invalid focus_chlid problems 
-	* kernel/CoreApp.h, kernel/GUIApp.h, misc/Console.cpp : Console no longer 
-	  dependant on GUIApp.
+	* kernel/CoreApp.h, kernel/GUIApp.h, misc/Console.cpp : Console
+	  no longer dependant on GUIApp.
 	  
 2003-06-02  Ryan Nunn <colourles@users.sourceforge.net>
 	* Almost every single file being committed here : Changes the 
-	  p_dynamic_cast macros. Just check P_dynamic_cast.h for the new macros to 
-	  use. Also made the macros define some new functions. These are:
-	  1) IsOfType() which can check to see if an object is of a certain type. It
-	  can be used in 2 ways, either with IsOfType(ClassToCheck::ClassType) or
-	  IsOfType<ClassToCheck>(). 
-	  2) GetClassType(), which gets the ClassType for an object virtually so it 
-	  always gets the ClassType for the class the object was created with.
+	  p_dynamic_cast macros. Just check P_dynamic_cast.h for the new
+	  macros to use. Also made the macros define some new functions.
+	  These are:
+	  1) IsOfType() which can check to see if an object is of a
+	   certain type. It can be used in 2 ways, either with
+	   IsOfType(ClassToCheck::ClassType) or IsOfType<ClassToCheck>().
+	  2) GetClassType(), which gets the ClassType for an object
+	   virtually so it always gets the ClassType for the class the
+	   object was created with.
 	    	
-	* Changes due to filesystem: No more raw accesses. Added readline to 
-	  IDataSource. Getting the ifstream from an IFileDataSource is no longer 
-	  such a hack. Added 'memory files'. Not entirely feature complete, but 
-	  what I've done lets me play with using Windows Resources for data files.
+	* Changes due to filesystem: No more raw accesses. Added readline
+	  to IDataSource. Getting the ifstream from an IFileDataSource is
+	  no longer such a hack. Added 'memory files'. Not entirely
+	  feature complete, but what I've done lets me play with using
+	  Windows Resources for data files.
 	  
-	* docs/scratch/quotes.txt : Some long overdue quotes that were supposed to
-	  be added but I held off. And no Darke, there are no toys here ;-)
+	* docs/scratch/quotes.txt : Some long overdue quotes that were
+	  supposed to be added but I held off. And no Darke, there are no
+	  toys here ;-)
 
-	* GUMPS! : Lots of gump related stuff, so much stuff I doubt I could list 
-	  it all. Suffice to say the rendering hacks in GUIApp are long gone. 
-	  Console and GameMap are now drawn using their primitive Gumps. Much of
-	  Gump framework is done, however, I have no idea if input handling will 
-	  work anything near correctly. All the old input hacks are still in 
-	  place. Added ItemRelativeGump. Added BarkGump. It's not entirely 
-	  finished because it should use a TextWidget or some such rather than 
-	  having all the code to handle text drawing in it. Got Item::I_ask to 
-	  create a BarkGump to list the choices. Of course that is in no way a 
-	  correct solution. Added u8gumps.flx to GameData. It's just of type 
-	  ShapeFlex for now but I don't think it needs any changes, not now anyway 
-
-	* Font related: Added some hacks that only allow the length of a line of
-	  text to be about 160 pixels. This is a hack to force word wrapping with
-	  BarkGumps. Added a getHeight() method that can get the height of a font
-	  and also getTextSize() which will calcuate a rect that will fit the 
-	  text (baseline and stuff will cause problems here).
+	* GUMPS! : Lots of gump related stuff, so much stuff I doubt I
+	  could list it all. Suffice to say the rendering hacks in GUIApp
+	  are long gone. Console and GameMap are now drawn using their
+	  primitive Gumps. Much of Gump framework is done, however, I
+	  have no idea if input handling will work anything near
+	  correctly. All the old input hacks are still in place. Added
+	  ItemRelativeGump. Added BarkGump. It's not entirely finished
+	  because it should use a TextWidget or some such rather than 
+	  having all the code to handle text drawing in it. Got
+	  Item::I_ask to create a BarkGump to list the choices. Of course
+	  that is in no way a correct solution. Added u8gumps.flx to
+	  GameData. It's just of type ShapeFlex for now but I don't think
+	  it needs any changes, not now anyway
+	
+	* Font related: Added some hacks that only allow the length of a
+	  line of text to be about 160 pixels. This is a hack to force
+	  word wrapping with BarkGumps. Added a getHeight() method that
+	  can get the height of a font and also getTextSize() which will
+	  calculate a rect that will fit the text (baseline and stuff
+	  will cause problems here).
 
 	* Various files: Fixing up various bug and stuff.
 
@@ -132,7 +149,8 @@
 	* world/TeleportEgg.*, world/actors/MainActor.*: teleporting
 
 2003-05-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
-	* graphics/AnimDat.cpp, world/actors/AnimAction.h: read more anim. data
+	* graphics/AnimDat.cpp, world/actors/AnimAction.h: read more
+	anim. data
 	* docs/u8anim.txt: changed some flag guesses
 	* world/*Egg*: use original's way of storing egg data
 
@@ -148,76 +166,83 @@
 	* graphics/*RenderSurface*: a very very basic PrintText
 	
 2003-05-29	Darke <darkepaw@users.sf.net>
-	* configure.ac: Adding semi-b0rk3n support for linking into a seperate
-	  console-only binary. Almost completely useless, overly linked to objects
-	  and in the wrong place (since I was wanting to not have to duplicate
-	  the significant list of overlapping objects for console vs. gui
-	  binaries), and I couldn't get the module.mk to support it properly.
-	  No point to modifying the .mingw makefile with this binary at the
-	  moment, wait until I get around to disentangling everything. *grin*
+	* configure.ac: Adding semi-b0rk3n support for linking into a
+	  seperate console-only binary. Almost completely useless, overly
+	  linked to objects and in the wrong place (since I was wanting
+	  to not have to duplicate the significant list of overlapping
+	  objects for console vs. gui binaries), and I couldn't get the
+	  module.mk to support it properly. No point to modifying the
+	  .mingw makefile with this binary at the moment, wait until I
+	  get around to disentangling everything. *grin*
 	* kernel/[Core|GUI]App.*: Cleanup of random left-over crud.
-	* module.mk, llcLexer.cpp: Pointless cleanup of warnings when I was
-	  bored at work. *grin*
+	* module.mk, llcLexer.cpp: Pointless cleanup of warnings when I
+	  was bored at work. *grin*
 	* usecode/UCMachine.*: Minor additional abstraction.
 	* kernel/ConApp.*,llc.cpp: Console application abstraction.
 	
 2003-05-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
-	* configure.ac: 'sed' is one of the standard utilities configure uses,
-	so checking for it won't help. Things will break horribly without it.
+	* configure.ac: 'sed' is one of the standard utilities configure
+	uses, so checking for it won't help. Things will break horribly
+	without it.
 	* configure.ac: cleaned up the platform-specific #define's a bit
 
 2003-05-28	Darke <darkepaw@users.sf.net>
-	* configure.ac: Checks for `sed` and reports a warning if it's lacking.
-	* tools/compile/module.mk: Runs a few sed scripts so that it shouldn't
-	  be necessary to hack-make a correct FlexLexer.h or prepend a
-	  #include "pent_include.h"
+	* configure.ac: Checks for `sed` and reports a warning if it's
+	  lacking.
+	* tools/compile/module.mk: Runs a few sed scripts so that it 
+	  shouldn't  be necessary to hack-make a correct FlexLexer.h or
+	  prepend a #include "pent_include.h"
 	* tools/compile/llcLexer.cpp: The updated 'should work' file.
-	  Of course this needs a little testing on a system that's just slightly
-	  more broken then mine. *grin*
+	  Of course this needs a little testing on a system that's just
+	  slightly more broken then mine. *grin*
 	
 2003-05-27	Darke <darkepaw@users.sf.net>
-	* kernel/CoreApp.*, kernel/GUIApp.*: Split up Application into a 'Core'
-	  base class and a 'GUI' subsystem, and removed the original
-	  kernel/Application.* files.
+	* kernel/CoreApp.*, kernel/GUIApp.*: Split up Application into a
+	  'Core' base class and a 'GUI' subsystem, and removed the
+	  original kernel/Application.* files.
 	* module.mk, pentagram.cpp, tools/compile/Compile.cpp,
-	  tools/compile/CompileProcess.cpp, tools/disasm/DisasmProcess.cpp,
-	  usecode/UCMachine.cpp, usecode/u8intrinsics.h, world/CameraProcess.cpp,
+	  tools/compile/CompileProcess.cpp, 
+	  tools/disasm/DisasmProcess.cpp, usecode/UCMachine.cpp,
+	  usecode/u8intrinsics.h, world/CameraProcess.cpp, 
 	  world/Item.cpp: Flow on effect from above.
 
 2003-05-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/*: use animation frame repeat flag
-	* usecode/UCProcess.*, kernel/Process.*: moved itemnum/type to Process
+	* usecode/UCProcess.*, kernel/Process.*: moved itemnum/type to
+	  Process
 	* kernel/GameData.*: load u8fonts.flx
 
 2003-05-26  Ryan Nunn <colourles@users.sourceforge.net>
-	* kernel/Application.cpp, world/CameraProcess.* : A tweek to the lerping when
-	  following an item.
+	* kernel/Application.cpp, world/CameraProcess.* : A tweek to the
+	  lerping when following an item.
 	  
 2003-05-26	Darke <darkepaw@users.sf.net>
-	* configure.ac: Couple of relevant only to the usecode compiler config
-	  flags.
+	* configure.ac: Couple of relevant only to the usecode compiler
+	  config flags.
 	* module.mk: More random sorting...
-	* kernel/Application.h: Hiding what I shouldn't have unhidden. *grin*
-	* tools/compile/*: More compiler stuff, still doesn't do anything really.
+	* kernel/Application.h: Hiding what I shouldn't have unhidden.
+	  *grin*
+	* tools/compile/*: More compiler stuff, still doesn't do anything
+	  really.
 	* world/Item.cpp: Removal of old-style casts.
 	
-	* tools/compile/llcLexer.cpp: Added 'cause flex2.5.4 hasn't really been
-	  maintained in the last 7 years...
+	* tools/compile/llcLexer.cpp: Added 'cause flex2.5.4 hasn't 
+	  really been maintained in the last 7 years...
 
 2003-05-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCMachine.cpp: process exclude
 
 2003-05-25  Ryan Nunn <colourles@users.sourceforge.net>
-	* kernel/Application.* : Timing and interpolation, Fast Area, Camera,
-	  avatarInStatis
+	* kernel/Application.* : Timing and interpolation, Fast Area,
+	  Camera, avatarInStatis
 	* kernel/Kernel.cpp : Fixing erase bug
 	* usecode/u8intrinsics.h : Camera, avatarInStatis
 	* usecode/UCMachine.cpp : Fixing huge bug
 	* world/CameraProcess.* : Camera
-	* world/Item.* : Interpolation changes. Fast Area, Animate, Added some 
-	  optimzations for getting a Shape and ShapeInfo. Consequently the 'shape'
-	  member is now const and needs to be set with setShape() (yes this is a bit
-	  of a hack)
+	* world/Item.* : Interpolation changes. Fast Area, Animate, Added
+	  some optimizations for getting a Shape and ShapeInfo.
+	  Consequently the 'shape' member is now const and needs to be
+	  set with setShape() (yes this is a bit of a hack)
 	* world/ItemFactory.cpp : use setShape()
 	* world/ItemSorter.cpp : An optimization
 
@@ -228,28 +253,32 @@
 	* usecode/UCProcess.cpp: don't push this pointer if it's zero
 
 2003-05-25	Darke <darkepaw@users.sf.net>
-	* configure.ac: Removed dependancy on awk and yacc, since we use neither,
-	  and added flex dependancy since we're now using it.
-	* module.mk: Started cleaning it up a little so we might, someday, be
-	  able to compile an application without dragging *everything* in...
+	* configure.ac: Removed dependancy on awk and yacc, since we use
+	neither, and added flex dependancy since we're now using it.
+	* module.mk: Started cleaning it up a little so we might, 
+	  someday, be able to compile an application without dragging
+	  *everything* in...
 	* tools/compile/module.mk: Added handling of .l files.
-	* tools/compile/CompileProcess.*: Added some minor compiler functionality.
+	* tools/compile/CompileProcess.*: Added some minor compiler
+	  functionality.
 	* tools/compile/Compile.cpp, tools/compile/CompileUnit.h,
 	  tools/compile/llcLexer.[h|l], tools/compile/llcTokens.h:
 	  More compiler related files.
 
-	* tools/compile/CompileNodes.h: There's got to be a rule that for *every*
-	  major commit I must forget adding at least one file... *sigh*
+	* tools/compile/CompileNodes.h: There's got to be a rule that for
+	  *every* major commit I must forget adding at least one file...
+	  *sigh*
 
 	* tools/compile/llcLexer.l: Quick cleanup of cruft.
 
 2003-05-20  Ryan Nunn <colourles@users.sourceforge.net>
-	* world/actors/ActorAnimProcess.cpp : Avoiding problems with bounds.
+	* world/actors/ActorAnimProcess.cpp: Avoiding problems with
+	  bounds.
 
 2003-05-20  Ryan Nunn <colourles@users.sourceforge.net>
 	* usecode/UCMachine.cpp : 1 Based lists
-	* kernel/Application.cpp : A hack to support 'different' versions of U8 with 
-	  f and g keys
+	* kernel/Application.cpp : A hack to support 'different' versions
+	  of U8 with f and g keys
 	  
 2003-05-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/ActorAnimProcess.cpp: smoothen repeating animations

@@ -29,7 +29,7 @@ class UCList;
 class Container : public Item
 {
 	friend class ItemFactory;
-
+	friend class ContainerGump;
 public:
 	Container();
 	virtual ~Container();

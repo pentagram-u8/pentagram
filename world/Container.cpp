@@ -83,6 +83,7 @@ bool Container::AddItem(Item* item)
 	contents.push_back(item);
 
 	item->setFlag(Item::FLG_CONTAINED);
+	item->setParent(this);
 
 	return true;
 }

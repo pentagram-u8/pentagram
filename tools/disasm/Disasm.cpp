@@ -224,11 +224,12 @@ void printglobals()
 		con.Printf("[%04X %02X] (%s)\n", i->first, i->second.size, i->second.name.c_str());
 }
 
-/* This looks _real_ dubious. Instead of loading all the offsets from the files and converting
-   them to pair<uint32, uint32>, we're storing them in memory as strings, then having to
-   convert the class:offset pair into a string, and strcmping against them.
-   So instead of having a 2*O(N) operation at read, and a 2*O(1)*O(logN) at search. We've got
-   a O(N) operation at read, and a O(N)*O(logN) for _each_ search. */
+/* This looks _real_ dubious. Instead of loading all the offsets from the
+   files and converting them to pair<uint32, uint32>, we're storing them in
+   memory as strings, then having to convert the class:offset pair into a
+   string, and strcmping against them. So instead of having a 2*O(N) operation
+   at read, and a 2*O(1)*O(logN) at search. We've got a O(N) operation at read,
+   and a O(N)*O(logN) for _each_ search. */
 string functionaddresstostring(const sint32 i0, const sint32 i1, IDataSource *ucfile)
 {
 	char buf[10];

@@ -33,7 +33,8 @@ GameData* GameData::gamedata = 0;
 
 
 GameData::GameData()
-	: mainshapes(0), mainusecode(0), globs(0), fonts(0)
+	: fixed(0), mainshapes(0), mainusecode(0), globs(0), fonts(0), gumps(0),
+	  mouse(0)
 {
 	assert(gamedata == 0);
 	gamedata = this;
@@ -41,18 +42,29 @@ GameData::GameData()
 
 GameData::~GameData()
 {
-	gamedata = 0;
-
-	globs.clear();
-
-	delete mainusecode;
-	mainusecode = 0;
+	delete fixed;
+	fixed = 0;
 
 	delete mainshapes;
 	mainshapes = 0;
 
+	delete mainusecode;
+	mainusecode = 0;
+
+	for (unsigned int i = 0; i < globs.size(); ++i)
+		delete globs[i];
+	globs.clear();
+
 	delete fonts;
 	fonts = 0;
+
+	delete gumps;
+	gumps = 0;
+
+	delete mouse;
+	mouse = 0;
+
+	gamedata = 0;
 }
 
 Glob* GameData::getGlob(uint32 glob) const
@@ -152,4 +164,12 @@ void GameData::loadU8Data()
 	mouse = new Shape(msds, 0);
 	mouse->setPalette(PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
 	delete msds;
+
+	IDataSource *gumpds = filesystem->ReadFile("@u8/static/u8gumps.flx");
+	if (!gumpds) {
+		perr << "Unable to load static/u8gumps.flx. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	gumps = new ShapeFlex(gumpds, PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
+	//! we're leaking gumpds here
 }

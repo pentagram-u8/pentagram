@@ -71,8 +71,9 @@ using std::string;
 DEFINE_RUNTIME_CLASSTYPE_CODE(GUIApp,CoreApp);
 
 GUIApp::GUIApp(const int argc, const char * const * const argv)
-	: CoreApp(argc, argv, "u8", true), desktopGump(0),
-	  consoleGump(0), gameMapGump(0), ucmachine(0), screen(0), palettemanager(0), gamedata(0), world(0),
+	: CoreApp(argc, argv, "u8", true), ucmachine(0), screen(0),
+	  palettemanager(0), gamedata(0), world(0), desktopGump(0),
+	  consoleGump(0), gameMapGump(0),
 	  runGraphicSysInit(false), runSDLInit(false),
 	  frameSkip(false), frameLimit(true), interpolate(true),
 	  animationRate(33), avatarInStasis(false), painting(false)
@@ -150,8 +151,8 @@ void GUIApp::run()
 
 				ticks = SDL_GetTicks();
 
-				// If frame skipping is off, we will only recalc next ticks IF the frames are
-				// taking up 'way' too much time. 
+				// If frame skipping is off, we will only recalc next
+				// ticks IF the frames are taking up 'way' too much time. 
 				if (!frameSkip && diff <= -animationRate*2) next_ticks = animationRate + ticks;
 
 				diff = next_ticks - ticks;
@@ -233,6 +234,7 @@ void GUIApp::U8Playground()
 //	av->teleport(40, 16240, 15240, 64); // central Tenebrae
 //	av->teleport(3, 11391, 1727, 64); // docks, near gate
 //	av->teleport(39, 16240, 15240, 64); // West Tenebrae
+//	av->teleport(41, 12000, 15000, 64); // East Tenebrae
 
 	if (av)
 		world->switchMap(av->getMapNum());

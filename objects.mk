@@ -66,10 +66,11 @@ MISC = \
 
 ARGS = \
 	misc/Args.o \
-	
+
 GUMPS = \
 	gumps/BarkGump.o \
 	gumps/ConsoleGump.o \
+	gumps/ContainerGump.o \
 	gumps/DesktopGump.o \
 	gumps/GameMapGump.o \
 	gumps/Gump.o \

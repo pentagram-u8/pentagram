@@ -65,7 +65,7 @@ void BarkGump::InitGump()
 	font->getTextSize(barked.c_str(), tx, ty);
 	dims.w = tx;
 	dims.h = ty;
-	counter = ty*5;
+	counter = ty*5; //! constant
 }
 
 bool BarkGump::Run(const uint32 framenum)

@@ -38,6 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ItemMoveProcess.h"
 #include "BarkGump.h"
 #include "GumpNotifyProcess.h"
+#include "ContainerGump.h"
 
 #include <cstdlib>
 
@@ -111,6 +112,14 @@ void Item::getLocationAbsolute(sint32& X, sint32& Y, sint32& Z) const
 		Y = y;
 		Z = z;
 	}
+}
+
+void Item::getGumpLocation(sint32& X, sint32& Y) const
+{
+	if (!parent) return;
+
+	X = y & 0xFF;
+	Y = (y >> 8) & 0xFF;
 }
 
 void Item::getCentre(sint32& X, sint32& Y, sint32& Z) const
@@ -904,9 +913,10 @@ uint32 Item::I_bark(const uint8* args, unsigned int /*argsize*/)
 
 		return gump->GetNotifyProcess()->getPid();
 	}
-	// of course, in the final version of bark, we'll have to actually do
-	// something after the timeout occurs.
-	// Some kind of 'callback-delay-process' maybe?
+	// TODO:
+	// * If multiple things are barked for a single item, they
+	//   shouldn't be placed on top of eachother.
+	// * We shouldn't output more than 5 lines at once.
 }
 
 uint32 Item::I_look(const uint8* args, unsigned int /*argsize*/)
@@ -1464,4 +1474,43 @@ uint32 Item::I_shoot(const uint8* args, unsigned int /*argsize*/)
 	uint16 z = buf[4];
 
 	return Kernel::get_instance()->addProcess(new ItemMoveProcess(item,x,y,z,unk1,true));
+}
+
+uint32 Item::I_openGump(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_UINT16(gumpshape);
+	if (!item) return 0;
+
+	if (item->flags & FLG_GUMP_OPEN) return 0;
+	assert(item->gump == 0);
+
+	Shape* shape = GameData::get_instance()->getGumps()->getShape(gumpshape);
+
+	item->gump = new ContainerGump(shape, 0, item->getObjId(),
+								   Gump::FLAG_ITEM_DEPENDANT);
+	item->gump->InitGump();
+	GUIApp *app = p_dynamic_cast<GUIApp*>(GUIApp::get_instance());
+	app->getDesktopGump()->AddChild(item->gump);
+	item->flags |= FLG_GUMP_OPEN;
+
+	return 0;
+}
+
+uint32 Item::I_closeGump(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	if (!item) return 0;
+
+	if (!(item->flags & FLG_GUMP_OPEN)) return 0;
+	assert(item->gump);
+
+	item->gump->Close();
+
+	// can we already clear gump here, or do we need to wait for the gump
+	// to really close??
+	item->gump = 0;
+	item->flags &= ~FLG_GUMP_OPEN;
+
+	return 0;
 }

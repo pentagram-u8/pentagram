@@ -39,10 +39,12 @@ public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
 	Container* getParent() const { return parent; }
+	void setParent(Container* p) { parent = p; }
 	void setLocation(sint32 x, sint32 y, sint32 z); // this only sets the loc.
 	void move(sint32 x, sint32 y, sint32 z); // move also handles item lists
 	void getLocationAbsolute(sint32& x, sint32& y, sint32& z) const;
 	void getLocation(sint32& x, sint32& y, sint32& z) const;
+	void getGumpLocation(sint32& x, sint32& y) const;
 	void getCentre(sint32& x, sint32& y, sint32& z) const;
 	void getFootpad(sint32& x, sint32& y, sint32& z) const;
 	uint16 getFlags() const { return flags; }
@@ -169,6 +171,8 @@ public:
 	INTRINSIC(I_use);
 	INTRINSIC(I_enterFastArea);
 	INTRINSIC(I_ask);
+	INTRINSIC(I_openGump);
+	INTRINSIC(I_closeGump);
 	INTRINSIC(I_create);
 	INTRINSIC(I_legalCreateAtPoint);
 	INTRINSIC(I_legalCreateAtCoords);

@@ -30,8 +30,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Container.h"
 
-#define LOGPF(X) pout.printf X
-//#define LOGPF(X)
+//#define LOGPF(X) pout.printf X
+#define LOGPF(X)
+//#define LOGPF(X) do { if (p->classid == 1219) { pout.printf X; } } while(0)
 
 enum UCSegments {
 	SEG_STACK      = 0x0000,
@@ -99,7 +100,9 @@ bool UCMachine::execProcess(UCProcess* p)
 
 	//! check if process is suspended? (or do that in UCProcess::run?)
 
+#if 0
 	pout << std::hex << "running process " << p->pid << ", class " << p->classid << ", offset " << p->ip << std::dec << std::endl;
+#endif
 
 	bool cede = false;
 	bool error = false;
@@ -2031,6 +2034,14 @@ uint32 UCMachine::I_AvatarCanCheat(const uint8* /*args*/, unsigned int /*argsize
 {
 	return 1; // of course the avatar can cheat ;-)
 }
+
+uint32 UCMachine::I_isGameRunning(const uint8* /*args*/, unsigned int /*argsize*/)
+{
+	return 1; // yes, the game is running.
+
+	// I'm guessing this was used to distinguish between game/editor
+}
+
 
 uint32 UCMachine::I_dummyProcess(const uint8* /*args*/, unsigned int /*argsize*/)
 {
