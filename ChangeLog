@@ -1,30 +1,4 @@
-2004-05-15  Ryan Nunn <colourles@users.sourceforge.net>
-        * graphics/*.* : Added RenderSurface::FadedBlit() that allows a blit 
-          from a texture to be blended with a colour. Use the TEX32_PACK_RGBA()
-          macro for the colour. The Alpha component of the colour the amount of
-          blending to do. 0 Alpha is no blending, 255 Alpha is total blending.
-
-2004-05-15  Ryan Nunn <colourles@users.sourceforge.net>
-        * audio/midi/fmopl.cpp : Fixing a problem with an overloaded function
-          using a certain 'unnamed' compiler.
-        * filesys/FileSystem.cpp : Hack for WinCE
-        * graphics/*.* : Added Rendering To Texture support. Use static 
-          CreateSecondaryRenderSurface() to create a surface that you can get 
-          a texture for using GetSurfaceAsTetxture(). Do NOT delete the texture
-          that is returned by the call. The surface itself will delete the 
-          texture. You WILL need to call Begin/EndPainting on the SRS when you
-          want to paint to it. The format of the surface and the texture match
-          the back buffer.
-        * gumps/PaperdollGump.cpp : WinCE problem
-        * kernel/CoreApp.cpp : I don't think all WinCE users want their HOME 
-          dir in Pentagram to be one of my networked directories. :-)
-        * kernel/GUIApp.cpp : Yet another WinCE hack :-)
-        * disasm/Disasm.cpp : Added a hacky mode that will only output strings
-        * tools/fold/*.* : Getting rid of some stupid warnings
-        * world/actors/AvatarMoverProcess.cpp : Fixing up signed/unsigned 
-          comparisons
-          
-2004-05-13  Matthew Jimenez <mjimenez@users.sourceforge.net>
+2004-05-15  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* gumps/ReadableGump.*: A gump to handle reading graves and plaques
 	* usecode/u8intrinsics.h: Attached ReadableGump
 	* graphics/fonts/ShapeFont.cpp: set vlead to -1 to fix overlapping of
@@ -32,6 +6,32 @@
 	* graphics/fonts/Font.cpp: asterisks are handled as line breaks for now
 	* kernel/HIDManager.cpp: slight clean up
 
+2004-05-15  Ryan Nunn <colourles@users.sourceforge.net>
+	* graphics/*.* : Added RenderSurface::FadedBlit() that allows a blit 
+	  from a texture to be blended with a colour. Use the TEX32_PACK_RGBA()
+	  macro for the colour. The Alpha component of the colour the amount of
+	  blending to do. 0 Alpha is no blending, 255 Alpha is total blending.
+
+2004-05-15  Ryan Nunn <colourles@users.sourceforge.net>
+	* audio/midi/fmopl.cpp : Fixing a problem with an overloaded function
+	  using a certain 'unnamed' compiler.
+	* filesys/FileSystem.cpp : Hack for WinCE
+	* graphics/*.* : Added Rendering To Texture support. Use static 
+	  CreateSecondaryRenderSurface() to create a surface that you can get 
+	  a texture for using GetSurfaceAsTetxture(). Do NOT delete the texture
+	  that is returned by the call. The surface itself will delete the 
+	  texture. You WILL need to call Begin/EndPainting on the SRS when you
+	  want to paint to it. The format of the surface and the texture match
+	  the back buffer.
+	* gumps/PaperdollGump.cpp : WinCE problem
+	* kernel/CoreApp.cpp : I don't think all WinCE users want their HOME 
+	  dir in Pentagram to be one of my networked directories. :-)
+	* kernel/GUIApp.cpp : Yet another WinCE hack :-)
+	* disasm/Disasm.cpp : Added a hacky mode that will only output strings
+	* tools/fold/*.* : Getting rid of some stupid warnings
+	* world/actors/AvatarMoverProcess.cpp : Fixing up signed/unsigned
+	  comparisons
+          
 2004-05-13  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* world/actors/AvatarMoverProcess.*: Running in combat switches to
 	  normal mode until right button released, and jumping occures only
