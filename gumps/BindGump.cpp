@@ -19,6 +19,7 @@
 #include "pent_include.h"
 #include "BindGump.h"
 
+#include "Font.h"
 #include "RenderSurface.h"
 #include "GUIApp.h"
 #include "TextWidget.h"
@@ -43,26 +44,12 @@ void BindGump::InitGump()
 {
 	ModalGump::InitGump();
 
-	int y = 8;
-	Pentagram::Rect rect;
-	Gump * widget = new TextWidget(0, 0, "Press any key or button.", 6);
+	Gump * widget = new TextWidget(0, 0,
+		"Press any key or button.\n\nPress ESCAPE to cancel\nor BACKSPACE to clear",
+		6, 0, 0,Pentagram::Font::TEXT_CENTER);
 	widget->InitGump();
 	AddChild(widget);
-	widget->setRelativePosition(TOP_CENTER, 0, y);
-	widget->GetDims(rect);
-
-	y += rect.h * 2;
-	widget = new TextWidget(0, 0, "Press ESCAPE to cancel", 6);
-	widget->InitGump();
-	AddChild(widget);
-	widget->setRelativePosition(TOP_CENTER, 0, y);
-	widget->GetDims(rect);
-
-	y += rect.h;
-	widget = new TextWidget(0, 0, "or BACKSPACE to clear.", 6);
-	widget->InitGump();
-	AddChild(widget);
-	widget->setRelativePosition(TOP_CENTER, 0, y);
+	widget->setRelativePosition(TOP_CENTER, 0, 8);
 }
 
 

@@ -1,3 +1,7 @@
+2004-05-22  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* gumps/BindGump.cpp: Text in BindGumop is now represented as a single
+	  TextWidget instead of 3 separate TextWidgets.
+
 2004-05-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* configure.ac, Makefile.in: --enable-gcc-pch enables PCH in gcc 3.4
 
