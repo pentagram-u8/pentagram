@@ -5,4 +5,4 @@ LPATH := misc
 LSRC := $(wildcard $(LPATH)/*.cpp)
 
 # Common rules
-include common.mk
+include $(srcdir)/common.mk

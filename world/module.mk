@@ -6,4 +6,4 @@ LSRC := $(wildcard $(LPATH)/*.cpp)
 LPRODUCTS :=
 
 # Common rules
-include common.mk
+include $(srcdir)/common.mk

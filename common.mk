@@ -5,7 +5,7 @@
 LRULES := $(patsubst %,$(LPATH)/$(DEPDIR)/%.rules,$(LPRODUCTS))
 $(LRULES): genrules.pl
 	-$(MKDIR) $(dir $@)
-	./genrules.pl $(notdir $(basename $@)) > $@
+	$(top_srcdir)/genrules.pl $(notdir $(basename $@)) > $@
 -include $(LRULES) $(EMPTY_FILE)
 
 

@@ -24,4 +24,4 @@ tools/compile/llcLexer.cpp: tools/compile/llcLexer.l
 	$(RM) tools/compile/llcLexer.preproc1 tools/compile/llcLexer.preproc2 tools/compile/llcLexer.preproc3 tools/compile/llcLexer.preproc4 tools/compile/llcLexer.preproc5 tools/compile/llcLexer.preproc6 tools/compile/llcLexer.preproc7
 
 # Common rules
-include common.mk
+include $(srcdir)/common.mk

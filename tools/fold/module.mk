@@ -23,4 +23,4 @@ fold_OBJ = \
 	tools/fold/LoopScriptNodes.o
 
 # Common rules
-include common.mk
+include $(srcdir)/common.mk

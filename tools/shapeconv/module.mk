@@ -18,4 +18,4 @@ shapeconv_OBJ = \
 	kernel/CoreApp.o
 
 # Common rules
-include common.mk
+include $(srcdir)/common.mk

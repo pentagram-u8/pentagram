@@ -57,6 +57,9 @@ MODULES := convert convert/u8 convert/crusader misc filesys \
 #   each of the modules
 CXXFLAGS += $(patsubst %,-I$(top_srcdir)/%,$(MODULES)) -I.
 
+# config.h will be in $(top_builddir)/misc
+CXXFLAGS += -I$(top_builddir)/misc
+
 # list of all .deps subdirs
 DEPDIRS = $(patsubst %,%/$(top_builddir)/$(DEPDIR),$(MODULES))
 

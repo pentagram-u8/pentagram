@@ -5,7 +5,7 @@ LPATH := tools/disasm
 LSRC := $(wildcard $(LPATH)/*.cpp)
 LPRODUCTS := disasm
 
-include objects.mk
+include $(srcdir)/objects.mk
 
 disasm_OBJ = \
 	$(ARGS) \
@@ -27,4 +27,4 @@ disasm_OBJ = \
 
 # ../../filesys/Flex.o
 # Common rules
-include common.mk
+include $(srcdir)/common.mk

@@ -1,4 +1,8 @@
 2004-01-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* */module.mk, Makefile.in, common.mk: fixed configuring/building
+	  from outside of the source directory
+
+2004-01-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* IDataSource.h: getRWops creates an SDL_RWops struct from IDataSource
 	* TTFont.*: load font from IDataSource
 
