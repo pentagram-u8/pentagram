@@ -26,6 +26,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AudioSample.h"
 #include "AudioMixer.h"
 
+#include "IDataSource.h"
+#include "ODataSource.h"
+
 using Pentagram::AudioSample;
 using Pentagram::AudioMixer;
 
