@@ -165,6 +165,7 @@ ACTORS = \
 	world/actors/CombatProcess.o \
 	world/actors/DeleteActorProcess.o \
 	world/actors/GrantPeaceProcess.o \
+	world/actors/HealProcess.o \
 	world/actors/LoiterProcess.o \
 	world/actors/MainActor.o \
 	world/actors/Pathfinder.o \

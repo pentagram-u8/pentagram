@@ -2,6 +2,7 @@
 	* world/actors/GrantPeaceProcess.*: castGrantPeace intrinsic
 	* world/FireballProcess.*: TonysBalls intrinsic
 	* world/Item.*: make collideMove return which item was hit
+	* world/actors/HealProcess.*: heal gradually; feedAvatar intrinsic
 
 2004-11-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCMachine.cpp: silenced unhandled intrinsic messages

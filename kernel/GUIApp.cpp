@@ -84,6 +84,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GrantPeaceProcess.h"
 #include "CombatProcess.h"
 #include "FireballProcess.h"
+#include "HealProcess.h"
 
 #include "MovieGump.h"
 
@@ -276,6 +277,8 @@ void GUIApp::startup()
 							 ProcessLoader<CombatProcess>::load);
 	kernel->addProcessLoader("FireballProcess",
 							 ProcessLoader<FireballProcess>::load);
+	kernel->addProcessLoader("HealProcess",
+							 ProcessLoader<HealProcess>::load);
 
 	gamedata = new GameData();
 
@@ -1589,6 +1592,9 @@ bool GUIApp::newGame()
 	pout << "Create AvatarMoverProcess" << std::endl;
 	avatarMoverProcess = new AvatarMoverProcess();
 	kernel->addProcess(avatarMoverProcess);
+
+	pout << "Create HealProcess" << std::endl;
+	kernel->addProcess(new HealProcess());
 
 //	av->teleport(40, 16240, 15240, 64); // central Tenebrae
 //	av->teleport(3, 11391, 1727, 64); // docks, near gate

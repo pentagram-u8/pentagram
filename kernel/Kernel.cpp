@@ -291,7 +291,7 @@ uint32 Kernel::getNumProcesses(ObjId objid, uint16 processtype)
 		Process* p = *it;
 
 		// Don't count us, we are not really here
-		if (p->terminate_deferred) continue;
+		if (p->terminate_deferred || p->terminated) continue;
 
 		if ((objid == 0 || objid == p->item_num) &&
 			(processtype == 6 || processtype == p->type))
@@ -307,8 +307,8 @@ Process* Kernel::findProcess(ObjId objid, uint16 processtype)
 	{
 		Process* p = *it;
 
-		// Don't count us, were are not really here
-		if (p->terminate_deferred) continue;
+		// Don't count us, we are not really here
+		if (p->terminate_deferred || p->terminated) continue;
 
 		if ((objid == 0 || objid == p->item_num) &&
 			(processtype == 6 || processtype == p->type))

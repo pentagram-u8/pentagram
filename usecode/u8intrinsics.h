@@ -42,6 +42,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "TargetGump.h"
 #include "GrantPeaceProcess.h"
 #include "FireballProcess.h"
+#include "HealProcess.h"
 
 // Ultima 8 Intrinsics
 Intrinsic U8Intrinsics[] = {
@@ -289,7 +290,7 @@ Intrinsic U8Intrinsics[] = {
 	PaletteFaderProcess::I_fadeToWhite,
 	PaletteFaderProcess::I_fadeFromWhite,
 	0, // playEndgame
-	0, // FeedAvatar
+	HealProcess::I_feedAvatar,
 	MainActor::I_accumulateStrength,
 	MainActor::I_accumulateIntelligence,
 	MainActor::I_accumulateDexterity,
