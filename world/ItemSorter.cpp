@@ -271,34 +271,18 @@ inline bool SortItem::operator<(const SortItem& si2) const
 
 		// 32x32 flats get drawn first
 		if (si1.f32x32 != si2.f32x32) return si1.f32x32 > si2.f32x32;
-
-		// Clearly in x and y?
-		//if (si1.x <= si2.xleft && si1.y <= si2.yfar) return true;
-		//else if (si1.xleft >= si2.x && si1.yfar >= si2.y) return false;
-
-		// Clearly in x?
-		if (si1.x <= si2.xleft) return true;
-		else if (si1.xleft >= si2.x) return false;
-
-		// Clearly in y?
-		if (si1.y <= si2.yfar) return true;
-		else if (si1.yfar >= si2.y) return false;
 	}
 	// Mixed, or non flat
 	else {
 
-		// Clearly X, Y and Z
+		// Clearly X, Y and Z (useful?)
 		//if (si1.x <= si2.xleft && si1.y <= si2.yfar && si1.ztop <= si2.z) return true;
 		//else if (si1.xleft >= si2.x && si1.yfar >= si2.y && si1.z >= si2.ztop) return false;
 
-		//  Clearly X and Y
-		//if (si1.x <= si2.xleft && si1.y <= si2.yfar) return true;
-		//else if (si1.xleft >= si2.x && si1.yfar >= si2.y) return false;
-
-		int front1 = si1.x + si1.y;
-		int rear1 = si1.xleft + si1.yfar;
-		int front2 = si2.x + si2.y;
-		int rear2 = si2.xleft + si2.yfar;
+		//int front1 = si1.x + si1.y;
+		//int rear1 = si1.xleft + si1.yfar;
+		//int front2 = si2.x + si2.y;
+		//int rear2 = si2.xleft + si2.yfar;
 
 		// Rear of object is infront of other's front
 		//if (front1 <= rear2) return true;
@@ -308,44 +292,21 @@ inline bool SortItem::operator<(const SortItem& si2) const
 		if (si1.ztop <= si2.z) return true;
 		else if (si1.z >= si2.ztop) return false;
 
-		// Clearly X
-		if (si1.x <= si2.xleft) return true;
-		else if (si1.xleft >= si2.x) return false;
-
-		// Clearly Y
-		if (si1.y <= si2.yfar) return true;
-		else if (si1.yfar >= si2.y) return false;
-/*
-
-		// Clearly in x?
-		if (si1.xd || si2.xd) {
-			if (si1.x <= si2.xleft) return true;
-			else if (si1.xleft >= si2.x) return false;
-		}
-		else {
-			if (si1.x != si2.x) return si1.x < si2.x;
-		}
-
-		// Clearly in y?
-		if (si1.yd || si2.yd) {
-		//	if (si1.y <= si2.yfar) return true;
-		//	else if (si1.yfar >= si2.y) return false;
-			if (si1.y != si2.y) return si1.y < si2.y;
-		}
-		else {
-			if (si1.y != si2.y) return si1.y < si2.y;
-		}
-*/
-		{
-			// Clearly in x and y?
-			//if (si1.x <= si2.xleft && si1.y <= si2.yfar) return true;
-			//else if (si1.xleft >= si2.x && si1.yfar >= si2.y) return false;
-
-		}
-
 		// Partial in z
 		//if (si1.ztop != si2.ztop) return si1.ztop < si2.ztop;
 	}
+
+	// Clearly in x and y? (useful?)
+	//if (si1.x <= si2.xleft && si1.y <= si2.yfar) return true;
+	//else if (si1.xleft >= si2.x && si1.yfar >= si2.y) return false;
+
+	// Clearly in x?
+	if (si1.x <= si2.xleft) return true;
+	else if (si1.xleft >= si2.x) return false;
+
+	// Clearly in y?
+	if (si1.y <= si2.yfar) return true;
+	else if (si1.yfar >= si2.y) return false;
 
 	// Biased Clearly in z
 	if ((si1.ztop+si1.z)/2 <= si2.z) return true;
@@ -466,22 +427,6 @@ inline bool SortItem::operator<<(const SortItem& si2) const
 		// 32x32 flats get drawn first
 		//if (si1.f32x32 != si2.f32x32) return si1.f32x32 > si2.f32x32;
 		COMPARISON_RETURN(f32x32,>,"\t");
-
-		// Clearly in x and y?
-		//if (si1.x <= si2.xleft && si1.y <= si2.yfar) return true;
-		//else if (si1.xleft >= si2.x && si1.yfar >= si2.y) return false;
-
-		// Clearly X
-		//if (si1.x <= si2.xleft) return true;
-		//else if (si1.xleft >= si2.x) return false;
-		COMPARISON_RETURN_TF(si1.x,<=,si2.xleft,true,"\t");
-		COMPARISON_RETURN_TF(si1.xleft,>=,si2.x,false,"\t");
-
-		// Clearly Y
-		//if (si1.y <= si2.yfar) return true;
-		//else if (si1.yfar >= si2.y) return false;
-		COMPARISON_RETURN_TF(si1.y,<=,si2.yfar,true,"\t");
-		COMPARISON_RETURN_TF(si1.yfar,>=,si2.y,false,"\t");
 	}
 	// Mixed, or non flat
 	else {
@@ -489,24 +434,20 @@ inline bool SortItem::operator<<(const SortItem& si2) const
 		pout << "else" << std::endl;
 		pout << "{" << std::endl;
 
-		// Clearly X, Y and Z
+		// Clearly X, Y and Z  (useful?)
 		//if (si1.x <= si2.xleft && si1.y <= si2.yfar && si1.ztop <= si2.z) return true;
 		//else if (si1.xleft >= si2.x && si1.yfar >= si2.y && si1.z >= si2.ztop) return false;
 
-		//  Clearly X and Y
-		//if (si1.x <= si2.xleft && si1.y <= si2.yfar) return true;
-		//else if (si1.xleft >= si2.x && si1.yfar >= si2.y) return false;
-
-		int front1 = si1.x + si1.y;
-		int rear1 = si1.xleft + si1.yfar;
-		int front2 = si2.x + si2.y;
-		int rear2 = si2.xleft + si2.yfar;
+		//int front1 = si1.x + si1.y;
+		//int rear1 = si1.xleft + si1.yfar;
+		//int front2 = si2.x + si2.y;
+		//int rear2 = si2.xleft + si2.yfar;
 
 		// Rear of object is infront of other's front
 		//if (front1 <= rear2) return true;
 		//else if (rear1 >= front2) return false;
-	//	COMPARISON_RETURN_TF(front1,<=,rear2,true,"\t");
-	//	COMPARISON_RETURN_TF(rear1,>=,front2,false,"\t");
+		//COMPARISON_RETURN_TF(front1,<=,rear2,true,"\t");
+		//COMPARISON_RETURN_TF(rear1,>=,front2,false,"\t");
 
 		// Clearly in z
 		//if (si1.ztop <= si2.z) return true;
@@ -514,50 +455,26 @@ inline bool SortItem::operator<<(const SortItem& si2) const
 		COMPARISON_RETURN_TF(si1.ztop,<=,si2.z,true,"\t");
 		COMPARISON_RETURN_TF(si1.z,>=,si2.ztop,false,"\t");
 
-		// Clearly X
-		//if (si1.x <= si2.xleft) return true;
-		//else if (si1.xleft >= si2.x) return false;
-		COMPARISON_RETURN_TF(si1.x,<=,si2.xleft,true,"\t");
-		COMPARISON_RETURN_TF(si1.xleft,>=,si2.x,false,"\t");
-
-		// Clearly Y
-		//if (si1.y <= si2.yfar) return true;
-		//else if (si1.yfar >= si2.y) return false;
-		COMPARISON_RETURN_TF(si1.y,<=,si2.yfar,true,"\t");
-		COMPARISON_RETURN_TF(si1.yfar,>=,si2.y,false,"\t");
-/*
-
-		// Clearly in x?
-		if (si1.xd || si2.xd) {
-			if (si1.x <= si2.xleft) return true;
-			else if (si1.xleft >= si2.x) return false;
-		}
-		else {
-			if (si1.x != si2.x) return si1.x < si2.x;
-		}
-
-		// Clearly in y?
-		if (si1.yd || si2.yd) {
-		//	if (si1.y <= si2.yfar) return true;
-		//	else if (si1.yfar >= si2.y) return false;
-			if (si1.y != si2.y) return si1.y < si2.y;
-		}
-		else {
-			if (si1.y != si2.y) return si1.y < si2.y;
-		}
-*/
-		{
-			// Clearly in x and y?
-			//if (si1.x <= si2.xleft && si1.y <= si2.yfar) return true;
-			//else if (si1.xleft >= si2.x && si1.yfar >= si2.y) return false;
-
-		}
-
 		// Partial in z
 		//if (si1.ztop != si2.ztop) return si1.ztop < si2.ztop;
 	}
 	pout << "}" << std::endl;
 
+	// Clearly in x and y? (useful?)
+	//if (si1.x <= si2.xleft && si1.y <= si2.yfar) return true;
+	//else if (si1.xleft >= si2.x && si1.yfar >= si2.y) return false;
+
+	// Clearly X
+	//if (si1.x <= si2.xleft) return true;
+	//else if (si1.xleft >= si2.x) return false;
+	COMPARISON_RETURN_TF(si1.x,<=,si2.xleft,true,"\t");
+	COMPARISON_RETURN_TF(si1.xleft,>=,si2.x,false,"\t");
+
+	// Clearly Y
+	//if (si1.y <= si2.yfar) return true;
+	//else if (si1.yfar >= si2.y) return false;
+	COMPARISON_RETURN_TF(si1.y,<=,si2.yfar,true,"\t");
+	COMPARISON_RETURN_TF(si1.yfar,>=,si2.y,false,"\t");
 
 	// Biased Clearly in z
 	//if ((si1.ztop+si1.z)/2 <= si2.z) return true;
@@ -586,7 +503,7 @@ inline bool SortItem::operator<<(const SortItem& si2) const
 	COMPARISON_RETURN_EX(si1.xleft + si1.yfar,<,si1.xleft + si2.yfar,"");
 
 	// Partial in x?
-	if (si1.x != si2.x) return si1.x < si2.x;
+	//if (si1.x != si2.x) return si1.x < si2.x;
 	COMPARISON_RETURN(x,<,"");
 
 	// Partial in y?
