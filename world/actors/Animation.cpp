@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 namespace Animation
 {
 
-bool Animation::isCombatAnim(const Sequence anim)
+bool isCombatAnim(const Sequence anim)
 {
 	switch (anim) {
 		case combat_stand:
@@ -40,7 +40,7 @@ bool Animation::isCombatAnim(const Sequence anim)
 }
 
 /** determines if we need to ready or unready our weapon */
-Sequence Animation::checkWeapon(const Sequence nextanim,
+Sequence checkWeapon(const Sequence nextanim,
 const Sequence lastanim)
 {
 	Sequence anim = nextanim;

@@ -18,7 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/fmopl.cpp,v 1.5 2004/05/15 16:13:11 colourles Exp $
+ * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/fmopl.cpp,v 1.6 2005/02/14 08:51:05 darkepaw Exp $
  *
  * LGPL licensed version of MAMEs fmopl (V0.37a modified) by
  * Tatsuyuki Satoh. Included from LGPL'ed AdPlug.
@@ -113,7 +113,7 @@ static const int slot_array[32]=
 	-1,-1,-1,-1,-1,-1,-1,-1
 };
 
-#define SC(mydb) ((uint32) (mydb / (EG_STEP/2)))
+#define SC(mydb) (static_cast<uint32>(mydb / (EG_STEP/2)))
 
 static const uint32 KSL_TABLE[8 * 16] = {
 	/* OCT 0 */
@@ -162,7 +162,7 @@ static const uint32 KSL_TABLE[8 * 16] = {
 
 /* sustain lebel table (3db per step) */
 /* 0 - 15: 0, 3, 6, 9,12,15,18,21,24,27,30,33,36,39,42,93 (dB)*/
-#define SC(db) (int)(db*((3/EG_STEP)*(1<<ENV_BITS)))+EG_DST
+#define SC(db) static_cast<int>(db*((3/EG_STEP)*(1<<ENV_BITS)))+EG_DST
 static const int SL_TABLE[16]={
  SC( 0),SC( 1),SC( 2),SC(3 ),SC(4 ),SC(5 ),SC(6 ),SC( 7),
  SC( 8),SC( 9),SC(10),SC(11),SC(12),SC(13),SC(14),SC(31)
@@ -187,7 +187,7 @@ static int *VIB_TABLE;
 static int ENV_CURVE[2*EG_ENT+1];
 
 /* multiple table */
-#define ML(a) (int)(a*2)
+#define ML(a) static_cast<int>(a*2)
 static const uint32 MUL_TABLE[16]= {
 /* 1/2, 1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15 */
    ML(0.50), ML(1.00), ML(2.00),  ML(3.00), ML(4.00), ML(5.00), ML(6.00), ML(7.00),

@@ -1,3 +1,7 @@
+2005-02-14	Darke  <darkepaw@users.sf.net>
+	* audio/midi/fmopl.cpp: cast pedantification.
+	* world/actors/Animation.cpp,gumps/PaperdollGump.cpp: gcc4 fixes.
+
 2005-02-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AvatarMoverProcess.*: avatar looks around when idle
 	* world/actors/AvatarMoverProcess.*: try not to interrupt spellcasting

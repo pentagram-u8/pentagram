@@ -43,7 +43,7 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(PaperdollGump,ContainerGump);
 
 
 // lots of CONSTANTS...
-struct {
+struct equipcoords_struct {
 	int x, y;
 } equipcoords[] = {
 	{ 0, 0 },
@@ -55,7 +55,8 @@ struct {
 	{ 16, 18 }
 };
 
-struct {
+struct statcords_struct {
+
     int xd, x, y;
 } statcoords[] = {
 	{ 90, 130, 24 },
