@@ -40,7 +40,7 @@ CONF_OBJS=conf/Configuration.o conf/XMLNode.o conf/XMLTree.o
 
 KERNEL_OBJS=kernel/Kernel.o kernel/Application.o kernel/Object.o kernel/Process.o kernel/GameData.o
 
-USECODE_OBJS=usecode/UCList.o usecode/UCMachine.o usecode/UCProcess.o usecode/UsecodeFlex.o
+USECODE_OBJS=usecode/UCList.o usecode/UCMachine.o usecode/UCProcess.o usecode/UsecodeFlex.o usecode/Usecode.o
 
 WORLD_OBJS=world/Container.o world/CurrentMap.o world/Glob.o world/GlobEgg.o world/Item.o world/ItemFactory.o world/Map.o \
 	world/World.o
