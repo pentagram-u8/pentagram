@@ -144,7 +144,8 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 
 	con.AddConsoleCommand("GUIApp::saveGame", ConCmd_saveGame);
 	con.AddConsoleCommand("GUIApp::loadGame", ConCmd_loadGame);
-	con.AddConsoleCommand("Kernel::processTypes",Kernel::ConCmd_processTypes);
+	con.AddConsoleCommand("HIDManager::bind", HIDManager::ConCmd_bind);
+	con.AddConsoleCommand("Kernel::processTypes", Kernel::ConCmd_processTypes);
 	con.AddConsoleCommand("ObjectManager::objectTypes",
 								   ObjectManager::ConCmd_objectTypes);
 	con.AddConsoleCommand("MainActor::teleport", MainActor::ConCmd_teleport);
@@ -160,6 +161,7 @@ GUIApp::~GUIApp()
 {
 	con.RemoveConsoleCommand("GUIApp::saveGame");
 	con.RemoveConsoleCommand("GUIApp::loadGame");
+	con.RemoveConsoleCommand("HIDManager::bind");
 	con.RemoveConsoleCommand("Kernel::processTypes");
 	con.RemoveConsoleCommand("ObjectManager::objectTypes");
 	con.RemoveConsoleCommand("MainActor::teleport");

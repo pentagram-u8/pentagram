@@ -91,50 +91,70 @@ void HIDManager::loadBindings()
 	Configuration * config= GUIApp::get_instance()->getConfig();
 	Configuration::KeyTypeList ktl;
 	config->getSubkeys(ktl, "bindings");
-	uint16 key = 0;
-	uint16 button = 1;
-	const char * name = 0;
 
 	for (Configuration::KeyTypeList::iterator i = ktl.begin();
 		i != ktl.end(); ++i)
 	{
 		Pentagram::istring bindingName = (*i).second.c_str();
-		HIDBindingMap::iterator j = bindingMap.find(bindingName);
-		if (j != bindingMap.end())
-		{
+		bind((*i).first, bindingName);
+	}
+}
 
-			for (key=0; key < SDLK_LAST; ++key)
+void HIDManager::bind(const Pentagram::istring& control, const Pentagram::istring& bindingName)
+{
+	uint16 key = 0;
+	uint16 button = 1;
+	const char * name = 0;
+	HIDBindingMap::iterator j = bindingMap.find(bindingName);
+
+	if (j != bindingMap.end())
+	{
+
+		for (key=0; key < SDLK_LAST; ++key)
+		{
+			name = SDL_GetKeyName((SDLKey) key);
+			if (control == name)
 			{
-				name = SDL_GetKeyName((SDLKey) key);
-				if ((*i).first == name)
+				pout << "Binding \"" << name
+					<< "\" to " << (*j).first.c_str() << std::endl;
+				keybindings[key] = (*j).second;
+
+				// We found the matching SDLKey. Stop searching;
+				break;
+			}
+		}
+
+		if (key >= SDLK_LAST) // we did not find a matching SDLKey
+		{
+			for (button=1; button < NUM_MOUSEBUTTONS+1; ++button)
+			{
+				name = GetMouseButtonName((MouseButton) button);
+				if (control == name)
 				{
 					pout << "Binding \"" << name
-						<< "\" to " << (*i).second << std::endl;
-					keybindings[key] = (*j).second;
+						<< "\" to " << (*j).first.c_str() << std::endl;
+					mousebindings[button] = (*j).second;
 
-					// We found the matching SDLKey. Stop searching;
+					// We found the matching Mouse Button. Stop searching;
 					break;
 				}
-			}
-
-			if (key >= SDLK_LAST) // we did not find a matching SDLKey
-			{
-				for (button=1; button < NUM_MOUSEBUTTONS+1; ++button)
-				{
-					name = GetMouseButtonName((MouseButton) button);
-					if ((*i).first == name)
-					{
-						pout << "Binding \"" << name
-							<< "\" to " << (*i).second << std::endl;
-						mousebindings[button] = (*j).second;
-
-						// We found the matching Mouse Button. Stop searching;
-						break;
-					}
-				} 
-			}
-
+			} 
 		}
 	}
+}
+
+void HIDManager::ConCmd_bind(const Console::ArgsType &args, const Console::ArgvType &argv)
+{
+	if (argv.size() != 3)
+	{
+		if (! argv.empty())
+			pout << "Usage: " << argv[0] << " <key> <action>: binds a key or button to an action" << std::endl;
+		return;
+	}
+	HIDManager * hidmanager = HIDManager::get_instance();
 	
+	Pentagram::istring control(argv[1]);
+	Pentagram::istring bindingName(argv[2]);
+
+	hidmanager->bind(control, bindingName);
 }

@@ -21,16 +21,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 static const char* mouseButtonName[] = {
 	"",
-	"Left Button",
-	"Middle Button",
-	"Right Button",
-	"Wheel Up",
-	"Wheel Down",
-	"Mouse 6",
-	"Mouse 7",
-	"Mouse 8",
-	"Mouse 9",
-	"Mouse 10"
+	"LeftButton",
+	"MiddleButton",
+	"RightButton",
+	"WheelUp",
+	"WheelDown",
+	"Mouse6",
+	"Mouse7",
+	"Mouse8",
+	"Mouse9",
+	"Mouse10"
 };
 
 const char* GetMouseButtonName(MouseButton button)

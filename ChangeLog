@@ -1,4 +1,7 @@
 2004-04-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* various: patch #893176 by watt (HIDManager::Bind and cleanup)
+
+2004-04-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: patch #935779 by watt (Animation cleanup)
 
 2004-04-10  Max Horn <max@quendi.de>

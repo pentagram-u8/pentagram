@@ -41,6 +41,14 @@ public:
 	
 	//! loads the keybindings from the configuration
 	void loadBindings();
+
+	//! loads a single keybinding
+	//! \param control a key or button to bind
+	//! \param bindingName name of the HIDBinding
+    void bind(const Pentagram::istring& control, const Pentagram::istring& bindingName);
+
+	//! "bind" console command
+	static void HIDManager::ConCmd_bind(const Console::ArgsType &args, const Console::ArgvType &argv);
 private:
 	HIDBindingMap bindingMap; 
 	HIDBinding keybindings[SDLK_LAST];
