@@ -138,11 +138,12 @@ bool Pathfinder::alreadyVisited(sint32 x, sint32 y, sint32 z)
 
 bool Pathfinder::checkTarget(PathNode* node)
 {
-	// TODO: these ranges are too high, but otherwise it won't work yet -wjp
+	// TODO: these ranges are probably a bit too high,
+	// but otherwise it won't work properly yet -wjp
 	if (targetitem)
-		return node->state.checkItem(targetitem, 64, 8);
+		return node->state.checkItem(targetitem, 32, 8);
 	else
-		return node->state.checkPoint(targetx, targety, targetz, 64, 8);
+		return node->state.checkPoint(targetx, targety, targetz, 32, 8);
 }
 
 unsigned int Pathfinder::costHeuristic(PathNode* node)
@@ -224,10 +225,10 @@ bool Pathfinder::pathfind(std::vector<PathfindingAction>& path)
 	//!! FIXME: memory leaks
 
 	if (targetitem) {
-		perr << "Pathfinding to item: ";
+		pout << "Pathfinding to item: ";
 		targetitem->dumpInfo();
 	} else {
-		perr << "Pathfinding to (" << targetx << "," << targety << "," << targetz << ")" << std::endl;
+		pout << "Pathfinding to (" << targetx << "," << targety << "," << targetz << ")" << std::endl;
 	}
 
 	path.clear();
@@ -240,14 +241,14 @@ bool Pathfinder::pathfind(std::vector<PathfindingAction>& path)
 	nodes.push(startnode);
 
 	unsigned int expandednodes = 0;
-	const unsigned int NODELIMIT = 1000; //! constant
+	const unsigned int NODELIMIT = 200; //! constant
 	bool found = false;
 
 	while (expandednodes < NODELIMIT && !nodes.empty() && !found) {
 		PathNode* node = nodes.top(); nodes.pop();
 
 #if 0
-		perr << "Trying node: (" << node->state.x << "," << node->state.y
+		pout << "Trying node: (" << node->state.x << "," << node->state.y
 			 << "," << node->state.z << ") target=(" << targetx << ","
 			 << targety << "," << targetz << ")" << std::endl;
 #endif
@@ -264,7 +265,7 @@ bool Pathfinder::pathfind(std::vector<PathfindingAction>& path)
 			}
 			path.resize(length);
 
-			perr << "Pathfinder: path found (length = " << length << ")"
+			pout << "Pathfinder: path found (length = " << length << ")"
 				 << std::endl;
 
 			// now backtrack through the nodes to assemble the final animation
@@ -274,7 +275,7 @@ bool Pathfinder::pathfind(std::vector<PathfindingAction>& path)
 				action.direction = node->state.direction;
 				path[--length] = action;
 #if 0
-				perr << "anim = " << node->state.lastanim << ", dir = "
+				pout << "anim = " << node->state.lastanim << ", dir = "
 					 << node->state.direction << std::endl;
 #endif
 

@@ -26,6 +26,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IDataSource.h"
 #include "ODataSource.h"
 
+static const unsigned int PATH_OK = 1;
+static const unsigned int PATH_FAILED = 0;
+
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(PathfinderProcess,Process);
 
@@ -43,8 +46,8 @@ PathfinderProcess::PathfinderProcess(Actor* actor_, ObjId item_)
 	if (!item) {
 		perr << "PathfinderProcess: non-existent target" << std::endl;
 		// can't get there...
-		result = 1;
-		terminate();
+		result = PATH_FAILED;
+		terminateDeferred();
 		return;
 	}
 
@@ -60,8 +63,8 @@ PathfinderProcess::PathfinderProcess(Actor* actor_, ObjId item_)
 	if (!ok) {
 		perr << "PathfinderProcess: failed to find path" << std::endl;
 		// can't get there...
-		result = 1;
-		terminate();
+		result = PATH_FAILED;
+		terminateDeferred();
 		return;
 	}
 }
@@ -88,8 +91,8 @@ PathfinderProcess::PathfinderProcess(Actor* actor_,
 	if (!ok) {
 		perr << "PathfinderProcess: failed to find path" << std::endl;
 		// can't get there...
-		result = 1;
-		terminate();
+		result = PATH_FAILED;
+		terminateDeferred();
 		return;
 	}
 }
@@ -104,7 +107,7 @@ bool PathfinderProcess::run(const uint32 framenum)
 	if (currentstep >= path.size()) {
 		// done
 		perr << "PathfinderProcess: done" << std::endl;
-		result = 0;
+		result = PATH_OK;
 		terminate();
 		return false;
 	}
@@ -140,7 +143,7 @@ bool PathfinderProcess::run(const uint32 framenum)
 		if (!ok) {
 			perr << "PathfinderProcess: failed to find path" << std::endl;
 			// can't get there anymore
-			result = 1;
+			result = PATH_FAILED;
 			terminate();
 			return false;
 		}
@@ -149,7 +152,7 @@ bool PathfinderProcess::run(const uint32 framenum)
 	if (currentstep >= path.size()) {
 		perr << "PathfinderProcess: done" << std::endl;
 		// done
-		result = 0;
+		result = PATH_OK;
 		terminate();
 		return false;
 	}
