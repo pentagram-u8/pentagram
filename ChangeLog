@@ -1,3 +1,9 @@
+2005-01-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/fonts/TTF*: added bordersize parameter to TTF rendering
+	* kernel/GUIApp.cpp: override book/scroll font with TTF as well,
+	  using Vera.ttf
+	* kernel/GUIApp.cpp: don't allow saving if avatar is dead
+
 2005-01-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* data/u8bindings.ini: set c to combat mode, insert to clipping
 	* usecode/UCMachine.*: UCMachine::traceAll intrinsic

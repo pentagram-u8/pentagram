@@ -100,8 +100,8 @@ bool FontManager::openTTF(Pentagram::istring name, IDataSource* ds, int size)
 #endif
 }
 
-bool FontManager::addTTFOverride(unsigned int fontnum,
-								 Pentagram::istring ttf, uint32 rgb)
+bool FontManager::addTTFOverride(unsigned int fontnum, Pentagram::istring ttf,
+								 uint32 rgb, int bordersize)
 {
 #ifdef USE_SDLTTF
 
@@ -110,7 +110,7 @@ bool FontManager::addTTFOverride(unsigned int fontnum,
 	if (iter == ttfs.end())
 		return false;
 
-	TTFont* font = new TTFont(iter->second, rgb);
+	TTFont* font = new TTFont(iter->second, rgb, bordersize);
 
 	if (fontnum >= overrides.size())
 		overrides.resize(fontnum+1);

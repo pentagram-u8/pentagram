@@ -44,6 +44,7 @@ TTFRenderedText::~TTFRenderedText()
 void TTFRenderedText::draw(RenderSurface* surface, int x, int y)
 {
 	surface->Blit(texture, 0, 0, width, height, x, y-font->getBaseline());
+//	surface->FadedBlit(texture, 0, 0, width, height, x, y-font->getBaseline(), 0x800000F0);
 }
 
 #endif

@@ -945,13 +945,19 @@ void GUIApp::GraphicSysInit()
 		IDataSource* fontids = FileSystem::get_instance()->
 			ReadFile("@data/VeraBd.ttf");
 		if (fontids)
-			fontmanager->openTTF("vera10", fontids, 10);
+			fontmanager->openTTF("verabd10", fontids, 10);
 
-		fontmanager->addTTFOverride(0, "vera10", 0xC0C0FF);
-		fontmanager->addTTFOverride(5, "vera10", 0xFFAE00);
-		fontmanager->addTTFOverride(6, "vera10", 0xD00000);
-		fontmanager->addTTFOverride(7, "vera10", 0x00D000);
-		fontmanager->addTTFOverride(8, "vera10", 0xFFF000);
+		fontmanager->addTTFOverride(0, "verabd10", 0xC0C0FF, 1);
+		fontmanager->addTTFOverride(5, "verabd10", 0xFFAE00, 1);
+		fontmanager->addTTFOverride(6, "verabd10", 0xD00000, 1);
+		fontmanager->addTTFOverride(7, "verabd10", 0x00D000, 1);
+		fontmanager->addTTFOverride(8, "verabd10", 0xFFF000, 1);
+
+		fontids = FileSystem::get_instance()->ReadFile("@data/Vera.ttf");
+		if (fontids)
+			fontmanager->openTTF("vera9", fontids, 9);
+
+		fontmanager->addTTFOverride(9, "vera9", 0x000000, 0);
 	}
 
 	// Set Screen Resolution
@@ -1500,13 +1506,21 @@ void GUIApp::writeSaveInfo(ODataSource* ods)
 
 bool GUIApp::saveGame(std::string filename, bool ignore_modals)
 {
-	pout << "Saving..." << std::endl;
-
 	// Don't allow saving with Modals open
 	if (!ignore_modals && desktopGump->FindGump<ModalGump>()) {
 		pout << "Can't save: modal gump open." << std::endl;
 		return false;
 	}
+
+	// Don't allow saving when avatar is dead.
+	// (Avatar is flagged dead by usecode when you finish the game as well.)
+	MainActor* av = world->getMainActor();
+	if (!av || (av->getActorFlags() && Actor::ACT_DEAD)) {
+		pout << "Can't save: Avatar is dead or game is over." << std::endl;
+		return false;
+	}
+
+	pout << "Saving..." << std::endl;
 
 	// Hack - don't save mouse over status for gumps
 	Gump * gump = getGump(mouseOverGump);

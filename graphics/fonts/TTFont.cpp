@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -33,13 +33,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 DEFINE_RUNTIME_CLASSTYPE_CODE(TTFont,Pentagram::Font);
 
 
-TTFont::TTFont(TTF_Font* font, uint32 rgb_)
+TTFont::TTFont(TTF_Font* font, uint32 rgb_, int bordersize_)
 {
 	ttf_font = font;
 
 //	rgb = PACK_RGB8( (rgb_>>16)&0xFF , (rgb_>>8)&0xFF , rgb_&0xFF );
 	// This should be performed by PACK_RGB8, but it is not initialized at this point.
 	rgb = (rgb_>>16)&0xFF | ((rgb_>>8)&0xFF)<<8 | (rgb_&0xFF)<<16;
+	bordersize = bordersize_;
 }
 
 TTFont::~TTFont()
@@ -49,7 +50,7 @@ TTFont::~TTFont()
 
 int TTFont::getHeight()
 {
-	return TTF_FontHeight(ttf_font) + 2; // constant (border)
+	return TTF_FontHeight(ttf_font) + 2*bordersize; // constant (border)
 }
 
 int TTFont::getBaseline()
@@ -126,8 +127,8 @@ void TTFont::getStringSize(std::string& text, int& width, int& height)
 	pout << "descent: " << TTF_FontDescent(ttf_font) << std::endl;
 #endif
 
-	width += 2; // constant (border)
-	height += 2;
+	width += 2*bordersize;
+	height += 2*bordersize;
 }
 
 RenderedText* TTFont::renderText(std::string text,
@@ -191,14 +192,15 @@ RenderedText* TTFont::renderText(std::string text,
 				if (surfrow[x] == 1) {
 //					bufrow[iter->dims.x+x+1] = 0xFFFFFFFF;
 					bufrow[iter->dims.x+x+1] = rgb | 0xFF000000;
-					for (int dx = -1; dx < 2; dx++) {
-						for (int dy = -1; dy < 2; dy++) {
-							if (x + 1 + iter->dims.x + dx >= 0 &&
-								x + 1 + iter->dims.x + dx < resultwidth &&
-								y + 1 + dy >= 0 && y + 1 + dy < resultheight)
+					if (bordersize <= 0) continue;
+					for (int dx = -bordersize; dx <= bordersize; dx++) {
+						for (int dy = -bordersize; dy <= bordersize; dy++) {
+							if (x + bordersize + iter->dims.x + dx >= 0 &&
+								x + bordersize + iter->dims.x + dx < resultwidth &&
+								y + bordersize + dy >= 0 && y + bordersize + dy < resultheight)
 							{
-								if (buf[(y+iter->dims.y+dy+1)*resultwidth + x+1+iter->dims.x+dx] == 0) {
-									buf[(y+iter->dims.y+dy+1)*resultwidth + x+1+iter->dims.x+dx] = 0xFF000000;
+								if (buf[(y+iter->dims.y+dy+bordersize)*resultwidth + x+bordersize+iter->dims.x+dx] == 0) {
+									buf[(y+iter->dims.y+dy+bordersize)*resultwidth + x+bordersize+iter->dims.x+dx] = 0xFF000000;
 								}
 							}
 						}

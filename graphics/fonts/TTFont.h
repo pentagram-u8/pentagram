@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -30,7 +30,7 @@ class IDataSource;
 class TTFont : public Pentagram::Font
 {
 public:
-	TTFont(TTF_Font* font, uint32 rgb);
+	TTFont(TTF_Font* font, uint32 rgb, int bordersize);
 	virtual ~TTFont();
 
 	virtual int getHeight();
@@ -48,6 +48,7 @@ public:
 protected:
 	TTF_Font* ttf_font;
 	uint32 rgb;
+	int bordersize;
 };
 
 

@@ -54,7 +54,7 @@ public:
 	//! \param ttf the alias of the TTF to override it with
 	//! \param rgb the color to use for the font
 	bool addTTFOverride(unsigned int fontnum, Pentagram::istring ttf,
-						uint32 rgb);
+						uint32 rgb, int bordersize);
 
 private:
 
