@@ -64,7 +64,7 @@ void BarkGump::InitGump()
 	AddChild(widget);
 
 	// This is just a hack
-	Rect d;
+	Pentagram::Rect d;
 	widget->GetDims(d);
 	counter = d.h*5; //! constant
 	dims.h = d.h;

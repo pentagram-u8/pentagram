@@ -202,11 +202,11 @@ void Gump::Paint(RenderSurface *surf, sint32 lerp_factor)
 	surf->SetOrigin(ox+nx, oy+ny);
 
 	// Get Old Clipping Rect
-	Rect old_rect;
+	Pentagram::Rect old_rect;
 	surf->GetClippingRect(old_rect);
 
 	// Set new clipping rect
-	Rect new_rect = old_rect;
+	Pentagram::Rect new_rect = old_rect;
 	new_rect.Intersect(dims);
 	surf->SetClippingRect(new_rect);
 
@@ -228,7 +228,7 @@ void Gump::PaintThis(RenderSurface* surf, sint32 /*lerp_factor*/)
 	if (shape)
 	{
 #if 0
-		Rect sr;
+		Pentagram::Rect sr;
 		ShapeFrame *f = shape->getFrame(framenum);
 		sr.h = f->height;
 		sr.w = f->height;

@@ -22,7 +22,6 @@
 #include "ItemRelativeGump.h"
 
 class Shape;
-struct Rect;
 
 class ContainerGump : public ItemRelativeGump
 {
@@ -33,7 +32,7 @@ public:
 				  uint32 _Flags = 0, sint32 layer = LAYER_NORMAL);
 	virtual ~ContainerGump(void);
 
-	void setItemArea(Rect* itemarea_) { itemarea = *itemarea_; }
+	void setItemArea(Pentagram::Rect* itemarea_) { itemarea = *itemarea_; }
 
 	// Close the gump
 	virtual void Close(bool no_del = false);
@@ -65,7 +64,7 @@ public:
 	virtual void OnMouseDouble(int button, int mx, int my);
 
 protected:
-	Rect itemarea;
+	Pentagram::Rect itemarea;
 
 	bool display_dragging;
 	uint32 dragging_shape;

@@ -57,7 +57,7 @@ protected:
 	uint32			zpitch;					// Z Buffer pitch (bytes)
 
 	// Clipping Rectangle
-	Rect			clip_window;
+	Pentagram::Rect	clip_window;
 
 	// Locking count
 	uint32			lock_count;				// Number of locks on surface
@@ -104,16 +104,16 @@ public:
 	virtual void GetOrigin(sint32 &x, sint32 &y) const;
 
 	// Get the Surface Dimensions
-	virtual void GetSurfaceDims(Rect &) const;
+	virtual void GetSurfaceDims(Pentagram::Rect &) const;
 
 	// Get Clipping Rectangle
-	virtual void GetClippingRect(Rect &) const;
+	virtual void GetClippingRect(Pentagram::Rect &) const;
 
 	// Set Clipping Rectangle
-	virtual void SetClippingRect(const Rect &);
+	virtual void SetClippingRect(const Pentagram::Rect &);
 
 	// Check Clipped. -1 if off screen, 0 if not clipped, 1 if clipped
-	virtual sint16 CheckClipped(const Rect &) const;
+	virtual sint16 CheckClipped(const Pentagram::Rect &) const;
 
 	//
 	// Surface Palettes

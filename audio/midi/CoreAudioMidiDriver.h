@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003  The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,26 +16,31 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef GUMPSHAPEFLEX_H
-#define GUMPSHAPEFLEX_H
+#ifndef COREAUDIOMIDIDRIVER_H_INCLUDED
+#define COREAUDIOMIDIDRIVER_H_INCLUDED
 
-#include "ShapeFlex.h"
+#ifdef MACOSX
 
-namespace Pentagram { struct Rect; }
+#include "LowLevelMidiDriver.h"
 
-class GumpShapeFlex : public ShapeFlex
+#include <AudioUnit/AudioUnit.h>
+
+class CoreAudioMidiDriver : public LowLevelMidiDriver
 {
+	AudioUnit au_MusicDevice;
+	AudioUnit au_output;
+
 public:
-	GumpShapeFlex(IDataSource* ds, Palette* pal = 0,
-				  const ConvertShapeFormat *format = 0);
-	virtual ~GumpShapeFlex();
-	
-	void loadGumpage(IDataSource *ds);
-	Pentagram::Rect* getGumpItemArea(uint32 shapenum);
-	
+	CoreAudioMidiDriver();
+
 protected:
-	std::vector<Pentagram::Rect*> gumpItemArea;
+	virtual int			open();
+	virtual void		close();
+	virtual void		send(uint32 message);
+	virtual void		increaseThreadPriority();
+	virtual void		yield();
 };
 
+#endif //MACOSX
 
-#endif
+#endif //COREAUDIOMIDIDRIVER_H_INCLUDED

@@ -36,6 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MainShapeFlex.h"
 
 using std::list; // too messy otherwise
+using Pentagram::Rect;
 typedef list<Item*> item_list;
 
 CurrentMap::CurrentMap()

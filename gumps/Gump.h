@@ -44,7 +44,7 @@ protected:
 	Gump *				parent;			// Parent gump
 	sint32				x, y;			// Gumps position. This is always the upper left corner!
 
-	Rect				dims;			// The dimentions/coord space of the gump
+	Pentagram::Rect		dims;			// The dimentions/coord space of the gump
 	uint32				flags;			// Gump flags
 	sint32				layer;			// gump ordering layer
 
@@ -161,7 +161,7 @@ public:
 	//
 
 	//! Get the dims
-	virtual void		GetDims(Rect &d) { d = dims; }
+	virtual void		GetDims(Pentagram::Rect &d) { d = dims; }
 
 	//! Detect if a point is on the gump
 	virtual bool		PointOnGump(int mx, int my);

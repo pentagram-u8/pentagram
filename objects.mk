@@ -121,4 +121,5 @@ MIDI = \
 	audio/midi/XMidiFile.o \
 	audio/midi/XMidiSequence.o \
 	audio/midi/LowLevelMidiDriver.o \
+	audio/midi/CoreAudioMidiDriver.o \
 	audio/midi/WindowsMidiDriver.o

@@ -62,8 +62,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "MusicProcess.h"
 
+#include "MidiDriver.h"
 #ifdef WIN32
 #include "WindowsMidiDriver.h"
+#endif
+#ifdef MACOSX
+#include "CoreAudioMidiDriver.h"
 #endif
 
 using std::string;
@@ -92,6 +96,7 @@ GUIApp::~GUIApp()
 {
 	FORGET_OBJECT(ucmachine);
 	FORGET_OBJECT(palettemanager);
+	// TODO: shouldn't the midi_driver be free'd, too?
 }
 
 void GUIApp::startup()
@@ -110,6 +115,8 @@ void GUIApp::startup()
 	// Create the driver
 #ifdef WIN32
 	midi_driver = new WindowsMidiDriver();
+#elif defined(MACOSX)
+	midi_driver = new CoreAudioMidiDriver();
 #else
 	midi_driver = 0;
 #endif
@@ -280,7 +287,7 @@ void GUIApp::U8Playground()
 		world->switchMap(3);
 
 	// Create GameMapGump
-	Rect dims;
+	Pentagram::Rect dims;
 	screen->GetSurfaceDims(dims);
 	
 	pout << "Create GameMapGump" << std::endl;
@@ -315,7 +322,7 @@ void GUIApp::paint()
 	screen->BeginPainting();
 
 	// We need to get the dims
-	Rect dims;
+	Pentagram::Rect dims;
 	screen->GetSurfaceDims(dims);
 
 	long before_gumps = SDL_GetTicks();
@@ -384,7 +391,7 @@ void GUIApp::GraphicSysInit()
 	LoadConsoleFont();
 
 	// Create desktop
-	Rect dims;
+	Pentagram::Rect dims;
 	screen->GetSurfaceDims(dims);
 
 	runGraphicSysInit=true;

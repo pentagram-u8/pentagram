@@ -19,36 +19,36 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef RECT_H_INCLUDED
 #define RECT_H_INCLUDED
 
+namespace Pentagram {
+
 struct Rect {
-	// DO NOT Manually Set these!
 	sint32		x, y;
 	sint32		w, h;
-	sint32		xr, yb;
 
-	Rect() : x(0), y(0), w(0), h(0), xr(0), yb(0) {}
-	Rect(int nx, int ny, int nw, int nh) : x(nx), y(ny), w(nw), h(nh), xr(nx+nw), yb(ny+nh) {}
-	Rect(const Rect& o) : x(o.x), y(o.y), w(o.w), h(o.h), xr(o.x+o.w), yb(o.y+o.h) {}
+	Rect() : x(0), y(0), w(0), h(0) {}
+	Rect(int nx, int ny, int nw, int nh) : x(nx), y(ny), w(nw), h(nh) {}
+	Rect(const Rect& o) : x(o.x), y(o.y), w(o.w), h(o.h) {}
 	
-	void	Set(int nx, int ny, int nw, int nh) { x=nx; y=ny; w=nw; h=nh; xr=x+w; yb=y+h; }
+	void	Set(int nx, int ny, int nw, int nh) { x=nx; y=ny; w=nw; h=nh; }
 	void	Set(Rect &o) { *this = o; }
-
+	
 	// Check to see if a Rectangle is 'valid'
-	bool	IsValid() { return w > 0 && h > 0; }
+	bool	IsValid() const { return w > 0 && h > 0; }
 
 	// Check to see if a point is within the Rectangle
-	bool	InRect(int px, int py) { return px >= x && py >= y && px < (x+w) && py < (y+h); }
+	bool	InRect(int px, int py) const { return px >= x && py >= y && px < (x+w) && py < (y+h); }
 
 	// Move the Rect (Relative)
-	void	MoveRel(sint32 dx, sint32 dy) { x=x+dx; y=y+dy; xr=x+w; yb=y+h; }
+	void	MoveRel(sint32 dx, sint32 dy) { x=x+dx; y=y+dy; }
 
 	// Move the Rect (Absolute)
-	void	MoveAbs(sint32 nx, sint32 ny) { x=nx; y=ny; xr=x+w; yb=y+h; }
+	void	MoveAbs(sint32 nx, sint32 ny) { x=nx; y=ny; }
 
 	// Resize the Rect (Relative)
-	void	ResizeRel(sint32 dw, sint32 dh) { w=w+dw; h=h+dh; xr=x+w; yb=y+h; }
+	void	ResizeRel(sint32 dw, sint32 dh) { w=w+dw; h=h+dh; }
 
 	// Resize the Rect (Absolute)
-	void	ResizeAbs(sint32 nw, sint32 nh) { w=nw; h=nh; xr=x+w; yb=y+h; }
+	void	ResizeAbs(sint32 nw, sint32 nh) { w=nw; h=nh; }
 
 	// Intersect/Clip this rect with another
 	void	Intersect(int ox, int oy, int ow, int oh)
@@ -68,8 +68,6 @@ struct Rect {
 		if (y2 < oy) y2 = oy;
 		else if (y2 > oy2) y2 = oy2;
 
-		xr = x2;
-		yb = y2;
 		w = x2 - x;
 		h = y2 - y;
 
@@ -115,8 +113,6 @@ struct Rect {
 		if (oy < y) y = ox;
 		else if (oy2 > y2) y2 = ox2;
 
-		xr = x2;
-		yb = y2;
 		w = x2 - x;
 		h = y2 - y;
 	}
@@ -127,10 +123,10 @@ struct Rect {
 		Union(o.x, o.y, o.w, o.h);
 	}
 
-	bool 	Overlaps(const Rect& o)
+	bool 	Overlaps(const Rect& o) const
 	{
-		if (xr <= o.x || o.xr <= x) return false;
-		if (yb <= o.y || o.yb <= y) return false;
+		if (x+w <= o.x || o.x+o.w <= x) return false;
+		if (y+h <= o.y || o.y+o.h <= y) return false;
 		return true;
 	}
 
@@ -154,5 +150,7 @@ struct Rect {
 	}
 
 };
+
+}
 
 #endif // RECT_H_INCLUDED

@@ -1,3 +1,14 @@
+2003-07-02  Max Horn <max@quendi.de>
+	* misc/Rect.h: Moved struct Rect into namespace Pentagram (it conflicts
+	  with a struct in the Mac OS X system headers); removed xr/yb members
+	  (besides adding 8 byte more memory, they were useless, and in fact since
+	  a lot of stuff modifies x/y/w/h directly, they quickly got out of sync)
+	* various: adapted to struct Rect now being in namespace Pentagram
+	* audio/midi/CoreAudioMidiDriver.*: Mac OS X Midi driver using CoreAudio,
+	  based on the equivalent ScummVM driver
+	* kernel/GUIApp.cpp: On Mac OS X, instantiate CoreAudioMidiDriver
+	* configure.ac: Added -framework AudioUnits, needed by CoreAudioMidiDriver 
+
 2003-07-02  Ryan Nunn <colourles@users.sourceforge.net>
 	* world/SpriteProcess.cpp : Set FLG_DISPOSABLE, even though it's not
 	  yet implemented
@@ -28,7 +39,6 @@
 
 2003-06-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GameDetector.cpp: fixed crash for non-U8 games
-
 
 2003-06-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Kernel.*, world/World.cpp: kill any process belonging to an

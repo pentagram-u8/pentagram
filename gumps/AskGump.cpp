@@ -74,7 +74,7 @@ void AskGump::InitGump()
 		child->SetIndex(i);
 		AddChild(child);
 
-		Rect cd;
+		Pentagram::Rect cd;
 		child->GetDims(cd);
 
 		if (px+cd.w > 160 && px != 0) 

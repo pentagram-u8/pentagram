@@ -48,11 +48,11 @@ void GumpShapeFlex::loadGumpage(IDataSource* ds)
 		y = ds->read2();
 		w = ds->read2();
 		h = ds->read2();
-		gumpItemArea[i] = new Rect(x, y, w, h);
+		gumpItemArea[i] = new Pentagram::Rect(x, y, w, h);
 	}
 }
 
-Rect* GumpShapeFlex::getGumpItemArea(uint32 shapenum)
+Pentagram::Rect* GumpShapeFlex::getGumpItemArea(uint32 shapenum)
 {
 	if (shapenum >= gumpItemArea.size()) return 0;
 	return gumpItemArea[shapenum];

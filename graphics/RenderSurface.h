@@ -27,7 +27,7 @@ struct Texture;
 class Shape;
 class Font;
 struct Palette;
-struct Rect;
+namespace Pentagram { struct Rect; }
 
 //
 // RenderSurface
@@ -74,16 +74,16 @@ public:
 	virtual void GetOrigin(sint32 &x, sint32 &y) const = 0;
 
 	// Get the Surface Dimensions
-	virtual void GetSurfaceDims(Rect &) const = 0;
+	virtual void GetSurfaceDims(Pentagram::Rect &) const = 0;
 
 	// Get Clipping Rectangle
-	virtual void GetClippingRect(Rect &) const = 0;
+	virtual void GetClippingRect(Pentagram::Rect &) const = 0;
 
 	// Set Clipping Rectangle
-	virtual void SetClippingRect(const Rect &) = 0;
+	virtual void SetClippingRect(const Pentagram::Rect &) = 0;
 
 	// Check Clipped. -1 if off screen, 0 if not clipped, 1 if clipped
-	virtual sint16 CheckClipped(const Rect &) const = 0;
+	virtual sint16 CheckClipped(const Pentagram::Rect &) const = 0;
 
 
 	//
