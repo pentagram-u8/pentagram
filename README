@@ -78,7 +78,8 @@ ESC,q			: quits pentagram
 				  show the paint order. [ "steps" backward.
 left mouse		: look at item/npc
 right mouse		: use item/talk to npc
-middle mouse	: turn object invisible
+middle mouse	: feature test button :-) likely to change very often.
+				  At the moment it is an object "hurler"
 
 
 HACKS TO SHOW OFF
