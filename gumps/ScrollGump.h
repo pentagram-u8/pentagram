@@ -36,8 +36,11 @@ public:
 	// Run the gump
 	virtual bool Run(const uint32 framenum);
 
-	// Got to the next page on mouse click
-	virtual Gump* OnMouseDown(int button, int mx, int my);
+	// Go to the next page on mouse click
+	virtual void OnMouseClick(int button, int mx, int my);
+
+	// Close on double click
+	virtual void OnMouseDouble(int button, int mx, int my);
 
 	// Init the gump, call after construction
 	virtual void InitGump();

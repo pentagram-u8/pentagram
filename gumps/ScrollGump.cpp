@@ -95,11 +95,15 @@ bool ScrollGump::Run(const uint32 framenum)
 	return true;	// Always repaint, even though we really could just try to detect it
 }
 
-Gump *ScrollGump::OnMouseDown(int button, int mx, int my)
+void ScrollGump::OnMouseClick(int button, int mx, int my)
 {
 	// Scroll to next text, if possible
 	NextText();
-	return this;
+}
+
+void ScrollGump::OnMouseDouble(int button, int mx, int my)
+{
+	Close();
 }
 
 uint32 ScrollGump::I_readScroll(const uint8* args, unsigned int /*argsize*/)

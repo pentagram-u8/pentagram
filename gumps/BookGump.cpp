@@ -102,14 +102,18 @@ bool BookGump::Run(const uint32 framenum)
 {
 	ModalGump::Run(framenum);
 
-	return true;	// Always repaint, even though we really could just try to detect it
+	return true;
 }
 
-Gump *BookGump::OnMouseDown(int button, int mx, int my)
+void BookGump::OnMouseClick(int button, int mx, int my)
 {
-	// Scrol to next text, if possible
+	// Scroll to next text, if possible
 	NextText();
-	return this;
+}
+
+void BookGump::OnMouseDouble(int button, int mx, int my)
+{
+	Close();
 }
 
 uint32 BookGump::I_readBook(const uint8* args, unsigned int /*argsize*/)

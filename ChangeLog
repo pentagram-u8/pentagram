@@ -1,3 +1,6 @@
+2004-09-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/BookGump.*, gumps/ScrollGump.*: close books/scrolls on dblclick
+
 2004-09-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Kernel.*: added killProcessesNotOfType function
 	* world/World.cpp: kill all processes not of type 1 on map change
@@ -17,7 +20,6 @@
 	* gumps/PaperdollGump.*: don't close backpack when closing paperdoll
 	* world/Item.h, world/ItemSorter.cpp: don't draw invisible items,
 	  added EXT_TRANSPARENT flag to draw item transparently
-	
 
 2004-09-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/SplitItemProcess.cpp: fixed double-terminate
