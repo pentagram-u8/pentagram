@@ -1,3 +1,7 @@
+2004-03-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/WeaponOverlay.h: weapon overlay info
+	* graphics/WpnOvlayDat.*, kernel/GameData.*: load wpnovlay.dat
+
 2004-03-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/World.cpp: updated comments a bit
 	* world/actors/AnimAction.h: added some flags

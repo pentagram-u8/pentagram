@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -31,6 +31,7 @@ class Usecode;
 class Glob;
 class Shape;
 class MusicFlex;
+class WpnOvlayDat;
 
 class GameData
 {
@@ -50,6 +51,7 @@ public:
 	GumpShapeFlex* getGumps() const { return gumps; }
 	Shape* getMouse() const { return mouse; }
 	MusicFlex* getMusic() const { return music; }
+	WpnOvlayDat* getWeaponOverlay() const { return weaponoverlay; }
 
 private:
 	Flex* fixed;
@@ -60,6 +62,7 @@ private:
 	GumpShapeFlex* gumps;
 	Shape* mouse;
 	MusicFlex* music;
+	WpnOvlayDat* weaponoverlay;
 
 	GameInfo gameinfo;
 

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -30,13 +30,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "PaletteManager.h"
 #include "Shape.h"
 #include "MusicFlex.h"
+#include "WpnOvlayDat.h"
 
 GameData* GameData::gamedata = 0;
 
 
 GameData::GameData()
 	: fixed(0), mainshapes(0), mainusecode(0), globs(0), fonts(0), gumps(0),
-	  mouse(0)
+	  mouse(0), music(0), weaponoverlay(0)
 {
 	assert(gamedata == 0);
 	gamedata = this;
@@ -68,6 +69,9 @@ GameData::~GameData()
 
 	delete music;
 	music = 0;
+
+	delete weaponoverlay;
+	weaponoverlay = 0;
 
 	gamedata = 0;
 }
@@ -132,6 +136,17 @@ void GameData::loadU8Data()
 	}
 	mainshapes->loadAnimDat(af);
 	delete af;
+
+	// Load weapon overlay data
+	IDataSource* wod = filesystem->ReadFile("@u8/static/wpnovlay.dat");
+	if (!wod) {
+		perr << "Unable to load static/wpnovlay.dat. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	Flex* overlayflex = new Flex(wod);
+	weaponoverlay = new WpnOvlayDat();
+	weaponoverlay->load(overlayflex);
+	delete overlayflex;
 
 	// Load globs
 	IDataSource *gds = filesystem->ReadFile("@u8/static/glob.flx");
