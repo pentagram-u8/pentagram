@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -127,6 +127,12 @@ void PathfinderProcess::terminate()
 
 bool PathfinderProcess::run(const uint32 /*framenum*/)
 {
+	Actor* actor = World::get_instance()->getNPC(item_num);
+	assert(actor);
+	// if not in the fastarea, do nothing
+	if (!(actor->getFlags() & Item::FLG_FASTAREA)) return false;
+
+
 	bool ok = true;
 
 	if (targetitem) {
@@ -163,8 +169,6 @@ bool PathfinderProcess::run(const uint32 /*framenum*/)
 #if 0
 	pout << "PathfinderProcess: trying step" << std::endl;
 #endif
-
-	Actor* actor = World::get_instance()->getNPC(item_num);
 
 	// if actor is still animating for whatever reason, wait until he stopped
 	// FIXME: this should happen before the pathfinder is actually called,

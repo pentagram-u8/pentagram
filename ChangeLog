@@ -1,3 +1,7 @@
+2005-03-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/PathfinderProcess.cpp: hopefully prevent infinite loop
+	  in PathfinderProcess when actor is outside of the fast area
+
 2005-03-13  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* kernel/*Pool.*, kernel/*Allocator.*, kernel/MemoryManager.*: new
 	  classes to handle memory pooling.
