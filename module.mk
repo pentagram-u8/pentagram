@@ -57,6 +57,7 @@ pentagram_OBJ = \
 	world/Glob.o \
 	world/GlobEgg.o \
 	world/World.o \
+	world/ItemMoveProcess.o \
 	world/actors/Actor.o \
 	world/actors/ActorAnimProcess.o \
 	world/actors/MainActor.o \
