@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "FileSystem.h"
 
 // p_dynamic_cast stuff
-DEFINE_DYNAMIC_CAST_CODE(CompileProcess,Process);
+DEFINE_RUNTIME_CLASSTYPE_CODE(CompileProcess,Process);
 
 CompileProcess::CompileProcess(FileSystem *filesystem) : termCounter(10)
 {

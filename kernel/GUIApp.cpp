@@ -32,9 +32,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "U8Save.h"
 
+#include "Gump.h"
+#include "DesktopGump.h"
+#include "ConsoleGump.h"
+#include "GameMapGump.h"
+#include "BarkGump.h"
+
 // TODO MOVE THIS STUFF TO GameMapGump or somewhere else
 #include "Item.h"
 #include "Actor.h"
+#include "MainActor.h"
 #include "ItemSorter.h"
 #include "CurrentMap.h"
 #include "Rect.h"
@@ -53,18 +60,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "DisasmProcess.h"
 #include "CompileProcess.h"
 
+#if defined(WIN32) && defined(COLOURLESS_WANTS_A_DATA_FREE_PENATGRAM)
+#include <windows.h>
+#include "resource.h"
+#endif
+
 using std::string;
 
-bool showconsole=true; // yes, yes, more of them :-)
+DEFINE_RUNTIME_CLASSTYPE_CODE(GUIApp,CoreApp);
 
 GUIApp::GUIApp(const int argc, const char * const * const argv)
-	: CoreApp(argc, argv, true), desktop(0),
-	  console(0), screen(0), palettemanager(0), gamedata(0), world(0),
-	  display_list(0), camera(0),
+	: CoreApp(argc, argv, true), desktopGump(0), consoleGump(0), gameMapGump(0),
+	  screen(0), palettemanager(0), gamedata(0), world(0),
 	  runGraphicSysInit(false), runSDLInit(false),
 	  frameSkip(false), frameLimit(true), interpolate(true),
-	  animationRate(33), fastArea(0), avatarInStasis(false)
+	  animationRate(33), avatarInStasis(false), painting(false)
 {
+	// Set the console to auto paint, till we have finished initing
+	con.SetAutoPaint(true);
+
 	application = this;
 
 	postInit(argc, argv);
@@ -73,6 +87,8 @@ GUIApp::GUIApp(const int argc, const char * const * const argv)
 
 	U8Playground();
 
+	// Unset the console auto paint, since we have finished initing
+	con.SetAutoPaint(false);
 }
 
 GUIApp::~GUIApp()
@@ -109,7 +125,7 @@ void GUIApp::run()
 			if (kernel->runProcesses(framenum++)) repaint = true;
 			inBetweenFrame = false;
 			next_ticks = animationRate + SDL_GetTicks();
-			lerpFactor = 0;
+			lerpFactor = 256;
 		}
 		else 
 		{
@@ -136,8 +152,9 @@ void GUIApp::run()
 			// Calculate the lerp_factor
 			lerpFactor = ((animationRate-diff)*256)/animationRate;
 			//pout << "lerpFactor: " << lerpFactor << " framenum: " << framenum << std::endl;
-			if (lerpFactor > 256) lerpFactor = 256;
+			if (!interpolate || lerpFactor > 256) lerpFactor = 256;
 		}
+
 
 		repaint = true;
 
@@ -147,13 +164,15 @@ void GUIApp::run()
 		}
 
 		// Paint Screen
-		if(runGraphicSysInit) // need to worry if the graphics system has been started. Need nicer way.
-			paint();
+		paint();
 	}
 }
 
 void GUIApp::U8Playground()
 {
+	inBetweenFrame = 0;
+	lerpFactor = 256;
+
 	// Load palette
 	pout << "Load Palette" << std::endl;
 	palettemanager = new PaletteManager(screen);
@@ -165,12 +184,9 @@ void GUIApp::U8Playground()
 	pf->seek(4); // seek past header
 	palettemanager->load(PaletteManager::Pal_Game, *pf, U8XFormFuncs);
 
+	pout << "Load GameData" << std::endl;
 	gamedata = new GameData();
 	gamedata->loadU8Data();
-
-	// Create ItemSorter *** TODO MOVE THIS TO GameMapGump
-	pout << "Create display_list ItemSorter object" << std::endl;
-	display_list = new ItemSorter();
 
 	// Initialize world
 	pout << "Initialize World" << std::endl;
@@ -197,6 +213,7 @@ void GUIApp::U8Playground()
 		perr << "Unable to load savegame/u8save.000/NPCDATA.DAT. Exiting" << std::endl;
 		std::exit(-1);
 	}
+
 	world->loadItemCachNPCData(icd, npcd);
 	delete icd;
 	delete npcd;
@@ -207,192 +224,37 @@ void GUIApp::U8Playground()
 //	av->teleport(40, 16240, 15240, 64); // central Tenebrae
 //	av->teleport(3, 11391, 1727, 64); // docks, near gate
 //	av->teleport(39, 16240, 15240, 64); // West Tenebrae
+
 	if (av)
 		world->switchMap(av->getMapNum());
 	else
 		world->switchMap(3);
 
-	// Create console gump
-	//pout << "Create Graphics Console" << std::endl;
-	//desktop = console = new ConsoleGump(0,0, width, height);
+	// Create GameMapGump
+	Rect dims;
+	screen->GetSurfaceDims(dims);
 
-	// Clear Screen
+	pout << "Create GameMapGump" << std::endl;
+	gameMapGump = new GameMapGump(0, 0, dims.w, dims.h);
+	gameMapGump->InitGump();
+	desktopGump->AddChild(gameMapGump);
+
+	pout << "Create Camera" << std::endl;
+	CameraProcess::SetCameraProcess(new CameraProcess(1)); // Follow Avatar
+
 	pout << "Paint Inital display" << std::endl;
-	inBetweenFrame = 0;
-	lerpFactor = 256;
-	SetCameraProcess(new CameraProcess(1)); // Follow Avatar
 	paint();
 }
 
-uint16 GUIApp::SetCameraProcess(CameraProcess *cam)
-{
-	if (!cam) cam = new CameraProcess();
-	if (camera) camera->terminate();
-	camera = cam;
-	return kernel->addProcess(camera);
-}
-
-void GUIApp::GetCamera(sint32 &x, sint32 &y, sint32 &z)
-{
-	if (!camera) {
-
-		CurrentMap *map = world->getCurrentMap();
-		int map_num = map->getNum();
-		Actor* av = world->getNPC(1);
-		
-		if (!av || av->getMapNum() != map_num)
-		{
-			x = 8192;
-			y = 8192;
-			z = 64;
-		}
-		else
-			av->getLocation(x,y,z);
-	}
-	else
-	{
-		camera->GetLerped(false, x, y, z, 256);
-	}
-}
-
-void GUIApp::ResetCamera()
-{
-	if (camera) camera->terminate();
-	camera = 0;
-}
-
-void GUIApp::SetupDisplayList()
-{
-	Rect dims;
-	screen->GetSurfaceDims(dims);
-	sint32 resx = dims.w, resy = dims.h;
-	/*
-	at 640x480, with u8 sizes
-	sint32 sx_limit = 4;
-	sint32 sy_limit = 8;
-	sint32 xy_limit = 6;
-
-	at 320x240, with u8 sizes
-	sint32 sx_limit = 3;
-	sint32 sy_limit = 7;
-	sint32 xy_limit = 4;
-
-	for tgwds use half the resolution
-	*/
-
-
-	//if (tgwds)
-	//{
-	//	resx/=2;
-	//	resy/=2;
-	//}
-
-	// By default the fastArea is the screensize plus a border of no more
-	// than 256 pixels wide and 384 pixels high
-
-	sint32 sx_limit = resx/256 + 3;
-	sint32 sy_limit = resy/128 + 7;
-	sint32 xy_limit = (sy_limit+sx_limit)/2;
-	CurrentMap *map = world->getCurrentMap();
-
-	std::vector<uint16> *prev_fast = &fastAreas[1-fastArea];
-	std::vector<uint16> *fast = &fastAreas[fastArea];
-	if (!inBetweenFrame) 
-	{
-		fast->erase(fast->begin(), fast->end());
-	}
-
-	// Get the initial camera location
-	int lx, ly, lz;
-	if (!camera) {
-
-		int map_num = map->getNum();
-		Actor* av = world->getNPC(1);
-		
-		if (!av || av->getMapNum() != map_num)
-		{
-			lx = 8192;
-			ly = 8192;
-			lz = 64;
-		}
-		else
-			av->getLocation(lx,ly,lz);
-	}
-	else
-	{
-		camera->GetLerped(inBetweenFrame, lx, ly, lz, lerpFactor);
-	}
-
-	sint32 gx = lx/512;
-	sint32 gy = ly/512;
-
-	// Get all the required items and sort
-	for (int y = -xy_limit; y <= xy_limit; y++)
-	{
-		for (int x = -xy_limit; x <= xy_limit; x++)
-		{
-			sint32 sx = x - y;
-			sint32 sy = x + y;
-
-			if (sx < -sx_limit || sx > sx_limit || sy < -sy_limit || sy > sy_limit)
-				continue;
-
-			const std::list<Item*>* items = map->getItemList(gx+x,gy+y);
-
-			if (!items) continue;
-
-			std::list<Item*>::const_iterator it = items->begin();
-			std::list<Item*>::const_iterator end = items->end();
-			for (; it != end; ++it)
-			{
-				Item *item = *it;
-				if (!item) continue;
-
-				if (!inBetweenFrame) 
-				{
-					item->inFastArea(fastArea);
-					fast->push_back(item->getObjId());
-				}
-				item->doLerp(lx,ly,lz,lerpFactor);
-
-				display_list->AddItem(item);
-			}
-		}
-	}
-
-	// Now handle leaving the fast area
-	if (!inBetweenFrame) 
-	{
-		std::vector<uint16>::iterator it  = prev_fast->begin();
-		std::vector<uint16>::iterator end  = prev_fast->end();
-
-		for (;it != end; ++it)
-		{
-			Object *obj = world->getObject(*it);
-
-			// No object, continue
-			if (!obj) continue;
-
-			Item *item = p_dynamic_cast<Item*>(obj);
-
-			// Not an item, continue
-			if (!item) continue;
-
-			// If the fast area for the item is the current one, continue
-			if (item->getExtFlags() & (Item::EXT_FAST0<<fastArea)) continue;
-
-			// Ok, we must leave te Fast area
-			item->leavingFastArea();
-		}
-
-		// Flip the fast area
-		fastArea=1-fastArea;
-	}
-}
 
 // Paint the screen
 void GUIApp::paint()
 {
+	if(!runGraphicSysInit) // need to worry if the graphics system has been started. Need nicer way.
+		return;
+
+	painting = true;
+
 	// Begin painting
 	screen->BeginPainting();
 
@@ -400,26 +262,13 @@ void GUIApp::paint()
 	Rect dims;
 	screen->GetSurfaceDims(dims);
 
-	long before_fill = SDL_GetTicks();
-	screen->Fill32(0x3F3F3F, dims.x, dims.y, dims.w, dims.h);
-	long after_fill = SDL_GetTicks();
+	long before_gumps_setup_lerp = SDL_GetTicks();
+	desktopGump->SetupLerp();
+	long after_gumps_setup_lerp = SDL_GetTicks();
 
-	// Set the origin to the center of the screen
-	screen->SetOrigin(dims.w/2, dims.h/2);
-
-	// Do display list
-	display_list->BeginDisplayList(screen);
-	long before_sort = SDL_GetTicks();
-	SetupDisplayList();
-	long after_sort = SDL_GetTicks();
-	display_list->PaintDisplayList();
-	long after_paint = SDL_GetTicks();
-
-	// Put the origin to 0,0 for drawing console
-	screen->SetOrigin(0,0);
-
-	if (showconsole)
-		con.DrawConsole(screen, 0, 0, dims.w, dims.h);
+	long before_gumps = SDL_GetTicks();
+	desktopGump->Paint(screen, lerpFactor);
+	long after_gumps = SDL_GetTicks();
 
 	static long prev = 0;
 	long now = SDL_GetTicks();
@@ -427,11 +276,13 @@ void GUIApp::paint()
 	prev = now;
 
 	char buf[256];
-	snprintf(buf, 255, "Rendering time %li ms %li FPS - Sort %li ms  Paint %li ms  Fill %li ms", diff, 1000/diff, after_sort-before_sort, after_paint-after_sort, after_fill-before_fill);
+	snprintf(buf, 255, "Rendering time %li ms %li FPS - Lerp %li ms  Paint Gumps %li ms", diff, 1000/diff, after_gumps_setup_lerp-before_gumps_setup_lerp, after_gumps-before_gumps);
 	screen->PrintTextFixed(con.GetConFont(), buf, 8, dims.h-16);
 
 	// End painting
 	screen->EndPainting();
+
+	painting = false;
 }
 
 void GUIApp::GraphicSysInit()
@@ -454,16 +305,39 @@ void GUIApp::GraphicSysInit()
 		perr << "Unable to set video mode. Exiting" << std::endl;
 		std::exit(-1);
 	}
-	pout << "Resize Console" << std::endl;
-	con.CheckResize(width);
+
+	pout << "Create Desktop" << std::endl;
+	desktopGump = new DesktopGump(0,0, width, height);
+	desktopGump->InitGump();
+	desktopGump->MakeFocus();
+
+	pout << "Create Graphics Console" << std::endl;
+	consoleGump = new ConsoleGump(0, 0, width, height);
+	consoleGump->InitGump();
+	desktopGump->AddChild(consoleGump);
 
 	LoadConsoleFont();
 
+	// Create desktop
+	Rect dims;
+	screen->GetSurfaceDims(dims);
+
 	runGraphicSysInit=true;
+
+	// Do initial console paint
+	paint();
 }
 
 void GUIApp::LoadConsoleFont()
 {
+#if defined(WIN32) && defined(COLOURLESS_WANTS_A_DATA_FREE_PENATGRAM)
+	HRSRC res = FindResource(NULL,  MAKEINTRESOURCE(IDR_FIXED_FONT_TGA), RT_RCDATA);
+	if (res) filesystem->MountFileInMemory("@data/fixedfont.tga", static_cast<uint8*>(LockResource(LoadResource(NULL, res))), SizeofResource(NULL, res));
+
+	res = FindResource(NULL, MAKEINTRESOURCE(IDR_FIXED_FONT_CFG), RT_RCDATA);
+	if (res) filesystem->MountFileInMemory("@data/fixedfont.cfg", static_cast<uint8*>(LockResource(LoadResource(NULL, res))), SizeofResource(NULL, res));
+#endif
+
 	std::string data;
 	std::string confontfile;
 	std::string confontcfg("@data/fixedfont.cfg");
@@ -558,8 +432,8 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			screen->GetSurfaceDims(dims);
 
 			// We will assume the display_list has all the items in it
-			uint16 objID = display_list->Trace(event.button.x - dims.w/2,
-							event.button.y - dims.h/2);
+			uint16 objID = desktopGump->TraceObjID(event.button.x,
+							event.button.y);
 
 			if (!objID)
 				pout << "Didn't find an item" << std::endl;
@@ -571,11 +445,18 @@ void GUIApp::handleEvent(const SDL_Event& event)
 				World *world = World::get_instance();
 				Item *item = p_dynamic_cast<Item*>(world->getObject(objID));
 
-				pout << "Found item " << objID << " (shape " << item->getShape() << ", " << item->getFrame() << ", q:" << item->getQuality() << ", m:" << item->getMapNum() << ", n:" << item->getNpcNum() << ")" << std::endl;
-				if (event.button.button == SDL_BUTTON_LEFT) {
-					if (item) item->callUsecodeEvent(0);	// CONSTANT
-				} else {
-					if (item) item->callUsecodeEvent(1);	// CONSTANT
+				if (item)
+				{
+					pout << "Found item " << objID << " (shape " << item->getShape() << ", " << item->getFrame() << ", q:" << item->getQuality() << ", m:" << item->getMapNum() << ", n:" << item->getNpcNum() << ")" << std::endl;
+					if (event.button.button == SDL_BUTTON_LEFT) {
+						if (item) item->callUsecodeEvent(0);	// CONSTANT
+					} else {
+						if (item) item->callUsecodeEvent(1);	// CONSTANT
+					}
+				}
+				else
+				{
+					pout << "Didn't find an item" << std::endl;
 				}
 			}
 		}
@@ -653,12 +534,24 @@ void GUIApp::handleEvent(const SDL_Event& event)
 				pout << "Can't: avatarInStasis" << std::endl; 
 			}
 		} break;
-		case SDLK_BACKQUOTE: showconsole = !showconsole; break;
+		case SDLK_BACKQUOTE: {
+			if (consoleGump->IsHidden())
+				consoleGump->UnhideGump();
+			else
+				consoleGump->HideGump();
+			break;
+		}
 		case SDLK_ESCAPE: case SDLK_q: isRunning = false; break;
-		case SDLK_PAGEUP: if (showconsole) con.ScrollConsole(-3); break;
-		case SDLK_PAGEDOWN: if (showconsole) con.ScrollConsole(3); break;
-		case SDLK_LEFTBRACKET: display_list->DecSortLimit(); break;
-		case SDLK_RIGHTBRACKET: display_list->IncSortLimit(); break;
+		case SDLK_PAGEUP: {
+			if (!consoleGump->IsHidden()) con.ScrollConsole(-3);
+			break;
+		}
+		case SDLK_PAGEDOWN: {
+			if (!consoleGump->IsHidden()) con.ScrollConsole(3); 
+			break;
+		}
+		//case SDLK_LEFTBRACKET: display_list->DecSortLimit(); break;
+		//case SDLK_RIGHTBRACKET: display_list->IncSortLimit(); break;
 		case SDLK_t: { // quick animation test
 
 			if (!avatarInStasis) { 
@@ -680,7 +573,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 					egg = p_dynamic_cast<Egg*>(World::get_instance()->getObject(21184)); // *cough*
 				sint32 ix, iy, iz;
 				egg->getLocation(ix,iy,iz);
-				SetCameraProcess(new CameraProcess(ix,iy,iz)); // Center on egg
+				CameraProcess::SetCameraProcess(new CameraProcess(ix,iy,iz)); // Center on egg
 				egg->hatch();
 			} else { 
 				pout << "Can't: avatarInStasis" << std::endl; 

@@ -233,10 +233,19 @@ template<class uintX> void SoftRenderSurface<uintX>::PrintChar(Font * f, char ch
 
 template<class uintX> void SoftRenderSurface<uintX>::PrintText(Font * f, const char* s, int x, int y)
 {
-	//!!! TODO: line breaks, hleads, ...
+	//!!! TODO: hleads, ...
+	int x_start = x;
 	while (*s) {
-		Paint(f, static_cast<uint32>(*s), x, y);
-		x += f->getWidth(*s);
+		if (*s == '\n' || (*s == ' ' && (x-x_start) > 160 && *(s+1) != '\n')) 
+		{
+			y += f->getHeight();
+			x = x_start;
+		}
+		else if (*s != '\r')
+		{
+			Paint(f, static_cast<uint32>(*s), x, y);
+			x += f->getWidth(*s);
+		}
 		s++;
 	}
 }

@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 #include "ODataSource.h"
 #include "RenderSurface.h"
+#include "GUIApp.h"
 
 #include <cstdio>
 #include <cstring>
@@ -315,9 +316,15 @@ void Console::PrintRawInternal (const char *txt, int n)
 void Console::Linefeed (void)
 {
 	x = 0;
-	if (display == current) display++;
+	display++;
 	current++;
 	std::memset (&text[(current%totallines)*linewidth], ' ', linewidth);
+
+	if (auto_paint)
+	{
+		GUIApp *app = p_dynamic_cast<GUIApp*>(GUIApp::get_instance());
+		if (app && !app->isPainting()) app->paint();
+	}
 }
 
 // Print a text string to the console

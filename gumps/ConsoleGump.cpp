@@ -19,16 +19,109 @@
 #include "pent_include.h"
 #include "ConsoleGump.h"
 
+DEFINE_RUNTIME_CLASSTYPE_CODE(ConsoleGump,Gump);
+
 ConsoleGump::ConsoleGump(int X, int Y, int Width, int Height) :
-	ResizableGump(X,Y,Width,Height)
+	Gump(X,Y,Width,Height, 0, LAYER_CONSOLE), scroll_state(NOT_SCROLLING)
 {
+	// Resize it
+	con.CheckResize(Width);
 }
 
 ConsoleGump::~ConsoleGump()
 {
 }
 
-void ConsoleGump::Paint(RenderSurface * /*surf*/)
+void ConsoleGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 {
+	Gump::PaintThis(surf,lerp_factor);
+
+	int h = dims.h;
+	if (scroll_state == SCROLLING_TO_SHOW_1) 
+		h = (h*(000+lerp_factor))/1024;
+	else if (scroll_state == SCROLLING_TO_SHOW_2) 
+		h = (h*(256+lerp_factor))/1024;
+	else if (scroll_state == SCROLLING_TO_SHOW_3) 
+		h = (h*(512+lerp_factor))/1024;
+	else if (scroll_state == SCROLLING_TO_SHOW_4) 
+		h = (h*(768+lerp_factor))/1024;
+
+	else if (scroll_state == SCROLLING_TO_HIDE_1) 
+		h = (h*(1024-lerp_factor))/1024;
+	else if (scroll_state == SCROLLING_TO_HIDE_2)
+		h = (h*(768-lerp_factor))/1024;
+	else if (scroll_state == SCROLLING_TO_HIDE_3)
+		h = (h*(512-lerp_factor))/1024;
+	else if (scroll_state == SCROLLING_TO_HIDE_4)
+		h = (h*(256-lerp_factor))/1024;
+
+	con.DrawConsole(surf,0,0,dims.w, h);
 }
 
+void ConsoleGump::UnhideGump()
+{
+	if (flags & FLAG_HIDDEN || scroll_state != NOT_SCROLLING)
+		scroll_state = WAITING_TO_SHOW;
+}
+
+void ConsoleGump::HideGump()
+{
+	if (!(flags & FLAG_HIDDEN) || scroll_state != NOT_SCROLLING)
+		scroll_state = WAITING_TO_HIDE;
+}
+
+void ConsoleGump::SetupLerp()
+{
+	Gump::SetupLerp();
+
+	switch (scroll_state)
+	{
+	case WAITING_TO_HIDE:
+		scroll_state = SCROLLING_TO_HIDE_1;
+		break;
+
+	case SCROLLING_TO_HIDE_1:
+		scroll_state = SCROLLING_TO_HIDE_2;
+		break;
+
+	case SCROLLING_TO_HIDE_2:
+		scroll_state = SCROLLING_TO_HIDE_3;
+		break;
+
+	case SCROLLING_TO_HIDE_3:
+		scroll_state = SCROLLING_TO_HIDE_4;
+		break;
+
+	case SCROLLING_TO_HIDE_4:
+		Gump::HideGump();
+		scroll_state = NOT_SCROLLING;
+		break;
+
+	case WAITING_TO_SHOW:
+		Gump::UnhideGump();
+		scroll_state = SCROLLING_TO_SHOW_1;
+		break;
+
+	case SCROLLING_TO_SHOW_1:
+		scroll_state = SCROLLING_TO_SHOW_2;
+		break;
+
+	case SCROLLING_TO_SHOW_2:
+		scroll_state = SCROLLING_TO_SHOW_3;
+		break;
+
+	case SCROLLING_TO_SHOW_3:
+		scroll_state = SCROLLING_TO_SHOW_4;
+		break;
+
+	case SCROLLING_TO_SHOW_4:
+		scroll_state = NOT_SCROLLING;
+		break;
+
+	default:
+		scroll_state = NOT_SCROLLING;
+		break;
+	}
+}
+
+// Colourless Protection

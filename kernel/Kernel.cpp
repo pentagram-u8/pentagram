@@ -56,7 +56,7 @@ uint16 Kernel::addProcess(Process* proc)
 	perr << "[Kernel] Adding process " << proc
 		 << ", pid = " << proc->pid << std::endl;
 
-	processes.push_front(proc);
+	processes.push_back(proc);
 	proc->active = true;
 
 	return proc->pid;

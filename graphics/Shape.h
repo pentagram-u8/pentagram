@@ -43,7 +43,7 @@ public:
 	// This will detect the format of a shape
 	static const ConvertShapeFormat *DetectShapeFormat(const uint8* data, uint32 size);
 
-	ENABLE_DYNAMIC_CAST(Object);
+	ENABLE_RUNTIME_CLASSTYPE();
 
 protected:
 

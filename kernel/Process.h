@@ -36,7 +36,7 @@ public:
 	virtual ~Process() { }
 
 	// p_dynamic_cast stuff
-	ENABLE_DYNAMIC_CAST(Process);
+	ENABLE_RUNTIME_CLASSTYPE();
 
 	bool is_active() const { return active; }
 

@@ -57,7 +57,7 @@ void AnimDat::load(IDataSource *ds)
 {
 	AnimFrame f;
 
-	// constant!
+	// CONSTANT !
 	anims.resize(2048);
 
 	for (unsigned int shape = 0; shape < anims.size(); shape++)
@@ -72,7 +72,7 @@ void AnimDat::load(IDataSource *ds)
 
 		ActorAnim *a = new ActorAnim();
 
-		// constant!
+		// CONSTANT !
 		a->actions.resize(64);
 
 		for (unsigned int action = 0; action < a->actions.size(); action++)

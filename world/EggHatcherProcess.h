@@ -32,7 +32,7 @@ public:
 	virtual ~EggHatcherProcess();
 
 	// p_dynamic_cast stuff
-	ENABLE_DYNAMIC_CAST(EggHatcherProcess);
+	ENABLE_RUNTIME_CLASSTYPE();
 
 	virtual bool run(const uint32 framenum);
 

@@ -105,14 +105,20 @@ class FileSystem
 	static FileSystem* get_instance() { return filesystem; }
 
 	// Open a streaming file as readable. Streamed (0 on failure)
-	IFileDataSource *ReadFile(const std::string &vfn, bool is_text=false);
+	IDataSource *ReadFile(const std::string &vfn, bool is_text=false);
 
 	// Open a streaming file as readable. Streamed (0 on failure)
-	OFileDataSource *WriteFile(const std::string &vfn, bool is_text=false);
+	ODataSource *WriteFile(const std::string &vfn, bool is_text=false);
 
 	bool AddVirtualPath(const std::string &vpath, const std::string &realpath, bool create=false);
 	bool RemoveVirtualPath(const std::string &vpath);
 	
+	bool MountFileInMemory(const std::string &vpath, const uint8 *data, const uint32 len);
+
+ private:
+	void switch_slashes(std::string &name);
+	bool base_to_uppercase(std::string& str, int count);
+
 	bool rawopen
 	(
 	std::ifstream& in,			// Input stream to open.
@@ -127,10 +133,6 @@ class FileSystem
 	bool is_text = false		// Should the file be opened in text mode
 	);
 	
- private:
-	void switch_slashes(std::string &name);
-	bool base_to_uppercase(std::string& str, int count);
-
 	bool IsDir(const std::string& path);
 	int  MkDir(const std::string& path);
 
@@ -144,6 +146,15 @@ class FileSystem
 	bool rewrite_virtual_path(std::string& vfn);
 
 	std::map<std::string, std::string> virtualpaths;
+
+	struct MemoryFile
+	{
+		MemoryFile(const uint8* _data, const uint32 _len) : data(_data), len(_len) { } 
+		const uint8		*data;
+		const uint32	len;
+	};
+	std::map<std::string, MemoryFile*> memoryfiles;		// Files mounted in memory
+
 };
 
 

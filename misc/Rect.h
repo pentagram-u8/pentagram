@@ -35,6 +35,9 @@ struct Rect {
 	// Check to see if a Rectangle is 'valid'
 	bool	IsValid() { return w > 0 && h > 0; }
 
+	// Check to see if a point is within the Rectangle
+	bool	InRect(int px, int py) { return px >= x && py >= y && px < (x+w) && py < (y+h); }
+
 	// Move the Rect (Relative)
 	void	MoveRel(sint32 dx, sint32 dy) { x=x+dx; y=y+dy; xr=x+w; yb=y+h; }
 

@@ -24,7 +24,7 @@
 #include "u8/ConvertShapeU8.h"
 #include "crusader/ConvertShapeCrusader.h"
 
-DEFINE_DYNAMIC_CAST_CODE_BASE_CLASS(Shape);
+DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(Shape);
 
 Shape::Shape(const uint8* data, uint32 size, const ConvertShapeFormat *format)
 {

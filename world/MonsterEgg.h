@@ -29,7 +29,7 @@ public:
 	MonsterEgg();
 	virtual ~MonsterEgg();
 
-	ENABLE_DYNAMIC_CAST(MonsterEgg);
+	ENABLE_RUNTIME_CLASSTYPE();
 
 	int getProb() const { return (quality >> 11) & 0x1F; }
 	int getMonsterShape() const { return quality & 0x7FF; }

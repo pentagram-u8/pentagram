@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ItemMoveProcess.h" // temp. replacement for pathfinding
 
 // p_dynamic_cast stuff
-DEFINE_DYNAMIC_CAST_CODE(Actor,Container);
+DEFINE_RUNTIME_CLASSTYPE_CODE(Actor,Container);
 
 Actor::Actor()
 	: strength(0), dexterity(0), intelligence(0),

@@ -97,11 +97,14 @@ public:
 	// Surface Properties
 	//
 
-	// Get the Surface Dimensions
-	virtual void GetSurfaceDims(Rect &) const;
+	// Set the Origin of the Surface
+	virtual void SetOrigin(sint32 x, sint32 y);
 
 	// Set the Origin of the Surface
-	virtual void SetOrigin(int x, int y);
+	virtual void GetOrigin(sint32 &x, sint32 &y) const;
+
+	// Get the Surface Dimensions
+	virtual void GetSurfaceDims(Rect &) const;
 
 	// Get Clipping Rectangle
 	virtual void GetClippingRect(Rect &) const;

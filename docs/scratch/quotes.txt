@@ -1,14 +1,17 @@
 <Colourless> i don't know why i put up with you... your just too cute i guess :-)
 (To Darke on IRC)
 
+
 <Nadir> what are you guys on ?
 (To Darke and Colourless on IRC after a particularly surreal episode.)
+
 
 Pentagram, regardless of what ends up happening to it, will be an
 interesting experiment in software engineering. It's always going
 to be in danger of being over engineered, but call it a allergic
 reaction to the seemingly utter lack of any real engineering in exult :-)
 (Colourless on IRC)
+
 
 Colourless thinks that you very much don't want to have any std's :-)
 Colourless tries to remove his head from the gutter, but for some reason just can't
@@ -17,9 +20,47 @@ Jammet gives Colourless a crowbar.
 Darke moves his periscope out of the way. There, that should help Colourless.
 (On IRC, where else? *grin* Colourless' typos corrected by me.)
 
+
 Jett persists in trying to work out how you 'stimulate' a virgin.
 (Jett aka Darke on IRC)
 
+
 That's *simulate*! STIM... err... SIM-U-LATE!
 (Darke upon discovery that said typographical error was added to the quotes)
+
+
+Solely for the perverse pleasure of being... well... perverse.
+(Darke detailing an idea for Pentagram)
+
+
+Please consult your English Tutor if problems persist.
+(Darke in reponse to one of the inifinte typo corrections made by Colourless)
+
+
+It'll get the Pentagram Pathetic Programming(tm) award for the rest of the decade
+(Darke considering if he should or shouldn't do something)
+
+
+I wouldn't exactly consider their l33t credits/quotes encoding a 'technology'
+(Darke on what is and isn't classed as Ultima 8 Technologies)
+
+
+I think that YAN MIN would be better - Yet Another Nested Macro Infested Nightmare
+(Colourless describing his code...)
+
+
+Everyone always regrets something stupid they did in a previous project and in the next probject they will have learnt, but they will just do something different stupidly.
+(Extract from 'Programming Wisdom' by Colourless, Part 1)
+
+
+An experienced programmer then becomes someone who has done enough stupid things to have a vaste knowledge of things you shouldn't do, not things that you should do.
+(Extract from 'Programming Wisdom' by Colourless, Part 2)
+
+
+Then you have an 'advanced' programmer who does stupid things, but for a reason.
+(Extract from 'Programming Wisdom' by Colourless, Part 3)
+
+
+I presume this is what you use as your excuse for creating YAN MIN.
+(Drake on Colourless' so called Programming Wisdom)
 

@@ -68,7 +68,10 @@ public:
 	//
 
 	// Set the Origin of the Surface
-	virtual void SetOrigin(int x, int y) = 0;
+	virtual void SetOrigin(sint32 x, sint32 y) = 0;
+
+	// Set the Origin of the Surface
+	virtual void GetOrigin(sint32 &x, sint32 &y) const = 0;
 
 	// Get the Surface Dimensions
 	virtual void GetSurfaceDims(Rect &) const = 0;

@@ -16,15 +16,30 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "ResizableGump.h"
+#ifndef BARKGUMP_H_INCLUDED
+#define BARKGUMP_H_INCLUDED
 
+#include "ItemRelativeGump.h"
 
-ResizableGump::ResizableGump(int X, int Y, int Width, int Height) : Gump(X,Y,Width,Height)
+class BarkGump : public ItemRelativeGump
 {
-}
+	std::string	barked;
+	int	fontnum;
+	sint32 counter;
+public:
+	ENABLE_RUNTIME_CLASSTYPE();
 
-ResizableGump::~ResizableGump()
-{
-}
+	BarkGump(uint16 itemid, std::string msg);
+	virtual ~BarkGump(void);
 
-// Colourless Protection
+	virtual void				SetupLerp();
+
+	// Init the gump, call after construction
+	virtual void				InitGump();
+
+	// Overloadable method to Paint just this Gumps (RenderSurface is relative to this)
+	virtual void		PaintThis(RenderSurface*, sint32 lerp_factor);
+
+};
+
+#endif //BARKGUMP_H_INCLUDED

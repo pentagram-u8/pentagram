@@ -30,13 +30,14 @@ public:
 	Egg();
 	virtual ~Egg();
 
+
+	ENABLE_RUNTIME_CLASSTYPE();
+
 	int getXRange() const { return (npcnum >> 4) & 0xF; }
 	int getYRange() const { return npcnum & 0xF; }
 
 	void setXRange(int r) { npcnum &= 0x0F; npcnum |= (r & 0xF); }
 	void setYRange(int r) { npcnum &= 0xF0; npcnum |= (r & 0xF) << 4; }
-
-	ENABLE_DYNAMIC_CAST(Egg);
 
 	INTRINSIC(I_getEggXRange);
 	INTRINSIC(I_getEggYRange);

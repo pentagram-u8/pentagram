@@ -36,7 +36,7 @@ static const int watchactor = WATCHACTOR;
 #endif
 
 // p_dynamic_cast stuff
-DEFINE_DYNAMIC_CAST_CODE(ActorAnimProcess,Process);
+DEFINE_RUNTIME_CLASSTYPE_CODE(ActorAnimProcess,Process);
 
 ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 {
@@ -44,7 +44,7 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 	item_num = actor_->getObjId();
 	dir = dir_;
 
-	type = 0x00F0; // constant!
+	type = 0x00F0; // CONSTANT !
 
 	uint32 shape = actor_->getShape();
 	animaction = GameData::get_instance()->getMainShapes()->
@@ -96,7 +96,6 @@ bool ActorAnimProcess::run(const uint32 framenum)
 		terminate();
 		return false;
 	}
-
 	//!! this needs timing
 	// without main timing I can't really determine how many 'ticks' 
 	// each frame should last.
@@ -113,27 +112,42 @@ bool ActorAnimProcess::run(const uint32 framenum)
 		return false;
 	}
 
+	// Adding position works like this
+	// subtract how much we've already added
+	// then add how much we want. This is to get around issues
+	// with accuracy
+
+	sint32 x, y, z;
+	sint32 dx, dy, dz;
+	a->getLocation(x,y,z);
+
+	dx = 2 * x_fact[dir] * f.deltadir;
+	dy = 2 * y_fact[dir] * f.deltadir;
+	dz = f.deltaz;
+
+	x -= (dx*framecount)/animaction->framerepeat;
+	y -= (dy*framecount)/animaction->framerepeat;
+	z -= (dz*framecount)/animaction->framerepeat;
+
+	x += (dx*(framecount+1))/animaction->framerepeat;
+	y += (dy*(framecount+1))/animaction->framerepeat;
+	z += (dz*(framecount+1))/animaction->framerepeat;
+
+	a->move(x,y,z);
+	a->setFrame(f.frame);
+
+	if (f.is_flipped()) {
+		a->setFlag(Item::FLG_FLIPPED);
+	} else {
+		a->clearFlag(Item::FLG_FLIPPED);
+	}
+
 	if (framecount == 0) {
 #ifdef WATCHACTOR
 		if (item_num == watchactor)
 			perr << "Animation [" << GUIApp::get_instance()->getFrameNum()
 				 << "] showing new frame" << std::endl;
 #endif
-		sint32 x, y, z;
-		a->getLocation(x,y,z);
-
-		x += 2 * x_fact[dir] * f.deltadir;
-		y += 2 * y_fact[dir] * f.deltadir;
-		z += f.deltaz;
-
-		a->move(x,y,z);
-		a->setFrame(f.frame);
-
-		if (f.is_flipped()) {
-			a->setFlag(Item::FLG_FLIPPED);
-		} else {
-			a->clearFlag(Item::FLG_FLIPPED);
-		}
 	}
 
 	currentindex++;
@@ -144,7 +158,6 @@ bool ActorAnimProcess::run(const uint32 framenum)
 			perr << "Animation [" << GUIApp::get_instance()->getFrameNum()
 				 << "] ActorAnimProcess terminating" << std::endl;
 #endif		 
-
 		//? do we need to terminate now or when we're about to show the next
 		// frame?
 		terminate();

@@ -47,21 +47,21 @@ class ConvertUsecode
 		
 		virtual const char* const *intrinsics()=0;
 		virtual const char* const *event_names()=0;
-		virtual void readheader(IFileDataSource *ucfile, UsecodeHeader &uch, uint32 &curOffset)=0;
-		virtual void readevents(IFileDataSource *ucfile, const UsecodeHeader &uch)=0;
-		virtual void readOp(TempOp &op, IFileDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols, bool &done)=0;
-		virtual Node *readOp(IFileDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols, bool &done)=0;
+		virtual void readheader(IDataSource *ucfile, UsecodeHeader &uch, uint32 &curOffset)=0;
+		virtual void readevents(IDataSource *ucfile, const UsecodeHeader &uch)=0;
+		virtual void readOp(TempOp &op, IDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols, bool &done)=0;
+		virtual Node *readOp(IDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols, bool &done)=0;
 
-		void readDbgSymbols(IFileDataSource *ucfile, std::vector<DebugSymbol> &debugSymbols);
-		void readOpGeneric(TempOp &op, IFileDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols,
+		void readDbgSymbols(IDataSource *ucfile, std::vector<DebugSymbol> &debugSymbols);
+		void readOpGeneric(TempOp &op, IDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols,
 			bool &done, const bool crusader);
-		Node *readOpGeneric(IFileDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols,
+		Node *readOpGeneric(IDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols,
 			bool &done, const bool crusader);
 		void printDbgSymbols(std::vector<DebugSymbol> &debugSymbols);
 };
 
 /* This needs to go into Convert*Crusader only too */
-void ConvertUsecode::readDbgSymbols(IFileDataSource *ucfile, std::vector<DebugSymbol> &debugSymbols)
+void ConvertUsecode::readDbgSymbols(IDataSource *ucfile, std::vector<DebugSymbol> &debugSymbols)
 {
 	uint32 count=read1(ucfile);
 
@@ -93,7 +93,7 @@ void ConvertUsecode::printDbgSymbols(std::vector<DebugSymbol> &debugSymbols)
 	}
 };
 
-void printbytes(IFileDataSource *f, uint32 num)
+void printbytes(IDataSource *f, uint32 num)
 {
 	//uint32 loff=0;
 	while(num>0)
@@ -106,7 +106,7 @@ void printbytes(IFileDataSource *f, uint32 num)
 
 /* This needs to be shuffled into two different readOp() functions, one in Convert*Crusader, and
 	the other in Convert*U8 */
-void ConvertUsecode::readOpGeneric(TempOp &op, IFileDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols,
+void ConvertUsecode::readOpGeneric(TempOp &op, IDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols,
 	bool &done, const bool crusader)
 {
 		if(dbg_symbol_offset==curOffset)
@@ -810,7 +810,7 @@ and that the child threads are indeed placed infront of the parent thread.
 
 /* This needs to be shuffled into two different readOp() functions, one in Convert*Crusader, and
 	the other in Convert*U8 */
-Node *ConvertUsecode::readOpGeneric(IFileDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols,
+Node *ConvertUsecode::readOpGeneric(IDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols,
 	bool &done, const bool /*crusader*/)
 {
 	Node *n=0;

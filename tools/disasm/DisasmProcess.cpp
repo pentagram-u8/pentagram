@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CoreApp.h"
 
 // p_dynamic_cast stuff
-DEFINE_DYNAMIC_CAST_CODE(DisasmProcess,Process);
+DEFINE_RUNTIME_CLASSTYPE_CODE(DisasmProcess,Process);
 
 DisasmProcess::DisasmProcess() : termCounter(120)
 {

@@ -34,6 +34,8 @@ class Configuration;
 class CoreApp // will eventually be renamed Application again, once everything is fully rearranged.
 {
 	public:
+		ENABLE_RUNTIME_CLASSTYPE();
+
 		CoreApp(const int argc, const char * const * const argv, bool delayPostInit=false);
 		virtual ~CoreApp();
 		

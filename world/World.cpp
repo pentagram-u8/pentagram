@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GameData.h"
 #include "Kernel.h"
 #include "GUIApp.h"
-#include "CameraProcess.h" // for resetting the camera; move to GUIApp?
+#include "CameraProcess.h" // for resetting the camera
 
 //#define DUMP_ITEMS
 
@@ -132,7 +132,7 @@ bool World::switchMap(uint32 newmap)
 	// - temporary items/actors?
 
 	// kill camera
-	dynamic_cast<GUIApp*>(GUIApp::get_instance())->ResetCamera();
+	CameraProcess::ResetCameraProcess();
 
 	// kill ALL processes:
 	Kernel::get_instance()->killProcesses(0,6); // !constant
@@ -182,7 +182,7 @@ bool World::switchMap(uint32 newmap)
 	currentmap->loadMap(maps[newmap]);
 
 	// reset camera
-	dynamic_cast<GUIApp*>(GUIApp::get_instance())->SetCameraProcess(new CameraProcess(1));
+	CameraProcess::SetCameraProcess(new CameraProcess(1));
 
 	return true;
 }

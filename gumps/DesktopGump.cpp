@@ -16,15 +16,25 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "ResizableGump.h"
+#include "pent_include.h"
+#include "DesktopGump.h"
+#include "RenderSurface.h"
 
+DEFINE_RUNTIME_CLASSTYPE_CODE(DesktopGump,Gump);
 
-ResizableGump::ResizableGump(int X, int Y, int Width, int Height) : Gump(X,Y,Width,Height)
+DesktopGump::DesktopGump(sint32 _x, sint32 _y, sint32 _width, sint32 _height) :
+	Gump(_x, _y, _width, _height, 0, LAYER_DESKTOP)
 {
 }
 
-ResizableGump::~ResizableGump()
+DesktopGump::~DesktopGump(void)
 {
+}
+
+void DesktopGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
+{
+	// Just fill it
+	surf->Fill32(0x3f3f3f, 0, 0, dims.w, dims.h);
 }
 
 // Colourless Protection

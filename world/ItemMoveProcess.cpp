@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "World.h"
 
 // p_dynamic_cast stuff
-DEFINE_DYNAMIC_CAST_CODE(ItemMoveProcess,Process);
+DEFINE_RUNTIME_CLASSTYPE_CODE(ItemMoveProcess,Process);
 
 ItemMoveProcess::ItemMoveProcess(Item* item_, sint32 to_x_, sint32 to_y_,
 								 sint32 to_z_, int speed_, bool curve_)

@@ -16,15 +16,34 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "ResizableGump.h"
+#ifndef ITEMRELATIVEGUMP_H_INCLUDED
+#define ITEMRELATIVEGUMP_H_INCLUDED
 
+#include "Gump.h"
 
-ResizableGump::ResizableGump(int X, int Y, int Width, int Height) : Gump(X,Y,Width,Height)
+class ItemRelativeGump : public Gump
 {
-}
+protected:
+	uint16 item_num;
+	sint32 ix, iy;
 
-ResizableGump::~ResizableGump()
-{
-}
+public:
+	ENABLE_RUNTIME_CLASSTYPE();
 
-// Colourless Protection
+	ItemRelativeGump(uint16 item_num, sint32 x, sint32 y, sint32 width, sint32 height, uint32 _Flags = 0);
+	virtual ~ItemRelativeGump(void);
+
+	// Paint the Gump (RenderSurface is relative to parent). Calls PaintThis and PaintChildren
+	virtual void		Paint(RenderSurface*, sint32 lerp_factor);
+
+	// Convert a parent relative point to a gump point
+	virtual void		ParentToGump(int &px, int &py);
+
+	// Convert a gump point to parent relative point
+	virtual void		GumpToParent(int &gx, int &gy);
+
+protected:
+	void				GetItemLocation(sint32 lerp_factor);
+};
+
+#endif

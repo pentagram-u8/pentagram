@@ -34,22 +34,27 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class CameraProcess : public Process
 {
 public:
-	CameraProcess();											// Do nothing
-	CameraProcess(uint16 itemnum);								// Follow item
+	CameraProcess(uint16 itemnum=0);							// Follow item/Do nothing
 	CameraProcess(sint32 x, sint32 y, sint32 z);				// Goto location
 	CameraProcess(sint32 x, sint32 y, sint32 z, sint32 time);	// Scroll to location
 
 	// p_dynamic_cast stuff
-	ENABLE_DYNAMIC_CAST(CameraProcess);
+	ENABLE_RUNTIME_CLASSTYPE();
 
 	virtual bool run(const uint32 framenum);
 
 	// You will notice that this isn't the same as how Item::GetLerped works
-	void GetLerped(bool inBetween, sint32 &x, sint32 &y, sint32 &z, sint32 factor);
+	void GetLerped(sint32 &x, sint32 &y, sint32 &z, sint32 factor);
 
 	INTRINSIC(I_setCenterOn);
 	INTRINSIC(I_move_to);
 	INTRINSIC(I_scrollTo);
+
+	static void				GetCameraLocation(sint32 &x, sint32 &y, sint32 &z);
+	static CameraProcess*	GetCameraProcess() { return camera; }
+	static uint16			SetCameraProcess(CameraProcess *);	// Set the current camera process. Adds process. Return PID
+	static void				ResetCameraProcess();
+
 
 private:
 	sint32 sx, sy, sz;
@@ -57,6 +62,10 @@ private:
 	sint32 time;
 	sint32 elapsed;
 	uint16 itemnum;
+
+	uint32 last_framenum;
+
+	static CameraProcess	*camera;
 };
 
 #endif //CAMERAPROCESS_H

@@ -16,15 +16,20 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "ResizableGump.h"
+#ifndef DESKTOPGUMP_H_INCLUDED
+#define DESKTOPGUMP_H_INCLUDED
 
+#include "Gump.h"
 
-ResizableGump::ResizableGump(int X, int Y, int Width, int Height) : Gump(X,Y,Width,Height)
+class DesktopGump : public Gump
 {
-}
+public:
+	ENABLE_RUNTIME_CLASSTYPE();
 
-ResizableGump::~ResizableGump()
-{
-}
+	DesktopGump(sint32 x, sint32 y, sint32 width, sint32 height);
+	virtual ~DesktopGump(void);
 
-// Colourless Protection
+	virtual void PaintThis(RenderSurface *surf, sint32 lerp_factor);
+};
+
+#endif

@@ -31,7 +31,7 @@ public:
 	ActorAnimProcess(Actor* actor, uint32 action, uint32 dir);
 
 	// p_dynamic_cast stuff
-	ENABLE_DYNAMIC_CAST(ActorAnimProcess);
+	ENABLE_RUNTIME_CLASSTYPE();
 
 	virtual bool run(const uint32 framenum);
 

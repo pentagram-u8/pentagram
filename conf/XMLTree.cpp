@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "FileSystem.h"
 
 #include "util.h"
+#include <strstream>
 
 XMLTree::XMLTree()
 	: tree(new XMLNode("config")), root("config"), is_file(false),
@@ -56,17 +57,16 @@ void XMLTree::clear(std::string root_)
 
 bool XMLTree::readConfigFile(std::string fname)
 {
-	std::ifstream f;
+	IDataSource *f = FileSystem::get_instance()->ReadFile(fname, true);
+	if (!f) return false;
 
-	if (!FileSystem::get_instance()->rawopen(f, fname, true))
-		return false;
 	std::string sbuf, line;
-	while (f.good()) {
-		std::getline(f, line);
+	while (f->getPos() < f->getSize()) {
+		f->readline(line);
 		sbuf += line;
 	}
 
-	f.close();
+	delete f;
 
 	if (!readConfigString(sbuf))
 		return false;
@@ -105,13 +105,14 @@ void XMLTree::write()
 	if (!is_file || readonly)
 		return;
 
-	std::ofstream f;
-	if (!FileSystem::get_instance()->rawopen(f, filename, true))
-		return;
+	ODataSource *f = FileSystem::get_instance()->WriteFile(filename, true);
+	if (!f) return;
 
-	f << dump();
+	std::string s = dump();
+	const char *cstr = s.c_str();
+	f->write(cstr,strlen(cstr));
 
-	f.close();
+	delete [] f;
 }
 
 bool XMLTree::hasNode(std::string key) const

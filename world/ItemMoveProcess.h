@@ -31,7 +31,7 @@ public:
 					int speed, bool curve=false);
 
 	// p_dynamic_cast stuff
-	ENABLE_DYNAMIC_CAST(ItemMoveProcess);
+	ENABLE_RUNTIME_CLASSTYPE();
 
 	virtual bool run(const uint32 framenum);
 

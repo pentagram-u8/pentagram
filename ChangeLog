@@ -1,3 +1,41 @@
+2003-06-02  Ryan Nunn <colourles@users.sourceforge.net>
+	* Almost every single file being committed here : Changes the 
+	  p_dynamic_cast macros. Just check P_dynamic_cast.h for the new macros to 
+	  use. Also made the macros define some new functions. These are:
+	  1) IsOfType() which can check to see if an object is of a certain type. It
+	  can be used in 2 ways, either with IsOfType(ClassToCheck::ClassType) or
+	  IsOfType<ClassToCheck>(). 
+	  2) GetClassType(), which gets the ClassType for an object virtually so it 
+	  always gets the ClassType for the class the object was created with.
+	    	
+	* Changes due to filesystem: No more raw accesses. Added readline to 
+	  IDataSource. Getting the ifstream from an IFileDataSource is no longer 
+	  such a hack. Added 'memory files'. Not entirely feature complete, but 
+	  what I've done lets me play with using Windows Resources for data files.
+	  
+	* docs/scratch/quotes.txt : Some long overdue quotes that were supposed to
+	  be added but I held off. And no Darke, there are no toys here ;-)
+
+	* GUMPS! : Lots of gump related stuff, so much stuff I doubt I could list 
+	  it all. Suffice to say the rendering hacks in GUIApp are long gone. 
+	  Console and GameMap are now drawn using their primitive Gumps. Much of
+	  Gump framework is done, however, I have no idea if input handling will 
+	  work anything near correctly. All the old input hacks are still in 
+	  place. Added ItemRelativeGump. Added BarkGump. It's not entirely 
+	  finished because it should use a TextWidget or some such rather than 
+	  having all the code to handle text drawing in it. Got Item::I_ask to 
+	  create a BarkGump to list the choices. Of course that is in no way a 
+	  correct solution. Added u8gumps.flx to GameData. It's just of type 
+	  ShapeFlex for now but I don't think it needs any changes, not now anyway 
+
+	* Font related: Added some hacks that only allow the length of a line of
+	  text to be about 160 pixels. This is a hack to force word wrapping with
+	  BarkGumps. Added a getHeight() method that can get the height of a font
+	  and also getTextSize() which will calcuate a rect that will fit the 
+	  text (baseline and stuff will cause problems here).
+
+	* Various files: Fixing up various bug and stuff.
+
 2003-06-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/idMan.*: added function to mark any ID as used
 	* world/MonsterEgg.*: monster hatching

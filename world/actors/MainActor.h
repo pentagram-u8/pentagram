@@ -34,7 +34,7 @@ public:
 	void setJustTeleported(bool t) { justTeleported = t; }
 
 	// p_dynamic_cast stuff
-	ENABLE_DYNAMIC_CAST(MainActor);
+	ENABLE_RUNTIME_CLASSTYPE();
 
 private:
 	bool justTeleported;

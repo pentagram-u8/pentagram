@@ -69,7 +69,7 @@ int shapenum;
 #endif
 
 // Nasty yucky stuff
-void ConvertFlexes(IFileDataSource *readfile, OFileDataSource *writefile)
+void ConvertFlexes(IDataSource *readfile, ODataSource *writefile)
 {
 	ConvertShape	shape;
 	uint32			i;
@@ -157,7 +157,7 @@ void ConvertFlexes(IFileDataSource *readfile, OFileDataSource *writefile)
 	pout << "Done!" << std::endl;
 }
 
-void ConvertShp(IFileDataSource *readfile, OFileDataSource *writefile)
+void ConvertShp(IDataSource *readfile, ODataSource *writefile)
 {
 #ifdef EXPORT_SHAPENUM
 	shapenum = 1;
@@ -263,7 +263,7 @@ int main(int argc, char **argv)
 	FileSystem filesys(true);
 
 	// Load read flex/shape file
-	IFileDataSource *readfile = filesys.ReadFile(argv[1]);
+	IDataSource *readfile = filesys.ReadFile(argv[1]);
 
 	// Uh oh, couldn't load it
 	if(readfile==0)
@@ -273,7 +273,7 @@ int main(int argc, char **argv)
 	}
 
 	// Load write flex/shape file
-	OFileDataSource *writefile = filesys.WriteFile(argv[2]);
+	ODataSource *writefile = filesys.WriteFile(argv[2]);
 
 	// Uh oh, couldn't load it
 	if(writefile==0)

@@ -159,7 +159,7 @@ bool CompileUnit::parse()
 
 		idatasource = filesys->ReadFile(fname.c_str());
 		assert(idatasource!=0); // FIXME: Error checking!
-		ifile = GetRawIfstream(idatasource);
+		ifile = idatasource->GetRawIfstream();
 
 		assert((ifile!=0) && (!ifile->fail())); //FIXME: Error checking!
 

@@ -28,7 +28,7 @@ public:
 	virtual ~Object();
 
 	// p_dynamic_cast stuff
-	ENABLE_DYNAMIC_CAST(Object);
+	ENABLE_RUNTIME_CLASSTYPE();
 
 	uint16 getObjId() const { return objid; }
 	virtual uint16 assignObjId(); //get and assign self (and contents) an objID

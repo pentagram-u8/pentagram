@@ -32,7 +32,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <SDL.h>
 
+#if defined(WIN32) && defined(WIN32_USE_MY_DOCUMENTS)
+#include <shlobj.h>
+#endif
+
 using std::string;
+
+// p_dynamic_cast stuff
+DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(CoreApp);
 
 CoreApp* CoreApp::application = 0;
 
@@ -104,6 +111,11 @@ void CoreApp::setupVirtualPaths()
 #ifdef HAVE_HOME
 	home = getenv("HOME");
 	home += "/.pentagram";
+#elif defined(WIN32) && defined(WIN32_USE_MY_DOCUMENTS)
+      TCHAR MyDocumentsPath[MAX_PATH];
+      SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, MyDocumentsPath);
+      home = MyDocumentsPath;
+      home += "\\Pentagram";
 #else
 	// TODO: what to do on systems without $HOME?
 	home = ".";

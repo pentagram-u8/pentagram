@@ -22,47 +22,49 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class ShapeInfo
 {
 public:
-	enum { SI_FIXED   = 0x0001,
-		   SI_SOLID   = 0x0002,
-		   SI_SEA     = 0x0004,
-		   SI_LAND    = 0x0008,
-		   SI_OCCL    = 0x0010,
-		   SI_BAG     = 0x0020,
-		   SI_DAMAGING= 0x0040,
-		   SI_NOISY   = 0x0080,
-		   SI_DRAW    = 0x0100,
-		   SI_IGNORE  = 0x0200,
-		   SI_ROOF    = 0x0400,
-		   SI_TRANSL  = 0x0800,
-		   SI_EDITOR  = 0x1000,
-		   SI_EXPLODE = 0x2000,
-		   SI_UNKNOWN46 = 0x4000,
-		   SI_UNKNOWN47 = 0x8000
-	} SFlags;
+	enum SFlags { 
+		SI_FIXED   = 0x0001,
+		SI_SOLID   = 0x0002,
+		SI_SEA     = 0x0004,
+		SI_LAND    = 0x0008,
+		SI_OCCL    = 0x0010,
+		SI_BAG     = 0x0020,
+		SI_DAMAGING= 0x0040,
+		SI_NOISY   = 0x0080,
+		SI_DRAW    = 0x0100,
+		SI_IGNORE  = 0x0200,
+		SI_ROOF    = 0x0400,
+		SI_TRANSL  = 0x0800,
+		SI_EDITOR  = 0x1000,
+		SI_EXPLODE = 0x2000,
+		SI_UNKNOWN46 = 0x4000,
+		SI_UNKNOWN47 = 0x8000
+	};
 
-	enum { SF_GENERIC     = 0,
-		   SF_QUALITY     = 1,
-		   SF_QUANTITY    = 2,
-		   SF_GLOBEGG     = 3,
-		   SF_UNKEGG      = 4,
-		   SF_BREAKABLE   = 5,
-		   SF_CONTAINER   = 6,
-		   SF_MONSTEREGG  = 7,
-		   SF_TELEPORTEGG = 8,
-		   SF_REAGENT     = 9,
-		   SF_15          = 15
-	} SFamily;
+	enum SFamily {
+        SF_GENERIC     = 0,
+		SF_QUALITY     = 1,
+		SF_QUANTITY    = 2,
+		SF_GLOBEGG     = 3,
+		SF_UNKEGG      = 4,
+		SF_BREAKABLE   = 5,
+		SF_CONTAINER   = 6,
+		SF_MONSTEREGG  = 7,
+		SF_TELEPORTEGG = 8,
+		SF_REAGENT     = 9,
+		SF_15          = 15
+	};
 
-	enum { SE_NONE   = 0,
-		   SE_SHIELD = 1,
-		   SE_ARM    = 2,
-		   SE_HEAD   = 3,
-		   SE_BODY   = 4,
-		   SE_LEGS   = 5,
-		   SE_WEAPON = 6
-	} SEquipType;
+	enum SEquipType {
+		SE_NONE   = 0,
+		SE_SHIELD = 1,
+		SE_ARM    = 2,
+		SE_HEAD   = 3,
+		SE_BODY   = 4,
+		SE_LEGS   = 5,
+		SE_WEAPON = 6
+	};
 		   
-
 	uint32 flags;
 	uint32 x, y, z;
 	uint32 family;

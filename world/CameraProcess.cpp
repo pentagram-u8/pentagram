@@ -19,57 +19,107 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "CameraProcess.h"
-#include "GUIApp.h"
 #include "World.h"
+#include "CurrentMap.h"
 #include "Item.h"
 #include "Actor.h"
 #include "UCMachine.h"
 #include "ShapeInfo.h"
+#include "Kernel.h"
+#include "CoreApp.h"
 
 // p_dynamic_cast stuff
-DEFINE_DYNAMIC_CAST_CODE(CameraProcess,Process);
+DEFINE_RUNTIME_CLASSTYPE_CODE(CameraProcess,Process);
 
-// Do nothing, or follow avatar, reletive
-CameraProcess::CameraProcess() : 
-	time(0), elapsed(0), itemnum(0)
+// 
+// Statics
+//
+CameraProcess *CameraProcess::camera = 0;
+
+uint16 CameraProcess::SetCameraProcess(CameraProcess *cam)
 {
-	static_cast<GUIApp *>(CoreApp::get_instance())->GetCamera(sx,sy,sz);
-	ex = sx; ey = sy; ez = sz;
+	if (!cam) cam = new CameraProcess();
+	if (camera) camera->terminate();
+	camera = cam;
+	return Kernel::get_instance()->addProcess(camera);
 }
 
-// Track item
-CameraProcess::CameraProcess(uint16 _itemnum) : 
-	time(0), elapsed(0), itemnum(_itemnum)
+void CameraProcess::ResetCameraProcess()
 {
-	static_cast<GUIApp *>(CoreApp::get_instance())->GetCamera(sx,sy,sz);
-	Object *obj = World::get_instance()->getObject(itemnum);
+	if (camera) camera->terminate();
+	camera = 0;
+}
 
-	// Got it
-	if (obj) 
+void CameraProcess::GetCameraLocation(sint32 &x, sint32 &y, sint32 &z)
+{
+ 	if (!camera) 
 	{
-		Item *item = p_dynamic_cast<Item*>(obj);
+		World *world = World::get_instance();
+		CurrentMap *map = world->getCurrentMap();
+		int map_num = map->getNum();
+		Actor* av = world->getNPC(1);
+		
+		if (!av || av->getMapNum() != map_num)
+		{
+			x = 8192;
+			y = 8192;
+			z = 64;
+		}
+		else
+			av->getLocation(x,y,z);
+	}
+	else
+	{
+		camera->GetLerped(x, y, z, 256);
+	}
+}
+
+//
+// Constructors
+// 
+
+// Track item, do nothing
+CameraProcess::CameraProcess(uint16 _itemnum) : 
+	time(0), elapsed(0), itemnum(_itemnum), last_framenum(0)
+{
+	GetCameraLocation(sx,sy,sz);
+
+	if (itemnum)
+	{
+		Object *obj = World::get_instance()->getObject(itemnum);
 
 		// Got it
-		if (item)
+		if (obj) 
 		{
-			item->getLocation(ex,ey,ez);
-			ez += 20;
+			Item *item = p_dynamic_cast<Item*>(obj);
+
+			// Got it
+			if (item)
+			{
+				item->getLocation(ex,ey,ez);
+				ez += 20;
+			}
+			return;
 		}
 	}
+
+	// No item
+	itemnum = 0;
+	ex = sx; ey = sy; ez = sz;
 }
 
 // Stay over point
 CameraProcess::CameraProcess(sint32 _x, sint32 _y, sint32 _z) : 
 	ex(_x), ey(_y), ez(_z), time(0), elapsed(0), itemnum(0)
 {
-	static_cast<GUIApp *>(CoreApp::get_instance())->GetCamera(sx,sy,sz);
+	GetCameraLocation(sx,sy,sz);
 }
 
 // Scroll
 CameraProcess::CameraProcess(sint32 _x, sint32 _y, sint32 _z, sint32 _time) : 
 	ex(_x), ey(_y), ez(_z), time(_time), elapsed(0), itemnum(0)
 {
-	static_cast<GUIApp *>(CoreApp::get_instance())->GetCamera(sx,sy,sz);
+	GetCameraLocation(sx,sy,sz);
 	pout << "Scrolling from (" << sx << "," << sy << "," << sz << ") to (" <<
 		ex << "," << ey << "," << ez << ") in " << time << " frames" << std::endl;
 }
@@ -82,6 +132,7 @@ bool CameraProcess::run(const uint32 /* framenum */)
 
 		// This is a bit of a hack. If we are looking at avatar,
 		// then follow avatar
+		/* - Shouldn't be needed. I_setCenterOn(1) is called
 		Actor *av = World::get_instance()->getNPC(1);
 		sint32 ax, ay, az;
 		av->getLocation(ax,ay,az);
@@ -92,7 +143,8 @@ bool CameraProcess::run(const uint32 /* framenum */)
 			static_cast<GUIApp *>(CoreApp::get_instance())->SetCameraProcess(new CameraProcess(1));
 		}
 		else 
-			static_cast<GUIApp *>(CoreApp::get_instance())->SetCameraProcess(0);	// This will terminate us
+		*/
+		CameraProcess::SetCameraProcess(0);	// This will terminate us
 		return false;
 	}
 
@@ -101,8 +153,18 @@ bool CameraProcess::run(const uint32 /* framenum */)
 	return true;
 }
 
-void CameraProcess::GetLerped(bool inBetween, sint32 &x, sint32 &y, sint32 &z, sint32 factor)
+void CameraProcess::GetLerped(sint32 &x, sint32 &y, sint32 &z, sint32 factor)
 {
+	bool inBetween = true;
+
+	uint32 game_framenum = CoreApp::get_instance()->getFrameNum();
+
+	if (game_framenum != last_framenum)
+	{
+		last_framenum = game_framenum;
+		inBetween = false;
+	}
+
 	if (time == 0)
 	{
 		
@@ -181,7 +243,7 @@ uint32 CameraProcess::I_move_to(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(y);
 	ARG_UINT8(z);
 	ARG_SINT16(unk);
-	static_cast<GUIApp *>(CoreApp::get_instance())->SetCameraProcess(new CameraProcess(x,y,z));
+	CameraProcess::SetCameraProcess(new CameraProcess(x,y,z));
 	return 0;
 }
 
@@ -189,9 +251,7 @@ uint32 CameraProcess::I_move_to(const uint8* args, unsigned int /*argsize*/)
 uint32 CameraProcess::I_setCenterOn(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_UINT16(itemnum);
-	if (!itemnum) static_cast<GUIApp *>(CoreApp::get_instance())->SetCameraProcess(new CameraProcess(1));
-	else static_cast<GUIApp *>(CoreApp::get_instance())->SetCameraProcess(new CameraProcess(itemnum));
-
+	CameraProcess::SetCameraProcess(new CameraProcess(itemnum));
 	return 0;
 }
 
@@ -202,6 +262,6 @@ uint32 CameraProcess::I_scrollTo(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(y);
 	ARG_UINT8(z);
 	ARG_SINT16(unk);
-	return static_cast<GUIApp *>(CoreApp::get_instance())->SetCameraProcess(new CameraProcess(x,y,z, 5));
+	return CameraProcess::SetCameraProcess(new CameraProcess(x,y,z, 15));
 }
 

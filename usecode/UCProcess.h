@@ -36,7 +36,7 @@ public:
     ~UCProcess();
 
 	// p_dynamic_cast stuff
-	ENABLE_DYNAMIC_CAST(UCProcess);
+	ENABLE_RUNTIME_CLASSTYPE();
 
 	void load(uint16 classid_, uint16 offset_, uint32 this_ptr = 0,
 			  int thissize = 0, const uint8* args = 0, int argsize = 0);

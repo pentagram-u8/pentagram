@@ -90,17 +90,33 @@ class IDataSource
 #endif
 		}
 
+		void readline(std::string &str)
+		{
+			str.erase();
+			while (getPos() < getSize())
+			{
+				char character =  static_cast<char>(read1());
+
+				if (character == '\r') continue;	// Skip cr 
+				else if (character == '\n')	break;	// break on line feed
+
+				str+= character;
+			}
+		}
+
 		virtual void seek(uint32 pos)=0;
 		virtual void skip(sint32 delta)=0;
 		virtual uint32 getSize()=0;
 		virtual uint32 getPos()=0;
+
+		virtual std::ifstream *GetRawIfstream() { 
+			return 0; 
+		}
 };
 
 
 class IFileDataSource: public IDataSource
 {
-	friend std::ifstream *GetRawIfstream(IFileDataSource *ifds);
-
 	private:
 		std::ifstream *in;
 
@@ -190,35 +206,82 @@ class IFileDataSource: public IDataSource
 
 	virtual uint32 getPos() { return in->tellg(); }
 
+	virtual std::ifstream *GetRawIfstream() {
+		return in; 
+	}
 };
-
-inline std::ifstream *GetRawIfstream(IFileDataSource *ifds)
-{
-	return ifds->in;
-}
 
 class IBufferDataSource : public IDataSource
 {
 protected:
 	const uint8* buf;
 	const uint8* buf_ptr;
-
+	bool free_buffer;
 	uint32 size;
 
+	void ConvertTextBuffer()
+	{
+#ifdef WIN32
+		uint8* new_buf = new uint8[size];
+		uint8* new_buf_ptr = new_buf;
+		uint32 new_size = 0;
+
+		// What we want to do is convert all 0x0D 0x0A to just 0x0D
+
+		// Do for all but last byte
+		while (size > 1)
+		{
+			*new_buf_ptr = *buf_ptr;
+
+			if (*(uint16*)buf_ptr == 0x0A0D)
+			{
+				buf_ptr++;
+				size--;
+			}
+
+			new_buf_ptr++;
+			new_size++;
+			buf_ptr++;
+			size--;
+		}
+
+		// Do last byte
+		if (size) *new_buf_ptr = *buf_ptr;
+
+		buf_ptr = buf = new_buf;
+		size = new_size;
+		free_buffer = true;
+#endif
+	}
+
 public:
-	IBufferDataSource(const uint8* data, unsigned int len) {
+	IBufferDataSource(const uint8* data, unsigned int len, bool is_text = false) {
 		assert(data != 0 || len == 0);
 		buf = buf_ptr = data;
 		size = len;
+		free_buffer = false;
+
+		if (is_text) ConvertTextBuffer();
 	}
 
-	void load(const uint8* data, unsigned int len) {
+	virtual void load(const uint8* data, unsigned int len, bool is_text = false) {
+		if (free_buffer && buf) delete [] const_cast<uint8 *>(buf);
+		free_buffer = false;
+		buf = buf_ptr = 0;
+
 		assert(data != 0 || len == 0);
 		buf = buf_ptr = data;
 		size = len;
+		free_buffer = false;
+
+		if (is_text) ConvertTextBuffer();
 	}
 
-	virtual ~IBufferDataSource() { }
+	virtual ~IBufferDataSource() { 
+		if (free_buffer && buf) delete [] const_cast<uint8 *>(buf);
+		free_buffer = false;
+		buf = buf_ptr = 0;
+	}
 
 	virtual uint8 read1() {
 		uint8 b0;
@@ -286,6 +349,7 @@ public:
 	virtual uint32 getPos() {
 		return (buf_ptr - buf);
 	}
+
 };
 
 

@@ -28,8 +28,8 @@ class ConvertUsecodeCrusader : public ConvertUsecode
 	public:
 		const char* const *intrinsics()  { return _intrinsics;  };
 		const char* const *event_names() { return _event_names; };
-		void readheader(IFileDataSource *ucfile, UsecodeHeader &uch, uint32 &curOffset);
-		void readevents(IFileDataSource *ucfile, const UsecodeHeader &uch)
+		void readheader(IDataSource *ucfile, UsecodeHeader &uch, uint32 &curOffset);
+		void readevents(IDataSource *ucfile, const UsecodeHeader &uch)
 		{
 			uint32 num_crusader_routines = uch.offset / 6;
 			for (uint32 i=0; i < num_crusader_routines; i++) {
@@ -44,9 +44,9 @@ class ConvertUsecodeCrusader : public ConvertUsecode
 		
 		// as weird as this may seem, we'll start this with Crusader's opcodes first.
 		// They're both simpler and more complex. *grin*
-		void readOp(TempOp &op, IFileDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols, bool &done)
+		void readOp(TempOp &op, IDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols, bool &done)
 		{ readOpGeneric(op, ucfile, dbg_symbol_offset, debugSymbols, done, true); };
-		Node *readOp(IFileDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols, bool &done)
+		Node *readOp(IDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols, bool &done)
 		{ return readOpGeneric(ucfile, dbg_symbol_offset, debugSymbols, done, true); };
 
 	private:
@@ -436,7 +436,7 @@ const char * const ConvertUsecodeCrusader::_event_names[] = {
 	0
 };
 
-void ConvertUsecodeCrusader::readheader(IFileDataSource *ucfile, UsecodeHeader &uch, uint32 &curOffset)
+void ConvertUsecodeCrusader::readheader(IDataSource *ucfile, UsecodeHeader &uch, uint32 &curOffset)
 {
 	uch.routines = read4(ucfile);     // routines
 	uch.maxOffset = read4(ucfile);           // total code size,
@@ -455,7 +455,7 @@ void ConvertUsecodeCrusader::readheader(IFileDataSource *ucfile, UsecodeHeader &
 	curOffset = 1-uch.offset;
 };
 
-/*void ConvertUsecodeCrusader::readOp(TempOp &op, IFileDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols, bool &done)
+/*void ConvertUsecodeCrusader::readOp(TempOp &op, IDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols, bool &done)
 {
 
 };*/

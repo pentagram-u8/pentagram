@@ -19,15 +19,38 @@
 #ifndef CONSOLEGUMP_H_INCLUDED
 #define CONSOLEGUMP_H_INCLUDED
 
-#include "ResizableGump.h"
+#include "Gump.h"
 
-class ConsoleGump : public ResizableGump
+class ConsoleGump : public Gump
 {
+	enum ConsoleScrollState {
+		NOT_SCROLLING,
+		WAITING_TO_HIDE,
+		SCROLLING_TO_HIDE_1,
+		SCROLLING_TO_HIDE_2,
+		SCROLLING_TO_HIDE_3,
+		SCROLLING_TO_HIDE_4,
+		WAITING_TO_SHOW,
+		SCROLLING_TO_SHOW_1,
+		SCROLLING_TO_SHOW_2,
+		SCROLLING_TO_SHOW_3,
+		SCROLLING_TO_SHOW_4
+	};
+
+	ConsoleScrollState	scroll_state;
+
 public:
+	ENABLE_RUNTIME_CLASSTYPE();
+
 	ConsoleGump(int x, int y, int w, int h);
 	virtual ~ConsoleGump();
 
-	virtual void Paint(RenderSurface *surf);
+	virtual void UnhideGump();
+	virtual void HideGump();
+
+	virtual void SetupLerp();
+
+	virtual void PaintThis(RenderSurface *surf, sint32 lerp_factor);
 };
 
 #endif //CONSOLEGUMP_H_INCLUDED

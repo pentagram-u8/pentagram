@@ -27,59 +27,58 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "CoreApp.h"
 
-class ResizableGump;
+class Gump;
 class ConsoleGump;
+class GameMapGump;
 class RenderSurface;
 class PaletteManager;
 class GameData;
 class World;
-class ItemSorter;	// TODO MOVE THIS TO GameMapGump
-class CameraProcess;
 
 // extremely simplified stub-ish Application class
 class GUIApp : public CoreApp
 {
 	public:
+		ENABLE_RUNTIME_CLASSTYPE();
+
 		GUIApp(const int argc, const char * const * const argv);
 		virtual ~GUIApp();
 
 		virtual void run();
-		virtual void paint();
 		virtual void handleEvent(const SDL_Event& event);
 
 		//virtual void loadConfig();
 		//virtual void setupVirtualPaths();
 
 		void U8Playground();
+		void paint();
+		bool isPainting() { return painting; }
+
 
 		INTRINSIC(I_getCurrentTimerTick);
 		INTRINSIC(I_setAvatarInStasis);
 		INTRINSIC(I_getAvatarInStasis);
 
-		// To be moved 'somewhere' else
-		void GetCamera(sint32 &x, sint32 &y, sint32 &z);
-		uint16 SetCameraProcess(CameraProcess *);	// Set the current camera process. Adds process. Return PID
-		void ResetCamera(); // Kill camera process
 		void setAvatarInStasis(bool stat) { avatarInStasis = stat; }
+
+		GameMapGump *getGameMapMapGump() { return gameMapGump; }
+		Gump *getDestkopGump() { return desktopGump; }
 
 	private:
 
 		// full system
-		ResizableGump* desktop;
-		ConsoleGump* console;
 		RenderSurface *screen;
 		PaletteManager *palettemanager;
 		GameData *gamedata;
 		World *world;
-		ItemSorter *display_list;	// TODO MOVE THIS TO GameMapGump
 
-		CameraProcess	 *camera;
+		Gump* desktopGump;
+		ConsoleGump *consoleGump;
+		GameMapGump *gameMapGump;
 
 		// called depending upon command line arguments
 		void GraphicSysInit(); // starts the graphics subsystem
 		void LoadConsoleFont(); // loads the console font
-
-		void SetupDisplayList();	// TODO MOVE THIS TO GameMapGump
 
 		// Various dependancy flags
 		bool runGraphicSysInit;
@@ -94,14 +93,12 @@ class GUIApp : public CoreApp
 		bool interpolate;			// Set to true to enable interpolation (default true)
 		sint32 animationRate;		// The animation rate in ms. Affects all processes! (default 100)
 
-		// fastArea stuff. Move somewhere else
-		std::vector<uint16>			fastAreas[2];
-		int							fastArea;	// 0 or 1
-
 		// Sort of Camera Related Stuff, move somewhere else
 
 		bool avatarInStasis;	// If this is set to true, Avatar can't move, 
 								// nor can Avatar start more usecode
+
+		bool painting;			// Set true when painting
 };
 
 inline GUIApp *getGUIInstance() { return static_cast<GUIApp *>(CoreApp::get_instance()); };

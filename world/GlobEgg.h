@@ -31,7 +31,7 @@ public:
 	virtual ~GlobEgg();
 
 	// p_dynamic_cast stuff
-	ENABLE_DYNAMIC_CAST(GlobEgg);
+	ENABLE_RUNTIME_CLASSTYPE();
 
 	void expand();   // expand the contents of the glob into the main objlist
 	void unexpand(); // delete the expanded contents

@@ -141,4 +141,13 @@ void GameData::loadU8Data()
 	}
 	fonts = new FontShapeFlex(fds, PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
 	//! we're leaking fds here
+
+	// Load fonts
+	IDataSource *gmds = filesystem->ReadFile("@u8/static/u8gumps.flx");
+	if (!gmds) {
+		perr << "Unable to load static/u8gumps.flx. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	gumps = new ShapeFlex(gmds, PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
+	//! we're leaking gmds here
 }

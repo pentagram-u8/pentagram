@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "World.h"
 #include "TeleportEgg.h"
 
-DEFINE_DYNAMIC_CAST_CODE(EggHatcherProcess,Process);
+DEFINE_RUNTIME_CLASSTYPE_CODE(EggHatcherProcess,Process);
 
 EggHatcherProcess::EggHatcherProcess()
 {

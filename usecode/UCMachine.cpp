@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Usecode.h"
 #include "Kernel.h"
 #include "DelayProcess.h"
+#include "CoreApp.h"
 
 #include "CurrentMap.h"
 #include "World.h"
@@ -1168,6 +1169,9 @@ bool UCMachine::execProcess(UCProcess* p)
 				newproc->load(classid, offset, thisptr, this_size,
 							  p->stack.access(), arg_bytes);
 
+				// Run the new process
+				newproc->run(CoreApp::get_instance()->getFrameNum());
+
 				//!! CHECKME
 				//!! is order of execution of this process and the new one
 				//!! relevant? It might be, since 0x6C and freeing opcodes
@@ -1176,7 +1180,6 @@ bool UCMachine::execProcess(UCProcess* p)
 				//!! of the execution list, so it's guaranteed to be run
 				//!! before the current process
 			}
-			cede = true; // give new process a chance to run
 			break;
 
 
@@ -1206,9 +1209,15 @@ bool UCMachine::execProcess(UCProcess* p)
 
 				newproc->load(classid, offset + delta, thisptr, this_size);
 
+				// Run the new process
+				newproc->run(CoreApp::get_instance()->getFrameNum());
+
 				p->stack.push2(newpid); //! push pid of newproc?
+
+				// Run the new process
+				newproc->run(CoreApp::get_instance()->getFrameNum());
 			}
-			cede = true;
+	//		cede = true;
 			break;
 	
 		case 0x59:

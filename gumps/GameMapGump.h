@@ -19,15 +19,39 @@
 #ifndef GAMEMAPGUMP_H_INCLUDED
 #define GAMEMAPGUMP_H_INCLUDED
 
-#include "ResizableGump.h"
+#include "Gump.h"
+#include <vector>
 
-class GameMapGump : public ResizableGump
+class ItemSorter;
+class CameraProcess;
+
+class GameMapGump : public Gump
 {
+protected:
+	ItemSorter		*display_list;
+
+	std::vector<uint16>			fastAreas[2];
+	int							fastArea;	// 0 or 1
+
 public:
+	ENABLE_RUNTIME_CLASSTYPE();
+
 	GameMapGump(int x, int y, int w, int h);
 	virtual ~GameMapGump();
 
-	virtual void Paint(RenderSurface *surf);
+	virtual void		SetupLerp();
+
+	virtual void		PaintThis(RenderSurface *surf, sint32 lerp_factor);
+
+	// Trace a click, and return ObjID
+	virtual uint16		TraceObjID(int mx, int my);
+
+	// Get the location of an item in the gump (coords reletive to this). Returns false on failure
+	virtual bool		GetLocationOfItem(uint16 itemid, int &gx, int &gy, sint32 lerp_factor = 256);
+
+protected:
+
+	void				SetupFastAreaDisplayList(sint32 lerp_factor);
 };
 
 #endif //GameMapGUMP_H_INCLUDED

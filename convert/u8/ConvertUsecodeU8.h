@@ -26,8 +26,8 @@ class ConvertUsecodeU8 : public ConvertUsecode
 	public:
 		const char* const *intrinsics()  { return _intrinsics;  };
 		const char* const *event_names() { return _event_names; };
-		void readheader(IFileDataSource *ucfile, UsecodeHeader &uch, uint32 &curOffset);
-		void readevents(IFileDataSource *ucfile, const UsecodeHeader &/*uch*/)
+		void readheader(IDataSource *ucfile, UsecodeHeader &uch, uint32 &curOffset);
+		void readevents(IDataSource *ucfile, const UsecodeHeader &/*uch*/)
 		{
 			for (uint32 i=0; i<32; ++i)
 			{
@@ -39,9 +39,9 @@ class ConvertUsecodeU8 : public ConvertUsecode
 			}
 		}
 
-		void readOp(TempOp &op, IFileDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols, bool &done)
+		void readOp(TempOp &op, IDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols, bool &done)
 		{ readOpGeneric(op, ucfile, dbg_symbol_offset, debugSymbols, done, false); };
-		Node *readOp(IFileDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols, bool &done)
+		Node *readOp(IDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols, bool &done)
 		{ return readOpGeneric(ucfile, dbg_symbol_offset, debugSymbols, done, false); };
 
 	
@@ -365,7 +365,7 @@ const char * const ConvertUsecodeU8::_event_names[] = {
 	0
 };
 
-void ConvertUsecodeU8::readheader(IFileDataSource *ucfile, UsecodeHeader &uch, uint32 &curOffset)
+void ConvertUsecodeU8::readheader(IDataSource *ucfile, UsecodeHeader &uch, uint32 &curOffset)
 {
 	#ifdef DISASM_DEBUG
 	perr << std::setfill('0') << std::hex;

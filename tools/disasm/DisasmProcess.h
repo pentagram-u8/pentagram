@@ -28,7 +28,7 @@ public:
     ~DisasmProcess();
 
 	// p_dynamic_cast stuff
-	ENABLE_DYNAMIC_CAST(DisasmProcess);
+	ENABLE_RUNTIME_CLASSTYPE();
 
 	virtual bool run(const uint32 framenum);
 

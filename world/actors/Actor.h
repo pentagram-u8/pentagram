@@ -56,7 +56,7 @@ public:
 	virtual uint16 assignObjId(); // assign an NPC objid
 
 	// p_dynamic_cast stuff
-	ENABLE_DYNAMIC_CAST(Actor);
+	ENABLE_RUNTIME_CLASSTYPE();
 
 	INTRINSIC(I_isNPC);
 	INTRINSIC(I_getDir);

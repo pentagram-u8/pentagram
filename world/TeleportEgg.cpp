@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "World.h"
 #include "MainActor.h"
 
-DEFINE_DYNAMIC_CAST_CODE(TeleportEgg,Egg);
+DEFINE_RUNTIME_CLASSTYPE_CODE(TeleportEgg,Egg);
 
 TeleportEgg::TeleportEgg()
 {

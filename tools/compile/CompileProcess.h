@@ -31,7 +31,7 @@ public:
     ~CompileProcess();
 
 	// p_dynamic_cast stuff
-	ENABLE_DYNAMIC_CAST(CompileProcess);
+	ENABLE_RUNTIME_CLASSTYPE();
 
 	virtual bool run(const uint32 framenum);
 

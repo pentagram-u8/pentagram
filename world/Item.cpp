@@ -36,6 +36,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UCStack.h"
 #include "Direction.h"
 #include "ItemMoveProcess.h"
+#include "BarkGump.h"
+#include "GumpNotifyProcess.h"
 
 #include <cstdlib>
 
@@ -50,14 +52,14 @@ This is why the Item (and Container) constructors are currently rather empty.
 */
 
 // p_dynamic_cast stuff
-DEFINE_DYNAMIC_CAST_CODE(Item,Object);
+DEFINE_RUNTIME_CLASSTYPE_CODE(Item,Object);
 
 Item::Item()
 	: shape(0), frame(0), x(0), y(0), z(0),
 	  flags(0), quality(0), npcnum(0), mapnum(0),
 	  extendedflags(0), parent(0), 
 	  cachedShape(0), cachedShapeInfo(0),
-	  glob_next(0)
+	  gump(0), glob_next(0)
 {
 
 }
@@ -77,7 +79,7 @@ void Item::setLocation(sint32 X, sint32 Y, sint32 Z)
 
 void Item::move(sint32 X, sint32 Y, sint32 Z)
 {
-	//! constants
+	//constant
 	if (!(flags & (FLG_CONTAINED | FLG_EQUIPPED | FLG_ETHEREAL))
 		&& ((x / 512 != X / 512) || (y / 512 != Y / 512))) {
 
@@ -97,6 +99,18 @@ void Item::getLocation(sint32& X, sint32& Y, sint32& Z) const
 	X = x;
 	Y = y;
 	Z = z;
+}
+
+void Item::getLocationAbsolute(sint32& X, sint32& Y, sint32& Z) const
+{
+	if (parent) 
+		parent->getLocationAbsolute(X,Y,Z);
+	else
+	{
+		X = x;
+		Y = y;
+		Z = z;
+	}
 }
 
 void Item::getCentre(sint32& X, sint32& Y, sint32& Z) const
@@ -488,7 +502,7 @@ void Item::animateItem(int even_odd)
 
 
 	case 5:
-		callUsecodeEvent(0x02);	// CONSTANT!
+		callUsecodeEvent(0x02);	// CONSTANT
 		dirty = true;
 		break;
 
@@ -534,7 +548,7 @@ void Item::inFastArea(int even_odd)
 	if (shape == 0x2c8) return;
 
 	// Call usecode here
-	callUsecodeEvent(0x0F);		// CONSTANT!
+	callUsecodeEvent(0x0F);		// CONSTANT
 }
 
 // Called when an item is leaving the fast area
@@ -549,7 +563,7 @@ void Item::leavingFastArea()
 	flags &= ~FLG_FASTAREA;
 
 	// Call usecode here
-	callUsecodeEvent(0x10);		// CONSTANT!
+	callUsecodeEvent(0x10);		// CONSTANT
 }
 
 uint32 Item::I_getX(const uint8* args, unsigned int /*argsize*/)
@@ -557,7 +571,9 @@ uint32 Item::I_getX(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM(item);
 	if (!item) return 0;
 
-	return item->x;
+	sint32 x,y,z;
+	item->getLocationAbsolute(x,y,z);
+	return x;
 }
 
 uint32 Item::I_getY(const uint8* args, unsigned int /*argsize*/)
@@ -565,7 +581,9 @@ uint32 Item::I_getY(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM(item);
 	if (!item) return 0;
 
-	return item->y;
+	sint32 x,y,z;
+	item->getLocationAbsolute(x,y,z);
+	return y;
 }
 
 uint32 Item::I_getZ(const uint8* args, unsigned int /*argsize*/)
@@ -573,7 +591,9 @@ uint32 Item::I_getZ(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM(item);
 	if (!item) return 0;
 
-	return item->z;
+	sint32 x,y,z;
+	item->getLocationAbsolute(x,y,z);
+	return z;
 }
 
 uint32 Item::I_getCX(const uint8* args, unsigned int /*argsize*/)
@@ -581,10 +601,13 @@ uint32 Item::I_getCX(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM(item);
 	if (!item) return 0;
 
+	sint32 x,y,z;
+	item->getLocationAbsolute(x,y,z);
+
 	if (item->flags & FLG_FLIPPED)
-		return item->x - item->getShapeInfo()->y * 16;
+		return x - item->getShapeInfo()->y * 16;
 	else
-		return item->x - item->getShapeInfo()->x * 16;
+		return x - item->getShapeInfo()->x * 16;
 }
 
 uint32 Item::I_getCY(const uint8* args, unsigned int /*argsize*/)
@@ -592,10 +615,13 @@ uint32 Item::I_getCY(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM(item);
 	if (!item) return 0;
 
+	sint32 x,y,z;
+	item->getLocationAbsolute(x,y,z);
+
 	if (item->flags & FLG_FLIPPED)
-		return item->y - item->getShapeInfo()->x * 16;
+		return y - item->getShapeInfo()->x * 16;
 	else
-		return item->y - item->getShapeInfo()->y * 16;
+		return y - item->getShapeInfo()->y * 16;
 }
 
 uint32 Item::I_getCZ(const uint8* args, unsigned int /*argsize*/)
@@ -603,7 +629,10 @@ uint32 Item::I_getCZ(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM(item);
 	if (!item) return 0;
 
-	return item->z + item->getShapeInfo()->z * 4;
+	sint32 x,y,z;
+	item->getLocationAbsolute(x,y,z);
+
+	return z + item->getShapeInfo()->z * 4;
 }
 
 uint32 Item::I_getPoint(const uint8* args, unsigned int /*argsize*/)
@@ -612,13 +641,16 @@ uint32 Item::I_getPoint(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT32(ptr);
 	if (!item) return 0;
 
+	sint32 x,y,z;
+	item->getLocationAbsolute(x,y,z);
+
 	uint8 buf[5];
 
-	buf[0] = static_cast<uint8>(item->x);
-	buf[1] = static_cast<uint8>(item->x >> 8);
-	buf[2] = static_cast<uint8>(item->y);
-	buf[3] = static_cast<uint8>(item->y >> 8);
-	buf[4] = static_cast<uint8>(item->z);
+	buf[0] = static_cast<uint8>(x);
+	buf[1] = static_cast<uint8>(x >> 8);
+	buf[2] = static_cast<uint8>(y);
+	buf[3] = static_cast<uint8>(y >> 8);
+	buf[4] = static_cast<uint8>(z);
 
 	UCMachine::get_instance()->assignPointer(ptr, buf, 5);
 
@@ -850,11 +882,29 @@ uint32 Item::I_bark(const uint8* args, unsigned int /*argsize*/)
 	ARG_STRING(str);
 	if (!item) return 0;
 
-	pout << std::endl << std::endl << str  << std::endl << std::endl;
-	
-	// wait a while
-	return Kernel::get_instance()->addProcess(new DelayProcess(50));
+	GUIApp *app = p_dynamic_cast<GUIApp*>(GUIApp::get_instance());
 
+	if (!app)
+	{
+		pout << std::endl << std::endl << str  << std::endl << std::endl;
+		
+		// wait a while
+		return Kernel::get_instance()->addProcess(new DelayProcess(50));
+	}
+	else
+	{
+		Gump *desktop = app->getDestkopGump();
+		Gump *gump = new BarkGump(item->getObjId(), str);
+		gump->InitGump();
+		desktop->AddChild(gump);
+
+		GumpNotifyProcess *proc = new GumpNotifyProcess();
+		proc->setGump(gump);
+		gump->SetNotifyProcess(proc);
+
+		return Kernel::get_instance()->addProcess(proc);
+
+	}
 	// of course, in the final version of bark, we'll have to actually do
 	// something after the timeout occurs.
 	// Some kind of 'callback-delay-process' maybe?
@@ -865,7 +915,7 @@ uint32 Item::I_look(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM(item);
 	if (!item) return 0;
 
-	// constant?
+	// constant
 	return item->callUsecodeEvent(0);
 }
 
@@ -874,7 +924,7 @@ uint32 Item::I_use(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM(item);
 	if (!item) return 0;
 
-	// constant?
+	// constant
 	return item->callUsecodeEvent(1);
 }
 
@@ -883,11 +933,11 @@ uint32 Item::I_enterFastArea(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM(item);
 	if (!item) return 0;
 
-	// constant?
+	// constant
 	return item->callUsecodeEvent(15);
 }
 
-//!!!!! major hack
+//HACK !!!!! major hack
 UCList* answerlist;
 int userchoice;
 class UserChoiceProcess : public Process
@@ -915,11 +965,28 @@ uint32 Item::I_ask(const uint8* args, unsigned int /*argsize*/)
 	// display answers and spawn new process (return pid)
 	// process waits for user input and returns the selected answer (as string)
 
+	std::string str_answers;
+
 	pout << std::endl << std::endl;
 	for (unsigned int i = 0; i < answers->getSize(); ++i) {
 		pout << i << ": " << UCMachine::get_instance()->getString(answers->getStringIndex(i)) << std::endl;
+		char buf[32];
+		str_answers += "@";
+		snprintf(buf,32,"%i: ", i);
+		str_answers += buf;
+		str_answers += UCMachine::get_instance()->getString(answers->getStringIndex(i));
+		str_answers += "\n";
 	}
 
+	// Hack using a bark gump
+	GUIApp *app = p_dynamic_cast<GUIApp*>(GUIApp::get_instance());
+	if (app)
+	{
+		Gump *desktop = app->getDestkopGump();
+		Gump *gump = new BarkGump(1, str_answers);
+		gump->InitGump();
+		desktop->AddChild(gump);
+	}
 	userchoice = -1;
 	answerlist = new UCList(2);
 	answerlist->copyStringList(*answers);
@@ -1324,7 +1391,10 @@ uint32 Item::I_getDirToCoords(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(y);
 	if (!item) return 0;
 
-	return Get_WorldDirection(y - item->y, x - item->x);
+	sint32 ix,iy,iz;
+	item->getLocationAbsolute(ix,iy,iz);
+
+	return Get_WorldDirection(y - iy, x - ix);
 }
 
 uint32 Item::I_getDirFromCoords(const uint8* args, unsigned int /*argsize*/)
@@ -1334,7 +1404,10 @@ uint32 Item::I_getDirFromCoords(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(y);
 	if (!item) return 0;
 
-	return Get_WorldDirection(y - item->y, item->x - x);
+	sint32 ix,iy,iz;
+	item->getLocationAbsolute(ix,iy,iz);
+
+	return Get_WorldDirection(iy - y, ix - x);
 }
 
 uint32 Item::I_getDirToItem(const uint8* args, unsigned int /*argsize*/)
@@ -1345,7 +1418,13 @@ uint32 Item::I_getDirToItem(const uint8* args, unsigned int /*argsize*/)
 	if (!item) return 0;
 	if (!item2) return 0;
 
-	return Get_WorldDirection(item2->y - item->y, item2->x - item->x);
+	sint32 ix,iy,iz;
+	item->getLocationAbsolute(ix,iy,iz);
+
+	sint32 i2x,i2y,i2z;
+	item2->getLocationAbsolute(i2x,i2y,i2z);
+
+	return Get_WorldDirection(i2y - iy, i2x - ix);
 }
 
 uint32 Item::I_getDirFromItem(const uint8* args, unsigned int /*argsize*/)
@@ -1356,7 +1435,13 @@ uint32 Item::I_getDirFromItem(const uint8* args, unsigned int /*argsize*/)
 	if (!item) return 0;
 	if (!item2) return 0;
 
-	return Get_WorldDirection(item->y - item2->y, item->x - item2->x);
+	sint32 ix,iy,iz;
+	item->getLocationAbsolute(ix,iy,iz);
+
+	sint32 i2x,i2y,i2z;
+	item2->getLocationAbsolute(i2x,i2y,i2z);
+
+	return Get_WorldDirection(iy - i2y, ix - i2x);
 }
 
 

@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UCMachine.h"
 #include "World.h"
 
-DEFINE_DYNAMIC_CAST_CODE(Egg,Item);
+DEFINE_RUNTIME_CLASSTYPE_CODE(Egg,Item);
 
 Egg::Egg() : hatched(false)
 {

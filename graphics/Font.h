@@ -25,15 +25,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class Font : public Shape
 {
+	int height;
 public:
 	Font(const uint8* data, uint32 size, const ConvertShapeFormat *format)
-		: Shape(data, size, format) { }
+		: Shape(data, size, format), height(0) { }
 	virtual ~Font() { }
 
-	int getWidth(char c);
+	sint32 getWidth(char c);
+	sint32 getHeight();
 
+	void getTextSize(const char *text, sint32 &x, sint32 &y);
 
-	ENABLE_DYNAMIC_CAST(Font);
+	ENABLE_RUNTIME_CLASSTYPE();
 };
 
 #endif

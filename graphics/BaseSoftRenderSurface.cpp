@@ -180,11 +180,11 @@ void BaseSoftRenderSurface::GetSurfaceDims(Rect &r) const
 }
 
 //
-// void BaseSoftRenderSurface::SetOrigin(int x, int y)
+// void BaseSoftRenderSurface::SetOrigin(sint32 x, sint32 y)
 //
 // Desc: Set the Phyiscal Pixel to be the logical origin
 //
-void BaseSoftRenderSurface::SetOrigin(int x, int y)
+void BaseSoftRenderSurface::SetOrigin(sint32 x, sint32 y)
 {
 	// Adjust the clipping window
 	clip_window.MoveRel(ox-x, oy-y);
@@ -196,6 +196,18 @@ void BaseSoftRenderSurface::SetOrigin(int x, int y)
 	// The new pointers
 	pixels = pixels00 + x*bytes_per_pixel + y*pitch;
 	zbuffer = reinterpret_cast<uint16*>(zbuffer00 + x + y * zpitch);
+}
+
+//
+// void BaseSoftRenderSurface::GetOrigin(sint32 &x, sint32 &y)
+//
+// Desc: Get the Phyiscal Pixel that is the logical origin
+//
+void BaseSoftRenderSurface::GetOrigin(sint32 &x, sint32 &y) const
+{
+	// Set the origin
+	x = ox;
+	y = oy;
 }
 
 //

@@ -16,15 +16,29 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#include "ResizableGump.h"
+#ifndef GUMPNOTIFYPROCESS_H_INCLUDED
+#define GUMPNOTIFYPROCESS_H_INCLUDED
 
+#include "Process.h"
 
-ResizableGump::ResizableGump(int X, int Y, int Width, int Height) : Gump(X,Y,Width,Height)
+class Gump;
+
+class GumpNotifyProcess : public Process
 {
-}
+	Gump	*gump;
 
-ResizableGump::~ResizableGump()
-{
-}
+public:
+	GumpNotifyProcess(void);
+	virtual ~GumpNotifyProcess(void);
 
-// Colourless Protection
+	void setGump(Gump *g) { gump = g; }
+	Gump *getGump() const { return gump; }
+
+	virtual void notifyClosing(int res);
+
+	virtual void terminate();
+
+	virtual bool run(const uint32 framenum);
+};
+
+#endif //GUMPNOTIFYPROCESS_H_INCLUDED

@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class Flex;
 class MainShapeFlex;
 class FontShapeFlex;
+class ShapeFlex;
 class Usecode;
 class Glob;
 
@@ -42,6 +43,7 @@ public:
 	Flex* getFixed() const { return fixed; }
 	Glob* getGlob(uint32 glob) const;
 	FontShapeFlex* getFonts() const { return fonts; }
+	ShapeFlex* getGumps() const { return gumps; }
 
 private:
 	Flex* fixed;
@@ -49,6 +51,7 @@ private:
 	Usecode* mainusecode;
 	std::vector<Glob*> globs;
 	FontShapeFlex* fonts;
+	ShapeFlex* gumps;
 
 	static GameData* gamedata;
 };

@@ -87,7 +87,7 @@ class CompileUnit
 		*/
 		
 		std::ifstream *ifile; // real file we use
-		IFileDataSource *idatasource; // temp data source
+		IDataSource *idatasource; // temp data source
 
 		llcFlexLexer *parser;
 

@@ -24,52 +24,56 @@
 // The Pentagram dynamic cast
 template<class A, class B> inline A p_dynamic_cast (B *object)
 {
-	if (!object) return 0;
-	return static_cast<A>( object->DoDynamicCast(& ((static_cast<A>(0))->ClassTypeConstant) ) );
+	if (object && object->IsOfType(static_cast<A>(0)->ClassType)) return static_cast<A>(object);
+	return 0;
 }
 
 // This is just a 'type' used to differentiate each class.
 struct RunTimeClassType
 {
 	const char *	class_name;
+	inline bool operator == (const RunTimeClassType &other) const { return this == &other; }
 };
 
 //
 // Include this in every class. It sets up the class to be able to use 
 // p_dynamic_cast. Make sure this is public!
 //
-#define ENABLE_DYNAMIC_CAST(Classname)							\
-	static const RunTimeClassType	ClassTypeConstant;			\
-	virtual void * DoDynamicCast(const RunTimeClassType *type);
+#define ENABLE_RUNTIME_CLASSTYPE()												\
+	static const RunTimeClassType	ClassType;									\
+	virtual bool IsOfType(const RunTimeClassType & type);						\
+	template<class T> inline bool IsOfType() { return IsOfType(T::ClassType); }	\
+	virtual const RunTimeClassType & GetClassType() { return ClassType; }
+	
 
 
 //
 // Define this in the source files of base classes
 //
-#define DEFINE_DYNAMIC_CAST_CODE_BASE_CLASS(Classname)			\
-const RunTimeClassType Classname::ClassTypeConstant = {			\
-	#Classname													\
-};																\
-																\
-void * Classname::DoDynamicCast(const RunTimeClassType * type)	\
-{																\
-	if (type == &ClassTypeConstant) return this;				\
-	return 0;													\
-}																\
+#define DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(Classname)			\
+const RunTimeClassType Classname::ClassType = {						\
+	#Classname														\
+};																	\
+																	\
+bool Classname::IsOfType(const RunTimeClassType & type)				\
+{																	\
+	if (type == ClassType) return true;							\
+	return false;													\
+}
 
 
 //
 // Define this in the source files of child classes, with 1 parent
 //
-#define DEFINE_DYNAMIC_CAST_CODE(Classname,ParentClassname)		\
-const RunTimeClassType Classname::ClassTypeConstant = {			\
-	#Classname													\
-};																\
-																\
-void * Classname::DoDynamicCast(const RunTimeClassType * type)	\
-{																\
-	if (type == &ClassTypeConstant) return this;				\
-	return ParentClassname::DoDynamicCast(type);				\
+#define DEFINE_RUNTIME_CLASSTYPE_CODE(Classname,ParentClassname)	\
+const RunTimeClassType Classname::ClassType = {						\
+	#Classname														\
+};																	\
+																	\
+bool Classname::IsOfType(const RunTimeClassType & type)				\
+{																	\
+	if (type == ClassType) return true;								\
+	return ParentClassname::IsOfType(type);							\
 }
 
 
@@ -77,18 +81,17 @@ void * Classname::DoDynamicCast(const RunTimeClassType * type)	\
 //
 // Define this in the source files of child classes, with 2 parents
 //
-#define DEFINE_DYNAMIC_CAST_CODE_MULTI2(Classname,Parent1,Parent2)	\
-const RunTimeClassType Classname::ClassTypeConstant = {				\
-	#Classname														\
-};																	\
-																	\
-void * Classname::DoDynamicCast(const RunTimeClassType *type)		\
-{																	\
-	if (type == &ClassTypeConstant) return this;					\
-	void *ret = Parent1::DoDynamicCast(type);						\
-	if (ret) return ret;											\
-	return Parent2::DoDynamicCast(type);							\
+#define DEFINE_RUNTIME_CLASSTYPE_CODE_MULTI2(Classname,Parent1,Parent2)	\
+const RunTimeClassType Classname::ClassType = {							\
+	#Classname															\
+};																		\
+																		\
+bool Classname::IsOfType(const RunTimeClassType &type)					\
+{																		\
+	if (type == ClassType) return true;									\
+	bool ret = Parent1::IsOfType(type);									\
+	if (ret) return true;												\
+	return Parent2::IsOfType(type);										\
 }
 
-
-#endif //P_DYNAMIC_CAST
+#endif //P_RUNTIME_CLASSTYPE

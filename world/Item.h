@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class Container;
 class ShapeInfo;
 class Shape;
+class Gump;
 
 class Item : public Object
 {
@@ -35,11 +36,12 @@ public:
 	virtual ~Item();
 
 	// p_dynamic_cast stuff
-	ENABLE_DYNAMIC_CAST(Item);
+	ENABLE_RUNTIME_CLASSTYPE();
 
 	Container* getParent() const { return parent; }
 	void setLocation(sint32 x, sint32 y, sint32 z); // this only sets the loc.
 	void move(sint32 x, sint32 y, sint32 z); // move also handles item lists
+	void getLocationAbsolute(sint32& x, sint32& y, sint32& z) const;
 	void getLocation(sint32& x, sint32& y, sint32& z) const;
 	void getCentre(sint32& x, sint32& y, sint32& z) const;
 	void getFootpad(sint32& x, sint32& y, sint32& z) const;
@@ -64,6 +66,8 @@ public:
 	Shape* getShapeObject();
 	Shape* getShapeObjectNoCache() const;
 	uint16 getFamily();
+
+	Gump* getGump() { return gump; }
 
 	Item* getGlobNext() const { return glob_next; }
 	void setGlobNext(Item* i) { glob_next = i; }
@@ -205,6 +209,8 @@ protected:
 	Lerped	l_next;			// Next (current) state (relative to camera)
 	sint32	ix,iy,iz;		// Interpolated position in camera space
 
+	Gump* gump;				// Item's gump
+
 private:
 	Item* glob_next; // next item in glob
 
@@ -215,7 +221,7 @@ private:
 	void setupLerp();		
 
 public:
-	enum {
+	enum statusflags {
 		FLG_DISPOSABLE	 = 0x0002,
 		FLG_OWNED		 = 0x0004,
 		FLG_CONTAINED	 = 0x0008,
@@ -230,16 +236,16 @@ public:
 		FLG_HANGING		 = 0x1000,
 		FLG_FASTAREA     = 0x2000,
 		FLG_LOW_FRICTION = 0x4000
-	} statusflags;
+	};
 
-	enum {
+	enum extflags {
 		EXT_FIXED     = 0x0001, // item came from FIXED
 		EXT_INGLOB    = 0x0002, // item is part of a glob
 		EXT_NOTINMAP  = 0x0004, // item isn't part of the map itself (e.g. NPCs)
 
 		EXT_FAST0	  = 0x0008,	// Special stuff for detecting an item leaving the fast area
 		EXT_FAST1	  = 0x0010	// They are mutually exclusive
-	} extflags;
+	};
 };
 
 #endif

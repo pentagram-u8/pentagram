@@ -52,22 +52,33 @@ FileSystem::~FileSystem()
 
 
 // Open a streaming file as readable. Streamed (0 on failure)
-IFileDataSource* FileSystem::ReadFile(const string &vfn, bool is_text)
+IDataSource* FileSystem::ReadFile(const string &vfn, bool is_text)
 {
 	string filename = vfn;
+
+	// Is it a Memory file?
+	std::map<string, MemoryFile*>::iterator mf = memoryfiles.find(vfn);
+
+	if (mf != memoryfiles.end())
+		return new IBufferDataSource(mf->second->data, mf->second->len, is_text);
+
 	std::ifstream *f = new std::ifstream();
-	if(!rawopen(*f, filename, is_text))
+	if(!rawopen(*f, filename, is_text)) 
 		return 0;
+
 	return new IFileDataSource(f);
 }
 
 // Open a streaming file as readable. Streamed (0 on failure)
-OFileDataSource* FileSystem::WriteFile(const string &vfn, bool is_text)
+ODataSource* FileSystem::WriteFile(const string &vfn, bool is_text)
 {
 	string filename = vfn;
 	std::ofstream *f = new std::ofstream();
 	if(!rawopen(*f, filename, is_text))
+	{
+		delete f;
 		return 0;
+	}
 	return new OFileDataSource(f);
 }
 
@@ -261,16 +272,31 @@ bool FileSystem::AddVirtualPath(const string &vpath, const string &realpath, con
 		return false;
 	}
 
+	// Finding Reserved Virtual Path Names
+	// memory path is reserved
+	if (vp == "@memory" || vp.substr(0, 8) == "@memory/")
+	{
+		perr << "Error mounting virtual path \"" << vp << "\": "
+				<< "\"@memory\" is a reserved virtual path name." << std::endl;
+		return false;
+	}
+
 	string fullpath = rp;
 	rewrite_virtual_path(fullpath);
-	if (!IsDir(fullpath)) {
-		if(!create) {
-			perr << "Error mounting virtual path \"" << vp << "\": "
-				 << "directory not found: " << fullpath << std::endl;
-			return false;
-		}
-		else {
-			MkDir(fullpath);
+	// When mouting a memory file, it wont exist, so don't attempt to create the dir
+	perr << "virtual path \"" << vp << "\": "
+		<< fullpath << std::endl;
+	if (!(fullpath.substr(0, 8) == "@memory/"))
+	{
+		if (!IsDir(fullpath)) {
+			if(!create) {
+				perr << "Error mounting virtual path \"" << vp << "\": "
+					<< "directory not found: " << fullpath << std::endl;
+				return false;
+			}
+			else {
+				MkDir(fullpath);
+			}
 		}
 	}
 
@@ -296,6 +322,23 @@ bool FileSystem::RemoveVirtualPath(const string &vpath)
 	}
 }
 
+bool FileSystem::MountFileInMemory(const std::string &vpath, const uint8 *data, const uint32 len)
+{
+	string vp = vpath;
+
+	std::map<string, MemoryFile*>::iterator p = memoryfiles.find(vp);
+
+	if (p != memoryfiles.end())
+	{
+		perr << "Error mounting file in memory \"" << vp << "\": "
+				<< "File already mounted." << std::endl;
+		return false;
+	}
+
+	memoryfiles[vp] = new MemoryFile(data,len);
+
+	return true;
+}
 
 bool FileSystem::rewrite_virtual_path(string &vfn)
 {

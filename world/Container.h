@@ -35,7 +35,7 @@ public:
 	virtual ~Container();
 
 	// p_dynamic_cast stuff
-	ENABLE_DYNAMIC_CAST(Item);
+	ENABLE_RUNTIME_CLASSTYPE();
 
 	bool AddItem(Item* item);
 	bool RemoveItem(Item* item);

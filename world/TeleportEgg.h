@@ -31,7 +31,7 @@ public:
 	bool isTeleporter() const { return (quality & 0xFF00) != 0; }
 	int getTeleportId() const { return (quality & 0xFF); }
 
-	ENABLE_DYNAMIC_CAST(TeleportEgg);
+	ENABLE_RUNTIME_CLASSTYPE();
 
 
 	virtual uint16 hatch();
