@@ -412,7 +412,7 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 	if (getActorFlags() & ACT_DEAD)
 		return; // already dead, so don't bother
 
-	pout << "Actor " << getObjId() << " received hit from " << ". ";
+	pout << "Actor " << getObjId() << " received hit from " << other << ". ";
 
 	damage = calculateAttackDamage(other, damage, damage_type);
 
