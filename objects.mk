@@ -1,12 +1,9 @@
 KERNEL = \
 	kernel/Kernel.o \
 	kernel/CoreApp.o \
-	kernel/Process.o \
-	kernel/GameDetector.o
-
+	kernel/Process.o
 
 KERNEL2 = \
-	kernel/GameData.o \
 	kernel/HIDManager.o \
 	kernel/ObjectManager.o \
 	kernel/Object.o \
@@ -47,6 +44,8 @@ CONF = \
 	conf/SettingManager.o
 
 GAMES = \
+	games/GameData.o \
+	games/GameDetector.o \
 	games/u8bindings.o \
 	games/stdbindings.o
 
