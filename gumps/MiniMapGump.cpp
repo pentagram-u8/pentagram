@@ -30,8 +30,8 @@
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(MiniMapGump,Gump);
 
-MiniMapGump::MiniMapGump(void) : 
-	Gump(0,0,MAP_NUM_CHUNKS*2+2,MAP_NUM_CHUNKS*2+2,0,FLAG_DONT_SAVE,LAYER_NORMAL),
+MiniMapGump::MiniMapGump(int x, int y) : 
+	Gump(x,y,MAP_NUM_CHUNKS*2+2,MAP_NUM_CHUNKS*2+2,0,0,LAYER_NORMAL),
 	minimap(), lastMapNum(0)
 {
 	minimap.format = TEX_FMT_NATIVE;
@@ -40,6 +40,11 @@ MiniMapGump::MiniMapGump(void) :
 
 	con.AddConsoleCommand("MiniMapGump::generateWholeMap",
 						  MiniMapGump::ConCmd_generateWholeMap);
+}
+
+MiniMapGump::MiniMapGump() : Gump()
+{
+
 }
 
 MiniMapGump::~MiniMapGump(void)
@@ -170,9 +175,9 @@ void MiniMapGump::ConCmd_toggle(const Console::ArgsType &args, const Console::Ar
 	Gump *mmg = desktop->FindGump(MiniMapGump::ClassType);
 
 	if (!mmg) {
-		mmg = new MiniMapGump;
+		mmg = new MiniMapGump(4,4);
 		mmg->InitGump();
-		desktop->AddChild(mmg);
+		app->addGump(mmg);
 		mmg->setRelativePosition(TOP_LEFT, 4, 4);
 
 	}
@@ -197,4 +202,23 @@ uint16 MiniMapGump::TraceObjId(int mx, int my)
 			objid = getObjId();
 
 	return objid;
+}
+
+void MiniMapGump::saveData(ODataSource* ods)
+{
+	Gump::saveData(ods);
+}
+
+bool MiniMapGump::loadData(IDataSource* ids, uint32 version)
+{
+	if (!Gump::loadData(ids, version)) return false;
+
+	lastMapNum = 0;
+	minimap.format = TEX_FMT_NATIVE;
+	minimap.width = minimap.height = MAP_NUM_CHUNKS*MINMAPGUMP_SCALE;
+	minimap.buffer = texbuffer[0];
+
+	con.AddConsoleCommand("MiniMapGump::generateWholeMap",
+						  MiniMapGump::ConCmd_generateWholeMap);
+	return true;
 }

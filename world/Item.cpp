@@ -56,7 +56,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "SpriteProcess.h"
 #include "SliderGump.h"
 #include "UCProcess.h"
-#include "DeleteActorProcess.h"
+#include "DestroyItemProcess.h"
 
 #include <cstdlib>
 
@@ -1099,7 +1099,7 @@ uint32 Item::use()
 	return callUsecodeEvent_use();
 }
 
-void Item::destroy()
+void Item::destroy(bool delnow)
 {
 	if (flags & FLG_ETHEREAL) {
 		// Remove us from the ether
@@ -1115,9 +1115,15 @@ void Item::destroy()
 		World::get_instance()->getCurrentMap()->removeItemFromList(this,x,y);
 	}
 		
-
 	if (extendedflags & Item::EXT_CAMERA)
 		CameraProcess::SetCameraProcess(0);
+
+	// Do we want to delete now or not?
+	if (!delnow) {
+		Process* dap = new DestroyItemProcess(this);
+		Kernel::get_instance()->addProcess(dap);
+		return;
+	}
 
 	clearObjId();
 	delete this; // delete self.
@@ -1288,13 +1294,7 @@ void Item::leaveFastArea()
 
 	// Kill us if we are fast only
 	if (flags & FLG_FAST_ONLY) {
-		Actor* a = p_dynamic_cast<Actor*>(this);
-		if (a) {
-			Process* dap = new DeleteActorProcess(a);
-			Kernel::get_instance()->addProcess(dap);
-		} else {
-			destroy();
-		}
+		destroy();
 	}
 	// If we have a gravity process, move us to the ground
 	else if (gravitypid)

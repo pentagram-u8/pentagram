@@ -183,7 +183,8 @@ WORLD = \
 	world/MissileProcess.o \
 	world/GravityProcess.o \
 	world/SplitItemProcess.o \
-	world/SpriteProcess.o
+	world/SpriteProcess.o \
+	world/DestroyItemProcess.o
 
 ACTORS = \
 	world/actors/Actor.o \
@@ -196,7 +197,6 @@ ACTORS = \
 	world/actors/AvatarMoverProcess.o \
 	world/actors/ClearFeignDeathProcess.o \
 	world/actors/CombatProcess.o \
-	world/actors/DeleteActorProcess.o \
 	world/actors/GrantPeaceProcess.o \
 	world/actors/HealProcess.o \
 	world/actors/LoiterProcess.o \

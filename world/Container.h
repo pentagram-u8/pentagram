@@ -89,7 +89,7 @@ public:
 	virtual void clearObjId();
 
 	//! Destroy self
-	virtual void destroy();
+	virtual void destroy(bool delnow=false);
 
 	virtual void dumpInfo();
 

@@ -170,18 +170,18 @@ void Container::destroyContents()
 		Item *item = *(contents.begin());
 		Container *cont = p_dynamic_cast<Container*>(item);
 		if (cont) cont->destroyContents();
-		item->destroy(); 
+		item->destroy(true); // we destroy the item immediately
 	}
 }
 
-void Container::destroy()
+void Container::destroy(bool delnow)
 {
 	//! What do we do with our contents?
 	//! (in Exult we remove the contents)
 
 	removeContents();
 
-	Item::destroy();
+	Item::destroy(delnow);
 }
 
 uint32 Container::getTotalWeight()

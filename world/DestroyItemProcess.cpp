@@ -18,7 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 
-#include "DeleteActorProcess.h"
+#include "DestroyItemProcess.h"
 #include "World.h"
 #include "Actor.h"
 
@@ -26,59 +26,53 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ODataSource.h"
 
 // p_dynamic_cast stuff
-DEFINE_RUNTIME_CLASSTYPE_CODE(DeleteActorProcess,Process);
+DEFINE_RUNTIME_CLASSTYPE_CODE(DestroyItemProcess,Process);
 
-DeleteActorProcess::DeleteActorProcess() : Process()
+DestroyItemProcess::DestroyItemProcess() : Process()
 {
 
 }
 
-DeleteActorProcess::DeleteActorProcess(Actor* actor_)
+DestroyItemProcess::DestroyItemProcess(Item* item_)
 {
-	assert(actor_);
-	item_num = actor_->getObjId();
+	assert(item_);
+	item_num = item_->getObjId();
 
 	type = 0; // FIXME!!
 }
 
-bool DeleteActorProcess::run(const uint32 /*framenum*/)
+bool DestroyItemProcess::run(const uint32 /*framenum*/)
 {
-	Actor *a = World::get_instance()->getNPC(item_num);
+	Item *it = World::get_instance()->getItem(item_num);
 
-	if (!a) {
+	if (!it) {
 		// somebody did our work for us...
-		terminate();
-		return false;
-	}
-
-	if (!(a->getActorFlags() & Actor::ACT_DEAD)) {
-		// not dead?
 		terminate();
 		return false;
 	}
 
 	// FIXME: should probably prevent player from opening gump in the
 	// first place...
-	if (a->getFlags() & Item::FLG_GUMP_OPEN) {
+	if (it->getFlags() & Item::FLG_GUMP_OPEN) {
 		// first close gump in case player is still rummaging through us
-		a->closeGump();
+		it->closeGump();
 	}
 
 	// bye bye
 	// (note that Container::destroy() calls removeContents())
-	a->destroy();
+	it->destroy(true);
 
-	// NOTE: we're terminated here because this process belongs to the actor
+	// NOTE: we're terminated here because this process belongs to the item
 
 	return true;
 }
 
-void DeleteActorProcess::saveData(ODataSource* ods)
+void DestroyItemProcess::saveData(ODataSource* ods)
 {
 	Process::saveData(ods);
 }
 
-bool DeleteActorProcess::loadData(IDataSource* ids, uint32 version)
+bool DestroyItemProcess::loadData(IDataSource* ids, uint32 version)
 {
 	if (!Process::loadData(ids, version)) return false;
 

@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Animation.h"
 #include "DelayProcess.h"
 #include "ResurrectionProcess.h"
-#include "DeleteActorProcess.h"
+#include "DestroyItemProcess.h"
 #include "ClearFeignDeathProcess.h"
 #include "PathfinderProcess.h"
 #include "Shape.h"
@@ -614,7 +614,7 @@ ProcId Actor::die(uint16 damageType)
 
 		pout << "Actor::die: scheduling vanishing" << std::endl;
 
-		Process* vanishproc = new DeleteActorProcess(this);
+		Process* vanishproc = new DestroyItemProcess(this);
 		Kernel::get_instance()->addProcess(vanishproc);
 
 		vanishproc->waitFor(animprocid);

@@ -85,7 +85,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "PathfinderProcess.h"
 #include "AvatarMoverProcess.h"
 #include "ResurrectionProcess.h"
-#include "DeleteActorProcess.h"
 #include "SplitItemProcess.h"
 #include "ClearFeignDeathProcess.h"
 #include "LoiterProcess.h"
@@ -93,6 +92,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GrantPeaceProcess.h"
 #include "CombatProcess.h"
 #include "FireballProcess.h"
+#include "DestroyItemProcess.h"
 
 #include "MovieGump.h"
 
@@ -292,7 +292,9 @@ void GUIApp::startup()
 	kernel->addProcessLoader("ResurrectionProcess",
 							 ProcessLoader<ResurrectionProcess>::load);
 	kernel->addProcessLoader("DeleteActorProcess",
-							 ProcessLoader<DeleteActorProcess>::load);
+							 ProcessLoader<DestroyItemProcess>::load);	// YES, this is intentional
+	kernel->addProcessLoader("DestroyItemProcess",
+							 ProcessLoader<DestroyItemProcess>::load);
 	kernel->addProcessLoader("SplitItemProcess",
 							 ProcessLoader<SplitItemProcess>::load);
 	kernel->addProcessLoader("ClearFeignDeathProcess",
@@ -1882,7 +1884,8 @@ void GUIApp::addGump(Gump* gump)
 
 	assert(desktopGump);
 
-	if (gump->IsOfType<ModalGump>() || (ttfoverrides && (gump->IsOfType<BarkGump>() || gump->IsOfType<AskGump>())))
+	if (gump->IsOfType<ModalGump>() || gump->IsOfType<MiniMapGump>() || 
+		(ttfoverrides && (gump->IsOfType<BarkGump>() || gump->IsOfType<AskGump>())))
 	{
 		desktopGump->AddChild(gump);
 	}

@@ -37,6 +37,7 @@ public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
 	MiniMapGump(void);
+	MiniMapGump(int x, int y);
 	virtual ~MiniMapGump(void);
 
 	virtual void		PaintThis(RenderSurface* surf, sint32 lerp_factor);
@@ -44,6 +45,10 @@ public:
 
 	static void			ConCmd_toggle(const Console::ArgsType &args, const Console::ArgvType &argv);	//!< "MiniMapGump::toggle" console command
 	static void			ConCmd_generateWholeMap(const Console::ArgsType &args, const Console::ArgvType &argv);	//!< "MiniMapGump::generateWholeMap" console command
+
+	bool loadData(IDataSource* ids, uint32 version);
+protected:
+	virtual void saveData(ODataSource* ods);
 };
 
 #endif // MINIMAPGUMP_H_INCLUDED

@@ -47,6 +47,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ButtonWidget.h"
 #include "SlidingWidget.h"
 #include "MiniStatsGump.h"
+#include "MiniMapGump.h"
 
 ObjectManager* ObjectManager::objectmanager = 0;
 
@@ -360,5 +361,6 @@ void ObjectManager::setupLoaders()
 	addObjectLoader("ButtonWidget", ObjectLoader<ButtonWidget>::load);
 	addObjectLoader("SlidingWidget", ObjectLoader<SlidingWidget>::load);
 	addObjectLoader("MiniStatsGump", ObjectLoader<MiniStatsGump>::load);
+	addObjectLoader("MiniMapGump", ObjectLoader<MiniMapGump>::load);
 }
 

@@ -1,3 +1,11 @@
+2005-03-14  Ryan Nunn <colourles@users.sourceforge.net>
+	* gumps/MiniMapGump.*, kernel/ObjectManager.cpp, kernel/GUIApp.cpp :
+	  Making the MiniMapGump savable
+	* world/DestroyItemProcess.*, world/Container.*, world/Item.*,
+	  world/actors/Actor.cpp : Added defered Item deleting. 	   
+	* world/actors/DeleteActorProcess.* : Removed this now unneeded
+	  process
+
 2005-03-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/PathfinderProcess.cpp: hopefully prevent infinite loop
 	  in PathfinderProcess when actor is outside of the fast area

@@ -16,18 +16,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef DELETEACTORPROCESS_H
-#define DELETEACTORPROCESS_H
+#ifndef DESTROYITEMPROCESS_H
+#define DESTROYITEMPROCESS_H
 
 #include "Process.h"
 
-class Actor;
+class Item;
 
-class DeleteActorProcess : public Process
+class DestroyItemProcess : public Process
 {
 public:
-	DeleteActorProcess();
-	DeleteActorProcess(Actor* actor);
+	DestroyItemProcess();
+	DestroyItemProcess(Item* item);
 
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();

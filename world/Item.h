@@ -183,7 +183,7 @@ public:
 	void closeGump();
 
 	//! Destroy self.
-	virtual void destroy();
+	virtual void destroy(bool delnow = false);
 
 	//! Check if this item overlaps another item in 3D world-space
 	bool overlaps(Item& item2) const;
