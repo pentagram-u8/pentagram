@@ -36,6 +36,9 @@ public:
 			  uint32 offset_, uint32 this_ptr = 0);
     ~UCProcess();
 
+	// p_dynamic_cast stuff
+	ENABLE_DYNAMIC_CAST(UCProcess);
+
 	virtual bool run(const uint32 framenum);
 
 protected:

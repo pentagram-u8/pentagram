@@ -19,21 +19,39 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef SHAPEFRAME_H
 #define SHAPEFRAME_H
 
+struct ConvertShapeFormat;
+
 class ShapeFrame 
 {
- public:
+public:
+
 	// parse data. 
-	// NB: ShapeFrame uses the shape data without copying (or deleting) it.
-	ShapeFrame(const uint8* data, uint32 size);
+	//
+	// You will find this is quite similar to the ConvertShapeFrame except 
+	// all the unknown crap is removed. It's designed to allow for painting
+	// only, and for speed when loading.
+	
+	ShapeFrame(const uint8* data, uint32 size, const ConvertShapeFormat* format=0);
 	~ShapeFrame();
 
-// protected:
-	uint32 width, height;
-	sint32 xoffset, yoffset;
-	uint8 compressed;
+	uint32				compressed;
+	sint32				width, height;
+	sint32				xoff, yoff;
 
-	const uint8* data;
-	uint32 size;
+	uint32				*line_offsets;		// Note these are offsets into rle_data
+	const uint8			*rle_data;
+
+protected:
+
+	// This will load a u8 style shape 'optimzed'.
+	void LoadU8Format(const uint8* data, uint32 size);
+
+	// This will load a pentagram style shape 'optimzed'.
+	void LoadPentagramFormat(const uint8* data, uint32 size);
+
+	// This will load any sort of shape via a ConvertShapeFormat struct
+	// Crusader shapes must be loaded this way
+	void LoadGenericFormat(const uint8* data, uint32 size, const ConvertShapeFormat* format);
 };
 
 

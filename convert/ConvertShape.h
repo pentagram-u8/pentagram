@@ -25,22 +25,22 @@
 // Convert shape C
 struct ConvertShapeFormat
 {
-	const char * const	name;
+	const char *		name;
 													//	U8		U8 Gump	U8.SKF	Cru		Cru2D	Pent
 	uint32				len_header;					//	6		6		2		6		6		8
-	const char * const	ident;						//  ""		""		""		""		""		"PSHP"
-	uint32				bytes_ident;				//	0		0		0		0		0		4
+	const char *		ident;						//  ""		""		"\2\0"	""		""		"PSHP"
+	uint32				bytes_ident;				//	0		0		2		0		0		4
 	uint32				bytes_header_unk;			//	4		4		0		4		4		0
-	uint32				bytes_num_frames;			//	2		2		2		2		2		4
+	uint32				bytes_num_frames;			//	2		2		0		2		2		4
 
-	uint32				len_frameheader;			//	6		6		6		8		8		8
-	uint32				bytes_frame_offset;			//	3		3		3		3		3		4
-	uint32				bytes_frameheader_unk;		//	1		2		1		2		2		0
-	uint32				bytes_frame_length;			//	2		2		2		3		3		4
-	uint32				bytes_frame_length_kludge;	//	0		8		0		0		0		4
+	uint32				len_frameheader;			//	6		6		0		8		8		8
+	uint32				bytes_frame_offset;			//	3		3		0		3		3		4
+	uint32				bytes_frameheader_unk;		//	1		2		0		2		2		0
+	uint32				bytes_frame_length;			//	2		2		0		3		3		4
+	uint32				bytes_frame_length_kludge;	//	0		8		0		0		0		0
 
-	uint32				len_frameheader2;			//	18		18		18		28		20		20
-	uint32				bytes_frame_unknown;		//	8		8		8		8		0		0
+	uint32				len_frameheader2;			//	18		18		10		28		20		20
+	uint32				bytes_frame_unknown;		//	8		8		0		8		0		0
 	uint32				bytes_frame_compression;	//	2		2		2		4		4		4
 	uint32				bytes_frame_width;			//	2		2		2		4		4		4
 	uint32				bytes_frame_height;			//	2		2		2		4		4		4
@@ -48,6 +48,7 @@ struct ConvertShapeFormat
 	uint32				bytes_frame_yoff;			//	2		2		2		4		4		4
 
 	uint32				bytes_line_offset;			//	2		2		2		4		4		4
+	uint32				line_offset_absolute;		//	0		0		0		0		0		1
 };
 
 // ConvertShapeFrame structure
@@ -117,8 +118,9 @@ public:
 // This will check to see if a Shape is of a certain type. Return true if ok, false if bad
 bool CheckShapeFormat(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len);
 
-// This will attempt to detect a Shape as being Pentagram format
-bool AutoDetectShapePentagram (IDataSource *source);
+// This will also check to see if a shape is of a certain type. However it won't check
+// the rle data, it only checks headers. Return true if ok, false if bad
+bool CheckShapeFormatUnsafe(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len);
 
 // Shape format configuration for Pentagram format
 extern const ConvertShapeFormat		PentagramShapeFormat;

@@ -22,6 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UCMachine.h"
 #include "Usecode.h"
 
+// p_dynamic_cast stuff
+DEFINE_DYNAMIC_CAST_CODE(UCProcess,Process);
+
 UCProcess::UCProcess(Usecode* usecode_, uint32 classid_,
 					 uint32 offset_, uint32 this_ptr) :
 	item_num(0), type(0), usecode(usecode_), classid(classid_)

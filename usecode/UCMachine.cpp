@@ -931,7 +931,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 				if (segment >= SEG_STACK_FIRST && segment <= SEG_STACK_LAST)
 				{
-					UCProcess *proc = dynamic_cast<UCProcess*>
+					UCProcess *proc = p_dynamic_cast<UCProcess*>
 						(Kernel::get_instance()->getProcess(segment));
 
 					// reference to the stack of pid 'segment'
@@ -988,7 +988,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 				if (segment >= SEG_STACK_FIRST && segment <= SEG_STACK_LAST)
 				{
-					UCProcess *proc = dynamic_cast<UCProcess*>
+					UCProcess *proc = p_dynamic_cast<UCProcess*>
 						(Kernel::get_instance()->getProcess(segment));
 
 					// reference to the stack of pid 'segment'

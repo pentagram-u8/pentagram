@@ -1,3 +1,55 @@
+2003-03-08  Ryan Nunn <colourles@users.sourceforge.net>
+	* convert/ConvertShape.*, convert/crusader/ConvertShapeCrusader.*,
+	  convert/u8/ConvertShapeU8.* : Fixing a problem with SKF shapes.
+	  Improved Auto detection speed. Added second faster, less safe, 
+	  auto detection function. Tweaking of Pentagram shape format
+
+	* filesys/FileSystem.* : Added option to allow full access to system 
+	  paths. I did this so the various command line tools wont require
+	  virtual paths to be set.
+
+	* filesys/IDataSource.h : Added signed readXS method.
+
+	* graphics/*RenderSurface.* : Moved and renamed SoftRenderSurface to 
+	  BaseSoftRenderSurface, and renamed U8SoftRenderSurface to 
+	  SoftRenderSurface. Implemented all shape drawing methods. Commented
+	  out some palette stuff that doesn't look like it's going to be used.
+
+	* graphics/SoftRenderSurface.inl : Macro heaven, now with less macros
+	  and more comments. Oh, this contains the shape drawing code if you
+	  really needed to know.
+
+	* graphics/Palette.*, graphics/PaletteManager.* : Some changes to 
+	  support xforming.
+
+	* graphics/Shape.*, graphics/ShapeFlex.*, graphics/ShapeFrame.* : 
+	  Changed things so all the shape formats can be loaded and used.
+	  As things currently are, the shape formats will be autodetected.
+	  Using shapes converted to the Pentagram Shape Format should be 
+	  fastest.
+
+	* graphics/XFormBlend.cpp : XFormBlending functions. Only have U8Xform
+	  functions at the moment, so Crusader stuff doesn't look correct.
+
+	* gumps/*.* : Some near-stub gump classes. Nothing much here, except a
+	  start. Thought I would just commit this.
+
+	* kernel/Application.cpp : Added an 'avatar' to the centre of the 
+	  screen, as a test.
+	
+	* kernel/Object.cpp : Added for p_dynamic_cast support
+
+	* misc/pent_include.h : 2003
+
+	* kernel/Object.*, world/Container.*, world/Item.* : Added 
+	  p_dynamic_cast support.
+
+	* kernel/Process.*,  usecode/UCMachine.cpp, usecode/UCProcess.* : Also
+	  added p_dynamic_cast support here too.
+
+	* tools/shapeconv/ShapeConv.cpp, tools/disasm/Disasm.cpp : Stop filesys
+	  from forcing the use of virtual paths.
+
 2003-03-07  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Glob.*, Map.*, ItemFactory.*: some more near-stub classes
 

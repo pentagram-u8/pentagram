@@ -1655,7 +1655,7 @@ int main(int argc, char **argv)
 	}
 
 	// Create filesystem object
-	FileSystem filesys;
+	FileSystem filesys(true);
 
 	// Load usecode file
 	IFileDataSource *ucfile = filesys.ReadFile(argv[1]);

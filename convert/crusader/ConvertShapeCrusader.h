@@ -21,9 +21,6 @@
 
 #include "ConvertShape.h"
 
-// This will attempt to detect a Shape as being Crusader
-bool AutoDetectShapeCrusader(IDataSource *source);
-
 // Shape format configuration for Crusader
 extern const ConvertShapeFormat		CrusaderShapeFormat;
 

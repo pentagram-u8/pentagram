@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2002, 2003 The Pentagram Team
+ *  Copyright (C) 2003  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,18 +16,18 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef CONVERTSHAPEU8_H
-#define CONVERTSHAPEU8_H
+#include "pent_include.h"
+#include "Gump.h"
 
-#include "ConvertShape.h"
+Gump::Gump(int X, int Y, int Width, int Height) : Object(), parent(0), gump_flags(0), 
+	x(X), y(Y), dims(0,0,Width,Height), layer(GUMP_LAYER_NORMAL)
+{
+}
 
-// Shape format configuration for Ultima 8
-extern const ConvertShapeFormat		U8ShapeFormat;
+Gump::~Gump()
+{
+}
 
-// Shape format configuration for Ultima 8 2D
-extern const ConvertShapeFormat		U82DShapeFormat;
-
-// Shape format configuration for Ultima 8 SKF file shapes
-extern const ConvertShapeFormat		U8SKFShapeFormat;
-
-#endif //CONVERTSHAPEU8_H
+void Gump::Paint(RenderSurface *)
+{
+}

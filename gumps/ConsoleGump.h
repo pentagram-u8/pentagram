@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2002, 2003 The Pentagram Team
+ *  Copyright (C) 2003  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,18 +16,19 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef CONVERTSHAPEU8_H
-#define CONVERTSHAPEU8_H
+#ifndef CONSOLEGUMP_H_INCLUDED
+#define CONSOLEGUMP_H_INCLUDED
 
-#include "ConvertShape.h"
+#include "ResizableGump.h"
 
-// Shape format configuration for Ultima 8
-extern const ConvertShapeFormat		U8ShapeFormat;
+class ConsoleGump : public ResizableGump
+{
+public:
+	ConsoleGump(int x, int y, int w, int h);
+	virtual ~ConsoleGump();
 
-// Shape format configuration for Ultima 8 2D
-extern const ConvertShapeFormat		U82DShapeFormat;
+	virtual void Paint(RenderSurface *surf);
+};
 
-// Shape format configuration for Ultima 8 SKF file shapes
-extern const ConvertShapeFormat		U8SKFShapeFormat;
+#endif //CONSOLEGUMP_H_INCLUDED
 
-#endif //CONVERTSHAPEU8_H

@@ -16,36 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef ITEM_H
-#define ITEM_H
-
+#include "pent_include.h"
 #include "Object.h"
-class Container;
 
-class Item : public Object
-{
-	friend class ItemFactory;
-
-public:
-	Item();
-	virtual ~Item();
-
-	// p_dynamic_cast stuff
-	ENABLE_DYNAMIC_CAST(Item);
-
-	Container* getParent() const { return parent; }
-
-protected:
-	uint32 shape;
-	uint32 frame;
-
-	sint32 x,y,z; // world coordinates
-	uint32 flags;
-	uint16 quality;
-	uint32 npcNum;
-	uint32 mapNum;
-
-	Container* parent; // container this item is in (or 0 for top-level items)
-};
-
-#endif
+// p_dynamic_cast stuff
+DEFINE_DYNAMIC_CAST_CODE_BASE_CLASS(Object);

@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef PALETTEMANAGER_H
 #define PALETTEMANAGER_H
 
+#include "XFormBlend.h"
 #include <vector>
 
 struct Palette;
@@ -35,7 +36,7 @@ public:
 		Pal_Game = 0
 	};
 
-	void load(PalIndex index, IDataSource& ds);
+	void load(PalIndex index, IDataSource& ds, const xformBlendFuncType *xff);
 	Palette* getPalette(PalIndex index);
 
 private:

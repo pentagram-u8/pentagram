@@ -36,7 +36,7 @@ PaletteManager::~PaletteManager()
 	palettes.clear();
 }
 
-void PaletteManager::load(PalIndex index, IDataSource& ds)
+void PaletteManager::load(PalIndex index, IDataSource& ds, const xformBlendFuncType *xff)
 {
 	if (palettes.size() <= static_cast<unsigned int>(index))
 		palettes.resize(index+1);
@@ -45,7 +45,7 @@ void PaletteManager::load(PalIndex index, IDataSource& ds)
 		delete palettes[index];
 
 	Palette* pal = new Palette;
-	pal->load(ds);
+	pal->load(ds,xff);
 	rendersurface->CreateNativePalette(pal); // convert to native format
 
 	palettes[index] = pal;

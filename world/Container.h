@@ -31,6 +31,9 @@ public:
 	Container();
 	virtual ~Container();
 
+	// p_dynamic_cast stuff
+	ENABLE_DYNAMIC_CAST(Item);
+
 	bool AddItem(Item* item);
 	bool RemoveItem(Item* item);
 

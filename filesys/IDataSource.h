@@ -1,7 +1,7 @@
 /*
  *	IDataSource.h - DataSource type for loading data, only needs read only access
  *
- *  Copyright (C) 2002 The Pentagram Team
+ *  Copyright (C) 2002, 2003 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -45,6 +45,15 @@ class IDataSource
 			else if (num_bytes == 2) return read2();
 			else if (num_bytes == 3) return read3();
 			else return read4();
+		}
+		
+		sint32 readXS(uint32 num_bytes)
+		{
+			assert(num_bytes > 0 && num_bytes <= 4);
+			if (num_bytes == 1) return (sint8) read1();
+			else if (num_bytes == 2) return (sint16) read2();
+			else if (num_bytes == 3) return ((((sint32) read3()) << 8)>>8);
+			else return (sint32) read4();
 		}
 		
 		float readf()

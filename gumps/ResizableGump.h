@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2002, 2003 The Pentagram Team
+ *  Copyright (C) 2003  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,18 +16,22 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef CONVERTSHAPEU8_H
-#define CONVERTSHAPEU8_H
+#ifndef RESIZABLEGUMP_H_INCLUDED
+#define RESIZABLEGUMP_H_INCLUDED
 
-#include "ConvertShape.h"
+#include "Gump.h"
 
-// Shape format configuration for Ultima 8
-extern const ConvertShapeFormat		U8ShapeFormat;
+//
+// The resizable gump is a gump that can doesn't have a static size.
+//
+// An example of such would be the Console and the GameMap gumps
+//
+class ResizableGump : public Gump
+{
+public:
+	ResizableGump(int x, int y, int width, int height);
+	virtual ~ResizableGump();
+};
 
-// Shape format configuration for Ultima 8 2D
-extern const ConvertShapeFormat		U82DShapeFormat;
+#endif //RESIZABLEGUMP_H_INCLUDED
 
-// Shape format configuration for Ultima 8 SKF file shapes
-extern const ConvertShapeFormat		U8SKFShapeFormat;
-
-#endif //CONVERTSHAPEU8_H

@@ -1,7 +1,7 @@
 /*
  *	FileSystem.cpp - The Pentagram File System
  *
- *  Copyright (C) 2002 The Pentagram Team
+ *  Copyright (C) 2002, 2003  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -39,7 +39,7 @@ using	std::string;
 
 FileSystem* FileSystem::filesystem;
 
-FileSystem::FileSystem()
+FileSystem::FileSystem(bool noforced) : noforcedvpaths(noforced)
 {
 	filesystem = this;
 }
@@ -63,7 +63,7 @@ IFileDataSource* FileSystem::ReadFile(const string &vfn, bool is_text)
 // Open a streaming file as readable. Streamed (0 on failure)
 OFileDataSource* FileSystem::WriteFile(const string &vfn, bool is_text)
 {
-	string filename;
+	string filename = vfn;
 	std::ofstream *f = new std::ofstream();
 	if(!rawopen(*f, filename, is_text))
 		return 0;
@@ -312,6 +312,10 @@ bool FileSystem::rewrite_virtual_path(string &vfn)
 			--pos;
 		}
 	}
+
+	// We will allow all paths to work
+	if (noforcedvpaths) ret = true;
+
 	return ret;
 }
 
@@ -327,7 +331,7 @@ bool FileSystem::IsDir(const string &path)
 	do {
 		exists = (stat(name.c_str(), &sbuf) == 0);
 		if (exists) {
-			if (S_ISDIR(sbuf.st_mode))
+			if (sbuf.st_mode & _S_IFDIR)
 				return true;  // exists, and is a directory
 			else
 				return false; // exists, but not a directory

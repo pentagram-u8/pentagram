@@ -34,12 +34,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "PaletteManager.h"
 #include "ShapeFlex.h"
 #include "Palette.h"
+#include "XFormBlend.h"
 
 #include <SDL.h>
 #include <cstdlib>
 
 int classid, offset; // only temporary, don't worry :-)
 ShapeFlex* shapes;
+Shape* shape;
 
 Application::Application(int argc, char *argv[])
 {
@@ -81,7 +83,7 @@ Application::Application(int argc, char *argv[])
 		std::exit(-1);
 	}
 	pf->seek(4); // seek past header
-	palettemanager->load(PaletteManager::Pal_Game, *pf);
+	palettemanager->load(PaletteManager::Pal_Game, *pf, U8XFormFuncs);
 
 	// Load main shapes
 	pout << "Load Shapes" << std::endl;
@@ -91,6 +93,8 @@ Application::Application(int argc, char *argv[])
 		std::exit(-1);
 	}
 	shapes = new ShapeFlex(sf);
+	shape = shapes->getShape(1);
+	shape->setPalette(palettemanager->getPalette(PaletteManager::Pal_Game));
 
 	// Load confont
 	pout << "Load Confont" << std::endl;
@@ -172,7 +176,8 @@ void Application::paint()
 {
 	screen->BeginPainting();
 	screen->Fill32(0x3F3F3F, 0, 0, 640, 480);
-	con.DrawConsole(screen, 0, 0, 640, 480);
+ 	con.DrawConsole(screen, 0, 0, 640, 480);
+	screen->Paint(shape,2,320,240);
 	screen->EndPainting();
 }
 

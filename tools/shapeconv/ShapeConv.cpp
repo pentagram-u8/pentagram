@@ -254,7 +254,7 @@ int main(int argc, char **argv)
 		pout << "Converting " << read_format->name << " format shapes in flex '"<< argv[1] << "' to " << write_format->name << " format in '"<< argv[2] << "'" << std::endl;
 
 	// Create filesystem object
-	FileSystem filesys;
+	FileSystem filesys(true);
 
 	// Load read flex/shape file
 	IFileDataSource *readfile = filesys.ReadFile(argv[1]);

@@ -1,7 +1,7 @@
 /*
  *	FileSystem.h - The Pentagram File System
  *
- *  Copyright (C) 2002 The Pentagram Team
+ *  Copyright (C) 2002, 2003  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -99,7 +99,7 @@ significant overhead.
 class FileSystem
 {
  public:
-	FileSystem();
+	FileSystem(bool noforcedvpaths = false);
 	~FileSystem();
 
 	static FileSystem* get_instance() { return filesystem; }
@@ -134,6 +134,9 @@ class FileSystem
 	bool IsDir(const std::string& path);
 
 	static FileSystem* filesystem;
+
+	// This will disable the usage of forced virtual paths. It's useful for 'tools'
+	bool	noforcedvpaths;
 
 	// rewrite virtual path in-place (i.e., fvn is replaced)
 	// returns false if no rewriting was done

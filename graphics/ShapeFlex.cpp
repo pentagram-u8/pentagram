@@ -21,8 +21,8 @@
 #include "ShapeFlex.h"
 #include "Shape.h"
 
-ShapeFlex::ShapeFlex(IDataSource* ds)
-	: Flex(ds)
+ShapeFlex::ShapeFlex(IDataSource* ds, ConvertShapeFormat *fmt)
+	: Flex(ds), format(fmt)
 {
 	shapes.resize(get_count()); // shape pointers are initialized to 0 by this
 }
@@ -51,7 +51,20 @@ void ShapeFlex::cache(uint32 shapenum)
 	if (shapenum >= shapes.size()) return;
 	if (shapes[shapenum]) return;
 
-	Shape* shape = new Shape(get_object(shapenum));
+	uint8 *data = get_object(shapenum);
+	uint32 shpsize = get_size(shapenum);
+
+	// Auto detect format
+	if (!format) format = Shape::DetectShapeFormat(data,shpsize);
+	
+	if (!format)
+	{
+		delete [] data;
+		perr << "Error: Unable to detect shape format for flex." << std::endl;
+		return;
+	}
+
+	Shape* shape = new Shape(data, shpsize, format);
 
 	shapes[shapenum] = shape;
 }

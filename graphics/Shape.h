@@ -23,13 +23,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class ShapeFrame;
 struct Palette;
+struct ConvertShapeFormat;
 
 class Shape 
 {
- public:
+public:
 	// Parse data, create frames.
 	// NB: Shape uses data without copying it. It is deleted on destruction
-	Shape(const uint8* data);
+	// If format is not specified it will be autodetected
+	Shape(const uint8* data, uint32 size, const ConvertShapeFormat *format);
 	~Shape();
 	void setPalette(const Palette* pal) { palette = pal; }
 	const Palette* getPalette() const { return palette; }
@@ -38,7 +40,21 @@ class Shape
 
 	ShapeFrame* getFrame(unsigned int frame) { return frames[frame]; }
 
- protected:
+	// This will detect the format of a shape
+	static const ConvertShapeFormat *DetectShapeFormat(const uint8* data, uint32 size);
+
+protected:
+
+	// This will load a u8 style shape 'optimzed'.
+	void LoadU8Format(const uint8* data, uint32 size, const ConvertShapeFormat* format);
+
+	// This will load a pentagram style shape 'optimzed'.
+	void LoadPentagramFormat(const uint8* data, uint32 size, const ConvertShapeFormat* format);
+
+	// This will load any sort of shape via a ConvertShapeFormat struct
+	// Crusader shapes must be loaded this way
+	void LoadGenericFormat(const uint8* data, uint32 size, const ConvertShapeFormat* format);
+
 	std::vector<ShapeFrame*> frames;
 
 	const Palette* palette;

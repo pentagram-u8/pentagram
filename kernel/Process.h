@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class Process {
 public:
+
 	friend class Kernel;
 
 	// returns true if screen needs to be repainted
@@ -33,6 +34,9 @@ public:
 		result(0)
 	{ }
 	virtual ~Process() { }
+
+	// p_dynamic_cast stuff
+	ENABLE_DYNAMIC_CAST(Process);
 
 	bool is_active() const { return active; }
 

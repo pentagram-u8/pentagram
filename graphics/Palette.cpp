@@ -21,8 +21,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Palette.h"
 #include "IDataSource.h"
 
-void Palette::load(IDataSource& ds)
+void Palette::load(IDataSource& ds, const xformBlendFuncType *xff)
 {
+	xform_funcs = xff;
+
 	ds.read(palette, 768);
 
 	// convert from 0-63 to 0-255 palette

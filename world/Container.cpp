@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Container.h"
 
+// p_dynamic_cast stuff
+DEFINE_DYNAMIC_CAST_CODE(Container,Item);
 
 Container::Container()
 {
@@ -38,8 +40,7 @@ bool Container::AddItem(Item* item)
 {
 	if (item == 0) return false;
 
-	// TODO: get rid of dynamic cast maybe? replace by our own?
-	Container *c = dynamic_cast<Container*>(item);
+	Container *c = p_dynamic_cast<Container*>(item);
 	if (c) {
 		// To quote Exult: "Watch for snake eating itself."
 		Container* p = this;

@@ -19,17 +19,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef PALETTE_H
 #define PALETTE_H
 
+#include "XFormBlend.h"
+
 class IDataSource;
 
 struct Palette
 {
-	void load(IDataSource& ds);
+	void load(IDataSource& ds, const xformBlendFuncType *xff);
 
 	// 256 rgb entries
 	uint8 palette[768];
 
 	// native format palette. Created by the RenderSurface
 	uint32 native[256];
+
+	// xform functions
+	const xformBlendFuncType	*xform_funcs;
 };
 
 

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2002, 2003 The Pentagram Team
+ *  Copyright (C) 2003  Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,18 +16,20 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef CONVERTSHAPEU8_H
-#define CONVERTSHAPEU8_H
+#ifndef XFORMBLEND_H
+#define XFORMBLEND_H
 
-#include "ConvertShape.h"
+#ifndef P_FASTCALL
+#ifdef _MSC_VER
+#define P_FASTCALL __fastcall
+#elif (defined(WIN32) && defined(FASTCALL))
+#define P_FASTCALL FASTCALL
+#else
+#define P_FASTCALL
+#endif
+#endif
 
-// Shape format configuration for Ultima 8
-extern const ConvertShapeFormat		U8ShapeFormat;
+typedef uint32 (P_FASTCALL * xformBlendFuncType)(uint32 col); 
+const extern xformBlendFuncType		U8XFormFuncs[256];
 
-// Shape format configuration for Ultima 8 2D
-extern const ConvertShapeFormat		U82DShapeFormat;
-
-// Shape format configuration for Ultima 8 SKF file shapes
-extern const ConvertShapeFormat		U8SKFShapeFormat;
-
-#endif //CONVERTSHAPEU8_H
+#endif

@@ -1,7 +1,7 @@
 /*
 SoftRenderSurface.cpp : SoftRenderSurface Implementation source file
 
-Copyright (C) 2002 The Pentagram Team
+Copyright (C) 2002, 2003 The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,10 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "pent_include.h"
-#include "SoftRenderSurface.h"
-#include "Texture.h"
 #include <SDL.h>
 
+#include "SoftRenderSurface.h"
+#include "Texture.h"
 #include "Shape.h"
 #include "ShapeFrame.h"
 #include "Palette.h"
@@ -34,173 +34,34 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //                   //
 ///////////////////////
 
-uint8	SoftRenderSurface::r_loss,   SoftRenderSurface::g_loss,   SoftRenderSurface::b_loss;
-uint8	SoftRenderSurface::r_loss16, SoftRenderSurface::g_loss16, SoftRenderSurface::b_loss16;
-uint8	SoftRenderSurface::r_shift,  SoftRenderSurface::g_shift,  SoftRenderSurface::b_shift;
-uint32	SoftRenderSurface::r_mask,   SoftRenderSurface::g_mask,   SoftRenderSurface::b_mask;
-
 
 //
 // SoftRenderSurface::SoftRenderSurface(SDL_Surface *s)
 //
-// Desc: Constructor for SoftRenderSurface from a SDL_Surface
+// Desc: Create a SoftRenderSurface from a SDL_Surface
 //
-SoftRenderSurface::SoftRenderSurface(SDL_Surface *s) :
-	pixels(0), pixels00(0), zbuffer(0), zbuffer00(0),
-	bytes_per_pixel(0), bits_per_pixel(0), format_type(0), 
-	w_real(0), h_real(0), width(0), height(0), pitch(0), zpitch(0),
-	clip_window(0,0,0,0), lock_count(0),
-	sdl_surf(s)
-{
-	clip_window.w = width = sdl_surf->w;
-	clip_window.h = height = sdl_surf->h;
-	pitch = sdl_surf->pitch;
-	bits_per_pixel = sdl_surf->format->BitsPerPixel;
-	bytes_per_pixel = sdl_surf->format->BytesPerPixel;
-
-	r_loss = sdl_surf->format->Rloss;
-	g_loss = sdl_surf->format->Gloss;
-	b_loss = sdl_surf->format->Bloss;
-	r_loss16 = r_loss+8;
-	g_loss16 = g_loss+8;
-	b_loss16 = b_loss+8;
-	r_shift = sdl_surf->format->Rshift;
-	g_shift = sdl_surf->format->Gshift;
-	b_shift = sdl_surf->format->Bshift;
-	r_mask = sdl_surf->format->Rmask;
-	g_mask = sdl_surf->format->Gmask;
-	b_mask = sdl_surf->format->Bmask;
-
-}
-
-
-//
-// SoftRenderSurface::~SoftRenderSurface()
-//
-// Desc: Destructor
-//
-SoftRenderSurface::~SoftRenderSurface()
+template<class uintX> SoftRenderSurface<uintX>::SoftRenderSurface(SDL_Surface *s)
+	: BaseSoftRenderSurface(s)
 {
 }
 
 
 //
-// SoftRenderSurface::BeginPainting()
+// SoftRenderSurface::Fill8(uint8 index, sint32 sx, sint32 sy, sint32 w, sint32 h)
 //
-// Desc: Prepare the surface for drawing this frame (in effect lock it for drawing)
-// Returns: Non Zero on error
+// Desc: Fill buffer (using a palette index) - Remove????
 //
-ECode SoftRenderSurface::BeginPainting()
-{
-	if (!lock_count && sdl_surf) {
-
-		// SDL_Surface requires locking
-		if (SDL_MUSTLOCK(sdl_surf))
-		{
-			// Did the lock fail?
-			if (SDL_LockSurface(sdl_surf)!=0) {
-				pixels = pixels00 = 0;
-				// TODO: SetLastError(GR_SOFT_ERROR_SDL_LOCK_FAILED, "SDL Surface Lock Failed!");
-				perr << "Error: SDL Surface Lock Failed!" << std::endl;
-				return GR_SOFT_ERROR_SDL_LOCK_FAILED;
-			}
-		}
-
-		pixels = pixels00 = (uint8*)sdl_surf->pixels;
-		pitch = sdl_surf->pitch;
-	}
-	lock_count++;
-	
-	if (pixels == 0) 
-	{
-		// TODO: SetLastError(GR_SOFT_ERROR_LOCKED_NULL_PIXELS, "Surface Locked with NULL SoftRenderSurface::pixels pointer!");
-		perr << "Error: Surface Locked with NULL SoftRenderSurface::pixels pointer!" << std::endl;
-		return GR_SOFT_ERROR_LOCKED_NULL_PIXELS;
-	}
-
-	// No error
-	return P_NO_ERROR;
-}
-
-
-//
-// SoftRenderSurface::EndPainting()
-//
-// Desc: Prepare the surface for drawing this frame (in effect lock it for drawing)
-// Returns: Non Zero on error
-//
-ECode SoftRenderSurface::EndPainting()
-{
-	// Already Unlocked
-	if (!lock_count)
-	{
-		// TODO: SetLastError(GR_SOFT_ERROR_BEGIN_END_MISMATCH, "BeginPainting()/EndPainting() Mismatch!");
-		perr << "Error: BeginPainting()/EndPainting() Mismatch!" << std::endl;
-		return GR_SOFT_ERROR_BEGIN_END_MISMATCH;
-	}
-
-	// Decrement counter
-	--lock_count;
-
-	if (!lock_count) if (sdl_surf) {
-		// Unlock the SDL_Surface if required
-		if (SDL_MUSTLOCK(sdl_surf)) SDL_UnlockSurface(sdl_surf);
-
-		// Clear pointers
-		pixels=pixels00=0;
-
-		// Present
-		SDL_UpdateRect(sdl_surf, 0,0,0,0);
-	}
-
-	// No error
-	return P_NO_ERROR;
-}
-
-
-//
-// SoftRenderSurface::SetPalette(uint8 palette[768])
-//
-// Desc: Set The Surface Palette
-//
-void SoftRenderSurface::SetPalette(uint8 palette[768])
-{
-}
-
-//
-// U8SoftRenderSurface::U8SoftRenderSurface(SDL_Surface *s)
-//
-// Desc: Create a U8 SoftRenderSurface from a SDL_Surface
-//
-template<class uintX> U8SoftRenderSurface<uintX>::U8SoftRenderSurface(SDL_Surface *s)
-	: SoftRenderSurface(s)
-{
-}
-
-
-/////////////////////////
-//                     //
-// U8SoftRenderSurface //
-//                     //
-/////////////////////////
-
-
-//
-// U8SoftRenderSurface::Fill8(uint8 index, sint32 sx, sint32 sy, sint32 w, sint32 h)
-//
-// Desc: Fill buffer (using a palette index)
-//
-template<class uintX> void U8SoftRenderSurface<uintX>::Fill8(uint8 index, sint32 sx, sint32 sy, sint32 w, sint32 h)
+template<class uintX> void SoftRenderSurface<uintX>::Fill8(uint8 index, sint32 sx, sint32 sy, sint32 w, sint32 h)
 {
 }
 
 
 //
-// U8SoftRenderSurface::Fill32(uint32 rgb, sint32 sx, sint32 sy, sint32 w, sint32 h)
+// SoftRenderSurface::Fill32(uint32 rgb, sint32 sx, sint32 sy, sint32 w, sint32 h)
 //
 // Desc: Fill buffer (using a RGB colour)
 //
-template<class uintX> void U8SoftRenderSurface<uintX>::Fill32(uint32 rgb, sint32 sx, sint32 sy, sint32 w, sint32 h)
+template<class uintX> void SoftRenderSurface<uintX>::Fill32(uint32 rgb, sint32 sx, sint32 sy, sint32 w, sint32 h)
 {
 	uint8 *pixel = pixels + sy * pitch + sx * sizeof(uintX);
 	uint8 *line_end = pixel + w*sizeof(uintX);
@@ -220,16 +81,15 @@ template<class uintX> void U8SoftRenderSurface<uintX>::Fill32(uint32 rgb, sint32
 		line_end += pitch;
 		pixel += diff;
 	}
-
 }
 
 
 //
-// U8SoftRenderSurface::Blit(Texture *, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy)
+// SoftRenderSurface::Blit(Texture *, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy)
 //
 // Desc: Blit a region from a Texture (Alpha == 0 -> skipped)
 //
-template<class uintX> void U8SoftRenderSurface<uintX>::Blit(Texture *tex, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy)
+template<class uintX> void SoftRenderSurface<uintX>::Blit(Texture *tex, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy)
 {
 	// Clip dx
 	if (dx < 0) {
@@ -286,36 +146,36 @@ template<class uintX> void U8SoftRenderSurface<uintX>::Blit(Texture *tex, sint32
 
 
 //
-// U8SoftRenderSurface::PrintCharFixed(Texture *, char character, int x, int y)
+// SoftRenderSurface::PrintCharFixed(Texture *, char character, int x, int y)
 //
 // Desc: Draw a fixed width character from a Texture buffer
 //
-template<class uintX> void U8SoftRenderSurface<uintX>::PrintCharFixed(Texture *texture, int character, int x, int y)
+template<class uintX> void SoftRenderSurface<uintX>::PrintCharFixed(Texture *texture, int character, int x, int y)
 {
 	int char_width = texture->width/16;
 	int char_height = texture->height/16;
 
 	if (char_width == 16 && char_height == 16)
 	{
-		Blit(texture, (character&0x0F) << 4, character&0xF0, 16, 16, x, y);
+		SoftRenderSurface::Blit(texture, (character&0x0F) << 4, character&0xF0, 16, 16, x, y);
 	}
 	else if (char_width == 8 && char_height == 8)
 	{
-		Blit(texture, (character&0x0F) << 3, (character>>1)&0x78, 8, 8, x, y);
+		SoftRenderSurface::Blit(texture, (character&0x0F) << 3, (character>>1)&0x78, 8, 8, x, y);
 	}
 	else
 	{
-		Blit(texture,  (character&0x0F) * char_width, (character&0xF0>>4) * char_height, char_width, char_height, x, y);
+		SoftRenderSurface::Blit(texture,  (character&0x0F) * char_width, (character&0xF0>>4) * char_height, char_width, char_height, x, y);
 	}
 }
 
 
 //
-// U8SoftRenderSurface::PrintTextFixed(Texture *, const char *text, int x, int y)
+// SoftRenderSurface::PrintTextFixed(Texture *, const char *text, int x, int y)
 //
 // Desc: Draw fixed width from a Texture buffer (16x16 characters fixed width and height)
 //
-template<class uintX> void U8SoftRenderSurface<uintX>::PrintTextFixed(Texture *texture, const char *text, int x, int y)
+template<class uintX> void SoftRenderSurface<uintX>::PrintTextFixed(Texture *texture, const char *text, int x, int y)
 {
 	int char_width = texture->width/16;
 	int char_height = texture->height/16;
@@ -323,126 +183,83 @@ template<class uintX> void U8SoftRenderSurface<uintX>::PrintTextFixed(Texture *t
 	int character;
 	if (char_width == 16 && char_height == 16) while (character = *text)
 	{
-		Blit(texture, (character&0x0F) << 4, character&0xF0, 16, 16, x, y);
+		SoftRenderSurface::Blit(texture, (character&0x0F) << 4, character&0xF0, 16, 16, x, y);
 		++text;
 		x+=16;
 	}
 	else if (char_width == 8 && char_height == 8) while (character = *text)
 	{
-		Blit(texture, (character&0x0F) << 3, (character>>1)&0x78, 8, 8, x, y);
+		SoftRenderSurface::Blit(texture, (character&0x0F) << 3, (character>>1)&0x78, 8, 8, x, y);
 		++text;
 		x+=8;
 	}
 	else while (character = *text)
 	{
-		Blit(texture,  (character&0x0F) * char_width, (character&0xF0>>4) * char_height, char_width, char_height, x, y);
+		SoftRenderSurface::Blit(texture,  (character&0x0F) * char_width, (character&0xF0>>4) * char_height, char_width, char_height, x, y);
 		++text;
 		x+=char_width;
 	}
 }
 
-template<class uintX> void U8SoftRenderSurface<uintX>::CreateNativePalette(Palette* palette)
-{
-	for (int i = 0; i < 256; i++)
-	{
-		palette->native[i] = SDL_MapRGB(sdl_surf->format,
-										palette->palette[i*3],
-										palette->palette[i*3+1],
-										palette->palette[i*3+2]);
-	}
-}
-
-template<class uintX> void U8SoftRenderSurface<uintX>::Paint(Shape*s, uint32 framenum, sint32 x, sint32 y)
-{
-
-	// Sanity check
-	if (framenum >= s->frameCount()) return;
-	if (s->getPalette() == 0) return;
-
-	ShapeFrame*	frame = s->getFrame(framenum);
-
-	const uint8 *data = frame->data;
-	uint32 width = frame->width;
-	uint32 height = frame->height;
-	x -= frame->xoffset;
-	y -= frame->yoffset;
-
-	const uint32* pal = &(s->getPalette()->native[0]);
-
-	unsigned int xpos;
-	unsigned int linepos;
-	unsigned int dlen;
-	const uint8* linedata;
-	uintX* line_start;
-	uintX* pixptr;
-	uintX* endrun;
-	uintX pix;
-
-	if (frame->compressed != 0)
-	{
-		// compressed
-		for (unsigned int i = 0; i < height; i++)
-		{
-			linepos = data[i*2] + (data[i*2+1]<<8) + i*2;
-			linedata = data + linepos;
-			xpos = 0;
-
-			line_start = (uintX*)((uint8*)pixels + pitch*(y+i));
-
-			do {
-				xpos += *linedata++;
-				
-				if (xpos == width) break;
-				
-				dlen = *linedata++;
-				int type = dlen & 1;
-				dlen >>= 1;
-				
-				pixptr= line_start+x+xpos;
-				endrun = pixptr + dlen;
-				
-				if (!type) {
-					while (pixptr != endrun) *pixptr++ = pal[*linedata++];
-				} else {
-					pix = pal[*linedata++];
-					while (pixptr != endrun) *pixptr++ = pix;
-				}
-				
-				xpos += dlen;
-				
-			} while (xpos < width);			
-		}
-	} else {
-		// not compressed
-		for (unsigned int i = 0; i < height; i++)
-		{
-			linepos = data[i*2] + (data[i*2+1]<<8) + i*2;
-			linedata = data + linepos;
-			xpos = 0;
-
-			line_start = (uintX*)((uint8*)pixels + pitch*(y+i));
-
-			do {
-				xpos += *linedata++;
-				
-				if (xpos == width) break;
-				
-				dlen = *linedata++;
-				
-				pixptr= line_start+x+xpos;
-				endrun = pixptr + dlen;
-				
-				while (pixptr != endrun) *pixptr++ = pal[*linedata++];
-								
-				xpos += dlen;
-				
-			} while (xpos < width);			
-		}		
-	}
-}
 
 //
-// Instantiate the U8SoftRenderSurface Class
+// void SoftRenderSurface::Paint(Shape*s, uint32 framenum, sint32 x, sint32 y)
 //
-template class U8SoftRenderSurface<uint16>;
-template class U8SoftRenderSurface<uint32>;
+// Desc: Standard shape drawing functions. Clips but doesn't do anything else
+//
+template<class uintX> void SoftRenderSurface<uintX>::Paint(Shape*s, uint32 framenum, sint32 x, sint32 y)
+{
+	#include "SoftRenderSurface.inl"
+}
+
+
+//
+// void SoftRenderSurface::PaintNoClip(Shape*s, uint32 framenum, sint32 x, sint32 y)
+//
+// Desc: Standard shape drawing functions. Doesn't clips
+//
+template<class uintX> void SoftRenderSurface<uintX>::PaintNoClip(Shape*s, uint32 framenum, sint32 x, sint32 y)
+{
+#define NO_CLIPPING
+	#include "SoftRenderSurface.inl"
+#undef NO_CLIPPING
+}
+
+
+//
+// void SoftRenderSurface::PaintTranslucent(Shape*s, uint32 framenum, sint32 x, sint32 y)
+//
+// Desc: Standard shape drawing functions. Clips and XForms
+//
+template<class uintX> void SoftRenderSurface<uintX>::PaintTranslucent(Shape* s, uint32 framenum, sint32 x, sint32 y)
+{
+#define XFORM_SHAPES
+	#include "SoftRenderSurface.inl"
+#undef XFORM_SHAPES
+}
+
+
+//
+// void SoftRenderSurface::PaintMirrored(Shape*s, uint32 framenum, sint32 x, sint32 y, bool trans)
+//
+// Desc: Standard shape drawing functions. Clips, Flips and conditionally XForms
+//
+template<class uintX> void SoftRenderSurface<uintX>::PaintMirrored(Shape* s, uint32 framenum, sint32 x, sint32 y, bool trans)
+{
+#define FLIP_SHAPES
+#define XFORM_SHAPES
+#define XFORM_CONDITIONAL trans
+
+	#include "SoftRenderSurface.inl"
+
+#undef FLIP_SHAPES
+#undef XFORM_SHAPES
+#undef XFORM_CONDITIONAL
+}
+
+
+//
+// Instantiate the SoftRenderSurface Class
+//
+template class SoftRenderSurface<uint16>;
+template class SoftRenderSurface<uint32>;

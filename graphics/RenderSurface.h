@@ -1,7 +1,7 @@
 /*
 RenderSurface.h : RenderSurface Interface header
 
-Copyright (C) 2002 The Pentagram Team
+Copyright (C) 2002, 2003 The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -80,7 +80,7 @@ public:
 	//
 
 	// Set The Surface Palette
-	virtual void SetPalette(uint8 palette[768]) = 0;
+	// virtual void SetPalette(uint8 palette[768]) = 0;
 
 	// Set The Surface Palette to be the one used by another surface
 	// TODO: virtual void SetPalette(RenderSurface &) = 0;
@@ -116,13 +116,19 @@ public:
 
 	// Paint a Shape
 	// TODO: virtual void Paint(CachedShape* s, uint32 frame, sint32 x, sint32 y) = 0;
-	virtual void Paint(Shape*s, uint32 frame, sint32 x, sint32 y)=0;
+	virtual void Paint(Shape*s, uint32 frame, sint32 x, sint32 y) = 0;
+
+	// Paint an Shape without clipping
+	// TODO: virtual void PaintNoClip(CachedShape*s, uint32 frame, sint32 x, sint32 y) = 0;
+	virtual void PaintNoClip(Shape*s, uint32 frame, sint32 x, sint32 y) = 0;
 
 	// Paint a Translucent Shape. 
 	// TODO: virtual void PaintTranslucent(CachedShape* s, uint32 frame, sint32 x, sint32 y) = 0;
+	virtual void PaintTranslucent(Shape* s, uint32 frame, sint32 x, sint32 y) = 0;
 
 	// Paint a Mirrored Shape
 	// TODO: virtual void PaintMirrored(CachedShape* s, uint32 frame, sint32 x, sint32 y, bool trans = false) = 0;
+	virtual void PaintMirrored(Shape* s, uint32 frame, sint32 x, sint32 y, bool trans = false) = 0;
 
 
 	//

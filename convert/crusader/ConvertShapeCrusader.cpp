@@ -19,25 +19,6 @@
 #include "pent_include.h"
 #include "ConvertShapeCrusader.h"
 
-// This will attempt to detect a Shape as being Crusader
-bool AutoDetectShapeCrusader(IDataSource *source)
-{
-	// What we will do is seek to byte 6 and get num frames. 
-	source->skip(6);
-	uint32 num_frames = source->read2();
-
-	// Now read the size of the first frame
-	uint32 frame_offset = source->read3();
-
-	// Be a nice Function and skip back 11 bytes
-	source->skip(-11);
-
-	// Now for a trick :-)
-	// If frame_offset == (6 + num_frames * 8) then we can be fairly sure this is Crusader
-
-	return frame_offset == (6 + num_frames * 8);
-}
-
 // Shape format configuration for Crusader
 const ConvertShapeFormat		CrusaderShapeFormat =
 {
@@ -62,7 +43,8 @@ const ConvertShapeFormat		CrusaderShapeFormat =
 	4,		// frame_xoff
 	4,		// frame_yoff
 
-	4		// line_offset
+	4,		// line_offset
+	0		// line_offset_absolute
 };
 
 // Shape format configuration for 2D Crusader Shapes
@@ -89,5 +71,6 @@ const ConvertShapeFormat		Crusader2DShapeFormat =
 	4,		// frame_xoff
 	4,		// frame_yoff
 
-	4		// line_offset
+	4,		// line_offset
+	0		// line_offset_absolute
 };

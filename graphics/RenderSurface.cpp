@@ -1,7 +1,7 @@
 /*
 RenderSurface.cpp : RenderSurface Interface source file
 
-Copyright (C) 2002 The Pentagram Team
+Copyright (C) 2002, 2003 The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -104,8 +104,8 @@ RenderSurface *RenderSurface::SetVideoMode(uint32 width,		// Width of desired mo
 	RenderSurface *surf;
 
 	// TODO: Change this
-	if (bpp == 32) surf = new U8SoftRenderSurface<uint32>(sdl_surf);
-	else surf = new U8SoftRenderSurface<uint16>(sdl_surf);
+	if (bpp == 32) surf = new SoftRenderSurface<uint32>(sdl_surf);
+	else surf = new SoftRenderSurface<uint16>(sdl_surf);
 
 	return surf;
 }
