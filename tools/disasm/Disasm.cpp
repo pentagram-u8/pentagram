@@ -164,7 +164,7 @@ void printglobals()
    convert the class:offset pair into a string, and strcmping against them.
    So instead of having a 2*O(N) operation at read, and a 2*O(1)*O(logN) at search. We've got
    a O(N) operation at read, and a O(N)*O(logN) for _each_ search. */
-string functionaddresstostring(const sint32 i0, const sint32 i1)
+string functionaddresstostring(const sint32 i0, const sint32 i1, IFileDataSource *ucfile)
 {
 	char buf[10];
 	std::map<string, string>::iterator funcoffset = FuncNames.find(buf);
@@ -173,11 +173,37 @@ string functionaddresstostring(const sint32 i0, const sint32 i1)
 	funcoffset = FuncNames.find(buf);
 	if (funcoffset != FuncNames.end())
 		return funcoffset->second;
-	else if (crusader)
+
+	// Attempt to grab function name of the requested func
+
+	// Save the original pos
+	uint32 origpos = ucfile->getPos();
+
+	// Seek to index table entry 1
+	ucfile->seek(0x80 + 8);
+
+	// Get details
+	sint32 offset = ucfile->read4();
+	sint32 length = ucfile->read4();
+
+	// Seek to name entry
+	ucfile->seek(offset + i0*13 + 4);
+
+	// Read name
+	ucfile->read(buf, 9);
+
+	// Return to the pos
+	ucfile->seek(origpos);
+
+	// Couldn't get name, just use number
+	if (!buf[0]) snprintf(buf, 10, "%04X", i0);
+
+	// String to return
+	std::string str = buf;
+
+	// This will only work in crusader
+	if (crusader)
 	{
-		std::string str = "";
-		snprintf(buf, 10, "%04X", i0);
-		str += buf;
 		if (i1 < 0x20)
 		{
 			return str + "::" + convert->event_names()[i1];
@@ -188,8 +214,15 @@ string functionaddresstostring(const sint32 i0, const sint32 i1)
 			return str + "::ordinal" + buf;
 		}
 	}
+	// For Ultima 8
 	else
-		return "unknown";
+	{
+		snprintf(buf, 10, "%04X", i1);
+		return str + "::" + buf;
+	}
+
+	// Shouldn't ever get here
+	return "unknown";
 }
 
 const char * const print_bp(const sint32 offset)
@@ -249,6 +282,9 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 		else 
 			printf(" (Event %X) %s::ordinal%02X", it->second, name, it->second);
 	}
+	else 
+		printf("  %s::%04X", name, curOffset);
+
 	printf(":\n");
 
 	uint32 dbg_symbol_offset=0;
@@ -374,7 +410,7 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 			i0 = read2(ucfile);
 			i1 = read2(ucfile);
 			printf("call\t\t%04X:%04X (%s)", i0, i1,
-				functionaddresstostring(i0, i1).c_str());
+				functionaddresstostring(i0, i1, ucfile).c_str());
 			break;
 		case 0x12:
 			// 12
@@ -726,7 +762,7 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 			i0 = read1(ucfile); i1 = read1(ucfile);
 			i2 = read2(ucfile); i3 = read2(ucfile);
 			printf("spawn\t\t%02X %02X %04X:%04X (%s)",
-				   i0, i1, i2, i3, functionaddresstostring(i2,i3).c_str());
+				   i0, i1, i2, i3, functionaddresstostring(i2,i3, ucfile).c_str());
 			break;
 		case 0x58:
 			// 58 xx xx yy yy zz zz tt uu
@@ -738,7 +774,7 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 			i3 = read1(ucfile); i4 = read1(ucfile);
 			printf("spawn inline\t%04X:%04X+%04X=%04X %02X %02X (%s+%04X)",
 				   i0, i1, i2, i1+i2, i3, i4,
-				   functionaddresstostring(i0, i1).c_str(), i2);
+				   functionaddresstostring(i0, i1, ucfile).c_str(), i2);
 			break;
 		case 0x59:
 			// 59
@@ -1132,7 +1168,7 @@ int main(int argc, char **argv)
 	Args parameters;
 	
 	parameters.declare("--lang",    &gamelanguage,  "unknown");
-	parameters.declare("--game",    &gametype,      "u8");
+	parameters.declare("--game",    &gametype,      "none");
 	parameters.declare("--globals", &print_globals, true);
 	#ifdef FOLD
 	parameters.declare("--disasm",  &print_disasm,  true);
@@ -1170,24 +1206,52 @@ int main(int argc, char **argv)
 		std::cerr << "Warning: unknown language specified (" << gamelanguage << ")." << std::endl;
 	}
 
+	// Create filesystem object
+	FileSystem filesys;
+
+	// Load usecode file
+	IFileDataSource *ucfile = filesys.ReadFile(argv[1]);
+
+	// Uh oh, couldn't load it
+	if(ucfile==0)
+	{
+		cerr << "Error reading file \"" << argv[1] << "\"" << endl;
+		return 1;
+	}
+
+	// Force crusader mode if we are reading overload.dat
+	if (!Q_strcasecmp(stripped_filename, "overload.dat"))
+	{
+		std::cout << "Using \"overload.dat\". Forcing crusader gametype." << std::endl;
+		gametype="crusader";
+	}
+	// Or if gametype is none, attempt to autodetect game type
+	else if (gametype=="none")
+	{
+		ucfile->seek(0x80);
+		sint32 nameoffset = read4(ucfile);
+		sint32 namelength = read4(ucfile);
+
+		// Looks like Ultima8 (has a global section)
+		if (nameoffset && namelength) gametype="u8";
+		// Must be crusader (no globals section)
+		else gametype="crusader";
+	}
+
+	// Output the game type and langauge
+	std::cout << "Game type: " << gametype << std::endl <<
+		"Language: " << gamelanguage << std::endl;
+
 	// setup crusader
-	if (gametype=="crusader" || !Q_strcasecmp(argv[2], "-overload"))
+	if (gametype=="crusader")
 	{
 		crusader=true;
 		FORGET_OBJECT(convert);
 		convert = new ConvertUsecodeCrusader();
 	}
 
-	FileSystem filesys;
-
+	// Read function names from cfg file
 	readfunctionnames();
-	IFileDataSource *ucfile = filesys.ReadFile(argv[1]);
-
-	if(ucfile==0)
-	{
-		cerr << "Error reading file \"" << argv[1] << "\"" << endl;
-		return 1;
-	}
 
 	// List functions
 	if (!Q_strcasecmp(argv[2], "-l")) {
@@ -1232,6 +1296,7 @@ int main(int argc, char **argv)
 		if (!Q_strcasecmp(stripped_filename, "overload.dat"))
 		{
 			end = ucfile->getSize();
+			ucfile->seek(0);
 		}
 		// We want usecode entry 1
 		else 

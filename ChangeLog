@@ -1,4 +1,8 @@
 2002-10-26  Ryan Nunn <colourles@users.sourceforge.net>
+	* tools/disasm/Disasm.cpp : Autodetect gametype. Improved u8 function
+	  name printing.
+
+2002-10-26  Ryan Nunn <colourles@users.sourceforge.net>
 	* Q_strcasecmp.* : Portable case insensitive compare from Quake 2
 	* tools/disasm/Disasm.cpp : use Q_strcasecmp() instead of stricmp()
 
