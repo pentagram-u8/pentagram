@@ -1,3 +1,14 @@
+2003-05-25	Darke <darkepaw@users.sf.net>
+	* configure.ac: Removed dependancy on awk and yacc, since we use neither,
+	  and added flex dependancy since we're now using it.
+	* module.mk: Started cleaning it up a little so we might, someday, be
+	  able to compile an application without dragging *everything* in...
+	* tools/compile/module.mk: Added handling of .l files.
+	* tools/compile/CompileProcess.*: Added some minor compiler functionality.
+	* tools/compile/Compile.cpp, tools/compile/CompileUnit.h,
+	  tools/compile/llcLexer.[h|l], tools/compile/llcTokens.h:
+	  More compiler related files.
+	
 2003-05-20  Ryan Nunn <colourles@users.sourceforge.net>
 	* world/actors/ActorAnimProcess.cpp : Avoiding problems with bounds.
 

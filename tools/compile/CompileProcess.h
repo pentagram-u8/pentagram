@@ -21,10 +21,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Process.h"
 
+class CompileUnit;
+class FileSystem;
+
 class CompileProcess : public Process
 {
 public:
-	CompileProcess();
+	CompileProcess(FileSystem *filesystem);
     ~CompileProcess();
 
 	// p_dynamic_cast stuff
@@ -35,6 +38,8 @@ public:
 protected:
 	// just a quick way to get it to run for a little before dying.
 	uint32 termCounter;
+
+	CompileUnit *cu;
 };
 
 #endif

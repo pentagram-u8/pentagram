@@ -3,7 +3,12 @@
 LPATH := tools/compile
 
 LSRC := $(wildcard $(LPATH)/*.cpp)
-LPRODUCTS :=
+LPRODUCTS := 
+
+tools/compile/llcLexer.l: 
+
+tools/compile/llcLexer.cpp: tools/compile/llcLexer.l
+	flex++ -+ -otools/compile/llcLexer.cpp tools/compile/llcLexer.l
 
 # Common rules
 include common.mk

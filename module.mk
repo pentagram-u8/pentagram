@@ -6,24 +6,47 @@ LSRC := $(wildcard $(LPATH)/*.cpp)
 LPRODUCTS := pentagram
 LINSTALL := pentagram
 
-pentagram_OBJ = \
-	pentagram.o \
+KERNEL = \
 	kernel/Kernel.o \
 	kernel/Application.o \
 	kernel/Process.o \
 	kernel/Object.o \
 	kernel/GameData.o \
-	kernel/idMan.o \
+	kernel/idMan.o 
+
+USECODE = \
 	usecode/UCMachine.o \
 	usecode/UCProcess.o \
 	usecode/Usecode.o \
 	usecode/UsecodeFlex.o \
-	usecode/UCList.o \
+	usecode/UCList.o
+
+COMPILE = \
+	tools/compile/CompileProcess.o \
+	tools/compile/Compile.o \
+	tools/compile/llcLexer.o
+
+FILESYS = \
 	filesys/FileSystem.o \
 	filesys/Flex.o \
-	filesys/U8Save.o \
-	misc/Args.o \
+	filesys/U8Save.o
+
+CONVERT = \
+	convert/ConvertShape.o \
+	convert/u8/ConvertShapeU8.o \
+	convert/crusader/ConvertShapeCrusader.o
+
+CONF = \
+	conf/Configuration.o \
+	conf/XMLTree.o \
+	conf/XMLNode.o
+
+pentagram_OBJ = \
+	$(KERNEL) \
+	$(USECODE) \
+	$(FILESYS) \
 	misc/Console.o \
+	misc/Args.o \
 	misc/Q_strcasecmp.o \
 	misc/pent_include.o \
 	misc/util.o \
@@ -61,14 +84,11 @@ pentagram_OBJ = \
 	world/actors/Actor.o \
 	world/actors/ActorAnimProcess.o \
 	world/actors/MainActor.o \
-	convert/ConvertShape.o \
-	convert/u8/ConvertShapeU8.o \
-	convert/crusader/ConvertShapeCrusader.o \
-	conf/Configuration.o \
-	conf/XMLTree.o \
-	conf/XMLNode.o \
+	$(CONVERT) \
+	$(CONF) \
 	tools/disasm/DisasmProcess.o \
-	tools/compile/CompileProcess.o
+	$(COMPILE) \
+	pentagram.o 
 
 # Common rules
 include common.mk

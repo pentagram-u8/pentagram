@@ -89,7 +89,7 @@ Application::Application(const int argc, const char * const * const argv)
 	{
 		pout << "We Are Compiling..." << std::endl;
 		MinimalSysInit();
-		kernel->addProcess(new CompileProcess());
+		kernel->addProcess(new CompileProcess(filesystem));
 	}
 	else
 	{

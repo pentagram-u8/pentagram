@@ -21,11 +21,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CompileProcess.h"
 #include "Application.h"
 
+#include "CompileUnit.h"
+#include "FileSystem.h"
+
 // p_dynamic_cast stuff
 DEFINE_DYNAMIC_CAST_CODE(CompileProcess,Process);
 
-CompileProcess::CompileProcess() : termCounter(120)
+CompileProcess::CompileProcess(FileSystem *filesystem) : termCounter(10)
 {
+	cu = new CompileUnit(filesystem);
+
 }
 
 
@@ -38,10 +43,24 @@ bool CompileProcess::run(const uint32 /*framenum*/)
 	if (suspended)
 		return false;
 
+	if(cu->state()!=CompileUnit::CSTATE_FINISHED)
+		cu->parse();
+
+	if(cu->state()==CompileUnit::CSTATE_FAIL)
+		Application::application->ForceQuit();
+	//while(!cu->parse())
+	//	;
+
+	if(cu->state()==CompileUnit::CSTATE_FINISHED)
+	{
+		terminate(); //FIXME: Needs to handle multiple files and such...
+		Application::application->ForceQuit();
+	}
+	
 	if(termCounter==0)
 		Application::application->ForceQuit();
 
-	//pout << termCounter << std::endl;
+	pout << "Countdown to Term...: " << termCounter << std::endl;
 	termCounter--;
 
 	// if we need to redraw the screen (aka, we've done something), we need to return true;

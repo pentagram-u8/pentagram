@@ -114,11 +114,10 @@ esac
 # ---------------------------------------------------------------------
 # Compilers and other tools
 # ---------------------------------------------------------------------
-AC_PROG_AWK
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_INSTALL
-AC_PROG_YACC
+AC_PROG_LEX
 AC_PROG_CXX
 
 # ---------------------------------------------------------------------
@@ -223,7 +222,7 @@ AC_LANG_CPLUSPLUS
 # ------------------
 AC_ARG_ENABLE(paranoid-warnings, [  --enable-paranoid-warnings       Enable paranoid warnings [default no]],,enable_paranoid_warnings=no)
 if test x$enable_paranoid_warnings = xyes; then
-        WARNINGS="-Wall -W -Wcast-qual -Wwrite-strings -Wconversion -Wredundant-decls -Winline -Wdisabled-optimization -fcheck-new -Wctor-dtor-privacy -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Wfloat-equal -Wundef -Wpointer-arith -Wcast-qual -Wcast-align -Wdisabled-optimization"
+        WARNINGS="-Wall -W -Wcast-qual -Wwrite-strings -Wconversion -Wredundant-decls -Wdisabled-optimization -fcheck-new -Wctor-dtor-privacy -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Wfloat-equal -Wundef -Wpointer-arith -Wcast-qual -Wcast-align -Wdisabled-optimization"
 		# -Wshadow produces a lot of pointless warnings, don't use it.
 		# -Wunreachable-code
 #       DEBUG_FLAGS="$DEBUG_FLAGS -Wall -O -Wunused -Wuninitialized -Woverloaded-virtual -Wpointer-arith -Wcast-qual -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -Winline"
@@ -242,7 +241,8 @@ AC_MSG_CHECKING(if we should include profiling information)
 AC_ARG_ENABLE(profiling, [  --enable-profiling       Enable Profiling [default no]],,enable_profiling=no)
 if test x$enable_profiling = xyes; then
 	AC_MSG_RESULT(yes)
-	PROFILE="-pg -fprofile-arcs"
+	PROFILE="-pg"
+	# -fprofile-arcs
 else
 	AC_MSG_RESULT(no)
 fi
@@ -268,6 +268,7 @@ echo
 echo Pentagram v$VERSION
 echo
 echo SDL ....................... :  `$SDL_CONFIG --version`
+echo
 echo Warning level ............. : $WARNING_LEVEL
 
 echo
