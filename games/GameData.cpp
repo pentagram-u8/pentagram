@@ -397,9 +397,6 @@ void GameData::setupTTFOverrides()
 								   0, 0);
 		int border = std::atoi(fontdesc.substr(pos2+1).c_str());
 
-		pout << fontnum << ": " << fontname << ", " << col32 << ", " << border
-			 << std::endl;
-
 		fontmanager->addTTFOverride(fontnum, fontname, col32, border);
 	}
 }
