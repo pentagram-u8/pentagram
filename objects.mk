@@ -144,6 +144,7 @@ WORLD = \
 	world/World.o \
 	world/MissileProcess.o \
 	world/GravityProcess.o \
+	world/SplitItemProcess.o \
 	world/SpriteProcess.o
 
 ACTORS = \

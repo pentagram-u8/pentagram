@@ -30,6 +30,10 @@
 #include "GameData.h"
 #include "MainShapeFlex.h"
 #include "Mouse.h"
+#include "SliderGump.h"
+#include "GumpNotifyProcess.h"
+#include "ItemFactory.h"
+#include "SplitItemProcess.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -327,36 +331,87 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 	GumpToParent(px, py);
 	// see what the item is being dropped on
 	Item* targetitem = World::get_instance()->getItem(TraceObjId(px, py));
-	Container* targetcontainer = 0;
-	if (targetitem) {
-		targetcontainer = p_dynamic_cast<Container*>(targetitem);
-		if (targetcontainer) {
+	Container* targetcontainer = p_dynamic_cast<Container*>(targetitem);
 
-		} else {
-			// try to combine items
-			int family = item->getShapeInfo()->family;
 
-			// item with quantity?
-			if (item->getShapeInfo()->hasQuantity())
-			{
-				if (targetitem->getShape() == item->getShape() &&
-					(targetitem->getFrame() == item->getFrame() ||
-					 family == ShapeInfo::SF_QUANTITY))
-				{
-					// can only combine SF_REAGENTS when frame is equal
-					// see U8's usecode FREE::2767
-					targetitem->setQuality(targetitem->getQuality() +
-										   item->getQuality());
-					targetitem->callUsecodeEvent_combine();
+	if (item->getShapeInfo()->hasQuantity() &&
+		item->getQuality() > 1)
+	{
+		// more than one, so see if we should ask if we should split it up
 
-					// combined, so delete item
-					item->destroy(); item = 0;
-					return;
-				}
-						
+		Item* splittarget = 0;
+
+		// also try to combine
+		int family = item->getShapeInfo()->family;
+		// Note: can only combine SF_REAGENTS when frame is equal
+		// see U8's usecode FREE::2767
+		if (targetitem && targetitem->getShape() == item->getShape() &&
+			(targetitem->getFrame() == item->getFrame() ||
+			 family == ShapeInfo::SF_QUANTITY))
+		{
+			splittarget = targetitem;
+		}
+
+		if (!splittarget) {
+			// create new item
+			splittarget = ItemFactory::createItem(
+				item->getShape(), item->getFrame(), 0,
+				item->getFlags() & (Item::FLG_DISPOSABLE | Item::FLG_OWNED | Item::FLG_INVISIBLE | Item::FLG_FLIPPED | Item::FLG_FAST_ONLY | Item::FLG_LOW_FRICTION), item->getNpcNum(), item->getMapNum(),
+				item->getExtFlags() & (Item::EXT_SPRITE | Item::EXT_HIGHLIGHT));
+			if (!splittarget) {
+				perr << "ContainerGump failed to create item ("
+					 << item->getShape() << "," << item->getFrame()
+					 << ") while splitting" << std::endl;
+				return;
 			}
+			splittarget->assignObjId();
+
+
+			if (targetcontainer) {
+				splittarget->moveToContainer(targetcontainer);
+				splittarget->setGumpLocation(0, 0); //TODO: randomize!
+			} else {
+				splittarget->moveToContainer(p_dynamic_cast<Container*>(
+									World::get_instance()->getItem(owner)));
+				splittarget->setGumpLocation(dragging_x, dragging_y);
+			}
+		}			
+
+		SliderGump* slidergump = new SliderGump(100, 100,
+												0, item->getQuality(),
+												item->getQuality());
+		slidergump->InitGump();
+		GUIApp::get_instance()->getDesktopGump()->AddChild(slidergump);
+		slidergump->CreateNotifier(); // manually create notifier
+		Process* notifier = slidergump->GetNotifyProcess();
+		SplitItemProcess* splitproc = new SplitItemProcess(item,
+															   splittarget);
+		Kernel::get_instance()->addProcess(splitproc);
+		splitproc->waitFor(notifier);
+
+		return;
+	}
+
+	if (targetitem && item->getShapeInfo()->hasQuantity())
+	{
+		// try to combine items
+		int family = item->getShapeInfo()->family;
+		if (targetitem->getShape() == item->getShape() &&
+			(targetitem->getFrame() == item->getFrame() ||
+			 family == ShapeInfo::SF_QUANTITY))
+		{
+			// Note: can only combine SF_REAGENTS when frame is equal
+			// see U8's usecode FREE::2767
+			targetitem->setQuality(targetitem->getQuality() +
+								   item->getQuality());
+			targetitem->callUsecodeEvent_combine();
+			
+			// combined, so delete item
+			item->destroy(); item = 0;
+			return;
 		}
 	}
+
 
 	if (targetcontainer) {
 		// do not move to containers marked as land or is an NPC,
@@ -368,6 +423,7 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 			! (targetcontainer->getFlags() & Item::FLG_IN_NPC_LIST))
 		{
 			item->moveToContainer(targetcontainer);
+			item->setGumpLocation(0, 0); //TODO: randomize!
 			return;
 		}
 	}

@@ -74,6 +74,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AvatarMoverProcess.h"
 #include "ResurrectionProcess.h"
 #include "DeleteActorProcess.h"
+#include "SplitItemProcess.h"
 
 #include "MovieGump.h"
 
@@ -252,6 +253,8 @@ void GUIApp::startup()
 							 ProcessLoader<ResurrectionProcess>::load);
 	kernel->addProcessLoader("DeleteActorProcess",
 							 ProcessLoader<DeleteActorProcess>::load);
+	kernel->addProcessLoader("SplitItemProcess",
+							 ProcessLoader<SplitItemProcess>::load);
 
 	gamedata = new GameData();
 

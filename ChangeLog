@@ -1,3 +1,7 @@
+2004-08-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/SplitItemProcess.*: process to split up a stack of items
+	* gumps/ContainerGump.cpp: ask how to split up stacks when dragging
+
 2004-08-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AnimationTracker.*: fixed teleporting while playing anim
 	* kernel/GUIApp.cpp: some free necromancy reagents at startup
