@@ -347,6 +347,7 @@ void GUIApp::startup()
 	game = Game::createGame(getGameInfo());
 
 	game->loadFiles();
+	gamedata->setupTTFOverrides();
 
 	// Unset the console auto paint, since we have finished initing
 	con.SetAutoPaint(0);
@@ -953,35 +954,8 @@ void GUIApp::GraphicSysInit()
 
 	fontmanager = new FontManager();
 
-	;
 	settingman->setDefault("ttf", false);
 	settingman->get("ttf", ttfoverrides);
-
-	if (ttfoverrides) {
-		pout << "Loading TTF" << std::endl;
-
-		IDataSource* fontids = FileSystem::get_instance()->
-			ReadFile("@data/VeraBd.ttf");
-		if (fontids)
-			ttfoverrides = fontmanager->openTTF("verabd10", fontids, 10);
-		else 
-			ttfoverrides = false;
-
-		if (ttfoverrides)
-		{
-			fontmanager->addTTFOverride(0, "verabd10", 0xC0C0FF, 1);
-			fontmanager->addTTFOverride(5, "verabd10", 0xFFAE00, 1);
-			fontmanager->addTTFOverride(6, "verabd10", 0xD00000, 1);
-			fontmanager->addTTFOverride(7, "verabd10", 0x00D000, 1);
-			fontmanager->addTTFOverride(8, "verabd10", 0xFFF000, 1);
-
-			fontids = FileSystem::get_instance()->ReadFile("@data/Vera.ttf");
-			if (fontids)
-				fontmanager->openTTF("vera9", fontids, 9);
-
-			fontmanager->addTTFOverride(9, "vera9", 0x000000, 0);
-		}		
-	}
 
 	// Set Screen Resolution
 	pout << "Set Video Mode" << std::endl;

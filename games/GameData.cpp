@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -33,7 +33,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "WpnOvlayDat.h"
 #include "CoreApp.h"
 #include "ConfigFileManager.h"
+#include "FontManager.h"
 #include "GameInfo.h"
+#include "SettingManager.h"
 
 GameData* GameData::gamedata = 0;
 
@@ -342,4 +344,62 @@ void GameData::loadU8Data()
 	music = new MusicFlex(mf);
 
 	loadTranslation();
+}
+
+void GameData::setupTTFOverrides()
+{
+	ConfigFileManager* config = ConfigFileManager::get_instance();
+	SettingManager* settingman = SettingManager::get_instance();
+	FontManager* fontmanager = FontManager::get_instance();
+	std::map<Pentagram::istring, std::string> ttfkeyvals;
+
+	bool ttfoverrides = false;
+	settingman->get("ttf", ttfoverrides);
+	if (!ttfoverrides) return;
+
+	ttfkeyvals = config->listKeyValues("game/ttf");
+	std::map<Pentagram::istring, std::string>::iterator iter;
+
+	for (iter = ttfkeyvals.begin(); iter != ttfkeyvals.end(); ++iter)
+	{
+		Pentagram::istring fontname = iter->first;
+		std::string fontdesc = iter->second;
+		std::string::size_type pos = fontdesc.find(',');
+		if (pos == std::string::npos) {
+			perr << "Invalid ttf description: " << fontdesc << std::endl;
+			continue;
+		}
+		std::string filename = fontdesc.substr(0,pos);
+		int pointsize = std::atoi(fontdesc.substr(pos+1).c_str());
+		IDataSource* fontids;
+		fontids = FileSystem::get_instance()->ReadFile("@data/" + filename);
+		if (fontids) {
+			fontmanager->openTTF(fontname, fontids, pointsize);
+		}
+	}
+
+	ttfkeyvals = config->listKeyValues("game/fontoverride");
+	for (iter = ttfkeyvals.begin(); iter != ttfkeyvals.end(); ++iter)
+	{
+		int fontnum = std::atoi(iter->first.c_str());
+		std::string fontdesc = iter->second;
+		std::string::size_type pos = fontdesc.find(',');
+		std::string::size_type pos2 = std::string::npos;
+		if (pos != std::string::npos) pos2 = fontdesc.find(',', pos+1);
+		if (pos == std::string::npos || pos2 == std::string::npos)
+		{
+			perr << "Invalid ttf override: " << fontdesc << std::endl;
+			continue;
+		}
+		std::string fontname = fontdesc.substr(0,pos);
+
+		uint32 col32 = std::strtol(fontdesc.substr(pos+1,pos2-pos-1).c_str(),
+								   0, 0);
+		int border = std::atoi(fontdesc.substr(pos2+1).c_str());
+
+		pout << fontnum << ": " << fontname << ", " << col32 << ", " << border
+			 << std::endl;
+
+		fontmanager->addTTFOverride(fontnum, fontname, col32, border);
+	}
 }
