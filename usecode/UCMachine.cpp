@@ -1209,6 +1209,11 @@ bool UCMachine::execProcess(UCProcess* p)
 				UCProcess* newproc = new UCProcess(p->usecode, classid,
 												   offset, this_ptr);
 				newproc->stack.push(p->stack.access(), arg_bytes);
+				//!! CHECKME
+				//!! it looks like these arguments may have to be put
+				//!! earlier on the stack than this
+				//!! (i.e., even before the this pointer)
+				//!! (check for instance METHOD::091C)
 
 				temp32 = addProcess(newproc);
 
