@@ -1,3 +1,9 @@
+2005-02-27  Ryan Nunn <colourles@users.sourceforge.net>
+	* kernel/GUIApp.cpp : Ctrl-V is paste from clipboard for all gumps that
+	  accept keyboard input
+	* graphics/scalers/BilinearScaler.cpp : Fixing overun crashes when
+	  doing Arbitrary scaling due rounding/accuracy problems.
+
 2005-02-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* games/GameData.*: use ttf overrides from u8.ini instead of hardcoded
 

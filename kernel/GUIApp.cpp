@@ -101,8 +101,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "DisasmProcess.h"
 #include "CompileProcess.h"
 
-#if defined(WIN32) && defined(COLOURLESS_WANTS_A_DATA_FREE_PENATGRAM)
+#ifdef WIN32
 #include <windows.h>
+#endif
+
+#if defined(WIN32) && defined(COLOURLESS_WANTS_A_DATA_FREE_PENATGRAM)
 #include "resource.h"
 #endif
 
@@ -1111,6 +1114,32 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			switch (event.type) {
 				case SDL_KEYDOWN:
 					if (event.key.keysym.sym == SDLK_BACKQUOTE) break;
+
+#ifdef WIN32 
+					// Paste from Clip-Board on Ctrl-V - Note this should be a flag of some sort
+					if (event.key.keysym.sym == SDLK_v && event.key.keysym.mod & KMOD_CTRL)
+					{
+						if (!IsClipboardFormatAvailable(CF_TEXT)) 
+							return ; 
+						if (!OpenClipboard(NULL)) 
+							return; 
+
+						HGLOBAL hglb = GetClipboardData(CF_TEXT); 
+						if (hglb != NULL) 
+						{ 
+							LPTSTR lptstr = reinterpret_cast<LPTSTR>(GlobalLock(hglb)); 
+							if (lptstr != NULL) 
+							{ 
+								// Only read the first line of text
+								while (*lptstr >= ' ') gump->OnTextInput(*lptstr++);
+
+								GlobalUnlock(hglb); 
+							} 
+						} 
+						CloseClipboard(); 
+						return;
+					}
+#endif
 
 					if (event.key.keysym.unicode >= ' ' &&
 						event.key.keysym.unicode <= 255)

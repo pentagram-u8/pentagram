@@ -119,19 +119,20 @@ namespace Pentagram {
 	CopyLerp(cols[5],e,l, 0x2AA4);	}
 
 #define ArbInnerLoop(a,b,f,g) {		\
-	while (pos_y < end_y) {			\
+	if (pos_y < end_y) do {			\
 		pos_x = dst_x;				\
 		pixel = blockline_start;	\
 		/* Dest Loop X */			\
-		while (pos_x < end_x) {		\
+		if (pos_x < end_x) do {		\
 			FilterPixel(a,b,f,g,(end_x-pos_x)>>8,(end_y-pos_y)>>8);\
 			pixel+=sizeof(uintX);	\
 			pos_x += add_x;			\
-		}							\
+		} while (pos_x < end_x);	\
 		if (!next_block) next_block = pixel;	\
 		blockline_start += pitch;	\
 		pos_y += add_y;				\
-	} end_y += 1 << 16; }
+	} while (pos_y < end_y);		\
+	end_y += 1 << 16; }
 
 
 #define Read5(a,b,c,d,e) {	\
@@ -532,14 +533,19 @@ public:
 
 		uint8 a[4], b[4], c[4], d[4], e[4], f[4], g[4], h[4], i[4], j[4];
 
-		uint32 pos_y, pos_x;
+		uint32 pos_y=0, pos_x=0;
 
 		uint32 add_y = (sh<<16)/dh;
+		uint32 add_x = (sw<<16)/dw;
+
+		uint32 start_x = (sw<<16) - (add_x * dw);
+		uint32 dst_y = (sh<<16) - (add_y * dh);
 		uint32 end_y = 1<<16;
-		uint32 dst_y = 0;
 
 		uint8* blockline_start = 0;
 		uint8* next_block = 0;
+
+		uint8* pixel_start = pixel;
 
 		bool clip_x = true;
 		if (sw+sx < tex->width && clamp_src == false)
@@ -561,9 +567,8 @@ public:
 			Read5(a,b,c,d,e);
 			texel++;
 
-			uint32 add_x = (sw<<16)/dw;
 			uint32 end_x = 1<<16;
-			uint32 dst_x = 0;
+			uint32 dst_x = start_x;
 
 			next_block = pixel;
 
@@ -655,9 +660,8 @@ public:
 			Read5_Clipped(a,b,c,d,e);
 			texel++;
 
-			uint32 add_x = (sw<<16)/dw;
 			uint32 end_x = 1<<16;
-			uint32 dst_x = 0;
+			uint32 dst_x = start_x;
 
 			next_block = pixel;
 
