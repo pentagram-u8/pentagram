@@ -81,7 +81,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 		uint8 opcode = cs.read1();
 
-		LOGPF(("bp = %02X; sp = %02X; %04X: %02X\t", p->bp, 
+		LOGPF(("sp = %02X; %04X: %02X\t",
 			   p->stack.stacksize(), p->ip, opcode));
 
 		sint8 si8a, si8b;
@@ -157,6 +157,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			ui16b = p->stack.access2(p->bp+si8a);
 			if (si8b) { // slist?
 				// what special behaviour do we need here?
+				// probably just that the overwritten element has to be freed?
 				if (ui32a != 2) error = true; // um?
 				listHeap[ui16b]->assign(ui16a, p->stack.access());
 				p->stack.pop2(); // advance SP
@@ -321,30 +322,37 @@ bool UCMachine::execProcess(UCProcess* p)
 			LOGPF(("append"));
 			break;
 
-/*
 		case 0x19:
 			// 19 02
-			// add two stringlists
-			// (free the originals?, remove duplicates)
-			i0 = read1(in);
-			printf("append slist\t(%02X)", i0);
+			// add two stringlists, removing duplicates
+			ui32a = cs.read1();
+			if (ui32a != 2) error = true;
+			ui16a = p->stack.pop2();
+			ui16b = p->stack.pop2();
+			listHeap[ui16b]->unionStringList(*listHeap[ui16a]);
+			freeStringList(ui16a); // contents are actually freed in unionSL
+			p->stack.push2(ui16b);
+			LOGPF(("union slist\t(%02X)", ui32a));
 			break;
 
 		case 0x1A:
 			// 1A
-			// pop two string lists from the stack and remove the 2nd from the 1st
-			// (free the originals?)
-			// NB: this one takes a length parameter in crusader. (not in u8)
-			i0 = read1(in);
-			printf("remove slist\t(%02X)", i0);
-			break;
+			// substract string list
+			// NB: this one takes a length parameter in crusader. (not in U8)!!
+//!!		ui32a = cs.read1(); // elementsize
+			ui32a = 2;
+			ui16a = p->stack.pop2();
+			ui16b = p->stack.pop2();
+			listHeap[ui16b]->substractStringList(*listHeap[ui16a]);
+			freeStringList(ui16a); // contents are actually freed in subSL
+			p->stack.push2(ui16b);
+			LOGPF(("remove slist\t(%02X)", ui32a));
+			break;			
 
-*/
 		case 0x1B:
 			// 1B xx
 			// pop two lists from the stack and remove the 2nd from the 1st
 			// (free the originals? order?)
-			// why do we need elementsize?
 			// only occurs in crusader.
 			ui32a = cs.read1(); // elementsize
 			ui16a = p->stack.pop2();
@@ -704,16 +712,18 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x38:
 			// 38 xx yy
 			// is element (size xx) in list? (or slist if yy is true)
-
-			// 0583(FIRESPEL):2ADB: create list. Where is this list deleted?
-			// would this mean that we're supposed to destroy the list here?
-			// I guess it would make sense if 'push list' duplicates a list
+			// free list/slist afterwards
 
 			ui16a = cs.read1();
 			ui32a = cs.read1();
 			ui16b = p->stack.pop2();
 			if (ui32a) { // stringlist
-				//! TODO
+				if (ui16a != 2) error = true;
+				if (listHeap[ui16b]->stringInList(p->stack.pop2()))
+					p->stack.push2(1);
+				else
+					p->stack.push2(0);
+				freeStringList(ui16b);
 			} else {
 				bool found = listHeap[ui16b]->inList(p->stack.access());
 				p->stack.addSP(ui16a);
@@ -822,20 +832,27 @@ bool UCMachine::execProcess(UCProcess* p)
 				ui16a = cs.read1();
 				ui16b = p->stack.access2(p->bp+si8a);
 				UCList* l = new UCList(ui16a);
-				l = listHeap[ui16b];
+				l->copyList(*listHeap[ui16b]);
 				p->stack.push2(assignList(l));
-				LOGPF(("push string\t%s", print_bp(si8a)));
+				LOGPF(("push list\t%s", print_bp(si8a)));
 			}
 			break;
 
-
-/*
 		case 0x43:
 			// 43 xx
 			// push the stringlist local var xx
-			// duplicating the list? duplicating the strings in the list??
-			printf("push slist\t%s", print_bp(read1(in)));
+			// duplicating the list, duplicating the strings in the list
+			{
+				si8a = static_cast<sint8>(cs.read1());
+				ui16a = cs.read1();
+				ui16b = p->stack.access2(p->bp+si8a);
+				UCList* l = new UCList(ui16a);
+				l->copyStringList(*listHeap[ui16b]);
+				p->stack.push2(assignList(l));
+				LOGPF(("push slist\t%s", print_bp(si8a)));				
+			}
 			break;
+
 		case 0x44:
 			// 44 xx yy
 			// push element from the second last var pushed onto the stack
@@ -843,19 +860,33 @@ bool UCMachine::execProcess(UCProcess* p)
 			// (a byte/word). XX is the size of the types contained in the list
 			// YY is true if it's a slist (for garbage collection)
 
-			// duplicate string if YY? hard to tell... yy = 1 only occurs
+			// duplicate string if YY? yy = 1 only occurs
 			// in two places in U8: once it pops into temp afterwards,
-			// once it is indeed freed. What is temp exactly?
+			// once it is indeed freed. So, guessing we should duplicate.
 
-			i0 = read1(in); i1 = read1(in);
-			printf("push element\t%s slist==%02X", print_bp(i0), i1);
+			ui32a = cs.read1();
+			ui32b = cs.read1();
+			ui16a = p->stack.pop2(); // index
+			ui16b = p->stack.pop2(); // list
+			if (ui32b) {
+				uint16 s = listHeap[ui16b]->getStringIndex(ui16a);
+				p->stack.push2(duplicateString(s));
+			} else {
+				p->stack.push((*listHeap[ui16b])[ui16a], ui32a);
+			}
+			LOGPF(("push element\t%02X slist==%02X", ui32a, ui32b));
 			break;
+
 		case 0x45:
-			// 45
-			// push huge
-			i0 = read1(in); i1 = read1(in);
-			printf("push huge\t%02X %02X", i0, i1);
+			// 45 xx yy
+			// push huge of size yy from BP+xx
+			si8a = static_cast<sint8>(cs.read1());
+			ui16b = cs.read2();
+			p->stack.push(p->stack.access(p->bp+si8a), ui16b);
+			LOGPF(("push huge\t%s %02X", print_bp(si8a), ui16b));
 			break;
+
+/*
 		case 0x4B:
 			// 4B xx
 			// push 32 pointer address of BP+XX
@@ -980,6 +1011,8 @@ bool UCMachine::execProcess(UCProcess* p)
                         // spawn process function yyyy in class xxxx
                         // aa = number of arg bytes pushed (not including this pointer which is 4 bytes)
                         // tt = sizeof this pointer object
+						// only remove the this pointer from stack (4 bytes)
+						// put PID of spawned process in temp
                         {
                                 // TODO
                                 uint32 arg_bytes = ds.read1();
@@ -1065,7 +1098,6 @@ bool UCMachine::execProcess(UCProcess* p)
 			LOGPF(("long to int"));
 			break;
 
-/*
 		case 0x63:
 			// 63 xx
 			// free the stringlist in var BP+xx
@@ -1075,7 +1107,6 @@ bool UCMachine::execProcess(UCProcess* p)
 			LOGPF(("free slist\t%s", print_bp(si8a)));
 			break;
 
-*/
 		case 0x64:
 			// 64 xx
 			// free the list in var BP+xx
@@ -1085,17 +1116,16 @@ bool UCMachine::execProcess(UCProcess* p)
 			LOGPF(("free list\t%s", print_bp(si8a)));
 			break;
 	
-/*
 		case 0x65:
 			// 65 xx
 			// free the string at SP+xx
-			// sometimes the 32-bit string pointer at SP+xx????
+			// NB: sometimes there's a 32-bit string pointer at SP+xx
+			//     However, the low word of this is exactly the 16bit ref
 			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.access2(p->stack.getSP()+si8a);
 			freeString(ui16a);
 			LOGPF(("free string\t%s", print_sp(si8a)));
 			break;
-*/
 
 		case 0x66:
 			// 66 xx
@@ -1106,7 +1136,6 @@ bool UCMachine::execProcess(UCProcess* p)
 			LOGPF(("free list\t%s", print_sp(si8a)));
 			break;
 
-/*
 		case 0x67:
 			// 67 xx
 			// free the string list at SP+xx
@@ -1116,6 +1145,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			LOGPF(("free slist\t%s", print_sp(si8a)));
 			break;
 
+/*
 		case 0x69:
 			// 69 xx
 			// push the string in var BP+xx as 32 bit pointer
@@ -1129,6 +1159,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x6D:
 			// 6D
 			// push result of process
+			// (of which process? pop anything?)
 			printf("push dword\tprocess result");
 			break;
 */
@@ -1224,26 +1255,71 @@ bool UCMachine::execProcess(UCProcess* p)
 			error = true;
 			break;
 
+		case 0x08:
+			p->stack.pop4();
+			perr.printf("unhandled opcode %02X\n", opcode);
+			break;
+		case 0x4B:
+			cs.read1();
+			p->stack.push4(0);
+			perr.printf("unhandled opcode %02X\n", opcode);
+			break;
+		case 0x4C:
+			p->stack.pop4();
+			p->stack.addSP(-cs.read1());
+			perr.printf("unhandled opcode %02X\n", opcode);
+			break;
+		case 0x4D:
+			p->stack.pop4();
+			p->stack.addSP(cs.read1());
+			perr.printf("unhandled opcode %02X\n", opcode);
+			break;
+		case 0x54:
+			cs.read1();
+			cs.read1();
+			p->stack.pop2();
+			p->stack.pop2();
+			p->stack.push2(0);
+			perr.printf("unhandled opcode %02X\n", opcode);
+			break;
 		case 0x57:
+			p->stack.pop4();
 			cs.read4();
 			cs.read2();
+			temp32 = 0x11223344;
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
 		case 0x58:
+			p->stack.pop4();
 			cs.read4();
 			cs.read4();
+			temp32 = 0x11223344;
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
-		case 0x44:
-			cs.read2();
-			perr.printf("unhandled opcode %02X\n", opcode);
-			break;
-		case 0x19: case 0x43: case 0x45: case 0x4C:
-		case 0x4D: case 0x63: case 0x65: case 0x67:
+		case 0x69:
 			cs.read1();
+			p->stack.push4(0);
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
-
+		case 0x6B:
+			p->stack.pop2();
+			p->stack.push4(0);
+			perr.printf("unhandled opcode %02X\n", opcode);
+			break;
+		case 0x6D:
+			p->stack.push4(0);
+			perr.printf("unhandled opcode %02X\n", opcode);
+			break;
+		case 0x6F:
+			cs.read1();
+			p->stack.push4(0);
+			perr.printf("unhandled opcode %02X\n", opcode);
+			break;
+		case 0x70: case 0x73: case 0x74: case 0x75: case 0x76:
+			error = true;
+			perr.printf("unhandled opcode %02X\n", opcode);
+			break;
+				
 		default:
 			perr.printf("unhandled opcode %02X\n", opcode);
 
@@ -1311,7 +1387,18 @@ void UCMachine::freeList(uint16 l)
 {
 	std::map<uint16, UCList*>::iterator iter = listHeap.find(l);
 	if (iter != listHeap.end()) {
-		delete iter->second; // free the list
+		iter->second->free();
+		delete iter->second;
 		listHeap.erase(iter);
 	}
+}
+
+void UCMachine::freeStringList(uint16 l)
+{
+	std::map<uint16, UCList*>::iterator iter = listHeap.find(l);
+	if (iter != listHeap.end()) {
+		iter->second->freeStrings();
+		delete iter->second;
+		listHeap.erase(iter);
+	}	
 }

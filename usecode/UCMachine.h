@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define UCMACHINE_H
 
 #include <map>
+#include <string>
 
 #include "UCStack.h"
 #include "UCList.h"
@@ -36,6 +37,17 @@ public:
 
 	bool execProcess(UCProcess* proc);
 
+	std::string& getString(uint16 str) { return stringHeap[str]; }
+	UCList* getList(uint16 l) { return listHeap[l]; }
+
+	void freeString(uint16 s);
+	void freeStringList(uint16 l);
+	void freeList(uint16 l);
+
+	uint16 duplicateString(uint16 str) {
+		return assignString(stringHeap[str].c_str());
+	}
+
 private:
 
 	// this technically isn't a stack, but UCStack supports the access 
@@ -51,9 +63,6 @@ private:
 
 	uint16 assignString(const char* str);
 	uint16 assignList(UCList* l);
-
-	void freeString(uint16 s);
-	void freeList(uint16 l);
 
 	static UCMachine* ucmachine;
 };

@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define UCLIST_H
 
 #include <vector>
+#include <string>
 
 // stringlists: elementsize = 2, each element is actually a stringref
 // see for example the 0x0E opcode: there is no way to see if the
@@ -40,18 +41,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class UCList
 {
 	std::vector<uint8> elements;
-	int elementsize;
-	int size;
+	unsigned int elementsize;
+	unsigned int size;
 
  public:
-	UCList(unsigned int elementsize_, uint32 capacity=0) : 
+	UCList(unsigned int elementsize_, unsigned int capacity=0) : 
 		elementsize(elementsize_)
 	{
 		if (capacity > 0)
 			elements.reserve(elementsize * capacity);
 	}
 
-	~UCList() { free(); }
+	~UCList() {
+		// slight problem: we don't know if we're a stringlist
+		free();
+	}
 
 	const uint8* operator[](uint32 index) {
 		// check that index isn't out of bounds...
@@ -60,16 +64,17 @@ class UCList
 
 	void append(const uint8* e) {
 		elements.reserve((size + 1) * elementsize);
-		for (int i = 0; i < elementsize; i++)
+		for (unsigned int i = 0; i < elementsize; i++)
 			elements[size*elementsize + i] = e[i];
 		size++;
 	}
 
 	void remove(const uint8* e) {
 		// do we need to erase all occurences of e or just the first one?
-		for (int i = 0; i < size; i++) {
+		// (deleting all, currently)
+		for (unsigned int i = 0; i < size; i++) {
 			bool equal = true;
-			for (int j = 0; j < elementsize && equal; j++)
+			for (unsigned int j = 0; j < elementsize && equal; j++)
 				equal = (elements[i*elementsize + j] == e[j]);
 			if (!equal) {
 				elements.erase(elements.begin()+i*elementsize,
@@ -81,9 +86,9 @@ class UCList
 	}
 
 	bool inList(const uint8* e) {
-		for (int i = 0; i < size; i++) {
+		for (unsigned int i = 0; i < size; i++) {
 			bool equal = true;
-			for (int j = 0; j < elementsize && equal; j++)
+			for (unsigned int j = 0; j < elementsize && equal; j++)
 				equal = (elements[i*elementsize + j] == e[j]);
 			if (equal)
 				return true;
@@ -94,34 +99,47 @@ class UCList
 	void appendList(UCList& l) {
 		// need to check if elementsizes match...
 		elements.reserve(elementsize * (size + l.size));
-		for (int i = 0; i < l.size; i++)
+		for (unsigned int i = 0; i < l.size; i++)
 			append(l[i]);
+		l.free(); // NB: if l is a stringlist, do _not_ free the strings in l,
+		          // since all strings are now in this
 	}
 	void unionList(UCList& l) { // like append, but remove duplicates
 		// need to check if elementsizes match...
-		for (int i = 0; i < l.size; i++)
+		for (unsigned int i = 0; i < l.size; i++)
 			if (!inList(l[i]))
 				append(l[i]);
 	}
 	void substractList(UCList& l) {
-		for (int i = 0; i < l.size; i++)
+		for (unsigned int i = 0; i < l.size; i++)
 			remove(l[i]);
 	}
 
 	void free() { elements.clear(); size = 0; }
 	uint32 getSize() const { return size; }
 
-	void assign(int index, const uint8* e) {
+	void assign(uint32 index, const uint8* e) {
 		// need to check that index isn't out-of-bounds? (or grow list?)
-		for (int i = 0; i < elementsize; i++)
+		for (unsigned int i = 0; i < elementsize; i++)
 			elements[index*elementsize+i] = e[i];
 	}
 
-	UCList& operator=(UCList& l) { // deep copy constructor
+	void copyList(UCList& l) { // deep copy for list
 		free();
 		appendList(l);
-		return *this;
 	}
+
+	void freeStrings();
+	void copyStringList(UCList& l);
+	void unionStringList(UCList& l);
+	void substractStringList(UCList& l);
+	bool stringInList(uint16 str);
+	void assignString(uint32 index, uint16 str);
+	void removeString(uint16 str);
+
+	uint16 getStringIndex(uint32 index);
+ private:
+	std::string& getString(uint32 index);
 };
 
 #endif

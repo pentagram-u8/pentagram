@@ -12,6 +12,7 @@ pentagram_OBJ = \
 	usecode/UCMachine.o \
 	usecode/UCProcess.o \
 	usecode/UsecodeFlex.o \
+	usecode/UCList.o \
 	filesys/FileSystem.o \
 	filesys/Flex.o \
 	misc/Args.o \
