@@ -146,7 +146,7 @@ ECode BaseSoftRenderSurface::EndPainting()
 		pixels=pixels00=0;
 
 		// Present
-		SDL_UpdateRect(sdl_surf, 0,0,0,0);
+		SDL_Flip (sdl_surf);
 	}
 
 	// No error

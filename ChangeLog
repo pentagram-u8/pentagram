@@ -1,3 +1,7 @@
+	* graphics/*RenderSurface.cpp : Double Buffering and Hardware surfaces
+	* kernel/Application.cpp : Fullscreen can now be set with 
+	  config/video/fullscreen setting.
+
 2003-05-04  Ryan Nunn <colourles@users.sourceforge.net>
 	* world/ItemSorter.cpp : Enable 'fast' noclip painting.
 	* world/World.* : Removed 'old' SetupDisplayList methods.

@@ -412,7 +412,12 @@ void Application::GraphicSysInit()
 
 	// Set Screen Resolution
 	pout << "Set Video Mode" << std::endl;
-	screen = RenderSurface::SetVideoMode(640, 480, 32, false, false);
+
+	std::string fullscreen;
+	config->value("config/video/fullscreen", fullscreen, "no");
+	if (fullscreen!="yes") fullscreen="no";
+	screen = RenderSurface::SetVideoMode(640, 480, 32, fullscreen=="yes", false);
+
 	if (!screen)
 	{
 		perr << "Unable to set video mode. Exiting" << std::endl;

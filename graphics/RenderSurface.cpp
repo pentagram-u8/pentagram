@@ -75,22 +75,16 @@ RenderSurface *RenderSurface::SetVideoMode(uint32 width,		// Width of desired mo
 
 		// Enable Resizable
 		flags |= SDL_RESIZABLE;
-
-		// Software Surface
-		flags |= SDL_SWSURFACE;
 	}
 	// Fullscreen Specific 
 	else
 	{
 		// Enable Fullscreen
 		flags |= SDL_FULLSCREEN;
-
-		// TODO: Enable double buffering or use a software surface
-		//if (vinfo->hw_available && doubleBuffer)
-		//	flags |= SDL_HWSURFACE|SDL_DOUBLEBUF;
-		//else
-			flags |= SDL_SWSURFACE;
 	}
+
+	// Double buffered (sdl will emulate if we don't have)
+	flags |= SDL_HWSURFACE|SDL_DOUBLEBUF;
 
 	SDL_Surface *sdl_surf = SDL_SetVideoMode(width, height, bpp, flags);
 	
