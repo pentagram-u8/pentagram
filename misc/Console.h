@@ -31,12 +31,50 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define		CON_PUTCHAR_SIZE	256
 
 // For Enable/Disable flags
-#define		CON_STDOUT			1
-#define		CON_STDERR			2
+#define		CON_STDOUT			0x01
+#define		CON_STDERR			0x02
 
 class ODataSource;
 class RenderSurface;
 struct Texture;
+
+enum MsgMask {
+	/* Output no message(s). For obvious reasons this probably should never need to be used... */
+	MM_NONE=0x00,
+	/* general informative messages like the `virtual path "@home"...` stuff.
+		non-critical and in the general case non-useful unless trying to debug a problem. */
+	MM_INFO=0x01,
+	/* similar in urgency to a general message, except it's just noting a possible, though
+		unlikely problem. The:
+		`Error mounting virtual path "@data": directory not found: /usr/local/share/pentagram`
+		message would be a good example of this, I believe. */
+	MM_MINOR_WARN=0x02,
+	/* The compatriot to MINOR_WARN, this one effectively says "there's likely a problem here" */
+	MM_MAJOR_WARN=0x04,
+	/* "We had a problem, and we're trying to recover from it, hopefully successfully." */
+	MM_MINOR_ERR=0x08,
+	/* A message noting that we encountered a significant problem and that we're going to
+		(hopefully!) gracefully terminate the engine... Probably though a call to
+		CoreApp::application->ForceQuit();
+		"We had a rather significant problem. Shutting down pentagram now..."
+		*/
+	MM_MAJOR_ERR=0x10,
+	/* Significant failures that simply can't be recovered from, since there's either no way to
+		recover, or it's likely we'll crash in the final execution of the main loop before everything
+		shuts down.
+		Effectively things you'll want to be calling `exit(-1);` on, immediately after issuing the
+		warning. *grin* */
+	MM_TERMINAL_ERR=0x20,
+	/* Displays no matter what the warning level. Only really useful to setup the relevant internal masks. */
+	MM_ALL=0x3F
+	/* TODO:
+		Thoughts:
+		* Maybe there should be a MM_UNINPORTANT for MM_INFO messages that, whilst
+			potentially useful, are useful in very, very rare circumstances...
+			Would be turned on by a -v flag or something.
+		* This is probably too detailed already though.
+	*/
+};
 
 class Console
 {
@@ -67,6 +105,8 @@ class Console
 
 	void		(*auto_paint)(void);
 
+	MsgMask		msgMask;				// mask to determine which messages are printed or not
+	
 public:
 	Console();
 	~Console();
@@ -120,16 +160,24 @@ public:
 		return std_output_enabled;
 	}
 
+	// sets what message types to ignore
+	void setMsgMask(const MsgMask mm)
+	{
+		msgMask = mm;
+	}
+	
 	//
 	// STDOUT Methods
 	//
 
 	// Print a text string to the console, and output to stdout
-	void	Print (const char *txt);
+	void	Print(const char *txt);
+	void	Print(const MsgMask mm, const char *txt);
 
 	// printf, and output to stdout
-	int		Printf (const char *fmt, ...);
-
+	sint32	Printf(const char *fmt, ...);
+	sint32	Printf(const MsgMask mm, const char *fmt, ...); // with msg filtering
+	
 	// printf, and output to stdout (va_list)
 	int		vPrintf (const char *fmt, va_list);
 
@@ -145,10 +193,12 @@ public:
 	//
 
 	// Print a text string to the console, and output to stderr
-	void	Print_err (const char *txt);
+	void	Print_err(const char *txt);
+	void	Print_err(const MsgMask mm, const char *txt);
 
 	// printf, and output to stderr
-	int		Printf_err (const char *fmt, ...);
+	sint32	Printf_err(const char *fmt, ...);
+	sint32	Printf_err(const MsgMask mm, const char *fmt, ...);
 
 	// printf, and output to stderr (va_list)
 	int		vPrintf_err (const char *fmt, va_list);

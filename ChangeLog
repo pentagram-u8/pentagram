@@ -1,3 +1,23 @@
+2003-06-06	Darke <darkepaw@users.sf.net>
+	* misc/Console.*: Added support for a basic message filtering system for
+	  output. Basicly instead of your normal con.Printf(...) call, you instead
+	  call `con.Printf(MM_INFO, ...)` (or whatever mask you want other then
+	  MM_INFO...) and depending upon what the global mask is set to allow,
+	  it will be appropriately printed or not. The default is to print
+	  everything.
+	  For details as to what the general masks mean, see the MsgMask enum in
+	  misc/Console.h. Most of the examples are currently in kernel/CoreApp.cpp.
+	* filesys/FileSystem.cpp: Added message filtering stuff.
+	* kernel/CoreApp.*, kernel/ConApp.cpp: Added message filtering stuff, and
+	  a basic 'help' command line message (triggered on -h flag), only useful
+	  in llc at the moment, since support needs to be added in the derived
+	  class.
+	  Also added '-q' and '-qq' flags for 'quiet' and 'very quiet' output,
+	  but since most of the GUIApp and related output hasn't been correctly
+	  setup according to the new setup in Console, you're not going to notice
+	  much. I'm getting there slowly... *grin*
+	* filesys/IDataSource.h: Fixed casting warning.
+	
 2003-06-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/ItemSorter.*, gumps/GameMapGump.*: move camera-related
 	calculations to the end of the rendering 'pipeline' to prevent some

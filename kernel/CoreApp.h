@@ -56,6 +56,12 @@ class CoreApp
 	
 		uint32 getFrameNum() const { return framenum; };
 
+		virtual void helpMe();
+
+		bool help()   const { return oHelp;   };
+		bool quiet()  const { return oQuiet;  };
+		bool vquiet() const { return oVQuiet; };
+		
 	//protected: // should be, but I think the nesting is too deep for this to work right...
 
 		bool isRunning;
@@ -82,8 +88,13 @@ class CoreApp
 		virtual void ParseArgs(const int argc, const char * const * const argv);
 		virtual void setupVirtualPaths();
 		virtual void loadConfig();
+
+		bool oHelp;
+		bool oQuiet;
+		bool oVQuiet;
 };
 
 inline CoreApp *getCoreInstance() { return CoreApp::get_instance(); };
 
 #endif
+

@@ -149,7 +149,7 @@ bool FileSystem::rawopen
 {
 	string name = fname;
 	if (!rewrite_virtual_path(name)) {
-		perr << "Illegal file access" << std::endl;
+		con.Print_err(MM_MAJOR_WARN, "Illegal file access\n");
 		return false;
 	}
 
@@ -269,8 +269,9 @@ bool FileSystem::AddVirtualPath(const string &vpath, const string &realpath, con
 		rp.erase(rp.rfind('/'));
 
 	if (rp.find("..") != string::npos) {
-		perr << "Error mounting virtual path \"" << vp << "\": "
-			 << "\"..\" not allowed." << std::endl;
+		con.Printf_err(MM_MINOR_ERR,
+			"Error mounting virtual path \"%s\": \"..\" not allowed.\n",
+			vp.c_str());
 		return false;
 	}
 
@@ -278,22 +279,23 @@ bool FileSystem::AddVirtualPath(const string &vpath, const string &realpath, con
 	// memory path is reserved
 	if (vp == "@memory" || vp.substr(0, 8) == "@memory/")
 	{
-		perr << "Error mounting virtual path \"" << vp << "\": "
-				<< "\"@memory\" is a reserved virtual path name." << std::endl;
+		con.Printf_err(MM_MINOR_ERR,
+			"Error mounting virtual path \"%s\": %s\"@memory\" is a reserved virtual path name.\n",
+			vp.c_str());
 		return false;
 	}
 
 	string fullpath = rp;
 	rewrite_virtual_path(fullpath);
 	// When mouting a memory file, it wont exist, so don't attempt to create the dir
-	perr << "virtual path \"" << vp << "\": "
-		<< fullpath << std::endl;
+	con.Printf(MM_INFO, "virtual path \"%s\": %s\n", vp.c_str(), fullpath.c_str());
 	if (!(fullpath.substr(0, 8) == "@memory/"))
 	{
 		if (!IsDir(fullpath)) {
 			if(!create) {
-				perr << "Error mounting virtual path \"" << vp << "\": "
-					<< "directory not found: " << fullpath << std::endl;
+				con.Printf_err(MM_MINOR_WARN,
+					"Problem mounting virtual path \"%s\": directory not found: %s\n",
+					vp.c_str(), fullpath.c_str());
 				return false;
 			}
 			else {
@@ -332,8 +334,9 @@ bool FileSystem::MountFileInMemory(const std::string &vpath, const uint8 *data, 
 
 	if (p != memoryfiles.end())
 	{
-		perr << "Error mounting file in memory \"" << vp << "\": "
-				<< "File already mounted." << std::endl;
+		con.Printf_err(MM_MINOR_ERR,
+			"Error mounting file in memory \"%s\": File already mounted.\n",
+			vp.c_str());
 		return false;
 	}
 

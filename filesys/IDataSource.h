@@ -353,7 +353,7 @@ public:
 		return (buf_ptr - buf);
 	}
 
-	virtual bool eof() { return ((uint32)(buf_ptr-buf))>=size; }
+	virtual bool eof() { return (static_cast<uint32>(buf_ptr-buf))>=size; }
 
 };
 

@@ -46,10 +46,18 @@ CoreApp* CoreApp::application = 0;
 CoreApp::CoreApp(const int argc, const char * const * const argv,
 	const string _defaultGame, bool delayPostInit)
 	: isRunning(false), framenum(0), kernel(0), filesystem(0), config(0),
-		defaultGame(_defaultGame)
+		defaultGame(_defaultGame), oHelp(false), oQuiet(false), oVQuiet(false)
 {
 	assert(application == 0);
 	application = this;
+
+	// we need to preparse the arguments to find out if we're quiet or not
+	ParseArgs(argc, argv);
+
+	// if we're spitting out help, we probably want to avoid having the other cruft dumped too...
+	if(oHelp) { oQuiet=oVQuiet=true; }
+	if(oQuiet) con.setMsgMask(static_cast<MsgMask>(MM_ALL & ~MM_INFO & ~MM_MINOR_WARN));
+	if(oVQuiet) con.setMsgMask(static_cast<MsgMask>(MM_ALL & ~MM_INFO & ~MM_MINOR_WARN & ~MM_MAJOR_WARN & ~MM_MINOR_ERR));
 
 	sysInit();
 
@@ -69,7 +77,7 @@ CoreApp::~CoreApp()
 // Init sdl
 void CoreApp::SDLInit()
 {
-	pout << "Init SDL" << std::endl;
+	con.Print(MM_INFO, "Initilising SDL...\n");
 	SDL_Init(SDL_INIT_VIDEO);
 	atexit(SDL_Quit);
 }
@@ -87,13 +95,13 @@ void CoreApp::sysInit()
 	SDLInit();
 
 	// Create the kernel
-	pout << "Create Kernel" << std::endl;
+	con.Print(MM_INFO, "Creating Kernel...\n");
 	kernel = new Kernel;
 
-	pout << "Create FileSystem" << std::endl;
+	con.Print(MM_INFO, "Creating FileSystem...\n");
 	filesystem = new FileSystem;
 
-	pout << "Create Configuration" << std::endl;
+	con.Print(MM_INFO, "Creating Configuration...\n");
 	config = new Configuration;
 
 }
@@ -111,10 +119,10 @@ void CoreApp::setupVirtualPaths()
 	home = getenv("HOME");
 	home += "/.pentagram";
 #elif defined(WIN32) && defined(WIN32_USE_MY_DOCUMENTS)
-      TCHAR MyDocumentsPath[MAX_PATH];
-      SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, MyDocumentsPath);
-      home = MyDocumentsPath;
-      home += "\\Pentagram";
+	TCHAR MyDocumentsPath[MAX_PATH];
+	SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, MyDocumentsPath);
+	home = MyDocumentsPath;
+	home += "\\Pentagram";
 #else
 	// TODO: what to do on systems without $HOME?
 	home = ".";
@@ -127,30 +135,28 @@ void CoreApp::setupVirtualPaths()
 #else
 	data = "data";
 #endif
-	pout << "Trying built-in data path" << std::endl;
+	con.Print(MM_INFO, "Trying built-in data path\n");
 	filesystem->AddVirtualPath("@data", data);
 }
 
 // load configuration files
 void CoreApp::loadConfig()
 {
-	pout << "Loading configuration files:" << std::endl;
+	con.Print(MM_INFO, "Loading configuration files:\n");
 
 	// system-wide config
-	pout << "@data/pentagram.cfg... ";
 	if (config->readConfigFile("@data/pentagram.cfg", "config"))
-		pout << "Ok" << std::endl;
+		con.Print(MM_INFO, "@data/pentagram.cfg... Ok\n");
 	else
-		pout << "Failed" << std::endl;
+		con.Print(MM_MINOR_WARN, "@data/pentagram.cfg... Failed\n");
 
 	// user config
-	pout << "@home/pentagram.cfg... ";
 	if (config->readConfigFile("@home/pentagram.cfg", "config"))
-		pout << "Ok" << std::endl;
+		con.Print(MM_INFO, "@home/pentagram.cfg... Ok\n");
 	else
-		pout << "Failed" << std::endl;
+		con.Print(MM_MINOR_WARN, "@home/pentagram.cfg... Failed\n");
 
-	pout << "Game: " << game << std::endl;
+	con.Printf(MM_INFO, "Game: %s\n", game.c_str());
 
 	// Question: config files can specify an alternate data path
 	// Do we reload the config files if that path differs from the
@@ -161,24 +167,24 @@ void CoreApp::loadConfig()
 	 **********/
 	//addPath("config/general/data","@data", "Data Path");
 	std::string data;
-	pout << "Reading \"config/general/data\" config key." << std::endl;
+	con.Print(MM_INFO, "Reading \"config/general/data\" config key.\n");
 	config->value("config/general/data", data, "");
 	if (data != "") {
-		pout << "Data Path: " << data << std::endl;
+		con.Printf(MM_INFO, "Data Path: %s\n",data.c_str());
 		filesystem->AddVirtualPath("@data", data);
 	}
 	else {
-		pout << "Key not found. Data path set to default." << std::endl;
+		con.Print(MM_MINOR_WARN, "Key not found. Data path set to default.\n");
 	}
 
 	/**********
 	  load main game data path
 	 **********/
 	std::string gpath;
-	pout << "Reading \"config/" << game << "/path\" config key." << std::endl;
+	con.Printf(MM_INFO, "Reading \"config/%s/path\" config key.\n", game.c_str());
 	config->value(string("config/")+game+"/path", gpath, ".");
 	filesystem->AddVirtualPath("@u8", gpath);
-	pout << "Game Path: " << gpath << std::endl;
+	con.Printf(MM_INFO, "Game Path: %s\n", gpath.c_str());
 
 	/**********
 	  load work path. Default is $(HOME)/.pentagram/game-work
@@ -193,10 +199,10 @@ void CoreApp::loadConfig()
 	home = ".";
 #endif
 	std::string work(home+"/"+game+"-work");
-	pout << "Reading \"config/" << game << "/work\" config key." << std::endl;
+	con.Printf(MM_INFO, "Reading \"config/%s/work\" config key.\n", game.c_str());
 	config->value(string("config/")+game+"/work", work, string(home+"/"+game+"-work").c_str());
 	filesystem->AddVirtualPath("@work", work, true); // force creation if it doesn't exist
-	pout << "U8 Workdir: " << work << std::endl;
+	con.Printf(MM_INFO, "U8 Workdir: %s\n", work.c_str());
 
 	// make sure we've got a minimal sane filesystem under there...
 	filesystem->MkDir("@work/usecode");
@@ -207,11 +213,19 @@ void CoreApp::loadConfig()
 
 void CoreApp::ParseArgs(const int argc, const char * const * const argv)
 {
-	pout << "Parsing Args" << std::endl;
-
-	parameters.declare("--game", &game, defaultGame.c_str());
-	//parameters.declare("--singlefile",	&singlefile, true);
-
+	parameters.declare("--game",	&game,		defaultGame.c_str());
+	parameters.declare("-h",		&oHelp, 	true);
+	parameters.declare("-q", 		&oQuiet,	true);
+	parameters.declare("-qq",		&oVQuiet,	true);
+	
 	parameters.process(argc, argv);
+}
+
+void CoreApp::helpMe()
+{
+	con.Print("\t-h\t\t- quick help menu (this)\n");
+	con.Print("\t-q\t\t- silence general logging messages\n");
+	con.Print("\t-qq\t\t- silence general logging messages and non-critical warnings/errors\n");
+	con.Print("\t--game {name}\t- executes the appropritate game by reading the specific 'name' section of the pentagram.cfg file\n");
 }
 

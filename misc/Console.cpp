@@ -180,7 +180,7 @@ Console::Console () : current(0), x(0), display(0), linewidth(-1),
 					 totallines(0), vislines(0), wordwrap(true), cr(false),
 					 putchar_count(0), std_output_enabled(0xFFFFFFFF),
 					 stdout_redir(0), stderr_redir(0), confont(0),
-					 auto_paint(0)
+					 auto_paint(0), msgMask(MM_ALL)
 {
 	linewidth = -1;
 
@@ -353,7 +353,6 @@ void Console::PrintPutchar()
 
 	// Print it
 	PrintInternal(putchar_buf);
-
 }
 
 //
@@ -361,38 +360,54 @@ void Console::PrintPutchar()
 //
 
 // Print a text string to the console, and output to stdout
-void Console::Print (const char *txt)
+void Console::Print(const char *txt)
 {
 	if (std_output_enabled & CON_STDOUT) fputs(txt, stdout);
 	if (stdout_redir) stdout_redir->write(txt, std::strlen(txt));
-	PrintInternal (txt);
+	PrintInternal(txt);
+}
+
+// Print a text string to the console, and output to stdout, with message filtering
+void Console::Print(const MsgMask mm, const char *txt)
+{
+	if(mm & msgMask) Print(txt);
 }
 
 // printf, and output to stdout
-int Console::Printf (const char *fmt, ...)
+sint32 Console::Printf(const char *fmt, ...)
 {
-	va_list		argptr;
-	char		msg[MAXPRINTMSG];
+	va_list argptr;
 
-	va_start (argptr,fmt);
-	if (std_output_enabled & CON_STDOUT) vfprintf (stdout, fmt,argptr);
-	int count = vsnprintf (msg,MAXPRINTMSG,fmt,argptr);
-	if (stdout_redir) stdout_redir->write(msg,count);
-	PrintInternal (msg);
-	va_end (argptr);
+	va_start(argptr,fmt);
+	sint32 count = vPrintf(fmt, argptr);
+	va_end(argptr);
+
+	return count;
+}
+
+// printf, and output to stdout, with message filtering.
+sint32 Console::Printf(const MsgMask mm, const char *fmt, ...)
+{
+	if(!(mm & msgMask)) return 0;
+
+	va_list argptr;
+	
+	va_start(argptr,fmt);
+	sint32 count = vPrintf(fmt, argptr);
+	va_end(argptr);
 
 	return count;
 }
 
 // printf, and output to stdout (va_list)
-int Console::vPrintf (const char *fmt, va_list argptr)
+sint32 Console::vPrintf (const char *fmt, va_list argptr)
 {
-	char		msg[MAXPRINTMSG];
+	char msg[MAXPRINTMSG];
 
-	if (std_output_enabled & CON_STDOUT) vfprintf (stdout, fmt,argptr);
-	int count = vsnprintf (msg,MAXPRINTMSG,fmt,argptr);
-	if (stdout_redir) stdout_redir->write(msg,count);
-	PrintInternal (msg);
+	if (std_output_enabled & CON_STDOUT) vfprintf (stdout, fmt, argptr);
+	sint32 count = vsnprintf (msg, MAXPRINTMSG, fmt, argptr);
+	if (stdout_redir) stdout_redir->write(msg, count);
+	PrintInternal(msg);
 
 	return count;
 }
@@ -400,8 +415,8 @@ int Console::vPrintf (const char *fmt, va_list argptr)
 // Print a text string to the console, and output to stdout
 void Console::PrintRaw (const char *txt, int n)
 {
-	if (std_output_enabled & CON_STDOUT) std::fwrite(txt,n,1,stdout);
-	if (stdout_redir) stdout_redir->write(txt,n);
+	if (std_output_enabled & CON_STDOUT) std::fwrite(txt, n, 1, stdout);
+	if (stdout_redir) stdout_redir->write(txt, n);
 	PrintRawInternal (txt, n);
 }
 
@@ -426,29 +441,46 @@ void Console::Print_err (const char *txt)
 	PrintInternal (txt);
 }
 
+// Print a text string to the console, and output to stderr, with message filtering
+void Console::Print_err(const MsgMask mm, const char *txt)
+{
+	if(mm & msgMask) Print_err(txt);
+}
+
 // printf, and output to stderr
-int Console::Printf_err (const char *fmt, ...)
+sint32 Console::Printf_err (const char *fmt, ...)
 {
 	va_list		argptr;
 	char		msg[MAXPRINTMSG];
 
-	va_start (argptr,fmt);
-	int count = vsnprintf (msg,MAXPRINTMSG,fmt,argptr);
-	if (std_output_enabled & CON_STDERR) vfprintf (stderr, fmt,argptr);
-	if (stderr_redir) stderr_redir->write(msg, count);
-	PrintInternal (msg);
+	va_start (argptr, fmt);
+	sint32 count = vPrintf_err(fmt, argptr);
 	va_end (argptr);
 
 	return count;
 }
 
-// printf, and output to stderr (va_list)
-int Console::vPrintf_err (const char *fmt, va_list argptr)
+// printf, and output to stderr, with message filtering
+sint32 Console::Printf_err(const MsgMask mm, const char *fmt, ...)
 {
-	char		msg[MAXPRINTMSG];
+	if(!(mm & msgMask)) return 0;
+
+	va_list argptr;
+
+	va_start(argptr,fmt);
+	sint32 count = vPrintf_err(fmt, argptr);
+	va_end(argptr);
+
+	return count;
+}
+
+// printf, and output to stderr (va_list)
+sint32 Console::vPrintf_err (const char *fmt, va_list argptr)
+{
+	char msg[MAXPRINTMSG];
 
 	if (std_output_enabled & CON_STDERR) vfprintf (stderr, fmt,argptr);
-	int count = vsnprintf (msg,MAXPRINTMSG,fmt,argptr);
+	sint32 count = vsnprintf (msg, MAXPRINTMSG, fmt, argptr);
 	if (stderr_redir) stderr_redir->write(msg, count);
 	PrintInternal (msg);
 

@@ -36,19 +36,26 @@ ConApp::ConApp(const int argc, const char * const * const argv, const std::strin
 
 	postInit(argc, argv);
 
-	if(weAreDisasming==true)
+	if(help())
 	{
-		pout << "We Are Disassembling..." << std::endl;
+		helpMe();
+	}
+	else if(weAreDisasming==true)
+	{
+		//QUIET(pout << "We Are Disassembling..." << std::endl);
+		con.Print(MM_INFO, "We Are Diassembling...\n");
 		kernel->addProcess(new DisasmProcess());
 	}
 	else if(weAreCompiling==true)
 	{
-		pout << "We Are Compiling..." << std::endl;
+		//QUIET(pout << "We Are Compiling..." << std::endl);
+		con.Print(MM_INFO, "We Are Compiling...\n");
 		kernel->addProcess(new CompileProcess(filesystem));
 	}
 	else
 	{
 		// we'll presume we're testing for the moment, but we really need to have a proper testing target in the future...
+		con.Print(MM_INFO, "We Are Compiling...\n");
 		kernel->addProcess(new CompileProcess(filesystem));
 		//assert(false);
 	}

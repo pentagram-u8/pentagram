@@ -7,4 +7,5 @@ config.sub
 configure
 ltmain.sh
 pentagram
+llc
 cachegrind.out.*
