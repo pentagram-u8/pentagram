@@ -25,13 +25,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <cstring>
 
+#include "pentpal.h"
+
 #include "FileSystem.h"
 #include "ConvertShape.h"
 #include "Shape.h"
 #include "ShapeFrame.h"
 #include "Palette.h"
-#include "crusader/ConvertShapeCrusader.h"
-#include "u8/ConvertShapeU8.h"
 
 // And not too shockingly similiar to the exult plugin!
 
@@ -49,7 +49,9 @@ static gint32 load_image(IDataSource * ids, const gchar * filename);
 static void load_frame(Shape * s, uint32 framenum, GimpDrawable * drawable);
 static void paintFrame(Shape * s, uint32 framenum, void * pixels,
 				uint32 pitch, sint32 x, sint32 y, GimpPixelRgn * clip_window);
-static IDataSource * choosePalette();
+
+static gint32 save_image(gchar *filename, gint32 image_ID,
+						 gint32 drawable_ID, gint32 orig_image_ID);
 
 GimpPlugInInfo PLUG_IN_INFO =
 {
@@ -96,6 +98,7 @@ static void query(void)
 
 	gimp_register_magic_load_handler (LOAD_PROC, EXT, "", "");
 
+/*
 	gimp_install_procedure (SAVE_PROC,
 		"Save files in Pentagram SHP format",
 		HELP,
@@ -110,6 +113,7 @@ static void query(void)
 		save_args, NULL);
 
 	gimp_register_save_handler (SAVE_PROC, EXT, "");
+*/
 }
 
 static void run(const gchar *name, gint nparams, const GimpParam * param,
@@ -120,11 +124,14 @@ static void run(const gchar *name, gint nparams, const GimpParam * param,
 	gint32 image_ID;
 	gint32 drawable_ID;
 	gint32 orig_image_ID;
+	gchar * name_buf;
+	gchar * filename;
 	GimpRunMode run_mode;
 
 	*nreturn_vals = 1;
 	*return_vals = values;
 	values[0].type = GIMP_PDB_STATUS;
+	run_mode = param[0].data.d_int32;
 
 	if (! strcmp(name, LOAD_PROC))
 	{
@@ -159,7 +166,15 @@ static void run(const gchar *name, gint nparams, const GimpParam * param,
 		orig_image_ID = param[1].data.d_int32;
 		image_ID = orig_image_ID;
 		drawable_ID = param[2].data.d_int32;
-		// TODO: Umm... the rest of this shit
+		filename = param[3].data.d_string;
+		if (run_mode != GIMP_RUN_NON_INTERACTIVE)
+		{
+			name_buf = g_strdup_printf("Saving %s:", filename);
+			gimp_progress_init(name_buf);
+			g_free(name_buf);
+		}
+		save_image(filename, image_ID,
+				   drawable_ID, orig_image_ID);
 	}
 	else
 	{
@@ -177,7 +192,6 @@ static gint32 load_image(IDataSource * ids, const gchar * filename)
 	uint32 i;
 	ShapeFrame *frame;
 	Pentagram::Palette pal;
-	guchar palHack [2];
 	guchar cmap[768];
 	const ConvertShapeFormat *read_format;
 	uint32 read_size = ids->getSize();
@@ -190,23 +204,14 @@ static gint32 load_image(IDataSource * ids, const gchar * filename)
 		return -1;
 	}
 
-	IDataSource * ds = choosePalette();
-	if (ds)
+	if (loadPalette(&pal, read_format))
 	{
-		ds->seek(4);
-		pal.load(*ds);
-		delete ds;
-
-		palHack[1] = 255;
 		for (int i = 0; i < 256; ++i)
 		{
-			palHack[0] = i;
-			pal.native[i] = *((uint16 * ) palHack);
 			cmap[i* 3] = pal.palette[i * 3];
 			cmap[i* 3 + 1] = pal.palette[i * 3 + 1];
 			cmap[i* 3 + 2] = pal.palette[i * 3 + 2];
 		}
-//		pout << "Palette Loaded." << std::endl;
 	}
 	else
 	{
@@ -235,7 +240,7 @@ static gint32 load_image(IDataSource * ids, const gchar * filename)
 	}
 	image_ID = gimp_image_new(width - min_x, height - min_y, GIMP_INDEXED);
 	gimp_image_set_filename(image_ID, filename);
-	gimp_image_set_cmap(image_ID, cmap, 256);
+	gimp_image_set_colormap(image_ID, cmap, 256);
 
 	for (i = 0; i < shape.frameCount(); ++i)
 	{
@@ -258,51 +263,6 @@ static gint32 load_image(IDataSource * ids, const gchar * filename)
 	}
 
 	return image_ID;
-}
-
-static void file_sel_delete( GtkWidget *widget, GtkWidget **file_sel )
-{
-	gtk_widget_destroy( *file_sel );
-	*file_sel = NULL;
-}
-
-static void file_selected( GtkWidget *widget, gboolean *selected )
-{
-	*selected = TRUE;
-}
-
-static IDataSource * choosePalette()
-{
-	FileSystem * filesys = FileSystem::get_instance();
-	GtkWidget *file_sel;
-	gchar *filename;
-	gboolean selected = FALSE;
-
-	file_sel = gtk_file_selection_new( "Choose a Palette" );
-	gtk_window_set_modal( GTK_WINDOW( file_sel ), TRUE );
-
-	gtk_signal_connect( GTK_OBJECT( file_sel ), "destroy",
-                            GTK_SIGNAL_FUNC( file_sel_delete ), &file_sel );
-
-	gtk_signal_connect( GTK_OBJECT( GTK_FILE_SELECTION( file_sel )->cancel_button ), "clicked", GTK_SIGNAL_FUNC( file_sel_delete ), &file_sel );
-
-	gtk_signal_connect( GTK_OBJECT( GTK_FILE_SELECTION( file_sel )->ok_button ), "clicked", GTK_SIGNAL_FUNC( file_selected ), &selected );
-
-	gtk_widget_show( file_sel );
-
-	while( ( ! selected ) && ( file_sel ) )
-		gtk_main_iteration();
-
-	/* canceled or window was closed */
-	if( ! selected )
-		return 0;
-
-	/* ok */
-	filename = g_strdup( gtk_file_selection_get_filename( GTK_FILE_SELECTION( file_sel ) ) );
-	gtk_widget_destroy( file_sel );
-
-	IDataSource * ds = filesys->ReadFile(filename);
-	return ds;
 }
 
 static void load_frame(Shape * s, uint32 framenum, GimpDrawable * drawable)
@@ -342,3 +302,7 @@ static void paintFrame(Shape * s, uint32 framenum, void * pixels,
 	#undef NO_CLIPPING
 }
 
+static gint32 save_image(gchar *filename, gint32 image_ID,
+						 gint32 drawable_ID, gint32 orig_image_ID)
+{
+}

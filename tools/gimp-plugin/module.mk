@@ -15,10 +15,18 @@ pentshp_OBJ = \
 	graphics/Shape.o \
 	graphics/ShapeFrame.o
 
-$(LPATH)/pentshp$(EXEEXT): $(pentshp_OBJ) $(LPATH)/pentshp.o
+pentshp_CUST_OBJ = \
+	$(LPATH)/pentshp.o \
+	$(LPATH)/pentpal.o
+
+$(LPATH)/pentshp$(EXEEXT): $(pentshp_OBJ) $(pentshp_CUST_OBJ)
 	$(CXX) -g -o $@ $+ $(LDFLAGS) $(GIMP_LIBS)
 
 $(LPATH)/pentshp.o: $(LPATH)/pentshp.cpp
+	@$(MKDIR) $(*D)/$(DEPDIR)
+	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).d",-MQ,"$@",-MP $(WARNINGS) $(CXXFLAGS) $(SDL_CFLAGS) $(GIMP_INCLUDES) -c -o $@ $<
+
+$(LPATH)/pentpal.o: $(LPATH)/pentpal.cpp
 	@$(MKDIR) $(*D)/$(DEPDIR)
 	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).d",-MQ,"$@",-MP $(WARNINGS) $(CXXFLAGS) $(SDL_CFLAGS) $(GIMP_INCLUDES) -c -o $@ $<
 

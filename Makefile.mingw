@@ -72,6 +72,7 @@ shapeconv.exe : tools/shapeconv/ShapeConv.o $(CONVERT) $(FILESYS) $(UNZIP) $(MIS
 
 PENTSHP_OBJCS = \
 	$(CONVERT) $(MISC) filesys/FileSystem.o graphics/Palette.o graphics/Shape.o graphics/ShapeFrame.o \
+	tools/gimp-plugin/pentpal.o \
 	tools/gimp-plugin/pentshp.o
 
 pentshp.exe : $(PENTSHP_OBJCS)

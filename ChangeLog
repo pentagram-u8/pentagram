@@ -1,3 +1,7 @@
+2005-01-23  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* tools/gimp-plugin/*: Palettes now saved in the gimp after loading
+	  once. Requires gimp-2.2.
+
 2005-01-22  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* misc/Console.*: RemoveConsoleFunction to remove all commands attached
 	  to a function.
