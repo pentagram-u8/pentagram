@@ -134,6 +134,7 @@ bool ShapeViewerGump::OnKeyDown(int key, int mod)
 	switch(key)
 	{
 	case SDLK_UP:
+		if (delta >= flex->get_count()) delta = 1;
 		if (curshape < delta)
 			curshape = flex->get_count() + curshape - delta;
 		else
@@ -142,6 +143,7 @@ bool ShapeViewerGump::OnKeyDown(int key, int mod)
 		curframe = 0;
 		break;
 	case SDLK_DOWN:
+		if (delta >= flex->get_count()) delta = 1;
 		if (curshape + delta >= flex->get_count())
 			curshape = curshape + delta - flex->get_count();
 		else
@@ -152,7 +154,8 @@ bool ShapeViewerGump::OnKeyDown(int key, int mod)
 	case SDLK_LEFT:
 	{
 		Shape* shape = flex->getShape(curshape);
-		if (shape) {
+		if (shape && shape->frameCount()) {
+			if (delta >= shape->frameCount()) delta = 1;
 			if (curframe < delta)
 				curframe = shape->frameCount() + curframe - delta;
 			else
@@ -162,7 +165,8 @@ bool ShapeViewerGump::OnKeyDown(int key, int mod)
 	case SDLK_RIGHT:
 	{
 		Shape* shape = flex->getShape(curshape);
-		if (shape) {
+		if (shape && shape->frameCount()) {
+			if (delta >= shape->frameCount()) delta = 1;
 			if (curframe + delta >= shape->frameCount())
 				curframe = curframe + delta - shape->frameCount();
 			else
