@@ -68,8 +68,7 @@ bool DeleteActorProcess::run(const uint32 framenum)
 	// (note that Container::destroy() calls removeContents())
 	a->destroy();
 
-	// done
-	terminate();
+	// NOTE: we're terminated here because this process belongs to the actor
 
 	return true;
 }
