@@ -1,3 +1,6 @@
+2004-01-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* docs/shapes.cmp.txt: u8shapes.cmp format
+
 2004-01-04  Ryan Nunn <colourles@users.sourceforge.net>
 	* First commit of the new year for 2 years running! 
 	* misc/common_types.h : Added ObjId and ProcId typedefs.

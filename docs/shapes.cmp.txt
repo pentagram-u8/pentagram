@@ -1,31 +1,71 @@
-shape 25:
+The earlier releases of Ultima 8 had a file u8shapes.cmp which had to
+be uncompressed into u8shapes.flx.
 
-compressed header:
+Format of u8shapes.cmp:
+------------------------
 
-00 01 02 03 04 01 00 01 00 01 00 0C 00 00 00 72
-----header---- --unknown-- frams froffset
-08 01 00 32 00 40 00 11 00 3F 00
+u8shapes.cmp is a standard U8 flex file.
+Each object is a shape, formatted as follows:
 
-22 02 BE 0F 22 .....
--------data---------
+Header:
+uint8 special[5]     5 'special' colour indices. See below.
+uint32 unk1
+uint16 numframes     the number of frames in this shape
 
-uncompressed:
+numframes times 6 bytes:
+uint32 frameoffset   offset of the (compressed) frame data relative to 'unk1'
+uint16 framesize     size of the (compressed) frame data
 
-01 00 01 00 01 00 0c 00 00 80 ea 08 19 00 00 00
---unknown-- frams froffset ?? size- shpnm frnum
+This is followed by the actual frame data.
 
-00 00 00 00 01 00 32 00 40 00 11 00 3f 00 80 00
---unknown-- cmpr? xlgth ylgth xoffs yoffs 
+The frames are stored using a form of RLE. Each frame can also 'copy'
+sequences of pixels from the previous frame in this shape.
+(See below for details.)
 
-82 00 86 00 8c 00 93 00 9e 00 ad 00 c0 00 d7 00
-f0 00 0b 01 26 01 3e 01 5b 01 78 01 95 01 b3 01
-d1 01 f0 01 10 02 30 02 4f 02 70 02 90 02 b2 02
-d5 02 f6 02 1a 03 3f 03 64 03 8a 03 b0 03 d5 03
-fa 03 21 04 49 04 70 04 99 04 c1 04 eb 04 14 05
-3f 05 6a 05 92 05 bd 05 e7 05 14 06 43 06 71 06
-a0 06 cd 06 fb 06 27 07 51 07 79 07 9f 07 c3 07
-e4 07 01 08 1a 08 2F 08 40 08 4C 08 54 08
+Each frame has the following format:
 
-22 02 BE 0F 22 .....
---------data--------
+Frame header:
+uint16 compression   (boolean)
+uint16 xsize         dimensions of this frame
+uint16 ysize
+sint16 xoffset       (x,y) of the origin of this frame
+sint16 yoffset
 
+The image data is stored line-by-line in ysize lines.
+Each line contains alternating gaps and runs.
+A gap is a uint8 indicating a number of transparent pixels. (Can be zero.)
+A run is a number of pixels. See below for the format of a run.
+A line ends when the total size of the gaps and runs reaches xsize. If the
+next gap to be read makes the line longer than xsize, then this gap should
+not be read and the line is ended.
+
+The format of a run depends on if the 'compression' boolean is 1 (true) or
+0 (false).
+If false, the first byte of a run is the length in bytes of this run.
+It is followed by this number of bytes. Each byte is a pixel, unless the
+current frame is not the first frame, and the byte is one of the 'special' 
+colour indices from the shape header or 0xFF.
+
+The special bytes mean, in order, "copy 2 pixels from previous frame",
+"copy 3 pixels from previous frame", ..., "copy 7 pixels from previous frame".
+
+A 0xFF byte is also used to copy pixels from the previous frame. It is
+followed by a uint8 that indicates the number of pixels to copy.
+
+Pixels are copied from the current position in the previous frame, if
+the origins of the two frames overlap.
+This means that, if (x,y) are the current coordinates in the current frame
+relative to the top-left corner, then pixels are copied from the previous
+frame at (x - xoffset + previous_xoffset, y - yoffset + previous_yoffset).
+
+
+
+If 'compression' is true, the least significant bit of the first byte
+determines the encoding of this run: if 0, the following bytes are to be
+copied literally; if 1, the following byte should be repeated.
+The remaining 7 bits give the number of bytes to copy or the number of 
+times to repeat.
+
+If copying a series of bytes, interpret the 5 special colour values and 0xFF
+as in the previous case.
+No special interpreting takes places when repeating a single byte.
