@@ -222,8 +222,9 @@ uint16 Actor::doAnim(Animation::Sequence anim, int dir)
 
 	if (dir == 8) {
 		//!!! CHECKME
-		//!! what does dir == 8 mean?
-		dir = 0;
+		//!! what does dir == 8 mean? Guessing 'last direction'
+		// (should it be direction 'now' or direction when starting animation?)
+		dir = direction;
 	}
 
 	Process *p = new ActorAnimProcess(this, anim, dir);
@@ -472,10 +473,16 @@ void Actor::die()
 
 		Process* resproc = new ResurrectionProcess(this);
 		Kernel::get_instance()->addProcess(resproc);
+
 		Process* delayproc = new DelayProcess(timeout);
 		Kernel::get_instance()->addProcess(delayproc);
 
+		ProcId animpid = doAnim(Animation::standUp, 8);
+		Process* animproc = Kernel::get_instance()->getProcess(animpid);
+		assert(animproc);
+
 		resproc->waitFor(delayproc);
+		animproc->waitFor(resproc);
 	}
 }
 
