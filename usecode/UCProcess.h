@@ -30,7 +30,7 @@ class Usecode;
 class UCProcess : public Process
 {
 	friend class UCMachine;
-
+	friend class Kernel;
 public:
 	UCProcess(Usecode* usecode_, uint16 classid_,
 			  uint16 offset_, uint32 this_ptr = 0);
@@ -49,8 +49,7 @@ protected:
 	bool ret();
 
 	// item we are assigned to
-	uint16 item_num;
-
+	uint16 item_num;  //!! these two may have to be moved to Process
 	uint16 type;
 
 	// stack base pointer

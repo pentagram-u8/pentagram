@@ -28,7 +28,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 DEFINE_DYNAMIC_CAST_CODE(Actor,Container);
 
 Actor::Actor()
-	: animproc(0)
+	: animating(false), strength(0), dexterity(0), intelligence(0),
+	  hitpoints(0), mana(0), lastanim(0), direction(0)
 {
 
 }
@@ -73,3 +74,110 @@ uint32 Actor::I_doAnim(const uint8* args, unsigned int /*argsize*/)
 
 	return Kernel::get_instance()->addProcess(p);
 }
+
+uint32 Actor::I_getDir(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR(actor);
+	if (!actor) return 0;
+
+	return actor->getDir();
+}
+
+uint32 Actor::I_getLastAnimSet(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR(actor);
+	if (!actor) return 0;
+
+	return actor->getLastAnim();
+}
+
+uint32 Actor::I_getStr(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR(actor);
+	if (!actor) return 0;
+
+	return actor->getStr();
+}
+
+uint32 Actor::I_getDex(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR(actor);
+	if (!actor) return 0;
+
+	return actor->getDex();
+}
+
+uint32 Actor::I_getInt(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR(actor);
+	if (!actor) return 0;
+
+	return actor->getInt();
+}
+
+uint32 Actor::I_getHp(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR(actor);
+	if (!actor) return 0;
+
+	return actor->getHP();
+}
+
+uint32 Actor::I_getMana(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR(actor);
+	if (!actor) return 0;
+
+	return actor->getMana();
+}
+
+uint32 Actor::I_setStr(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR(actor);
+	ARG_UINT16(str);
+	if (!actor) return 0;
+
+	actor->setStr(str);
+	return 0;
+}
+
+uint32 Actor::I_setDex(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR(actor);
+	ARG_UINT16(dex);
+	if (!actor) return 0;
+
+	actor->setDex(dex);
+	return 0;
+}
+
+uint32 Actor::I_setInt(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR(actor);
+	ARG_UINT16(int_);
+	if (!actor) return 0;
+
+	actor->setStr(int_);
+	return 0;
+}
+
+uint32 Actor::I_setHp(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR(actor);
+	ARG_UINT16(hp);
+	if (!actor) return 0;
+
+	actor->setHP(hp);
+	return 0;
+}
+
+uint32 Actor::I_setMana(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR(actor);
+	ARG_UINT16(mp);
+	if (!actor) return 0;
+
+	actor->setMana(mp);
+	return 0;
+}
+

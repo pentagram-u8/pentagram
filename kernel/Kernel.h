@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <list>
 #include <map>
 
+#include "intrinsics.h"
+
 class Process;
 class idMan;
 
@@ -34,12 +36,17 @@ public:
 
 	uint16 addProcess(Process *proc); // returns pid of new process
 	void removeProcess(Process *proc);
-
 	bool runProcesses(uint32 framenum);
-
 	Process* getProcess(uint16 pid);
 
+	// only UCProcesses; objid = 0 means any object, type = 6 means any type
+	uint32 getNumProcesses(uint16 objid, uint16 processtype);
+	void killProcesses(uint16 objid, uint16 processtype);
+
 	void kernelStats();
+
+	INTRINSIC(I_getNumProcesses);
+	INTRINSIC(I_resetRef);
 private:
 	std::list<Process*> processes;
 	idMan	*pIDs;

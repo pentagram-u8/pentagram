@@ -31,15 +31,52 @@ public:
 	Actor();
 	~Actor();
 
+	uint16 getStr() const { return strength; }
+	void setStr(uint16 str) { strength = str; }
+	uint16 getDex() const { return dexterity; }
+	void setDex(uint16 dex) { dexterity = dex; }
+	uint16 getInt() const { return intelligence; }
+	void setInt(uint16 int_) { intelligence = int_; }
+	uint16 getHP() const { return hitpoints; }
+	void setHP(uint16 hp) { hitpoints = hp; }
+	uint16 getMana() const { return mana; }
+	void setMana(uint16 mp) { mana = mp; }
+
+	uint16 getLastAnim() const { return lastanim; }
+	void setLastAnim(uint16 anim) { lastanim = anim; }
+	uint16 getDir() const { return direction; }
+	void setDir(uint16 dir) { direction = dir; }
+
 	// p_dynamic_cast stuff
 	ENABLE_DYNAMIC_CAST(Actor);
 
 	INTRINSIC(I_isNPC);
+	INTRINSIC(I_getDir);
+	INTRINSIC(I_getLastAnimSet);
+	INTRINSIC(I_getStr);
+	INTRINSIC(I_getDex);
+	INTRINSIC(I_getInt);
+	INTRINSIC(I_getHp);
+	INTRINSIC(I_getMana);
+	INTRINSIC(I_setStr);
+	INTRINSIC(I_setDex);
+	INTRINSIC(I_setInt);
+	INTRINSIC(I_setHp);
+	INTRINSIC(I_setMana);
 	INTRINSIC(I_getMap);
 	INTRINSIC(I_doAnim);
 
 private:
-	uint16 animproc; // pid of ActorAnimProcess
+	bool animating;
+
+	uint16 strength;
+	uint16 dexterity;
+	uint16 intelligence;
+	uint16 hitpoints;
+	uint16 mana;
+
+	uint16 lastanim;
+	uint16 direction;
 };
 
 

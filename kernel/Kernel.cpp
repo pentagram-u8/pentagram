@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Process.h"
 #include "idMan.h"
 
+#include "UCProcess.h"
+
 #include "UCMachine.h" // only for usecodeStats.
 #include "World.h" // only for worldStats
 
@@ -135,4 +137,54 @@ void Kernel::kernelStats()
 {
 	pout << "Kernel memory stats:" << std::endl;
 	pout << "Processes : " << processes.size() << "/32765" << std::endl;
+}
+
+
+uint32 Kernel::getNumProcesses(uint16 objid, uint16 processtype)
+{
+	uint32 count = 0;
+
+	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it)
+	{
+		Process* p = *it;
+		UCProcess* up = p_dynamic_cast<UCProcess*>(p);
+		if (!up) continue; //! only relevant for UCProcesses (??)
+
+		if ((objid == 0 || objid == up->item_num) &&
+			(processtype == 6 || processtype == up->type))
+			count++;
+	}
+
+	return count;
+}
+
+void Kernel::killProcesses(uint16 objid, uint16 processtype)
+{
+	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it)
+	{
+		Process* p = *it;
+		UCProcess* up = p_dynamic_cast<UCProcess*>(p);
+		if (!up) continue; //! only relevant for UCProcesses (??)
+
+		if ((objid == 0 || objid == up->item_num) &&
+			(processtype == 6 || processtype == up->type))
+			up->terminate();
+	}
+}
+
+uint32 Kernel::I_getNumProcesses(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_UINT16(item);
+	ARG_UINT16(type);
+
+	return Kernel::get_instance()->getNumProcesses(item, type);
+}
+
+uint32 Kernel::I_resetRef(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_UINT16(item);
+	ARG_UINT16(type);
+
+	Kernel::get_instance()->killProcesses(item, type);
+	return 0;
 }

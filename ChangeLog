@@ -1,4 +1,8 @@
 2003-05-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/Kernel.*: kernel intrinsics
+	* world/World.*, world/actors/Actor.*: some actor attributes/intrinsics
+
+2003-05-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/World*, world/Item.*: ethereal items, push/pop intrinsics
 	* world/actors/Actor.*, world/Item.*: more intrinsics
 

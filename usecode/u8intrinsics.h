@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UCMachine.h"
 #include "Container.h"
 #include "Actor.h"
-
+#include "Kernel.h"
 
 // Ultima 8 Intrinsics
 Intrinsic U8Intrinsics[] = {
@@ -196,24 +196,24 @@ Intrinsic U8Intrinsics[] = {
 	0,
 	0,
 	0,
-	0,
+	Actor::I_getDir,
 	Actor::I_getMap,
 	0,
 	Actor::I_doAnim,
 	// 0x0A0
-	0,
+	Actor::I_getLastAnimSet,
 	UCMachine::I_dummyProcess, //!! process Npc::pathfind(uword, uword, uword, uword)
 	UCMachine::I_dummyProcess, //!! process Npc::pathfind(uword, uword)
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
+	Actor::I_getStr,
+	Actor::I_getInt,
+	Actor::I_getDex,
+	Actor::I_getHp,
+	Actor::I_getMana,
+	Actor::I_setStr,
+	Actor::I_setInt,
+	Actor::I_setDex,
+	Actor::I_setHp,
+	Actor::I_setMana,
 	0,
 	UCMachine::I_dummyProcess, //!! process Npc::cSetActivity(Activity)
 	0,
@@ -245,10 +245,10 @@ Intrinsic U8Intrinsics[] = {
 	0,
 	0,
 	0,
-	0,
-	0,
+	Kernel::I_getNumProcesses,
+	Kernel::I_resetRef,
 	UCMachine::I_dummyProcess, //!! process teleportToEgg(word, word, ubyte)
-	0,
+	Kernel::I_resetRef,
 	0,
 	0,
 	// 0x0D0

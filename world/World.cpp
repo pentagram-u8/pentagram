@@ -231,7 +231,6 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 		npcds->seek(7 + i * 0x31);
 		frame += npcds->read1() << 8;
 
-		// TODO: (decode and) read rest of npcdata.dat...
 		// TODO: locate inventory
 
 		if (shape == 0) {
@@ -253,12 +252,21 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 												Item::EXT_NOTINMAP);
 		if (!actor) {
 #ifdef DUMP_ITEMS
-			// this 'error' message is supposed to occur rather a lot
 			pout << "Couldn't create actor" << std::endl;
 #endif
 			continue;
 		}
 		actor->setLocation(x,y,z);
+
+		// read npcdata:
+		npcds->seek(i * 0x31);
+		actor->setStr(npcds->read1());
+		actor->setDex(npcds->read1());
+		actor->setInt(npcds->read1());
+		actor->setHP(npcds->read1());
+		actor->setDir(npcds->read1());
+		actor->setLastAnim(npcds->read1());
+		// TODO: (decode and) read rest of npcdata.dat...
 
 		npcs[i] = actor;
 		objects[i] = actor;

@@ -47,7 +47,7 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 
 	currentindex = 0;
 
-	if (actor_->animproc != 0) {
+	if (actor_->animating) {
 		//! What do we do if actor was already animating?
 		//! don't do this animation or kill the previous one?
 		//! Or maybe wait until the previous one finishes?
@@ -56,8 +56,9 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 		animaction = 0;
 	}
 
-	// can't set actor_->animproc here yet, because this process
-	// doesn't have a pid yet
+	actor_->animating = true;
+	actor_->lastanim = action;
+	actor_->direction = dir_;
 }
 
 bool ActorAnimProcess::run(const uint32 framenum)
@@ -80,14 +81,6 @@ bool ActorAnimProcess::run(const uint32 framenum)
 		terminate();
 		return false;
 	}
-
-	// set a->animproc now
-	if (a->animproc == 0) {
-		a->animproc = pid;
-	} else {
-		assert(a->animproc == pid);
-	}
-	
 
 	sint32 x, y, z;
 	a->getLocation(x,y,z);
@@ -124,8 +117,7 @@ void ActorAnimProcess::terminate()
 	Actor *a = p_dynamic_cast<Actor*>(World::get_instance()->getObject(actor));
 	if (a) {
 		if (animaction) { 
-			assert(a->animproc == pid);
-			a->animproc = 0;
+			a->animating = false;
 		}
 	}
 
