@@ -333,6 +333,10 @@ bool ContainerGump::StartDraggingItem(Item* item, int mx, int my)
 	// probably don't need to check if item can be moved, since it shouldn't
 	// be in a container otherwise
 
+	// check if the container the item is in is in range
+	MainActor* avatar = World::get_instance()->getMainActor();
+	if (!avatar->canReach(item, 128)) return false;
+
 	sint32 itemx,itemy;
 	item->getGumpLocation(itemx,itemy);
 
@@ -341,12 +345,22 @@ bool ContainerGump::StartDraggingItem(Item* item, int mx, int my)
 
 	GUIApp::get_instance()->setDraggingOffset(mx - itemx, my - itemy);
 
-	//TODO: do need to check if the container the item is in, is in range
 	return true;
 }
 
 bool ContainerGump::DraggingItem(Item* item, int mx, int my)
 {
+	Container* c = p_dynamic_cast<Container*>
+		(World::get_instance()->getItem(owner));
+	assert(c);
+
+	// check if the container the item is in is in range
+	MainActor* avatar = World::get_instance()->getMainActor();
+	if (!avatar->canReach(c, 128)) {
+		display_dragging = false;
+		return false;
+	}
+
 	int dox, doy;
 	GUIApp::get_instance()->getDraggingOffset(dox, doy);	
 	GUIApp::get_instance()->setMouseCursor(GUIApp::MOUSE_TARGET);
@@ -366,11 +380,6 @@ bool ContainerGump::DraggingItem(Item* item, int mx, int my)
 		display_dragging = false;
 		return false;
 	}
-
-
-	Container* c = p_dynamic_cast<Container*>
-		(World::get_instance()->getItem(owner));
-	assert(c);
 
 	// check if item will fit (weight/volume/adding container to itself)
 	if (!c->CanAddItem(item, true)) {
