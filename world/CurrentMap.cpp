@@ -477,13 +477,8 @@ void CurrentMap::surfaceSearch(UCList* itemlist, const uint8* loopscript,
 {
 	sint32 x,y,z;
 	sint32 xd,yd,zd;
-	// if item != 0, search an area around item. Otherwise, search an area
-	// around (x,y)
 	check->getLocation(x,y,z);
-	check->getFootpad(xd,yd,zd);
-	xd *= 32;
-	yd *= 32;
-	zd *= 8;
+	check->getFootpadWorld(xd,yd,zd);
 
 	Rect searchrange(x-xd,y-yd,xd,yd);
 
@@ -514,11 +509,7 @@ void CurrentMap::surfaceSearch(UCList* itemlist, const uint8* loopscript,
 				sint32 ix, iy, iz;
 				item->getLocation(ix, iy, iz);
 				sint32 ixd, iyd, izd;
-				item->getFootpad(ixd, iyd, izd);
-				//!! constants
-				ixd *= 32;
-				iyd *= 32;
-				izd *= 8;
+				item->getFootpadWorld(ixd, iyd, izd);
 
 				Rect itemrect(ix - ixd, iy - iyd, ixd, iyd);
 
@@ -615,8 +606,7 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 
 				sint32 ix, iy, iz, ixd, iyd, izd;
 				item->getLocation(ix, iy, iz);
-				item->getFootpad(ixd, iyd, izd);
-				ixd *= 32; iyd *= 32; izd *= 8; //!! constants
+				item->getFootpadWorld(ixd, iyd, izd);
 
 #if 0
 				if (item->getShape() == 145) {
@@ -751,8 +741,8 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 
 				sint32 other[3], oext[3];
 				other_item->getLocation(other[0], other[1], other[2]);
-				other_item->getFootpad(oext[0], oext[1], oext[2]);
-				oext[0] *= 16; oext[1] *= 16; oext[2] *= 4; //!! constants
+				other_item->getFootpadWorld(oext[0], oext[1], oext[2]);
+				oext[0] /= 2; oext[1] /= 2; oext[2] /= 2;
 
 				// Put other into our coord frame
 				other[0] -= oext[0]+centre[0];

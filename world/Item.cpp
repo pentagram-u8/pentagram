@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "World.h"
 #include "DelayProcess.h"
 #include "Container.h"
+#include "Actor.h"
 #include "Kernel.h"
 #include "ObjectManager.h"
 
@@ -358,8 +359,18 @@ void Item::getCentre(sint32& X, sint32& Y, sint32& Z) const
 	Z = z + shapeinfo->z * 4;
 }
 
+// like getFootpadData, but scaled to world coordinates
+void Item::getFootpadWorld(sint32& X, sint32& Y, sint32& Z) const
+{
+	getFootpadData(X, Y, Z);
+	X *= 32; //! constants
+	Y *= 32;
+	Z *= 8;
+}
+
+
 // note that this is in different units than location
-void Item::getFootpad(sint32& X, sint32& Y, sint32& Z) const
+void Item::getFootpadData(sint32& X, sint32& Y, sint32& Z) const
 {
 	Z = getShapeInfoNoCache()->z;
 
@@ -370,7 +381,6 @@ void Item::getFootpad(sint32& X, sint32& Y, sint32& Z) const
 		X = getShapeInfoNoCache()->x;
 		Y = getShapeInfoNoCache()->y;
 	}
-	
 }
 
 bool Item::overlaps(Item& item2) const
@@ -381,15 +391,15 @@ bool Item::overlaps(Item& item2) const
 	item2.getLocation(x2b,y2b,z2a);
 
 	sint32 xd,yd,zd;
-	getFootpad(xd,yd,zd);
-	x1a = x1b - 32 * xd;
-	y1a = y1b - 32 * yd;
-	z1b = z1a + 8 * zd;
+	getFootpadWorld(xd,yd,zd);
+	x1a = x1b - xd;
+	y1a = y1b - yd;
+	z1b = z1a + zd;
 
-	item2.getFootpad(xd,yd,zd);
-	x2a = x2b - 32 * xd;
-	y2a = y2b - 32 * yd;
-	z2b = z2a + 8 * zd;
+	item2.getFootpadWorld(xd,yd,zd);
+	x2a = x2b - xd;
+	y2a = y2b - yd;
+	z2b = z2a + zd;
 
 	if (x1b <= x2a || x2b <= x1a) return false;
 	if (y1b <= y2a || y2b <= y1a) return false;
@@ -405,13 +415,13 @@ bool Item::overlapsxy(Item& item2) const
 	item2.getLocation(x2b,y2b,z2a);
 
 	sint32 xd,yd,zd;
-	getFootpad(xd,yd,zd);
-	x1a = x1b - 32 * xd;
-	y1a = y1b - 32 * yd;
+	getFootpadWorld(xd,yd,zd);
+	x1a = x1b - xd;
+	y1a = y1b - yd;
 
-	item2.getFootpad(xd,yd,zd);
-	x2a = x2b - 32 * xd;
-	y2a = y2b - 32 * yd;
+	item2.getFootpadWorld(xd,yd,zd);
+	x2a = x2b - xd;
+	y2a = y2b - yd;
 
 	if (x1b <= x2a || x2b <= x1a) return false;
 	if (y1b <= y2a || y2b <= y1a) return false;
@@ -426,14 +436,14 @@ bool Item::isOn(Item& item2) const
 	item2.getLocation(x2b,y2b,z2a);
 
 	sint32 xd,yd,zd;
-	getFootpad(xd,yd,zd);
-	x1a = x1b - 32 * xd;
-	y1a = y1b - 32 * yd;
+	getFootpadWorld(xd,yd,zd);
+	x1a = x1b - xd;
+	y1a = y1b - yd;
 
-	item2.getFootpad(xd,yd,zd);
-	x2a = x2b - 32 * xd;
-	y2a = y2b - 32 * yd;
-	z2b = z2a + 8 * zd;
+	item2.getFootpadWorld(xd,yd,zd);
+	x2a = x2b - xd;
+	y2a = y2b - yd;
+	z2b = z2a + zd;
 
 	if (x1b <= x2a || x2b <= x1a) return false;
 	if (y1b <= y2a || y2b <= y1a) return false;
@@ -444,8 +454,7 @@ bool Item::isOn(Item& item2) const
 bool Item::canExistAt(sint32 x, sint32 y, sint32 z) const
 {
 	sint32 xd, yd, zd;
-	getFootpad(xd, yd, zd);
-	xd *= 32; yd *= 32; zd *= 8; //!! constants
+	getFootpadWorld(xd, yd, zd);
 	CurrentMap* cm = World::get_instance()->getCurrentMap();
 #if 0
 	if (getShape() == 264) { // spiky sphere
@@ -692,8 +701,7 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 	}
 
 	sint32 dims[3];
-	getFootpad(dims[0], dims[1], dims[2]);
-	dims[0] *= 32; dims[1] *= 32; dims[2] *= 8;
+	getFootpadWorld(dims[0], dims[1], dims[2]);
 
 	// Do the sweep test
 	std::list<CurrentMap::SweepItem> collisions;
@@ -1237,6 +1245,8 @@ void Item::grab()
 
 void Item::explode()
 {
+	assert(!p_dynamic_cast<Actor*>(this)); // shouldn't blow up actors
+
 	Process *p = new SpriteProcess(578, 20, 34, 1, 1, //!! constants
 								   x, y, z);
 	Kernel::get_instance()->addProcess(p);
@@ -1862,7 +1872,7 @@ uint32 Item::I_destroy(const uint8* args, unsigned int /*argsize*/)
 	return 0;
 }
 
-uint32 Item::I_getFootpad(const uint8* args, unsigned int /*argsize*/)
+uint32 Item::I_getFootpadData(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM_FROM_PTR(item);
 	ARG_UC_PTR(xptr);
@@ -1872,7 +1882,7 @@ uint32 Item::I_getFootpad(const uint8* args, unsigned int /*argsize*/)
 
 	uint8 buf[2];
 	sint32 x,y,z;
-	item->getFootpad(x,y,z);
+	item->getFootpadData(x,y,z);
 
 	buf[0] = static_cast<uint8>(x);
 	buf[1] = static_cast<uint8>(x >> 8);

@@ -40,6 +40,8 @@
 #include "GravityProcess.h" // hack...
 #include "PathfinderProcess.h"
 #include "AvatarMoverProcess.h"
+#include "UCList.h"
+#include "LoopScript.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(GameMapGump,Gump);
 
@@ -134,7 +136,7 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 		sint32 ax, ay, az, axd, ayd, azd;
 		Actor* av = world->getNPC(1);
 		av->getLocation(ax, ay, az);
-		av->getFootpad(axd, ayd, azd);
+		av->getFootpadWorld(axd, ayd, azd);
 		map->isValidPosition(ax, ay, az, 32, 32, 8, 1, 0, &roofid);
 	}
 	else
@@ -324,9 +326,26 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 			item->getLocation(x,y,z);
 			item->dumpInfo();
 
+#if 0
 			Actor* devon = World::get_instance()->getNPC(1);
 			PathfinderProcess* pfp = new PathfinderProcess(devon, x, y, z);
 			Kernel::get_instance()->addProcess(pfp);
+#elif 0
+			item->explode();
+#else
+			UCList uclist(2);
+			LOOPSCRIPT(script, LS_TOKEN_TRUE); // we want all items
+			World* world= World::get_instance();
+			world->getCurrentMap()->surfaceSearch(&uclist, script,
+												  sizeof(script),
+												  item, true, false, true);
+			for (uint32 i = 0; i < uclist.getSize(); i++)
+			{
+				Item *item2 = world->getItem(uclist.getuint16(i));
+				if (!item2) continue;
+				item2->setExtFlag(Item::EXT_HIGHLIGHT);
+			}
+#endif
 		}
 	}
 	default:

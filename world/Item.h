@@ -90,9 +90,12 @@ public:
 	//! is contained or equipped.
 	void getCentre(sint32& x, sint32& y, sint32& z) const;
 
-	//! Get the size of this item's 3D bounding box. (Note that the coordinates
-	//! are not in the same unit as world coordinates)
-	void getFootpad(sint32& x, sint32& y, sint32& z) const;
+	//! Get the size of this item's 3D bounding box, in world coordinates.
+	void getFootpadWorld(sint32& x, sint32& y, sint32& z) const;
+
+	//! Get the size of this item's 3D bounding box, scaled as in the datafiles
+    //! (i.e., the dimensions are not in the same unit as world coordinates!)
+	void getFootpadData(sint32& x, sint32& y, sint32& z) const;
 
 	//! Get flags
 	uint16 getFlags() const { return flags; }
@@ -332,7 +335,7 @@ public:
 	INTRINSIC(I_getStatus);
 	INTRINSIC(I_orStatus);
 	INTRINSIC(I_andStatus);
-	INTRINSIC(I_getFootpad);
+	INTRINSIC(I_getFootpadData);
 	INTRINSIC(I_overlaps);
 	INTRINSIC(I_overlapsXY);
 	INTRINSIC(I_isOn);

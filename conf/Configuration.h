@@ -91,7 +91,7 @@ class Configuration
 	//! \param key The key to return setkeys of
 	//! \param longformat If true, return the full key name, instead of
 	//!                   just the last part
-	//! \return the subkeys. They have no guarenteed order.
+	//! \return the subkeys. They have no guaranteed order.
 	std::set<std::string> listKeys(std::string key, bool longformat = false);
 
 	typedef std::pair<std::string, std::string> KeyType;

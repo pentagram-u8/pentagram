@@ -1,3 +1,9 @@
+2003-12-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/GUIApp.cpp: adjusted 'Hanoi' coordinates to a free spot
+	* filesys/SavegameWriter.*: changed return types from void to bool
+	* world/Item.*: added getFootpadWorld to return footpad in world coords
+	* various: use getFootpadWorld
+
 2003-11-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AvatarMoverProcess.*: retreating/running in combat
 	* world/Item.h, world/SpriteProcess.cpp, world/CurrentMap.cpp:

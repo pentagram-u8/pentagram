@@ -539,7 +539,7 @@ void GUIApp::U8Playground()
 //	av->teleport(41, 12000, 15000, 64); // East Tenebrae
 //	av->teleport(8, 14462, 15178, 48); // before entrance to Mythran's house
 //	av->teleport(40, 13102,9474,48); // entrance to Mordea's throne room
-//	av->teleport(54, 14783,5759,8); // shrine of the Ancient Ones; Hanoi
+//	av->teleport(54, 14783,5959,8); // shrine of the Ancient Ones; Hanoi
 //	av->teleport(5, 5104,22464,48); // East road (tenebrae end)
 
 	pout << "Paint Inital display" << std::endl;
@@ -857,8 +857,7 @@ public:
 		sint32 x,y,z;
 		avatar->getLocation(x,y,z);
 		sint32 ixd,iyd,izd;
-		avatar->getFootpad(ixd, iyd, izd);
-		ixd *= 32; iyd *= 32; izd *= 8; //!! constants
+		avatar->getFootpadWorld(ixd, iyd, izd);
 
 		CurrentMap* cm = World::get_instance()->getCurrentMap();
 
@@ -1596,7 +1595,7 @@ bool GUIApp::saveGame(std::string filename)
 	sgw->writeFile("APP", &buf);
 	buf.clear();
 
-	sgw->fixupCount();
+	sgw->finish();
 	delete sgw;
 
 	pout << "Done" << std::endl;

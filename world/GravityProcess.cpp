@@ -93,8 +93,7 @@ bool GravityProcess::run(uint32 framenum)
 	sint32 ix,iy,iz;
 	item->getLocation(ix, iy, iz);
 	sint32 ixd,iyd,izd;
-	item->getFootpad(ixd, iyd, izd);
-	ixd *= 32; iyd *= 32; izd *= 8; //!! constants
+	item->getFootpadWorld(ixd, iyd, izd);
 
 	sint32 tx,ty,tz;
 	tx = ix + xspeed;

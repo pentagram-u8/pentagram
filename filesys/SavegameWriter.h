@@ -32,25 +32,26 @@ public:
 	//! write the savegame header
 	//! \param count the number of files in this savegame
 	//!              (can be written later if unknown)
-	virtual void start(uint32 count=0);
+	virtual bool start(uint32 count=0);
 
 	//! write the savegame's global version
-	void writeVersion(uint16 version);
+	bool writeVersion(uint16 version);
 
 	//! write a file to the savegame
 	//! \param name name of the file
 	//! \param data the data
 	//! \param size (in bytes) of data
-	virtual void writeFile(const char* name, const uint8* data, uint32 size);
+	virtual bool writeFile(const char* name, const uint8* data, uint32 size);
 
 	//! write a file to the savegame from an OBufferDataSource
 	//! \param name name of the file
 	//! \param buf the OBufferDataSource to save
-	void writeFile(const char* name, OAutoBufferDataSource* buf);
+	bool writeFile(const char* name, OAutoBufferDataSource* buf);
 
-	//! write the written number of files into the savegame header,
-	//! if necessary
-	virtual void fixupCount();
+	//! finish the savegame.
+	//! (writes the written number of files into the savegame header,
+	//! if necessary)
+	virtual bool finish();
 
 protected:
 	ODataSource* ds;

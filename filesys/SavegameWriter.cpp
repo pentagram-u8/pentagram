@@ -36,14 +36,17 @@ SavegameWriter::~SavegameWriter()
 	ds = 0;
 }
 
-void SavegameWriter::start(uint32 count)
+bool SavegameWriter::start(uint32 count)
 {
 	ds->write(saveid, strlen(saveid));
 	ds->write4(count);
 	writtencount = count;
+
+	return true;
 }
 
-void SavegameWriter::writeFile(const char* name, const uint8* data, uint32 size)
+bool SavegameWriter::writeFile(const char* name,
+							   const uint8* data, uint32 size)
 {
 	perr << name << ": " << size << std::endl;
 	uint32 namelen = strlen(name);
@@ -54,26 +57,34 @@ void SavegameWriter::writeFile(const char* name, const uint8* data, uint32 size)
 	ds->write(data, size);
 
 	realcount++;
+
+	return true;
 }
 
-void SavegameWriter::writeFile(const char* name, OAutoBufferDataSource* ods)
+bool SavegameWriter::writeFile(const char* name, OAutoBufferDataSource* ods)
 {
-	writeFile(name, ods->getBuf(), ods->getSize());
+	return writeFile(name, ods->getBuf(), ods->getSize());
 }
 
-	//! write the written number of files into the savegame header
-void SavegameWriter::fixupCount()
+bool SavegameWriter::finish()
 {
+	if (!ds) return false;
+
 	if (realcount != writtencount) {
 		ds->seek(strlen(saveid));
 		ds->write4(realcount);
 	}
+
+	delete ds;
+	ds = 0;
+
+	return true;
 }
 
-void SavegameWriter::writeVersion(uint16 version)
+bool SavegameWriter::writeVersion(uint16 version)
 {
 	uint8 buf[2];
 	buf[0] = version & 0xFF;
 	buf[1] = (version >> 8) & 0xFF;
-	writeFile("VERSION", buf, 2);
+	return writeFile("VERSION", buf, 2);
 }

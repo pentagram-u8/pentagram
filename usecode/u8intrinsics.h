@@ -77,7 +77,7 @@ Intrinsic U8Intrinsics[] = {
 	Item::I_getStatus,
 	Item::I_orStatus,
 	Item::I_andStatus,
-	Item::I_getFootpad,
+	Item::I_getFootpadData,
 	0, //U
 	Item::I_overlaps,
 	Item::I_overlapsXY,

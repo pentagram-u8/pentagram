@@ -287,9 +287,9 @@ uint16 CameraProcess::FindRoof(sint32 factor)
 	earthquake = earthquake_old;
 	Item *avatar = World::get_instance()->getItem(1);
 	sint32 dx,dy,dz;
-	avatar->getFootpad(dx,dy,dz);
+	avatar->getFootpadWorld(dx,dy,dz);
 	uint16 roofid;
-	World::get_instance()->getCurrentMap()->isValidPosition(x, y, z-10, dx*16, dy*16, dz*4, 1, 0, &roofid);
+	World::get_instance()->getCurrentMap()->isValidPosition(x, y, z-10, dx/2, dy/2, dz/2, 1, 0, &roofid);
 	return roofid;
 }
 

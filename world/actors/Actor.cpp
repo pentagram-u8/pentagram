@@ -217,8 +217,7 @@ bool Actor::tryAnim(int anim, int dir, PathfindingState* state)
 		firststep = state->firststep;
 	}
 
-	getFootpad(dims[0], dims[1], dims[2]);
-	dims[0] *= 32; dims[1] *= 32; dims[2] *= 8;
+	getFootpadWorld(dims[0], dims[1], dims[2]);
 
 	// getFootpad gets the footpad of the _current_ item, so curflipped
 	// is also set to the flipped-state of the current item.
