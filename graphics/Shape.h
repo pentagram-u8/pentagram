@@ -40,7 +40,8 @@ public:
 
 	unsigned int frameCount() const { return frames.size(); }
 
-	ShapeFrame* getFrame(unsigned int frame) { return frames[frame]; }
+	ShapeFrame* getFrame(unsigned int frame)
+		{ if (frame < frames.size()) return frames[frame]; else return 0; }
 
 	// This will detect the format of a shape
 	static const ConvertShapeFormat *DetectShapeFormat(const uint8* data, uint32 size);

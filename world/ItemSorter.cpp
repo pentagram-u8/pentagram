@@ -569,6 +569,11 @@ void ItemSorter::AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 
 	si->shape_num = shape_num;
 	si->frame = frame_num;
 	ShapeFrame *frame = si->shape->getFrame(si->frame);
+	if (!frame) {
+		perr << "Invalid shape: " << si->shape_num << "," << si->frame
+			 << std::endl;
+		return;
+	}
 
 	ShapeInfo *info = shapes->getShapeInfo(shape_num);
 
@@ -711,6 +716,7 @@ void ItemSorter::AddItem(Item *add)
 	AddItem(x,y,z,add->getShape(), add->getFrame(), add->getFlags(), add->getObjId());
 
 #else
+
 	//if (add->iz > skip_lift) return;
 	//if (Application::tgwds && shape == 538) return;
 
@@ -727,6 +733,11 @@ void ItemSorter::AddItem(Item *add)
 	si->shape_num = add->getShape();
 	si->frame = add->getFrame();
 	ShapeFrame *frame = si->shape->getFrame(si->frame);
+	if (!frame) {
+		perr << "Invalid shape: " << si->shape_num << "," << si->frame
+			 << std::endl;
+		return;
+	}
 
 	ShapeInfo *info = add->getShapeInfo();
 
@@ -1001,6 +1012,7 @@ uint16 ItemSorter::Trace(sint32 x, sint32 y)
 
 		// Now check the frame itself
 		ShapeFrame *frame = it->shape->getFrame(it->frame);
+		assert(frame); // invalid frames shouldn't have been added to the list
 
 		// Nope, doesn't have a point
 		if (!frame->hasPoint(x-it->sxbot, y-it->sybot)) continue;

@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "UCStack.h"
 #include "Direction.h"
-#include "ItemMoveProcess.h"
+#include "MissileProcess.h"
 #include "BarkGump.h"
 #include "AskGump.h"
 #include "GumpNotifyProcess.h"
@@ -1486,7 +1486,7 @@ uint32 Item::I_shoot(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(unk2);
 	if (!item) return 0;
 
-	return Kernel::get_instance()->addProcess(new ItemMoveProcess(item,
+	return Kernel::get_instance()->addProcess(new MissileProcess(item,
 							point.getX(),point.getY(),point.getZ(),unk1,true));
 }
 

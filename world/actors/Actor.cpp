@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "ItemFactory.h"
 
-#include "ItemMoveProcess.h" // temp. replacement for pathfinding
+#include "MissileProcess.h" // temp. replacement for pathfinding
 
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(Actor,Container);
@@ -301,7 +301,7 @@ uint32 Actor::I_pathfindToItem(const uint8* args, unsigned int /*argsize*/)
 	sint32 x,y,z;
 	item->getLocation(x,y,z);
 
-	return Kernel::get_instance()->addProcess(new ItemMoveProcess(actor,x,y,z,100));
+	return Kernel::get_instance()->addProcess(new MissileProcess(actor,x,y,z,100));
 }
 
 uint32 Actor::I_isBusy(const uint8* args, unsigned int /*argsize*/)

@@ -97,7 +97,7 @@ WORLD = \
 	world/GlobEgg.o \
 	world/TeleportEgg.o \
 	world/World.o \
-	world/ItemMoveProcess.o \
+	world/MissileProcess.o \
 	world/GravityProcess.o \
 	world/actors/Actor.o \
 	world/actors/ActorAnimProcess.o \

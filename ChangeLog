@@ -1,10 +1,14 @@
+2003-06-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/ItemSorter.cpp: check for valid frame
+	* world/ItemMoveProcess.*: renamed ItemMoveProcess to MissileProcess
+
 2003-06-17	  Ryan Nunn <colourles@users.sourceforge.net>
-	* gumps/ConsoleGump.*, misc/Console.*, kernel/GUIApp.cpp : Added 4 line 
-	  console overlay when the console is up. Console now also automatically
-	  raises after Pentagram is loaded.
-	* kernel/GUIApp.cpp : Included a hacky 'clipped' mode for Avatar movement. 
-	  Use 'C' to toggle it. It's off by default. Also added a quarter speed 
-	  move mode. Hold do either shift to slow things down.
+	* gumps/ConsoleGump.*, misc/Console.*, kernel/GUIApp.cpp : Added 4 line
+	  console overlay when the console is up. Console now also
+	  automatically raises after Pentagram is loaded.
+	* kernel/GUIApp.cpp : Included a hacky 'clipped' mode for Avatar
+	  movement. Use 'C' to toggle it. It's off by default. Also added a
+	  quarter speed move mode. Hold do either shift to slow things down.
 
 2003-06-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/MonsterEgg.cpp: set FLG_MONSTER_NPC on NPCs spawned by egg
