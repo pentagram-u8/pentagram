@@ -9,6 +9,9 @@ However, for the second speech, this flag is only set _after_ waiting for a
 Camera::scrollTo to finish, which gives a second process enough time to
 pass the !startedConvo check.
 
+FIX:
+Set startedConvo flag to 1 at offset 0949 instead of at 09A5.
+
 WORKAROUND:
 Serious hack in UCMachine which sets startedConvo to true as soon as
 setAvatarInStasis is called. This makes sure the flag is set at the right time.
