@@ -31,6 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Gump.h"
 #include "QuitGump.h"
 #include "ConsoleGump.h"
+#include "GameMapGump.h"
 
 namespace HIDBindings {
 
@@ -434,5 +435,26 @@ bool quickMoveClipping(const HID_Event& event)
 	return handled;
 }
 
+bool highlightItems(const HID_Event& event)
+{
+	bool handled = false;
+	switch (event.type) {
+	case HID_DOWN:
+	{
+		GameMapGump::SetHighlightItems(true);
+		pout << "GameMapGump::highlightItems = " << GameMapGump::isHighlightItems() << std::endl;
+		handled = true;
+	} break;
+	case HID_UP:
+	{
+		GameMapGump::SetHighlightItems(false);
+		pout << "GameMapGump::highlightItems = " << GameMapGump::isHighlightItems() << std::endl;
+		handled = true;
+	}
+	default:
+		break;
+	}
+	return handled;
+}
 
 };

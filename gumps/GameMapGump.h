@@ -88,6 +88,9 @@ public:
 
 	bool loadData(IDataSource* ids, uint32 version);
 
+	static void			SetHighlightItems(bool highlight) { highlightItems = highlight; }
+	static bool			isHighlightItems() { return highlightItems; }
+
 protected:
 	virtual void saveData(ODataSource* ods);
 
@@ -96,6 +99,8 @@ protected:
 	uint32 dragging_frame;
 	uint32 dragging_flags;
 	sint32 dragging_pos[3];
+
+	static bool highlightItems;
 
 };
 

@@ -149,6 +149,8 @@ struct SortItem
 	bool	noisy : 1;			// Needs 1 bit	6
 	bool	anim : 1;			// Needs 1 bit	7
 	bool	trans : 1;			// Needs 1 bit	8
+	bool	fixed : 1;
+	bool	land : 1;
 
 	bool	occluded : 1;		// Set true if occluded
 
@@ -683,6 +685,8 @@ void ItemSorter::AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 
 		si->noisy = info->is_noisy();
 		si->anim = info->animtype != 0;
 		si->trans = info->is_translucent();
+		si->fixed = info->is_fixed();
+		si->land = info->is_land();
 	}
 
 	si->occluded = false;
@@ -850,6 +854,8 @@ void ItemSorter::AddItem(Item *add)
 		si->noisy = info->is_noisy();
 		si->anim = info->animtype != 0;
 		si->trans = info->is_translucent();
+		si->fixed = info->is_fixed();
+		si->land = info->is_land();
 	}
 
 	si->occluded = false;
@@ -899,7 +905,7 @@ void ItemSorter::AddItem(Item *add)
 
 SortItem *prev = 0;
 
-void ItemSorter::PaintDisplayList()
+void ItemSorter::PaintDisplayList(bool item_highlight)
 {
 	prev = 0;
 	SortItem *it = items;
@@ -909,6 +915,27 @@ void ItemSorter::PaintDisplayList()
 	{
 		if (it->order == -1) if (PaintSortItem(it)) return;
 		++it;
+	}
+
+	// Item highlighting. We redraw each 'item' transparent
+	if (item_highlight)
+	{
+		it = items;
+		while (it != end)
+		{
+			if (!(it->flags & (Item::FLG_DISPOSABLE|Item::FLG_FAST_ONLY)) && !it->fixed )
+			{
+				surf->PaintHighlightInvis(it->shape, 
+						it->frame, 
+						it->sxbot, 
+						it->sybot, 
+						it->trans, 
+						(it->flags&Item::FLG_FLIPPED)!=0, 0x1f00ffff);
+			}
+
+			++it;
+		}
+
 	}
 }
 
@@ -941,6 +968,8 @@ bool ItemSorter::PaintSortItem(SortItem	*si)
 
 //	if (wire) si->info->draw_box_back(s, dispx, dispy, 255);
 
+	if (si->ext_flags & Item::EXT_HIGHLIGHT && (si->ext_flags & Item::EXT_TRANSPARENT || si->ext_flags & Item::EXT_TRANSPARENT))
+		surf->PaintHighlightInvis(si->shape, si->frame, si->sxbot, si->sybot, si->trans, (si->flags&Item::FLG_FLIPPED)!=0, 0x7F00007F);
 	if (si->ext_flags & Item::EXT_HIGHLIGHT)
 		surf->PaintHighlight(si->shape, si->frame, si->sxbot, si->sybot, si->trans, (si->flags&Item::FLG_FLIPPED)!=0, 0x7F00007F);
 	else if (si->ext_flags & Item::EXT_TRANSPARENT)
@@ -1021,7 +1050,7 @@ bool ItemSorter::NullPaintSortItem(SortItem	*si)
 	return false;
 }
 
-uint16 ItemSorter::Trace(sint32 x, sint32 y, HitFace* face)
+uint16 ItemSorter::Trace(sint32 x, sint32 y, HitFace* face, bool item_highlight)
 {
 	SortItem *it;
 	SortItem *end;
@@ -1040,14 +1069,53 @@ uint16 ItemSorter::Trace(sint32 x, sint32 y, HitFace* face)
 		}
 	}
 
+	// Firstly, we check for highlighted items
+	selected = 0;
+
+	if (item_highlight)
+	{
+		it = items + num_items;
+		selected = 0;
+		end = items;
+
+		while (it-- != end)
+		{
+			if (!(it->flags & (Item::FLG_DISPOSABLE|Item::FLG_FAST_ONLY)) && !it->fixed )
+			{
+
+				if (!it->item_num) continue;
+
+				// Doesn't Overlap
+				if (x < it->sx || x >= it->sx2 || y < it->sy || y >= it->sy2) continue;
+
+				// Now check the frame itself
+				ShapeFrame *frame = it->shape->getFrame(it->frame);
+				assert(frame); // invalid frames shouldn't have been added to the list
+
+				// Nope, doesn't have a point
+				if (it->flags & Item::FLG_FLIPPED)
+				{
+					if (!frame->hasPoint(it->sxbot-x, y-it->sybot)) continue;
+				}
+				else
+				{
+					if (!frame->hasPoint(x-it->sxbot, y-it->sybot)) continue;
+				}
+
+				// Ok now check against selected
+				selected = it;
+			}	
+		}
+
+	}
+
 	// Ok, this is all pretty simple. We iterate all the items.
 	// We then check to see if the item has a point where the trace goes.
 	// Finally we then set the selected SortItem if it's 'order' is highest
 	it = items;
-	selected = 0;
 	end = items + num_items;
 
-	for (;it != end;++it)
+	if (!selected) for (;it != end;++it)
 	{
 		if (!it->item_num) continue;
 

@@ -12,6 +12,12 @@
 	  to mean an absolute size (positive of course). Same with factors over
 	  100. Non integer scaling factors WILL be supported.
 	* gumps/ItemRelativeGump.cpp : Fixing prob with relative gump positions
+	* data/u8bindings.ini, games/stdbindings.*, graphics/RenderSurface.h,
+	  graphics/SoftRenderSurface.*, graphics/XFormBlend.h,
+	  gumps/GameMapGump.*, kernel/HIDManager.cpp, world/ItemSorter.* :
+	  Pressing (and holding) the tab Key will highlight, and let you click 
+	  on hidden items. At least that is what it is supposed to do. Sort of
+	  works, but needs refining (shows items it shouldn't)
 
 2005-02-14	Darke  <darkepaw@users.sf.net>
 	* audio/midi/fmopl.cpp: cast pedantification.

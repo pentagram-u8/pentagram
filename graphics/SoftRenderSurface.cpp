@@ -647,6 +647,34 @@ template<class uintX> void SoftRenderSurface<uintX>::PaintHighlight(Shape* s, ui
 }
 
 //
+// void SoftRenderSurface::PaintHighlightInvis(Shape* s, uint32 frame, sint32 x, sint32 y, bool mirrored)
+//
+// Desc: Standard shape drawing functions. Highlights, Clips, and conditionally Flips and Xforms. 50% translucent
+//
+
+template<class uintX> void SoftRenderSurface<uintX>::PaintHighlightInvis(Shape* s, uint32 framenum, sint32 x, sint32 y, bool trans, bool mirrored, uint32 col32)
+{
+#define FLIP_SHAPES
+#define FLIP_CONDITIONAL mirrored
+#define XFORM_SHAPES
+#define XFORM_CONDITIONAL trans
+#define BLEND_SHAPES(src,dst) BlendHighlightInvis(src,dst,cr,cg,cb,ca,255-ca)
+
+	uint32 ca = TEX32_A(col32);
+	uint32 cr = TEX32_R(col32);
+	uint32 cg = TEX32_G(col32);
+	uint32 cb = TEX32_B(col32);
+
+	#include "SoftRenderSurface.inl"
+
+#undef FLIP_SHAPES
+#undef FLIP_CONDITIONAL
+#undef XFORM_SHAPES
+#undef XFORM_CONDITIONAL
+#undef BLEND_SHAPES
+}
+
+//
 // Instantiate the SoftRenderSurface Class
 //
 template class SoftRenderSurface<uint16>;

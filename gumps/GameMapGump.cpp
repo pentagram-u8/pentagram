@@ -45,6 +45,8 @@
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(GameMapGump,Gump);
 
+bool GameMapGump::highlightItems = false;
+
 GameMapGump::GameMapGump() :
 	Gump(), display_dragging(false)
 {
@@ -195,7 +197,7 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 	}
 
 
-	display_list->PaintDisplayList();
+	display_list->PaintDisplayList(highlightItems);
 }
 
 // Trace a click, and return ObjId
@@ -205,7 +207,7 @@ uint16 GameMapGump::TraceObjId(int mx, int my)
 	if (objid && objid != 65535) return objid;
 
 	ScreenSpaceToGump(mx,my);
-	return display_list->Trace(mx,my);
+	return display_list->Trace(mx,my,0,highlightItems);
 }
 
 uint16 GameMapGump::TraceCoordinates(int mx, int my, sint32 coords[3],

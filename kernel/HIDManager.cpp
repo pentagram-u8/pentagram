@@ -84,6 +84,7 @@ HIDManager::HIDManager()
 	bindingMap.insert( HIDBINDING_PAIR(quickMoveDescend) );
 	bindingMap.insert( HIDBINDING_PAIR(quickMoveQuarterSpeed) );
 	bindingMap.insert( HIDBINDING_PAIR(quickMoveClipping) );
+	bindingMap.insert( HIDBINDING_PAIR(highlightItems) );
 	keybindings[SDLK_ESCAPE] = &HIDBindings::quit;
 	keybindings[SDLK_BACKQUOTE] = &HIDBindings::toggleConsole;
 

@@ -23,81 +23,86 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 namespace HIDBindings {
 
-// ! toggles the avatar in and out of stasis
-// ! \see HIDBinding
+//! toggles the avatar in and out of stasis
+//! \see HIDBinding
 bool avatarInStasis(const HID_Event& event);
 
-// ! displays pentagram's engine statistics
-// ! \see HIDBinding
+//! displays pentagram's engine statistics
+//! \see HIDBinding
 bool engineStats(const HID_Event& event);
 
-// ! attempts to locate an item
-// ! \see HIDBinding
+//! attempts to locate an item
+//! \see HIDBinding
 bool itemLocator(const HID_Event& event);
 
-// ! toggles the painting of editor items
-// ! \see HIDBinding
+//! toggles the painting of editor items
+//! \see HIDBinding
 bool paintEditorItems(const HID_Event& event);
 
-// ! toggles the highlighting of items touching the main actor
-// ! \see HIDBinding
+//! toggles the highlighting of items touching the main actor
+//! \see HIDBinding
 bool showTouchingItems(const HID_Event& event);
 
-// ! binding to quickload
-// ! \see HIDBinding
+//! binding to quickload
+//! \see HIDBinding
 bool quickLoad(const HID_Event& event);
 
-// ! binding to quicksave
-// ! \see HIDBinding
+//! binding to quicksave
+//! \see HIDBinding
 bool quickSave(const HID_Event& event);
 
-// ! binding to toggle frame-by-frame mode
-// ! \see HIDBinding
+//! binding to toggle frame-by-frame mode
+//! \see HIDBinding
 bool toggleFrameByFrame(const HID_Event& event);
 
-// ! binding to go to the next frame in frame-by-frame mode
-// ! \see HIDBinding
+//! binding to go to the next frame in frame-by-frame mode
+//! \see HIDBinding
 bool advanceFrameByFrame(const HID_Event& event);
 
-// ! binding to ask if the user wishes to quit
-// ! \see HIDBinding
+//! binding to ask if the user wishes to quit
+//! \see HIDBinding
 bool quit(const HID_Event& event);
 
-// ! toggles the console up and down
-// ! \see HIDBinding
+//! toggles the console up and down
+//! \see HIDBinding
 bool toggleConsole(const HID_Event& event);
 
-// ! moves main actor up without playing any animation
-// ! \see HIDBinding
+//! moves main actor up without playing any animation
+//! \see HIDBinding
 bool quickMoveUp(const HID_Event& event);
 
-// ! moves main actor down without playing any animation
-// ! \see HIDBinding
+//! moves main actor down without playing any animation
+//! \see HIDBinding
 bool quickMoveDown(const HID_Event& event);
 
-// ! moves main actor left without playing any animation
-// ! \see HIDBinding
+//! moves main actor left without playing any animation
+//! \see HIDBinding
 bool quickMoveLeft(const HID_Event& event);
 
-// ! moves main actor right without playing any animation
-// ! \see HIDBinding
+//! moves main actor right without playing any animation
+//! \see HIDBinding
 bool quickMoveRight(const HID_Event& event);
 
-// ! main actor ascends without playing any animation
-// ! \see HIDBinding
+//! main actor ascends without playing any animation
+//! \see HIDBinding
 bool quickMoveAscend(const HID_Event& event);
 
-// ! main actor descends without playing any animation
-// ! \see HIDBinding
+//! main actor descends without playing any animation
+//! \see HIDBinding
 bool quickMoveDescend(const HID_Event& event);
 
-// ! quick moves act at quater speed
-// ! \see HIDBinding
+//! quick moves act at quater speed
+//! \see HIDBinding
 bool quickMoveQuarterSpeed(const HID_Event& event);
 
-// ! toggles clipping on quick moves
-// ! \see HIDBinding
+//! toggles clipping on quick moves
+//! \see HIDBinding
 bool quickMoveClipping(const HID_Event& event);
+
+//! Highlight Items
+//! \see HIDBinding
+bool highlightItems(const HID_Event& event);
+
 
 };
 

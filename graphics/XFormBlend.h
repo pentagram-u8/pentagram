@@ -67,4 +67,17 @@ inline uint32 P_FASTCALL BlendInvisible(uint32 src, uint32 dst)
 						sb*100+db*156);
 }
 
+// This does the translucent highlight blending. (50%) 
+inline uint32 P_FASTCALL BlendHighlightInvis(uint32 src, uint32 dst, uint32 cr, uint32 cg, uint32 cb, uint32 ca, uint32 ica)
+{
+	uint32 sr, sg, sb;
+	uint32 dr, dg, db;
+	UNPACK_RGB8(src,sr,sg,sb);
+	UNPACK_RGB8(dst,dr,dg,db);
+	return PACK_RGB16(((sr*ica+cr*ca)>>1)+(dr<<7), 
+						((sg*ica+cg*ca)>>1)+(dg<<7), 
+						((sb*ica+cb*ca)>>1)+(db<<7));
+}
+
+
 #endif

@@ -56,11 +56,11 @@ public:
 	void AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 frame_num, uint32 item_flags, uint32 ext_flags, uint16 item_num=0);
 	void AddItem(Item *);					// Add an Item. SetupLerp() MUST have been called
 
-	void PaintDisplayList();				// Finishes the display list and Paints
+	void PaintDisplayList(bool item_highlight=false);				// Finishes the display list and Paints
 
 	// Trace and find an object. Returns objid.
 	// If face is non-NULL, also return the face of the 3d bbox (x,y) is on
-	uint16 Trace(sint32 x, sint32 y, HitFace* face = 0 );
+	uint16 Trace(sint32 x, sint32 y, HitFace* face = 0, bool item_highlight=false );
 
 	void IncSortLimit() { sort_limit++; }
 	void DecSortLimit() { if (sort_limit > 0) sort_limit--; }
