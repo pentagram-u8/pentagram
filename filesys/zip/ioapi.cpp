@@ -4,6 +4,7 @@
    Version 1.01, May 8th, 2004
 
    Copyright (C) 1998-2004 Gilles Vollant
+   Converted to more modern C by the Pentagram team.
 */
 
 #include <stdio.h>
