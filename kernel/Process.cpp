@@ -33,6 +33,25 @@ Process::Process(ObjId it, uint16 ty)
 	Kernel::get_instance()->assignPID(this);
 }
 
+void Process::fail()
+{
+	assert(!terminated);
+
+	Kernel *kernel = Kernel::get_instance();
+
+	// fail all waiting processes
+	for (std::vector<ProcId>::iterator i = waiting.begin();
+		 i != waiting.end(); ++i)
+	{
+		Process *p = kernel->getProcess(*i);
+		if (p && !p->terminated)
+			p->fail();
+	}
+	waiting.clear(); // to prevent terminate() from waking them again
+
+	terminate();
+}
+
 void Process::terminate()
 {
 	assert(!terminated);

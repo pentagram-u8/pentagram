@@ -58,12 +58,12 @@ public:
 	// only UCProcesses; objid = 0 means any object, type = 6 means any type
 	uint32 getNumProcesses(ObjId objid, uint16 processtype);
 
-	//! kill processes of a certain object and/or of a certain type
+	//! kill (fail) processes of a certain object and/or of a certain type
 	//! \param objid the object, or 0 for any object
 	//! \param type the type, or 6 for any type
 	void killProcesses(ObjId objid, uint16 processtype);
 
-	//! kill processes of a certain object and not of a certain type
+	//! kill (fail) processes of a certain object and not of a certain type
 	//! \param objid the object, or 0 for any object
 	//! \param type the type not to kill
 	void killProcessesNotOfType(ObjId objid, uint16 processtype);

@@ -39,8 +39,14 @@ public:
 
 	bool is_active() const { return active; }
 
-	virtual void terminate();	// Terminate NOW!
-	void terminateDeferred() { terminate_deferred = true; } // Terminate next frame
+	//! terminate the process and recursively fail all processes waiting for it
+	void fail();
+
+	//! terminate the process. This wakes up all processes waiting for it.
+	virtual void terminate();
+
+	//! terminate next frame
+	void terminateDeferred() { terminate_deferred = true; } 
 
 	//! suspend until process 'pid' returns. If pid is 0, suspend indefinitely
 	void waitFor(ProcId pid);

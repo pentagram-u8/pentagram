@@ -292,7 +292,8 @@ void Kernel::killProcesses(ObjId objid, uint16 processtype)
 		if ((objid == 0 || objid == p->item_num) &&
 			(processtype == 6 || processtype == p->type) && !p->terminated)
 		{
-			p->terminate();
+//			p->terminate();
+			p->fail(); // CHECKME: always use fail here or something terminate?
 		}
 	}
 }
@@ -306,7 +307,8 @@ void Kernel::killProcessesNotOfType(ObjId objid, uint16 processtype)
 		if ((objid == 0 || objid == p->item_num) &&
 			(p->type != processtype) && !p->terminated)
 		{
-			p->terminate();
+//			p->terminate();
+			p->fail(); // CHECKME: always use fail here or something terminate?
 		}
 	}
 }

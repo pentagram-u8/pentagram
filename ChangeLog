@@ -4,6 +4,9 @@
 	* world/actors/AvatarMoverProcess.cpp: set type to 1
 	* world/actors/TeleportToEggProcess.*: set type to 1
 	* world/actors/AvatarMoverProcess.cpp: set type to 1 on load (hack!)
+	* kernel/Process.*: added fail function to kill a process and all
+	  the processes waiting for it recursively
+	* kernel/Kernel.*: killProcess* now uses fail() instead of terminate()
 	* graphics/PaletteFaderProcess.cpp: terminate, don't delete, old faders
 
 2004-09-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
