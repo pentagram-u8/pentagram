@@ -850,8 +850,6 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 				// Uh oh, we hit something
 				if (info->is_solid())
 				{
-					pout << "Hit: "; item->dumpInfo();
-
 					hit = it->hit_time;
 					break;
 				}
