@@ -13,7 +13,7 @@ SDL_LIBS=-L$(SRC)/sdl/lib -lSDLmain -lSDL
 
 CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -I$(SRC)/conf -I$(SRC)/convert \
 	-I$(SRC)/filesys -I$(SRC)/graphics -I$(SRC)/gumps -I$(SRC)/kernel -I$(SRC)/misc \
-	-I$(SRC)/tools/disasm -I$(SRC)/tools/fold -I$(SRC)/usecode $(SDL_CFLAGS) \
+	-I$(SRC)/tools/disasm -I$(SRC)/tools/fold -I$(SRC)/usecode -I$(SRC)/world $(SDL_CFLAGS) \
 	-DHAVE_SYS_STAT_H -DHAVE_SYS_TYPES_H -DHAVE_UNISTD_H
 CXXFLAGS=-O2
 CXX=g++
@@ -25,17 +25,22 @@ CONVERT_OBJS=convert/ConvertShape.o convert/crusader/ConvertShapeCrusader.o conv
 
 FILESYS_OBJS=filesys/FileSystem.o filesys/Flex.o
 
-GRAPHICS_OBJS=graphics/Palette.o graphics/PaletteManager.o graphics/RenderSurface.o \
-  	graphics/Shape.o graphics/ShapeFlex.o graphics/ShapeFrame.o graphics/SoftRenderSurface.o \
-	graphics/Texture.o graphics/TextureBitmap.o graphics/TextureTarga.o
+GRAPHICS_OBJS=graphics/Texture.o graphics/TextureBitmap.o graphics/TextureTarga.o \
+	graphics/BaseSoftRenderSurface.o graphics/MainShapeFlex.o graphics/Palette.o graphics/PaletteManager.o \
+	graphics/RenderSurface.o graphics/Shape.o graphics/ShapeFlex.o graphics/ShapeFrame.o \
+	graphics/SoftRenderSurface.o graphics/TypeFlags.o graphics/XFormBlend.o
+
+GUMPS_OBJS=gumps/ConsoleGump.o gumps/GameMapGump.o gumps/Gump.o gumps/ResizableGump.o
 
 MISC_OBJS=misc/Args.o misc/Console.o misc/pent_include.o misc/Q_strcasecmp.o misc/util.o
 
 CONF_OBJS=conf/Configuration.o conf/XMLNode.o conf/XMLTree.o 
 
-KERNEL_OBJS=kernel/Kernel.o kernel/Application.o kernel/Process.o
+KERNEL_OBJS=kernel/Kernel.o kernel/Application.o kernel/Object.o kernel/Process.o
 
-USECODE_OBJS=usecode/UCMachine.o usecode/UCProcess.o usecode/UsecodeFlex.o usecode/UCList.o
+USECODE_OBJS=usecode/UCList.o usecode/UCMachine.o usecode/UCProcess.o usecode/UsecodeFlex.o
+
+WORLD_OBJS=world/Container.o world/Glob.o world/Item.o world/ItemFactory.o world/Map.o world/World.o
 
 all: amf2mod.exe disasm.exe fold.exe shapeconv.exe pentagram.exe
 
@@ -54,7 +59,7 @@ fold.exe : tools/fold/Fold.o $(FOLD_OBJCS) $(FILESYS_OBJS) $(MISC_OBJS)
 shapeconv.exe : tools/shapeconv/ShapeConv.o $(CONVERT_OBJS) $(FILESYS_OBJS) $(MISC_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
-PENTAGRAM_OBJS=$(CONF_OBJS) $(FILESYS_OBJS) $(GRAPHICS_OBJS) $(KERNEL_OBJS) $(MISC_OBJS) $(USECODE_OBJS) pentagram.o
+PENTAGRAM_OBJS=$(CONF_OBJS) $(CONVERT_OBJS) $(FILESYS_OBJS) $(GRAPHICS_OBJS) $(GUMPS_OBJS) $(KERNEL_OBJS) $(MISC_OBJS) $(USECODE_OBJS) $(WORLD_OBJS) pentagram.o
 
 pentagram.exe: $(PENTAGRAM_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ $(LIBS)
