@@ -1,3 +1,7 @@
+2004-08-15  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* world/actors/AnimationTracker.cpp: Hack to make jumping down act a
+	  little nicer
+
 2004-08-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/ActorAnimProcess.cpp: kill anim when leaving fastarea
 	* world/actors/Pathfinder*.cpp: removed debugging output
@@ -16,7 +20,7 @@
 	* world/actors/AnimationTracker.*: fixed teleporting while playing anim
 	* kernel/GUIApp.cpp: some free necromancy reagents at startup
 	* gumps/GameMapGump.cpp: put item in backpack if dropping on Avatar
-	
+
 2004-08-09  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* world/actors/ActorAnimProcess.cpp: pause animation when actor leaves
 	  fast area
