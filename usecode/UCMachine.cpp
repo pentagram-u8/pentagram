@@ -105,12 +105,16 @@ UCMachine::UCMachine(Intrinsic *iset) : avatarsName("Avatar")
 	stringIDs = new idMan(1, 65534, 256);
 
 	con.AddConsoleCommand("UCMachine::avatarsName", ConCmd_avatarsName);
+	con.AddConsoleCommand("UCMachine::getGlobal", ConCmd_getGlobal);
+	con.AddConsoleCommand("UCMachine::setGlobal", ConCmd_setGlobal);
 }
 
 
 UCMachine::~UCMachine()
 {
 	con.RemoveConsoleCommand("UCMachine::avatarsName");
+	con.RemoveConsoleCommand("UCMachine::getGlobal");
+	con.RemoveConsoleCommand("UCMachine::setGlobal");
 
 	ucmachine = 0;
 
@@ -338,12 +342,12 @@ bool UCMachine::execProcess(UCProcess* p)
 				// !constants
 				if (func >= 0x100 || intrinsics[func] == 0) {
 					p->temp32 = 0;
-					perr << "Unhandled intrinsic \'" << convuse->intrinsics()[func] << "\' (" << std::hex << func << std::dec << ") called" << std::endl;
+//					perr << "Unhandled intrinsic \'" << convuse->intrinsics()[func] << "\' (" << std::hex << func << std::dec << ") called" << std::endl;
 				} else {
 					//!! hackish
 					if (intrinsics[func] == UCMachine::I_dummyProcess ||
 						intrinsics[func] == UCMachine::I_true) {
-						perr << "Unhandled intrinsic \'" << convuse->intrinsics()[func] << "\' (" << std::hex << func << std::dec << ") called" << std::endl;
+//						perr << "Unhandled intrinsic \'" << convuse->intrinsics()[func] << "\' (" << std::hex << func << std::dec << ") called" << std::endl;
 					}
 					uint8 *argbuf = new uint8[arg_bytes];
 					p->stack.pop(argbuf, arg_bytes);
@@ -2360,4 +2364,37 @@ void UCMachine::ConCmd_avatarsName(const Console::ArgsType & /*args*/, const Con
 	{
 		uc->avatarsName = argv[1].c_str();
 	}
+}
+
+void UCMachine::ConCmd_getGlobal(const Console::ArgsType & /*args*/, const Console::ArgvType &argv)
+{
+	UCMachine *uc = UCMachine::get_instance();
+	if (argv.size() != 3) {
+		pout << "usage: UCMachine::getGlobal offset size" << std::endl;
+		return;
+	}
+
+	unsigned int offset = strtol(argv[1].c_str(), 0, 0);
+	unsigned int size = strtol(argv[2].c_str(), 0, 0);
+
+	pout.printf("[%04X %02X] = %d\n", offset, size,
+				uc->globals->getBits(offset, size));
+}
+
+void UCMachine::ConCmd_setGlobal(const Console::ArgsType & /*args*/, const Console::ArgvType &argv)
+{
+	UCMachine *uc = UCMachine::get_instance();
+	if (argv.size() != 4) {
+		pout << "usage: UCMachine::setGlobal offset size value" << std::endl;
+		return;
+	}
+
+	unsigned int offset = strtol(argv[1].c_str(), 0, 0);
+	unsigned int size = strtol(argv[2].c_str(), 0, 0);
+	unsigned int value = strtol(argv[3].c_str(), 0, 0);
+
+	uc->globals->setBits(offset, size, value);
+
+	pout.printf("[%04X %02X] = %d\n", offset, size,
+				uc->globals->getBits(offset, size));
 }

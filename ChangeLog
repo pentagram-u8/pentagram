@@ -1,3 +1,7 @@
+2004-11-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/UCMachine.cpp: silenced unhandled intrinsic messages
+	* usecode/UCMachine.*: UCMachine::{set,get}Global console commands
+
 22004-11-14  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* kernel/HIDManager.*: Replaced "do" command with separate commands for
 	  each HIDBindings
