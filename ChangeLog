@@ -8,7 +8,10 @@
 	* tools/compile/Compile.cpp, tools/compile/CompileUnit.h,
 	  tools/compile/llcLexer.[h|l], tools/compile/llcTokens.h:
 	  More compiler related files.
-	
+
+	* tools/compile/CompileNodes.h: There's got to be a rule that for *every*
+	  major commit I must forget adding at least one file... *sigh*
+
 2003-05-20  Ryan Nunn <colourles@users.sourceforge.net>
 	* world/actors/ActorAnimProcess.cpp : Avoiding problems with bounds.
 
