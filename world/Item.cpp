@@ -48,16 +48,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <cstdlib>
 
-/*
-My current idea on how to construct items: an ItemFactory class that
-creates the right kind of Item (Item, Container, ???) based on
-the item that it's supposed to create. (This would be a friend of the Item
-classes)
-
-This is why the Item (and Container) constructors are currently rather empty.
--wjp
-*/
-
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(Item,Object);
 
@@ -84,11 +74,11 @@ void Item::setLocation(sint32 X, sint32 Y, sint32 Z)
 	z = Z;
 }
 
-void Item::move(sint32 X, sint32 Y, sint32 Z)
+void Item::move(sint32 X, sint32 Y, sint32 Z, bool forcemapupdate)
 {
 	//constant
 	if (!(flags & (FLG_CONTAINED | FLG_EQUIPPED | FLG_ETHEREAL))
-		&& ((x / 512 != X / 512) || (y / 512 != Y / 512))) {
+		&& (forcemapupdate || (x / 512 != X / 512) || (y / 512 != Y / 512))) {
 
 		// if item isn't contained or equipped, it's in CurrentMap
 
@@ -932,6 +922,22 @@ void Item::fall()
 	}
 
 	p->setGravity(4); //!! constant
+}
+
+void Item::grab()
+{
+	UCList uclist(2);
+	LOOPSCRIPT(script, LS_TOKEN_TRUE); // we want all items
+	World* world= World::get_instance();
+	world->getCurrentMap()->surfaceSearch(&uclist, script, sizeof(script),
+										  this, true, false, true);
+
+	for (int i = 0; i < uclist.getSize(); i++)
+	{
+		Item *item = world->getItem(uclist.getuint16(i));
+		if (!item) continue;
+		item->fall();
+	}
 }
 
 uint32 Item::I_touch(const uint8* args, unsigned int /*argsize*/)
@@ -1821,6 +1827,16 @@ uint32 Item::I_fall(const uint8* args, unsigned int /*argsize*/)
 	return 0;
 }
 
+uint32 Item::I_grab(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM_FROM_PTR(item);
+	if (!item) return 0;
+
+	item->grab();
+
+	return 0;
+}
+
 uint32 Item::I_openGump(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM_FROM_PTR(item);
@@ -1882,8 +1898,8 @@ uint32 Item::I_getSurfaceWeight(const uint8* args, unsigned int /*argsize*/)
 	UCList uclist(2);
 	LOOPSCRIPT(script, LS_TOKEN_TRUE);
 	World* world= World::get_instance();
-	world->getCurrentMap()->surfaceSearch(&uclist, script, sizeof(script), item, 
-			true, false, true);
+	world->getCurrentMap()->surfaceSearch(&uclist, script, sizeof(script),
+										  item, true, false, true);
 
 	uint32 weight = 0; 
 	for (uint32 i = 0; i < uclist.getSize(); i++)
@@ -1894,7 +1910,6 @@ uint32 Item::I_getSurfaceWeight(const uint8* args, unsigned int /*argsize*/)
 	}
 
 	return weight;
-
 }
 
 uint32 Item::I_isExplosive(const uint8* args, unsigned int /*argsize*/)

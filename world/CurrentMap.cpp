@@ -107,7 +107,12 @@ void CurrentMap::writeback()
 
 				// delete items inside globs
 				if (item->getExtFlags() & Item::EXT_INGLOB) {
-					item->clearObjId();
+					delete item;
+					continue;
+				}
+
+				// delete all monsters
+				if (item->getFlags() & Item::FLG_MONSTER_NPC) {
 					delete item;
 					continue;
 				}

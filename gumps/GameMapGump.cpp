@@ -502,6 +502,8 @@ void GameMapGump::StopDraggingItem(Item* item, bool moved)
 
 	if (!moved) return; // nothing to do
 
+	// make items on top of item fall
+	item->grab();
 	// remove item from world
 	CurrentMap* cm = World::get_instance()->getCurrentMap();
 	cm->removeItem(item);
@@ -522,7 +524,12 @@ void GameMapGump::DropItem(Item* item, int mx, int my)
 	dragging_x = 2*mx + 4*(my+128) + cx - 4*cz;
 	dragging_y = -2*mx + 4*(my+128) + cy - 4*cz;
 
-	item->move(dragging_x,dragging_y,dragging_z);
+	perr << "Dropping item at (" << dragging_x << "," << dragging_y 
+		 << "," << dragging_z << ")" << std::endl;
+		
+
+	item->move(dragging_x,dragging_y,dragging_z, true); // move, and force
+	                                                    // map update
 	item->fall();
 }
 

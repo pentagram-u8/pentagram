@@ -1,3 +1,10 @@
+2003-06-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Item.*, gumps/GameMapGump.*: fixed bug with items disappearing
+	  after dragging.
+	* world/Item.*, gumps/GameMapGump.*: Made items fall down when
+	  supporting item is dragged away. Implemented I_grab().
+	* world/CurrentMap.cpp: clear FLG_MONSTER_NPC items on map change
+
 2003-06-21	  Ryan Nunn <colourles@users.sourceforge.net>
 	* world/CurrentMap.cpp : Fixing the searches
 	* world/CurrentMap.h : Updated docs

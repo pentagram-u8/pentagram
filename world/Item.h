@@ -50,7 +50,9 @@ public:
 
 	//! Move an item. This moves an item to the new location, and updates
 	//! CurrentMap if necessary.
-	void move(sint32 x, sint32 y, sint32 z); // move also handles item lists
+	//! \param forcemapupdate if set, will force updating the item lists in
+	//!                       CurrentMap
+	void move(sint32 x, sint32 y, sint32 z, bool forcemapupdate=false);
 
 	//! Get the location of the top-most container this Item is in, or
 	//! this Item's location if not in a container.
@@ -190,6 +192,11 @@ public:
 	//! This creates a GravityProcess to do the actual work if the Item
 	//! doesn't already have one.
 	void fall();
+
+	//! Make any items on top of this Item fall down.
+	//! Note that this Item has to be moved away right after calling grab(),
+	//! since otherwise the items will immediately hit this Item again.
+	void grab();
 
 	//! Assign a GravityProcess to this Item
 	void setGravityProcess(uint16 pid) { gravitypid = pid; }
@@ -334,6 +341,7 @@ public:
 	INTRINSIC(I_hurl);
 	INTRINSIC(I_shoot);
 	INTRINSIC(I_fall);
+	INTRINSIC(I_grab);
 	INTRINSIC(I_getFamilyOfType);
 	INTRINSIC(I_getEtherealTop);
 	INTRINSIC(I_guardianBark);

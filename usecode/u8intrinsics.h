@@ -114,7 +114,7 @@ Intrinsic U8Intrinsics[] = {
 	Item::I_hurl,
 	Item::I_shoot,
 	Item::I_fall,
-	0, // Item::grab
+	Item::I_grab,
 	0, //U
 	Item::I_bark,
 	Item::I_ask,
