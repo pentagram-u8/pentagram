@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "World.h"
 #include "Item.h"
 #include "GUIApp.h"
+#include "QuickAvatarMoverProcess.h"
 
 #include "Gump.h"
 #include "QuitGump.h"
@@ -102,6 +103,23 @@ bool paintEditorItems(const SDL_Event& event)
 		GUIApp * g = GUIApp::get_instance();
 		g->togglePaintEditorItems();
 		pout << "paintEditorItems = " << g->isPaintEditorItems() << std::endl;
+	}
+	break;
+
+	}
+	return handled;
+}
+
+bool showTouchingItems(const SDL_Event& event)
+{
+	bool handled = false;
+	switch (event.type) {
+	case HID_DOWN:
+	{
+		handled = true;
+		GUIApp * g = GUIApp::get_instance();
+		g->toggleShowTouchingItems();
+		pout << "ShowTouchingItems = " << g->isShowTouchingItems() << std::endl;
 	}
 	break;
 
@@ -206,5 +224,206 @@ bool toggleConsole(const SDL_Event& event)
 	}
 	return handled;
 }
+
+bool quickMoveUp(const SDL_Event& event)
+{
+	bool handled = false;
+	switch (event.type) {
+	case HID_DOWN:
+	{
+		GUIApp * g = GUIApp::get_instance();
+		if (! g->isAvatarInStasis())
+		{
+			Process *p = new QuickAvatarMoverProcess(-64,-64,0,0);
+			Kernel::get_instance()->addProcess(p);
+		} else {
+			pout << "Can't: avatarInStasis" << std::endl;
+		}
+		handled = true;
+	} break;
+	case HID_UP:
+	{
+		QuickAvatarMoverProcess::terminateMover(0);
+		handled = true;
+	}
+	default:
+		break;
+	}
+	return handled;
+}
+
+bool quickMoveDown(const SDL_Event& event)
+{
+	bool handled = false;
+	switch (event.type) {
+	case HID_DOWN:
+	{
+		GUIApp * g = GUIApp::get_instance();
+		if (! g->isAvatarInStasis())
+		{
+			Process *p = new QuickAvatarMoverProcess(+64,+64,0,1);
+			Kernel::get_instance()->addProcess(p);
+		} else {
+			pout << "Can't: avatarInStasis" << std::endl;
+		}
+		handled = true;
+	} break;
+	case HID_UP:
+	{
+		QuickAvatarMoverProcess::terminateMover(1);
+		handled = true;
+	}
+	default:
+		break;
+	}
+	return handled;
+}
+
+bool quickMoveLeft(const SDL_Event& event)
+{
+	bool handled = false;
+	switch (event.type) {
+	case HID_DOWN:
+	{
+		GUIApp * g = GUIApp::get_instance();
+		if (! g->isAvatarInStasis())
+		{
+			Process *p = new QuickAvatarMoverProcess(-64,+64,0,2);
+			Kernel::get_instance()->addProcess(p);
+		} else {
+			pout << "Can't: avatarInStasis" << std::endl;
+		}
+		handled = true;
+	} break;
+	case HID_UP:
+	{
+		QuickAvatarMoverProcess::terminateMover(2);
+		handled = true;
+	}
+	default:
+		break;
+	}
+	return handled;
+}
+
+bool quickMoveRight(const SDL_Event& event)
+{
+	bool handled = false;
+	switch (event.type) {
+	case HID_DOWN:
+	{
+		GUIApp * g = GUIApp::get_instance();
+		if (! g->isAvatarInStasis())
+		{
+			Process *p = new QuickAvatarMoverProcess(+64,-64,0,3);
+			Kernel::get_instance()->addProcess(p);
+		} else {
+			pout << "Can't: avatarInStasis" << std::endl;
+		}
+		handled = true;
+	} break;
+	case HID_UP:
+	{
+		QuickAvatarMoverProcess::terminateMover(3);
+		handled = true;
+	}
+	default:
+		break;
+	}
+	return handled;
+}
+
+bool quickMoveAscend(const SDL_Event& event)
+{
+	bool handled = false;
+	switch (event.type) {
+	case HID_DOWN:
+	{
+		GUIApp * g = GUIApp::get_instance();
+		if (! g->isAvatarInStasis())
+		{
+			Process *p = new QuickAvatarMoverProcess(0,0,8,4);
+			Kernel::get_instance()->addProcess(p);
+		} else {
+			pout << "Can't: avatarInStasis" << std::endl;
+		}
+		handled = true;
+	} break;
+	case HID_UP:
+	{
+		QuickAvatarMoverProcess::terminateMover(4);
+		handled = true;
+	}
+	default:
+		break;
+	}
+	return handled;
+}
+
+bool quickMoveDescend(const SDL_Event& event)
+{
+	bool handled = false;
+	switch (event.type) {
+	case HID_DOWN:
+	{
+		GUIApp * g = GUIApp::get_instance();
+		if (! g->isAvatarInStasis())
+		{
+			Process *p = new QuickAvatarMoverProcess(0,0,-8,5);
+			Kernel::get_instance()->addProcess(p);
+		} else {
+			pout << "Can't: avatarInStasis" << std::endl;
+		}
+		handled = true;
+	} break;
+	case HID_UP:
+	{
+		QuickAvatarMoverProcess::terminateMover(5);
+		handled = true;
+	}
+	default:
+		break;
+	}
+	return handled;
+}
+
+bool quickMoveQuarterSpeed(const SDL_Event& event)
+{
+	bool handled = false;
+	switch (event.type) {
+	case HID_DOWN:
+	{
+		QuickAvatarMoverProcess::setQuarterSpeed(true);
+		pout << "QuickAvatarMoverProcess::quarter = " << QuickAvatarMoverProcess::isQuarterSpeed() << std::endl;
+		handled = true;
+	} break;
+	case HID_UP:
+	{
+		QuickAvatarMoverProcess::setQuarterSpeed(false);
+		pout << "QuickAvatarMoverProcess::quarter = " << QuickAvatarMoverProcess::isQuarterSpeed() << std::endl;
+		handled = true;
+	}
+	default:
+		break;
+	}
+	return handled;
+}
+
+bool quickMoveClipping(const SDL_Event& event)
+{
+	bool handled = false;
+	switch (event.type) {
+	case HID_DOWN:
+	{
+		QuickAvatarMoverProcess::toggleClipping();
+		pout << "QuickAvatarMoverProcess::clipping = " << QuickAvatarMoverProcess::isClipping() << std::endl;
+		handled = true;
+	} break;
+	default:
+		break;
+	}
+	return handled;
+}
+
 
 };

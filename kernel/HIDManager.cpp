@@ -60,6 +60,7 @@ HIDManager::HIDManager()
 	bindingMap.insert( HIDBINDING_PAIR(avatarInStatis) );
 	bindingMap.insert( HIDBINDING_PAIR(engineStats) );
 	bindingMap.insert( HIDBINDING_PAIR(paintEditorItems) );
+	bindingMap.insert( HIDBINDING_PAIR(showTouchingItems) );
 	bindingMap.insert( HIDBINDING_PAIR(itemLocator) );
 	bindingMap.insert( HIDBINDING_PAIR(toggleCombat) );
 	bindingMap.insert( HIDBINDING_PAIR(openInventory) );
@@ -73,6 +74,14 @@ HIDManager::HIDManager()
 	bindingMap.insert( HIDBINDING_PAIR(showMenu) );
 	bindingMap.insert( HIDBINDING_PAIR(quit) );
 	bindingMap.insert( HIDBINDING_PAIR(toggleConsole) );
+	bindingMap.insert( HIDBINDING_PAIR(quickMoveUp) );
+	bindingMap.insert( HIDBINDING_PAIR(quickMoveDown) );
+	bindingMap.insert( HIDBINDING_PAIR(quickMoveLeft) );
+	bindingMap.insert( HIDBINDING_PAIR(quickMoveRight) );
+	bindingMap.insert( HIDBINDING_PAIR(quickMoveAscend) );
+	bindingMap.insert( HIDBINDING_PAIR(quickMoveDescend) );
+	bindingMap.insert( HIDBINDING_PAIR(quickMoveQuarterSpeed) );
+	bindingMap.insert( HIDBINDING_PAIR(quickMoveClipping) );
 
 	keybindings[SDLK_ESCAPE] = &HIDBindings::quit;
 	keybindings[SDLK_BACKQUOTE] = &HIDBindings::toggleConsole;
@@ -128,8 +137,8 @@ void HIDManager::loadBindings()
 	
 	if (i == end)
 	{
-		pout << "No HIDBindings detected!" << std::endl
-			<< "Loading default HIDBindings..." << std::endl;
+		pout << "No custom HIDBinding found:" << std::endl
+			<< "\tLoading default HIDBindings..." << std::endl;
 		ConfigFileManager* config = ConfigFileManager::get_instance();
 		keys = config->listKeyValues("bindings/bindings");
 		i = keys.begin();

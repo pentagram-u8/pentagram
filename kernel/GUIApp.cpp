@@ -1401,67 +1401,6 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		if (dragging != DRAG_NOT) break;
 
 		switch (event.key.keysym.sym) {
-			case SDLK_LSHIFT: 
-			case SDLK_RSHIFT: {
-				QuickAvatarMoverProcess::toggleQuarter();
-				pout << "QuickAvatarMoverProcess::quarter = " << QuickAvatarMoverProcess::isQuarter() << std::endl;
-			} break;
-			case SDLK_c: {
-				QuickAvatarMoverProcess::toggleClipping();
-				pout << "QuickAvatarMoverProcess::clipping = " << QuickAvatarMoverProcess::isClipping() << std::endl;
-			} break;
-			case SDLK_h: {
-				toggleShowTouchingItems();
-				pout << "ShowTouchingItems = " << isShowTouchingItems() << std::endl; 
-			} break;
-			case SDLK_UP: {
-				if (!avatarInStasis) { 
-					Process *p = new QuickAvatarMoverProcess(-64,-64,0,0);
-					Kernel::get_instance()->addProcess(p);
-				} else { 
-					pout << "Can't: avatarInStasis" << std::endl; 
-				}
-			} break;
-			case SDLK_DOWN: {
-				if (!avatarInStasis) { 
-					Process *p = new QuickAvatarMoverProcess(+64,+64,0,1);
-					Kernel::get_instance()->addProcess(p);
-				} else { 
-					pout << "Can't: avatarInStasis" << std::endl; 
-				}
-			} break;
-			case SDLK_LEFT: {
-				if (!avatarInStasis) { 
-					Process *p = new QuickAvatarMoverProcess(-64,+64,0,2);
-					Kernel::get_instance()->addProcess(p);
-				} else { 
-					pout << "Can't: avatarInStasis" << std::endl; 
-				}
-			} break;
-			case SDLK_RIGHT: {
-				if (!avatarInStasis) { 
-					Process *p = new QuickAvatarMoverProcess(+64,-64,0,3);
-					Kernel::get_instance()->addProcess(p);
-				} else { 
-					pout << "Can't: avatarInStasis" << std::endl; 
-				}
-			} break;
-			case SDLK_HOME: {
-				if (!avatarInStasis) { 
-					Process *p = new QuickAvatarMoverProcess(0,0,8,4);
-					Kernel::get_instance()->addProcess(p);
-				} else { 
-					pout << "Can't: avatarInStasis" << std::endl; 
-				}
-			} break;
-			case SDLK_END: {
-				if (!avatarInStasis) { 
-					Process *p = new QuickAvatarMoverProcess(0,0,-8,5);
-					Kernel::get_instance()->addProcess(p);
-				} else { 
-					pout << "Can't: avatarInStasis" << std::endl; 
-				}
-			} break;
 			case SDLK_KP_PLUS: {
 				midi_volume+=8;
 				if (midi_volume>255) midi_volume =255;
@@ -1490,30 +1429,6 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			if (event.key.keysym.mod & KMOD_CTRL)
 				ForceQuit();
 		} break;
-		case SDLK_LSHIFT: 
-		case SDLK_RSHIFT: {
-			QuickAvatarMoverProcess::toggleQuarter();
-			pout << "QuickAvatarMoverProcess::quarter = " << QuickAvatarMoverProcess::isQuarter() << std::endl;
-		} break;
-		case SDLK_UP: {
-			QuickAvatarMoverProcess::terminateMover(0);
-		} break;
-		case SDLK_DOWN: {
-			QuickAvatarMoverProcess::terminateMover(1);
-		} break;
-		case SDLK_LEFT: {
-			QuickAvatarMoverProcess::terminateMover(2);
-		} break;
-		case SDLK_RIGHT: {
-			QuickAvatarMoverProcess::terminateMover(3);
-		} break;
-		case SDLK_HOME: {
-			QuickAvatarMoverProcess::terminateMover(4);
-		} break;
-		case SDLK_END: {
-			QuickAvatarMoverProcess::terminateMover(5);
-		} break;
-
 		case SDLK_LEFTBRACKET: gameMapGump->IncSortOrder(-1); break;
 		case SDLK_RIGHTBRACKET: gameMapGump->IncSortOrder(+1); break;
 

@@ -35,9 +35,9 @@ public:
 	virtual bool run(const uint32 framenum);
 	virtual void terminate();
 
-	static bool isQuarter() {return quarter;}
+	static bool isQuarterSpeed() {return quarter;}
 	static bool isClipping() {return clipping;}
-	static void toggleQuarter() {quarter = !quarter;}
+	static void setQuarterSpeed(bool q) {quarter = q;}
 	static void toggleClipping() {clipping = !clipping;}
 
 	static void terminateMover(int _dir);

@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 namespace HIDBindings {
 
-// ! toogles the avatar in and out of statis
+// ! toggles the avatar in and out of statis
 // ! \see HIDBinding
 bool avatarInStatis(const SDL_Event& event);
 
@@ -35,9 +35,13 @@ bool engineStats(const SDL_Event& event);
 // ! \see HIDBinding
 bool itemLocator(const SDL_Event& event);
 
-// ! toogles the painting of editor items
+// ! toggles the painting of editor items
 // ! \see HIDBinding
 bool paintEditorItems(const SDL_Event& event);
+
+// ! toggles the highlighting of items touching the main actor
+// ! \see HIDBinding
+bool showTouchingItems(const SDL_Event& event);
 
 // ! binding to quickload
 // ! \see HIDBinding
@@ -62,6 +66,38 @@ bool quit(const SDL_Event& event);
 // ! toggles the console up and down
 // ! \see HIDBinding
 bool toggleConsole(const SDL_Event& event);
+
+// ! moves main actor up without playing any animation
+// ! \see HIDBinding
+bool quickMoveUp(const SDL_Event& event);
+
+// ! moves main actor down without playing any animation
+// ! \see HIDBinding
+bool quickMoveDown(const SDL_Event& event);
+
+// ! moves main actor left without playing any animation
+// ! \see HIDBinding
+bool quickMoveLeft(const SDL_Event& event);
+
+// ! moves main actor right without playing any animation
+// ! \see HIDBinding
+bool quickMoveRight(const SDL_Event& event);
+
+// ! main actor ascends without playing any animation
+// ! \see HIDBinding
+bool quickMoveAscend(const SDL_Event& event);
+
+// ! main actor descends without playing any animation
+// ! \see HIDBinding
+bool quickMoveDescend(const SDL_Event& event);
+
+// ! quick moves act at quater speed
+// ! \see HIDBinding
+bool quickMoveQuarterSpeed(const SDL_Event& event);
+
+// ! toggles clipping on quick moves
+// ! \see HIDBinding
+bool quickMoveClipping(const SDL_Event& event);
 
 };
 

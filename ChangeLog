@@ -1,3 +1,9 @@
+2004-09-05  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* kernel/GUIApp.cpp: moved quick move keybings into HIDBindings
+	* game/stdbindings.*, kernel/HIDManager.cpp: created more HIDBindings
+	* world/actors/QuickAvatarMoverProcess.h: renamed method for quarter
+	  speed
+
 2004-09-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/BookGump.*, gumps/ScrollGump.*: close books/scrolls on dblclick
 	* world/actors/Actor.cpp: don't make things wait for LoiterProcess
