@@ -47,7 +47,6 @@ protected:
 	virtual void saveData(ODataSource* ods);
 
 	virtual void selectEntry(int entry);
-	ObjId entryGumps[9];
 };
 
 

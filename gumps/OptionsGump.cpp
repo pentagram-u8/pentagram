@@ -46,12 +46,7 @@ OptionsGump::~OptionsGump()
 
 void OptionsGump::InitGump()
 {
-	int i;
 	Gump::InitGump();
-	for (i=0; i < 9; ++i)
-	{
-		entryGumps[i] = 0;
-	}
 
 	dims.w = 220;
 	dims.h = 120;
@@ -62,41 +57,34 @@ void OptionsGump::InitGump()
 
 	widget = new ButtonWidget(x, y, "1. Video", font);
 	widget->InitGump();
+	widget->SetIndex(1);
 	AddChild(widget);
-	entryGumps[0] = widget->getObjId();
 	y+= 14;
 
 	widget = new ButtonWidget(x, y, "2. Audio", font);
 	widget->InitGump();
+	widget->SetIndex(2);
 	AddChild(widget);
-	entryGumps[1] = widget->getObjId();
 	y+= 14;
 
 	widget = new ButtonWidget(x, y, "3. Controls", font);
 	widget->InitGump();
+	widget->SetIndex(3);
 	AddChild(widget);
-	entryGumps[2] = widget->getObjId();
 	y+= 14;
 
 	widget = new ButtonWidget(x, y, "4. Gameplay", font);
 	widget->InitGump();
+	widget->SetIndex(4);
 	AddChild(widget);
-	entryGumps[3] = widget->getObjId();
 	y+= 14;
 }
 
 void OptionsGump::ChildNotify(Gump *child, uint32 message)
 {
-	ObjId cid = child->getObjId();
 	if (message == ButtonWidget::BUTTON_CLICK)
 	{
-		for (int i = 0; i < 9; ++i)
-		{
-			if (cid == entryGumps[i])
-			{
-				selectEntry(i + 1);
-			}
-		}
+		selectEntry(child->GetIndex());
 	}
 }
 
@@ -137,7 +125,8 @@ void OptionsGump::selectEntry(int entry)
 		gump->InitGump();
 		gump->addPage(ControlsGump::showEngineMenu());
 		gump->addPage(ControlsGump::showU8Menu());
-		//! BUG: try adding to this gump instead of parent to trigger a bug.
+		// The parent to this gump is actually  a PagedGump,
+		// and this gump does not cover the entire parent.
 		parent->AddChild(gump);
 		gump->setRelativePosition(CENTER);
 	} break;	

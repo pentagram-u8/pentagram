@@ -67,12 +67,7 @@ static const int menuEntryShape = 37;
 
 void MenuGump::InitGump()
 {
-	int i;
 	ModalGump::InitGump();
-	for (i=0; i < 9; ++i)
-	{
-		entryGumps[i] = 0;
-	}
 
 	shape = GameData::get_instance()->getGumps()->getShape(gumpShape);
 	ShapeFrame* sf = shape->getFrame(0);
@@ -101,8 +96,8 @@ void MenuGump::InitGump()
 		frame_down = _TL_SHP_(frame_down);
 		widget = new ButtonWidget(x, y, frame_up, frame_down);
 		widget->InitGump();
+		widget->SetIndex(i + 1);
 		AddChild(widget);
-		entryGumps[i] = widget->getObjId();
 		y+= 14;
 	}
 	
@@ -138,16 +133,9 @@ bool MenuGump::OnKeyDown(int key, int mod)
 
 void MenuGump::ChildNotify(Gump *child, uint32 message)
 {
-	ObjId cid = child->getObjId();
 	if (message == ButtonWidget::BUTTON_CLICK)
 	{
-		for (int i = 0; i < 9; ++i)
-		{
-			if (cid == entryGumps[i])
-			{
-				selectEntry(i + 1);
-			}
-		}
+		selectEntry(child->GetIndex());
 	}
 }
 
@@ -245,10 +233,6 @@ bool MenuGump::loadData(IDataSource* ids)
 	if (version != 1) return false;
 	if (!ModalGump::loadData(ids)) return false;
 
-	for (int i = 0; i < 8; ++i)
-	{
-		entryGumps[i] = ids->read2();
-	}
 	return true;
 }
 
@@ -256,9 +240,5 @@ void MenuGump::saveData(ODataSource* ods)
 {
 	ods->write2(1); //version
 	ModalGump::saveData(ods);
-	for (int i = 0; i < 8; ++i)
-	{
-		ods->write2(entryGumps[i]);
-	}
 }
 
