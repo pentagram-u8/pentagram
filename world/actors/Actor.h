@@ -138,6 +138,9 @@ public:
 	//! \param state the state to start from, or 0 to use the current state
 	Animation::Result tryAnim(Animation::Sequence anim, int dir, PathfindingState* state=0);
 
+	//! create an actor, assign objid, make it ethereal and load monster stats.
+	static Actor* createActor(uint32 shape);
+
 	virtual uint16 assignObjId(); // assign an NPC objid
 
 	virtual void dumpInfo();

@@ -35,6 +35,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AnimationTracker.h"
 #include "AudioProcess.h"
 #include "SettingManager.h"
+#include "CombatProcess.h"
+#include "SpriteProcess.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -271,7 +273,7 @@ void ActorAnimProcess::doSpecial()
 	Actor *a = World::get_instance()->getNPC(item_num);
 	assert(a);
 
-	// play SFX when Avatar draws/sheates weapon
+	// play SFX when Avatar draws/sheathes weapon
 	if (item_num == 1 && (action == Animation::readyWeapon ||
 						  action == Animation::unreadyWeapon) &&
 		a->getEquip(ShapeInfo::SE_WEAPON) != 0)
@@ -282,6 +284,66 @@ void ActorAnimProcess::doSpecial()
 		return;
 	}
 
+	// ghosts
+	if (a->getShape() == 0x19b)
+	{
+		Actor* hostile = 0;
+		if (action == Animation::attack) {
+			// fireball on attack
+			unsigned int skullcount = a->countNearby(0x19d, 6*256);
+			if (skullcount > 5) return;
+
+			Actor* skull = Actor::createActor(0x19d);
+			if (!skull) return;
+			skull->setFlag(Item::FLG_FAST_ONLY);
+			sint32 x,y,z;
+			a->getLocation(x,y,z);
+			int dir = a->getDir();
+			skull->move(x+32*x_fact[dir],y+32*y_fact[dir],z);
+			hostile = skull;
+		} else if (a->getMapNum() != 54) { // Khumash-Gor doesn't summon ghouls
+			// otherwise, summon ghoul
+			unsigned int ghoulcount = a->countNearby(0x8e, 8*256);
+			if (ghoulcount > 2) return;
+
+			sint32 x,y,z;
+			a->getLocation(x,y,z);
+			x += (std::rand() % (6*256)) - 3*256;
+			y += (std::rand() % (6*256)) - 3*256;
+
+			Actor* ghoul = Actor::createActor(0x8e);
+			if (!ghoul) return;
+			ghoul->setFlag(Item::FLG_FAST_ONLY);
+			if (!ghoul->canExistAt(x,y,z,true)) {
+				ghoul->destroy();
+				return;
+			}
+			ghoul->move(x,y,z);
+			ghoul->doAnim(Animation::standUp, 0);
+			hostile = ghoul;
+		}
+		
+		if (hostile) {
+			hostile->setInCombat();
+			CombatProcess* hostilecp = hostile->getCombatProcess();
+			CombatProcess* cp = a->getCombatProcess();
+			if (hostilecp && cp)
+				hostilecp->setTarget(cp->getTarget());
+		}
+
+		return;
+	}
+
+	// ghost's fireball
+	if (a->getShape() == 0x19d)
+	{
+		Actor* av = World::get_instance()->getNPC(1);
+		if (a->getRange(*av) < 96) {
+			a->setActorFlag(Actor::ACT_DEAD);
+			a->explode(); // explode if close to the avatar
+		}
+		return;
+	}
 
 	// play PC/NPC footsteps
 	SettingManager* settingman = SettingManager::get_instance();
@@ -302,13 +364,15 @@ void ActorAnimProcess::doSpecial()
 
 		uint32 floor = f->getShape();
 		bool running = (action == Animation::run);
+		bool splash = false;
 		int sfx = 0;
 		switch (floor) { // lots of constants!!
 		case 0x03: case 0x04: case 0x09: case 0x0B: case 0x5C: case 0x5E:
 			sfx = 0x2B;
 			break;
-		case 0x7E:
+		case 0x7E: case 0x80:
 			sfx = 0xCD;
+			splash = true;
 			break;
 		case 0xA1: case 0xA2: case 0xA3: case 0xA4:
 			sfx = (running ? 0x99 : 0x91);
@@ -321,6 +385,13 @@ void ActorAnimProcess::doSpecial()
 		if (sfx) {
 			AudioProcess* audioproc = AudioProcess::get_instance();
 			if (audioproc) audioproc->playSFX(sfx, 0x60, item_num, 0);
+		}
+
+		if (splash) {
+			sint32 x,y,z;
+			a->getLocation(x,y,z);			
+			Process *sp = new SpriteProcess(475, 0, 7, 1, 1, x, y, z);
+			Kernel::get_instance()->addProcess(sp);
 		}
 	}
 

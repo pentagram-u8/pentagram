@@ -504,7 +504,7 @@ bool Item::isOn(Item& item2) const
 	return false;
 }
 
-bool Item::canExistAt(sint32 x, sint32 y, sint32 z) const
+bool Item::canExistAt(sint32 x, sint32 y, sint32 z, bool needsupport) const
 {
 	sint32 xd, yd, zd;
 	getFootpadWorld(xd, yd, zd);
@@ -515,7 +515,10 @@ bool Item::canExistAt(sint32 x, sint32 y, sint32 z) const
 			 << ")-(" << x << "," << y << "," << z+zd << ")" << std::endl;
 	}
 #endif
-	return cm->isValidPosition(x, y, z, xd, yd, zd, getObjId(), 0, 0);
+	ObjId support;
+	bool valid = cm->isValidPosition(x, y, z, xd, yd, zd, getObjId(),
+									 &support, 0);
+	return valid && (!needsupport || support);
 }
 
 int Item::getDirToItemCentre(Item& item2) const
@@ -528,6 +531,47 @@ int Item::getDirToItemCentre(Item& item2) const
 
 	return Get_WorldDirection(i2y - iy, i2x - ix);
 }
+
+int Item::getRange(Item& item2, bool checkz) const
+{
+	sint32 thisX, thisY, thisZ;
+	sint32 otherX, otherY, otherZ;
+	sint32 thisXd, thisYd, thisZd;
+	sint32 otherXd, otherYd, otherZd;
+	sint32 thisXmin, thisYmin, thisZmax;
+	sint32 otherXmin, otherYmin, otherZmax;
+
+	getLocationAbsolute(thisX, thisY, thisZ);
+	item2.getLocationAbsolute(otherX, otherY, otherZ);
+	getFootpadWorld(thisXd, thisYd, thisZd);
+	item2.getFootpadWorld(otherXd, otherYd, otherZd);
+
+	thisXmin = thisX - thisXd;
+	thisYmin = thisY - thisYd;
+	thisZmax = thisZ + thisZd;
+
+	otherXmin = otherX - otherXd;
+	otherYmin = otherY - otherYd;
+	otherZmax = otherZ + otherZd;
+
+	sint32 range = 0;
+
+	if (thisXmin - otherX > range)
+		range = thisYmin - otherY;
+	if (otherXmin - thisX > range)
+		range = thisXmin - otherX;
+	if (thisYmin - otherY > range)
+		range = otherXmin - thisX;
+	if (otherYmin - thisY > range)
+		range = otherYmin - thisY;
+	if (checkz && thisZ - otherZmax > range)
+		range = thisZ - otherZmax;
+	if (checkz && otherZ - thisZmax > range)
+		range = otherZ - thisZmax;
+
+	return range;
+}
+
 
 ShapeInfo* Item::getShapeInfo()
 {
@@ -954,6 +998,17 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 
 	return 0;
 }
+
+unsigned int Item::countNearby(uint32 shape, uint16 range)
+{
+	CurrentMap* currentmap = World::get_instance()->getCurrentMap();
+	UCList itemlist(2);
+	LOOPSCRIPT(script, LS_SHAPE_EQUAL(shape));
+	currentmap->areaSearch(&itemlist, script, sizeof(script),
+						   this, range, false);
+	return itemlist.getSize();
+}
+
 
 uint32 Item::callUsecodeEvent(uint32 event, const uint8* args, int argsize)
 {
@@ -1484,8 +1539,6 @@ void Item::hurl(int xs, int ys, int zs, int grav)
 
 void Item::explode()
 {
-	assert(!p_dynamic_cast<Actor*>(this)); // shouldn't blow up actors
-
 	Process *p = new SpriteProcess(578, 20, 34, 1, 1, //!! constants
 								   x, y, z);
 	Kernel::get_instance()->addProcess(p);
@@ -1502,16 +1555,17 @@ void Item::explode()
 	LOOPSCRIPT(script, LS_TOKEN_TRUE); // we want all items
 	CurrentMap* currentmap = World::get_instance()->getCurrentMap();
 	currentmap->areaSearch(&itemlist, script, sizeof(script), 0,
-						   128, false, x, y); //! CHECKME: 128?
+						   160, false, x, y); //! CHECKME: 128?
 
 	for (unsigned int i = 0; i < itemlist.getSize(); ++i) {
 		Item *item = World::get_instance()->getItem(itemlist.getuint16(i));
 		if (!item) continue;
+		if (getRange(*item, true) > 160) continue; // check vertical distance
 		sint32 ix,iy,iz;
 		item->getLocation(ix,iy,iz);
 		int dir = Get_WorldDirection(ix-x, iy-y); //!! CHECKME
-		// TODO/CHECKME: make the '16' depend on range? check damage type
-		item->receiveHit(0, dir, 16, 0);
+		item->receiveHit(0, dir, 6 + (std::rand()%6),
+						 WeaponInfo::DMG_BLUNT|WeaponInfo::DMG_FIRE);
 	}
 }
 
@@ -2838,34 +2892,5 @@ uint32 Item::I_getRange(const uint8* args, unsigned int /*argsize*/)
 	if (!item) return 0;
 	if (!other) return 0;
 
-	sint32 thisX, thisY, thisZ;
-	sint32 otherX, otherY, otherZ;
-	sint32 thisXd, thisYd, thisZd;
-	sint32 otherXd, otherYd, otherZd;
-	sint32 thisXmin, thisYmin;
-	sint32 otherXmin, otherYmin;
-
-	item->getLocationAbsolute(thisX, thisY, thisZ);
-	other->getLocationAbsolute(otherX, otherY, otherZ);
-	item->getFootpadWorld(thisXd, thisYd, thisZd);
-	other->getFootpadWorld(otherXd, otherYd, otherZd);
-
-	thisXmin = thisX - thisXd;
-	thisYmin = thisY - thisYd;
-
-	otherXmin = otherX - otherXd;
-	otherYmin = otherY - otherYd;
-
-	sint32 range = 0;
-
-	if (thisXmin - otherX > range)
-		range = thisYmin - otherY;
-	if (otherXmin - thisX > range)
-		range = thisXmin - otherX;
-	if (thisYmin - otherY > range)
-		range = otherXmin - thisX;
-	if (otherYmin - thisY > range)
-		range = otherYmin - thisY;
-
-	return static_cast<uint32>(range);
+	return item->getRange(*other);
 }

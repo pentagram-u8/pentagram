@@ -5,6 +5,11 @@
 	* world/actors/ActorAnimProcess.cpp: play SFX for drawing/sheating
 	  weapon, footsteps
 	* world/actors/GrantPeaceProcess.cpp: play SFX
+	* world/actors/ActorAnimProcess.cpp: ghosts throw fireballs, summon
+	  ghouls. Fireballs explode. Show splashes when walking on water tiles.
+	* world/Item.cpp: let explosions do blunt fire damage
+	* world/actors/CombatProcess.cpp: don't do a range check for ghost's
+	  attacks
 
 2005-03-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/fonts/*: allow disabling interpreting of special characters

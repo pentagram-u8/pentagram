@@ -245,6 +245,10 @@ void CombatProcess::turnToDirection(int direction)
 bool CombatProcess::inAttackRange()
 {
 	Actor* a = World::get_instance()->getNPC(item_num);
+
+	if (a->getShape() == 0x19b) // constant! (ghost)
+		return true; // ghosts throw fireballs; always in range
+
 	AnimationTracker tracker;
 	if (!tracker.init(a, Animation::attack, a->getDir(), 0))
 		return false;

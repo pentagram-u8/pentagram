@@ -195,11 +195,15 @@ public:
 	bool isOn(Item& item2) const;
 
 	//! Check if this item can exist at the given coordinates
-	bool canExistAt(sint32 x, sint32 y, sint32 z) const;
+	bool canExistAt(sint32 x,sint32 y,sint32 z, bool needsupport=false) const;
 
 	//! Get direction from centre to another item's centre.
 	//! Undefined if either item is contained or equipped.
 	int getDirToItemCentre(Item& item2) const;
+
+	//! get 'distance' to other item. This is the maximum of the differences
+	//! between the x, y (and possibly z) coordinates of the items.
+	int getRange(Item& item2, bool checkz=false) const;
 
 	//! Check if this item can reach another item.
 	//! \param other item to be reached
@@ -266,6 +270,9 @@ public:
 	//! \param damage The force of the hit. Zero for default
 	//! \param type The type of damage done. Zero for default
 	virtual void receiveHit(ObjId other, int dir, int damage, uint16 type);
+
+	//! count nearby objects of a given shape
+	unsigned int countNearby(uint32 shape, uint16 range);
 
 	//! can this item be dragged?
 	bool canDrag();

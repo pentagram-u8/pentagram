@@ -801,6 +801,29 @@ uint16 Actor::schedule(uint32 time)
 	return static_cast<uint16>(ret);
 }
 
+//static
+Actor* Actor::createActor(uint32 shape)
+{
+	Actor* newactor = ItemFactory::createActor(shape, 0, 0, Item::FLG_IN_NPC_LIST, 0, 0, 0);
+	if (!newactor)
+		return 0;
+	uint16 objID = newactor->assignObjId();
+
+	// set stats
+	if (!newactor->loadMonsterStats()) {
+		perr << "I_createActor failed to set stats for actor (" << shape
+			 << ")." << std::endl;
+	}
+
+	Actor* av = World::get_instance()->getNPC(1);
+	newactor->setMapNum(av->getMapNum());
+	newactor->setNpcNum(objID);
+	newactor->setFlag(FLG_ETHEREAL);
+	World::get_instance()->etherealPush(objID);
+
+	return newactor;
+}
+
 
 void Actor::dumpInfo()
 {
@@ -1318,25 +1341,13 @@ uint32 Actor::I_createActor(const uint8* args, unsigned int /*argsize*/)
 
 	//!! do we need to flag actor as temporary?
 
-	Actor* newactor = ItemFactory::createActor(shape, 0, 0, Item::FLG_IN_NPC_LIST, 0, 0, 0);
+	Actor* newactor = createActor(shape);
 	if (!newactor) {
 		perr << "I_createActor failed to create actor (" << shape
 			 <<	")." << std::endl;
 		return 0;
 	}
-	uint16 objID = newactor->assignObjId();
-
-	// set stats
-	if (!newactor->loadMonsterStats()) {
-		perr << "I_createActor failed to set stats for actor (" << shape
-			 << ")." << std::endl;
-	}
-
-	Actor* av = World::get_instance()->getNPC(1);
-	newactor->setMapNum(av->getMapNum());
-	newactor->setNpcNum(objID);
-	newactor->setFlag(FLG_ETHEREAL);
-	World::get_instance()->etherealPush(objID);
+	uint16 objID = newactor->getObjId();
 
 	uint8 buf[2];
 	buf[0] = static_cast<uint8>(objID);
