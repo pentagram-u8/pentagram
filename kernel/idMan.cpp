@@ -19,6 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 #include "idMan.h"
 
+#include "IDataSource.h"
+#include "ODataSource.h"
+
 idMan::idMan(uint16 Begin, uint16 End) : begin(Begin), end(End)
 {
 	// 0 is always reserved, as is 65535
@@ -120,3 +123,40 @@ void idMan::clearID(uint16 id)
 	}
 }
 
+void idMan::save(ODataSource* ods)
+{
+	ods->write2(1); // version
+	ods->write2(begin);
+	ods->write2(end);
+	uint16 cur = first;
+	while (cur) {
+		ods->write2(cur);
+		cur = ids[cur];
+	}
+	ods->write2(0); // terminator
+}
+
+bool idMan::load(IDataSource* ds)
+{
+	uint16 version = ds->read2();
+	if (version != 1) return false;
+
+	begin = ds->read2();
+	end = ds->read2();
+
+	if (ids) delete[] ids;
+	ids = new uint16[end+1];
+
+	for (unsigned int i = 0; i <= end; ++i) {
+		ids[i] = 0;
+	}
+	first = last = 0;
+
+	uint16 cur = ds->read2();
+	while (cur) {
+		clearID(cur);
+		cur = ds->read2();
+	}
+
+	return true;
+}

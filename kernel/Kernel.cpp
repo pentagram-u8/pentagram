@@ -253,6 +253,7 @@ void Kernel::killObjectProcesses()
 void Kernel::save(ODataSource* ods)
 {
 	ods->write2(1); // kernel savegame version 1
+	pIDs->save(ods);
 	ods->write4(processes.size());
 	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it)
 	{
@@ -265,13 +266,14 @@ bool Kernel::load(IDataSource* ids)
 	uint16 version = ids->read2();
 	if (version != 1) return false;
 
+	if (!pIDs->load(ids)) return false;
+
 	uint32 pcount = ids->read4();
 
 	for (unsigned int i = 0; i < pcount; ++i) {
 		Process* p = loadProcess(ids);
 		if (!p) return false;
 		processes.push_back(p);
-		pIDs->reserveID(p->getPid());
 	}
 
 	return true;

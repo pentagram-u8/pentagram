@@ -195,6 +195,9 @@ void ObjectManager::save(ODataSource* ods)
 {
 	ods->write2(1); // objects savegame version 1
 
+	objIDs->save(ods);
+	actorIDs->save(ods);
+
 	for (unsigned int i = 0; i < objects.size(); ++i) {
 		Object* object = objects[i];
 		if (!object) continue;
@@ -217,6 +220,9 @@ bool ObjectManager::load(IDataSource* ids)
 {
 	uint16 version = ids->read2();
 	if (version != 1) return false;
+
+	if (!objIDs->load(ids)) return false;
+	if (!actorIDs->load(ids)) return false;
 
 	do {
 		// peek ahead for terminator
@@ -256,16 +262,11 @@ Object* ObjectManager::loadObject(IDataSource* ids)
 	if (!obj) {
 		return 0;
 	}
-
 	uint16 objid = obj->getObjId();
-	if (objid != 0xFFFF) {
-		Actor* a = p_dynamic_cast<Actor*>(obj);
-		if (a) {
-			assignActorObjId(a, objid);
-		} else {
-			assignObjId(obj, objid);
-		}
-	}
+
+	if (objid != 0xFFFF)
+		objects[objid] = obj;
+
 	return obj;
 }
 

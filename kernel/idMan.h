@@ -19,6 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef IDMAN_H
 #define IDMAN_H
 
+class IDataSource;
+class ODataSource;
+
 //
 // idMan. Used to allocate and keep track of unused ids.
 // Supposed to be used by Kernel and World for pID and ObjID
@@ -47,9 +50,13 @@ public:
 	void		clearAll();
 
 	uint16		getNewID();
+	// (note: reserveID is O(n), so don't use too often.)
 	bool		reserveID(uint16 id); // false if already used
 	void		clearID(uint16 id);
 	bool		isIDUsed(uint16 id) { return ids[id] == 0 && id != last; }
+
+	void save(ODataSource* ods);
+	bool load(IDataSource* ids);
 };
 
 #endif //IDMAN_H

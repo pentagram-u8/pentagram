@@ -1,4 +1,8 @@
 2003-07-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/idMan.*, kernel/Kernel.*, kernel/ObjectManager.*:
+	  an O(n^2) object loading algorithm probably wasn't such a good idea
+
+2003-07-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* configure.ac, audio/midi/timidity/*: added --with-timidity=path
 	  to configure to supply default timidity path
 	* audio/midi/various: typos :-)

@@ -46,13 +46,22 @@ uint32 framenum
 
 PROCESSES: (v1)
 uint16 version			processes savegame version
+idMan pids
 uint32 processcount
 [processcount processes, from front to back of list]
 
 see below for individual process descriptions
 
+idMan: (v1)
+uint16 begin
+uint16 end
+uint16 unused[]
+uint16 terminator (0)
+
 OBJECTS: (v1)
 uint16 version			objects savegame version
+idMan objIDs
+idMan actorIDs
 [...objects...]
 uint16 terminator (0)
 
