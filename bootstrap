@@ -17,12 +17,21 @@ automake --foreign --add-missing --copy
 #Create configure script
 autoconf
 
-echo "Copying Makefiles..."
+echo -n "Copying Makefiles"
 cp tools/Makefile tools/disasm
+echo -n "."
 #cp tools/Makefile tools/fold
+#echo -n "."
 #cp tools/Makefile tools/suc
+#echo -n "."
 cp tools/Makefile misc
+echo -n "."
 cp tools/Makefile convert
+echo -n "."
 cp tools/Makefile convert/u8
+echo -n "."
+cp tools/Makefile filesys
+echo -n "."
 
+echo ""
 echo "You are now ready to run ./configure ..."

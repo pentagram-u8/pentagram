@@ -1,3 +1,11 @@
+2002-09-22  Darke  <darkepaw@users.sf.net>
+	* misc/[Aa]rgs.*: Missed changing a header name.
+	* filesys/*: All the file systems stuff. The primary FileSystem class
+	  is rather bare and not completely correct, but good enough to use
+	  it's basic features.
+	* tools/disasm/*: Updated disasm to use the new DataSource classes.
+	
+
 2002-09-08  Darke  <darkepaw@users.sf.net>
 	* tools/disasm/Disasm.cpp: All opcodes known, yay! Now we just have
 	to figure out how they work. *grin*

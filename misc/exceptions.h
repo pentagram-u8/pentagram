@@ -22,6 +22,7 @@
 #include <cerrno>
 #include <stdexcept>
 #include <string>
+#include <common_types.h>
 
 /*
  *  Base class of all our exceptions, providing a storage for the error message
