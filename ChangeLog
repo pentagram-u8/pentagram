@@ -1,3 +1,9 @@
+2004-05-05  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* gumps/QuitGump.*: gump to verify if the user wishes to quit
+	* gumps/MenuGump.*: start of menu with some functionality that looks like u8's menu
+	* games/u8bindings.*: binding to show the menu
+	* kernel/HIDManager.cpp: added new binding
+
 2004-05-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/ConsoleGump.*: fixed key input
 

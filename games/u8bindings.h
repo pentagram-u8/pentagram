@@ -51,6 +51,10 @@ bool toggleCombat(const SDL_Event& event);
 // ! \see HIDBinding
 bool u8ShapeViewer(const SDL_Event& event);
 
+// ! U8 game menu
+// ! \see HIDBinding
+bool showMenu(const SDL_Event& event);
+
 };
 
 #endif

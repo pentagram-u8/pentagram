@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CameraProcess.h"
 #include "CurrentMap.h"
 #include "ShapeViewerGump.h"
+#include "MenuGump.h"
 
 namespace HIDBindings {
 
@@ -217,5 +218,15 @@ bool u8ShapeViewer(const SDL_Event& event)
 	}
 }
 
+bool showMenu(const SDL_Event& event)
+{
+	switch (event.type) {
+	case HID_DOWN:
+		MenuGump::showMenu();
+		return true;
+	default:
+		return false;
+	}
+}
 
 }; // namespace HIDBindings

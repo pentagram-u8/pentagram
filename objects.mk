@@ -101,13 +101,15 @@ GUMPS = \
 	gumps/GumpNotifyProcess.o \
 	gumps/ItemRelativeGump.o \
 	gumps/MiniStatsGump.o \
+	gumps/MenuGump.o \
 	gumps/ModalGump.o \
 	gumps/PaperdollGump.o \
 	gumps/ResizableGump.o \
 	gumps/ScrollGump.o \
 	gumps/ShapeViewerGump.o \
 	gumps/SliderGump.o \
-	gumps/TargetGump.o
+	gumps/TargetGump.o \
+	gumps/QuitGump.o
 
 WIDGETS = \
 	gumps/widgets/ButtonWidget.o \
