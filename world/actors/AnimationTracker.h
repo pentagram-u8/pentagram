@@ -76,6 +76,8 @@ public:
 	void save(ODataSource* ods);
 
 private:
+	unsigned int getNextFrame(unsigned int frame);
+
 	unsigned int startframe, endframe;
 	bool firstframe;
 	unsigned int currentframe;

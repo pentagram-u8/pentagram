@@ -1,4 +1,7 @@
 2004-08-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/AnimationTracker.*: moved next frame code to sep. func.
+
+2004-08-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AnimationTracker.*: a class to handle animations
 	* world/actors/ActorAnimProcess.*: use AnimationTracker internally
 	* world/actors/PathfindingProcess.*: set ACT_PATHFINDING flag

@@ -80,6 +80,25 @@ void AnimationTracker::init(Actor* actor_, Animation::Sequence action_,
 	unsupported = false;
 }
 
+unsigned int AnimationTracker::getNextFrame(unsigned int frame)
+{
+	frame++;
+
+	if (frame == endframe)
+		return endframe;
+
+	// loop if necessary
+	if (frame >= animaction->size) {
+		if (animaction->flags & AnimAction::AAF_LOOPING) {
+			frame = 1;
+		} else {
+			frame = 0;
+		}
+	}
+
+	return frame;
+}
+
 bool AnimationTracker::step()
 {
 	if (done) return false;
@@ -98,7 +117,7 @@ bool AnimationTracker::step()
 	if (firstframe)
 		currentframe = startframe;
 	else
-		currentframe++;
+		currentframe = getNextFrame(currentframe);
 
 	if (currentframe == endframe) {
 		done = true;
@@ -113,15 +132,6 @@ bool AnimationTracker::step()
 	}
 
 	firstframe = false;
-
-	// loop if necessary
-	if (currentframe >= animaction->size) {
-		if (animaction->flags & AnimAction::AAF_LOOPING) {
-			currentframe = 1;
-		} else {
-			currentframe = 0;
-		}
-	}
 
 	AnimFrame& f = animaction->frames[dir][currentframe];
 
