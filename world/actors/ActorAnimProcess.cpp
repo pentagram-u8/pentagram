@@ -115,7 +115,7 @@ void ActorAnimProcess::terminate()
 {
 	Actor *a = p_dynamic_cast<Actor*>(World::get_instance()->getObject(actor));
 	if (a) {
-		assert(a->animproc == pid);
+		if (animaction) { assert(a->animproc == pid); }
 		a->animproc = 0;
 	}
 
