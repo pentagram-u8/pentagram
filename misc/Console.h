@@ -22,29 +22,43 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef CONSOLE_H
 #define CONSOLE_H
 
+#include <cstdarg>
+
 //
 // The Console
 //
 #define		CON_TEXTSIZE		32768
 #define		CON_PUTCHAR_SIZE	256
 
+// For Enable/Disable flags
+#define		CON_STDOUT			1
+#define		CON_STDERR			2
+
+class ODataSource;
+
 class Console
 {
-	char	text[CON_TEXTSIZE];
-	int		current;				// line where next message will be printed
-	int		x;						// offset in current line for next print
-	int		display;				// bottom of console displays this line
+	char		text[CON_TEXTSIZE];
+	sint32		current;				// line where next message will be printed
+	sint32		x;						// offset in current line for next print
+	sint32		display;				// bottom of console displays this line
 
-	int 	linewidth;				// characters across screen
-	int		totallines;				// total lines in console scrollback
+	sint32		linewidth;				// characters across screen
+	sint32		totallines;				// total lines in console scrollback
 
-	int		vislines;
+	sint32		vislines;
 
-	bool	wordwrap;				// Enable/Disable word wrapping
-	bool	cr;						// Line feed marker
+	bool		wordwrap;				// Enable/Disable word wrapping
+	bool		cr;						// Line feed marker
 
-	int		putchar_count;			// Number of characters that have been putchar'd
-	char	putchar_buf[CON_PUTCHAR_SIZE];	// The Characters that have been putchar'd
+	sint32		putchar_count;			// Number of characters that have been putchar'd
+	char		putchar_buf[CON_PUTCHAR_SIZE];	// The Characters that have been putchar'd
+
+	uint32		std_output_enabled;		
+
+	// stdout and stderr redirection
+	ODataSource	*stdout_redir;
+	ODataSource	*stderr_redir;
 
 public:
 	Console();
@@ -59,6 +73,30 @@ public:
 	// Resize the console buffer (on screen change)
 	void	CheckResize (int scrwidth);
 
+	// Redirection
+	void	RedirectOutputStream(uint32 mask, ODataSource *ds)
+	{
+		if (mask & CON_STDOUT) stdout_redir = ds;
+		if (mask & CON_STDERR) stderr_redir = ds;
+	}
+
+	// Enabling output
+	void	setOutputEnabled(uint32 mask)
+	{
+		std_output_enabled |= mask;
+	}
+
+	// Disabling output
+	void	unsetOutputEnabled(uint32 mask)
+	{
+		std_output_enabled &= ~mask;
+	}
+	
+	// Enabling output
+	uint32	getOutputEnabled()
+	{
+		return std_output_enabled;
+	}
 
 	//
 	// STDOUT Methods
@@ -69,6 +107,9 @@ public:
 
 	// printf, and output to stdout
 	int		Printf (const char *fmt, ...);
+
+	// printf, and output to stdout (va_list)
+	int		vPrintf (const char *fmt, va_list);
 
 	// putchar, and output to stdout
 	void	Putchar (int c);
@@ -86,6 +127,9 @@ public:
 
 	// printf, and output to stderr
 	int		Printf_err (const char *fmt, ...);
+
+	// printf, and output to stderr (va_list)
+	int		vPrintf_err (const char *fmt, va_list);
 
 	// putchar, and output to stderr
 	void	Putchar_err (int c);
@@ -163,6 +207,15 @@ class console_ostream : public std::basic_ostream<_E, _Tr>
 public:	
 	console_ostream() : std::basic_ostream<_E, _Tr>(&_Fb) {}
 	virtual ~console_ostream() { }
+
+	int printf (const char *fmt, ...)
+	{
+		va_list	argptr;
+		va_start (argptr,fmt);
+		int ret = con.vPrintf(fmt, argptr);
+		va_end (argptr);
+		return ret;
+	}
 };
 
 //
@@ -209,6 +262,16 @@ class console_err_ostream : public std::basic_ostream<_E, _Tr>
 public:	
 	console_err_ostream() : std::basic_ostream<_E, _Tr>(&_Fb) {}
 	virtual ~console_err_ostream() { }
+
+	int printf (const char *fmt, ...)
+	{
+		va_list	argptr;
+		va_start (argptr,fmt);
+		int ret = con.vPrintf_err(fmt, argptr);
+		va_end (argptr);
+		return ret;
+	}
+
 };
 
 //

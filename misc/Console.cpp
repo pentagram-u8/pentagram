@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // console.c
 
 #include "pent_include.h"
+#include "ODataSource.h"
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
@@ -175,7 +176,8 @@ void Console::CheckResize (int scrwidth)
 //
 Console::Console () : current(0), x(0), display(0), linewidth(-1),
 					 totallines(0), vislines(0), wordwrap(true), cr(false),
-					 putchar_count(0)
+					 putchar_count(0), std_output_enabled(0xFFFFFFFF),
+					 stdout_redir(0), stderr_redir(0)
 {
 	linewidth = -1;
 
@@ -356,7 +358,8 @@ void Console::PrintPutchar()
 // Print a text string to the console, and output to stdout
 void Console::Print (const char *txt)
 {
-	fputs(txt, stdout);
+	if (std_output_enabled & CON_STDOUT) fputs(txt, stdout);
+	if (stdout_redir) stdout_redir->write(txt, std::strlen(txt));
 	PrintInternal (txt);
 }
 
@@ -367,10 +370,23 @@ int Console::Printf (const char *fmt, ...)
 	char		msg[MAXPRINTMSG];
 
 	va_start (argptr,fmt);
-	vfprintf (stdout, fmt,argptr);
+	if (std_output_enabled & CON_STDOUT) vfprintf (stdout, fmt,argptr);
 	int count = vsnprintf (msg,MAXPRINTMSG,fmt,argptr);
+	if (stdout_redir) stdout_redir->write(msg,count);
+	PrintInternal (msg);
 	va_end (argptr);
 
+	return count;
+}
+
+// printf, and output to stdout (va_list)
+int Console::vPrintf (const char *fmt, va_list argptr)
+{
+	char		msg[MAXPRINTMSG];
+
+	if (std_output_enabled & CON_STDOUT) vfprintf (stdout, fmt,argptr);
+	int count = vsnprintf (msg,MAXPRINTMSG,fmt,argptr);
+	if (stdout_redir) stdout_redir->write(msg,count);
 	PrintInternal (msg);
 
 	return count;
@@ -379,14 +395,16 @@ int Console::Printf (const char *fmt, ...)
 // Print a text string to the console, and output to stdout
 void Console::PrintRaw (const char *txt, int n)
 {
-	std::fwrite(txt,n,1,stdout);
+	if (std_output_enabled & CON_STDOUT) std::fwrite(txt,n,1,stdout);
+	if (stdout_redir) stdout_redir->write(txt,n);
 	PrintRawInternal (txt, n);
 }
 
 // putchar, and output to stdout
 void Console::Putchar (int c)
 {
-	fputc(c, stdout);
+	if (std_output_enabled & CON_STDOUT) fputc(c, stdout);
+	if (stdout_redir) stdout_redir->write1(c);
 	PutcharInternal(c);
 }
 
@@ -395,14 +413,15 @@ void Console::Putchar (int c)
 // STDERR Methods
 //
 
-// Print a text string to the console, and output to stdout
+// Print a text string to the console, and output to stderr
 void Console::Print_err (const char *txt)
 {
-	fputs(txt, stderr);
+	if (std_output_enabled & CON_STDERR) fputs(txt, stderr);
+	if (stderr_redir) stderr_redir->write(txt, std::strlen(txt));
 	PrintInternal (txt);
 }
 
-// printf, and output to stdout
+// printf, and output to stderr
 int Console::Printf_err (const char *fmt, ...)
 {
 	va_list		argptr;
@@ -410,25 +429,40 @@ int Console::Printf_err (const char *fmt, ...)
 
 	va_start (argptr,fmt);
 	int count = vsnprintf (msg,MAXPRINTMSG,fmt,argptr);
-	vfprintf (stderr, fmt,argptr);
+	if (std_output_enabled & CON_STDERR) vfprintf (stderr, fmt,argptr);
+	if (stderr_redir) stderr_redir->write(msg, count);
+	PrintInternal (msg);
 	va_end (argptr);
 
+	return count;
+}
+
+// printf, and output to stderr (va_list)
+int Console::vPrintf_err (const char *fmt, va_list argptr)
+{
+	char		msg[MAXPRINTMSG];
+
+	if (std_output_enabled & CON_STDERR) vfprintf (stderr, fmt,argptr);
+	int count = vsnprintf (msg,MAXPRINTMSG,fmt,argptr);
+	if (stderr_redir) stderr_redir->write(msg, count);
 	PrintInternal (msg);
 
 	return count;
 }
 
-// Print a text string to the console, and output to stdout
+// Print a text string to the console, and output to stderr
 void Console::PrintRaw_err (const char *txt, int n)
 {
-	std::fwrite(txt,n,1,stdout);
+	if (std_output_enabled & CON_STDERR) std::fwrite(txt,n,1,stderr);
+	if (stderr_redir) stderr_redir->write(txt, n);
 	PrintRawInternal (txt, n);
 }
 
-// putchar, and output to stdout
+// putchar, and output to stderr
 void Console::Putchar_err (int c)
 {
-	fputc(c, stderr);
+	if (std_output_enabled & CON_STDERR) fputc(c, stderr);
+	if (stderr_redir) stderr_redir->write1(c);
 	PutcharInternal(c);
 }
 
