@@ -2,6 +2,8 @@
 	* conf/*: added Configuration classes
 	* kernel/Application.*: create Configuration
 	* bootstrap: check for /usr/local/share/aclocal
+	* conf/ConfigNode.h: added missing set() function
+	* conf/Configuration.h: some comments
 
 2002-12-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* module.mk: updated

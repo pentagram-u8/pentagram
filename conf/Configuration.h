@@ -26,6 +26,26 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class XMLTree;
 class ConfigNode;
 
+
+/*
+Configuration class.
+
+The configuration values are stored in a tree. (or a forest, technically)
+All values are stored as strings, but access functions for ints and bools
+ are provided
+You should only store values in leaf nodes. (This isn't enforced everywhere,
+ but contents of non-leaf nodes can disappear without warning)
+
+You can load multiple config files, which can be read-only.
+Each config file contains a single tree.
+Values in files loaded last override values in files loaded earlier.
+Values are written to the last-loaded writable config file with the right root.
+ Because of this it's important to make sure the last-loaded config file with
+ a given root is writable. (The idea is that you can load a system-wide config
+ file first, and a user's config file after that.)
+ 
+*/
+
 class Configuration
 {
  public:

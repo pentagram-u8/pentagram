@@ -51,6 +51,9 @@ class ConfigNode
 	void set(std::string value) {
 		config.set(key, value);
 	}
+	void set(const char* value) {
+		config.set(key, value);
+	}
 	void set(int value) {
 		config.set(key, value);
 	}
