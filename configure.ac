@@ -326,7 +326,6 @@ if test x$enable_timidity_midi = xyes; then
 else
 	AC_MSG_RESULT(no)
 fi
-echo "TIMIDITY=$with_timidity"
 
 #if test x$HAVESDLMIXER = xyes -a x$USESDLMIXER = xyes; then
 #	SDL_LIBS="$SDL_LIBS -lSDL_mixer"
