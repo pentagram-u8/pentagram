@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "Flex.h"
+#include "IDataSource.h"
 
 Flex::Flex(IDataSource* ds_) : objects(0), ds(ds_)
 {
@@ -38,6 +39,8 @@ Flex::~Flex()
 
 		delete [] objects;
 	}
+
+	// Q: Shouldn't we delete the datasource here too?
 }
 
 //static
@@ -63,6 +66,12 @@ const uint8* Flex::get_object_nodel(uint32 index)
 	return objects[index];
 }
 
+uint32 Flex::get_offset(uint32 index)
+{
+	ds->seek(0x80 + 8*index);
+	return ds->read4();
+}
+
 uint8* Flex::get_object(uint32 index)
 {
 	if (index >= count) return 0;
@@ -78,9 +87,8 @@ uint8* Flex::get_object(uint32 index)
 		return object;
 	}
 
-	ds->seek(0x80 + 8*index);
-	uint32 offset = ds->read4();
-	length = ds->read4();
+	uint32 offset = get_offset(index);
+	length = get_size(index);
 
 	if (length == 0) return 0;
 
@@ -130,7 +138,7 @@ void Flex::cache()
 	}
 }
 
-// Loads all data into memory
+// Loads one object into memory
 void Flex::cache(uint32 index)
 {
 	uint32 actual_count = get_count();

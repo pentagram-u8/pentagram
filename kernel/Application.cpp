@@ -38,6 +38,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "World.h"
 
 #include "Map.h" // temp
+#include "U8Save.h"
+
 
 #include <SDL.h>
 #include <cstdlib>
@@ -126,22 +128,25 @@ Application::Application(int argc, char *argv[])
 	delete cf;
 	con.SetConFont(confont);
 
-	IDataSource *nfd = filesystem->ReadFile("@u8/gamedat/nonfixed.dat");
+	IDataSource *saveds = filesystem->ReadFile("@u8/savegame/u8save.000");
+	U8Save *u8save = new U8Save(saveds);
+
+	IDataSource *nfd = u8save->get_datasource("NONFIXED.DAT");
 	if (!nfd) {
-		perr << "Unable to load gamedat/nonfixed.dat. Exiting" << std::endl;
+		perr << "Unable to load savegame/u8save.000/NONFIXED.DAT. Exiting" << std::endl;
 		std::exit(-1);
 	}
 	world->initMaps();
 	world->loadNonFixed(nfd);
 	delete nfd;
-	IDataSource *icd = filesystem->ReadFile("@u8/gamedat/itemcach.dat");
+	IDataSource *icd = u8save->get_datasource("ITEMCACH.DAT");
 	if (!icd) {
-		perr << "Unable to load gamedat/itemcach.dat. Exiting" << std::endl;
+		perr << "Unable to load savegame/u8save.000/ITEMCACH.DAT. Exiting" << std::endl;
 		std::exit(-1);
 	}
-	IDataSource *npcd = filesystem->ReadFile("@u8/gamedat/npcdata.dat");
+	IDataSource *npcd = u8save->get_datasource("NPCDATA.DAT");
 	if (!npcd) {
-		perr << "Unable to load gamedat/npcdata.dat. Exiting" << std::endl;
+		perr << "Unable to load savegame/u8save.000/NPCDATA.DAT. Exiting" << std::endl;
 		std::exit(-1);
 	}		
 	world->initNPCs();

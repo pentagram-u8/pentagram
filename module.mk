@@ -18,6 +18,7 @@ pentagram_OBJ = \
 	usecode/UCList.o \
 	filesys/FileSystem.o \
 	filesys/Flex.o \
+	filesys/U8Save.o \
 	misc/Args.o \
 	misc/Console.o \
 	misc/Q_strcasecmp.o \
