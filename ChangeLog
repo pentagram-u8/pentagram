@@ -13,6 +13,8 @@
 	  Keyboards.
 	* misc/Console.cpp : You want unused variables, YOU CAN'T HANDLE UNUSED
 	  VARIABLES!
+	* world/LoopScript.h : Ritulastic Macro Abuse aka using the Preprocess to
+	  compile LoopScripts using macros.
 
 2003-06-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GUIApp.cpp: cleaned up FIRST/EXCUTION hacks
