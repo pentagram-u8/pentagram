@@ -197,7 +197,7 @@ uint32 Item::I_enterFastArea(const uint8* args, unsigned int /*argsize*/)
 
 //!!!!! major hack
 UCList* answerlist;
-uint32 userchoice;
+int userchoice;
 class UserChoiceProcess : public Process
 {
 public:
