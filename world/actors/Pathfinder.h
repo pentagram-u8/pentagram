@@ -21,13 +21,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <vector>
 #include <queue>
+#include "Animation.h"
+
 class Actor;
 class Item;
 
 struct PathfindingState
 {
 	sint32 x, y, z;
-	uint32 lastanim, direction;
+	Animation::Sequence lastanim;
+	uint32 direction;
 	bool flipped;
 	bool firststep;
 
@@ -37,7 +40,7 @@ struct PathfindingState
 
 struct PathfindingAction
 {
-	uint32 action;
+	Animation::Sequence action;
 	uint32 direction;
 };
 

@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Container.h"
 #include "intrinsics.h"
+#include "Animation.h"
 
 class ActorAnimProcess;
 struct PathfindingState;
@@ -54,8 +55,8 @@ public:
 	uint16 getEnemyAlignment() const { return enemyalignment; }
 	void setEnemyAlignment(uint16 a) { enemyalignment = a; }
 
-	uint16 getLastAnim() const { return lastanim; }
-	void setLastAnim(uint16 anim) { lastanim = anim; }
+	Animation::Sequence getLastAnim() const { return lastanim; }
+	void setLastAnim(Animation::Sequence anim) { lastanim = anim; }
 	uint16 getDir() const { return direction; }
 	void setDir(uint16 dir) { direction = dir; }
 
@@ -92,7 +93,7 @@ public:
 
 	//! run the given animation
 	//! \return the PID of the ActorAnimProcess
-	uint16 doAnim(int anim, int dir);
+	uint16 doAnim(Animation::Sequence anim, int dir);
 
 	//! check if the given animation can be done from the location in state,
 	//! without walking into things. If state is non-zero, and successful,
@@ -101,7 +102,7 @@ public:
 	//! \param anim Action to try
 	//! \param dir direction to walk in
 	//! \param state the state to start from, or 0 to use the current state
-	bool tryAnim(int anim, int dir, PathfindingState* state=0);
+	bool tryAnim(Animation::Sequence anim, int dir, PathfindingState* state=0);
 
 	virtual uint16 assignObjId(); // assign an NPC objid
 
@@ -172,7 +173,7 @@ protected:
 
 	uint16 alignment, enemyalignment;
 
-	uint16 lastanim;
+	Animation::Sequence lastanim;
 	uint16 animframe;
 	uint16 direction;
 

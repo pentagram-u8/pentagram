@@ -19,9 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef ANIMATION_H
 #define ANIMATION_H
 
-struct Animation
+namespace Animation
 {
-	enum {
+	enum Sequence {
 		walk = 0,
 		run = 1,
 		stand = 2,
@@ -79,9 +79,9 @@ struct Animation
 		//63: unused
 	};
 
-	static bool isCombatAnim(const unsigned int anim);
-	static unsigned int checkWeapon(const unsigned int nextanim,
-		const unsigned int lastanim);
+	bool isCombatAnim(const Sequence anim);
+	Sequence checkWeapon(const Sequence nextanim,
+		const Sequence lastanim);
 };
 
 #endif

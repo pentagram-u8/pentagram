@@ -46,7 +46,7 @@ ActorAnimProcess::ActorAnimProcess() : Process()
 
 }
 
-ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
+ActorAnimProcess::ActorAnimProcess(Actor* actor_, Animation::Sequence action, uint32 dir_)
 {
 	assert(actor_);
 	item_num = actor_->getObjId();

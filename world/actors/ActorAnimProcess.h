@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define ACTORANIMPROCESS_H
 
 #include "Process.h"
+#include "Animation.h"
 
 class Actor;
 struct AnimAction;
@@ -29,7 +30,7 @@ class ActorAnimProcess : public Process
 public:
 	ActorAnimProcess();
 	//! note: this probably needs some more parameters
-	ActorAnimProcess(Actor* actor, uint32 action, uint32 dir);
+	ActorAnimProcess(Actor* actor, Animation::Sequence action, uint32 dir);
 
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();

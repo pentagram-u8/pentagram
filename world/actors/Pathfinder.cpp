@@ -141,7 +141,7 @@ unsigned int Pathfinder::costHeuristic(PathNode* node)
 
 void Pathfinder::expandNode(PathNode* node)
 {
-	const int c_walk_anim = 0;
+	Animation::Sequence c_walk_anim = Animation::walk;
 	PathfindingState state;
 
 	// try walking in all 8 directions

@@ -70,11 +70,10 @@ bool AvatarMoverProcess::handleCombatMode()
 {
 	GUIApp* guiapp = GUIApp::get_instance();
 	MainActor* avatar = World::get_instance()->getMainActor();
-	uint32 lastanim = avatar->getLastAnim();
+	Animation::Sequence lastanim = avatar->getLastAnim();
+	Animation::Sequence nextanim = Animation::walk;
 	uint32 direction = avatar->getDir();
-	uint32 nextanim, nextdir;
-	nextanim = 0;
-	nextdir = direction;
+	uint32 nextdir = direction;
 	uint32 now = SDL_GetTicks();
 
 	int mx, my;
@@ -224,11 +223,10 @@ bool AvatarMoverProcess::handleNormalMode()
 {
 	GUIApp* guiapp = GUIApp::get_instance();
 	MainActor* avatar = World::get_instance()->getMainActor();
-	uint32 lastanim = avatar->getLastAnim();
+	Animation::Sequence lastanim = avatar->getLastAnim();
+	Animation::Sequence nextanim = Animation::walk;
 	uint32 direction = avatar->getDir();
-	uint32 nextanim, nextdir;
-	nextanim = 0;
-	nextdir = direction;
+	uint32 nextdir = direction;
 
 	int mx, my;
 	guiapp->getMouseCoords(mx, my);

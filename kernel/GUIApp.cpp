@@ -1554,10 +1554,10 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		case SDLK_KP8: case SDLK_KP9: { // quick animation test
 			if (!avatarInStasis) { 
 				int dir;
-				int action = 0;
-				if (event.key.keysym.mod & KMOD_LSHIFT) action = 1;
-				if (event.key.keysym.mod & KMOD_LCTRL) action = 12;
-				if (event.key.keysym.mod & KMOD_LALT) action = 17;
+				Animation::Sequence action = Animation::walk;
+				if (event.key.keysym.mod & KMOD_LSHIFT) action = Animation::run;
+				if (event.key.keysym.mod & KMOD_LCTRL) action = Animation::step;
+				if (event.key.keysym.mod & KMOD_LALT) action = Animation::jump;
 				switch (event.key.keysym.sym) {
 				case SDLK_KP1: dir=4; break;
 				case SDLK_KP2: dir=3; break;
@@ -1581,10 +1581,10 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		case SDLK_F3: {
 			if (!avatarInStasis) { 
                 MainActor* av = World::get_instance()->getMainActor();
-				if (!av->tryAnim(0, 2)) {
+				if (!av->tryAnim(Animation::walk, 2)) {
 					perr << "tryAnim: failed!" << std::endl;
 				}
-				av->doAnim(0, 2);
+				av->doAnim(Animation::walk, 2);
 			} else { 
 				pout << "Can't: avatarInStasis" << std::endl; 
 			} 

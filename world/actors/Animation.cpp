@@ -19,7 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 #include "Animation.h"
 
-bool Animation::isCombatAnim(const unsigned int anim)
+namespace Animation
+{
+
+bool Animation::isCombatAnim(const Sequence anim)
 {
 	switch (anim) {
 		case combat_stand:
@@ -36,10 +39,10 @@ bool Animation::isCombatAnim(const unsigned int anim)
 }
 
 /** determines if we need to ready or unready our weapon */
-unsigned int Animation::checkWeapon(const unsigned int nextanim,
-const unsigned int lastanim)
+Sequence Animation::checkWeapon(const Sequence nextanim,
+const Sequence lastanim)
 {
-	unsigned int anim = nextanim;
+	Sequence anim = nextanim;
 	if (isCombatAnim(nextanim) && ! isCombatAnim(lastanim))
 	{
 		anim = readyWeapon;
@@ -50,3 +53,5 @@ const unsigned int lastanim)
 	}
 	return anim;
 }
+
+};

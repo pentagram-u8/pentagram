@@ -47,7 +47,7 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(Actor,Container);
 Actor::Actor()
 	: strength(0), dexterity(0), intelligence(0),
 	  hitpoints(0), mana(0), alignment(0), enemyalignment(0),
-	  lastanim(0), animframe(0), direction(0), actorflags(0)
+	  lastanim(Animation::walk), animframe(0), direction(0), actorflags(0)
 {
 
 }
@@ -174,7 +174,7 @@ void Actor::teleport(int newmap, sint32 newx, sint32 newy, sint32 newz)
 	}
 } 
 
-uint16 Actor::doAnim(int anim, int dir)
+uint16 Actor::doAnim(Animation::Sequence anim, int dir)
 {
 	if (dir < 0 || dir > 8) {
 		perr << "Actor::doAnim: Invalid direction (" << dir << ")" <<std::endl;
@@ -200,7 +200,7 @@ uint16 Actor::doAnim(int anim, int dir)
 	return Kernel::get_instance()->addProcess(p);
 }
 
-bool Actor::tryAnim(int anim, int dir, PathfindingState* state)
+bool Actor::tryAnim(Animation::Sequence anim, int dir, PathfindingState* state)
 {
 	//!NOTE: this is broken, as it does not take height differences
 	// into account. tryAnim and ActorAnimProcess::run() should be 
@@ -559,7 +559,7 @@ bool Actor::loadData(IDataSource* ids)
 	mana = static_cast<sint16>(ids->read2());
 	alignment = ids->read2();
 	enemyalignment = ids->read2();
-	lastanim = ids->read2();
+	lastanim = (Animation::Sequence) ids->read2();
 	animframe = ids->read2();
 	direction = ids->read2();
 	actorflags = ids->read4();
@@ -606,7 +606,7 @@ uint32 Actor::I_doAnim(const uint8* args, unsigned int /*argsize*/)
 
 	if (!actor) return 0;
 
-	return actor->doAnim(anim, dir);
+	return actor->doAnim((Animation::Sequence) anim, dir);
 }
 
 uint32 Actor::I_getDir(const uint8* args, unsigned int /*argsize*/)

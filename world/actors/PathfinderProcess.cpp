@@ -151,7 +151,7 @@ bool PathfinderProcess::loadData(IDataSource* ids)
 	unsigned int pathsize = ids->read2();
 	path.resize(pathsize);
 	for (unsigned int i = 0; i < pathsize; ++i) {
-		path[i].action = ids->read2();
+		path[i].action = (Animation::Sequence) ids->read2();
 		path[i].direction = ids->read2();
 	}
 
