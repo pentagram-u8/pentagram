@@ -438,7 +438,12 @@ sint32 Console::vPrintf (const char *fmt, va_list argptr)
 {
 	char msg[MAXPRINTMSG];
 
-	if (std_output_enabled & CON_STDOUT) vfprintf (stdout, fmt, argptr);
+	if (std_output_enabled & CON_STDOUT) {
+		va_list argptr2;
+		va_copy(argptr2, argptr);
+		vfprintf (stdout, fmt, argptr2);
+		va_end(argptr2);
+	}
 	sint32 count = vsnprintf (msg, MAXPRINTMSG, fmt, argptr);
 	if (stdout_redir) stdout_redir->write(msg, count);
 	PrintInternal(msg);
@@ -484,7 +489,7 @@ void Console::Print_err(const MsgMask mm, const char *txt)
 // printf, and output to stderr
 sint32 Console::Printf_err (const char *fmt, ...)
 {
-	va_list		argptr;
+	va_list	argptr;
 
 	va_start (argptr, fmt);
 	sint32 count = vPrintf_err(fmt, argptr);
@@ -512,7 +517,12 @@ sint32 Console::vPrintf_err (const char *fmt, va_list argptr)
 {
 	char msg[MAXPRINTMSG];
 
-	if (std_output_enabled & CON_STDERR) vfprintf (stderr, fmt,argptr);
+	if (std_output_enabled & CON_STDERR) {
+		va_list argptr2;
+		va_copy(argptr2, argptr);
+		vfprintf (stderr, fmt, argptr2);
+		va_end(argptr2);
+	}
 	sint32 count = vsnprintf (msg, MAXPRINTMSG, fmt, argptr);
 	if (stderr_redir) stderr_redir->write(msg, count);
 	PrintInternal (msg);
