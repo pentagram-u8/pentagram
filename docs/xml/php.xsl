@@ -20,8 +20,7 @@
 		<a><xsl:attribute name="href">#<xsl:value-of select="@title"/></xsl:attribute>
 			<xsl:number level="multiple"
 						count="section"
-						format="1. "
-						value="position() -1"/>
+						format="1. "/>
 				<xsl:value-of select="@title"/>
 		</a>
 		<br/>
@@ -30,7 +29,7 @@
 				<xsl:number level="multiple"
 							count="section|sub"
 							format="1."
-							value="count(ancestor::section/preceding-sibling::section)"/>
+							value="count(ancestor::section/preceding-sibling::section)+1"/>
 				<xsl:number format="1. "/>
 				<xsl:apply-templates select="header"/>
 			</a>
@@ -87,8 +86,7 @@
 	<table width="100%">
 		<tr><th align="left">
 			<a><xsl:attribute name="name"><xsl:value-of select="@title"/></xsl:attribute>
-				<xsl:number format="1. "
-				value="position() -1"/>
+				<xsl:number format="1. "/>
 				<xsl:value-of select="@title"/>
 			</a>
 		</th></tr>
@@ -103,7 +101,7 @@
 		<xsl:number level="single"
 					count="section"
 					format="1."
-					value="count(ancestor::section/preceding-sibling::section)"/>
+					value="count(ancestor::section/preceding-sibling::section)+1"/>
 		<xsl:number format="1. "/>
 	</xsl:variable>
 	<tr><td><xsl:text disable-output-escaping="yes">&amp;nbsp;</xsl:text></td></tr>

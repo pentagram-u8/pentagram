@@ -1,11 +1,8 @@
 Pentagram F.A.Q. (frequently asked questions)
-last changed: 24 May 2004 (GMT)
+last changed: 19 June 2004 (GMT)
 
 The latest version of this document can be found at http://pentagram.sourceforge.net/faq.php
 
-
-0. Changes to the FAQ
-0.1. - 24 May 2004
 
 1. Introduction
 1.1. What is Pentagram?
@@ -19,13 +16,8 @@ The latest version of this document can be found at http://pentagram.sourceforge
 1.9. Why doesn't feature X work properly?
 1.10. Why isn't feature Y implemented?
 
-
---------------------------------------------------------------------------------
-
-0. Changes to the FAQ
-0.1. - 24 May 2004
-No changes yet, first xml-generated version
-
+2. Changes to the FAQ
+2.1. - 19 June 2004
 
 
 --------------------------------------------------------------------------------
@@ -36,7 +28,7 @@ Pentagram is not Exult. Any similarities between Pentagram and Exult are purely 
 
 
 1.2. Is it Exult for Ultima 8?
-Of course not. As stated in 1.1. "Pentagram is not Exult". Anyway, what sort of fool would attempt such a thing anyway.
+Of course not. As stated in 0.1. "Pentagram is not Exult". Anyway, what sort of fool would attempt such a thing anyway.
 
 
 1.3. When will Pentagram be playable?
@@ -60,7 +52,7 @@ You don't need to know what they are, since we don't support them. QED.
 
 
 1.8. Will we finish The Lost Vale?
-See the answer to 1.5..
+See the answer to 0.5..
 
 
 1.9. Why doesn't feature X work properly?
@@ -69,5 +61,13 @@ We prefer playing games to be a challenge.
 
 1.10. Why isn't feature Y implemented?
 It's better this way. Trust us.
+
+
+
+--------------------------------------------------------------------------------
+
+2. Changes to the FAQ
+2.1. - 19 June 2004
+No changes yet, first xml-generated version
 
 
