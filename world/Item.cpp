@@ -855,6 +855,7 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 					break;
 				}
 			}
+			if (hit < 0) hit = 0;
 
 			if (hit != 0x4000)
 			{
@@ -883,13 +884,8 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 			uint16 proc_gothit = 0, proc_rel = 0;
 
 			// If hitting at start, we should have already 
-			// called gotHit and hit, unless this item is preventing
-			// us from moving at all.
-			// NOTE: In the latter case, we can not require that the hit
-			// item is solid. This breaks spiky spheres, which need to hit
-			// (non-solid) shape 503.
-			if (it->hit_time > 0 ||
-				(it->hit_time == 0 && hit == 0 && !it->touching))
+			// called gotHit and hit.
+			if ((!it->touching || it->touching_floor) && it->hit_time >= 0)
 			{
 				if (objid == 1 && guiapp->isShowTouchingItems())
 					item->setExtFlag(Item::EXT_HIGHLIGHT);

@@ -781,6 +781,7 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 				sint32 u_0[3] = {0x4000,0x4000,0x4000}; // CONSTANTS
 
 				bool touch = false;
+				bool touch_floor = false;
 
 				//find the possible first and last times
 				//of overlap along each axis
@@ -814,8 +815,9 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 					else if( vel[i] == 0 && A_max >= B_min && A_min <= B_max)
 					{
 						if (A_min==B_max || A_max==B_min) touch = true;
+						if (i == 2 && A_min == B_max) touch_floor = true;
 
-						u_0[i] = 0;
+						u_0[i] = -1;
 						u_1[i] = 0x4000;
 					}
 					else
@@ -851,7 +853,7 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 					if (!hit) return true;
 
 					// Clamp
-					if (first < 0) first = 0;
+					if (first < -1) first = -1;
 					if (last > 0x4000) last = 0x4000;
 
 					// Ok, what we want to do here is add to the list.
@@ -870,7 +872,7 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 						if ((*sw_it).hit_time > first) break;
 
 					// Now add it
-					sw_it = hit->insert(sw_it, SweepItem(other_item->getObjId(),first,last,touch));
+					sw_it = hit->insert(sw_it, SweepItem(other_item->getObjId(),first,last,touch,touch_floor));
 //					pout << "Hit item " << other_item->getObjId() << " at (" << first << "," << last << ")" << std::endl;
 //					pout << "hit item      (" << other[0] << ", " << other[1] << ", " << other[2] << ")" << std::endl;
 //					pout << "hit item time (" << u_0[0] << "-" << u_1[0] << ") (" << u_0[1] << "-" << u_1[1] << ") ("

@@ -100,8 +100,9 @@ public:
 						 ObjId* support=0, ObjId* roof=0);
 
 	struct SweepItem {
-		SweepItem(ObjId it, sint32 ht, sint32 et, bool touch) : 
-			item(it), hit_time(ht), end_time(et), touching(touch) { }
+		SweepItem(ObjId it, sint32 ht, sint32 et, bool touch, bool touchfloor)
+			: item(it), hit_time(ht), end_time(et), touching(touch),
+			  touching_floor(touchfloor) { }
 
 		ObjId	item;		// Item that was hit
 
@@ -114,16 +115,17 @@ public:
 		// hit_time to find where the moving item was when the hit occurs
 		//
 
-		sint32	hit_time;	// if 0, already hitting when sweep started. 
+		sint32	hit_time;	// if -1, already hitting when sweep started. 
 		sint32	end_time;	// if 0x4000, still hitting when sweep finished
 
 		bool	touching;	// We are only touching (don't actually overlap)
+		bool	touching_floor; // touching and directly below the moving item
 
 		// Use this func to get the interpolated location of the hit
 		void GetInterpolatedCoords(sint32 out[3], sint32 start[3], sint32 end[3])
 		{
 			for (int i = 0; i < 3; i++)
-				out[i] = start[i] + ((end[i]-start[i])*hit_time+(end[i] > start[i] ? 0x2000 : -0x2000) )/0x4000;
+				out[i] = start[i] + ((end[i]-start[i])*(hit_time>=0?hit_time:0)+(end[i] > start[i] ? 0x2000 : -0x2000) )/0x4000;
 		}
 	};
 

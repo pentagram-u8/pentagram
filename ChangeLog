@@ -1,3 +1,8 @@
+2004-10-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/CurrentMap.*: detect 'touching_floor' in sweepTest
+	* world/Item.cpp: don't call hit() when touching, unless touching_floor
+	* world/CurrentMap.cpp: hit_time = -1 when already hitting at start
+
 2004-10-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.cpp: don't make legalMoveToPoint teleport an item
 	* world/Item.cpp: fixed collideMove to also call Hit on items that
