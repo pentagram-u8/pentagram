@@ -67,11 +67,11 @@ bool showconsole=true; // yes, yes, more of them :-)
 GUIApp::GUIApp(const int argc, const char * const * const argv)
 	: CoreApp(argc, argv, true), desktop(0),
 	  console(0), screen(0), palettemanager(0), gamedata(0), world(0),
-	  display_list(0),
+	  display_list(0), camera(0),
 	  runGraphicSysInit(false), runSDLInit(false),
 	  weAreDisasming(false), weAreCompiling(false),
-	  frameSkip(false), frameLimit(true), interpolate(true), animationRate(100),
-  	  fastArea(0), avatarInStasis(false), camera(0)
+	  frameSkip(false), frameLimit(true), interpolate(true),
+	  animationRate(33), fastArea(0), avatarInStasis(false)
 {
 	application = this;
 
@@ -741,7 +741,8 @@ void GUIApp::handleEvent(const SDL_Event& event)
 uint32 GUIApp::I_getCurrentTimerTick(const uint8* /*args*/,
 										unsigned int /*argsize*/)
 {
-	return static_cast<GUIApp *>(get_instance())->getFrameNum()*8;
+	// number of ticks of a 60Hz timer, with the default animrate of 30Hz
+	return get_instance()->getFrameNum()*2;
 }
 
 uint32 GUIApp::I_setAvatarInStasis(const uint8* args, unsigned int /*argsize*/)
