@@ -1,6 +1,7 @@
 2004-10-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Kernel.*: added Kernel::listItemProcesses console command
 	* kernel/Process.*, usecode/UCProcess.*: Process::dumpInfo
+	* world/actors/AvatarMoverProcess.cpp: removed some noise
 
 2004-10-14  Dominik Reichardt <dominus@users.sourceforge.net>
 	* FAQ: updated with old spelling corrections

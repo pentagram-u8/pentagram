@@ -131,7 +131,6 @@ bool AvatarMoverProcess::handleCombatMode()
 				 mouselength != 2) //hack...
 				))
 		{
-			pout << "AvatarMover: combat turn" << std::endl;
 			nextdir = mousedir;
 
 			if (lastanim == Animation::walk || lastanim == Animation::run &&
@@ -152,10 +151,10 @@ bool AvatarMoverProcess::handleCombatMode()
 		(mouseButton[0].state & MBS_HANDLED))
 	{
 		// left click-and-hold = block
-		pout << "AvatarMover: combat block" << std::endl;
-
 		if (lastanim == Animation::startblock)
 			return false;
+
+		pout << "AvatarMover: combat block" << std::endl;
 
 		waitFor(avatar->doAnim(Animation::startblock, nextdir));
 		return false;
@@ -211,8 +210,6 @@ bool AvatarMoverProcess::handleCombatMode()
 			avatar->toggleInCombat();
 		}
 
-		pout << "AvatarMover: combat walk" << std::endl;
-
 		nextanim = Animation::checkWeapon(nextanim, lastanim);
 		waitFor(avatar->doAnim(nextanim, nextdir));
 		return false;
@@ -255,6 +252,7 @@ bool AvatarMoverProcess::handleNormalMode()
 
 	// If Avatar has fallen down, stand up.
 	if (lastanim == Animation::die || lastanim == Animation::fallBackwards) {
+		pout << "AvatarMover: standing up" << std::endl;
 		waitFor(avatar->doAnim(Animation::standUp, nextdir));
 		return false;
 	}
@@ -340,7 +338,6 @@ bool AvatarMoverProcess::handleNormalMode()
 				 mouselength != 2) //hack...
 				))
 		{
-			pout << "AvatarMover: turn" << std::endl;
 			nextdir = mousedir;
 
 			if (lastanim == Animation::walk || lastanim == Animation::run &&
@@ -415,8 +412,6 @@ bool AvatarMoverProcess::handleNormalMode()
 			else				
 				nextanim = Animation::walk;
 		}
-
-		pout << "AvatarMover: walk" << std::endl;
 
 		nextanim = Animation::checkWeapon(nextanim, lastanim);
 		waitFor(avatar->doAnim(nextanim, nextdir));
