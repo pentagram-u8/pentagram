@@ -1832,7 +1832,7 @@ bool GUIApp::load(IDataSource* ids, uint32 version)
 
 	PaletteManager::get_instance()->transformPalette(PaletteManager::Pal_Game, matrix);
 	Pentagram::Palette *pal = PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game);
-	pal->transform = static_cast<PaletteManager::PalTransforms>(ids->read2());
+	pal->transform = static_cast<Pentagram::PalTransforms>(ids->read2());
 
 	inversion = ids->read2();
 

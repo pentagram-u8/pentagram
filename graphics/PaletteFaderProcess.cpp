@@ -37,7 +37,7 @@ PaletteFaderProcess::PaletteFaderProcess()
 
 }
 
-PaletteFaderProcess::PaletteFaderProcess(PaletteManager::PalTransforms trans,
+PaletteFaderProcess::PaletteFaderProcess(Pentagram::PalTransforms trans,
 		int priority_, int frames) : priority(priority_), 
 		counter(frames), max_counter(frames)
 {
@@ -148,7 +148,7 @@ uint32 PaletteFaderProcess::I_fadeToPaletteTransform(const uint8* args,
 	if (fader && fader->priority > priority) return 0;
 	else if (fader) fader->terminate();
 
-	fader = new PaletteFaderProcess(static_cast<PaletteManager::PalTransforms>(transform),
+	fader = new PaletteFaderProcess(static_cast<Pentagram::PalTransforms>(transform),
 				priority, 45);
 
 	return Kernel::get_instance()->addProcess(fader);

@@ -36,7 +36,7 @@ public:
 	// p_dynamic_class stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 	PaletteFaderProcess();
-	PaletteFaderProcess(PaletteManager::PalTransforms trans, int priority, int frames);
+	PaletteFaderProcess(Pentagram::PalTransforms trans, int priority, int frames);
 	PaletteFaderProcess(uint32 rgba, bool from, int priority, int frames, bool current);
 	PaletteFaderProcess(sint16 from[12], sint16 to[12], int priority, int frames);
 	virtual ~PaletteFaderProcess(void);

@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "PaletteManager.h"
-#include "Palette.h"
 #include "IDataSource.h"
 #include "RenderSurface.h"
 #include "Texture.h"
@@ -90,12 +89,12 @@ void PaletteManager::transformPalette(PalIndex index, sint16 matrix[12])
 	rendersurface->CreateNativePalette(pal); // convert to native format
 }
 
-void PaletteManager::getTransformMatrix(sint16 matrix[12], PalTransforms trans)
+void PaletteManager::getTransformMatrix(sint16 matrix[12], Pentagram::PalTransforms trans)
 {
 	switch (trans)
 	{
 		// Normal untransformed palette
-	case Transform_None:
+		case Pentagram::Transform_None:
 		{
 			matrix[0] = 0x800;	matrix[1] = 0;		matrix[2]  = 0;		matrix[3]  = 0;
 			matrix[4] = 0;		matrix[5] = 0x800;	matrix[6]  = 0;		matrix[7]  = 0;
@@ -104,7 +103,7 @@ void PaletteManager::getTransformMatrix(sint16 matrix[12], PalTransforms trans)
 		break;
 
 		// O[i] = I[r]*0.375 + I[g]*0.5 + I[b]*0.125;
-	case Transform_Greyscale:
+		case Pentagram::Transform_Greyscale:
 		{
 			for (int i = 0; i < 3; i++)
 			{
@@ -117,7 +116,7 @@ void PaletteManager::getTransformMatrix(sint16 matrix[12], PalTransforms trans)
 		break;
 
 		// O[r] = 0;
-	case Transform_NoRed:
+		case Pentagram::Transform_NoRed:
 		{
 			matrix[0] = 0;	matrix[1] = 0;		matrix[2]  = 0;		matrix[3]  = 0;
 			matrix[4] = 0;	matrix[5] = 0x800;	matrix[6]  = 0;		matrix[7]  = 0;
@@ -126,7 +125,7 @@ void PaletteManager::getTransformMatrix(sint16 matrix[12], PalTransforms trans)
 		break;
 
 		// O[i] = (I[i] + Grey)*0.25 + 0.1875;
-	case Transform_RainStorm:
+		case Pentagram::Transform_RainStorm:
 		{
 			for (int i = 0; i < 3; i++)
 			{
@@ -144,7 +143,7 @@ void PaletteManager::getTransformMatrix(sint16 matrix[12], PalTransforms trans)
 		// O[r] = I[r]*0.5 + Grey*0.5  + 0.1875; 
 		// O[g] = I[g]*0.5 + Grey*0.25; 
 		// O[b] = I[b]*0.5;
-	case Transform_FireStorm:
+		case Pentagram::Transform_FireStorm:
 		{
 			// O[r] = I[r]*0.5 + Grey*0.5 + 0.1875; 
 			matrix[0] =((0x0300*0x0400)>>11) + 0x0400;
@@ -167,7 +166,7 @@ void PaletteManager::getTransformMatrix(sint16 matrix[12], PalTransforms trans)
 		break;
 
 		// O[i] = I[i]*2 -Grey;
-	case Transform_Saturate:
+		case Pentagram::Transform_Saturate:
 		{
 			for (int i = 0; i < 3; i++)
 			{
@@ -181,7 +180,7 @@ void PaletteManager::getTransformMatrix(sint16 matrix[12], PalTransforms trans)
 		break;
 
 		// O[b] = I[r]; O[r] = I[g]; O[g] = I[b];
-	case Transform_BRG:
+		case Pentagram::Transform_BRG:
 		{
 			matrix[0] = 0;		matrix[1] = 0x800;	matrix[2]  = 0;		matrix[3]  = 0;
 			matrix[4] = 0;		matrix[5] = 0;		matrix[6]  = 0x800;	matrix[7]  = 0;
@@ -190,7 +189,7 @@ void PaletteManager::getTransformMatrix(sint16 matrix[12], PalTransforms trans)
 		break;
 
 		// O[g] = I[r]; O[b] = I[g]; O[r] = I[b];
-	case Transform_GBR:
+		case Pentagram::Transform_GBR:
 		{
 			matrix[0] = 0;		matrix[1] = 0;		matrix[2]  = 0x800;	matrix[3]  = 0;
 			matrix[4] = 0x800;	matrix[5] = 0;		matrix[6]  = 0;		matrix[7]  = 0;

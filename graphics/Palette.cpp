@@ -54,7 +54,7 @@ void Palette::load(IDataSource& ds)
 	matrix[4] = 0;		matrix[5] = 0x800;	matrix[6] = 0;		matrix[7] = 0;
 	matrix[8] = 0;		matrix[9] = 0;		matrix[10] = 0x800;	matrix[11] = 0;
 
-	transform=PaletteManager::Transform_None;
+	transform=Transform_None;
 }
 
 }

@@ -182,18 +182,22 @@ void Shape::LoadGenericFormat(const uint8* data, uint32 size, const ConvertShape
 const ConvertShapeFormat *Shape::DetectShapeFormat(const uint8* data, uint32 size)
 {
 	IBufferDataSource ds(data,size);
+	return Shape::DetectShapeFormat(&ds, size);
+}
 
-	if (CheckShapeFormatUnsafe(&ds, &PentagramShapeFormat, size))
+const ConvertShapeFormat *Shape::DetectShapeFormat(IDataSource * ds, uint32 size)
+{
+	if (CheckShapeFormatUnsafe(ds, &PentagramShapeFormat, size))
 		return &PentagramShapeFormat;
-	else if (CheckShapeFormatUnsafe(&ds, &U8SKFShapeFormat, size))
+	else if (CheckShapeFormatUnsafe(ds, &U8SKFShapeFormat, size))
 		return &U8SKFShapeFormat;
-	else if (CheckShapeFormatUnsafe(&ds, &U8ShapeFormat, size))
+	else if (CheckShapeFormatUnsafe(ds, &U8ShapeFormat, size))
 		return &U8ShapeFormat;
-	else if (CheckShapeFormatUnsafe(&ds, &U82DShapeFormat, size))
+	else if (CheckShapeFormatUnsafe(ds, &U82DShapeFormat, size))
 		return &U82DShapeFormat;
-	else if (CheckShapeFormatUnsafe(&ds, &CrusaderShapeFormat, size))
+	else if (CheckShapeFormatUnsafe(ds, &CrusaderShapeFormat, size))
 		return &CrusaderShapeFormat;
-	else if (CheckShapeFormatUnsafe(&ds, &Crusader2DShapeFormat, size))
+	else if (CheckShapeFormatUnsafe(ds, &Crusader2DShapeFormat, size))
 		return &Crusader2DShapeFormat;
 
 	return 0;

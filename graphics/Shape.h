@@ -53,6 +53,7 @@ public:
 
 	// This will detect the format of a shape
 	static const ConvertShapeFormat *DetectShapeFormat(const uint8* data, uint32 size);
+	static const ConvertShapeFormat *DetectShapeFormat(IDataSource *ds, uint32 size);
 
 	ENABLE_RUNTIME_CLASSTYPE();
 

@@ -1,3 +1,9 @@
+2005-01-01  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* graphics/Palette*.*: Moved the PalTransforms enum to Palette.h
+	* graphics/Shape.*: Added another DetectShapeFormat to directly use
+	  IDataSources
+	* kernel/GUIApp.cpp: Updated location of PalTransforms
+
 2005-01-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* filesys/IDataSource.h: read() now returns number of bytes read
 	* filesys/ListFiles.h: use rewrite_virtual_path to detect illegal paths
