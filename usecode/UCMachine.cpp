@@ -262,7 +262,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				//! TODO
 				uint16 arg_bytes = cs.read1();
 				uint16 func = cs.read2();
-				LOGPF(("!calli\t\t%04Xh (%02Xh arg bytes)", func, arg_bytes));
+				LOGPF(("calli\t\t%04Xh (%02Xh arg bytes)", func, arg_bytes));
 
 				// !constants
 				if (func >= 0x100 || intrinsics[func] == 0) {
@@ -1483,7 +1483,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 				delete[] script;
 
-				LOGPF(("!loop\t\t%s %02X %02X", print_bp(si16a),
+				LOGPF(("loop\t\t%s %02X %02X", print_bp(si16a),
 					   scriptsize, searchtype));
 			}
 			// FALL-THROUGH to handle first item
@@ -1535,7 +1535,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				}
 
 				if (opcode == 0x73) { // because of the fall-through
-					LOGPF(("!loopnext"));
+					LOGPF(("loopnext"));
 				}
 			}
 			break;
