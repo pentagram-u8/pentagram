@@ -57,6 +57,7 @@
 // Strings
 //
 #include <string>
+#include "istring.h"
 
 // Empty string
 extern const std::string c_empty_string;
@@ -126,16 +127,31 @@ extern const std::string c_empty_string;
 #include <list>
 #include <vector>
 
-// Useful Pentagram header
-//#include "Kernel.h"
-//#include "Object.h"
-//#include "Item.h"
-//#include "FileSystem.h"
-//#include "IDataSource.h"
-//#include "Flex.h"
-//#include "ShapeFlex.h"
-//#include "RenderSurface.h"
-//#include "Shape.h"
+// Useful Pentagram headers
+#include "Kernel.h"
+#include "intrinsics.h"
+#include "Process.h"
+#include "Object.h"
+#include "Item.h"
+#include "Container.h"
+#include "Actor.h"
+#include "MainActor.h"
+#include "Gump.h"
+#include "FileSystem.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
+#include "ShapeFlex.h"
+#include "Shape.h"
+#include "ShapeFrame.h"
+#include "RenderSurface.h"
+#include "World.h"
+#include "CurrentMap.h"
+#include "ObjectManager.h"
+#include "GUIApp.h"
+#include "Usecode.h"
+#include "UCList.h"
+#include "UCMachine.h"
+#include "UCProcess.h"
 #endif
 
 #endif //PENT_INCLUDE_H

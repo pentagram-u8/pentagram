@@ -530,7 +530,7 @@ DRAWING
 ==============================================================================
 */
 
-void Console::DrawConsole (RenderSurface *surf, int height)
+void Console::DrawConsole (RenderSurface *surf, int height, const char *com, int com_size)
 {
 	int				i, x, y;
 	int				rows;
@@ -560,9 +560,9 @@ void Console::DrawConsole (RenderSurface *surf, int height)
 
 	y = lines - 24;
 #else
-	rows = (lines-22)>>3;		// rows of text to draw
+	rows = (lines-16)>>3;		// rows of text to draw
 
-	y = lines - 30;
+	y = lines - 24;
 #endif
 
 // draw from the bottom up
@@ -593,6 +593,22 @@ void Console::DrawConsole (RenderSurface *surf, int height)
 		//putchar ('\n');
 	}
 
+	if (!com) return;
+
+	//	prestep if horizontally scrolling
+	if (com_size >= (linewidth-1))
+		com += 1 + com_size - (linewidth-1);
+
+	y = lines-16;
+
+	surf->PrintCharFixed(confont, ']', 8, y);
+
+	for (x=0 ; x<linewidth && com[x]; x++) {
+		surf->PrintCharFixed(confont, com[x], (x+2)<<3, y);
+	//	putchar (txt[x]);
+	}
+
+	surf->Fill32(0xFFFFFFFF, ((x+2)<<3)+1, y, 2, 8);
 }
 
 
@@ -687,6 +703,7 @@ void Con_DrawNotify (void)
 		v += 8;
 	}
 	
+const char *com, int com_size
 	if (v)
 	{
 		SCR_AddDirtyPoint (0,0);

@@ -126,7 +126,7 @@ public:
 	void	CheckResize (int scrwidth);
 
 	// Draw the Console
-	void	DrawConsole (RenderSurface *surf, int height);
+	void	DrawConsole (RenderSurface *surf, int height, const char *com, int com_size);
 
 	// Draw the Console Notify Overlay
 	void	DrawConsoleNotify (RenderSurface *surf);
