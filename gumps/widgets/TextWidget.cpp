@@ -64,9 +64,8 @@ void TextWidget::InitGump()
 	if (ttffont)
 	  font = ttffont;
 	else
-#else
-	font = GameData::get_instance()->getFonts()->getFont(fontnum);
 #endif
+	  font = GameData::get_instance()->getFonts()->getFont(fontnum);
 
 	// Y offset is always baseline
 	dims.y = -font->getBaseline();
@@ -89,9 +88,8 @@ bool TextWidget::setupNextText()
 	if (ttffont)
 	  font = ttffont;
 	else
-#else
-	font = GameData::get_instance()->getFonts()->getFont(fontnum);
 #endif
+	  font = GameData::get_instance()->getFonts()->getFont(fontnum);
 
 	int tx, ty;
 	unsigned int remaining;
