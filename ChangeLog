@@ -1,3 +1,6 @@
+2005-03-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* bootstrap, config.*: commit config.sub, config.guess to CVS
+	
 2005-03-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/CreditsGump.*: fix ending of quotes/credits
 	* games/GameInfo.h: add function to return one-letter language code
