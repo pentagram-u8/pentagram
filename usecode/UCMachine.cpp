@@ -99,6 +99,9 @@ UCMachine::UCMachine(Intrinsic *iset)
 	con.AddConsoleCommand("UCMachine::traceClass", ConCmd_traceClass);
 	con.AddConsoleCommand("UCMachine::traceAll", ConCmd_traceAll);
 	con.AddConsoleCommand("UCMachine::stopTrace", ConCmd_stopTrace);
+
+	tracing_enabled = false;
+	trace_all = false;
 #endif
 }
 
