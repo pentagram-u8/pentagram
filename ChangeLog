@@ -1,3 +1,6 @@
+2002-12-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/UCMachine.cpp: global pointer dereferencing
+
 2002-12-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/*: bugfixes
 	* kernel/Kernel.cpp: output UCMachine mem.stats on exit

@@ -919,6 +919,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// all possible pointers, so we're just going to do a few:
 			// * stack pointers
 			// * object pointers, as long as xx == 02. (i.e., push objref)
+			// * global pointers
 			{
 				ui16a = cs.read1();
 				ui32a = p->stack.pop4();
@@ -950,6 +951,10 @@ bool UCMachine::execProcess(UCProcess* p)
 						p->stack.push2(offset);
 					}
 				}
+				else if (segment == SEG_GLOBAL)
+				{
+					p->stack.push(globals.access(offset), ui16a);
+				}
 				else
 				{
 					perr << "Trying to access segment " << std::hex
@@ -966,8 +971,9 @@ bool UCMachine::execProcess(UCProcess* p)
 			// pops a 32 bit pointer off the stack and pushes xx bytes
 			// from the location referenced by the pointer
 
-			// like 0x4C, this one is tricky
-			// only support writing to SEG_STACK for now
+			// like 0x4C. Only implemented the following:
+			// * stack pointers
+			// * global pointers
 			{
 				ui16a = cs.read1();
 				ui32a = p->stack.pop4();
@@ -989,6 +995,11 @@ bool UCMachine::execProcess(UCProcess* p)
 														 ui16a);
 						p->stack.addSP(ui16a);
 					}
+				}
+				else if (segment == SEG_GLOBAL)
+				{
+					globals.assign(offset, p->stack.access(), ui16a);
+					p->stack.addSP(ui16a);
 				}
 				else
 				{
@@ -1302,6 +1313,12 @@ bool UCMachine::execProcess(UCProcess* p)
 			break;
 
 /*
+		case 0x6C:
+		
+
+*/
+
+/*
 		case 0x6D:
 			// 6D
 			// push result of process
@@ -1463,6 +1480,12 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 78
 			// process exclude
 			// process gets 'exclusive access' to this object
+
+			// This probably means that an object has to have an
+			// 'exclusive_pid' variable. When starting to execute
+			// a UCProcess, we have to check if the current item
+			// is locked by another process?
+
 			LOGPF(("process exclude"));
 			break;
 
@@ -1480,6 +1503,9 @@ bool UCMachine::execProcess(UCProcess* p)
 
 		case 0x08: // pop result
 			p->stack.pop4();
+			perr.printf("unhandled opcode %02X\n", opcode);
+			break;
+		case 0x5B: case 0x5C: // debugging
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
 		case 0x6D: // push process result 
