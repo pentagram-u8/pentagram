@@ -90,6 +90,13 @@ void GameData::loadU8Data()
 	//! we're leaking fd here
 
 	IDataSource* uds = filesystem->ReadFile("@u8/usecode/eusecode.flx");
+
+	//!! hack alert
+	if (!uds)
+		uds = filesystem->ReadFile("@u8/usecode/gusecode.flx");
+	if (!uds)
+		uds = filesystem->ReadFile("@u8/usecode/fusecode.flx");
+
 	if (!uds) {
 		perr << "Unable to load usecode/eusecode.flx. Exiting" << std::endl;
 		std::exit(-1);
