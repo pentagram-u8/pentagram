@@ -1,3 +1,7 @@
+2004-12-26  Ryan Nunn <colourles@users.sourceforge.net>
+	* world/actors/HealProcess.cpp: Fixing a serious problem in 
+	  I_feedAvatar(), were casting hp, instead of p
+
 2004-12-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/PathfinderProcess.*: very basic moving-target support
 	* world/actors/CombatProcess.*: pathfind to target
