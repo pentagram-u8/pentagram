@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002 The Pentagram team
+Copyright (C) 2003 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,48 +16,42 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef UCPROCESS_H
-#define UCPROCESS_H
+#include "pent_include.h"
 
 #include "Process.h"
-#include "UCStack.h"
-#include "IDataSource.h"
+#include "Kernel.h"
 
-class Usecode;
-
-
-// probably won't inherit from Process directly in the future
-class UCProcess : public Process
+void Process::terminate()
 {
-	friend class UCMachine;
+	Kernel *kernel = Kernel::get_instance();
 
-public:
-	UCProcess(Usecode* usecode_, uint32 classid_,
-			  uint32 offset_, uint32 this_ptr = 0);
-    ~UCProcess();
+	// wake up waiting processes
+	for (std::vector<uint16>::iterator i = waiting.begin();
+		 i != waiting.end(); ++i)
+	{
+		Process *p = kernel->getProcess(*i);
+		if (p)
+			p->wakeUp(result);
+	}
 
-	virtual bool run(const uint32 framenum);
+	terminated = true;
+}
 
-protected:
+void Process::wakeUp(uint32 result_)
+{
+	result = result_;
 
-	void call(uint32 classid_, uint32 offset_);
-	bool ret();
+	suspended = false;
+}
 
-	// item we are assigned to
-	uint16 item_num;
+void Process::waitFor(uint16 pid_)
+{
+	Kernel *kernel = Kernel::get_instance();
 
-	uint16 type;
+	// add this process to waiting list of process pid_
+	Process *p = kernel->getProcess(pid_);
+	if (p)
+		p->waiting.push_back(pid);
 
-	// stack base pointer
-	uint16 bp;
-
-	Usecode* usecode;
-
-	uint32 classid;
-	uint16 ip;
-
-	// data stack
-	UCStack stack;
-};
-
-#endif
+	suspended = true;
+}

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002 The Pentagram team
+Copyright (C) 2002,2003 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -147,16 +147,15 @@ bool UCMachine::execProcess(UCProcess* p)
 			}
 			break;
 
-/*
 		case 0x08:
 			// 08
 			// pop 32bits into result register
 			//! what is this result register exactly??
-			//! probably a member of the UCProcess?
-			printf("pop res");
+			//! probably a member of the Process?
+			//! is the result in 0x08 and 0x6D the same var?
+			LOGPF(("pop dword\tprocess result"));
+			p->result = p->stack.pop4();
 			break;
-
-*/
 
 		case 0x09:
 			// 09 xx yy zz
@@ -928,16 +927,18 @@ bool UCMachine::execProcess(UCProcess* p)
 
 				if (segment >= SEG_STACK_FIRST && segment <= SEG_STACK_LAST)
 				{
+					UCProcess *proc = dynamic_cast<UCProcess*>
+						(Kernel::get_instance()->getProcess(segment));
+
 					// reference to the stack of pid 'segment'
-					if (processes.find(segment) == processes.end()) {
+					if (!proc) {
 						// segfault :-)
 						perr << "Trying to access stack of non-existent "
 							 << "process (pid: " << std::hex << segment
 							 << std::dec << ")" << std::endl;
 						error = true;
 					} else {
-						p->stack.push(processes[segment]->stack.access(offset),
-									  ui16a);
+						p->stack.push(proc->stack.access(offset), ui16a);
 					}
 				}
 				else if (segment == SEG_OBJ)
@@ -982,17 +983,18 @@ bool UCMachine::execProcess(UCProcess* p)
 
 				if (segment >= SEG_STACK_FIRST && segment <= SEG_STACK_LAST)
 				{
+					UCProcess *proc = dynamic_cast<UCProcess*>
+						(Kernel::get_instance()->getProcess(segment));
+
 					// reference to the stack of pid 'segment'
-					if (processes.find(segment) == processes.end()) {
+					if (!proc) {
 						// segfault :-)
 						perr << "Trying to access stack of non-existent "
 							 << "process (pid: " << std::hex << segment
 							 << std::dec << ")" << std::endl;
 						error = true;
 					} else {
-						processes[segment]->stack.assign(offset,
-														 p->stack.access(),
-														 ui16a);
+						proc->stack.assign(offset, p->stack.access(), ui16a);
 						p->stack.addSP(ui16a);
 					}
 				}
@@ -1097,25 +1099,36 @@ bool UCMachine::execProcess(UCProcess* p)
 			// this seems to link two processes (two pids are popped)
 			// the '01 01' variety most likely causes one process
 			// to wait for the other to finish.
-			// AFAICT, the first pid pushed is always the current pid in U8
+			// the first pid pushed is often the current pid in U8
 
 			// question: can multiple processes be waiting for a single proc?
 			// can a process be waiting for multiple processes?
 
 			// 'implies' seems to push a value too, although it is very
-			// often ignored
+			// often ignored. It looks like it's a pid, but which one?
 
 			// additionally, it is possible that 'implies' puts the result
 			// of a process in the 'process result' variable
+			// or more likely, when a process finishes, it sets the result
+			// value of the processes that were waiting for it
 			// 0x6D (push process result) only seems to occur soon after
 			// an 'implies'
 
-			cs.read2(); // skip the 01 01
-			ui16a = p->stack.pop2();
-			ui16b = p->stack.pop2();
-			p->stack.push2(0);
-			perr.printf("unhandled opcode %02X\n", opcode);
-			LOGPF(("!implies"));
+			{
+				cs.read2(); // skip the 01 01
+				ui16a = p->stack.pop2();
+				ui16b = p->stack.pop2();
+				p->stack.push2(ui16a); //!! which pid do we need to push!?
+				LOGPF(("implies"));
+
+				Process *proc = Kernel::get_instance()->getProcess(ui16b);
+				if (proc) {
+					proc->waitFor(ui16a);
+				} else {
+					perr << "Non-existant process PID in implies" << std::endl;
+					error = true;
+				}
+			}
 			break;
 
 		case 0x57:
@@ -1174,7 +1187,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 				UCProcess* newproc = new UCProcess(p->usecode, classid,
 												   offset + delta);
-				addProcess(newproc); // pid of newproc isn't stored anywhere?
+				p->stack.push2(addProcess(newproc)); //! push pid of newproc?
 			}
 			cede = true;
 			break;
@@ -1318,15 +1331,14 @@ bool UCMachine::execProcess(UCProcess* p)
 
 */
 
-/*
 		case 0x6D:
 			// 6D
-			// push result of process
+			// push 32bit result of process
 			// (of which process? pop anything?)
 			// (also see comment for 0x54 'implies')
-			printf("push dword\tprocess result");
+			LOGPF(("push dword\tprocess result"));
+			p->stack.push4(p->result);
 			break;
-*/
 
 		case 0x6E:
 			// 6E xx
@@ -1501,15 +1513,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			error = true;
 			break;
 
-		case 0x08: // pop result
-			p->stack.pop4();
-			perr.printf("unhandled opcode %02X\n", opcode);
-			break;
 		case 0x5B: case 0x5C: // debugging
-			perr.printf("unhandled opcode %02X\n", opcode);
-			break;
-		case 0x6D: // push process result 
-			p->stack.push4(0);
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
 		case 0x6C: // parameter passing?
@@ -1589,21 +1593,6 @@ uint16 UCMachine::assignList(UCList* l)
 	return count++;
 }
 
-uint16 UCMachine::getNewPID()
-{
-	static uint16 count = 1; // 0 is reserved, higher than 0x7FFF too
-
-	// I'm not exactly sure if this is the most efficient way to do this
-
-	// find unused PID
-	while (processes.find(count) != processes.end()) {
-		count++;
-		if (count > 0x7FFE) count = 1;
-	}
-
-	return count++;
-}
-
 void UCMachine::freeString(uint16 s)
 {
 	//! There's still a semi-bug in some places that string 0 can be assigned
@@ -1678,31 +1667,27 @@ uint32 UCMachine::objectToPtr(uint16 objID)
 
 uint16 UCMachine::addProcess(UCProcess* p)
 {
-	uint16 pid = getNewPID();
-	processes[pid] = p;
-	p->pid = pid;
-	Kernel::get_instance()->addProcess(p);
-	return pid;
+	return Kernel::get_instance()->addProcess(p);
 }
 
 void UCMachine::killProcess(UCProcess* p)
 {
-	killProcess(p->pid);
+	p->terminate();
 }
 
 void UCMachine::killProcess(uint16 pid)
 {
-	std::map<uint16, UCProcess*>::iterator iter = processes.find(pid);
-	if (iter != processes.end()) {
-		iter->second->terminate();
-		processes.erase(iter);
-	}
+	Kernel* k = Kernel::get_instance();
+
+	Process* p = k->getProcess(pid);
+	if (p)
+		p->terminate();
 }
 
 void UCMachine::memStats()
 {
 	pout << "Usecode Machine memory stats:" << std::endl;
-	pout << "Processes: " << processes.size() << "/32766" << std::endl;
+//	pout << "Processes: " << processes.size() << "/32766" << std::endl;
 	pout << "Strings  : " << stringHeap.size() << "/65534" << std::endl;
 
 	std::map<uint16, std::string>::iterator iter;

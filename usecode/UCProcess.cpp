@@ -24,8 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 UCProcess::UCProcess(Usecode* usecode_, uint32 classid_,
 					 uint32 offset_, uint32 this_ptr) :
-	pid(0xFFFF), item_num(0), type(0), usecode(usecode_),
-	classid(classid_), suspended(false)
+	item_num(0), type(0), usecode(usecode_), classid(classid_)
 {
 	if (usecode->get_class_size(classid) == 0)
 		perr << "Class is empty..." << std::endl;
@@ -47,6 +46,9 @@ UCProcess::~UCProcess()
 
 bool UCProcess::run(const uint32 framenum)
 {
+	if (suspended)
+		return false;
+
 	// pass to UCMachine for execution
 
 	return UCMachine::get_instance()->execProcess(this);

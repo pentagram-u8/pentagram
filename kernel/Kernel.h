@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002 The Pentagram team
+Copyright (C) 2002,2003 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,24 +20,29 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define KERNEL_H
 
 #include <list>
+#include <map>
 
 class Process;
 
 class Kernel {
-	std::list<Process*> processes;
-
 public:
 	Kernel();
 	~Kernel();
 
 	static Kernel* get_instance() { return kernel; }
 
-	void addProcess(Process *proc);
+	uint16 addProcess(Process *proc); // returns pid of new process
 	void removeProcess(Process *proc);
 
 	bool runProcesses(uint32 framenum);
 
+	Process* getProcess(uint16 pid);
+
 private:
+	uint16 getNewPID();
+
+	std::list<Process*> processes;
+
 	static Kernel* kernel;
 };
 

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002 The Pentagram team
+Copyright (C) 2002,2003 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -36,17 +36,22 @@ Kernel::~Kernel()
 {
 }
 
-void Kernel::addProcess(Process* proc)
+uint16 Kernel::addProcess(Process* proc)
 {
 	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it) {
 		if (*it == proc)
-			return;
+			return 0;
 	}
 
-	perr << "[Kernel] Adding process " << proc << std::endl;
+	proc->pid = getNewPID();
+
+	perr << "[Kernel] Adding process " << proc
+		 << ", pid = " << proc->pid << std::endl;
 
 	processes.push_front(proc);
 	proc->active = true;
+
+	return proc->pid;
 }
 
 void Kernel::removeProcess(Process* proc)
@@ -96,4 +101,29 @@ bool Kernel::runProcesses(uint32 framenum)
 	}
 
 	return dirty;
+}
+
+Process* Kernel::getProcess(uint16 pid)
+{
+	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it) {
+		Process* p = *it;
+		if (p->pid == pid)
+			return p;
+	}
+	return 0;
+}
+
+uint16 Kernel::getNewPID()
+{
+	static uint16 count = 1; // 0 is reserved, higher than 0x7FFF too
+
+	// I'm not pretty sure this isn't the most efficient way to do this :-)
+
+	// find unused PID
+	while (getProcess(count)) {
+		count++;
+		if (count > 0x7FFE) count = 1;
+	}
+
+	return count++;
 }

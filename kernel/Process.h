@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002 The Pentagram team
+Copyright (C) 2002,2003 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,23 +19,41 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef PROCESS_H
 #define PROCESS_H
 
-class Process {
-	bool active;
-	bool terminated;
+#include <vector>
 
+class Process {
 public:
 	friend class Kernel;
 
 	// returns true if screen needs to be repainted
 	virtual bool run(const uint32 framenum) = 0;
 
-	Process() : active(false), terminated(false) { }
+	Process() : 
+		pid(0xFFFF), active(false), suspended(false), terminated(false),
+		result(0)
+	{ }
 	virtual ~Process() { }
 
 	bool is_active() const { return active; }
 
-	void terminate() { terminated = true; }
+	void terminate();
+	void waitFor(uint16 pid);
+	void wakeUp(uint32 result);
 
+protected:
+	// process id
+	uint16 pid;
+
+	bool active; // is the process in the run-list?
+	bool suspended; // suspended? (because it's waiting for something)
+	bool terminated;
+
+	// process result
+	uint32 result;
+
+	// processes waiting for this one to finish
+	// when this process terminates, awaken them and pass them the result val.
+	std::vector<uint16> waiting;
 };
 
 

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002 The Pentagram team
+Copyright (C) 2002,2003 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -64,12 +64,9 @@ private:
 	// this probably won't be the final way of storing these
 	std::map<uint16, UCList*> listHeap;
 	std::map<uint16, std::string> stringHeap;
-	std::map<uint16, UCProcess*> processes;
 
 	uint16 assignString(const char* str);
 	uint16 assignList(UCList* l);
-
-	uint16 getNewPID();
 
 	uint32 listToPtr(uint16 l);
 	uint32 stringToPtr(uint16 s);

@@ -4,11 +4,13 @@ LPATH := .
 
 LSRC := $(wildcard $(LPATH)/*.cpp)
 LPRODUCTS := pentagram
+LINSTALL := pentagram
 
 pentagram_OBJ = \
 	pentagram.o \
 	kernel/Kernel.o \
 	kernel/Application.o \
+	kernel/Process.o \
 	usecode/UCMachine.o \
 	usecode/UCProcess.o \
 	usecode/UsecodeFlex.o \

@@ -1,3 +1,7 @@
+2003-01-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/*: added waitFor to processes
+	* usecode/*: implemented implies
+
 2003-01-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* convert/ConvertShape.h: compile error
 	* conf/XMLTree.cpp: allow 0xHEX constants as integers
