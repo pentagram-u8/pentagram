@@ -57,7 +57,7 @@ UCMachine::UCMachine() :
 	loop_list = 0;
 	loop_index = 0;
 
-	intrinsics = U8Intrinsics; //!...
+	loadIntrinsics(U8Intrinsics); //!...
 }
 
 
@@ -80,6 +80,11 @@ static const char *print_sp(const sint16 offset)
 	snprintf(str, 32, "[SP%c%02Xh]", offset<0?'-':'+', 
 				  offset<0?-offset:offset);
 	return str;
+}
+
+void UCMachine::loadIntrinsics(Intrinsic *i)
+{
+	intrinsics=i;
 }
 
 bool UCMachine::execProcess(UCProcess* p)

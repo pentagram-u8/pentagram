@@ -1,3 +1,17 @@
+2003-05-29	Darke <darkepaw@users.sf.net>
+	* configure.ac: Adding semi-b0rk3n support for linking into a seperate
+	  console-only binary. Almost completely useless, overly linked to objects
+	  and in the wrong place (since I was wanting to not have to duplicate
+	  the significant list of overlapping objects for console vs. gui
+	  binaries), and I couldn't get the module.mk to support it properly.
+	  No point to modifying the .mingw makefile with this binary at the
+	  moment, wait until I get around to disentangling everything. *grin*
+	* kernel/[Core|GUI]App.*: Cleanup of random left-over crud.
+	* module.mk, llcLexer.cpp: Pointless cleanup of warnings when I was
+	  bored at work. *grin*
+	* usecode/UCMachine.*: Minor additional abstraction.
+	* kernel/ConApp.*,llc.cpp: Console application abstraction.
+	
 2003-05-28	Darke <darkepaw@users.sf.net>
 	* configure.ac: Checks for `sed` and reports a warning if it's lacking.
 	* tools/compile/module.mk: Runs a few sed scripts so that it shouldn't

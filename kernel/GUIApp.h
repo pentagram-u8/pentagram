@@ -84,11 +84,6 @@ class GUIApp : public CoreApp
 		bool runGraphicSysInit;
 		bool runSDLInit;
 
-		// various temporary state flags, to be moved somewhere more appropriate in time.
-		bool weAreDisasming;
-		bool weAreCompiling;
-		bool weAreWeAreWeAreTheMany; // false for the time being. *grin*
-
 		// Timing stuff
 		sint32 lerpFactor;			// Interpolation factor for this frame (0-256)
 		bool inBetweenFrame;		// Set true if we are doing an inbetween frame
@@ -107,5 +102,8 @@ class GUIApp : public CoreApp
 		bool avatarInStasis;	// If this is set to true, Avatar can't move, 
 								// nor can Avatar start more usecode
 };
+
+inline GUIApp *getGUIInstance() { return static_cast<GUIApp *>(CoreApp::get_instance()); };
+
 
 #endif

@@ -18,27 +18,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 
-// tested
 #include "GUIApp.h"
 
 #include "Kernel.h"
 #include "FileSystem.h"
 #include "Configuration.h"
-// /tested
 
-#include "IDataSource.h"
 #include "RenderSurface.h"
 #include "Texture.h"
-//#include "ConsoleGump.h"
 #include "PaletteManager.h"
-#include "MainShapeFlex.h"
-#include "Palette.h"
-#include "XFormBlend.h"
 #include "GameData.h"
 #include "World.h"
-#include "Args.h"
 
-#include "Map.h" // temp
 #include "U8Save.h"
 
 // TODO MOVE THIS STUFF TO GameMapGump or somewhere else
@@ -55,7 +46,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ActorAnimProcess.h"
 
 #include <SDL.h>
-//#include <cstdlib>
 
 #include "DisasmProcess.h"
 #include "CompileProcess.h"
@@ -69,33 +59,16 @@ GUIApp::GUIApp(const int argc, const char * const * const argv)
 	  console(0), screen(0), palettemanager(0), gamedata(0), world(0),
 	  display_list(0), camera(0),
 	  runGraphicSysInit(false), runSDLInit(false),
-	  weAreDisasming(false), weAreCompiling(false),
 	  frameSkip(false), frameLimit(true), interpolate(true),
 	  animationRate(33), fastArea(0), avatarInStasis(false)
 {
 	application = this;
 
-	parameters.declare("--disasm",  &weAreDisasming, true);
-	parameters.declare("--compile", &weAreCompiling, true);
-
 	postInit(argc, argv);
 
-	if(weAreDisasming==true)
-	{
-		pout << "We Are Disassembling..." << std::endl;
-		kernel->addProcess(new DisasmProcess());
-	}
-	else if(weAreCompiling==true)
-	{
-		pout << "We Are Compiling..." << std::endl;
-		kernel->addProcess(new CompileProcess(filesystem));
-	}
-	else
-	{
-		GraphicSysInit();
+	GraphicSysInit();
 
-		U8Playground();
-	}
+	U8Playground();
 
 }
 
@@ -461,8 +434,6 @@ void GUIApp::GraphicSysInit()
 	// if we've already done this...
 	if(runGraphicSysInit) return;
 	//else...
-
-	// go!
 
 	// Set Screen Resolution
 	pout << "Set Video Mode" << std::endl;

@@ -3,12 +3,13 @@
 LPATH := .
 
 LSRC := $(wildcard $(LPATH)/*.cpp)
-LPRODUCTS := pentagram
+LPRODUCTS := pentagram llc
 LINSTALL := pentagram
 
 KERNEL = \
 	kernel/Kernel.o \
 	kernel/GUIApp.o \
+	kernel/ConApp.o \
 	kernel/CoreApp.o \
 	kernel/Process.o \
 	kernel/Object.o \
@@ -26,6 +27,9 @@ COMPILE = \
 	tools/compile/CompileProcess.o \
 	tools/compile/Compile.o \
 	tools/compile/llcLexer.o
+
+DISASM = \
+	tools/disasm/DisasmProcess.o
 
 FILESYS = \
 	filesys/FileSystem.o \
@@ -67,16 +71,13 @@ MISC = \
 	misc/pent_include.o \
 	misc/util.o
 
-pentagram_OBJ = \
-	$(KERNEL) \
-	$(USECODE) \
-	$(FILESYS) \
-	$(GRAPHICS) \
-	$(MISC) \
+GUMPS = \
 	gumps/ConsoleGump.o \
 	gumps/GameMapGump.o \
 	gumps/Gump.o \
-	gumps/ResizableGump.o \
+	gumps/ResizableGump.o
+
+WORLD = \
 	world/CameraProcess.o \
 	world/Egg.o \
 	world/Item.o \
@@ -91,12 +92,35 @@ pentagram_OBJ = \
 	world/ItemMoveProcess.o \
 	world/actors/Actor.o \
 	world/actors/ActorAnimProcess.o \
-	world/actors/MainActor.o \
+	world/actors/MainActor.o
+	
+pentagram_OBJ = \
+	$(KERNEL) \
+	$(USECODE) \
+	$(FILESYS) \
+	$(GRAPHICS) \
+	$(MISC) \
 	$(CONVERT) \
 	$(CONF) \
-	tools/disasm/DisasmProcess.o \
+	$(GUMPS) \
+	$(WORLD) \
 	$(COMPILE) \
+	$(DISASM) \
 	pentagram.o 
+
+llc_OBJ = \
+	$(KERNEL) \
+	$(USECODE) \
+	$(FILESYS) \
+	$(GRAPHICS) \
+	$(MISC) \
+	$(CONVERT) \
+	$(CONF) \
+	$(GUMPS) \
+	$(WORLD) \
+	$(COMPILE) \
+	$(DISASM) \
+	llc.o
 
 # Common rules
 include common.mk

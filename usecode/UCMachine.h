@@ -76,6 +76,9 @@ public:
 	INTRINSIC(I_numToStr);
 	INTRINSIC(I_getCurrentTimerTick);
 
+protected:
+	void loadIntrinsics(Intrinsic *i);
+
 private:
 
 	Intrinsic* intrinsics;

@@ -1,0 +1,89 @@
+/*
+Copyright (C) 2002-2003 The Pentagram team
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
+#include "pent_include.h"
+
+#include "ConApp.h"
+
+#include "DisasmProcess.h"
+#include "CompileProcess.h"
+
+#include "Kernel.h"
+
+ConApp::ConApp(const int argc, const char * const * const argv)
+	: CoreApp(argc, argv, true), weAreDisasming(false), weAreCompiling(false)
+{
+	application = this;
+
+	parameters.declare("--disasm",  &weAreDisasming, true);
+	parameters.declare("--compile", &weAreCompiling, true);
+
+	postInit(argc, argv);
+
+	if(weAreDisasming==true)
+	{
+		pout << "We Are Disassembling..." << std::endl;
+		kernel->addProcess(new DisasmProcess());
+	}
+	else if(weAreCompiling==true)
+	{
+		pout << "We Are Compiling..." << std::endl;
+		kernel->addProcess(new CompileProcess(filesystem));
+	}
+	else
+	{
+		assert(false);
+	}
+
+}
+
+ConApp::~ConApp()
+{
+
+}
+
+void ConApp::run()
+{
+	isRunning = true;
+
+	sint32 next_ticks = SDL_GetTicks();	// Next time is right now!
+	
+	// Ok, the theory is that if this is set to true then we must do a repaint
+	// At the moment only it's ignored
+	bool repaint;
+
+	SDL_Event event;
+	while (isRunning) {
+		// this needs some major changes, including possibly:
+		// - handling events in-between processes?
+		//   (so have a kernel->runProcess() that runs a single process)
+		// - smarter painting
+		//    - dirty rectangles?
+		//    - more/less often depending on speed
+		//    ...
+		// ...
+
+		if (kernel->runProcesses(framenum++)) repaint = true;
+
+		// get & handle all events in queue
+		while (isRunning && SDL_PollEvent(&event)) {
+			handleEvent(event);
+		}
+	}
+}
+

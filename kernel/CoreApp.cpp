@@ -31,10 +31,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Args.h"
 
 #include <SDL.h>
-//#include <cstdlib>
-
-//#include "DisasmProcess.h"
-//#include "CompileProcess.h"
 
 using std::string;
 

@@ -28,7 +28,7 @@ ConsoleGump::~ConsoleGump()
 {
 }
 
-void ConsoleGump::Paint(RenderSurface */*surf*/)
+void ConsoleGump::Paint(RenderSurface * /*surf*/)
 {
 }
 
