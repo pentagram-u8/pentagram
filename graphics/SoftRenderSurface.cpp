@@ -99,17 +99,19 @@ template<class uintX> void SoftRenderSurface<uintX>::Fill32(uint32 rgb, sint32 s
 #if defined(__GNUC__) && defined(i386)
 template<> void SoftRenderSurface<uint32>::Fill32(uint32 rgb, sint32 sx, sint32 sy, sint32 w, sint32 h)
 {
+	int u0, u1, u2;
+
 	clip_window.IntersectOther(sx,sy,w,h);
 	if (!w || !h) return;
 
 	// An optimization.
-	if ((w*sizeof(uintX)) == pitch)
+	if ((w*sizeof(uint32)) == pitch)
 	{
 		w *= h;
 		h = 1;
 	}
 
-	uint8 *pixel = pixels + sy * pitch + sx * sizeof(uintX);
+	uint8 *pixel = pixels + sy * pitch + sx * sizeof(uint32);
 	uint8 *end = pixel + h * pitch;
 
 	rgb = PACK_RGB8( (rgb>>16)&0xFF , (rgb>>8)&0xFF , rgb&0xFF );
