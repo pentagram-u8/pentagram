@@ -37,7 +37,7 @@ FOLD_OBJCS = \
 	filesys/FileSystem.o misc/Args.o misc/Console.o misc/Q_strcasecmp.o \
 	tools/fold/CallNodes.o tools/fold/Folder.o tools/fold/FuncNodes.o \
 	tools/fold/IfNode.o tools/fold/OperatorNodes.o tools/fold/Type.o \
-	tools/fold/VarNodes.o
+	tools/fold/VarNodes.o tools/fold/LoopScriptNodes.o
 
 disasm.exe : tools/disasm/Disasm.o $(FOLD_OBJCS)
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
