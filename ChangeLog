@@ -1,3 +1,7 @@
+2004-10-07  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* kernel/GUIApp.cpp: clean up the textmodes input handling for possible
+	  additions to type of input it could handle.
+
 2004-10-07  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/fonts/FontManager.*: new FontManager for font overrides
 	* kernel/GUIApp.*: init FontManager and setup some (test) overrides

@@ -1037,10 +1037,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 	bool handled = false;
 
 	// Text mode input. A few hacks here
-	if (!textmodes.empty() &&
-		(event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) &&
-		event.key.keysym.sym != SDLK_BACKQUOTE) {
-
+	if (!textmodes.empty()) {
 		Gump *gump = 0;
 
 		while (!textmodes.empty())
@@ -1052,20 +1049,26 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		}
 
 		if (gump) {
+			switch (event.type) {
+				case SDL_KEYDOWN:
+					if (event.key.keysym.sym == SDLK_BACKQUOTE) break;
 
-			if (event.type == SDL_KEYDOWN) {
-				if (event.key.keysym.unicode >= ' ' &&
-					event.key.keysym.unicode <= 255)
-				{
-					gump->OnTextInput(event.key.keysym.unicode);
-				}
+					if (event.key.keysym.unicode >= ' ' &&
+						event.key.keysym.unicode <= 255)
+					{
+						gump->OnTextInput(event.key.keysym.unicode);
+					}
 
-				gump->OnKeyDown(event.key.keysym.sym, event.key.keysym.mod);
-			} else {
-				gump->OnKeyUp(event.key.keysym.sym);
+					gump->OnKeyDown(event.key.keysym.sym, event.key.keysym.mod);
+					return;
+
+				case SDL_KEYUP:
+					if (event.key.keysym.sym == SDLK_BACKQUOTE) break;
+					gump->OnKeyUp(event.key.keysym.sym);
+					return;
+
+				default: break;
 			}
-
-			return;
 		}
 	}
 	
