@@ -1,3 +1,7 @@
+2005-03-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* games/*Game.*: moved intro/endgame to U8Game. Now properly loads
+	  non-english intro.
+
 2005-03-20  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* pentagram.cpp: GUIApp no longer dynamically allocated.
 	* kernel/Segmented*: rename Simple* and use a simple list instead of

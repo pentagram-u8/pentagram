@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -37,6 +37,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CameraProcess.h"
 #include "GUIApp.h"
 #include "SettingManager.h"
+#include "MovieGump.h"
+#include "RawArchive.h"
 
 U8Game::U8Game() : Game()
 {
@@ -304,6 +306,63 @@ bool U8Game::startInitialUsecode()
 	}
 
 	return true;
+}
+
+
+void U8Game::playIntroMovie()
+{
+	GameInfo* gameinfo = CoreApp::get_instance()->getGameInfo();
+
+	std::string filename = "@u8/static/";
+
+	switch (gameinfo->language) {
+	case GameInfo::GAMELANG_ENGLISH:
+	case GameInfo::GAMELANG_SPANISH:
+		filename += "eintro.skf";
+		break;
+	case GameInfo::GAMELANG_FRENCH:
+		filename += "fintro.skf";
+		break;
+	case GameInfo::GAMELANG_GERMAN:
+		filename += "gintro.skf";
+		break;
+	default:
+		perr << "U8Game::playIntro: Unknown language." << std::endl;
+		return;
+	}
+
+	FileSystem* filesys = FileSystem::get_instance();
+	IDataSource* skf = filesys->ReadFile(filename);
+	if (!skf) {
+		pout << "U8Game::playIntro: movie not found." << std::endl;
+		return;
+	}
+	
+	RawArchive* flex = new RawArchive(skf);
+	MovieGump::U8MovieViewer(flex);
+}
+
+void U8Game::playEndgameMovie()
+{
+	std::string filename = "@u8/static/endgame.skf";
+	FileSystem* filesys = FileSystem::get_instance();
+	IDataSource* skf = filesys->ReadFile(filename);
+	if (!skf) {
+		pout << "U8Game::playEndgame: movie not found." << std::endl;
+		return;
+	}
+	
+	RawArchive* flex = new RawArchive(skf);
+	MovieGump::U8MovieViewer(flex);
+}
+
+void U8Game::playCredits()
+{
+
+}
+void U8Game::playQuotes()
+{
+
 }
 
 

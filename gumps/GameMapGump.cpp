@@ -335,6 +335,8 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 	{
 		if (avatar->isInCombat()) break;
 
+		if (GUIApp::get_instance()->isMouseDown(BUTTON_RIGHT)) break;
+
 		if (GUIApp::get_instance()->isAvatarInStasis()) {
 			pout << "Can't: avatarInStasis" << std::endl;
 			break;
@@ -365,9 +367,9 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 			Actor* devon = World::get_instance()->getNPC(1);
 			PathfinderProcess* pfp = new PathfinderProcess(devon, x, y, z);
 			Kernel::get_instance()->addProcess(pfp);
-#elif 0
+#elif 1
 			if (p_dynamic_cast<Actor*>(item)) {
-				p_dynamic_cast<Actor*>(item)->die();
+				p_dynamic_cast<Actor*>(item)->die(0);
 			} else {
 				item->destroy();
 			}
@@ -384,8 +386,10 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 				if (!item2) continue;
 				item2->setExtFlag(Item::EXT_HIGHLIGHT);
 			}
-#else
+#elif 0
 			item->receiveHit(1, 0, 1024, 0);
+#else
+			item->clearFlag(Item::FLG_HANGING);
 #endif
 		}
 	}
@@ -401,6 +405,8 @@ void GameMapGump::OnMouseDouble(int button, int mx, int my)
 	case BUTTON_LEFT:
 	{
 		if (avatar->isInCombat()) break;
+
+		if (GUIApp::get_instance()->isMouseDown(BUTTON_RIGHT)) break;
 
 		if (GUIApp::get_instance()->isAvatarInStasis()) {
 			pout << "Can't: avatarInStasis" << std::endl; 

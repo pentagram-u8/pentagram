@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2004-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@
 
 #include "GameData.h"
 #include "GumpShapeArchive.h"
-#include "RawArchive.h"
 #include "Shape.h"
 #include "ShapeFrame.h"
 #include "GUIApp.h"
@@ -32,14 +31,10 @@
 #include "ControlsGump.h"
 #include "OptionsGump.h"
 #include "PagedGump.h"
+#include "Game.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
-
-// for the movies (temporary)
-#include "FileSystem.h"
-#include "MovieGump.h"
-// --
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(MenuGump,ModalGump);
 
@@ -146,17 +141,7 @@ void MenuGump::selectEntry(int entry)
 	{
 	case 1:
 	{	// Intro
-		//!! FIXME: Hack, english only, etc, etc...
-		std::string filename = "@u8/static/eintro.skf";
-		FileSystem* filesys = FileSystem::get_instance();
-		IDataSource* skf = filesys->ReadFile(filename);
-		if (!skf) {
-			pout << "movie not found." << std::endl;
-			return;
-		}
-		
-		RawArchive* flex = new RawArchive(skf);
-		MovieGump::U8MovieViewer(flex);
+		Game::get_instance()->playIntroMovie();
 	} break;
 	case 2:
 	{	// Read Diary
@@ -190,17 +175,7 @@ void MenuGump::selectEntry(int entry)
 	} break;
 	case 8:
 	{	// End Game
-		//!! FIXME: Hack, english only, etc, etc...
-		std::string filename = "@u8/static/endgame.skf";
-		FileSystem* filesys = FileSystem::get_instance();
-		IDataSource* skf = filesys->ReadFile(filename);
-		if (!skf) {
-			pout << "movie not found." << std::endl;
-			return;
-		}
-		
-		RawArchive* flex = new RawArchive(skf);
-		MovieGump::U8MovieViewer(flex);
+		Game::get_instance()->playEndgameMovie();
 	} break;
 	default:
 		break;

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -40,6 +40,11 @@ public:
 
 	//! write game-specific savegame info (avatar stats, equipment, ...)
 	virtual void writeSaveInfo(ODataSource* ods)=0;
+
+	virtual void playIntroMovie()=0;
+	virtual void playEndgameMovie()=0;
+	virtual void playCredits()=0;
+	virtual void playQuotes()=0;
 
 	static Game* createGame(GameInfo* info);
 
