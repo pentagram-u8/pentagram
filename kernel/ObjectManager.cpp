@@ -51,6 +51,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "TargetGump.h"
 #include "BookGump.h"
 #include "ReadableGump.h"
+#include "MenuGump.h"
 
 ObjectManager* ObjectManager::objectmanager = 0;
 
@@ -308,4 +309,6 @@ void ObjectManager::setupLoaders()
 	addObjectLoader("ReadableGump", ObjectLoader<ReadableGump>::load);
 	addObjectLoader("MiniStatsGump", ObjectLoader<MiniStatsGump>::load);
 	addObjectLoader("TargetGump", ObjectLoader<TargetGump>::load);
-}	
+	addObjectLoader("MenuGump", ObjectLoader<MenuGump>::load);
+}
+

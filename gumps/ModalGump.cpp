@@ -42,7 +42,6 @@ ModalGump::ModalGump(int x, int y, int width, int height, uint16 owner,
 
 ModalGump::~ModalGump()
 {
-
 }
 
 void ModalGump::InitGump()
@@ -105,6 +104,11 @@ bool ModalGump::loadData(IDataSource* ids)
 	uint16 version = ids->read2();
 	if (version != 1) return false;
 	if (!Gump::loadData(ids)) return false;
+
+	// lock keyboard
+	GUIApp::get_instance()->enterTextMode(this);
+
+	Kernel::get_instance()->pause();
 
 	return true;
 }

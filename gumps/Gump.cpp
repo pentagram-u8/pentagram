@@ -63,6 +63,13 @@ Gump::~Gump()
 		it = children.erase(it);
 		delete g;
 	}
+
+	// Check to see if close has been called.
+	if (! IsClosing())
+	{
+		// no delete! We're already destructing.
+		Close(true);		
+	}
 }
 
 void Gump::InitGump()

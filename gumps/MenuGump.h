@@ -31,6 +31,7 @@ public:
 
 	// Init the gump, call after construction
 	virtual void InitGump();
+	virtual void Close(bool no_del = false);
 
 	// Paint the Gump
 	virtual void PaintThis(RenderSurface*, sint32 lerp_factor);

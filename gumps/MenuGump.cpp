@@ -45,7 +45,14 @@ MenuGump::MenuGump(): ModalGump(0, 0, 5, 5)
 
 MenuGump::~MenuGump()
 {
-	GUIApp::get_instance()->popMouseCursor();
+}
+
+void MenuGump::Close(bool no_del)
+{
+	GUIApp* guiapp = GUIApp::get_instance();
+	guiapp->popMouseCursor();
+
+	ModalGump::Close(no_del);
 }
 
 static const int gumpShape = 35;
@@ -143,10 +150,10 @@ bool MenuGump::OnKeyDown(int key, int mod)
 	} break;
 	case SDLK_7:
 	{	// Quotes
-	} break;	
+	} break;
 	case SDLK_8:
 	{	// End Game
-	} break;	
+	} break;
 	default:
 		break;
 	}
@@ -177,7 +184,7 @@ void MenuGump::ChildNotify(Gump *child, uint32 message)
 				{	// Write Diary
 					// I'm lazy - MJ
 					GUIApp::get_instance()->saveGame("@save/quicksave");
-				} break;	
+				} break;
 				case 4:
 				{	// Options
 					PagedGump * gump = new PagedGump(34, -38, 3, gumpShape);
@@ -196,10 +203,10 @@ void MenuGump::ChildNotify(Gump *child, uint32 message)
 				} break;
 				case 7:
 				{	// Quotes
-				} break;	
+				} break;
 				case 8:
 				{	// End Game
-				} break;	
+				} break;
 				default:
 					break;
 				}
@@ -231,10 +238,24 @@ void MenuGump::showMenu()
 
 bool MenuGump::loadData(IDataSource* ids)
 {
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!ModalGump::loadData(ids)) return false;
+
+	for (int i = 0; i < 8; ++i)
+	{
+		entryGumps[i] = ids->read2();
+	}
 	return true;
 }
 
 void MenuGump::saveData(ODataSource* ods)
 {
+	ods->write2(1); //version
+	ModalGump::saveData(ods);
+	for (int i = 0; i < 8; ++i)
+	{
+		ods->write2(entryGumps[i]);
+	}
 }
 

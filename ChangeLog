@@ -1,3 +1,9 @@
+2004-06-01  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* gumps/Gump.cpp: ensure the Gumps are properly closed in the destructor
+	* gumps/MenuGump.*: saves and loads, but loads only once properly?
+	* gumps/ModalGump.cpp: Relock the keyboard and pause kernel after load
+	* kernel/ObjectManager.cpp: add MenuGump ObjectLoader
+
 2004-05-29  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* filesys/Flex.*: isFlex returns true for ultima8 flexes.
 	* graphics/fonts/TTFont.*: added colour parameter
