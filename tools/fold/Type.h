@@ -86,7 +86,9 @@ class DataType
 			: _vtype(newVType), _dtype(newDType), _value(newValue) {};
 		DataType(const Type::ttype &newVType, const datatype newDType, const std::string &newStrValue)
 			: _vtype(newVType), _dtype(newDType), _strvalue(newStrValue) {};
-		
+		DataType(const Type::ttype &newVType, const datatype newDType, const uint32 var, const uint32 varIndex)
+			: _vtype(newVType), _dtype(newDType), _value(var), _valueIndex(varIndex) {};
+
 		const Type &type() const { return _vtype; };
 		const datatype &dtype() const { return _dtype; };
 		sint32 value() const { return _value; };
@@ -97,16 +99,15 @@ class DataType
 		void print_value_bin(ODequeDataSource &o) const;
 		
 	private:
-		Type _vtype;
-		datatype _dtype;
-		sint32 _value;
+		Type		_vtype;
+		datatype	_dtype;
+		sint32		_value;
 		std::string _strvalue;
-		//uint32 _size; // for globals
-	
+		uint32		_valueIndex; // for globals
 };
 
 
-/* FIXME: end conveniently placed functions... */
+/* FIXME: conveniently placed functions... */
 
 namespace suc
 {

@@ -87,7 +87,7 @@ class DCFuncNode : public ColNode
 	public:
 		DCFuncNode()
 			: ColNode(0xFFFF, 0x0000, Type(Type::T_INVALID)),
-			setinfonode(0), //procexcludenode(0),
+			setinfonode(0),
 			locals_datasize(0), func_start_offset(0),
 			debug_ret_offset(0), debug_end_offset(0),
 			process_type(0), debug_processtype_offset(0), debug_thisp(false),
@@ -112,7 +112,6 @@ class DCFuncNode : public ColNode
 	protected:
 		std::deque<Node *> funcnodes;
 		DCCallMutatorNode *setinfonode;
-		//DCCallMutatorNode *procexcludenode;
 
 		uint32	locals_datasize; // from 'init' opcode
 		uint32	func_start_offset; // from 'init' opcode

@@ -60,7 +60,7 @@ class PopVarNode : public UniNode
 		void print_asm(Console &o) const;
 		void print_bin(ODequeDataSource &o) const;
 
-		bool fold(DCUnit */*unit*/, std::deque<Node *> &nodes);
+		bool fold(DCUnit * /*unit*/, std::deque<Node *> &nodes);
 
 	protected:
 
@@ -111,6 +111,13 @@ class PushVarNode : public Node
 					break;
 				default: assert(false);
 			}
+			rtype(_dtype.type());
+		};
+		PushVarNode(const uint32 opcode, const uint32 offset, const uint32 variable, const uint32 varindex)
+			: Node(opcode, offset)
+		{
+			assert(acceptOp(opcode, 0x4E));
+			_dtype = DataType(Type::T_WORD, DataType::DT_GLOBAL, variable, varindex);
 			rtype(_dtype.type());
 		};
 		PushVarNode(const uint32 opcode, const uint32 offset)

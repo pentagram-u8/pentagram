@@ -896,6 +896,12 @@ Node *ConvertUsecode::readOpGeneric(IDataSource *ucfile, uint32 &dbg_symbol_offs
 		case 0x4C: // push indirect
 			n = new DCCallMutatorNode(opcode, offset, read1(ucfile));
 			break;
+		case 0x4E: // push global
+			{
+				uint32 tint = read2(ucfile);
+				n = new PushVarNode(opcode, offset, tint, read1(ucfile));
+			}
+			break;
 		case 0x50: // ret
 			n = new FuncMutatorNode(opcode, offset);
 			break;

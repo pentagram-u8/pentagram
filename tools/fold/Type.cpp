@@ -38,6 +38,9 @@ void Type::print_unk(Console &o) const
 /****************************************************************************
 	DataType
  ****************************************************************************/
+//class GlobalName;
+
+//extern std::map<uint32, GlobalName> GlobalNames;
 
 void DataType::print_value_unk(Console &o) const
 {
@@ -62,9 +65,9 @@ void DataType::print_value_unk(Console &o) const
 		case DT_STRING:    o.Printf("\"%s\"", _strvalue.c_str());         break;
 		case DT_PID:       o.Printf("pid");                            break;
 		/*case DT_PRESULT:   o.Printf("presult");                        break;
-		case DT_RESULT:    o.Printf("result");                         break;
+		case DT_RESULT:    o.Printf("result");                         break;*/
 		case DT_GLOBAL:    o.Printf("global %s(%04X, %02X)",
-			GlobalNames[global_offset].name.c_str(), global_offset, global_size); break;*/
+			"name", /*FIXME: Insert: GlobalNames[_value].name.c_str() <- here*/ _value, _valueIndex); break;
 		case DT_TEMP:      o.Printf("temp");                      break;
 		default:           assert(false); /* can't happen */      break;
 	}
@@ -109,6 +112,13 @@ void DataType::print_value_asm(Console &o) const
 		case DT_PID:
 		case DT_TEMP:
 			//do nothing, I think...
+			break;
+		case DT_GLOBAL:
+			switch(_vtype.type())
+			{
+				case Type::T_WORD: o.Printf("[%04X %02X]", _value, _valueIndex); break;
+				default: assert(false);
+			}
 			break;
 			
 		default: assert(false);
@@ -158,6 +168,11 @@ void DataType::print_value_bin(ODequeDataSource &o) const
 		case DT_PID:
 		case DT_TEMP:
 			// do nothing, I think...
+			break;
+		case DT_GLOBAL:
+			assert(_vtype.type()==Type::T_WORD);
+			o.write2(_value);
+			o.write1(_valueIndex);
 			break;
 		default: assert(false);
 	}
