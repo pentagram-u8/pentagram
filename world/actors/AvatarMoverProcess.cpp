@@ -315,29 +315,10 @@ bool AvatarMoverProcess::handleNormalMode()
 				nextanim = Animation::stand;
 			}
 
-			// Replace with a targeted jump
-			//! TODO: Make this a gameplay option
 			if (nextanim == Animation::jump || nextanim == Animation::jumpUp)
 			{
-				sint32 coords[3];
-				GameMapGump * gameMap = guiapp->getGameMapMapGump();
-				// We need the Gump's x/y for TraceCoordinates
-				gameMap->ParentToGump(mx,my);
-				ObjId targetId = gameMap->TraceCoordinates(mx,my,coords);
-				Item * target = World::get_instance()->getItem(targetId);
-
-				if (target && target->getShapeInfo()->is_land())
-				{
-					Process *p = new TargetedAnimProcess(avatar,
-							Animation::jumpUp, nextdir, coords);
-					waitFor(Kernel::get_instance()->addProcess(p));
-					return false;
-				}
-				else
-				{
-					waitFor(avatar->doAnim(Animation::shakeHead, nextdir));
-					return false;
-				}
+				jump(nextanim, nextdir);
+				return false;
 			}
 
 			nextanim = Animation::checkWeapon(nextanim, lastanim);
@@ -389,10 +370,12 @@ bool AvatarMoverProcess::handleNormalMode()
 		// check if we need to do a running jump
 		if (lastanim == Animation::run || lastanim == Animation::runningJump) {
 			pout << "AvatarMover: running jump" << std::endl;
-			nextanim = Animation::runningJump;
+			jump(Animation::runningJump, nextdir);
+			return false;
 		} else if (mouselength > 0) {
 			pout << "AvatarMover: jump" << std::endl;
-			nextanim = Animation::jump;
+			jump(Animation::jump, nextdir);
+			return false;
 		}
 		nextanim = Animation::checkWeapon(nextanim, lastanim);
 		waitFor(avatar->doAnim(nextanim, nextdir));
@@ -442,6 +425,7 @@ bool AvatarMoverProcess::handleNormalMode()
 
 	// not doing anything in particular? stand
 	// TODO: make sure falling works properly.
+	// FIXME: this breaks spellcasting animations (and maybe others as well)
 	if (lastanim != Animation::stand) {
 		nextanim = Animation::stand;
 		nextanim = Animation::checkWeapon(nextanim, lastanim);
@@ -449,6 +433,52 @@ bool AvatarMoverProcess::handleNormalMode()
 	}
 
 	return false;
+}
+
+void AvatarMoverProcess::jump(Animation::Sequence action, int direction)
+{
+	GUIApp* guiapp = GUIApp::get_instance();
+	MainActor* avatar = World::get_instance()->getMainActor();
+	int mx, my;
+	guiapp->getMouseCoords(mx, my);
+
+	// running jump
+	if (action == Animation::runningJump)
+	{
+		waitFor(avatar->doAnim(action, direction));
+		return;
+	}
+
+	// airwalk
+	if ((avatar->getActorFlags() & Actor::ACT_AIRWALK) &&
+		action == Animation::jump)
+	{
+		waitFor(avatar->doAnim(Animation::airwalkJump, direction));
+		return;
+	}
+
+
+	//! TODO: add gameplay option: targetedJump or not
+
+	sint32 coords[3];
+	GameMapGump * gameMap = guiapp->getGameMapMapGump();
+	// We need the Gump's x/y for TraceCoordinates
+	gameMap->ParentToGump(mx,my);
+	ObjId targetId = gameMap->TraceCoordinates(mx,my,coords);
+	Item * target = World::get_instance()->getItem(targetId);
+	
+	if (target && target->getShapeInfo()->is_land())
+	{
+		Process *p = new TargetedAnimProcess(avatar, Animation::jumpUp,
+											 direction, coords);
+		waitFor(Kernel::get_instance()->addProcess(p));
+		return;
+	}
+	else
+	{
+		waitFor(avatar->doAnim(Animation::shakeHead, direction));
+		return;
+	}
 }
 
 void AvatarMoverProcess::turnToDirection(int direction)

@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Process.h"
 #include "Mouse.h"
+#include "Animation.h"
 
 class AvatarMoverProcess : public Process
 {
@@ -42,6 +43,8 @@ protected:
 
 	bool handleCombatMode();
 	bool handleNormalMode();
+
+	void jump(Animation::Sequence action, int direction);
 
 	void turnToDirection(int direction);
 	

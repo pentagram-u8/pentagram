@@ -10,6 +10,7 @@
 	* graphics/PaletteFaderProcess.cpp: terminate, don't delete, old faders
 	* world/MonsterEgg.*: set monster activity
 	* world/MonsterEgg.cpp: check if new monster's position is valid
+	* world/actors/AvatarMoverProcess.*: airwalk
 
 2004-09-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/SplitItemProcess.cpp: fixed double-terminate
