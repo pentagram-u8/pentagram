@@ -16,26 +16,24 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef CONTAINER_H
-#define CONTAINER_H
+#ifndef MAP_H
+#define MAP_H
 
-#include "Item.h"
 #include <list>
 
+class Item;
+class Glob;
 
-class Container : public Item
+class Map
 {
-	friend class ItemFactory;
-
 public:
-	Container();
-	virtual ~Container();
+	Map();
+	~Map();
 
-	bool AddItem(Item* item);
-	bool RemoveItem(Item* item);
-
-protected:
-	std::list<Item*> contents;
+private:
+	std::list<Glob*> globs;
+	std::list<Item*> items;
 };
+
 
 #endif

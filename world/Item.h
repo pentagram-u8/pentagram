@@ -24,6 +24,8 @@ class Container;
 
 class Item : public Object
 {
+	friend class ItemFactory;
+
 public:
 	Item();
 	virtual ~Item();
@@ -31,6 +33,9 @@ public:
 	Container* getParent() const { return parent; }
 
 protected:
+	uint32 shape;
+	uint32 frame;
+
 	sint32 x,y,z; // world coordinates
 	uint32 flags;
 	uint16 quality;

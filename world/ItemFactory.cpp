@@ -16,26 +16,23 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef CONTAINER_H
-#define CONTAINER_H
+#include "pent_include.h"
 
+#include "ItemFactory.h"
 #include "Item.h"
-#include <list>
+#include "Container.h"
 
-
-class Container : public Item
+Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
+							  uint32 flags, uint32 mapNum)
 {
-	friend class ItemFactory;
+	// TODO: check what class to create... (need to read typeflag.dat)
 
-public:
-	Container();
-	virtual ~Container();
+	Item* item = new Item();
+	item->shape = shape;
+	item->frame = frame;
+	item->quality = quality;
+	item->flags = flags;
+	item->mapNum = mapNum;
 
-	bool AddItem(Item* item);
-	bool RemoveItem(Item* item);
-
-protected:
-	std::list<Item*> contents;
-};
-
-#endif
+	return item;
+}

@@ -16,26 +16,20 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef CONTAINER_H
-#define CONTAINER_H
+#ifndef ITEMFACTORY_H
+#define ITEMFACTORY_H
 
-#include "Item.h"
-#include <list>
+class Item;
 
-
-class Container : public Item
+class ItemFactory
 {
-	friend class ItemFactory;
-
 public:
-	Container();
-	virtual ~Container();
 
-	bool AddItem(Item* item);
-	bool RemoveItem(Item* item);
-
-protected:
-	std::list<Item*> contents;
+	// create an item.
+	// look up (where?) what type of item the given shape is, and
+	// create an instance of the corresponding Item class.
+	static Item* createItem(uint32 shape, uint32 frame, uint16 quality,
+							uint32 flags, uint32 mapNum);
 };
 
 #endif

@@ -16,26 +16,21 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef CONTAINER_H
-#define CONTAINER_H
+#ifndef GLOB_H
+#define GLOB_H
 
-#include "Item.h"
-#include <list>
+#include <vector>
 
+class Item;
 
-class Container : public Item
+class Glob
 {
-	friend class ItemFactory;
-
 public:
-	Container();
-	virtual ~Container();
+	Glob();
+	~Glob();
 
-	bool AddItem(Item* item);
-	bool RemoveItem(Item* item);
-
-protected:
-	std::list<Item*> contents;
+private:
+	std::vector<Item*> contents;
 };
 
 #endif

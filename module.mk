@@ -34,6 +34,9 @@ pentagram_OBJ = \
 	graphics/ShapeFlex.o \
 	world/Item.o \
 	world/Container.o \
+	world/ItemFactory.o \
+	world/Map.o \
+	world/Glob.o \
 	conf/Configuration.o \
 	conf/XMLTree.o \
 	conf/XMLNode.o

@@ -1,3 +1,6 @@
+2003-03-07  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Glob.*, Map.*, ItemFactory.*: some more near-stub classes
+
 2003-03-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Object.h: small start of a base usecode object class
 	* world/Item.*, world/Container.*: item/container classes
