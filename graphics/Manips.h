@@ -36,7 +36,7 @@ public:
 	static uint16 to16bit(uintX src) { 
 		uint8 r,g,b;
 		UNPACK_RGB(src,r,g,b);
-		return (r>>3)|((g&0xFC)<<3)|((b&F8)<<8);
+		return (r>>3)|((g&0xFC)<<3)|((b&0xF8)<<8);
 	}
 };
 
