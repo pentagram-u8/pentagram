@@ -1,7 +1,10 @@
 2002-11-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* tools/disasm/module.mk: removed weird -I flag
 	* Makefile.in: we don't have headers/ anymore
-
+	* Makefile.in, bootstrap, tools/shapeconv/module.mk: build shapeconv
+	* filesys/IDataSource.h: #include <fstream>
+	* tools/shapeconv/ShapeConv.cpp: std::endl
+	
 2002-11-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* Makefile.in: tweaked dependency generation a bit
 
