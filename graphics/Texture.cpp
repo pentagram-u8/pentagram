@@ -16,6 +16,7 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "pent_include.h"
 #include "Texture.h"
 #include "TextureBitmap.h"
 #include "TextureTarga.h"
@@ -60,7 +61,7 @@ else {										\
 //
 // Create a texture from a Data Source (filename is use to help detection of type)
 //
-Texture * Texture::Create(DataSource &ds, const char *filename)
+Texture * Texture::Create(IDataSource &ds, const char *filename)
 {
 	Texture *tex;
 

@@ -35,7 +35,8 @@ public:
 	}
 
 	~UCStack() {
-		delete[] buf;
+		uint8 *delptr = const_cast<uint8*>(buf);
+		delete[] delptr;
 	}
 
 	inline uint32 stacksize() const {

@@ -29,7 +29,7 @@ public:
 	// returns true if screen needs to be repainted
 	virtual bool run(const uint32 framenum) = 0;
 
-	Process() : active(false) { }
+	Process() : active(false), terminated(false) { }
 	virtual ~Process() { }
 
 	bool is_active() const { return active; }

@@ -19,13 +19,14 @@
 #include "pent_include.h"
 #include "MD3_Model.h"
 #include <cstring>
+#include "IDataSource.h"
 
 using std::memcmp;
 
 //
 // Read Header
 //
-bool MD3_Header::Read(DataSource *ds)
+bool MD3_Header::Read(IDataSource *ds)
 {
 	//
 	// Info
@@ -89,7 +90,7 @@ bool MD3_Header::Read(DataSource *ds)
 //
 // Read Frame Info
 //
-void MD3_FrameInfo::Read(DataSource *ds)
+void MD3_FrameInfo::Read(IDataSource *ds)
 {
 	// Bounding Box lower extents
 	box_min[0] = ds->readf();
@@ -116,7 +117,7 @@ void MD3_FrameInfo::Read(DataSource *ds)
 //
 // Read Tags
 //
-void MD3_Tag::Read(DataSource *ds)
+void MD3_Tag::Read(IDataSource *ds)
 {
 	// Tag name
 	ds->read(name, 64);
@@ -150,7 +151,7 @@ void MD3_Tag::Read(DataSource *ds)
 //
 // Read Triangles
 //
-void MD3_Triangle::Read(DataSource *ds)
+void MD3_Triangle::Read(IDataSource *ds)
 {
 	// Triangle incidces
 	indices[0] = ds->read4();	
@@ -161,7 +162,7 @@ void MD3_Triangle::Read(DataSource *ds)
 //
 // Tex Coords
 //
-void MD3_TexCoord ::Read(DataSource *ds)
+void MD3_TexCoord ::Read(IDataSource *ds)
 {
 	// ST coords
 	st[0] = ds->readf();
@@ -171,7 +172,7 @@ void MD3_TexCoord ::Read(DataSource *ds)
 //
 // Read Surface Shaders
 //
-void MD3_Shader::Read(DataSource *ds)
+void MD3_Shader::Read(IDataSource *ds)
 {
 	// Filename of shader
 	ds->read(filename, 64);
@@ -183,7 +184,7 @@ void MD3_Shader::Read(DataSource *ds)
 //
 // Read Vertices
 //
-void MD3_DiskVertex::Read(DataSource *ds)
+void MD3_DiskVertex::Read(IDataSource *ds)
 {
 	// Vertex
 	xyz[0] = ds->read2();
@@ -200,7 +201,7 @@ void MD3_DiskVertex::Read(DataSource *ds)
 //
 // Read Surface Header
 //
-bool MD3_SurfaceHeader::Read(DataSource *ds)
+bool MD3_SurfaceHeader::Read(IDataSource *ds)
 {
 	// "IDP3"
 	ds->read(type, 4);
@@ -266,7 +267,7 @@ void MD3_Surface::FreeData()
 //
 // Read Surface
 //
-bool MD3_Surface::Read(DataSource *ds)
+bool MD3_Surface::Read(IDataSource *ds)
 {
 	uint32 i;
 	int start = ds->getPos();
@@ -404,7 +405,7 @@ void MD3_Model::FreeData()
 //
 // Read MD3 Model
 //
-bool MD3_Model::Read(DataSource *ds)
+bool MD3_Model::Read(IDataSource *ds)
 {
 	uint32 i;
 	int start = ds->getPos();

@@ -26,15 +26,60 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UCProcess.h"
 #include "UsecodeFlex.h"
 #include "IDataSource.h"
+#include "RenderSurface.h"
+#include "Texture.h"
+//#include "ConsoleGump.h"
+
+#include <SDL.h>
 
 int classid, offset; // only temporary, don't worry :-)
 
 Application::Application(int argc, char *argv[])
 {
+	// Init sdl
+	pout << "Init SDL" << std::endl;
+	SDL_Init(SDL_INIT_VIDEO);
+	atexit(SDL_Quit);
+
 	// Create the kernel
+	pout << "Create Kernel" << std::endl;
 	kernel = new Kernel;
+	pout << "Create UCMachine" << std::endl;
 	ucmachine = new UCMachine;
+	pout << "Create FileSystem" << std::endl;
 	filesystem = new FileSystem;
+
+	// Set Screen Resolution
+	pout << "Set Video Mode" << std::endl;
+	screen = RenderSurface::SetVideoMode(640, 480, 32, false, false);
+	if (!screen)
+	{
+		perr << "Unable to set video mode. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	pout << "Resize Console" << std::endl;
+	con.CheckResize(640);
+
+	// Load confont
+	pout << "Load Confont" << std::endl;
+	IDataSource *cf = filesystem->ReadFile("fixedfont.tga");
+	if (cf) confont = Texture::Create(*cf, "fixedfont.tga");
+	else confont = 0;
+	if (!confont)
+	{
+		perr << "Unable to load fixedfont.tga. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	delete cf;
+	con.SetConFont(confont);
+
+	// Create console gump
+	//pout << "Create Graphics Console" << std::endl;
+	//desktop = console = new ConsoleGump(0,0, width, height);
+
+	// Clear Screen
+	pout << "Paint Inital display" << std::endl;
+	paint();
 
 	classid = offset = -1;
 	if (argc == 3) {
@@ -53,7 +98,6 @@ Application::~Application()
 
 void Application::run()
 {
-
 	IDataSource* ds = filesystem->ReadFile("eusecode.flx");
 	Usecode* u = new UsecodeFlex(ds);
 	UCProcess* p;
@@ -66,7 +110,30 @@ void Application::run()
 
     ucmachine->addProcess(p);
 	uint32 framenum = 0;
+	SDL_Event event;
 	while (1) {
 		kernel->runProcesses(framenum++);
+
+		pout << "Pausing execution. Press a key (in graphics window) to continue" << std::endl;
+		
+		// Paint Screen
+		paint();
+
+		while (1)
+		{
+			if (SDL_PollEvent(&event))
+			{
+				if (event.type == SDL_KEYDOWN) break;
+			}
+		}
 	}
+}
+
+// Paint the screen
+void Application::paint()
+{
+	screen->BeginPainting();
+	screen->Fill32(0x3F3F3F, 0, 0, 640, 480);
+	con.DrawConsole(screen, 0, 0, 640, 480);
+	screen->EndPainting();
 }

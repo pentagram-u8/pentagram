@@ -40,10 +40,12 @@
 //
 #include "common_types.h"
 
+
 //
 // assert
 //
 #include <cassert>
+
 
 //
 // Strings
@@ -52,6 +54,13 @@
 
 // Empty string
 extern const std::string c_empty_string;
+
+
+//
+// Base Errors
+//
+
+#include "Errors.h"
 
 
 //

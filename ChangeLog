@@ -1,3 +1,30 @@
+2002-12-30  Ryan Nunn <colourles@users.sourceforge.net>
+	* misc/Errors.h graphics/GraphicsErrors.h : 'Unified' Error Code System
+
+	* graphics/RenderSurface.* : RenderSurface Interface
+
+	* graphics/SoftRenderSurface.* : SoftRenderSurface Implementation of 
+	  RenderSurface
+
+	* misc/Rect.h : The useful Rect class
+
+	* data/fixedfont.tga : Font for the console
+
+	* graphics/Texture*.*, graphics/MD3_Model.* : Removed dependencies on
+	  'old' and stuff I'm yet to commit
+
+	* kernel/Application.* : Added some basic Painting and res setting code
+
+	* kernel/Process.h : Explicitly set 'terminated' to false as you can't
+	  assume that all compilers will zero the memory. *cough* I'm looking
+	  at you gcc users. *cough*
+	  
+	* misc/Console.* : Console Drawing
+
+	* misc/pent_include.h : Minor update
+
+	* usecode/UCStack.h : Fixing deleting of const pointers related issue
+
 2002-12-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCMachine.cpp: global pointer dereferencing
 

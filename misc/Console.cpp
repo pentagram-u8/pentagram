@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 #include "ODataSource.h"
+#include "RenderSurface.h"
+
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
@@ -177,7 +179,7 @@ void Console::CheckResize (int scrwidth)
 Console::Console () : current(0), x(0), display(0), linewidth(-1),
 					 totallines(0), vislines(0), wordwrap(true), cr(false),
 					 putchar_count(0), std_output_enabled(0xFFFFFFFF),
-					 stdout_redir(0), stderr_redir(0)
+					 stdout_redir(0), stderr_redir(0), confont(0)
 {
 	linewidth = -1;
 
@@ -473,6 +475,71 @@ DRAWING
 
 ==============================================================================
 */
+
+void Console::DrawConsole (RenderSurface *surf, int sx, int sy, int width, int height)
+{
+	int				i, x, y;
+	int				rows;
+	int				row;
+	int				lines;
+///	char			version[64];
+
+	// Need to do this first
+	PrintPutchar();
+
+	lines = height;
+	if (lines <= 0)
+		return;
+
+	//if (lines > viddef.height)
+	//	lines = viddef.height;
+
+	//Com_sprintf (version, sizeof(version), "v%4.2f", VERSION);
+	//for (x=0 ; x<5 ; x++)
+	//	re.DrawChar (viddef.width-44+x*8, lines-12, 128 + version[x] );
+
+	// draw the text
+	vislines = lines;
+	
+#if 0
+	rows = (lines-8)>>3;		// rows of text to draw
+
+	y = lines - 24;
+#else
+	rows = (lines-22)>>3;		// rows of text to draw
+
+	y = lines - 30;
+#endif
+
+// draw from the bottom up
+	if (display != current)
+	{
+	// draw arrows to show the buffer is backscrolled
+		for (x=0 ; x<linewidth ; x+=4)
+			surf->PrintCharFixed(confont, '^', (x+1)<<3, y);
+	
+		y -= 8;
+		rows--;
+	}
+	
+	row = display;
+	for (i=0 ; i<rows ; i++, y-=8, row--)
+	{
+		if (row < 0)
+			break;
+		if (current - row >= totallines)
+			break;		// past scrollback wrap point
+			
+		char *txt = text + (row % totallines)*linewidth;
+
+		for (x=0 ; x<linewidth ; x++) {
+			surf->PrintCharFixed(confont, txt[x], (x+1)<<3, y);
+		//	putchar (txt[x]);
+		}
+		//putchar ('\n');
+	}
+
+}
 
 
 /*

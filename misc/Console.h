@@ -35,6 +35,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define		CON_STDERR			2
 
 class ODataSource;
+class RenderSurface;
+struct Texture;
 
 class Console
 {
@@ -60,6 +62,9 @@ class Console
 	ODataSource	*stdout_redir;
 	ODataSource	*stderr_redir;
 
+	// Confont texture
+	Texture		*confont;
+
 public:
 	Console();
 	~Console();
@@ -72,6 +77,12 @@ public:
 
 	// Resize the console buffer (on screen change)
 	void	CheckResize (int scrwidth);
+
+	// Draw the Console
+	void	DrawConsole (RenderSurface *surf, int sx, int sy, int width, int height);
+
+	// Set the console font texture
+	void	SetConFont(Texture *cf) { confont = cf; }
 
 	// Redirection
 	void	RedirectOutputStream(uint32 mask, ODataSource *ds)

@@ -16,8 +16,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "pent_include.h"
 #include "TextureBitmap.h"
-#include "soft_draw.h"
+#include "IDataSource.h"
 
 // graphics defines
 #define BITMAP_ID            0x4D42 // universal id for a bitmap
@@ -32,7 +33,7 @@ struct BMPHeader {
 		uint16		bfReserved2;
 		uint32		bfOffBits;
 
-		void Read(DataSource &ds) {
+		void Read(IDataSource &ds) {
 			bfType = ds.read2();
 			bfSize = ds.read4();
 			bfReserved1 = ds.read2();
@@ -57,7 +58,7 @@ struct BMPInfoHeader {
 		uint32		biClrUsed;
 		uint32		biClrImportant;
 
-		void Read(DataSource &ds) {
+		void Read(IDataSource &ds) {
 			biSize = ds.read4();
 			biWidth = ds.read4();
     		biHeight = ds.read4();
@@ -76,7 +77,7 @@ struct BMPInfoHeader {
 //
 // Read from a Data Source
 //
-bool TextureBitmap::Read(DataSource &ds)
+bool TextureBitmap::Read(IDataSource &ds)
 {
 	// Seek to start
 	ds.seek(0);

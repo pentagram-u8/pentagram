@@ -21,7 +21,7 @@
 
 #include <cmath>
 #include "q_math.h"
-#include "databuf.h"
+class IDataSource;
 
     /////////////////////////
    //                     //
@@ -82,8 +82,8 @@ struct MD3_Header {
 	// Offset to end of file
 	uint32	offset_end;
 
-	// Read from a DataSource
-	bool	Read(DataSource*);
+	// Read from a IDataSource
+	bool	Read(IDataSource*);
 };
 
 //
@@ -100,8 +100,8 @@ struct MD3_FrameInfo {
 	// Methods
 	//
 
-	// Read from DataSource
-	void	Read(DataSource*);
+	// Read from IDataSource
+	void	Read(IDataSource*);
 };
 
 //
@@ -116,7 +116,7 @@ struct MD3_Tag {
 	// Methods
 	//
 
-	void	Read(DataSource*);
+	void	Read(IDataSource*);
 
 	inline void Lerp(MD3_Tag &oldt, MD3_Tag &newt, float lerp_factor)
 	{
@@ -149,8 +149,8 @@ struct MD3_Triangle {
 	// Methods
 	//
 
-	// Read from DataSource
-	void	Read(DataSource*);
+	// Read from IDataSource
+	void	Read(IDataSource*);
 };
 
 //
@@ -163,8 +163,8 @@ struct MD3_TexCoord {
 	// Methods
 	//
 
-	// Read from DataSource
-	void	Read(DataSource*);
+	// Read from IDataSource
+	void	Read(IDataSource*);
 };
 
 //
@@ -178,8 +178,8 @@ struct MD3_Shader {
 	// Methods
 	//
 
-	// Read from DataSource
-	void	Read(DataSource*);
+	// Read from IDataSource
+	void	Read(IDataSource*);
 };
 
 //
@@ -195,8 +195,8 @@ struct MD3_DiskVertex {
 	// Methods
 	//
 
-	// Read from DataSource
-	void	Read(DataSource*);
+	// Read from IDataSource
+	void	Read(IDataSource*);
 
 	// Get the vertex
 	inline void GetVertex(float vertex[3]) {
@@ -276,7 +276,7 @@ struct MD3_SurfaceHeader {
 	// Methods
 	//
 
-	bool	Read(DataSource*);
+	bool	Read(IDataSource*);
 
 };
 
@@ -297,7 +297,7 @@ struct MD3_Surface : public MD3_SurfaceHeader
 
 	void			FreeData();
 
-	bool			Read(DataSource*);
+	bool			Read(IDataSource*);
 };
 
 //
@@ -328,8 +328,8 @@ public:
 	// Free the model
 	void	FreeData();
 
-	// Read from a DataSource
-	bool 	Read(DataSource*);
+	// Read from a IDataSource
+	bool 	Read(IDataSource*);
 
 	// Output info to the console
 	void	OutputInfo();

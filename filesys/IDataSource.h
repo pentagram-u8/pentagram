@@ -47,6 +47,16 @@ class IDataSource
 			else return read4();
 		}
 		
+		float readf()
+		{
+			union {
+				uint32	i;
+				float	f;
+			} int_float;
+			int_float.i = read4();
+			return int_float.f;
+		}
+
 		virtual void seek(uint32 pos)=0;
 		virtual void skip(sint32 delta)=0;
 		virtual uint32 getSize()=0;

@@ -16,8 +16,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "pent_include.h"
 #include "TextureTarga.h"
-#include "soft_draw.h"
+#include "IDataSource.h"
 
 struct TGA
 {
@@ -29,7 +30,7 @@ struct TGA
 	bool		Flipped;
 	bool		Compressed;
 
-	void Read(DataSource &ds)
+	void Read(IDataSource &ds)
 	{
 		Width	= ds.read2();
 		Height	= ds.read2();
@@ -44,7 +45,7 @@ struct TGA
 static const uint8 uTGAcompare[12] = {0,0,2, 0,0,0,0,0,0,0,0,0};	// Uncompressed TGA Header
 static const uint8 cTGAcompare[12] = {0,0,10,0,0,0,0,0,0,0,0,0};	// Compressed TGA Header
 
-bool TextureTarga::Read(DataSource &ds)
+bool TextureTarga::Read(IDataSource &ds)
 {
 	// TGA File Header
 	uint8 header[12];										

@@ -22,6 +22,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class Kernel;
 class UCMachine;
 class FileSystem;
+class ResizableGump;
+class ConsoleGump;
+class RenderSurface;
+struct Texture;
 
 // extremely simplified stub-ish Application class
 class Application {
@@ -30,11 +34,17 @@ public:
 	virtual ~Application();
 
 	virtual void run();
+	virtual void paint();
 
 protected:
 	Kernel* kernel;
 	UCMachine* ucmachine;
 	FileSystem* filesystem;
+	ResizableGump* desktop;
+	ConsoleGump* console;
+	RenderSurface *screen;
+	Texture *confont;
+
 };
 
 #endif
