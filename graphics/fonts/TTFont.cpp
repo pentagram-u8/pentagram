@@ -134,11 +134,12 @@ void TTFont::getStringSize(std::string& text, int& width, int& height)
 RenderedText* TTFont::renderText(std::string text,
 									  unsigned int& remaining,
 									  int width, int height,
-									  TextAlign align)
+									  TextAlign align, bool u8specials)
 {
 	int resultwidth, resultheight;
 	std::list<PositionedText> lines = typesetText(text, remaining,
-												  width, height, align,
+												  width, height,
+												  align, u8specials,
 												  resultwidth, resultheight);
 
 	SDL_Color white = { 0xFF , 0xFF , 0xFF, 0 };

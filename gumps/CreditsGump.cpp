@@ -115,6 +115,13 @@ void CreditsGump::extractLine(std::string& text,
 
 	line = text.substr(0, starpos);
 
+	// replace '%%' by '%'.
+	// (Original interpreted these strings as format strings??)
+	std::string::size_type ppos;
+	while ((ppos = line.find("%%")) != std::string::npos) {
+		line.replace(ppos, 2, "%");
+	}
+
 	if (starpos != std::string::npos) starpos++;
 	text.erase(0, starpos);
 }

@@ -83,7 +83,7 @@ bool TextWidget::setupNextText()
 	int tx, ty;
 	unsigned int remaining;
 	font->getTextSize(text.substr(current_start), tx, ty, remaining,
-					  targetwidth, targetheight, textalign);
+					  targetwidth, targetheight, textalign, true);
 
 	dims.w = tx;
 	dims.h = ty;
@@ -112,7 +112,7 @@ void TextWidget::renderText()
 		cached_text = font->renderText(text.substr(current_start,
 												   current_end-current_start),
 									   remaining, targetwidth, targetheight,
-									   textalign);
+									   textalign, true);
 	}
 }
 
@@ -181,7 +181,7 @@ bool TextWidget::loadData(IDataSource* ids, uint32 version)
 	int tx, ty;
 	unsigned int remaining;
 	font->getTextSize(text.substr(current_start), tx, ty, remaining,
-					  targetwidth, targetheight, textalign);
+					  targetwidth, targetheight, textalign, true);
 
 	// Y offset is always baseline
 	dims.y = -font->getBaseline();

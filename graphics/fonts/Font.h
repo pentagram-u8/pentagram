@@ -67,11 +67,13 @@ public:
 	//! \param width The width of the target rectangle, or 0 for unlimited
 	//! \param height The height of the target rectangle, or 0 for unlimited
 	//! \param align Alignment of the text (left, right, center)
+	//! \param u8specials If true, interpret the special characters U8 uses
 	//! \return the rendered text in a RenderedText object
 	virtual RenderedText* renderText(std::string text,
 									 unsigned int& remaining,
 									 int width=0, int height=0,
-									 TextAlign align=TEXT_LEFT)=0;
+									 TextAlign align=TEXT_LEFT,
+									 bool u8specials=false)=0;
 
 	//! get the dimensions of a rendered string
 	//! \param text The text
@@ -80,19 +82,20 @@ public:
 	//! \param remaining Returns index of the first character not printed
 	//! \param width The width of the target rectangle, or 0 for unlimited
 	//! \param height The height of the target rectangle, or 0 for unlimited
+	//! \param u8specials If true, interpret the special characters U8 uses
 	//! \param align Alignment of the text (left, right, center)
 	void getTextSize(std::string text,
 					 int& resultwidth, int& resultheight,
 					 unsigned int& remaining,
 					 int width=0, int height=0,
-					 TextAlign align=TEXT_LEFT);
+					 TextAlign align=TEXT_LEFT, bool u8specials=false);
 	
 
 protected:
 	std::list<PositionedText> typesetText(std::string& text,
 										  unsigned int& remaining,
 										  int width, int height,
-										  TextAlign align,
+										  TextAlign align, bool u8specials,
 										  int& resultwidth, int& resultheight);
 
 };

@@ -1,4 +1,8 @@
 2005-03-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/fonts/*: allow disabling interpreting of special characters
+	* gumps/CreditsGump.cpp: fix double percent sign
+
+2005-03-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* audio/*AudioSample.*: add interface for getting sample length
 	* audio/SpeechFlex.*: get length in milliseconds of speech
 	* gumps/BarkGump.*: properly sync text and speech

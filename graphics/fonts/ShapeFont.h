@@ -47,7 +47,8 @@ public:
 	virtual RenderedText* renderText(std::string text,
 									 unsigned int& remaining,
 									 int width=0, int height=0,
-									 TextAlign align=TEXT_LEFT);
+									 TextAlign align=TEXT_LEFT,
+									 bool u8specials=false);
 
 	ENABLE_RUNTIME_CLASSTYPE();
 };
