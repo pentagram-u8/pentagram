@@ -2191,7 +2191,15 @@ uint32 Item::I_legalMoveToPoint(const uint8* args, unsigned int /*argsize*/)
 //	}
 }
 
+uint32 Item::I_legalMoveToContainer(const uint8* args,unsigned int /*argsize*/)
+{
+	ARG_ITEM_FROM_PTR(item);
+	ARG_CONTAINER_FROM_PTR(container);
+	ARG_UINT16(unknown); // always 0
 
+	// try to move item to container checking weight and volume
+	return item->moveToContainer(container, true);
+}
 
 uint32 Item::I_getEtherealTop(const uint8* args, unsigned int /*argsize*/)
 {
@@ -2437,4 +2445,43 @@ uint32 Item::I_explode(const uint8* args, unsigned int /*argsize*/)
 
 	item->explode();
 	return 0;
+}
+
+uint32 Item::I_getRange(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM_FROM_PTR(item);
+	ARG_ITEM_FROM_ID(other);
+	if (!item) return 0;
+	if (!other) return 0;
+
+	sint32 thisX, thisY, thisZ;
+	sint32 otherX, otherY, otherZ;
+	sint32 thisXd, thisYd, thisZd;
+	sint32 otherXd, otherYd, otherZd;
+	sint32 thisXmin, thisYmin;
+	sint32 otherXmin, otherYmin;
+
+	item->getLocationAbsolute(thisX, thisY, thisZ);
+	other->getLocationAbsolute(otherX, otherY, otherZ);
+	item->getFootpadWorld(thisXd, thisYd, thisZd);
+	other->getFootpadWorld(otherXd, otherYd, otherZd);
+
+	thisXmin = thisX - thisXd;
+	thisYmin = thisY - thisYd;
+
+	otherXmin = otherX - otherXd;
+	otherYmin = otherY - otherYd;
+
+	sint32 range = 0;
+
+	if (thisXmin - otherX > range)
+		range = thisYmin - otherY;
+	if (otherXmin - thisX > range)
+		range = thisXmin - otherX;
+	if (thisYmin - otherY > range)
+		range = otherXmin - thisX;
+	if (otherYmin - thisY > range)
+		range = otherYmin - thisY;
+
+	return static_cast<uint32>(range);
 }

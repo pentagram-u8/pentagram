@@ -111,7 +111,7 @@ Intrinsic U8Intrinsics[] = {
 	0, //U
 	// 0x040
 	Item::I_legalMoveToPoint,
-	0, // Item::legal_move
+	Item::I_legalMoveToContainer,
 	Actor::I_isNPC,
 	0, //U
 	Item::I_hurl,
@@ -133,7 +133,7 @@ Intrinsic U8Intrinsics[] = {
 	Item::I_receiveHit,
 	Item::I_explode,
 	UCMachine::I_true, // Item::canReach
-	0, // Item::getRange
+	Item::I_getRange,
 	0, //U
 	Item::I_getDirToCoords,
 	Item::I_getDirFromCoords,

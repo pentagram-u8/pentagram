@@ -377,6 +377,7 @@ public:
 	INTRINSIC(I_destroy);
 	INTRINSIC(I_move);
 	INTRINSIC(I_legalMoveToPoint);
+	INTRINSIC(I_legalMoveToContainer);
 	INTRINSIC(I_hurl);
 	INTRINSIC(I_shoot);
 	INTRINSIC(I_fall);
@@ -388,6 +389,7 @@ public:
 	INTRINSIC(I_isExplosive);
 	INTRINSIC(I_receiveHit);
 	INTRINSIC(I_explode);
+	INTRINSIC(I_getRange);
 
 private:
 	uint32 shape;	// DO NOT modify this directly! Always use setShape()!
