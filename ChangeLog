@@ -2,6 +2,7 @@
 	* world/Item.*: make Item::grab() also call the release event
 	* world/Item.*: added Item::hurl() function
 	* world/actors/MainActor.cpp: fixed crash in recall parsing
+	* world/CurrentMap.cpp: trying to fix touch-detection in sweepTest
 
 2004-07-05  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* world/actors/Animation.h: changed flag name

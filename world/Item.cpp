@@ -2256,7 +2256,7 @@ uint32 Item::I_legalMoveToPoint(const uint8* args, unsigned int /*argsize*/)
 //		item->move(point.getX(), point.getY(), point.getZ());
 //		return 1;
 //	} else {
-	return item->collideMove(point.getX(), point.getY(), point.getZ(), true, force==1) != 0;
+	return item->collideMove(point.getX(), point.getY(), point.getZ(), true, force==1) == 0x4000;
 //	}
 }
 

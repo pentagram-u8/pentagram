@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -775,7 +775,8 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 
 					if ( vel[i] < 0 && A_max>=B_min )		// A_max>=B_min not required
 					{
-						if (A_max==B_min) touch = true;
+						if (A_max==B_min) touch = true; // touch at start
+						if (A_min+vel[i]==B_max) touch = true; // touch at end
 
 						// - want to know when rear of A passes front of B
 						u_0[i] = ((B_max - A_min)*0x4000) / vel[i];
@@ -784,7 +785,8 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 					}
 					else if( vel[i] > 0 && A_min<=B_max)	// A_min<=B_max not required
 					{
-						if (A_min==B_max) touch = true;
+						if (A_min==B_max) touch = true; // touch at start
+						if (A_max-vel[i]==B_min) touch = true; // touch at end
 
 						// + want to know when front of A passes rear of B
 						u_0[i] = ((B_min - A_max)*0x4000) / vel[i];
