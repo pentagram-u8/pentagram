@@ -273,6 +273,12 @@ sint32 itemarea.w
 sint32 itemarea.h
 
 
+PaperdollGump: (v1)
+uint16 version
+<ContainerGump>
+uint16 statbuttongump
+
+
 SliderGump: (v1)
 uint16 version
 <ModalGump>

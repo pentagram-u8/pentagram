@@ -198,7 +198,7 @@ std::list<PositionedText> Font::typesetText(std::string& text,
 		}
 	}
 
-	if (lines.size() == 1) {
+	if (lines.size() == 1 && align == TEXT_LEFT) {
 		// only one line, so use the actual text width
 	    width = totalwidth;
 	}

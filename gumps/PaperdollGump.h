@@ -37,6 +37,11 @@ public:
 	// Paint this Gump
 	virtual void PaintThis(RenderSurface*, sint32 lerp_factor);
 
+	//! Paint the stats
+	void PaintStats(RenderSurface*, sint32 lerp_factor);
+
+	virtual void ChildNotify(Gump *child, uint32 message);
+
 	// Trace a click, and return ObjId
 	virtual uint16 TraceObjId(int mx, int my);
 
@@ -61,6 +66,8 @@ public:
 	bool loadData(IDataSource* ids);
 protected:
 	virtual void saveData(ODataSource* ods);
+
+	uint16 statbuttongid;
 };
 
 #endif

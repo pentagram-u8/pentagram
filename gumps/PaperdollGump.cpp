@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003  The Pentagram Team
+ *  Copyright (C) 2003-2004  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,38 +27,21 @@
 #include "RenderSurface.h"
 #include "GameData.h"
 #include "MainShapeFlex.h"
+#include "ShapeFont.h"
+#include "FontShapeFlex.h"
+#include "RenderedText.h"
+#include "GumpShapeFlex.h"
+#include "ButtonWidget.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(PaperdollGump,ContainerGump);
 
-PaperdollGump::PaperdollGump()
-	: ContainerGump()
-{
 
-}
-
-PaperdollGump::PaperdollGump(Shape* shape_, uint32 framenum_, uint16 owner,
-							 uint32 Flags_, sint32 layer)
-	: ContainerGump(shape_, framenum_, owner, Flags_, layer)
-{
-}
-
-PaperdollGump::~PaperdollGump()
-{
-
-}
-
-
-void PaperdollGump::InitGump()
-{
-	ContainerGump::InitGump();
-
-}
 
 // lots of CONSTANTS...
-struct EquipCoords {
+struct {
 	int x, y;
 } equipcoords[] = {
 	{ 0, 0 },
@@ -70,7 +53,130 @@ struct EquipCoords {
 	{ 16, 18 }
 };
 
+struct {
+    int xd, x, y;
+} statcoords[] = {
+	{ 90, 130, 24 },
+	{ 90, 130, 33 },
+	{ 90, 130, 42 },
+	{ 90, 130, 51 },
+	{ 90, 130, 60 },
+	{ 90, 130, 69 },
+	{ 90, 130, 78 }
+};
+
+static const int statdescwidth = 29;
+static const int statwidth = 15;
+static const int statheight = 8;
+static const int statfont = 7;
+static const int statdescfont = 0;
+
 const Pentagram::Rect backpack_rect(49, 25, 10, 25);
+
+static const int statbuttonshape = 38;
+static const int statbuttonx = 81;
+static const int statbuttony = 84;
+
+
+PaperdollGump::PaperdollGump()
+	: ContainerGump()
+{
+
+}
+
+PaperdollGump::PaperdollGump(Shape* shape_, uint32 framenum_, uint16 owner,
+							 uint32 Flags_, sint32 layer)
+	: ContainerGump(shape_, framenum_, owner, Flags_, layer)
+{
+	statbuttongid = 0;
+}
+
+PaperdollGump::~PaperdollGump()
+{
+
+}
+
+void PaperdollGump::InitGump()
+{
+	ContainerGump::InitGump();
+
+	Shape* childshape = GameData::get_instance()->getGumps()->
+		getShape(statbuttonshape);
+
+	Gump *widget = new ButtonWidget(statbuttonx, statbuttony,
+									childshape, 0, childshape, 1);
+	statbuttongid = widget->getObjId();
+	widget->InitGump();
+	AddChild(widget);
+}
+
+
+void PaperdollGump::PaintStats(RenderSurface* surf, sint32 lerp_factor)
+{
+	Actor* a = World::get_instance()->getNPC(owner);
+	assert(a);
+
+	// text: English: STR,INT,DEX,ARMR,HITS,MANA,WGHT
+	//       French : FORCE,INTEL,DEXT,ARMR,COUPS,MAGIE,POIDS
+    //       German : KRAFT,INTELL.,GESCH.,R\"UST.,TREFF.,MANA,LAST
+
+	ShapeFont* font = GameData::get_instance()->getFonts()->getFont(statfont);
+	ShapeFont* descfont = GameData::get_instance()->
+		getFonts()->getFont(statdescfont);
+	char buf[16]; // enough for uint32
+	RenderedText* rendtext;
+	unsigned int remaining;
+
+	sprintf(buf, "%d", a->getStr());
+	rendtext = font->renderText(buf, remaining, statwidth, statheight,
+							   Pentagram::Font::TEXT_RIGHT);
+	rendtext->draw(surf, statcoords[0].x, statcoords[0].y);
+	delete rendtext;
+
+#if 0
+	// TODO: hardcoded text!! (needs different languages)
+	rendtext = descfont->renderText("STR", remaining, statdescwidth,statheight,
+									Pentagram::Font::TEXT_RIGHT);
+	rendtext->draw(surf, statcoords[0].xd, statcoords[0].y);
+	delete rendtext;
+#endif
+
+	sprintf(buf, "%d", a->getInt());
+	rendtext = font->renderText(buf, remaining, statwidth, statheight,
+							   Pentagram::Font::TEXT_RIGHT);
+	rendtext->draw(surf, statcoords[1].x, statcoords[1].y);
+	delete rendtext;
+
+	sprintf(buf, "%d", a->getDex());
+	rendtext = font->renderText(buf, remaining, statwidth, statheight,
+							   Pentagram::Font::TEXT_RIGHT);
+	rendtext->draw(surf, statcoords[2].x, statcoords[2].y);
+	delete rendtext;
+
+	sprintf(buf, "%d", a->getArmourClass());
+	rendtext = font->renderText(buf, remaining, statwidth, statheight,
+							   Pentagram::Font::TEXT_RIGHT);
+	rendtext->draw(surf, statcoords[3].x, statcoords[3].y);
+	delete rendtext;
+
+	sprintf(buf, "%d", a->getHP());
+	rendtext = font->renderText(buf, remaining, statwidth, statheight,
+							   Pentagram::Font::TEXT_RIGHT);
+	rendtext->draw(surf, statcoords[4].x, statcoords[4].y);
+	delete rendtext;
+
+	sprintf(buf, "%d", a->getMana());
+	rendtext = font->renderText(buf, remaining, statwidth, statheight,
+							   Pentagram::Font::TEXT_RIGHT);
+	rendtext->draw(surf, statcoords[5].x, statcoords[5].y);
+	delete rendtext;
+
+	sprintf(buf, "%d", a->getTotalWeight());
+	rendtext = font->renderText(buf, remaining, statwidth, statheight,
+							   Pentagram::Font::TEXT_RIGHT);
+	rendtext->draw(surf, statcoords[6].x, statcoords[6].y);
+	delete rendtext;
+}
 
 void PaperdollGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 {
@@ -84,6 +190,8 @@ void PaperdollGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 		Close();
 		return;
 	}
+
+	PaintStats(surf, lerp_factor);
 
 	for (int i = 6; i >= 1; --i) { // constants
 		Item* item = World::get_instance()->getItem(a->getEquip(i));
@@ -270,10 +378,25 @@ void PaperdollGump::DropItem(Item* item, int mx, int my)
 	}
 }
 
+void PaperdollGump::ChildNotify(Gump *child, uint32 message)
+{
+	if (child->getObjId() == statbuttongid &&
+		(message == ButtonWidget::BUTTON_CLICK ||
+		 message == ButtonWidget::BUTTON_DOUBLE))
+	{
+		pout << "Stat Button pressed!" << std::endl;
+
+		// TODO: mini-stats gump
+	}
+}
+
+
 void PaperdollGump::saveData(ODataSource* ods)
 {
 	ods->write2(1);
 	ContainerGump::saveData(ods);
+
+	ods->write2(statbuttongid);
 }
 
 bool PaperdollGump::loadData(IDataSource* ids)
@@ -281,6 +404,8 @@ bool PaperdollGump::loadData(IDataSource* ids)
 	uint16 version = ids->read2();
 	if (version != 1) return false;
 	if (!ContainerGump::loadData(ids)) return false;
+
+	statbuttongid = ids->read2();
 
 	return true;
 }

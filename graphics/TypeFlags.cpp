@@ -229,10 +229,6 @@ void TypeFlags::loadArmourInfo()
 		config->value(k + "/kick_bonus", val);
 		ai.kick_attack_bonus = static_cast<uint16>(val);
 
-		pout << "shape: " << ai.shape << ", frame " << ai.frame << ", ac: "
-			 << ai.armour_class << std::endl;
-			
-
 		aia[ai.frame] = ai;
 	}
 }

@@ -304,21 +304,28 @@ bool Gump::PointOnGump(int mx, int my)
 		return false;
 	}
 
-	if (shape) {
-		ShapeFrame* sf = shape->getFrame(framenum);
-		assert(sf);
-		if (!sf->hasPoint(gx, gy)) {
-			return false;
-		}
+	if (!shape) {
+		// no shape? Then if it's in the rectangle it's on the gump.
+		return true;
 	}
-	// TODO - Check again shape/texture if this gump has one
-	// Then again, we might want to have stuff like that somewhere
-	// else like in a TexturedGump or ShapeGump or something
-	//
-	// Also might want to check children, cause they may not be over
-	// our shape
 
-	return true;
+	ShapeFrame* sf = shape->getFrame(framenum);
+	assert(sf);
+	if (sf->hasPoint(gx, gy)) {
+		return true;
+	}
+
+	// reverse-iterate children
+	std::list<Gump*>::reverse_iterator it;
+	for (it = children.rbegin(); it != children.rend(); ++it)
+	{
+		Gump *g = *it;
+
+		// It's got the point
+		if (g->PointOnGump(gx,gy)) return true;
+	}
+
+	return false;
 }
 
 // Convert a screen space point to a gump point

@@ -213,6 +213,9 @@ void ContainerGump::Close(bool no_del)
 
 Gump* ContainerGump::OnMouseDown(int button, int mx, int my)
 {
+	Gump* handled = Gump::OnMouseDown(button, mx, my);
+	if (handled) return handled;
+
 	// only interested in left clicks
 	if (button == BUTTON_LEFT)
 		return this;

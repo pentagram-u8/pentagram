@@ -98,6 +98,7 @@ public:
 
 	~ShapeInfo() {
 		delete weaponinfo;
+		delete[] armourinfo;
 	}
 
 };
