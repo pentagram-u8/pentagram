@@ -369,7 +369,7 @@ uint16 Actor::getDefenseType()
 {
 	ShapeInfo* si = getShapeInfo();
 	if (si->monsterinfo)
-		return si->monsterinfo->defense_type;;
+		return si->monsterinfo->defense_type;
 	else
 		return 0;
 }
