@@ -4,7 +4,7 @@
 	xmlns="http://www.w3.org/1999/xhtml">
 
 <xsl:output method="xml"
-	indent="yes" omit-xml-declaration="yes"/>
+	indent="no" omit-xml-declaration="yes"/>
 
 <!-- Keys -->
 <xsl:key name="sub_ref" match="sub" use="@name"/>

@@ -6,7 +6,7 @@
 <xsl:output method="xml"
 	doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
 	doctype-system="DTD/xhtml1-transitional.dtd"
-	indent="yes"/>
+	indent="no"/>
 
 <!-- Keys -->
 <xsl:key name="sub_ref" match="sub" use="@name"/>
