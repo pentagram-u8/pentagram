@@ -1,6 +1,7 @@
 2004-08-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/GlobEgg.cpp: fix glob expansion coordinates
 	* world/CurrentMap.cpp: removed wrong fix for ascending platforms
+	* usecode/UCMachine.cpp: silenced some noisy usecode warnings
 
 2004-08-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCMachine.cpp: added workaround to U8 usecode bug (see below)

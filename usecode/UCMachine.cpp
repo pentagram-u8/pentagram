@@ -994,7 +994,8 @@ bool UCMachine::execProcess(UCProcess* p)
 					l->copyList(*getList(ui16b));
 				} else {
 					// trying to push non-existent list. Error or not?
-					perr << "Pushing non-existent list" << std::endl;
+					// Not: for example, function 01E3::0080, offset 0112
+					// perr << "Pushing non-existent list" << std::endl;
 					// error = true;
 				}
 				p->stack.push2(assignList(l));
@@ -1017,7 +1018,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				} else {
 					// trying to push non-existent list. Error or not?
 					// (Devon's talk code seems to use it; so no error for now)
-					perr << "Pushing non-existent slist" << std::endl;
+					// perr << "Pushing non-existent slist" << std::endl;
 					// error = true;
 				}
 				p->stack.push2(assignList(l));
