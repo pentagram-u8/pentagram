@@ -50,8 +50,8 @@ DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(CoreApp);
 CoreApp* CoreApp::application = 0;
 
 CoreApp::CoreApp(int argc_, const char* const* argv_)
-	: isRunning(false), kernel(0), filesystem(0), configfileman(0),
-	  settingman(0), argc(argc_), argv(argv_), oHelp(false),
+	: isRunning(false), gameinfo(0), kernel(0), filesystem(0),
+	  configfileman(0), settingman(0), argc(argc_), argv(argv_), oHelp(false),
 	  oQuiet(false), oVQuiet(false)
 {
 	assert(application == 0);
@@ -64,6 +64,7 @@ CoreApp::~CoreApp()
 	FORGET_OBJECT(filesystem);
 	FORGET_OBJECT(settingman);
 	FORGET_OBJECT(configfileman);
+	FORGET_OBJECT(gameinfo);
 
 	application = 0;
 }
@@ -99,7 +100,7 @@ void CoreApp::startup()
 
 void CoreApp::DeclareArgs()
 {
-	parameters.declare("--game",	&game,		"");
+	parameters.declare("--game",	&gamename,	"");
 	parameters.declare("-h",		&oHelp, 	true);
 	parameters.declare("--help",	&oHelp,		true);
 	parameters.declare("-q", 		&oQuiet,	true);
@@ -117,6 +118,8 @@ void CoreApp::SDLInit()
 void CoreApp::sysInit()
 {
 	SDLInit();
+
+	gameinfo = new GameInfo();
 
 	// Create the kernel
 	con.Print(MM_INFO, "Creating Kernel...\n");
@@ -184,7 +187,7 @@ void CoreApp::loadConfig()
 	else
 		con.Print(MM_MINOR_WARN, "@home/pentagram.ini... Failed\n");
 
-	con.Printf(MM_INFO, "Game: %s\n", game.c_str());
+	con.Printf(MM_INFO, "Game: %s\n", gamename.c_str());
 
 
 	//  load pentagram specific data path
@@ -208,8 +211,8 @@ void CoreApp::initGame()
 	for (iter = games.begin(); iter != games.end(); ++iter) {
 		std::string game = *iter;
 		GameInfo info;
-		bool detected = getGameInfo(game, &info);
-		con.Printf(MM_INFO, "%s: ", game.c_str());
+		bool detected = getGameInfo(gamename, &info);
+		con.Printf(MM_INFO, "%s: ", gamename.c_str());
 		if (detected) {
 			if (info.type == GameInfo::GAME_U8) {
 				con.Print(MM_INFO, "U8, ");
@@ -230,16 +233,16 @@ void CoreApp::initGame()
 		con.Print(MM_INFO, "\n");
 	}
 
-	if (game == "") {
+	if (gamename == "") {
 		std::string defaultgame;
 		bool defaultset = settingman->get("defaultgame", defaultgame,
 										  SettingManager::DOM_GLOBAL);
 		if (defaultset) {
 			// default game specified in config file
-			game = defaultgame;
+			gamename = defaultgame;
 		} else if (games.size() == 1) {
 			// only one game in config file, so pick that
-			game = (*(games.begin())).c_str();
+			gamename = (*(games.begin())).c_str();
 		} else if (games.size() == 0) {
 			perr << "No games set up in configuration. "
 				 << "Please read the README for instructions." << std::endl;
@@ -255,25 +258,24 @@ void CoreApp::initGame()
 		}
 	}
 
-	pout << "Selected game: " << game << std::endl;
+	pout << "Selected game: " << gamename << std::endl;
 
 	bool foundgame = false;
 	for (unsigned int i = 0; i < games.size(); ++i) {
-		if (games[i] == game) {
+		if (games[i] == gamename) {
 			foundgame = true;
 			break;
 		}
 	}
 
 	if (!foundgame) {
-		perr << "Game \"" << game << "\" not found." << std::endl;
+		perr << "Game \"" << gamename << "\" not found." << std::endl;
 		exit(1);
 	}
 
-	//!! use GameData's info
-	GameInfo info;
-	getGameInfo(game, &info);
-	setupGamePaths(game, &info);
+	// fill our GameInfo struct
+	getGameInfo(gamename, gameinfo);
+	setupGamePaths(gamename, gameinfo);
 }
 
 bool CoreApp::getGameInfo(std::string& game, GameInfo* gameinfo)

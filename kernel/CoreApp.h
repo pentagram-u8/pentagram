@@ -52,6 +52,9 @@ public:
 	//! Startup the application. This will prepare the application for run().
 	//! Should call parent class' startup().
 	void startup();
+
+	//! Get current GameInfo struct
+	GameInfo* getGameInfo() const { return gameinfo; }
 	
 	virtual void helpMe();
 	
@@ -79,9 +82,10 @@ protected:
 
 	bool isRunning;
 	
-	std::string game;
+	std::string gamename;
 	
 	// minimal system
+	GameInfo* gameinfo;
 	Kernel* kernel;
 	FileSystem* filesystem;
 	ConfigFileManager* configfileman;

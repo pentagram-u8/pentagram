@@ -1,3 +1,7 @@
+2004-10-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* games/*Game.*: Game class with game initialisation functions
+	* kernel/*App.*: reworked startup sequence to be more flexible
+
 2004-10-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* misc/pent_include.h: fix CANT_HAPPEN_RETURN, typos
 	* kernel/DelayProcess.*: add RUNTIME_CLASSTYPE

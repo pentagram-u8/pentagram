@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "WpnOvlayDat.h"
 #include "CoreApp.h"
 #include "ConfigFileManager.h"
+#include "GameInfo.h"
 
 GameData* GameData::gamedata = 0;
 
@@ -120,8 +121,10 @@ void GameData::loadTranslation()
 	ConfigFileManager* config = ConfigFileManager::get_instance();
 	std::string translationfile;
 
-	if (gameinfo.type == GameInfo::GAME_U8) {
-		switch (gameinfo.language) {
+	GameInfo* gameinfo = CoreApp::get_instance()->getGameInfo();
+
+	if (gameinfo->type == GameInfo::GAME_U8) {
+		switch (gameinfo->language) {
 		case GameInfo::GAMELANG_ENGLISH:
 			// default. Don't need to do anything
 			break;

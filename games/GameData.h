@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define GAMEDATA_H
 
 #include <vector>
-#include "GameInfo.h"
 #include "FrameID.h"
 
 class Flex;
@@ -59,7 +58,6 @@ public:
 	Shape* getShape(FrameID frameid) const;
 	ShapeFrame* getFrame(FrameID frameid) const;
 
-	void setGameInfo(GameInfo& info) { gameinfo = info; }
 	std::string translate(std::string text);
 	FrameID translate(FrameID frame);
 
@@ -80,8 +78,6 @@ private:
 	Shape* mouse;
 	MusicFlex* music;
 	WpnOvlayDat* weaponoverlay;
-
-	GameInfo gameinfo;
 
 	static GameData* gamedata;
 };

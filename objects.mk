@@ -49,8 +49,10 @@ GAMES = \
 	games/GameDetector.o
 
 GAMES2 = \
+	games/Game.o \
 	games/GameData.o \
 	games/TreasureLoader.o \
+	games/U8Game.o \
 	games/u8bindings.o \
 	games/stdbindings.o
 

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2003 The Pentagram team
+Copyright (C) 2002-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CoreApp.h"
 #include "Mouse.h"
 
+class Game;
 class Gump;
 class ConsoleGump;
 class GameMapGump;
@@ -66,7 +67,6 @@ public:
 	virtual void run();
 	virtual void handleEvent(const SDL_Event& event);
 	
-	void U8Playground();
 	virtual void paint();
 	virtual bool isPainting() { return painting; }
 	
@@ -105,6 +105,10 @@ public:
 	//! \param filename the savegame to load
 	//! \return true if succesful.
 	bool loadGame(std::string filename);
+
+	//! start a new game
+	//! \return true if succesful.
+	bool newGame();
 
 	MidiDriver* getMidiDriver() const { return midi_driver; }
 
@@ -155,7 +159,12 @@ private:
 	//! load CoreApp/GUIApp data
 	bool load(IDataSource* ids);
 	
+	//! reset engine (including World, UCMachine, a.o.)
+	void resetEngine();
+
 	// full system
+	Game* game;
+
 	ObjectManager* objectmanager;
 	HIDManager* hidmanager;
 	UCMachine* ucmachine;

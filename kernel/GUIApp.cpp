@@ -40,6 +40,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GameData.h"
 #include "World.h"
 #include "Direction.h"
+#include "Game.h"
 
 #include "U8Save.h"
 #include "SavegameWriter.h"
@@ -140,9 +141,9 @@ using std::string;
 DEFINE_RUNTIME_CLASSTYPE_CODE(GUIApp,CoreApp);
 
 GUIApp::GUIApp(int argc, const char* const* argv)
-	: CoreApp(argc, argv), ucmachine(0), screen(0),
-	  palettemanager(0), gamedata(0), world(0), desktopGump(0),
-	  consoleGump(0), gameMapGump(0), avatarMoverProcess(0),
+	: CoreApp(argc, argv), game(0), objectmanager(0), hidmanager(0),
+	  ucmachine(0), screen(0), palettemanager(0), gamedata(0), world(0),
+	  desktopGump(0), consoleGump(0), gameMapGump(0), avatarMoverProcess(0),
 	  runGraphicSysInit(false), runSDLInit(false),
 	  frameSkip(false), frameLimit(true), interpolate(false),
 	  animationRate(100), avatarInStasis(false), paintEditorItems(false),
@@ -274,11 +275,8 @@ void GUIApp::startup()
 	hidmanager = new HIDManager();
 	
 	pout << "Loading HIDBindings" << std::endl;
-	GameInfo info;
-	getGameInfo(game, &info);
-	gamedata->setGameInfo(info);
 
-	if (info.type == GameInfo::GAME_U8) {
+	if (getGameInfo()->type == GameInfo::GAME_U8) {
 		// system-wide config
 		if (configfileman->readConfigFile("@data/u8bindings.ini",
 										  "bindings", true))
@@ -297,13 +295,33 @@ void GUIApp::startup()
 	SDL_ShowCursor(SDL_DISABLE);
 	SDL_GetMouseState(&mouseX, &mouseY);
 
-	U8Playground();
+	inBetweenFrame = 0;
+	lerpFactor = 256;
 
-	// This Must be AFTER U8Playground() cause it might need gamedata
-	init_midi();
+	// Initialize world
+	pout << "Initialize World" << std::endl;
+	world = new World();
+	world->initMaps();
+
+	game = Game::createGame(getGameInfo());
+
+	game->loadFiles();
 
 	// Unset the console auto paint, since we have finished initing
 	con.SetAutoPaint(0);
+
+#if 1
+	newGame();
+#else
+	loadGame("@save/quicksave");
+#endif
+
+	pout << "Paint Initial display" << std::endl;
+	consoleGump->HideConsole();
+	paint();
+
+	// This Must be AFTER loading the data cause it might need gamedata
+	init_midi();
 }
 
 void GUIApp::sdlAudioCallback(void *userdata, Uint8 *stream, int len)
@@ -528,232 +546,6 @@ void GUIApp::run()
 	}
 }
 
-void GUIApp::U8Playground()
-{
-	inBetweenFrame = 0;
-	lerpFactor = 256;
-
-	// Load palette
-	pout << "Load Palette" << std::endl;
-	palettemanager = new PaletteManager(screen);
-	IDataSource *pf = filesystem->ReadFile("@u8/static/u8pal.pal");
-	if (!pf) {
-		perr << "Unable to load static/u8pal.pal. Exiting" << std::endl;
-		std::exit(-1);
-	}
-	pf->seek(4); // seek past header
-
-	IBufferDataSource xfds(U8XFormPal,1024);
-	palettemanager->load(PaletteManager::Pal_Game, *pf, xfds);
-	delete pf;
-
-	pout << "Load GameData" << std::endl;
-	gamedata->loadU8Data();
-
-#if defined(WIN32) && defined(I_AM_COLOURLESS_EXPERIMENTING_WITH_HW_CURSORS)
-	CreateHWCursors();
-#endif
-
-	// Initialize world
-	pout << "Initialize World" << std::endl;
-	world = new World();
-
-	IDataSource *saveds = filesystem->ReadFile("@u8/savegame/u8save.000");
-	if (!saveds) {
-		perr << "Unable to load savegame/u8save.000. Exiting" << std::endl;
-		std::exit(-1);
-	}
-	U8Save *u8save = new U8Save(saveds);
-
-	IDataSource *nfd = u8save->get_datasource("NONFIXED.DAT");
-	if (!nfd) {
-		perr << "Unable to load savegame/u8save.000/NONFIXED.DAT. Exiting" << std::endl;
-		std::exit(-1);
-	}
-	world->initMaps();
-	world->loadNonFixed(nfd);
-
-	IDataSource *icd = u8save->get_datasource("ITEMCACH.DAT");
-	if (!icd) {
-		perr << "Unable to load savegame/u8save.000/ITEMCACH.DAT. Exiting" << std::endl;
-		std::exit(-1);
-	}
-	IDataSource *npcd = u8save->get_datasource("NPCDATA.DAT");
-	if (!npcd) {
-		perr << "Unable to load savegame/u8save.000/NPCDATA.DAT. Exiting" << std::endl;
-		std::exit(-1);
-	}
-
-	world->loadItemCachNPCData(icd, npcd);
-	delete u8save;
-
-	Actor* av = world->getNPC(1);
-
-	// avatar needs a backpack ... CONSTANTs and all that
-	Container* backpack = p_dynamic_cast<Container*>(
-		ItemFactory::createItem(529, 0, 0, 0, 0, 0, 0));
-
-	// a little bonus :-)
-	Item* money = ItemFactory::createItem(143, 7, 500, 0, 0, 0, 0);
-	money->moveToContainer(backpack);
-	money->setGumpLocation(40, 20);
-
-	// skull of quakes
-	Item *skull = ItemFactory::createItem(814, 0, 0, 0, 0, 0, 0);
-	skull->moveToContainer(backpack);  
-	skull->setGumpLocation(60, 20);
-
-	// recall item
-	Item *recall = ItemFactory::createItem(833, 0, 0, 0, 0, 0, 0);
-	recall->moveToContainer(backpack);
-	recall->setGumpLocation(20, 20);
-
-	// sword
-	Item* sword = ItemFactory::createItem(420, 0, 0, 0, 0, 0, 0);
-	sword->moveToContainer(backpack);
-	sword->setGumpLocation(20, 30);
-
-	// Deceiver
-	Item* deceiver = ItemFactory::createItem(822, 0, 0, 0, 0, 0, 0);
-	deceiver->moveToContainer(backpack);
-	deceiver->setGumpLocation(20, 30);
-
-	Item* flamesting = ItemFactory::createItem(817, 0, 0, 0, 0, 0, 0);
-	flamesting->moveToContainer(backpack);
-	flamesting->setGumpLocation(20, 30);
-
-	// armour
-	Item* armour = ItemFactory::createItem(64, 0, 0, 0, 0, 0, 0);
-	armour->moveToContainer(backpack);
-	armour->setGumpLocation(30, 30);
-
-	armour = ItemFactory::createItem(532, 0, 0, 0, 0, 0, 0);
-	armour->moveToContainer(backpack);
-	armour->setGumpLocation(40, 30);
-
-	armour = ItemFactory::createItem(539, 0, 0, 0, 0, 0, 0);
-	armour->moveToContainer(backpack);
-	armour->setGumpLocation(50, 30);
-
-	armour = ItemFactory::createItem(530, 0, 0, 0, 0, 0, 0);
-	armour->moveToContainer(backpack);
-	armour->setGumpLocation(10, 40);
-
-	armour = ItemFactory::createItem(531, 0, 0, 0, 0, 0, 0);
-	armour->moveToContainer(backpack);
-	armour->setGumpLocation(20, 40);
-
-	// necromancy reagents
-	Item* bagitem = ItemFactory::createItem(637, 0, 0, 0, 0, 0, 0);
-	bagitem->moveToContainer(backpack);
-	bagitem->setGumpLocation(70, 40);
-
-	bagitem = ItemFactory::createItem(637, 0, 0, 0, 0, 0, 0);
-	Container* bag = p_dynamic_cast<Container*>(bagitem);
-	bagitem->moveToContainer(backpack);
-	bagitem->setGumpLocation(70, 20);
-
-	Item* reagents = ItemFactory::createItem(395, 0, 50, 0, 0, 0, 0); 
-	reagents->moveToContainer(bag);
-	reagents->setGumpLocation(10, 10);
-	reagents = ItemFactory::createItem(395, 6, 50, 0, 0, 0, 0); 
-	reagents->moveToContainer(bag);
-	reagents->setGumpLocation(30, 10);
-	reagents = ItemFactory::createItem(395, 8, 50, 0, 0, 0, 0); 
-	reagents->moveToContainer(bag);
-	reagents->setGumpLocation(50, 10);
-	reagents = ItemFactory::createItem(395, 9, 50, 0, 0, 0, 0); 
-	reagents->moveToContainer(bag);
-	reagents->setGumpLocation(20, 30);
-	reagents = ItemFactory::createItem(395, 10, 50, 0, 0, 0, 0); 
-	reagents->moveToContainer(bag);
-	reagents->setGumpLocation(40, 30);
-	reagents = ItemFactory::createItem(395, 14, 50, 0, 0, 0, 0); 
-	reagents->moveToContainer(bag);
-	reagents->setGumpLocation(60, 30);
-
-	// theurgy foci
-	bagitem = ItemFactory::createItem(637, 0, 0, 0, 0, 0, 0);
-	bag = p_dynamic_cast<Container*>(bagitem);
-	bagitem->moveToContainer(backpack);
-	bagitem->setGumpLocation(0, 30);
-
-	Item* focus = ItemFactory::createItem(396, 8, 0, 0, 0, 0, 0);
-	focus->moveToContainer(bag);
-	focus->setGumpLocation(10, 10);
-	focus = ItemFactory::createItem(396, 9, 0, 0, 0, 0, 0);
-	focus->moveToContainer(bag);
-	focus->setGumpLocation(25, 10);
-	focus = ItemFactory::createItem(396, 10, 0, 0, 0, 0, 0);
-	focus->moveToContainer(bag);
-	focus->setGumpLocation(40, 10);
-	focus = ItemFactory::createItem(396, 11, 0, 0, 0, 0, 0);
-	focus->moveToContainer(bag);
-	focus->setGumpLocation(55, 10);
-	focus = ItemFactory::createItem(396, 12, 0, 0, 0, 0, 0);
-	focus->moveToContainer(bag);
-	focus->setGumpLocation(70, 10);
-	focus = ItemFactory::createItem(396, 13, 0, 0, 0, 0, 0);
-	focus->moveToContainer(bag);
-	focus->setGumpLocation(10, 30);
-	focus = ItemFactory::createItem(396, 14, 0, 0, 0, 0, 0);
-	focus->moveToContainer(bag);
-	focus->setGumpLocation(30, 30);
-	focus = ItemFactory::createItem(396, 15, 0, 0, 0, 0, 0);
-	focus->moveToContainer(bag);
-	focus->setGumpLocation(50, 30);	
-	focus = ItemFactory::createItem(396, 17, 0, 0, 0, 0, 0);
-	focus->moveToContainer(bag);
-	focus->setGumpLocation(70, 30);	
-
-	// oil flasks
-	Item* flask = ItemFactory::createItem(579, 0, 0, 0, 0, 0, 0);
-	flask->moveToContainer(backpack);
-	flask->setGumpLocation(30, 40);
-	flask = ItemFactory::createItem(579, 0, 0, 0, 0, 0, 0);
-	flask->moveToContainer(backpack);
-	flask->setGumpLocation(30, 40);
-	flask = ItemFactory::createItem(579, 0, 0, 0, 0, 0, 0);
-	flask->moveToContainer(backpack);
-	flask->setGumpLocation(30, 40);
-
-	backpack->assignObjId();
-	backpack->moveToContainer(av);
-
-	if (av)
-		world->switchMap(av->getMapNum());
-	else
-		world->switchMap(3);
-
-	// Create GameMapGump
-	Pentagram::Rect dims;
-	screen->GetSurfaceDims(dims);
-	
-	pout << "Create GameMapGump" << std::endl;
-	gameMapGump = new GameMapGump(0, 0, dims.w, dims.h);
-	gameMapGump->InitGump();
-	desktopGump->AddChild(gameMapGump);
-
-	pout << "Create Camera" << std::endl;
-	CameraProcess::SetCameraProcess(new CameraProcess(1)); // Follow Avatar
-
-	pout << "Create AvatarMoverProcess" << std::endl;
-	avatarMoverProcess = new AvatarMoverProcess();
-	kernel->addProcess(avatarMoverProcess);
-
-//	av->teleport(40, 16240, 15240, 64); // central Tenebrae
-//	av->teleport(3, 11391, 1727, 64); // docks, near gate
-//	av->teleport(39, 16240, 15240, 64); // West Tenebrae
-//	av->teleport(41, 12000, 15000, 64); // East Tenebrae
-//	av->teleport(8, 14462, 15178, 48); // before entrance to Mythran's house
-//	av->teleport(40, 13102,9474,48); // entrance to Mordea's throne room
-//	av->teleport(54, 14783,5959,8); // shrine of the Ancient Ones; Hanoi
-//	av->teleport(5, 5104,22464,48); // East road (tenebrae end)
-
-	pout << "Paint Inital display" << std::endl;
-	consoleGump->HideConsole();
-	paint();
-}
 
 // conAutoPaint hackery
 void GUIApp::conAutoPaint(void)
@@ -1170,6 +962,8 @@ void GUIApp::GraphicSysInit()
 	// Create desktop
 	Pentagram::Rect dims;
 	screen->GetSurfaceDims(dims);
+
+	palettemanager = new PaletteManager(screen);
 
 	runGraphicSysInit=true;
 
@@ -1680,6 +1474,81 @@ bool GUIApp::saveGame(std::string filename, bool ignore_modals)
 	return true;
 }
 
+void GUIApp::resetEngine()
+{
+	// kill music
+	if (midi_driver) {
+		for (int i = 0; i < midi_driver->maxSequences(); i++) {
+			midi_driver->finishSequence(i);
+		}
+	}
+
+	// now, reset everything (order matters)
+	world->reset();
+	ucmachine->reset();
+	// ObjectManager, Kernel have to be last, because they kill
+	// all processes/objects
+	objectmanager->reset();
+	kernel->reset();
+
+	textmodes.clear();
+
+	// reset mouse cursor
+	while (!cursors.empty()) cursors.pop();
+	pushMouseCursor();
+	
+}
+
+bool GUIApp::newGame()
+{
+	resetEngine();
+
+	// have to recreate desktop and console gumps
+
+	Pentagram::Rect dims;
+	screen->GetSurfaceDims(dims);
+
+	pout << "Create Desktop" << std::endl;
+	desktopGump = new DesktopGump(0,0, dims.w, dims.h);
+	desktopGump->InitGump();
+	desktopGump->MakeFocus();
+
+	pout << "Create Graphics Console" << std::endl;
+	consoleGump = new ConsoleGump(0, 0, dims.w, dims.h);
+	consoleGump->InitGump();
+	desktopGump->AddChild(consoleGump);
+
+	game->startGame();
+
+	pout << "Create GameMapGump" << std::endl;
+	gameMapGump = new GameMapGump(0, 0, dims.w, dims.h);
+	gameMapGump->InitGump();
+	desktopGump->AddChild(gameMapGump);
+
+	pout << "Create Camera" << std::endl;
+	CameraProcess::SetCameraProcess(new CameraProcess(1)); // Follow Avatar
+
+	pout << "Create AvatarMoverProcess" << std::endl;
+	avatarMoverProcess = new AvatarMoverProcess();
+	kernel->addProcess(avatarMoverProcess);
+
+//	av->teleport(40, 16240, 15240, 64); // central Tenebrae
+//	av->teleport(3, 11391, 1727, 64); // docks, near gate
+//	av->teleport(39, 16240, 15240, 64); // West Tenebrae
+//	av->teleport(41, 12000, 15000, 64); // East Tenebrae
+//	av->teleport(8, 14462, 15178, 48); // before entrance to Mythran's house
+//	av->teleport(40, 13102,9474,48); // entrance to Mordea's throne room
+//	av->teleport(54, 14783,5959,8); // shrine of the Ancient Ones; Hanoi
+//	av->teleport(5, 5104,22464,48); // East road (tenebrae end)
+
+#if 0
+	// disable this for now since it takes too long
+	game->startInitialUsecode();
+#endif
+
+	return true;
+}
+
 bool GUIApp::loadGame(std::string filename)
 {
 	pout << "Loading..." << std::endl;
@@ -1698,25 +1567,7 @@ bool GUIApp::loadGame(std::string filename)
 		return false;
 	}
 
-	// kill music
-	if (midi_driver) {
-		for (int i = 0; i < midi_driver->maxSequences(); i++) {
-			midi_driver->finishSequence(i);
-		}
-	}
-
-	// now, reset everything (order matters)
-	world->reset();
-	ucmachine->reset();
-	// ObjectManager, Kernel have to be last, because they kill
-	// all processes/objects
-	objectmanager->reset();
-	kernel->reset();
-	textmodes.clear();
-
-	// reset mouse cursor
-	while (!cursors.empty()) cursors.pop();
-	pushMouseCursor();
+	resetEngine();
 
 	bool ok, totalok = true;
 
@@ -1788,7 +1639,7 @@ bool GUIApp::loadGame(std::string filename)
 		exit(1);
 	}
 
-	//!! temporary hack: reset desktopgump, gamemapgump, consolegump:
+	//!! Hack: reset desktopgump, gamemapgump, consolegump:
 	desktopGump = 0;
 	for (unsigned int i = 256; i < 65535; ++i) {
 		DesktopGump* dg = p_dynamic_cast<DesktopGump*>(getGump(i));
@@ -1799,11 +1650,11 @@ bool GUIApp::loadGame(std::string filename)
 	}
 	assert(desktopGump);
 	gameMapGump = p_dynamic_cast<GameMapGump*>(desktopGump->
-											   FindGump(GameMapGump::ClassType));
+										   FindGump(GameMapGump::ClassType));
 	assert(gameMapGump);
 
 	consoleGump = p_dynamic_cast<ConsoleGump*>(desktopGump->
-											   FindGump(ConsoleGump::ClassType));
+										   FindGump(ConsoleGump::ClassType));
 	assert(consoleGump);
 
 	pout << "Done" << std::endl;
@@ -1924,8 +1775,8 @@ uint32 GUIApp::I_getCurrentTimerTick(const uint8* /*args*/,
 
 uint32 GUIApp::I_setAvatarInStasis(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_SINT16(statis);
-	get_instance()->setAvatarInStasis(statis!=0);
+	ARG_SINT16(stasis);
+	get_instance()->setAvatarInStasis(stasis!=0);
 	return 0;
 }
 
