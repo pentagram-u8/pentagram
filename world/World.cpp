@@ -118,7 +118,7 @@ bool World::switchMap(uint32 newmap)
 	CameraProcess::ResetCameraProcess();
 
 	// kill ALL processes:
-	Kernel::get_instance()->killProcesses(0,6); // !constant
+//	Kernel::get_instance()->killProcesses(0,6); // !constant
 
 	// Notify all the gumps of the mapchange
 	GUIApp *gui = GUIApp::get_instance();

@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Map.h"
 #include "Item.h"
 #include "GlobEgg.h"
+#include "Egg.h"
 #include "Actor.h"
 #include "World.h"
 #include "Rect.h"
@@ -115,6 +116,12 @@ void CurrentMap::writeback()
 				GlobEgg* globegg = p_dynamic_cast<GlobEgg*>(item);
 				if (globegg) {
 					globegg->unexpand();
+				}
+
+				// Reset the egg
+				Egg* egg = p_dynamic_cast<Egg*>(item);
+				if (egg) {
+					egg->reset();
 				}
 
 				// this item isn't from the Map. (like NPCs)

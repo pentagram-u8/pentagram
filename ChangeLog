@@ -12,7 +12,9 @@
 	* gumps/GameMapGump.cpp : Don't roof pop items with DRAW type flag
 	* kernel/Kernel.cpp : ObjID 666 is reserved (it's used in a nasty hack for
 	  guardianBark, and I don't want it used by anything else)
-	
+	* world/Egg.h, world/CurrentMap.cpp : Reset eggs on map writeback
+	* world/World.cpp : Disabled killing of all processes on map change
+		
 2003-06-19  Dominik Reichardt <dominus@users.sourceforge.net> 
 	* README: added section of games/versions supported by pentagram, and 'c', 'h' and
 	  shift key
