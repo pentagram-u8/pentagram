@@ -37,7 +37,7 @@ ID      Function                Description
 				broken chair 22A)
  7	Egg::hatch()
  8	Npc::schedule()		AdvanceSchedule() (called when???) - Note avatar has it too, but there
-				it is used to control the stroms.
+				it is used to control the storms.
  9	Item::release()		stepped from? (also when object is removed?)
  A	unused
  B	unused
