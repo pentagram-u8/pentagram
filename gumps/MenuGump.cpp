@@ -62,7 +62,13 @@ static const int menuEntryShape = 37;
 
 void MenuGump::InitGump()
 {
+	int i;
 	ModalGump::InitGump();
+	for (i=0; i < 9; ++i)
+	{
+		entryGumps[i] = 0;
+	}
+
 	shape = GameData::get_instance()->getGumps()->getShape(gumpShape);
 	ShapeFrame* sf = shape->getFrame(0);
 	assert(sf);
@@ -113,26 +119,51 @@ void MenuGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 
 bool MenuGump::OnKeyDown(int key, int mod)
 {
-	switch (key)
-	{
-	case SDLK_ESCAPE:
+	if (key == SDLK_ESCAPE)
 	{
 		Close();
-	} break;
-	case SDLK_1:
+	}
+	else if (key >= SDLK_1 && key <=SDLK_9)
+	{
+		// Minor hack
+		selectEntry(key - SDLK_1 + 1);
+	}
+	return true;
+}
+
+void MenuGump::ChildNotify(Gump *child, uint32 message)
+{
+	ObjId cid = child->getObjId();
+	if (message == ButtonWidget::BUTTON_CLICK)
+	{
+		for (int i = 0; i < 9; ++i)
+		{
+			if (cid == entryGumps[i])
+			{
+				selectEntry(i + 1);
+			}
+		}
+	}
+}
+
+void MenuGump::selectEntry(int entry)
+{
+	switch (entry)
+	{
+	case 1:
 	{	// Intro
 	} break;
-	case SDLK_2:
+	case 2:
 	{	// Read Diary
 		// I'm lazy - MJ
 		GUIApp::get_instance()->loadGame("@save/quicksave");
 	} break;
-	case SDLK_3:
+	case 3:
 	{	// Write Diary
 		// I'm lazy - MJ
 		GUIApp::get_instance()->saveGame("@save/quicksave");
-	} break;	
-	case SDLK_4:
+	} break;
+	case 4:
 	{	// Options
 		OptionsGump * options = new OptionsGump();
 		options->InitGump();
@@ -142,40 +173,21 @@ bool MenuGump::OnKeyDown(int key, int mod)
 		AddChild(gump);
 		gump->setRelativePosition(CENTER);
 	} break;
-	case SDLK_5:
+	case 5:
 	{	// Credits
 	} break;
-	case SDLK_6:
+	case 6:
 	{	// Quit
 		QuitGump::verifyQuit();
 	} break;
-	case SDLK_7:
+	case 7:
 	{	// Quotes
 	} break;
-	case SDLK_8:
+	case 8:
 	{	// End Game
 	} break;
 	default:
 		break;
-	}
-
-	return true;
-}
-
-void MenuGump::ChildNotify(Gump *child, uint32 message)
-{
-	ObjId cid = child->getObjId();
-	if (message == ButtonWidget::BUTTON_CLICK)
-	{
-		for (int i = 0; i < 8; ++i)
-		{
-			if (cid == entryGumps[i])
-			{
-				//! Hack! Taking advantage of key ordering because
-				// I'm tired of writing code twice.
-				OnKeyDown(i + SDLK_1, 0);
-			}
-		}
 	}
 }
 

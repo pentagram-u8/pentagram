@@ -41,7 +41,9 @@ public:
 	bool loadData(IDataSource* ids);
 protected:
 	virtual void saveData(ODataSource* ods);
-	ObjId entryGumps[6];
+
+	virtual void selectEntry(int entry);
+	ObjId entryGumps[9];
 };
 
 #endif

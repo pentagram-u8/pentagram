@@ -3,6 +3,8 @@
 	* gumps/MenuGump.cpp: attached OptionsGump to Options
 	* gumps/OptionsGump.*: initial version of options menu
 	* gumps/PagedGump.*: responsible for setting mouse cursor now
+	* gumps/MenuGump.*: add a selectEntry method to clean up a hack
+	* gumps/OptionsGump.*: add a selectEntry method to clean up a hack
 
 2004-06-13  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* gumps/widgets/ButtonWidget.cpp: verify mouse is on button during

@@ -46,7 +46,12 @@ OptionsGump::~OptionsGump()
 
 void OptionsGump::InitGump()
 {
+	int i;
 	Gump::InitGump();
+	for (i=0; i < 9; ++i)
+	{
+		entryGumps[i] = 0;
+	}
 
 	dims.w = 220;
 	dims.h = 120;
@@ -78,9 +83,6 @@ void OptionsGump::InitGump()
 	AddChild(widget);
 	entryGumps[3] = widget->getObjId();
 	y+= 14;
-
-	entryGumps[4] = 0;
-	entryGumps[5] = 0;
 }
 
 void OptionsGump::ChildNotify(Gump *child, uint32 message)
@@ -88,13 +90,11 @@ void OptionsGump::ChildNotify(Gump *child, uint32 message)
 	ObjId cid = child->getObjId();
 	if (message == ButtonWidget::BUTTON_CLICK)
 	{
-		for (int i = 0; i < 6; ++i)
+		for (int i = 0; i < 9; ++i)
 		{
 			if (cid == entryGumps[i])
 			{
-				//! Hack! Taking advantage of key ordering because
-				// I'm tired of writing code twice.
-				OnKeyDown(i + SDLK_1, 0);
+				selectEntry(i + 1);
 			}
 		}
 	}
@@ -109,19 +109,29 @@ static const int gumpShape = 35;
 
 bool OptionsGump::OnKeyDown(int key, int mod)
 {
-	switch (key)
-	{
-	case SDLK_ESCAPE:
+	if (key == SDLK_ESCAPE)
 	{
 		Close();
-	} break;
-	case SDLK_1:
+	}
+	else if (key >= SDLK_1 && key <=SDLK_9)
+	{
+		// Minor hack.
+		selectEntry(key - SDLK_1 + 1);
+	}
+	return true;
+}
+
+void OptionsGump::selectEntry(int entry)
+{
+	switch (entry)
+	{
+	case 1:
 	{	// Video
 	} break;
-	case SDLK_2:
+	case 2:
 	{	// Audio
 	} break;
-	case SDLK_3:
+	case 3:
 	{	// Controls
 		PagedGump * gump = new PagedGump(34, -38, 3, gumpShape);
 		gump->InitGump();
@@ -131,20 +141,18 @@ bool OptionsGump::OnKeyDown(int key, int mod)
 		parent->AddChild(gump);
 		gump->setRelativePosition(CENTER);
 	} break;	
-	case SDLK_4:
+	case 4:
 	{	// Gameplay
 	} break;
-	case SDLK_5:
+	case 5:
 	{
 	} break;
-	case SDLK_6:
+	case 6:
 	{
 	} break;
 	default:
 		break;
 	}
-
-	return true;
 }
 
 bool OptionsGump::loadData(IDataSource* ids)
