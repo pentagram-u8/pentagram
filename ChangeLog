@@ -1,9 +1,14 @@
 2002-12-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* convert/ConvertShape.cpp: ignore corrupt frames
+	* convert/crusader/ConvertShapeCrusader.cpp: added some comments
+	* tools/shapeconv/ShapeConv.cpp: added (unused) function for converting
+	non-flex shapefiles
+
+2002-12-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: minor cosmetic changes
 	* filesys/*: added get_instance()
 	* misc/util.*: added. (with to_uppercase function)
 	* conf/XMLTree.cc: properly access files through filesystem
-
 
 2002-12-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* conf/*: added Configuration classes

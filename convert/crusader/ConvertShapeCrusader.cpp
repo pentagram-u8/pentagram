@@ -50,8 +50,8 @@ const ConvertShapeFormat		CrusaderShapeFormat =
 	1,		// frameheader_unk
 	4,		// frame_length
 
-	28,		// frameheader2
-	8,		// frame_unknown
+	28,		// frameheader2        20 for mouse/gumps
+	8,		// frame_unknown       0  for mouse/gumps
 	4,		// frame_compression
 	4,		// frame_width
 	4,		// frame_height
