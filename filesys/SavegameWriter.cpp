@@ -35,7 +35,7 @@ static long ods_seek(voidpf opaque, voidpf stream, uLong offset, int origin);
 static int ods_close(voidpf opaque, voidpf stream);
 static int ods_error(voidpf opaque, voidpf stream);
 
-zlib_filefunc_def ODS_filefunc_templ = {
+PentZip::zlib_filefunc_def ODS_filefunc_templ = {
 	ods_open, ods_read, ods_write, ods_tell, ods_seek, ods_close, ods_error, 0
 };
 
@@ -45,10 +45,10 @@ SavegameWriter::SavegameWriter(ODataSource* ds_)
 {
 	ds = ds_;
 
-	zlib_filefunc_def filefuncs = ODS_filefunc_templ;
+	PentZip::zlib_filefunc_def filefuncs = ODS_filefunc_templ;
 	filefuncs.opaque = static_cast<void*>(ds);
 
-	zipFile zfile = zipOpen2("", 0, 0, &filefuncs);
+	PentZip::zipFile zfile = PentZip::zipOpen2("", 0, 0, &filefuncs);
 	zipfile = static_cast<void*>(zfile);
 }
 
@@ -61,9 +61,9 @@ SavegameWriter::~SavegameWriter()
 
 bool SavegameWriter::finish()
 {
-	zipFile zfile = static_cast<zipFile>(zipfile);
+	PentZip::zipFile zfile = static_cast<PentZip::zipFile>(zipfile);
 	zipfile = 0;
-	if (zipClose(zfile, comment.c_str()) != ZIP_OK) return false;
+	if (PentZip::zipClose(zfile, comment.c_str()) != ZIP_OK) return false;
 
 	return true;
 }
@@ -72,17 +72,17 @@ bool SavegameWriter::finish()
 bool SavegameWriter::writeFile(const char* name,
 							   const uint8* data, uint32 size)
 {
-	zipFile zfile = static_cast<zipFile>(zipfile);
+	PentZip::zipFile zfile = static_cast<PentZip::zipFile>(zipfile);
 	perr << name << ": " << size << std::endl;
 
-	if (zipOpenNewFileInZip(zfile, name, 0, 0, 0, 0, 0, 0,
-							Z_DEFLATED, Z_BEST_COMPRESSION) != ZIP_OK)
+	if (PentZip::zipOpenNewFileInZip(zfile, name, 0, 0, 0, 0, 0, 0,
+									 Z_DEFLATED, Z_BEST_COMPRESSION) != ZIP_OK)
 		return false;
 	
-	if (zipWriteInFileInZip(zfile, data, size) != ZIP_OK)
+	if (PentZip::zipWriteInFileInZip(zfile, data, size) != ZIP_OK)
 		return false;
 
-	if (zipCloseFileInZip(zfile) != ZIP_OK)
+	if (PentZip::zipCloseFileInZip(zfile) != ZIP_OK)
 		return false;
 
 	return true;

@@ -36,6 +36,8 @@ woven in by Terry Thorsen 1/2003.
   version without encryption capabilities).
  */
 
+#include "pent_include.h"
+#define NOUNCRYPT
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -54,9 +56,6 @@ woven in by Terry Thorsen 1/2003.
 #   include <errno.h>
 #endif
 
-// Pentagram modifications:
-#define NOUNCRYPT
-// ---
 
 
 #ifndef local
@@ -90,7 +89,7 @@ woven in by Terry Thorsen 1/2003.
 #define SIZECENTRALDIRITEM (0x2e)
 #define SIZEZIPLOCALHEADER (0x1e)
 
-
+namespace PentZip {
 
 
 const char unz_copyright[] =
@@ -1538,4 +1537,7 @@ extern int ZEXPORT unzSetOffset (unzFile file, uLong pos)
                                               NULL,0,NULL,0,NULL,0);
     s->current_file_ok = (err == UNZ_OK);
     return err;
+}
+
+
 }

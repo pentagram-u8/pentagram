@@ -2,6 +2,7 @@
    Version 1.01, May 8th, 2004
 
    Copyright (C) 1998-2004 Gilles Vollant
+   Converted to more modern C/C++ by the Pentagram team.
 
    This unzip package allow creates .ZIP file, compatible with PKZip 2.04g
      WinZip, InfoZip tools and compatible.
@@ -45,10 +46,6 @@
 #ifndef _zip_H
 #define _zip_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef _ZLIB_H
 #include "zlib.h"
 #endif
@@ -56,6 +53,8 @@ extern "C" {
 #ifndef _ZLIBIOAPI_H
 #include "ioapi.h"
 #endif
+
+namespace PentZip {
 
 #if defined(STRICTZIP) || defined(STRICTZIPUNZIP)
 /* like the STRICT of WIN32, we define a pointer that cannot be converted
@@ -227,8 +226,6 @@ extern int ZEXPORT zipClose OF((zipFile file,
   Close the zipfile
 */
 
-#ifdef __cplusplus
 }
-#endif
 
 #endif /* _zip_H */

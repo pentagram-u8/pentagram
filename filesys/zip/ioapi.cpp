@@ -30,6 +30,8 @@
 #define SEEK_SET    0
 #endif
 
+namespace PentZip {
+
 voidpf ZCALLBACK fopen_file_func OF((
    voidpf opaque,
    const char* filename,
@@ -156,4 +158,6 @@ void fill_fopen_filefunc (zlib_filefunc_def* pzlib_filefunc_def)
     pzlib_filefunc_def->zclose_file = fclose_file_func;
     pzlib_filefunc_def->zerror_file = ferror_file_func;
     pzlib_filefunc_def->opaque = NULL;
+}
+
 }

@@ -42,7 +42,7 @@ static long ids_seek(voidpf opaque, voidpf stream, uLong offset, int origin);
 static int ids_close(voidpf opaque, voidpf stream);
 static int ids_error(voidpf opaque, voidpf stream);
 
-zlib_filefunc_def IDS_filefunc_templ = {
+PentZip::zlib_filefunc_def IDS_filefunc_templ = {
 	ids_open, ids_read, ids_write, ids_tell, ids_seek, ids_close, ids_error, 0
 };
 
@@ -50,11 +50,11 @@ zlib_filefunc_def IDS_filefunc_templ = {
 ZipFile::ZipFile(IDataSource* ds_)
 {
 	ds = ds_;
-	zlib_filefunc_def filefuncs = IDS_filefunc_templ;
+	PentZip::zlib_filefunc_def filefuncs = IDS_filefunc_templ;
 	filefuncs.opaque = static_cast<void*>(ds);
 
 	// filefuncs contains the datasource, so no need to actually use a path
-	unzFile unzfile = unzOpen2("", &filefuncs);
+	PentZip::unzFile unzfile = PentZip::unzOpen2("", &filefuncs);
 
 	valid = (unzfile != 0);
 
@@ -63,7 +63,7 @@ ZipFile::ZipFile(IDataSource* ds_)
 	if (valid) {
 		pout << "ZipFile: reading metadata" << std::endl;
 		valid = readMetadata();
-		if (!valid) unzClose(unzfile);
+		if (!valid) PentZip::unzClose(unzfile);
 	}
 }
 
@@ -71,8 +71,8 @@ ZipFile::ZipFile(IDataSource* ds_)
 ZipFile::~ZipFile()
 {
 	if (valid) {
-		unzFile unzfile = static_cast<unzFile>(unzipfile);
-		unzClose(unzfile);		
+		PentZip::unzFile unzfile = static_cast<PentZip::unzFile>(unzipfile);
+		PentZip::unzClose(unzfile);		
 	}
 	delete ds;
 }
@@ -80,14 +80,14 @@ ZipFile::~ZipFile()
 //static
 bool ZipFile::isZipFile(IDataSource* ids)
 {
-	zlib_filefunc_def filefuncs = IDS_filefunc_templ;
+	PentZip::zlib_filefunc_def filefuncs = IDS_filefunc_templ;
 	filefuncs.opaque = static_cast<void*>(ids);
 
 	// filefuncs contains the datasource, so no need to actually use a path
-	unzFile unzfile = unzOpen2("", &filefuncs);
+	PentZip::unzFile unzfile = PentZip::unzOpen2("", &filefuncs);
 
 	if (unzfile != 0) {
-		unzClose(unzfile);
+		PentZip::unzClose(unzfile);
 		return true;
 	}
 
@@ -96,35 +96,37 @@ bool ZipFile::isZipFile(IDataSource* ids)
 
 bool ZipFile::readMetadata()
 {
-	unzFile unzfile = static_cast<unzFile>(unzipfile);
+	PentZip::unzFile unzfile = static_cast<PentZip::unzFile>(unzipfile);
 
-	unz_global_info ginfo;
-	if (unzGetGlobalInfo(unzfile, &ginfo) != UNZ_OK) return false;
+	PentZip::unz_global_info ginfo;
+	if (PentZip::unzGetGlobalInfo(unzfile, &ginfo) != UNZ_OK) return false;
 
 	count = ginfo.number_entry;
 
 	globalComment = "";
 	if (ginfo.size_comment > 0) {
 		char* commentbuf = new char[ginfo.size_comment+1];
-		int c = unzGetGlobalComment(unzfile, commentbuf, ginfo.size_comment+1);
+		int c = PentZip::unzGetGlobalComment(unzfile,
+											 commentbuf, ginfo.size_comment+1);
 		if (c > 0) globalComment = commentbuf;
 		delete[] commentbuf;
 	}
 
-	unz_file_info info;
+	PentZip::unz_file_info info;
 	char name[256];
 
-	bool done = (unzGoToFirstFile(unzfile) != UNZ_OK);
+	bool done = (PentZip::unzGoToFirstFile(unzfile) != UNZ_OK);
 
 	while (!done) {
-		int ret = unzGetCurrentFileInfo(unzfile, &info, name, 256, 0, 0, 0, 0);
+		int ret = PentZip::unzGetCurrentFileInfo(unzfile, &info, name, 256,
+												 0, 0, 0, 0);
 		if (ret != UNZ_OK) continue;
 
 		std::string filename = name;
 		storeIndexedName(filename);
 		sizes[filename] = info.uncompressed_size;
 
-		done = (unzGoToNextFile(unzfile) != UNZ_OK);
+		done = (PentZip::unzGoToNextFile(unzfile) != UNZ_OK);
 	}
 
 	return true;
@@ -147,27 +149,28 @@ uint32 ZipFile::getSize(const std::string& name)
 
 uint8* ZipFile::getObject(const std::string& name, uint32* sizep)
 {
-	unzFile unzfile = static_cast<unzFile>(unzipfile);
+	PentZip::unzFile unzfile = static_cast<PentZip::unzFile>(unzipfile);
 
-	if (unzLocateFile(unzfile, name.c_str(), 1) != UNZ_OK) return 0;
+	if (PentZip::unzLocateFile(unzfile, name.c_str(), 1) != UNZ_OK) return 0;
 
-	unz_file_info info;
+	PentZip::unz_file_info info;
 	uint8* buf = 0;
 
-	if (unzGetCurrentFileInfo(unzfile, &info, 0, 0, 0, 0, 0, 0) != UNZ_OK)
+	if (PentZip::unzGetCurrentFileInfo(unzfile, &info, 0, 0, 0, 0, 0, 0)
+		!= UNZ_OK)
 		return 0;
 
-	if (unzOpenCurrentFile(unzfile) != UNZ_OK) return 0;
+	if (PentZip::unzOpenCurrentFile(unzfile) != UNZ_OK) return 0;
 	uint32 size = info.uncompressed_size;
 
 	buf = new uint8[size];
 
-	if (unzReadCurrentFile(unzfile, buf, size) < size) {
+	if (PentZip::unzReadCurrentFile(unzfile, buf, size) < size) {
 		delete[] buf;
 		return 0;
 	}
 
-	if (unzCloseCurrentFile(unzfile) != UNZ_OK) {
+	if (PentZip::unzCloseCurrentFile(unzfile) != UNZ_OK) {
 		delete[] buf;
 		return 0;
 	}

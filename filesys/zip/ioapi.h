@@ -4,6 +4,7 @@
    Version 1.01, May 8th, 2004
 
    Copyright (C) 1998-2004 Gilles Vollant
+   Converted to more modern C/C++ by the Pentagram team.
 */
 
 #ifndef _ZLIBIOAPI_H
@@ -31,9 +32,7 @@
 #endif
 #endif
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+namespace PentZip {
 
 typedef voidpf (ZCALLBACK *open_file_func) OF((voidpf opaque, const char* filename, int mode));
 typedef uLong  (ZCALLBACK *read_file_func) OF((voidpf opaque, voidpf stream, void* buf, uLong size));
@@ -67,9 +66,7 @@ void fill_fopen_filefunc OF((zlib_filefunc_def* pzlib_filefunc_def));
 #define ZERROR(filefunc,filestream) ((*((filefunc).zerror_file))((filefunc).opaque,filestream))
 
 
-#ifdef __cplusplus
 }
-#endif
 
 #endif
 

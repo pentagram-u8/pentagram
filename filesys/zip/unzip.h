@@ -2,6 +2,7 @@
    Version 1.01, May 8th, 2004
 
    Copyright (C) 1998-2004 Gilles Vollant
+   Converted to more modern C/C++ by the Pentagram team.
 
    This unzip package allow extract file from .ZIP file, compatible with PKZip 2.04g
      WinZip, InfoZip tools and compatible.
@@ -43,10 +44,6 @@
 #ifndef _unz_H
 #define _unz_H
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #ifndef _ZLIB_H
 #include "zlib.h"
 #endif
@@ -54,6 +51,8 @@ extern "C" {
 #ifndef _ZLIBIOAPI_H
 #include "ioapi.h"
 #endif
+
+namespace PentZip {
 
 #if defined(STRICTUNZIP) || defined(STRICTZIPUNZIP)
 /* like the STRICT of WIN32, we define a pointer that cannot be converted
@@ -344,9 +343,7 @@ extern uLong ZEXPORT unzGetOffset (unzFile file);
 extern int ZEXPORT unzSetOffset (unzFile file, uLong pos);
 
 
-
-#ifdef __cplusplus
 }
-#endif
+
 
 #endif /* _unz_H */

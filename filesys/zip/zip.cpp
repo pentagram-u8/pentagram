@@ -3,11 +3,14 @@
 
    Copyright (C) 1998-2004 Gilles Vollant
    Small modifications (C) 2005 The Pentagram Team
-   Converted to more modern C by the Pentagram team.
+   Converted to more modern C/C++ by the Pentagram team.
 
    Read zip.h for more info
 */
 
+#include "pent_include.h"
+#define NOCRYPT
+#define NO_ADDFILEINEXISTINGZIP
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,11 +29,6 @@
 #else
 #   include <errno.h>
 #endif
-
-// Pentagram modifications:
-#define NOCRYPT
-#define NO_ADDFILEINEXISTINGZIP
-// ---
 
 
 #ifndef local
@@ -83,6 +81,9 @@
 #  define DEF_MEM_LEVEL  MAX_MEM_LEVEL
 #endif
 #endif
+
+namespace PentZip {
+
 const char zip_copyright[] =
    " zip 1.01 Copyright 1998-2004 Gilles Vollant - http://www.winimage.com/zLibDll";
 
@@ -1137,4 +1138,7 @@ extern int ZEXPORT zipClose (zipFile file, const char* global_comment)
     TRYFREE(zi);
 
     return err;
+}
+
+
 }
