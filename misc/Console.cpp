@@ -627,6 +627,7 @@ void Console::ScrollCommandHistory(int num)
 void Console::ClearCommandBuffer()
 {
 	commandBuffer.clear();
+	commandCursorPos = 0;
 }
 
 void Console::AddCharacterToCommandBuffer(int ch)

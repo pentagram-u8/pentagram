@@ -1057,7 +1057,14 @@ uint16 ItemSorter::Trace(sint32 x, sint32 y)
 		assert(frame); // invalid frames shouldn't have been added to the list
 
 		// Nope, doesn't have a point
-		if (!frame->hasPoint(x-it->sxbot, y-it->sybot)) continue;
+		if (it->flags & Item::FLG_FLIPPED)
+		{
+			if (!frame->hasPoint(it->sxbot-x, y-it->sybot)) continue;
+		}
+		else
+		{
+			if (!frame->hasPoint(x-it->sxbot, y-it->sybot)) continue;
+		}
 
 		// Ok now check against selected
 		if (!selected|| (it->order > selected->order)) selected = it;

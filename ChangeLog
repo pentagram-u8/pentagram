@@ -1,3 +1,8 @@
+2004-07-12  Ryan Nunn <colourles@users.sourceforge.net>
+	* gumps/ConsoleGump.cpp : Clear command buffer when closing
+	* misc/Console.cpp : Fixing crash when closing console with chars typed
+	* world/ItemSorter.cpp : Correctly trace against flipped shapes
+	
 2004-07-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Actor.*: fix combat-stat functions for non-monster Actor
 

@@ -132,7 +132,7 @@ void ConsoleGump::ToggleConsole()
 	case NORMAL_DISPLAY:
 		scroll_state = WAITING_TO_HIDE;
 		GUIApp::get_instance()->leaveTextMode(this);
-//		commandBuffer.clear();
+		con.ClearCommandBuffer();
 		break;
 
 	default:
@@ -168,7 +168,7 @@ void ConsoleGump::HideConsole()
 	case NORMAL_DISPLAY:
 		scroll_state = WAITING_TO_HIDE;
 		GUIApp::get_instance()->leaveTextMode(this);
-//		commandBuffer.clear();
+		con.ClearCommandBuffer();
 		break;
 
 	default:
