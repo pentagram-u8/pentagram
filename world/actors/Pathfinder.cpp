@@ -263,25 +263,33 @@ bool Pathfinder::pathfind(std::vector<PathfindingAction>& path)
 				n = n->parent;
 				length++;
 			}
-			path.resize(length);
-
 			pout << "Pathfinder: path found (length = " << length << ")"
 				 << std::endl;
+
+			unsigned int i = length;
+			if (length > 0) length++; // add space for final 'stand' action
+			path.resize(length);
 
 			// now backtrack through the nodes to assemble the final animation
 			while (node->parent) {
 				PathfindingAction action;
 				action.action = node->state.lastanim;
 				action.direction = node->state.direction;
-				path[--length] = action;
+				path[--i] = action;
 #if 0
 				pout << "anim = " << node->state.lastanim << ", dir = "
 					 << node->state.direction << std::endl;
 #endif
 
 				//TODO: check how turns work
+				//TODO: append final 'stand' animation
 
 				node = node->parent;
+			}
+
+			if (length) {
+				path[length-1].action = Animation::stand;
+				path[length-1].direction = path[length-2].direction;
 			}
 
 			return true;

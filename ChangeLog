@@ -1,3 +1,6 @@
+2004-06-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/Pathfinder.cpp: play a stand animation after the path
+
 2004-06-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/ContainerGump.cpp, world/Container.*: move items to end of a
 	  container's contents list after dragging them around in a gump
