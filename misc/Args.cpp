@@ -21,7 +21,7 @@
 #endif
 
 #include <iostream>
-#include "args.h"
+#include "Args.h"
 
 using std::cerr;
 using std::endl;
