@@ -58,8 +58,10 @@ bool DCCallPostfixNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 	return false;
 }
 
-void DCCallPostfixNode::print_unk(Console &o, const uint32 /*isize*/) const
+void DCCallPostfixNode::print_unk(Console &o, const uint32 /*isize*/, const bool comment) const
 {
+	if(!comment) return; // handle debug output
+
 	switch(ptype)
 	{
 		case PUSH_RETVAL:
@@ -140,8 +142,10 @@ void DCCallPostfixNode::print_bin(ODequeDataSource &o) const
 	DCCallMutatorNode
  ****************************************************************************/
 
-void DCCallMutatorNode::print_unk(Console &o, const uint32 isize) const
+void DCCallMutatorNode::print_unk(Console &o, const uint32 isize, const bool comment) const
 {
+	if(!comment && mtype!=PROCESS_EXCLUDE) return;
+	
 	switch(mtype)
 	{
 		case PUSH_INDIRECT:
@@ -442,7 +446,7 @@ void DCCallNode::print_asm(Console &o) const
 				o.Printf("calli\t\t%02Xh %04Xh", spsize, intrinsic);
 				for(std::list<DCCallPostfixNode *>::const_reverse_iterator i=freenodes.rbegin(); i!=freenodes.rend(); ++i)
 				{
-					(*i)->print_asm(o); o.Putchar('\n');
+					o.Putchar('\n'); (*i)->print_asm(o);
 				}
 				//FIXME: o.Printf(" (%s)", convert->intrinsics()[op.i1]);
 				if(addSP!=0)

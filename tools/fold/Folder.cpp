@@ -61,6 +61,7 @@ void Unit::print_unk(Console &o, const uint32 isize) const
 		// main function body
 		indent(o, isize);
 		o.Print("{\n");
+		
 		//indent(o, isize+1);
 		(*i)->print_unk(o, isize+1);
 		//o.Putchar('\n');
@@ -114,7 +115,7 @@ const bool DCUnit::fold(Node *n)
 	// DEBUGGING. Will produce _lots_ of output.
 	//print_asm(con);
 	//print_assert(n, this);
-	con.Printf("currop.offset: %04X\tifstack.size: %d\telsestack.size: %d\n", n->offset(), ifstack.size(), elsestack.size());
+	//con.Printf("currop.offset: %04X\tifstack.size: %d\telsestack.size: %d\n", n->offset(), ifstack.size(), elsestack.size());
 	
 	while(elsestack.size()>0 && n->offset()==elsestack.back()->TargetOffset())
 	{
@@ -230,7 +231,7 @@ const bool DCUnit::fold(Node *n)
 	// special handling for 'end' opcodes
 	if(n->opcode()==0x7A)
 	{
-		con.Printf("<< Assign func %d\n", functions.size()+1);
+		//con.Printf("<< Assign func %d\n", functions.size()+1);
 		assert(nodes.back()->opcode()==0xFFFF);
 		functions.push_back(static_cast<DCFuncNode *>(nodes.back()));
 		nodes.pop_back();
@@ -317,6 +318,7 @@ bool print_assert(const Node *n, const DCUnit *u)
 		//{
 		//	(*i)->print_unk(con, 1);
 		//}
+		u->print_asm(con);
 		u->print_unk(con, 0);
 
 		con.Printf("IfStack:");

@@ -90,6 +90,7 @@ class Folder
 
 		inline void SelectUnit(const uint32 id)
 		{
+			///con.Printf(">>> SelectingUnit: %d OldUnit: %d <<<\n", id, (curr ? curr->id : 0));
 			if(curr!=0 && curr->id!=id)
 				NewUnit(id);
 			else if(curr==0)
@@ -102,6 +103,13 @@ class Folder
 			if(curr!=0) units.push_back(curr);
 			curr = new DCUnit(id);
 		};
+		
+		inline void FinalUnit()
+		{
+			if(curr!=0)
+				units.push_back(curr);
+			curr=0;
+		}
 
 	private:
 		DCUnit *curr;

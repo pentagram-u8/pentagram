@@ -690,8 +690,10 @@ void printfunc(const uint32 func, const uint32 nameoffset, IDataSource *ucfile)
 	while (readfunction(ucfile, namebuf, uch, func));
 
 	#ifdef FOLD
+	folder->FinalUnit();
 	//fold(func);
 	//folder->print_unk(pout);
+	folder->print_asm(con);
 	folder->print_unk(con);
 	//delete folder;
 	//folder = new Folder();

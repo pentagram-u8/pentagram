@@ -28,24 +28,43 @@ using	std::deque;
 	FuncMutatorNode
  ****************************************************************************/
 
-void FuncMutatorNode::print_unk(Console &o, const uint32 isize) const
+void FuncMutatorNode::print_unk(Console &o, const uint32 isize, const bool comment) const
 {
+	/* if we're in a comment, then we're actually going to output, else we silently
+		do nothing. This is to handle the cases where we don't want this data
+		such as in non-debugging situations */
+	if(!comment && mtype!=SUSPEND) return;
+	
 	assert(rtype().type()==Type::T_INVALID);
-	Node::print_linenum_unk(o, isize);
 	switch(mtype)
 	{
-		case RET:         o.Printf("ret_NOPRINT()"); break;
-		case INIT:        o.Printf("init_NOPRINT(0x%02X)", _initsize); break;
+		case RET:
+			Node::print_linenum_unk(o, isize);
+			o.Printf("ret_NOPRINT()");
+			break;
+		case INIT:
+			Node::print_linenum_unk(o, isize);
+			o.Printf("init_NOPRINT(0x%02X)", _initsize);
+			break;
 		case LINE_NUMBER:
+			Node::print_linenum_unk(o, isize);
 			#if 0
 			o.Printf(" /* Line No: %d */ ", _linenum);
 			#else
 			o.Printf("/*%d*/", _linenum);
 			#endif
 			break;
-		case SYMBOL_INFO: o.Printf("symbol_info_NOPRINT(0x%04X, \"%s\")", _symboloffset, _classname.c_str()); break;
-		case SUSPEND:     o.Printf("suspend"); break;
-		case END:         o.Printf("end_NOPRINT()"); break;
+		case SYMBOL_INFO:
+			Node::print_linenum_unk(o, isize);
+			o.Printf("symbol_info_NOPRINT(0x%04X, \"%s\")", _symboloffset, _classname.c_str());
+			break;
+		case SUSPEND:
+			o.Printf("suspend");
+			break;
+		case END:
+			Node::print_linenum_unk(o, isize);
+			o.Printf("end_NOPRINT()");
+			break;
 		default: assert(print_assert(this)); // can't happen
 	}
 }
@@ -119,32 +138,55 @@ bool FuncMutatorNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 /****************************************************************************
 	DCFuncNode
  ****************************************************************************/
+//#define DEBUG_COMMENTS
 
 void DCFuncNode::print_unk(Console &o, const uint32 isize) const
 {
-	indent(o, isize);
-	initnode->print_unk(o, isize);
+	#ifdef DEBUG_COMMENTS
+	indent(o, isize); o.Print("/*"); // prelude
+
+	indent(o, 1);
+	initnode->print_unk(o, isize+1, true);
 	o.Putchar('\n');
 	
+	indent(o, isize+1);
+	setinfonode->print_unk(o, isize+1, true);
+	
+	indent(o, 1); o.Print("*/\n"); // postfix
+	#endif
+	
+	indent(o, isize);
+	procexcludenode->print_unk(o, isize);
+	o.Putchar('\n');
+
 	for(std::deque<Node *>::const_iterator i=funcnodes.begin(); i!=funcnodes.end(); ++i)
 	{
 		indent(o, isize);
 		(*i)->print_unk(o, isize);
 		o.Putchar('\n');
 	}
-	indent(o, isize);
-	retnode->print_unk(o, isize);
+
+	#ifdef DEBUG_COMMENTS
+	indent(o, isize); o.Print("/*"); // prelude
+	
+	indent(o, 1);
+	retnode->print_unk(o, isize+1, true);
 	o.Putchar('\n');
 	
-	indent(o, isize);
-	endnode->print_unk(o, isize);
-	o.Putchar('\n');
+	indent(o, isize+1);
+	endnode->print_unk(o, isize+1, true);
 	
+	indent(o, 1); o.Print("*/\n"); // postfix
+	#endif
 }
 
 void DCFuncNode::print_asm(Console &o) const
 {
 	initnode->print_asm(o);
+	o.Putchar('\n');
+	setinfonode->print_asm(o);
+	o.Putchar('\n');
+	procexcludenode->print_asm(o);
 	o.Putchar('\n');
 	
 	for(std::deque<Node *>::const_iterator i=funcnodes.begin(); i!=funcnodes.end(); ++i)
@@ -163,6 +205,14 @@ void DCFuncNode::print_bin(ODequeDataSource &o) const
 	assert(initnode!=0);
 	initnode->print_mac(con);
 	initnode->print_bin(o);
+	
+	assert(setinfonode!=0);
+	setinfonode->print_mac(con);
+	setinfonode->print_bin(o);
+	
+	assert(procexcludenode!=0);
+	procexcludenode->print_mac(con);
+	procexcludenode->print_bin(o);
 	
 	for(std::deque<Node *>::const_iterator i=funcnodes.begin(); i!=funcnodes.end(); ++i)
 	{
@@ -197,7 +247,7 @@ bool DCFuncNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 	
 	// while we haven't gotten init
 	bool read_last=false;
-	while(nodes.size() && nodes.back()->opcode()!=0x5A)
+	while(nodes.size() && !acceptOp(nodes.back()->opcode(), 0x5A, 0x78))
 	{
 		/*switch(nodes.back()->opcode())
 		{
@@ -212,11 +262,23 @@ bool DCFuncNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 		nodes.pop_back();
 	}
 
+	// ... and our 'process exclude'
+	assert(nodes.size() && nodes.back()->opcode()==0x78);
+	procexcludenode = static_cast<DCCallMutatorNode *>(nodes.back());
+	nodes.pop_back();
+
+	// ... and our 'set info'
+	assert(nodes.size() && nodes.back()->opcode()==0x77);
+	setinfonode = static_cast<DCCallMutatorNode *>(nodes.back());
+	nodes.pop_back();
+
 	// ... and our 'init'
 	assert(nodes.size() && nodes.back()->opcode()==0x5A);
 	initnode = static_cast<FuncMutatorNode *>(nodes.back());
 	nodes.pop_back();
-	
+	parameters_datasize = initnode->a_initsize();
+	func_start_offset = initnode->offset();
+
 	// FIXME: This will obviously be false when we're finally implementing
 	// inline functions.
 	assert((nodes.size()==0) || print_assert(0, unit));

@@ -22,6 +22,7 @@
 #define FUNCNODES_H
 
 #include "GenericNodes.h"
+#include "CallNodes.h"
 #include <deque>
 #include <string>
 
@@ -62,7 +63,8 @@ class FuncMutatorNode : public Node
 			};
 		~FuncMutatorNode() {};
 
-		void print_unk(Console &o, const uint32 isize) const;
+		void print_unk(Console &o, const uint32 isize, const bool comment) const;
+		void print_unk(Console &o, const uint32 isize) const { print_unk(o, isize, true); };
 		void print_asm(Console &o) const;
 		void print_bin(ODequeDataSource &o) const;
 		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
@@ -75,6 +77,9 @@ class FuncMutatorNode : public Node
 		uint32 _linenum; // line number
 		uint32 _symboloffset; // symbol info
 		std::string _classname; // symbol info
+	
+	public: // wheeefun accessors.
+		uint32 a_initsize() const { assert(opcode()==0x5A && mtype==INIT); return _initsize; };
 };
 
 class DCFuncNode : public ColNode
@@ -82,7 +87,7 @@ class DCFuncNode : public ColNode
 	public:
 		DCFuncNode()//const uint32 opcode, const uint32 offset)
 			: ColNode(0xFFFF, 0x0000, Type(Type::T_INVALID)),
-			initnode(0), retnode(0), endnode(0)
+			initnode(0), setinfonode(0), procexcludenode(0), retnode(0), endnode(0)
 			{
 			};
 		~DCFuncNode() {};
@@ -96,9 +101,13 @@ class DCFuncNode : public ColNode
 	protected:
 		std::deque<Node *> funcnodes;
 		FuncMutatorNode *initnode;
+		DCCallMutatorNode *setinfonode;
+		DCCallMutatorNode *procexcludenode;
 		FuncMutatorNode *retnode;
 		FuncMutatorNode *endnode;
 
+		uint32	parameters_datasize; // from 'init' opcode
+		uint32	func_start_offset; // from 'init' opcode
 	private:
 };
 

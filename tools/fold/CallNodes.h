@@ -54,7 +54,8 @@ class DCCallPostfixNode : public Node
 		~DCCallPostfixNode() {};
 
 		void print() const {};
-		void print_unk(Console &o, const uint32 isize) const;
+		void print_unk(Console &o, const uint32 isize, const bool comment) const;
+		void print_unk(Console &o, const uint32 isize) const { print_unk(o, isize, true); };
 		void print_asm(Console &o) const;
 		void print_bin(ODequeDataSource &o) const;
 
@@ -96,7 +97,8 @@ class DCCallMutatorNode : public BinNode
 			};
 		~DCCallMutatorNode() {};
 
-		void print_unk(Console &o, const uint32 isize) const;
+		void print_unk(Console &o, const uint32 isize, const bool comment) const;
+		void print_unk(Console &o, const uint32 isize) const { print_unk(o, isize, true); };
 		void print_asm(Console &o) const;
 		void print_bin(ODequeDataSource &o) const;
 

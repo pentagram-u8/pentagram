@@ -301,7 +301,7 @@ void PushVarNode::print_asm(Console &o) const
 			}
 			break;
 		case DataType::DT_PID:
-			assert(dtype.type().type()==Type::T_PID);
+			//assert(dtype.type().type()==Type::T_PID);
 			o.Printf("push\t\tpid");
 			break;
 		default: assert(false);

@@ -1,5 +1,18 @@
+2003-09-24	Darke  <darkepaw@users.sf.net>
+	* tools/disasm/Disasm.cpp, tools/fold/*: General prettification of
+	  output, minor fiddling with asm output format.
+
 2003-09-17  Max Horn <max@quendi.de>
 	* tools/fold/CallNodes.h: added missing #include <list>
+
+2003-09-17	Darke  <darkepaw@users.sf.net>
+	* convert/Convert.hi, tools/fold/*: free str (0x65), str to ptr (0x6B),
+	and end of function/global_address (0x79) ops supported by fold.
+	* kernel/CoreApp.cpp: Quietened some of the messages with MM_INFO.
+	* misc/memset_n.h: Fixing up a casting warning.
+	* tools/disasm/Disasm.cpp, convert/Convert.h: Generalised and
+	shuffled the 'functionaddresstostring' function into the appropriate
+	place/name in Convert.
 
 2003-08-31	Darke  <darkepaw@users.sf.net>
 	* convert/Convert.h, tools/fold/*: Folds push string(0x0D).
