@@ -389,9 +389,21 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 	// TODO: accumulate strength for avatar kicks
 	// TODO: accumulate dexterity for avatar hits
 
+	if (getActorFlags() & (ACT_IMMORTAL | ACT_INVINCIBLE))
+		return; // invincible
+ 
 	if (damage >= hitpoints) {
 		// we're dead
-		die();
+
+		if (getActorFlags() & ACT_WITHSTANDDEATH) {
+			// or maybe not...
+
+			setHP(getMaxHP());
+			// TODO: SFX
+			clearActorFlag(ACT_WITHSTANDDEATH);
+		} else {
+			die();
+		}
 	} else {
 		setHP(static_cast<uint16>(hitpoints - damage));
 	}
