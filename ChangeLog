@@ -1,5 +1,6 @@
 2004-09-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/ContainerGump.cpp: don't paint editor items
+	* graphics/TypeFlags.cpp: fix ArmourInfo loading
 
 2004-09-02  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* kernel/GUIApp.cpp: Separated the QuickAvatarMoverProcess from GUIApp

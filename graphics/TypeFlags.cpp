@@ -205,11 +205,15 @@ void TypeFlags::loadArmourInfo()
 		config->get(k + "/armour", val);
 		ai.armour_class = static_cast<uint16>(val);
 
-		config->get(k + "/type", val);
-		ai.defense_type = static_cast<uint16>(val);
+		if (config->get(k + "/type", val))
+			ai.defense_type = static_cast<uint16>(val);
+		else
+			ai.defense_type = 0;
 
-		if (!config->get(k + "/kick_bonus", val)) val = 0;
-		ai.kick_attack_bonus = static_cast<uint16>(val);
+		if (config->get(k + "/kick_bonus", val))
+			ai.kick_attack_bonus = static_cast<uint16>(val);
+		else
+			ai.kick_attack_bonus = 0;
 
 		aia[ai.frame] = ai;
 	}

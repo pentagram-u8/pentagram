@@ -25,8 +25,7 @@ struct ArmourInfo {
 	uint32 frame;
 	uint16 armour_class;
 	uint16 kick_attack_bonus;
-	uint16 defense_type;// 0x02 = blade, 0x04 = blunt, 0x08 = fire?
-	                    // 0x10 = undead, 0x20 = fire, ...?
+	uint16 defense_type; // see WeaponInfo struct
 };
 
 
