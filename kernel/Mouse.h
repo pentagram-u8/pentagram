@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2004 The Pentagram team
+Copyright (C) 2002-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -33,7 +33,8 @@ struct MButton
 
 enum MouseButtonState {
 	MBS_DOWN = 0x1,
-	MBS_HANDLED = 0x2
+	MBS_HANDLED = 0x2,
+	MBS_RELHANDLED = 0x4
 };
 
 enum MouseButton {

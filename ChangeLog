@@ -1,3 +1,7 @@
+2005-02-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/AvatarMoverProcess.*: avatar looks around when idle
+	* world/actors/AvatarMoverProcess.*: try not to interrupt spellcasting
+
 2005-02-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/SchedulerProcess.*: call NPC::schedule every hour
 

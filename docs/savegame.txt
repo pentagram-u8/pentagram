@@ -439,7 +439,7 @@ sint16 new_matrix[12]
 AvatarMoverProcess: Process (v1)
 <Process>
 uint32 lastAttack
-uint32 lastHeadShake
+uint32 idleTime
 uint16 lastHeadShakeAnim
 
 QuickAvatarMoverProcess: Process (v1)		terminates after loading
