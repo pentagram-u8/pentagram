@@ -95,8 +95,6 @@ void Item::dumpInfo()
 		 << ", m:" << getMapNum() << ", n:" << getNpcNum()
 		 << ", f:" << std::hex << getFlags() << ", ef:"
 		 << getExtFlags() << ")" << std::dec << std::endl;
-	pout << "l_prev.frame: " << l_prev.frame << ", l_next.frame: "
-		 << l_next.frame << std::endl;
 }
 
 Container *Item::getParentAsContainer() const
