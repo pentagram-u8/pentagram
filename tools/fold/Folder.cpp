@@ -214,7 +214,7 @@ const bool DCUnit::fold(Node *n)
 				ifstack.back()->nodes().push_back(n);
 		*/
 		
-		assert(elsestack.size()==0);
+		assert(elsestack.size()==0 || print_assert(n, this));
 		DCFuncNode *func = new DCFuncNode();
 		assert(ifstack.size()==0);
 		
@@ -296,6 +296,10 @@ bool print_assert(const Node *n, const DCUnit *u)
 			for(std::deque<IfNode *>::const_iterator i=u->ifstack.begin(); i!=u->ifstack.end(); ++i)
 			{
 				con.Printf("\n    %04X: %02X -> %04X", (*i)->offset(), (*i)->opcode(), (*i)->TargetOffset());
+				for(std::deque<Node *>::const_iterator j=(*i)->nodes().begin(); j!=(*i)->nodes().end(); ++j)
+				{
+					con.Printf("\n        %04X: %02X", (*j)->offset(), (*j)->opcode());
+				}
 			}
 		}
 		if(u->ifstack.size()) con.Printf("  <-");
@@ -306,6 +310,10 @@ bool print_assert(const Node *n, const DCUnit *u)
 			for(std::deque<IfNode *>::const_iterator i=u->elsestack.begin(); i!=u->elsestack.end(); ++i)
 			{
 				con.Printf("\n    %04X: %02X -> %04X", (*i)->offset(), (*i)->opcode(), (*i)->TargetOffset());
+				for(std::deque<Node *>::const_iterator j=(*i)->nodes().begin(); j!=(*i)->nodes().end(); ++j)
+				{
+					con.Printf("\n        %04X: %02X", (*j)->offset(), (*j)->opcode());
+				}
 			}
 		}
 		if(u->elsestack.size()) con.Printf("  <-");

@@ -25,6 +25,7 @@
 #include <vector>
 #include <string>
 #include "GenericNodes.h"
+#include "LoopScriptNodes.h"
 
 class DebugSymbol
 {
@@ -856,6 +857,7 @@ Node *ConvertUsecode::readOpGeneric(IDataSource *ucfile, uint32 &dbg_symbol_offs
 			n = new PopVarNode(opcode, offset);
 			break;
 		case 0x14: // add
+		case 0x1C: // sub
 		case 0x24: // cmp
 		case 0x28: // lt
 		case 0x2A: // le
@@ -930,6 +932,24 @@ Node *ConvertUsecode::readOpGeneric(IDataSource *ucfile, uint32 &dbg_symbol_offs
 			break;
 		case 0x6E: // add sp
 			n = new DCCallPostfixNode(opcode, offset, read1(ucfile));
+			break;
+		case 0x70: // loop
+			{
+				uint32 currobj = read1(ucfile);
+				uint32 strsize = read1(ucfile);
+				uint32 type = read1(ucfile);
+			// 70 xx yy zz
+			// loop something. Stores 'current object' in var xx
+			// yy == num bytes in string
+			// zz == type
+				n = new LoopNode(opcode, offset, currobj, strsize, type);
+			}
+			break;
+		//case 0x73: // loopnext
+		//	n = new LoopNextNode(opcode, offset);
+		//	break;
+		case 0x74: // loopscr
+			n = new LoopScriptNode(opcode, offset, read1(ucfile));
 			break;
 		case 0x77: // set info
 			n = new DCCallMutatorNode(opcode, offset);

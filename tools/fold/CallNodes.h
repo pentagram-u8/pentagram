@@ -170,7 +170,7 @@ class DCCallNode : public ColNode
 		uint32 intrinsic; // calli
 		
 		uint32 thispsize; // spawn
-	public: // FIXME: temp debugging!
+
 		DCCallPostfixNode *addSP;
 		DCCallPostfixNode *retVal;
 		Node *thisP;

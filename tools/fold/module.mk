@@ -19,7 +19,8 @@ fold_OBJ = \
 	tools/fold/OperatorNodes.o \
 	tools/fold/CallNodes.o \
 	tools/fold/VarNodes.o \
-	tools/fold/FuncNodes.o
+	tools/fold/FuncNodes.o \
+	tools/fold/LoopScriptNodes.o
 
 # Common rules
 include common.mk

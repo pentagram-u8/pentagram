@@ -135,6 +135,7 @@ void BinOperatorNode::print_unk(Console &o, const uint32 isize) const
 	switch(otype)
 	{
 		case M_ADD: o.Printf(" + ");  break;
+		case M_SUB: o.Printf(" - ");  break;
 		case M_CMP: o.Printf(" == "); break;
 		case M_LT:  o.Printf(" < ");  break;
 		case M_LE:  o.Printf(" <= "); break;
@@ -161,6 +162,7 @@ void BinOperatorNode::print_asm(Console &o) const
 	switch(otype)
 	{
 		case M_ADD: o.Printf("add"); break;
+		case M_SUB: o.Printf("sub"); break;
 		case M_CMP: o.Printf("cmp"); break;
 		case M_LT:  o.Printf("lt");  break;
 		case M_LE:  o.Printf("le");  break;
@@ -183,6 +185,7 @@ void BinOperatorNode::print_bin(ODequeDataSource &o) const
 	switch(otype)
 	{
 		case M_ADD: o.write1(0x14); break;
+		case M_SUB: o.write1(0x1C); break;
 		case M_CMP: o.write1(0x24); break;
 		case M_LT:  o.write1(0x28); break;
 		case M_LE:  o.write1(0x2A); break;
@@ -198,6 +201,7 @@ bool BinOperatorNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 	switch(otype)
 	{
 		case M_ADD:
+		case M_SUB:
 		case M_CMP:
 		case M_LT:
 		case M_LE:
