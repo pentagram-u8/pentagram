@@ -55,10 +55,6 @@ bool u8ShapeViewer(const HID_Event& event);
 // ! \see HIDBinding
 bool showMenu(const HID_Event& event);
 
-// ! open gump with item shortcuts
-// ! \see HIDBinding
-bool openQuickItemGump(const HID_Event& event);
-
 };
 
 #endif

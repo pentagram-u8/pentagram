@@ -31,7 +31,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "ShapeViewerGump.h"
 #include "MenuGump.h"
-#include "QuickItemGump.h"
 
 namespace HIDBindings {
 
@@ -229,17 +228,6 @@ bool showMenu(const HID_Event& event)
 	switch (event.type) {
 	case HID_DOWN:
 		MenuGump::showMenu();
-		return true;
-	default:
-		return false;
-	}
-}
-
-bool openQuickItemGump(const HID_Event& event)
-{
-	switch (event.type) {
-	case HID_DOWN:
-		QuickItemGump::openGump();
 		return true;
 	default:
 		return false;

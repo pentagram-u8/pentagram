@@ -72,8 +72,8 @@ public:
 	//! "save" console command
 	static void ConCmd_save(const Console::ArgsType &args, const Console::ArgvType &argv);
 
-	//! "do" console command
-	static void ConCmd_do(const Console::ArgsType &args, const Console::ArgvType &argv);
+	//! all binding console commands
+	static void ConCmd_execBinding(const Console::ArgsType &args, const Console::ArgvType &argv);
 
 	//! stores the names of all controls bond to bindingName in a vector
 	//! \param bindingName name of a HIDBinding

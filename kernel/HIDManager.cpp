@@ -82,13 +82,30 @@ HIDManager::HIDManager()
 	bindingMap.insert( HIDBINDING_PAIR(quickMoveDescend) );
 	bindingMap.insert( HIDBINDING_PAIR(quickMoveQuarterSpeed) );
 	bindingMap.insert( HIDBINDING_PAIR(quickMoveClipping) );
-
 	keybindings[SDLK_ESCAPE] = &HIDBindings::quit;
 	keybindings[SDLK_BACKQUOTE] = &HIDBindings::toggleConsole;
+
+	HIDBindingMap::iterator i;
+	Pentagram::istring conCmd;
+	for (i = bindingMap.begin(); i != bindingMap.end(); ++i)
+	{
+		conCmd = "HIDBinding::";
+		conCmd.append(i->first);
+		con.AddConsoleCommand(conCmd, HIDManager::ConCmd_execBinding);
+	}
 }
 
 HIDManager::~HIDManager()
 {
+	HIDBindingMap::iterator i;
+	Pentagram::istring conCmd;
+	for (i = bindingMap.begin(); i != bindingMap.end(); ++i)
+	{
+		conCmd = "HIDBinding::";
+		conCmd.append(i->first);
+		con.RemoveConsoleCommand(conCmd);
+	}
+
 	ShutdownJoystick();
 	hidmanager = 0;
 	bindingMap.clear();
@@ -468,15 +485,11 @@ void HIDManager::ConCmd_save(const Console::ArgsType &args, const Console::ArgvT
 	settings->write();
 }
 
-void HIDManager::ConCmd_do(const Console::ArgsType &args, const Console::ArgvType &argv)
+void HIDManager::ConCmd_execBinding(const Console::ArgsType &args, const Console::ArgvType &argv)
 {
-	if (argv.size() < 2)
-	{
-		if (! argv.empty())
-			pout << "Usage: " << argv[0] <<
-				" <action> [\"HID_DOWN\" | \"HID_UP\"]: performs an action using the key up or down event (defaults to HID_DOWN)" << std::endl;
-		return;
-	}
+	uint32 pos = argv[0].find_last_of(':');
+	assert (pos != Pentagram::istring::npos);
+	Pentagram::istring bindingName = argv[0].substr( pos + 1 );
 	HID_Event event;
 	event.xrel = 0;
 	event.yrel = 0;
@@ -484,14 +497,16 @@ void HIDManager::ConCmd_do(const Console::ArgsType &args, const Console::ArgvTyp
 	event.device = HID_OTHER;
 	event.type = HID_DOWN;
 
-	if (argv.size() > 2)
+	if (argv.size() > 1)
 	{
-		if (argv[2] == "HID_UP")
+		if (argv[1] == "HID_UP" || argv[1] == "OFF" || argv[1] == "0")
+		{
 			event.type = HID_UP;
+		}
 	}
 
 	HIDManager * hidmanager = HIDManager::get_instance();
-	HIDBinding binding = hidmanager->getBinding(argv[1]);
+	HIDBinding binding = hidmanager->getBinding(bindingName);
 	if (binding)
 		binding(event);
 }
