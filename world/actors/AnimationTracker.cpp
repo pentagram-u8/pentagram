@@ -299,7 +299,8 @@ void AnimationTracker::updateActorFlags()
 	else
 		a->clearActorFlag(Actor::ACT_FIRSTSTEP);
 
-	a->animframe = currentframe;
+	if (currentframe != endframe)
+		a->animframe = currentframe;
 }
 
 void AnimationTracker::getInterpolatedPosition(sint32& x_, sint32& y_,
