@@ -146,7 +146,7 @@ bool Gump::Run(const uint32 framenum)
 void Gump::MapChanged()
 {
 	// Close it, and return
-	if (flags & FLAG_ITEM_DEPENDANT) 
+	if (flags & FLAG_ITEM_DEPENDENT) 
 	{
 		Close();
 		return;

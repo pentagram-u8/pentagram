@@ -1264,9 +1264,9 @@ uint16 Item::openGump(uint32 gumpshape)
 	ContainerGump* cgump;
 
 	if (getObjId() != 1) { //!! constant
-		cgump = new ContainerGump(shape, 0, objid, Gump::FLAG_ITEM_DEPENDANT);
+		cgump = new ContainerGump(shape, 0, objid, Gump::FLAG_ITEM_DEPENDENT);
 	} else {
-		cgump = new PaperdollGump(shape, 0, objid, Gump::FLAG_ITEM_DEPENDANT);
+		cgump = new PaperdollGump(shape, 0, objid, Gump::FLAG_ITEM_DEPENDENT);
 	}
 	//!!TODO: clean up the way this is set
 	//!! having the itemarea associated with the shape through the 
@@ -2612,6 +2612,26 @@ uint32 Item::I_explode(const uint8* args, unsigned int /*argsize*/)
 	item->explode();
 	return 0;
 }
+
+uint32 Item::I_igniteChaos(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_UINT16(x);
+	ARG_UINT16(y);
+	ARG_NULL8();
+
+	UCList itemlist(2);
+	LOOPSCRIPT(script, LS_SHAPE_EQUAL(592)); // all oilflasks (CONSTANT!)
+	CurrentMap* currentmap = World::get_instance()->getCurrentMap();
+	currentmap->areaSearch(&itemlist, script, sizeof(script), 0,
+						   160, false, x, y); //! CHECKME: 160?
+
+	for (unsigned int i = 0; i < itemlist.getSize(); ++i) {
+		Item *item = World::get_instance()->getItem(itemlist.getuint16(i));
+		if (!item) continue;
+		item->use();
+	}
+}
+
 
 uint32 Item::I_getRange(const uint8* args, unsigned int /*argsize*/)
 {

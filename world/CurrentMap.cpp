@@ -212,7 +212,6 @@ void CurrentMap::loadMap(Map* map)
 
 	// load relevant NPCs to the item lists
 	// !constant
-	{
 	for (uint16 i = 0; i < 256; ++i) {
 		Actor* actor = World::get_instance()->getNPC(i);
 		if (!actor) continue;
@@ -230,7 +229,6 @@ void CurrentMap::loadMap(Map* map)
 				actor->callUsecodeEvent_cachein();
 #endif
 		}
-	}
 	}
 }
 

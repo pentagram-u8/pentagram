@@ -402,6 +402,7 @@ public:
 	INTRINSIC(I_shoot);
 	INTRINSIC(I_fall);
 	INTRINSIC(I_grab);
+	INTRINSIC(I_igniteChaos);
 	INTRINSIC(I_getFamilyOfType);
 	INTRINSIC(I_getEtherealTop);
 	INTRINSIC(I_guardianBark);

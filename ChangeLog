@@ -1,3 +1,7 @@
+2004-11-07  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/Gump.h: typo in gump flag name (s/DEPENDANT/DEPENDENT/)
+	* world/Item.*: igniteChaos intrinsic
+
 2004-11-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AvatarDeathProcess.*: AvatarDeathProcess (show RIP gump)
 	* world/actors/MainActor.cpp: start AvatarDeathProcess

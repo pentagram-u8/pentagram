@@ -244,7 +244,7 @@ Intrinsic U8Intrinsics[] = {
 	0, //U
 	MusicProcess::I_playMusic,
 	UCMachine::I_getName, //temp
-	0, // igniteChaos
+	Item::I_igniteChaos,
 	CameraProcess::I_setCenterOn,
 	CameraProcess::I_move_to,
 	// 0x0C0
