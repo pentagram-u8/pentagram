@@ -2,6 +2,7 @@
 	* various: merged rest of patch #857366
 	* docs/savegame, world/actors/ActorAnimProcess.cpp: save 'aborted' bit
 	* kernel/GUIApp.cpp: fixed Palette::matrix array size
+	* world/Item.cpp: don't use l_next if undefined
 
 2003-12-19  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* misc/istring.*: case-insensitive string (patch #857366)

@@ -1008,8 +1008,9 @@ void Item::setupLerp(sint32 gametick)
 
 	// No lerping this frame if Shape Changed, or No lerp is set, 
 	// or no last setup, or last setup more than 1 tick ago
-	if ((l_next.shape != shape) || (extendedflags & EXT_LERP_NOPREV) ||
-		(last_setup == 0) || (gametick-last_setup)>1 || flags & FLG_CONTAINED)
+	if ((last_setup == 0) || (l_next.shape != shape) ||
+		(extendedflags & EXT_LERP_NOPREV) || 
+		(gametick-last_setup)>1 || flags & FLG_CONTAINED)
 		no_lerp = true;
 
 	// Update the time we were just setup
