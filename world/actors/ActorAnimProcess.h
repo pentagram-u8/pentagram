@@ -46,8 +46,6 @@ protected:
 
 	virtual bool init();
 
-	ObjId checkWeaponHit(int dir, int range);
-
 	Animation::Sequence action;
 	uint32 dir;
 

@@ -78,6 +78,7 @@ public:
 	bool isDone() const { return done; }
 	bool isBlocked() const { return blocked; }
 	bool isUnsupported() const { return unsupported; }
+	ObjId hitSomething() const { return hitobject; }
 
 	bool load(IDataSource* ids);
 	void save(ODataSource* ods);
@@ -90,6 +91,7 @@ private:
 	};
 
 	unsigned int getNextFrame(unsigned int frame);
+	void checkWeaponHit();
 
 	unsigned int startframe, endframe;
 	bool firstframe;
@@ -111,6 +113,7 @@ private:
 	bool done;
 	bool blocked;
 	bool unsupported;
+	ObjId hitobject;
 
 	Mode mode;
 };

@@ -235,13 +235,8 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 		}
 
 		// attacking?
-		if ((tracker->getAnimAction()->flags & AnimAction::AAF_ATTACK) && 
-			!attackedSomething && tracker->getAnimFrame()->attack_range()) {
-			
-			// check if there's anything in range
-			ObjId hit = checkWeaponHit(dir, tracker->getAnimFrame()->
-									   attack_range());
-			
+		if (!attackedSomething) {
+			ObjId hit = tracker->hitSomething();
 			if (hit) {
 				attackedSomething = true;
 				Item* hit_item = World::get_instance()->getItem(hit);
@@ -273,50 +268,6 @@ void ActorAnimProcess::terminate()
 	delete tracker;
 
 	Process::terminate();
-}
-
-ObjId ActorAnimProcess::checkWeaponHit(int dir, int range)
-{
-	pout << "Checking hit (" << range << "): ";
-
-	Actor *a = World::get_instance()->getNPC(item_num);
-	assert(a);
-
-	CurrentMap* cm = World::get_instance()->getCurrentMap();
-
-	UCList itemlist(2);
-	LOOPSCRIPT(script, LS_TOKEN_END);
-
-	// CHECKME: check range
-	cm->areaSearch(&itemlist, script, sizeof(script), a, 16*range, false);
-
-	ObjId hit = 0;
-	for (unsigned int i = 0; i < itemlist.getSize(); ++i) {
-		ObjId itemid = itemlist.getuint16(i);
-		Item* item = World::get_instance()->getItem(itemid);
-		assert(item);
-		sint32 ix,iy,iz;
-		item->getLocationAbsolute(ix,iy,iz);
-		sint32 ax,ay,az;
-		a->getLocationAbsolute(ax,ay,az);
-		int dirdelta = abs(a->getDirToItemCentre(*item) - dir);
-		if ((dirdelta <= 1 || dirdelta >= 7) &&
-			!a->getShapeInfo()->is_fixed() && itemid < 256) {
-			// FIXME: should allow item to be only slightly outside of
-			//        the right direction
-			// FIXME: shouldn't only allow hitting NPCs
-			hit = itemid;
-			pout << "hit ";
-			item->dumpInfo();
-			break;
-		}
-	}
-
-	if (!hit) {
-		pout << "nothing" << std::endl;
-	}
-
-	return hit;
 }
 
 

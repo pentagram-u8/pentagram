@@ -1,3 +1,7 @@
+2004-11-23  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/AnimationTracker.*: track attacks as well
+	* world/actors/ActorAnimProcess.*: let tracker handle weapon checks
+
 2004-11-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/GrantPeaceProcess.*: castGrantPeace intrinsic
 	* world/FireballProcess.*: TonysBalls intrinsic

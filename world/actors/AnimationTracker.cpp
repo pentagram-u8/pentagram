@@ -27,6 +27,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AnimAction.h"
 #include "Direction.h"
 #include "ShapeInfo.h"
+#include "UCList.h"
+#include "LoopScript.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -78,6 +80,7 @@ void AnimationTracker::init(Actor* actor_, Animation::Sequence action_,
 	done = false;
 	blocked = false;
 	unsupported = false;
+	hitobject = 0;
 	mode = NormalMode;
 }
 
@@ -220,6 +223,15 @@ bool AnimationTracker::step()
 	y += dy;
 	z += dz;
 
+
+	// if attack animation, see if we hit something
+	if ((animaction->flags & AnimAction::AAF_ATTACK) &&
+		(hitobject == 0) && f.attack_range() > 0)
+	{
+		checkWeaponHit();
+	}
+		
+
 	if (f.flags & AnimFrame::AFF_ONGROUND) {
 		// needs support
 
@@ -280,6 +292,60 @@ void AnimationTracker::setTargetedMode(sint32 x_, sint32 y_, sint32 z_)
 		target_dy = (y_ - y - end_dy) / offGround;
 	}
 
+}
+
+void AnimationTracker::checkWeaponHit()
+{
+	// FIXME: this is rather broken, since it uses the Actor's position
+	// instead of the current internal (x,y) tracker position.
+	// However, attack animations generally don't move the actor, so
+	// the effect shouldn't be noticable for now.
+
+	int range = animaction->frames[dir][currentframe].attack_range();
+
+	pout << "Checking hit (" << range << "): ";
+
+	Actor *a = World::get_instance()->getNPC(actor);
+	assert(a);
+
+	CurrentMap* cm = World::get_instance()->getCurrentMap();
+
+	UCList itemlist(2);
+	LOOPSCRIPT(script, LS_TOKEN_END);
+
+	// CHECKME: check range
+	cm->areaSearch(&itemlist, script, sizeof(script), a, 16*range, false/*,
+				   x, y*/);
+
+	ObjId hit = 0;
+	for (unsigned int i = 0; i < itemlist.getSize(); ++i) {
+		ObjId itemid = itemlist.getuint16(i);
+		if (itemid == actor) continue; // don't want to hit self
+
+		Item* item = World::get_instance()->getItem(itemid);
+		assert(item);
+		sint32 ix,iy,iz;
+		item->getLocationAbsolute(ix,iy,iz);
+		sint32 ax,ay,az;
+		a->getLocationAbsolute(ax,ay,az);
+		int dirdelta = abs(a->getDirToItemCentre(*item) - dir);
+		if ((dirdelta <= 1 || dirdelta >= 7) &&
+			!a->getShapeInfo()->is_fixed() && itemid < 256) {
+			// FIXME: should allow item to be only slightly outside of
+			//        the right direction
+			// FIXME: shouldn't only allow hitting NPCs
+			hit = itemid;
+			pout << "hit ";
+			item->dumpInfo();
+			break;
+		}
+	}
+
+	if (!hit) {
+		pout << "nothing" << std::endl;
+	}
+
+	hitobject = hit;
 }
 
 void AnimationTracker::updateState(PathfindingState& state)
@@ -368,6 +434,7 @@ void AnimationTracker::save(ODataSource* ods)
 	ods->write1(flag);
 	flag = unsupported ? 1 : 0;
 	ods->write1(flag);
+	ods->write2(hitobject);
 }
 
 bool AnimationTracker::load(IDataSource* ids)
@@ -413,6 +480,7 @@ bool AnimationTracker::load(IDataSource* ids)
 	done = (ids->read1() != 0);
 	blocked = (ids->read1() != 0);
 	unsupported = (ids->read1() != 0);
+	hitobject = ids->read2();
 
 	return true;
 }
