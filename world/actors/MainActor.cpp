@@ -318,6 +318,7 @@ ProcId MainActor::die(uint16 damageType)
 
 	// TODO: implement this properly
 	// TODO: close gumps, play music, set 'game over' flag, ...
+	// TODO: gravestone gump opened should not be modal and not be closable
 
 	return animprocid;
 }
