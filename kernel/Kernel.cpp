@@ -327,11 +327,11 @@ void Kernel::killProcesses(ObjId objid, uint16 processtype)
 	{
 		Process* p = *it;
 
-		if ((objid == 0 || objid == p->item_num) &&
+		if (p->item_num != 0 && (objid == 0 || objid == p->item_num) &&
 			(processtype == 6 || processtype == p->type) && !p->terminated)
 		{
 //			p->terminate();
-			p->fail(); // CHECKME: always use fail here or something terminate?
+			p->fail(); // CHECKME: always use fail here or sometimes terminate?
 		}
 	}
 }
@@ -342,11 +342,11 @@ void Kernel::killProcessesNotOfType(ObjId objid, uint16 processtype)
 	{
 		Process* p = *it;
 
-		if ((objid == 0 || objid == p->item_num) &&
+		if (p->item_num != 0 && (objid == 0 || objid == p->item_num) &&
 			(p->type != processtype) && !p->terminated)
 		{
 //			p->terminate();
-			p->fail(); // CHECKME: always use fail here or something terminate?
+			p->fail(); // CHECKME: always use fail here or sometimes terminate?
 		}
 	}
 }

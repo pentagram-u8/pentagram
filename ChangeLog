@@ -1,5 +1,8 @@
+2004-11-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/Kernel.*: don't kill processes with item 0 on map change
+
 2004-11-09  Ryan Nunn <colourles@users.sourceforge.net>
-	* filesys\FileSystem.cpp, misc\exceptions.h : getting rid of exceptions.h
+	* filesys\FileSystem.cpp,misc\exceptions.h: getting rid of exceptions.h
 
 2004-11-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Kernel.*: add findProcess function

@@ -62,12 +62,12 @@ public:
 	Process* findProcess(ObjId objid, uint16 processtype);
 
 	//! kill (fail) processes of a certain object and/or of a certain type
-	//! \param objid the object, or 0 for any object
+	//! \param objid the object, or 0 for any object (except objid 0)
 	//! \param type the type, or 6 for any type
 	void killProcesses(ObjId objid, uint16 processtype);
 
 	//! kill (fail) processes of a certain object and not of a certain type
-	//! \param objid the object, or 0 for any object
+	//! \param objid the object, or 0 for any object (except objid 0)
 	//! \param type the type not to kill
 	void killProcessesNotOfType(ObjId objid, uint16 processtype);
 
