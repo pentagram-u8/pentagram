@@ -3,6 +3,7 @@
 	* kernel/GUIApp.*: init FontManager and setup some (test) overrides
 	* gumps/widget/TextWidget.cpp: use FontManager to get Font
 	* graphics/fonts/TTFont.*: let FontManager handle SDL_ttf
+	* gumps/ShapeViewerGump.cpp: use FontManager
 
 2004-10-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* games/*Game.*: Game class with game initialisation functions

@@ -26,10 +26,11 @@
 #include "ShapeInfo.h"
 
 #include "RenderedText.h"
-#include "ShapeFont.h"
+#include "Font.h"
+#include "FontManager.h"
+
 #include "GameData.h"
 #include "FontShapeFlex.h"
-
 #include "MainShapeFlex.h"
 #include "GumpShapeFlex.h"
 #include "DesktopGump.h"
@@ -57,6 +58,8 @@ ShapeViewerGump::ShapeViewerGump(int width, int height,
 {
 	if (flexes.size())
 		flex = flexes[0].second;
+	else
+		flex = 0;
 }
 
 ShapeViewerGump::~ShapeViewerGump()
@@ -87,7 +90,7 @@ void ShapeViewerGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 		surf->Paint(shape, curframe, posx, posy);
 
 	RenderedText* rendtext;
-	ShapeFont* font = GameData::get_instance()->getFonts()->getFont(0);
+	Pentagram::Font* font = FontManager::get_instance()->getFont(0, true);
 	unsigned int remaining;
 
 	char buf1[50];
@@ -101,6 +104,7 @@ void ShapeViewerGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 			curshape, buf1);
 	rendtext = font->renderText(buf2, remaining);
 	rendtext->draw(surf, 20, 20);
+	delete rendtext;
 	
 	MainShapeFlex* mainshapes = p_dynamic_cast<MainShapeFlex*>(flex);
 	if (!mainshapes || !shape) return;
@@ -122,6 +126,7 @@ void ShapeViewerGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 				buf3, buf4, buf5);
 		rendtext = font->renderText(buf6, remaining);
 		rendtext->draw(surf, 300, 20);
+		delete rendtext;
 	}
 }
 
