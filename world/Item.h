@@ -54,21 +54,18 @@ public:
 
 	//! Move an item. This moves an item to the new location, and updates
 	//! CurrentMap and fastArea if necessary.
-	//! \note This can destroy the object
 	void move(sint32 x, sint32 y, sint32 z);
 
 	//! Move an item. This moves an item to a container and  updates
 	//! CurrentMap and fastArea if necessary.
 	//! \param container The container this item should be placed in
 	//! \return true if item was moved, false if failed
-	//! \note This can destroy the object
 	bool moveToContainer(Container *container, bool checkwghtvol=false);
 
 	//! Move an item to the Ethereal Void
 	void moveToEtherealVoid();
 
 	//! Move an item out of the Ethereal Void to where it originally was
-	//! \note This can destroy the object
 	void returnFromEtherealVoid();
 
 	//! Get the location of the top-most container this Item is in, or

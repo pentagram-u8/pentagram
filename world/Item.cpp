@@ -56,6 +56,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "SpriteProcess.h"
 #include "SliderGump.h"
 #include "UCProcess.h"
+#include "DeleteActorProcess.h"
 
 #include <cstdlib>
 
@@ -197,7 +198,7 @@ void Item::move(sint32 X, sint32 Y, sint32 Z)
 		if (extendedflags & EXT_CAMERA) 
 			CameraProcess::GetCameraProcess()->ItemMoved();
 		else
-			leaveFastArea();	// Can destroy the item
+			leaveFastArea();
 
 		return; //we are done
 	}
@@ -1282,6 +1283,14 @@ void Item::leaveFastArea()
 	// Unset the flag
 	flags &= ~FLG_FASTAREA;
 
+	// CHECKME: what do we need to do exactly?
+	// currently, if an actor, schedule deletion; otherwise, do nothing
+	Actor* a = p_dynamic_cast<Actor*>(this);
+	if (a) {
+		Process* dap = new DeleteActorProcess(a);
+		Kernel::get_instance()->addProcess(dap);
+	}
+#if 0
 	// Kill us if we are fast only
 	if (flags & FLG_FAST_ONLY) 
 		destroy();
@@ -1295,7 +1304,7 @@ void Item::leaveFastArea()
 			collideMove(x,y,0,true,false);
 		}
 	}
-
+#endif
 }
 
 uint16 Item::openGump(uint32 gumpshape)

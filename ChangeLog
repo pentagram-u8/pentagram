@@ -1,6 +1,7 @@
 2005-02-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* configure.ac: add --enable-hq2x option
 	* graphics/ScalerManager.*: changed comments into doxygen comments
+	* world/Item.cpp: don't let item be destroyed in leaveFastArea
 
 2005-02-27  Ryan Nunn <colourles@users.sourceforge.net>
 	* kernel/GUIApp.cpp : Ctrl-V is paste from clipboard for all gumps that
