@@ -1108,6 +1108,32 @@ uint32 Actor::I_createActor(const uint8* args, unsigned int /*argsize*/)
 	return objID;
 }
 
+uint32 Actor::I_setAirWalkEnabled(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	ARG_UINT16(enabled);
+	if (!actor) return 0;
+
+	if (enabled)
+		actor->setActorFlag(ACT_AIRWALK);
+	else
+		actor->clearActorFlag(ACT_AIRWALK);
+
+	return 0;
+}
+
+
+uint32 Actor::I_getAirWalkEnabled(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	if (!actor) return 0;
+
+	if (actor->getActorFlags() & ACT_AIRWALK)
+		return 1;
+	else
+		return 0;
+}
+
 uint32 Actor::I_getEquip(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ACTOR_FROM_PTR(actor);

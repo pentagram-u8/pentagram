@@ -156,6 +156,8 @@ public:
 	INTRINSIC(I_isFeignDeath);
 	INTRINSIC(I_isBusy);
 	INTRINSIC(I_createActor);
+	INTRINSIC(I_setAirWalkEnabled);
+	INTRINSIC(I_getAirWalkEnabled);
 	INTRINSIC(I_getEquip);
 	INTRINSIC(I_setEquip);
 
