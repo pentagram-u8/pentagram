@@ -67,10 +67,11 @@ void QuitGump::InitGump()
 	sf = askShape->getFrame(askshape.framenum);
 	assert(sf);
 
-	Gump * ask = new Gump(6, 6, sf->width, sf->height);
+	Gump * ask = new Gump(0, 0, sf->width, sf->height);
 	ask->SetShape(askShape, askshape.framenum);
 	ask->InitGump();
 	AddChild(ask);
+	ask->setRelativePosition(TOP_CENTER, 0, 5);
 
 	FrameID yesbutton_up(GameData::GUMPS, yesShapeId, 0);
 	FrameID yesbutton_down(GameData::GUMPS, yesShapeId, 1);
@@ -78,9 +79,10 @@ void QuitGump::InitGump()
 	yesbutton_down = _TL_SHP_(yesbutton_down);
 
 	Gump * widget;
-	widget = new ButtonWidget(16, 38, yesbutton_up, yesbutton_down);
+	widget = new ButtonWidget(0, 0, yesbutton_up, yesbutton_down);
 	widget->InitGump();
 	AddChild(widget);
+	widget->setRelativePosition(TOP_LEFT, 16, 38);
 	yesWidget = widget->getObjId();
 
 	FrameID nobutton_up(GameData::GUMPS, noShapeId, 0);
@@ -88,9 +90,10 @@ void QuitGump::InitGump()
 	nobutton_up = _TL_SHP_(nobutton_up);
 	nobutton_down = _TL_SHP_(nobutton_down);
 
-	widget = new ButtonWidget(dims.w / 2 + 8, 38, nobutton_up, nobutton_down);
+	widget = new ButtonWidget(0, 0, nobutton_up, nobutton_down);
 	widget->InitGump();
 	AddChild(widget);
+	widget->setRelativePosition(TOP_RIGHT, -16, 38);
 	noWidget = widget->getObjId();
 }
 

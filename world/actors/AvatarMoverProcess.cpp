@@ -254,14 +254,59 @@ bool AvatarMoverProcess::handleNormalMode()
 	}
 
     // check mouse state to see what needs to be done
+	if (!(mouseButton[0].state & MBS_HANDLED) &&
+		SDL_GetTicks() - mouseButton[0].curDown > DOUBLE_CLICK_TIMEOUT)
+	{
+		mouseButton[0].state |= MBS_HANDLED;
+	}
+
 	if (!(mouseButton[1].state & MBS_HANDLED) &&
-		SDL_GetTicks() - mouseButton[1].lastDown > DOUBLE_CLICK_TIMEOUT)
+		SDL_GetTicks() - mouseButton[1].curDown > DOUBLE_CLICK_TIMEOUT)
 	{
 		mouseButton[1].state |= MBS_HANDLED;
 	}
 
-	if ((mouseButton[1].state & MBS_DOWN) ||
+	if (!(mouseButton[0].state & MBS_HANDLED) &&
 		!(mouseButton[1].state & MBS_HANDLED))
+	{
+		// notice these are all unsigned.
+		uint32 down = mouseButton[1].curDown;
+		if (mouseButton[0].curDown < down)
+		{
+			down = down - mouseButton[0].curDown;
+		}
+		else
+		{
+			down = mouseButton[0].curDown - down;
+		}
+		
+		if (down < DOUBLE_CLICK_TIMEOUT)
+		{
+			mouseButton[0].state |= MBS_HANDLED;
+			mouseButton[1].state |= MBS_HANDLED;
+			// We got a left mouse down.
+			// Note that this automatically means right was down at the time too.
+
+			nextanim = Animation::jumpUp;
+			if (mouselength > 0) {
+				nextanim = Animation::jump;
+			}
+			// check if there's something we can climb up onto here
+
+			// We must be facing the correct direction
+			if (mousedir != nextdir)
+			{
+				nextanim = Animation::stand;
+			}
+
+			nextanim = Animation::checkWeapon(nextanim, lastanim);
+			waitFor(avatar->doAnim(nextanim, nextdir));
+			return false;
+		}
+	}
+
+	if ((mouseButton[1].state & MBS_DOWN) &&
+		(mouseButton[1].state & MBS_HANDLED))
 	{
 		// right mouse button down, but maybe not long enough to really
 		// start walking. Check if we need to turn.
@@ -289,24 +334,20 @@ bool AvatarMoverProcess::handleNormalMode()
 		}
 	}
 
-	if (!(mouseButton[0].state & MBS_HANDLED))
+	if (!(mouseButton[0].state & MBS_HANDLED) &&
+		(mouseButton[1].state & MBS_DOWN))
 	{
 		mouseButton[0].state |= MBS_HANDLED;
-		mouseButton[1].state |= MBS_HANDLED;
 		// We got a left mouse down.
 		// Note that this automatically means right was down at the time too.
 
 		nextanim = Animation::jumpUp;
-
-		// jump.
 
 		// check if we need to do a running jump
 		if (lastanim == Animation::run || lastanim == Animation::runningJump) {
 			pout << "AvatarMover: running jump" << std::endl;
 			nextanim = Animation::runningJump;
 		} else if (mouselength > 0) {
-			// jumping straight up.
-			// check if there's something we can climb up onto here
 			pout << "AvatarMover: jump" << std::endl;
 			nextanim = Animation::jump;
 		}

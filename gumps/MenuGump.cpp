@@ -78,7 +78,7 @@ void MenuGump::InitGump()
 	for (int i = 0; i < 8; ++i)
 	{
 		FrameID frame_up(GameData::GUMPS, menuEntryShape, i * 2);
-		FrameID frame_down(GameData::GUMPS, menuEntryShape, i * 2);
+		FrameID frame_down(GameData::GUMPS, menuEntryShape, i * 2 + 1);
 		frame_up = _TL_SHP_(frame_up);
 		frame_down = _TL_SHP_(frame_down);
 		widget = new ButtonWidget(x, y, frame_up, frame_down);
@@ -86,7 +86,7 @@ void MenuGump::InitGump()
 		AddChild(widget);
 		entryGumps[i] = widget->getObjId();
 		widget->GetDims(rect);
-		y+= rect.h + 1;
+		y+= 14;
 	}
 	
 	// Should be Avatar's name.

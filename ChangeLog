@@ -1,3 +1,9 @@
+2004-05-23  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* gumps/GameMapGump.*: Always send mouse clicks to the AvatarMoverProcess
+	* gumps/MenuGump.cpp: Correction to make other laguages look right
+	* gumps/QuitGump.cpp: Correction to make other laguages look right
+	* world/actors/AvatarMoverProcess.cpp: Handle jump from standing still
+
 2004-05-23  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* data/u8{french,german,spanish}.ini: translations
 	* graphics/FrameID.*: a FrameID class for easy addressing of a frame

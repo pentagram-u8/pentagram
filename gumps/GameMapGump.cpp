@@ -46,7 +46,7 @@
 DEFINE_RUNTIME_CLASSTYPE_CODE(GameMapGump,Gump);
 
 GameMapGump::GameMapGump() :
-	Gump(), display_dragging(false), leftDownToAvatarMover(false)
+	Gump(), display_dragging(false)
 {
 	display_list = new ItemSorter();
 }
@@ -251,21 +251,8 @@ Gump* GameMapGump::OnMouseDown(int button, int mx, int my)
 	GumpToScreenSpace(sx, sy);
 
 	AvatarMoverProcess* amp = GUIApp::get_instance()->getAvatarMoverProcess();
-	MainActor* avatar = World::get_instance()->getMainActor();
-	if (button == BUTTON_RIGHT) {
+	if (button == BUTTON_RIGHT || button == BUTTON_LEFT) {
 		amp->OnMouseDown(button, sx, sy);
-	}
-
-	if (button == BUTTON_LEFT &&
-		(GUIApp::get_instance()->isMouseDown(BUTTON_RIGHT) ||
-		 avatar->isInCombat()))
-	{
-		// if right button is down, or in combat mode,
-		// AvatarMoverProcess wants left clicks too
-		amp->OnMouseDown(button, sx, sy);
-		leftDownToAvatarMover = true;
-	} else if (button == BUTTON_LEFT) {
-		leftDownToAvatarMover = false;
 	}
 
 	if (button == BUTTON_LEFT || button == BUTTON_RIGHT ||
@@ -281,21 +268,18 @@ Gump* GameMapGump::OnMouseDown(int button, int mx, int my)
 void GameMapGump::OnMouseUp(int button, int mx, int my)
 {
 	AvatarMoverProcess* amp = GUIApp::get_instance()->getAvatarMoverProcess();
-	if (button == BUTTON_RIGHT) {
-		amp->OnMouseUp(button);
-	}
-
-	if (button == BUTTON_LEFT && leftDownToAvatarMover) {
+	if (button == BUTTON_RIGHT || button == BUTTON_LEFT) {
 		amp->OnMouseUp(button);
 	}
 }
 
 void GameMapGump::OnMouseClick(int button, int mx, int my)
 {
+	MainActor* avatar = World::get_instance()->getMainActor();
 	switch (button) {
 	case BUTTON_LEFT:
 	{
-		if (leftDownToAvatarMover) break;
+		if (avatar->isInCombat()) break;
 
 		if (GUIApp::get_instance()->isAvatarInStasis()) {
 			pout << "Can't: avatarInStasis" << std::endl;
@@ -357,10 +341,11 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 
 void GameMapGump::OnMouseDouble(int button, int mx, int my)
 {
+	MainActor* avatar = World::get_instance()->getMainActor();
 	switch (button) {
 	case BUTTON_LEFT:
 	{
-		if (leftDownToAvatarMover) break;
+		if (avatar->isInCombat()) break;
 
 		if (GUIApp::get_instance()->isAvatarInStasis()) {
 			pout << "Can't: avatarInStasis" << std::endl; 

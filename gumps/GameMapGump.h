@@ -92,7 +92,6 @@ protected:
 	uint32 dragging_flags;
 	sint32 dragging_x, dragging_y, dragging_z;
 
-	bool leftDownToAvatarMover;
 };
 
 #endif //GameMapGUMP_H_INCLUDED
