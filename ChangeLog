@@ -1,3 +1,6 @@
+2004-10-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/GUIApp.cpp: add 'ttf' config option for TTF overrides
+
 2004-10-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/CurrentMap.*: don't call cachein when loading games
 	* world/CurrentMap.cpp: disabled cachein for actors (temporarily?)

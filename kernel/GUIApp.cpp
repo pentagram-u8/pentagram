@@ -888,15 +888,24 @@ void GUIApp::GraphicSysInit()
 
 	fontmanager = new FontManager();
 
-	IDataSource* fontids = FileSystem::get_instance()->ReadFile("@data/VeraBd.ttf");
-	if (fontids)
-		fontmanager->openTTF("vera10", fontids, 10);
+	bool ttfoverrides;
+	settingman->setDefault("ttf", false);
+	settingman->get("ttf", ttfoverrides);
 
-	fontmanager->addTTFOverride(0, "vera10", 0xC0C0FF);
-	fontmanager->addTTFOverride(5, "vera10", 0xFFAE00);
-	fontmanager->addTTFOverride(6, "vera10", 0xD00000);
-	fontmanager->addTTFOverride(7, "vera10", 0x00D000);
-	fontmanager->addTTFOverride(8, "vera10", 0xFFF000);
+	if (ttfoverrides) {
+		pout << "Loading TTF" << std::endl;
+
+		IDataSource* fontids = FileSystem::get_instance()->
+			ReadFile("@data/VeraBd.ttf");
+		if (fontids)
+			fontmanager->openTTF("vera10", fontids, 10);
+
+		fontmanager->addTTFOverride(0, "vera10", 0xC0C0FF);
+		fontmanager->addTTFOverride(5, "vera10", 0xFFAE00);
+		fontmanager->addTTFOverride(6, "vera10", 0xD00000);
+		fontmanager->addTTFOverride(7, "vera10", 0x00D000);
+		fontmanager->addTTFOverride(8, "vera10", 0xFFF000);
+	}
 
 	// Set Screen Resolution
 	pout << "Set Video Mode" << std::endl;

@@ -86,6 +86,10 @@
 						<configtag name="bpp">
 							32
 						</configtag>
+						<configtag name="ttf">
+							no
+							<comment># Enable this to use the BitStream Vera font for conversations.</comment>
+						</configtag>
 						<configtag name="midi_driver">
 							disabled/windows/fmopl/timidity/coreaudio
 							<comment># If you don't specify midi_driver, Pentagram will automatically select one,</comment>
@@ -112,7 +116,7 @@
 				<para>
 					You may also override some settings under [pentagram] by writing them
 					under [u8]. The ones that can be overriden are midi_driver, fullscreen,
-					width, height, bpp, timiditycfg.<br/>
+					width, height, bpp, ttf, timiditycfg.<br/>
 					Right now this is not necessary as we only support U8 but if we start to
 					support other games it might come in handy.
 				</para>
@@ -188,8 +192,9 @@
 					<keydesc name="g">plays execution scene</keydesc>
 				</keytable>
 				<para>
-					If you copy VeraBd.ttf to the <Pent/> data directory the font of U8 gets replaced by it. 
-					Looks better in conversations but you loose the different colors.
+					If you copy VeraBd.ttf to the <Pent/> data directory and enable the ttf configuration option,
+					the font of U8 gets replaced by it. This font should be more readable than the original U8
+					font in conversations.
 				</para>
 			</body>
 		</sub>
