@@ -30,13 +30,14 @@ FILESYS_OBJS=filesys/FileSystem.o filesys/Flex.o filesys/U8Save.o
 GRAPHICS_OBJS=graphics/Texture.o graphics/TextureBitmap.o graphics/TextureTarga.o graphics/AnimDat.o \
 	graphics/BaseSoftRenderSurface.o graphics/MainShapeFlex.o graphics/Palette.o graphics/PaletteManager.o \
 	graphics/RenderSurface.o graphics/Shape.o graphics/ShapeFlex.o graphics/ShapeFrame.o graphics/ShapeInfo.o \
-	graphics/SoftRenderSurface.o graphics/TypeFlags.o graphics/XFormBlend.o
+	graphics/SoftRenderSurface.o graphics/TypeFlags.o graphics/XFormBlend.o graphics/Font.o \
+	graphics/FontShapeFlex.o
 
 GUMPS_OBJS=gumps/ConsoleGump.o gumps/GameMapGump.o gumps/Gump.o gumps/ResizableGump.o
 
 MISC_OBJS=misc/Args.o misc/Console.o misc/pent_include.o misc/Q_strcasecmp.o misc/util.o
 
-CONF_OBJS=conf/Configuration.o conf/XMLNode.o conf/XMLTree.o 
+CONF_OBJS=conf/Configuration.o conf/XMLNode.o conf/XMLTree.o
 
 KERNEL_OBJS=kernel/CoreApp.o kernel/GUIApp.o kernel/Kernel.o kernel/Object.o kernel/Process.o kernel/GameData.o \
 	kernel/idMan.o
@@ -75,7 +76,7 @@ PENTAGRAM_OBJS=$(CONF_OBJS) $(CONVERT_OBJS) $(FILESYS_OBJS) $(GRAPHICS_OBJS) $(G
 pentagram.exe: $(PENTAGRAM_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ $(LIBS)
 
-tools: amf2mod.exe disasm.exe fold.exe shapeconv.exe 
+tools: amf2mod.exe disasm.exe fold.exe shapeconv.exe
 
 clean:
 	rm -f $(PENTAGRAM_OBJS) pentagram.o
