@@ -9,7 +9,11 @@ player interpretes to do various things.
 I believe that Index 0 in the flex is what can be described as the play list.
 It contains what to play, and when to play it.
 
-Each packet in Index 0 contains a type byte. Here are some the I konw:
+It consists of 6 byte blocks, divided into 3 int16s, terminated by a
+FFFF FFFF FFFF block.
+The first int16 is the shape to display, the second int16 the type of
+action (see list below), and the third int16 a parameter to the action.
+
 Type 0x03 : Play Music. Data is num in music.flx
 Type 0x04 : Slow stop music
 Type 0x05 : Play SFX. Data is num in sound.flx
@@ -19,6 +23,7 @@ Type 0x08 : Fade to black
 Type 0x09 : Fade to palette (Data is palette index in skf)
 Type 0x0C : Wait
 Type 0x0E : Play sound (Data is index in the skf)
+Type 0x12 : Clear subtitles???
 
 The rest of the indices contain the actual frames. There are various types of
 data.
