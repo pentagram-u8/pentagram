@@ -16,24 +16,30 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef MAP_H
-#define MAP_H
+#ifndef MAINSHAPEFLEX_H
+#define MAINSHAPEFLEX_H
 
-#include <list>
+#include "ShapeFlex.h"
 
-class Item;
-class IDataSource;
+class TypeFlags;
+class ShapeInfo;
 
-class Map
+class MainShapeFlex : public ShapeFlex
 {
 public:
-	Map();
-	~Map();
+	MainShapeFlex(IDataSource* ds, ConvertShapeFormat *format = 0);
+	virtual ~MainShapeFlex();
 
-	void loadObjects(IDataSource* ds);
+	static MainShapeFlex* get_instance() { return mainShapeFlex; }
+	
+	void loadTypeFlags(IDataSource *ds);
+	ShapeInfo* getShapeInfo(uint32 shapenum);
+
+protected:
+	TypeFlags* typeFlags;
+
 private:
-	std::list<Item*> globs;
-	std::list<Item*> items;
+	static MainShapeFlex* mainShapeFlex;
 };
 
 

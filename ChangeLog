@@ -1,4 +1,10 @@
 2003-03-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/TypeFlags.*, graphics/ShapeInfo.h: typeflag.dat handling
+	* kernel/Application.cpp: load typeflag.dat
+	* graphics/MainShapeFlex.*: class for the main shapeflex (u8shapes.flx)
+	* world/*: starting some map reading code. (very unfinished)
+
+2003-03-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* */*: minor tweaks/warnings
 	* module.mk: added new object files
 

@@ -16,25 +16,25 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef MAP_H
-#define MAP_H
+#ifndef TYPEFLAGS_H
+#define TYPEFLAGS_H
 
-#include <list>
+#include <vector>
+#include "ShapeInfo.h"
 
-class Item;
 class IDataSource;
 
-class Map
+class TypeFlags
 {
 public:
-	Map();
-	~Map();
+	TypeFlags();
+	~TypeFlags();
 
-	void loadObjects(IDataSource* ds);
+	void load(IDataSource* ds);
+	ShapeInfo* getShapeInfo(uint32 shape);
+
 private:
-	std::list<Item*> globs;
-	std::list<Item*> items;
+	std::vector<ShapeInfo> shapeInfo;
 };
-
 
 #endif

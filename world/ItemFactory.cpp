@@ -19,20 +19,51 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "ItemFactory.h"
+#include "MainShapeFlex.h"
+#include "ShapeInfo.h"
 #include "Item.h"
 #include "Container.h"
 
 Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
-							  uint32 flags, uint32 mapNum)
+							  uint32 flags, uint32 mapnum)
 {
-	// TODO: check what class to create... (need to read typeflag.dat)
+	// check what class to create
+	ShapeInfo *info = MainShapeFlex::get_instance()->getShapeInfo(shape);
+	if (info == 0) return 0;
 
-	Item* item = new Item();
-	item->shape = shape;
-	item->frame = frame;
-	item->quality = quality;
-	item->flags = flags;
-	item->mapNum = mapNum;
+	uint32 family = info->family;
 
-	return item;
+	switch (family) {
+	case ShapeInfo::SF_GENERIC:
+	case ShapeInfo::SF_QUALITY:
+	case ShapeInfo::SF_QUANTITY:
+	case ShapeInfo::SF_BREAKABLE:
+	case ShapeInfo::SF_REAGENT:
+	{
+		// simple item
+
+		Item* item = new Item();
+		item->shape = shape;
+		item->frame = frame;
+		item->quality = quality;
+		item->flags = flags;
+		item->mapnum = mapnum;
+		return item;
+	}
+
+	case ShapeInfo::SF_CONTAINER:
+	{
+		// container
+
+		Container* container = new Container();
+		container->shape = shape;
+		container->frame = frame;
+		container->quality = quality;
+		container->flags = flags;
+		container->mapnum = mapnum;
+		return container;
+	}
+	default:
+		return 0;
+	}
 }

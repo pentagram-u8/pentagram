@@ -34,7 +34,9 @@ pentagram_OBJ = \
 	graphics/Palette.o \
 	graphics/PaletteManager.o \
 	graphics/ShapeFlex.o \
+	graphics/MainShapeFlex.o \
 	graphics/XFormBlend.o \
+	graphics/TypeFlags.o \
 	gumps/ConsoleGump.o \
 	gumps/GameMapGump.o \
 	gumps/Gump.o \

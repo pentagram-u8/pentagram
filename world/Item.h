@@ -42,8 +42,8 @@ protected:
 	sint32 x,y,z; // world coordinates
 	uint32 flags;
 	uint16 quality;
-	uint32 npcNum;
-	uint32 mapNum;
+	uint32 npcnum;
+	uint32 mapnum;
 
 	Container* parent; // container this item is in (or 0 for top-level items)
 };
