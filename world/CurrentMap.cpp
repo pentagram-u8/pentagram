@@ -631,10 +631,8 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 				{
 					// overlapping a solid item. Invalid position
 #if 0
-					if (item->getShape() == 145) {
-						perr << "Hit!" << std::endl;
-					}
-#endif
+					item->dumpInfo();
+#endif					
 					valid = false;
 				}
 
@@ -908,7 +906,7 @@ uint32 CurrentMap::I_canExistAt(const uint8* args, unsigned int /*argsize*/)
 	//!! constants
 	xd = si->x * 32;
 	yd = si->y * 32;
-	zd = si->z * 32;
+	zd = si->z * 8;
 
 	CurrentMap* cm = World::get_instance()->getCurrentMap();
 	bool valid = cm->isValidPosition(x, y, z, xd, yd, zd, 0, 0, 0);
