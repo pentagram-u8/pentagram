@@ -226,11 +226,11 @@ bool ActorAnimProcess::run(const uint32 framenum)
 		if (!result && tracker->isUnsupported()) {
 			animAborted = true;
 			GravityProcess* gp = new GravityProcess(a, 4);
-			uint16 gppid = Kernel::get_instance()->addProcess(gp);
+			Kernel::get_instance()->addProcess(gp);
 			// TODO: inertia
 			
-			// CHECKME: do we need to wait for the fall to finish?
-			waitFor(gppid);
+			// Note: do not wait for the fall to finish: this breaks
+			// the scene where Devon kills Mordea
 			return true;
 		}
 

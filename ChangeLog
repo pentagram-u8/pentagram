@@ -1,8 +1,16 @@
+2004-11-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/Kernel.*: added terminate/fail switch to killProcess calls
+	* kernel/Object.cpp: fail processes when destroying owner after all
+	* world/actors/ActorAnimProcess.cpp: don't wait for fall to finish
+	* usecode/UCMachine.cpp: properly show all process changes in trace
+
 2004-11-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Kernel.*: don't kill processes with item 0 on map change
+	* kernel/Kernel*, kernel/Object.cpp: don't fail a process when
+	  destroying its owner, but terminate it
 
 2004-11-09  Ryan Nunn <colourles@users.sourceforge.net>
-	* filesys\FileSystem.cpp,misc\exceptions.h: getting rid of exceptions.h
+	* filesys/FileSystem.cpp,misc/exceptions.h: getting rid of exceptions.h
 
 2004-11-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Kernel.*: add findProcess function

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -47,8 +47,8 @@ ObjId Object::assignObjId()
 
 void Object::clearObjId()
 {
-	// On clearObjId we terminate all processes that belonged to us
-	Kernel::get_instance()->killProcesses(objid, 6);
+	// On clearObjId we kill all processes that belonged to us
+	Kernel::get_instance()->killProcesses(objid, 6, true);
 
 	if (objid != 0xFFFF)
 		ObjectManager::get_instance()->clearObjId(objid);

@@ -1290,6 +1290,13 @@ bool UCMachine::execProcess(UCProcess* p)
 												   arg_bytes);
 				p->temp32 = Kernel::get_instance()->addProcessExec(newproc);
 
+				if (SHOWSTART) {
+					pout << std::hex << "(still) running process " << p->pid
+						 << ", item " << p->item_num << ", class " <<p->classid
+						 << ", offset " << p->ip << std::dec << std::endl;
+				}
+
+
 				// Note: order of execution of this process and the new one is
 				// relevant. Currently, the spawned processes is executed once
 				// immediately, after which the current process resumes
@@ -1304,7 +1311,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 58 xx xx yy yy zz zz tt uu
 			// spawn inline process function yyyy in class xxxx at offset zzzz
 			// tt = size of this pointer
-			// uu = unknown (occuring values: 00, 02, 05)
+			// uu = unknown (occurring values: 00, 02, 05)
 
 			{
 				uint16 classid = cs.read2();
@@ -1323,6 +1330,12 @@ bool UCMachine::execProcess(UCProcess* p)
 												   thisptr, this_size);
 
 				uint16 newpid= Kernel::get_instance()->addProcessExec(newproc);
+
+				if (SHOWSTART) {
+					pout << std::hex << "(still) running process " << p->pid
+						 << ", item " << p->item_num << ", class " <<p->classid
+						 << ", offset " << p->ip << std::dec << std::endl;
+				}
 
 				// as with 'spawn', run execute the spawned process once
 				// immediately

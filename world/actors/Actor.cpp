@@ -530,7 +530,7 @@ ProcId Actor::die(uint16 damageType)
 	setHP(0);
 	setActorFlag(ACT_DEAD);
 
-	Kernel::get_instance()->killProcesses(getObjId(), 6); // CONSTANT!
+	Kernel::get_instance()->killProcesses(getObjId(), 6, true); // CONSTANT!
 
 	ProcId animprocid = doAnim(Animation::die, getDir());
 
