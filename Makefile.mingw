@@ -60,7 +60,7 @@ PENTAGRAM_OBJS = \
 	$(KERNEL) $(KERNEL2) $(USECODE) $(FILESYS) $(CONVERT) $(CONF)\
 	$(GRAPHICS) $(MISC) $(ARGS) $(GUMPS) $(WIDGETS) $(WORLD) $(ACTORS)\
 	$(COMPILE) $(DISASM) $(AUDIO) $(MIDI) $(TIMIDITY) $(GAMES) $(GAMES2) \
-	$(FONTS) kernel/GUIApp.o pentagram.o
+	$(FONTS) kernel/GUIApp.o misc/version.o pentagram.o
 
 pentagram.exe: $(PENTAGRAM_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ $(LIBS)

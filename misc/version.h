@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2004 The Pentagram team
+Copyright (C) 2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,32 +16,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "pent_include.h"
+#ifndef VERSION_H
+#define VERSION_H
 
-#include <SDL.h>
-#include "GUIApp.h"
-#include "version.h"
+#include <string>
 
-int main(int argc, char* argv[])
-{
-#ifdef SAFE_CONSOLE_STREAMS
-	console_streambuf<char> fb;
-	ppout = new console_ostream<char>(&fb);
+namespace PentagramVersion {
 
-	console_err_streambuf<char> err_fb;
-	pperr = new console_err_ostream<char>(&err_fb);
+extern const char *version;
+extern const char *features;
+extern const char *buildtime;
+
+}
 
 #endif
-
-	pout << "Pentagram version " << PentagramVersion::version << std::endl;
-	pout << "Built: " << PentagramVersion::buildtime << std::endl;
-	pout << "Optional features: " << PentagramVersion::features << std::endl;
-	pout << std::endl;
-
-	GUIApp* app = new GUIApp(argc, argv);
-	app->startup();
-	app->run();
-
-	delete app;
-	return 0;
-}

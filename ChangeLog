@@ -1,4 +1,7 @@
 2004-12-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* misc/version.*: version info
+
+2004-12-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AnimationTracker.*: removed 'dangerous' constructor
 	* docs/savegame.txt: new INFO savegame file
 	* kernel/GUIApp.*, games/U8Game.*: write INFO data
