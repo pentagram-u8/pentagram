@@ -49,7 +49,7 @@ Pentagram needs a pentagram.ini file to point it to the game data files. In Linu
 # (that's the directory that contains fixedfont.tga)
 data=path to pentagram data dir
 [u8]
-# replace 'path to pentagram data dir' with the directory containing 'u8.exe'
+# replace 'path to U8 directory' with the directory containing 'u8.exe'
 path=path to U8 directory
 
 
@@ -64,7 +64,7 @@ fullscreen=no
 width=640
 height=480
 bpp=32
-# Enable this to use the BitStream Vera font for conversations.
+# Enable this to use the BitStream Vera font for conversations and object descriptions.
 ttf=no
 # If you don't specify midi_driver, Pentagram will automatically select one,
 # based on your platform.
@@ -73,7 +73,7 @@ midi_driver=disabled/windows/fmopl/timidity/coreaudio
 # You may need to set timiditycfg if you choose midi_driver=timidity.
 timiditycfg=path to timidity.cfg
 [u8]
-# replace 'path to pentagram data dir' with the directory containing 'u8.exe'
+# replace 'path to U8 directory' with the directory containing 'u8.exe'
 path=path to U8 directory
 # replace with the directory you want Pentagram to save games to.
 # (no, loading of the original's savegames is not supported)
@@ -135,7 +135,7 @@ Some keyboard commands that are only there to trigger some scenes.
 Hacks
 f : plays first scene (Avatar standing up, speaking to Devon)
 g : plays execution scene
-If you copy VeraBd.ttf to the Pentagram data directory and enable the ttf configuration option, the font of U8 gets replaced by it. This font should be more readable than the original U8 font in conversations.
+If you copy VeraBd.ttf to the Pentagram data directory and enable the ttf configuration option, Pentagram will be using it to display conversations and object descriptions. This font is much more readable than the original U8 font. VeraBd.ttf is part of the Bitstream Vera fonts and can be downloaded at http://www.math.leidenuniv.nl/~wpalenst/vera.zip.
 
 
 
