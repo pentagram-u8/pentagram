@@ -82,7 +82,7 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 	if (animaction) {
 		actor_->setActorFlag(Actor::ACT_ANIMLOCK);
 
-#ifdef ANIMATIONINTTERUPT
+#ifdef ANIMATIONINTERRUPT
 		if (animaction->unk1 == 5) {
 			if (actor_->lastanim == action && actor_->direction == dir_) {
 				currentindex = (actor_->lastframe+1) * animaction->framerepeat;
@@ -181,7 +181,7 @@ bool ActorAnimProcess::run(const uint32 framenum)
 #endif
 	}
 
-#ifdef ANIMATIONINTTERUPT
+#ifdef ANIMATIONINTERRUPT
 	if (framecount == animaction->framerepeat - 1) {
 		if (animaction->unk1 == 5) {
 			a->lastframe = frameindex;
@@ -196,7 +196,7 @@ bool ActorAnimProcess::run(const uint32 framenum)
 	currentindex++;
 
 	if (currentindex >= animaction->size * animaction->framerepeat) {
-#ifdef ANIMATIONINTTERUPT
+#ifdef ANIMATIONINTERRUPT
 		if (animaction->unk1 == 5) {
 			currentindex = 0;
 		} else {
@@ -207,7 +207,7 @@ bool ActorAnimProcess::run(const uint32 framenum)
 					 << "] ActorAnimProcess terminating" << std::endl;
 #endif		 
 			terminate();
-#ifdef ANIMATIONINTTERUPT
+#ifdef ANIMATIONINTERRUPT
 		}
 #endif
 	}
