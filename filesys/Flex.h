@@ -23,6 +23,8 @@ class IDataSource;
 
 class Flex {
 public:
+	ENABLE_RUNTIME_CLASSTYPE();
+
 	explicit Flex(IDataSource* ds);
 	virtual ~Flex();
 

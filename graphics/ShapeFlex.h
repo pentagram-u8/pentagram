@@ -31,6 +31,8 @@ namespace Pentagram { struct Palette; }
 class ShapeFlex : protected Flex
 {
 public:
+	ENABLE_RUNTIME_CLASSTYPE();
+
 	ShapeFlex(IDataSource* ds, Pentagram::Palette* pal = 0,
 			  const ConvertShapeFormat *format = 0);
 	virtual ~ShapeFlex();

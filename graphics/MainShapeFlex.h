@@ -30,6 +30,8 @@ struct AnimAction;
 class MainShapeFlex : public ShapeFlex
 {
 public:
+	ENABLE_RUNTIME_CLASSTYPE();
+
 	MainShapeFlex(IDataSource* ds, Pentagram::Palette* pal = 0,
 				  const ConvertShapeFormat *format = 0);
 	virtual ~MainShapeFlex();

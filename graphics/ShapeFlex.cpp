@@ -22,6 +22,8 @@
 #include "Shape.h"
 #include "Palette.h"
 
+DEFINE_RUNTIME_CLASSTYPE_CODE(ShapeFlex,Flex);
+
 ShapeFlex::ShapeFlex(IDataSource* ds, Pentagram::Palette* pal,
 					 const ConvertShapeFormat *fmt)
 	: Flex(ds), format(fmt), palette(pal)

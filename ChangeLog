@@ -1,3 +1,10 @@
+2004-05-19  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* filesys/Flex.*: added p_dynamic cast support (base class)
+	* graphics/ShapeFlex.*: added p_dynamic cast support
+	* graphics/MainShapeFlex.*: added p_dynamic cast support
+	* gumps/ShapeViewerGump.cpp: added shapeinfo to gump when viewed
+	  shape is from MainShapeFlex.
+
 2004-05-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/PaperdollGump.*: output stat descriptions
 

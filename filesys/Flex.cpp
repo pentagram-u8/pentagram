@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Flex.h"
 #include "IDataSource.h"
 
+DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(Flex);
+
 Flex::Flex(IDataSource* ds_) : objects(0), ds(ds_)
 {
 	ds->seek(0x54);

@@ -23,6 +23,7 @@
 #include "RenderSurface.h"
 #include "GUIApp.h"
 #include "Shape.h"
+#include "ShapeInfo.h"
 
 #include "RenderedText.h"
 #include "ShapeFont.h"
@@ -100,6 +101,28 @@ void ShapeViewerGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 			curshape, buf1);
 	rendtext = font->renderText(buf2, remaining);
 	rendtext->draw(surf, 20, 20);
+	
+	MainShapeFlex* mainshapes = p_dynamic_cast<MainShapeFlex*>(flex);
+	if (!mainshapes || !shape) return;
+	
+	char buf3[128];
+	char buf4[128];
+	char buf5[128];
+	char buf6[512];
+	ShapeInfo * info = mainshapes->getShapeInfo(curshape);
+	if (info)
+	{
+		sprintf(buf3, "x = %d, y = %d, z = %d\n flags = 0x%04X, family = %d",
+				info->x, info->y, info->z, info->flags, info->family);
+		sprintf(buf4, "equip type = %d\n unknown flags = 0x%02X\n weight = %d",
+				info->equiptype, info->unknown, info->weight);
+		sprintf(buf5, "volume = %d\n animtype = %d, animdata = %d",
+				info->animtype, info->animdata, info->volume);
+		sprintf(buf6, "ShapeInfo:\n %s\n %s, %s",
+				buf3, buf4, buf5);
+		rendtext = font->renderText(buf6, remaining);
+		rendtext->draw(surf, 300, 20);
+	}
 }
 
 bool ShapeViewerGump::OnKeyDown(int key, int mod)
