@@ -1,3 +1,9 @@
+
+2004-10-08  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* world/actors/AnimationTracker.*: targeted jump do not affect z.
+	  Avatar should not be able to jump higher, and gravity + inertia
+	  should take care of falling.
+
 2004-10-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* games/U8Game.cpp: put avatar in stasis at the beginning
 

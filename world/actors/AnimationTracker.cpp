@@ -158,10 +158,6 @@ bool AnimationTracker::step()
 	{
 		dx += target_dx;
 		dy += target_dy;
-//		dz += target_dz;
-		//!HACK HACK HACK - @see SetTargetedMode
-		if ((target_dz < 0 && dz < 0) || target_dz > 0)
-			dz += target_dz;
 	}
 
 	// determine footpad
@@ -264,19 +260,14 @@ void AnimationTracker::setTargetedMode(sint32 x_, sint32 y_, sint32 z_)
 	unsigned int i;
 	int totaldir = 0;
 	int offGround = 0;
-	int negDzCount = 0;
-	sint32 end_dx, end_dy, end_dz = 0;
+	sint32 end_dx, end_dy;
 
 	for (i=startframe; i != endframe; i = getNextFrame(i))
 	{
 		AnimFrame& f = animaction->frames[dir][i];
 		totaldir += f.deltadir;  // This line sometimes seg faults.. ????
-		end_dz += f.deltaz;
 		if (!(f.flags & AnimFrame::AFF_ONGROUND))
 			++offGround;
-
-		if (f.deltaz < 0)
-			++negDzCount;
 	}
 
 	end_dx = 4 * x_fact[dir] * totaldir;
@@ -287,13 +278,6 @@ void AnimationTracker::setTargetedMode(sint32 x_, sint32 y_, sint32 z_)
 		mode = TargetMode;
 		target_dx = (x_ - x - end_dx) / offGround;
 		target_dy = (y_ - y - end_dy) / offGround;
-		target_dz = (z_ - z - end_dz) / offGround;
-
-		//! HACK HACK HACK! Animation will reach it's top height before
-		// applying z delta if z delta is negative,
-		// but the delta will be larger
-		if (target_dz < 0 && negDzCount > 0)
-			target_dz = (z_ - z - end_dz) / negDzCount;
 	}
 
 }
@@ -371,7 +355,6 @@ void AnimationTracker::save(ODataSource* ods)
 	if (mode == TargetMode) {
 		ods->write4(static_cast<uint32>(target_dx));
 		ods->write4(static_cast<uint32>(target_dy));
-		ods->write4(static_cast<uint32>(target_dz));
 	}
 	uint8 fs = firststep ? 1 : 0;
 	ods->write1(fs);
@@ -421,7 +404,6 @@ bool AnimationTracker::load(IDataSource* ids)
 	if (mode == TargetMode) {
 		target_dx = ids->read4();
 		target_dy = ids->read4();
-		target_dz = ids->read4();
 	}
 
 	firststep = (ids->read1() != 0);

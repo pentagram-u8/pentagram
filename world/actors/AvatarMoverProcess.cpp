@@ -468,7 +468,7 @@ void AvatarMoverProcess::jump(Animation::Sequence action, int direction)
 	Item * target = World::get_instance()->getItem(targetId);
 	
 	if (target && target->getShapeInfo()->is_land())
-	{
+	{	// Original also only lets you jump at the Z_FACE
 		Process *p = new TargetedAnimProcess(avatar, Animation::jumpUp,
 											 direction, coords);
 		waitFor(Kernel::get_instance()->addProcess(p));

@@ -103,7 +103,7 @@ private:
 	// actor state
 	sint32 prevx,prevy,prevz;
 	sint32 x,y,z;
-	sint32 target_dx,target_dy,target_dz;
+	sint32 target_dx,target_dy;
 	bool firststep, flipped;
 	uint32 shapeframe;
 
