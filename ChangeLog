@@ -1,4 +1,7 @@
 2003-05-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/Application.cpp: getCurrentTimerTick
+	
+2003-05-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCProcess.cpp: don't push this pointer if it's zero
 
 2003-05-25	Darke <darkepaw@users.sf.net>

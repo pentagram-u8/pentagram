@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define APPLICATION_H
 
 #include "SDL_events.h"
+#include "intrinsics.h"
 
 class Kernel;
 class UCMachine;
@@ -52,9 +53,12 @@ public:
 
 	void ForceQuit() { isRunning=false; };
 
+	uint32 getFrameNum() const { return framenum; }
+
+	INTRINSIC(I_getCurrentTimerTick);
+
 	// Bad Darke! *pawslap!* Will make this private again soon.
 	static Application* application;
-
 private:
 	// minimal system
 	Kernel* kernel;
@@ -93,6 +97,8 @@ private:
 	bool weAreWeAreWeAreTheMany; // false for the time being. *grin*
 
 	bool isRunning;
+
+	uint32 framenum;
 };
 
 #endif

@@ -74,6 +74,7 @@ public:
 	INTRINSIC(I_urandom);
 	INTRINSIC(I_rndRange);
 	INTRINSIC(I_numToStr);
+	INTRINSIC(I_getCurrentTimerTick);
 
 private:
 

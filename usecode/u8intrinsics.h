@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Container.h"
 #include "Actor.h"
 #include "Kernel.h"
+#include "Application.h"
 
 // Ultima 8 Intrinsics
 Intrinsic U8Intrinsics[] = {
@@ -83,7 +84,7 @@ Intrinsic U8Intrinsics[] = {
 	0, //U
 	// 0x030
 	0, //U
-	Item::I_legalCreateAtCoords,//the 'legalCreate's are just educated guesses
+	Item::I_legalCreateAtCoords,
 	Item::I_create,
 	Item::I_legalCreateAtPoint,
 	Item::I_legalCreateInCont,
@@ -254,7 +255,7 @@ Intrinsic U8Intrinsics[] = {
 	// 0x0D0
 	0,
 	Item::I_getEtherealTop,
-	0,
+	Application::I_getCurrentTimerTick,
 	0,
 	0,
 	0,
@@ -298,7 +299,7 @@ Intrinsic U8Intrinsics[] = {
 	0,
 	0,
 	0,
-	UCMachine::I_AvatarCanCheat, // temp.
+	UCMachine::I_AvatarCanCheat,
 	0,
 	0,
 	0,

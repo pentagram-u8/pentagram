@@ -72,7 +72,7 @@ Application::Application(const int argc, const char * const * const argv)
 	  display_list(0),
 	  runMinimalSysInit(false), runGraphicSysInit(false), runSDLInit(false),
 	  weAreDisasming(false), weAreCompiling(false),
-	  isRunning(false)
+	  isRunning(false), framenum(0)
 {
 	assert(application == 0);
 	application = this;
@@ -116,7 +116,6 @@ void Application::run()
 {
 	isRunning = true;
 
-	uint32 framenum = 0;
 	SDL_Event event;
 	while (isRunning) {
 		// this needs some major changes, including possibly:
@@ -569,7 +568,7 @@ void Application::SDLInit()
 	//else...
 
 	pout << "Init SDL" << std::endl;
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE);
+	SDL_Init(SDL_INIT_VIDEO);
 	atexit(SDL_Quit);
 
 	runSDLInit=true;
@@ -696,7 +695,7 @@ void Application::handleEvent(const SDL_Event& event)
 				item = p_dynamic_cast<Item*>(World::get_instance()->getObject(21184)); // *cough*
 			item->callUsecodeEvent(7);
 		} break;
-		case SDLK_g: { // trigger
+		case SDLK_g: { // trigger 'execution' egg
 			Item* item = p_dynamic_cast<Item*>(World::get_instance()->getObject(21162)); // *cough*
 			if (item->getQuality() != 4)
 				item = p_dynamic_cast<Item*>(World::get_instance()->getObject(21163)); // *cough*
@@ -717,4 +716,12 @@ void Application::handleEvent(const SDL_Event& event)
 	default:
 		break;
 	}
+}
+
+
+
+uint32 Application::I_getCurrentTimerTick(const uint8* /*args*/,
+										unsigned int /*argsize*/)
+{
+	return get_instance()->getFrameNum();
 }
