@@ -135,7 +135,7 @@ uint32 Archive::getRawSize(uint32 index)
 ArchiveFile* Archive::findArchiveFile(uint32 index)
 {
 	unsigned int n = sources.size();
-	for (unsigned int i = 0; i < sources.size(); ++i) {
+	for (unsigned int i = 1; i <= n; ++i) {
 		if (sources[n-i]->exists(index))
 			return sources[n-i];
 	}
