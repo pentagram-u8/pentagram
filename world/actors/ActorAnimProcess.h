@@ -46,6 +46,7 @@ protected:
 	uint32 dir;
 
 	uint32 currentindex;
+	bool firstframe;
 };
 
 

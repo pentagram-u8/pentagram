@@ -108,8 +108,9 @@ public:
 		ACT_ASCENDING      = 0x000002,
 		ACT_DESCENDING     = 0x000004,
 		ACT_ANIMLOCK       = 0x000008,
-		
-		ACT_INCOMBAT       = 0x000800, // flags from npcdata byte 0x2F
+
+		ACT_FIRSTSTEP      = 0x000400, // flags from npcdata byte 0x2F
+		ACT_INCOMBAT       = 0x000800,
 		ACT_DEAD           = 0x001000,
 		
 		ACT_AIRWALK        = 0x020000, // flags from npcdata byte 0x30
@@ -134,9 +135,6 @@ protected:
 
 	uint16 lastanim;
 	uint16 direction;
-#ifdef ANIMATIONINTERRUPT
-	int lastframe;
-#endif
 
 	uint32 actorflags;
 };

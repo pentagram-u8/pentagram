@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IDataSource.h"
 #include "ODataSource.h"
 
-//#define WATCHACTOR 5
+//#define WATCHACTOR 19
 
 #ifdef WATCHACTOR
 static const int watchactor = WATCHACTOR;
@@ -64,6 +64,7 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 	}
 
 	currentindex = 0;
+	firstframe = true;
 
 	if (actor_->getActorFlags() & Actor::ACT_ANIMLOCK) {
 		//! What do we do if actor was already animating?
@@ -74,42 +75,50 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 		animaction = 0;
 	}
 
-#ifndef ANIMATIONINTERRUPT
+	if (!animaction) return;
+
+	uint32 startframe = 0;
+
+#if 1
 	if (item_num == 5)
 		animaction->framerepeat = 2; // force Darion to 2 frames
 #endif
 
-	if (animaction) {
-		actor_->setActorFlag(Actor::ACT_ANIMLOCK);
+	actor_->setActorFlag(Actor::ACT_ANIMLOCK);
 
-#ifdef ANIMATIONINTERRUPT
-		if (animaction->unk1 == 5) {
-			if (actor_->lastanim == action && actor_->direction == dir_) {
-				currentindex = (actor_->lastframe+1) * animaction->framerepeat;
-				// resume previous animation
-
-				if (currentindex >= animaction->size * animaction->framerepeat)
-					currentindex = 0;
+	if (animaction->flags & AnimAction::AAF_TWOSTEP) {
+		// two-step animation?
+		if (actor_->getActorFlags() & Actor::ACT_FIRSTSTEP) {
+			if (animaction->flags & AnimAction::AAF_LOOPING) {
+				// for a looping animation, start at the end to
+				// make things more fluid
+				startframe = animaction->size - 1;
+			} else {
+				startframe = 0;
 			}
 		} else {
-#endif
-			if (actor_->lastanim == action && actor_->direction == dir_ &&
-				animaction->size > 1)
-			{
-				currentindex+=animaction->framerepeat; // skip first frame if 
-				                                      // repeating an animation
-			}
-#ifdef ANIMATIONINTERRUPT
+			// second step starts halfway
+			startframe = animaction->size / 2;
 		}
-#endif
-		actor_->lastanim = action;
-		actor_->direction = dir_;
+	} else {
+		if (actor_->lastanim == action && actor_->direction == dir_ &&
+			animaction->size > 1)
+		{
+			// skip first frame if repeating an animation
+			startframe = 1;
+		}
 	}
+
+	actor_->lastanim = action;
+	actor_->direction = dir_;
+
+	currentindex = startframe * animaction->framerepeat;
 
 #ifdef WATCHACTOR
 	if (item_num == watchactor)
 		perr << "Animation [" << GUIApp::get_instance()->getFrameNum()
-			 << "] ActorAnimProcess created" << std::endl;
+			 << "] ActorAnimProcess created (" <<action << "," << dir_ << ")"
+			 << std::endl;
 #endif
 }
 
@@ -120,14 +129,7 @@ bool ActorAnimProcess::run(const uint32 framenum)
 		terminate();
 		return false;
 	}
-	//!! this needs timing
-	// without main timing I can't really determine how many 'ticks' 
-	// each frame should last.
 
-	int frameindex = currentindex / animaction->framerepeat;
-	int framecount = currentindex % animaction->framerepeat;
-
-	AnimFrame& f = animaction->frames[dir][frameindex];
 	Actor *a = World::get_instance()->getNPC(item_num);
 
 	if (!a) {
@@ -135,6 +137,74 @@ bool ActorAnimProcess::run(const uint32 framenum)
 		terminate();
 		return false;
 	}
+
+	if (!firstframe) {
+		currentindex++;
+	} else {
+		firstframe = false;
+	}
+
+	unsigned int frameindex = currentindex / animaction->framerepeat;
+	unsigned int framecount = currentindex % animaction->framerepeat;
+
+	// check if we're done
+	if (framecount == 0) {
+		bool done = false;
+
+		if (animaction->flags & AnimAction::AAF_TWOSTEP) {
+			// two-step animation
+			if (a->getActorFlags() & Actor::ACT_FIRSTSTEP) {
+				// end of first step is halfway through the animation
+				//! TODO: check if this causes problem with extremely
+				//        short anims
+				
+				if (frameindex == animaction->size/2)
+				{
+					a->clearActorFlag(Actor::ACT_FIRSTSTEP);
+					done = true;
+				} else {
+					// loop if necessary
+					if (frameindex >= animaction->size) {
+						if (animaction->flags & AnimAction::AAF_LOOPING) {
+							frameindex = 1;
+						} else {
+							frameindex = 0;
+						}
+					}
+				}
+			} else {
+				if (animaction->flags & AnimAction::AAF_LOOPING) {
+					// end of second step is one frame before the end
+					if (frameindex == animaction->size - 1) {
+						a->setActorFlag(Actor::ACT_FIRSTSTEP);
+						done = true;
+					}
+				}
+			}
+		}
+
+		if (!done && frameindex >= animaction->size) {
+			a->setActorFlag(Actor::ACT_FIRSTSTEP);
+			done = true;
+		}
+		
+		if (done) {
+#ifdef WATCHACTOR
+			if (item_num == watchactor)
+				perr << "Animation [" << GUIApp::get_instance()->getFrameNum()
+					 << "] ActorAnimProcess terminating" << std::endl;
+#endif		 
+			terminate();
+			return true;
+		}
+
+		currentindex = frameindex * animaction->framerepeat;
+	}
+
+	AnimFrame& f = animaction->frames[dir][frameindex];
+
+	//! TODO: check if actor is still in fastarea
+	//!       check if being controlled by a GravityTracker
 
 	// Adding position works like this
 	// subtract how much we've already added
@@ -145,23 +215,19 @@ bool ActorAnimProcess::run(const uint32 framenum)
 	sint32 dx, dy, dz;
 	a->getLocation(x,y,z);
 
-#ifdef ANIMATIONINTERRUPT
 	dx = 4 * x_fact[dir] * f.deltadir;
 	dy = 4 * y_fact[dir] * f.deltadir;
 	dz = f.deltaz;
-#else
-	dx = 2 * x_fact[dir] * f.deltadir;
-	dy = 2 * y_fact[dir] * f.deltadir;
-	dz = f.deltaz;
-#endif
 
-	x -= (dx*framecount)/animaction->framerepeat;
-	y -= (dy*framecount)/animaction->framerepeat;
-	z -= (dz*framecount)/animaction->framerepeat;
+	int fc = static_cast<int>(framecount);
 
-	x += (dx*(framecount+1))/animaction->framerepeat;
-	y += (dy*(framecount+1))/animaction->framerepeat;
-	z += (dz*(framecount+1))/animaction->framerepeat;
+	x -= (dx*fc)/animaction->framerepeat;
+	y -= (dy*fc)/animaction->framerepeat;
+	z -= (dz*fc)/animaction->framerepeat;
+
+	x += (dx*(fc+1))/animaction->framerepeat;
+	y += (dy*(fc+1))/animaction->framerepeat;
+	z += (dz*(fc+1))/animaction->framerepeat;
 
 //	a->move(x,y,z);
 	a->collideMove(x, y, z, false, false);
@@ -177,42 +243,10 @@ bool ActorAnimProcess::run(const uint32 framenum)
 #ifdef WATCHACTOR
 		if (item_num == watchactor)
 			perr << "Animation [" << GUIApp::get_instance()->getFrameNum()
-				 << "] showing new frame" << std::endl;
+				 << "] showing new frame (" << frameindex << "/"
+				 << animaction->size << ")" << std::endl;
 #endif
 	}
-
-#ifdef ANIMATIONINTERRUPT
-	if (framecount == animaction->framerepeat - 1) {
-		if (animaction->unk1 == 5) {
-			a->lastframe = frameindex;
-//			perr << std::hex << f.flags << std::dec << std::endl;
-			if (f.flags & 0x800) {
-				terminate();
-			}
-		}
-	}
-#endif
-
-	currentindex++;
-
-	if (currentindex >= animaction->size * animaction->framerepeat) {
-#ifdef ANIMATIONINTERRUPT
-		if (animaction->unk1 == 5) {
-			currentindex = 0;
-		} else {
-#endif
-#ifdef WATCHACTOR
-			if (item_num == watchactor)
-				perr << "Animation [" << GUIApp::get_instance()->getFrameNum()
-					 << "] ActorAnimProcess terminating" << std::endl;
-#endif		 
-			terminate();
-#ifdef ANIMATIONINTERRUPT
-		}
-#endif
-	}
-
-
 
 	return true;
 }
@@ -235,7 +269,9 @@ void ActorAnimProcess::saveData(ODataSource* ods)
 {
 	ods->write2(1); //version
 	Process::saveData(ods);
-	
+
+	uint8 ff = firstframe ? 1 : 0;
+	ods->write1(ff);
 	ods->write4(dir);
 	ods->write4(currentindex);
 	if (animaction) {
@@ -253,6 +289,7 @@ bool ActorAnimProcess::loadData(IDataSource* ids)
 	if (version != 1) return false;
 	if (!Process::loadData(ids)) return false;
 
+	firstframe = (ids->read1() != 0);
 	dir = ids->read4();
 	currentindex = ids->read4();
 

@@ -39,7 +39,12 @@ struct AnimAction {
 	std::vector<AnimFrame> frames[8]; // 8 directions
 	unsigned int size;
 	int framerepeat;
-	uint32 unk1;
+	uint32 flags;
+
+	enum {
+		AAF_TWOSTEP = 0x01,
+		AAF_LOOPING = 0x04
+	} AnimActionFlags;
 };
 
 

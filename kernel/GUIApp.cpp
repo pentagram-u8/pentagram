@@ -1183,7 +1183,16 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			avatarInStasis = !avatarInStasis;
 			pout << "avatarInStasis = " << avatarInStasis << std::endl; 
 		} break;
-		case SDLK_t: { // engine stats
+		case SDLK_F2: { // quick animation test
+			if (!avatarInStasis) { 
+                Actor* devon = World::get_instance()->getNPC(2);
+				Process* p = new ActorAnimProcess(devon, 0, 2);
+				Kernel::get_instance()->addProcess(p);
+			} else { 
+				pout << "Can't: avatarInStasis" << std::endl; 
+			} 
+
+		} break;		case SDLK_t: { // engine stats
 			Kernel::get_instance()->kernelStats();
 			ObjectManager::get_instance()->objectStats();
 			UCMachine::get_instance()->usecodeStats();

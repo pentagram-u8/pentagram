@@ -1,3 +1,8 @@
+2003-07-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* docs/savegame.txt: updated
+	* world/actors/AnimAction.h: named some flags
+	* world/actors/ActorAnimProcess.*: handle AnimAction flags
+
 2003-07-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Container.*, world/actors/Actor.*: dumpInfo()
 	* kernel/*: give Processes a pid on construction (except when loading)
