@@ -3,6 +3,7 @@
 	* graphics/TypeFlags.cpp: fix ArmourInfo loading
 	* data/u8.ini, data/u8monsters.ini: let Malchir drop Tongue of Flame
 	* world/actors/Actor.*: mostly unimplemented cSetActivity intrinsic
+	* world/Egg.cpp: let dumpInfo show state of hatched flag
 
 2004-09-02  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* kernel/GUIApp.cpp: Separated the QuickAvatarMoverProcess from GUIApp
