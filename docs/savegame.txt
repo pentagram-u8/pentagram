@@ -476,6 +476,7 @@ AvatarDeathProcess: Process (v1)
 CombatProcess: Process (v1)
 <Process>
 uint16 target
+uint16 fixedtarget
 uint8 combatmode (CombatMode)
 
 
