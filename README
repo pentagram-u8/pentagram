@@ -22,3 +22,28 @@ Windows:
 
 MacOS 9:
   Not yet supported
+
+
+CONFIGURATION
+=============
+
+Pentagram needs a pentagram.cfg file to point it to the game data files.
+In Linux, this has to be in a ~/.pentagram directory.
+In Windows, it has to be in the current directory.
+
+A sample pentagram.cfg is included below:
+
+<config>
+ <paths>
+  <u8>
+   /path/to/u8
+  </u8>
+  <data>
+   /path/to/pentagram/data
+  </data>
+ </paths>
+</config>
+
+Replace '/path/to/u8' with the directory containing 'u8.exe'.
+Replace '/path/to/pentagram/data' with the pentagram data directory (that's
+the directory that contains fixedfont.tga).
