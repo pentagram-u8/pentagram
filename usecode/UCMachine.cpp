@@ -1149,6 +1149,14 @@ bool UCMachine::execProcess(UCProcess* p)
 				if (proc && proc2) {
 					proc->waitFor(ui16a);
 				} else {
+
+					// There seem to be cases where a process has terminated
+					// before the caller has had the time to wait for it.
+					// Does that mean we had to wait longer with terminating
+					// the process? For now, just ignore the error.
+
+					// (Example: AVATAR::Look(), the spawn FREE:29D8)
+
 					perr << "Non-existant process PID in implies" << std::endl;
 //					error = true;
 				}
