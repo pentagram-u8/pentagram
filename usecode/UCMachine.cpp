@@ -69,7 +69,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 	//! check if process is suspended? (or do that in UCProcess::run?)
 
-	pout << "running process " << p->pid << ", class " << p->classid << ", offset " << p->ip << std::endl;
+	pout << std::hex << "running process " << p->pid << ", class " << p->classid << ", offset " << p->ip << std::dec << std::endl;
 
 	bool cede = false;
 	bool error = false;
@@ -81,8 +81,8 @@ bool UCMachine::execProcess(UCProcess* p)
 
 		uint8 opcode = cs.read1();
 
-		LOGPF(("sp = %02X; %04X: %02X\t", p->stack.stacksize(),
-			   p->ip, opcode));
+		LOGPF(("bp = %02X; sp = %02X; %04X: %02X\t", p->bp, 
+			   p->stack.stacksize(), p->ip, opcode));
 
 		sint8 si8a, si8b;
 		uint16 ui16a, ui16b;
@@ -236,6 +236,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				uint16 arg_bytes = cs.read1();
 				uint16 func = cs.read2();
 				LOGPF(("!calli\t\t%04Xh (%02Xh arg bytes)", func, arg_bytes));
+				temp32 = 0x11223344; //!
 			}
 			break;
 
@@ -260,14 +261,20 @@ bool UCMachine::execProcess(UCProcess* p)
 			}
 			break;
 
-/*
 		case 0x12:
 			// 12
 			// pop 16bits into temp register
-			//! what is the temp register exactly?
-			printf("pop\t\ttemp");
+			temp32 = p->stack.pop2();
+			LOGPF(("pop\t\ttemp = %04X", (temp32 & 0xFFFF)));
 			break;
-*/
+
+		case 0x13:
+			// 13
+			// pop 32bits into temp register
+			// NB: 0x13 isn't used AFAIK, but this is a 'logical' guess
+			temp32 = p->stack.pop4();
+			LOGPF(("pop long\t\ttemp = %08X", temp32));
+			break;
 
 		// Arithmetic
 
@@ -1018,23 +1025,29 @@ bool UCMachine::execProcess(UCProcess* p)
 			}
 			break;
 
-/*
-               case 0x5D:
-                        // 5D
-                        // push 8 bit value returned from function call
-                        printf("push byte\tretval");
-                        break;
-                case 0x5E:
-                        // 5E
-                        // push 16 bit value returned from function call
-                        printf("push\t\tretval");
-                        break;
-                case 0x5F:
-                        // 5F
-                        // push 32 bit value returned from function call?
-                        printf("push dword\tretval");
-                        break;
-*/
+		case 0x5D:
+			// 5D
+			// push 8 bit value returned from function call
+			// (push temp8 as 16 bit value)
+			p->stack.push2(static_cast<uint8>(temp32 & 0xFF));
+			LOGPF(("push byte\tretval = %02X", (temp32 & 0xFF)));
+			break;
+
+		case 0x5E:
+			// 5E
+			// push 16 bit value returned from function call
+			// (push temp16)
+			p->stack.push2(static_cast<uint16>(temp32 & 0xFFFF));
+			LOGPF(("push\t\tretval = %04X", (temp32 & 0xFFFF)));
+			break;
+
+		case 0x5F:
+			// 5F
+			// push 32 bit value returned from function call
+			// (push temp32)
+			p->stack.push4(temp32);
+			LOGPF(("push long\t\tretval = %08X", temp32));
+			break;
 
 		case 0x60:
 			// 60
