@@ -170,8 +170,14 @@ void Application::U8Playground(int argc, char *argv[])
 		std::exit(-1);
 	}
 	world->loadFixed(fd);
+
+	Actor* av = world->getNPC(1);
+	if (av)
+		world->switchMap(av->getMapNum());
+	else
+		world->switchMap(3);
 	// some testing...
-	world->switchMap(3);
+	//world->switchMap(3);
 	//world->switchMap(40);
 	//world->switchMap(43);
   	//world->switchMap(3);
@@ -183,6 +189,7 @@ void Application::U8Playground(int argc, char *argv[])
 	// Clear Screen
 	pout << "Paint Inital display" << std::endl;
 	paint();
+
 }
 
 void Application::SetupDisplayList()
@@ -561,7 +568,7 @@ void Application::handleEvent(const SDL_Event& event)
 				World *world = World::get_instance();
 				Item *item = p_dynamic_cast<Item*>(world->getObject(objID));
 
-				pout << "Found item " << objID << std::endl;
+				pout << "Found item " << objID << " (shape " << item->getShape() << ", " << item->getFrame() << ")" << std::endl;
 				if (item) item->callUsecodeEvent(0);	// CONSTANT
 			}
 		}

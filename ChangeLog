@@ -1,3 +1,7 @@
+2003-05-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/Application.cpp: show shape/frame when clicking
+	* kernel/Application.cpp: start on avatar's map
+
 2003-05-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/*: some error checking
 	* kernel/Application.cpp: removed usecode call on startup
