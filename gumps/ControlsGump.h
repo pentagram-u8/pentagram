@@ -35,8 +35,8 @@ public:
 	// Paint the Gump
 	virtual void PaintThis(RenderSurface*, sint32 lerp_factor);
 
-	virtual void ChildNotify(Gump *child, uint32 message);
 	virtual bool OnKeyDown(int key, int mod);
+	virtual void ChildNotify(Gump *child, uint32 message);
 
 	static void showMenu();
 
@@ -44,8 +44,6 @@ public:
 protected:
 	void addEntry(char * binding, char * name, int & x, int & y);
 	virtual void saveData(ODataSource* ods);
-	typedef std::pair<ObjId, Pentagram::istring> entryPair;
-	std::vector<entryPair> entries;
 };
 
 

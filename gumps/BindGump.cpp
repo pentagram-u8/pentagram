@@ -19,17 +19,21 @@
 #include "pent_include.h"
 #include "BindGump.h"
 
+#include "ControlsGump.h"
+
 #include "RenderSurface.h"
 #include "GUIApp.h"
 #include "TextWidget.h"
 #include "Mouse.h"
+
+#include "HIDManager.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(BindGump,ModalGump);
 
-BindGump::BindGump(): ModalGump(0, 0, 160, 80)
+BindGump::BindGump(Pentagram::istring * b, Gump * g): ModalGump(0, 0, 160, 80), binding(b), invoker(g)
 {
 }
 
@@ -74,9 +78,18 @@ void BindGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 
 bool BindGump::OnKeyDown(int key, int mod)
 {
-	if (key != SDLK_ESCAPE)
+	if (key != SDLK_ESCAPE && binding)
 	{
-		pout << "Key pressed - " << SDL_GetKeyName((SDLKey) key) << std::endl;
+		HIDManager * hidmanager = HIDManager::get_instance();
+		if (key == SDLK_BACKSPACE) {
+			hidmanager->clearBindings(*binding);
+		}
+		else {
+			Pentagram::istring control = SDL_GetKeyName((SDLKey) key);
+			hidmanager->bind(control, *binding);
+		}
+		if (invoker)
+			invoker->ChildNotify(this, UPDATE);
 	}
 	Close();	
 	return true;
@@ -84,18 +97,14 @@ bool BindGump::OnKeyDown(int key, int mod)
 
 Gump * BindGump::OnMouseDown(int button, int mx, int my)
 {
-	pout << "Mouse Button pressed - " << GetMouseButtonName((MouseButton) button) << std::endl;
+	Pentagram::istring control = GetMouseButtonName((MouseButton) button);
+	HIDManager * hidmanager = HIDManager::get_instance();
+	if (binding)
+		hidmanager->bind(control, *binding);
+	if (invoker)
+		invoker->ChildNotify(this, UPDATE);
 	Close();
 	return this;
-}
-
-//static
-void BindGump::askBinding(Gump * parent)
-{
-	ModalGump* gump = new BindGump();
-	gump->InitGump();
-	parent->AddChild(gump);
-	gump->setRelativePosition(CENTER);
 }
 
 bool BindGump::loadData(IDataSource* ids)

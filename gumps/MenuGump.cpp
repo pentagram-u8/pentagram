@@ -130,11 +130,9 @@ bool MenuGump::OnKeyDown(int key, int mod)
 	case SDLK_4:
 	{	// Options
 		ControlsGump::showMenu();
-		BindGump::askBinding(this);
 	} break;
 	case SDLK_5:
 	{	// Credits
-		BindGump::askBinding(this);
 	} break;
 	case SDLK_6:
 	{	// Quit
@@ -183,7 +181,6 @@ void MenuGump::ChildNotify(Gump *child, uint32 message)
 				} break;
 				case 5:
 				{	// Credits
-					BindGump::askBinding(this);
 				} break;
 				case 6:
 				{	// Quit

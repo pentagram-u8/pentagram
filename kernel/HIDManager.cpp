@@ -202,3 +202,31 @@ void HIDManager::getBindings(const Pentagram::istring& bindingName, std::vector<
 		}
 	}	
 }
+
+void HIDManager::clearBindings(const Pentagram::istring& bindingName)
+{
+	HIDBindingMap::iterator j = bindingMap.find(bindingName);
+	if (j != bindingMap.end())
+	{
+
+		for (uint16 key=0; key < SDLK_LAST; ++key)
+		{
+			if (key == SDLK_ESCAPE || key == SDLK_BACKQUOTE)
+			{	// We will not allow these keys to be rebound
+				++key; 
+			}
+			if (keybindings[key] == (*j).second)
+			{
+				keybindings[key] = 0;
+			}
+		}
+
+		for (uint16 button=1; button < NUM_MOUSEBUTTONS+1; ++button)
+		{
+			if (mousebindings[button] == (*j).second)
+			{
+				mousebindings[button] = 0;
+			}
+		}
+	}	
+}

@@ -21,12 +21,14 @@
 
 #include "ModalGump.h"
 
+class ControlsGump;
+
 class BindGump : public ModalGump
 {
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	BindGump();
+	BindGump(Pentagram::istring * b, Gump * g);
 	virtual ~BindGump(void);
 
 	// Init the gump, call after construction
@@ -38,11 +40,16 @@ public:
 	virtual bool OnKeyDown(int key, int mod);
 	virtual Gump *	OnMouseDown(int button, int mx, int my);
 
-	static void askBinding(Gump * parent);
-
 	bool loadData(IDataSource* ids);
+
+	enum Message
+	{	// We should really define these messages elsewhere
+		UPDATE = 10
+	};
 protected:
 	virtual void saveData(ODataSource* ods);
+	Pentagram::istring * binding;
+	Gump * invoker;
 };
 
 #endif

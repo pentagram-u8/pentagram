@@ -33,6 +33,87 @@
 #include "IDataSource.h"
 #include "ODataSource.h"
 
+class ControlEntryGump : public Gump
+{
+public:
+	ENABLE_RUNTIME_CLASSTYPE();
+	ControlEntryGump(int x, int y, int width, char * binding, char * name);
+	virtual ~ControlEntryGump(void);
+	virtual void InitGump();
+	virtual void ChildNotify(Gump *child, uint32 message);
+protected:
+	Pentagram::istring bindingName;
+	std::string displayedName;
+	Gump * button;
+};
+
+DEFINE_RUNTIME_CLASSTYPE_CODE(ControlEntryGump,Gump);
+
+ControlEntryGump::ControlEntryGump(int x, int y, int width, char * binding, char * name)
+	:Gump(x, y, width, 5), bindingName(binding), displayedName(name)
+{
+}
+
+ControlEntryGump::~ControlEntryGump()
+{
+}
+
+void ControlEntryGump::InitGump()
+{
+	// close all children so we can simply use this method to re init
+	std::list<Gump*>::iterator it;
+	for (it = children.begin(); it != children.end(); ++it)
+	{
+		Gump *g = *it;
+		if (! g->IsClosing())
+			g->Close();
+	}
+
+	std::vector<const char *> controls;
+	std::vector<const char *>::iterator i;
+	HIDManager * hidmanager = HIDManager::get_instance();
+	Gump * widget;
+
+	Pentagram::Rect rect;
+	button = new ButtonWidget(0, 0, displayedName, 0);
+	button->InitGump();
+	AddChild(button);
+	button->GetDims(rect);
+
+	dims.h = rect.h;
+
+	hidmanager->getBindings(bindingName, controls);
+	int x = 124;
+	for (i = controls.begin(); i != controls.end(); ++i)
+	{
+		widget = new TextWidget(x, 0, *i, 0);
+		widget->InitGump();
+		AddChild(widget, false);
+		widget->GetDims(rect);
+		x += rect.w + 5;
+	}
+}
+
+void ControlEntryGump::ChildNotify(Gump *child, uint32 message)
+{
+	ObjId cid = child->getObjId();
+	if (message == ButtonWidget::BUTTON_CLICK)
+	{
+		if (cid == button->getObjId())
+		{
+			Gump* desktopGump = GUIApp::get_instance()->getDesktopGump();
+			ModalGump* gump = new BindGump(&bindingName, parent);
+			gump->InitGump();
+			desktopGump->AddChild(gump);
+			gump->setRelativePosition(CENTER);
+		}
+	}
+	else if (message == BindGump::UPDATE)
+	{
+		parent->ChildNotify(child, message);
+	}
+}
+
 DEFINE_RUNTIME_CLASSTYPE_CODE(ControlsGump,ModalGump);
 
 ControlsGump::ControlsGump(): ModalGump(0, 0, 5, 5)
@@ -44,7 +125,6 @@ ControlsGump::ControlsGump(): ModalGump(0, 0, 5, 5)
 
 ControlsGump::~ControlsGump()
 {
-	entries.clear();
 	GUIApp::get_instance()->popMouseCursor();
 }
 
@@ -79,43 +159,30 @@ void ControlsGump::InitGump()
 	addEntry("showMenu", "Menu", x, y);
 	addEntry("quit", "Quit", x, y);
 	addEntry("toggleConsole", "Console", x, y);
-
-	std::vector<const char *> controls;
-	std::vector<const char *>::iterator j;
-	std::vector<entryPair>::iterator i;
-	HIDManager * hidmanager = HIDManager::get_instance();
-	ObjectManager * objectmanager = ObjectManager::get_instance();
-	Pentagram::Rect rect;
-
-	y = 20;
-	for (i = entries.begin(); i != entries.end(); ++i)
-	{
-		x = 124;
-		hidmanager->getBindings(i->second, controls);
-		for (j = controls.begin(); j != controls.end(); ++j)
-		{
-			widget = new TextWidget(x, y, *j, 0);
-			widget->InitGump();
-			AddChild(widget, false);
-			widget->GetDims(rect);
-			x += 30;
-		}
-		y += rect.h;
-	}	
 }
 
 void ControlsGump::addEntry(char * binding, char * name, int & x, int & y)
 {
-	entryPair e;
 	Pentagram::Rect rect;
-	Gump * widget = new ButtonWidget(x, y, name, 0);
+	Gump * widget = new ControlEntryGump(x, y, dims.w - x, binding, name);
 	widget->InitGump();
 	AddChild(widget);
-	e.first = widget->getObjId();
-	e.second = binding;
-	entries.push_back(e);
 	widget->GetDims(rect);
 	y += rect.h;
+}
+
+void ControlsGump::ChildNotify(Gump *child, uint32 message)
+{
+	if (message == BindGump::UPDATE)
+	{
+		std::list<Gump*>::iterator it;
+		for (it = children.begin(); it != children.end(); ++it)
+		{
+			ControlEntryGump *g =  p_dynamic_cast<ControlEntryGump*>(*it);
+			if (g)
+				g->InitGump();
+		}
+	}
 }
 
 void ControlsGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
@@ -140,14 +207,6 @@ bool ControlsGump::OnKeyDown(int key, int mod)
 	}
 
 	return true;
-}
-
-void ControlsGump::ChildNotify(Gump *child, uint32 message)
-{
-	ObjId cid = child->getObjId();
-	if (message == ButtonWidget::BUTTON_CLICK)
-	{
-	}
 }
 
 //static

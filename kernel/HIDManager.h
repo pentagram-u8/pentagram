@@ -55,6 +55,9 @@ public:
 	//! \param controls vector to store the controls attached to bindingName
 	void getBindings(const Pentagram::istring& bindingName, std::vector<const char *>& controls);
 
+	//! removes all controls to a HIDBinding
+	//! \param bindingName name of a HIDBinding
+	void clearBindings(const Pentagram::istring& bindingName);
 private:
 	HIDBindingMap bindingMap; 
 	HIDBinding keybindings[SDLK_LAST];
