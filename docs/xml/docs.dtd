@@ -65,7 +65,7 @@
 <!ATTLIST	ref1		target	CDATA	#REQUIRED>
 <!ATTLIST	section_ref		target	CDATA	#REQUIRED>
 <!ATTLIST	extref		target	CDATA	#REQUIRED>
-<!ATTLIST	extref		doc	(faq|docs|studio)	#IMPLIED>
+<!ATTLIST	extref		doc	(faq|readme)	#IMPLIED>
 <!ATTLIST	img		src 	CDATA	#REQUIRED>
 <!ATTLIST	img		alt 	CDATA	#REQUIRED>
 

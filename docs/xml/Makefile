@@ -7,7 +7,7 @@ HTML_OBJS := $(patsubst %.xml,%.html,$(wildcard *.xml))
 TEXT_OBJS := $(patsubst %.xml,%.txt,$(wildcard *.xml))
 PHP_OBJS := $(patsubst %.xml,%.dat,$(wildcard *.xml))
 
-all: html text php ReadMe.html
+all: html text php
 
 # Rules for transforming the XML source
 .xml.html: html.xsl
@@ -17,10 +17,6 @@ all: html text php ReadMe.html
 .xml.dat: php.xsl
 	$(JAVA) -classpath $(CLASSPATH) $(CLASS) -IN $< -XSL php.xsl -OUT $@
 .SUFFIXES: .xml .html .txt .dat
-
-# rule for renaming docs.html to ReadMe.html
-ReadMe.html: docs.html
-	mv docs.html ReadMe.html
 
 # remove all generated files
 clean:

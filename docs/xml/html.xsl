@@ -150,7 +150,7 @@
 						<p>last changed: <xsl:value-of select="@changed"/></p>
 						<hr/>
 						<p>
-							The latest version of this document can be found <a href="http://exult.sourceforge.net/docs.php">here</a>
+							The latest version of this document can be found <a href="http://exult.sourceforge.net/readme.php">here</a>
 						</p>
 						<br/>
 
@@ -256,7 +256,7 @@
 			<xsl:when test="@doc='faq'">
 				<xsl:text>faq.html#</xsl:text>
 			</xsl:when>
-			<xsl:when test="@doc='docs'">
+			<xsl:when test="@doc='readme'">
 				<xsl:text>ReadMe.html#</xsl:text>
 			</xsl:when>
 		</xsl:choose>
@@ -269,7 +269,7 @@
 		<xsl:when test="@doc='faq'">
 			<xsl:text>FAQ</xsl:text>
 		</xsl:when>
-		<xsl:when test="@doc='docs'">
+		<xsl:when test="@doc='readme'">
 			<xsl:text>ReadMe</xsl:text>
 		</xsl:when>
 		<xsl:otherwise>

@@ -1,7 +1,7 @@
 Pentagram Documentation
 last changed: 24 May 2004 (GMT)
 
-The latest version of this document can be found at http://pentagram.sourceforge.net/docs.php
+The latest version of this document can be found at http://pentagram.sourceforge.net/readme.php
 
 
 0. Changes to the Documentation
@@ -51,7 +51,7 @@ nothing here yet
 
 2. Configuration
 2.1. Quick guide
-needs a pentagram.ini file to point it to the game data files. In Linux, this has to be in a ~/.pentagram directory. In Windows, it has to be in the current directory. also needs a u8bindings.ini file to load the keybindings for Ultima 8. The default u8bindings.ini is already in the data directory. A sample pentagram.ini is included below (this is all that is needed at the moment to run ). Comments are marked with # and are above the ini-entries. You can copy/paste these settings with the comments to your ini file as will ignore lines beginning with #.
+Pentagram needs a pentagram.ini file to point it to the game data files. In Linux, this has to be in a ~/.pentagram directory. In Windows, it has to be in the current directory. Pentagram also needs a u8bindings.ini file to load the keybindings for Ultima 8. The default u8bindings.ini is already in the data directory. A sample pentagram.ini is included below (this is all that is needed at the moment to run Pentagram). Comments are marked with # and are above the ini-entries. You can copy/paste these settings with the comments to your ini file as Pentagram will ignore lines beginning with #.
 [pentagram]
 # replace 'path to pentagram data dir' with the pentagram data directory
 # (that's the directory that contains fixedfont.tga)
@@ -62,7 +62,7 @@ path=path to U8 directory
 
 
 2.2. Advanced Configuration
-Right now assumes some default settings that don't need to be set to make work. If you want to change the music driver or the resoultion runs in, you see the defaults below.
+Right now Pentagram assumes some default settings that don't need to be set to make Pentagram work. If you want to change the music driver or the resoultion Pentagram runs in, you see the defaults below.
 [pentagram]
 # replace 'path to pentagram data dir' with the pentagram data directory
 # (that's the directory that contains fixedfont.tga)
@@ -103,7 +103,7 @@ Note that on Mac OS you have to hold down the 'Cmd' key and the mouse button to 
 
 
 3.2. Keyboard commands
-All key commands of can be changed by editing u8bindings.ini or via the options menu in the game. 'KP' means keypad.
+All key commands of Pentagram can be changed by editing u8bindings.ini or via the options menu in the game. 'KP' means keypad.
 
 Default keyboard commands
 ~ : hides/restores console
@@ -141,7 +141,7 @@ Some keyboard commands that are only there to trigger some scenes.
 Hacks
 f : plays first scene (Avatar standing up, speaking to Devon)
 g : plays execution scene
-If you copy VeraBd.ttf to the data directory the font of U8 gets replaced by it. Looks better in conversations but you loose the different colors.
+If you copy VeraBd.ttf to the Pentagram data directory the font of U8 gets replaced by it. Looks better in conversations but you loose the different colors.
 
 
 

@@ -66,7 +66,7 @@
 	<p>last changed: <xsl:value-of select="@changed"/></p>
 	<hr/>
 	<p>
-		A text only version can be found <a href="http://pentagram.sourceforge.net/docs.txt">here</a>
+		A text only version can be found <a href="http://pentagram.sourceforge.net/readme.txt">here</a>
 	</p>
 	<br/>
 
@@ -178,7 +178,7 @@
 			<xsl:when test="@doc='faq'">
 				<xsl:text>faq.php#</xsl:text>
 			</xsl:when>
-			<xsl:when test="@doc='docs'">
+			<xsl:when test="@doc='readme'">
 				<xsl:text>docs.php#</xsl:text>
 			</xsl:when>
 		</xsl:choose>
@@ -191,7 +191,7 @@
 		<xsl:when test="@doc='faq'">
 			<xsl:text>FAQ</xsl:text>
 		</xsl:when>
-		<xsl:when test="@doc='docs'">
+		<xsl:when test="@doc='readme'">
 			<xsl:text>Documentation</xsl:text>
 		</xsl:when>
 		<xsl:otherwise>

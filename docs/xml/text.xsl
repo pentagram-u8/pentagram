@@ -73,7 +73,7 @@
 	<xsl:text>last changed: </xsl:text>
 	<xsl:value-of select="@changed"/>
 	<xsl:text>&#xA;&#xA;</xsl:text>
-	<xsl:text>The latest version of this document can be found at http://pentagram.sourceforge.net/docs.php&#xA;</xsl:text>
+	<xsl:text>The latest version of this document can be found at http://pentagram.sourceforge.net/readme.php&#xA;</xsl:text>
 	<xsl:text>&#xA;&#xA;</xsl:text>
 
 	<!-- BEGIN TOC -->
@@ -168,11 +168,8 @@
 		<xsl:when test="@doc='faq'">
 			<xsl:text>FAQ.txt</xsl:text>
 		</xsl:when>
-		<xsl:when test="@doc='docs'">
+		<xsl:when test="@doc='readme'">
 			<xsl:text>ReadMe.txt</xsl:text>
-		</xsl:when>
-		<xsl:when test="@doc='studio'">
-			<xsl:text>exult_studio.txt</xsl:text>
 		</xsl:when>
 		<xsl:otherwise>
 			<xsl:value-of select="@target"/>
@@ -242,16 +239,7 @@
 
 <xsl:template match="key">'<xsl:value-of select="."/>'</xsl:template>
 
-
-<xsl:template match="Exult">
-	<xsl:text>Exult</xsl:text>
-</xsl:template>
-
-<xsl:template match="Studio">
-	<xsl:text>Exult Studio</xsl:text>
-</xsl:template>
-
-<xsl:template match="Pentagram">
+<xsl:template match="Pent">
 	<xsl:text>Pentagram</xsl:text>
 </xsl:template>
 
