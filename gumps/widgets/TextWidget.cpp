@@ -58,12 +58,14 @@ void TextWidget::InitGump()
 {
 	Gump::InitGump();
 
+	Pentagram::Font *font;
 #ifdef USE_SDLTTF
 	// HACK
-	Pentagram::Font *font = ttffont;
+	if (ttffont)
+	  font = ttffont;
+	else
 #else
-	Pentagram::Font *font = GameData::get_instance()->
-		getFonts()->getFont(fontnum);
+	font = GameData::get_instance()->getFonts()->getFont(fontnum);
 #endif
 
 	// Y offset is always baseline
@@ -81,12 +83,14 @@ bool TextWidget::setupNextText()
 
 	if (current_start >= text.size()) return false;
 
+	Pentagram::Font *font;
 #ifdef USE_SDLTTF
 	// HACK
-	Pentagram::Font *font = ttffont;
+	if (ttffont)
+	  font = ttffont;
+	else
 #else
-	Pentagram::Font *font = GameData::get_instance()->
-		getFonts()->getFont(fontnum);
+	font = GameData::get_instance()->getFonts()->getFont(fontnum);
 #endif
 
 	int tx, ty;

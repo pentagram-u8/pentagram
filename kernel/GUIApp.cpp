@@ -955,7 +955,12 @@ void GUIApp::GraphicSysInit()
 	//HACK;
 //	IDataSource* fontids = FileSystem::get_instance()->ReadFile("@data/verdanab.ttf");
 	IDataSource* fontids = FileSystem::get_instance()->ReadFile("@data/VeraBd.ttf");
-	ttffont = new TTFont(fontids, 10);
+	if (fontids)
+	  ttffont = new TTFont(fontids, 10);
+	else {
+	  ttffont = 0;
+	  perr << "Warning: unable to open @data/VeraBd.ttf" << std::endl;
+	}
 #endif
 
 	// Set Screen Resolution

@@ -1,7 +1,11 @@
 2004-01-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* GUIApp.cpp, TextWidet.cpp: don't crash if @data/VeraBd.ttf not found
+
+2004-01-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/Gump.*: don't allow child gumps to be dragged by default
 	* gumps/DesktopGump.*: allow children of DesktopGump to be dragged
 	* gumps/GameMapGump.*: fix paintEditorItems (it was inverted)
+	* kernel/GUIApp.cpp: use VeraBd.ttf instead of Verdana
 
 2004-01-25  Ryan Nunn <colourles@users.sourceforge.net>
 	* gumps/Gump.cpp, gumps/ConsoleGump.*, kernel/GUIApp.*, misc/Console.*,
