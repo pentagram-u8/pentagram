@@ -81,7 +81,7 @@ bool EggHatcherProcess::run(const uint32 framenum)
 
 		// note that this prevents eggs with XRange==0||YRange==0 from hatching
 		if (x1 <= ax && ax < x2 && y1 <= ay && ay < y2) {
-			if (tegg) nearteleporter = true;
+			if (tegg && tegg->isTeleporter()) nearteleporter = true;
 
 			if (tegg && av->hasJustTeleported()) continue;
 
