@@ -16,29 +16,36 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef BARKGUMP_H_INCLUDED
-#define BARKGUMP_H_INCLUDED
+#ifndef SIMPLETEXTWIDGET_H_INCLUDED
+#define SIMPLETEXTWIDGET_H_INCLUDED
 
-#include "ItemRelativeGump.h"
+//
+// SimpleTextWidget. Just paints the text, resizes itself to fit if desired
+//
+// Alignment is always upper left
+//
+// For word wrapping multipage text widgets (such as used by BarkGump) use
+// WrappingTextWidget
+//
+// For Book like facing page text widgets use FacingPageTextWidget
+//
 
-class BarkGump : public ItemRelativeGump
+#include "Gump.h"
+
+class SimpleTextWidget : public Gump
 {
-	std::string	barked;
-	sint32 counter;
+	std::string		text;
+	int				fontnum;
+
 public:
-	ENABLE_RUNTIME_CLASSTYPE();
-
-	BarkGump(uint16 owner, std::string msg);
-	virtual ~BarkGump(void);
-
-	// Run the gump (decrement the counter)
-	virtual bool		Run(const uint32 framenum);
-
-	// Got to the next page on mouse click
-	virtual Gump *		OnMouseDown(int button, int mx, int my);
+	SimpleTextWidget(int X, int Y, std::string txt, int fontnum, int width = 0, int height = 0);
+	virtual ~SimpleTextWidget(void);
 
 	// Init the gump, call after construction
-	virtual void		InitGump();
+	virtual void			InitGump();
+
+	// Overloadable method to Paint just this Gump (RenderSurface is relative to this)
+	virtual void			PaintThis(RenderSurface*, sint32 lerp_factor);
 };
 
-#endif //BARKGUMP_H_INCLUDED
+#endif SIMPLETEXTWIDGET_H_INCLUDED

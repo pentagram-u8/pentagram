@@ -451,7 +451,6 @@ void Console::Print_err(const MsgMask mm, const char *txt)
 sint32 Console::Printf_err (const char *fmt, ...)
 {
 	va_list		argptr;
-	char		msg[MAXPRINTMSG];
 
 	va_start (argptr, fmt);
 	sint32 count = vPrintf_err(fmt, argptr);

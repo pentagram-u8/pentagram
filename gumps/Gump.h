@@ -131,6 +131,9 @@ public:
 	// Points and Coords
 	//
 
+	// Get the dims
+	virtual void		GetDims(Rect &d) { d = dims; }
+
 	// Used to detect if a point is on the gump
 	virtual bool		PointOnGump(int mx, int my);
 
@@ -219,6 +222,11 @@ public:
 	// Get the root gump (or self)
 	Gump *				GetRootGump();
 
+	// This function is used by our children to notifty us of 'something'
+	// Think of it as a generic call back function
+protected:
+	virtual void		ChildNotify(Gump *child, uint32 message) { }
+public:
 
 	// Dragging
 	virtual void		StartDraggingChild(Gump* gump, int mx, int my);

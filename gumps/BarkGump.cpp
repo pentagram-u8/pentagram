@@ -18,19 +18,27 @@
 
 #include "pent_include.h"
 #include "BarkGump.h"
-#include "Font.h"
-#include "FontShapeFlex.h"
-#include "GameData.h"
-#include "RenderSurface.h"
+#include "SimpleTextWidget.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(BarkGump,ItemRelativeGump);
 
 // TODO: Remove all the hacks
 
 BarkGump::BarkGump(uint16 owner, std::string msg) :
-	ItemRelativeGump(0, 0, 100, 100, owner, 0, LAYER_ABOVE_NORMAL), barked(msg), fontnum(0), counter(100)
+	ItemRelativeGump(0, 0, 100, 100, owner, 0, LAYER_ABOVE_NORMAL), barked(msg), counter(100)
 {
+}
+
+BarkGump::~BarkGump(void)
+{
+}
+
+void BarkGump::InitGump()
+{
+	ItemRelativeGump::InitGump();
+
 	// OK, this is a bit of a hack, but it's how it's has to be
+	int	fontnum;
 	if (owner == 1) fontnum = 6;
 	else if (owner > 256) fontnum = 8;
 	else switch (owner%3) {
@@ -46,26 +54,21 @@ BarkGump::BarkGump(uint16 owner, std::string msg) :
 			fontnum = 0;
 			break;
 	}
-}
 
-BarkGump::~BarkGump(void)
-{
-}
+	// Create the WrappedTextWidget
+	Gump *widget = new SimpleTextWidget(0,0,barked,fontnum);
 
-void BarkGump::InitGump()
-{
-	ItemRelativeGump::InitGump();
+	widget->InitGump();
 
-	// Create the TextWidget... ok, I couldn't care less at the moment,
+	// Add it to us
+	AddChild(widget);
+
 	// This is just a hack
-
-	Font *font = GameData::get_instance()->getFonts()->getFont(fontnum);
-
-	sint32 tx, ty; 
-	font->getTextSize(barked.c_str(), tx, ty);
-	dims.w = tx;
-	dims.h = ty;
-	counter = ty*5; //! constant
+	Rect d;
+	widget->GetDims(d);
+	counter = d.h*5; //! constant
+	dims.h = d.h;
+	dims.w = d.w;
 }
 
 bool BarkGump::Run(const uint32 framenum)
@@ -77,13 +80,14 @@ bool BarkGump::Run(const uint32 framenum)
 	return true;	// Always repaint, even though we really could just try to detect it
 }
 
-// Overloadable method to Paint just this Gumps (RenderSurface is relative to this)
-void BarkGump::PaintThis(RenderSurface*surf, sint32 lerp_factor)
+Gump *BarkGump::OnMouseDown(int button, int mx, int my)
 {
-	ItemRelativeGump::PaintThis(surf,lerp_factor);
-	Font *font = GameData::get_instance()->getFonts()->getFont(fontnum);
+	Gump *g = ItemRelativeGump::OnMouseDown(button,mx,my);
+	if (g) return g;
 
-	surf->PrintText(font,barked.c_str(), 0, font->getBaseline());
+	// Close us.
+	Close();
+	return this;
 }
 
 // Colourless Protection

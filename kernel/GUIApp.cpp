@@ -47,6 +47,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Egg.h"
 #include "CurrentMap.h"
 #include "UCList.h"
+#include "LoopScript.h"
 
 #include <SDL.h>
 
@@ -391,6 +392,45 @@ void GUIApp::LoadConsoleFont()
 	con.SetConFont(confont);
 }
 
+//
+// Hacks are us!
+//
+
+class AvatarMoverProcess : public Process
+{
+	int dx, dy, dir;
+public:
+	static  AvatarMoverProcess	*amp[4];
+
+	AvatarMoverProcess(int x, int y, int _dir) : Process(1), dx(x), dy(y), dir(_dir)
+	{
+		if (amp[dir]) amp[dir]->terminate();
+		amp[dir] = this;
+	}
+
+	virtual bool run(const uint32 framenum)
+	{
+		if (GUIApp::get_instance()->isAvatarInStasis()) 
+		{
+			terminate();
+			return false;
+		}
+		Actor* avatar = World::get_instance()->getNPC(1);
+		sint32 x,y,z;
+		avatar->getLocation(x,y,z);
+		avatar->move(x+dx,y+dy,z);
+		return true;
+	}
+
+	virtual void terminate()
+	{
+		Process::terminate();
+		amp[dir] = 0;
+	}
+};
+
+AvatarMoverProcess	*AvatarMoverProcess::amp[4] = { 0, 0, 0, 0};
+
 void GUIApp::handleEvent(const SDL_Event& event)
 {
 	extern int userchoice; // major hack... see Item::I_ask
@@ -542,7 +582,43 @@ void GUIApp::handleEvent(const SDL_Event& event)
 
 	case SDL_KEYDOWN:
 	{
+		switch (event.key.keysym.sym) {
+			case SDLK_UP: {
+				if (!avatarInStasis) { 
+					Process *p = new AvatarMoverProcess(-64,-64,0);
+					Kernel::get_instance()->addProcess(p);
+				} else { 
+					pout << "Can't: avatarInStasis" << std::endl; 
+				}
+			} break;
+			case SDLK_DOWN: {
+				if (!avatarInStasis) { 
+					Process *p = new AvatarMoverProcess(+64,+64,1);
+					Kernel::get_instance()->addProcess(p);
+				} else { 
+					pout << "Can't: avatarInStasis" << std::endl; 
+				}
+			} break;
+			case SDLK_LEFT: {
+				if (!avatarInStasis) { 
+					Process *p = new AvatarMoverProcess(-64,+64,2);
+					Kernel::get_instance()->addProcess(p);
+				} else { 
+					pout << "Can't: avatarInStasis" << std::endl; 
+				}
+			} break;
+			case SDLK_RIGHT: {
+				if (!avatarInStasis) { 
+					Process *p = new AvatarMoverProcess(+64,-64,3);
+					Kernel::get_instance()->addProcess(p);
+				} else { 
+					pout << "Can't: avatarInStasis" << std::endl; 
+				}
+			} break;
 
+			default:
+				break;
+		}
 	}
 	break;
 
@@ -564,46 +640,20 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		case SDLK_c: userchoice = 12; break;
 		case SDLK_d: userchoice = 13; break;
 		case SDLK_e: userchoice = 14; break;
+
 		case SDLK_UP: {
-			if (!avatarInStasis) { 
-				Actor* avatar = World::get_instance()->getNPC(1);
-				sint32 x,y,z;
-				avatar->getLocation(x,y,z);
-				avatar->move(x-64,y-64,z);
-			} else { 
-				pout << "Can't: avatarInStasis" << std::endl; 
-			}
+			if (AvatarMoverProcess::amp[0]) AvatarMoverProcess::amp[0]->terminate();
 		} break;
 		case SDLK_DOWN: {
-			if (!avatarInStasis) { 
-				Actor* avatar = World::get_instance()->getNPC(1);
-				sint32 x,y,z;
-				avatar->getLocation(x,y,z);
-				avatar->move(x+64,y+64,z);
-			} else { 
-				pout << "Can't: avatarInStasis" << std::endl; 
-			}
+			if (AvatarMoverProcess::amp[1]) AvatarMoverProcess::amp[1]->terminate();
 		} break;
 		case SDLK_LEFT: {
-			if (!avatarInStasis) { 
-				Actor* avatar = World::get_instance()->getNPC(1);
-				sint32 x,y,z;
-				avatar->getLocation(x,y,z);
-				avatar->move(x-64,y+64,z);
-			} else { 
-				pout << "Can't: avatarInStasis" << std::endl; 
-			}
+			if (AvatarMoverProcess::amp[2]) AvatarMoverProcess::amp[2]->terminate();
 		} break;
 		case SDLK_RIGHT: {
-			if (!avatarInStasis) { 
-				Actor* avatar = World::get_instance()->getNPC(1);
-				sint32 x,y,z;
-				avatar->getLocation(x,y,z);
-				avatar->move(x+64,y-64,z);
-			} else { 
-				pout << "Can't: avatarInStasis" << std::endl; 
-			}
+			if (AvatarMoverProcess::amp[3]) AvatarMoverProcess::amp[3]->terminate();
 		} break;
+
 		case SDLK_BACKQUOTE: {
 			if (consoleGump->IsHidden())
 				consoleGump->UnhideGump();
@@ -641,8 +691,9 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			CurrentMap* currentmap = World::get_instance()->getCurrentMap();
 			UCList uclist(2);
 			// (shape == 73 && quality == 36)
-			char* script = "@%\x49\x00=*%\x24\x00=&$";
-			currentmap->areaSearch(&uclist, (uint8*)script, 12,
+			//const uint8 script[] = "@%\x49\x00=*%\x24\x00=&$";
+			LOOPSCRIPT(script, LS_AND(LS_SHAPE_EQUAL1(73), LS_Q_EQUAL(36)));
+			currentmap->areaSearch(&uclist, script, sizeof(script),
 								   0, 256, false, 16188, 7500);
 			if (uclist.getSize() < 1) {
 				perr << "Unable to find FIRST egg!" << std::endl;
@@ -667,8 +718,9 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			CurrentMap* currentmap = World::get_instance()->getCurrentMap();
 			UCList uclist(2);
 			// (shape == 73 && quality == 4)
-			char* script = "@%\x49\x00=*%\x04\x00=&$";
-			currentmap->areaSearch(&uclist, (uint8*)script, 12,
+			//const uint8* script = "@%\x49\x00=*%\x04\x00=&$";
+			LOOPSCRIPT(script, LS_AND(LS_SHAPE_EQUAL1(73), LS_Q_EQUAL(4)));
+			currentmap->areaSearch(&uclist, script, sizeof(script),
 								   0, 256, false, 11732, 5844);
 			if (uclist.getSize() < 1) {
 				perr << "Unable to find EXCUTION egg!" << std::endl;
