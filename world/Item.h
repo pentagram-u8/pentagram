@@ -84,6 +84,8 @@ public:
 	bool isOn(Item& item2) const;
 	bool canExistAt(sint32 x, sint32 y, sint32 z) const;
 
+	void setGravityProcess(uint16 pid) { gravitypid = pid; }
+
 	virtual uint32 getTotalWeight(); // weight including contents (if any)
 	bool checkLoopScript(const uint8* script, uint32 scriptsize);
 	uint32 callUsecodeEvent(uint32 event);
@@ -189,7 +191,9 @@ public:
 	INTRINSIC(I_destroy);
 	INTRINSIC(I_move);
 	INTRINSIC(I_legalMoveToPoint);
+	INTRINSIC(I_hurl);
 	INTRINSIC(I_shoot);
+	INTRINSIC(I_fall);
 	INTRINSIC(I_getFamilyOfType);
 	INTRINSIC(I_getEtherealTop);
 
@@ -222,6 +226,7 @@ protected:
 	sint32	ix,iy,iz;		// Interpolated position in camera space
 
 	Gump* gump;				// Item's gump
+	uint16 gravitypid;		// Item's GravityTracker (or 0)
 
 private:
 	Item* glob_next; // next item in glob

@@ -47,7 +47,9 @@ uint16 MonsterEgg::hatch()
 
 	int shape = getMonsterShape();
 
-	Actor* newactor = ItemFactory::createActor(shape, 0, 0, 0, 0, 0, Item::EXT_NOTINMAP);
+	Actor* newactor = ItemFactory::createActor(shape, 0, 0,
+											   Item::FLG_MONSTER_NPC, 0, 0,
+											   Item::EXT_NOTINMAP);
 	if (!newactor) {
 		perr << "MonsterEgg::hatch failed to create actor (" << shape
 			 <<	")." << std::endl;

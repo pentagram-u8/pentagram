@@ -48,7 +48,7 @@ USECODE_OBJS=usecode/UCList.o usecode/UCMachine.o usecode/UCProcess.o usecode/Us
 
 WORLD_OBJS=world/CameraProcess.o world/Container.o world/CurrentMap.o world/Egg.o world/EggHatcherProcess.o world/Glob.o world/GlobEgg.o \
 	world/Item.o world/ItemFactory.o world/ItemMoveProcess.o world/ItemSorter.o world/Map.o world/MonsterEgg.o \
-	world/TeleportEgg.o world/World.o
+	world/TeleportEgg.o world/World.o world/GravityProcess.o
 
 ACTORS_OBJS=world/actors/Actor.o world/actors/ActorAnimProcess.o world/actors/MainActor.o
 

@@ -37,6 +37,8 @@
 #include "GUIApp.h"
 #include "ShapeInfo.h"
 
+#include "GravityProcess.h" // hack...
+
 DEFINE_RUNTIME_CLASSTYPE_CODE(GameMapGump,Gump);
 
 GameMapGump::GameMapGump(int X, int Y, int Width, int Height) :
@@ -347,7 +349,14 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 				 << z << ") q:" << item->getQuality() << ", m:"
 				 << item->getMapNum() << ", n:" << item->getNpcNum()
 				 << ")" << std::endl;
+#if 0
 			item->setFlag(Item::FLG_INVISIBLE);
+#else
+			GravityProcess* p = new GravityProcess(item, 4);
+			Kernel::get_instance()->addProcess(p);
+			p->init();
+			p->move(0, -32, 32);
+#endif
 		}
 	}
 	default:

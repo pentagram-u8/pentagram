@@ -109,9 +109,9 @@ Intrinsic U8Intrinsics[] = {
 	0, // Item::legal_move
 	Actor::I_isNPC,
 	0, //U
-	UCMachine::I_dummyProcess, // process Item::hurl
+	Item::I_hurl,
 	Item::I_shoot,
-	0, // Item::fall
+	Item::I_fall,
 	0, // Item::grab
 	0, //U
 	Item::I_bark,

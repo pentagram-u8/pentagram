@@ -98,6 +98,7 @@ WORLD = \
 	world/TeleportEgg.o \
 	world/World.o \
 	world/ItemMoveProcess.o \
+	world/GravityProcess.o \
 	world/actors/Actor.o \
 	world/actors/ActorAnimProcess.o \
 	world/actors/MainActor.o

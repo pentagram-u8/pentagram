@@ -1,19 +1,26 @@
-2003-06-15	  Ryan Nunn <colourles@users.sourceforge.net>
-	* convert/u8/ConvertUsecodeU8.h, usecode/u8intrinsics.h : Hurl is actually
-	  a process so I made it use I_dummyProcess.
+2003-06-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/MonsterEgg.cpp: set FLG_MONSTER_NPC on NPCs spawned by egg
+	* world/GravityProcess.*: move an item with gravity (not yet done)
+	* world/Item.*: hurl, fall intrinsics
+
+2003-06-16	  Ryan Nunn <colourles@users.sourceforge.net>
+	* convert/u8/ConvertUsecodeU8.h, usecode/u8intrinsics.h : Hurl is
+	  actually a process so I made it use I_dummyProcess.
 	* usecode/u8intrinsics.h, kernel/GUIApp.* : Added some getTimeIn???
 	  instrinsics. These will not be the final versions of these. They are
 	  purely place holders for now.
 	* usecode/UCMachine.cpp, kernel/Kernel.cpp, kernel/Process.h : 
-	  Deferred process termination. This fixes problems with processes terminating
-	  before implies is called.
-	* world/CurrentMap.cpp : Execute NPC schedule funcs on map load. Also added
-	  in code to execute cachein funcs on map load. However cachein was messing
-	  up the start sequence, so the code is commented out for now.
-	* usecode/intrinsics.h, world/* : New intrinsic ARG Macros. Including new
-	  WorldPoint sturct.
-	* kernel/GUIApp.*, usecode/u8intrinsics.h : Added I_setTimeInGameHours() so
-	  beds now work. Also added time (minutes + seconds) and gamehour display.
+	  Deferred process termination. This fixes problems with processes
+	  terminating before implies is called.
+	* world/CurrentMap.cpp : Execute NPC schedule funcs on map load. Also
+	  added in code to execute cachein funcs on map load. However cachein
+	  was messing up the start sequence, so the code is commented out for
+	  now.
+	* usecode/intrinsics.h, world/* : New intrinsic ARG Macros. Including
+	  new WorldPoint struct.
+	* kernel/GUIApp.*, usecode/u8intrinsics.h : Added
+	  I_setTimeInGameHours() so beds now work. Also added time
+	  (minutes + seconds) and gamehour display.
 	  	
 2003-06-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/MainActor.*: teleportToEgg intrinsic

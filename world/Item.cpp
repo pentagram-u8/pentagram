@@ -43,6 +43,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ContainerGump.h"
 #include "GameMapGump.h"
 #include "WorldPoint.h"
+#include "GravityProcess.h"
 
 #include <cstdlib>
 
@@ -63,8 +64,8 @@ Item::Item()
 	: shape(0), frame(0), x(0), y(0), z(0),
 	  flags(0), quality(0), npcnum(0), mapnum(0),
 	  extendedflags(0), parent(0), 
-	  cachedShape(0), cachedShapeInfo(0),
-	  gump(0), glob_next(0),last_setup(0)
+	  cachedShape(0), cachedShapeInfo(0), gump(0), gravitypid(0),
+	  glob_next(0),last_setup(0)
 {
 
 }
@@ -1453,6 +1454,29 @@ uint32 Item::I_getDirFromItem(const uint8* args, unsigned int /*argsize*/)
 	return Get_WorldDirection(iy - i2y, ix - i2x);
 }
 
+uint32 Item::I_hurl(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM_FROM_PTR(item);
+	ARG_SINT16(xs);
+	ARG_SINT16(ys);
+	ARG_SINT16(zs);
+	ARG_SINT16(grav);
+	if (!item) return 0;
+
+	GravityProcess* p = 0;
+	if (item->gravitypid) {
+		p = p_dynamic_cast<GravityProcess*>(
+			Kernel::get_instance()->getProcess(item->gravitypid));
+		assert(p);
+	} else {
+		p = new GravityProcess(item, grav);
+		Kernel::get_instance()->addProcess(p);
+		p->init();
+	}
+	p->move(xs,ys,zs);
+
+	return item->gravitypid;
+}
 
 uint32 Item::I_shoot(const uint8* args, unsigned int /*argsize*/)
 {
@@ -1464,6 +1488,27 @@ uint32 Item::I_shoot(const uint8* args, unsigned int /*argsize*/)
 
 	return Kernel::get_instance()->addProcess(new ItemMoveProcess(item,
 							point.getX(),point.getY(),point.getZ(),unk1,true));
+}
+
+uint32 Item::I_fall(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM_FROM_PTR(item);
+	if (!item) return 0;
+
+	GravityProcess* p = 0;
+	if (item->gravitypid) {
+		p = p_dynamic_cast<GravityProcess*>(
+			Kernel::get_instance()->getProcess(item->gravitypid));
+		assert(p);
+	} else {
+		p = new GravityProcess(item, 0);
+		Kernel::get_instance()->addProcess(p);
+		p->init();
+	}
+
+	p->setGravity(4); //!! constant
+
+	return 0;
 }
 
 uint32 Item::I_openGump(const uint8* args, unsigned int /*argsize*/)
