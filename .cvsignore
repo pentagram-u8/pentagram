@@ -9,3 +9,4 @@ configure
 ltmain.sh
 .deps
 pentagram
+cachegrind.out.*
