@@ -1,3 +1,8 @@
+2003-02-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* filesys/FileSystem.*: added basic virtual path support
+	* kernel/Application.*: setup/use virtual paths
+	* configure.ac: renamed configure.in to configure.ac
+
 2003-02-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/Palette.*: load palette from datasource
 	* graphics/PaletteManager.*: palette manager

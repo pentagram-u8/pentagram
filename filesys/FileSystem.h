@@ -91,6 +91,7 @@ significant overhead.
 
 #include <fstream>
 #include <string>
+#include <map>
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -104,23 +105,14 @@ class FileSystem
 	static FileSystem* get_instance() { return filesystem; }
 
 	// Open a streaming file as readable. Streamed (0 on failure)
-	IFileDataSource *ReadFile(const std::string &vfn, bool is_text=false)
-	{
-		std::ifstream *f = new std::ifstream();
-		if(!rawopen(*f, vfn, is_text))
-			return 0;
-		return new IFileDataSource(f);
-	}
+	IFileDataSource *ReadFile(const std::string &vfn, bool is_text=false);
 
 	// Open a streaming file as readable. Streamed (0 on failure)
-	OFileDataSource *WriteFile(const std::string &vfn,const bool is_text=false)
-	{
-		std::ofstream *f = new std::ofstream();
-		if(!rawopen(*f, vfn, is_text))
-			return 0;
-		return new OFileDataSource(f);
-	}
+	OFileDataSource *WriteFile(const std::string &vfn, bool is_text=false);
 
+	bool AddVirtualPath(const std::string &vpath, const std::string &realpath);
+	bool RemoveVirtualPath(const std::string &vpath);
+	
 	bool rawopen
 	(
 	std::ifstream& in,			// Input stream to open.
@@ -137,9 +129,15 @@ class FileSystem
 	
  private:
 	void switch_slashes(std::string &name);
-	bool base_to_uppercase(std::string& str, const int count);
+	bool base_to_uppercase(std::string& str, int count);
 
-	static FileSystem* filesystem;	
+	static FileSystem* filesystem;
+
+	// rewrite virtual path in-place (i.e., fvn is replaced)
+	// returns false if no rewriting was done
+	bool rewrite_virtual_path(std::string& vfn);
+
+	std::map<std::string, std::string> virtualpaths;
 };
 
 

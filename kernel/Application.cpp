@@ -36,6 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Palette.h"
 
 #include <SDL.h>
+#include <cstdlib>
 
 int classid, offset; // only temporary, don't worry :-)
 ShapeFlex* shapes;
@@ -54,6 +55,8 @@ Application::Application(int argc, char *argv[])
 	ucmachine = new UCMachine;
 	pout << "Create FileSystem" << std::endl;
 	filesystem = new FileSystem;
+	setupVirtualPaths(); // setup %home, %data
+
 	pout << "Create Configuration" << std::endl;
 	config = new Configuration;
 	loadConfig();
@@ -72,7 +75,7 @@ Application::Application(int argc, char *argv[])
 	// Load palette
 	pout << "Load Palette" << std::endl;
 	palettemanager = new PaletteManager(screen);
-	IDataSource *pf = filesystem->ReadFile("u8pal.pal");
+	IDataSource *pf = filesystem->ReadFile("%u8/static/u8pal.pal");
 	if (!pf) {
 		perr << "Unable to load u8pal.pal. Exiting" << std::endl;
 		std::exit(-1);
@@ -82,7 +85,7 @@ Application::Application(int argc, char *argv[])
 
 	// Load main shapes
 	pout << "Load Shapes" << std::endl;
-	IDataSource *sf = filesystem->ReadFile("u8shapes.flx");
+	IDataSource *sf = filesystem->ReadFile("%u8/static/u8shapes.flx");
 	if (!sf) {
 		perr << "Unable to load u8shapes.flx. Exiting" << std::endl;
 		std::exit(-1);
@@ -91,8 +94,8 @@ Application::Application(int argc, char *argv[])
 
 	// Load confont
 	pout << "Load Confont" << std::endl;
-	IDataSource *cf = filesystem->ReadFile("fixedfont.tga");
-	if (cf) confont = Texture::Create(*cf, "fixedfont.tga");
+	IDataSource *cf = filesystem->ReadFile("%data/fixedfont.tga");
+	if (cf) confont = Texture::Create(*cf, "%data/fixedfont.tga");
 	else confont = 0;
 	if (!confont)
 	{
@@ -129,7 +132,11 @@ Application::~Application()
 
 void Application::run()
 {
-	IDataSource* ds = filesystem->ReadFile("eusecode.flx");
+	IDataSource* ds = filesystem->ReadFile("%u8/usecode/eusecode.flx");
+	if (!ds) {
+		perr << "Unable to load eusecode.flx. Exiting" << std::endl;
+		std::exit(-1);
+	}
 	Usecode* u = new UsecodeFlex(ds);
 	UCProcess* p;
 	if (classid != -1) {
@@ -170,6 +177,33 @@ void Application::paint()
 }
 
 
+void Application::setupVirtualPaths()
+{
+	// setup the 'base' virtual paths:
+	// %home - $HOME/.pentagram/ - for config files, saves,... (OS dependant)
+	// %data - /usr/share/pentagram/ - for config files, data,.. (OS dependant)
+	//       NB: %data can be overwritten by config files
+	//       this should be a default set by configure (or other build systems)
+
+	std::string home;
+#ifdef HAVE_HOME
+	home = getenv("HOME");
+	home += "/.pentagram";
+#else
+	// TODO: what to do on systems without $HOME?
+	home = ".";
+#endif
+	filesystem->AddVirtualPath("%home", home);
+
+	std::string data;
+#ifdef DATA_PATH
+	data = DATA_PATH;
+#else
+	data = "data";
+#endif
+	filesystem->AddVirtualPath("%data", data);
+}
+
 // load configuration files
 void Application::loadConfig()
 {
@@ -179,17 +213,32 @@ void Application::loadConfig()
 	// load system-wide config...
 	// load user-specific config...
 
-	// for now:
-	pout << "pentagram.cfg... ";
-	if (config->readConfigFile("pentagram.cfg", "config"))
+	// system-wide config
+	pout << "%data/pentagram.cfg... ";
+	if (config->readConfigFile("%data/pentagram.cfg", "config"))
+		pout << "Ok" << std::endl;
+	else
+		pout << "Failed" << std::endl;
+
+	// user config
+	pout << "%home/pentagram.cfg... ";
+	if (config->readConfigFile("%home/pentagram.cfg", "config"))
 		pout << "Ok" << std::endl;
 	else
 		pout << "Failed" << std::endl;
 
 
-	pout << "test.cfg... ";
-	if (config->readConfigFile("test.cfg", "config"))
-		pout << "Ok" << std::endl;
-	else
-		pout << "Failed" << std::endl;
+	// Question: config files can specify an alternate data path
+	// Do we reload the config files if that path differs from the
+	// hardcoded data path? (since the system-wide config file is in %data)
+
+	std::string data;
+	config->value("config/paths/data", data, "");
+	if (data != "") {
+		filesystem->AddVirtualPath("%data", data);
+	}
+
+	std::string u8;
+	config->value("config/paths/u8", u8, ".");
+	filesystem->AddVirtualPath("%u8", u8);
 }

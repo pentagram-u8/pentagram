@@ -41,7 +41,7 @@ EMPTY_FILE := @EMPTY_FILE@
 DEPDIR := .deps
 SDL_CFLAGS := @SDL_CFLAGS@
 SDL_LIBS := @SDL_LIBS@
-CXXFLAGS += -g @CXXFLAGS@ @DEFS@ @PROFILE@
+CXXFLAGS += -g @CXXFLAGS@ @DEFS@ @PROFILE@ -DDATA_PATH=\"@DATAPATH@\"
 LDFLAGS += @LIBS@ @PROFILE@
 WARNINGS := @WARNINGS@
 
@@ -92,9 +92,9 @@ Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 # rules to rebuild configure, config.status, aclocal.m4
 $(top_builddir)/config.status: $(srcdir)/configure
 	$(SHELL) ./config.status --recheck
-$(srcdir)/configure: $(srcdir)/configure.in $(top_srcdir)/aclocal.m4
+$(srcdir)/configure: $(srcdir)/configure.ac $(top_srcdir)/aclocal.m4
 	cd $(srcdir) && $(AUTOCONF)
-$(top_srcdir)/aclocal.m4: $(srcdir)/configure.in
+$(top_srcdir)/aclocal.m4: $(srcdir)/configure.ac
 	cd $(srcdir) && $(ACLOCAL)
 
 .PHONY: all clean distclean

@@ -44,15 +44,21 @@ AC_SUBST(RM)
 MKDIR="mkdir -p"
 AC_SUBST(MKDIR)
 
+DATAPATH="$datadir/pentagram"
+
+# TODO: Fix this XWIN/UNIX/Linux mess.
+
 # determine windowing system based on 'host_os'
 AC_MSG_CHECKING("windowing system")
 case "$host_os" in
 	linux*)
 		WINDOWING_SYSTEM="-DXWIN"
+		AC_DEFINE(HAVE_HOME, 1, [HOME env.var exists])
 		AC_MSG_RESULT(X11 (GNU/Linux))
 		;;
 	beos)
 		WINDOWING_SYSTEM="-DBEOS"
+		AC_DEFINE(HAVE_HOME, 1, [HOME env.var exists])
 		AC_MSG_RESULT(BeOS)
 		LIBS="$LIBS -lbe -lmidi"
 		enable_timidity="no"
@@ -74,27 +80,30 @@ case "$host_os" in
 		;;
 	openbsd* )
 		WINDOWING_SYSTEM="-DXWIN"
+		AC_DEFINE(HAVE_HOME, 1, [HOME env.var exists])
 		AC_DEFINE(OPENBSD, 1, [Compiling on OpenBSD])
 		AC_MSG_RESULT(X11 (OpenBSD))
 		LIBS="$LIBS -L/usr/X11R6/lib -lX11 -lXext -lXxf86vm -lXxf86dga"
 		;;
 	solaris* )
 		WINDOWING_SYSTEM="-DXWIN"
+		AC_DEFINE(HAVE_HOME, 1, [HOME env.var exists])
 		AC_MSG_RESULT(X11 (Solaris))
 		LIBS="$LIBS -lsocket -lX11"
 		;;
 	darwin*)
-		dnl We have a problem here: both MacOS X and Darwin report the same
-		dnl signature "powerpc-apple-darwin*" - so we have to do more to
-		dnl distinguish them. Plain Darwin will propably use X-Windows; and it
-		dnl is of course lacking Cocoa. For now I am lazy and do not add 
-		dnl proper detection code.
+		dnl We have a problem here: both MacOS X and Darwin report 
+		dnl the same signature "powerpc-apple-darwin*" - so we have
+		dnl to do more to distinguish them. Plain Darwin will propably
+		dnl use X-Windows; and it is of course lacking Cocoa.
+		dnl For now I am lazy and do not add proper detection code.
 		
 		WINDOWING_SYSTEM="-DMACOSX"
 		AC_DEFINE(MACOSX, 1, [Compiling on Mac OS X])
 		AC_MSG_RESULT(Mac OS X)
 		LIBS="$LIBS -framework QuickTime"
 		ARCH=macosx
+		DATAPATH="data"
 		;;
 	*)
 		WINDOWING_SYSTEM="-DXWIN"
@@ -225,6 +234,7 @@ AC_SUBST(WINDOWING_SYSTEM)
 AC_SUBST(WARNINGS)
 AC_SUBST(PACKAGE)
 AC_SUBST(PROFILE)
+AC_SUBST(DATAPATH)
 
 AC_OUTPUT([
 Makefile

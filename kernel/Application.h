@@ -39,6 +39,7 @@ public:
 	virtual void paint();
 
 	void loadConfig();
+	void setupVirtualPaths();
 
 protected:
 	Kernel* kernel;

@@ -40,6 +40,26 @@ FileSystem::~FileSystem()
 }
 
 
+// Open a streaming file as readable. Streamed (0 on failure)
+IFileDataSource* FileSystem::ReadFile(const string &vfn, bool is_text)
+{
+	string filename = vfn;
+	std::ifstream *f = new std::ifstream();
+	if(!rawopen(*f, filename, is_text))
+		return 0;
+	return new IFileDataSource(f);
+}
+
+// Open a streaming file as readable. Streamed (0 on failure)
+OFileDataSource* FileSystem::WriteFile(const string &vfn, bool is_text)
+{
+	string filename;
+	std::ofstream *f = new std::ofstream();
+	if(!rawopen(*f, filename, is_text))
+		return 0;
+	return new OFileDataSource(f);
+}
+
 /*
  *	Open a file for input,
  *	trying the original name (lower case), and the upper case version
@@ -55,6 +75,12 @@ bool FileSystem::rawopen
 	bool is_text				// Should the file be opened in text mode
 	)
 {
+	string name = fname;
+	if (!rewrite_virtual_path(name)) {
+		perr << "Illegal file access" << std::endl;
+		return false;
+	}
+
 #if defined(MACOS) || (__GNUG__ > 2)
 	std::ios_base::openmode mode = std::ios::in;
 	if (!is_text) mode |= std::ios::binary;
@@ -64,8 +90,6 @@ bool FileSystem::rawopen
 	int mode = std::ios::in;
 	if (!is_text) mode |= std::ios::binary;
 #endif
-	//string name = get_system_path(fname);
-	string name(fname);
 	switch_slashes(name);
 	
 	int uppercasecount = 0;
@@ -99,6 +123,12 @@ bool FileSystem::rawopen
 	bool is_text				// Should the file be opened in text mode
 	)
 {
+	string name = fname;
+	if (!rewrite_virtual_path(name)) {
+		perr << "Illegal file access" << std::endl;
+		return false;
+	}
+
 #if defined(MACOS) || (__GNUG__ > 2)
 	std::ios_base::openmode mode = std::ios::out | std::ios::trunc;
 	if (!is_text) mode |= std::ios::binary;
@@ -108,8 +138,6 @@ bool FileSystem::rawopen
 	int mode = std::ios::out | std::ios::trunc;
 	if (!is_text) mode |= std::ios::binary;
 #endif
-	//string name = get_system_path(fname);
-	string name(fname);
 	switch_slashes(name);
 
 	// We first "clear" the stream object. This is done to prevent
@@ -177,7 +205,7 @@ void FileSystem::switch_slashes(string &name)
  *  returns false if there are less than 'count' parts
  */
 
-bool FileSystem::base_to_uppercase(string& str, const int count)
+bool FileSystem::base_to_uppercase(string& str, int count)
 {
 	if (count <= 0) return true;
 
@@ -205,5 +233,59 @@ bool FileSystem::base_to_uppercase(string& str, const int count)
 	return (todo <= 0);
 }
 
+bool FileSystem::AddVirtualPath(const string &vpath, const string &realpath)
+{
+	// TODO: check stuff
+
+	string vp = vpath, rp = realpath;
+
+	// remove trailing slash
+	if (vp.rfind('/') == vp.size() - 1)
+		vp.erase(vp.rfind('/'));
+
+	if (rp.rfind('/') == rp.size() - 1)
+		rp.erase(rp.rfind('/'));
+
+	virtualpaths[vp] = rp;
+	return true;
+}
+
+bool FileSystem::RemoveVirtualPath(const string &vpath)
+{
+	// TODO: check stuff
+
+	string vp = vpath;
+
+	// remove trailing slash
+	if (vp.rfind('/') == vp.size() - 1)
+		vp.erase(vp.rfind('/'));
+
+	virtualpaths.erase(vp);
+
+	return true;
+}
 
 
+bool FileSystem::rewrite_virtual_path(string &vfn)
+{
+	bool ret = false;
+	std::string::size_type pos = std::string::npos;
+
+	while ((pos = vfn.rfind('/', pos)) != std::string::npos) {
+//		perr << vfn << ", " << vfn.substr(0, pos) << ", " << pos << std::endl;
+		std::map<string, string>::iterator p = virtualpaths.find(
+			vfn.substr(0, pos));
+		
+		if (p != virtualpaths.end()) {
+			ret = true;
+			// rewrite first part of path
+			vfn = p->second + vfn.substr(pos);
+			pos = std::string::npos; 
+		} else {
+			if (pos == 0)
+				break;
+			--pos;
+		}
+	}
+	return ret;
+}
