@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "u8intrinsics.h"
 
 #define LOGPF(X) pout.printf X
+//#define LOGPF(X)
 
 enum UCSegments {
 	SEG_STACK      = 0x0000,
@@ -106,6 +107,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			   p->stack.stacksize(), p->ip, opcode));
 
 		sint8 si8a, si8b;
+		uint8 ui8a;
 		uint16 ui16a, ui16b;
 		uint32 ui32a, ui32b;
 		sint16 si16a, si16b;
@@ -1450,13 +1452,15 @@ bool UCMachine::execProcess(UCProcess* p)
 			// next loop object? pushes false if end reached
 			printf("loopnext");
 			break;
+*/
 		case 0x74:
 			// 74 xx
 			// add xx to the current 'loopscript'
-			i0 = read1(in);
-			printf("loopscr\t\t%02X \"%c\"", i0, static_cast<char>(i0));
+			ui8a = cs.read1();
+			p->stack.push1(ui8a);
+			LOGPF(("loopscr\t\t%02X \"%c\"", ui8a, static_cast<char>(ui8a)));
+			break;
 
-*/
 		case 0x75: case 0x76:
 			// 75 xx yy zz zz
 			// 76 xx yy zz zz
@@ -1588,7 +1592,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
 		case 0x6C: // parameter passing?
-		case 0x70: case 0x73: case 0x74: // loopscripts
+		case 0x70: case 0x73: // loopscripts
 			error = true;
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;

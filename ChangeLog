@@ -1,3 +1,9 @@
+2003-05-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Item.*: loopscript support in Item
+	* world/*: changed some fields in Item to uint16
+	* usecode/UCMachine.*: one (out of three) loopscript opcodes
+	* usecode/UCStack.h: UCStack::push1(uint8)
+
 2003-05-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCMachine.cpp, usecode/UCProcess.cpp:
 	spawn now puts arguments on the stack before the this pointer

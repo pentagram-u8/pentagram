@@ -26,6 +26,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "World.h"
 #include "DelayProcess.h"
 
+#include "UCStack.h"
+
 /*
 My current idea on how to construct items: an ItemFactory class that
 creates the right kind of Item (Item, Container, ???) based on
@@ -67,6 +69,163 @@ void Item::getLocation(sint32& X, sint32& Y, sint32 &Z) const
 	Z = z;
 }
 
+bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
+{
+	// if really necessary this could be made static to prevent news/deletes
+	UCStack stack(0x40); // 64bytes should be plenty of room
+
+	unsigned int i = 0;
+
+	uint16 ui16a, ui16b;
+
+	while (i < scriptsize) {
+		switch(script[i]) {
+		case 0: // false
+			stack.push2(0); break;
+		case 1: // true
+			stack.push2(1); break;
+		case '$': // end
+			ui16a = stack.pop2();
+			return (ui16a != 0);
+		case '%': // int
+			//! check for i out of bounds
+			ui16a = script[i+1] + (script[i+2]<<8);
+			stack.push2(ui16a);
+			i += 2;
+			break;
+		case '&': // and
+			ui16a = stack.pop2();
+			ui16b = stack.pop2();
+			if (ui16a != 0 && ui16b != 0)
+				stack.push2(1);
+			else
+				stack.push2(0);
+			break;
+		case '+': // or
+			ui16a = stack.pop2();
+			ui16b = stack.pop2();
+			if (ui16a != 0 || ui16b != 0)
+				stack.push2(1);
+			else
+				stack.push2(0);
+			break;			
+		case '!': // not
+			ui16a = stack.pop2();
+			if (ui16a != 0)
+				stack.push2(0);
+			else
+				stack.push2(1);
+			break;
+		case '?': // item status
+			stack.push2(getFlags());
+			break;
+		case '*': // item quality
+			stack.push2(getQuality());
+			break;
+		case '#': // npc num
+			stack.push2(npcnum);
+			break;
+		case '=': // equal
+			ui16a = stack.pop2();
+			ui16b = stack.pop2();
+			if (ui16a == ui16b)
+				stack.push2(1);
+			else
+				stack.push2(0);
+			break;
+		case '>': // greater than
+			ui16a = stack.pop2();
+			ui16b = stack.pop2();
+			if (ui16b > ui16a)
+				stack.push2(1);
+			else
+				stack.push2(0);
+			break;
+		case '<': // less than
+			ui16a = stack.pop2();
+			ui16b = stack.pop2();
+			if (ui16b < ui16a)
+				stack.push2(1);
+			else
+				stack.push2(0);
+			break;
+		case ']': // greater or equal
+			ui16a = stack.pop2();
+			ui16b = stack.pop2();
+			if (ui16b >= ui16a)
+				stack.push2(1);
+			else
+				stack.push2(0);
+			break;
+		case '[': // smaller or equal
+			ui16a = stack.pop2();
+			ui16b = stack.pop2();
+			if (ui16b <= ui16a)
+				stack.push2(1);
+			else
+				stack.push2(0);
+			break;
+		case ':': // item family
+			//!!
+			break;
+		case '@': // item shape
+			stack.push2(getShape());
+			break;
+		case 'A': case 'B': case 'C': case 'D': case 'E':
+		case 'F': case 'G': case 'H': case 'I': case 'J':
+		case 'K': case 'L': case 'M': case 'N': case 'O':
+		case 'P': case 'Q': case 'R': case 'S': case 'T':
+		case 'U': case 'V': case 'W': case 'X': case 'Y': case 'Z':
+		{
+			bool match = false;
+			int count = script[i] - '@';
+			for (int j = 0; j < count; i++) {
+				//! check for i out of bounds
+				if (getShape() == (uint32)(script[i+1] + (script[i+2]<<8)))
+					match = true;
+				i += 2;
+			}
+			if (match)
+				stack.push2(1);
+			else
+				stack.push2(0);
+		}
+		break;
+		case '`': // item frame
+			stack.push2(getFrame());
+			break;
+		case 'a': case 'b': case 'c': case 'd': case 'e':
+		case 'f': case 'g': case 'h': case 'i': case 'j':
+		case 'k': case 'l': case 'm': case 'n': case 'o':
+		case 'p': case 'q': case 'r': case 's': case 't':
+		case 'u': case 'v': case 'w': case 'x': case 'y': case 'z':
+		{
+			bool match = false;
+			int count = script[i] - '`';
+			for (int j = 0; j < count; i++) {
+				//! check for i out of bounds
+				if (getFrame() == (uint32)(script[i+1] + (script[i+2]<<8)))
+					match = true;
+				i += 2;
+			}
+			if (match)
+				stack.push2(1);
+			else
+				stack.push2(0);
+		}
+		break;
+		default:
+			perr.printf("Unknown loopscript opcode %02X\n", script[i]);
+		}
+
+		i++;
+	}
+	perr.printf("Didn't encounter $ in loopscript\n");
+	return false;
+}
+
+
+
 uint32 Item::callUsecodeEvent(uint32 event)
 {
 	uint32	class_id = shape;
@@ -101,7 +260,6 @@ void Item::setupLerp(sint32 cx, sint32 cy, sint32 cz)
 	l_next.shape = shape;
 	l_next.frame = frame;
 }
-
 
 
 uint32 Item::I_getX(const uint8* args, unsigned int /*argsize*/)

@@ -62,6 +62,11 @@ public:
 	//
 	// Push values to the stack
 	//
+
+	inline void push1(uint8 val) {
+		buf_ptr--;
+		const_cast<uint8*>(buf_ptr)[0] = val;
+	}
 	
 	inline void push2(uint16 val) {
 		buf_ptr-=2;

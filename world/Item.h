@@ -38,15 +38,18 @@ public:
 	Container* getParent() const { return parent; }
 	void setLocation(sint32 x, sint32 y, sint32 z);
 	void getLocation(sint32& x, sint32& y, sint32& z) const;
-	uint32 getFlags() const { return flags; }
+	uint16 getFlags() const { return flags; }
 	void setExtFlags(uint32 f) { extendedflags = f; }
 	uint32 getExtFlags() const { return extendedflags; }
 	uint32 getShape() const { return shape; }
 	uint32 getFrame() const { return frame; }
-	uint32 getMapNum() const { return mapnum; }
+	uint16 getQuality() const { return quality; }
+	uint16 getMapNum() const { return mapnum; }
 
 	Item* getGlobNext() const { return glob_next; }
 	void setGlobNext(Item* i) { glob_next = i; }
+
+	bool checkLoopScript(const uint8* script, uint32 scriptsize);
 
 	uint32 callUsecodeEvent(uint32 event);
 
@@ -105,10 +108,10 @@ protected:
 	uint32 frame;
 
 	sint32 x,y,z; // world coordinates
-	uint32 flags;
+	uint16 flags;
 	uint16 quality;
-	uint32 npcnum;
-	uint32 mapnum;
+	uint16 npcnum;
+	uint16 mapnum;
 
 	uint32 extendedflags; // pentagram's own flags
 
