@@ -34,7 +34,7 @@
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(MenuGump,ModalGump);
 
-MenuGump::MenuGump(): ModalGump(50, 50, 5, 5)
+MenuGump::MenuGump(): ModalGump(0, 0, 5, 5)
 {
 	GUIApp * app = GUIApp::get_instance();
 	app->pushMouseCursor();
@@ -214,11 +214,12 @@ void MenuGump::showMenu()
 	ModalGump* gump = new MenuGump();
 	gump->InitGump();
 	desktopGump->AddChild(gump);
+	gump->setRelativePosition(CENTER);
 }
 
 bool MenuGump::loadData(IDataSource* ids)
 {
-	return false;
+	return true;
 }
 
 void MenuGump::saveData(ODataSource* ods)

@@ -33,7 +33,7 @@
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(QuitGump,ModalGump);
 
-QuitGump::QuitGump(): ModalGump(50, 50, 5, 5)
+QuitGump::QuitGump(): ModalGump(0, 0, 5, 5)
 {
 	GUIApp * app = GUIApp::get_instance();
 	app->pushMouseCursor();
@@ -149,11 +149,12 @@ void QuitGump::verifyQuit()
 	ModalGump* gump = new QuitGump();
 	gump->InitGump();
 	desktopGump->AddChild(gump);
+	gump->setRelativePosition(CENTER);
 }
 
 bool QuitGump::loadData(IDataSource* ids)
 {
-	return false;
+	return true;
 }
 
 void QuitGump::saveData(ODataSource* ods)

@@ -293,6 +293,39 @@ Gump* Gump::FindGump(int mx, int my)
 	return 0;		
 }
 
+void Gump::setRelativePosition(Gump::Position pos, int xoffset, int yoffset)
+{
+	if (parent)
+	{
+		Pentagram::Rect rect;
+		parent->GetDims(rect);
+		switch (pos)
+		{
+		case CENTER:
+		{
+			Move(rect.w / 2 - dims.w / 2 + xoffset, rect.h / 2 - dims.h / 2 + yoffset);
+		} break;
+		case TOP_LEFT:
+		{
+			Move(xoffset, yoffset);
+		} break;
+		case TOP_RIGHT:
+		{
+			Move(rect.w - dims.w + xoffset, yoffset);
+		} break;
+		case BOTTOM_LEFT:
+		{
+			Move(xoffset, rect.h - dims.h + yoffset);
+		} break;
+		case BOTTOM_RIGHT:
+		{
+			Move(rect.w - dims.w + xoffset, rect.h - dims.h + yoffset);
+		} break;
+		default:
+			break;			
+		};
+	}
+}
 
 bool Gump::PointOnGump(int mx, int my)
 {

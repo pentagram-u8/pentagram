@@ -158,6 +158,20 @@ public:
 	virtual void		Move(int x_, int y_)
 		{ x = x_ - moveOffsetX; y = y_ - moveOffsetY; }
 
+	enum Position {
+		CENTER = 1,
+		TOP_LEFT = 2,
+		TOP_RIGHT = 3,
+		BOTTOM_LEFT = 4,
+		BOTTOM_RIGHT = 5
+	};
+
+	//! Moves this gump to a relative location on the parent gump
+	// \param pos the postition on the parent gump
+	// \param xoffset an offset from the position on the x-axis
+	// \param yoffset an offset from the position on the y-axis
+	virtual void		setRelativePosition(Position pos, int xoffset=0, int yoffset=0);
+
 	//
 	// Points and Coords
 	//
