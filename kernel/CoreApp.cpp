@@ -211,8 +211,8 @@ void CoreApp::initGame()
 	for (iter = games.begin(); iter != games.end(); ++iter) {
 		std::string game = *iter;
 		GameInfo info;
-		bool detected = getGameInfo(gamename, &info);
-		con.Printf(MM_INFO, "%s: ", gamename.c_str());
+		bool detected = getGameInfo(game, &info);
+		con.Printf(MM_INFO, "%s: ", game.c_str());
 		if (detected) {
 			if (info.type == GameInfo::GAME_U8) {
 				con.Print(MM_INFO, "U8, ");
