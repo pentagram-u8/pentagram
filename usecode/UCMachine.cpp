@@ -38,8 +38,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Container.h"
 
-//#define WATCH_CLASS 68
-//#define WATCH_ITEM 2982
+//#define WATCH_CLASS 1161
+//#define WATCH_ITEM 6637
 
 #ifdef WATCH_CLASS
 #define LOGPF(X) do { if (thisclassid == WATCH_CLASS) { pout.printf X; } } while(0)
@@ -921,9 +921,9 @@ bool UCMachine::execProcess(UCProcess* p)
 
 		case 0x3E:
 			// 3E xx
-			// push the value of the 8 bit local var xx
+			// push the value of the unsigned 8 bit local var xx as 16 bit int
 			si8a = static_cast<sint8>(cs.read1());
-			ui16a = static_cast<sint8>(p->stack.access1(p->bp+si8a));
+			ui16a = p->stack.access1(p->bp+si8a);
 			p->stack.push2(ui16a);
 			LOGPF(("push byte\t%s = %02Xh\n", print_bp(si8a), ui16a));
 			break;

@@ -1,6 +1,7 @@
 2004-08-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.*: Item::ascend intrinsic
 	* world/CurrentMap.cpp: allow slight overlap in some cases
+	* usecode/UCMachine.cpp: opcode 0x3E pushes an _un_signed 8 bit int
 
 2004-08-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: uninitialized variables
