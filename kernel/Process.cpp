@@ -120,6 +120,15 @@ void Process::dumpInfo()
 	if (suspended) pout << "S";
 	if (terminated) pout << "T";
 	if (terminate_deferred) pout << "t";
+	if (!waiting.empty()) {
+		pout << ", notify: ";
+		for (std::vector<ProcId>::iterator i = waiting.begin();
+			 i != waiting.end(); ++i)
+		{
+			if (i != waiting.begin()) pout << ", ";
+			pout << *i;
+		}
+	}
 	pout << std::endl;
 }
 

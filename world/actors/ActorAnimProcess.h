@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -39,6 +39,8 @@ public:
 	virtual bool run(const uint32 framenum);
 
 	virtual void terminate();
+
+	virtual void dumpInfo();
 
 	bool loadData(IDataSource* ids, uint32 version);
 protected:

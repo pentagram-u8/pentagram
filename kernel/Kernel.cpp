@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2004 The Pentagram team
+Copyright (C) 2002-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -281,6 +281,26 @@ void Kernel::ConCmd_listItemProcesses(const Console::ArgsType & /*args*/, const 
 	}
 
 }
+
+void Kernel::ConCmd_processInfo(const Console::ArgsType& args, const Console::ArgvType& argv)
+{
+	if (argv.size() != 2) {
+		pout << "usage: processInfo <objectnum>" << std::endl;
+		return;
+	}
+
+	Kernel* kernel = Kernel::get_instance();
+
+	ProcId procid = strtol(argv[1].c_str(), 0, 0);
+
+	Process* p = kernel->getProcess(procid);
+	if (p == 0) {
+		pout << "No such process: " << procid << std::endl;
+	} else {
+		p->dumpInfo();
+	}
+}
+
 
 uint32 Kernel::getNumProcesses(ObjId objid, uint16 processtype)
 {

@@ -167,6 +167,7 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 						  HIDManager::ConCmd_listbinds);
 	con.AddConsoleCommand("HIDManager::save", HIDManager::ConCmd_save);
 	con.AddConsoleCommand("Kernel::processTypes", Kernel::ConCmd_processTypes);
+	con.AddConsoleCommand("Kernel::processInfo", Kernel::ConCmd_processInfo);
 	con.AddConsoleCommand("Kernel::listItemProcesses",
 						  Kernel::ConCmd_listItemProcesses);
 	con.AddConsoleCommand("ObjectManager::objectTypes",
@@ -199,6 +200,7 @@ GUIApp::~GUIApp()
 	con.RemoveConsoleCommand("HIDManager::listbinds");
 	con.RemoveConsoleCommand("HIDManager::save");
 	con.RemoveConsoleCommand("Kernel::processTypes");
+	con.RemoveConsoleCommand("Kernel::processInfo");
 	con.RemoveConsoleCommand("Kernel::listItemProcesses");
 	con.RemoveConsoleCommand("ObjectManager::objectTypes");
 	con.RemoveConsoleCommand("ObjectManager::objectInfo");
@@ -1186,6 +1188,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 				if (gump)
 					gump->OnMouseDouble(button, mx, my);
 				mouseButton[button].state |= MBS_HANDLED;
+				mouseButton[button].lastDown = 0;
 			}
 		}
 		mouseButton[button].lastDown = now;

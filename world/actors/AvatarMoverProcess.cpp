@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -41,6 +41,9 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(AvatarMoverProcess,Process);
 AvatarMoverProcess::AvatarMoverProcess() : Process()
 {
 	lastframe = 0;
+	lastAttack = 0;
+	lastHeadShake = 0;
+	lastHeadShakeAnim = Animation::stand;
 	mouseButton[0].state = MBS_HANDLED; mouseButton[1].state = MBS_HANDLED;
 	combatRun = false;
 	type = 1; // CONSTANT! (type 1 = persistent)
@@ -54,6 +57,12 @@ AvatarMoverProcess::~AvatarMoverProcess()
 
 bool AvatarMoverProcess::run(const uint32 framenum)
 {
+	// small hack: when attacking, we set lastAttack to 0xFFFFFFFF and then
+	// wait for the attack animation to finish. We then set lastAttack to
+	// the time the attack finished here.
+	if (lastAttack == 0xFFFFFFFF)
+		lastAttack = framenum;
+
 	GUIApp* guiapp = GUIApp::get_instance();
 
 	// in stasis, so don't move
@@ -80,7 +89,6 @@ bool AvatarMoverProcess::handleCombatMode()
 	Animation::Sequence lastanim = avatar->getLastAnim();
 	Animation::Sequence nextanim = Animation::walk;
 	sint32 direction = avatar->getDir();
-	sint32 nextdir = direction;
 	uint32 now = SDL_GetTicks();
 
 	int mx, my;
@@ -92,7 +100,7 @@ bool AvatarMoverProcess::handleCombatMode()
 
 	// If Avatar has fallen down, stand up.
 	if (lastanim == Animation::die || lastanim == Animation::fallBackwards) {
-		waitFor(avatar->doAnim(Animation::standUp, nextdir));
+		waitFor(avatar->doAnim(Animation::standUp, mousedir));
 		return false;
 	}
 
@@ -101,54 +109,29 @@ bool AvatarMoverProcess::handleCombatMode()
 		!(mouseButton[0].state & MBS_DOWN))
 	{
 		pout << "AvatarMover: combat stop blocking" << std::endl;
-		waitFor(avatar->doAnim(Animation::stopblock, nextdir));
+		waitFor(avatar->doAnim(Animation::stopblock, direction));
 		return false;
 	}
 
+	bool m0clicked = false;
+	bool m1clicked = false;
 
-	// handle double click timeout
-	for (unsigned int i = 0; i < 2; ++i) {
-		if (!(mouseButton[i].state & MBS_HANDLED) &&
-			now - mouseButton[i].curDown > DOUBLE_CLICK_TIMEOUT)
-		{
-			mouseButton[i].state |= MBS_HANDLED;
-		}
+	if (!(mouseButton[0].state & MBS_HANDLED) &&
+		now - mouseButton[0].curDown > DOUBLE_CLICK_TIMEOUT)
+	{
+		m0clicked = true;
+		mouseButton[0].state |= MBS_HANDLED;
 	}
 
-    // check mouse state to see what needs to be done
-	if ((mouseButton[0].state & MBS_DOWN) ||
-		!(mouseButton[0].state & MBS_HANDLED) ||
-		(mouseButton[1].state & MBS_DOWN) ||
-		!(mouseButton[1].state & MBS_HANDLED))
+	if (!(mouseButton[1].state & MBS_HANDLED) &&
+		now - mouseButton[1].curDown > DOUBLE_CLICK_TIMEOUT)
 	{
-		// mouse button down, so maybe turn
-
-		// Note: don't need to turn if moving backward in combat stance
-		// CHECKME: currently, first turn in the right direction
-		if (mousedir != direction && !(
-				(abs(mousedir - direction) == 4 &&
-				 Animation::isCombatAnim(lastanim) &&
-				 mouselength != 2) //hack...
-				))
-		{
-			nextdir = mousedir;
-
-			if (lastanim == Animation::walk || lastanim == Animation::run &&
-				(abs(mousedir - direction) + 1 % 8 <= 2))
-			{
-				// don't need to explicitly do a turn animation
-			} else {
-				nextanim = Animation::combat_stand;
-			}
-
-			nextanim = Animation::checkWeapon(nextanim, lastanim);
-			waitFor(avatar->doAnim(nextanim, nextdir));
-			return false;
-		}
+		m1clicked = true;
+		mouseButton[1].state |= MBS_HANDLED;
 	}
 
 	if ((mouseButton[0].state & MBS_DOWN) &&
-		(mouseButton[0].state & MBS_HANDLED))
+		(mouseButton[0].state & MBS_HANDLED) && mouseButton[0].lastDown > 0)
 	{
 		// left click-and-hold = block
 		if (lastanim == Animation::startblock)
@@ -156,7 +139,9 @@ bool AvatarMoverProcess::handleCombatMode()
 
 		pout << "AvatarMover: combat block" << std::endl;
 
-		waitFor(avatar->doAnim(Animation::startblock, nextdir));
+		if (checkTurn(mousedir, false)) return false;
+
+		waitFor(avatar->doAnim(Animation::startblock, mousedir));
 		return false;
 	}
 
@@ -165,11 +150,18 @@ bool AvatarMoverProcess::handleCombatMode()
 		mouseButton[0].curDown-mouseButton[0].lastDown <= DOUBLE_CLICK_TIMEOUT)
 	{
 		mouseButton[0].state |= MBS_HANDLED;
+		mouseButton[0].lastDown = 0;
 
-		// double left click = attack
-		pout << "AvatarMover: combat attack" << std::endl;
+		if (canAttack()) {
+			// double left click = attack
+			pout << "AvatarMover: combat attack" << std::endl;
 
-		waitFor(avatar->doAnim(Animation::attack, nextdir));
+			if (checkTurn(mousedir, true)) return false;
+
+			waitFor(avatar->doAnim(Animation::attack, mousedir));
+			lastAttack = 0xFFFFFFFF;
+		}
+
 		return false;
 	}
 
@@ -178,11 +170,26 @@ bool AvatarMoverProcess::handleCombatMode()
 		mouseButton[1].curDown-mouseButton[1].lastDown <= DOUBLE_CLICK_TIMEOUT)
 	{
 		mouseButton[1].state |= MBS_HANDLED;
+		mouseButton[1].lastDown = 0;
 
-		// double right click = kick
-		pout << "AvatarMover: combat kick" << std::endl;
+		Gump* desktopgump = GUIApp::get_instance()->getDesktopGump();
+		if (desktopgump->TraceObjId(mx,my) == 1) {
+			// double right click on avatar = toggle combat mode
+			avatar->toggleInCombat();
+			waitFor(avatar->doAnim(Animation::unreadyWeapon, direction));
+			return false;
+		}
 
-		waitFor(avatar->doAnim(Animation::kick, nextdir));
+		if (canAttack()) {
+			// double right click = kick
+			pout << "AvatarMover: combat kick" << std::endl;
+
+			if (checkTurn(mousedir, false)) return false;
+			
+			waitFor(avatar->doAnim(Animation::kick, mousedir));
+			lastAttack = 0xFFFFFFFF;
+		}
+
 		return false;
 	}
 
@@ -193,14 +200,19 @@ bool AvatarMoverProcess::handleCombatMode()
 		// if facing right direction, walk
 		//!! TODO: check if you can actually take this step
 
+		if (checkTurn(mousedir, true)) return false;
+
+		sint32 nextdir = mousedir;
+
 		if (lastanim == Animation::run) {
 			// want to run while in combat mode?
 			// first sheath weapon
 			nextanim = Animation::readyWeapon;
-		} else if (mousedir == direction)
-			nextanim = Animation::advance;
-		else
+		} else if (abs(direction - mousedir) == 4) {
 			nextanim = Animation::retreat;
+			nextdir = direction;
+		} else
+			nextanim = Animation::advance;
 
 		if (mouselength == 2)
 		{
@@ -215,13 +227,16 @@ bool AvatarMoverProcess::handleCombatMode()
 		return false;
 	}
 
+	// if clicked, turn in mouse direction
+	if (m0clicked || m1clicked)
+		if (checkTurn(mousedir, false)) return false;
 
 	// not doing anything in particular? stand
 	// TODO: make sure falling works properly.
 	if (lastanim != Animation::combat_stand) {
 		nextanim = Animation::combat_stand;
 		nextanim = Animation::checkWeapon(nextanim, lastanim);
-		waitFor(avatar->doAnim(nextanim, nextdir));
+		waitFor(avatar->doAnim(nextanim, direction));
 	}
 
 	return false;
@@ -234,7 +249,7 @@ bool AvatarMoverProcess::handleNormalMode()
 	Animation::Sequence lastanim = avatar->getLastAnim();
 	Animation::Sequence nextanim = Animation::walk;
 	sint32 direction = avatar->getDir();
-	sint32 nextdir = direction;
+	uint32 now = SDL_GetTicks();
 
 	int mx, my;
 	guiapp->getMouseCoords(mx, my);
@@ -253,23 +268,36 @@ bool AvatarMoverProcess::handleNormalMode()
 	// If Avatar has fallen down, stand up.
 	if (lastanim == Animation::die || lastanim == Animation::fallBackwards) {
 		pout << "AvatarMover: standing up" << std::endl;
-		waitFor(avatar->doAnim(Animation::standUp, nextdir));
+		waitFor(avatar->doAnim(Animation::standUp, direction));
 		return false;
 	}
 
+	bool m1clicked = false;
+
     // check mouse state to see what needs to be done
 	if (!(mouseButton[0].state & MBS_HANDLED) &&
-		SDL_GetTicks() - mouseButton[0].curDown > DOUBLE_CLICK_TIMEOUT)
+		now - mouseButton[0].curDown > DOUBLE_CLICK_TIMEOUT)
 	{
 		mouseButton[0].state |= MBS_HANDLED;
 	}
 
 	if (!(mouseButton[1].state & MBS_HANDLED) &&
-		SDL_GetTicks() - mouseButton[1].curDown > DOUBLE_CLICK_TIMEOUT)
+		now - mouseButton[1].curDown > DOUBLE_CLICK_TIMEOUT)
 	{
+		m1clicked = true;
 		mouseButton[1].state |= MBS_HANDLED;
 	}
 
+
+	// if running, and mouse not down, slow to a walk before stopping
+	if (lastanim == Animation::run &&
+		!(mouseButton[1].state & MBS_DOWN))
+	{
+		waitFor(avatar->doAnim(Animation::walk, direction));
+		return false;
+	}
+
+	// both mouse buttons down
 	if (!(mouseButton[0].state & MBS_HANDLED) &&
 		!(mouseButton[1].state & MBS_HANDLED))
 	{
@@ -289,7 +317,9 @@ bool AvatarMoverProcess::handleNormalMode()
 			mouseButton[0].state |= MBS_HANDLED;
 			mouseButton[1].state |= MBS_HANDLED;
 			// We got a left mouse down.
-			// Note that this automatically means right was down at the time too.
+			// Note that this automatically means right was down too.
+
+			if (checkTurn(mousedir, false)) return false;
 
 			nextanim = Animation::jumpUp;
 			if (mouselength > 0) {
@@ -300,57 +330,21 @@ bool AvatarMoverProcess::handleNormalMode()
 			Animation::Sequence climbanim = Animation::climb72;
 			while (climbanim >= Animation::climb16)
 			{
-				if(avatar->tryAnim(climbanim, nextdir) == Animation::SUCCESS)
+				if (avatar->tryAnim(climbanim, direction)==Animation::SUCCESS)
 				{
 					nextanim = climbanim;
 				}
 				climbanim = static_cast<Animation::Sequence>(climbanim - 1);
 			}
 
-			// We must be facing the correct direction
-			if (mousedir != nextdir)
-			{
-				nextanim = Animation::stand;
-			}
-
 			if (nextanim == Animation::jump || nextanim == Animation::jumpUp)
 			{
-				jump(nextanim, nextdir);
+				jump(nextanim, direction);
 				return false;
 			}
 
 			nextanim = Animation::checkWeapon(nextanim, lastanim);
-			waitFor(avatar->doAnim(nextanim, nextdir));
-			return false;
-		}
-	}
-
-	if ((mouseButton[1].state & MBS_DOWN) ||
-		!(mouseButton[1].state & MBS_HANDLED))
-	{
-		// right mouse button down, but maybe not long enough to really
-		// start walking. Check if we need to turn.
-		// Note: don't need to turn if moving backward in combat stance
-		// CHECKME: currently, first turn in the right direction
-		if (mousedir != direction && !(
-				(abs(mousedir - direction) == 4 &&
-				 Animation::isCombatAnim(lastanim) &&
-				 mouselength != 2) //hack...
-				))
-		{
-			nextdir = mousedir;
-
-			if (lastanim == Animation::walk || lastanim == Animation::run &&
-				(abs(mousedir - direction) + 1 % 8 <= 2))
-			{
-				// don't need to explicitly do a turn animation
-			} else {
-				turnToDirection(nextdir);
-				return false;
-//				nextanim = Animation::stand;
-			}
-			nextanim = Animation::checkWeapon(nextanim, lastanim);
-			waitFor(avatar->doAnim(nextanim, nextdir));
+			waitFor(avatar->doAnim(nextanim, direction));
 			return false;
 		}
 	}
@@ -362,26 +356,42 @@ bool AvatarMoverProcess::handleNormalMode()
 		// We got a left mouse down.
 		// Note that this automatically means right was down at the time too.
 
+		if (checkTurn(mousedir, false)) return false;
+
 		nextanim = Animation::jumpUp;
 
 		// check if we need to do a running jump
 		if (lastanim == Animation::run || lastanim == Animation::runningJump) {
 			pout << "AvatarMover: running jump" << std::endl;
-			jump(Animation::runningJump, nextdir);
+			jump(Animation::runningJump, direction);
 			return false;
 		} else if (mouselength > 0) {
 			pout << "AvatarMover: jump" << std::endl;
-			jump(Animation::jump, nextdir);
+			jump(Animation::jump, direction);
 			return false;
 		}
 		nextanim = Animation::checkWeapon(nextanim, lastanim);
-		waitFor(avatar->doAnim(nextanim, nextdir));
+		waitFor(avatar->doAnim(nextanim, direction));
 		return false;
 
-		// TODO: post-patch targeted jumping
-		// TODO: airwalk
-		// TODO: climbing up onto things
+		// TODO: climbing up onto things?
 		// CHECKME: check what needs to happen when keeping left pressed
+	}
+
+	if ((mouseButton[1].state & MBS_DOWN) &&
+		!(mouseButton[1].state & MBS_HANDLED) &&
+		mouseButton[1].curDown-mouseButton[1].lastDown <= DOUBLE_CLICK_TIMEOUT)
+	{
+		Gump* desktopgump = GUIApp::get_instance()->getDesktopGump();
+		if (desktopgump->TraceObjId(mx,my) == 1) {
+			// double right click on avatar = toggle combat mode
+			mouseButton[1].state |= MBS_HANDLED;
+			mouseButton[1].lastDown = 0;
+
+			avatar->toggleInCombat();
+			waitFor(avatar->doAnim(Animation::readyWeapon, direction));
+			return false;
+		}
 	}
 
 	if ((mouseButton[1].state & MBS_DOWN) &&
@@ -394,7 +404,7 @@ bool AvatarMoverProcess::handleNormalMode()
 		nextanim = Animation::step;
 
 		//Not perfect, but don't think anyone will ever notice or care.
-		if ((avatar->tryAnim(nextanim, nextdir) == Animation::END_OFF_LAND) &&
+		if ((avatar->tryAnim(nextanim, mousedir) == Animation::END_OFF_LAND) &&
 			(lastanim != Animation::keepBalance))
 		{
 			nextanim = Animation::keepBalance;
@@ -413,10 +423,18 @@ bool AvatarMoverProcess::handleNormalMode()
 				nextanim = Animation::walk;
 		}
 
+		bool moving = (nextanim == Animation::run ||
+					   nextanim == Animation::walk);
+
+		if (checkTurn(mousedir, moving)) return false;
+
 		nextanim = Animation::checkWeapon(nextanim, lastanim);
-		waitFor(avatar->doAnim(nextanim, nextdir));
+		waitFor(avatar->doAnim(nextanim, mousedir));
 		return false;
 	}
+
+	if (m1clicked)
+		if (checkTurn(mousedir, false)) return true;
 
 	// not doing anything in particular? stand
 	// TODO: make sure falling works properly.
@@ -424,7 +442,7 @@ bool AvatarMoverProcess::handleNormalMode()
 	if (lastanim != Animation::stand) {
 		nextanim = Animation::stand;
 		nextanim = Animation::checkWeapon(nextanim, lastanim);
-		waitFor(avatar->doAnim(nextanim, nextdir));
+		waitFor(avatar->doAnim(nextanim, direction));
 	}
 
 	return false;
@@ -525,6 +543,46 @@ void AvatarMoverProcess::turnToDirection(int direction)
 	waitFor(animpid);
 }
 
+bool AvatarMoverProcess::checkTurn(int direction, bool moving)
+{
+	MainActor* avatar = World::get_instance()->getMainActor();
+	int curdir = avatar->getDir();
+	bool combat = avatar->isInCombat() && !combatRun;
+	Animation::Sequence lastanim = avatar->getLastAnim();
+
+	// Note: don't need to turn if moving backward in combat stance
+	// CHECKME: currently, first turn in the right direction
+	if (direction != curdir && !(
+			combat && abs(direction - curdir) == 4))
+	{
+		if (moving &&
+			(lastanim == Animation::walk || lastanim == Animation::run ||
+			 lastanim == Animation::combat_stand) &&
+			(abs(direction - curdir) + 1 % 8 <= 2))
+		{
+			// don't need to explicitly do a turn animation
+			return false;
+		}
+
+		if (moving && lastanim == Animation::run) {
+			// slow down to a walk first
+			waitFor(avatar->doAnim(Animation::walk, curdir));
+			return true;
+		}
+
+		turnToDirection(direction);
+		return true;
+	}
+
+	return false;
+}
+
+bool AvatarMoverProcess::canAttack()
+{
+	MainActor* avatar = World::get_instance()->getMainActor();
+	return (lastframe > lastAttack + (25 - avatar->getDex()));
+}
+
 void AvatarMoverProcess::OnMouseDown(int button, int mx, int my)
 {
 	int bid = 0;
@@ -576,11 +634,19 @@ void AvatarMoverProcess::OnMouseUp(int button)
 void AvatarMoverProcess::saveData(ODataSource* ods)
 {
 	Process::saveData(ods);
+
+	ods->write4(lastAttack);
+	ods->write4(lastHeadShake);
+	ods->write2(static_cast<uint8>(lastHeadShakeAnim));
 }
 
 bool AvatarMoverProcess::loadData(IDataSource* ids, uint32 version)
 {
 	if (!Process::loadData(ids, version)) return false;
+
+	lastAttack = ids->read4();
+	lastHeadShake = ids->read4();
+	lastHeadShakeAnim = static_cast<Animation::Sequence>(ids->read2());
 
 	return true;
 }

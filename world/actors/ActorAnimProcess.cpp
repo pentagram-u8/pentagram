@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -89,7 +89,7 @@ bool ActorAnimProcess::init()
 		//! don't do this animation or kill the previous one?
 		//! Or maybe wait until the previous one finishes?
 
-		perr << "ActorAnimProcess: ANIMLOCK set on actor "
+		perr << "ActorAnimProcess [" << getPid() << "]: ANIMLOCK set on actor "
 			 << item_num << std::endl;
 
 		// for now, just don't play this one.
@@ -271,6 +271,11 @@ void ActorAnimProcess::terminate()
 	Process::terminate();
 }
 
+void ActorAnimProcess::dumpInfo()
+{
+	Process::dumpInfo();
+	pout << "action: " << action << ", dir: " << dir << std::endl;
+}
 
 void ActorAnimProcess::saveData(ODataSource* ods)
 {

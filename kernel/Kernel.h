@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2004 The Pentagram team
+Copyright (C) 2002-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -95,6 +95,8 @@ public:
 	static void ConCmd_processTypes(const Console::ArgsType &args, const Console::ArgvType &argv);
 	//! "Kernel::listItemProcesses" console command
 	static void ConCmd_listItemProcesses(const Console::ArgsType &args, const Console::ArgvType &argv);
+	//! "Kernel::processInfo" console command
+	static void ConCmd_processInfo(const Console::ArgsType &args, const Console::ArgvType &argv);
 	
 	INTRINSIC(I_getNumProcesses);
 	INTRINSIC(I_resetRef);

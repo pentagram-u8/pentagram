@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -45,12 +45,20 @@ protected:
 	bool handleNormalMode();
 
 	void jump(Animation::Sequence action, int direction);
-
 	void turnToDirection(int direction);
+	bool checkTurn(int direction, bool moving);
+	bool canAttack();
 	
 	bool combatRun;
 
 	uint32 lastframe;
+
+	// attack speed limiting
+	uint32 lastAttack;
+
+	// shake head when idle
+	uint32 lastHeadShake;
+	Animation::Sequence lastHeadShakeAnim;
 
 	MButton mouseButton[2];
 };

@@ -1,3 +1,10 @@
+2005-01-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/AvatarMoverProcess.*: fixed turning, cleaned up
+	* world/actors/AvatarMoverProcess.cpp: dblclk on avatar toggles combat
+	* kernel/Kernel.*: Kernel::processInfo console command
+	* kernel/Process.cpp: dump dependant processes in dumpInfo()
+	* world/actors/ActorAnimProcess.*: dumpInfo() for anim processes
+
 2005-01-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/ActorBarkNotifyProcess.*, world/Item.cpp:
 	  talk animation while talking
