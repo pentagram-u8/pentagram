@@ -53,6 +53,8 @@ public:
 
 	virtual void teleport(int mapnum, sint32 x, sint32 y, sint32 z);
 
+	virtual uint16 assignObjId(); // assign an NPC objid
+
 	// p_dynamic_cast stuff
 	ENABLE_DYNAMIC_CAST(Actor);
 
@@ -79,6 +81,7 @@ public:
 	INTRINSIC(I_isWithstandDeath);
 	INTRINSIC(I_isFeignDeath);
 	INTRINSIC(I_isBusy);
+	INTRINSIC(I_createActor);
 
 	enum {
 		ACT_INVINCIBLE     = 0x000001, // flags from npcdata byte 0x1B

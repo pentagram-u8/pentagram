@@ -21,6 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MonsterEgg.h"
 #include "World.h"
 #include "UCMachine.h"
+#include "Actor.h"
+#include "ItemFactory.h"
+#include "CurrentMap.h"
 
 DEFINE_DYNAMIC_CAST_CODE(MonsterEgg,Egg);
 
@@ -37,8 +40,26 @@ MonsterEgg::~MonsterEgg()
 
 uint16 MonsterEgg::hatch()
 {
-	// create monster...
-	return 0;
+	//!! do we need to check probability here?
+	//!! monster activity? combat? anything?
+	//!! maybe mark actor as temporary
+
+	int shape = getMonsterShape();
+
+	Actor* newactor = ItemFactory::createActor(shape, 0, 0, 0, 0, 0, Item::EXT_NOTINMAP);
+	if (!newactor) {
+		perr << "MonsterEgg::hatch failed to create actor (" << shape
+			 <<	")." << std::endl;
+		return 0;
+	}
+	uint16 objID = newactor->assignObjId();
+
+	newactor->setMapNum(getMapNum());
+	newactor->setNpcNum(objID);
+	newactor->setLocation(x,y,z);
+	World::get_instance()->getCurrentMap()->addItem(newactor);
+
+	return objID;
 }
 
 uint32 MonsterEgg::I_monsterEggHatch(const uint8*args,unsigned int /*argsize*/)

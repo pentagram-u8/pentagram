@@ -39,7 +39,6 @@ MainActor::~MainActor()
 void MainActor::teleport(int mapnum, sint32 x, sint32 y, sint32 z)
 {
 	World* world = World::get_instance();
-	CurrentMap* currentmap = world->getCurrentMap();
 
 	// (attempt to) load the new map
 	if (!world->switchMap(mapnum)) {

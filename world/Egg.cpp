@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 DEFINE_DYNAMIC_CAST_CODE(Egg,Item);
 
-Egg::Egg()
+Egg::Egg() : hatched(false)
 {
 
 }
@@ -37,7 +37,8 @@ Egg::~Egg()
 
 uint16 Egg::hatch()
 {
-	//TODO: flag egg as hatched
+	if (hatched) return 0;
+	hatched = true;
 	return callUsecodeEvent(7); //! constant
 }
 

@@ -32,7 +32,7 @@ public:
 
 	uint16 getObjId() const { return objid; }
 	virtual uint16 assignObjId(); //get and assign self (and contents) an objID
-	void clearObjId();
+	virtual void clearObjId(); // clear objID of self (and contents)
 
 	uint32 callUsecode(uint16 classid, uint16 offset, Usecode *u);
 

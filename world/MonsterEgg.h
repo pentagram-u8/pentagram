@@ -31,8 +31,8 @@ public:
 
 	ENABLE_DYNAMIC_CAST(MonsterEgg);
 
-	int getProb() const { return (quality >> 12) & 0xF; }
-	int getMonsterShape() const { return quality & 0xFFF; }
+	int getProb() const { return (quality >> 11) & 0x1F; }
+	int getMonsterShape() const { return quality & 0x7FF; }
 
 	virtual uint16 hatch();
 

@@ -63,6 +63,7 @@ class Flex;
 class Object;
 class idMan;
 class Item;
+class Actor;
 
 
 class World
@@ -84,6 +85,7 @@ public:
 	bool switchMap(uint32 newmap);
 
 	uint16 assignObjId(Object* obj);
+	uint16 assignActorObjId(Actor* obj);
 	void clearObjId(uint16 objid);
 
 	Object* getObject(uint16 objid) const;
@@ -108,6 +110,7 @@ private:
 
 	std::vector<Object*> objects;
 	idMan* objIDs;
+	idMan* actorIDs;
 };
 
 #endif

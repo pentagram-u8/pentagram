@@ -45,6 +45,7 @@ World::World()
 
 	//!CONSTANTS
 	objIDs = new idMan(256,65534);	// Want range of 256 to 65534
+	actorIDs = new idMan(1,255);
 }
 
 
@@ -52,6 +53,7 @@ World::~World()
 {
 	clear();
 	delete objIDs;
+	delete actorIDs;
 
 	world = 0;
 }
@@ -81,6 +83,7 @@ void World::clear()
 
 	// Clear all the objIDs
 	objIDs->clearAll();
+	actorIDs->clearAll();
 }
 
 void World::initMaps()
@@ -124,14 +127,30 @@ bool World::switchMap(uint32 newmap)
 	// - camera reset?
 	// - ...?
 
+	// TODO:
+	// - check ethereal items
+	// - temporary items/actors?
+
 	// kill camera
 	dynamic_cast<GUIApp*>(GUIApp::get_instance())->ResetCamera();
 
 	// kill ALL processes:
 	Kernel::get_instance()->killProcesses(0,6); // !constant
 
-	uint32 oldmap = currentmap->getNum();
 
+#if 0
+	// get rid of any remaining ethereal items
+	while (!etherealEmpty()) {
+		uint16 eth = etherealPop();
+		Object* o = getObject(eth);
+		if (o) {
+			o->clearObjId();
+			delete o;
+		}
+	}
+#endif
+
+	uint32 oldmap = currentmap->getNum();
 	if (oldmap != 0) {
 		perr << "Unloading map " << oldmap << std::endl;
 
@@ -145,6 +164,7 @@ bool World::switchMap(uint32 newmap)
 
 		//! constant
 		for (unsigned int i = 256; i < objects.size(); ++i) {
+//			assert(objects[i] == 0);
 			if (objects[i] != 0)
 				objects[i]->clearObjId();
 		}
@@ -236,11 +256,7 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 		if (shape == 0) {
 			// U8's itemcach has a lot of garbage in it.
 			// Ignore it.
-			x = 0; y = 0; z = 0;
-			frame = 0;
-			flags = 0; quality = 0;
-			npcnum = 0; mapnum = 0;
-			next = 0;
+			continue;
 		}
 
 #ifdef DUMP_ITEMS
@@ -264,11 +280,12 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 		actor->setDex(npcds->read1());
 		actor->setInt(npcds->read1());
 		actor->setHP(npcds->read1());
-		actor->setDir(npcds->read1());
+		actor->setDir(npcds->read1()); //! is this correct?
 		actor->setLastAnim(npcds->read1());
 		// TODO: (decode and) read rest of npcdata.dat...
 
 		objects[i] = actor;
+		actorIDs->reserveID(i);
 	}
 
 	delete itemcachflex;
@@ -282,15 +299,33 @@ uint16 World::assignObjId(Object* obj)
 {
 	uint16 new_objid = objIDs->getNewID();
 	// failure???
-	if (new_objid != 0) objects[new_objid] = obj;
+	if (new_objid != 0) {
+		assert(objects[new_objid] == 0);
+		objects[new_objid] = obj;
+	}
 	return new_objid;
+}
 
+uint16 World::assignActorObjId(Actor* actor)
+{
+	uint16 new_objid = actorIDs->getNewID();
+	// failure???
+	if (new_objid != 0) {
+		assert(objects[new_objid] == 0);
+		objects[new_objid] = actor;
+	}
+	return new_objid;
 }
 
 void World::clearObjId(uint16 objid)
 {
-	assert(objid >= 256);
-	objIDs->clearID(objid);
+	// need to make this assert check only permanent NPCs
+//	assert(objid >= 256); // !constant
+	if (objid >= 256) // !constant
+		objIDs->clearID(objid);
+	else
+		actorIDs->clearID(objid);
+
 	objects[objid] = 0;
 }
 

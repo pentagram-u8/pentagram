@@ -56,6 +56,7 @@ public:
 	uint16 getQuality() const { return quality; }
 	void setQuality(uint16 quality_) { quality = quality_; }
 	uint16 getNpcNum() const { return npcnum; }
+	void setNpcNum(uint16 npcnum_) { npcnum = npcnum_; }
 	uint16 getMapNum() const { return mapnum; }
 	void setMapNum(uint16 mapnum_) { mapnum = mapnum_; }
 	ShapeInfo* getShapeInfo();

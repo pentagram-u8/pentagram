@@ -148,8 +148,11 @@ Actor* ItemFactory::createActor(uint32 shape, uint32 frame, uint16 quality,
 	// this function should probably differentiate between the Avatar,
 	// NPCs, monsters?
 
+/*
+    // This makes it rather hard to create new NPCs...
 	if (npcnum == 0) // or do monsters have npcnum 0? we'll see...
 		return 0;
+*/
 
 	if (npcnum == 1) {
 		// Main Actor
@@ -174,7 +177,9 @@ Actor* ItemFactory::createActor(uint32 shape, uint32 frame, uint16 quality,
 	actor->flags = flags;
 	actor->npcnum = npcnum;
 	actor->mapnum = mapnum;
-	actor->objid = static_cast<uint16>(npcnum);
+	if (npcnum != 0) {
+		actor->objid = static_cast<uint16>(npcnum);
+	}
 	actor->extendedflags = extendedflags;
 
 	return actor;

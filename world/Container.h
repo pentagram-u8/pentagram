@@ -47,6 +47,7 @@ public:
 	virtual uint32 getTotalWeight();
 
 	virtual uint16 assignObjId(); //get and assign self (and contents) an objID
+	virtual void clearObjId(); // clear objID of self (and contents)
 
 	virtual void destroy();
 

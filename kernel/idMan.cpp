@@ -72,6 +72,34 @@ uint16 idMan::getNewID()
 
 }
 
+bool idMan::reserveID(uint16 id)
+{
+	if (isIDUsed(id))
+		return false; // already used
+
+	if (id == first) {
+		first = ids[id];
+		ids[id] = 0;
+		if (!first) last = 0;
+		return true;
+	}
+
+	uint16 node = ids[first];
+	uint16 prev = first;
+
+	while (node != id && node != 0) {
+		prev = node;
+		node = ids[node];
+	}
+	assert(node != 0); // list corrupt...
+
+	ids[prev] = ids[node];
+	ids[node] = 0;
+	if (last == node)
+		last = prev;
+	return true;
+}
+
 void idMan::clearID(uint16 id)
 {
 	// Only clear IF it is used. We don't want to screw up the linked list

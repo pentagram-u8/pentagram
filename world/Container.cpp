@@ -51,6 +51,17 @@ uint16 Container::assignObjId()
 	return id;
 }
 
+void Container::clearObjId()
+{
+	Item::clearObjId();
+
+	std::list<Item*>::iterator iter;
+	for (iter = contents.begin(); iter != contents.end(); ++iter) {
+		(*iter)->clearObjId();
+	}
+}
+
+
 bool Container::AddItem(Item* item)
 {
 	if (item == 0) return false;

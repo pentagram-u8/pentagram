@@ -46,6 +46,9 @@ public:
 	INTRINSIC(I_setEggId);
 
 	virtual uint16 hatch();
+
+protected:
+	bool hatched; //!!TODO: figure out where the original stores 'hatched'
 };
 
 

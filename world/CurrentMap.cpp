@@ -119,6 +119,7 @@ void CurrentMap::writeback()
 				if (item->getExtFlags() & Item::EXT_NOTINMAP)
 					continue;
 
+				item->clearObjId();
 				if (item->getExtFlags() & Item::EXT_FIXED) {
 					// item came from fixed
 					current_map->fixeditems.push_back(item);

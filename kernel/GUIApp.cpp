@@ -205,7 +205,8 @@ void GUIApp::U8Playground()
 
 	Actor* av = world->getNPC(1);
 //	av->teleport(40, 16240, 15240, 64); // central Tenebrae
-	av->teleport(3, 11391, 1727, 64); // docks, near gate
+//	av->teleport(3, 11391, 1727, 64); // docks, near gate
+//	av->teleport(39, 16240, 15240, 64); // West Tenebrae
 	if (av)
 		world->switchMap(av->getMapNum());
 	else
@@ -353,6 +354,7 @@ void GUIApp::SetupDisplayList()
 					fast->push_back(item->getObjId());
 				}
 				item->doLerp(lx,ly,lz,lerpFactor);
+
 				display_list->AddItem(item);
 			}
 		}
@@ -627,7 +629,6 @@ void GUIApp::handleEvent(const SDL_Event& event)
 				sint32 x,y,z;
 				avatar->getLocation(x,y,z);
 				avatar->move(x+64,y+64,z);
-				perr << "Moving to " << x << "," << y << "," << z << std::endl;
 			} else { 
 				pout << "Can't: avatarInStasis" << std::endl; 
 			}

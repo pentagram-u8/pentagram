@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "World.h"
 #include "ActorAnimProcess.h"
 #include "CurrentMap.h"
+#include "ItemFactory.h"
 
 #include "ItemMoveProcess.h" // temp. replacement for pathfinding
 
@@ -41,6 +42,20 @@ Actor::~Actor()
 {
 
 }
+
+uint16 Actor::assignObjId()
+{
+	if (objid == 0xFFFF)
+		objid = World::get_instance()->assignActorObjId(this);
+
+	std::list<Item*>::iterator iter;
+	for (iter = contents.begin(); iter != contents.end(); ++iter) {
+		(*iter)->assignObjId();
+	}
+
+	return objid;
+}
+
 
 void Actor::teleport(int newmap, sint32 newx, sint32 newy, sint32 newz)
 {
@@ -95,6 +110,8 @@ uint32 Actor::I_doAnim(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(dir); // seems to be 0-8
 	ARG_UINT16(unk1); // this is almost always 10000 in U8.Maybe speed-related?
 	ARG_UINT16(unk2); // appears to be 0 or 1. Some flag?
+
+	perr << "I_doAnim: objID: " << id_obj_actor << std::endl;
 
 	if (!actor) return 0;
 
@@ -299,4 +316,36 @@ uint32 Actor::I_isBusy(const uint8* args, unsigned int /*argsize*/)
 		return 1;
 	else
 		return 0;
+}
+
+uint32 Actor::I_createActor(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_UINT32(ptr);
+	ARG_UINT16(shape);
+	ARG_UINT16(unknown); // !!! what's this?
+
+	//!! do we need to flag actor as temporary somehow?
+
+	Actor* newactor = ItemFactory::createActor(shape, 0, 0, 0, 0, 0, Item::EXT_NOTINMAP);
+	if (!newactor) {
+		perr << "I_createActor failed to create actor (" << shape
+			 <<	")." << std::endl;
+		return 0;
+	}
+	uint16 objID = newactor->assignObjId();
+
+	Actor* av = World::get_instance()->getNPC(1);
+	newactor->setMapNum(av->getMapNum());
+	newactor->setNpcNum(objID);
+	newactor->setFlag(FLG_ETHEREAL);
+	World::get_instance()->etherealPush(objID);
+
+	uint8 buf[2];
+	buf[0] = static_cast<uint8>(objID);
+	buf[1] = static_cast<uint8>(objID >> 8);
+	UCMachine::get_instance()->assignPointer(ptr, buf, 2);
+
+	perr << "I_createActor: created actor #" << objID << " with shape " << shape << std::endl;
+
+	return objID;
 }
