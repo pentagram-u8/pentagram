@@ -76,7 +76,7 @@ void IfNode::print_unk(Console &o, const uint32 isize) const
 	indent(o, isize);
 	o.Print("{");
 	Node::print_linenum_unk(o, isize);
-	#if DEBUG_JUNK
+	#ifdef DEBUG_JUNK
 	if(itype!=I_ELSE)
 		o.Printf(" //jne_NOPRINT(0x%04X)", targetOffset);
 	#endif
@@ -91,7 +91,7 @@ void IfNode::print_unk(Console &o, const uint32 isize) const
 	// print the terminating structure '}\n' or '} else'
 	indent(o, isize);
 	o.Putchar('}');
-	#if DEBUG_JUNK
+	#ifdef DEBUG_JUNK
 	o.Printf("/*%02X*/", itype);
 	#endif
 	switch(itype)
@@ -104,11 +104,11 @@ void IfNode::print_unk(Console &o, const uint32 isize) const
 		case I_ELSE_IF_ELSE:
 		case I_IF_ELSE_IF:
 			assert(jmpnode!=0);
-			#if DEBUG_JUNK
+			#ifdef DEBUG_JUNK
 			jmpnode->print_unk(o, isize);
 			#endif
 			//o.Print(" else ");
-			#if DEBUG_JUNK
+			#ifdef DEBUG_JUNK
 			if(elsenode!=0) o.Print("/*(elsenode)*/");
 			#endif
 			/*assert(elsenode!=0);
@@ -142,15 +142,15 @@ void IfNode::print_asm(Console &o) const
 				o.Putchar('\n');
 				Node::print_asm(o);
 				o.Printf("jne\t\t%04Xh\t(to %04X)", targetOffset - _offset - 3, targetOffset);
-				if(jmpnode!=0)
-				{
-					o.Putchar('\n');
-					jmpnode->print_asm(o);
-				}
 				for(std::deque<Node *>::const_iterator i=ifnodes.begin(); i!=ifnodes.end(); ++i)
 				{
 					o.Putchar('\n');
 					(*i)->print_asm(o);
+				}
+				if(jmpnode!=0)
+				{
+					o.Putchar('\n');
+					jmpnode->print_asm(o);
 				}
 				break;
 			}
@@ -241,8 +241,8 @@ bool IfNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 			}
 			// handle the pessimal if(true){code}->if(false){}else{code} case
 			// we've also got to handle the... 'unique' problem that if we get a cmp
-			// node after our jne node, our cmp node will be 'inside' us.
-			// the simplest solution then, is to have the cmp append to our 'nodes',
+			// node after our jne node, our jmp node will be 'inside' us.
+			// the simplest solution then, is to have the jmp append to our 'nodes',
 			// then have us be called again through fold() by the loop in Unit::fold()
 			// as a special case
 			else if(jmpnode==0 && ifnodes.size()>0 && ifnodes.back()->opcode()==0x52)
@@ -274,7 +274,6 @@ bool IfNode::fold_else(DCUnit *unit, std::deque<Node *> &nodes)
 {
 	switch(itype)
 	{
-		// "If I were an ifnode, lalala lalalaLAlaLAlala. I would be a very iffy ifnode..." *ahem*
 		case I_ELSE:
 			if(ifnodes.size()==0)
 			{
@@ -282,7 +281,7 @@ bool IfNode::fold_else(DCUnit *unit, std::deque<Node *> &nodes)
 				while(!finished)
 				{
 					assert(nodes.size()>0);
-					if(nodes.back()->opcode()==0x51)
+					if(nodes.back()->opcode()==0x51 || nodes.back()->opcode()==0x52)
 						if(static_cast<IfNode *>(nodes.back())->TargetOffset()==TargetOffset())
 							finished=true;
 

@@ -135,6 +135,8 @@ void BinOperatorNode::print_unk(Console &o, const uint32 isize) const
 	switch(otype)
 	{
 		case M_CMP: o.Printf(" == "); break;
+		case M_LT:  o.Printf(" < ");  break;
+		case M_LE:  o.Printf(" <= "); break;
 		case M_GT:  o.Printf(" > ");  break;
 		case M_OR:  o.Printf(" or "); break;
 		default: assert(false); // can't happen
@@ -157,6 +159,8 @@ void BinOperatorNode::print_asm(Console &o) const
 	switch(otype)
 	{
 		case M_CMP: o.Printf("cmp"); break;
+		case M_LT:  o.Printf("lt");  break;
+		case M_LE:  o.Printf("le");  break;
 		case M_GT:  o.Printf("gt");  break;
 		case M_OR:  o.Printf("or");  break;
 		default: assert(false); // can't happen
@@ -175,6 +179,8 @@ void BinOperatorNode::print_bin(ODequeDataSource &o) const
 	switch(otype)
 	{
 		case M_CMP: o.write1(0x24); break;
+		case M_LT:  o.write1(0x28); break;
+		case M_LE:  o.write1(0x2A); break;
 		case M_GT:  o.write1(0x2C); break;
 		case M_OR:  o.write1(0x34); break;
 		default: assert(false); // can't happen
@@ -186,6 +192,8 @@ bool BinOperatorNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 	switch(otype)
 	{
 		case M_CMP:
+		case M_LT:
+		case M_LE:
 		case M_GT:
 		case M_OR:
 			assert(acceptType(nodes.back()->rtype(), Type::T_WORD, Type::T_BYTE));

@@ -58,7 +58,7 @@ class IfNode;
 class IfNode : public UniNode
 {
 	public:
-		enum iftype { I_IF, I_IF_ELSE, I_IF_ELSE_IF, I_ELSE_IF, I_ELSE_IF_ELSE, I_ELSE };
+		enum iftype { I_IF=0, I_IF_ELSE, I_IF_ELSE_IF, I_ELSE_IF, I_ELSE_IF_ELSE, I_ELSE };
 		
 		IfNode(const iftype newItype, const uint32 newTargetOffset)
 			: UniNode(0x51, 0x0000, Type(Type::T_INVALID)), itype(newItype),

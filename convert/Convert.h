@@ -299,7 +299,7 @@ void ConvertUsecode::readOpGeneric(TempOp &op, IDataSource *ucfile, uint32 &dbg_
 			break;
 		case 0x2B:
 			// 2B
-			// less than or equal to
+			// less than or equal to 32 bit
 			break;
 		case 0x2C:
 			// 2C
@@ -853,6 +853,8 @@ Node *ConvertUsecode::readOpGeneric(IDataSource *ucfile, uint32 &dbg_symbol_offs
 			}
 			break;
 		case 0x24: // cmp
+		case 0x28: // lt
+		case 0x2A: // le
 		case 0x2C: // gt
 			n = new BinOperatorNode(opcode, offset);
 			break;
@@ -882,6 +884,9 @@ Node *ConvertUsecode::readOpGeneric(IDataSource *ucfile, uint32 &dbg_symbol_offs
 			break;
 		case 0x52: // jmp
 			n = new EndNode(opcode, offset, offset + 3 + static_cast<uint16>(read2(ucfile)));
+			break;
+		case 0x59: // push pid
+			n = new PushVarNode(opcode, offset);
 			break;
 		case 0x5A: // init
 			n = new FuncMutatorNode(opcode, offset, read1(ucfile));

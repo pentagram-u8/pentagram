@@ -1,3 +1,7 @@
+2003-08-23	Darke  <darkepaw@users.sf.net>
+	* convert/Convert.h, tools/fold/*: Fixed Maximally Annoying Bug(tm),
+	  and a few other minor things.
+	
 2003-08-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AvatarMoverProcess.*: non-functioning avatar movement
 	* world/actors/Pathfinder.*: a pathfinder which doesn't quite work yet

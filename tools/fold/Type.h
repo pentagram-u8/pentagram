@@ -38,7 +38,13 @@ class Type
 		inline bool operator==(const ttype t) const { return _type == t; };
 		inline bool operator!=(const ttype t) const { return _type != t; };
 		inline Type &operator=(const Type &t) { _type = t._type; return *this; };
-		inline bool operator==(const Type &t) const { return _type == t._type; };
+		inline bool operator==(const Type &t) const
+		{
+			if( (_type==T_BYTE || _type==T_WORD) && (t._type==T_BYTE || t._type==T_WORD) )
+				return true;
+			else
+				return _type == t._type;
+		};
 		inline bool operator!=(const Type &t) const { return _type != t._type; };
 
 		inline ttype type() const { return _type; };
@@ -73,7 +79,7 @@ class DataType
 {
 	public:
 		enum datatype { DT_NULL, DT_BYTES, DT_BP, DT_BPLIST, DT_BPADDR, DT_BPSTRPTR,
-			DT_SP, DT_SPADDR, DT_CHARS, DT_DPID, DT_PRESULT, DT_RESULT, DT_GLOBAL };
+			DT_SP, DT_SPADDR, DT_CHARS, DT_PID, DT_PRESULT, DT_RESULT, DT_GLOBAL };
 		
 		DataType(const Type &newVType=Type::T_VOID, const datatype newDType=DT_NULL, const sint32 newValue=0)
 			: _vtype(newVType), _dtype(newDType), _value(newValue) {};

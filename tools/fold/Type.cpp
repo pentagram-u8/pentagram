@@ -62,9 +62,9 @@ void DataType::print_value_unk(Console &o) const
 		/*case DT_BPSTRPTR:  o.Printf("strptr(%s)", print_bp(value));    break;
 		case DT_SP:        o.Printf("%s", print_sp(value));            break;
 		case DT_SPADDR:    o.Printf("addressof(%s)", print_sp(value)); break;
-		case DT_CHARS:     o.Printf("\"%s\"", strval.c_str());         break;
-		case DT_DPID:      o.Printf("pid");                            break;
-		case DT_PRESULT:   o.Printf("presult");                        break;
+		case DT_CHARS:     o.Printf("\"%s\"", strval.c_str());         break;*/
+		case DT_PID:        o.Printf("pid");                            break;
+		/*case DT_PRESULT:   o.Printf("presult");                        break;
 		case DT_RESULT:    o.Printf("result");                         break;
 		case DT_GLOBAL:    o.Printf("global %s(%04X, %02X)",
 			GlobalNames[global_offset].name.c_str(), global_offset, global_size); break;*/
@@ -101,6 +101,10 @@ void DataType::print_value_asm(Console &o) const
 				default: assert(false);
 			}
 			break;
+		case DT_PID:
+			//do nothing, I think...
+			break;
+			
 		default: assert(false);
 	}
 }
@@ -133,6 +137,9 @@ void DataType::print_value_bin(ODequeDataSource &o) const
 				case Type::T_DWORD: o.write1(_value); break;
 				default: assert(false);
 			}
+			break;
+		case DT_PID:
+			// do nothing, I think...
 			break;
 		default: assert(false);
 	}

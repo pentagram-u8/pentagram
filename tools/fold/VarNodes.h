@@ -85,6 +85,19 @@ class PushVarNode : public Node
 			}
 			rtype(dtype.type());
 		};
+		PushVarNode(const uint32 opcode, const uint32 offset)
+			: Node(opcode, offset)
+		{
+			assert(acceptOp(opcode, 0x59));
+			switch(opcode)
+			{
+				case 0x59:
+					dtype = DataType(Type::T_WORD, DataType::DT_PID);
+					break;
+				default: assert(false);
+			}
+			rtype(dtype.type());
+		};
 
 		~PushVarNode() {};
 

@@ -90,7 +90,7 @@ void Unit::print_bin(ODequeDataSource &o) const
 /****************************************************************************
 	DCUnit
  ****************************************************************************/
-
+//#define UNITDEBUG
 /* returns true if we've finished folding the current function */
 const bool DCUnit::fold(Node *n)
 {
@@ -109,14 +109,15 @@ const bool DCUnit::fold(Node *n)
 	// DEBUGGING. Will produce _lots_ of output.
 	//print_asm(con);
 	//print_assert(n, this);
-	//con.Printf("ifstack.size: %d\n", ifstack.size());
+	//con.Printf("currop.offset: %04X\tifstack.size: %d\telsestack.size: %d\n", n->offset(), ifstack.size(), elsestack.size());
 	
 	while(elsestack.size()>0 && n->offset()==elsestack.back()->TargetOffset())
 	{
-		//print_assert(0, this);
-
 		IfNode *last = elsestack.back();
 		elsestack.pop_back();
+		#ifdef UNITDEBUG
+		con.Printf("Popping elsestack offset: %04X type %d at %04X\n", last->offset(), last->itype, n->offset());
+		#endif
 
 		// bunch of random asserts
 		assert(last->itype!=IfNode::I_IF && last->itype!=IfNode::I_ELSE_IF);
@@ -128,13 +129,13 @@ const bool DCUnit::fold(Node *n)
 		{
 			assert(elsestack.back()->elsenode==0 || print_assert(elsestack.back(), this));
 			elsestack.back()->elsenode=last;
-			#if UNITDEBUG
+			#ifdef UNITDEBUG
 			print_assert(0, this);
 			#endif
 		}
-
-		assert(ifstack.size()>0 || print_assert(0, this));
-		if(last!=ifstack.back() && last->elsenode==0)
+		//if(!(ifstack.size()>0)) { last->print_asm(con); last->print_unk(con, 3); n->print_unk(con, 5); print_assert(n, this); }//debugging, DELETE:
+		//assert(ifstack.size()>0 || print_assert(n, this));
+		if(ifstack.size()>0 && last!=ifstack.back() && last->elsenode==0)
 		{
 			IfNode *newnode = new IfNode(IfNode::I_ELSE, last->TargetOffset());
 			newnode->fold_else(this, ifstack.back()->nodes());
@@ -142,14 +143,22 @@ const bool DCUnit::fold(Node *n)
 			assert(ifstack.back()->opcode()==0x51);
 			ifstack.back()->nodes().push_back(newnode);
 		}
+		else if(nodes.size()>0 && last!=nodes.back() && last->elsenode==0)
+		{
+			IfNode *newnode = new IfNode(IfNode::I_ELSE, last->TargetOffset());
+			newnode->fold_else(this, nodes);
+			assert(last->elsenode==0 || print_assert(last->elsenode, this));
+			assert(nodes.back()->opcode()==0x51);
+			nodes.push_back(newnode);
+		}
 	}
 
 	while(ifstack.size()>0 && n->offset()==ifstack.back()->TargetOffset())
 	{
 		IfNode *last = ifstack.back();
 		ifstack.pop_back();
-		#if UNITDEBUG
-		con.Printf("Popping offset: %04X at %04X\n", last->offset(), n->offset());
+		#ifdef UNITDEBUG
+		con.Printf("Popping ifstack offset: %04X type %d at %04X\n", last->offset(), last->itype, n->offset());
 		#endif
 		// fold the last if node once more, with the 'parent' stack,
 		// just in case it wants to do anything funky (FIXME: Be just a _tad_ more specific here)
@@ -161,6 +170,10 @@ const bool DCUnit::fold(Node *n)
 		// if we're an else type, append us to the stack
 		if(last->itype!=IfNode::I_IF && last->itype!=IfNode::I_ELSE_IF)
 		{
+			#if 0
+			con.Printf("Fnord: %04X\n", last->offset());
+			print_assert(last, this);
+			#endif
 			if(elsestack.size()>0 && (elsestack.back()->itype==IfNode::I_IF_ELSE
 				|| elsestack.back()->itype==IfNode::I_ELSE_IF_ELSE))
 			{
@@ -273,6 +286,7 @@ bool print_assert(const Node *n, const DCUnit *u)
 		con.Printf("\n========================================\n");
 		con.Printf("  Error with opcode %02X at offset %04X.\n", n->opcode(), n->offset());
 		con.Printf("========================================\n");
+		//n->print_unk(con, 0);
 	}
 	
 	if(u!=0)
