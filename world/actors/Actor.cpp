@@ -81,6 +81,35 @@ uint16 Actor::getMaxHP() const
 	return static_cast<uint16>(2 * getStr());
 }
 
+bool Actor::loadMonsterStats()
+{
+	ShapeInfo* shapeinfo = getShapeInfo();
+	MonsterInfo* mi = 0;
+	if (shapeinfo) mi = shapeinfo->monsterinfo;
+	if (!mi)
+		return false;
+
+	uint16 hp;
+	if (mi->max_hp <= mi->min_hp)
+		hp = mi->min_hp;
+	else
+		hp = mi->min_hp + std::rand() % (mi->max_hp - mi->min_hp);
+	setHP(hp);
+	
+	uint16 dex;
+	if (mi->max_dex <= mi->min_dex)
+		dex = mi->min_dex;
+	else
+		dex = mi->min_dex + std::rand() % (mi->max_dex - mi->min_dex);
+	setDex(dex);
+	
+	uint8 alignment = mi->alignment;
+	setAlignment(alignment & 0x0F);
+	setEnemyAlignment((alignment & 0xF0) >> 4); // !! CHECKME
+
+	return true;
+}
+
 
 bool Actor::CanAddItem(Item* item, bool checkwghtvol)
 {
@@ -335,6 +364,8 @@ sint16 Actor::getDefendingDex()
 		assert(si->weaponinfo);
 		dex += si->weaponinfo->dex_defend_bonus;
 	}
+
+	if (dex <= 0) dex = 1;
 
 	return dex;
 }
@@ -917,7 +948,7 @@ uint32 Actor::I_createActor(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(shape);
 	ARG_UINT16(unknown); // !!! what's this?
 
-	//!! do we need to flag actor as temporary somehow?
+	//!! do we need to flag actor as temporary?
 
 	Actor* newactor = ItemFactory::createActor(shape, 0, 0, Item::FLG_IN_NPC_LIST, 0, 0, 0);
 	if (!newactor) {
@@ -926,6 +957,12 @@ uint32 Actor::I_createActor(const uint8* args, unsigned int /*argsize*/)
 		return 0;
 	}
 	uint16 objID = newactor->assignObjId();
+
+	// set stats
+	if (!newactor->loadMonsterStats()) {
+		perr << "I_createActor failed to set stats for actor (" << shape
+			 << ")." << std::endl;
+	}
 
 	Actor* av = World::get_instance()->getNPC(1);
 	newactor->setMapNum(av->getMapNum());

@@ -64,6 +64,10 @@ public:
 	void setActorFlag(uint32 mask) { actorflags |= mask; }
 	void clearActorFlag(uint32 mask) { actorflags &= ~mask; }
 
+	//! set stats from MonsterInfo (hp, dex, alignment, enemyalignment)
+	//! \return true if a MonsterInfo struct was found, false otherwise
+	bool loadMonsterStats();
+
 	virtual void teleport(int mapnum, sint32 x, sint32 y, sint32 z);
 
 	virtual bool CanAddItem(Item* item, bool checkwghtvol=false);

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,6 +25,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Actor.h"
 #include "ItemFactory.h"
 #include "CurrentMap.h"
+#include "ShapeInfo.h"
+#include "MonsterInfo.h"
+
 #include "IDataSource.h"
 #include "ODataSource.h"
 
@@ -58,6 +61,12 @@ uint16 MonsterEgg::hatch()
 		return 0;
 	}
 	uint16 objID = newactor->assignObjId();
+
+	// set stats
+	if (!newactor->loadMonsterStats()) {
+		perr << "MonsterEgg::hatch failed to set stats for actor (" << shape
+			 << ")." << std::endl;
+	}
 
 	newactor->setMapNum(getMapNum());
 	newactor->setNpcNum(objID);
