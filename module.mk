@@ -18,7 +18,9 @@ pentagram_OBJ = \
 	$(CONVERT) \
 	$(CONF) \
 	$(GUMPS) \
+	$(WIDGETS) \
 	$(WORLD) \
+	$(ACTORS) \
 	$(ARGS) \
 	kernel/GUIApp.o \
 	pentagram.o 
@@ -33,7 +35,9 @@ llc_OBJ = \
 	$(CONVERT) \
 	$(CONF) \
 	$(GUMPS) \
+	$(WIDGETS) \
 	$(WORLD) \
+	$(ACTORS) \
 	$(COMPILE) \
 	$(DISASM) \
 	$(ARGS) \

@@ -78,7 +78,9 @@ GUMPS = \
 	gumps/Gump.o \
 	gumps/GumpNotifyProcess.o \
 	gumps/ItemRelativeGump.o \
-	gumps/ResizableGump.o \
+	gumps/ResizableGump.o
+
+WIDGETS = \
 	gumps/widgets/ButtonWidget.o \
 	gumps/widgets/SimpleTextWidget.o
 
@@ -98,7 +100,9 @@ WORLD = \
 	world/TeleportEgg.o \
 	world/World.o \
 	world/MissileProcess.o \
-	world/GravityProcess.o \
+	world/GravityProcess.o
+
+ACTORS = \
 	world/actors/Actor.o \
 	world/actors/ActorAnimProcess.o \
 	world/actors/MainActor.o
