@@ -55,7 +55,7 @@ A sample pentagram.cfg is included below:
 </config>
 
 Replace '/path/to/u8' with the directory containing 'u8.exe'.
-Replace '/path/to/u8/work/dir' with the work directory (not used and 
+Replace '/path/to/u8/work/dir' with the work directory (not used and
 necessary yet - don't ask).
 Replace '/path/to/pentagram/data' with the pentagram data directory (that's
 the directory that contains fixedfont.tga).
@@ -69,10 +69,17 @@ These commands are likely to change in the future so keep an eye on CHANGELOG as
 ~				: hides/restores console
 page up/down	: scrolls console
 arrow keys		: scrolls map
-t				: play test animation (Devon)
 0-9,a-e			: selects 0-14 in conversations
 ESC,q			: quits pentagram
 [,]				: first ] clears the screen, multiple presses of ]
 				  show the paint order. [ "steps" backward.
 left mouse		: look at item/npc
 right mouse		: use item/talk to npc
+
+
+HACKS TO SHOW OFF
+=================
+
+t				: play test animation (Devon)
+f				: plays first scene (Avatar standing up, speaking to Devon)
+g				: plays execution scene
