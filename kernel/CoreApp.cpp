@@ -214,19 +214,36 @@ void CoreApp::initGame()
 		bool detected = getGameInfo(game, &info);
 		con.Printf(MM_INFO, "%s: ", game.c_str());
 		if (detected) {
-			if (info.type == GameInfo::GAME_U8) {
-				con.Print(MM_INFO, "U8, ");
-			} /* else...*/
+			switch(info.type) {
+			case GameInfo::GAME_U8:
+				con.Print(MM_INFO, "Ultima 8, ");
+				break;
+			case GameInfo::GAME_REMORSE:
+				con.Print(MM_INFO, "Crusader: No Remorse, ");
+				break;
+			case GameInfo::GAME_REGRET:
+				con.Print(MM_INFO, "Crusader: No Regret, ");
+				break;
+			default:
+				con.Print(MM_INFO, "Unknown, ");
+			} 
 
-			if (info.language == GameInfo::GAMELANG_ENGLISH) {
+			switch(info.language) {
+			case GameInfo::GAMELANG_ENGLISH:
 				con.Print(MM_INFO, "English");
-			} else if (info.language == GameInfo::GAMELANG_FRENCH) {
+				break;
+			case GameInfo::GAMELANG_FRENCH:
 				con.Print(MM_INFO, "French");
-			} else if (info.language == GameInfo::GAMELANG_GERMAN) {
+				break;
+			case GameInfo::GAMELANG_GERMAN:
 				con.Print(MM_INFO, "German");
-			} else if (info.language == GameInfo::GAMELANG_SPANISH) {
+				break;
+			case GameInfo::GAMELANG_SPANISH:
 				con.Print(MM_INFO, "Spanish");
-			} /* else...*/
+				break;
+			default:
+				con.Print(MM_INFO, "Unknown");
+			}
 		} else {
 			con.Print(MM_INFO, "(unknown)");
 		}
