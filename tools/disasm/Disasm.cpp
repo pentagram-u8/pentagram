@@ -1,7 +1,7 @@
 /*
  *	disasm.cc - Disassembler for U8's usecode
  *
- *  Copyright (C) 2001-2002 Willem Jan Palenstijn and The Pentagram Team
+ *  Copyright (C) 2001-2003 Willem Jan Palenstijn and The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by

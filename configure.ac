@@ -197,7 +197,9 @@ AC_MSG_CHECKING(if we should add seemingly random optimisations)
 AC_ARG_ENABLE(random_optimisations, [  --enable-random-optimisations       Use random optimisations [default no]],,enable_random_optimisations=no)
 if test x$enable_random_optimisations = xyes; then
     AC_MSG_RESULT(yes)
-    CXXFLAGS="$CXXFLAGS -O3"
+    CXXFLAGS="$CXXFLAGS -O3 -funroll-loops"
+	# Either of these 'may' generate better code: -fforce-mem -fforce-addr
+	# For branch profiling optimisations: -fbranch-probabilities
 else
     AC_MSG_RESULT(no)
 fi

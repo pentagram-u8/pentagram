@@ -36,6 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "XFormBlend.h"
 #include "GameData.h"
 #include "World.h"
+#include "Args.h"
 
 #include "Map.h" // temp
 #include "U8Save.h"
@@ -43,7 +44,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // TODO MOVE THIS STUFF TO GameMapGump
 #include "Item.h"
 #include "Actor.h"
-#include "ItemSorter.h" 
+#include "ItemSorter.h"
 #include "CurrentMap.h"
 #include "Rect.h"
 // END TODO
@@ -51,6 +52,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <SDL.h>
 #include <cstdlib>
 
+#include "DisasmProcess.h"
+
+using std::string;
 
 Application* Application::application = 0;
 
@@ -59,27 +63,37 @@ Application::Application(int argc, char *argv[])
 	  console(0), screen(0), palettemanager(0), gamedata(0), world(0),
 	  display_list(0),
 	  runMinimalSysInit(false), runGraphicSysInit(false), runSDLInit(false),
+	  weAreDisasming(false),
 	  isRunning(false)
 {
 	assert(application == 0);
 	application = this;
 
-	MinimalSysInit();
+	ParseArgs(argc, argv);
 
-	UCMachineInit();
+	if(weAreDisasming==true)
+	{
+		pout << "We Are Disassembling..." << std::endl;
+		MinimalSysInit();
+		kernel->addProcess(new DisasmProcess());
+	}
+	else
+	{
+		MinimalSysInit();
 
-	GraphicSysInit();
+		GraphicSysInit();
 
-	U8Playground(argc, argv);
+		U8Playground(argc, argv);
+	}
 }
 
 Application::~Application()
 {
-	delete kernel;
-	delete ucmachine;
-	delete filesystem;
-	delete config;
-	delete palettemanager;
+	FORGET_OBJECT(kernel);
+	FORGET_OBJECT(ucmachine);
+	FORGET_OBJECT(filesystem);
+	FORGET_OBJECT(config);
+	FORGET_OBJECT(palettemanager);
 
 	application = 0;
 }
@@ -108,7 +122,8 @@ void Application::run()
 		}
 
 		// Paint Screen
-		paint();
+		if(runGraphicSysInit) // need to worry if the graphics system has been started. Need nicer way.
+			paint();
 	}
 }
 
@@ -230,14 +245,14 @@ void Application::SetupDisplayList()
 	sint32 lx,ly,lz;
 	int map_num = map->getNum();
 	Actor* av = world->getNPC(1);
-	
-	if (!av || av->getMapNum() != map_num) 
+
+	if (!av || av->getMapNum() != map_num)
 	{
 		lx = 8192;
 		ly = 8192;
 		lz = 64;
 	}
-	else 
+	else
 		av->getLocation(lx,ly,lz);
 
 	sint32 gx = lx/512;
@@ -252,7 +267,7 @@ void Application::SetupDisplayList()
 			sint32 sx = x - y;
 			sint32 sy = x + y;
 
-			if (sx < -sx_limit || sx > sx_limit || sy < -sy_limit || sy > sy_limit) 
+			if (sx < -sx_limit || sx > sx_limit || sy < -sy_limit || sy > sy_limit)
 				continue;
 
 			const std::list<Item*>* items = map->getItemList(gx+x,gy+y);
@@ -367,14 +382,15 @@ void Application::loadConfig()
 	else
 		pout << "Failed" << std::endl;
 
+	pout << "Game: " << game << std::endl;
 
 	// Question: config files can specify an alternate data path
 	// Do we reload the config files if that path differs from the
 	// hardcoded data path? (since the system-wide config file is in @data)
 
 	std::string data;
-	pout << "Reading \"config/paths/data\" config key." << std::endl;
-	config->value("config/paths/data", data, "");
+	pout << "Reading \"config/general/data\" config key." << std::endl;
+	config->value("config/general/data", data, "");
 	if (data != "") {
 		pout << "Data Path: " << data << std::endl;
 		filesystem->AddVirtualPath("@data", data);
@@ -384,10 +400,23 @@ void Application::loadConfig()
 	}
 
 	std::string u8;
-	pout << "Reading \"config/paths/u8\" config key." << std::endl;
-	config->value("config/paths/u8", u8, ".");
+	pout << "Reading \"config/" << game << "/path\" config key." << std::endl;
+	config->value(string("config/")+game+"/path", u8, ".");
 	filesystem->AddVirtualPath("@u8", u8);
 	pout << "U8 Path: " << u8 << std::endl;
+}
+
+void Application::ParseArgs(int argc, char *argv[])
+{
+	pout << "Parsing Args" << std::endl;
+
+	Args parameters;
+
+	parameters.declare("--disasm", &weAreDisasming, true);
+	parameters.declare("--game",   &game,           "u8");
+	//parameters.declare("--singlefile",	&singlefile, true);
+
+	parameters.process(argc, argv);
 }
 
 void Application::MinimalSysInit()
@@ -409,6 +438,9 @@ void Application::MinimalSysInit()
 	pout << "Create Configuration" << std::endl;
 	config = new Configuration;
 	loadConfig();
+
+	pout << "Create UCMachine" << std::endl;
+	ucmachine = new UCMachine;
 
 	runMinimalSysInit=true;
 }
@@ -512,22 +544,6 @@ void Application::SDLInit()
 }
 
 
-void Application::UCMachineInit()
-{
-	// if we've already done this...
-	if(ucmachine!=0) return;
-	//else...
-
-	// check we've run the prereqs...
-	if(!runMinimalSysInit)
-		MinimalSysInit();
-	// go!
-
-	pout << "Create UCMachine" << std::endl;
-	ucmachine = new UCMachine;
-}
-
-
 void Application::handleEvent(const SDL_Event& event)
 {
 	uint32 eventtime = SDL_GetTicks();
@@ -544,34 +560,34 @@ void Application::handleEvent(const SDL_Event& event)
 		// pause when lost focus?
 	}
 	break;
-	
+
 
 	// most of these events will probably be passed to a gump manager,
 	// since almost all (all?) user input will be handled by a gump
-	
+
 	case SDL_MOUSEBUTTONDOWN:
 	{
-		
+
 	}
 	break;
-	
+
 	case SDL_MOUSEBUTTONUP:
 	{
 		// Ok, a bit of a hack for now
 		if (event.button.button == SDL_BUTTON_LEFT)
 		{
 			pout << std::endl << "Tracing left mouse click: ";
-		
+
 			Rect dims;
 			screen->GetSurfaceDims(dims);
-	
+
 			// We will assume the display_list has all the items in it
 			uint16 objID = display_list->Trace(event.button.x - dims.w/2,
 							event.button.y - dims.h/2);
 
 			if (!objID)
 				pout << "Didn't find an item" << std::endl;
-			else 
+			else
 			{
 				World *world = World::get_instance();
 				Item *item = p_dynamic_cast<Item*>(world->getObject(objID));
@@ -583,27 +599,27 @@ void Application::handleEvent(const SDL_Event& event)
 
 	}
 	break;
-	
+
 	case SDL_MOUSEMOTION:
 	{
-		
+
 	}
 	break;
-	
+
 	case SDL_KEYDOWN:
 	{
 
 	}
 	break;
-	
+
 	case SDL_KEYUP:
 	{
-		isRunning = false;		
+		isRunning = false;
 	}
 	break;
 
 	// any more useful events?
-	
+
 	default:
 		break;
 	}

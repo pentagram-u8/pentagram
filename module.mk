@@ -62,7 +62,8 @@ pentagram_OBJ = \
 	convert/crusader/ConvertShapeCrusader.o \
 	conf/Configuration.o \
 	conf/XMLTree.o \
-	conf/XMLNode.o
+	conf/XMLNode.o \
+	tools/disasm/DisasmProcess.o
 
 # Common rules
 include common.mk

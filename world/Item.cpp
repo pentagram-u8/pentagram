@@ -158,8 +158,6 @@ uint32 Item::I_bark(const uint8* args, unsigned int /*argsize*/)
 	ARG_STRING(str);
 	if (!item) return 0;
 
-	return 0;
-
 	pout << std::endl << std::endl << str  << std::endl << std::endl;
 	
 	// wait 4 ticks

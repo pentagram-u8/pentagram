@@ -50,11 +50,18 @@ public:
 
 	void U8Playground(int argc, char *argv[]);
 
+	void ForceQuit() { isRunning=false; };
+
+	// Bad Darke! *pawslap!* Will make this private again soon.
+	static Application* application;
+
 private:
+	// minimal system
 	Kernel* kernel;
 	UCMachine* ucmachine;
 	FileSystem* filesystem;
 	Configuration* config;
+	// full system
 	ResizableGump* desktop;
 	ConsoleGump* console;
 	RenderSurface *screen;
@@ -63,7 +70,7 @@ private:
 	World *world;
 	ItemSorter *display_list;	// TODO MOVE THIS TO GameMapGump
 
-	static Application* application;
+	void ParseArgs(int argc, char *argv[]);
 
 	// internal initilisation functions,
 	// called depending upon command line arguments
@@ -71,7 +78,6 @@ private:
 	void GraphicSysInit(); // starts the graphics subsystem
 	void LoadConsoleFont(); // loads the console font
 	void SDLInit(); // start sdl
-	void UCMachineInit(); // start usecode machine
 
 	void SetupDisplayList();	// TODO MOVE THIS TO GameMapGump
 
@@ -79,6 +85,11 @@ private:
 	bool runMinimalSysInit;
 	bool runGraphicSysInit;
 	bool runSDLInit;
+
+	std::string game;
+	// various temporary state flags, to be moved somewhere more appropriate in time.
+	bool weAreDisasming;
+	bool weAreWeAreWeAreTheMany; // false for the time being. *grin*
 
 	bool isRunning;
 };

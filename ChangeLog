@@ -1,3 +1,18 @@
+2003-05-11  Darke <darkepaw@users.sf.net>
+	* tools/disasm/DisasmProcess.*: New disassembler process files.
+	* kernel/Application.*: Added stub of disassembler process; parameter
+	  handling; and new config file format, the default u8 and data paths
+	  have been shuffled to something that looks like this:
+	  <config>
+	      <u8>
+	          <path> /home/darke/game/pagan2.13 </>
+	      </>
+	      <general>
+	          <data> /home/darke/code/pentagram/data </>
+	      </>
+	  </config>
+	* random-files: Updated copyright to 2003.																																	  
+
 2003-05-11  Ryan Nunn <colourles@users.sourceforge.net>
 	* misc/memset_n.h : Added generic memset_32 and memset_16 functions.
 	  Additionally added optimized memset_32 funcs (which are used by 
