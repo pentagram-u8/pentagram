@@ -206,6 +206,7 @@ public:
 			result = answerlist->getStringIndex(userchoice);
 			// we're leaking strings and memory here... (not that I care)
 			pout << "User answer = " << result << ": " << UCMachine::get_instance()->getString(result) << std::endl;
+			userchoice = -1;
 			terminate();
 		}
 		return false;
