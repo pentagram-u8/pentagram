@@ -1,3 +1,7 @@
+2004-08-29  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* kernel/GUIApp.cpp: Separated the QuickAvatarMoverProcess from GUIApp
+	* world/actors/QuickAvatarMoverProcess.*: new Quick Mover
+
 2004-09-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCList.h: fixed CopyList
 	* usecode/UCMachine.cpp: fixed listHeap corruption bug

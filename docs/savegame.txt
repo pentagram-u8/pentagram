@@ -491,6 +491,11 @@ AvatarMoverProcess: Process (v1)
 uint16 version
 <Process>
 
+QuickAvatarMoverProcess: Process (v1)		terminates after loading
+uint16 version
+<Process>
+sint32 dir
+
 
 ResurrectionProcess: Process (v1)
 uint16 version

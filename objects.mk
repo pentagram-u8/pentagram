@@ -155,6 +155,7 @@ ACTORS = \
 	world/actors/Animation.o \
 	world/actors/AnimationTracker.o \
 	world/actors/AvatarMoverProcess.o \
+	world/actors/QuickAvatarMoverProcess.o \
 	world/actors/ClearFeignDeathProcess.o \
 	world/actors/DeleteActorProcess.o \
 	world/actors/MainActor.o \

@@ -51,6 +51,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GameMapGump.h"
 #include "BarkGump.h"
 
+#include "QuickAvatarMoverProcess.h"
 #include "Actor.h"
 #include "ActorAnimProcess.h"
 #include "TargetedAnimProcess.h"
@@ -234,6 +235,8 @@ void GUIApp::startup()
 							 ProcessLoader<TargetedAnimProcess>::load);
 	kernel->addProcessLoader("AvatarMoverProcess",
 							 ProcessLoader<AvatarMoverProcess>::load);
+	kernel->addProcessLoader("QuickAvatarMoverProcess",
+							 ProcessLoader<QuickAvatarMoverProcess>::load);
 	kernel->addProcessLoader("PathfinderProcess",
 							 ProcessLoader<PathfinderProcess>::load);
 	kernel->addProcessLoader("SpriteProcess",
@@ -1227,121 +1230,6 @@ void GUIApp::LoadConsoleFont()
 	con.SetConFont(confont);
 }
 
-//
-// Hacks are us!
-//
-
-class QuickAvatarMoverProcess : public Process
-{
-	int dx, dy, dz, dir;
-public:
-	static  QuickAvatarMoverProcess	*amp[6];
-	static	bool				clipping;
-	static	bool				quarter;
-
-	QuickAvatarMoverProcess(int x, int y, int z, int _dir) : Process(1), dx(x), dy(y), dz(z), dir(_dir)
-	{
-		if (amp[dir]) amp[dir]->terminate();
-		amp[dir] = this;
-	}
-
-	virtual bool run(const uint32 framenum)
-	{
-		if (GUIApp::get_instance()->isAvatarInStasis()) 
-		{
-			terminate();
-			return false;
-		}
-		Actor* avatar = World::get_instance()->getNPC(1);
-		sint32 x,y,z;
-		avatar->getLocation(x,y,z);
-		sint32 ixd,iyd,izd;
-		avatar->getFootpadWorld(ixd, iyd, izd);
-
-		CurrentMap* cm = World::get_instance()->getCurrentMap();
-
-		sint32 dx = this->dx;
-		sint32 dy = this->dy;
-		sint32 dz = this->dz;
-
-		for (int j = 0; j < 3; j++)
-		{
-			dx = this->dx;
-			dy = this->dy;
-			dz = this->dz;
-
-			if (j == 1) dx = 0;
-			else if (j == 2) dy = 0;
-
-			if (quarter)
-			{
-				dx /= 4;
-				dy /= 4;
-				dz /= 4;
-			}
-
-			bool ok = false;
-
-			while (dx || dy || dz) {
-
-				if (!clipping || cm->isValidPosition(x+dx,y+dy,z+dz,ixd,iyd,izd,1,0,0))
-				{
-					if (clipping && !dz)
-					{
-						if (cm->isValidPosition(x+dx,y+dy,z-8,ixd,iyd,izd,1,0,0) &&
-								!cm->isValidPosition(x,y,z-8,ixd,iyd,izd,1,0,0))
-						{
-							dz = -8;
-						}
-						else if (cm->isValidPosition(x+dx,y+dy,z-16,ixd,iyd,izd,1,0,0) &&
-								!cm->isValidPosition(x,y,z-16,ixd,iyd,izd,1,0,0))
-						{
-							dz = -16;
-						}
-						else if (cm->isValidPosition(x+dx,y+dy,z-24,ixd,iyd,izd,1,0,0) &&
-								!cm->isValidPosition(x,y,z-24,ixd,iyd,izd,1,0,0))
-						{
-							dz = -24;
-						}
-						else if (cm->isValidPosition(x+dx,y+dy,z-32,ixd,iyd,izd,1,0,0) &&
-								!cm->isValidPosition(x,y,z-32,ixd,iyd,izd,1,0,0))
-						{
-							dz = -32;
-						}
-					}
-					ok = true;
-					break;
-				}
-				else if (cm->isValidPosition(x+dx,y+dy,z+dz+8,ixd,iyd,izd,1,0,0))
-				{
-					dz+=8;
-					ok = true;
-					break;
-				}
-				dx/=2;
-				dy/=2;
-				dz/=2;
-			}
-			if (ok) break;
-		}
-
-		// Yes, i know, not entirely correct
-		avatar->collideMove(x+dx,y+dy,z+dz, false, true);
-		return true;
-	}
-
-	virtual void terminate()
-	{
-		Process::terminate();
-		amp[dir] = 0;
-	}
-};
-
-QuickAvatarMoverProcess	*QuickAvatarMoverProcess::amp[6] = { 0, 0, 0, 0, 0, 0 };
-bool QuickAvatarMoverProcess::clipping = false;
-bool QuickAvatarMoverProcess::quarter = false;
-
-
 static int volumelevel = 255;
 
 void GUIApp::enterTextMode(Gump *gump)
@@ -1512,12 +1400,12 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		switch (event.key.keysym.sym) {
 			case SDLK_LSHIFT: 
 			case SDLK_RSHIFT: {
-				QuickAvatarMoverProcess::quarter = true;
-				pout << "QuickAvatarMoverProcess::quarter = " << QuickAvatarMoverProcess::quarter << std::endl; 
+				QuickAvatarMoverProcess::toggleQuarter();
+				pout << "QuickAvatarMoverProcess::quarter = " << QuickAvatarMoverProcess::isQuarter() << std::endl;
 			} break;
 			case SDLK_c: {
-				QuickAvatarMoverProcess::clipping = !QuickAvatarMoverProcess::clipping;
-				pout << "QuickAvatarMoverProcess::clipping = " << QuickAvatarMoverProcess::clipping << std::endl; 
+				QuickAvatarMoverProcess::toggleClipping();
+				pout << "QuickAvatarMoverProcess::clipping = " << QuickAvatarMoverProcess::isClipping() << std::endl;
 			} break;
 			case SDLK_h: {
 				toggleShowTouchingItems();
@@ -1601,26 +1489,26 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		} break;
 		case SDLK_LSHIFT: 
 		case SDLK_RSHIFT: {
-			QuickAvatarMoverProcess::quarter = false;
-			pout << "QuickAvatarMoverProcess::quarter = " << QuickAvatarMoverProcess::quarter << std::endl; 
+			QuickAvatarMoverProcess::toggleQuarter();
+			pout << "QuickAvatarMoverProcess::quarter = " << QuickAvatarMoverProcess::isQuarter() << std::endl;
 		} break;
 		case SDLK_UP: {
-			if (QuickAvatarMoverProcess::amp[0]) QuickAvatarMoverProcess::amp[0]->terminate();
+			QuickAvatarMoverProcess::terminateMover(0);
 		} break;
 		case SDLK_DOWN: {
-			if (QuickAvatarMoverProcess::amp[1]) QuickAvatarMoverProcess::amp[1]->terminate();
+			QuickAvatarMoverProcess::terminateMover(1);
 		} break;
 		case SDLK_LEFT: {
-			if (QuickAvatarMoverProcess::amp[2]) QuickAvatarMoverProcess::amp[2]->terminate();
+			QuickAvatarMoverProcess::terminateMover(2);
 		} break;
 		case SDLK_RIGHT: {
-			if (QuickAvatarMoverProcess::amp[3]) QuickAvatarMoverProcess::amp[3]->terminate();
+			QuickAvatarMoverProcess::terminateMover(3);
 		} break;
 		case SDLK_HOME: {
-			if (QuickAvatarMoverProcess::amp[4]) QuickAvatarMoverProcess::amp[4]->terminate();
+			QuickAvatarMoverProcess::terminateMover(4);
 		} break;
 		case SDLK_END: {
-			if (QuickAvatarMoverProcess::amp[5]) QuickAvatarMoverProcess::amp[5]->terminate();
+			QuickAvatarMoverProcess::terminateMover(5);
 		} break;
 
 		case SDLK_LEFTBRACKET: gameMapGump->IncSortOrder(-1); break;
