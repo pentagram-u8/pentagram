@@ -256,7 +256,7 @@ bool ActorAnimProcess::run(const uint32 framenum)
 		a->clearFlag(Item::FLG_FLIPPED);
 	}
 
-	if (dist < 0x4000) {
+	if (dist < 0x4000 && !(animaction->flags & AnimAction::AAF_UNSTOPPABLE)) {
 #ifdef WATCHACTOR
 			if (item_num == watchactor)
 				pout << "Animation [" << Kernel::get_instance()->getFrameNum()

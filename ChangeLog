@@ -1,4 +1,7 @@
 2004-07-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/AnimAction.h: new flag (AAF_UNSTOPPABLE)
+
+2004-07-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/GameMapGump.cpp: don't ignore FLIPPED flag when dragging
 
 2004-07-04  Matthew Jimenez <mjimenez@users.sourceforge.net>

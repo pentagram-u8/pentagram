@@ -57,10 +57,11 @@ struct AnimAction {
 					  unsigned int& startframe, unsigned int& endframe);
 
 	enum AnimActionFlags {
-		AAF_TWOSTEP = 0x01,
-		AAF_ATTACK  = 0x02,
-		AAF_LOOPING = 0x04,
-		AAF_HANGING = 0x80
+		AAF_TWOSTEP     = 0x01,
+		AAF_ATTACK      = 0x02,
+		AAF_LOOPING     = 0x04,
+		AAF_UNSTOPPABLE = 0x08,
+		AAF_HANGING     = 0x80
 	};
 };
 
