@@ -1,3 +1,8 @@
+2003-06-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/ItemSorter.*, gumps/GameMapGump.*: move camera-related
+	calculations to the end of the rendering 'pipeline' to prevent some
+	tearing between items
+
 2003-06-03	  Ryan Nunn <colourles@users.sourceforge.net>
 	* gump/ItemRelativeGump.* : Fixing broken ItemRelativeGump
 

@@ -233,7 +233,7 @@ template<class uintX> void SoftRenderSurface<uintX>::PrintChar(Font * f, char ch
 
 template<class uintX> void SoftRenderSurface<uintX>::PrintText(Font * f, const char* s, int x, int y)
 {
-	//!!! TODO: hleads, ...
+	//!!! TODO: constants...
 	int x_start = x;
 	while (*s) {
 		if (*s == '\n' || (*s == ' ' && (x-x_start) > 160 && *(s+1) != '\n')) 

@@ -139,7 +139,7 @@ void Gump::MapChanged()
 		{
 			it = children.erase(it);
 			FindNewFocusChild();
-			 if (g->flags & FLAG_CLOSE_AND_DEL) delete g;
+			if (g->flags & FLAG_CLOSE_AND_DEL) delete g;
 		}
 		else
 		{

@@ -50,10 +50,6 @@ public:
 
 	// Get the location of an item in the gump (coords reletive to this). Returns false on failure
 	virtual bool		GetLocationOfItem(uint16 itemid, int &gx, int &gy, sint32 lerp_factor = 256);
-
-protected:
-
-	void				SetupFastAreaDisplayList(sint32 lerp_factor);
 };
 
 #endif //GameMapGUMP_H_INCLUDED

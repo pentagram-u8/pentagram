@@ -116,18 +116,38 @@ void GameMapGump::MapChanged()
 
 void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 {
-	display_list->BeginDisplayList(surf);
-	SetupFastAreaDisplayList(lerp_factor);
-	display_list->PaintDisplayList();
-}
-
-void GameMapGump::SetupFastAreaDisplayList(sint32 lerp_factor)
-{
 	World *world = World::get_instance();
 	if (!world) return;	// Is it possible the world doesn't exist?
 
 	CurrentMap *map = world->getCurrentMap();
 	if (!map) return;	// Is it possible the map doesn't exist?
+
+
+	// Get the camera location
+	int lx, ly, lz;
+	CameraProcess *camera = CameraProcess::GetCameraProcess();
+	if (!camera) {
+
+		int map_num = map->getNum();
+		Actor* av = world->getNPC(1);
+		
+		if (!av || av->getMapNum() != map_num)
+		{
+			lx = 8192;
+			ly = 8192;
+			lz = 64;
+		}
+		else
+			av->getLocation(lx,ly,lz);
+	}
+	else
+	{
+		camera->GetLerped(lx, ly, lz, lerp_factor);
+	}
+
+
+	display_list->BeginDisplayList(surf, lx, ly, lz);
+
 
 	sint32 resx = dims.w, resy = dims.h;
 
@@ -165,28 +185,6 @@ void GameMapGump::SetupFastAreaDisplayList(sint32 lerp_factor)
 	std::vector<uint16> *fast = &fastAreas[fastArea];
 	fast->erase(fast->begin(), fast->end());
 
-	// Get the camera location
-	int lx, ly, lz;
-	CameraProcess *camera = CameraProcess::GetCameraProcess();
-	if (!camera) {
-
-		int map_num = map->getNum();
-		Actor* av = world->getNPC(1);
-		
-		if (!av || av->getMapNum() != map_num)
-		{
-			lx = 8192;
-			ly = 8192;
-			lz = 64;
-		}
-		else
-			av->getLocation(lx,ly,lz);
-	}
-	else
-	{
-		camera->GetLerped(lx, ly, lz, lerp_factor);
-	}
-
 	sint32 gx = lx/512;
 	sint32 gy = ly/512;
 
@@ -216,7 +214,7 @@ void GameMapGump::SetupFastAreaDisplayList(sint32 lerp_factor)
 
 				item->inFastArea(fastArea, framenum);
 				fast->push_back(item->getObjId());
-				item->doLerp(lx,ly,lz,lerp_factor);
+				item->doLerp(lerp_factor);
 				display_list->AddItem(item);
 			}
 		}
@@ -244,6 +242,10 @@ void GameMapGump::SetupFastAreaDisplayList(sint32 lerp_factor)
 		// Ok, we must leave te Fast area
 		item->leavingFastArea();
 	}
+
+
+
+	display_list->PaintDisplayList();
 }
 
 // Trace a click, and return ObjID

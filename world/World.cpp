@@ -126,6 +126,7 @@ bool World::switchMap(uint32 newmap)
 	// - processes have to be terminated (all processes?)
 	// - autosave?
 	// - camera reset?
+	// - kill gumps?
 	// - ...?
 
 	// TODO:

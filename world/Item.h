@@ -86,33 +86,37 @@ public:
 	inline void getLerped(sint32& x, sint32& y, sint32& z) const // Get lerped location
 		{ x = ix; y = iy; z = iz; }
 
-	inline void doLerp(sint32 camx, sint32 camy, sint32 camz, sint32 factor) 		// Does lerping for an in between frame (0-256)
+	// Does lerping for an in between frame (0-256)
+	inline void doLerp(sint32 factor)
 	{
-		// Should be noted that this does indeed limit us to 'only' 24bit coords
-		// not that it matters because on disk they are unsigned 16 bit
+	// Should be noted that this does indeed limit us to 'only' 24bit coords
+	// not that it matters because on disk they are unsigned 16 bit
+
+		factor = 256;
+
 		if (factor == 256)
 		{
-			ix = l_next.x - camx;
-			iy = l_next.y - camy;
-			iz = l_next.z - camz;
+			ix = l_next.x;
+			iy = l_next.y;
+			iz = l_next.z;
 		}
 		else if (factor == 0)
 		{
-			ix = l_prev.x - camx;
-			iy = l_prev.y - camy;
-			iz = l_prev.z - camz;
+			ix = l_prev.x;
+			iy = l_prev.y;
+			iz = l_prev.z;
 		}
 		else
 		{
 #if 1
 			// This way while possibly slower is more accurate
-			ix = ((l_prev.x*(256-factor) + l_next.x*factor)>>8) - camx;
-			iy = ((l_prev.y*(256-factor) + l_next.y*factor)>>8) - camy;
-			iz = ((l_prev.z*(256-factor) + l_next.z*factor)>>8) - camz;
+			ix = ((l_prev.x*(256-factor) + l_next.x*factor)>>8);
+			iy = ((l_prev.y*(256-factor) + l_next.y*factor)>>8);
+			iz = ((l_prev.z*(256-factor) + l_next.z*factor)>>8);
 #else
-			ix = l_prev.x + (((l_next.x-l_prev.x)*factor)>>8) - cx;
-			iy = l_prev.y + (((l_next.y-l_prev.y)*factor)>>8) - cy;
-			iz = l_prev.z + (((l_next.z-l_prev.z)*factor)>>8) - cz;
+			ix = l_prev.x + (((l_next.x-l_prev.x)*factor)>>8);
+			iy = l_prev.y + (((l_next.y-l_prev.y)*factor)>>8);
+			iz = l_prev.z + (((l_next.z-l_prev.z)*factor)>>8);
 #endif
 		}
 	}

@@ -38,12 +38,16 @@ class ItemSorter
 
 	sint32		order_counter;
 
+	sint32		cam_sx, cam_sy;
+
 public:
 	ItemSorter(int Max_Items = 2048);
 	~ItemSorter();
 
-	void BeginDisplayList(RenderSurface*);// Begin's creating the display list
-	
+	// Begin creating the display list
+	void BeginDisplayList(RenderSurface*,
+						  sint32 camx, sint32 camy, sint32 camz);
+
 	void AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 frame_num, uint32 item_flags, uint16 item_num=0);
 	void AddItem(Item *);					// Add an Item. SetupLerp() MUST have been called
 

@@ -390,7 +390,8 @@ ItemSorter::~ItemSorter()
 	delete [] items;
 }
 
-void ItemSorter::BeginDisplayList(RenderSurface *rs)
+void ItemSorter::BeginDisplayList(RenderSurface *rs,
+								  sint32 camx, sint32 camy, sint32 camz)
 {
 	// Get the shapes, if required
 	if (!shapes) shapes = GameData::get_instance()->getMainShapes();
@@ -399,6 +400,11 @@ void ItemSorter::BeginDisplayList(RenderSurface *rs)
 	surf = rs;
 	num_items = 0;
 	order_counter = 0;
+
+	// Screenspace bounding box bottom x coord (RNB x coord)
+	cam_sx = (camx - camy)/4;
+	// Screenspace bounding box bottom extent  (RNB y coord)
+	cam_sy = (camx + camy)/8 - camz;
 }
 
 void ItemSorter::AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 frame_num, uint32 flags, uint16 item_num)
@@ -447,19 +453,19 @@ void ItemSorter::AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 
 	si->ztop = si->z + zd;
 
 	// Screenspace bounding box left extent    (LNT x coord)
-	si->sxleft = (si->xleft - si->y)/4;
+	si->sxleft = (si->xleft - si->y)/4 - cam_sx;
 	// Screenspace bounding box right extent   (RFT x coord)
-	si->sxright= (si->x - si->yfar)/4;
+	si->sxright= (si->x - si->yfar)/4 - cam_sx;
 
 	// Screenspace bounding box top x coord    (LFT x coord)
-	si->sxtop = (si->xleft - si->yfar)/4;
+	si->sxtop = (si->xleft - si->yfar)/4 - cam_sx;
 	// Screenspace bounding box top extent     (LFT y coord)
-	si->sytop = (si->xleft + si->yfar)/8 - si->ztop;
+	si->sytop = (si->xleft + si->yfar)/8 - si->ztop - cam_sy;
 
 	// Screenspace bounding box bottom x coord (RNB x coord)
-	si->sxbot = (si->x - si->y)/4;
+	si->sxbot = (si->x - si->y)/4 - cam_sx;
 	// Screenspace bounding box bottom extent  (RNB y coord)
-	si->sybot = (si->x + si->y)/8 - si->z;
+	si->sybot = (si->x + si->y)/8 - si->z - cam_sy;
 
 //	si->sxleft += swo2;
 //	si->sxright += swo2;
@@ -604,19 +610,19 @@ void ItemSorter::AddItem(Item *add)
 	si->ztop = si->z + zd;
 
 	// Screenspace bounding box left extent    (LNT x coord)
-	si->sxleft = (si->xleft - si->y)/4;
+	si->sxleft = (si->xleft - si->y)/4 - cam_sx;
 	// Screenspace bounding box right extent   (RFT x coord)
-	si->sxright= (si->x - si->yfar)/4;
+	si->sxright= (si->x - si->yfar)/4 - cam_sx;
 
 	// Screenspace bounding box top x coord    (LFT x coord)
-	si->sxtop = (si->xleft - si->yfar)/4;
+	si->sxtop = (si->xleft - si->yfar)/4 - cam_sx;
 	// Screenspace bounding box top extent     (LFT y coord)
-	si->sytop = (si->xleft + si->yfar)/8 - si->ztop;
+	si->sytop = (si->xleft + si->yfar)/8 - si->ztop - cam_sy;
 
 	// Screenspace bounding box bottom x coord (RNB x coord)
-	si->sxbot = (si->x - si->y)/4;
+	si->sxbot = (si->x - si->y)/4 - cam_sx;
 	// Screenspace bounding box bottom extent  (RNB y coord)
-	si->sybot = (si->x + si->y)/8 - si->z;
+	si->sybot = (si->x + si->y)/8 - si->z - cam_sy;
 
 //	si->sxleft += swo2;
 //	si->sxright += swo2;
