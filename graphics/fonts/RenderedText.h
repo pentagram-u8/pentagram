@@ -27,7 +27,15 @@ public:
 	RenderedText();
 	virtual ~RenderedText();
 
+	//! Draw self to a rendersurface.
+	//! \param surface The surface to draw to
+	//! \param x X coordinate of target
+	//! \param y Y coordinate of target. This will be the top baseline.
 	virtual void draw(RenderSurface* surface, int x, int y)=0;
+
+	//! Get dimensions.
+	//! \param x Returns the width
+	//! \param y Returns the height
 	virtual void getSize(int &x, int &y) { x = width; y = height; }
 
 	ENABLE_RUNTIME_CLASSTYPE();
