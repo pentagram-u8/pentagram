@@ -56,6 +56,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using std::string;
 
+sint32 lx=-1, ly=-1, lz=-1; // yes, yes, globals...
+
 Application* Application::application = 0;
 
 Application::Application(int argc, char *argv[])
@@ -241,19 +243,22 @@ void Application::SetupDisplayList()
 	sint32 xy_limit = (sy_limit+sx_limit)/2;
 	CurrentMap *map = world->getCurrentMap();
 
-	// Get the camera location
-	sint32 lx,ly,lz;
-	int map_num = map->getNum();
-	Actor* av = world->getNPC(1);
 
-	if (!av || av->getMapNum() != map_num)
-	{
-		lx = 8192;
-		ly = 8192;
-		lz = 64;
+	// Get the initial camera location
+	if (lx == -1 && ly == -1 && lz == -1) {
+
+		int map_num = map->getNum();
+		Actor* av = world->getNPC(1);
+		
+		if (!av || av->getMapNum() != map_num)
+		{
+			lx = 8192;
+			ly = 8192;
+			lz = 64;
+		}
+		else
+			av->getLocation(lx,ly,lz);
 	}
-	else
-		av->getLocation(lx,ly,lz);
 
 	sint32 gx = lx/512;
 	sint32 gy = ly/512;
@@ -631,7 +636,12 @@ void Application::handleEvent(const SDL_Event& event)
 		case SDLK_a: userchoice = 10; break;
 		case SDLK_b: userchoice = 11; break;
 		case SDLK_c: userchoice = 12; break;
-		default: isRunning = false;
+		case SDLK_UP: lx -= 512; ly -= 512; break;
+		case SDLK_DOWN: lx += 512; ly += 512; break;
+		case SDLK_LEFT: lx -= 512; ly += 512; break;
+		case SDLK_RIGHT: lx += 512; ly -= 512; break;
+		case SDLK_ESCAPE: case SDLK_q: isRunning = false; break;
+		default: break;
 		}
 	}
 	break;
