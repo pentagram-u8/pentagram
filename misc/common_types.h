@@ -19,11 +19,9 @@
 #ifndef	COMMON_TYPES_H
 #define	COMMON_TYPES_H
 
-#ifdef HAVE_CONFIG_H
-#  include <config.h>
-#endif
-
-#include <string>
+//
+// {s,u}int{8,16,32} 
+//
 
 #ifdef BEOS
 // BeOS headers already define these types
@@ -70,29 +68,7 @@ typedef	signed EX_TYPE_INT8		sint8;
 typedef	signed EX_TYPE_INT16	sint16;
 typedef	signed EX_TYPE_INT32	sint32;
 
-
 #endif //BeOS
-
-/*
- * Empty string
- */
-extern const std::string c_empty_string;
-
-
-// Debug
-#ifdef DEBUG
-#  define COUT(x)		do { std::cout << x << std::endl; std::cout.flush(); } while (0)
-#  define CERR(x)		do { std::cerr << x << std::endl; std::cerr.flush(); } while (0)
-#else
-#  define COUT(x)		do { } while(0)
-#  define CERR(x)		do { } while(0)
-#endif
-
-// Two very useful macros that one should use instead of pure delete; they will additionally
-// set the old object pointer to 0, thus helping prevent double deletes (not that "delete 0"
-// is a no-op.
-#define FORGET_OBJECT(x) do { delete x; x = 0; } while(0)
-#define FORGET_ARRAY(x) do { delete [] x; x = 0; } while(0)
 
 
 #endif

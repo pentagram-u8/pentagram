@@ -1,7 +1,7 @@
 /*
  *	disasm.cc - Disassembler for U8's usecode
  *
- *  Copyright (C) 2001-2002 Willem Jan Palenstijn
+ *  Copyright (C) 2001-2002 Willem Jan Palenstijn and The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,6 +17,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
+
+#include "pent_include.h"
 
 #include <iostream>
 #include <fstream>
@@ -69,6 +71,8 @@ inline uint32 read1(IFileDataSource *ucfile) { curOffset+=1; return ucfile->read
 inline uint32 read2(IFileDataSource *ucfile) { curOffset+=2; return ucfile->read2(); };
 inline uint32 read4(IFileDataSource *ucfile) { curOffset+=4; return ucfile->read4(); };
 
+std::map<int, std::string> ScriptExpressions;
+
 map<uint32, uint32> EventMap;
 
 #include "u8/ConvertUsecodeU8.h"
@@ -91,7 +95,10 @@ using ::snprintf;
 	default and worry about it later */
 ConvertUsecode *convert = new ConvertUsecodeU8();
 
-const string c_empty_string;
+
+// Overload Table
+void printoverloads(IFileDataSource *ucfile, int endpos);
+
 
 class GlobalName
 {
@@ -147,7 +154,7 @@ void readglobals(IFileDataSource *ucfile)
 
 void printglobals()
 {
-	for(map<uint32, GlobalName>::iterator i=GlobalNames.begin(); i!=GlobalNames.end(); ++i)
+	for(std::map<uint32, GlobalName>::iterator i=GlobalNames.begin(); i!=GlobalNames.end(); ++i)
 		printf("[%04X %02X] (%s)\n", i->first, i->second.size, i->second.name.c_str());
 }
 
@@ -159,14 +166,29 @@ void printglobals()
 string functionaddresstostring(const sint32 i0, const sint32 i1)
 {
 	char buf[10];
-	map<string, string>::iterator funcoffset = FuncNames.find(buf);
+	std::map<string, string>::iterator funcoffset = FuncNames.find(buf);
 
-	std::snprintf(buf, 10, "%04X:%04X", i0, i1);
+	snprintf(buf, 10, "%04X:%04X", i0, i1);
 	funcoffset = FuncNames.find(buf);
-	if (funcoffset == FuncNames.end())
-		return "unknown";
-	else
+	if (funcoffset != FuncNames.end())
 		return funcoffset->second;
+	else if (crusader)
+	{
+		std::string str = "";
+		snprintf(buf, 10, "%04X", i0);
+		str += buf;
+		if (i1 < 0x20)
+		{
+			return str + "::" + convert->event_names()[i1];
+		}
+		else
+		{
+			snprintf(buf, 10, "%02X", i1);
+			return str + "::ordinal" + buf;
+		}
+	}
+	else
+		return "unknown";
 }
 
 const char * const print_bp(const sint32 offset)
@@ -221,12 +243,17 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 	std::map<uint32, uint32>::iterator it = EventMap.find(curOffset);
 	if (it != EventMap.end())
 	{
-		printf(" (Event %X) %s::%s", it->second, name, convert->event_names()[it->second]);
+		if (it->second < 0x20)
+			printf(" (Event %X) %s::%s", it->second, name, convert->event_names()[it->second]);
+		else 
+			printf(" (Event %X) %s::ordinal%02X", it->second, name, it->second);
 	}
 	printf(":\n");
 
 	uint32 dbg_symbol_offset=0;
 	bool done = false;
+	sint32 i;
+
 	while (!done) {
 		short s0;
 		sint32 i0=0, i1=0, i2=0, i3=0, i4=0;
@@ -742,7 +769,7 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 			i0 = read2(ucfile);
 			i0 = curOffset + (static_cast<short>(i0));
 			str0 = "";
-			for (uint32 i=0; i < 8; ++i)
+			for (i=0; i < 8; ++i)
 			 str0 += static_cast<char>(read1(ucfile));
 			if(read1(ucfile)!=0) assert(false); // trailing 0
 			printf("symbol info\toffset %04x = \"%s\"", i0, str0.c_str());
@@ -940,7 +967,7 @@ and that the child threads are indeed placed infront of the parent thread.
 			// 74 xx
 			// add xx to the current 'loopscript'
 			i0 = read1(ucfile);
-			printf("loopscr\t\t%02X \"%c\"", i0, static_cast<char>(i0));
+			printf("loopscr\t\t%02X \"%c\" - %s", i0, static_cast<char>(i0),ScriptExpressions[i0].c_str());
 			break;
 
 		// 75 appears to have something to do with lists, looks like an enum/next from u7...
@@ -1048,7 +1075,7 @@ void printfunc(const uint32 func, const uint32 nameoffset, IFileDataSource *ucfi
 
 	printf("Usecode function %d (%04X %s)\n", func, func, namebuf);
 
-	convert->readevents(ucfile);
+	convert->readevents(ucfile, uch);
 
 	while (readfunction(ucfile, namebuf, uch));
 
@@ -1095,6 +1122,9 @@ int main(int argc, char **argv)
 		cerr << "Usage: disasm <file> -l" << endl;
 		cerr << "or" << endl;
 		cerr << "Usage: disasm <file> --globals {--game [u8|crusader]}" << endl;
+		// Overload Table
+		cerr << "or" << endl;
+		cerr << "Usage: disasm <file> -overload" << endl;
 		return 1;
 	}
 
@@ -1109,9 +1139,16 @@ int main(int argc, char **argv)
 
 	parameters.process(argc, argv);
 
+	// Filename with stripped path
+	char *stripped_filename = argv[1];
+
+	// Search for last ':', '/' or '\\'
+	for (int i = 0; argv[1][i]; i++)
+		if (argv[1][i] == '\\' || argv[1][i] == '/' || argv[1][i] == ':') stripped_filename  = argv[1]+i+1;
+
 	if (gamelanguage=="unknown")  // try to determine game language from file name
 	{
-		switch (argv[1][0])
+		switch (stripped_filename[0])
 		{
 			case 'g': case 'G':
 				gamelanguage = "german";
@@ -1133,7 +1170,7 @@ int main(int argc, char **argv)
 	}
 
 	// setup crusader
-	if (gametype=="crusader")
+	if (gametype=="crusader" || !std::stricmp(argv[2], "-overload"))
 	{
 		crusader=true;
 		FORGET_OBJECT(convert);
@@ -1152,7 +1189,7 @@ int main(int argc, char **argv)
 	}
 
 	// List functions
-	if (!std::strcmp(argv[2], "-l") || !std::strcmp(argv[2], "-L")) {
+	if (!std::stricmp(argv[2], "-l")) {
 
 		cout << "Listing functions..." << endl << endl;
 
@@ -1186,6 +1223,28 @@ int main(int argc, char **argv)
 		cout << endl << actual_num << " Usecode functions" << endl;
 		return 0;
 	}
+	// Overload Table
+	else if (!std::stricmp(argv[2], "-overload")) {
+		int end;
+
+		// it's overload.dat
+		if (!std::stricmp(stripped_filename, "overload.dat"))
+		{
+			end = ucfile->getSize();
+		}
+		// We want usecode entry 1
+		else 
+		{
+			ucfile->seek(0x88);
+			int offset = ucfile->read4();
+			end = ucfile->read4();
+			ucfile->seek(offset);
+			end += offset;
+		}
+
+		printoverloads(ucfile, end);
+		return 0;
+	}
 
 	cout.setf(std::ios::uppercase);
 	cout << std::hex;
@@ -1194,6 +1253,26 @@ int main(int argc, char **argv)
 
 	if(print_globals)
 		printglobals();
+	
+	// Setup script expressions
+	ScriptExpressions[0] = "false";
+	ScriptExpressions[1] = "true";
+	ScriptExpressions['$'] = "end";
+	ScriptExpressions['%'] = "int";
+	ScriptExpressions['&'] = "&&";
+	ScriptExpressions['+'] = "||";
+	ScriptExpressions['!'] = "!";
+	ScriptExpressions['?'] = "item->status";
+	ScriptExpressions['*'] = "item->q";
+	ScriptExpressions['#'] = "item->npc_num";
+	ScriptExpressions['='] = "==";
+	ScriptExpressions['>'] = ">";
+	ScriptExpressions['<'] = "<";
+	ScriptExpressions[']'] = ">=";
+	ScriptExpressions['['] = "<=";
+	ScriptExpressions[':'] = "item->family";
+	ScriptExpressions['@'] = "item->shape";
+	ScriptExpressions['`'] = "item->frame";
 
 	#ifdef FOLD
 	initfolding();
@@ -1217,4 +1296,41 @@ int main(int argc, char **argv)
 	printfunc(func, nameoffset, ucfile);
 	
 	return 0;
+}
+
+// Overload Table
+void printoverloads(IFileDataSource *ucfile, int endpos)
+{
+	std::printf ("Overload Table:\n");
+
+	int f, i = 0;
+	uint32 all_mask = 0;
+
+	while ((ucfile->getPos()) < endpos) {
+		uint32 mask;
+		char classname[9];
+
+		mask = ucfile->read4();
+		ucfile->read(classname, 9);
+
+		if (classname[0]) {
+			std::printf ("%04d: %8s ", i, classname);
+
+			for (f=0; f<32; f++) std::printf (" %i",(mask>>f) & 1);
+
+			std::printf ("\n");
+		}
+		all_mask |= mask;
+		i++;
+	}
+	std::printf ("\n%i functions ", i);
+
+	std::printf ("\nAll functions: ");
+
+	for (f=0; f<32; f++) std::printf (" %i",(all_mask>>f) & 1);
+
+	std::printf ("\n\nEvents used:\n");
+	for (f=0; f<32; f++) {
+		if ((all_mask>>f) & 1) std::printf (" %i: %s\n", f, convert->event_names()[f]);
+	}
 }

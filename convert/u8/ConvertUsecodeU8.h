@@ -27,7 +27,7 @@ class ConvertUsecodeU8 : public ConvertUsecode
 		const char* const *intrinsics()  { return _intrinsics;  };
 		const char* const *event_names() { return _event_names; };
 		void readheader(IFileDataSource *ucfile, UsecodeHeader &uch, uint32 &curOffset);
-		void readevents(IFileDataSource *ucfile)
+		void readevents(IFileDataSource *ucfile, const UsecodeHeader &uch)
 		{
 			for (uint32 i=0; i<32; ++i)
 			{
@@ -324,38 +324,39 @@ const char* const ConvertUsecodeU8::_intrinsics[] = {
 };
 
 const char * const ConvertUsecodeU8::_event_names[] = {
-	"look()",
-	"use()",
-	"anim()",
-	"unknown",
-	"cachein()",
-	"hit(ushort,short)",
-	"gotHit(ushort,short)",
-	"hatch()",
-	"schedule()",
-	"release()",
-	"unknown",
-	"unknown",
-	"combine()",
-	"unknown",
-	"unknown",
-	"enterFastArea()",
-	"leaveFastArea()",
-	"cast(ushort)",
-	"justMoved()",
-	"AvatarStoleSomething(ushort)",
-	"unknown",
-	"guardianBark(int)",
-	"unknown",
-	"unknown",
-	"unknown",
-	"unknown",
-	"unknown",
-	"unknown",
-	"unknown",
-	"unknown",
-	"unknown",
-	"unknown",
+	"look()",						// 0x00
+	"use()",						// 0x01
+	"anim()",						// 0x02
+	"setActivity()",				// 0x03
+	"cachein()",					// 0x04
+	"hit(ushort,short)",			// 0x05
+	"gotHit(ushort,short)",			// 0x06
+	"hatch()",						// 0x07
+	"schedule()",					// 0x08
+	"release()",					// 0x09
+	"equip()",						// 0x0A
+	"unequip()",					// 0x0B
+	"combine()",					// 0x0C
+	"func0D",						// 0x0D
+	"calledFromAnim()",				// 0x0E
+	"enterFastArea()",				// 0x0F
+
+	"leaveFastArea()",				// 0x10
+	"cast(ushort)",					// 0x11
+	"justMoved()",					// 0x12
+	"AvatarStoleSomething(ushort)",	// 0x13
+	"animGetHit()",					// 0x14
+	"guardianBark(int)",			// 0x15
+	"func16",						// 0x16
+	"func17",						// 0x17
+	"func18",						// 0x18
+	"func19",						// 0x19
+	"func1A",						// 0x1A
+	"func1B",						// 0x1B
+	"func1C",						// 0x1C
+	"func1D",						// 0x1D
+	"func1E",						// 0x1E
+	"func1F",						// 0x1F
 	0
 };
 

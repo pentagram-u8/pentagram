@@ -34,10 +34,10 @@ class IDataSource
 		virtual uint16 read2high()=0;
 		virtual uint32 read4()=0;
 		virtual uint32 read4high()=0;
-		virtual void read(char *str, const sint32 num_bytes)=0;
-
-		virtual void seek(const uint32 pos)=0;
-		virtual void skip(const sint32 delta)=0;
+		virtual void read(char *str, sint32 num_bytes)=0;
+		
+		virtual void seek(uint32 pos)=0;
+		virtual void skip(sint32 delta)=0;
 		virtual uint32 getSize()=0;
 		virtual uint32 getPos()=0;
 };

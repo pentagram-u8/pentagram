@@ -1,3 +1,23 @@
+2002-10-26  Ryan Nunn <colourles@users.sourceforge.net>
+	* misc/pent_include.* : File to the included at the top of every 
+	  source file (this is not an option, it must be included). It will
+	  include config.h. It will also include common_type.h and define some
+	  useful things. It can double as a pre-compiled header for those
+	  systems that support it.
+
+	* misc/common_types.h : Removed some stuff and put them in
+	  pent_include.h
+
+	* misc/Args.cpp, filesys/FileSystem.cpp : Include pent_include.h
+
+	* filesys/IDataSource.h: : Fixing a few virtual function issues
+
+	* convert/Convert.h,  convert/crusader/ConvertUsecodeCrusader.h, 
+	  convert/u8/ConvertUsecodeU8.h : Changes for TGWDS
+
+	* tools/disasm/Disasm.cpp : Getting to compile in MSVC. Changes for
+	  TGWDS. Added some loopscript stuff
+
 2002-10-07  Ryan Nunn <colourles@users.sourceforge.net>
 	* graphics/ : Pretty obvious what this is for, but don't expect
 	  anything in there to work quite yet. Files are missing

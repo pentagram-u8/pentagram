@@ -18,6 +18,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "pent_include.h"
+
 #include "FileSystem.h"
 
 #include "exceptions.h"
@@ -67,7 +69,8 @@ bool FileSystem::rawopen
 	} while (base_to_uppercase(name, ++uppercasecount));
 
 	// file not found.
-	throw (file_open_exception(fname/*get_system_path(fname)*/));
+	//throw (file_open_exception(fname/*get_system_path(fname)*/));
+	throw file_open_exception(fname);
 	return false;
 }
 
@@ -112,7 +115,8 @@ bool FileSystem::rawopen
 	} while (base_to_uppercase(name, ++uppercasecount));
 
 	// file not found.
-	throw (file_open_exception(fname/*get_system_path(fname)*/));
+//	throw (file_open_exception(fname/*get_system_path(fname)*/));
+	throw file_open_exception(fname);
 	return false;
 }
 

@@ -1,5 +1,7 @@
 /*
- *  Copyright (C) 2002 The Pentagram Team
+ *  pent_include.cpp - Basic Pentagram types, and precompiled header
+ *
+ *  Copyright (C) 2002  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,20 +18,9 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef CONVERT_H
-#define CONVERT_H
+#include "pent_include.h"
 
-#include "IDataSource.h"
-#include "common_types.h"
-
-class ConvertUsecode
-{
-	// just an 'empty' base class
-	public:
-		virtual const char* const *intrinsics()=0;
-		virtual const char* const *event_names()=0;
-		virtual void readheader(IFileDataSource *ucfile, UsecodeHeader &uch, uint32 &curOffset)=0;
-		virtual void readevents(IFileDataSource *ucfile, const UsecodeHeader &uch)=0;
-};
-
+// We will define c_empty_string here, unless we say not to
+#ifndef DONT_DEFINE_C_EMPTY_STRING
+const std::string c_empty_string;
 #endif

@@ -29,8 +29,18 @@ class ConvertUsecodeCrusader : public ConvertUsecode
 		const char* const *intrinsics()  { return _intrinsics;  };
 		const char* const *event_names() { return _event_names; };
 		void readheader(IFileDataSource *ucfile, UsecodeHeader &uch, uint32 &curOffset);
-		void readevents(IFileDataSource * /*ucfile*/)
-		{ /* crusader doesn't have inline events */ };
+		void readevents(IFileDataSource *ucfile, const UsecodeHeader &uch)
+		{ 
+			int num_crusader_routines = uch.offset / 6;
+			for (unsigned int i=0; i < num_crusader_routines; i++) {
+				uint32 size = read2(ucfile);
+				uint32 offset = read4(ucfile);
+				EventMap[offset] = i;
+				#ifdef DISASM_DEBUG
+				cout << "Crusader Routine: " << i << ": " << std::hex << std::setw(4) << offset << std::dec << " size " << size << endl;
+				#endif
+			}
+		};
 		
 	private:
 		static const char* const _intrinsics[];
@@ -382,38 +392,39 @@ const char* const ConvertUsecodeCrusader::_intrinsics[] = {
 };
 
 const char * const ConvertUsecodeCrusader::_event_names[] = {
-	"e00_look()",
-	"e01_use()",
-	"e02_anim()",
-	"e03_unknown",
-	"e04_cachein()",
-	"e05_hit(ushort,short)",
-	"e06_gotHit(ushort,short)",
-	"e07_hatch()",
-	"e08_schedule()",
-	"e09_release()",
-	"e0A_unknown",
-	"e0B_unknown",
-	"e0C_combine()",
-	"e0D_unknown",
-	"e0E_unknown",
-	"e0F_enterFastArea()",
-	"e10_leaveFastArea()",
-	"e11_cast(ushort)",
-	"e12_justMoved()",
-	"e13_AvatarStoleSomething(ushort)",
-	"e14_unknown",
-	"e15_guardianBark(int)",
-	"e16_unknown",
-	"e17_unknown",
-	"e18_unknown",
-	"e19_unknown",
-	"e1A_unknown",
-	"e1B_unknown",
-	"e1C_unknown",
-	"e1D_unknown",
-	"e1E_unknown",
-	"e1F_unknown",
+	"look()",						// 0x00
+	"use()",						// 0x01
+	"anim()",						// 0x02
+	"setActivity()",				// 0x03
+	"cachein()",					// 0x04
+	"hit(ushort,short)",			// 0x05
+	"gotHit(ushort,short)",			// 0x06
+	"hatch()",						// 0x07
+	"schedule()",					// 0x08
+	"release()",					// 0x09
+	"equip()",						// 0x0A
+	"unequip()",					// 0x0B
+	"combine()",					// 0x0C
+	"func0D",						// 0x0D
+	"calledFromAnim()",				// 0x0E
+	"enterFastArea()",				// 0x0F
+
+	"leaveFastArea()",				// 0x10
+	"cast(ushort)",					// 0x11
+	"justMoved()",					// 0x12
+	"AvatarStoleSomething(ushort)",	// 0x13
+	"animGetHit()",					// 0x14
+	"guardianBark(int)",			// 0x15
+	"func16",						// 0x16
+	"func17",						// 0x17
+	"func18",						// 0x18
+	"func19",						// 0x19
+	"func1A",						// 0x1A
+	"func1B",						// 0x1B
+	"func1C",						// 0x1C
+	"func1D",						// 0x1D
+	"func1E",						// 0x1E
+	"func1F",						// 0x1F
 	0
 };
 
@@ -429,12 +440,11 @@ void ConvertUsecodeCrusader::readheader(IFileDataSource *ucfile, UsecodeHeader &
 	printf("MaxOffset:\t%04X\nOffset:\t\t%04X\n", uch.maxOffset, uch.offset);
 	printf("ExternTable:\t%04X\nFixupTable:\t%04X\n", uch.externTable, uch.fixupTable);
 	#endif
-	uch.maxOffset += uch.offset;
+	uch.maxOffset += 1;
 	#ifdef DISASM_DEBUG
 	printf("Adjusted MaxOffset:\t%04X\n", uch.maxOffset);
 	#endif
-	ucfile->skip(uch.offset);
-	curOffset = uch.offset;
+	curOffset = 1-uch.offset;
 };
 
 #endif
