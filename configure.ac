@@ -172,7 +172,7 @@ AC_CHECK_SIZEOF(long long, 8)
 # ---------------------------------------------------------------------
 
 AC_MSG_CHECKING(if we should optimise for MMX)
-AC_ARG_ENABLE(timidity, [  --enable-mmx       Use MMX optimisations [defult no]],,enable_mmx=no)
+AC_ARG_ENABLE(timidity, [  --enable-mmx       Use MMX optimisations [default no]],,enable_mmx=no)
 if test x$enable_mmx = xyes; then
 	AC_MSG_RESULT(yes)
 	CXXFLAGS="$CXXFLAGS -mmmx"
@@ -181,7 +181,7 @@ else
 fi
 
 AC_MSG_CHECKING(if we should optimise for 3DNOW)
-AC_ARG_ENABLE(timidity, [  --enable-3dnow       Use 3DNOW optimisations [defult no]],,enable_3dnow=no)
+AC_ARG_ENABLE(timidity, [  --enable-3dnow       Use 3DNOW optimisations [default no]],,enable_3dnow=no)
 if test x$enable_3dnow = xyes; then
 	AC_MSG_RESULT(yes)
 	CXXFLAGS="$CXXFLAGS -m3dnow"
