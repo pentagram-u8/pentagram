@@ -252,7 +252,7 @@ void AnimationTracker::setTargetedMode(sint32 x_, sint32 y_, sint32 z_)
 	int offGround = 0;
 	sint32 end_dx, end_dy, end_dz = 0;
 
-	for (i=currentframe; i != endframe; i = getNextFrame(i))
+	for (i=startframe; i != endframe; i = getNextFrame(i))
 	{
 		AnimFrame& f = animaction->frames[dir][i];
 		totaldir += f.deltadir;  // This line sometimes seg faults.. ????
