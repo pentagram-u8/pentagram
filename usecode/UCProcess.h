@@ -32,7 +32,8 @@ class UCProcess : public Process
 	friend class UCMachine;
 
 public:
-	UCProcess(Usecode* usecode_, uint32 classid_, uint32 offset_);
+	UCProcess(Usecode* usecode_, uint32 classid_,
+			  uint32 offset_, uint32 this_ptr = 0xA1A1A1A1);
     ~UCProcess();
 
 	virtual bool run(const uint32 framenum);

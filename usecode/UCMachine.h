@@ -44,6 +44,10 @@ public:
 	void freeStringList(uint16 l);
 	void freeList(uint16 l);
 
+	uint16 addProcess(UCProcess *p);
+	void killProcess(UCProcess *p);
+	void killProcess(uint16 pid);
+
 	uint16 duplicateString(uint16 str) {
 		return assignString(stringHeap[str].c_str());
 	}
@@ -60,9 +64,12 @@ private:
 	// this probably won't be the final way of storing these
 	std::map<uint16, UCList*> listHeap;
 	std::map<uint16, std::string> stringHeap;
+	std::map<uint16, UCProcess*> processes;
 
 	uint16 assignString(const char* str);
 	uint16 assignList(UCList* l);
+
+	uint16 getNewPID();
 
 	uint32 listToPtr(uint16 l);
 	uint32 stringToPtr(uint16 s);

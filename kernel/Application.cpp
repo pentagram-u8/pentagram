@@ -64,7 +64,7 @@ void Application::run()
 // p = new UCProcess(u, 0x581, 0x28F9);
 	}
 
-	kernel->addProcess(p);
+    ucmachine->addProcess(p);
 	uint32 framenum = 0;
 	while (1) {
 		kernel->runProcesses(framenum++);

@@ -3,6 +3,8 @@
 	* usecode/*: function return values
 	* usecode/*: stringlists
 	* usecode/*: basic pointer opcodes, bugfixes
+	* kernel/*: rearranged process queue a bit
+	* usecode/*: spawn opcode
 
 2002-12-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* filesys/IDataSource.h, usecode/UCStack.h: const changes

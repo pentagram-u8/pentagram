@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class Process {
 	bool active;
+	bool terminated;
 
 public:
 	friend class Kernel;
@@ -32,6 +33,9 @@ public:
 	virtual ~Process() { }
 
 	bool is_active() const { return active; }
+
+	void terminate() { terminated = true; }
+
 };
 
 

@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Process.h"
 #include "Kernel.h"
 
-typedef std::set<Process *>::iterator ProcessIterator;
+typedef std::list<Process *>::iterator ProcessIterator;
 
 Kernel* Kernel::kernel = 0;
 
@@ -36,24 +36,26 @@ Kernel::~Kernel()
 
 void Kernel::addProcess(Process* proc)
 {
-	ProcessIterator it = processes.find (proc);
-
-	if (it == processes.end()) {
-		// POUT("Adding process");
-		processes.insert(proc);
-		proc->active = true;
+	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it) {
+		if (*it == proc)
+			return;
 	}
+
+	perr << "[Kernel] Adding process " << proc << std::endl;
+
+	processes.push_front(proc);
+	proc->active = true;
 }
 
 void Kernel::removeProcess(Process* proc)
 {
-	ProcessIterator it = processes.find (proc);
-
-	if (it != processes.end()) {
-		// POUT("Removing process");
-		(*it)->active = false;
-		processes.erase(it);
-	}    
+	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it) {
+		if (*it == proc) {
+			proc->active = false;
+			processes.erase(it);
+			return;
+		}
+	}
 }
 
 bool Kernel::runProcesses(uint32 framenum)
@@ -67,7 +69,16 @@ bool Kernel::runProcesses(uint32 framenum)
 
 	bool dirty = false;
 	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it) {
-		if ((*it)->run(framenum)) dirty = true;
+		Process* p = *it;
+		if (!p->terminated)
+			if (p->run(framenum)) dirty = true;
+		if (p->terminated) {
+			// process is killed, so remove it from the list
+			it = processes.erase(it);
+
+			//! is this the right place to delete processes?
+			delete p;
+		}
 	}
 
 	return dirty;

@@ -1006,30 +1006,46 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 53
 			// suspend
 			// TODO!
-			LOGPF(("!suspend\n"));
+			LOGPF(("!suspend"));
 			cede=true; 
 			break;
 
-/*
 
-                case 0x57:
-                        // 57 aa tt xx xx yy yy
-                        // spawn process function yyyy in class xxxx
-                        // aa = number of arg bytes pushed (not including this pointer which is 4 bytes)
-                        // tt = sizeof this pointer object
-						// only remove the this pointer from stack (4 bytes)
-						// put PID of spawned process in temp
-                        {
-                                // TODO
-                                uint32 arg_bytes = ds.read1();
-                                uint32 this_size = ds.read1();  // Relevance?
-                                uint32 new_class = ds.read2();
-                                uint32 new_func  = ds.read2();
-                                uint32 this_ptr = stack.pop4(); // This pointer is pushed onto the stack. CAN BE NULL!
-                                printf("!spawn\t\t%02X %02X %04X:%04X",
-                                        arg_bytes, this_size, new_class, new_func);
-                                break;
-                        }
+		case 0x57:
+			// 57 aa tt xx xx yy yy
+			// spawn process function yyyy in class xxxx
+			// aa = number of arg bytes pushed (not including this pointer which is 4 bytes)
+			// tt = sizeof this pointer object
+			// only remove the this pointer from stack (4 bytes)
+			// put PID of spawned process in temp			
+			{
+				uint32 arg_bytes = cs.read1();
+				uint32 this_size = cs.read1(); // Relevance?
+				uint32 classid = cs.read2();
+				uint32 offset = cs.read2();
+				uint32 this_ptr = p->stack.pop4(); // can be NULL
+				
+				LOGPF(("!spawn\t\t%02X %02X %04X:%04X",
+					   arg_bytes, this_size, classid, offset));
+
+				UCProcess* newproc = new UCProcess(p->usecode, classid,
+												   offset, this_ptr);
+				newproc->stack.push(p->stack.access(), arg_bytes);
+
+				temp32 = addProcess(newproc);
+
+				//!! CHECKME
+				//!! is order of execution of this process and the new one
+				//!! relevant? It might be, since 0x6C and freeing opcodes
+				//!! might be executed in the wrong order otherwise.
+				//!! Currently, the spawned processes is added to the front
+				//!! of the execution list, so it's guaranteed to be run
+				//!! before the current process
+			}
+			cede = true; // give new process a chance to run
+			break;
+
+/*
                 case 0x58:
                         // 58 xx xx yy yy zz zz tt uu
                         // spawn inline process function yyyy in class xxxx at offset zzzz
@@ -1258,6 +1274,16 @@ bool UCMachine::execProcess(UCProcess* p)
 			LOGPF(("set info"));
 			break;
 
+/*
+		case 0x78:
+			// 78
+			// process exclude
+			// process gets 'exclusive access' to this object
+			LOGPF(("process exclude"));
+			break;
+
+*/
+
 		case 0x79: case 0x7A:
 			// 7A
 			// end of function
@@ -1295,13 +1321,6 @@ bool UCMachine::execProcess(UCProcess* p)
 			p->stack.push2(0);
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
-		case 0x57: // spawn
-			p->stack.pop4();
-			cs.read4();
-			cs.read2();
-			temp32 = 0x11223344;
-			perr.printf("unhandled opcode %02X\n", opcode);
-			break;
 		case 0x58: // spawn inline
 			p->stack.pop4();
 			cs.read4();
@@ -1320,8 +1339,10 @@ bool UCMachine::execProcess(UCProcess* p)
 			break;
 		case 0x6C: // parameter passing?
 		case 0x70: case 0x73: case 0x74: case 0x75: case 0x76: // loops
-		case 0x78: // process exclude
 			error = true;
+			perr.printf("unhandled opcode %02X\n", opcode);
+			break;
+		case 0x78: // process exclude
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
 				
@@ -1341,9 +1362,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		perr << "Process " << p->pid << " caused an error. Killing process."
 			 << std::endl;
 
-		// there probably should be a nicer way to abort processes
-		// (which also properly destructs them)
-		Kernel::get_instance()->removeProcess(p);
+		killProcess(p);
 	}
 
 
@@ -1356,6 +1375,8 @@ uint16 UCMachine::assignString(const char* str)
 	static uint16 count = 1; // 0 is reserved
 
 	// I'm not exactly sure if this is the most efficient way to do this
+
+	//! infinite loop when too many strings
 
 	// find unassigned element
 	while (stringHeap.find(count) != stringHeap.end()) {
@@ -1374,6 +1395,8 @@ uint16 UCMachine::assignList(UCList* l)
 
 	// I'm not exactly sure if this is the most efficient way to do this
 
+	//! infinite loop when too many lists
+
 	// find unassigned element
 	while (listHeap.find(count) != listHeap.end()) {
 		count++;
@@ -1381,6 +1404,18 @@ uint16 UCMachine::assignList(UCList* l)
 	}
 
 	listHeap[count] = l;
+
+	return count++;
+}
+
+uint16 UCMachine::getNewPID()
+{
+	static uint16 count = 1; // 0 is reserved, higher than 0x7FFF too
+
+	// I'm not exactly sure if this is the most efficient way to do this
+
+	// find unused PID
+	//! TODO
 
 	return count++;
 }
@@ -1426,4 +1461,27 @@ uint32 UCMachine::stringToPtr(uint16 s)
 	ptr <<= 16;
 	ptr += s;
 	return ptr;
+}
+
+uint16 UCMachine::addProcess(UCProcess* p)
+{
+	uint16 pid = getNewPID();
+	processes[pid] = p;
+	p->pid = pid;
+	Kernel::get_instance()->addProcess(p);
+	return pid;
+}
+
+void UCMachine::killProcess(UCProcess* p)
+{
+	killProcess(p->pid);
+}
+
+void UCMachine::killProcess(uint16 pid)
+{
+	std::map<uint16, UCProcess*>::iterator iter = processes.find(pid);
+	if (iter != processes.end()) {
+		iter->second->terminate();
+		processes.erase(iter);
+	}
 }

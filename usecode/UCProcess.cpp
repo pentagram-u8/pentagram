@@ -22,7 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UCMachine.h"
 #include "Usecode.h"
 
-UCProcess::UCProcess(Usecode* usecode_, uint32 classid_, uint32 offset_) :
+UCProcess::UCProcess(Usecode* usecode_, uint32 classid_,
+					 uint32 offset_, uint32 this_ptr) :
 	pid(0xFFFF), item_num(0), type(0), usecode(usecode_),
 	classid(classid_), suspended(false)
 {
@@ -33,7 +34,7 @@ UCProcess::UCProcess(Usecode* usecode_, uint32 classid_, uint32 offset_) :
 	ip = 0xFFFF;
 	bp = 0x0000;
 
-	stack.push4(0x11223344); // obj-to-ptr(itemnum)?
+	stack.push4(this_ptr); // BP+06 this pointer
 
 	call(classid_, offset_);
 }
