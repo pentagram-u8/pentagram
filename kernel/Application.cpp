@@ -262,6 +262,8 @@ void Application::SetupDisplayList()
 		}
 		else
 			av->getLocation(lx,ly,lz);
+
+		pout << "Camera: " << lx << ", " << ly << ", " << lz << std::endl;
 	}
 
 	sint32 gx = lx/512;
@@ -685,6 +687,14 @@ void Application::handleEvent(const SDL_Event& event)
 			Actor* devon = World::get_instance()->getNPC(2);
 			Process* p = new ActorAnimProcess(devon, 0, 2);
 			Kernel::get_instance()->addProcess(p);
+		} break;
+		case SDLK_f: { // trigger 'first' egg
+//			lx = 14527 + 3*512;
+//			ly = 5887 + 3*512;
+//			lz = 8;
+
+			Item* item = p_dynamic_cast<Item*>(World::get_instance()->getObject(21183)); // *cough*
+			item->callUsecodeEvent(7);
 		} break;
 		default: break;
 		}

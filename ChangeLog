@@ -1,4 +1,11 @@
 2003-05-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* misc/Rect.h: Rect::Overlaps
+	* world/CurrentMap.*: area searches
+	* world/Container.*: container searches
+	* world/UCMachine.*: searching
+	* kernel/Application.cpp: press f to trigger first egg if you're lucky
+
+2003-05-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Actor.*: basics of actor flags
 
 2003-05-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>

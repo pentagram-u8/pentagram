@@ -24,6 +24,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GlobEgg.h"
 #include "Actor.h"
 #include "World.h"
+#include "Rect.h"
+#include "Container.h"
+#include "UCList.h"
+#include "ShapeInfo.h"
 
 using std::list; // too messy otherwise
 typedef list<Item*> item_list;
@@ -198,4 +202,75 @@ void CurrentMap::removeItemFromList(Item* item, sint32 oldx, sint32 oldy)
 	sint32 cy = oldy / 512;
 
 	items[cx][cy].remove(item);
+}
+
+
+void CurrentMap::areaSearch(UCList* itemlist, const uint8* loopscript,
+							uint32 scriptsize, Item* item, uint16 range,
+							bool recurse)
+{
+	sint32 x,y,z;
+	item->getLocation(x,y,z);
+
+	Rect searchrange(x-range,y-range,2*range,2*range);
+
+	int minx, miny, maxx, maxy;
+
+	//! constants
+	minx = ((x-range)/512) - 1;
+	maxx = ((x+range)/512) + 1;
+	miny = ((y-range)/512) - 1;
+	maxy = ((y+range)/512) + 1;
+	if (minx < 0) minx = 0;
+	if (maxx > 127) maxx = 127;
+	if (miny < 0) miny = 0;
+	if (miny > 127) maxy = 127;
+
+	for (int cx = minx; cx <= maxx; cx++) {
+		for (int cy = miny; cy <= maxy; cy++) {
+			item_list::iterator iter;
+			for (iter = items[cx][cy].begin();
+				 iter != items[cx][cy].end(); ++iter) {
+
+				Item* item = *iter;
+
+
+				// check if item is in range?
+				sint32 itemx, itemy, itemz;
+				item->getLocation(itemx, itemy, itemz);
+
+				ShapeInfo* info = item->getShapeInfo();
+				sint32 xd, yd;
+
+				if (item->getFlags() & Item::FLG_FLIPPED) {
+					xd = 32 * info->y;
+					yd = 32 * info->x;
+				} else {
+					xd = 32 * info->x;
+					yd = 32 * info->y;
+				}
+
+				Rect itemrect(x - xd, y - yd, xd, yd);
+
+				if (!itemrect.Overlaps(searchrange)) continue;
+
+				if (recurse) {
+					// recurse into child-containers
+					Container *container = p_dynamic_cast<Container*>(*iter);
+					if (container)
+						container->containerSearch(itemlist, loopscript,
+												   scriptsize, recurse);
+				}
+				
+				// check item against loopscript
+				if ((*iter)->checkLoopScript(loopscript, scriptsize)) {
+					uint16 objid = (*iter)->getObjId();
+					uint8 buf[2];
+					buf[0] = static_cast<uint8>(objid);
+					buf[1] = static_cast<uint8>(objid >> 8);
+					itemlist->append(buf);				
+				}
+			}
+		}
+	}
 }

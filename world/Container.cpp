@@ -131,6 +131,31 @@ uint32 Container::getTotalWeight()
 	return weight;
 }
 
+void Container::containerSearch(UCList* itemlist, const uint8* loopscript,
+								uint32 scriptsize, bool recurse)
+{
+	std::list<Item*>::iterator iter;
+	for (iter = contents.begin(); iter != contents.end(); ++iter) {
+		if (recurse) {
+			// recurse into child-containers
+			Container *container = p_dynamic_cast<Container*>(*iter);
+			if (container)
+				container->containerSearch(itemlist, loopscript,
+										   scriptsize, recurse);
+		}
+
+		// check item against loopscript
+		if ((*iter)->checkLoopScript(loopscript, scriptsize)) {
+			uint16 objid = (*iter)->getObjId();
+			uint8 buf[2];
+			buf[0] = static_cast<uint8>(objid);
+			buf[1] = static_cast<uint8>(objid >> 8);
+			itemlist->append(buf);
+		}
+	}	
+}
+
+
 uint32 Container::I_removeContents(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_CONTAINER(container);

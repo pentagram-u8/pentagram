@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002 The Pentagram Team
+Copyright (C) 2002-2003 The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -122,6 +122,13 @@ struct Rect {
 	void	Union(const Rect& o)
 	{
 		Union(o.x, o.y, o.w, o.h);
+	}
+
+	bool 	Overlaps(const Rect& o)
+	{
+		Rect tmp = o;
+		IntersectOther(tmp.x, tmp.y, tmp.w, tmp.h);
+		return tmp.IsValid();
 	}
 
 	// Operator +=

@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "intrinsics.h"
 
+class UCList;
+
 class Container : public Item
 {
 	friend class ItemFactory;
@@ -40,6 +42,8 @@ public:
 	void removeContents();
 	void destroyContents();
 
+	void containerSearch(UCList* itemlist, const uint8* loopscript,
+						 uint32 scriptsize, bool recurse);
 	virtual uint32 getTotalWeight();
 
 	virtual uint16 assignObjId(); //get and assign self (and contents) an objID

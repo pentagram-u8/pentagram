@@ -24,6 +24,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Kernel.h"
 #include "DelayProcess.h"
 
+#include "CurrentMap.h"
+#include "World.h"
+
 #include "u8intrinsics.h"
 
 #define LOGPF(X) pout.printf X
@@ -1358,31 +1361,184 @@ bool UCMachine::execProcess(UCProcess* p)
 			p->stack.push4(stackToPtr(p->pid, static_cast<uint16>(p->stack.getSP() - si8a)));
 			LOGPF(("push addr\t%s", print_sp(-si8a)));
 			break;
-/*
-		// loop-related opcodes
-		// Theory: put a 'container object' on the stack, and this will
-		// loop over the objects in there. The 'loopscript' determines
-		// which objects are selected. (By a simple 'shape == x, frame == y'
-		// thing, it seems)
 
-		// See the abacus code (function 375) for a simple example
+		// loop-related opcodes
+		// 0x70 has a different types:
+		//    02: search the area around an object
+		//    03: search the area around an object, recursing into containers
+		//    04: search a container
+		//    05: search a container, recursing into containers
+		//    06: something about looking for items on top of another (??)
+		// each of these types allocate a rather large area on the stack
+		// we expect SP to be at the end of that area when 0x73 is executed
+		// a 'loop script' (created by 0x74) is used to select items
 
 		case 0x70:
 			// 70 xx yy zz
 			// loop something. Stores 'current object' in var xx
 			// yy == num bytes in string
 			// zz == type
-			si8a = cs.read1();
-			ui32a = cs.read1();
-			ui32b = cs.read1();
-			LOGPF(("!loop\t\t%s %02X %02X", print_bp(si8a), ui32a, ui32b));
-			break;
+			{
+				si16a = cs.read1();
+				uint32 scriptsize = cs.read1();
+				uint32 searchtype = cs.read1();
+
+				ui16a = p->stack.pop2();
+				ui16b = p->stack.pop2();
+
+				//!! This may not be the way the original did things...
+
+				// We'll first create a list of all matching items.
+				// Store the id of this list in the last two bytes
+				// of our stack area.
+				// Behind that we'll store an index into this list.
+				// This is followed by the variable in which to store the item
+				// After that we store the loopscript length followed by
+				// the loopscript itself.
+				//   (Note that this puts a limit on the max. size of the
+				//    loopscript of 0x20 bytes)
+
+				if (scriptsize > 0x20) {
+					perr << "Loopscript too long" << std::endl;
+					error = true;
+					break;
+				}
+
+				uint8* script = new uint8[scriptsize];
+				p->stack.pop(script, scriptsize);
+
+				uint32 stacksize = 0;
+				bool recurse = false;
+				// we'll put everything on the stack after stacksize is set
+
+				UCList *itemlist = new UCList(2);
+
+				World* world = World::get_instance();
+
+				switch (searchtype) {
+				case 2: case 3:
+				{
+					// area search (3 = recursive)
+					stacksize = 0x34;
+					if (searchtype == 3) recurse = true;
+
+					// ui16a = item, ui16b = range
+					Item* item= p_dynamic_cast<Item*>(world->getObject(ui16a));
+
+					if (item) {
+					    world->getCurrentMap()->areaSearch(itemlist, script,
+														   scriptsize, item,
+														   ui16b, recurse);
+					} else {
+						// return error or return empty list?
+						perr << "Warning: invalid item passed to area search"
+							 << std::endl;
+					}
+					break;
+				}
+				case 4: case 5:
+				{
+					// container search (4 = recursive)
+					stacksize = 0x281;
+					if (searchtype == 5) { stacksize += 2; recurse = true; }
+
+					// ui16a = 0xFFFF (?), ui16b = container
+					Container* container = p_dynamic_cast<Container*>
+						(world->getObject(ui16b));
+
+					if (ui16b != 0xFFFF) {
+						perr << "Warning: non-FFFF value passed to "
+							 << "container search" << std::endl;
+					}
+
+					if (container) {
+						container->containerSearch(itemlist, script,
+												   scriptsize, recurse);
+					} else {
+						// return error or return empty list?
+						perr << "Warning: invalid container passed to "
+							 << "container search" << std::endl;
+					}
+					break;
+				}
+				case 6:
+				{
+					stacksize = 0x3D;
+					//!!!!!! fall-through for now
+				}
+				default:
+					perr << "Unhandled search type " << searchtype <<std::endl;
+					error = true;
+					delete[] script;
+					break;
+				}
+
+				p->stack.push0(stacksize - scriptsize - 8); // filler
+				p->stack.push(script, scriptsize);
+				p->stack.push2(scriptsize);
+				p->stack.push2(static_cast<uint16>(si16a));
+				p->stack.push2(0);
+				uint16 itemlistID = assignList(itemlist);
+				p->stack.push2(itemlistID);
+
+				delete[] script;
+
+				LOGPF(("!loop\t\t%s %02X %02X", print_bp(si16a),
+					   scriptsize, searchtype));
+			}
+			// FALL-THROUGH to handle first item
 		case 0x73:
 			// 73
-			// next loop object? pushes false if end reached
-			printf("loopnext");
+			// next loop object. pushes false if end reached
+			{
+				unsigned int sp = p->stack.getSP();
+				uint16 itemlistID = p->stack.access2(sp);
+				UCList* itemlist = getList(itemlistID);
+				uint16 index = p->stack.access2(sp+2);
+				si16a = static_cast<sint16>(p->stack.access2(sp+4));
+//				uint16 scriptsize = p->stack.access2(sp+6);
+//				const uint8* loopscript = p->stack.access(sp+8);
+
+				if (!itemlist) {
+					perr << "Invalid item list in loopnext!" << std::endl;
+					error = true;
+					break;
+				}
+
+				// see if there are still valid items left
+				bool valid;
+				do {
+					if (index >= itemlist->getSize()) {
+						valid = false;
+						break;
+					}
+
+					p->stack.assign(p->bp+si16a, (*itemlist)[index], 2);
+					uint16 objid = p->stack.access2(p->bp+si16a);
+					if (p_dynamic_cast<Item*>(World::get_instance()->
+											  getObject(objid))) {
+						valid = true;
+					} else {
+						valid = false;
+						index++;
+					}
+					
+				} while (!valid);
+
+				if (!valid) {
+					p->stack.push2(0); // end of loop
+					freeList(itemlistID);
+				} else {
+					p->stack.push2(1);
+					// increment index
+					p->stack.assign2(sp+2, index+1);
+				}
+
+				if (opcode == 0x73) { // because of the fall-through
+					LOGPF(("!loopnext"));
+				}
+			}
 			break;
-*/
 
 		case 0x74:
 			// 74 xx
@@ -1523,7 +1679,6 @@ bool UCMachine::execProcess(UCProcess* p)
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
 		case 0x6C: // parameter passing?
-		case 0x70: case 0x73: // loopscripts
 			error = true;
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
