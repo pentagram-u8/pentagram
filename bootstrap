@@ -20,7 +20,7 @@ autoconf
 echo "Writing Makefiles:"
 
 # Note: do _NOT_ include '.' here
-MODULES="tools tools/disasm tools/shapeconv misc convert convert/u8 convert/crusader filesys kernel"
+MODULES="tools tools/disasm tools/shapeconv tools/fold misc convert convert/u8 convert/crusader filesys kernel graphics audio world world/actors usecode gumps"
 
 for subdir in $MODULES; do
   rm -f $subdir/Makefile
