@@ -90,6 +90,10 @@ GRAPHICS = \
 	graphics/TypeFlags.o \
 	graphics/WpnOvlayDat.o
 
+SCALERS = \
+	graphics/scalers/BilinearScaler.o \
+	graphics/scalers/PointScaler.o
+
 FONTS = \
 	graphics/fonts/Font.o \
 	graphics/fonts/FontManager.o \

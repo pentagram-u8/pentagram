@@ -58,8 +58,8 @@ GIMP_PLUGIN_PREFIX = @GIMP_PLUGIN_PREFIX@
 MODULES := convert convert/u8 convert/crusader misc filesys filesys/zip \
 	tools tools/disasm tools/compile tools/flexpack tools/fold \
 	tools/shapeconv $(GIMP_PLUGIN_MODULES)\
-	kernel games graphics graphics/fonts audio audio/midi \
-	audio/midi/timidity usecode world world/actors gumps \
+	kernel games graphics graphics/fonts graphics/scalers audio \
+	audio/midi audio/midi/timidity usecode world world/actors gumps \
 	gumps/widgets conf .
 
 # GCC 3.4+ precompiled header

@@ -24,7 +24,7 @@ SDL_CFLAGS=-I$(SRC)/sdl/include
 SDL_LIBS=-L$(SRC)/sdl/lib -lSDLmain -lSDL -lSDL_ttf
 
 CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -DSIZEOF_INTP=4 -I$(SRC)/conf -I$(SRC)/convert -I$(SRC)/filesys \
-	-I$(SRC)/filesys/zip -I$(SRC)/graphics -I$(SRC)/graphics/fonts -I$(SRC)/gumps -I$(SRC)/kernel \
+	-I$(SRC)/filesys/zip -I$(SRC)/graphics -I$(SRC)/graphics/fonts -I$(SRC)/graphics/scalers -I$(SRC)/gumps -I$(SRC)/kernel \
 	-I$(SRC)/misc -I$(SRC)/tools/compile -I$(SRC)/tools/disasm \
 	-I$(SRC)/tools/flexpack -I$(SRC)/tools/fold -I$(SRC)/usecode -I$(SRC)/world \
 	-I$(SRC)/world/actors -I$(SRC)/gumps/widgets -I$(SRC)/games \
@@ -80,7 +80,7 @@ pentshp.exe : $(PENTSHP_OBJCS)
 
 PENTAGRAM_OBJS = \
 	$(KERNEL) $(KERNEL2) $(USECODE) $(FILESYS) $(UNZIP) $(CONVERT) $(CONF)\
-	$(GRAPHICS) $(MISC) $(ARGS) $(GUMPS) $(WIDGETS) $(WORLD) $(ACTORS)\
+	$(GRAPHICS) $(SCALERS) $(MISC) $(ARGS) $(GUMPS) $(WIDGETS) $(WORLD) $(ACTORS)\
 	$(COMPILE) $(DISASM) $(AUDIO) $(MIDI) $(TIMIDITY) $(GAMES) $(GAMES2) \
 	$(FONTS) kernel/GUIApp.o misc/version.o pentagram.o
 

@@ -3,7 +3,7 @@
 LPATH := .
 
 LSRC := $(wildcard $(srcdir)/$(LPATH)/*.cpp)
-LPRODUCTS := pentagram llc
+LPRODUCTS := pentagram
 LINSTALL := pentagram
 
 include $(srcdir)/objects.mk
@@ -17,6 +17,7 @@ pentagram_OBJ = \
 	$(GAMES) \
 	$(GAMES2) \
 	$(GRAPHICS) \
+	$(SCALERS) \
 	$(FONTS) \
 	$(MISC) \
 	$(CONVERT) \
@@ -42,6 +43,7 @@ llc_OBJ = \
 	$(GAMES) \
 	$(GAMES2) \
 	$(GRAPHICS) \
+	$(SCALERS) \
 	$(FONTS) \
 	$(MISC) \
 	$(CONVERT) \
