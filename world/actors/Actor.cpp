@@ -521,10 +521,10 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 	if (getActorFlags() & (ACT_IMMORTAL | ACT_INVINCIBLE))
 		return; // invincible
  
-	if (damage >= 4 && objid == 1 && other) {
+	if (damage >= 4 && objid == 1 && hitter) {
 		// play blood sprite
 		int start = 0, end = 12;
-		if (getDirToItemCentre(*attacker) > 2) {
+		if (getDirToItemCentre(*hitter) > 2) {
 			start = 13; end = 25;
 		}
 
