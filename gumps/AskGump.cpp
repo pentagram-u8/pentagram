@@ -77,7 +77,7 @@ void AskGump::InitGump()
 		std::string str_answer = "@ ";
 		str_answer += UCMachine::get_instance()->getString(answers->getStringIndex(i));
 
-		Gump *child = new ButtonWidget(px, py, str_answer, fontnum);
+		ButtonWidget *child = new ButtonWidget(px, py, str_answer, fontnum);
 		child->InitGump();
 		child->SetIndex(i);
 		AddChild(child);
@@ -127,6 +127,42 @@ bool AskGump::loadData(IDataSource* ids, uint32 version)
 
 	answers = new UCList(2);
 	answers->load(ids, version);
+
+	// HACK ALERT
+	int px = 0, py = 0;
+
+	dims.w = 0;
+	dims.h = 0;
+
+
+	for (unsigned int i = 0; i < answers->getSize(); ++i) {
+
+		ButtonWidget *child = 0;
+
+		std::list<Gump*>::iterator it;
+		for (it = children.begin(); it != children.end(); ++it) {
+			if ((*it)->GetIndex() != i) continue;
+			child = p_dynamic_cast<ButtonWidget*>(*it);
+			if (!child) continue;
+		}
+
+		if (!child) return false;
+
+		Pentagram::Rect cd;
+		child->GetDims(cd);
+
+		if (px+cd.w > 160 && px != 0) 
+		{
+			py = dims.h;
+			px = 0;
+		}
+		child->Move(px,py);
+
+		if (cd.w+px > dims.w) dims.w = cd.w+px;
+		if (cd.h+py > dims.h) dims.h = cd.h+py;
+
+		px += cd.w+4;
+	}
 
 	return true;
 }

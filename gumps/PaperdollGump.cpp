@@ -410,7 +410,7 @@ void PaperdollGump::ChildNotify(Gump *child, uint32 message)
 		if (!desktop->FindGump(MiniStatsGump::ClassType)) {
 			Gump* gump = new MiniStatsGump(0, 0);
 			gump->InitGump();
-			desktop->AddChild(gump);
+			GUIApp::get_instance()->addGump(gump);
 			gump->setRelativePosition(BOTTOM_RIGHT, -5, -5);
 		}
 	}

@@ -90,10 +90,9 @@ bool MovieGump::OnKeyDown(int key, int mod)
 //static
 void MovieGump::U8MovieViewer(RawArchive* movie)
 {
-	Gump* desktopGump = GUIApp::get_instance()->getDesktopGump();
 	Gump* gump = new MovieGump(320, 200, movie);
 	gump->InitGump();
-	desktopGump->AddChild(gump);
+	GUIApp::get_instance()->addGump(gump);
 	gump->setRelativePosition(CENTER);
 }
 

@@ -92,10 +92,9 @@ uint32 ReadableGump::I_readGrave(const uint8* args, unsigned int /*argsize*/)
 	GUIApp *app = p_dynamic_cast<GUIApp*>(GUIApp::get_instance());
 	assert(app);
 
-	Gump *desktop = app->getDesktopGump();
 	Gump *gump = new ReadableGump(item->getObjId(), shape, 11, str);
 	gump->InitGump();
-	desktop->AddChild(gump);
+	GUIApp::get_instance()->addGump(gump);
 	gump->setRelativePosition(CENTER);
 	
 	return gump->GetNotifyProcess()->getPid();
@@ -111,10 +110,9 @@ uint32 ReadableGump::I_readPlaque(const uint8* args, unsigned int /*argsize*/)
 	GUIApp *app = p_dynamic_cast<GUIApp*>(GUIApp::get_instance());
 	assert(app);
 
-	Gump *desktop = app->getDesktopGump();
 	Gump *gump = new ReadableGump(item->getObjId(), shape, 10, str);
 	gump->InitGump();
-	desktop->AddChild(gump);
+	GUIApp::get_instance()->addGump(gump);
 	gump->setRelativePosition(CENTER);
 	
 	return gump->GetNotifyProcess()->getPid();

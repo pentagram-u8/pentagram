@@ -51,9 +51,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "DesktopGump.h"
 #include "ConsoleGump.h"
 #include "GameMapGump.h"
-#include "BarkGump.h"
 #include "InverterGump.h"
 #include "ScalerGump.h"
+
+// For gump positioning... perhaps shouldn't do it this way....
+#include "BarkGump.h"
+#include "AskGump.h"
+#include "ModalGump.h"
+
 
 #include "QuickAvatarMoverProcess.h"
 #include "Actor.h"
@@ -150,7 +155,7 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	  painting(false), showTouching(false), flashingcursor(-1), 
 	  mouseOverGump(0), dragging(DRAG_NOT), dragging_offsetX(0),
 	  dragging_offsetY(0), inversion(0), timeOffset(0), has_cheated(false),
-	  midi_driver(0), midi_volume(255), drawRenderStats(false)
+	  midi_driver(0), midi_volume(255), drawRenderStats(false), ttfoverrides(false)
 {
 	application = this;
 
@@ -944,7 +949,7 @@ void GUIApp::GraphicSysInit()
 
 	fontmanager = new FontManager();
 
-	bool ttfoverrides;
+	;
 	settingman->setDefault("ttf", false);
 	settingman->get("ttf", ttfoverrides);
 
@@ -954,19 +959,24 @@ void GUIApp::GraphicSysInit()
 		IDataSource* fontids = FileSystem::get_instance()->
 			ReadFile("@data/VeraBd.ttf");
 		if (fontids)
-			fontmanager->openTTF("verabd10", fontids, 10);
+			ttfoverrides = fontmanager->openTTF("verabd10", fontids, 10);
+		else 
+			ttfoverrides = false;
 
-		fontmanager->addTTFOverride(0, "verabd10", 0xC0C0FF, 1);
-		fontmanager->addTTFOverride(5, "verabd10", 0xFFAE00, 1);
-		fontmanager->addTTFOverride(6, "verabd10", 0xD00000, 1);
-		fontmanager->addTTFOverride(7, "verabd10", 0x00D000, 1);
-		fontmanager->addTTFOverride(8, "verabd10", 0xFFF000, 1);
+		if (ttfoverrides)
+		{
+			fontmanager->addTTFOverride(0, "verabd10", 0xC0C0FF, 1);
+			fontmanager->addTTFOverride(5, "verabd10", 0xFFAE00, 1);
+			fontmanager->addTTFOverride(6, "verabd10", 0xD00000, 1);
+			fontmanager->addTTFOverride(7, "verabd10", 0x00D000, 1);
+			fontmanager->addTTFOverride(8, "verabd10", 0xFFF000, 1);
 
-		fontids = FileSystem::get_instance()->ReadFile("@data/Vera.ttf");
-		if (fontids)
-			fontmanager->openTTF("vera9", fontids, 9);
+			fontids = FileSystem::get_instance()->ReadFile("@data/Vera.ttf");
+			if (fontids)
+				fontmanager->openTTF("vera9", fontids, 9);
 
-		fontmanager->addTTFOverride(9, "vera9", 0x000000, 0);
+			fontmanager->addTTFOverride(9, "vera9", 0x000000, 0);
+		}		
 	}
 
 	// Set Screen Resolution
@@ -1643,9 +1653,9 @@ void GUIApp::setupCoreGumps()
 
 	// Scaler stuff... should probably be elsewhere
 	int scalex, scaley;
-	settingman->setDefault("scalex", 1);
+	settingman->setDefault("scalex", 320);
 	settingman->get("scalex", scalex);
-	settingman->setDefault("scaley", 1);
+	settingman->setDefault("scaley", 200);
 	settingman->get("scaley", scaley);
 
 	if (scalex < 0) scalex= -scalex;
@@ -1836,7 +1846,14 @@ void GUIApp::addGump(Gump* gump)
 
 	assert(desktopGump);
 
-	desktopGump->AddChild(gump);
+	if (gump->IsOfType<ModalGump>() || (ttfoverrides && (gump->IsOfType<BarkGump>() || gump->IsOfType<AskGump>())))
+	{
+		desktopGump->AddChild(gump);
+	}
+	else
+	{
+		scalerGump->AddChild(gump);
+	}
 }
 
 uint32 GUIApp::getGameTimeInSeconds()

@@ -103,10 +103,9 @@ void ControlEntryGump::ChildNotify(Gump *child, uint32 message)
 	{
 		if (cid == button->getObjId())
 		{
-			Gump* desktopGump = GUIApp::get_instance()->getDesktopGump();
 			ModalGump* gump = new BindGump(&bindingName, parent);
 			gump->InitGump();
-			desktopGump->AddChild(gump);
+			GUIApp::get_instance()->addGump(gump);
 			gump->setRelativePosition(CENTER);
 		}
 	}

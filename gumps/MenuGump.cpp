@@ -221,10 +221,9 @@ bool MenuGump::OnTextInput(int unicode)
 //static
 void MenuGump::showMenu()
 {
-	Gump* desktopGump = GUIApp::get_instance()->getDesktopGump();
 	ModalGump* gump = new MenuGump();
 	gump->InitGump();
-	desktopGump->AddChild(gump);
+	GUIApp::get_instance()->addGump(gump);
 	gump->setRelativePosition(CENTER);
 }
 

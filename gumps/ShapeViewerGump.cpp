@@ -280,7 +280,7 @@ void ShapeViewerGump::U8ShapeViewer()
 
 	ModalGump* gump = new ShapeViewerGump((res.w*3)/4, (res.h*3)/4, flexes);
 	gump->InitGump();
-	desktopGump->AddChild(gump);
+	GUIApp::get_instance()->addGump(gump);
 }
 
 bool ShapeViewerGump::loadData(IDataSource* ids)

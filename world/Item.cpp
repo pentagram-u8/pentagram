@@ -1317,8 +1317,7 @@ uint16 Item::openGump(uint32 gumpshape)
 	cgump->setItemArea(GameData::get_instance()->
 					   getGumps()->getGumpItemArea(gumpshape));
 	cgump->InitGump();
-	GUIApp *app = GUIApp::get_instance();
-	app->getDesktopGump()->AddChild(cgump);
+	GUIApp::get_instance()->addGump(cgump);
 	flags |= FLG_GUMP_OPEN;
 	gump = cgump->getObjId();
 
@@ -2089,7 +2088,6 @@ uint32 Item::I_bark(const uint8* args, unsigned int /*argsize*/)
 	}
 	else
 	{
-		Gump *desktop = app->getDesktopGump();
 		Gump *gump = new BarkGump(item->getObjId(), str);
 
 		if (item->getObjId() < 256) // CONSTANT!
@@ -2101,7 +2099,7 @@ uint32 Item::I_bark(const uint8* args, unsigned int /*argsize*/)
 		}
 
 		gump->InitGump();
-		desktop->AddChild(gump);
+		GUIApp::get_instance()->addGump(gump);
 
 		return gump->GetNotifyProcess()->getPid();
 	}
@@ -2154,10 +2152,9 @@ uint32 Item::I_ask(const uint8* args, unsigned int /*argsize*/)
 
 	// Use AskGump
 	GUIApp *app = p_dynamic_cast<GUIApp*>(GUIApp::get_instance());
-	Gump *desktop = app->getDesktopGump();
 	Gump *gump = new AskGump(1, answers);
 	gump->InitGump();
-	desktop->AddChild(gump);
+	GUIApp::get_instance()->addGump(gump);
 	return gump->GetNotifyProcess()->getPid();
 }
 
@@ -2709,8 +2706,7 @@ uint32 Item::I_getSliderInput(const uint8* args, unsigned int /*argsize*/)
 	gump->InitGump(); // modal gump
 	gump->setUsecodeNotify(current);
 
-	GUIApp *app = GUIApp::get_instance();
-	app->getDesktopGump()->AddChild(gump);
+	GUIApp::get_instance()->addGump(gump);
 
 	current->suspend();
 

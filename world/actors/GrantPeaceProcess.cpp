@@ -66,8 +66,7 @@ bool GrantPeaceProcess::run(const uint32 /*framenum*/)
 	if (!havetarget) {
 		TargetGump* targetgump = new TargetGump(0, 0);
 		targetgump->InitGump();
-		GUIApp *app = GUIApp::get_instance();
-		app->getDesktopGump()->AddChild(targetgump);
+		GUIApp::get_instance()->addGump(targetgump);
 
 		waitFor(targetgump->GetNotifyProcess()->getPid());
 

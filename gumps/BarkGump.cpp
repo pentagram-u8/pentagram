@@ -67,7 +67,7 @@ void BarkGump::InitGump()
 	}
 
 	// Create the TextWidget
-	Gump *widget = new TextWidget(0,0,barked,fontnum,194,55);
+	TextWidget *widget = new TextWidget(0,0,barked,fontnum,194,55);
 	widget->InitGump();
 
 	textwidget = widget->getObjId();
@@ -135,6 +135,16 @@ bool BarkGump::loadData(IDataSource* ids, uint32 version)
 
 	counter = static_cast<sint32>(ids->read4());
 	textwidget = ids->read2();
+
+	TextWidget *widget = p_dynamic_cast<TextWidget*>
+		(GUIApp::get_instance()->getGump(textwidget));
+
+	// This is just a hack
+	Pentagram::Rect d;
+	widget->GetDims(d);
+	counter = d.h*5; //! constant
+	dims.h = d.h;
+	dims.w = d.w;
 
 	return true;
 }

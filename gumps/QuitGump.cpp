@@ -150,10 +150,9 @@ bool QuitGump::OnTextInput(int unicode)
 //static
 void QuitGump::verifyQuit()
 {
-	Gump* desktopGump = GUIApp::get_instance()->getDesktopGump();
 	ModalGump* gump = new QuitGump();
 	gump->InitGump();
-	desktopGump->AddChild(gump);
+	GUIApp::get_instance()->addGump(gump);
 	gump->setRelativePosition(CENTER);
 }
 

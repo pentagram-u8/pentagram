@@ -295,7 +295,6 @@ private:
 	void		init_midi();
 	void		deinit_midi();
 	static void	sdlAudioCallback(void *userdata, Uint8 *stream, int len);
-
 	
 	std::list<ObjId>	textmodes;		//!< Gumps that want text mode
 
@@ -309,6 +308,8 @@ private:
 	// This should be a console variable once they are implemented
 	bool				drawRenderStats;
 	static void			ConCmd_drawRenderStats(const Console::ArgsType &args, const Console::ArgvType &argv);		//!< "GUIApp::drawRenderStats" console command
+
+	bool				ttfoverrides;
 };
 
 #endif

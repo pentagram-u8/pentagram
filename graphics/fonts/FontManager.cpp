@@ -96,7 +96,7 @@ bool FontManager::openTTF(Pentagram::istring name, IDataSource* ds, int size)
 
 #else
 	delete ds;
-	return true;
+	return false;
 #endif
 }
 
@@ -125,6 +125,6 @@ bool FontManager::addTTFOverride(unsigned int fontnum, Pentagram::istring ttf,
 	return true;
 
 #else
-	return true;
+	return false;
 #endif
 }

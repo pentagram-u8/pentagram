@@ -18,7 +18,13 @@
 	  Pressing (and holding) the tab Key will highlight, and let you click 
 	  on hidden items. At least that is what it is supposed to do. Sort of
 	  works, but needs refining (shows items it shouldn't)
-
+	* Lots of files : Using GUIApp::addGump()
+	* kernel/GUIApp.h : Position all gumps scaled except Modal gumps and
+	  Ask and Bark gumps if TTF is being used
+	* gumps/AskGump.cpp, gumps/BarkGump.cpp, gumps/widgets/* :
+	  Changes so Ask and Bark gumps properly resize on reloads if TTF
+	  is toggles
+	  
 2005-02-14	Darke  <darkepaw@users.sf.net>
 	* audio/midi/fmopl.cpp: cast pedantification.
 	* world/actors/Animation.cpp,gumps/PaperdollGump.cpp: gcc4 fixes.

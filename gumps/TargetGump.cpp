@@ -106,8 +106,7 @@ uint32 TargetGump::I_target(const uint8* /*args*/, unsigned int /*argsize*/)
 {
 	TargetGump* targetgump = new TargetGump(0, 0);
 	targetgump->InitGump();
-	GUIApp *app = GUIApp::get_instance();
-	app->getDesktopGump()->AddChild(targetgump);
+	GUIApp::get_instance()->addGump(targetgump);
 
 	return targetgump->GetNotifyProcess()->getPid();
 }

@@ -39,7 +39,7 @@ ButtonWidget::ButtonWidget()
 
 ButtonWidget::ButtonWidget(int X, int Y, std::string txt, int font,
 						   uint32 mouseOverBlendCol_, int w, int h) :
-	Gump(X,Y,w,h), shape_up(0), shape_down(0), mouseOver(false)
+	Gump(X,Y,w,h), shape_up(0), shape_down(0), mouseOver(false), origw(w), origh(h)
 {
 	TextWidget* widget = new TextWidget(0,0,txt,font,w,h);
 	textwidget = widget->getObjId();
@@ -180,7 +180,22 @@ void ButtonWidget::OnMouseLeft()
 
 void ButtonWidget::saveData(ODataSource* ods)
 {
+	// HACK ALERT
+	int w, h;
+	if (textwidget != 0) {
+		w = dims.w;
+		h = dims.h;
+		dims.w = origw;
+		dims.h = origh;
+	}
+
 	Gump::saveData(ods);
+
+	// HACK ALERT
+	if (textwidget != 0) {
+		dims.w = w;
+		dims.h = h;
+	}
 
 	uint16 flex = 0;
 	uint32 shapenum = 0;
@@ -233,5 +248,13 @@ bool ButtonWidget::loadData(IDataSource* ids, uint32 version)
 	mouseOverBlendCol = ids->read4();
 	mouseOver = (ids->read1() != 0);
 
+	// HACK ALERT
+	if (textwidget != 0) {
+		Gump* widget = GUIApp::get_instance()->getGump(textwidget);
+		widget->GetDims(dims); // transfer child dimension to self
+		widget->Move(0,dims.y); // move it to the correct height
+	}
+
 	return true;
 }
+

@@ -22,6 +22,7 @@
 #include "FontManager.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
+#include "TTFont.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(TextWidget,Gump);
 
@@ -151,6 +152,21 @@ bool TextWidget::loadData(IDataSource* ids, uint32 version)
 	} else {
 		text = "";
 	}
+
+	// HACK ALERT
+	Pentagram::Font *font;
+	font = FontManager::get_instance()->getFont(fontnum, true);
+
+	int tx, ty;
+	unsigned int remaining;
+	font->getTextSize(text.substr(current_start), tx, ty, remaining,
+					  targetwidth, targetheight, textalign);
+
+	// Y offset is always baseline
+	dims.y = -font->getBaseline();
+	dims.w = tx;
+	dims.h = ty;
+	current_end = current_start + remaining;
 
 	return true;
 }

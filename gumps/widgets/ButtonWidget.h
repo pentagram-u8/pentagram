@@ -66,6 +66,7 @@ protected:
 	uint16 textwidget;
 	uint32 mouseOverBlendCol;
 	bool mouseOver;
+	int origw, origh;
 
 public:
 	bool loadData(IDataSource* ids, uint32 version);

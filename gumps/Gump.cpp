@@ -29,6 +29,7 @@
 #include "IDataSource.h"
 #include "ODataSource.h"
 #include "ObjectManager.h"
+#include "ScalerGump.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(Gump,Object);
 
@@ -316,6 +317,10 @@ void Gump::setRelativePosition(Gump::Position pos, int xoffset, int yoffset)
 	{
 		Pentagram::Rect rect;
 		parent->GetDims(rect);
+
+		// A small hack
+		if (parent->IsOfType<ScalerGump>()) parent->ParentToGump(rect.w, rect.h);
+
 		switch (pos)
 		{
 		case CENTER:

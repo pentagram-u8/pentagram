@@ -459,7 +459,7 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 												0, item->getQuality(),
 												item->getQuality());
 		slidergump->InitGump();
-		GUIApp::get_instance()->getDesktopGump()->AddChild(slidergump);
+		GUIApp::get_instance()->addGump(slidergump);
 		slidergump->CreateNotifier(); // manually create notifier
 		Process* notifier = slidergump->GetNotifyProcess();
 		SplitItemProcess* splitproc = new SplitItemProcess(item, splittarget);

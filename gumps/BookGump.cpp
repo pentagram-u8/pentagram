@@ -125,10 +125,9 @@ uint32 BookGump::I_readBook(const uint8* args, unsigned int /*argsize*/)
 	GUIApp *app = p_dynamic_cast<GUIApp*>(GUIApp::get_instance());
 	assert(app);
 
-	Gump *desktop = app->getDesktopGump();
 	Gump *gump = new BookGump(item->getObjId(), str);
 	gump->InitGump();
-	desktop->AddChild(gump);
+	app->addGump(gump);
 	gump->setRelativePosition(CENTER);
 	
 	return gump->GetNotifyProcess()->getPid();

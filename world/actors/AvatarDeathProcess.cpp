@@ -55,11 +55,10 @@ bool AvatarDeathProcess::run(const uint32 /*framenum*/)
 		return false;
 	}
 
-	Gump *desktop = GUIApp::get_instance()->getDesktopGump();
 	Gump *gump = new ReadableGump(1, 27, 11,
 								  _TL_("HERE LIES*THE AVATAR*REST IN PEACE"));
 	gump->InitGump();
-	desktop->AddChild(gump);
+	GUIApp::get_instance()->addGump(gump);
 	gump->setRelativePosition(Gump::CENTER);
 
 	// done

@@ -115,10 +115,9 @@ uint32 ScrollGump::I_readScroll(const uint8* args, unsigned int /*argsize*/)
 	GUIApp *app = p_dynamic_cast<GUIApp*>(GUIApp::get_instance());
 	assert(app);
 
-	Gump *desktop = app->getDesktopGump();
 	Gump *gump = new ScrollGump(item->getObjId(), str);
 	gump->InitGump();
-	desktop->AddChild(gump);
+	GUIApp::get_instance()->addGump(gump);
 	gump->setRelativePosition(CENTER);
 	
 	return gump->GetNotifyProcess()->getPid();
