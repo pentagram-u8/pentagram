@@ -725,7 +725,7 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 
 //	pout << "Sweeping from (" << -ext[0] << ", " << -ext[1] << ", " << -ext[2] << ")" << std::endl;
 //	pout << "              (" << ext[0] << ", " << ext[1] << ", " << ext[2] << ")" << std::endl;
-///	pout << "Sweeping to   (" << vel[0]-ext[0] << ", " << vel[1]-ext[1] << ", " << vel[2]-ext[2] << ")" << std::endl;
+//	pout << "Sweeping to   (" << vel[0]-ext[0] << ", " << vel[1]-ext[1] << ", " << vel[2]-ext[2] << ")" << std::endl;
 //	pout << "              (" << vel[0]+ext[0] << ", " << vel[1]+ext[1] << ", " << vel[2]+ext[2] << ")" << std::endl;
 
 	std::list<SweepItem>::iterator sw_it;
@@ -801,6 +801,12 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 						u_0[i] = 0x4001;
 						u_1[i] = -1;
 					}
+
+					if (u_1[i] >= u_0[i] && (u_0[i] > 0x4000 || u_1[i] < 0))
+					{
+						u_0[i] = 0x4001;
+						u_1[i] = -1;
+					}
 				}
 
 				//possible first time of overlap
@@ -843,8 +849,10 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 
 					// Now add it
 					sw_it = hit->insert(sw_it, SweepItem(other_item->getObjId(),first,last,touch));
-					//pout << "Hit item " << other_item->getObjId() << " at (" << first << "," << last << ")" << std::endl;
-					//pout << "hit item      (" << other[0] << ", " << other[1] << ", " << other[2] << ")" << std::endl;
+//					pout << "Hit item " << other_item->getObjId() << " at (" << first << "," << last << ")" << std::endl;
+//					pout << "hit item      (" << other[0] << ", " << other[1] << ", " << other[2] << ")" << std::endl;
+//					pout << "hit item time (" << u_0[0] << "-" << u_1[0] << ") (" << u_0[1] << "-" << u_1[1] << ") ("
+//						 << u_0[2] << "-" << u_1[2] << ")" << std::endl;
 				}
 			}
 		}

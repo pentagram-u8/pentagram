@@ -1,3 +1,7 @@
+2003-08-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/CurrentMap.cpp: do a (time) range-check in sweepTest
+	* world/actors/Actor.cpp: properly interpret sweepTest in tryAnim
+
 2003-08-24	Darke  <darkepaw@users.sf.net>
 	* convert/Convert.h, tools/fold/*: Added 'add' op. (Hey, if wjp can
 	  have lots of tiny commits, so can I! *grin*)

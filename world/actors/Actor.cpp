@@ -247,7 +247,25 @@ bool Actor::tryAnim(int anim, int dir, PathfindingState* state)
 
 		std::list<CurrentMap::SweepItem>::iterator iter;
 		for (iter = hit.begin(); iter != hit.end(); ++iter) {
-			if (!iter->touching) {
+			if (!iter->touching && iter->hit_time != 0x4000 &&
+				iter->end_time != 0)
+			{
+#if 0
+				perr << "tryAnim: (" << start[0] << "," << start[1]
+					 << "," << start[2] << ")-(" << end[0] << "," << end[1]
+					 << "," << end[2] << ") dims (" << dims[0] << ","
+					 << dims[1] << "," << dims[2] << ")" << std::endl;
+				perr << "tryAnim: blocked by item " << iter->item << ", ";
+				Item *item = World::get_instance()->getItem(iter->item);
+				if (item) {
+					sint32 ix, iy, iz;
+					item->getLocation(ix, iy, iz);
+					perr << item->getShape() << " (" << ix << "," << iy
+						 << "," << iz << ")" << std::endl;
+				} else {
+					perr << "(invalid)" << std::endl;
+				}
+#endif
 				return false;
 			}
 		}
