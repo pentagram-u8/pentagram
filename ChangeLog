@@ -1,3 +1,7 @@
+2004-07-07  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* data/u8monsters.ini: mark seeker as exploding
+	* world/actors/Actor.cpp: let seekers explode on death
+
 2004-07-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.*: make Item::grab() also call the release event
 	* world/Item.*: added Item::hurl() function

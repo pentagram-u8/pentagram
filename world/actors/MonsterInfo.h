@@ -30,7 +30,8 @@ struct MonsterInfo {
 	bool unk;
 	uint16 damage_type;
 	uint16 defense_type;
-	bool resurrection;
+	bool resurrection; // auto-resurrection after being killed
+	uint32 explode; // shape to hurl around after being killed (or 0)
 };
 
 

@@ -271,6 +271,12 @@ void TypeFlags::loadMonsterInfo()
 		} else
 			mi->resurrection = false;
 
+		if (config->exists(k + "/explode")) {
+			config->get(k + "/explode", val);
+			mi->explode = val;
+		} else
+			mi->explode = 0;
+
 		assert(mi->shape < shapeInfo.size());
 		shapeInfo[mi->shape].monsterinfo = mi;
 	}

@@ -35,6 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Animation.h"
 #include "DelayProcess.h"
 #include "ResurrectionProcess.h"
+#include "Shape.h"
 
 #include "ItemFactory.h"
 #include "IDataSource.h"
@@ -486,6 +487,7 @@ void Actor::die()
 	ShapeInfo* shapeinfo = getShapeInfo();
 	MonsterInfo* mi = 0;
 	if (shapeinfo) mi = shapeinfo->monsterinfo;
+
 	if (mi && mi->resurrection) {
 		// this monster will resurrect after a while
 
@@ -503,6 +505,37 @@ void Actor::die()
 
 		resproc->waitFor(delayproc);
 		animproc->waitFor(resproc);
+	}
+
+	if (mi && mi->explode) {
+		// this monster explodes when it dies
+
+		pout << "Actor::die: exploding" << std::endl;
+
+		int count = 5;
+		Shape* explosionshape = GameData::get_instance()->getMainShapes()
+			->getShape(mi->explode);
+		assert(explosionshape);
+		unsigned int framecount = explosionshape->frameCount();
+
+		for (int i = 0; i < count; ++i) {
+			Item* piece = ItemFactory::createItem(mi->explode,
+												  std::rand()%framecount,
+												  0, // qual
+												  Item::FLG_FAST_ONLY, //flags,
+												  0, // npcnum
+												  0, // mapnum
+												  0 // extended. flags
+				);
+			piece->assignObjId();
+			piece->move(x - 128 + 32*(std::rand()%6),
+						y - 128 + 32*(std::rand()%6),
+						z + std::rand()%8 ); // move to near actor's position
+			piece->hurl(-25 + (std::rand()%50),
+						-25 + (std::rand()%50),
+						10 + (std::rand()%10),
+						4); // (wrong?) CONSTANTS!
+		}
 	}
 }
 
