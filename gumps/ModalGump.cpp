@@ -24,6 +24,7 @@
 
 #include "IDataSource.h"
 #include "ODataSource.h"
+#include "AudioProcess.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(ModalGump,Gump);
 
@@ -52,6 +53,9 @@ void ModalGump::InitGump()
 	GUIApp::get_instance()->enterTextMode(this);
 
 	Kernel::get_instance()->pause();
+
+	AudioProcess *ap = AudioProcess::get_instance();
+	if (ap) ap->pauseAllSamples();
 }
 
 Gump* ModalGump::FindGump(int mx, int my)
@@ -81,6 +85,9 @@ void ModalGump::Close(bool no_del)
 	GUIApp::get_instance()->leaveTextMode(this);
 
 	Kernel::get_instance()->unpause();
+
+	AudioProcess *ap = AudioProcess::get_instance();
+	if (ap) ap->unpauseAllSamples();
 
 	Gump::Close(no_del);
 }

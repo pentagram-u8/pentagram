@@ -36,10 +36,13 @@ public:
 
 	void			reset();
 
-	int				playSample(AudioSample *sample, int loop=0, int priority=100);
+	int				playSample(AudioSample *sample, int loop=0, int priority=100,bool paused=false);
 	bool			isPlaying(int chan);
 	void			stopSample(int chan);
 	
+	void			setPaused(int chan, bool paused);
+	bool			isPaused(int chan);
+
 private:
 	bool			audio_ok;
 	uint32			sample_rate;

@@ -85,6 +85,11 @@ public:
 	//! returns channel sample is played on, or -1
 	int playSample(Pentagram::AudioSample* sample, int priority, int loops);
 
+	//! pause all currently playing samples
+	void pauseAllSamples();
+	//! unpause all currently playing samples
+	void unpauseAllSamples();
+
 	// AudioProcess::playSound console command
 	//static void ConCmd_playSound(const Console::ArgsType &args, const Console::ArgvType &argv);
 
@@ -92,6 +97,7 @@ public:
 
 private:
 	virtual void saveData(ODataSource* ods);
+	uint32 paused;
 
 	//! play the next speech sample for the text in this SampleInfo
 	//! note: si is reused if successful

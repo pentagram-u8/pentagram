@@ -149,7 +149,7 @@ void AudioMixer::reset()
 	Unlock();
 }
 
-int AudioMixer::playSample(AudioSample *sample, int loop, int priority)
+int AudioMixer::playSample(AudioSample *sample, int loop, int priority, bool paused)
 {
 	if (!audio_ok || !channels) return -1;
 
@@ -173,7 +173,7 @@ int AudioMixer::playSample(AudioSample *sample, int loop, int priority)
 	}
 
 	if (i != num_channels || lowprior < priority)
-		channels[lowest]->playSample(sample,loop);
+		channels[lowest]->playSample(sample,loop,priority,100,paused);
 	else 
 		lowest = -1;
 
@@ -205,6 +205,30 @@ void AudioMixer::stopSample(int chan)
 		channels[chan]->stop();
 
 	Unlock();
+}
+
+void AudioMixer::setPaused(int chan, bool paused)
+{
+	if (chan > num_channels || chan < 0 || !channels || !audio_ok) return;
+
+	Lock();
+
+		channels[chan]->setPaused(paused);
+
+	Unlock();
+}
+
+bool AudioMixer::isPaused(int chan)
+{
+	if (chan > num_channels || chan < 0 || !channels || !audio_ok) return false;
+
+	Lock();
+
+		bool ret = channels[chan]->isPaused();
+
+	Unlock();
+
+	return ret;
 }
 
 void AudioMixer::sdlAudioCallback(void *userdata, Uint8 *stream, int len)

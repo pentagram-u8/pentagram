@@ -47,6 +47,7 @@ class AudioChannel
 	int				volume;			// 0-100
 	uint32			pitch_shift;	// 0x10000 = no shift
 	int				priority;		// anything. 
+	bool			paused;			// true/false
 
 public:
 	AudioChannel(uint32 sample_rate, bool stereo);
@@ -54,7 +55,7 @@ public:
 
 	void stop() { sample = 0; }
 
-	void playSample(AudioSample *sample, int loop, int priority=100, int volume=100, int pitch_shift=0x10000);
+	void playSample(AudioSample *sample, int loop, int priority=100, int volume=100, bool paused=false, int pitch_shift=0x10000);
 	void resampleAndMix(sint16 *stream, uint32 bytes);
 
 	bool isPlaying() { return sample != 0; }
@@ -71,6 +72,8 @@ public:
 	void setPriority(int priority_) { priority = priority_; }
 	int getPriority() const { return priority; }
 
+	void setPaused(int paused_) { paused = paused_; }
+	bool isPaused() const { return paused; }
 private:
 
 	//

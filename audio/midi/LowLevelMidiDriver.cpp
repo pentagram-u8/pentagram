@@ -76,7 +76,10 @@ int LowLevelMidiDriver::initMidiDriver(uint32 samp_rate, bool is_stereo)
 	std::memset(sequences, 0, sizeof (XMidiSequence*) * LLMD_NUM_SEQ);
 	std::memset(chan_locks, -1, sizeof (sint32) * 16);
 	std::memset(chan_map, -1, sizeof (sint32) * LLMD_NUM_SEQ * 16);
-	for (int i = 0; i < LLMD_NUM_SEQ; i++) playing[i] = false;
+	for (int i = 0; i < LLMD_NUM_SEQ; i++) {
+		playing[i] = false;
+		callback_data[i] = -1;
+	}
 
 	mutex = SDL_CreateMutex();
 	cbmutex = SDL_CreateMutex();
@@ -527,6 +530,7 @@ bool LowLevelMidiDriver::playSequences ()
 					delete sequences[message.sequence]; 
 					sequences[message.sequence] = 0;
 					playing[message.sequence] = false;
+					callback_data[message.sequence] = -1;
 					unlockAndUnprotectChannel(message.sequence);
 				}
 				break;
@@ -538,6 +542,7 @@ bool LowLevelMidiDriver::playSequences ()
 						delete sequences[i]; 
 						sequences[i] = 0;
 						playing[i] = false;
+						callback_data[i] = -1;
 						unlockAndUnprotectChannel(i);
 					}
 				}
@@ -581,6 +586,7 @@ bool LowLevelMidiDriver::playSequences ()
 					delete sequences[message.sequence]; 
 					sequences[message.sequence] = 0;
 					playing[message.sequence] = false;
+					callback_data[message.sequence] = -1;
 					unlockAndUnprotectChannel(message.sequence);
 
 					giveinfo();

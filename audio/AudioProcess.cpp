@@ -38,7 +38,7 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(AudioProcess,Process);
 
 AudioProcess * AudioProcess::the_audio_process = 0;
 
-AudioProcess::AudioProcess(void)
+AudioProcess::AudioProcess(void) : paused(0)
 {
 	the_audio_process = this;
 	type = 1; // persistent
@@ -342,6 +342,47 @@ bool AudioProcess::isSpeechPlaying(std::string &barked, int shapenum)
 	return false;
 }
 
+void AudioProcess::pauseAllSamples()
+{
+	paused++;
+	if (paused != 1) return;
+
+	AudioMixer *mixer = AudioMixer::get_instance();
+
+	std::list<SampleInfo>::iterator it;
+	for (it = sample_info.begin(); it != sample_info.end(); ) {
+		if (mixer->isPlaying(it->channel)) {
+			mixer->setPaused(it->channel,true);
+			++it;
+		}
+		else {
+			it = sample_info.erase(it);
+		}
+
+	}
+
+}
+
+void AudioProcess::unpauseAllSamples()
+{
+	paused--;
+	if (paused != 0) return;
+
+	AudioMixer *mixer = AudioMixer::get_instance();
+
+	std::list<SampleInfo>::iterator it;
+	for (it = sample_info.begin(); it != sample_info.end(); ) {
+		if (mixer->isPlaying(it->channel)) {
+			mixer->setPaused(it->channel,false);
+			++it;
+		}
+		else {
+			it = sample_info.erase(it);
+		}
+
+	}
+
+}
 
 //
 // Intrinsics

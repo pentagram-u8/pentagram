@@ -39,7 +39,7 @@ AudioChannel::AudioChannel(uint32 sample_rate_, bool stereo_) :
 	playdata(0), playdata_size(0), decompressor_size(0), frame_size(0),
 	sample_rate(sample_rate_), stereo(stereo_),
 	loop(0), sample(0), 
-	frame_evenodd(0), frame0_size(0), frame1_size(0), position(0),
+	frame_evenodd(0), frame0_size(0), frame1_size(0), position(0), paused(false),
 	fp_pos(0), fp_speed(0)
 {
 }
@@ -48,12 +48,13 @@ AudioChannel::~AudioChannel(void)
 {
 }
 
-void AudioChannel::playSample(AudioSample *sample_, int loop_, int priority_, int volume_, int pitch_shift_)
+void AudioChannel::playSample(AudioSample *sample_, int loop_, int priority_, int volume_, bool paused_, int pitch_shift_)
 {
 	sample = sample_; 
 	loop = loop_;
 	priority = priority_;
 	volume = volume_;
+	paused = paused_;
 	pitch_shift = pitch_shift_;
 
 	if (!sample) return;
@@ -99,7 +100,7 @@ void AudioChannel::playSample(AudioSample *sample_, int loop_, int priority_, in
 
 void AudioChannel::resampleAndMix(sint16 *stream, uint32 bytes)
 {
-	if (!sample) return;
+	if (!sample || paused) return;
 
 	// Update fp_speed
 	fp_speed = (pitch_shift*sample->getRate())/sample_rate;
