@@ -65,6 +65,7 @@ void Container::clearObjId()
 bool Container::CanAddItem(Item* item, bool checkwghtvol)
 {
 	if (!item) return false;
+	if (item->getParent() == this) return true; // already in here
 
 	Container *c = p_dynamic_cast<Container*>(item);
 	if (c) {
@@ -77,7 +78,7 @@ bool Container::CanAddItem(Item* item, bool checkwghtvol)
 	}
 
 	if (checkwghtvol) {
-		// check weight and volume
+		//TODO: check weight and volume
 
 	}
 
@@ -87,8 +88,7 @@ bool Container::CanAddItem(Item* item, bool checkwghtvol)
 bool Container::AddItem(Item* item, bool checkwghtvol)
 {
 	if (!CanAddItem(item, checkwghtvol)) return false;
-
-	if (item->getParent() == this) return true; // already added
+	if (item->getParent() == this) return true; // already in here
 
 	contents.push_back(item);
 
@@ -107,10 +107,10 @@ bool Container::RemoveItem(Item* item)
 		if (*iter == item) {
 			contents.erase(iter);
 			item->clearFlag(Item::FLG_CONTAINED);
+			item->setParent(0);
 			return true;
 		}
 	}
-
 	return false;
 }
 

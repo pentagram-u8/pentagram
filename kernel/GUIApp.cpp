@@ -724,7 +724,8 @@ void GUIApp::handleEvent(const SDL_Event& event)
 						gump = desktopGump->FindGump(startx, starty);
 						int gx = startx, gy = starty;
 						gump->ScreenSpaceToGump(gx, gy);
-						bool ok = gump->StartDraggingItem(item,gx,gy);
+						bool ok = !isAvatarInStasis() &&
+							gump->StartDraggingItem(item,gx,gy);
 						if (!ok) {
 							dragging = DRAG_INVALID;
 						} else {

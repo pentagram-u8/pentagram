@@ -282,6 +282,17 @@ bool ContainerGump::DraggingItem(Item* item, int mx, int my)
 		return false;
 	}
 
+
+	Container* c = p_dynamic_cast<Container*>
+		(World::get_instance()->getItem(owner));
+	assert(c);
+
+	// check if item will fit (weight/volume/adding container to itself)
+	if (!c->CanAddItem(item, true)) {
+		display_dragging = false;
+		return false;
+	}
+
 	return true;
 }
 
@@ -312,7 +323,7 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 	Container* c = p_dynamic_cast<Container*>
 		(World::get_instance()->getItem(owner));
 	assert(c);
-	c->AddItem(item);	
+	c->AddItem(item);
 
 	dragging_x = mx - itemarea.x;
 	dragging_y = my - itemarea.y;

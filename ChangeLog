@@ -1,5 +1,8 @@
 2003-06-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Object.h, world/Item.h, world/Container.h: doxygen comments
+	* world/Container.*: reset parent in Container::RemoveItem
+	* gumps/ContainerGump.*: check whether item fits while dragging
+	* kernel/GUIApp.cpp: don't allow dragging items while in stasis
 
 2003-06-21	  Ryan Nunn <colourles@users.sourceforge.net>
 	* kernel/GUIApp.cpp, world/CurrentMap.*,
