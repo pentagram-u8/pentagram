@@ -25,6 +25,10 @@
 
 #include "Gump.h"
 
+#include "Font.h"
+
+using Pentagram::Font;
+
 class RenderedText;
 
 class TextWidget : public Gump
@@ -39,13 +43,14 @@ protected:
 	int targetwidth, targetheight;
 
 	RenderedText* cached_text;
-
+	Font::TextAlign	textalign;
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
 	TextWidget();
 	TextWidget(int X, int Y, std::string txt, int fontnum,
-			   int width = 0, int height = 0);
+			   int width = 0, int height = 0,
+			   Font::TextAlign align = Font::TEXT_LEFT);
 	virtual ~TextWidget(void);
 
 	// Init the gump, call after construction

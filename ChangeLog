@@ -5,6 +5,8 @@
 	  GameInfo is used to detect the game rather than using the game string
 	* kernel/HIDManager.*: Bindings now loaded from SettingManager unless
 	  not present. Bindings can be saved using the HIDManager::save command
+	* gumps/ReadableGump.*: Using TextWidget to display text.
+	* gumps/widgets/TextWidget.*: Added constructor parameter to align text
 
 2004-05-15  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* gumps/ReadableGump.*: A gump to handle reading graves and plaques

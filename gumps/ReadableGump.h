@@ -21,14 +21,13 @@
 
 #include "ModalGump.h"
 #include "intrinsics.h"
-#include "RenderedText.h"
 
 class ReadableGump : public ModalGump
 {
 	uint16 shapenum;
-	int fontnum, tx, ty;
+	int fontnum;
 	std::string	text;
-	RenderedText* rt;
+	ObjId textwidget;
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
@@ -40,8 +39,6 @@ public:
 
 	// Init the gump, call after construction
 	virtual void InitGump();
-
-	virtual void PaintThis(RenderSurface*, sint32 lerp_factor);
 
 	INTRINSIC(I_readGrave);
 	INTRINSIC(I_readPlaque);

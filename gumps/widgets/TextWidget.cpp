@@ -40,9 +40,11 @@ TextWidget::TextWidget()
 
 }
 
-TextWidget::TextWidget(int X, int Y, std::string txt, int font, int w, int h) :
+TextWidget::TextWidget(int X, int Y, std::string txt, int font,
+					   int w, int h, Font::TextAlign align) :
 	Gump(X, Y, w, h), text(txt), fontnum(font), current_start(0),
-	current_end(0), targetwidth(w), targetheight(h), cached_text(0)
+	current_end(0), targetwidth(w), targetheight(h), textalign(align),
+	cached_text(0)
 {
 
 }
@@ -94,7 +96,7 @@ bool TextWidget::setupNextText()
 	int tx, ty;
 	unsigned int remaining;
 	font->getTextSize(text.substr(current_start), tx, ty, remaining,
-					  targetwidth, targetheight);
+					  targetwidth, targetheight, textalign);
 
 	dims.w = tx;
 	dims.h = ty;
@@ -122,7 +124,8 @@ void TextWidget::PaintThis(RenderSurface*surf, sint32 lerp_factor)
 
 	if (!cached_text) {
 		unsigned int remaining;
-		cached_text = font->renderText(text.substr(current_start, current_end-current_start), remaining, targetwidth, targetheight);
+		cached_text = font->renderText(text.substr(current_start, current_end-current_start),
+									   remaining, targetwidth, targetheight, textalign);
 	}
 	cached_text->draw(surf, 0, 0);
 //	surf->PrintText(font, text.c_str(), 0, 0);

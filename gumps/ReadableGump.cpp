@@ -19,8 +19,7 @@
 #include "pent_include.h"
 #include "ReadableGump.h"
 
-#include "ShapeFont.h"
-#include "FontShapeFlex.h"
+#include "TextWidget.h"
 #include "GUIApp.h"
 #include "GameData.h"
 #include "Shape.h"
@@ -62,19 +61,14 @@ void ReadableGump::InitGump()
 	dims.w = sf->width;
 	dims.h = sf->height;
 
-	unsigned int remaining;
-	Pentagram::Font * font = GameData::get_instance()->getFonts()->getFont(fontnum);
-	rt = font->renderText(text, remaining, dims.w - 16, 0, Pentagram::Font::TEXT_CENTER);
-	rt->getSize(tx, ty);
-	
-	tx = dims.w / 2 - tx / 2;
-	ty = dims.h / 2 - ty / 2 + 8;
-}
+	Gump *widget = new TextWidget(0, 0, text, fontnum, dims.w - 16, 0, Pentagram::Font::TEXT_CENTER);
+	widget->InitGump();
 
-void ReadableGump::PaintThis(RenderSurface*surf, sint32 lerp_factor)
-{
-	ModalGump::PaintThis(surf,lerp_factor);
-	rt->draw(surf, tx, ty);
+	textwidget = widget->getObjId();
+
+	// Add it to us
+	AddChild(widget);
+	widget->setRelativePosition(CENTER);
 }
 
 Gump *ReadableGump::OnMouseDown(int button, int mx, int my)
