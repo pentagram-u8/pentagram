@@ -70,3 +70,18 @@ void GlobEgg::enterFastArea()
 
 	Item::enterFastArea();
 }
+
+void GlobEgg::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	Item::saveData(ods);
+}
+
+bool GlobEgg::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Item::loadData(ids)) return false;
+
+	return true;
+}

@@ -45,6 +45,7 @@ void SavegameWriter::start(uint32 count)
 
 void SavegameWriter::writeFile(const char* name, const uint8* data, uint32 size)
 {
+	perr << name << ": " << size << std::endl;
 	uint32 namelen = strlen(name);
 	ds->write4(namelen);
 	ds->write(name, namelen);

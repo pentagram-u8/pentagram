@@ -25,6 +25,7 @@ KERNEL: Processes
 OBJECTS: Objects (includes currently loaded items, gumps)
 WORLD: World data (currently current map, ethereal items)
 MAPS: Maps ('nonfixed' data)
+CURRENTMAP: fast area
 UCGLOBALS: Globals
 UCSTRINGS: Strings
 UCLISTS: Lists
@@ -86,6 +87,11 @@ uint32 itemcount
 [itemcount items]
 
 
+CURRENTMAP: (v1)
+uint16 version
+uint32[MAP_NUM_CHUNKS][MAP_NUM_CHUNKS/32] fast
+
+
 UCSTRINGS: (v1)
 uint16 version
 uint32 stringcount
@@ -130,14 +136,13 @@ uint16 objid
 
 Item: (v1)
 uint16 version
+<Object>
 uint16 extendedflags
 uint16 flags
-<Object>
-if (!EXT_SAVE_GLOBSKIP) uint16 shape, frame
-if (!EXT_SAVE_GLOBSKIP) uint16 x,y,z
-if (!EXT_SAVE_GLOBSKIP) uint16 quality, npcnum, mapnum
-if (objid != 0xFFFF && !EXT_SAVE_GLOBSKIP) uint16 gump, gravity_pid
-if (objid != 0xFFFF) uint16 glob_next
+uint16 shape, frame
+uint16 x,y,z
+uint16 quality, npcnum, mapnum
+if (objid != 0xFFFF) uint16 gump, gravity_pid
 
 Container: (v1)
 uint16 version
@@ -181,7 +186,6 @@ uint16 version
 GlobEgg: (v1)
 uint16 version
 <Item>
-uint16 contents
 
 Gump: (v1)
 uint16 version
@@ -212,11 +216,6 @@ uint16 version
 GameMapGump: (v1)
 uint16 version
 <Gump>
-sint32 fastArea
-uint32 fast0count
-uint16 fast0[fast0count]
-uint32 fast1count
-uint16 fast1[fast1count]
 
 
 ConsoleGump: (v1)
@@ -375,5 +374,5 @@ uint16 version
 <Process>
 sint32 priority
 sint32 counter, max_counter
-float old_matrix[12]
-float new_matrix[12]
+sint16 old_matrix[12]
+sint16 new_matrix[12]

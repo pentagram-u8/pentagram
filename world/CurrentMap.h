@@ -27,6 +27,8 @@ class Item;
 class UCList;
 class TeleportEgg;
 class EggHatcherProcess;
+class IDataSource;
+class ODataSource;
 
 #define MAP_NUM_CHUNKS	64
 #define MAP_CHUNK_SIZE	512
@@ -150,6 +152,9 @@ public:
 			return false;
 		return (fast[cy][cx/32]&(1<<(cx&31))) != 0;
 	}
+
+	void save(ODataSource* ods);
+	bool load(IDataSource* ids);
 
 	INTRINSIC(I_canExistAt);
 

@@ -35,6 +35,10 @@ public:
 
 	//! The item has entered the fast area
 	virtual void enterFastArea(); 
+
+	bool loadData(IDataSource* ids);
+protected:
+	virtual void saveData(ODataSource* ods);
 };
 
 

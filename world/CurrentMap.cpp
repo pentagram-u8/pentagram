@@ -36,6 +36,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MainShapeFlex.h"
 #include "GUIApp.h"
 #include "GameMapGump.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
 
 using std::list; // too messy otherwise
 using Pentagram::Rect;
@@ -848,6 +850,31 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3], const sin
 	}
 
 	return hit && hit->size();
+}
+
+void CurrentMap::save(ODataSource* ods)
+{
+	ods->write2(1); // version
+
+	for (unsigned int i = 0; i < MAP_NUM_CHUNKS; ++i) {
+		for (unsigned int j = 0; j < MAP_NUM_CHUNKS/32; ++j) {
+			ods->write4(fast[i][j]);
+		}
+	}
+}
+
+bool CurrentMap::load(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+
+	for (unsigned int i = 0; i < MAP_NUM_CHUNKS; ++i) {
+		for (unsigned int j = 0; j < MAP_NUM_CHUNKS/32; ++j) {
+			fast[i][j] = ids->read4();
+		}
+	}
+
+	return true;
 }
 
 uint32 CurrentMap::I_canExistAt(const uint8* args, unsigned int /*argsize*/)

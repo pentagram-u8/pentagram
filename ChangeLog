@@ -1,3 +1,8 @@
+2003-07-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/GUIApp.cpp, world/CurrentMap.*: save new FastArea
+	* docs/savegame.txt: updated
+	* filesys/SavegameWriter.cpp, kernel/GUIApp.cpp: output some save info
+
 2003-07-16  Ryan Nunn <colourles@users.sourceforge.net>
 	* audio/midi/*.* : Fixing doxygen comments
 	* audio/midi/fmpopl*.* : Added stereo support to FMOpl. Doesn't make a
@@ -10,7 +15,7 @@
 	  tweaks
 	* graphics/*.* : Make the palette transform matrix use fixed point 
 	  rather than floating point
-	* Like every other file i'm committing: Changes for new Item::move 
+	* Like every other file I'm committing: Changes for new Item::move 
 	  methods and fastArea
 
 2003-07-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>

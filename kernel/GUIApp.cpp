@@ -170,6 +170,8 @@ void GUIApp::startup()
 
 	GraphicSysInit();
 
+	SDL_ShowCursor(SDL_DISABLE);
+
 	U8Playground();
 
 	// This Must be AFTER U8Playground() cause it might need gamedata
@@ -1023,11 +1025,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 	{
 		int mx = event.button.x;
 		int my = event.button.y;
-		if (!mouseSet) {
-			SDL_ShowCursor(SDL_DISABLE);
-			mouseSet = true;
-		}
-		mouseX = mx; mouseY = my;
+		mouseX = mx; mouseY = my; mouseSet = true;
 		if (dragging == DRAG_NOT && !avatarInStasis) {
 			if (mouseState[BUTTON_LEFT] & MBS_DOWN) {
 				int startx = mouseDownX[BUTTON_LEFT];
@@ -1462,7 +1460,7 @@ bool GUIApp::saveGame(std::string filename)
 	if (!ods) return false;
 
 	SavegameWriter* sgw = new SavegameWriter(ods);
-	sgw->start(9); // 8 files + version
+	sgw->start(10); // 9 files + version
 	sgw->writeVersion(1);
 
 	// We'll make it 2KB intially
@@ -1482,6 +1480,10 @@ bool GUIApp::saveGame(std::string filename)
 
 	world->saveMaps(&buf);
 	sgw->writeFile("MAPS", &buf);
+	buf.clear();
+
+	world->getCurrentMap()->save(&buf);
+	sgw->writeFile("CURRENTMAP", &buf);
 	buf.clear();
 
 	ucmachine->saveStrings(&buf);
@@ -1541,7 +1543,7 @@ bool GUIApp::loadGame(std::string filename)
 	objectmanager->reset();
 	kernel->reset();
 
-	bool ok = true;
+	bool ok, totalok = true;
 
 	// TODO: reset mouse state in GUIApp
 
@@ -1552,37 +1554,59 @@ bool GUIApp::loadGame(std::string filename)
 	// UCSTRINGS, UCGLOBALS, UCLISTS, APP don't depend on anything else,
 	// so load these first
 	ds = sg->get_datasource("UCSTRINGS");
-	ok &= ucmachine->loadStrings(ds);
+	ok = ucmachine->loadStrings(ds);
+	totalok &= ok;
+	perr << "UCSTRINGS: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
 
 	ds = sg->get_datasource("UCGLOBALS");
-	ok &= ucmachine->loadGlobals(ds);
+	ok = ucmachine->loadGlobals(ds);
+	totalok &= ok;
+	perr << "UCGLOBALS: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
 
 	ds = sg->get_datasource("UCLISTS");
-	ok &= ucmachine->loadLists(ds);
+	ok = ucmachine->loadLists(ds);
+	totalok &= ok;
+	perr << "UCLISTS: " << (ok ? "ok" : "failed")<< std::endl;
 	delete ds;
 
 	ds = sg->get_datasource("APP");
-	ok &= load(ds);
+	ok = load(ds);
+	totalok &= ok;
+	perr << "APP: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
 
 	// KERNEL must be before OBJECTS, for the egghatcher
 	ds = sg->get_datasource("KERNEL");
-	ok &= kernel->load(ds);
+	ok = kernel->load(ds);
+	totalok &= ok;
+	perr << "KERNEL: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
 
 	// WORLD must be before OBJECTS, for the egghatcher
 	ds = sg->get_datasource("WORLD");
-	ok &= world->load(ds);
+	ok = world->load(ds);
+	totalok &= ok;
+	perr << "WORLD: " << (ok ? "ok" : "failed") << std::endl;
+	delete ds;
+
+	ds = sg->get_datasource("CURRENTMAP");
+	ok = world->getCurrentMap()->load(ds);
+	totalok &= ok;
+	perr << "CURRENTMAP: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
 
 	ds = sg->get_datasource("OBJECTS");
-	ok &= objectmanager->load(ds);
+	ok = objectmanager->load(ds);
+	totalok &= ok;
+	perr << "OBJECTS: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
 
 	ds = sg->get_datasource("MAPS");
-	ok &= world->loadMaps(ds);
+	ok = world->loadMaps(ds);
+	totalok &= ok;
+	perr << "MAPS: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
 
 	if (!ok) {
