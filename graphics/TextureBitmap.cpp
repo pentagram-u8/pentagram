@@ -17,7 +17,7 @@
  */
 
 #include "TextureBitmap.h"
-#include "tmapper.h"
+#include "soft_draw.h"
 
 // graphics defines
 #define BITMAP_ID            0x4D42 // universal id for a bitmap

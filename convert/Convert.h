@@ -86,7 +86,7 @@ void ConvertUsecode::printDbgSymbols(std::vector<DebugSymbol> &debugSymbols)
 {
 	for(uint32 i=0; i<debugSymbols.size(); ++i)
 	{
-		DebugSymbol &ds(debugSymbols[i]);
+		DebugSymbol &ds = debugSymbols[i];
 		
 		con.Printf("%02X: %02X type=%02X (%c) %s (%02X) %02X %s\n",
 			ds.number, ds.unknown1, ds.type, ds.type, print_bp(ds.unknown2), ds.unknown2, ds.unknown3, ds.name.c_str());
@@ -519,22 +519,24 @@ void ConvertUsecode::readOpGeneric(TempOp &op, IFileDataSource *ucfile, uint32 &
 			op.i0 = read2(ucfile);
 			break;
 		case 0x5C:
-			// 5C xx xx yy yy yy yy yy yy yy yy 00
-			// debugging symbol information
-			// xxxx is the offset to one past the last 'ret' in the function, which
-			// will be pointing to an 0x7a opcode if there is no debug info, else
-			// to the first byte of the debug info.
-			// yy .. yy is the class' name
-			op.i0 = read2(ucfile);
-			//assert(curOffset + (static_cast<short>(op.i0))==op.offset + 3 + (static_cast<short>(op.i0)));
-			op.i0 = curOffset + (static_cast<short>(op.i0));
-			op.str = "";
-			for (uint32 i=0; i < 8; ++i)
-			 op.str += static_cast<char>(read1(ucfile));
-			if(read1(ucfile)!=0) assert(false); // trailing 0
-			dbg_symbol_offset = op.i0; // the offset to the raw symbol data.
-				// nothing between it and the 0x7a opcode is opcodes
-			break;
+			{
+				// 5C xx xx yy yy yy yy yy yy yy yy 00
+				// debugging symbol information
+				// xxxx is the offset to one past the last 'ret' in the function, which
+				// will be pointing to an 0x7a opcode if there is no debug info, else
+				// to the first byte of the debug info.
+				// yy .. yy is the class' name
+				op.i0 = read2(ucfile);
+				//assert(curOffset + (static_cast<short>(op.i0))==op.offset + 3 + (static_cast<short>(op.i0)));
+				op.i0 = curOffset + (static_cast<short>(op.i0));
+				op.str = "";
+				for (uint32 i=0; i < 8; ++i)
+				 op.str += static_cast<char>(read1(ucfile));
+				if(read1(ucfile)!=0) assert(false); // trailing 0
+				dbg_symbol_offset = op.i0; // the offset to the raw symbol data.
+					// nothing between it and the 0x7a opcode is opcodes
+				break;
+			}
 
 		case 0x5D:
 			// 5D

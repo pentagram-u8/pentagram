@@ -108,9 +108,9 @@ class OBufferDataSource : public ODataSource
 		out.push_back(static_cast<char> (val&0xff));
 	};
 
-	virtual void write(const void *b, const uint32 length) { write(b, length, length); };
+	virtual void write(const void *b, uint32 length) { write(b, length, length); };
 	
-	virtual void write(const void *b, const uint32 length, uint32 pad_length)
+	virtual void write(const void *b, uint32 length, uint32 pad_length)
 	{
 		for(uint32 i=0; i<length; i++)
 			out.push_back(static_cast<const char *>(b)[i]);

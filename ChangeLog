@@ -1,3 +1,9 @@
+2002-12-13  Ryan Nunn <colourles@users.sourceforge.net>
+	* filesys/ODataSource.h	: Fixing a const problem
+	* convert/Convert.h, tools/disasm/Disasm.cpp, tools/fold/CallNodes.cpp,
+	  tools/fold/Folder.cpp, tools/fold/IfNode.cpp : MSVC hacks
+	* graphics/*.* : General updates (I can't even remember what they are)
+
 2002-12-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/*: minor changes
 	* usecode/*: continued implementing opcodes

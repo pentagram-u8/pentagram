@@ -133,24 +133,26 @@ void Unit::fold(Node *n)
 void Unit::print_extern_unk(Console &o, const uint32 isize) const
 {
 	o.Print("// External Functions:\n");
-	for(set<CallNode *>::const_iterator i=externFuncs.begin(); i!=externFuncs.end(); ++i)
+	for(std::set<CallNode *>::const_iterator i=externFuncs.begin(); i!=externFuncs.end(); ++i)
 	{
 		indent(o, isize+1);
 		(*i)->print_extern_unk(o, isize+1);
 		o.Putchar('\n');
 	}
 	o.Print("// External Intrinsics:\n");
-	for(set<CallNode *>::const_iterator i=externIntrinsics.begin(); i!=externIntrinsics.end(); ++i)
 	{
-		indent(o, isize+1);
-		(*i)->print_extern_unk(o, isize+1);
-		o.Putchar('\n');
+		for(std::set<CallNode *>::const_iterator i=externIntrinsics.begin(); i!=externIntrinsics.end(); ++i)
+		{
+			indent(o, isize+1);
+			(*i)->print_extern_unk(o, isize+1);
+			o.Putchar('\n');
+		}
 	}
 }
 
 void Unit::print_unk(Console &o, const uint32 isize) const
 {
-	for(deque<Node *>::const_iterator i=nodes.begin(); i!=nodes.end(); ++i)
+	for(std::deque<Node *>::const_iterator i=nodes.begin(); i!=nodes.end(); ++i)
 	{
 		indent(o, isize+1);
 		(*i)->print_unk(o, isize+1);
@@ -160,7 +162,7 @@ void Unit::print_unk(Console &o, const uint32 isize) const
 
 void Unit::print_asm(Console &o) const
 {
-	for(deque<Node *>::const_iterator i=nodes.begin(); i!=nodes.end(); ++i)
+	for(std::deque<Node *>::const_iterator i=nodes.begin(); i!=nodes.end(); ++i)
 	{
 		(*i)->print_asm(o);
 		o.Putchar('\n');
@@ -169,13 +171,13 @@ void Unit::print_asm(Console &o) const
 
 void Unit::print_bin(OBufferDataSource &o) const
 {
-	for(deque<Node *>::const_iterator i=nodes.begin(); i!=nodes.end(); ++i)
+	for(std::deque<Node *>::const_iterator i=nodes.begin(); i!=nodes.end(); ++i)
 	{
 		o.clear();
 		(*i)->print_mac(con);
 		(*i)->print_bin(o);
 		// FIXME: The following is a bit of a hack, just so we get some 'real' output
-		for(deque<char>::const_iterator i=o.buf().begin(); i!=o.buf().end(); ++i)
+		for(std::deque<char>::const_iterator i=o.buf().begin(); i!=o.buf().end(); ++i)
 			con.Printf("%02X ", static_cast<uint8>(*i));
 		con.Putchar('\n');
 	}
@@ -192,7 +194,7 @@ void Folder::fold(Node *n)
 
 void Folder::print_unk(Console &o) const
 {
-	for(deque<Unit *>::const_iterator i=units.begin(); i!=units.end(); ++i)
+	for(std::deque<Unit *>::const_iterator i=units.begin(); i!=units.end(); ++i)
 	{
 		(*i)->print_unk(o, 0);
 	}
@@ -200,7 +202,7 @@ void Folder::print_unk(Console &o) const
 
 void Folder::print_asm(Console &o) const
 {
-	for(deque<Unit *>::const_iterator i=units.begin(); i!=units.end(); ++i)
+	for(std::deque<Unit *>::const_iterator i=units.begin(); i!=units.end(); ++i)
 	{
 		(*i)->print_asm(o);
 	}
@@ -208,7 +210,7 @@ void Folder::print_asm(Console &o) const
 
 void Folder::print_bin(OBufferDataSource &o) const
 {
-	for(deque<Unit *>::const_iterator i=units.begin(); i!=units.end(); ++i)
+	for(std::deque<Unit *>::const_iterator i=units.begin(); i!=units.end(); ++i)
 	{
 		(*i)->print_bin(o);
 	}
@@ -230,25 +232,31 @@ bool print_assert(const Node *n, const Unit *u)
 	if(u!=0)
 	{
 		con.Printf("IfStack:");
-		for(deque<IfNode *>::const_iterator i=u->ifstack.begin(); i!=u->ifstack.end(); ++i)
 		{
-			con.Printf("\n    %04X: %02X -> %04X", (*i)->offset(), (*i)->opcode(), (*i)->TargetOffset());
+			for(std::deque<IfNode *>::const_iterator i=u->ifstack.begin(); i!=u->ifstack.end(); ++i)
+			{
+				con.Printf("\n    %04X: %02X -> %04X", (*i)->offset(), (*i)->opcode(), (*i)->TargetOffset());
+			}
 		}
 		if(u->ifstack.size()) con.Printf("  <- head");
 		con.Putchar('\n');
 		
 		con.Printf("ElseStack:");
-		for(deque<IfNode *>::const_iterator i=u->elsestack.begin(); i!=u->elsestack.end(); ++i)
 		{
-			con.Printf("\n    %04X: %02X -> %04X", (*i)->offset(), (*i)->opcode(), (*i)->TargetOffset());
+			for(std::deque<IfNode *>::const_iterator i=u->elsestack.begin(); i!=u->elsestack.end(); ++i)
+			{
+				con.Printf("\n    %04X: %02X -> %04X", (*i)->offset(), (*i)->opcode(), (*i)->TargetOffset());
+			}
 		}
 		if(u->elsestack.size()) con.Printf("  <- head\n");
 		con.Putchar('\n');
 
 		con.Printf("Nodes:");
-		for(deque<Node *>::const_iterator i=u->nodes.begin(); i!=u->nodes.end(); ++i)
 		{
-			con.Printf("\n    %04X: %02X", (*i)->offset(), (*i)->opcode());
+			for(std::deque<Node *>::const_iterator i=u->nodes.begin(); i!=u->nodes.end(); ++i)
+			{
+				con.Printf("\n    %04X: %02X", (*i)->offset(), (*i)->opcode());
+			}
 		}
 		if(u->nodes.size()) con.Printf("  <- head\n");
 		con.Putchar('\n');

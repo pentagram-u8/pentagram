@@ -82,7 +82,7 @@ void IfNode::print_unk(Console &o, const uint32 isize) const
 	#endif
 	o.Print("\n");
 	// print the internal operations
-	for(deque<Node *>::const_iterator i=ifnodes.begin(); i!=ifnodes.end(); ++i)
+	for(std::deque<Node *>::const_iterator i=ifnodes.begin(); i!=ifnodes.end(); ++i)
 	{
 		indent(o, isize+1);
 		(*i)->print_unk(o, isize+1);
@@ -135,30 +135,34 @@ void IfNode::print_asm(Console &o) const
 		case I_IF_ELSE_IF:
 		case I_ELSE_IF:
 		case I_ELSE_IF_ELSE:
-			Node::print_linenum_asm(o);
-			assert(node!=0);
-			node->print_asm(o);
-			o.Putchar('\n');
-			Node::print_asm(o);
-			o.Printf("jne\t\t%04Xh\t(to %04X)", targetOffset - _offset - 3, targetOffset);
-			if(jmpnode!=0)
 			{
+				Node::print_linenum_asm(o);
+				assert(node!=0);
+				node->print_asm(o);
 				o.Putchar('\n');
-				jmpnode->print_asm(o);
+				Node::print_asm(o);
+				o.Printf("jne\t\t%04Xh\t(to %04X)", targetOffset - _offset - 3, targetOffset);
+				if(jmpnode!=0)
+				{
+					o.Putchar('\n');
+					jmpnode->print_asm(o);
+				}
+				for(std::deque<Node *>::const_iterator i=ifnodes.begin(); i!=ifnodes.end(); ++i)
+				{
+					o.Putchar('\n');
+					(*i)->print_asm(o);
+				}
+				break;
 			}
-			for(deque<Node *>::const_iterator i=ifnodes.begin(); i!=ifnodes.end(); ++i)
-			{
-				o.Putchar('\n');
-				(*i)->print_asm(o);
-			}
-			break;
 		case I_ELSE:
-			for(deque<Node *>::const_iterator i=ifnodes.begin(); i!=ifnodes.end(); ++i)
 			{
-				if(i!=ifnodes.begin()) o.Putchar('\n');
-				(*i)->print_asm(o);
+				for(std::deque<Node *>::const_iterator i=ifnodes.begin(); i!=ifnodes.end(); ++i)
+				{
+					if(i!=ifnodes.begin()) o.Putchar('\n');
+					(*i)->print_asm(o);
+				}
+				break;
 			}
-			break;
 		default: assert(false); // can't happen
 	}
 }
@@ -174,17 +178,19 @@ void IfNode::print_bin(OBufferDataSource &o) const
 		case I_IF_ELSE_IF:
 		case I_ELSE_IF:
 		case I_ELSE_IF_ELSE:
-			assert(node!=0);
-			node->print_bin(o);
-			o.write1(0x51);
-			o.write2(targetOffset - _offset - 3);
-			if(jmpnode!=0)
-				jmpnode->print_bin(o);
-			for(deque<Node *>::const_iterator i=ifnodes.begin(); i!=ifnodes.end(); ++i)
 			{
-				(*i)->print_bin(o);
+				assert(node!=0);
+				node->print_bin(o);
+				o.write1(0x51);
+				o.write2(targetOffset - _offset - 3);
+				if(jmpnode!=0)
+					jmpnode->print_bin(o);
+				for(std::deque<Node *>::const_iterator i=ifnodes.begin(); i!=ifnodes.end(); ++i)
+				{
+					(*i)->print_bin(o);
+				}
+				break;
 			}
-			break;
 		default: assert(false); // can't happen
 	}
 }

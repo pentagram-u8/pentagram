@@ -281,31 +281,35 @@ void CallNode::print_extern_unk(Console &o, const uint32 /*isize*/) const
 	switch(ctype)
 	{
 		case CALLI:
-			if(rtype().type()!=Type::T_INVALID)
 			{
-				o.Print(rtype().name()); o.Putchar('\t');
+				if(rtype().type()!=Type::T_INVALID)
+				{
+					o.Print(rtype().name()); o.Putchar('\t');
+				}
+				o.Printf("Intrinsic%04X(", intrinsic);
+				for(std::deque<Node *>::const_reverse_iterator i=pnode.rbegin(); i!=pnode.rend(); ++i)
+				{
+					if(i!=pnode.rbegin()) o.Print(", ");
+					o.Print((*i)->rtype().name());
+				}
+				o.Print(");");
+				break;
 			}
-			o.Printf("Intrinsic%04X(", intrinsic);
-			for(std::deque<Node *>::const_reverse_iterator i=pnode.rbegin(); i!=pnode.rend(); ++i)
-			{
-				if(i!=pnode.rbegin()) o.Print(", ");
-				o.Print((*i)->rtype().name());
-			}
-			o.Print(");");
-			break;
 		case CALL:
-			if(rtype().type()!=Type::T_INVALID)
 			{
-				o.Print(rtype().name()); o.Putchar('\t');
+				if(rtype().type()!=Type::T_INVALID)
+				{
+					o.Print(rtype().name()); o.Putchar('\t');
+				}
+				o.Printf("class_%04X_function_%04X(", uclass, targetOffset);
+				for(std::deque<Node *>::const_reverse_iterator i=pnode.rbegin(); i!=pnode.rend(); ++i)
+				{
+					if(i!=pnode.rbegin()) o.Print(", ");
+					o.Print((*i)->rtype().name());
+				}
+				o.Print(");");
+				break;
 			}
-			o.Printf("class_%04X_function_%04X(", uclass, targetOffset);
-			for(std::deque<Node *>::const_reverse_iterator i=pnode.rbegin(); i!=pnode.rend(); ++i)
-			{
-				if(i!=pnode.rbegin()) o.Print(", ");
-				o.Print((*i)->rtype().name());
-			}
-			o.Print(");");
-			break;
 		default: assert(print_assert(this)); // can't happen
 	}
 }
@@ -316,35 +320,39 @@ void CallNode::print_unk(Console &o, const uint32 isize) const
 	switch(ctype)
 	{
 		case CALLI:
-			#if 0
-			if(rtype().type()!=Type::T_VOID)
 			{
-				rtype().print_unk(o); o.Putchar(' ');
+				#if 0
+				if(rtype().type()!=Type::T_VOID)
+				{
+					rtype().print_unk(o); o.Putchar(' ');
+				}
+				#endif
+				o.Printf("Intrinsic%04X(", intrinsic);
+				for(std::deque<Node *>::const_reverse_iterator i=pnode.rbegin(); i!=pnode.rend(); ++i)
+				{
+					if(i!=pnode.rbegin()) o.Print(", ");
+					(*i)->print_unk(o, isize);
+				}
+				o.Putchar(')');
+				break;
 			}
-			#endif
-			o.Printf("Intrinsic%04X(", intrinsic);
-			for(std::deque<Node *>::const_reverse_iterator i=pnode.rbegin(); i!=pnode.rend(); ++i)
-			{
-				if(i!=pnode.rbegin()) o.Print(", ");
-				(*i)->print_unk(o, isize);
-			}
-			o.Putchar(')');
-			break;
 		case CALL:
-			#if 0
-			if(rtype().type()!=Type::T_VOID)
 			{
-				rtype().print_unk(o); o.Putchar(' ');
+				#if 0
+				if(rtype().type()!=Type::T_VOID)
+				{
+					rtype().print_unk(o); o.Putchar(' ');
+				}
+				#endif
+				o.Printf("class_%04X_function_%04X(", uclass, targetOffset);
+				for(std::deque<Node *>::const_reverse_iterator i=pnode.rbegin(); i!=pnode.rend(); ++i)
+				{
+					if(i!=pnode.rbegin()) o.Print(", ");
+					(*i)->print_unk(o, isize);
+				}
+				o.Putchar(')');
+				break;
 			}
-			#endif
-			o.Printf("class_%04X_function_%04X(", uclass, targetOffset);
-			for(std::deque<Node *>::const_reverse_iterator i=pnode.rbegin(); i!=pnode.rend(); ++i)
-			{
-				if(i!=pnode.rbegin()) o.Print(", ");
-				(*i)->print_unk(o, isize);
-			}
-			o.Putchar(')');
-			break;
 		default: assert(print_assert(this)); // can't happen
 	}
 }
@@ -355,43 +363,47 @@ void CallNode::print_asm(Console &o) const
 	switch(ctype)
 	{
 		case CALLI:
-			for(std::deque<Node *>::const_reverse_iterator i=pnode.rbegin(); i!=pnode.rend(); ++i)
 			{
-				(*i)->print_asm(o); o.Putchar('\n');
+				for(std::deque<Node *>::const_reverse_iterator i=pnode.rbegin(); i!=pnode.rend(); ++i)
+				{
+					(*i)->print_asm(o); o.Putchar('\n');
+				}
+				Node::print_asm(o);
+				o.Printf("calli\t\t%02Xh %04Xh", spsize, intrinsic);
+				//FIXME: o.Printf(" (%s)", convert->intrinsics()[op.i1]);
+				if(addSP!=0)
+				{
+					o.Putchar('\n');
+					addSP->print_asm(o);
+				}
+				if(rtype()!=Type::T_VOID)
+				{
+					assert(retVal!=0);
+					o.Putchar('\n');
+					retVal->print_asm(o);
+				}
+				break;
 			}
-			Node::print_asm(o);
-			o.Printf("calli\t\t%02Xh %04Xh", spsize, intrinsic);
-			//FIXME: o.Printf(" (%s)", convert->intrinsics()[op.i1]);
-			if(addSP!=0)
-			{
-				o.Putchar('\n');
-				addSP->print_asm(o);
-			}
-			if(rtype()!=Type::T_VOID)
-			{
-				assert(retVal!=0);
-				o.Putchar('\n');
-				retVal->print_asm(o);
-			}
-			break;
 		case CALL:
-			for(std::deque<Node *>::const_reverse_iterator i=pnode.rbegin(); i!=pnode.rend(); ++i)
 			{
-				(*i)->print_asm(o); o.Putchar('\n');
-			}
-			Node::print_asm(o);
-			o.Printf("call\t\t%04X:%04X", uclass, targetOffset);
-			o.Putchar('\n');
-			if(addSP!=0)
-				addSP->print_asm(o);
-			if(rtype()!=Type::T_VOID)
-			{
-				assert(retVal!=0);
+				for(std::deque<Node *>::const_reverse_iterator i=pnode.rbegin(); i!=pnode.rend(); ++i)
+				{
+					(*i)->print_asm(o); o.Putchar('\n');
+				}
+				Node::print_asm(o);
+				o.Printf("call\t\t%04X:%04X", uclass, targetOffset);
 				o.Putchar('\n');
-				retVal->print_asm(o);
+				if(addSP!=0)
+					addSP->print_asm(o);
+				if(rtype()!=Type::T_VOID)
+				{
+					assert(retVal!=0);
+					o.Putchar('\n');
+					retVal->print_asm(o);
+				}
+				//FIXME: o.Printf(" (%s)", functionaddresstostring(uclass, targetOffset, ucfile).c_str());
+				break;
 			}
-			//FIXME: o.Printf(" (%s)", functionaddresstostring(uclass, targetOffset, ucfile).c_str());
-			break;
 		default: assert(print_assert(this)); // can't happen
 	}
 }
@@ -402,37 +414,41 @@ void CallNode::print_bin(OBufferDataSource &o) const
 	switch(ctype)
 	{
 		case CALLI:
-			for(std::deque<Node *>::const_reverse_iterator i=pnode.rbegin(); i!=pnode.rend(); ++i)
 			{
-				(*i)->print_bin(o);
+				for(std::deque<Node *>::const_reverse_iterator i=pnode.rbegin(); i!=pnode.rend(); ++i)
+				{
+					(*i)->print_bin(o);
+				}
+				o.write1(0x0F);
+				o.write1(spsize);
+				o.write2(intrinsic);
+				if(addSP!=0)
+					addSP->print_bin(o);
+				if(rtype()!=Type::T_VOID)
+				{
+					assert(retVal!=0);
+					retVal->print_bin(o);
+				}
+				break;
 			}
-			o.write1(0x0F);
-			o.write1(spsize);
-			o.write2(intrinsic);
-			if(addSP!=0)
-				addSP->print_bin(o);
-			if(rtype()!=Type::T_VOID)
-			{
-				assert(retVal!=0);
-				retVal->print_bin(o);
-			}
-			break;
 		case CALL:
-			for(std::deque<Node *>::const_reverse_iterator i=pnode.rbegin(); i!=pnode.rend(); ++i)
 			{
-				(*i)->print_bin(o);
+				for(std::deque<Node *>::const_reverse_iterator i=pnode.rbegin(); i!=pnode.rend(); ++i)
+				{
+					(*i)->print_bin(o);
+				}
+				o.write1(0x11);
+				o.write2(uclass);
+				o.write2(targetOffset);
+				if(addSP!=0)
+					addSP->print_bin(o);
+				if(rtype()!=Type::T_VOID)
+				{
+					assert(retVal!=0);
+					retVal->print_bin(o);
+				}
+				break;
 			}
-			o.write1(0x11);
-			o.write2(uclass);
-			o.write2(targetOffset);
-			if(addSP!=0)
-				addSP->print_bin(o);
-			if(rtype()!=Type::T_VOID)
-			{
-				assert(retVal!=0);
-				retVal->print_bin(o);
-			}
-			break;
 		default: assert(print_assert(this)); // can't happen
 	}
 }

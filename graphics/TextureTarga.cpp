@@ -17,7 +17,7 @@
  */
 
 #include "TextureTarga.h"
-#include "tmapper.h"
+#include "soft_draw.h"
 
 struct TGA
 {

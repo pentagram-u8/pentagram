@@ -34,7 +34,11 @@ struct Texture
 	uint32			wlog2;
 	uint32			hlog2;
 
-	Texture() : buffer(0)
+	// For OpenGL
+	uint32			gl_tex;
+	Texture			*next;
+
+	Texture() : buffer(0), gl_tex(0), next(0)
 	{
 	}
 

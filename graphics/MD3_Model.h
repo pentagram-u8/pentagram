@@ -117,6 +117,26 @@ struct MD3_Tag {
 	//
 
 	void	Read(DataSource*);
+
+	inline void Lerp(MD3_Tag &oldt, MD3_Tag &newt, float lerp_factor)
+	{
+		origin[0] = oldt.origin[0] + lerp_factor*(newt.origin[0]-oldt.origin[0]);
+		origin[1] = oldt.origin[1] + lerp_factor*(newt.origin[1]-oldt.origin[1]);
+		origin[2] = oldt.origin[2] + lerp_factor*(newt.origin[2]-oldt.origin[2]);
+
+		matrix[0][0] = oldt.matrix[0][0] + lerp_factor*(newt.matrix[0][0]-oldt.matrix[0][0]);
+		matrix[0][1] = oldt.matrix[0][1] + lerp_factor*(newt.matrix[0][1]-oldt.matrix[0][1]);
+		matrix[0][2] = oldt.matrix[0][2] + lerp_factor*(newt.matrix[0][2]-oldt.matrix[0][2]);
+
+		matrix[1][0] = oldt.matrix[1][0] + lerp_factor*(newt.matrix[1][0]-oldt.matrix[1][0]);
+		matrix[1][1] = oldt.matrix[1][1] + lerp_factor*(newt.matrix[1][1]-oldt.matrix[1][1]);
+		matrix[1][2] = oldt.matrix[1][2] + lerp_factor*(newt.matrix[1][2]-oldt.matrix[1][2]);
+
+		matrix[2][0] = oldt.matrix[2][0] + lerp_factor*(newt.matrix[2][0]-oldt.matrix[2][0]);
+		matrix[2][1] = oldt.matrix[2][1] + lerp_factor*(newt.matrix[2][1]-oldt.matrix[2][1]);
+		matrix[2][2] = oldt.matrix[2][2] + lerp_factor*(newt.matrix[2][2]-oldt.matrix[2][2]);
+	}
+
 };
 
 //
@@ -208,6 +228,26 @@ struct MD3_Vertex {
 	inline void ConvertDisk(MD3_DiskVertex &disk) {
 		disk.GetVertex(xyz);
 		disk.GetNormal(normal);
+	}
+
+	inline void Lerp(MD3_Vertex &oldv, MD3_Vertex &newv, float lerp_factor)
+	{
+		xyz[0] = oldv.xyz[0] + lerp_factor*(newv.xyz[0]-oldv.xyz[0]);
+		xyz[1] = oldv.xyz[1] + lerp_factor*(newv.xyz[1]-oldv.xyz[1]);
+		xyz[2] = oldv.xyz[2] + lerp_factor*(newv.xyz[2]-oldv.xyz[2]);
+		normal[0] = oldv.normal[0] + lerp_factor*(newv.normal[0]-oldv.normal[0]);
+		normal[1] = oldv.normal[1] + lerp_factor*(newv.normal[1]-oldv.normal[1]);
+		normal[2] = oldv.normal[2] + lerp_factor*(newv.normal[2]-oldv.normal[2]);
+	}
+	inline void LerpAndNormalize(MD3_Vertex &oldv, MD3_Vertex &newv, float lerp_factor)
+	{
+		xyz[0] = oldv.xyz[0] + lerp_factor*(newv.xyz[0]-oldv.xyz[0]);
+		xyz[1] = oldv.xyz[1] + lerp_factor*(newv.xyz[1]-oldv.xyz[1]);
+		xyz[2] = oldv.xyz[2] + lerp_factor*(newv.xyz[2]-oldv.xyz[2]);
+		normal[0] = oldv.normal[0] + lerp_factor*(newv.normal[0]-oldv.normal[0]);
+		normal[1] = oldv.normal[1] + lerp_factor*(newv.normal[1]-oldv.normal[1]);
+		normal[2] = oldv.normal[2] + lerp_factor*(newv.normal[2]-oldv.normal[2]);
+		Quake::VectorNormalize(normal);
 	}
 };
 
