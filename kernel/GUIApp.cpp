@@ -129,9 +129,9 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	application = this;
 
 	for (int i = 0; i < NUM_MOUSEBUTTONS+1; ++i) {
-		mouseDownGump[i] = 0;
-		lastMouseDown[i] = 0;
-		mouseState[i] = MBS_HANDLED;
+		mouseButton[i].downGump = 0;
+		mouseButton[i].lastDown = 0;
+		mouseButton[i].state = MBS_HANDLED;
 	}
 }
 
@@ -802,7 +802,7 @@ void GUIApp::paint()
 
 bool GUIApp::isMouseDown(MouseButton button)
 {
-	return (mouseState[button] & MBS_DOWN);
+	return (mouseButton[button].state & MBS_DOWN);
 }
 
 int GUIApp::getMouseLength(int mx, int my)
@@ -1241,24 +1241,24 @@ void GUIApp::handleEvent(const SDL_Event& event)
 
 		Gump *mousedowngump = desktopGump->OnMouseDown(button, mx, my);
 		if (mousedowngump)
-			mouseDownGump[button] = mousedowngump->getObjId();
+			mouseButton[button].downGump = mousedowngump->getObjId();
 		else
-			mouseDownGump[button] = 0;
+			mouseButton[button].downGump = 0;
 
-		mouseDownX[button] = mx;
-		mouseDownY[button] = my;
-		mouseState[button] |= MBS_DOWN;
-		mouseState[button] &= ~MBS_HANDLED;
+		mouseButton[button].downX = mx;
+		mouseButton[button].downY = my;
+		mouseButton[button].state |= MBS_DOWN;
+		mouseButton[button].state &= ~MBS_HANDLED;
 
-		if (now - lastMouseDown[button] < 200) { //!! constant
+		if (now - mouseButton[button].lastDown < DOUBLE_CLICK_TIMEOUT) { //!! constant
 			if (dragging == DRAG_NOT) {
-				Gump* gump = getGump(mouseDownGump[button]);
+				Gump* gump = getGump(mouseButton[button].downGump);
 				if (gump)
 					gump->OnMouseDouble(button, mx, my);
-				mouseState[button] |= MBS_HANDLED;
+				mouseButton[button].state |= MBS_HANDLED;
 			}
 		}
-		lastMouseDown[button] = now;
+		mouseButton[button].lastDown = now;
 	}
 	break;
 
@@ -1269,7 +1269,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		int my = event.button.y;
 		assert(button >= 0 && button <= NUM_MOUSEBUTTONS);
 
-		mouseState[button] &= ~MBS_DOWN;
+		mouseButton[button].state &= ~MBS_DOWN;
 
 		if (button == BUTTON_LEFT && dragging != DRAG_NOT) {
 			stopDragging(mx, my);
@@ -1277,7 +1277,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		}
 
 		if (dragging == DRAG_NOT) {
-			Gump* gump = getGump(mouseDownGump[button]);
+			Gump* gump = getGump(mouseButton[button].downGump);
 			if (gump)
 				gump->OnMouseUp(button, mx, my);
 		}
@@ -1290,9 +1290,9 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		int my = event.button.y;
 		mouseX = mx; mouseY = my;
 		if (dragging == DRAG_NOT) {
-			if (mouseState[BUTTON_LEFT] & MBS_DOWN) {
-				int startx = mouseDownX[BUTTON_LEFT];
-				int starty = mouseDownY[BUTTON_LEFT];
+			if (mouseButton[BUTTON_LEFT].state & MBS_DOWN) {
+				int startx = mouseButton[BUTTON_LEFT].downX;
+				int starty = mouseButton[BUTTON_LEFT].downY;
 				if (abs(startx - mx) > 2 ||
 					abs(starty - my) > 2)
 				{
@@ -1501,16 +1501,16 @@ void GUIApp::handleDelayedEvents()
 {
 	uint32 now = SDL_GetTicks();
 	for (int button = 0; button <= NUM_MOUSEBUTTONS; ++button) {
-		if (!(mouseState[button] & (MBS_HANDLED | MBS_DOWN)) &&
-			now - lastMouseDown[button] > 200) // !constant
+		if (!(mouseButton[button].state & (MBS_HANDLED | MBS_DOWN)) &&
+			now - mouseButton[button].lastDown > DOUBLE_CLICK_TIMEOUT) // !constant
 		{
-			Gump* gump = getGump(mouseDownGump[button]);
+			Gump* gump = getGump(mouseButton[button].downGump);
 			if (gump)
-				gump->OnMouseClick(button, mouseDownX[button],
-								   mouseDownY[button]);
+				gump->OnMouseClick(button, mouseButton[button].downX,
+								   mouseButton[button].downY);
 
-			mouseDownGump[button] = 0;
-			mouseState[button] |= MBS_HANDLED;
+			mouseButton[button].downGump = 0;
+			mouseButton[button].state |= MBS_HANDLED;
 		}
 	}
 
@@ -1568,7 +1568,7 @@ void GUIApp::startDragging(int startx, int starty)
 	// pause the kernel
 	kernel->pause();
 	
-	mouseState[BUTTON_LEFT] |= MBS_HANDLED;
+	mouseButton[BUTTON_LEFT].state |= MBS_HANDLED;
 
 	if (dragging == DRAG_INVALID) {
 		setMouseCursor(MOUSE_CROSS);

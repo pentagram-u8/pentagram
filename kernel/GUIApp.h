@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Args.h"
 
 #include "CoreApp.h"
+#include "Mouse.h"
 
 class Gump;
 class ConsoleGump;
@@ -41,8 +42,6 @@ class MidiDriver;
 class AvatarMoverProcess;
 class IDataSource;
 class ODataSource;
-
-const int NUM_MOUSEBUTTONS = 10;
 
 // Hack alert
 struct HWMouseCursor;
@@ -111,14 +110,6 @@ public:
 
 	//! get current mouse cursor location
 	void getMouseCoords(int& mx, int& my) { mx = mouseX; my = mouseY; }
-
-	enum MouseButton {
-		BUTTON_LEFT = 1,
-		BUTTON_MIDDLE = 2,
-		BUTTON_RIGHT = 3,
-		WHEEL_UP = 4,
-		WHEEL_DOWN = 5
-	};
 
 	bool isMouseDown(MouseButton button);
 
@@ -212,14 +203,7 @@ private:
 	static void	conAutoPaint(void);
 
 	// mouse input state
-	uint16 mouseDownGump[NUM_MOUSEBUTTONS+1];
-	uint32 lastMouseDown[NUM_MOUSEBUTTONS+1];
-	int mouseDownX[NUM_MOUSEBUTTONS+1], mouseDownY[NUM_MOUSEBUTTONS+1];
-	int mouseState[NUM_MOUSEBUTTONS+1];
-	enum MouseButtonState {
-		MBS_DOWN = 0x1,
-		MBS_HANDLED = 0x2
-	};
+	MButton mouseButton[NUM_MOUSEBUTTONS+1];
 	enum DraggingState {
 		DRAG_NOT = 0,
 		DRAG_OK = 1,

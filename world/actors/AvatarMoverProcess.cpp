@@ -36,7 +36,7 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(AvatarMoverProcess,Process);
 AvatarMoverProcess::AvatarMoverProcess() : Process()
 {
 	lastframe = 0;
-	mouseState[0] = MBS_HANDLED; mouseState[1] = MBS_HANDLED;
+	mouseButton[0].state = MBS_HANDLED; mouseButton[1].state = MBS_HANDLED;
 }
 
 
@@ -83,13 +83,13 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 	}
 
     // check mouse state to see what needs to be done
-	if (!(mouseState[1] & MBS_HANDLED) &&
-		SDL_GetTicks() - lastMouseDown[1] > 200) //!! constant
+	if (!(mouseButton[1].state & MBS_HANDLED) &&
+		SDL_GetTicks() - mouseButton[1].lastDown > DOUBLE_CLICK_TIMEOUT) //!! constant
 	{
-		mouseState[1] |= MBS_HANDLED;
+		mouseButton[1].state |= MBS_HANDLED;
 	}
 
-	if (mouseState[1] & MBS_DOWN || !(mouseState[1] & MBS_HANDLED))
+	if (mouseButton[1].state & MBS_DOWN || !(mouseButton[1].state & MBS_HANDLED))
 	{
 		// right mouse button down, but maybe not long enough to really
 		// start walking. Check if we need to turn.
@@ -122,10 +122,10 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 		}
 	}
 
-	if (mouseState[0] & MBS_DOWN || !(mouseState[0] & MBS_HANDLED))
+	if (mouseButton[0].state & MBS_DOWN || !(mouseButton[0].state & MBS_HANDLED))
 	{
-		mouseState[0] |= MBS_HANDLED;
-		mouseState[1] |= MBS_HANDLED;
+		mouseButton[0].state |= MBS_HANDLED;
+		mouseButton[1].state |= MBS_HANDLED;
 		// We got a left mouse down.
 		// Note that this automatically means right was down at the time too.
 		// jumping straight up.
@@ -153,7 +153,7 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 		// CHECKME: check what needs to happen when keeping left pressed
 	}
 
-	if (mouseState[1] & MBS_DOWN && mouseState[1] & MBS_HANDLED)
+	if (mouseButton[1].state & MBS_DOWN && mouseButton[1].state & MBS_HANDLED)
 	{
 		// right mouse button is down long enough to act on it
 		// if facing right direction, walk
@@ -209,32 +209,40 @@ void AvatarMoverProcess::OnMouseDown(int button, int mx, int my)
 
 	int bid = 0;
 
-	if (button == GUIApp::BUTTON_LEFT) {
+	switch (button) {
+	case BUTTON_LEFT:
+	{
 		bid = 0;
-	} else if (button == GUIApp::BUTTON_RIGHT) {
-		bid = 1;
-	} else {
-		CANT_HAPPEN_MSG("invalid MouseDown passed to AvatarMoverProcess");
+		break;
 	}
+	case BUTTON_RIGHT:
+	{
+		bid = 1;
+		break;
+	}
+	default:
+		CANT_HAPPEN_MSG("invalid MouseDown passed to AvatarMoverProcess");
+		break;
+	};
 
-	lastMouseDown[bid] = SDL_GetTicks();
-	mouseState[bid] |= MBS_DOWN;
-	mouseState[bid] &= ~MBS_HANDLED;
+	mouseButton[bid].lastDown = SDL_GetTicks();
+	mouseButton[bid].state |= MBS_DOWN;
+	mouseButton[bid].state &= ~MBS_HANDLED;
 }
 
 void AvatarMoverProcess::OnMouseUp(int button)
 {
 	int bid = 0;
 
-	if (button == GUIApp::BUTTON_LEFT) {
+	if (button == BUTTON_LEFT) {
 		bid = 0;
-	} else if (button == GUIApp::BUTTON_RIGHT) {
+	} else if (button == BUTTON_RIGHT) {
 		bid = 1;
 	} else {
 		CANT_HAPPEN_MSG("invalid MouseUp passed to AvatarMoverProcess");
 	}
 
-	mouseState[bid] &= ~MBS_DOWN;
+	mouseButton[bid].state &= ~MBS_DOWN;
 }
 
 

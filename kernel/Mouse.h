@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2002-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,35 +16,38 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef AVATARMOVERPROCESS_H
-#define AVATARMOVERPROCESS_H
+#ifndef MOUSE_H
+#define MOUSE_H
 
-#include "Process.h"
-#include "Mouse.h"
+const int DOUBLE_CLICK_TIMEOUT = 200;
+const int NUM_MOUSEBUTTONS = 10;
 
-class AvatarMoverProcess : public Process
+struct MButton
 {
-public:
-	AvatarMoverProcess();
-	virtual ~AvatarMoverProcess();
-
-	// p_dynamic_cast stuff
-	ENABLE_RUNTIME_CLASSTYPE();
-
-	virtual bool run(const uint32 framenum);
-
-	void OnMouseDown(int button, int mx, int my);
-	void OnMouseUp(int button);
-
-	bool loadData(IDataSource* ids);
-protected:
-	virtual void saveData(ODataSource* ods);
-
-	uint32 lastframe;
-
-	MButton mouseButton[2];
+	uint16 downGump;
+	uint32 lastDown;
+	int downX, downY;
+	int state;
 };
 
+enum MouseButtonState {
+	MBS_DOWN = 0x1,
+	MBS_HANDLED = 0x2
+};
 
+enum MouseButton {
+	BUTTON_LEFT = 1,
+	BUTTON_MIDDLE = 2,
+	BUTTON_RIGHT = 3,
+	WHEEL_UP = 4,
+	WHEEL_DOWN = 5,
+	MOUSE_6 = 6,
+	MOUSE_7 = 7,
+	MOUSE_8 = 8,
+	MOUSE_9 = 9,
+	MOUSE_10 = 10
+};
+
+const char* GetMouseButtonName(MouseButton button);
 
 #endif

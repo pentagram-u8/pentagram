@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <vector>
 #include "SDL_events.h"
 #include "HIDBinding.h"
+#include "Mouse.h"
 
 //! Responsible to loading the keybindings and storing them
 class HIDManager
@@ -43,6 +44,7 @@ public:
 private:
 	HIDBindingMap bindingMap; 
 	HIDBinding keybindings[SDLK_LAST];
+	HIDBinding mousebindings[NUM_MOUSEBUTTONS+1];
 	static HIDManager* hidmanager;
 };
 

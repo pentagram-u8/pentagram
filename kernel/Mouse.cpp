@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2002-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,35 +16,25 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef AVATARMOVERPROCESS_H
-#define AVATARMOVERPROCESS_H
-
-#include "Process.h"
+#include "pent_include.h"
 #include "Mouse.h"
 
-class AvatarMoverProcess : public Process
-{
-public:
-	AvatarMoverProcess();
-	virtual ~AvatarMoverProcess();
-
-	// p_dynamic_cast stuff
-	ENABLE_RUNTIME_CLASSTYPE();
-
-	virtual bool run(const uint32 framenum);
-
-	void OnMouseDown(int button, int mx, int my);
-	void OnMouseUp(int button);
-
-	bool loadData(IDataSource* ids);
-protected:
-	virtual void saveData(ODataSource* ods);
-
-	uint32 lastframe;
-
-	MButton mouseButton[2];
+static const char* mouseButtonName[] = {
+	"",
+	"Left Button",
+	"Middle Button",
+	"Right Button",
+	"Wheel Up",
+	"Wheel Down",
+	"Mouse 6",
+	"Mouse 7",
+	"Mouse 8",
+	"Mouse 9",
+	"Mouse 10"
 };
 
-
-
-#endif
+const char* GetMouseButtonName(MouseButton button)
+{
+	assert(button > 0 && button <= NUM_MOUSEBUTTONS);
+	return mouseButtonName[button];
+}

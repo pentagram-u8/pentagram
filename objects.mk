@@ -9,7 +9,8 @@ KERNEL2 = \
 	kernel/GameData.o \
 	kernel/HIDManager.o \
 	kernel/ObjectManager.o \
-	kernel/Object.o
+	kernel/Object.o \
+	kernel/Mouse.o
 
 USECODE = \
 	usecode/BitSet.o \

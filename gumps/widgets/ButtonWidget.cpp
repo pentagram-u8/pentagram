@@ -22,6 +22,7 @@
 #include "GUIApp.h"
 #include "ShapeFrame.h"
 #include "Shape.h"
+#include "Mouse.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -83,7 +84,7 @@ Gump *ButtonWidget::OnMouseDown(int button, int mx, int my)
 {
 	Gump *ret = Gump::OnMouseDown(button,mx,my);
 	if (ret) return ret;
-	if (button == GUIApp::BUTTON_LEFT)
+	if (button == BUTTON_LEFT)
 	{
 		// CHECKME: change dimensions or not?
 		shape = shape_down;
@@ -104,7 +105,7 @@ uint16 ButtonWidget::TraceObjId(int mx, int my)
 
 void ButtonWidget::OnMouseUp(int button, int mx, int my)
 {
-	if (button == GUIApp::BUTTON_LEFT) {
+	if (button == BUTTON_LEFT) {
 		shape = shape_up;
 		framenum = framenum_up;
 		parent->ChildNotify(this,BUTTON_UP);

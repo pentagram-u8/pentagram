@@ -29,6 +29,7 @@
 #include "Kernel.h"
 #include "GameData.h"
 #include "MainShapeFlex.h"
+#include "Mouse.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -213,7 +214,7 @@ void ContainerGump::Close(bool no_del)
 Gump* ContainerGump::OnMouseDown(int button, int mx, int my)
 {
 	// only interested in left clicks
-	if (button == GUIApp::BUTTON_LEFT)
+	if (button == BUTTON_LEFT)
 		return this;
 
 	return 0;
@@ -221,7 +222,7 @@ Gump* ContainerGump::OnMouseDown(int button, int mx, int my)
 
 void ContainerGump::OnMouseClick(int button, int mx, int my)
 {
-	if (button == GUIApp::BUTTON_LEFT)
+	if (button == BUTTON_LEFT)
 	{
 		if (GUIApp::get_instance()->isAvatarInStasis()) {
 			pout << "Can't: avatarInStasis" << std::endl; 
@@ -245,7 +246,7 @@ void ContainerGump::OnMouseClick(int button, int mx, int my)
 
 void ContainerGump::OnMouseDouble(int button, int mx, int my)
 {
-	if (button == GUIApp::BUTTON_LEFT)
+	if (button == BUTTON_LEFT)
 	{
 		if (GUIApp::get_instance()->isAvatarInStasis()) {
 			pout << "Can't: avatarInStasis" << std::endl; 

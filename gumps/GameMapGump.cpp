@@ -35,6 +35,7 @@
 #include "ShapeInfo.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
+#include "Mouse.h"
 
 #include "GravityProcess.h" // hack...
 #include "PathfinderProcess.h"
@@ -250,22 +251,22 @@ Gump* GameMapGump::OnMouseDown(int button, int mx, int my)
 	GumpToScreenSpace(sx, sy);
 
 	AvatarMoverProcess* amp = GUIApp::get_instance()->getAvatarMoverProcess();
-	if (button == GUIApp::BUTTON_RIGHT) {
+	if (button == BUTTON_RIGHT) {
 		amp->OnMouseDown(button, sx, sy);
 	}
 
-	if (button == GUIApp::BUTTON_LEFT &&
-		GUIApp::get_instance()->isMouseDown(GUIApp::BUTTON_RIGHT))
+	if (button == BUTTON_LEFT &&
+		GUIApp::get_instance()->isMouseDown(BUTTON_RIGHT))
 	{
 		// if right button is down, AvatarMoverProcess wants left clicks too
 		amp->OnMouseDown(button, sx, sy);
 		leftDownToAvatarMover = true;
-	} else if (button == GUIApp::BUTTON_LEFT) {
+	} else if (button == BUTTON_LEFT) {
 		leftDownToAvatarMover = false;
 	}
 
-	if (button == GUIApp::BUTTON_LEFT || button == GUIApp::BUTTON_RIGHT ||
-		button == GUIApp::BUTTON_MIDDLE)
+	if (button == BUTTON_LEFT || button == BUTTON_RIGHT ||
+		button == BUTTON_MIDDLE)
 	{
 		// we take all clicks
 		return this;
@@ -277,11 +278,11 @@ Gump* GameMapGump::OnMouseDown(int button, int mx, int my)
 void GameMapGump::OnMouseUp(int button, int mx, int my)
 {
 	AvatarMoverProcess* amp = GUIApp::get_instance()->getAvatarMoverProcess();
-	if (button == GUIApp::BUTTON_RIGHT) {
+	if (button == BUTTON_RIGHT) {
 		amp->OnMouseUp(button);
 	}
 
-	if (button == GUIApp::BUTTON_LEFT && leftDownToAvatarMover) {
+	if (button == BUTTON_LEFT && leftDownToAvatarMover) {
 		amp->OnMouseUp(button);
 	}
 }
@@ -291,7 +292,7 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 	extern uint16 targetObject; // major hack number 2
 
 	switch (button) {
-	case GUIApp::BUTTON_LEFT:
+	case BUTTON_LEFT:
 	{
 		if (leftDownToAvatarMover) break;
 
@@ -316,7 +317,7 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 		}
 		break;
 	}
-	case GUIApp::BUTTON_MIDDLE:
+	case BUTTON_MIDDLE:
 	{
 		uint16 objID = TraceObjId(mx, my);
 		Item *item = World::get_instance()->getItem(objID);
@@ -355,7 +356,7 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 void GameMapGump::OnMouseDouble(int button, int mx, int my)
 {
 	switch (button) {
-	case GUIApp::BUTTON_LEFT:
+	case BUTTON_LEFT:
 	{
 		if (GUIApp::get_instance()->isAvatarInStasis()) {
 			pout << "Can't: avatarInStasis" << std::endl; 

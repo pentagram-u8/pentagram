@@ -37,6 +37,11 @@ HIDManager::HIDManager()
 	{
 		keybindings[key] = 0;
 	}
+	
+	for (uint16 button=0; button < NUM_MOUSEBUTTONS+1; ++button)
+	{
+		mousebindings[button] = 0;
+	}
 
 	bindingMap.insert( HIDBINDING_PAIR(quickSave) );
 	bindingMap.insert( HIDBINDING_PAIR(quickLoad) );
@@ -67,6 +72,11 @@ HIDBinding HIDManager::getBinding(const SDL_Event& event)
 		uint16 key = event.key.keysym.sym;
 		binding = keybindings[key];
 	}
+	case SDL_MOUSEBUTTONDOWN: case SDL_MOUSEBUTTONUP:
+	{
+		uint16 button = event.button.button;
+		binding = mousebindings[button];
+	}
 	break;
 	}
 
@@ -78,6 +88,9 @@ void HIDManager::loadBindings()
 	Configuration * config= GUIApp::get_instance()->getConfig();
 	Configuration::KeyTypeList ktl;
 	config->getSubkeys(ktl, "bindings");
+	uint16 key = 0;
+	uint16 button = 1;
+	const char * name = 0;
 
 	for (Configuration::KeyTypeList::iterator i = ktl.begin();
 		i != ktl.end(); ++i)
@@ -86,11 +99,13 @@ void HIDManager::loadBindings()
 		HIDBindingMap::iterator j = bindingMap.find(bindingName);
 		if (j != bindingMap.end())
 		{
-			for (uint16 key=0; key < SDLK_LAST; ++key)
+
+			for (key=0; key < SDLK_LAST; ++key)
 			{
-				if ((*i).first == SDL_GetKeyName((SDLKey) key))
+				name = SDL_GetKeyName((SDLKey) key);
+				if ((*i).first == name)
 				{
-					pout << "Binding \"" << SDL_GetKeyName((SDLKey) key)
+					pout << "Binding \"" << name
 						<< "\" to " << (*i).second << std::endl;
 					keybindings[key] = (*j).second;
 
@@ -98,6 +113,24 @@ void HIDManager::loadBindings()
 					break;
 				}
 			}
+
+			if (key >= SDLK_LAST) // we did not find a matching SDLKey
+			{
+				for (button=1; button < NUM_MOUSEBUTTONS+1; ++button)
+				{
+					name = GetMouseButtonName((MouseButton) button);
+					if ((*i).first == name)
+					{
+						pout << "Binding \"" << name
+							<< "\" to " << (*i).second << std::endl;
+						mousebindings[button] = (*j).second;
+
+						// We found the matching Mouse Button. Stop searching;
+						break;
+					}
+				} 
+			}
+
 		}
 	}
 	
