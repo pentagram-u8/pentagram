@@ -101,8 +101,6 @@ case "$host_os" in
 		WINDOWING_SYSTEM="-DMACOSX"
 		AC_DEFINE(MACOSX, 1, [Compiling on Mac OS X])
 		AC_MSG_RESULT(Mac OS X)
-		LIBS="$LIBS -framework QuickTime"
-		ARCH=macosx
 		DATAPATH="data"
 		;;
 	*)

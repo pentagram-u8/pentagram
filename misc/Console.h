@@ -220,7 +220,12 @@ public:
 	console_ostream() : std::basic_ostream<_E, _Tr>(&_Fb) {}
 	virtual ~console_ostream() { }
 
+#if defined(MACOSX) && defined(__GNUC__)
+	// Work around a bug in Apple GCC 3.x which incorrectly tries to inline this method
 	int __attribute__ ((noinline)) printf (const char *fmt, ...)
+#else
+	int printf (const char *fmt, ...)
+#endif
 	{
 		va_list	argptr;
 		va_start (argptr,fmt);
@@ -276,7 +281,12 @@ public:
 	console_err_ostream() : std::basic_ostream<_E, _Tr>(&_Fb) {}
 	virtual ~console_err_ostream() { }
 
+#if defined(MACOSX) && defined(__GNUC__)
+	// Work around a bug in Apple GCC 3.x which incorrectly tries to inline this method
 	int __attribute__ ((noinline)) printf (const char *fmt, ...)
+#else
+	int printf (const char *fmt, ...)
+#endif
 	{
 		va_list	argptr;
 		va_start (argptr,fmt);
