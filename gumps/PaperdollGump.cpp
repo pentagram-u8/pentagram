@@ -389,9 +389,10 @@ void PaperdollGump::ChildNotify(Gump *child, uint32 message)
 		// check if there already is an open MiniStatsGump
 		Gump* desktop = GUIApp::get_instance()->getDesktopGump();
 		if (!desktop->FindGump<MiniStatsGump>()) {
-			Gump* gump = new MiniStatsGump(300, 200); // FIXME! proper coords
+			Gump* gump = new MiniStatsGump(0, 0);
 			gump->InitGump();
 			desktop->AddChild(gump);
+			gump->setRelativePosition(BOTTOM_RIGHT, -5, -5);
 		}
 	}
 }

@@ -1,11 +1,17 @@
-2004-05-05  Matthew Jimenez <mjimenez@users.sourceforge.net>
-	* gumps/Gump.*: added a setRelativePosition - moves the gump to a position relative to the parent gump
+2004-05-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/PaperdollGump.cpp: use setRelativePosition to put MiniStatsGump
+	  in the bottom-right corner
+
+2004-05-06  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* gumps/Gump.*: added a setRelativePosition - moves the gump to a
+	  position relative to the parent gump
 	* gumps/QuitGump.*: setRelativePosition to CENTER
 	* gumps/MenuGump.*: setRelativePosition to CENTER
 
-2004-05-05  Matthew Jimenez <mjimenez@users.sourceforge.net>
+2004-05-06  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* gumps/QuitGump.*: gump to verify if the user wishes to quit
-	* gumps/MenuGump.*: start of menu with some functionality that looks like u8's menu
+	* gumps/MenuGump.*: start of menu with some functionality that looks
+	  like u8's menu
 	* games/u8bindings.*: binding to show the menu
 	* kernel/HIDManager.cpp: added new binding
 
