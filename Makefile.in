@@ -78,8 +78,8 @@ CXXFLAGS += $(patsubst %,-I$(top_srcdir)/%,$(MODULES)) -I.
 # list of all .deps subdirs
 DEPDIRS = $(patsubst %,%/$(top_builddir)/$(DEPDIR),$(MODULES))
 
-# Default target. The dependencies are added by the module.mk files
-all:
+# Default target. The other dependencies are added by the module.mk files
+all: misc/config.h
 
 # Clean all object files & binaries
 clean: clean-pch
@@ -87,6 +87,7 @@ clean: clean-pch
 # Clean *all*
 distclean: clean
 	-$(RM) -r $(DEPDIRS)
+	-$(RM) $(top_builddir)/misc/config.h $(top_builddir)/misc/config.h.stamp
 
 ifeq (@USE_PCH@,yes)
 clean-pch:
