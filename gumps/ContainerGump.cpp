@@ -35,6 +35,7 @@
 #include "ItemFactory.h"
 #include "SplitItemProcess.h"
 #include "GameMapGump.h"
+#include "MainActor.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -314,9 +315,14 @@ void ContainerGump::OnMouseDouble(int button, int mx, int my)
 		Item *item = world->getItem(objID);
 		if (item) {
 			item->dumpInfo();
-			
-			// call the 'use' event
-			item->use();
+
+			MainActor* avatar = World::get_instance()->getMainActor();
+			if (objID == owner || avatar->canReach(item, 128)) { // CONSTANT!
+				// call the 'use' event
+				item->use();
+			} else {
+				GUIApp::get_instance()->flashCrossCursor();
+			}			
 		}		
 	}
 }

@@ -142,9 +142,10 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	  runGraphicSysInit(false), runSDLInit(false),
 	  frameSkip(false), frameLimit(true), interpolate(false),
 	  animationRate(100), avatarInStasis(false), paintEditorItems(false),
-	  painting(false), showTouching(false), mouseOverGump(0),
-	  dragging(DRAG_NOT), dragging_offsetX(0), dragging_offsetY(0),
-	  timeOffset(0), midi_driver(0), midi_volume(255), drawRenderStats(false)
+	  painting(false), showTouching(false), flashingcursor(-1), 
+	  mouseOverGump(0), dragging(DRAG_NOT), dragging_offsetX(0),
+	  dragging_offsetY(0), timeOffset(0), midi_driver(0), midi_volume(255),
+	  drawRenderStats(false)
 {
 	application = this;
 
@@ -183,11 +184,13 @@ GUIApp::~GUIApp()
 {
 	con.RemoveConsoleCommand("GUIApp::saveGame");
 	con.RemoveConsoleCommand("GUIApp::loadGame");
+	con.RemoveConsoleCommand("GUIApp::newGame");
 	con.RemoveConsoleCommand("HIDManager::bind");
 	con.RemoveConsoleCommand("HIDManager::unbind");
 	con.RemoveConsoleCommand("HIDManager::listbinds");
 	con.RemoveConsoleCommand("HIDManager::save");
 	con.RemoveConsoleCommand("Kernel::processTypes");
+	con.RemoveConsoleCommand("Kernel::listItemProcesses");
 	con.RemoveConsoleCommand("ObjectManager::objectTypes");
 	con.RemoveConsoleCommand("MainActor::teleport");
 	con.RemoveConsoleCommand("MainActor::mark");
@@ -839,6 +842,15 @@ int GUIApp::getMouseFrame()
 	// 40 = red cross
 
 	MouseCursor cursor = cursors.top();
+
+	if (flashingcursor >= 0) {
+		if (SDL_GetTicks() < flashingcursor + 250)
+			cursor = MOUSE_CROSS;
+		else
+			flashingcursor = -1;
+	}
+
+
 	switch (cursor) {
 	case MOUSE_NORMAL:
 	{
@@ -877,6 +889,11 @@ void GUIApp::setMouseCursor(MouseCursor cursor)
 {
 	cursors.pop();
 	cursors.push(cursor);
+}
+
+void GUIApp::flashCrossCursor()
+{
+	flashingcursor = SDL_GetTicks();
 }
 
 void GUIApp::pushMouseCursor()

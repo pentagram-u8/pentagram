@@ -410,11 +410,13 @@ void GameMapGump::OnMouseDouble(int button, int mx, int my)
 			sint32 x,y,z;
 			item->getLocation(x,y,z);
 			item->dumpInfo();
-			
-			//!! need to check range
-			
-			// call the 'use' event
-			item->use();
+
+			if (avatar->canReach(item, 128)) { // CONSTANT!
+				// call the 'use' event
+				item->use();
+			} else {
+				GUIApp::get_instance()->flashCrossCursor();
+			}
 		}
 		break;
 	}

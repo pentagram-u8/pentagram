@@ -1510,6 +1510,110 @@ void Item::receiveHit(uint16 other, int dir, int damage, uint16 type)
 	p->move(-16*x_fact[dir],-16*y_fact[dir],16);
 }
 
+bool Item::canReach(Item* other, int range)
+{
+	// get location and dimensions of self and other (or their root containers)
+	sint32 thisX, thisY, thisZ;
+	sint32 otherX, otherY, otherZ;
+	sint32 thisXd, thisYd, thisZd;
+	sint32 otherXd, otherYd, otherZd;
+	sint32 thisXmin, thisYmin;
+	sint32 otherXmin, otherYmin;
+
+	getLocationAbsolute(thisX, thisY, thisZ);
+	other->getLocationAbsolute(otherX, otherY, otherZ);
+	getFootpadWorld(thisXd, thisYd, thisZd);
+	other->getFootpadWorld(otherXd, otherYd, otherZd);
+
+	thisXmin = thisX - thisXd;
+	thisYmin = thisY - thisYd;
+
+	otherXmin = otherX - otherXd;
+	otherYmin = otherY - otherYd;
+
+	// if items are further away than range in any direction, return false
+	if (thisXmin - otherX > range) return false;
+	if (otherXmin - thisX > range) return false;
+	if (thisYmin - otherY > range) return false;
+	if (otherYmin - thisY > range) return false;
+
+
+	// if not, do line of sight between origins of items
+	sint32 start[3];
+	sint32 end[3];
+	sint32 dims[3] = { 0, 0, 0 };
+
+	start[0] = thisX; start[1] = thisY; start[2] = thisZ;
+	end[0] = otherX; end[1] = otherY; end[2] = otherZ;
+	if (otherZ > thisZ && otherZ < thisZ + thisZd)
+		start[2] = end[2]; // bottom of other between bottom and top of this
+	else if (thisZ < otherZ + otherZd)
+		end[2] = start[2];
+
+	std::list<CurrentMap::SweepItem> collisions;
+	std::list<CurrentMap::SweepItem>::iterator it;
+	World *world = World::get_instance();
+	CurrentMap *map = world->getCurrentMap();
+	map->sweepTest(start, end, dims, objid, false, &collisions);
+	bool ok = true;
+	for (it = collisions.begin(); it != collisions.end(); it++)
+	{
+		// ignore self and other
+		if (it->item == getObjId() || it->item == other->getObjId()) continue;
+
+		// only touching?
+		if (it->touching) continue;
+		
+		Item *item = world->getItem(it->item);
+		if (!item) continue;
+		ShapeInfo *info = item->getShapeInfo();
+		
+		// hit something
+		if (info->is_solid()) {
+			ok = false;
+			break;
+		}
+	}
+
+	if (ok) return true;
+
+	// if that fails, try line of sight between centers
+	start[0] = thisX - thisXd/2; // xy center of this
+	start[1] = thisY - thisYd/2;
+	start[2] = thisZ;
+	if (thisZd > 16)
+		start[2] += thisZd - 8; // eye height
+
+	end[0] = otherX - otherXd/2; // xyz center of other
+	end[1] = otherY - otherYd/2;
+	end[2] = otherZ - otherZd/2;
+
+	collisions.clear();
+	map->sweepTest(start, end, dims, objid, false, &collisions);
+	ok = true;
+	for (it = collisions.begin(); it != collisions.end(); it++)
+	{
+		// ignore self and other
+		if (it->item == getObjId() || it->item == other->getObjId()) continue;
+
+		// only touching?
+		if (it->touching) continue;
+		
+		Item *item = world->getItem(it->item);
+		if (!item) continue;
+		ShapeInfo *info = item->getShapeInfo();
+		
+		// hit something
+		if (info->is_solid()) {
+			ok = false;
+			break;
+		}
+	}
+
+	return ok;
+}
+
+
 void Item::saveData(ODataSource* ods)
 {
 	ods->write2(1); // version
@@ -2630,6 +2734,22 @@ uint32 Item::I_igniteChaos(const uint8* args, unsigned int /*argsize*/)
 		if (!item) continue;
 		item->use();
 	}
+
+	return 0;
+}
+
+uint32 Item::I_canReach(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM_FROM_PTR(item);
+	ARG_ITEM_FROM_ID(other);
+	ARG_SINT16(range);
+
+	// TODO: add cheat to make this always return 1
+
+	if (item->canReach(other, range))
+		return 1;
+	else
+		return 0;
 }
 
 

@@ -134,7 +134,7 @@ Intrinsic U8Intrinsics[] = {
 	Item::I_setMapArray,
 	Item::I_receiveHit,
 	Item::I_explode,
-	UCMachine::I_true, // Item::canReach
+	Item::I_canReach,
 	Item::I_getRange,
 	0, //U
 	Item::I_getDirToCoords,

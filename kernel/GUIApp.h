@@ -138,6 +138,9 @@ public:
 	//! set the current mouse cursor
 	void setMouseCursor(MouseCursor cursor);
 
+	//! flash the red cross mouse cursor for a brief while
+	void flashCrossCursor();
+
 	//! push the current mouse cursor to the stack
 	void pushMouseCursor();
 
@@ -215,6 +218,7 @@ private:
 	//! get the current mouse frame
 	int getMouseFrame();
 	std::stack<MouseCursor> cursors;
+	int flashingcursor; // time (SDL_GetTicks) mouse started flashing, or -1
 
 	// Hack alert
 	HWMouseCursor			*hwcursors;	// Shape frames converted into system specific format.

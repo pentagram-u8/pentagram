@@ -204,6 +204,11 @@ public:
 	//! Undefined if either item is contained or equipped.
 	int getDirToItemCentre(Item& item2) const;
 
+	//! can this item reach another item?
+	//! \param other item to be reached
+	//! \param range range
+	bool canReach(Item* other, int range);
+
 	//! Move the object to (x,y,z) colliding with objects in the way.
 	//! \param teleport move without colliding with objects between source and
 	//!        destination
@@ -410,6 +415,7 @@ public:
 	INTRINSIC(I_isExplosive);
 	INTRINSIC(I_receiveHit);
 	INTRINSIC(I_explode);
+	INTRINSIC(I_canReach);
 	INTRINSIC(I_getRange);
 
 private:
