@@ -4,6 +4,8 @@
 	* misc/Console.h: Fixed 'nother compiler error.
 	* tools/disasm/Disasm.cpp: Being pedantic.
 
+	* misc/Console.h: Fixed a fix, that wasn't a fix.
+
 2002-11-04  Ryan Nunn <colourles@users.sourceforge.net>
 	* misc/Console.* : Added methods for Console output redirection and 
 	  flags to enable/disable output to stdout and stderr. Added printf()
