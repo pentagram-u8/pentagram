@@ -20,7 +20,6 @@
 
 #include "pent_include.h"
 
-#include <iostream>
 #include <fstream>
 #include <cstdio>
 
@@ -79,8 +78,6 @@ map<uint32, uint32> EventMap;
 #include "u8/ConvertUsecodeU8.h"
 #include "crusader/ConvertUsecodeCrusader.h"
 
-using std::cout;
-using std::cerr;
 using std::endl;
 using std::pair;
 
@@ -156,7 +153,7 @@ void readglobals(IFileDataSource *ucfile)
 void printglobals()
 {
 	for(std::map<uint32, GlobalName>::iterator i=GlobalNames.begin(); i!=GlobalNames.end(); ++i)
-		printf("[%04X %02X] (%s)\n", i->first, i->second.size, i->second.name.c_str());
+		con.Printf("[%04X %02X] (%s)\n", i->first, i->second.size, i->second.name.c_str());
 }
 
 /* This looks _real_ dubious. Instead of loading all the offsets from the files and converting
@@ -241,7 +238,9 @@ const char * const print_sp(const sint32 offset)
 
 /* Yes, this is icky and evil. *grin* But it works without modifying anything. */
 #ifdef FOLD
-	#define printf if(print_disasm) printf
+	#define con_Printf if(print_disasm) con.Printf
+#else
+	#define con_Printf con.Printf
 #endif
 
 uint32 read_dbg_symbols(IFileDataSource *ucfile)
@@ -258,7 +257,7 @@ uint32 read_dbg_symbols(IFileDataSource *ucfile)
 		uint32 tchar;
 		while ((tchar = read1(ucfile)))
 			s += static_cast<char>(tchar);
-		printf("%02X: %02X type=%02X (%c) %s (%02X) %02X %s\n",
+		con_Printf("%02X: %02X type=%02X (%c) %s (%02X) %02X %s\n",
 			i, unknown1, type, type, print_bp(unknown2), unknown2, unknown3, s.c_str());
 	}
 	count = read1(ucfile);
@@ -272,20 +271,20 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 
 	if (curOffset >= uch.maxOffset) return false;
 
-	printf("Func_%X", curOffset);
+	con_Printf("Func_%X", curOffset);
 
 	std::map<uint32, uint32>::iterator it = EventMap.find(curOffset);
 	if (it != EventMap.end())
 	{
 		if (it->second < 0x20)
-			printf(" (Event %X) %s::%s", it->second, name, convert->event_names()[it->second]);
+			con_Printf(" (Event %X) %s::%s", it->second, name, convert->event_names()[it->second]);
 		else 
-			printf(" (Event %X) %s::ordinal%02X", it->second, name, it->second);
+			con_Printf(" (Event %X) %s::ordinal%02X", it->second, name, it->second);
 	}
 	else 
-		printf("  %s::%04X", name, curOffset);
+		con_Printf("  %s::%04X", name, curOffset);
 
-	printf(":\n");
+	con_Printf(":\n");
 
 	uint32 dbg_symbol_offset=0;
 	bool done = false;
@@ -308,7 +307,7 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 			opcode = read1(ucfile);
 
 		// point to the location of the opcode we just grabbed
-		printf("    %04X:", curOffset-1);
+		con_Printf("    %04X:", curOffset-1);
 
 		if (!ucfile->good())
 			return false;
@@ -319,7 +318,7 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 		  (Questionmarks generally indicate uncertainty)
 		*/
 
-		printf(" %02X\t", opcode);
+		con_Printf(" %02X\t", opcode);
 
 		switch(opcode) {
 
@@ -328,37 +327,37 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 			// 00 xx
 			// pop 8 bit int into bp+xx
 			i0 = read1(ucfile);
-			printf("pop byte\t%s", print_bp(i0));
+			con_Printf("pop byte\t%s", print_bp(i0));
 			break;
 		case 0x01:
 			// 01 xx
 			// pop 16 bit int into bp+xx
 			i0 = read1(ucfile);
-			printf("pop\t\t%s", print_bp(i0));
+			con_Printf("pop\t\t%s", print_bp(i0));
 			break;
 		case 0x02:
 			// 02 xx
 			// pop 32 bit int into bp+xx
 			i0 = read1(ucfile);
-			printf("pop dword\t%s", print_bp(i0));
+			con_Printf("pop dword\t%s", print_bp(i0));
 			break;
 		case 0x03:
 			// 03 xx yy
 			// pop yy bytes into bp+xx
 			i0 = read1(ucfile); i1 = read1(ucfile);
-			printf("pop huge\t%s %i", print_bp(i0), i1);
+			con_Printf("pop huge\t%s %i", print_bp(i0), i1);
 			break;
 
 		case 0x08:
 			// 08
 			// pop 32bits into result register
-			printf("pop res");
+			con_Printf("pop res");
 			break;
 		case 0x09:
 			// 09 xx yy zz
     			// pop yy bytes into an element of list bp+xx (or slist if zz is set).
 			i0 = read1(ucfile); i1 = read1(ucfile); i2 = read1(ucfile);
-			printf("pop element\t%s (%02X) slist==%02X", print_bp(i0), i1, i2);
+			con_Printf("pop element\t%s (%02X) slist==%02X", print_bp(i0), i1, i2);
 			break;
 
 		// Constant pushing
@@ -366,19 +365,19 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 			// 0A xx
 			// push signed extended 8 bit xx onto the stack
 			i0 = read1(ucfile);
-			printf("push byte\t%02Xh", i0);
+			con_Printf("push byte\t%02Xh", i0);
 			break;
 		case 0x0B:
 			// 0B xx xx
 			// push 16 bit xxxx onto the stack
 			i0 = read2(ucfile);
-			printf("push\t\t%04Xh", i0);
+			con_Printf("push\t\t%04Xh", i0);
 			break;
 		case 0x0C:
 			// 0C xx xx xx xx
 			// push 32 bit xxxxxxxx onto the stack
 			i0 = read4(ucfile);
-			printf("push dword\t%08Xh", i0);
+			con_Printf("push dword\t%08Xh", i0);
 			break;
 		case 0x0D:
 			// 0D xx xx yy ... yy 00
@@ -386,14 +385,14 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 			i0 = read2(ucfile);
 			str0 = "";
 			while ((i1 = read1(ucfile))) str0 += static_cast<char>(i1);
-			printf("push string\t\"%s\"", str0.c_str());
+			con_Printf("push string\t\"%s\"", str0.c_str());
 			break;
 		case 0x0E:
 			// 0E xx yy
 			// pop yy values of size xx from the stack and push the resulting list
 			i0 = read1(ucfile);
 			i1 = read1(ucfile);
-			printf("create list\t%02X (%02X)", i1, i0);
+			con_Printf("create list\t%02X (%02X)", i1, i0);
 			break;
 
 		// Usecode function and intrinsic calls
@@ -402,196 +401,196 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 			// intrinsic call. xx is number of arguement bytes (includes this pointer)
 			i0 = read1(ucfile);
 			i1 = read2(ucfile);
-			printf("calli\t\t%02Xh %04X (%s)", i0, i1, convert->intrinsics()[i1]);
+			con_Printf("calli\t\t%02Xh %04X (%s)", i0, i1, convert->intrinsics()[i1]);
 			break;
 		case 0x11:
 			// 11 xx xx yy yy
 			// call the function at offset yy yy of class xx xx
 			i0 = read2(ucfile);
 			i1 = read2(ucfile);
-			printf("call\t\t%04X:%04X (%s)", i0, i1,
+			con_Printf("call\t\t%04X:%04X (%s)", i0, i1,
 				functionaddresstostring(i0, i1, ucfile).c_str());
 			break;
 		case 0x12:
 			// 12
 			// pop 16bits into temp register
-			printf("pop\t\ttemp");
+			con_Printf("pop\t\ttemp");
 			break;
 
 		case 0x14:
 			// 14
 			// pop two values from the stack and push the sum
-			printf("add");
+			con_Printf("add");
 			break;
 		case 0x15:
 			// 15
 			// add two longs
-			printf("add dword");
+			con_Printf("add dword");
 			break;
 		case 0x16:
 			// 16
 			// pop two strings from the stack and push the concatenation
-			printf("concat");
+			con_Printf("concat");
 			break;
 		case 0x17:
 			// 17
 			// pop two lists from the stack and push the 'sum' of the lists
-			printf("append");
+			con_Printf("append");
 			break;
 		case 0x19:
 			// 19 02
 			// add two stringlists
 			i0 = read1(ucfile);
-			printf("append slist\t(%02X)", i0);
+			con_Printf("append slist\t(%02X)", i0);
 			break;
 		case 0x1A:
 			// 1A
 			// pop two string lists from the stack and remove the 2nd from the 1st
 			i0 = read1(ucfile);
-			printf("remove slist\t(%02X)", i0);
+			con_Printf("remove slist\t(%02X)", i0);
 			break;
 		case 0x1B:
 			// 1B
 			// pop two lists from the stack and remove the 2nd from the 1st
 			i0 = read1(ucfile);
-			printf("remove list\t(%02X)", i0);
+			con_Printf("remove list\t(%02X)", i0);
 			break;
 		case 0x1C:
 			// 1C
 			// subtract two integers
-			printf("sub");
+			con_Printf("sub");
 			break;
 		case 0x1D:
 			// 1D
 			// subtract two dwords
-			printf("sub dword");
+			con_Printf("sub dword");
 			break;
 		case 0x1E:
 			// 1E
 			// multiply two integers
-			printf("mul");
+			con_Printf("mul");
 			break;
 		case 0x1F:
 			// 1F
 			// multiply two dwords
-			printf("mul dword");
+			con_Printf("mul dword");
 			break;
 		case 0x20:
 			// 20
 			// divide two integers
-			printf("div");
+			con_Printf("div");
 			break;
 		case 0x21:
 			// 21
 			// divide two dwords
-			printf("div dword");
+			con_Printf("div dword");
 			break;
 		case 0x22:
 			// 22
 			// mod
-			printf("mod");
+			con_Printf("mod");
 			break;
 		case 0x23:
 			// 23
 			// mod long
-			printf("mod dword");
+			con_Printf("mod dword");
 			assert(false); // Guessed opcode
 			break;
 		case 0x24:
 			// 24
 			// compare two integers
-			printf("cmp");
+			con_Printf("cmp");
 			break;
 		case 0x25:
 			// 24
 			// compare two dwords
-			printf("cmp dword");
+			con_Printf("cmp dword");
 			assert(false); // Guessed opcode
 			break;
 		case 0x26:
 			// 26
 			// compare two strings
-			printf("strcmp");
+			con_Printf("strcmp");
 			break;
 		case 0x28:
 			// 28
 			// less than
-			printf("lt");
+			con_Printf("lt");
 			break;
 		case 0x29:
 			// 29
 			// less than 32 bit
-			printf("lt dword");
+			con_Printf("lt dword");
 			break;
 		case 0x2A:
 			// 2A
 			// less than or equal to
-			printf("le");
+			con_Printf("le");
 			break;
 		case 0x2B:
 			// 2B
 			// less than or equal to
-			printf("le dword");
+			con_Printf("le dword");
 			break;
 		case 0x2C:
 			// 2C
 			// greater than
-			printf("gt");
+			con_Printf("gt");
 			break;
 		case 0x2D:
 			// 2D
 			// greater than 32 bit
-			printf("gt dword");
+			con_Printf("gt dword");
 			break;
 		case 0x2E:
 			// 2E
 			// 'greater than or equal to'
-			printf("ge");
+			con_Printf("ge");
 			break;
 		case 0x2F:
 			// 2F
 			// 'greater than or equal to' (longs)
-			printf("ge dword");
+			con_Printf("ge dword");
 			break;
 		case 0x30:
 			// 30
 			// pops a boolean from the stack and pushes the boolean not
-			printf("not");
+			con_Printf("not");
 			break;
 		case 0x31:
 			// 31
 			// pops a boolean from the stack and pushes the boolean not
-			printf("not dword");
+			con_Printf("not dword");
 			break;
 		case 0x32:
 			// 32
 			// pops two booleans from the stack and pushes the boolean and
-			printf("and");
+			con_Printf("and");
 			break;
 		case 0x33:
 			// 33
 			// pops two booleans from the stack and pushes the boolean and
-			printf("and dword");
+			con_Printf("and dword");
 			break;
 		case 0x34:
 			// 34
 			// boolean or
-			printf("or");
+			con_Printf("or");
 			break;
 		case 0x35:
 			// 35
 			// boolean or
-			printf("or dword");
+			con_Printf("or dword");
 			break;
 		case 0x36:
 			// 36
 			// are two integers not equal?
-			printf("ne");
+			con_Printf("ne");
 			break;
 		case 0x37:
 			// 37
 			// are two dwords not equal?
-			printf("ne dword");
+			con_Printf("ne dword");
 			break;
 
 		case 0x38:
@@ -602,70 +601,70 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 			// the 'size' of each list element, as is true for most list
 			// opcodes.
 			i0 = read1(ucfile); i1 = read1(ucfile);
-			printf("in list\t\t%02X slist==%02X", i0, i1);
+			con_Printf("in list\t\t%02X slist==%02X", i0, i1);
 			break;
 
 		case 0x39:
 			// 39
 			// bitwise and
-			printf("bit_and");
+			con_Printf("bit_and");
 			break;
 		case 0x3A:
 			// 3A
 			// bitwise or
-			printf("bit_or");
+			con_Printf("bit_or");
 			break;
 		case 0x3B:
 			// 3B
 			// bitwise not
-			printf("bit_not");
+			con_Printf("bit_not");
 			break;
 		case 0x3C:
 			// 3C
     		// left shift
-			printf("lsh");
+			con_Printf("lsh");
 			break;
 		case 0x3D:
 			// 3D
 			// right shift
-			printf("rsh");
+			con_Printf("rsh");
 			break;
 
 		case 0x3E:
 			// 3E xx
 			// push the value of the 8 bit local var xx ??
 			i0 = read1(ucfile);
-			printf("push byte\t%s", print_bp(i0));
+			con_Printf("push byte\t%s", print_bp(i0));
 			break;
 		case 0x3F:
 			// 3F xx
 			// push the value of the 16 bit local var xx
 			i0 = read1(ucfile);
-			printf("push\t\t%s", print_bp(i0));
+			con_Printf("push\t\t%s", print_bp(i0));
 			break;
 		case 0x40:
 			// 40 xx
 			// push the value of the 32 bit local var xx ??
 			i0 = read1(ucfile);
-			printf("push dword\t%s", print_bp(i0));
+			con_Printf("push dword\t%s", print_bp(i0));
 			break;
 		case 0x41:
 			// 41 xx
 			// push the string local var at BP+xx
 			i0 = read1(ucfile);
-			printf("push string\t%s", print_bp(i0));
+			con_Printf("push string\t%s", print_bp(i0));
 			break;
 		case 0x42:
 			// 42 xx yy
 			// push the list (with yy size elements) at BP+xx
 			i0 = read1(ucfile); i1 = read1(ucfile);
-			printf("push list\t%s (%02X)", print_bp(i0), i1);
+			con_Printf("push list\t%s (%02X)", print_bp(i0), i1);
 			break;
 		case 0x43:
 			// 43 xx
 			// push the stringlist local var at BP+xx
 			i0 = read1(ucfile);
-			printf("push slist\t%s", print_bp(i0));
+			con_Printf("push slist\t%s", print_bp(i0));
 			break;
 		case 0x44:
 			// 44 xx yy
@@ -674,19 +673,19 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 			// (a byte/word). XX is the size of the types contained in the list
 			// YY is true if it's a slist (for garbage collection)
 			i0 = read1(ucfile); i1 = read1(ucfile);
-			printf("push element\t(%02X) slist==%02X", i0, i1);
+			con_Printf("push element\t(%02X) slist==%02X", i0, i1);
 			break;
 		case 0x45:
 			// 45
 			// push huge
 			i0 = read1(ucfile); i1 = read1(ucfile);
-			printf("push huge\t%02X %02X", i0, i1);
+			con_Printf("push huge\t%02X %02X", i0, i1);
 			break;
 		case 0x4B:
 			// 4B xx
 			// push 32 pointer address of BP+XX
 			i0 = read1(ucfile);
-			printf("push addr\t%s", print_bp(i0));
+			con_Printf("push addr\t%s", print_bp(i0));
 			break;
 		case 0x4C:
 			// 4C xx
@@ -694,7 +693,7 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 			// pops a 32 bit pointer off the stack and pushes xx bytes
 			// from the location referenced by the pointer
 			i0 = read1(ucfile);
-			printf("push indirect\t%02Xh bytes", i0);
+			con_Printf("push indirect\t%02Xh bytes", i0);
 			break;
 		case 0x4D:
 			// 4D xx
@@ -702,46 +701,46 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 			// pops a 32 bit pointer off the stack and then pops xx bytes
 			// into the location referenced by the pointer
 			i0 = read1(ucfile);
-			printf("pop indirect\t%02Xh bytes", i0);
+			con_Printf("pop indirect\t%02Xh bytes", i0);
 			break;
 
 		case 0x4E:
 			// 4E xx xx yy
 			// push global xx xx size yy
 			i0 = read2(ucfile); i1 = read1(ucfile);
-			printf("push\t\tglobal [%04X %02X] (%s)", i0, i1,
+			con_Printf("push\t\tglobal [%04X %02X] (%s)", i0, i1,
 				GlobalNames[i0].name.c_str());
 			break;
 		case 0x4F:
 			// 4F xx xx yy
 			// pop value into global xx xx size yy
 			i0 = read2(ucfile); i1 = read1(ucfile);
-			printf("pop\t\tglobal [%04X %02X] (%s)", i0, i1,
+			con_Printf("pop\t\tglobal [%04X %02X] (%s)", i0, i1,
 				GlobalNames[i0].name.c_str());
 			break;
 
 		case 0x50:
 			// 50
 			// return from function
-			printf("ret");
+			con_Printf("ret");
 			break;
 		case 0x51:
 			// 51 xx xx
 			// relative jump to xxxx if false
 			i0 = read2(ucfile); s0 = static_cast<short>(i0);
-			printf("jne\t\t%04Xh\t(to %04X)", i0, curOffset + s0);
+			con_Printf("jne\t\t%04Xh\t(to %04X)", i0, curOffset + s0);
 			break;
 		case 0x52:
 			// 52 xx xx
 			// relative jump to xxxx
 			i0 = read2(ucfile); s0 = static_cast<short>(i0);
-			printf("jmp\t\t%04Xh\t(to %04X)", i0, curOffset + s0);
+			con_Printf("jmp\t\t%04Xh\t(to %04X)", i0, curOffset + s0);
 			break;
 
 		case 0x53:
 			// 50
 			// suspend function
-			printf("suspend");
+			con_Printf("suspend");
 			break;
 
 		case 0x54:
@@ -750,7 +749,7 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 			// this seems to link two processes, 'implying' that if one terminates,
 			// the other does also, but it's mostly a guess. *grin*
 			i0 = read1(ucfile); i1 = read1(ucfile);
-			printf("implies\t\t%02X %02X", i0, i1);
+			con_Printf("implies\t\t%02X %02X", i0, i1);
 			break;
 
 		case 0x57:
@@ -761,7 +760,7 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 			// tt = sizeof this pointer object
 			i0 = read1(ucfile); i1 = read1(ucfile);
 			i2 = read2(ucfile); i3 = read2(ucfile);
-			printf("spawn\t\t%02X %02X %04X:%04X (%s)",
+			con_Printf("spawn\t\t%02X %02X %04X:%04X (%s)",
 				   i0, i1, i2, i3, functionaddresstostring(i2,i3, ucfile).c_str());
 			break;
 		case 0x58:
@@ -772,14 +771,14 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 			i0 = read2(ucfile); i1 = read2(ucfile);
 			i2 = read2(ucfile);
 			i3 = read1(ucfile); i4 = read1(ucfile);
-			printf("spawn inline\t%04X:%04X+%04X=%04X %02X %02X (%s+%04X)",
+			con_Printf("spawn inline\t%04X:%04X+%04X=%04X %02X %02X (%s+%04X)",
 				   i0, i1, i2, i1+i2, i3, i4,
 				   functionaddresstostring(i0, i1, ucfile).c_str(), i2);
 			break;
 		case 0x59:
 			// 59
 			// push process id of current process
-			printf("push\t\tpid");
+			con_Printf("push\t\tpid");
 			break;
 
 		case 0x5A:
@@ -787,14 +786,14 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 			// init function. xx = local var size
 			// sets xx bytes on stack to 0, and moves sp by xx
 			i0 = read1(ucfile);
-			printf("init\t\t%02X", i0);
+			con_Printf("init\t\t%02X", i0);
 			break;
 
 		case 0x5B:
 			// 5B xx xx
 			// the current sourcecode line number
 			i0 = read2(ucfile);
-			printf ("line number\t%i (%04X)", i0, i0);
+			con_Printf ("line number\t%i (%04X)", i0, i0);
 			break;
 		case 0x5C:
 			// 5C xx xx yy yy yy yy yy yy yy yy 00
@@ -809,7 +808,7 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 			for (i=0; i < 8; ++i)
 			 str0 += static_cast<char>(read1(ucfile));
 			if(read1(ucfile)!=0) assert(false); // trailing 0
-			printf("symbol info\toffset %04x = \"%s\"", i0, str0.c_str());
+			con_Printf("symbol info\toffset %04x = \"%s\"", i0, str0.c_str());
 			dbg_symbol_offset = i0; // the offset to the raw symbol data.
 				// nothing between it and the 0x7a opcode is opcodes
 			break;
@@ -817,35 +816,35 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 		case 0x5D:
 			// 5D
 			// push 8 bit value returned from function call
-			printf("push byte\tretval");
+			con_Printf("push byte\tretval");
 			break;
 		case 0x5E:
 			// 5E
 			// push 16 bit value returned from function call
-			printf("push\t\tretval");
+			con_Printf("push\t\tretval");
 			break;
 		case 0x5F:
 			// 5F
 			// push 32 bit value returned from function call?
-			printf("push dword\tretval");
+			con_Printf("push dword\tretval");
 			break;
 
 		case 0x60:
 			// 60
 			// word to dword (sign extend)
-			printf("word to dword");
+			con_Printf("word to dword");
 			break;
 		case 0x61:
 			// 61
 			// dword to word
-			printf("dword to word");
+			con_Printf("dword to word");
 			break;
 
 		case 0x62:
 			// 62 xx
 			// free the string in var BP+xx
 			i0 = read1(ucfile);
-			printf("free string\t%s", print_bp(i0));
+			con_Printf("free string\t%s", print_bp(i0));
 			break;
 		case 0x63:
 			// 63 xx
@@ -853,42 +852,42 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 			// (This one seems to be similar to 0x64 but only used for lists
 			//  of strings?)
 			i0 = read1(ucfile);
-			printf("free slist\t%s", print_bp(i0));
+			con_Printf("free slist\t%s", print_bp(i0));
 			break;
 		case 0x64:
 			// 64 xx
 			// free the list in var BP+xx
 			i0 = read1(ucfile);
-			printf("free list\t%s", print_bp(i0));
+			con_Printf("free list\t%s", print_bp(i0));
 			break;
 		case 0x65:
 			// 65 xx
 			// free string at SP+xx
 			i0 = read1(ucfile);
-			printf("free string\t%s", print_sp(i0));
+			con_Printf("free string\t%s", print_sp(i0));
 			break;
 		case 0x66:
 			// 66 xx
 			// free the list at SP+xx
 			i0 = read1(ucfile);
-			printf("free list\t%s", print_sp(i0));
+			con_Printf("free list\t%s", print_sp(i0));
 			break;
 		case 0x67:
 			// 66 xx
 			// free the string list at SP+xx
 			i0 = read1(ucfile);
-			printf("free slist\t%s", print_sp(i0));
+			con_Printf("free slist\t%s", print_sp(i0));
 			break;
 		case 0x69:
 			// 69 xx
 			// push the string in var BP+xx as 32 bit pointer
 			i0 = read1(ucfile);
-			printf("push strptr\t%s", print_bp(i0));
+			con_Printf("push strptr\t%s", print_bp(i0));
 			break;
 		case 0x6B:
 			// 6B
 			// pop a string and push 32 bit pointer to string
-			printf("str to ptr");
+			con_Printf("str to ptr");
 			break;
 
 // Just my ramblings on 0x6C. It's a bit of a mess since it's taken from an irc log
@@ -959,25 +958,25 @@ and that the child threads are indeed placed infront of the parent thread.
 			// 6C xx yy
 			// looks to be a BP+XX function... maybe not
 			i0 = read1(ucfile); i1 = read1(ucfile);
-			printf("param pid change\t\t%s %02X", print_bp(i0), i1);
+			con_Printf("param pid change\t\t%s %02X", print_bp(i0), i1);
 			break;
 
 		case 0x6D:
 			// 6D
 			// push result of process
-			printf("push dword\tprocess result");
+			con_Printf("push dword\tprocess result");
 			break;
 		case 0x6E:
 			// 6E xx
 			// add xx to stack pointer
 			i0 = read1(ucfile);
-			printf("add sp\t\t%s%02Xh", i0>0x7F?"-":"", i0>0x7F?0x100-i0:i0);
+			con_Printf("add sp\t\t%s%02Xh", i0>0x7F?"-":"", i0>0x7F?0x100-i0:i0);
 			break;
 		case 0x6F:
 			// 6F xx
 			// push 32 pointer address of SP-xx
 			i0 = read1(ucfile);
-			printf("push addr\t%s", print_sp(0x100 - i0));
+			con_Printf("push addr\t%s", print_sp(0x100 - i0));
 			break;
 
 		// loop-related opcodes
@@ -993,18 +992,18 @@ and that the child threads are indeed placed infront of the parent thread.
 			// yy == num bytes in string
 			// zz == type
 			i0 = read1(ucfile); i1 = read1(ucfile); i2 = read1(ucfile);
-			printf("loop\t\t%s %02X %02X", print_bp(i0), i1, i2);
+			con_Printf("loop\t\t%s %02X %02X", print_bp(i0), i1, i2);
 			break;
 		case 0x73:
 			// 73
 			// next loop object? pushes false if end reached
-			printf("loopnext");
+			con_Printf("loopnext");
 			break;
 		case 0x74:
 			// 74 xx
 			// add xx to the current 'loopscript'
 			i0 = read1(ucfile);
-			printf("loopscr\t\t%02X \"%c\" - %s", i0, static_cast<char>(i0),ScriptExpressions[i0].c_str());
+			con_Printf("loopscr\t\t%02X \"%c\" - %s", i0, static_cast<char>(i0),ScriptExpressions[i0].c_str());
 			break;
 
 		// 75 appears to have something to do with lists, looks like an enum/next from u7...
@@ -1024,21 +1023,21 @@ and that the child threads are indeed placed infront of the parent thread.
 			//   seen 0xFFFF pushed before it (in Remorse1.21)), then pops
 			//   the 'list' off to iterate through
 			i0 = read1(ucfile); i1 = read1(ucfile); i2 = read2(ucfile);
-			printf("foreach list\t%s (%02X) %04X", print_bp(i0), i1, i2);
+			con_Printf("foreach list\t%s (%02X) %04X", print_bp(i0), i1, i2);
 			break;
 
 		/* 76 appears to be identical to 0x75, except it operates on slists */
 		case 0x76:
 			// 75 xx yy zz zz
 			i0 = read1(ucfile); i1 = read1(ucfile); i2 = read2(ucfile);
-			printf("foreach slist\t%s (%02X) %04X", print_bp(i0), i1, i2);
+			con_Printf("foreach slist\t%s (%02X) %04X", print_bp(i0), i1, i2);
 			break;
 
 		case 0x77:
 			// 77
 			// set info
 			// assigns item number and ProcessType, both values popped from the stack
-			printf("set info");
+			con_Printf("set info");
 			break;
 
 		case 0x78:
@@ -1047,7 +1046,7 @@ and that the child threads are indeed placed infront of the parent thread.
 			// sets a flag on the object target of the 'current' function call that
 			// said function call has exclusive use of the object until the call
 			// returns.
-			printf("process exclude");
+			con_Printf("process exclude");
 			break;
 
 		case 0x79:
@@ -1056,22 +1055,22 @@ and that the child threads are indeed placed infront of the parent thread.
 			if (crusader) // it's not eof for crusader...
 			{
 				i0 = read2(ucfile);
-				printf("global_address\t%04X", i0);
+				con_Printf("global_address\t%04X", i0);
 			}
 			else // but it is for U8
 			{
-				printf("end");
+				con_Printf("end");
 				done = true;
 			}
 			break;
 
 			case 0x7A:
 			// end of function (79 = u8, 7a = crusader)
-			printf("end");
+			con_Printf("end");
 
 			if(str0.size())
 			{
-				printf("\tsize of dbg symbols %04X", str0.size());
+				con_Printf("\tsize of dbg symbols %04X", str0.size());
 			}
 
 			done = true;
@@ -1079,10 +1078,10 @@ and that the child threads are indeed placed infront of the parent thread.
 
 		// can't happen.
 		default:
-			printf("db\t\t%02x", opcode);
+			con_Printf("db\t\t%02x", opcode);
 			assert(false);
 		}
-		printf("\n");
+		con_Printf("\n");
 
 		#ifdef FOLD
 		foldops.push_back(FoldOp(startOffset, opcode, curOffset, i0, i1, i2, i3, i4, str0));
@@ -1110,7 +1109,7 @@ void printfunc(const uint32 func, const uint32 nameoffset, IFileDataSource *ucfi
 	
 	convert->readheader(ucfile, uch, curOffset);
 
-	printf("Usecode function %d (%04X %s)\n", func, func, namebuf);
+	con_Printf("Usecode function %d (%04X %s)\n", func, func, namebuf);
 
 	convert->readevents(ucfile, uch);
 
@@ -1122,7 +1121,7 @@ void printfunc(const uint32 func, const uint32 nameoffset, IFileDataSource *ucfi
 	clearfolding(); // clear in case we need to do another function
 	#endif
 }
-#undef printf // undef the evil define
+#undef con_Printf // undef the evil define
 
 void readfunctionnames(void)
 {
@@ -1138,7 +1137,7 @@ void readfunctionnames(void)
 	{
 		config.value("usecodemap/" + *it + "/" + gamelanguage, functionaddress, "N/A");
 		if (functionaddress == "N/A")
-			std::cerr << gamelanguage << " entry point for " << *it << " not found" << std::endl;
+			perr << gamelanguage << " entry point for " << *it << " not found" << std::endl;
 		else
 		{
 			for(std::string::iterator i=functionaddress.begin(); i!=functionaddress.end(); ++i)
@@ -1154,14 +1153,14 @@ void readfunctionnames(void)
 int main(int argc, char **argv)
 {
 	if (argc < 3) {
-		cerr << "Usage: disasm <file> [<function number>|-a] {--game [u8|crusader]} {--lang [english|german|french]}" << endl;
-		cerr << "or" << endl;
-		cerr << "Usage: disasm <file> -l" << endl;
-		cerr << "or" << endl;
-		cerr << "Usage: disasm <file> --globals {--game [u8|crusader]}" << endl;
+		perr << "Usage: disasm <file> [<function number>|-a] {--game [u8|crusader]} {--lang [english|german|french]}" << endl;
+		perr << "or" << endl;
+		perr << "Usage: disasm <file> -l" << endl;
+		perr << "or" << endl;
+		perr << "Usage: disasm <file> --globals {--game [u8|crusader]}" << endl;
 		// Overload Table
-		cerr << "or" << endl;
-		cerr << "Usage: disasm <file> -overload" << endl;
+		perr << "or" << endl;
+		perr << "Usage: disasm <file> -overload" << endl;
 		return 1;
 	}
 
@@ -1197,13 +1196,13 @@ int main(int argc, char **argv)
 				gamelanguage = "french";
 				break;
 			default:
-				std::cerr << "Could not determine game language. Defaulting to english." << std::endl;
+				perr << "Could not determine game language. Defaulting to english." << std::endl;
 				gamelanguage = "english";
 		}
 	}
 	if ( (gamelanguage != "german") && (gamelanguage != "english") && (gamelanguage != "french"))
 	{
-		std::cerr << "Warning: unknown language specified (" << gamelanguage << ")." << std::endl;
+		perr << "Warning: unknown language specified (" << gamelanguage << ")." << std::endl;
 	}
 
 	// Create filesystem object
@@ -1215,14 +1214,14 @@ int main(int argc, char **argv)
 	// Uh oh, couldn't load it
 	if(ucfile==0)
 	{
-		cerr << "Error reading file \"" << argv[1] << "\"" << endl;
+		perr << "Error reading file \"" << argv[1] << "\"" << endl;
 		return 1;
 	}
 
 	// Force crusader mode if we are reading overload.dat
 	if (!Q_strcasecmp(stripped_filename, "overload.dat"))
 	{
-		std::cout << "Using \"overload.dat\". Forcing crusader gametype." << std::endl;
+		pout << "Using \"overload.dat\". Forcing crusader gametype." << std::endl;
 		gametype="crusader";
 	}
 	// Or if gametype is none, attempt to autodetect game type
@@ -1239,7 +1238,7 @@ int main(int argc, char **argv)
 	}
 
 	// Output the game type and langauge
-	std::cout << "Game type: " << gametype << std::endl <<
+	pout << "Game type: " << gametype << std::endl <<
 		"Language: " << gamelanguage << std::endl;
 
 	// setup crusader
@@ -1256,7 +1255,7 @@ int main(int argc, char **argv)
 	// List functions
 	if (!Q_strcasecmp(argv[2], "-l")) {
 
-		cout << "Listing functions..." << endl << endl;
+		pout << "Listing functions..." << endl << endl;
 
 		// Read num entries
 		ucfile->seek( 0x54);
@@ -1266,7 +1265,7 @@ int main(int argc, char **argv)
 		sint32 nameoffset = read4(ucfile);
 		sint32 namelength = read4(ucfile);
 
-		cout.setf(std::ios::uppercase);
+		pout.setf(std::ios::uppercase);
 
 		sint32 actual_num = 0;
 		for(uint32 func = 0; func < entries; ++func)
@@ -1281,11 +1280,11 @@ int main(int argc, char **argv)
 
 			if (length == 0) continue;
 
-			cout << "Usecode function " << func << " (0x" << std::hex << func
+			pout << "Usecode function " << func << " (0x" << std::hex << func
 				<< std::dec << ") (" << namebuf << ")" << endl;
 			++actual_num;
 		}
-		cout << endl << actual_num << " Usecode functions" << endl;
+		pout << endl << actual_num << " Usecode functions" << endl;
 		return 0;
 	}
 	// Overload Table
@@ -1312,8 +1311,8 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	cout.setf(std::ios::uppercase);
-	cout << std::hex;
+	pout.setf(std::ios::uppercase);
+	pout << std::hex;
 
 	readglobals(ucfile);
 
@@ -1361,13 +1360,14 @@ int main(int argc, char **argv)
 	
 	printfunc(func, nameoffset, ucfile);
 	
+	con.Dump("disasm_output.txt");
 	return 0;
 }
 
 // Overload Table
 void printoverloads(IFileDataSource *ucfile, int endpos)
 {
-	std::printf ("Overload Table:\n");
+	con.Printf ("Overload Table:\n");
 
 	int f, i = 0;
 	uint32 all_mask = 0;
@@ -1380,23 +1380,23 @@ void printoverloads(IFileDataSource *ucfile, int endpos)
 		ucfile->read(classname, 9);
 
 		if (classname[0]) {
-			std::printf ("%04d: %8s ", i, classname);
+			con.Printf ("%04d: %8s ", i, classname);
 
-			for (f=0; f<32; f++) std::printf (" %i",(mask>>f) & 1);
+			for (f=0; f<32; f++) con.Printf (" %i",(mask>>f) & 1);
 
-			std::printf ("\n");
+			con.Printf ("\n");
 		}
 		all_mask |= mask;
 		i++;
 	}
-	std::printf ("\n%i functions ", i);
+	con.Printf ("\n%i functions ", i);
 
-	std::printf ("\nAll functions: ");
+	con.Printf ("\nAll functions: ");
 
-	for (f=0; f<32; f++) std::printf (" %i",(all_mask>>f) & 1);
+	for (f=0; f<32; f++) con.Printf (" %i",(all_mask>>f) & 1);
 
-	std::printf ("\n\nEvents used:\n");
+	con.Printf ("\n\nEvents used:\n");
 	for (f=0; f<32; f++) {
-		if ((all_mask>>f) & 1) std::printf (" %i: %s\n", f, convert->event_names()[f]);
+		if ((all_mask>>f) & 1) con.Printf (" %i: %s\n", f, convert->event_names()[f]);
 	}
 }

@@ -37,7 +37,7 @@ class ConvertUsecodeCrusader : public ConvertUsecode
 				uint32 offset = read4(ucfile);
 				EventMap[offset] = i;
 				#ifdef DISASM_DEBUG
-				cout << "Crusader Routine: " << i << ": " << std::hex << std::setw(4) << offset << std::dec << " size " << size << endl;
+				pout << "Crusader Routine: " << i << ": " << std::hex << std::setw(4) << offset << std::dec << " size " << size << endl;
 				#endif
 			}
 		};
@@ -436,13 +436,13 @@ void ConvertUsecodeCrusader::readheader(IFileDataSource *ucfile, UsecodeHeader &
 	uch.externTable = read4(ucfile); // extern symbol table offset
 	uch.fixupTable = read4(ucfile);  // fixup table offset
 	#ifdef DISASM_DEBUG
-	printf("Routines:\t%04X\n", uch.routines);
-	printf("MaxOffset:\t%04X\nOffset:\t\t%04X\n", uch.maxOffset, uch.offset);
-	printf("ExternTable:\t%04X\nFixupTable:\t%04X\n", uch.externTable, uch.fixupTable);
+	con.Printf("Routines:\t%04X\n", uch.routines);
+	con.Printf("MaxOffset:\t%04X\nOffset:\t\t%04X\n", uch.maxOffset, uch.offset);
+	con.Printf("ExternTable:\t%04X\nFixupTable:\t%04X\n", uch.externTable, uch.fixupTable);
 	#endif
 	uch.maxOffset += 1;
 	#ifdef DISASM_DEBUG
-	printf("Adjusted MaxOffset:\t%04X\n", uch.maxOffset);
+	con.Printf("Adjusted MaxOffset:\t%04X\n", uch.maxOffset);
 	#endif
 	curOffset = 1-uch.offset;
 };

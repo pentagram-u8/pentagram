@@ -51,16 +51,22 @@ extern const std::string c_empty_string;
 
 
 //
+// The Console
+//
+
+#include "Console.h"
+
+
+//
 // Debugging
 //
 #ifdef DEBUG
-#  define COUT(x)		do { std::cout << x << std::endl; std::cout.flush(); } while (0)
-#  define CERR(x)		do { std::cerr << x << std::endl; std::cerr.flush(); } while (0)
+#  define POUT(x)		do { pout << x << std::endl; pout.flush(); } while (0)
+#  define PERR(x)		do { perr << x << std::endl; perr.flush(); } while (0)
 #else
-#  define COUT(x)		do { } while(0)
-#  define CERR(x)		do { } while(0)
+#  define POUT(x)		do { } while(0)
+#  define PERR(x)		do { } while(0)
 #endif
-
 
 // Two very useful macros that one should use instead of pure delete; they will additionally
 // set the old object pointer to 0, thus helping prevent double deletes (not that "delete 0"
@@ -73,7 +79,6 @@ extern const std::string c_empty_string;
 // Precompiled Header Support
 //
 #ifdef USE_PRECOMPILED_HEADER
-#include <iostream>
 #include <fstream>
 #include <cstdio>
 #endif

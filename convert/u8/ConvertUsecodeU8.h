@@ -34,7 +34,7 @@ class ConvertUsecodeU8 : public ConvertUsecode
 				uint32 offset = read4(ucfile);
 				EventMap[offset] = i;
 				#ifdef DISASM_DEBUG
-				cout << "Event " << i << ": " << std::hex << std::setw(4) << offset << std::dec << endl;
+				pout << "Event " << i << ": " << std::hex << std::setw(4) << offset << std::dec << endl;
 				#endif
 			}
 		}
@@ -363,11 +363,11 @@ const char * const ConvertUsecodeU8::_event_names[] = {
 void ConvertUsecodeU8::readheader(IFileDataSource *ucfile, UsecodeHeader &uch, uint32 &curOffset)
 {
 	#ifdef DISASM_DEBUG
-	cerr << std::setfill('0') << std::hex;
-	cerr << "unknown1: " << std::setw(4) << read4(ucfile) << endl; // unknown
+	perr << std::setfill('0') << std::hex;
+	perr << "unknown1: " << std::setw(4) << read4(ucfile) << endl; // unknown
 	uch.maxOffset = read4(ucfile) - 0x0C; // file size
-	cerr << "maxoffset: " << std::setw(4) << maxOffset << endl;
-	cerr << "unknown2: " << std::setw(4) << read4(ucfile) << endl; // unknown
+	perr << "maxoffset: " << std::setw(4) << maxOffset << endl;
+	perr << "unknown2: " << std::setw(4) << read4(ucfile) << endl; // unknown
 	curOffset = 0;
 	#else
 	read4(ucfile); // unknown

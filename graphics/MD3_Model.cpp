@@ -18,7 +18,6 @@
 
 #include "MD3_Model.h"
 #include <cstring>
-#include <iostream>
 
 using std::memcmp;
 
@@ -35,14 +34,14 @@ bool MD3_Header::Read(DataSource *ds)
 	// "IDP3"
 	ds->read(type, 4);
 	if (memcmp(type, "IDP3", 4)) {
-		std::cerr << "Invalid MD3 type. Expected \"IDP3\" found " << type[0] << type[1] << type[2] << type[3] << std::endl;
+		perr << "Invalid MD3 type. Expected \"IDP3\" found " << type[0] << type[1] << type[2] << type[3] << std::endl;
 		return false;
 	}
 
 	// 15
 	version = ds->read4();
 	if (version != 15) {
-		std::cerr << "Invalid MD3 version. Expected 15 found " << version << std::endl;
+		perr << "Invalid MD3 version. Expected 15 found " << version << std::endl;
 		return false;
 	}
 
@@ -205,7 +204,7 @@ bool MD3_SurfaceHeader::Read(DataSource *ds)
 	// "IDP3"
 	ds->read(type, 4);
 	if (memcmp(type, "IDP3", 4)) {
-		std::cerr << "Invalid MD3 Surface type. Expected \"IDP3\" found " << type[0] << type[1] << type[2] << type[3] << std::endl;
+		perr << "Invalid MD3 Surface type. Expected \"IDP3\" found " << type[0] << type[1] << type[2] << type[3] << std::endl;
 		return false;
 	}
 
@@ -273,7 +272,7 @@ bool MD3_Surface::Read(DataSource *ds)
 
 	// Read the header
 	if (!MD3_SurfaceHeader::Read(ds)) {
-		std::cerr << "Failed to read MD3_SurfaceHeader" << std::endl;
+		perr << "Failed to read MD3_SurfaceHeader" << std::endl;
 		return false;
 	}
 
@@ -411,7 +410,7 @@ bool MD3_Model::Read(DataSource *ds)
 
 	// Read the header
 	if (!MD3_Header::Read(ds)) {
-		std::cerr << "Failed to read MD3_Header" << std::endl;
+		perr << "Failed to read MD3_Header" << std::endl;
 		return false;
 	}
 
@@ -483,24 +482,24 @@ void MD3_Model::OutputInfo()
 	int i;
 
 
-	std::cout << "MD3 name: " << name << std::endl;
-	std::cout << "MD3 frames: " << num_frames << std::endl;
-	std::cout << "MD3 tags: " << num_tags << std::endl;
-	for (i = 0; i < num_tags; i++) std::cout << "MD3 tag " << i << " name: " << tags[0][i].name << std::endl;
-	std::cout << "MD3 surfs: " << num_surfs<< std::endl;
+	pout << "MD3 name: " << name << std::endl;
+	pout << "MD3 frames: " << num_frames << std::endl;
+	pout << "MD3 tags: " << num_tags << std::endl;
+	for (i = 0; i < num_tags; i++) pout << "MD3 tag " << i << " name: " << tags[0][i].name << std::endl;
+	pout << "MD3 surfs: " << num_surfs<< std::endl;
 	for (i = 0; i < num_surfs; i++) {
-		std::cout << "MD3 surface " << i << " name: " << surfaces[i].name << std::endl;
-		std::cout << "MD3 surface " << i << " frames: " << surfaces[i].num_frames << std::endl;
-		std::cout << "MD3 surface " << i << " shaders: " << surfaces[i].num_shaders << std::endl;
-		std::cout << "MD3 surface " << i << " tris: " << surfaces[i].num_tris << std::endl;
-		std::cout << "MD3 surface " << i << " verts: " << surfaces[i].num_verts << std::endl;
+		pout << "MD3 surface " << i << " name: " << surfaces[i].name << std::endl;
+		pout << "MD3 surface " << i << " frames: " << surfaces[i].num_frames << std::endl;
+		pout << "MD3 surface " << i << " shaders: " << surfaces[i].num_shaders << std::endl;
+		pout << "MD3 surface " << i << " tris: " << surfaces[i].num_tris << std::endl;
+		pout << "MD3 surface " << i << " verts: " << surfaces[i].num_verts << std::endl;
 
 		for (int j = 0; j < surfaces[i].num_shaders; j++) {
 			MD3_Shader *s = surfaces[i].shaders+j;
-			std::cout << "MD3 surface " << i << " shader " << j << " index: " << s->index << std::endl;
-			std::cout << "MD3 surface " << i << " shader " << j << " filename: " << s->filename << std::endl;
+			pout << "MD3 surface " << i << " shader " << j << " index: " << s->index << std::endl;
+			pout << "MD3 surface " << i << " shader " << j << " filename: " << s->filename << std::endl;
 		}
 	}
 
-	std::cout << std::endl;
+	pout << std::endl;
 }

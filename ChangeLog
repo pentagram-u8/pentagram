@@ -1,3 +1,12 @@
+2002-10-27  Ryan Nunn <colourles@users.sourceforge.net>
+	* misc/Console.h : Output Console
+
+	* graphics/MD3_Model.*, graphics/TextureBitmap.cpp, misc/Args.cpp
+	  misc/pent_include.h, convert/crusader/ConvertUsecodeCrusader.h, 
+	  tools/disasm/Disasm.cpp, convert/u8/ConvertUsecodeU8.h :
+	  Changes to use Output Console functions/streams instead  of standard
+	  outout functions/streams
+
 2002-10-26  Ryan Nunn <colourles@users.sourceforge.net>
 	* tools/disasm/Disasm.cpp : Autodetect gametype. Improved u8 function
 	  name printing.

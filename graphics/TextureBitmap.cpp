@@ -140,7 +140,6 @@ bool TextureBitmap::Read(DataSource &ds)
 
 	// 8 Bit Palette
 	if (bitmapinfoheader.biBitCount == 8) {
-		printf ("Reading 8 bit\n");
 		for (index=0; index<bitmapinfoheader.biWidth*bitmapinfoheader.biHeight; index++)
 		{
 			// extract RGB components (in BGR order), note the scaling
@@ -159,8 +158,6 @@ bool TextureBitmap::Read(DataSource &ds)
 	}
 	// 16 Bit High Colour
 	else if (bitmapinfoheader.biBitCount == 16) {
-		printf ("Reading 16 bit\n");
-
 		// Colour shifting values
 		#define UNPACK_BMP16(pix,r,g,b) { r = (((pix)&31)>>10)<<5; g = (((pix)&31)>>5)<<5; b = ((pix)&31)<<5; }
 
@@ -184,7 +181,6 @@ bool TextureBitmap::Read(DataSource &ds)
 	}
 	// 24 Bit True Colour
 	else if (bitmapinfoheader.biBitCount == 24) {
-		printf ("Reading 24 bit\n");
 		for (index=0; index<bitmapinfoheader.biWidth*bitmapinfoheader.biHeight; index++)
 		{
 			int row = index / bitmapinfoheader.biWidth;

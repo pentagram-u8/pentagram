@@ -22,7 +22,6 @@
 #include <cmath>
 #include "q_math.h"
 #include "databuf.h"
-#include <iostream>
 
     /////////////////////////
    //                     //

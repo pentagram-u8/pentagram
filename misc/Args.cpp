@@ -18,10 +18,8 @@
 
 #include "pent_include.h"
 
-#include <iostream>
 #include "Args.h"
 
-using std::cerr;
 using std::endl;
 using std::string;
 using std::strtol;
@@ -48,7 +46,7 @@ void Args::process(sint32 argc, char **argv)
 						// We want the _next_ argument
 						if(++i>=argc)
 						{
-							cerr << "Data not specified for argument '" << options[j].option <<"'. Using default." << endl;
+							perr << "Data not specified for argument '" << options[j].option <<"'. Using default." << endl;
 							break;
 						}
 						*(options[j]._str_val)=argv[i];
@@ -62,7 +60,7 @@ void Args::process(sint32 argc, char **argv)
 						// We want the _next_ argument
 						if(++i>=argc)
 						{
-							cerr << "Data not specified for argument '" << options[j].option <<"'. Using default." << endl;
+							perr << "Data not specified for argument '" << options[j].option <<"'. Using default." << endl;
 							break;
 						}
 						*(options[j]._sint_val)=strtol(argv[i],0,10);
@@ -76,7 +74,7 @@ void Args::process(sint32 argc, char **argv)
 						// We want the _next_ argument
 						if(++i>=argc)
 						{
-							cerr << "Data not specified for argument '" << options[j].option <<"'. Using default." << endl;
+							perr << "Data not specified for argument '" << options[j].option <<"'. Using default." << endl;
 							break;
 						}
 						*(options[j]._uint_val)=strtoul(argv[i],0,10);
