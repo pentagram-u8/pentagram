@@ -80,7 +80,7 @@ struct Animation
 	};
 
 	static bool isCombatAnim(const unsigned int anim);
-	static int checkWeapon(const unsigned int nextanim,
+	static unsigned int checkWeapon(const unsigned int nextanim,
 		const unsigned int lastanim);
 };
 

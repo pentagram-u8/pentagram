@@ -65,7 +65,8 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 	uint32 lastanim = avatar->getLastAnim();
 	uint32 direction = avatar->getDir();
 	uint32 nextanim, nextdir;
-	nextanim = nextdir = 0;
+	nextanim = 0;
+	nextdir = direction;
 
 	int mx, my;
 	guiapp->getMouseCoords(mx, my);
@@ -92,11 +93,22 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 	{
 		// right mouse button down, but maybe not long enough to really
 		// start walking. Check if we need to turn.
+		// Note: don't need to turn if moving backward in combat stance
 		// CHECKME: currently, first turn in the right direction
-		if (mousedir != direction) {
+		if (mousedir != direction && !(
+				(abs(mousedir - direction) == 4 &&
+				 Animation::isCombatAnim(lastanim) &&
+				 mouselength != 2) //hack...
+				))
+		{
 			pout << "AvatarMover: turn" << std::endl;
 			nextdir = mousedir;
-			if (avatar->isInCombat())
+
+			if (lastanim == Animation::walk || lastanim == Animation::run &&
+				(abs(mousedir - direction) + 1 % 8 <= 2))
+			{
+				// don't need to explicitly do a turn animation
+			} else if (avatar->isInCombat())
 			{
 				nextanim = Animation::combat_stand;
 			}
@@ -120,7 +132,6 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 		// check if there's something we can climb up onto here
 
 		nextanim = Animation::jumpUp;
-		nextdir = direction;
 
 		// jump.
 
@@ -128,11 +139,9 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 		if (lastanim == Animation::run || lastanim == Animation::runningJump) {
 			pout << "AvatarMover: running jump" << std::endl;
 			nextanim = Animation::runningJump;
-			nextdir = direction;
 		} else if (mouselength > 0) {
 			pout << "AvatarMover: jump" << std::endl;
 			nextanim = Animation::jump;
-			nextdir = direction;
 		}
 		nextanim = Animation::checkWeapon(nextanim, lastanim);
 		waitFor(avatar->doAnim(nextanim, nextdir));
@@ -154,17 +163,22 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 		if (mouselength == 1)
 			nextanim = Animation::walk;
 
-		if (avatar->isInCombat())
-			nextanim = Animation::advance;
+		if (avatar->isInCombat()) {
+			if (lastanim == Animation::run) {
+				// want to while in combat mode?
+				// first sheath weapon
+				nextanim = Animation::unreadyWeapon;
+			} else if (mousedir == direction)
+				nextanim = Animation::advance;
+			else
+				nextanim = Animation::retreat;
+		}
 
 		if (mouselength == 2)
-		{
 			nextanim = Animation::run;
-		}
 
 		pout << "AvatarMover: walk" << std::endl;
 
-		nextdir = mousedir;
 		nextanim = Animation::checkWeapon(nextanim, lastanim);
 		waitFor(avatar->doAnim(nextanim, nextdir));
 		return false;
@@ -173,7 +187,6 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 	// not doing anything in particular? stand
 	// TODO: make sure falling works properly.
 	if (lastanim != Animation::stand || lastanim != Animation::combat_stand) {
-		nextdir = direction;
 		if (avatar->isInCombat())
 		{
 			nextanim = Animation::combat_stand;

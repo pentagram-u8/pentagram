@@ -33,10 +33,10 @@ bool Animation::isCombatAnim(const unsigned int anim)
 }
 
 /** determines if we need to ready or unready our weapon */
-int Animation::checkWeapon(const unsigned int nextanim,
+unsigned int Animation::checkWeapon(const unsigned int nextanim,
 const unsigned int lastanim)
 {
-	int anim = nextanim;
+	unsigned int anim = nextanim;
 	if (isCombatAnim(nextanim) && ! isCombatAnim(lastanim))
 	{
 		anim = readyWeapon;
