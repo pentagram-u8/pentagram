@@ -38,7 +38,7 @@ ScalerManager::~ScalerManager()
 }
 
 //
-// Get the Index of a scaler from it's Name
+// Get the Index of a scaler from its Name
 //
 int	ScalerManager::GetIndexForName(const Pentagram::istring name)
 {
@@ -65,7 +65,7 @@ const char *ScalerManager::GetNameForIndex(int index)
 
 
 //
-// Get a Scaler from it's Index
+// Get a Scaler from its Index
 //
 const Pentagram::Scaler *ScalerManager::GetScaler(int index)
 {
@@ -75,7 +75,7 @@ const Pentagram::Scaler *ScalerManager::GetScaler(int index)
 }
 
 //
-// Get the Index of a scaler from it's Name
+// Get the Index of a scaler from its Name
 //
 const Pentagram::Scaler	*ScalerManager::GetScaler(const Pentagram::istring name)
 {
@@ -109,7 +109,7 @@ int ScalerManager::AddScaler(const Pentagram::Scaler *scaler)
 }
 
 //
-// Get a Scaler from it's Index
+// Get the Point Sampling Scaler
 //
 const Pentagram::Scaler *ScalerManager::GetPointScaler()
 {

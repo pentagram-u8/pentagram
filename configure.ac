@@ -402,6 +402,17 @@ else
 	AC_MSG_RESULT([no; SDL_ttf not found])
 fi
 
+
+# HQ2X scaler
+AC_ARG_ENABLE(hq2x, [  --enable-hq2x           Enable hq2x scaler support],,enable_hq2x=no)
+AC_MSG_CHECKING(if we should build the hq2x scaler)
+if test x$enable_hq2x = xyes; then
+	AC_MSG_RESULT(yes)
+	AC_DEFINE(USE_HQ2X_SCALER, 1, [Build hq2x scaler])
+else
+	AC_MSG_RESULT(no)
+fi
+
 # -------------------
 # GIMP plugin
 # -------------------

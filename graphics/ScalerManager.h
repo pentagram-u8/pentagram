@@ -41,32 +41,32 @@ public:
 	// Destructor
 	~ScalerManager();
 
-	// Get instance, or create
+	//! Get instance, or create
 	static ScalerManager *get_instance() { 
 			if (!scaler_man) scaler_man = new ScalerManager;
 			return scaler_man; 
 	}
 
-	// Adds a scaler, returns the index
+	//! Adds a scaler, returns the index
 	int	AddScaler(const Pentagram::Scaler *scaler);
 
 
-	// Get the total Number of scalers
+	//! Get the total Number of scalers
 	int	GetNumScalers();
 
-	// Get the Scaler Index from it's name
+	//! Get the Scaler Index from its name
 	int	GetIndexForName(const Pentagram::istring name);
 
-	// Get Name of a Scaler from its Index
+	//! Get Name of a Scaler from its Index
 	const char *GetNameForIndex(int index);
 
-	// Get a Scaler from it's Index
+	//! Get a Scaler from its Index
 	const Pentagram::Scaler	*GetScaler(int index);
 
-	// Get a Scaler from it's name
+	//! Get a Scaler from its name
 	const Pentagram::Scaler	*GetScaler(const Pentagram::istring name);
 
-	// Get the Point Sampling Scaler
+	//! Get the Point Sampling Scaler
 	const Pentagram::Scaler	*GetPointScaler();
 };
 
