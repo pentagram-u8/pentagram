@@ -627,6 +627,35 @@ void GUIApp::U8Playground()
 	armour->moveToContainer(backpack);
 	armour->setGumpLocation(20, 40);
 
+	// necromancy reagents
+	Item* bagitem = ItemFactory::createItem(637, 0, 0, 0, 0, 0, 0);
+	bagitem->moveToContainer(backpack);
+	bagitem->setGumpLocation(70, 40);
+
+	bagitem = ItemFactory::createItem(637, 0, 0, 0, 0, 0, 0);
+	Container* bag = p_dynamic_cast<Container*>(bagitem);
+	bagitem->moveToContainer(backpack);
+	bagitem->setGumpLocation(70, 20);
+
+	Item* reagents = ItemFactory::createItem(395, 0, 50, 0, 0, 0, 0); 
+	reagents->moveToContainer(bag);
+	reagents->setGumpLocation(10, 10);
+	reagents = ItemFactory::createItem(395, 6, 50, 0, 0, 0, 0); 
+	reagents->moveToContainer(bag);
+	reagents->setGumpLocation(30, 10);
+	reagents = ItemFactory::createItem(395, 8, 50, 0, 0, 0, 0); 
+	reagents->moveToContainer(bag);
+	reagents->setGumpLocation(50, 10);
+	reagents = ItemFactory::createItem(395, 9, 50, 0, 0, 0, 0); 
+	reagents->moveToContainer(bag);
+	reagents->setGumpLocation(20, 30);
+	reagents = ItemFactory::createItem(395, 10, 50, 0, 0, 0, 0); 
+	reagents->moveToContainer(bag);
+	reagents->setGumpLocation(40, 30);
+	reagents = ItemFactory::createItem(395, 14, 50, 0, 0, 0, 0); 
+	reagents->moveToContainer(bag);
+	reagents->setGumpLocation(60, 30);
+
 	// oil flasks
 	Item* flask = ItemFactory::createItem(579, 0, 0, 0, 0, 0, 0);
 	flask->moveToContainer(backpack);
