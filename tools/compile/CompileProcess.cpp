@@ -63,3 +63,4 @@ bool CompileProcess::run(const uint32 /*framenum*/)
 	// if we need to redraw the screen (aka, we've done something), we need to return true;
 	return false;
 }
+

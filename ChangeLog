@@ -6,6 +6,9 @@
 	* tools/compile/*: More compiler stuff, still doesn't do anything really.
 	* world/Item.cpp: Removal of old-style casts.
 	
+	* tools/compile/llcLexer.cpp: Added 'cause flex2.5.4 hasn't really been
+	  maintained in the last 7 years...
+
 2003-05-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCMachine.cpp: process exclude
 

@@ -18,6 +18,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
+#include "pent_include.h"
+
 /* Many things really, truely suck. One of them is the interface to the c++
 	FlexLexer... */
 #undef yyFlexLexer
@@ -37,9 +39,7 @@ using std::ifstream;
 #include <cassert>
 
 #include "llcTokens.h"
-#include "CompileUnit.h"
 
-#include "pent_include.h"
 #include "Application.h"
 
 //#define CTRACE(X)
@@ -72,6 +72,7 @@ MsgType msg(const MsgType msgType, const char * const msgDetails, CompileUnit *c
 /****************************************************************************/
 
 // Compile Unit **************************************************************
+#include "CompileUnit.h"
 
 // Wheeee! Debugging stuff...
 void CompileUnit::debugPrint(std::ostream &o, CompileNode *n) const
