@@ -908,6 +908,42 @@ void Item::leavingFastArea()
 	callUsecodeEvent_leaveFastArea();
 }
 
+uint16 Item::openGump(uint32 gumpshape)
+{
+	if (flags & FLG_GUMP_OPEN) return 0;
+	assert(gump == 0);
+	Shape* shape = GameData::get_instance()->getGumps()->getShape(gumpshape);
+
+	ContainerGump* cgump = new ContainerGump(shape, 0, objid,
+											 Gump::FLAG_ITEM_DEPENDANT);
+	//!!TODO: clean up the way this is set
+	//!! having the itemarea associated with the shape through the 
+	//!! GumpShapeFlex maybe
+	cgump->setItemArea(GameData::get_instance()->
+					   getGumps()->getGumpItemArea(gumpshape));
+	cgump->InitGump();
+	GUIApp *app = GUIApp::get_instance();
+	app->getDesktopGump()->AddChild(cgump);
+	flags |= FLG_GUMP_OPEN;
+	gump = cgump->getObjId();
+
+	return gump;
+}
+
+void Item::closeGump()
+{
+	if (!(flags & FLG_GUMP_OPEN)) return;
+
+	Gump* g = GUIApp::get_instance()->getGump(gump);
+	assert(g);
+	g->Close();
+
+	// can we already clear gump here, or do we need to wait for the gump
+	// to really close??
+	clearGump();
+}
+
+
 void Item::clearGump()
 {
 	gump = 0;
@@ -951,23 +987,37 @@ void Item::grab()
 	}
 }
 
+
+
 void Item::saveData(ODataSource* ods)
 {
+#if 0
+	if (extendedflags & EXT_INGLOB) {
+		ods->write2(2);
+		Object::saveData(ods);
+		ods->write2(extendedflags);
+		ods->write2(glob_next);
+		return;
+	}
+#endif
 	ods->write2(1); // version
 	Object::saveData(ods);
-	ods->write4(shape);
-	ods->write4(frame);
-	ods->write2(x);
-	ods->write2(y);
-	ods->write2(z);
+	ods->write2(static_cast<uint16>(shape));
+	ods->write2(static_cast<uint16>(frame));
+	ods->write2(static_cast<uint16>(x));
+	ods->write2(static_cast<uint16>(y));
+	ods->write2(static_cast<uint16>(z));
 	ods->write2(flags);
 	ods->write2(quality);
 	ods->write2(npcnum);
 	ods->write2(mapnum);
-	ods->write4(extendedflags);
-	ods->write2(gump);
-	ods->write2(gravitypid);
-	ods->write2(glob_next);
+	if (getObjId() != 0xFFFF) {
+		// these only make sense in currently loaded items
+		ods->write2(static_cast<uint16>(extendedflags));
+		ods->write2(gump);
+		ods->write2(gravitypid);
+		ods->write2(glob_next);
+	}
 }
 
 bool Item::loadData(IDataSource* ids)
@@ -976,8 +1026,8 @@ bool Item::loadData(IDataSource* ids)
 	if (version != 1) return false;
 	if (!Object::loadData(ids)) return false;
 
-	shape = ids->read4();
-	frame = ids->read4();
+	shape = ids->read2();
+	frame = ids->read2();
 	x = ids->read2();
 	y = ids->read2();
 	z = ids->read2();
@@ -985,10 +1035,14 @@ bool Item::loadData(IDataSource* ids)
 	quality = ids->read2();
 	npcnum = ids->read2();
 	mapnum = ids->read2();
-	extendedflags = ids->read4();
-	gump = ids->read2();
-	gravitypid = ids->read2();
-	glob_next = ids->read2();
+	if (getObjId() != 0xFFFF) {
+		extendedflags = ids->read2();
+		gump = ids->read2();
+		gravitypid = ids->read2();
+		glob_next = ids->read2();
+	} else {
+		extendedflags = gump = gravitypid = glob_next = 0;
+	}
 
 	//!! hackish...
 	if (extendedflags & EXT_INCURMAP) {
@@ -1902,24 +1956,7 @@ uint32 Item::I_openGump(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(gumpshape);
 	if (!item) return 0;
 
-	if (item->flags & FLG_GUMP_OPEN) return 0;
-	assert(item->gump == 0);
-
-	Shape* shape = GameData::get_instance()->getGumps()->getShape(gumpshape);
-
-	ContainerGump* cgump = new ContainerGump(shape, 0, item->getObjId(),
-											 Gump::FLAG_ITEM_DEPENDANT);
-	//!!TODO: clean up the way this is set
-	//!! having the itemarea associated with the shape through the 
-	//!! GumpShapeFlex maybe
-	cgump->setItemArea(GameData::get_instance()->
-					   getGumps()->getGumpItemArea(gumpshape));
-	cgump->InitGump();
-	GUIApp *app = GUIApp::get_instance();
-	app->getDesktopGump()->AddChild(cgump);
-	item->flags |= FLG_GUMP_OPEN;
-	item->gump = cgump->getObjId();
-
+	item->openGump(gumpshape);
 	return 0;
 }
 
@@ -1928,16 +1965,7 @@ uint32 Item::I_closeGump(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
-	if (!(item->flags & FLG_GUMP_OPEN)) return 0;
-
-	Gump* g = GUIApp::get_instance()->getGump(item->getGump());
-	assert(g);
-	g->Close();
-
-	// can we already clear gump here, or do we need to wait for the gump
-	// to really close??
-	item->clearGump();
-
+	item->closeGump();
 	return 0;
 }
 

@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "XMidiEventList.h"
 
 const MidiDriver::MidiDriverDesc TimidityMidiDriver::desc = 
-		MidiDriver::MidiDriverDesc ("TimidityMidiDriver", createInstance);
+		MidiDriver::MidiDriverDesc ("Timidity", createInstance);
 
 TimidityMidiDriver::TimidityMidiDriver() :
 	LowLevelMidiDriver()

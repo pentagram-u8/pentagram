@@ -56,6 +56,11 @@ A sample pentagram.cfg is included below:
    480
   </height>
  </video>
+ <audio>
+  <midi_driver>
+  disabled/windows/fmopl/timidity/coreaudio
+  </midi_driver>
+ </audio>
 </config>
 
 Replace '/path/to/u8' with the directory containing 'u8.exe'.
@@ -63,6 +68,12 @@ Replace '/path/to/u8/work/dir' with the work directory (not used and
 necessary yet - don't ask).
 Replace '/path/to/pentagram/data' with the pentagram data directory (that's
 the directory that contains fixedfont.tga).
+Pick one of the midi drivers: disabled, windows, fmopl, timidity, coreaudio.
+If you don't specify one, Pentagram will automatically select one, based on
+your platform.
+(Note: Windows will only work on Windows. CoreAudio only on MacOSX.)
+(Note: for timidity you'll need a timidity patch set, and you may have
+ to set the config/audio/timiditycfg entry to the full path of timidity.cfg.)
 
 KEYBOARD COMMANDS
 =================

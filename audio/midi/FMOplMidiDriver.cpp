@@ -18,7 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/FMOplMidiDriver.cpp,v 1.2 2003/07/05 19:01:32 colourles Exp $
+ * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/FMOplMidiDriver.cpp,v 1.3 2003/07/06 15:17:01 wjpalenstijn Exp $
  */
 
 #include "pent_include.h"
@@ -34,7 +34,7 @@
 #include <cmath>
 
 const MidiDriver::MidiDriverDesc FMOplMidiDriver::desc = 
-		MidiDriver::MidiDriverDesc ("FMOplMidiDriver", createInstance);
+		MidiDriver::MidiDriverDesc ("FMOpl", createInstance);
 
 //#define LUCAS_MODE
 

@@ -125,18 +125,19 @@ char classname[classlen]	class name of this Object
 
 
 
-Object: (v1)
-uint16 version
+Object: (unversioned)
 uint16 objid
 
 Item: (v1)
 uint16 version
 <Object>
-uint32 shape, frame
+uint16 shape, frame
 uint16 x,y,z
 uint16 flags, quality, npcnum, mapnum
-uint32 extendedflags
-uint16 gump, gravity_pid, glob_next
+if (objid != 0xFFFF) {
+   uint16 extendedflags
+   uint16 gump, gravity_pid, glob_next
+}
 
 Container: (v1)
 uint16 version

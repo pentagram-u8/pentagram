@@ -84,15 +84,14 @@ void Object::writeObjectHeader(ODataSource* ods)
 
 void Object::saveData(ODataSource* ods)
 {
-	ods->write2(1); // version
+	// note: Object is unversioned. If we ever want to version it,
+	// increase the global savegame version
+
 	ods->write2(objid);
 }
 
 bool Object::loadData(IDataSource* ids)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-
 	objid = ids->read2();
 
 	return true;

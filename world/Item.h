@@ -158,6 +158,11 @@ public:
 	uint16 getGump() { return gump; }
 	//! Call this to notify the Item's open Gump has closed.
 	void clearGump(); // set gump to 0 and clear the GUMP_OPEN flag
+	//! Open a gump with the given shape for this Item
+	uint16 openGump(uint32 gumpshape);
+	//! Close this Item's gump, if any
+	void closeGump();
+
 
 	//! Get the next Item in the Glob this Item belongs to
 	uint16 getGlobNext() const { return glob_next; }

@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 const MidiDriver::MidiDriverDesc CoreAudioMidiDriver::desc = 
-		MidiDriver::MidiDriverDesc ("CoreAudioMidiDriver", createInstance);
+		MidiDriver::MidiDriverDesc ("CoreAudio", createInstance);
 
 CoreAudioMidiDriver::CoreAudioMidiDriver() : 
 	au_MusicDevice(0), au_output(0)

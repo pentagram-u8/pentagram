@@ -1,3 +1,10 @@
+2003-07-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* README: added config/audio/midi_driver option
+	* audio/midi/*: changed midi driver names
+	  (they're now: windows, fmopl, timidity, coreaudio)
+	* world/Item.*: openGump(), closeGump() functions
+	* world/Object.cpp, world/Item.cpp: changed Object/Item savegame format
+
 2003-07-06  Max Horn <max@quendi.de>
 	* audio/midi/CoreAudioMidiDriver.*: Fixed some GCC 3.3 warnings;
 	  implemented increaseThreadPriority/yield.

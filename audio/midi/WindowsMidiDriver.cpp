@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "WindowsMidiDriver.h"
 
 const MidiDriver::MidiDriverDesc WindowsMidiDriver::desc = 
-		MidiDriver::MidiDriverDesc ("WindowsMidiDriver", createInstance);
+		MidiDriver::MidiDriverDesc ("Windows", createInstance);
 
 using std::endl;
 #include "Q_strcasecmp.h"
