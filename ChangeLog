@@ -1,3 +1,6 @@
+2005-03-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/UCProcess.cpp: use get_class_name in UCProcess::dumpInfo
+
 2005-03-13  Ryan Nunn <colourles@users.sourceforge.net>
 	* graphics/*RenderSurface.* : Added parameter to shape draw functions 
 	  to specify to use the untransformed palette.
