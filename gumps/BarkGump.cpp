@@ -85,7 +85,7 @@ void BarkGump::InitGump()
 
 void BarkGump::NextText()
 {
-	TextWidget *widget = dynamic_cast<TextWidget*>
+	TextWidget *widget = p_dynamic_cast<TextWidget*>
 		(GUIApp::get_instance()->getGump(textwidget));
 	assert(widget);
 	if (widget->setupNextText()) {
