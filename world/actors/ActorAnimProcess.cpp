@@ -44,7 +44,7 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 	currentindex = 0;
 }
 
-bool ActorAnimProcess::run(uint32 framenum)
+bool ActorAnimProcess::run(const uint32 framenum)
 {
 	if (!animaction) {
 		terminate();

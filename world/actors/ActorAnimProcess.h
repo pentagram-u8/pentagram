@@ -30,7 +30,7 @@ public:
 	//! note: this probably needs some more parameters
 	ActorAnimProcess(Actor* actor, uint32 action, uint32 dir);
 
-	virtual bool run(uint32 framenum);
+	virtual bool run(const uint32 framenum);
 
 private:
 	Actor* actor;
