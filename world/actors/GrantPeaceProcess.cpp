@@ -102,7 +102,7 @@ bool GrantPeaceProcess::run(const uint32 /*framenum*/)
 		// then find all the undead in the area
 		UCList itemlist(2);
 		LOOPSCRIPT(script2, LS_TOKEN_TRUE);
-		currentmap->areaSearch(&itemlist, script2, sizeof(script),
+		currentmap->areaSearch(&itemlist, script2, sizeof(script2),
 							   caster, 768, false);
 
 		for (unsigned int i = 0; i < itemlist.getSize(); ++i) {
