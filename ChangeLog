@@ -1,3 +1,6 @@
+2005-01-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* filesys/Archive.*: reverse order of searching input sources
+
 2005-01-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* Makefile.in, acinclude.m4: rebuild config.h when necessary
 

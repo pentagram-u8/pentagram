@@ -49,7 +49,7 @@ public:
 
 	//! add input source.
 	//! ArchiveFile will be deleted on destruction
-	//! Input sources are used in the order they are added.
+	//! Input sources are used in the reversed order they are added.
 	//! Effect of adding sources after having accessed objects is undef.
 	bool addSource(ArchiveFile* af);
 
