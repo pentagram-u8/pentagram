@@ -78,7 +78,8 @@ void ConvertFlexes(IDataSource *readfile, ODataSource *writefile)
 	uint32 num_entries = readfile->read4();
 
 	// Write blank stuff for output 
-	for (i = 0; i < 0x54; i++) writefile->write1(0);
+	for (i = 0; i < 0x52; i++) writefile->write1(0x1A);
+	writefile->write2(0);
 
 	// Write num entries
 	writefile->write4(num_entries);
