@@ -27,19 +27,43 @@ public:
 	MainActor();
 	virtual ~MainActor();
 
+	//! teleport to the given location on the given map
 	virtual void teleport(int mapnum, sint32 x, sint32 y, sint32 z);
+
+	//! teleport to a teleport-destination egg
+	//! \param mapnum The map to teleport to
+	//! \param teleport_id The ID of the egg to teleport to
 	void teleport(int mapnum, int teleport_id); // to teleportegg
 
 	bool hasJustTeleported() const { return justTeleported; }
 	void setJustTeleported(bool t) { justTeleported = t; }
 
+	//! accumulate a little bit of strength. When you reach 650 you gain
+	//! one strength point. (There's a chance you gain strength sooner)
+	void accumulateStr(int n);
+
+	//! accumulate a little bit of dexterity. When you reach 650 you gain
+	//! one dex. point. (There's a chance you gain dex. sooner)
+	void accumulateDex(int n);
+
+	//! accumulate a little bit of intelligence. When you reach 650 you gain
+	//! one int. point. (There's a chance you gain int. sooner)
+	void accumulateInt(int n);
+
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 
 	INTRINSIC(I_teleportToEgg);
+	INTRINSIC(I_accumulateStrength);
+	INTRINSIC(I_accumulateDexterity);
+	INTRINSIC(I_accumulateIntelligence);
 
 private:
 	bool justTeleported;
+
+	int accumStr;
+	int accumDex;
+	int accumInt;
 };
 
 #endif

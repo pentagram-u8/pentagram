@@ -79,6 +79,42 @@ void MainActor::teleport(int mapnum, int teleport_id)
 	justTeleported = true;
 }
 
+void MainActor::accumulateStr(int n)
+{
+	// already max?
+	if (strength == 35) return; //!! constant
+
+	accumStr += n;
+	if (accumStr >= 650 || std::rand() % (650 - accumStr) == 0) { //!! constant
+		strength++;
+		accumStr = 0;
+	}
+}
+
+void MainActor::accumulateDex(int n)
+{
+	// already max?
+	if (dexterity == 35) return; //!! constant
+
+	accumDex += n;
+	if (accumDex >= 650 || std::rand() % (650 - accumDex) == 0) { //!! constant
+		dexterity++;
+		accumDex = 0;
+	}
+}
+
+void MainActor::accumulateInt(int n)
+{
+	// already max?
+	if (intelligence == 35) return; //!! constant
+
+	accumInt += n;
+	if (accumInt >= 650 || std::rand() % (650 - accumInt) == 0) { //!! constant
+		intelligence++;
+		accumInt = 0;
+	}
+}
+
 
 
 class TeleportToEggProcess : public Process
@@ -118,4 +154,31 @@ uint32 MainActor::I_teleportToEgg(const uint8* args, unsigned int /*argsize*/)
 
 	return Kernel::get_instance()->addProcess(
 		new TeleportToEggProcess(mapnum, teleport_id));
+}
+
+uint32 MainActor::I_accumulateStrength(const uint8* args,
+									   unsigned int /*argsize*/)
+{
+	ARG_SINT16(n);
+	MainActor* av = p_dynamic_cast<MainActor*>(
+		World::get_instance()->getNPC(1));
+	av->accumulateStr(n);
+}
+
+uint32 MainActor::I_accumulateDexterity(const uint8* args,
+									   unsigned int /*argsize*/)
+{
+	ARG_SINT16(n);
+	MainActor* av = p_dynamic_cast<MainActor*>(
+		World::get_instance()->getNPC(1));
+	av->accumulateDex(n);
+}
+
+uint32 MainActor::I_accumulateIntelligence(const uint8* args,
+									   unsigned int /*argsize*/)
+{
+	ARG_SINT16(n);
+	MainActor* av = p_dynamic_cast<MainActor*>(
+		World::get_instance()->getNPC(1));
+	av->accumulateInt(n);
 }

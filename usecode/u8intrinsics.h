@@ -283,9 +283,9 @@ Intrinsic U8Intrinsics[] = {
 	PaletteFaderProcess::I_fadeFromWhite,
 	0, // playEndgame
 	0, // FeedAvatar
-	0, // AccumulateStrength
-	0, // AccumulateIntelligence
-	0, // AccumulateDexterity
+	MainActor::I_accumulateStrength,
+	MainActor::I_accumulateIntelligence,
+	MainActor::I_accumulateDexterity,
 	0, // ClrAvatarInCombat
 	0, // SetAvatarInCombat
 	0, // IsAvatarInCombat
