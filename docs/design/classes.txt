@@ -1,0 +1,182 @@
+Classes for Pentagram
+======================
+
+General Classes
+---------------
+
+class Pentagram
+ - Base application
+
+class FileSystem
+ - Handles all file related matters
+ - Used to open files
+ - Used to get correct filenames
+
+class InputHandler
+ - Handles all user input
+ - Does dispatching of input to all the component
+ - Controls binding.
+
+
+Kernel and Thread Classes
+-------------------------
+
+class PentagramKernel
+ - The Kernel
+
+class BasicThread
+ - Basic Thread class
+
+class VolatileThread
+ - Basic Volatile Thread class
+ - Saved to disk in save games
+ - Terminated on map changes
+
+class UCThread : public VolatileThread
+ - Class for Usecode threads
+
+
+Flex Classes
+------------
+
+class Flex
+ - Base Flex class
+ - Basic functionality
+
+class FlexWriter : public Flex
+ - Allows for dynamic flexes
+ - Can write to disk
+
+class ShapeFlex : protected Flex
+ - Class for Flex files that only contain shapes (u8shapes, u8gumps and u8fonts)
+ - Methods return Shape objects
+
+class FontFlex : public ShapeFlex
+ - Class for flex containing Fonts. (u8fonts)
+ - Methods return Font objects
+
+class MusicFlex : protected Flex
+ - Class for Music.flx
+ - Returns XMIDI objects
+
+class SoundFlex : public Flex
+ - Class for flexes countaining wave sounds
+
+class SpeechFlex : public SoundFlex
+ - A sound flex for speech.
+
+class SKFFlex : protected Flex
+ - class for SKF files.
+
+class AnimationFlex : protected Flex
+ - class for Anim.dat
+
+class GlobFlex : protected Flex
+ - class for Glob.flx
+
+class MapFlex : protected Flex
+ - class for Fixed.dat and Nonfixed.dat
+
+class XFormFlex : public Flex
+ - Class for XFORMPAL.DAT
+
+class WpnOvlayFlex : protected Flex
+ - Class for WPNOVLAY.DAT
+
+class UsecodeFlex : protected Flex
+ - Class for Usecode flexes
+
+
+Graphics/Shape Classes
+----------------------
+
+class DisplayManger
+ - Generates, sorts and paints the display list
+ - Used to trace mouse clicks
+
+struct DisplayListNode
+ - Node in display list
+
+class Shape
+ - A shape
+
+class ShapeFrame
+ - Paintable shape
+
+class OpenGL
+ - OpenGL renderer
+
+class ShapeGL
+ - OpenGL Shape
+
+class ShapeFrameGL
+ - OpenGL ShapeFrame
+
+class ShapeInfo
+ - Class for TYPEFLAG.DAT data
+ - See old ShapeInfo class in old ShapeManager.h
+
+class Animation
+ - Base Class for Animations from Anim.dat
+
+class AnimationThread : public VolatileThread
+ - Class for running an Animation from Anim.dat
+
+
+Audio Classes
+-------------
+
+class AudioThread : public BasicThread
+ - Class used to control sound effects and speech
+
+class MusicThread : public BasicThread
+ - Class used to control the music
+
+
+Gump Classes
+------------
+
+class GumpManager
+ - Does Gump Handling
+
+class Gump
+ - Base Gump class
+
+class ModalGump : public Gump
+ - Base class for modal gumps
+
+class MovableGump : public Gump
+ - Base class for non static gumps
+
+class AvatarGump : public MoveableGump
+ - Gump for avatar's Paperdoll
+
+class BookLikeGump : public ModalGump
+ - Base gump for modal book like based gump
+
+class BookGump : public BookLikeGump
+
+class ScrollGump : public BookLikeGump
+
+class TombStoneGump : public BookLikeGump
+
+class SignGump : public BookLikeGump
+
+class ItemGump : public MoveableGump
+ - Base class for item gumps
+
+class BarrelGump : public ItemGump
+
+class ChestGump : public ItemGump
+
+class BoxGump : public ItemGump
+
+class CorpseGump : public ItemGump
+
+
+Misc Classes
+------------
+
+class FlicPlayer
+ - Plays SKF cinematics
+

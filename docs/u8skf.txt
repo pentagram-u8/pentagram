@@ -1,0 +1,55 @@
+Info about the U8 skf files
+---------------------------
+
+The SKF files are used for the intro and endgame sequences.
+
+They are just a simple flex containing a series of 'frames' that the flic
+player interpretes to do various things.
+
+I believe that Index 0 in the flex is what can be described as the play list.
+It contains what to play, and when to play it.
+
+Each packet in Index 0 contains a type byte. Here are some the I konw:
+Type 0x03 : Play Music. Data is num in music.flx
+Type 0x04 : Slow stop music
+Type 0x05 : Play SFX. Data is num in sound.flx
+Type 0x06 : Stop SFX.
+Type 0x07 : Set Speed (FPS????)
+Type 0x08 : Fade to black
+Type 0x09 : Fade to palette (Data is palette index in skf)
+Type 0x0C : Wait
+Type 0x0E : Play sound (Data is index in the skf)
+
+The rest of the indices contain the actual frames. There are various types of
+data.
+
+The first 2 bytes desribe what type of data.
+
+Here is what I know:
+
+Type 0x00 : Nothing
+
+Type 0x01 : Palette
+
+Type 0x02 : Shape
+Same format as a normal shape. However the full size normal header is missing.
+The shape is just a single frame. The header in the shapes starts of from the
+shapeframe header compression word.
+Header {
+	uint16	compression;
+	uint16	width;
+	uint16	height;
+	uint16	xoff;
+	uint16	yoff;
+};
+
+Type 0x0D : Signed 8 Bit Sound
+Header {
+	uint32	size;
+	uint16	samplerate;
+	uint16	channels;
+	uint8	unused[24];
+};
+Signed 8bit data follows
+
+Type 0x11 : Subtitle
