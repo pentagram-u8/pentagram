@@ -250,7 +250,8 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 		pout << shape << "," << frame << ":\t(" << x << "," << y << "," << z << "),\t" << std::hex << flags << std::dec << ", " << quality << ", " << npcnum << ", " << mapnum << ", " << next << std::endl;
 #endif
 
-		Actor *actor = ItemFactory::createActor(shape,frame,quality,flags|Item::FLG_IN_NPC_LIST,
+		Actor *actor = ItemFactory::createActor(shape,frame,quality,
+												flags|Item::FLG_IN_NPC_LIST,
 												npcnum,mapnum, 0);
 		if (!actor) {
 #ifdef DUMP_ITEMS
@@ -262,14 +263,33 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 
 		// read npcdata:
 		npcds->seek(i * 0x31);
-		actor->setStr(npcds->read1());
-		actor->setDex(npcds->read1());
-		actor->setInt(npcds->read1());
-		actor->setHP(npcds->read1());
-		actor->setDir(npcds->read1()); //! is this correct?
-		actor->setLastAnim(npcds->read1());
+		actor->setStr(npcds->read1()); // 0x00: strength
+		actor->setDex(npcds->read1()); // 0x01: dexterity
+		actor->setInt(npcds->read1()); // 0x02: intelligence
+		actor->setHP(npcds->read1());  // 0x03: hitpoints
+		actor->setDir(npcds->read1()); // 0x04: direction
+		actor->setLastAnim(npcds->read2()); // 0x05: last anim
+		npcds->skip(1); // 0x07: unknown 
+		npcds->skip(1); // 0x08: current anim frame
+		npcds->skip(1); // 0x09: start Z of current fall
+		npcds->skip(1); // 0x0A: unknown
+		uint8 align = npcds->read1(); // 0x0B: alignments
+		actor->setAlignment(align & 0x0F);
+		actor->setEnemyAlignment(align & 0xF0);
+		npcds->skip(15); // 0x0C-0x1A: unknown
+		actor->clearActorFlag(0xFF);
+		actor->setActorFlag(npcds->read1()); // 0x1B: flags
+		npcds->skip(1); // 0x1C: unknown
+		npcds->skip(16); // 0x1D-0x2C: equipment
+		sint16 mana = static_cast<sint16>(npcds->read2()); // 0x2D: mana
+		actor->setMana(mana);
+		actor->clearActorFlag(0xFFFF00);
+		uint32 flags2F = npcds->read1(); // 0x2F: flags
+		actor->setActorFlag(flags2F << 8);
+		uint32 flags30 = npcds->read1(); // 0x30: flags
+		actor->setActorFlag(flags30 << 16);
 
-		// TODO: (decode and) read rest of npcdata.dat...
+		// TODO: decode and use rest of npcdata.dat
 
 		ObjectManager::get_instance()->assignActorObjId(actor, i);
 	}

@@ -14,7 +14,12 @@ Frame sequences have the following format:
 4 byte header:
 byte 0: length of sequences
 byte 1: flags: bit 0: two-step animation
+	       bit 1: unknown (attack animation?)
                bit 2: looping animation
+	       bit 3: unknown (don't stop animation if blocked?)
+	       bit 4: unknown
+	       bit 5: unknown
+	       bit 6: unknown
                bit 7: hanging
 byte 2, bits 0-3: time to show each frame (not sure which unit)
 byte 2, bits 4-7: unknown
@@ -32,9 +37,7 @@ byte 3: SFX# to play (zero for none?)
 byte 4: movement in 'main' direction. (* 4 units)
 byte 5:	bit 0: unknown (only used when moving backwards?)
 	bit 1: on-the-ground?
-	bit 2: unknown (attack-related?)
-	bit 3: unknown (attack-related?)
-	bit 4: unknown (only in action 7 for mages. spell trigger?)
+	bit 2-4: unknown (attack-range?)
 	bit 5: flipped
 	bits 6-7: unused
 
@@ -58,7 +61,7 @@ Actions:
 13: stepping back while reaching for weapon
 14: falling
 15: standing in combat stance
-16: preparing to jump
+16: preparing to jump (or landing from a fall?)
 17: jumping
 18: jumping with airwalk
 19-26: climbing up on increasingly high objects

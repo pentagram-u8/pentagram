@@ -1,3 +1,8 @@
+2004-02-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/World.cpp: read all of npcdata.dat
+	* world/actors/Actor.h: fixed mislabelled flag
+	* docs/u8anim.txt: some flag-guessing
+
 2004-02-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/MainActor.*: added teleport, mark, recall console cmds.
 	* conf/Configuration.cpp: actually use readonly setting of config files

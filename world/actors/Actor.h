@@ -132,7 +132,7 @@ public:
 		ACT_INCOMBAT       = 0x000800,
 		ACT_DEAD           = 0x001000,
 		
-		ACT_AIRWALK        = 0x020000, // flags from npcdata byte 0x30
+		ACT_AIRWALK        = 0x010000, // flags from npcdata byte 0x30
 		ACT_IMMORTAL       = 0x040000,
 		ACT_WITHSTANDDEATH = 0x080000,
 		ACT_FEIGNDEATH     = 0x100000,
