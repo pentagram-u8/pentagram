@@ -47,6 +47,7 @@ pentagram_OBJ = \
 	world/Item.o \
 	world/Container.o \
 	world/ItemFactory.o \
+	world/ItemSorter.o \
 	world/Map.o \
 	world/CurrentMap.o \
 	world/Glob.o \
