@@ -1,6 +1,8 @@
 2003-06-24  Max Horn <max@quendi.de>
 	* usecode/UCMachine.cpp, usecode/UCProcess.cpp, usecode/UCStack.h:
 	  rewrote UCStack to not inherit from IDataSource
+	* kernel/CoreApp.h, kernel/GUIApp.h, kernel/Process.h: turned some
+	  plain comments into doxygen comments
 
 2003-06-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GUIApp.*: conf/ supports multiple config files/roots,

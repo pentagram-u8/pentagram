@@ -48,8 +48,8 @@ public:
 	
 	virtual void ForceQuit() { isRunning=false; };
 
-	//! startup the application. This will prepare the application for run().
-	//! should call parent class' startup().
+	//! Startup the application. This will prepare the application for run().
+	//! Should call parent class' startup().
 	void startup();
 
 	uint32 getFrameNum() const { return framenum; };
@@ -62,8 +62,8 @@ public:
 	
 protected:
 
-	//! declare commandline arguments
-	//! should call parent class' DeclareArgs().
+	//! Declare commandline arguments.
+	//! Should call parent class' DeclareArgs().
 	virtual void DeclareArgs();
 	
 	//! Fill a GameInfo struct for the give game name
@@ -109,7 +109,7 @@ private:
 	//! setup default virtual paths (@home, @data)
 	void setupVirtualPaths();
 
-	//! load configuration file
+	//! load configuration files
 	//! Note: currently this also does game selection. Needs to change
 	void loadConfig();
 	

@@ -104,21 +104,21 @@ private:
 	bool runSDLInit;
 	
 	// Timing stuff
-	sint32 lerpFactor;		// Interpolation factor for this frame (0-256)
-	bool inBetweenFrame;	// Set true if we are doing an inbetween frame
+	sint32 lerpFactor;		//!< Interpolation factor for this frame (0-256)
+	bool inBetweenFrame;	//!< Set true if we are doing an inbetween frame
 	
-	bool frameSkip;			// Set to true to enable frame skipping (default false)
-	bool frameLimit;		// Set to true to enable frame limiting (default true)
-	bool interpolate;		// Set to true to enable interpolation (default true)
-	sint32 animationRate;	// The animation rate in ms. Affects all processes! (default 33)
+	bool frameSkip;			//!< Set to true to enable frame skipping (default false)
+	bool frameLimit;		//!< Set to true to enable frame limiting (default true)
+	bool interpolate;		//!< Set to true to enable interpolation (default true)
+	sint32 animationRate;	//!< The animation rate in ms. Affects all processes! (default 33)
 	
 	// Sort of Camera Related Stuff, move somewhere else
 	
-	bool avatarInStasis;    // If this is set to true, Avatar can't move, 
-	                        // nor can Avatar start more usecode
-	bool paintEditorItems;  // If true, paint items with the SI_EDITOR flag
+	bool avatarInStasis;    //!< If this is set to true, Avatar can't move, 
+	                        //!< nor can Avatar start more usecode
+	bool paintEditorItems;  //!< If true, paint items with the SI_EDITOR flag
 	
-	bool painting;			// Set true when painting
+	bool painting;			//!< Set true when painting
 	
 	static void	conAutoPaint(void);
 

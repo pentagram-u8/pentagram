@@ -50,25 +50,25 @@ public:
 
 	uint16 getPid() { return pid; }
 protected:
-	// process id
+	//! process id
 	uint16 pid;
 
-	bool active; // is the process in the run-list?
-	bool suspended; // suspended? (because it's waiting for something)
-	                //! (this may have to be a count instead, if a process
-	                //! is waiting for more than one others)
+	bool active; //!< is the process in the run-list?
+	bool suspended; //!< suspended? (because it's waiting for something)
+	                //!< (this may have to be a count instead, if a process
+	                //!< is waiting for more than one others)
 	bool terminated;
-	bool terminate_deferred;	// automatically call terminate next frame
+	bool terminate_deferred;	//!< automatically call terminate next frame
 
-	// item we are assigned to
+	//! item we are assigned to
 	uint16 item_num;
 	uint16 type;
 
-	// process result
+	//! process result
 	uint32 result;
 
-	// processes waiting for this one to finish
-	// when this process terminates, awaken them and pass them the result val.
+	//! Processes waiting for this one to finish.
+	//! When this process terminates, awaken them and pass them the result val.
 	std::vector<uint16> waiting;
 };
 
