@@ -1,4 +1,8 @@
 2003-05-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/AnimDat.cpp, world/actors/AnimAction.h: read more anim. data
+	* docs/u8anim.txt: changed some flag guesses
+
+2003-05-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/CurrentMap.*: findDestination to locate a teleportegg
 	* world/MonsterEgg.*: stub-ish monsteregg
 	* world/TeleportEgg.*: stub-ish teleportegg

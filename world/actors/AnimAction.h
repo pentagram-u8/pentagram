@@ -26,7 +26,8 @@ struct AnimFrame
 	int frame;
 	int deltaz;
 	int deltadir;
-	int flags;
+	int sfx;
+	uint32 flags;
 
 	inline bool is_flipped() { return (flags & 32) != 0; }
 };

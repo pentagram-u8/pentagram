@@ -100,11 +100,14 @@ void AnimDat::load(IDataSource *ds)
 
 				for (unsigned int j = 0; j < actionsize; j++)
 				{
-					f.frame = ds->read2() & 0x7FF;
+					f.frame = ds->read1(); // & 0x7FF;
+					uint8 x = ds->read1();
+					f.frame += (x & 0x7) << 8;
 					f.deltaz = ds->read1();
-					ds->skip(1); // unknown
+					f.sfx = ds->read1();
 					f.deltadir = ds->readXS(1);
 					f.flags = ds->read1();
+					f.flags += (x & 0xF8) << 8;
 					a->actions[action]->frames[dir].push_back(f);
 				}
 			}

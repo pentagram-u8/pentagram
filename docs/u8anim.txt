@@ -11,19 +11,24 @@ consists of 64 4-byte (absolute) offsets. These point to the actual
 frame sequences. The 64 sequences are specific 'actions'. They're listed below.
 
 Frame sequences have the following format:
-4 byte header: byte 0 is length of sequences. rest unknown
+4 byte header:
+byte 0: length of sequences
+byte 1: unknown
+byte 2: probably the number of times to repeat a frame
+byte 3: unknown
+
 header is followed by 8 * length 6-byte frame entries: 
 (8 = number of directions, in the order N NE E SE S SW W NW) 
 
 byte 0 + lowest 3 bits of byte 1: frame number
-byte 1, bit 3: footstep?
+byte 1, bit 3: interruptable?
 	bit 4: unknown (only used for troll,daemon,skeleton,eyebeast, act.14)
 	bit 5-7: unused
 byte 2: change in Z coordinate
 byte 3: SFX# to play (zero for none?)
 byte 4: movement in 'main' direction. (* 4 units)
 byte 5:	bit 0: unknown (only used when moving backwards?)
-	bit 1: interruptable? on-the-ground?
+	bit 1: on-the-ground?
 	bit 2: unknown (attack-related?)
 	bit 3: unknown (attack-related?)
 	bit 4: unknown (only in action 7 for mages. spell trigger?)
