@@ -269,6 +269,7 @@ private:
 	// Load and save games from arbitrary filenames from the console
 	static void			ConCmd_saveGame(const Console::ArgsType &args, const Console::ArgvType &argv);	//!< "GUIApp::saveGame <filename>" console command
 	static void			ConCmd_loadGame(const Console::ArgsType &args, const Console::ArgvType &argv);	//!< "GUIApp::loadGame <filename>" console command
+	static void			ConCmd_newGame(const Console::ArgsType &args, const Console::ArgvType &argv);	//!< "GUIApp::newGame" console command
 
 	static void			ConCmd_quit(const Console::ArgsType &args, const Console::ArgvType &argv);		//!< "quit" console command
 

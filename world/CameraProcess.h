@@ -39,6 +39,8 @@ public:
 	CameraProcess(sint32 x, sint32 y, sint32 z);				// Goto location
 	CameraProcess(sint32 x, sint32 y, sint32 z, sint32 time);	// Scroll to location
 
+	virtual ~CameraProcess();
+
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 

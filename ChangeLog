@@ -1,3 +1,8 @@
+2004-10-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/CameraProcess.*: add destructor for clearing static camera
+	* kernel/GUIApp.cpp: hide console and reset time when starting new game
+	* kernel/GUIApp.*: GUIApp::newGame console command
+
 2004-10-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GUIApp.cpp: add 'ttf' config option for TTF overrides
 

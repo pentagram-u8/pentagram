@@ -155,6 +155,7 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 
 	con.AddConsoleCommand("GUIApp::saveGame", ConCmd_saveGame);
 	con.AddConsoleCommand("GUIApp::loadGame", ConCmd_loadGame);
+	con.AddConsoleCommand("GUIApp::newGame", ConCmd_newGame);
 	con.AddConsoleCommand("HIDManager::bind", HIDManager::ConCmd_bind);
 	con.AddConsoleCommand("HIDManager::unbind", HIDManager::ConCmd_unbind);
 	con.AddConsoleCommand("HIDManager::listbinds", HIDManager::ConCmd_listbinds);
@@ -1514,7 +1515,8 @@ void GUIApp::resetEngine()
 	// reset mouse cursor
 	while (!cursors.empty()) cursors.pop();
 	pushMouseCursor();
-	
+
+	timeOffset = -Kernel::get_instance()->getFrameNum();
 }
 
 bool GUIApp::newGame()
@@ -1534,6 +1536,7 @@ bool GUIApp::newGame()
 	pout << "Create Graphics Console" << std::endl;
 	consoleGump = new ConsoleGump(0, 0, dims.w, dims.h);
 	consoleGump->InitGump();
+	consoleGump->HideConsole();
 	desktopGump->AddChild(consoleGump);
 
 	game->startGame();
@@ -1764,6 +1767,11 @@ void GUIApp::ConCmd_loadGame(const Console::ArgsType &args, const Console::ArgvT
 	std::string filename = "@save/";
 	filename += argv[1].c_str();
 	GUIApp::get_instance()->loadGame(filename);
+}
+
+void GUIApp::ConCmd_newGame(const Console::ArgsType &args, const Console::ArgvType &argv)
+{
+	GUIApp::get_instance()->newGame();
 }
 
 

@@ -48,6 +48,12 @@ CameraProcess::CameraProcess() : Process()
 
 }
 
+CameraProcess::~CameraProcess()
+{
+	if (camera == this)
+		camera = 0;
+}
+
 uint16 CameraProcess::SetCameraProcess(CameraProcess *cam)
 {
 	if (!cam) cam = new CameraProcess(0);
