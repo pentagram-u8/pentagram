@@ -6,7 +6,7 @@ LSRC := $(wildcard $(LPATH)/*.cpp)
 LPRODUCTS := pentagram llc
 LINSTALL := pentagram
 
-include objects.mk
+include $(srcdir)/objects.mk
 
 pentagram_OBJ = \
 	$(KERNEL) \
@@ -15,6 +15,7 @@ pentagram_OBJ = \
 	$(FILESYS) \
 	$(GAMES) \
 	$(GRAPHICS) \
+	$(FONTS) \
 	$(MISC) \
 	$(CONVERT) \
 	$(CONF) \
@@ -36,6 +37,7 @@ llc_OBJ = \
 	$(FILESYS) \
 	$(GAMES) \
 	$(GRAPHICS) \
+	$(FONTS) \
 	$(MISC) \
 	$(CONVERT) \
 	$(CONF) \
@@ -56,4 +58,4 @@ llc_OBJ = \
 # removing the dependancy of the console stuff on the GUIApp.
 
 # Common rules
-include common.mk
+include $(srcdir)/common.mk

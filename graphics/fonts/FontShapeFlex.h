@@ -16,37 +16,25 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "pent_include.h"
-#include "FontShapeFlex.h"
-#include "Font.h"
+#ifndef FONTSHAPEFLEX_H
+#define FONTSHAPEFLEX_H
 
-Pentagram::Font* FontShapeFlex::getFont(uint32 fontnum)
+#include "ShapeFlex.h"
+
+class ShapeFont;
+
+class FontShapeFlex : protected ShapeFlex
 {
-	return p_dynamic_cast<Pentagram::Font*>(getShape(fontnum));
-}
-
-
-
-void FontShapeFlex::cache(uint32 shapenum)
-{
-	if (shapenum >= shapes.size()) return;
-	if (shapes[shapenum]) return;
-
-	uint8 *data = get_object(shapenum);
-	uint32 shpsize = get_size(shapenum);
-
-	// Auto detect format
-	if (!format) format = Shape::DetectShapeFormat(data,shpsize);
+public:
+	FontShapeFlex(IDataSource* ds, Pentagram::Palette* pal = 0,
+				  const ConvertShapeFormat *format = 0) :
+		ShapeFlex(ds, pal, format) { }
+	virtual ~FontShapeFlex() { }
 	
-	if (!format)
-	{
-		delete [] data;
-		perr << "Error: Unable to detect shape format for flex." << std::endl;
-		return;
-	}
+	ShapeFont* getFont(uint32 fontnum);
 
-	Shape* shape = new Pentagram::Font(data, shpsize, format);
-	if (palette) shape->setPalette(palette);
+	virtual void cache(uint32 fontnum);
+};
 
-	shapes[shapenum] = shape;
-}
+
+#endif

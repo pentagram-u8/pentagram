@@ -26,7 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Shape.h"
 #include "ShapeFrame.h"
 #include "Palette.h"
-#include "Font.h"
 #include "memset_n.h"
 
 #include "XFormBlend.h"
@@ -245,33 +244,6 @@ template<class uintX> void SoftRenderSurface<uintX>::Blit(Texture *tex, sint32 s
 	}
 
 
-}
-
-
-// Draw a character from a Font
-
-template<class uintX> void SoftRenderSurface<uintX>::PrintChar(Pentagram::Font * f, char character, int x, int y)
-{
-	Paint(f, static_cast<unsigned char>(character), x, y);
-}
-
-template<class uintX> void SoftRenderSurface<uintX>::PrintText(Pentagram::Font * f, const char* s, int x, int y)
-{
-	//!!! TODO: constants...
-	int x_start = x;
-	while (*s) {
-		if (*s == '\n' || (*s == ' ' && (x-x_start) > 160 && *(s+1) != '\n')) 
-		{
-			y += f->getHeight()-f->getVlead();
-			x = x_start;
-		}
-		else if (*s != '\r')
-		{
-			Paint(f, static_cast<unsigned char>(*s), x, y);
-			x += f->getWidth(*s)-f->getHlead();
-		}
-		s++;
-	}
 }
 
 

@@ -75,6 +75,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "DisasmProcess.h"
 #include "CompileProcess.h"
 
+#ifdef USE_SDLTTF
+#include "SDL_ttf.h"
+#include "TTFont.h"
+// HACK
+TTFont* ttffont;
+#endif
+
 #if defined(WIN32) && defined(COLOURLESS_WANTS_A_DATA_FREE_PENATGRAM)
 #include <windows.h>
 #include "resource.h"
@@ -920,6 +927,13 @@ void GUIApp::GraphicSysInit()
 	// if we've already done this...
 	if(runGraphicSysInit) return;
 	//else...
+
+#ifdef USE_SDLTTF
+	TTF_Init();
+	atexit(TTF_Quit);
+	//HACK;
+	ttffont = new TTFont("verdanab.ttf", 12);
+#endif
 
 	// Set Screen Resolution
 	pout << "Set Video Mode" << std::endl;

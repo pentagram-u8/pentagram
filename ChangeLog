@@ -1,3 +1,11 @@
+2004-01-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/fonts: added directory
+	* graphics/fonts/ShapeFont.*, ShapeRenderedText.*: the old Font class
+	* graphics/fonts/TTFont.*, TTFRenderedText.*: experimental TTF support
+	* kernel/GUIApp.cpp: initialize SDL_ttf
+	* configure.ac: autodetect SDL_ttf
+	* GUIApp.cpp, SimpleTextWidget.cpp: hack to use verdanab.ttf
+
 2004-01-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/*: added a frame-by-frame mode (F12 toggles, space advances)
 

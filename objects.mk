@@ -54,8 +54,6 @@ GRAPHICS = \
 	graphics/AnimDat.o \
 	graphics/RenderSurface.o \
 	graphics/BaseSoftRenderSurface.o \
-	graphics/Font.o \
-	graphics/FontShapeFlex.o \
 	graphics/GumpShapeFlex.o \
 	graphics/SoftRenderSurface.o \
 	graphics/Texture.o \
@@ -71,6 +69,15 @@ GRAPHICS = \
 	graphics/MainShapeFlex.o \
 	graphics/XFormBlend.o \
 	graphics/TypeFlags.o
+
+FONTS = \
+	graphics/fonts/Font.o \
+	graphics/fonts/FontShapeFlex.o \
+	graphics/fonts/RenderedText.o \
+	graphics/fonts/ShapeFont.o \
+	graphics/fonts/ShapeRenderedText.o \
+	graphics/fonts/TTFont.o \
+	graphics/fonts/TTFRenderedText.o
 
 MISC = \
 	misc/istring.o \

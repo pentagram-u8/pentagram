@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,25 +16,24 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef FONTSHAPEFLEX_H
-#define FONTSHAPEFLEX_H
+#ifndef RENDEREDTEXT_H
+#define RENDEREDTEXT_H
 
-#include "ShapeFlex.h"
+class RenderSurface;
 
-namespace Pentagram { class Font; }
-
-class FontShapeFlex : protected ShapeFlex
+class RenderedText
 {
 public:
-	FontShapeFlex(IDataSource* ds, Pentagram::Palette* pal = 0,
-				  const ConvertShapeFormat *format = 0) :
-		ShapeFlex(ds, pal, format) { }
-	virtual ~FontShapeFlex() { }
-	
-	Pentagram::Font* getFont(uint32 fontnum);
+	RenderedText();
+	virtual ~RenderedText();
 
-	virtual void cache(uint32 fontnum);
+	virtual void draw(RenderSurface* surface, int x, int y)=0;
+	virtual void getSize(int &x, int &y) { x = width; y = height; }
+
+	ENABLE_RUNTIME_CLASSTYPE();
+
+protected:
+	int width, height;
 };
-
 
 #endif

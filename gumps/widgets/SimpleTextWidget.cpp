@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003  The Pentagram Team
+ *  Copyright (C) 2003-2004  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,27 +17,36 @@
  */
 #include "pent_include.h"
 #include "SimpleTextWidget.h"
-#include "Font.h"
+#include "ShapeFont.h"
+#include "RenderedText.h"
 #include "FontShapeFlex.h"
 #include "GameData.h"
-#include "RenderSurface.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
+
+//#undef USE_SDLTTF
+
+#ifdef USE_SDLTTF
+// HACK
+#include "TTFont.h"
+extern TTFont* ttffont;
+#endif
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(SimpleTextWidget,Gump);
 
 SimpleTextWidget::SimpleTextWidget()
-	: Gump()
+	: Gump(), cached_text(0)
 {
 }
 
 SimpleTextWidget::SimpleTextWidget(int X, int Y, std::string txt, int font, int w, int h) :
-	Gump(X, Y, w, h), text(txt), fontnum(font)
+	Gump(X, Y, w, h), text(txt), fontnum(font), cached_text(0)
 {
 }
 
 SimpleTextWidget::~SimpleTextWidget(void)
 {
+	delete cached_text;
 }
 
 // Init the gump, call after construction
@@ -45,8 +54,13 @@ void SimpleTextWidget::InitGump()
 {
 	Gump::InitGump();
 
+#ifdef USE_SDLTTF
+	// HACK
+	Pentagram::Font *font = ttffont;
+#else
 	Pentagram::Font *font = GameData::get_instance()->
 		getFonts()->getFont(fontnum);
+#endif
 
 	// Y offset is always baseline
 	dims.y = -font->getBaseline();
@@ -58,7 +72,8 @@ void SimpleTextWidget::InitGump()
 	if (!dims.w || !dims.h)
 	{
 		sint32 tx, ty; 
-		font->getTextSize(text.c_str(), tx, ty);
+		unsigned int remaining;
+		font->getTextSize(text.c_str(), tx, ty, remaining, 180, 0);
 
 		if (!dims.w) dims.w = tx;
 		if (!dims.h) dims.h = ty;
@@ -70,9 +85,20 @@ void SimpleTextWidget::PaintThis(RenderSurface*surf, sint32 lerp_factor)
 {
 	Gump::PaintThis(surf,lerp_factor);
 
+#ifdef USE_SDLTTF
+	// HACK
+	Pentagram::Font *font = ttffont;
+#else
 	Pentagram::Font *font = GameData::get_instance()->
 		getFonts()->getFont(fontnum);
-	surf->PrintText(font, text.c_str(), 0, 0);
+#endif
+
+	if (!cached_text) {
+		unsigned int remaining;
+		cached_text = font->renderText(text, remaining, 180, 0);
+	}
+	cached_text->draw(surf, 0, 0);
+//	surf->PrintText(font, text.c_str(), 0, 0);
 }
 
 void SimpleTextWidget::saveData(ODataSource* ods)

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003  The Pentagram Team
+ *  Copyright (C) 2003-2004  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,8 +24,8 @@
 #include "GumpShapeFlex.h"
 #include "Shape.h"
 #include "SlidingWidget.h"
-#include "Font.h"
-#include "RenderSurface.h"
+#include "ShapeFont.h"
+#include "RenderedText.h"
 #include "FontShapeFlex.h"
 #include "ButtonWidget.h"
 #include "UCProcess.h"
@@ -88,11 +88,16 @@ void SliderGump::setValue(int sliderx)
 
 void SliderGump::drawText(RenderSurface* surf)
 {
-	Pentagram::Font *font = GameData::get_instance()->
+	ShapeFont *font = GameData::get_instance()->
 		getFonts()->getFont(labelfont);
 	char buf[10]; // more than enough for a sint16
 	sprintf(buf, "%d", value);
-	surf->PrintText(font, buf, labelx, labely);
+
+	unsigned int remaining;
+	RenderedText* renderedText = font->renderText(buf, remaining);
+	renderedText->draw(surf, labelx, labely);
+	delete renderedText;
+//	surf->PrintText(font, buf, labelx, labely);
 }
 
 void SliderGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,38 +16,26 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef FONT_H
-#define FONT_H
+#include "pent_include.h"
 
-#include "Shape.h"
+#include "RenderedText.h"
 
-#include <string>
+namespace Pentagram {
 
-namespace Pentagram
+DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(RenderedText)
+
+RenderedText::RenderedText()
+	: width(-1), height(-1)
 {
-
-class Font : public Shape
-{
-	sint32 height;
-	sint32 baseline;
-	sint32 vlead;
-	sint32 hlead;
-public:
-	Font(const uint8* data, uint32 size, const ConvertShapeFormat *format)
-		: Shape(data, size, format), height(0), baseline(0), vlead(1), hlead(0) { }
-	virtual ~Font() { }
-
-	sint32 getWidth(char c);
-	sint32 getHeight();
-	sint32 getBaseline();
-	sint32 getVlead() { return vlead; }
-	sint32 getHlead() { return hlead; }
-
-	void getTextSize(const char *text, sint32 &x, sint32 &y);
-
-	ENABLE_RUNTIME_CLASSTYPE();
-};
 
 }
 
-#endif
+
+RenderedText::~RenderedText()
+{
+
+}
+
+
+
+}

@@ -1,7 +1,7 @@
 /*
 SoftRenderSurface.h : SoftRenderSurface Implementation header
 
-Copyright (C) 2002, 2003 The Pentagram Team
+Copyright (C) 2002-2004 The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -104,13 +104,6 @@ public:
 	//
 	// Basic Font Drawing
 	//
-	
-	// Draw from a Font
-	virtual void PrintText(Pentagram::Font *, const char *text, int x, int y);
-
-	// Draw a character from a Font
-	virtual void PrintChar(Pentagram::Font *, char character, int x, int y);
-
 	// Draw fixed width from a Texture buffer (16x16 characters fixed width and height)
 	virtual void PrintTextFixed(Texture *, const char *text, int x, int y);
 
