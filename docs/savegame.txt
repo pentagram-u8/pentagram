@@ -392,6 +392,9 @@ GumpNotifyProcess: Process (v1)
 uint16 gump
 
 
+ActorBarkNotifyProcess: GumpNotifyProcess (v1)
+<GumpNotifyProcess>
+
 DelayProcess: Process (v1)
 <Process>
 sint32 count

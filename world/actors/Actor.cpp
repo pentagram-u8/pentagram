@@ -343,6 +343,13 @@ uint16 Actor::doAnim(Animation::Sequence anim, int dir)
 	return Kernel::get_instance()->addProcess(p);
 }
 
+bool Actor::hasAnim(Animation::Sequence anim)
+{
+	AnimationTracker tracker;
+
+	return tracker.init(this, anim, 0);
+}
+
 Animation::Result Actor::tryAnim(Animation::Sequence anim, int dir, PathfindingState* state)
 {
 	if (dir < 0 || dir > 7) return Animation::FAILURE;

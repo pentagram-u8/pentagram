@@ -72,6 +72,7 @@ public:
 public:
 
 	virtual void				CreateNotifier();
+	void						SetNotifyProcess(GumpNotifyProcess* proc);
 	GumpNotifyProcess*			GetNotifyProcess();
 	inline uint32				GetResult() { return process_result; }
 

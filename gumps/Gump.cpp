@@ -74,7 +74,7 @@ Gump::~Gump()
 
 void Gump::InitGump()
 {
-	if (owner) CreateNotifier();
+	if (owner && !notifier) CreateNotifier();
 }
 
 void Gump::CreateNotifier()
@@ -85,6 +85,12 @@ void Gump::CreateNotifier()
 	GumpNotifyProcess *p = new GumpNotifyProcess(owner);
 	p->setGump(this);
 	notifier = Kernel::get_instance()->addProcess(p);
+}
+
+void Gump::SetNotifyProcess(GumpNotifyProcess* proc)
+{
+	assert(notifier == 0);
+	notifier = proc->getPid();
 }
 
 GumpNotifyProcess* Gump::GetNotifyProcess()

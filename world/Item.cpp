@@ -43,6 +43,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "BarkGump.h"
 #include "AskGump.h"
 #include "GumpNotifyProcess.h"
+#include "ActorBarkNotifyProcess.h"
 #include "ContainerGump.h"
 #include "PaperdollGump.h"
 #include "GameMapGump.h"
@@ -2090,6 +2091,15 @@ uint32 Item::I_bark(const uint8* args, unsigned int /*argsize*/)
 	{
 		Gump *desktop = app->getDesktopGump();
 		Gump *gump = new BarkGump(item->getObjId(), str);
+
+		if (item->getObjId() < 256) // CONSTANT!
+		{
+			GumpNotifyProcess* notifyproc;
+			notifyproc = new ActorBarkNotifyProcess(item->getObjId());
+			Kernel::get_instance()->addProcess(notifyproc);
+			gump->SetNotifyProcess(notifyproc);
+		}
+
 		gump->InitGump();
 		desktop->AddChild(gump);
 

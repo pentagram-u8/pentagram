@@ -1,3 +1,9 @@
+2005-01-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/ActorBarkNotifyProcess.*, world/Item.cpp:
+	  talk animation while talking
+	* world/actors/Actor.*: hasAnim() to check if an Actor has an Animation
+	* gumps/Gump.*: allowing setting a custom GumpNotifyProcess
+
 2005-01-30  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* tools/gimp-plugin/*: Compile fixes
 

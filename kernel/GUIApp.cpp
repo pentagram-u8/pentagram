@@ -66,6 +66,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "EggHatcherProcess.h" // for a hack
 #include "UCProcess.h" // more hacking
 #include "GumpNotifyProcess.h" // guess
+#include "ActorBarkNotifyProcess.h" // guess
 #include "DelayProcess.h"
 #include "GravityProcess.h"
 #include "MissileProcess.h"
@@ -288,6 +289,8 @@ void GUIApp::startup()
 							 ProcessLoader<HealProcess>::load);
 	kernel->addProcessLoader("InverterProcess",
 							 ProcessLoader<InverterProcess>::load);
+	kernel->addProcessLoader("ActorBarkNotifyProcess",
+							 ProcessLoader<ActorBarkNotifyProcess>::load);
 
 	gamedata = new GameData();
 

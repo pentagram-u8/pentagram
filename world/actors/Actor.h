@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -125,6 +125,9 @@ public:
 	//! run the given animation
 	//! \return the PID of the ActorAnimProcess
 	uint16 doAnim(Animation::Sequence anim, int dir);
+
+	//! check if this actor has a specific animation
+	bool hasAnim(Animation::Sequence anim);
 
 	//! check if the given animation can be done from the location in state,
 	//! without walking into things. If state is non-zero, and successful,
