@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,30 +27,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class DelayProcess : public Process {
 public:
-	explicit DelayProcess(int count_=0) : Process(), count(count_) { }
-	virtual ~DelayProcess() { }
+	explicit DelayProcess(int count_=0);
+	virtual ~DelayProcess();
 
-	virtual bool run(const uint32 /*framenum*/) { if (--count == 0) terminate(); return false; }
+	ENABLE_RUNTIME_CLASSTYPE();
 
-	bool loadData(IDataSource* ids)
-	{
-		uint16 version = ids->read2();
-		if (version != 1) return false;
-		if (!Process::loadData(ids)) return false;
+	virtual bool run(const uint32 framenum);
 
-		count = static_cast<int>(ids->read4());
-
-		return true;
-	}
-
+	bool loadData(IDataSource* ids);
 protected:
-
-	virtual void saveData(ODataSource* ods)
-	{
-		ods->write2(1); //version
-		Process::saveData(ods);
-		ods->write4(static_cast<uint32>(count));
-	}
+	virtual void saveData(ODataSource* ods);
 
 	int count;
 };

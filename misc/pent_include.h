@@ -107,15 +107,16 @@ extern const std::string c_empty_string;
 
 //
 // Can't happen return.
-// Were we're guaranteed to return before this, but we want to shut the compiler warning up.
+// If we're guaranteed to return before this, but we want to shut the
+// compiler warning up.
 //
-#define CANT_HAPPEN_RETURN() do { return 0; assert(false); } while(0)
+#define CANT_HAPPEN_RETURN() do { assert(false); return 0; } while(0)
 
 // 
 // Can't happen with a message 
 //
 // Allows a message to be supplied.
-// May not work on all compilers or run times as expected
+// May not work on all compilers or runtimes as expected
 //
 #define CANT_HAPPEN_MSG(msg) do { assert(msg && false); } while(0)
 

@@ -1,3 +1,7 @@
+2004-10-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* misc/pent_include.h: fix CANT_HAPPEN_RETURN, typos
+	* kernel/DelayProcess.*: add RUNTIME_CLASSTYPE
+
 2004-09-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* */module.mk, common.mk, Makefile.in: fix building from outside srcdir
 

@@ -1,4 +1,5 @@
 KERNEL = \
+	kernel/DelayProcess.o \
 	kernel/Kernel.o \
 	kernel/CoreApp.o \
 	kernel/Process.o
