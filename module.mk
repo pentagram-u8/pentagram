@@ -17,7 +17,12 @@ pentagram_OBJ = \
 	filesys/Flex.o \
 	misc/Args.o \
 	misc/Console.o \
-	misc/Q_strcasecmp.o
+	misc/Q_strcasecmp.o \
+	graphics/RenderSurface.o \
+	graphics/SoftRenderSurface.o \
+	graphics/Texture.o \
+	graphics/TextureTarga.o \
+	graphics/TextureBitmap.o
 
 # Common rules
 include common.mk

@@ -54,7 +54,7 @@ struct ECode
 		return error != _e;
 	}
 
-	friend static bool operator != (sint32 &_e, ECode &_e2)
+	friend bool operator != (sint32 &_e, ECode &_e2)
 	{
 		return _e2.error != _e;
 	}
@@ -64,7 +64,7 @@ struct ECode
 		return error == _e;
 	}
 
-	friend static bool operator == (sint32 &_e, ECode &_e2)
+	friend bool operator == (sint32 &_e, ECode &_e2)
 	{
 		return _e2.error == _e;
 	}
