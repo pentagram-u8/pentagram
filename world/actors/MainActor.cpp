@@ -279,7 +279,7 @@ void MainActor::ConCmd_mark(const Console::ArgsType &args, const Console::ArgvTy
 
 void MainActor::ConCmd_recall(const Console::ArgsType &args, const Console::ArgvType &argv)
 {
-	if (args.empty()) {
+	if (args.size() == 1) {
 		pout << "Usage: recall <mark>: recall to named mark" << std::endl;
 		return;
 	}
