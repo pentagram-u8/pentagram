@@ -19,9 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef GAMEDATA_H
 #define GAMEDATA_H
 
+#include <vector>
+
 class MainShapeFlex;
 class Usecode;
-class Flex;
+class Glob;
 
 class GameData
 {
@@ -35,13 +37,13 @@ public:
 
 	Usecode* getMainUsecode() const { return mainusecode; }
 	MainShapeFlex* getMainShapes() const { return mainshapes; }
-	Flex* getGlobs() const { return globs; }
+	Glob* getGlob(uint32 glob) const;
 
 private:
 
 	MainShapeFlex* mainshapes;
 	Usecode* mainusecode;
-	Flex* globs;
+	std::vector<Glob*> globs;
 
 	static GameData* gamedata;
 };

@@ -119,7 +119,7 @@ void Map::loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds,
 #endif
 
 		Item *item = ItemFactory::createItem(shape,frame,flags,quality,
-											 npcnum,mapnum);
+											 npcnum,mapnum,extendedflags);
 		if (!item) {
 		pout << shape << "," << frame << ":\t(" << x << "," << y << "," << z << "),\t" << std::hex << flags << std::dec << ", " << quality << ", " << npcnum << ", " << mapnum << ", " << next << std::endl;
 			pout << "Couldn't create item" << std::endl;

@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UsecodeFlex.h"
 #include "MainShapeFlex.h"
 #include "Flex.h"
+#include "Glob.h"
 
 GameData* GameData::gamedata = 0;
 
@@ -38,6 +39,14 @@ GameData::GameData()
 GameData::~GameData()
 {
 	gamedata = 0;
+}
+
+Glob* GameData::getGlob(uint32 glob) const
+{
+	if (glob < globs.size())
+		return globs[glob];
+	else
+		return 0;
 }
 
 
@@ -76,5 +85,19 @@ void GameData::loadU8Data()
 		perr << "Unable to load static/glob.flx. Exiting" << std::endl;
 		std::exit(-1);
 	}
-	globs = new Flex(gds);
+	Flex* globflex = new Flex(gds);
+	globs.clear();
+	globs.resize(globflex->get_count());
+	for (unsigned int i = 0; i < globflex->get_count(); ++i) {
+		Glob* glob = 0;
+		IDataSource* globds = globflex->get_datasource(i);
+
+		if (globds && globds->getSize()) {
+			Glob* glob = new Glob;
+			glob->read(globflex->get_datasource(i));
+		}
+
+		globs[i] = glob;
+	}
+	delete globflex;
 }

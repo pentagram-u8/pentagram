@@ -42,7 +42,7 @@ DEFINE_DYNAMIC_CAST_CODE(Item,Object);
 Item::Item()
 	: shape(0), frame(0), x(0), y(0), z(0),
 	  flags(0), quality(0), npcnum(0), mapnum(0),
-	  extendedflags(0), parent(0)
+	  extendedflags(0), parent(0), glob_next(0)
 {
 
 }

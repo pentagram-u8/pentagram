@@ -39,9 +39,13 @@ public:
 	void setLocation(sint32 x, sint32 y, sint32 z);
 	void getLocation(sint32& x, sint32& y, sint32& z) const;
 	uint32 getFlags() const { return flags; }
+	void setExtFlags(uint32 f) { extendedflags = f; }
 	uint32 getExtFlags() const { return extendedflags; }
 	uint32 getShape() const { return shape; }
 	uint32 getFrame() const { return frame; }
+
+	Item* getGlobNext() const { return glob_next; }
+	void setGlobNext(Item* i) { glob_next = i; }
 
 	uint32 callUsecodeEvent(uint32 event);
 
@@ -89,7 +93,7 @@ protected:
 
 	Container* parent; // container this item is in (or 0 for top-level items)
 
-	// This is stuff that is used for displaing and interpolation
+	// This is stuff that is used for displaying and interpolation
 	struct Lerped
 	{
 		sint32 x,y,z;
@@ -100,9 +104,13 @@ protected:
 	Lerped	l_next;			// Next (current) state (relative to camera)
 	sint32	ix,iy,iz;		// Interpolated position in camera space
 
+private:
+	Item* glob_next; // next item in glob
+
 public:
 	enum {
-		EXT_FIXED = 0x0001  // item came from FIXED
+		EXT_FIXED  = 0x0001, // item came from FIXED
+		EXT_INGLOB = 0x0002  // item is part of a glob
 	} extflags;
 };
 

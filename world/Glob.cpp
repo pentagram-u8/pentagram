@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "Glob.h"
+#include "IDataSource.h"
 
 Glob::Glob()
 {
@@ -28,5 +29,25 @@ Glob::Glob()
 
 Glob::~Glob()
 {
+	contents.clear();
+}
 
+void Glob::read(IDataSource* ds)
+{
+	unsigned int itemcount = ds->read2();
+	assert(ds->getSize() >= 2+itemcount*6);
+	contents.clear();
+	contents.resize(itemcount);
+
+	for (unsigned int i = 0; i < itemcount; ++i) {
+		GlobItem item;
+
+		item.x = ds->read1();
+		item.y = ds->read1();
+		item.z = ds->read1();
+		item.shape = ds->read2();
+		item.frame = ds->read1();
+
+		contents[i] = item;
+	}
 }

@@ -30,11 +30,13 @@ public:
 	// look up (where?) what type of item the given shape is, and
 	// create an instance of the corresponding Item class.
 	static Item* createItem(uint32 shape, uint32 frame, uint16 quality,
-							uint32 flags, uint32 npcnum, uint32 mapnum);
+							uint32 flags, uint32 npcnum, uint32 mapnum,
+							uint32 extendedflags);
 
 	// create an actor.
 	static Actor* createActor(uint32 shape, uint32 frame, uint16 quality,
-							  uint32 flags, uint32 npcnum, uint32 mapnum);
+							  uint32 flags, uint32 npcnum, uint32 mapnum,
+							  uint32 extendedflags);
 };
 
 #endif

@@ -33,8 +33,11 @@ public:
 	// p_dynamic_cast stuff
 	ENABLE_DYNAMIC_CAST(GlobEgg);
 
+	void expand();   // expand the contents of the glob into the main objlist
+	void unexpand(); // delete the expanded contents
+
 protected:
-	Glob* glob;
+	Item* contents;
 };
 
 

@@ -1,3 +1,7 @@
+2003-04-14 Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/GameData.*: load globs
+	* world/*: globs, globeggs
+
 2003-04-08 Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: minor changes
 

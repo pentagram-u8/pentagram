@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "Map.h"
 #include "Item.h"
+#include "GlobEgg.h"
 
 using std::list; // too messy otherwise
 typedef list<Item*> item_list;
@@ -88,9 +89,18 @@ void CurrentMap::writeback()
 			{
 				Item* item = *iter;
 
-				if (item->getExtFlags() || Item::EXT_FIXED) {
+				// ignore items inside globs; they'll be deleted
+				if (item->getExtFlags() | Item::EXT_INGLOB)
+					continue;
+
+				// unexpand all globeggs.(This deletes the items skipped above)
+				GlobEgg* globegg = p_dynamic_cast<GlobEgg*>(item);
+				if (globegg) {
+					globegg->unexpand();
+				}
+
+				if (item->getExtFlags() | Item::EXT_FIXED) {
 					// item came from fixed
-					
 					current_map->fixeditems.push_back(item);
 				} else {
 					current_map->dynamicitems.push_back(item);
@@ -108,22 +118,16 @@ void CurrentMap::loadItems(list<Item*> itemlist)
 	{
 		Item* item = *iter;
 
-		sint32 x,y,z;
-		item->getLocation(x,y,z);
+		// add item to internal object list
+		addItem(item);
 
-		//! constants
-		if (x < 0 || y < 0 || x >= 512*128 || y >= 512*128) {
-			perr << "Skipping item: out of range (" 
-				 << x << "," << y << ")" << std::endl;
-			continue;
-		}
-
-		sint32 cx, cy;
-		cx = x / 512;
-		cy = y / 512;
-
-		items[cx][cy].push_back(item);
 		item->assignObjId();
+
+
+		GlobEgg* globegg = p_dynamic_cast<GlobEgg*>(item);
+		if (globegg) {
+			globegg->expand();
+		}
 	}
 }
 
@@ -137,4 +141,23 @@ void CurrentMap::loadMap(Map* map)
 	// we take control of the items in map, so clear the pointers
 	map->fixeditems.clear();
 	map->dynamicitems.clear();
+}
+
+void CurrentMap::addItem(Item* item)
+{
+	sint32 ix, iy, iz;
+
+	item->getLocation(ix, iy, iz);
+
+	//! constants
+	if (ix < 0 || iy < 0 || ix >= 512*128 || iy >= 512*128) {
+		perr << "Skipping item: out of range (" 
+			 << ix << "," << iy << ")" << std::endl;
+		return;
+	}
+
+	sint32 cx = ix / 512;
+	sint32 cy = iy / 512;
+
+	items[cx][cy].push_back(item);
 }

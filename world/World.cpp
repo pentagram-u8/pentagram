@@ -31,7 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 World* World::world = 0;
 
 World::World()
-	: current_map(0), fixed(0), fixedds(0)
+	: currentmap(0), fixed(0), fixedds(0)
 {
 	assert(world == 0);
 	world = this;
@@ -63,8 +63,8 @@ void World::clear()
 	}
 	npcs.clear();
 
-	if (current_map)
-		delete current_map;
+	if (currentmap)
+		delete currentmap;
 
 	if (fixed)
 		delete fixed;
@@ -90,7 +90,7 @@ void World::initMaps()
 		maps[i] = new Map(i);
 	}
 
-	current_map = new CurrentMap();
+	currentmap = new CurrentMap();
 }
 
 void World::initNPCs()
@@ -103,22 +103,24 @@ void World::initNPCs()
 
 bool World::switchMap(uint32 newmap)
 {
-	assert(current_map);
+	assert(currentmap);
 
-	if (current_map->getNum() == newmap)
+	if (currentmap->getNum() == newmap)
 		return true;
 
 	if (newmap >= maps.size() || maps[newmap] == 0)
 		return false; // no such map
 
 	// Map switching procedure:
-	// write back CurrentMap to the old map
+	// write back CurrentMap to the old map, which
+	//   un-expands GlobEggs (delete EXT_INGLOB items, reset contents fields)
 	// clear all objIDs
 	// swap out fixed items in old map?
 	// make sure fixed items in the new map are loaded
 	// load new map into CurrentMap, which also
-	//  assigns objIDs to fixed items
-	//  assigns objIDs to nonfixed items
+	//   expands GlobEggs
+	//   assigns objIDs to fixed items
+	//   assigns objIDs to nonfixed items
 
 	// NB: not only World has to perform actions on a map switch
 	// other things that should/could also happen:
@@ -126,14 +128,14 @@ bool World::switchMap(uint32 newmap)
 	// - autosave?
 	// - ...?
 
-	uint32 oldmap = current_map->getNum();
+	uint32 oldmap = currentmap->getNum();
 
 	if (oldmap != 0) {
 		perr << "Unloading map " << oldmap << std::endl;
 
 		assert(oldmap < maps.size() && maps[oldmap] != 0);
 
-		current_map->writeback();
+		currentmap->writeback();
 
 		perr << "Unloading Fixed items from map " << oldmap << std::endl;
 
@@ -156,7 +158,7 @@ bool World::switchMap(uint32 newmap)
 	delete items;
 	pout << "-----------------------------------------" << std::endl;
 
-	current_map->loadMap(maps[newmap]);
+	currentmap->loadMap(maps[newmap]);
 
 	return true;
 }
@@ -251,7 +253,7 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 #endif
 
 		Actor *actor = ItemFactory::createActor(shape,frame,flags,quality,
-												npcnum,mapnum);
+												npcnum,mapnum,0);
 		if (!actor) {
 #ifdef DUMP_ITEMS
 			// this 'error' message is supposed to occur rather a lot

@@ -36,6 +36,8 @@ public:
 
 	uint32 getNum() const;
 
+	void addItem(Item* item);
+
 private:
 	void loadItems(std::list<Item*> itemlist);
 

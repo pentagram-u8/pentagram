@@ -29,7 +29,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GlobEgg.h"
 
 Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
-							  uint32 flags, uint32 npcnum, uint32 mapnum)
+							  uint32 flags, uint32 npcnum, uint32 mapnum,
+							  uint32 extendedflags)
 {
 	// check what class to create
 	ShapeInfo *info = GameData::get_instance()->getMainShapes()->
@@ -54,6 +55,7 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 		item->flags = flags;
 		item->npcnum = npcnum;
 		item->mapnum = mapnum;
+		item->extendedflags = extendedflags;
 		return item;
 	}
 
@@ -68,6 +70,7 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 		container->flags = flags;
 		container->npcnum = npcnum;
 		container->mapnum = mapnum;
+		container->extendedflags = extendedflags;
 		return container;
 	}
 
@@ -82,11 +85,8 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 		globegg->flags = flags;
 		globegg->npcnum = npcnum;
 		globegg->mapnum = mapnum;
-
-		globegg->glob = 0; // where do we get the globs from?
+		globegg->extendedflags = extendedflags;
 		return globegg;
-
-		return 0;
 	}
 
 	case ShapeInfo::SF_UNKEGG:
@@ -116,7 +116,8 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 
 
 Actor* ItemFactory::createActor(uint32 shape, uint32 frame, uint16 quality,
-								uint32 flags, uint32 npcnum, uint32 mapnum)
+								uint32 flags, uint32 npcnum, uint32 mapnum,
+								uint32 extendedflags)
 {
 	// this function should probably differentiate between the Avatar,
 	// NPCs, monsters?
@@ -135,6 +136,7 @@ Actor* ItemFactory::createActor(uint32 shape, uint32 frame, uint16 quality,
 		actor->npcnum = npcnum;
 		actor->mapnum = mapnum;
 		actor->objid = npcnum;
+		actor->extendedflags = extendedflags;
 		return actor;
 	}
 
@@ -147,6 +149,7 @@ Actor* ItemFactory::createActor(uint32 shape, uint32 frame, uint16 quality,
 	actor->npcnum = npcnum;
 	actor->mapnum = mapnum;
 	actor->objid = npcnum;
+	actor->extendedflags = extendedflags;
 
 	return actor;
 }

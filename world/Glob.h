@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <vector>
 
+class IDataSource;
+
 struct GlobItem {
 	int x;
 	int y;
@@ -31,12 +33,16 @@ struct GlobItem {
 
 class Glob
 {
+	friend class GlobEgg;
+
 public:
 	Glob();
 	~Glob();
 
+	void read(IDataSource* ds);
+
 private:
-	std::vector<GlobItem*> contents;
+	std::vector<GlobItem> contents;
 };
 
 #endif
