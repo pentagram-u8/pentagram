@@ -56,6 +56,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class Map;
 class IDataSource;
+class Actor;
 
 class World
 {
@@ -68,12 +69,15 @@ public:
 	void clear();
 
 	void initMaps();
+	void initNPCs();
 	void loadNonFixed(IDataSource* ds);
+	void loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata);
 
 private:
 	static World *world;
 
 	std::vector<Map*> maps;
+	std::vector<Actor*> npcs;
 
 };
 

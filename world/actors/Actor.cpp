@@ -16,25 +16,16 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef ITEMFACTORY_H
-#define ITEMFACTORY_H
+#include "pent_include.h"
 
-class Item;
-class Actor;
+#include "Actor.h"
 
-class ItemFactory
+Actor::Actor()
 {
-public:
 
-	// create an item.
-	// look up (where?) what type of item the given shape is, and
-	// create an instance of the corresponding Item class.
-	static Item* createItem(uint32 shape, uint32 frame, uint16 quality,
-							uint32 flags, uint32 npcnum, uint32 mapnum);
+}
 
-	// create an actor.
-	static Actor* createActor(uint32 shape, uint32 frame, uint16 quality,
-							  uint32 flags, uint32 npcnum, uint32 mapnum);
-};
+Actor::~Actor()
+{
 
-#endif
+}

@@ -47,6 +47,8 @@ pentagram_OBJ = \
 	world/Map.o \
 	world/Glob.o \
 	world/World.o \
+	world/actors/Actor.o \
+	world/actors/MainActor.o \
 	convert/ConvertShape.o \
 	convert/u8/ConvertShapeU8.o \
 	convert/crusader/ConvertShapeCrusader.o \

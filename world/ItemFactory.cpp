@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ShapeInfo.h"
 #include "Item.h"
 #include "Container.h"
+#include "Actor.h"
+#include "MainActor.h"
 
 Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 							  uint32 flags, uint32 npcnum, uint32 mapnum)
@@ -94,4 +96,40 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 	default:
 		return 0;
 	}
+}
+
+
+
+Actor* ItemFactory::createActor(uint32 shape, uint32 frame, uint16 quality,
+								uint32 flags, uint32 npcnum, uint32 mapnum)
+{
+	// this function should probably differentiate between the Avatar,
+	// NPCs, monsters?
+
+	if (npcnum == 0) // or do monsters have npcnum 0? we'll see...
+		return 0;
+
+	if (npcnum == 1) {
+		// Main Actor
+
+		MainActor* actor = new MainActor();
+		actor->shape = shape;
+		actor->frame = frame;
+		actor->quality = quality;
+		actor->flags = flags;
+		actor->npcnum = npcnum;
+		actor->mapnum = mapnum;		
+		return actor;
+	}
+
+	// 'normal' Actor/NPC
+	Actor* actor = new Actor();
+	actor->shape = shape;
+	actor->frame = frame;
+	actor->quality = quality;
+	actor->flags = flags;
+	actor->npcnum = npcnum;
+	actor->mapnum = mapnum;
+
+	return actor;
 }

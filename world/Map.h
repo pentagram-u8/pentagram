@@ -39,12 +39,6 @@ private:
 	// load items from something formatted like 'fixed.dat'
 	void loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds);
 
-	// load items from itemcach/npcdata
-	void loadItemCachObjects(std::list<Item*>& itemlist,
-							 IDataSource* itemcach,
-							 IDataSource* npcdata,
-							 unsigned int start, unsigned int end);
-
 	// Q: How should we store the items in a map.
 	// It might make things more efficient if we order them by 'chunk'
 	// (512x512). This would mean we need about 128x128 item lists.

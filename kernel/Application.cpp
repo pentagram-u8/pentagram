@@ -81,7 +81,7 @@ Application::Application(int argc, char *argv[])
 	palettemanager = new PaletteManager(screen);
 	IDataSource *pf = filesystem->ReadFile("@u8/static/u8pal.pal");
 	if (!pf) {
-		perr << "Unable to load u8pal.pal. Exiting" << std::endl;
+		perr << "Unable to load static/u8pal.pal. Exiting" << std::endl;
 		std::exit(-1);
 	}
 	pf->seek(4); // seek past header
@@ -91,7 +91,7 @@ Application::Application(int argc, char *argv[])
 	pout << "Load Shapes" << std::endl;
 	IDataSource *sf = filesystem->ReadFile("@u8/static/u8shapes.flx");
 	if (!sf) {
-		perr << "Unable to load u8shapes.flx. Exiting" << std::endl;
+		perr << "Unable to load static/u8shapes.flx. Exiting" << std::endl;
 		std::exit(-1);
 	}
 	mainshapes = new MainShapeFlex(sf);
@@ -99,7 +99,7 @@ Application::Application(int argc, char *argv[])
 	// Load typeflags
 	IDataSource *tfs = filesystem->ReadFile("@u8/static/typeflag.dat");
 	if (!tfs) {
-		perr << "Unable to load typeflag.dat. Exiting" << std::endl;
+		perr << "Unable to load static/typeflag.dat. Exiting" << std::endl;
 		std::exit(-1);
 	}
 	mainshapes->loadTypeFlags(tfs);
@@ -127,8 +127,27 @@ Application::Application(int argc, char *argv[])
 	con.SetConFont(confont);
 
 	IDataSource *nfd = filesystem->ReadFile("@u8/gamedat/nonfixed.dat");
+	if (!nfd) {
+		perr << "Unable to load gamedat/nonfixed.dat. Exiting" << std::endl;
+		std::exit(-1);
+	}
 	world->initMaps();
 	world->loadNonFixed(nfd);
+	delete nfd;
+	IDataSource *icd = filesystem->ReadFile("@u8/gamedat/itemcach.dat");
+	if (!icd) {
+		perr << "Unable to load gamedat/itemcach.dat. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	IDataSource *npcd = filesystem->ReadFile("@u8/gamedat/npcdata.dat");
+	if (!npcd) {
+		perr << "Unable to load gamedat/npcdata.dat. Exiting" << std::endl;
+		std::exit(-1);
+	}		
+	world->initNPCs();
+	world->loadItemCachNPCData(icd, npcd);
+	delete icd;
+	delete npcd;
 
 	// Create console gump
 	//pout << "Create Graphics Console" << std::endl;
