@@ -1,3 +1,8 @@
+2002-10-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* misc/Console.cpp: #include <cstdarg>
+	* misc/Q_strcasecmp.cpp: case mismatch
+	* tools/disasm/module.mk: added Console.o, Q_strcasecmp.o
+
 2002-10-27  Ryan Nunn <colourles@users.sourceforge.net>
 	* misc/Console.h : Output Console
 

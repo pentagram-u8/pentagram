@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // Q_strcasecmp.cpp -- portable case insensitive compare from quake 2
 
 #include "pent_include.h"
-#include "q_strcasecmp.h"
+#include "Q_strcasecmp.h"
 
 
 int Q_strncasecmp (char *s1, char *s2, int n)
