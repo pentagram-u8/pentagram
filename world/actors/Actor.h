@@ -65,6 +65,8 @@ public:
 
 	uint16 getEquip(uint32 type);
 
+	virtual void receiveHit(uint16 other, int dir, int damage, uint16 type);
+
 	//! run the given animation
 	//! \return the PID of the ActorAnimProcess
 	uint16 doAnim(int anim, int dir);

@@ -128,8 +128,8 @@ Intrinsic U8Intrinsics[] = {
 	Item::I_getMapArray,
 	0, //U
 	Item::I_setMapArray,
-	0, // Item::receiveHit
-	0, // Item::explode
+	Item::I_receiveHit,
+	Item::I_explode,
 	UCMachine::I_true, // Item::canReach
 	0, // Item::getRange
 	0, //U
@@ -272,7 +272,7 @@ Intrinsic U8Intrinsics[] = {
 	GUIApp::I_getTimeInGameHours,
 	GUIApp::I_getTimeInMinutes,
 	GUIApp::I_getTimeInSeconds,
-	GUIApp::I_setTimeInGameHours, // SetTimeInGameHours
+	GUIApp::I_setTimeInGameHours,
 	0, // SetTimeInMinutes
 	0, // SetTimeInSeconds
 	PaletteFaderProcess::I_fadeToBlack,

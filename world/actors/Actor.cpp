@@ -298,6 +298,10 @@ bool Actor::tryAnim(int anim, int dir, PathfindingState* state)
 	return true;
 }
 
+void Actor::receiveHit(uint16 other, int dir, int damage, uint16 type)
+{
+	// TODO: implement this
+}
 
 void Actor::dumpInfo()
 {

@@ -498,6 +498,17 @@ void GUIApp::U8Playground()
 	armour->moveToContainer(backpack);
 	armour->setGumpLocation(20, 40);
 
+	// oil flasks
+	Item* flask = ItemFactory::createItem(579, 0, 0, 0, 0, 0, 0);
+	flask->moveToContainer(backpack);
+	flask->setGumpLocation(30, 40);
+	flask = ItemFactory::createItem(579, 0, 0, 0, 0, 0, 0);
+	flask->moveToContainer(backpack);
+	flask->setGumpLocation(30, 40);
+	flask = ItemFactory::createItem(579, 0, 0, 0, 0, 0, 0);
+	flask->moveToContainer(backpack);
+	flask->setGumpLocation(30, 40);
+
 	backpack->assignObjId();
 	backpack->moveToContainer(av);
 

@@ -1,4 +1,7 @@
 2003-08-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Item.*: explode, receiveHit intrinsics (not complete yet)
+
+2003-08-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/MonsterEgg.*: changed baseclass of MonsterEgg from Egg to Item
 	* docs/savegame.txt: updated (note: savegames broken)
 

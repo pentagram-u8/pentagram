@@ -218,6 +218,16 @@ public:
 	//! Get the weight of this Item and its contents, if any
 	virtual uint32 getTotalWeight();
 
+	//! explode
+	void explode();
+
+	//! receive a hit
+	//! \param other The item delivering the hit
+	//! \param dir The direction the hit is coming from (or inverse? CHECKME!)
+	//! \param damage The force of the hit (not sure in which unit. CHECKME!)
+	//! \param type The type of damage done (not sure of the meaning. CHECKME!)
+	virtual void receiveHit(uint16 other, int dir, int damage, uint16 type);
+
 	//! Check this Item against the given loopscript
 	//! \param script The loopscript to run
 	//! \param scriptsize The size (in bytes) of the loopscript
@@ -363,6 +373,8 @@ public:
 	INTRINSIC(I_guardianBark);
 	INTRINSIC(I_getSurfaceWeight);
 	INTRINSIC(I_isExplosive);
+	INTRINSIC(I_receiveHit);
+	INTRINSIC(I_explode);
 
 private:
 	uint32 shape;	// DO NOT modify this directly! Always use setShape()!

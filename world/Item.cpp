@@ -51,6 +51,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IDataSource.h"
 #include "ODataSource.h"
 #include "CameraProcess.h"
+#include "SpriteProcess.h"
 
 #include <cstdlib>
 
@@ -859,7 +860,7 @@ uint32 Item::callUsecodeEvent(uint32 event, const uint8* args, int argsize)
 
 	Usecode* u = GameData::get_instance()->getMainUsecode();
 	uint32 offset = u->get_class_event(class_id, event);
-	if (!offset) return 0;
+	if (!offset) return 0; // event not found
 
 	//pout << "Item: " << objid << " calling usecode event " << event << " @ " << class_id << ":" << offset << std::endl;
 
@@ -1234,7 +1235,79 @@ void Item::grab()
 	}
 }
 
+void Item::explode()
+{
+	Process *p = new SpriteProcess(578, 20, 34, 1, 1, //!! constants
+								   x-128, y, z);
+	Kernel::get_instance()->addProcess(p);
 
+	// TODO: play SFX
+
+	sint32 x,y,z;
+	getLocation(x,y,z);
+
+	destroy(); // delete self
+	// WARNING: we are deleted at this point
+
+	// TODO: call receiveHit on items in range
+	//  (note: _no_ hitter, since we're gone)
+
+	UCList itemlist(2);
+	LOOPSCRIPT(script, LS_TOKEN_TRUE); // we want all items
+	CurrentMap* currentmap = World::get_instance()->getCurrentMap();
+	currentmap->areaSearch(&itemlist, script, sizeof(script), 0,
+						   128, false, x, y); //! CHECKME: 128?
+
+	for (unsigned int i = 0; i < itemlist.getSize(); ++i) {
+		Item *item = World::get_instance()->getItem(itemlist.getuint16(i));
+		if (!item) continue;
+		sint32 ix,iy,iz;
+		item->getLocation(ix,iy,iz);
+		int dir = Get_WorldDirection(ix-x, iy-y); //!! CHECKME
+		// TODO/CHECKME: make the '16' depend on range? check damage type
+		item->receiveHit(0, dir, 16, 0);
+	}
+}
+
+void Item::receiveHit(uint16 other, int dir, int damage, uint16 type)
+{
+	// first, check if the item has a 'gotHit' usecode event
+	if (callUsecodeEvent_gotHit(other, 0)) //!! TODO: what should the 0 be??
+		return;
+
+	// explosive?
+	if (getShapeInfo()->is_explode()) {
+		explode(); // warning: deletes this
+		return;
+	}
+
+	// breakable?
+	if (getFamily() == ShapeInfo::SF_BREAKABLE) {
+		// CHECKME: anything else?
+		destroy();
+		return;
+	}
+
+	if (getShapeInfo()->is_fixed()) {
+		// can't move
+		return;
+	}
+
+	// nothing special, so just hurl the item
+	// TODO: hurl item in direction, with speed depending on damage
+	GravityProcess* p = 0;
+	if (gravitypid) {
+		p = p_dynamic_cast<GravityProcess*>(
+			Kernel::get_instance()->getProcess(gravitypid));
+		assert(p);
+	} else {
+		p = new GravityProcess(this, 4); //!! constant
+		Kernel::get_instance()->addProcess(p);
+		p->init();
+	}
+
+	p->move(-16*x_fact[dir],-16*y_fact[dir],16);
+}
 
 void Item::saveData(ODataSource* ods)
 {
@@ -2246,3 +2319,25 @@ uint32 Item::I_isExplosive(const uint8* args, unsigned int /*argsize*/)
 	return item->getShapeInfo()->is_explode()?1:0;
 }
 
+uint32 Item::I_receiveHit(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM_FROM_PTR(item);
+	ARG_UINT16(other);
+	ARG_SINT16(dir);
+	ARG_SINT16(damage); // force of the hit
+	ARG_UINT16(type); // hit type
+	if (!item) return 0;
+
+	item->receiveHit(other, dir, damage, type);
+
+	return 0;
+}
+
+uint32 Item::I_explode(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM_FROM_PTR(item);
+	if (!item) return 0;
+
+	item->explode();
+	return 0;
+}

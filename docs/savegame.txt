@@ -182,7 +182,7 @@ uint16 hatched (boolean)
 
 MonsterEgg: (v1)
 uint16 version
-<Egg>
+<Item>
 
 TeleportEgg: (v1)
 uint16 version
