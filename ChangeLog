@@ -1,3 +1,21 @@
+2003-05-10  Ryan Nunn <colourles@users.sourceforge.net>
+	* graphics/*RenderSurface.* : Implemented functions to set clipping 
+	  region. Added function to move the effective origin position.
+
+	* graphics/SoftRenderSurface.inl, kernel/Application.cpp, 
+	  world/ItemSorter.* : Slightly changed the way the screen coords work.
+	  The world is now drawn with the origin set to the centre of the 
+	  screen instead of at the top left.
+
+	* graphics/ShapeFrame.* : Added hasPoint()
+
+	* world/ItemSorter.* : Display List Tracing for click detection
+
+	* kernel/Application.cpp : Added a simple tracing test for left
+	  mouse button up.
+
+	* misc/Rect.h : Added a few extra possibly useful features
+
 2003-05-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/SoftRenderSurface.cpp: asm version of uint32-Fill32/gcc/x86
 

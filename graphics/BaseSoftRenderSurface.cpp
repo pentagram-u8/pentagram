@@ -1,4 +1,4 @@
-/*
+	/*
 BaseSoftRenderSurface.cpp : Abstract BaseSoftRenderSurface source file
 
 Copyright (C) 2003 The Pentagram Team
@@ -44,12 +44,11 @@ uint32	BaseSoftRenderSurface::r_mask,   BaseSoftRenderSurface::g_mask,   BaseSof
 BaseSoftRenderSurface::BaseSoftRenderSurface(SDL_Surface *s) :
 	pixels(0), pixels00(0), zbuffer(0), zbuffer00(0),
 	bytes_per_pixel(0), bits_per_pixel(0), format_type(0), 
-	w_real(0), h_real(0), width(0), height(0), pitch(0), zpitch(0),
+	ox(0), oy(0), width(0), height(0), pitch(0), zpitch(0),
 	clip_window(0,0,0,0), lock_count(0),
 	sdl_surf(s)
 {
-	clip_window.w = width = sdl_surf->w;
-	clip_window.h = height = sdl_surf->h;
+	clip_window.ResizeAbs(width = sdl_surf->w, height = sdl_surf->h);
 	pitch = sdl_surf->pitch;
 	bits_per_pixel = sdl_surf->format->BitsPerPixel;
 	bytes_per_pixel = sdl_surf->format->BytesPerPixel;
@@ -167,6 +166,60 @@ void BaseSoftRenderSurface::CreateNativePalette(Palette* palette)
 										palette->palette[i*3+1],
 										palette->palette[i*3+2]);
 	}
+}
+
+//
+// void BaseSoftRenderSurface::GetSurfaceDims(Rect &r)
+//
+// Desc: Get the Surface Dimentions (and logical origin)
+// r: Rect object to fill
+//
+void BaseSoftRenderSurface::GetSurfaceDims(Rect &r) const
+{
+	r.Set(ox, oy, width, height);
+}
+
+//
+// void BaseSoftRenderSurface::SetOrigin(int x, int y)
+//
+// Desc: Set the Phyiscal Pixel to be the logical origin
+//
+void BaseSoftRenderSurface::SetOrigin(int x, int y)
+{
+	// Adjust the clipping window
+	clip_window.MoveRel(ox-x, oy-y);
+
+	// Set the origin
+	ox = x;
+	oy = y;
+
+	// The new pointers
+	pixels = pixels00 + x*bytes_per_pixel + y*pitch;
+	zbuffer = reinterpret_cast<uint16*>(zbuffer00 + x + y * zpitch);
+}
+
+//
+// void BaseSoftRenderSurface::GetClippingRect(Rect &r)
+//
+// Desc: Get the Clipping Rectangle
+// r: Rect object to fill
+//
+void BaseSoftRenderSurface::GetClippingRect(Rect &r) const
+{
+	r = clip_window;
+}
+
+//
+// void BaseSoftRenderSurface::GetClippingRect(Rect &r)
+//
+// Desc: Set the Clipping Rectangle
+// r: Rect object that contains new Clipping Rectangle
+//
+void BaseSoftRenderSurface::SetClippingRect(const Rect &r)
+{
+	// What we need to do is to clip the clipping rect to the phyiscal screen
+	clip_window = r;
+	clip_window.Intersect(-ox,-oy, width, height);
 }
 
 //

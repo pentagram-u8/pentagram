@@ -86,6 +86,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define LINE_END_ASSIGN()
 #define NOT_CLIPPED_X (1)
 #define NOT_CLIPPED_Y (1)
+//#define offset_pixels (pixels)
+
+	uint8				*offset_pixels  = static_cast<uint8*>(pixels);
+//	offset_pixels += clip_window.x;
+//	x -= clip_window.x;
 
 //
 // No Clipping = FALSE
@@ -96,9 +101,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define NOT_CLIPPED_Y (line >= 0 && line < scrn_height)
 #define NOT_CLIPPED_X (pixptr >= line_start && pixptr < line_end)
 
-	int					scrn_width = this->width;
-	int					scrn_height = this->height;
+	int					scrn_width = this->clip_window.w;
+	int					scrn_height = this->clip_window.h;
 	uintX				*line_end;
+
+	uint8				*offset_pixels  = static_cast<uint8*>(pixels);
+	offset_pixels += clip_window.x*sizeof(uintX) + clip_window.y*pitch;
+	x -= clip_window.x;
+	y -= clip_window.y;
 
 #endif
 
@@ -110,9 +120,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // All the variables we want
 
 	const uint8			*linedata;
-	int					xpos;
-	int					line;
-	int					dlen;
+	sint32				xpos;
+	sint32				line;
+	sint32				dlen;
 
 	uintX				*pixptr;
 	uintX				*endrun;
@@ -128,11 +138,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	const uint32	*line_offsets	= frame->line_offsets;
 	const uint32	*pal			= &(s->getPalette()->native[0]);
 
+	
 #ifdef XFORM_SHAPES
 	const xformBlendFuncType	*xform_funcs = s->getPalette()->xform_funcs;
 	xformBlendFuncType			xf_func;
 #endif
-
 
 	sint32 width = frame->width;
 	sint32 height = frame->height;
@@ -142,15 +152,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 	// Do it this way if compressed
 	if (frame->compressed) for (int i=0; i<height; i++) 
 	{
-
-		linedata = rle_data + line_offsets[i];
 		xpos = 0;
 		line = y+i;
 
 		if (NOT_CLIPPED_Y)
 		{
 
-			line_start = reinterpret_cast<uintX *>(static_cast<uint8*>(pixels) + pitch*line);
+			linedata = rle_data + line_offsets[i];
+			line_start = reinterpret_cast<uintX *>(static_cast<uint8*>(offset_pixels) + pitch*line);
+
 			LINE_END_ASSIGN();
 
 			do 
@@ -230,7 +240,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 		if (NOT_CLIPPED_Y)
 		{
-			line_start = reinterpret_cast<uintX *>(static_cast<uint8*>(pixels) + pitch*line);
+			line_start = reinterpret_cast<uintX *>(static_cast<uint8*>(offset_pixels) + pitch*line);
 			LINE_END_ASSIGN();
 
 			do 

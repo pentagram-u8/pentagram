@@ -342,10 +342,6 @@ void ItemSorter::BeginDisplayList(RenderSurface *rs, const Palette *palette)
 	pal = palette;
 	num_items = 0;
 	order_counter = 0;
-
-	// TODO!!! Actually use render surface dims
-	swo2 = 320;
-	sho2 = 240;
 }
 
 void ItemSorter::AddItem(Item *add)
@@ -410,13 +406,13 @@ void ItemSorter::AddItem(Item *add)
 	// Screenspace bounding box bottom extent  (RNB y coord)
 	si->sybot = (si->x + si->y)/8 - si->z;
 
-	si->sxleft += swo2;
-	si->sxright += swo2;
-	si->sxbot += swo2;
-	si->sxtop += swo2;
+//	si->sxleft += swo2;
+//	si->sxright += swo2;
+//	si->sxbot += swo2;
+//	si->sxtop += swo2;
 
-	si->sytop += sho2;
-	si->sybot += sho2;
+//	si->sytop += sho2;
+//	si->sybot += sho2;
 
 	// Real Screenspace coords
 	si->sx = si->sxbot - frame->xoff;	// Left
@@ -503,6 +499,7 @@ void ItemSorter::PaintDisplayList()
 {
 	SortItem *it = items;
 	SortItem *end = items + num_items;
+	order_counter = 0;	// Reset the order_counter
 	while (it != end)
 	{
 		if (it->order == -1) if (PaintSortItem(it)) return;
@@ -553,6 +550,81 @@ bool ItemSorter::PaintSortItem(SortItem	*si)
 //	if (wire) si->info->draw_box_front(s, dispx, dispy, 255);
 
 	return false;
+}
+
+bool ItemSorter::NullPaintSortItem(SortItem	*si)
+{
+	// Don't paint this, or dependencies if occluded
+	if (si->occluded) return false;
+
+	// Resursion, detection
+	si->order = -2;
+	
+	// Iterate through our dependancies, and paint them, if possible
+	SortItemVector::iterator it = si->depends.begin();
+	SortItemVector::iterator end = si->depends.end();
+	while (it != end)
+	{
+		// Well, it can't. Implies recursive sorting. Can happen though so
+		// you had best leave this commented out
+		//if ((*it)->order == -2) CANT_HAPPEN_MSG("Recursive item sorting");
+
+		if ((*it)->order == -1) if (NullPaintSortItem((*it))) return true;
+
+		++it;
+	}
+
+	// Set our painting/sorting order
+	si->order = order_counter;
+	order_counter++;
+
+	return false;
+}
+
+uint16 ItemSorter::Trace(sint32 x, sint32 y)
+{
+	SortItem *it;
+	SortItem *end;
+	SortItem *selected;
+
+	if (!order_counter)	// If no order_counter we need to sort the items
+	{
+		it = items;
+		end = items + num_items;
+		order_counter = 0;	// Reset the order_counter
+		while (it != end)
+		{
+			if (it->order == -1) if (NullPaintSortItem(it)) break;
+
+			++it;
+		}
+	}
+
+	// Ok, this is all pretty simple. We iterate all the items.
+	// We then check to see if the item has a point where the trace goes.
+	// Finally we then set the selected SortItem if it's 'order' is highest
+	it = items;
+	selected = 0;
+	end = items + num_items;
+
+	for (;it != end;++it)
+	{
+		// Doesn't Overlap
+		if (x < it->sx || x >= it->sx2 || y < it->sy || y >= it->sy2) continue;
+
+		// Now check the frame itself
+		ShapeFrame *frame = it->shape->getFrame(it->frame);
+
+		// Nope, doesn't have a point
+		if (!frame->hasPoint(x-it->sxbot, y-it->sybot)) continue;
+
+		// Ok now check against selected
+		if (!selected|| (it->order > selected->order)) selected = it;
+	}
+
+	if (selected) return selected->item_num;
+	
+	return 0;
 }
 
 

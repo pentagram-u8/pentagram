@@ -84,7 +84,7 @@ RenderSurface *RenderSurface::SetVideoMode(uint32 width,		// Width of desired mo
 	}
 
 	// Double buffered (sdl will emulate if we don't have)
-	flags |= SDL_HWSURFACE|SDL_DOUBLEBUF;
+	//flags |= SDL_HWSURFACE|SDL_DOUBLEBUF;
 
 	SDL_Surface *sdl_surf = SDL_SetVideoMode(width, height, bpp, flags);
 	

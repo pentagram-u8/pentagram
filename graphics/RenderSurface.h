@@ -66,11 +66,17 @@ public:
 	// Surface Properties
 	//
 
+	// Set the Origin of the Surface
+	virtual void SetOrigin(int x, int y) = 0;
+
+	// Get the Surface Dimensions
+	virtual void GetSurfaceDims(Rect &) const = 0;
+
 	// Get Clipping Rectangle
-	// TODO: virtual void GetClippingRect(Rect &) = 0;
+	virtual void GetClippingRect(Rect &) const = 0;
 
 	// Set Clipping Rectangle
-	// TODO: virtual void SetClippingRect(Rect &) = 0;
+	virtual void SetClippingRect(const Rect &) = 0;
 
 	// Check Clipped. -1 if off screen, 0 if not clipped, 1 if clipped
 	virtual sint16 CheckClipped(const Rect &) const = 0;

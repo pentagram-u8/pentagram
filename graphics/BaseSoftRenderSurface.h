@@ -38,12 +38,12 @@ class BaseSoftRenderSurface : public RenderSurface
 {
 protected:
 	// Frame buffer
-	uint8			*pixels;				// Pointer to top Left pixel in clipping window
-	uint8			*pixels00;				// Pointer to pixel 0,0
+	uint8			*pixels;				// Pointer to logical pixel 0,0
+	uint8			*pixels00;				// Pointer to physical pixel 0,0
 
 	// Depth Buffer
-	uint16			*zbuffer;				// Pointer to top left pixel in clipping window
-	uint8			*zbuffer00;				// Pointer to pixel 0,0
+	uint16			*zbuffer;				// Pointer to logical pixel 0,0
+	uint8			*zbuffer00;				// Pointer to physical pixel 0,0
 
 	// Pixel Format (also see 'Colour shifting values' later)
 	int				bytes_per_pixel;		// 2 or 4
@@ -51,12 +51,12 @@ protected:
 	int				format_type;			// 16, 555, 565, 32 or 888
 
 	// Dimensions
-	uint32			w_real, h_real;			// Actual Surface width and height
-	uint32			width, height;			// Effective Width and height (after clipping)
+	sint32			ox, oy;					// Physical Pixel for Logical Origin
+	uint32			width, height;			// Width and height
 	uint32			pitch;					// Frame buffer pitch (bytes)
 	uint32			zpitch;					// Z Buffer pitch (bytes)
 
-	// Clipping Rectangle - Should be public???
+	// Clipping Rectangle
 	Rect			clip_window;
 
 	// Locking count
@@ -97,11 +97,17 @@ public:
 	// Surface Properties
 	//
 
+	// Get the Surface Dimensions
+	virtual void GetSurfaceDims(Rect &) const;
+
+	// Set the Origin of the Surface
+	virtual void SetOrigin(int x, int y);
+
 	// Get Clipping Rectangle
-	// TODO: virtual void GetClippingRect(Rect &);
+	virtual void GetClippingRect(Rect &) const;
 
 	// Set Clipping Rectangle
-	// TODO: virtual void SetClippingRect(Rect &);
+	virtual void SetClippingRect(const Rect &);
 
 	// Check Clipped. -1 if off screen, 0 if not clipped, 1 if clipped
 	virtual sint16 CheckClipped(const Rect &) const;

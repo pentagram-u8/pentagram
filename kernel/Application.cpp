@@ -45,6 +45,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Actor.h"
 #include "ItemSorter.h" 
 #include "CurrentMap.h"
+#include "Rect.h"
 // END TODO
 
 #include <SDL.h>
@@ -204,12 +205,11 @@ void Application::U8Playground(int argc, char *argv[])
 	}
 }
 
-// Paint the screen
-void Application::paint()
+void Application::SetupDisplayList()
 {
-	screen->BeginPainting();
-	screen->Fill32(0x3F3F3F, 0, 0, 640, 480);
-
+	Rect dims;
+	screen->GetSurfaceDims(dims);
+	sint32 resx = dims.w, resy = dims.h;
 	/*
 	at 640x480, with u8 sizes
 	sint32 sx_limit = 4;
@@ -224,8 +224,6 @@ void Application::paint()
 	for tgwds use half the resolution
 	*/
 
-	// CONSTANTS
-	sint32 resx = 640, resy = 480;
 
 	//if (tgwds)
 	//{
@@ -235,6 +233,7 @@ void Application::paint()
 
 	// By default the fastArea is the screensize plus a border of no more
 	// than 256 pixels wide and 384 pixels high
+
 	sint32 sx_limit = resx/256 + 2;
 	sint32 sy_limit = resy/128 + 6;
 	sint32 xy_limit = (sy_limit+sx_limit)/2;
@@ -257,8 +256,6 @@ void Application::paint()
 	sint32 gx = lx/512;
 	sint32 gy = ly/512;
 
-	display_list->BeginDisplayList(screen, palettemanager->getPalette(PaletteManager::Pal_Game));
-	long before_sort = SDL_GetTicks();
 
 	// Get all the required items and sort
 	for (int y = -xy_limit; y <= xy_limit; y++)
@@ -287,12 +284,34 @@ void Application::paint()
 
 		}
 	}
+}
 
+
+// Paint the screen
+void Application::paint()
+{
+	// We need to get the dims
+	Rect dims;
+	screen->GetSurfaceDims(dims);
+
+	screen->BeginPainting();
+	screen->Fill32(0x3F3F3F, dims.x, dims.y, dims.w, dims.h);
+
+	// Set the origin to the center of the screen
+	screen->SetOrigin(dims.w/2, dims.h/2);
+
+	// Do display list
+	display_list->BeginDisplayList(screen, palettemanager->getPalette(PaletteManager::Pal_Game));
+	long before_sort = SDL_GetTicks();
+	SetupDisplayList();
 	long after_sort = SDL_GetTicks();
 	display_list->PaintDisplayList();
 	long after_paint = SDL_GetTicks();
 
- 	con.DrawConsole(screen, 0, 0, 640, 480);
+	// Put the origin to 0,0 for drawing console
+	screen->SetOrigin(0,0);
+
+ 	con.DrawConsole(screen, 0, 0, dims.w, dims.h);
 	screen->EndPainting();
 
 	static long prev = 0;
@@ -416,7 +435,8 @@ void Application::GraphicSysInit()
 	std::string fullscreen;
 	config->value("config/video/fullscreen", fullscreen, "no");
 	if (fullscreen!="yes") fullscreen="no";
-	screen = RenderSurface::SetVideoMode(640, 480, 32, fullscreen=="yes", false);
+	int width = 640, height = 480;
+	screen = RenderSurface::SetVideoMode(width, height, 32, fullscreen=="yes", false);
 
 	if (!screen)
 	{
@@ -424,7 +444,7 @@ void Application::GraphicSysInit()
 		std::exit(-1);
 	}
 	pout << "Resize Console" << std::endl;
-	con.CheckResize(640);
+	con.CheckResize(width);
 
 	LoadConsoleFont();
 
@@ -542,7 +562,24 @@ void Application::handleEvent(const SDL_Event& event)
 	
 	case SDL_MOUSEBUTTONUP:
 	{
+		// Ok, a bit of a hack for now
+		if (event.button.button == SDL_BUTTON_LEFT)
+		{
+			pout << std::endl << "Tracing left mouse click: ";
 		
+			Rect dims;
+			screen->GetSurfaceDims(dims);
+	
+			// We will assume the display_list has all the items in it
+			uint16 item = display_list->Trace(event.button.x - dims.w/2,
+							event.button.y - dims.h/2);
+
+			if (!item)
+				pout << "Didn't find an item" << std::endl;
+			else
+				pout << "Found item " << item << std::endl;
+		}
+
 	}
 	break;
 	

@@ -38,7 +38,6 @@ class ItemSorter
 	SortItem	*items;
 
 	sint32		order_counter;
-	sint32		swo2, sho2;
 
 public:
 	ItemSorter(int Max_Items = 2048);
@@ -48,10 +47,11 @@ public:
 	void AddItem(Item *);					// Add an Item. SetupLerp() MUST have been called
 	void PaintDisplayList();				// Finished the display list and Paints
 
-//	uint16 Trace(int x, int y);				// Trace and find an object. Returns 
+	uint16 Trace(sint32 x, sint32 y);		// Trace and find an object. Returns objid 
 
 private:
 	bool PaintSortItem(SortItem	*);
+	bool NullPaintSortItem(SortItem	*);
 };
 
 

@@ -41,6 +41,8 @@ public:
 	uint32				*line_offsets;		// Note these are offsets into rle_data
 	const uint8			*rle_data;
 
+	bool hasPoint(sint32 x, sint32 y) const;	// Check to see if a point is in the frame
+
 protected:
 
 	// This will load a u8 style shape 'optimzed'.
