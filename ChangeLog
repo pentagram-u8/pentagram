@@ -3,6 +3,7 @@
 	* world/actors/MainActor.*: moved defending/attacking dex to MainActor
 	* world/actors/MainActor.cpp: fixed max. stats
 	* world/actors/MainActor.*: added 'MainActor::maxStats' concmd cheat
+	* kernel/GUIApp.cpp: start with magic weapon
 
 2004-07-09  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* world/CurrentMap.*: second version of surfaceSearch added

@@ -586,6 +586,11 @@ void GUIApp::U8Playground()
 	sword->moveToContainer(backpack);
 	sword->setGumpLocation(20, 30);
 
+	// Deceiver
+	Item* deceiver = ItemFactory::createItem(822, 0, 0, 0, 0, 0, 0);
+	deceiver->moveToContainer(backpack);
+	deceiver->setGumpLocation(20, 30);
+
 	// armour
 	Item* armour = ItemFactory::createItem(64, 0, 0, 0, 0, 0, 0);
 	armour->moveToContainer(backpack);
