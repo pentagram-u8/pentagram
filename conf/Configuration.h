@@ -52,34 +52,54 @@ class Configuration
 	Configuration();
 	~Configuration();
 
-	// read config file. Multiple files may be read. Order is important.
+	//! read a config file. Multiple files may be read. Order is important.
+	//! \param fname The file to read
+	//! \param root The name of the root node in the file
+	//! \param readonly If true, don't write to this file's tree (or the file)
+	//! \return true if succesful
 	bool readConfigFile(std::string fname, std::string root,
 						bool readonly=false);
-	// write all (writable) config files
+
+	//! write all (writable) config files
 	void write();
-	// clear everything
+
+	//! clear everything
 	void clear();
 
-	// get value
+	//! get value
 	void value(std::string key, std::string &ret, const char *defaultvalue="");
+	//! get value
 	void value(std::string key, int &ret, int defaultvalue=0);
+	//! get value
 	void value(std::string key, bool &ret, bool defaultvalue=false);
 
-	// set value
+
+	//! set value
 	bool set(std::string key, std::string value);
+	//! set value
 	bool set(std::string key, const char* value);
+	//! set value
 	bool set(std::string key, int value);
+	//! set value
 	bool set(std::string key, bool value);
 
-	// get node ref. (delete it afterwards)
+
+	//! get node ref. (Delete it afterwards)
 	ConfigNode* getNode(std::string key);
 
-	// list all subkeys of a key. (no guaranteed order in result)
+	//! list all subkeys of a key
+	//! \param key The key to return setkeys of
+	//! \param longformat If true, return the full key name, instead of
+	//!                   just the last part
+	//! \return the subkeys. They have no guarenteed order.
 	std::set<std::string> listKeys(std::string key, bool longformat = false);
 
 	typedef std::pair<std::string, std::string> KeyType;
 	typedef std::vector<KeyType> KeyTypeList;
 
+	//! list all key-value pairs under the given basekey.
+	//! \param ktl The list in which key-value pairs are returned
+	//! \param basekey The key to search
 	void getSubkeys(KeyTypeList &ktl, std::string basekey);
 
  private:

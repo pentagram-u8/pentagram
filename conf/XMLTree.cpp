@@ -111,7 +111,7 @@ void XMLTree::write()
 	const char *cstr = s.c_str();
 	f->write(cstr,strlen(cstr));
 
-	delete [] f;
+	delete f;
 }
 
 bool XMLTree::hasNode(std::string key) const

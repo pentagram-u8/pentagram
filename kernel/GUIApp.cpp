@@ -69,8 +69,8 @@ using std::string;
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(GUIApp,CoreApp);
 
-GUIApp::GUIApp(const int argc, const char * const * const argv)
-	: CoreApp(argc, argv, "u8", true), ucmachine(0), screen(0),
+GUIApp::GUIApp(int argc, const char* const* argv)
+	: CoreApp(argc, argv), ucmachine(0), screen(0),
 	  palettemanager(0), gamedata(0), world(0), desktopGump(0),
 	  consoleGump(0), gameMapGump(0),
 	  runGraphicSysInit(false), runSDLInit(false),
@@ -78,26 +78,7 @@ GUIApp::GUIApp(const int argc, const char * const * const argv)
 	  animationRate(33), avatarInStasis(false), paintEditorItems(false),
 	  painting(false), dragging(DRAG_NOT), timeOffset(0), song(0)
 {
-	// Set the console to auto paint, till we have finished initing
-	con.SetAutoPaint(conAutoPaint);
-
 	application = this;
-
-	pout << "Create UCMachine" << std::endl;
-	ucmachine = new UCMachine(U8Intrinsics);
-
-	postInit(argc, argv);
-
-	GraphicSysInit();
-
-#ifdef COLOURLESS_IS_TESTING_MUSIC
-	midi_driver = new Windows_MidiOut();
-#endif
-
-	U8Playground();
-
-	// Unset the console auto paint, since we have finished initing
-	con.SetAutoPaint(0);
 
 	for (int i = 0; i < NUM_MOUSEBUTTONS+1; ++i) {
 		mouseDownGump[i] = 0;
@@ -110,6 +91,37 @@ GUIApp::~GUIApp()
 {
 	FORGET_OBJECT(ucmachine);
 	FORGET_OBJECT(palettemanager);
+}
+
+void GUIApp::startup()
+{
+	// Set the console to auto paint, till we have finished initing
+	con.SetAutoPaint(conAutoPaint);
+
+	// parent's startup first
+	CoreApp::startup();
+
+	pout << "Create UCMachine" << std::endl;
+	ucmachine = new UCMachine(U8Intrinsics);
+
+	GraphicSysInit();
+
+#ifdef COLOURLESS_IS_TESTING_MUSIC
+	midi_driver = new Windows_MidiOut();
+#endif
+
+	U8Playground();
+
+	// Unset the console auto paint, since we have finished initing
+	con.SetAutoPaint(0);
+}
+
+void GUIApp::DeclareArgs()
+{
+	// parent's arguments first
+	CoreApp::DeclareArgs();
+
+	// anything else?
 }
 
 void GUIApp::run()
@@ -324,8 +336,20 @@ void GUIApp::GraphicSysInit()
 	std::string fullscreen;
 	config->value("config/video/fullscreen", fullscreen, "no");
 	if (fullscreen!="yes") fullscreen="no";
-	int width = 640, height = 480;
-	screen = RenderSurface::SetVideoMode(width, height, 32, fullscreen=="yes", false);
+	int width, height, bpp;
+
+	config->value("config/video/width", width, 640);
+	config->value("config/video/height", height, 480);
+	config->value("config/video/bpp", bpp, 32);
+
+	// store values in user's config file
+	config->set("config/video/width", width);
+	config->set("config/video/height", height);
+	config->set("config/video/bpp", bpp);
+	config->set("config/video/fullscreen", fullscreen);
+
+	screen = RenderSurface::SetVideoMode(width, height, bpp,
+										 fullscreen=="yes", false);
 
 	if (!screen)
 	{
@@ -696,12 +720,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 					dragging_objid = desktopGump->TraceObjID(startx, starty);
 					perr << "Dragging object " << dragging_objid << std::endl;
 
-					//!! check if Object is draggable
-					//!! (also need to check if item is in range)
 					dragging = DRAG_OK;
-
-					//!! need to notify mouseDownGump that the last
-					//!! mousedown event was used for dragging
 
 					//!! need to pause the kernel
 

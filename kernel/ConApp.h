@@ -28,27 +28,30 @@
 
 class ConApp : public CoreApp
 {
-	public:
-		ConApp(const int argc, const char * const * const argv, const std::string _defaultGame);
-		virtual ~ConApp();
-		
-		virtual void run();
-		virtual void paint() {}; // should be removed from CoreApp
-		virtual void handleEvent(const SDL_Event&event) {}; // should this be in CoreApp?
+public:
+	ConApp(int argc, const char* const* argv);
+	virtual ~ConApp();
 
-	//protected: // should be, but I think the nesting is too deep for this to work right...
+	static ConApp* get_instance()
+		{ return p_dynamic_cast<ConApp*>(application); }
 
-		
-	private:
-		// various temporary state flags, to be moved somewhere more appropriate in time.
-		bool weAreDisasming;
-		bool weAreCompiling;
-		bool weAreWeAreWeAreTheMany; // false for the time being. *grin*
+	void startup();
 
+	virtual void helpMe();
+	
+	virtual void run();
+	virtual void paint() {}; // should be removed from CoreApp
+	virtual void handleEvent(const SDL_Event&event) {}; // should this be in CoreApp?
+	
+protected:
+	virtual void DeclareArgs();
 
+private:
+	// various temporary state flags, to be moved somewhere more appropriate in time.
+	bool weAreDisasming;
+	bool weAreCompiling;
+	bool weAreWeAreWeAreTheMany; // false for the time being. *grin*
 };
-
-inline ConApp *getConInstance() { return static_cast<ConApp *>(CoreApp::get_instance()); };
 
 #endif
 

@@ -1,4 +1,11 @@
 2003-06-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/*App.*: refactored startup sequence
+	* kernel/CoreApp.*: game selection changes
+	* conf/XMLTree.cpp: fix crash on write()
+	* various: cleanup and doxygen comments
+	* kernel/GameInfo.h: GameInfo struct for game version info
+
+2003-06-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.*, gumps/GameMapGump.*: fixed bug with items disappearing
 	  after dragging.
 	* world/Item.*, gumps/GameMapGump.*: Made items fall down when

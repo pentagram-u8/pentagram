@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UsecodeFlex.h"
 #include "IDataSource.h"
 #include "Args.h"
+#include "GameInfo.h"
 
 #include <SDL.h>
 
@@ -38,31 +39,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using std::string;
 
+static void ToLower(std::string& str);
+
+
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(CoreApp);
 
 CoreApp* CoreApp::application = 0;
 
-CoreApp::CoreApp(const int argc, const char * const * const argv,
-	const string _defaultGame, bool delayPostInit)
+CoreApp::CoreApp(int argc_, const char* const* argv_)
 	: isRunning(false), framenum(0), kernel(0), filesystem(0), config(0),
-		defaultGame(_defaultGame), oHelp(false), oQuiet(false), oVQuiet(false)
+	  argc(argc_), argv(argv_), oHelp(false), oQuiet(false), oVQuiet(false)
 {
 	assert(application == 0);
 	application = this;
-
-	// we need to preparse the arguments to find out if we're quiet or not
-	ParseArgs(argc, argv);
-
-	// if we're spitting out help, we probably want to avoid having the other cruft dumped too...
-	if(oHelp) { oQuiet=oVQuiet=true; }
-	if(oQuiet) con.setMsgMask(static_cast<MsgMask>(MM_ALL & ~MM_INFO & ~MM_MINOR_WARN));
-	if(oVQuiet) con.setMsgMask(static_cast<MsgMask>(MM_ALL & ~MM_INFO & ~MM_MINOR_WARN & ~MM_MAJOR_WARN & ~MM_MINOR_ERR));
-
-	sysInit();
-
-	if(!delayPostInit)
-		postInit(argc, argv);
 }
 
 CoreApp::~CoreApp()
@@ -74,6 +64,43 @@ CoreApp::~CoreApp()
 	application = 0;
 }
 
+void CoreApp::startup()
+{
+	DeclareArgs(); // Note: this is virtual
+
+	ParseArgs(argc, argv);
+
+	// if we're spitting out help, we probably want to avoid having the
+	// other cruft dumped too...
+	if(oHelp) { oQuiet=oVQuiet=true; }
+	if(oQuiet)
+		con.setMsgMask(static_cast<MsgMask>(MM_ALL & ~MM_INFO &
+											~MM_MINOR_WARN));
+	if(oVQuiet)
+		con.setMsgMask(static_cast<MsgMask>(MM_ALL & ~MM_INFO & ~MM_MINOR_WARN
+											& ~MM_MAJOR_WARN & ~MM_MINOR_ERR));
+
+	if (oHelp) {
+		helpMe(); // Note: this is virtual
+		exit(0);
+	}
+
+
+	sysInit();
+
+	setupVirtualPaths(); // setup @home, @data
+	loadConfig(); // load config files
+}
+
+void CoreApp::DeclareArgs()
+{
+	parameters.declare("--game",	&game,		"");
+	parameters.declare("-h",		&oHelp, 	true);
+	parameters.declare("--help",	&oHelp,		true);
+	parameters.declare("-q", 		&oQuiet,	true);
+	parameters.declare("-qq",		&oVQuiet,	true);	
+}
+
 // Init sdl
 void CoreApp::SDLInit()
 {
@@ -81,14 +108,6 @@ void CoreApp::SDLInit()
 	SDL_Init(SDL_INIT_VIDEO);
 	atexit(SDL_Quit);
 }
-
-void CoreApp::postInit(const int argc, const char * const * const argv)
-{
-	ParseArgs(argc, argv);
-	setupVirtualPaths(); // setup @home, @data
-	loadConfig();
-}
-
 
 void CoreApp::sysInit()
 {
@@ -145,7 +164,7 @@ void CoreApp::loadConfig()
 	con.Print(MM_INFO, "Loading configuration files:\n");
 
 	// system-wide config
-	if (config->readConfigFile("@data/pentagram.cfg", "config"))
+	if (config->readConfigFile("@data/pentagram.cfg", "config", true))
 		con.Print(MM_INFO, "@data/pentagram.cfg... Ok\n");
 	else
 		con.Print(MM_MINOR_WARN, "@data/pentagram.cfg... Failed\n");
@@ -158,14 +177,8 @@ void CoreApp::loadConfig()
 
 	con.Printf(MM_INFO, "Game: %s\n", game.c_str());
 
-	// Question: config files can specify an alternate data path
-	// Do we reload the config files if that path differs from the
-	// hardcoded data path? (since the system-wide config file is in @data)
 
-	/**********
-	  load pentagram specific data path
-	 **********/
-	//addPath("config/general/data","@data", "Data Path");
+	//  load pentagram specific data path
 	std::string data;
 	con.Print(MM_INFO, "Reading \"config/general/data\" config key.\n");
 	config->value("config/general/data", data, "");
@@ -177,31 +190,117 @@ void CoreApp::loadConfig()
 		con.Print(MM_MINOR_WARN, "Key not found. Data path set to default.\n");
 	}
 
-	/**********
-	  load main game data path
-	 **********/
+
+	//!! move this to some other init function
+	std::set<std::string> games;
+	games = config->listKeys("config/games", false);
+	pout << "Scanning config file for games:" << std::endl;
+	std::set<std::string>::iterator iter;
+	for (iter = games.begin(); iter != games.end(); ++iter) {
+		pout << *iter << std::endl;
+		//!! output some version info or something
+	}
+
+	if (game == "") {
+		std::string defaultgame;
+		config->value("config/general/defaultgame", defaultgame, "");
+		if (defaultgame != "") {
+			// default game specified in config file
+			game = defaultgame;
+		} else if (games.size() == 1) {
+			// only one game in config file, so pick that
+			game = *(games.begin());
+		} else if (games.size() == 0) {
+			perr << "No games set up in configuration. "
+				 << "Please read the README for instructions." << std::endl;
+			exit(1); //!! FIXME
+		} else {		
+			perr << "Multiple games found in configuration, but no default "
+				 << "game is selected." << std::endl
+				 << "Either start Pentagram with the \"--game <gamename>\","
+				 << std::endl
+				 << "or set config/general/defaultgame in pentagram.cfg"
+				 << std::endl;
+			exit(1); //!! FIXME
+		}
+	}
+
+	pout << "Selected game: " << game << std::endl;
+
+	if (games.find(game) == games.end()) {
+		perr << "Game \"" << game << "\" not found." << std::endl;
+		exit(1);
+	}
+
+	setupGamePaths(game, 0);
+}
+
+bool CoreApp::getGameInfo(std::string& game, GameInfo* gameinfo)
+{
+	// first try getting the information from the config file
+	// if that fails, try to autodetect it
+
+	gameinfo->type = GameInfo::GAME_UNKNOWN;
+	gameinfo->version = 0;
+	gameinfo->language = GameInfo::LANG_UNKNOWN;
+
+	std::string gamekey = "config/games/"+game;
+
+	std::string gametype;
+	config->value(gamekey+"/type", gametype, "unknown");
+	ToLower(gametype);
+
+	std::string version;
+	config->value(gamekey+"/version", version, "unknown");
+
+	std::string language;
+	config->value(gamekey+"/version", language, "unknown");
+	ToLower(language);
+
+	if (gametype == "u8") {
+		gameinfo->type = GameInfo::GAME_U8;
+	}
+
+	//!! TODO: version parsing
+
+	if (language == "english") {
+		gameinfo->language = GameInfo::LANG_ENGLISH;
+	} else if (language == "french") {
+		gameinfo->language = GameInfo::LANG_FRENCH;
+	} else if (language == "german") {
+		gameinfo->language = GameInfo::LANG_GERMAN;
+	} else if (language == "spanish") {
+		gameinfo->language = GameInfo::LANG_SPANISH;
+	}
+
+	//!! TODO: game detection
+
+	return false;
+}
+
+void CoreApp::setupGamePaths(std::string& game, GameInfo* gameinfo)
+{
+	std::string gamekey = "config/games/"+game;
+
+	// load main game data path
 	std::string gpath;
-	con.Printf(MM_INFO, "Reading \"config/%s/path\" config key.\n", game.c_str());
-	config->value(string("config/")+game+"/path", gpath, ".");
-	filesystem->AddVirtualPath("@u8", gpath);
+	con.Printf(MM_INFO, "Reading \"config/games/%s/path\" config key.\n", game.c_str());
+	config->value(gamekey+"/path", gpath, ".");
+	filesystem->AddVirtualPath("@u8", gpath); //!!FIXME
 	con.Printf(MM_INFO, "Game Path: %s\n", gpath.c_str());
 
-	/**********
-	  load work path. Default is $(HOME)/.pentagram/game-work
-	  where 'game' in the above is the specified 'game' loaded (default 'u8')
-	 **********/
-	std::string home;
-#ifdef HAVE_HOME
-	home = getenv("HOME");
-	home += "/.pentagram";
-#else
-	// TODO: what to do on systems without $HOME?
-	home = ".";
-#endif
-	std::string work(home+"/"+game+"-work");
-	con.Printf(MM_INFO, "Reading \"config/%s/work\" config key.\n", game.c_str());
-	config->value(string("config/")+game+"/work", work, string(home+"/"+game+"-work").c_str());
-	filesystem->AddVirtualPath("@work", work, true); // force creation if it doesn't exist
+
+
+	// load work path. Default is @home/game-work
+	// where 'game' in the above is the specified 'game' loaded
+	std::string work("@home/"+game+"-work");
+	con.Printf(MM_INFO, "Reading \"config/games/%s/work\" config key.\n",
+			   game.c_str());
+	config->value(gamekey+"/work", work,
+				  string("@home/"+game+"-work").c_str());
+
+	// force creation if it doesn't exist
+	filesystem->AddVirtualPath("@work", work, true);
 	con.Printf(MM_INFO, "U8 Workdir: %s\n", work.c_str());
 
 	// make sure we've got a minimal sane filesystem under there...
@@ -213,11 +312,6 @@ void CoreApp::loadConfig()
 
 void CoreApp::ParseArgs(const int argc, const char * const * const argv)
 {
-	parameters.declare("--game",	&game,		defaultGame.c_str());
-	parameters.declare("-h",		&oHelp, 	true);
-	parameters.declare("-q", 		&oQuiet,	true);
-	parameters.declare("-qq",		&oVQuiet,	true);
-	
 	parameters.process(argc, argv);
 }
 
@@ -225,7 +319,21 @@ void CoreApp::helpMe()
 {
 	con.Print("\t-h\t\t- quick help menu (this)\n");
 	con.Print("\t-q\t\t- silence general logging messages\n");
-	con.Print("\t-qq\t\t- silence general logging messages and non-critical warnings/errors\n");
-	con.Print("\t--game {name}\t- executes the appropritate game by reading the specific 'name' section of the pentagram.cfg file\n");
+	con.Print("\t-qq\t\t- silence general logging messages and\n\t\t\t  non-critical warnings/errors\n");
+	con.Print("\t--game {name}\t- select a game\n");
 }
 
+
+
+static void ToLower(std::string& str)
+{
+	for (unsigned int i = 0; i < str.size(); ++i)
+	{
+#if (defined(BEOS) || defined(OPENBSD) || defined(CYGWIN) || defined(__MORPHOS__))
+		if ((str[i] >= 'A') && (str[i] <= 'Z')) str[i] += 32;
+#else
+		str[i] = static_cast<char>(std::tolower(str[i]));
+#endif
+	}
+
+}

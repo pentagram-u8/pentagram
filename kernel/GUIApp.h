@@ -43,12 +43,14 @@ class GUIApp : public CoreApp
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 	
-	GUIApp(const int argc, const char * const * const argv);
+	GUIApp(int argc, const char* const* argv);
 	virtual ~GUIApp();
 	
 	static GUIApp* get_instance()
 		{ return p_dynamic_cast<GUIApp*>(application); }
 	
+	void startup();
+
 	virtual void run();
 	virtual void handleEvent(const SDL_Event& event);
 	
@@ -74,7 +76,10 @@ public:
 	GameMapGump *getGameMapMapGump() { return gameMapGump; }
 	Gump *getDesktopGump() { return desktopGump; }
 	Gump* getGump(uint16 gumpid);
-	
+
+protected:
+	virtual void DeclareArgs();
+
 private:
 	
 	// full system

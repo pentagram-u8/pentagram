@@ -62,7 +62,8 @@ IDataSource* FileSystem::ReadFile(const string &vfn, bool is_text)
 	std::map<string, MemoryFile*>::iterator mf = memoryfiles.find(vfn);
 
 	if (mf != memoryfiles.end())
-		return new IBufferDataSource(mf->second->data, mf->second->len, is_text);
+		return new IBufferDataSource(mf->second->data,
+									 mf->second->len, is_text);
 
 	std::ifstream *f = new std::ifstream();
 	if(!rawopen(*f, filename, is_text)) 

@@ -25,22 +25,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Kernel.h"
 
-ConApp::ConApp(const int argc, const char * const * const argv, const std::string _defaultGame)
-	: CoreApp(argc, argv, _defaultGame, true), weAreDisasming(false), weAreCompiling(false)
+ConApp::ConApp(int argc, const char* const* argv)
+	: CoreApp(argc, argv), weAreDisasming(false), weAreCompiling(false)
 	// FIXME! Need a 'console' intrinsic set instead of the 0 above!
 {
 	application = this;
+}
 
-	parameters.declare("--disasm",  &weAreDisasming, true);
-	parameters.declare("--compile", &weAreCompiling, true);
+void ConApp::startup()
+{
+	CoreApp::startup();
 
-	postInit(argc, argv);
-
-	if(help())
-	{
-		helpMe();
-	}
-	else if(weAreDisasming==true)
+	if(weAreDisasming==true)
 	{
 		//QUIET(pout << "We Are Disassembling..." << std::endl);
 		con.Print(MM_INFO, "We Are Diassembling...\n");
@@ -59,7 +55,26 @@ ConApp::ConApp(const int argc, const char * const * const argv, const std::strin
 		kernel->addProcess(new CompileProcess(filesystem));
 		//assert(false);
 	}
+}
 
+void ConApp::DeclareArgs()
+{
+	CoreApp::DeclareArgs();
+
+	parameters.declare("--disasm",  &weAreDisasming, true);
+	parameters.declare("--compile", &weAreCompiling, true);
+}
+
+void ConApp::helpMe()
+{
+	CoreApp::helpMe();
+
+	//TODO: some actual help :-)
+	//note: arguments are already parsed at this point, so we could
+	//provide more detailed help on e.g., './llc --help --disasm' 
+
+	con.Print("\t--disasm\t- disassemble\n");
+	con.Print("\t--compile\t- compile\n");
 }
 
 ConApp::~ConApp()

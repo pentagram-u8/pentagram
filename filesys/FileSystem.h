@@ -113,10 +113,12 @@ class FileSystem
 	// Open a streaming file as readable. Streamed (0 on failure)
 	ODataSource *WriteFile(const std::string &vfn, bool is_text=false);
 
-	bool AddVirtualPath(const std::string &vpath, const std::string &realpath, bool create=false);
+	bool AddVirtualPath(const std::string &vpath, const std::string &realpath,
+						bool create=false);
 	bool RemoveVirtualPath(const std::string &vpath);
 	
-	bool MountFileInMemory(const std::string &vpath, const uint8 *data, const uint32 len);
+	bool MountFileInMemory(const std::string &vpath, const uint8 *data,
+						   const uint32 len);
 
 	int  MkDir(const std::string& path); // can handle both paths and vpaths
 	int ListFiles(const std::string mask, FileList& files);
@@ -143,7 +145,8 @@ class FileSystem
 
 	static FileSystem* filesystem;
 
-	// This will disable the usage of forced virtual paths. It's useful for 'tools'
+	// This will disable the usage of forced virtual paths.
+	// It's useful for 'tools'
 	bool	noforcedvpaths;
 
 	// rewrite virtual path in-place (i.e., fvn is replaced)
@@ -154,11 +157,12 @@ class FileSystem
 
 	struct MemoryFile
 	{
-		MemoryFile(const uint8* _data, const uint32 _len) : data(_data), len(_len) { } 
+		MemoryFile(const uint8* _data, const uint32 _len)
+			: data(_data), len(_len) { } 
 		const uint8		*data;
 		const uint32	len;
 	};
-	std::map<std::string, MemoryFile*> memoryfiles;		// Files mounted in memory
+	std::map<std::string, MemoryFile*> memoryfiles;	// Files mounted in memory
 
 };
 

@@ -51,10 +51,6 @@ bool MissileProcess::run(const uint32 framenum)
 		{0, 156, 309, 454, 588, 705, 809, 891, 952, 987, 1000,
 		 987, 952, 891, 809, 705, 588, 454, 309, 156, 0};
 
-	//!! this needs timing
-	// without main timing I can't really determine how many 'ticks' 
-	// each frame should last.
-
 	Item *it = World::get_instance()->getItem(item);
 
 	if (!it) {

@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define GAMEDATA_H
 
 #include <vector>
+#include "GameInfo.h"
 
 class Flex;
 class MainShapeFlex;
@@ -58,6 +59,8 @@ private:
 	GumpShapeFlex* gumps;
 	Shape* mouse;
 	Flex* music;
+
+	GameInfo gameinfo;
 
 	static GameData* gamedata;
 };

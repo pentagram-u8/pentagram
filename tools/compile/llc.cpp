@@ -23,7 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 int main(int argc, char* argv[])
 {
-	ConApp* app = new ConApp(argc, argv, "test-warn");
+	ConApp* app = new ConApp(argc, argv);
+	//!! Note: I removed the 'test-warn' here
+	app->startup();
 	app->run();
 
 	delete app;
