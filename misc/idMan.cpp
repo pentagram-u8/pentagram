@@ -177,6 +177,9 @@ void idMan::clearID(uint16 id)
 
 		usedcount--;
 	}
+
+	// double-check we didn't break the list
+	assert(!first || last);
 }
 
 void idMan::save(ODataSource* ods)

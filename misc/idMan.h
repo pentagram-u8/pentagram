@@ -73,7 +73,7 @@ public:
 
 	//! check if an ID is in use
 	bool		isIDUsed(uint16 id)
-		{ return id <= end && ids[id] == 0 && id != last; }
+		{ return id >= begin && id <= end && ids[id] == 0 && id != last; }
 
 	void save(ODataSource* ods);
 	bool load(IDataSource* ids);

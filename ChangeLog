@@ -4,6 +4,7 @@
 	* usecode/UCMachine.cpp: opcode 0x3E pushes an _un_signed 8 bit int
 	* usecode/UCMachine.cpp: release string/list IDs when freeing them
 	* usecode/UCList.h: minor tweaks to allow appending a list to itself
+	* misc/idMan.*: don't break the list when freeing ID zero.
 
 2004-08-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: uninitialized variables
