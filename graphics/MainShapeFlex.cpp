@@ -21,9 +21,10 @@
 #include "MainShapeFlex.h"
 #include "TypeFlags.h"
 #include "ShapeInfo.h"
+#include "AnimDat.h"
 
 MainShapeFlex::MainShapeFlex(IDataSource* ds, ConvertShapeFormat *format)
-	: ShapeFlex(ds, format), typeFlags(0)
+	: ShapeFlex(ds, format), typeFlags(0), animdat(0)
 {
 
 }
@@ -34,6 +35,11 @@ MainShapeFlex::~MainShapeFlex()
 	if (typeFlags) {
 		delete typeFlags;
 		typeFlags = 0;
+	}
+
+	if (animdat) {
+		delete animdat;
+		animdat = 0;
 	}
 }
 	
@@ -53,4 +59,29 @@ ShapeInfo* MainShapeFlex::getShapeInfo(uint32 shapenum)
 	assert(typeFlags);
 
 	return typeFlags->getShapeInfo(shapenum);
+}
+
+void MainShapeFlex::loadAnimDat(IDataSource *ds)
+{
+	if (animdat) {
+		delete animdat;
+		animdat = 0;
+	}
+
+	animdat = new AnimDat;
+	animdat->load(ds);
+}
+
+ActorAnim* MainShapeFlex::getAnim(uint32 shape) const
+{
+	assert(animdat);
+
+	return animdat->getAnim(shape);
+}
+
+AnimAction* MainShapeFlex::getAnim(uint32 shape, uint32 action) const
+{
+	assert(animdat);
+
+	return animdat->getAnim(shape, action);
 }

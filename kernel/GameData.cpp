@@ -87,6 +87,15 @@ void GameData::loadU8Data()
 	mainshapes->loadTypeFlags(tfs);
 	delete tfs;
 
+	// Load animdat
+	IDataSource *af = filesystem->ReadFile("@u8/static/anim.dat");
+	if (!af) {
+		perr << "Unable to load static/anim.dat. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	mainshapes->loadAnimDat(af);
+	delete af;
+
 	// Load globs
 	IDataSource *gds = filesystem->ReadFile("@u8/static/glob.flx");
 	if (!gds) {

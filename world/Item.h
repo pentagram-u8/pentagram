@@ -40,6 +40,8 @@ public:
 	void setLocation(sint32 x, sint32 y, sint32 z);
 	void getLocation(sint32& x, sint32& y, sint32& z) const;
 	uint16 getFlags() const { return flags; }
+	void setFlag(uint32 mask) { flags |= mask; }
+	void clearFlag(uint32 mask) { flags &= ~mask; }
 	void setExtFlags(uint32 f) { extendedflags = f; }
 	uint32 getExtFlags() const { return extendedflags; }
 	uint32 getShape() const { return shape; }
@@ -134,7 +136,6 @@ public:
 	INTRINSIC(I_legalCreateAtPoint);
 	INTRINSIC(I_legalCreateAtCoords);
 	INTRINSIC(I_legalCreateInCont);
-
 
 protected:
 	uint32 shape;

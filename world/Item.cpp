@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "World.h"
 #include "DelayProcess.h"
 #include "Container.h"
+#include "Kernel.h"
 
 #include "MainShapeFlex.h"
 #include "ShapeInfo.h"
@@ -63,6 +64,7 @@ Item::~Item()
 
 void Item::setLocation(sint32 X, sint32 Y, sint32 Z)
 {
+	//!!!! need to check if item needs to move to another item list
 	x = X;
 	y = Y;
 	z = Z;
@@ -573,7 +575,7 @@ uint32 Item::I_bark(const uint8* args, unsigned int /*argsize*/)
 	pout << std::endl << std::endl << str  << std::endl << std::endl;
 	
 	// wait 4 ticks
-	return UCMachine::get_instance()->addProcess(new DelayProcess(4));
+	return Kernel::get_instance()->addProcess(new DelayProcess(4));
 
 	// of course, in the final version of bark, we'll have to actually do
 	// something after the timeout occurs.
@@ -644,7 +646,7 @@ uint32 Item::I_ask(const uint8* args, unsigned int /*argsize*/)
 	answerlist = new UCList(2);
 	answerlist->copyStringList(*answers);
 
-	return UCMachine::get_instance()->addProcess(new UserChoiceProcess());
+	return Kernel::get_instance()->addProcess(new UserChoiceProcess());
 }
 
 uint32 Item::I_legalCreateAtPoint(const uint8* args, unsigned int /*argsize*/)

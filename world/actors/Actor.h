@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define ACTOR_H
 
 #include "Container.h"
+#include "intrinsics.h"
 
 class Actor : public Container
 {
@@ -29,6 +30,8 @@ public:
 
 	// p_dynamic_cast stuff
 	ENABLE_DYNAMIC_CAST(Actor);
+
+	INTRINSIC(I_doAnim);
 };
 
 

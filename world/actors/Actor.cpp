@@ -17,8 +17,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "pent_include.h"
-
 #include "Actor.h"
+
+#include "Kernel.h"
+#include "UCMachine.h"
+#include "World.h"
+#include "ActorAnimProcess.h"
 
 // p_dynamic_cast stuff
 DEFINE_DYNAMIC_CAST_CODE(Actor,Container);
@@ -31,4 +35,19 @@ Actor::Actor()
 Actor::~Actor()
 {
 
+}
+
+
+uint32 Actor::I_doAnim(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR(actor);
+	ARG_UINT16(anim);
+	ARG_UINT16(dir); // seems to be 1-8
+	ARG_UINT16(unk1); // this is almost always 10000 in U8.Maybe speed-related?
+	ARG_UINT16(unk2); // appears to be 0 or 1. Some flag?
+	if (!actor) return 0;
+
+	Process *p = new ActorAnimProcess(actor, anim, dir);
+
+	return Kernel::get_instance()->addProcess(p);
 }

@@ -16,34 +16,28 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef MAINSHAPEFLEX_H
-#define MAINSHAPEFLEX_H
+#ifndef ACTORANIM_H
+#define ACTORANIM_H
 
-#include "ShapeFlex.h"
+#include <vector>
 
-class TypeFlags;
-class ShapeInfo;
-class AnimDat;
-class ActorAnim;
-struct AnimAction;
+class AnimAction;
 
-class MainShapeFlex : public ShapeFlex
+class ActorAnim
 {
+	friend class AnimDat;
 public:
-	MainShapeFlex(IDataSource* ds, ConvertShapeFormat *format = 0);
-	virtual ~MainShapeFlex();
-	
-	void loadTypeFlags(IDataSource *ds);
-	ShapeInfo* getShapeInfo(uint32 shapenum);
+	ActorAnim() {}
+	~ActorAnim() {}
 
-	void loadAnimDat(IDataSource *ds);
-	ActorAnim* getAnim(uint32 shape) const;
-	AnimAction* getAnim(uint32 shape, uint32 action) const;
-	
-protected:
-	TypeFlags* typeFlags;
-	AnimDat* animdat;
+	AnimAction* getAction(unsigned int n) {
+		if (n >= actions.size()) return 0;
+		return actions[n];
+	}
+
+private:
+	std::vector<AnimAction*> actions; // list of this actor's actions
+	                                  // (0 if actor doesn't have action)
 };
-
 
 #endif

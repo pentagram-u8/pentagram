@@ -16,33 +16,28 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef MAINSHAPEFLEX_H
-#define MAINSHAPEFLEX_H
+#ifndef ACTORANIMPROCESS_H
+#define ACTORANIMPROCESS_H
 
-#include "ShapeFlex.h"
+#include "Process.h"
 
-class TypeFlags;
-class ShapeInfo;
-class AnimDat;
-class ActorAnim;
-struct AnimAction;
+class Actor;
+class AnimAction;
 
-class MainShapeFlex : public ShapeFlex
+class ActorAnimProcess : public Process
 {
 public:
-	MainShapeFlex(IDataSource* ds, ConvertShapeFormat *format = 0);
-	virtual ~MainShapeFlex();
-	
-	void loadTypeFlags(IDataSource *ds);
-	ShapeInfo* getShapeInfo(uint32 shapenum);
+	//! note: this probably needs some more parameters
+	ActorAnimProcess(Actor* actor, uint32 action, uint32 dir);
 
-	void loadAnimDat(IDataSource *ds);
-	ActorAnim* getAnim(uint32 shape) const;
-	AnimAction* getAnim(uint32 shape, uint32 action) const;
-	
-protected:
-	TypeFlags* typeFlags;
-	AnimDat* animdat;
+	virtual bool run(uint32 framenum);
+
+private:
+	Actor* actor;
+	AnimAction* animaction;
+	uint32 dir;
+
+	uint32 currentindex;
 };
 
 

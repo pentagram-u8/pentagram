@@ -49,6 +49,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Rect.h"
 // END TODO
 
+// just for testing
+#include "Actor.h"
+#include "ActorAnimProcess.h"
+
 #include <SDL.h>
 #include <cstdlib>
 
@@ -652,6 +656,11 @@ void Application::handleEvent(const SDL_Event& event)
 		case SDLK_PAGEDOWN: if (showconsole) con.ScrollConsole(3); break;
 		case SDLK_LEFTBRACKET: display_list->DecSortLimit(); break;
 		case SDLK_RIGHTBRACKET: display_list->IncSortLimit(); break;
+		case SDLK_t: { // quick animation test
+			Actor* devon = World::get_instance()->getNPC(2);
+			Process* p = new ActorAnimProcess(devon, 0, 2);
+			Kernel::get_instance()->addProcess(p);
+		} break;
 		default: break;
 		}
 	}
