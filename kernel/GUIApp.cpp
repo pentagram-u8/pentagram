@@ -666,25 +666,23 @@ int GUIApp::getMouseFrame()
 	switch (cursor) {
 	case MOUSE_NORMAL:
 	{
-		bool combat = false; //!!! fixme
+		bool combat = false;
+		MainActor* av = World::get_instance()->getMainActor();
+		if (av) { combat = av->isInCombat(); }
 
 		// Calculate frame based on direction
 		int frame = getMouseDirection(mouseX, mouseY);
 
-		if (combat) {
-			frame += 25;
-		} else {
-			int arrowlength = getMouseLength(mouseX, mouseY);
-			if (arrowlength == 0) {
-				frame += 0;
-			} else if (arrowlength == 1) {
-				frame += 8;
-			} else {
-				frame += 16;
-			}
-		}
-
-		return frame;
+		/** length --- frame offset
+		 *    0              0
+		 *    1              8
+		 *    2             16
+		 *  combat          25
+		 **/
+		int offset = getMouseLength(mouseX, mouseY) * 8;
+		if (combat && offset != 16) //combat mouse is off if running
+			offset = 25;
+		return frame + offset;
 	}
 	//!! constants...
 	case MOUSE_NONE: return -1;
@@ -1287,6 +1285,14 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			sint32 x,y,z;
 			item->getLocation(x,y,z);
 			pout << "19204: (" << x << "," << y << "," << z << ")" << std::endl;			
+		} break;
+		case SDLK_m: { // toggle combat
+			if (avatarInStasis) {
+				pout << "Can't: avatarInStasis" << std::endl;
+				break;
+			}
+			MainActor* av = World::get_instance()->getMainActor();
+			av->toggleInCombat();
 		} break;
 		case SDLK_z: { // open inventory
 			if (avatarInStasis) {

@@ -1,3 +1,13 @@
+2003-11-30	Darke  <darkepaw@users.sf.net>
+	Committing patch by Matthew Jimenez:
+	* kernel/GUIApp.cpp, objects.mk, world/actors/*: Addeds support for
+	  Avatar's combat stance and cleaned up animation stuff.
+	
+	* docs/scratch/credits.txt: Added Matthew to credits.
+	* README: 'm' switches between combat mode and back.
+	* AUTHORS: Added Dominus to authors.
+	* ChangeLog: Updated changelog... oh, wait...
+
 2003-11-16	Darke  <darkepaw@users.sf.net>
 	* convert/Convert.h, tools/fold/*: Added mul (0x1E) and attempted
 	  to fix issues correctly folding a 'spawn' call.

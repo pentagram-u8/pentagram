@@ -92,6 +92,7 @@ h		: highlights any item you are "hitting", colliding with
 c		: enables clipping
 i		: open backpack
 z		: open paperdoll/status
+m		: switches combat mode on/off
 ESC,q		: quits pentagram
 [,]		: first ] clears the screen, multiple presses of ]
 		  show the paint order. [ "steps" backward.

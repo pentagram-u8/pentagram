@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "AvatarMoverProcess.h"
+#include "Animation.h"
 
 #include "GUIApp.h"
 #include "MainActor.h"
@@ -46,17 +47,6 @@ AvatarMoverProcess::~AvatarMoverProcess()
 
 bool AvatarMoverProcess::run(const uint32 framenum)
 {
-	const unsigned int fallanim = 44; //!! constants (move)
-	const unsigned int fallanim2 = 14;
-	const unsigned int standupanim = 4;
-	const unsigned int walkanim = 0;
-	const unsigned int runanim = 1;
-	const unsigned int stepanim = 12;
-	const unsigned int standanim = 2;
-	const unsigned int jumpanim = 17;
-	const unsigned int jumpupanim = 3;
-	const unsigned int runningjumpanim = 10;
-
 	GUIApp* guiapp = GUIApp::get_instance();
 
 	// in stasis, so don't move
@@ -74,22 +64,24 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 	MainActor* avatar = World::get_instance()->getMainActor();
 	uint32 lastanim = avatar->getLastAnim();
 	uint32 direction = avatar->getDir();
-
-	// If Avatar fell down, stand up.
-	if (lastanim == fallanim || lastanim == fallanim2) {
-		waitFor(avatar->doAnim(standupanim, direction));
-		return false;
-	}
+	uint32 nextanim, nextdir;
+	nextanim = nextdir = 0;
 
 	int mx, my;
 	guiapp->getMouseCoords(mx, my);
 	unsigned int mouselength = guiapp->getMouseLength(mx,my);
 
 	// adjust to world direction
-	unsigned int mousedir = (guiapp->getMouseDirection(mx,my)+7)%8;
+	uint32 mousedir = (guiapp->getMouseDirection(mx,my)+7)%8;
 
-	// check mouse state to see what needs to be done
+	// If Avatar fell down, stand up.
+	if (lastanim == Animation::fall || lastanim == Animation::fallBackwards) {
+		nextanim = Animation::checkWeapon(Animation::standUp, lastanim);
+		waitFor(avatar->doAnim(nextanim, nextdir));
+		return false;
+	}
 
+    // check mouse state to see what needs to be done
 	if (!(mouseState[1] & MBS_HANDLED) &&
 		SDL_GetTicks() - lastMouseDown[1] > 200) //!! constant
 	{
@@ -103,10 +95,19 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 		// CHECKME: currently, first turn in the right direction
 		if (mousedir != direction) {
 			pout << "AvatarMover: turn" << std::endl;
-			waitFor(avatar->doAnim(standanim, mousedir));
+			nextdir = mousedir;
+			if (avatar->isInCombat())
+			{
+				nextanim = Animation::combat_stand;
+			}
+			else
+			{
+				nextanim = Animation::stand;
+			}
+			nextanim = Animation::checkWeapon(nextanim, lastanim);
+			waitFor(avatar->doAnim(nextanim, nextdir));
 			return false;
 		}
-
 	}
 
 	if (mouseState[0] & MBS_DOWN || !(mouseState[0] & MBS_HANDLED))
@@ -115,26 +116,26 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 		mouseState[1] |= MBS_HANDLED;
 		// We got a left mouse down.
 		// Note that this automatically means right was down at the time too.
+		// jumping straight up.
+		// check if there's something we can climb up onto here
+
+		nextanim = Animation::jumpUp;
+		nextdir = direction;
 
 		// jump.
 
 		// check if we need to do a running jump
-		if (lastanim == runanim || lastanim == runningjumpanim) {
+		if (lastanim == Animation::run || lastanim == Animation::runningJump) {
 			pout << "AvatarMover: running jump" << std::endl;
-			waitFor(avatar->doAnim(runningjumpanim, direction));
-			return false;
-		}
-
-		if (mouselength > 0) {
+			nextanim = Animation::runningJump;
+			nextdir = direction;
+		} else if (mouselength > 0) {
 			pout << "AvatarMover: jump" << std::endl;
-			waitFor(avatar->doAnim(jumpanim, direction));
-			return false;
+			nextanim = Animation::jump;
+			nextdir = direction;
 		}
-
-		// jumping straight up.
-		// check if there's something we can climb up onto here
-
-		waitFor(avatar->doAnim(jumpupanim, direction));
+		nextanim = Animation::checkWeapon(nextanim, lastanim);
+		waitFor(avatar->doAnim(nextanim, nextdir));
 		return false;
 
 		// TODO: post-patch targeted jumping
@@ -146,27 +147,43 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 	if (mouseState[1] & MBS_DOWN && mouseState[1] & MBS_HANDLED)
 	{
 		// right mouse button is down long enough to act on it
-
 		// if facing right direction, walk
 		//!! TODO: check if you can actually take this step
 
-		int anim = walkanim;
-		if (mouselength == 0)
-			anim = stepanim;
-		else if (mouselength == 2)
-			anim = runanim;
+		nextanim = Animation::step;
+		if (mouselength == 1)
+			nextanim = Animation::walk;
+
+		if (avatar->isInCombat())
+			nextanim = Animation::advance;
+
+		if (mouselength == 2)
+		{
+			nextanim = Animation::run;
+		}
 
 		pout << "AvatarMover: walk" << std::endl;
 
-		waitFor(avatar->doAnim(anim, mousedir));
+		nextdir = mousedir;
+		nextanim = Animation::checkWeapon(nextanim, lastanim);
+		waitFor(avatar->doAnim(nextanim, nextdir));
 		return false;
 	}
 
 	// not doing anything in particular? stand
 	// TODO: make sure falling works properly.
-	if (lastanim != standanim) {
-		waitFor(avatar->doAnim(standanim, direction));
-		return false;
+	if (lastanim != Animation::stand || lastanim != Animation::combat_stand) {
+		nextdir = direction;
+		if (avatar->isInCombat())
+		{
+			nextanim = Animation::combat_stand;
+		}
+		else
+		{
+			nextanim = Animation::stand;
+		}
+		nextanim = Animation::checkWeapon(nextanim, lastanim);
+		waitFor(avatar->doAnim(nextanim, nextdir));
 	}
 
 	return false;

@@ -536,7 +536,7 @@ uint32 Actor::I_isInCombat(const uint8* args, unsigned int /*argsize*/)
 	ARG_ACTOR_FROM_PTR(actor);
 	if (!actor) return 0;
 
-	if (actor->getActorFlags() & ACT_INCOMBAT)
+	if (actor->isInCombat())
 		return 1;
 	else
 		return 0;
