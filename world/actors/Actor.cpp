@@ -28,8 +28,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 DEFINE_DYNAMIC_CAST_CODE(Actor,Container);
 
 Actor::Actor()
-	: animating(false), strength(0), dexterity(0), intelligence(0),
-	  hitpoints(0), mana(0), lastanim(0), direction(0)
+	: strength(0), dexterity(0), intelligence(0),
+	  hitpoints(0), mana(0), lastanim(0), direction(0), actorflags(0)
 {
 
 }
@@ -181,3 +181,57 @@ uint32 Actor::I_setMana(const uint8* args, unsigned int /*argsize*/)
 	return 0;
 }
 
+uint32 Actor::I_isInCombat(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR(actor);
+	if (!actor) return 0;
+
+	if (actor->getActorFlags() & ACT_INCOMBAT)
+		return 1;
+	else
+		return 0;
+}
+
+uint32 Actor::I_isDead(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR(actor);
+	if (!actor) return 0;
+
+	if (actor->getActorFlags() & ACT_DEAD)
+		return 1;
+	else
+		return 0;
+}
+
+uint32 Actor::I_isImmortal(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR(actor);
+	if (!actor) return 0;
+
+	if (actor->getActorFlags() & ACT_IMMORTAL)
+		return 1;
+	else
+		return 0;
+}
+
+uint32 Actor::I_isWithstandDeath(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR(actor);
+	if (!actor) return 0;
+
+	if (actor->getActorFlags() & ACT_WITHSTANDDEATH)
+		return 1;
+	else
+		return 0;
+}
+
+uint32 Actor::I_isFeignDeath(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR(actor);
+	if (!actor) return 0;
+
+	if (actor->getActorFlags() & ACT_FEIGNDEATH)
+		return 1;
+	else
+		return 0;
+}

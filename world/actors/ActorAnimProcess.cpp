@@ -47,7 +47,7 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 
 	currentindex = 0;
 
-	if (actor_->animating) {
+	if (actor_->getActorFlags() & Actor::ACT_ANIMLOCK) {
 		//! What do we do if actor was already animating?
 		//! don't do this animation or kill the previous one?
 		//! Or maybe wait until the previous one finishes?
@@ -56,9 +56,11 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 		animaction = 0;
 	}
 
-	actor_->animating = true;
-	actor_->lastanim = action;
-	actor_->direction = dir_;
+	if (animaction) {
+		actor_->setActorFlag(Actor::ACT_ANIMLOCK);
+		actor_->lastanim = action;
+		actor_->direction = dir_;
+	}
 }
 
 bool ActorAnimProcess::run(const uint32 framenum)
@@ -116,8 +118,8 @@ void ActorAnimProcess::terminate()
 {
 	Actor *a = p_dynamic_cast<Actor*>(World::get_instance()->getObject(actor));
 	if (a) {
-		if (animaction) { 
-			a->animating = false;
+		if (animaction) { // if we were really animating...
+			a->clearActorFlag(Actor::ACT_ANIMLOCK);
 		}
 	}
 

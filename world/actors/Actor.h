@@ -47,6 +47,10 @@ public:
 	uint16 getDir() const { return direction; }
 	void setDir(uint16 dir) { direction = dir; }
 
+	uint32 getActorFlags() const { return actorflags; }
+	void setActorFlag(uint32 mask) { actorflags |= mask; }
+	void clearActorFlag(uint32 mask) { actorflags &= ~mask; }
+
 	// p_dynamic_cast stuff
 	ENABLE_DYNAMIC_CAST(Actor);
 
@@ -65,10 +69,31 @@ public:
 	INTRINSIC(I_setMana);
 	INTRINSIC(I_getMap);
 	INTRINSIC(I_doAnim);
+	INTRINSIC(I_isInCombat);
+	INTRINSIC(I_isDead);
+	INTRINSIC(I_isImmortal);
+	INTRINSIC(I_isWithstandDeath);
+	INTRINSIC(I_isFeignDeath);
+
+	enum {
+		ACT_INVINCIBLE     = 0x000001, // flags from npcdata byte 0x1B
+		ACT_ASCENDING      = 0x000002,
+		ACT_DESCENDING     = 0x000004,
+		ACT_ANIMLOCK       = 0x000008,
+		
+		ACT_INCOMBAT       = 0x000800, // flags from npcdata byte 0x2F
+		ACT_DEAD           = 0x001000,
+		
+		ACT_AIRWALK        = 0x020000, // flags from npcdata byte 0x30
+		ACT_IMMORTAL       = 0x040000,
+		ACT_WITHSTANDDEATH = 0x080000,
+		ACT_FEIGNDEATH     = 0x100000,
+		ACT_STUNNED        = 0x200000,
+		ACT_POISONED       = 0x400000,
+		ACT_PATHFINDING    = 0x800000
+	} ActorFlags;
 
 private:
-	bool animating;
-
 	uint16 strength;
 	uint16 dexterity;
 	uint16 intelligence;
@@ -77,6 +102,8 @@ private:
 
 	uint16 lastanim;
 	uint16 direction;
+
+	uint32 actorflags;
 };
 
 

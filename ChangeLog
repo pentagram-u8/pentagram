@@ -1,3 +1,6 @@
+2003-05-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/Actor.*: basics of actor flags
+
 2003-05-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Kernel.*: kernel intrinsics
 	* world/World.*, world/actors/Actor.*: some actor attributes/intrinsics
