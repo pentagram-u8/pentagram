@@ -56,6 +56,10 @@ void MusicProcess::playMusic(int track)
 
 	// No current track if not playing
 	if (!driver->isSequencePlaying(0))
+		wanted_track = current_track = 0;
+
+	// No current track if not playing
+	if (!driver->isSequencePlaying(0))
 		current_track = 0;
 
 	// It's already playing and we are not transitioning
