@@ -90,6 +90,14 @@ toolsinstall: tools
 	strip shapeconv.exe -o $(U8PATH)/tools/shapeconv.exe
 
 dist:   install
+	cp AUTHORS $(U8PATH)/AUTHORS.txt
+	cp ChangeLog $(U8PATH)/ChangeLog.txt
+	cp COPYING $(U8PATH)/COPYING.txt
+	cp SDL/README-SDL.txt $(U8PATH)
+	cp SDL/lib/SDL.dll $(U8PATH)
+	u2d $(U8PATH)/*.txt
+
+toolsdist: toolsinstall
 	cp docs/maps.txt $(U8PATH)/tools
 	cp docs/musiceggs.txt $(U8PATH)/tools
 	cp docs/musicflx.txt $(U8PATH)/tools
@@ -107,9 +115,7 @@ dist:   install
 	cp docs/u8typeflag.txt $(U8PATH)/tools
 	cp docs/u8usecode.txt $(U8PATH)/tools
 	cp docs/u8weapon.txt $(U8PATH)/tools
-	u2d $(U8PATH)/*.txt
-
-toolsdist: toolsinstall
+	u2d $(U8PATH)/tools/*.txt
 
 allclean: clean toolsclean
 
