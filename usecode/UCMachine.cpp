@@ -33,7 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Container.h"
 
-//#define WATCH_CLASS 1210
+//#define WATCH_CLASS 198
 //#define WATCH_ITEM 19
 
 #ifdef WATCH_CLASS
@@ -269,14 +269,17 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x0E:
 			// 0E xx yy
 			// pop yy values of size xx and push the resulting list
+			// (list is created in reverse order)
 			{
 				ui16a = cs.read1();
 				ui16b = cs.read1();
 				UCList* l = new UCList(ui16a, ui16b);
+				p->stack.addSP(ui16a * (ui16b - 1));
 				for (unsigned int i = 0; i < ui16b; i++) {
 					l->append(p->stack.access());
-					p->stack.addSP(ui16a);
+					p->stack.addSP(-ui16a);
 				}
+				p->stack.addSP(ui16a * ui16b);
 				p->stack.push2(assignList(l));
 				LOGPF(("create list\t%02X (%02X)", ui16b, ui16a));
 			}
@@ -1048,19 +1051,21 @@ bool UCMachine::execProcess(UCProcess* p)
 			// get flagname for output?
 
 			//!! we're storing everything as 1 byte currently
-			p->stack.push2(globals.access1(ui16a));
-			LOGPF(("push\t\tglobal [%04X %02X]", ui16a, ui16b));
+			ui8a = globals.access1(ui16a);
+			p->stack.push2(ui8a);
+			LOGPF(("push\t\tglobal [%04X %02X] = %02X", ui16a, ui16b, ui8a));
 			break;
 
 		case 0x4F:
 			// 4F xx xx yy
 			// pop value into global xxxx size yy bits
 			ui16a = cs.read2();
-			ui16b = cs.read1(); // number
+			ui16b = cs.read1();
 			// get flagname for output?
 			ui8a = static_cast<uint8>(p->stack.pop2());
+			ui8a &= ((1 << ui16b) - 1);
 			globals.assign1(ui16a, ui8a);
-			LOGPF(("pop\t\tglobal [%04X %02X]", ui16a, ui16b));
+			LOGPF(("pop\t\tglobal [%04X %02X] = %02X", ui16a, ui16b, ui8a));
 			break;
 
 		case 0x50:

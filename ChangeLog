@@ -1,6 +1,7 @@
 2003-06-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCMachine.cpp: cleaned up item loop a bit
 	* usecode/UCMachine.cpp: semi-fixed push/pop global
+	* usecode/UCMachine.cpp: reverse list creation order
 
 2003-06-18	  Ryan Nunn <colourles@users.sourceforge.net>
 	* graphics/*RenderSurface.*, graphics/XFormBlend.*, world/Item.h,
