@@ -178,7 +178,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8b = static_cast<sint8>(cs.read1());
 			LOGPF(("assign element\t%s (%02X) (%02X)",
 				   print_bp(si8a), si8b, si8b));
-			ui16a = p->stack.pop2(); // index
+			ui16a = p->stack.pop2()-1; // index
 			ui16b = p->stack.access2(p->bp+si8a);
 			if (si8b) { // slist?
 				// what special behaviour do we need here?
@@ -935,7 +935,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 			ui32a = cs.read1();
 			ui32b = cs.read1();
-			ui16a = p->stack.pop2(); // index
+			ui16a = p->stack.pop2()-1; // index
 			ui16b = p->stack.pop2(); // list
 			if (ui32b) {
 				uint16 s = listHeap[ui16b]->getStringIndex(ui16a);

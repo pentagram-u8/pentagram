@@ -692,10 +692,14 @@ void Application::handleEvent(const SDL_Event& event)
 //			lz = 8;
 
 			Item* item = p_dynamic_cast<Item*>(World::get_instance()->getObject(21183)); // *cough*
+			if (item->getQuality() != 36)
+				item = p_dynamic_cast<Item*>(World::get_instance()->getObject(21184)); // *cough*
 			item->callUsecodeEvent(7);
 		} break;
 		case SDLK_g: { // trigger
 			Item* item = p_dynamic_cast<Item*>(World::get_instance()->getObject(21162)); // *cough*
+			if (item->getQuality() != 4)
+				item = p_dynamic_cast<Item*>(World::get_instance()->getObject(21163)); // *cough*
 			Actor* avatar = p_dynamic_cast<Actor*>(World::get_instance()->getObject(1));
 			sint32 x,y,z;
 			item->getLocation(x,y,z);
