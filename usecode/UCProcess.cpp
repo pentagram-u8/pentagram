@@ -53,8 +53,7 @@ void UCProcess::load(uint16 classid_, uint16 offset_, uint32 this_ptr,
 	if (this_ptr != 0 && thissize > 0) {
 		stack.addSP(-thissize);
 		UCMachine::get_instance()->
-			dereferencePointer(this_ptr, const_cast<uint8*>(stack.access()),
-							   thissize);
+			dereferencePointer(this_ptr, stack.access(), thissize);
 		thissp = stack.getSP();
 	}
 

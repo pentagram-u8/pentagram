@@ -1009,7 +1009,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 				p->stack.addSP(-ui16a);
 				if (!dereferencePointer(ui32a,
-										const_cast<uint8*>(p->stack.access()),
+										p->stack.access(),
 										ui16a))
 					error = true;
 
