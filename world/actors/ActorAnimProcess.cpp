@@ -149,13 +149,21 @@ bool ActorAnimProcess::run(const uint32 framenum)
 	firstframe = false;
 
 	if (!(a->getFlags() & Item::FLG_FASTAREA)) {
-		// not in the fast area? Pause play an animation then.
+		// not in the fast area? Kill the animation then.
 		//! TODO: Decide if this is the right move.
 		//  Animation could do one of three things: pause, move
 		//  without allowing actor to fall, or pretend to move and
 		//  complete the entire movement as the actor reappears
 		//  in fast area (still may need to pause when
 		//  AnimationTracker is done.)
+#ifdef WATCHACTOR
+		if (item_num == watchactor)
+			pout << "Animation ["
+				 << Kernel::get_instance()->getFrameNum()
+				 << "] ActorAnimProcess left fastarea; terminating"
+				 << std::endl;
+#endif
+		terminate();
 		return true;
 	}
 

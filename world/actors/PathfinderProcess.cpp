@@ -126,7 +126,9 @@ bool PathfinderProcess::run(const uint32 framenum)
 {
 	if (currentstep >= path.size()) {
 		// done
-		perr << "PathfinderProcess: done" << std::endl;
+#if 0
+		pout << "PathfinderProcess: done" << std::endl;
+#endif
 		result = PATH_OK;
 		terminate();
 		return false;
@@ -134,7 +136,9 @@ bool PathfinderProcess::run(const uint32 framenum)
 
 	// try to take the next step
 
-	perr << "PathfinderProcess: trying step" << std::endl;
+#if 0
+	pout << "PathfinderProcess: trying step" << std::endl;
+#endif
 
 	Actor* actor = World::get_instance()->getNPC(item_num);
 
@@ -151,7 +155,9 @@ bool PathfinderProcess::run(const uint32 framenum)
 							 path[currentstep].direction);
 
 	if (!ok) {
-		perr << "PathfinderProcess: recalculating path" << std::endl;
+#if 0
+		pout << "PathfinderProcess: recalculating path" << std::endl;
+#endif
 
 		// need to redetermine path
 		ok = true;
@@ -180,7 +186,9 @@ bool PathfinderProcess::run(const uint32 framenum)
 	}
 
 	if (currentstep >= path.size()) {
-		perr << "PathfinderProcess: done" << std::endl;
+#if 0
+		pout << "PathfinderProcess: done" << std::endl;
+#endif
 		// done
 		result = PATH_OK;
 		terminate();
@@ -189,9 +197,11 @@ bool PathfinderProcess::run(const uint32 framenum)
 
 	uint16 animpid = actor->doAnim(path[currentstep].action,
 								   path[currentstep].direction);
-	perr << "PathfinderProcess(" << getPid() << "): taking step "
+#if 0
+	pout << "PathfinderProcess(" << getPid() << "): taking step "
 		 << path[currentstep].action << "," << path[currentstep].direction
 		 << " (animpid=" << animpid << ")" << std::endl;
+#endif
 	currentstep++;
 
 	waitFor(animpid);

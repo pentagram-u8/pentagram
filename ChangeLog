@@ -1,3 +1,7 @@
+2004-08-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/ActorAnimProcess.cpp: kill anim when leaving fastarea
+	* world/actors/Pathfinder*.cpp: removed debugging output
+
 2004-08-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/*, kernel/GUIApp.*: fix item dragging offset; cleanup
 	* gumps/Gump.h: gump is also hidden if parent is hidden

@@ -265,8 +265,10 @@ bool Pathfinder::pathfind(std::vector<PathfindingAction>& path)
 				n = n->parent;
 				length++;
 			}
+#if 0
 			pout << "Pathfinder: path found (length = " << length << ")"
 				 << std::endl;
+#endif
 
 			unsigned int i = length;
 			if (length > 0) length++; // add space for final 'stand' action
