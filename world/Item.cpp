@@ -345,7 +345,7 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 		{
 			bool match = false;
 			int count = script[i] - '@';
-			for (int j = 0; j < count; i++) {
+			for (int j = 0; j < count; j++) {
 				//! check for i out of bounds
 				if (getShape() == static_cast<uint32>(script[i+1] + (script[i+2]<<8)))
 					match = true;
@@ -368,7 +368,7 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 		{
 			bool match = false;
 			int count = script[i] - '`';
-			for (int j = 0; j < count; i++) {
+			for (int j = 0; j < count; j++) {
 				//! check for i out of bounds
 				if (getFrame() == static_cast<uint32>(script[i+1] + (script[i+2]<<8)))
 					match = true;
