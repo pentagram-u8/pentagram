@@ -1101,8 +1101,10 @@ uint32 Item::I_legalCreateInCont(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT32(itemptr); // need to store the item id at *itemptr
 	ARG_UINT16(shape);
 	ARG_UINT16(frame);
-	ARG_CONTAINER(container);
+	ARG_UINT16(container_id);
 	ARG_UINT16(unknown); // ?
+	Container *container = p_dynamic_cast<Container*>
+		(World::get_instance()->getItem(container_id));
 
 	//! haven't checked if this does what it should do.
 	// It just creates an item, tries to add it to the given container.

@@ -1,3 +1,7 @@
+2003-06-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/UCMachine.cpp: fixed jumps
+	* world/Item.cpp: fixed legalCreateInContainer
+
 2003-06-15	  Ryan Nunn <colourles@users.sourceforge.net>
 	* world/ItemSorter.cpp : Fixing the positively absolutely busted ItemSorter
 	

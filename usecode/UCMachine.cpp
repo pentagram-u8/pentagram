@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //#define LOGPF(X) pout.printf X
 #define LOGPF(X)
-//#define LOGPF(X) do { if (p->classid == 68) { pout.printf X; } } while(0)
+//#define LOGPF(X) do { if (p->classid == 1034) { pout.printf X; } } while(0)
 
 enum UCSegments {
 	SEG_STACK      = 0x0000,
@@ -1069,7 +1069,8 @@ bool UCMachine::execProcess(UCProcess* p)
 			si16a = static_cast<sint16>(cs.read2());
 			ui16b = p->stack.pop2();
 			if (!ui16b) {
-				cs.skip(si16a);
+				ui16a = cs.getPos() + si16a;
+				cs.seek(ui16a);
 				LOGPF(("jne\t\t%04hXh\t(to %04X) (taken)", si16a,
 					   cs.getPos()));
 			} else {
@@ -1082,7 +1083,8 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 52 xx xx
 			// relative jump to xxxx
 			si16a = static_cast<sint16>(cs.read2());
-			cs.skip(si16a);
+			ui16a = cs.getPos() + si16a;
+			cs.seek(ui16a);
 			LOGPF(("jmp\t\t%04hXh\t(to %04X)", si16a, cs.getPos()));
 			break;
 
@@ -1648,7 +1650,8 @@ bool UCMachine::execProcess(UCProcess* p)
 				loop_index = 0;
 				
 				// jump out
-				cs.skip(si16a);					
+				ui16a = cs.getPos() + si16a;
+				cs.seek(ui16a);
 			}
 			else
 			{
