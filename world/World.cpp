@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "World.h"
 #include "Map.h"
+#include "CurrentMap.h"
 #include "IDataSource.h"
 #include "Flex.h"
 #include "ItemFactory.h"
@@ -30,6 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 World* World::world = 0;
 
 World::World()
+	: current_map(0), fixed(0), fixedds(0)
 {
 	assert(world == 0);
 	world = this;
@@ -55,6 +57,14 @@ void World::clear()
 		delete npcs[i];
 	}
 	npcs.clear();
+
+	if (current_map)
+		delete current_map;
+
+	if (fixed)
+		delete fixed;
+	if (fixedds)
+		delete fixedds;
 }
 
 void World::initMaps()
@@ -64,9 +74,10 @@ void World::initMaps()
 
 	maps.resize(256);
 	for (unsigned int i = 0; i < 256; ++i) {
-		maps[i] = new Map();
+		maps[i] = new Map(i);
 	}
 
+	current_map = new CurrentMap();
 }
 
 void World::initNPCs()
@@ -75,6 +86,52 @@ void World::initNPCs()
 
 	// automatically initialized to 0
 	npcs.resize(256);
+}
+
+bool World::switchMap(uint32 newmap)
+{
+	assert(current_map);
+
+	if (current_map->getNum() == newmap)
+		return true;
+
+	if (newmap >= maps.size() || maps[newmap] == 0)
+		return false; // no such map
+
+	// Map switching procedure:
+	// write back CurrentMap to the old map
+	// swap out fixed items in old map?
+	// make sure fixed items in the new map are loaded
+	// assign objIDs to fixed items
+	// assign objIDs to nonfixed items
+	// load new map into CurrentMap
+
+	// NB: not only World has to perform actions on a map switch
+	// other things that should/could also happen:
+	// - usecode processes have to be terminated (forcefully?)
+	// - autosave?
+	// - ...?
+
+	uint32 oldmap = current_map->getNum();
+
+	if (oldmap != 0) {
+		assert(oldmap < maps.size() && maps[oldmap] != 0);
+
+		current_map->writeback();
+		maps[oldmap]->unloadFixed();
+	}
+
+	pout << "Loading Fixed items in map " << newmap << std::endl;
+	pout << "-----------------------------------------" << std::endl;
+	IDataSource *items = fixed->get_datasource(newmap);
+	maps[newmap]->loadFixed(items);
+	delete items;
+
+	// TODO: assign objIDs
+
+	current_map->loadMap(maps[newmap]);
+
+	return true;
 }
 
 void World::loadNonFixed(IDataSource* ds)
@@ -103,6 +160,12 @@ void World::loadNonFixed(IDataSource* ds)
 	delete f;
 }
 
+
+void World::loadFixed(IDataSource* ds)
+{
+	fixed = new Flex(ds);
+	fixedds = ds;
+}
 
 void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 {
@@ -163,7 +226,10 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 		Actor *actor = ItemFactory::createActor(shape,frame,flags,quality,
 												npcnum,mapnum);
 		if (!actor) {
+#ifdef DUMP_ITEMS
+			// this 'error' message is supposed to occur rather a lot
 			pout << "Couldn't create actor" << std::endl;
+#endif
 			continue;
 		}
 		actor->setLocation(x,y,z);

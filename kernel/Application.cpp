@@ -149,6 +149,15 @@ Application::Application(int argc, char *argv[])
 	delete icd;
 	delete npcd;
 
+	IDataSource *fd = filesystem->ReadFile("@u8/static/fixed.dat");
+	if (!fd) {
+		perr << "Unable to load static/fixed.dat. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	world->loadFixed(fd);
+	world->switchMap(3);
+	world->switchMap(40);
+
 	// Create console gump
 	//pout << "Create Graphics Console" << std::endl;
 	//desktop = console = new ConsoleGump(0,0, width, height);

@@ -1,3 +1,7 @@
+2003-03-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/GlobEgg.*: stub GlobEgg class
+	* world/*: adding some functionality
+
 2003-03-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/CurrentMap.*: CurrentMap class in progress
 

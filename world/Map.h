@@ -28,17 +28,20 @@ class Map
 {
 	friend class CurrentMap;
 public:
-	Map();
+	explicit Map(uint32 mapnum);
 	~Map();
 
 	void clear();
 
 	void loadNonFixed(IDataSource* ds);
+	void loadFixed(IDataSource* ds);
+	void unloadFixed();
 
 private:
 
 	// load items from something formatted like 'fixed.dat'
-	void loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds);
+	void loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds,
+								uint32 extendedflags);
 
 	// Q: How should we store the items in a map.
 	// It might make things more efficient if we order them by 'chunk'
@@ -55,6 +58,8 @@ private:
 
 	std::list<Item*> fixeditems;
 	std::list<Item*> dynamicitems;
+
+	uint32 mapnum;
 };
 
 

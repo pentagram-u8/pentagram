@@ -34,6 +34,8 @@ public:
 	void writeback();
 	void loadMap(Map* map);
 
+	uint32 getNum() const;
+
 private:
 	void loadItems(std::list<Item*> itemlist);
 

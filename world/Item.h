@@ -36,6 +36,8 @@ public:
 	Container* getParent() const { return parent; }
 	void setLocation(sint32 x, sint32 y, sint32 z);
 	void getLocation(sint32& x, sint32& y, sint32& z) const;
+	uint32 getFlags() const { return flags; }
+	uint32 getExtFlags() const { return extendedflags; }
 
 protected:
 	uint32 shape;
@@ -47,7 +49,14 @@ protected:
 	uint32 npcnum;
 	uint32 mapnum;
 
+	uint32 extendedflags; // pentagram's own flags
+
 	Container* parent; // container this item is in (or 0 for top-level items)
+
+public:
+	enum {
+		EXT_FIXED = 0x0001  // item came from FIXED
+	} extflags;
 };
 
 #endif

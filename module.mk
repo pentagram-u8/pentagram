@@ -47,6 +47,7 @@ pentagram_OBJ = \
 	world/Map.o \
 	world/CurrentMap.o \
 	world/Glob.o \
+	world/GlobEgg.o \
 	world/World.o \
 	world/actors/Actor.o \
 	world/actors/MainActor.o \

@@ -55,8 +55,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <vector>
 
 class Map;
+class CurrentMap;
 class IDataSource;
 class Actor;
+class Flex;
 
 class World
 {
@@ -70,8 +72,11 @@ public:
 
 	void initMaps();
 	void initNPCs();
-	void loadNonFixed(IDataSource* ds);
+	void loadNonFixed(IDataSource* ds); // delete ds afterwards
+	void loadFixed(IDataSource* ds); // World takes ownership of ds
 	void loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata);
+
+	bool switchMap(uint32 newmap);
 
 private:
 	static World *world;
@@ -79,6 +84,10 @@ private:
 	std::vector<Map*> maps;
 	std::vector<Actor*> npcs;
 
+	CurrentMap* current_map;
+
+	Flex* fixed;
+	IDataSource* fixedds;
 };
 
 #endif

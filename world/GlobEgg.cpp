@@ -18,45 +18,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 
-#include "Item.h"
+#include "GlobEgg.h"
 
-/*
-My current idea on how to construct items: an ItemFactory class that
-creates the right kind of Item (Item, Container, ???) based on
-the item that it's supposed to create. (This would be a friend of the Item
-classes)
-
-This is why the Item (and Container) constructors are currently rather empty.
--wjp
-*/
-
-// p_dynamic_cast stuff
-DEFINE_DYNAMIC_CAST_CODE(Item,Object);
-
-Item::Item()
-	: shape(0), frame(0), x(0), y(0), z(0),
-	  flags(0), quality(0), npcnum(0), mapnum(0),
-	  extendedflags(0), parent(0)
+GlobEgg::GlobEgg()
 {
 
 }
 
-
-Item::~Item()
+GlobEgg::~GlobEgg()
 {
 
-}
-
-void Item::setLocation(sint32 X, sint32 Y, sint32 Z)
-{
-	x = X;
-	y = Y;
-	z = Z;
-}
-
-void Item::getLocation(sint32& X, sint32& Y, sint32 &Z) const
-{
-	X = x;
-	Y = y;
-	Z = z;
 }

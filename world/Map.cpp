@@ -28,7 +28,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //#define DUMP_ITEMS
 
-Map::Map()
+Map::Map(uint32 mapnum_)
+	: mapnum(mapnum_)
 {
 
 }
@@ -56,11 +57,26 @@ void Map::clear()
 
 void Map::loadNonFixed(IDataSource* ds)
 {
-	loadFixedFormatObjects(dynamicitems, ds);
+	loadFixedFormatObjects(dynamicitems, ds, 0);
 }
 
+void Map::loadFixed(IDataSource* ds)
+{
+	loadFixedFormatObjects(fixeditems, ds, Item::EXT_FIXED);
+}
 
-void Map::loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds)
+void Map::unloadFixed()
+{
+	std::list<Item*>::iterator iter;
+
+	for (iter = fixeditems.begin(); iter != fixeditems.end(); ++iter) {
+		delete *iter;
+	}
+	fixeditems.clear();
+}
+
+void Map::loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds,
+								 uint32 extendedflags)
 {
 	uint32 size = ds->getSize();
 	if (size == 0) return;
@@ -100,11 +116,10 @@ void Map::loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds)
 		pout << shape << "," << frame << ":\t(" << x << "," << y << "," << z << "),\t" << std::hex << flags << std::dec << ", " << quality << ", " << npcnum << ", " << mapnum << ", " << next << std::endl;
 #endif
 
-		// Question: how do we handle Globs?
-
 		Item *item = ItemFactory::createItem(shape,frame,flags,quality,
 											 npcnum,mapnum);
 		if (!item) {
+		pout << shape << "," << frame << ":\t(" << x << "," << y << "," << z << "),\t" << std::hex << flags << std::dec << ", " << quality << ", " << npcnum << ", " << mapnum << ", " << next << std::endl;
 			pout << "Couldn't create item" << std::endl;
 			continue;
 		}

@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Container.h"
 #include "Actor.h"
 #include "MainActor.h"
+#include "GlobEgg.h"
 
 Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 							  uint32 flags, uint32 npcnum, uint32 mapnum)
@@ -70,7 +71,17 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 
 	case ShapeInfo::SF_GLOBEGG:
 	{
-		// glob
+		// glob egg
+
+		GlobEgg* globegg = new GlobEgg();
+		globegg->shape = shape;
+		globegg->frame = frame;
+		globegg->quality = quality;
+		globegg->flags = flags;
+		globegg->npcnum = npcnum;
+		globegg->mapnum = mapnum;
+		return globegg;
+
 		return 0;
 	}
 

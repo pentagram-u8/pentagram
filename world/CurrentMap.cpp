@@ -50,7 +50,7 @@ void CurrentMap::clear()
 	// We need to be careful about who exactly deletes the items in a map
 	// (CurrentMap or Map)
 	// It should probably be CurrentMap, which means a Map has to be
-	// emptied when it's loaded?
+	// emptied when it's loaded into CurrentMap
 
 	//! get rid of constants
 	for (unsigned int i = 0; i < 128; i++) {
@@ -61,11 +61,42 @@ void CurrentMap::clear()
 			items[i][j].clear();
 		}
 	}
+
+	current_map = 0;
+}
+
+uint32 CurrentMap::getNum() const
+{
+	if (current_map == 0)
+		return 0;
+
+	return current_map->mapnum;
 }
 
 void CurrentMap::writeback()
 {
+	if (!current_map)
+		return;
 
+	//! constants
+
+	for (unsigned int i = 0; i < 128; i++) {
+		for (unsigned int j = 0; j < 128; j++) {
+			list<Item*>::iterator iter;
+			for (iter = items[i][j].begin(); iter != items[i][j].end(); ++iter)
+			{
+				Item* item = *iter;
+
+				if (item->getExtFlags() || Item::EXT_FIXED) {
+					// item came from fixed
+					
+					current_map->fixeditems.push_back(item);
+				} else {
+					current_map->dynamicitems.push_back(item);
+				}
+			}
+		}
+	}
 }
 
 void CurrentMap::loadItems(list<Item*> itemlist)
@@ -101,7 +132,7 @@ void CurrentMap::loadMap(Map* map)
 	loadItems(map->fixeditems);
 	loadItems(map->dynamicitems);
 
-	// see comments in ~CurrentMap
+	// we take control of the items in map, so clear the pointers
 	map->fixeditems.clear();
 	map->dynamicitems.clear();
 }
