@@ -1883,6 +1883,8 @@ uint32 UCMachine::I_rndRange(const uint8* args, unsigned int /*argsize*/)
 	ARG_SINT16(lo);
 	ARG_SINT16(hi);
 
+	// return random integer between lo (incl.) to hi (incl.)
+
 	if (hi <= lo) return lo;
 
 	return (lo + (rand() % (hi-lo+1)));
