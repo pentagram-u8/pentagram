@@ -20,6 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "BilinearScaler.h"
 #include "Manips.h"
 
+
+namespace Pentagram {
+
 #define SimpleLerp(a,b,fac) ((b<<8)+((a)-(b))*(fac))
 #define SimpleLerp2(a,b,fac) ((b<<16)+((a)-(b))*(fac))
 
@@ -167,53 +170,6 @@ template<class uintX, class Manip, class uintS=uintX> class BilinearScalerIntern
 {
 	
 public:
-	static bool Scale( Texture *tex, sint32 sx, sint32 sy, sint32 sw, sint32 sh, 
-						uint8* pixel, sint32 dw, sint32 dh, sint32 pitch, bool clamp_src)
-	{
-		// Must be multiples of 4!!!
-		if ((sh&3) || (sw&3)) return false;
-
-		//
-		// We work like this:
-		//
-		// Read texels
-		//
-		// A F
-		// B G
-		// C H
-		// D I
-		// E J
-		//
-		// Interpolate for all dest pixels
-		//
-		// The read 5 texels for A B C D E
-		// * F A 
-		// * G B
-		// * H C
-		// * I D
-		// * J E
-		//
-		// Interpolate for all dest pixels
-		//
-		// And so on
-		//
-
-
-		// 2x Scaling
-		if ((sw*2 == dw) && (sh*2 == dh))
-			return Scale2x(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
-		// 2 X 2.4 Y
-		else if ((sw*2 == dw) && (dh*5 == sh*12))
-			return ScaleX2Y24(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
-		// 1 X 1.2 Y 
-		else if ((sw == dw) && (dh*5 == sh*6))
-			return ScaleX1Y12(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
-		// Arbitrary 
-		else 
-			return ScaleArb(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
-	}
-
-private:
 
 	////////////////
 	//            //
@@ -782,17 +738,136 @@ private:
 };
 
 
-namespace Pentagram {
+static bool Bilinear_Scale16Nat( Texture *tex, sint32 sx, sint32 sy, sint32 sw, sint32 sh, 
+					uint8* pixel, sint32 dw, sint32 dh, sint32 pitch, bool clamp_src)
+{
+	// Must be multiples of 4!!!
+	if ((sh&3) || (sw&3)) return false;
+
+	// 2x Scaling
+	if ((sw*2 == dw) && (sh*2 == dh))
+		return BilinearScalerInternal<uint16, Manip_Nat2Nat_16, uint16>::Scale2x(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+	// 2 X 2.4 Y
+	else if ((sw*2 == dw) && (dh*5 == sh*12))
+		return BilinearScalerInternal<uint16, Manip_Nat2Nat_16, uint16>::ScaleX2Y24(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+	// 1 X 1.2 Y 
+	else if ((sw == dw) && (dh*5 == sh*6))
+		return BilinearScalerInternal<uint16, Manip_Nat2Nat_16, uint16>::ScaleX1Y12(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+	// Arbitrary 
+	else 
+		return BilinearScalerInternal<uint16, Manip_Nat2Nat_16, uint16>::ScaleArb(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+}
+
+static bool Bilinear_Scale16Sta( Texture *tex, sint32 sx, sint32 sy, sint32 sw, sint32 sh, 
+					uint8* pixel, sint32 dw, sint32 dh, sint32 pitch, bool clamp_src)
+{
+	// Must be multiples of 4!!!
+	if ((sh&3) || (sw&3)) return false;
+
+	// 2x Scaling
+	if ((sw*2 == dw) && (sh*2 == dh))
+		return BilinearScalerInternal<uint16, Manip_Sta2Nat_16, uint32>::Scale2x(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+	// 2 X 2.4 Y
+	else if ((sw*2 == dw) && (dh*5 == sh*12))
+		return BilinearScalerInternal<uint16, Manip_Sta2Nat_16, uint32>::ScaleX2Y24(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+	// 1 X 1.2 Y 
+	else if ((sw == dw) && (dh*5 == sh*6))
+		return BilinearScalerInternal<uint16, Manip_Sta2Nat_16, uint32>::ScaleX1Y12(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+	// Arbitrary 
+	else 
+		return BilinearScalerInternal<uint16, Manip_Sta2Nat_16, uint32>::ScaleArb(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+}
+
+static bool Bilinear_Scale32Nat( Texture *tex, sint32 sx, sint32 sy, sint32 sw, sint32 sh, 
+					uint8* pixel, sint32 dw, sint32 dh, sint32 pitch, bool clamp_src)
+{
+	// Must be multiples of 4!!!
+	if ((sh&3) || (sw&3)) return false;
+
+	// 2x Scaling
+	if ((sw*2 == dw) && (sh*2 == dh))
+		return BilinearScalerInternal<uint32, Manip_Nat2Nat_32, uint32>::Scale2x(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+	// 2 X 2.4 Y
+	else if ((sw*2 == dw) && (dh*5 == sh*12))
+		return BilinearScalerInternal<uint32, Manip_Nat2Nat_32, uint32>::ScaleX2Y24(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+	// 1 X 1.2 Y 
+	else if ((sw == dw) && (dh*5 == sh*6))
+		return BilinearScalerInternal<uint32, Manip_Nat2Nat_32, uint32>::ScaleX1Y12(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+	// Arbitrary 
+	else 
+		return BilinearScalerInternal<uint32, Manip_Nat2Nat_32, uint32>::ScaleArb(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+}
+
+static bool Bilinear_Scale32Sta( Texture *tex, sint32 sx, sint32 sy, sint32 sw, sint32 sh, 
+					uint8* pixel, sint32 dw, sint32 dh, sint32 pitch, bool clamp_src)
+{
+	// Must be multiples of 4!!!
+	if ((sh&3) || (sw&3)) return false;
+
+	// 2x Scaling
+	if ((sw*2 == dw) && (sh*2 == dh))
+		return BilinearScalerInternal<uint32, Manip_Sta2Nat_32, uint32>::Scale2x(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+	// 2 X 2.4 Y
+	else if ((sw*2 == dw) && (dh*5 == sh*12))
+		return BilinearScalerInternal<uint32, Manip_Sta2Nat_32, uint32>::ScaleX2Y24(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+	// 1 X 1.2 Y 
+	else if ((sw == dw) && (dh*5 == sh*6))
+		return BilinearScalerInternal<uint32, Manip_Sta2Nat_32, uint32>::ScaleX1Y12(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+	// Arbitrary 
+	else 
+		return BilinearScalerInternal<uint32, Manip_Sta2Nat_32, uint32>::ScaleArb(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+}
+
+static bool Bilinear_Scale32_A888( Texture *tex, sint32 sx, sint32 sy, sint32 sw, sint32 sh, 
+					uint8* pixel, sint32 dw, sint32 dh, sint32 pitch, bool clamp_src)
+{
+	// Must be multiples of 4!!!
+	if ((sh&3) || (sw&3)) return false;
+
+	// 2x Scaling
+	if ((sw*2 == dw) && (sh*2 == dh))
+		return BilinearScalerInternal<uint32, Manip_32_A888, uint32>::Scale2x(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+	// 2 X 2.4 Y
+	else if ((sw*2 == dw) && (dh*5 == sh*12))
+		return BilinearScalerInternal<uint32, Manip_32_A888, uint32>::ScaleX2Y24(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+	// 1 X 1.2 Y 
+	else if ((sw == dw) && (dh*5 == sh*6))
+		return BilinearScalerInternal<uint32, Manip_32_A888, uint32>::ScaleX1Y12(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+	// Arbitrary 
+	else 
+		return BilinearScalerInternal<uint32, Manip_32_A888, uint32>::ScaleArb(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+}
+
+static bool Bilinear_Scale32_888A( Texture *tex, sint32 sx, sint32 sy, sint32 sw, sint32 sh, 
+					uint8* pixel, sint32 dw, sint32 dh, sint32 pitch, bool clamp_src)
+{
+	// Must be multiples of 4!!!
+	if ((sh&3) || (sw&3)) return false;
+
+	// 2x Scaling
+	if ((sw*2 == dw) && (sh*2 == dh))
+		return BilinearScalerInternal<uint32, Manip_32_888A, uint32>::Scale2x(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+	// 2 X 2.4 Y
+	else if ((sw*2 == dw) && (dh*5 == sh*12))
+		return BilinearScalerInternal<uint32, Manip_32_888A, uint32>::ScaleX2Y24(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+	// 1 X 1.2 Y 
+	else if ((sw == dw) && (dh*5 == sh*6))
+		return BilinearScalerInternal<uint32, Manip_32_888A, uint32>::ScaleX1Y12(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+	// Arbitrary 
+	else 
+		return BilinearScalerInternal<uint32, Manip_32_888A, uint32>::ScaleArb(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+}
+
 
 BilinearScaler::BilinearScaler() : Scaler()
 {
-	Scale16Nat = BilinearScalerInternal<uint16, Manip_Nat2Nat<uint16>, uint16>::Scale;
-	Scale16Sta = BilinearScalerInternal<uint16, Manip_Sta2Nat<uint16>, uint32>::Scale;
+	Scale16Nat = Bilinear_Scale16Nat;
+	Scale16Sta = Bilinear_Scale16Sta;
 
-	Scale32Nat = BilinearScalerInternal<uint32, Manip_Nat2Nat<uint32>, uint16>::Scale;
-	Scale32Sta = BilinearScalerInternal<uint32, Manip_Sta2Nat<uint32>, uint32>::Scale;
-	Scale32_A888 = BilinearScalerInternal<uint32, Manip_32_A888, uint32>::Scale;
-	Scale32_888A = BilinearScalerInternal<uint32, Manip_32_888A, uint32>::Scale;
+	Scale32Nat = Bilinear_Scale32Nat;
+	Scale32Sta = Bilinear_Scale32Sta;
+	Scale32_A888 = Bilinear_Scale32_A888;
+	Scale32_888A = Bilinear_Scale32_888A;
 }
 
 const uint32 BilinearScaler::ScaleBits() { return 0xFFFFFFFF; }

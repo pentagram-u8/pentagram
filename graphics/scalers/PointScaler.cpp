@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "PointScaler.h"
 #include "Manips.h"
 
+namespace Pentagram {
+
 // Very very simple point scaler
 template<class uintX, class Manip, class uintS=uintX> class PointScalerInternal
 {
@@ -293,15 +295,14 @@ public:
 
 };
 
-namespace Pentagram {
 
 PointScaler::PointScaler() : Scaler()
 {
-	Scale16Nat = PointScalerInternal<uint16, Manip_Nat2Nat<uint16>, uint16>::Scale;
-	Scale16Sta = PointScalerInternal<uint16, Manip_Sta2Nat<uint16>, uint32>::Scale;
+	Scale16Nat = PointScalerInternal<uint16, Manip_Nat2Nat_16, uint16>::Scale;
+	Scale16Sta = PointScalerInternal<uint16, Manip_Sta2Nat_16, uint32>::Scale;
 
-	Scale32Nat = PointScalerInternal<uint32, Manip_Nat2Nat<uint32>, uint16>::Scale;
-	Scale32Sta = PointScalerInternal<uint32, Manip_Sta2Nat<uint32>, uint32>::Scale;
+	Scale32Nat = PointScalerInternal<uint32, Manip_Nat2Nat_32, uint32>::Scale;
+	Scale32Sta = PointScalerInternal<uint32, Manip_Sta2Nat_32, uint32>::Scale;
 	Scale32_A888 = PointScalerInternal<uint32, Manip_32_A888, uint32>::Scale;
 	Scale32_888A = PointScalerInternal<uint32, Manip_32_888A, uint32>::Scale;
 }

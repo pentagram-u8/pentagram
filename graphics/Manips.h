@@ -35,6 +35,32 @@ public:
 	}
 };
 
+class Manip_Nat2Nat_16
+{
+public:
+	static bool are_same() { return true; }
+	static uint16 copy (uint16 src) { return src; }
+	static void split(uint16 src, uint8 &r, uint8 &g, uint8 &b, uint8 &a) {
+		UNPACK_RGBA8(src, r, g, b, a);
+	}
+	static uint16 merge(uint8 r, uint8 g, uint8 b, uint8 a) {
+		return PACK_RGBA8(r, g, b, a);
+	}
+};
+
+class Manip_Nat2Nat_32
+{
+public:
+	static bool are_same() { return true; }
+	static uint32 copy (uint32 src) { return src; }
+	static void split(uint32 src, uint8 &r, uint8 &g, uint8 &b, uint8 &a) {
+		UNPACK_RGBA8(src, r, g, b, a);
+	}
+	static uint32 merge(uint8 r, uint8 g, uint8 b, uint8 a) {
+		return PACK_RGBA8(r, g, b, a);
+	}
+};
+
 template<class uintX> class Manip_Sta2Nat
 {
 public:
@@ -49,6 +75,42 @@ public:
 		a = TEX32_A(src);
 	}
 	static uintX merge(uint8 r, uint8 g, uint8 b, uint8 a) {
+		return PACK_RGBA8(r, g, b, a);
+	}
+};
+
+class Manip_Sta2Nat_16
+{
+public:
+	static bool are_same() { return false; }
+	static uint16 copy (uint32 src) { 
+		return PACK_RGBA8( TEX32_R(src), TEX32_G(src), TEX32_B(src), TEX32_A(src) );
+	}
+	static void split(uint32 src, uint8 &r, uint8 &g, uint8 &b, uint8 &a) {
+		r = TEX32_R(src);
+		g = TEX32_G(src);
+		b = TEX32_B(src);
+		a = TEX32_A(src);
+	}
+	static uint16 merge(uint8 r, uint8 g, uint8 b, uint8 a) {
+		return PACK_RGBA8(r, g, b, a);
+	}
+};
+
+class Manip_Sta2Nat_32
+{
+public:
+	static bool are_same() { return false; }
+	static uint32 copy (uint32 src) { 
+		return PACK_RGBA8( TEX32_R(src), TEX32_G(src), TEX32_B(src), TEX32_A(src) );
+	}
+	static void split(uint32 src, uint8 &r, uint8 &g, uint8 &b, uint8 &a) {
+		r = TEX32_R(src);
+		g = TEX32_G(src);
+		b = TEX32_B(src);
+		a = TEX32_A(src);
+	}
+	static uint32 merge(uint8 r, uint8 g, uint8 b, uint8 a) {
 		return PACK_RGBA8(r, g, b, a);
 	}
 };
