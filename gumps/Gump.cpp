@@ -586,18 +586,21 @@ Gump *Gump::OnMouseDown(int button, int mx, int my)
 bool Gump::OnKeyDown(int key)
 {
 	bool handled = false;
+	if (focus_child) handled = focus_child->OnKeyDown(key);
 	return handled;
 }
 
 bool Gump::OnKeyUp(int key)
 {
 	bool handled = false;
+	if (focus_child) handled = focus_child->OnKeyUp(key);
 	return handled;
 }
 
 bool Gump::OnTextInput(int unicode)
 {
 	bool handled = false;
+	if (focus_child) handled = focus_child->OnTextInput(unicode);
 	return handled;
 }
 

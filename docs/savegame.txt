@@ -234,7 +234,6 @@ uint16 version
 ConsoleGump: (v1)
 uint16 version
 <Gump>
-uint32 scroll_state (ConsoleScrollState)
 
 
 ItemRelativeGump: (v1)

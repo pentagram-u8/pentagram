@@ -104,6 +104,9 @@ private:
 	idMan* stringIDs;
 
 	static UCMachine* ucmachine;
+
+	std::string		avatarsName;	// HACK alert! Only here for the AvatarsName console command
+	static void		ConCmd_avatarsName(const Pentagram::istring &args);
 };
 
 #endif

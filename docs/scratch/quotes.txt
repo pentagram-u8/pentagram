@@ -91,7 +91,13 @@ Pentagram: implementation can wait until next week/month/year! ;-)
 > Or even Flex Usecode Kernel Object File Format. :-)
 (Colourless brainstorming (hallucinating?) bad ideas for names of file formats.)
 
+
 so in order to build wilderness they needed the forest gump :P
 (GodBeastX on the u8 editor, on IRC, and heading down the sliperly slope to
 kick-bansville.)
 
+
+<Colourless> ultima 8 is partially functional
+
+
+<wjp> and pentagram implements part of U8's partial functionality ;-)

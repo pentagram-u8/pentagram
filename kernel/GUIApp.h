@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <vector>
 #include <stack>
+#include <list>
 
 #include "SDL_events.h"
 #include "intrinsics.h"
@@ -133,6 +134,12 @@ public:
 	//! pop the last mouse cursor from the stack
 	void popMouseCursor();
 
+	//! Enter gump text mode (aka SDL Unicode keyhandling)
+	void enterTextMode(Gump *);
+
+	//! Leave gump text mode (aka SDL Unicode keyhandling)
+	void leaveTextMode(Gump *);
+
 protected:
 	virtual void DeclareArgs();
 
@@ -210,7 +217,7 @@ private:
 		DRAG_INVALID = 2,
 		DRAG_TEMPFAIL = 3
 	} dragging;
-	uint16 dragging_objid;
+	ObjId dragging_objid;
 	uint16 dragging_item_startgump;
 	uint16 dragging_item_lastgump;
 
@@ -226,6 +233,15 @@ private:
 	void		init_midi();
 	void		deinit_midi();
 	static void	sdlAudioCallback(void *userdata, Uint8 *stream, int len);
+
+	
+	std::list<ObjId>	textmodes;		//!< Gumps that want text mode
+
+	// Load and save games from arbitrary filenames from the console
+	static void			ConCmd_saveGame(const Pentagram::istring &args);	//!< "GUIApp::saveGame <filename>" console command
+	static void			ConCmd_loadGame(const Pentagram::istring &args);	//!< "GUIApp::loadGame <filename>" console command
+
+	static void			ConCmd_quit(const Pentagram::istring &args);		//!< "quit" console command
 };
 
 #endif

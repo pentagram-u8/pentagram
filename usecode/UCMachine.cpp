@@ -31,6 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "BitSet.h"
 #include "UCList.h"
 #include "idMan.h"
+#include "ConsoleGump.h"
 
 #define INCLUDE_CONVERTUSECODEU8_WITHOUT_BRINGING_IN_FOLD
 #include "u8/ConvertUsecodeU8.h"
@@ -89,7 +90,7 @@ enum UCSegments {
 
 UCMachine* UCMachine::ucmachine = 0;
 
-UCMachine::UCMachine(Intrinsic *iset)
+UCMachine::UCMachine(Intrinsic *iset) : avatarsName("Avatar")
 {
 	assert(ucmachine == 0);
 	ucmachine = this;
@@ -102,11 +103,15 @@ UCMachine::UCMachine(Intrinsic *iset)
 
 	listIDs = new idMan(1, 65534, 128);
 	stringIDs = new idMan(1, 65534, 256);
+
+	ConsoleGump::AddConsoleCommand("UCMachine::avatarsName", ConCmd_avatarsName);
 }
 
 
 UCMachine::~UCMachine()
 {
+	ConsoleGump::RemoveConsoleCommand("UCMachine::avatarsName");
+
 	ucmachine = 0;
 
 	delete globals; globals = 0;
@@ -2256,7 +2261,8 @@ uint32 UCMachine::I_dummyProcess(const uint8* /*args*/, unsigned int /*argsize*/
 
 uint32 UCMachine::I_getName(const uint8* /*args*/, unsigned int /*argsize*/)
 {
-	return UCMachine::get_instance()->assignString("Avatar");
+	UCMachine *uc = UCMachine::get_instance();
+	return uc->assignString(uc->avatarsName.c_str());
 }
 
 uint32 UCMachine::I_numToStr(const uint8* args, unsigned int /*argsize*/)
@@ -2319,4 +2325,17 @@ uint32 UCMachine::I_target(const uint8* /*args*/, unsigned int /*argsize*/)
 		 << std::endl;
 
 	return Kernel::get_instance()->addProcess(new TargetProcess());
+}
+
+void UCMachine::ConCmd_avatarsName(const Pentagram::istring &args)
+{
+	UCMachine *uc = UCMachine::get_instance();
+	if (args.empty())
+	{
+		pout << "UCMachine::avatarsName = \"" << uc->avatarsName << "\"" << std::endl;
+	}
+	else
+	{
+		uc->avatarsName = args.c_str();
+	}
 }

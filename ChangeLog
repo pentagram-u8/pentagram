@@ -1,3 +1,13 @@
+2004-01-24  Ryan Nunn <colourles@users.sourceforge.net>
+	* gumps/Gump.cpp, gumps/ConsoleGump.*, kernel/GUIApp.*, misc/Console.*,
+	  usecode/UCMachine.* : Added text input mode for gumps. Added Console
+	  commands. Do a "cmdList" in the console to see all the currently 
+	  supported commands (not many). Tab does command completion. Console 
+	  is case-insensitive. Adding extra console commands is real easy. Just
+	  use ConsoleGump::AddConsoleCommand() and then use 
+	  ConsoleGump::RemoveConsoleCommand() when you want it gone.
+	* misc/pent_include.h: Include istring in pent_include
+
 2004-01-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/widgets/TextWidget.*: renamed SimpleTextWidget to TextWidget
 	* BarkGump.*, TextWidget.*: added support for scrolling to next text

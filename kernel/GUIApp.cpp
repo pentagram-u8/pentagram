@@ -140,10 +140,18 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 		mouseButton[i].lastDown = 0;
 		mouseButton[i].state = MBS_HANDLED;
 	}
+
+	ConsoleGump::AddConsoleCommand("GUIApp::saveGame", ConCmd_saveGame);
+	ConsoleGump::AddConsoleCommand("GUIApp::loadGame", ConCmd_loadGame);
+	ConsoleGump::AddConsoleCommand("quit", ConCmd_quit);	
 }
 
 GUIApp::~GUIApp()
 {
+	ConsoleGump::RemoveConsoleCommand("GUIApp::saveGame");
+	ConsoleGump::RemoveConsoleCommand("GUIApp::loadGame");
+	ConsoleGump::RemoveConsoleCommand("quit");
+
 	FORGET_OBJECT(objectmanager);
 	FORGET_OBJECT(hidmanager);
 	deinit_midi();
@@ -799,8 +807,21 @@ void GUIApp::paint()
 	prev = now;
 
 	char buf[256];
-	snprintf(buf, 255, "Rendering time %li ms %li FPS - Paint Gumps %li ms - t %02d:%02d gh %i ", diff, 1000/diff, after_gumps-before_gumps, I_getTimeInMinutes(0,0), I_getTimeInSeconds(0,0)%60, I_getTimeInGameHours(0,0));
-	screen->PrintTextFixed(con.GetConFont(), buf, 8, dims.h-16);
+	Texture *confont = con.GetConFont();
+	int v_offset = 0;
+	int char_w = confont->width/16;
+
+	snprintf(buf, 255, "Rendering time %li ms %li FPS ", diff, 1000/diff);
+	screen->PrintTextFixed(confont, buf, dims.w-char_w*strlen(buf), v_offset);
+	v_offset += confont->height/16;
+
+	snprintf(buf, 255, "Paint Gumps %li ms ", after_gumps-before_gumps);
+	screen->PrintTextFixed(confont, buf, dims.w-char_w*strlen(buf), v_offset);
+	v_offset += confont->height/16;
+
+	snprintf(buf, 255, "t %02d:%02d gh %i ", I_getTimeInMinutes(0,0), I_getTimeInSeconds(0,0)%60, I_getTimeInGameHours(0,0));
+	screen->PrintTextFixed(confont, buf, dims.w-char_w*strlen(buf), v_offset);
+	v_offset += confont->height/16;
 
 	// End painting
 	screen->EndPainting();
@@ -1212,9 +1233,51 @@ bool hitting() { return QuickAvatarMoverProcess::hitting; }
 
 static int volumelevel = 255;
 
+void GUIApp::enterTextMode(Gump *gump)
+{
+	if (!textmodes.empty()) textmodes.remove(gump->getObjId());
+	else SDL_EnableUNICODE(1);
+	textmodes.push_front(gump->getObjId());
+}
+
+void GUIApp::leaveTextMode(Gump *gump)
+{
+	if (textmodes.empty()) return;
+	textmodes.remove(gump->getObjId());
+	if (textmodes.empty()) SDL_EnableUNICODE(0);
+}
+
 void GUIApp::handleEvent(const SDL_Event& event)
 {
 	uint32 now = SDL_GetTicks();
+
+	// Text mode input. A few hacks here
+	if (!textmodes.empty() && (event.type == SDL_KEYDOWN || event.type == SDL_KEYUP) && 
+		event.key.keysym.sym != SDLK_BACKQUOTE && 
+		event.key.keysym.sym != SDLK_ESCAPE) {
+
+		Gump *gump = 0;
+
+		while (!textmodes.empty())
+		{
+			gump = p_dynamic_cast<Gump*>(objectmanager->getObject(textmodes.front()));
+			if (gump) break;
+
+			textmodes.pop_front();
+		}
+
+		if (gump) {
+
+			if (event.type == SDL_KEYDOWN) {
+				if (event.key.keysym.unicode >= ' ' && event.key.keysym.unicode <= 255)
+					gump->OnTextInput(event.key.keysym.unicode);
+				else
+					gump->OnKeyDown(event.key.keysym.sym);
+			}
+
+			return;
+		}
+	}
 
 	if (dragging == DRAG_NOT) {
 
@@ -1450,14 +1513,6 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		case SDLK_LEFTBRACKET: gameMapGump->IncSortOrder(-1); break;
 		case SDLK_RIGHTBRACKET: gameMapGump->IncSortOrder(+1); break;
 		case SDLK_ESCAPE: case SDLK_q: isRunning = false; break;
-		case SDLK_PAGEUP: {
-			if (!consoleGump->ConsoleIsVisible()) con.ScrollConsole(-3);
-			break;
-		}
-		case SDLK_PAGEDOWN: {
-			if (!consoleGump->ConsoleIsVisible()) con.ScrollConsole(3); 
-			break;
-		}
 		case SDLK_KP1: case SDLK_KP2: case SDLK_KP3:
 		case SDLK_KP4: case SDLK_KP6: case SDLK_KP7:
 		case SDLK_KP8: case SDLK_KP9: { // quick animation test
@@ -1761,6 +1816,7 @@ bool GUIApp::loadGame(std::string filename)
 	// all processes/objects
 	objectmanager->reset();
 	kernel->reset();
+	textmodes.clear();
 
 	bool ok, totalok = true;
 
@@ -1898,6 +1954,46 @@ bool GUIApp::load(IDataSource* ids)
 
 	return true;
 }
+
+//
+// Console Commands
+//
+
+void GUIApp::ConCmd_saveGame(const Pentagram::istring &args)
+{
+	if (args.empty())
+	{
+		pout << "Usage: GUIApp::saveGame <filename>" << std::endl;
+		return;
+	}
+
+	std::string filename = "@save/";
+	filename += args.c_str();
+	GUIApp::get_instance()->saveGame(filename);
+}
+
+void GUIApp::ConCmd_loadGame(const Pentagram::istring &args)
+{
+	if (args.empty())
+	{
+		pout << "Usage: GUIApp::loadGame <filename>" << std::endl;
+		return;
+	}
+
+	std::string filename = "@save/";
+	filename += args.c_str();
+	GUIApp::get_instance()->loadGame(filename);
+}
+
+
+void GUIApp::ConCmd_quit(const Pentagram::istring &args)
+{
+	GUIApp::get_instance()->isRunning = false;
+}
+
+//
+// Intrinsics
+//
 
 uint32 GUIApp::I_getCurrentTimerTick(const uint8* /*args*/,
 										unsigned int /*argsize*/)
