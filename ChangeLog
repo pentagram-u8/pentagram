@@ -1,3 +1,6 @@
+2004-05-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* configure.ac, Makefile.in: --enable-gcc-pch enables PCH in gcc 3.4
+
 2004-05-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AvatarMoverProcess.cpp: handle all left mouse clicks
 	* usecode/UCMachine.cpp: ignore error when trying to wait for PID 0

@@ -141,6 +141,17 @@ dnl    ])
 dnl    AC_MSG_RESULT(-I binary -O $OBJCOPY_format -B $OBJCOPY_arch)
 dnl fi
 
+AC_MSG_CHECKING(if we should use GCC PCH)
+AC_ARG_ENABLE(gcc-pch, [  --enable-gcc-pch        Use GCC 3.4 precompiled headers [default no]],,enable_gcc_pch=no)
+if test x$GCC = xyes -a x$enable_gcc_pch = xyes; then
+	AC_DEFINE(USE_PRECOMPILED_HEADER, 1, [use precompiled header])
+	AC_MSG_RESULT(yes)
+	USE_PCH=yes
+else
+	AC_MSG_RESULT(no)
+	USE_PCH=no
+fi
+
 
 # ---------------------------------------------------------------------
 # Checks for header files.
@@ -268,25 +279,25 @@ else
 fi
 
 # ------------------
-# Semi-pointless compiler, compilation flags
+# Semi-pointless usecode compiler, compilation flags
 # ------------------
-AC_MSG_CHECKING(if we want quirky compiler comments)
-AC_ARG_ENABLE(compiler_quirks, [  --enable-compiler-quirks        Enable quirky compiler comments [default yes]],,enable_compiler_quirks=yes)
-if test x$enable_compiler_quirks = xyes; then
-	AC_MSG_RESULT(yes)
-	AC_DEFINE(USE_CQUIRKS, 1, [Random quirky comments, rather then default normalness])
-else
-	AC_MSG_RESULT(no)
-fi
+#AC_MSG_CHECKING(if we want quirky usecode compiler comments)
+#AC_ARG_ENABLE(compiler_quirks, [  --enable-compiler-quirks        Enable quirky compiler comments [default yes]],,enable_compiler_quirks=yes)
+#if test x$enable_compiler_quirks = xyes; then
+#	AC_MSG_RESULT(yes)
+#	AC_DEFINE(USE_CQUIRKS, 1, [Random quirky comments, rather then default normalness])
+#else
+#	AC_MSG_RESULT(no)
+#fi
 
-AC_MSG_CHECKING(if we want usecode compiler regression tester built)
-AC_ARG_ENABLE(compiler_tester, [  --enable-compiler-tester        Usecode compiler regression tester [default no]],,enable_compiler_tester=no)
-if test x$enable_compiler_tester = xyes; then
-	AC_MSG_RESULT(yes)
-	AC_DEFINE(COMPILER_TEST, 1, [Enable the compiler regression tester])
-else
-	AC_MSG_RESULT(no)
-fi
+#AC_MSG_CHECKING(if we want usecode compiler regression tester built)
+#AC_ARG_ENABLE(compiler_tester, [  --enable-compiler-tester        Usecode compiler regression tester [default no]],,enable_compiler_tester=no)
+#if test x$enable_compiler_tester = xyes; then
+#	AC_MSG_RESULT(yes)
+#	AC_DEFINE(COMPILER_TEST, 1, [Enable the compiler regression tester])
+#else
+#	AC_MSG_RESULT(no)
+#fi
 
 
 # ------------------
@@ -344,6 +355,7 @@ if test x$HAVESDLTTF = xyes; then
 	if test x$enable_ttf = xyes; then
 		AC_MSG_RESULT(yes)
 		AC_DEFINE(USE_SDLTTF, 1, [Use SDL_ttf])
+		
 		LIBS="$LIBS -lSDL_ttf"
 	else
 		AC_MSG_RESULT(no)
@@ -359,6 +371,7 @@ AC_SUBST(WARNINGS)
 AC_SUBST(PACKAGE)
 AC_SUBST(PROFILE)
 AC_SUBST(DATAPATH)
+AC_SUBST(USE_PCH)
 
 AC_OUTPUT([
 Makefile

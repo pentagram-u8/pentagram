@@ -53,6 +53,13 @@ MODULES := convert convert/u8 convert/crusader misc filesys \
 	audio/midi/timidity usecode world world/actors gumps \
 	gumps/widgets conf .
 
+# GCC 3.4+ precompiled header
+ifeq (@USE_PCH@,yes)
+PCHEADER := misc/pent_include.h.gch
+else
+PCHEADER :=
+endif
+
 # look for include files in
 #   each of the modules
 CXXFLAGS += $(patsubst %,-I$(top_srcdir)/%,$(MODULES)) -I.
@@ -67,11 +74,18 @@ DEPDIRS = $(patsubst %,%/$(top_builddir)/$(DEPDIR),$(MODULES))
 all:
 
 # Clean all object files & binaries
-clean:
+clean: clean-pch
 
 # Clean *all*
 distclean: clean
 	-$(RM) -r $(DEPDIRS)
+
+ifeq (@USE_PCH@,yes)
+clean-pch:
+	-$(RM) $(PCHEADER)
+else
+clean-pch:
+endif
 
 # Include additional rules for each module
 include $(patsubst %,$(top_srcdir)/%/module.mk,$(MODULES))
@@ -85,9 +99,15 @@ $(DEPDIRS):
 	touch $@
 
 # custom compile rule which calculates dependencies
-%.o: %.cpp
+%.o: %.cpp $(PCHEADER)
 	@$(MKDIR) $(*D)/$(DEPDIR)
 	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).d",-MQ,"$@",-MP $(WARNINGS) $(CXXFLAGS) $(SDL_CFLAGS) -c -o $@ $<
+
+# custom compile rule for the precompiled header
+%.h.gch: %.h
+	@$(MKDIR) $(*D)/$(DEPDIR)
+	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).h.gch.d",-MQ,"$@",-MP $(WARNINGS) $(CXXFLAGS) $(SDL_CFLAGS) -x c++-header -c $<
+
 
 # rule to rebuild Makefile if necessary
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
@@ -104,4 +124,4 @@ $(top_srcdir)/aclocal.m4: $(srcdir)/configure.ac
 	cd $(srcdir) && $(ACLOCAL)
 # fixme: rebuilding misc/config.h.in and misc/config.h
 
-.PHONY: all clean distclean
+.PHONY: all clean distclean clean-pch
