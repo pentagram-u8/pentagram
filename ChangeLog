@@ -10,6 +10,8 @@
 	* world/Item.*: gotHit intrinsic
 	* kernel/Kernel.cpp, gumps/GumpNotifyProcess.cpp, kernel/Process.cpp:
 	  fixed double-terminate
+	* usecode/UCMachine.cpp: fixed 'assign element' opcode bug
+	* usecode/UCStack.h: renamed moveSP to setSP
 
 2004-08-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.*: Item::ascend intrinsic

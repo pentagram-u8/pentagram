@@ -237,8 +237,8 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8a = static_cast<sint8>(cs.read1());
 			ui32a = cs.read1();
 			si8b = static_cast<sint8>(cs.read1());
-			LOGPF(("assign element\t%s (%02X) (%02X)\n",
-				   print_bp(si8a), si8b, si8b));
+			LOGPF(("assign element\t%s (%02X) (slist==%02X)\n",
+				   print_bp(si8a), ui32a, si8b));
 			ui16a = p->stack.pop2()-1; // index
 			ui16b = p->stack.access2(p->bp+si8a);
 			UCList* l = getList(ui16b);
@@ -256,7 +256,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				p->stack.pop2(); // advance SP
 			} else {
 				l->assign(ui16a, p->stack.access());
-				p->stack.moveSP(ui32a);
+				p->stack.addSP(ui32a);
 			}
 		} break;
 
