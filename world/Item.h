@@ -106,8 +106,8 @@ public:
 	uint32 getShape() const { return shape; }
 
 	//! Set this Item's shape number
-	// Hack Alert!
-	void setShape(uint32 shape_) { *const_cast<uint32*>(&shape) = shape_; cachedShapeInfo = 0; cachedShape = 0; }
+	void setShape(uint32 shape_)
+		{ shape = shape_; cachedShapeInfo = 0; cachedShape = 0; }
 
 	//! Get this Item's frame number
 	uint32 getFrame() const { return frame; }
@@ -348,8 +348,10 @@ public:
 	INTRINSIC(I_getSurfaceWeight);
 	INTRINSIC(I_isExplosive);
 
+private:
+	uint32 shape;	// DO NOT modify this directly! Always use setShape()!
+
 protected:
-	const uint32 shape;	// DO NOT modify this directly! Always use setShape()!
 	uint32 frame;
 
 	sint32 x,y,z; // world coordinates
