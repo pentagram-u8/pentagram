@@ -70,7 +70,11 @@ fold.exe : tools/fold/Fold.o $(FOLD_OBJCS)
 shapeconv.exe : tools/shapeconv/ShapeConv.o $(CONVERT) $(FILESYS) $(UNZIP) $(MISC) $(ARGS)
 	$(CXX) $(LFLAGS) -o $@ $+ -lz -mconsole
 
-pentshp.exe : tools/gimp-plugin/pentshp.o
+PENTSHP_OBJCS = \
+	$(CONVERT) $(MISC) filesys/FileSystem.o graphics/Palette.o graphics/Shape.o graphics/ShapeFrame.o \
+	tools/gimp-plugin/pentshp.o
+
+pentshp.exe : $(PENTSHP_OBJCS)
 	$(CXX) -o $(@) $+ $(GTK_LIBS) $(GIMP_LIBS) -mwindows
 
 PENTAGRAM_OBJS = \
@@ -83,6 +87,8 @@ pentagram.exe: $(PENTAGRAM_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ $(LIBS)
 
 tools: amf2mod.exe disasm.exe flexpack.exe fold.exe shapeconv.exe
+
+gimp-plugin: pentshp.exe
 
 clean:
 	rm -f $(PENTAGRAM_OBJS) pentagram.o
