@@ -29,24 +29,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 uint32	RenderSurface::s_bpp;
 
-uint8	RenderSurface::r_loss = 0;
-uint8	RenderSurface::r_loss16 = 0;
-uint8	RenderSurface::r_shift = 0;
+uint32	RenderSurface::r_loss = 0;
+uint32	RenderSurface::r_loss16 = 0;
+uint32	RenderSurface::r_shift = 0;
 uint32	RenderSurface::r_mask = 0;
 
-uint8	RenderSurface::g_loss = 0;
-uint8	RenderSurface::g_loss16 = 0;
-uint8	RenderSurface::g_shift = 0;
+uint32	RenderSurface::g_loss = 0;
+uint32	RenderSurface::g_loss16 = 0;
+uint32	RenderSurface::g_shift = 0;
 uint32	RenderSurface::g_mask = 0;
 
-uint8	RenderSurface::b_loss = 0;
-uint8	RenderSurface::b_loss16 = 0;
-uint8	RenderSurface::b_shift = 0;
+uint32	RenderSurface::b_loss = 0;
+uint32	RenderSurface::b_loss16 = 0;
+uint32	RenderSurface::b_shift = 0;
 uint32	RenderSurface::b_mask = 0;
 
-uint8	RenderSurface::a_loss = 0;
-uint8	RenderSurface::a_loss16 = 0;
-uint8	RenderSurface::a_shift = 0;
+uint32	RenderSurface::a_loss = 0;
+uint32	RenderSurface::a_loss16 = 0;
+uint32	RenderSurface::a_shift = 0;
 uint32	RenderSurface::a_mask = 0;
 
 

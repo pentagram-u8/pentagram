@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "memset_n.h"
 
 #include "XFormBlend.h"
+#include "scalers/PointScaler.h"
 
 ///////////////////////
 //                   //
@@ -420,8 +421,22 @@ template<class uintX> void SoftRenderSurface<uintX>::FadedBlit(Texture *tex, sin
 
 
 
+template<class uintX> class Mainp_Nat2Nat
+{
+public:
+	static uintX copy (uintX src) { return src; }
+};
+
+template<class uintX> class Mainp_Sta2Nat
+{
+public:
+	static uintX copy (uint32 src) { 
+		return static_cast<uintX>(PACK_RGB8( TEX32_R(src), TEX32_G(src), TEX32_B(src) ));
+	}
+};
+
 //
-// void SoftRenderSurface::StretchBlit(Texture *, sint32 sx, sint32 sy, sint32 sw, sint32 sh, sint32 dx, sint32 dy, sint32 dw, sint32 dh, bool bilinear)
+// void SoftRenderSurface::StretchBlit(Texture *, sint32 sx, sint32 sy, sint32 sw, sint32 sh, sint32 dx, sint32 dy, sint32 dw, sint32 dh, bool bilinear, bool clampedges)
 //
 // Desc: Blit a region from a Texture, and arbitrarily stretch it to fit the dest region
 //
@@ -429,17 +444,39 @@ template<class uintX> void SoftRenderSurface<uintX>::FadedBlit(Texture *tex, sin
 template<class uintX> void SoftRenderSurface<uintX>::StretchBlit(Texture *texture, 
 								sint32 sx, sint32 sy, sint32 sw, sint32 sh, 
 								sint32 dx, sint32 dy, sint32 dw, sint32 dh, 
-								bool bilinear)
+								bool bilinear, bool clampedges)
 {
 
 	// Nothing we can do
 	if ((sh <= 0) || (dh <= 0) || (sw <= 0) || (dw <= 0)) return;
 
+	// 1x No scaling needed
+	if (dw == sw && sh == dh)
+	{
+		Blit(texture, sw, sy, sw, sh, dx, dy);
+		return;
+	}
+
 	// First detect integer up scalings, since they are 'easy'
 	bool x_intscale = ((dw / sw) * sw) == dw;
 	bool y_intscale = ((dh / sh) * sh) == dh;
 
+	// Ok easy simple scale
+	if (!bilinear)
+	{
+		uint8 *pixel = pixels + dy * pitch + dx * sizeof(uintX);
 
+		if (texture->format == TEX_FMT_STANDARD)
+		{
+			PointScaler<uintX,Mainp_Sta2Nat<uintX>,uint32>::Scale(
+					texture, sx, sy, sw, sh, pixel, dw, dh, pitch );
+		}
+		else if (texture->format == TEX_FMT_NATIVE)
+		{
+			PointScaler<uintX,Mainp_Nat2Nat<uintX>,uintX>::Scale(
+					texture, sx, sy, sw, sh, pixel, dw, dh, pitch );
+		}
+	}
 }
 
 //

@@ -34,6 +34,8 @@ class Game;
 class Gump;
 class ConsoleGump;
 class GameMapGump;
+class ScalerGump;
+class InverterGump;
 class RenderSurface;
 class PaletteManager;
 class GameData;
@@ -191,9 +193,11 @@ private:
 	World *world;
 	FontManager* fontmanager;
 	
-	Gump* desktopGump;
-	ConsoleGump *consoleGump;
-	GameMapGump *gameMapGump;
+	Gump			*desktopGump;
+	ConsoleGump		*consoleGump;
+	GameMapGump		*gameMapGump;
+	ScalerGump		*scalerGump;
+	InverterGump	*inverterGump;
 
 	AvatarMoverProcess* avatarMoverProcess;
 	

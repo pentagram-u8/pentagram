@@ -53,6 +53,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GameMapGump.h"
 #include "BarkGump.h"
 #include "InverterGump.h"
+#include "ScalerGump.h"
 
 #include "QuickAvatarMoverProcess.h"
 #include "Actor.h"
@@ -1616,6 +1617,13 @@ void GUIApp::resetEngine()
 	objectmanager->reset();
 	kernel->reset();
 
+	// Reset thet gumps
+	desktopGump = 0;
+	consoleGump = 0;
+	gameMapGump = 0;
+	scalerGump = 0;
+	inverterGump = 0;
+
 	textmodes.clear();
 
 	// reset mouse cursor
@@ -1633,36 +1641,54 @@ void GUIApp::setupCoreGumps()
 	Pentagram::Rect dims;
 	screen->GetSurfaceDims(dims);
 
+	// Scaler stuff... should probably be elsewhere
+	int scalex, scaley;
+	settingman->setDefault("scalex", 1);
+	settingman->get("scalex", scalex);
+	settingman->setDefault("scaley", 1);
+	settingman->get("scaley", scaley);
+
+	if (scalex < 0) scalex= -scalex;
+	else if (scalex < 100) scalex = dims.w/scalex;
+
+	if (scaley < 0) scaley= -scaley;
+	else if (scaley < 100) scaley = dims.h/scaley;
+
 	pout << "Create Desktop" << std::endl;
 	desktopGump = new DesktopGump(0,0, dims.w, dims.h);
 	desktopGump->InitGump();
 	desktopGump->MakeFocus();
 
-	InverterGump* invgump = new InverterGump(0, 0, dims.w, dims.h);
-	invgump->InitGump();
-	desktopGump->AddChild(invgump);
+	pout << "Create Scalergump" << std::endl;
+	scalerGump = new ScalerGump(0,0, dims.w, dims.h,scalex,scaley,0,-1);
+	scalerGump->InitGump();
+	desktopGump->AddChild(scalerGump);
 
 	pout << "Create Graphics Console" << std::endl;
 	consoleGump = new ConsoleGump(0, 0, dims.w, dims.h);
 	consoleGump->InitGump();
 	consoleGump->HideConsole();
 	desktopGump->AddChild(consoleGump);
+	
+	inverterGump = new InverterGump(0, 0, scalex,scaley);
+	inverterGump->InitGump();
+	scalerGump->AddChild(inverterGump);
 
 	pout << "Create GameMapGump" << std::endl;
-	gameMapGump = new GameMapGump(0, 0, dims.w, dims.h);
+	gameMapGump = new GameMapGump(0, 0, scalex,scaley);
 	gameMapGump->InitGump();
-//	desktopGump->AddChild(gameMapGump);
-	invgump->AddChild(gameMapGump);
+	inverterGump->AddChild(gameMapGump);
 
 
 	// TODO: clean this up
 	assert(desktopGump->getObjId() == 256);
-	assert(invgump->getObjId() == 257);
+	assert(scalerGump->getObjId() == 257);
 	assert(consoleGump->getObjId() == 258);
-	assert(gameMapGump->getObjId() == 259);
+	assert(inverterGump->getObjId() == 259);
+	assert(gameMapGump->getObjId() == 260);
 
 
-	for (uint16 i = 260; i < 384; ++i)
+	for (uint16 i = 261; i < 384; ++i)
 		objectmanager->reserveObjId(i);
 }
 

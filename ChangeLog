@@ -1,3 +1,17 @@
+2005-02-19  Ryan Nunn <colourles@users.sourceforge.net>
+	* graphics/RenderSurface.* : StretchBlit function sort of implemented
+	* graphics/SoftRenderSurface.* : Point scaling for StretchBlit
+	* graphics/scalers/PointScaler.h : A simple point scaler. Work in
+	  Progress
+	* gumps/ScalerGump.* : Scaler gump. 
+	* kernel/GUIApp.* : Basic scaler support. Set 'scalex' and 'scaley' to
+	  the desired scaling factor. Only integer factors supported. Note
+	  it only works IF the backbuffer resolution can be evenly divided by
+	  scale factor. So you can't do width=640 with scalex=3 (640 can't be
+	  divided by 3). If a scale factor number is negetive, then it is taken
+	  to mean an absolute size (positive of course). Same with factors over
+	  100. Non integer scaling factors WILL be supported.
+
 2005-02-14	Darke  <darkepaw@users.sf.net>
 	* audio/midi/fmopl.cpp: cast pedantification.
 	* world/actors/Animation.cpp,gumps/PaperdollGump.cpp: gcc4 fixes.
