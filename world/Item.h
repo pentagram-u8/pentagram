@@ -97,6 +97,7 @@ public:
 	INTRINSIC(I_look);
 	INTRINSIC(I_use);
 	INTRINSIC(I_enterFastArea);
+	INTRINSIC(I_ask);
 
 
 protected:

@@ -47,7 +47,8 @@ public:
 		   SF_CONTAINER   = 6,
 		   SF_MONSTEREGG  = 7,
 		   SF_TELEPORTEGG = 8,
-		   SF_REAGENT     = 9
+		   SF_REAGENT     = 9,
+		   SF_15          = 15
 	} SFamily;
 
 	enum { SE_NONE   = 0,

@@ -1,3 +1,8 @@
+2003-05-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/*: minor changes
+	* world/Item.cpp, kernel/Application.cpp: hacked in the Ask intrinsic
+	* graphics/ShapeInfo.h, world/ItemFactory.cpp: added unknown family 15
+	
 2003-05-11  Darke <darkepaw@users.sf.net>
 	* tools/disasm/DisasmProcess.*: New disassembler process files.
 	* kernel/Application.*: Added stub of disassembler process; parameter
@@ -11,7 +16,7 @@
 	          <data> /home/darke/code/pentagram/data </>
 	      </>
 	  </config>
-	* random-files: Updated copyright to 2003.																																	  
+	* random-files: Updated copyright to 2003.
 
 2003-05-11  Ryan Nunn <colourles@users.sourceforge.net>
 	* misc/memset_n.h : Added generic memset_32 and memset_16 functions.

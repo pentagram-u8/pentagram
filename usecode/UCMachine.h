@@ -63,6 +63,9 @@ public:
 
 	static uint16 ptrToObject(uint32 ptr);
 
+	INTRINSIC(I_AvatarCanCheat);
+	INTRINSIC(I_dummyProcess);
+
 private:
 
 	Intrinsic* intrinsics;
@@ -86,6 +89,5 @@ private:
 
 	static UCMachine* ucmachine;
 };
-
 
 #endif

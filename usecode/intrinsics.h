@@ -44,6 +44,9 @@ typedef uint32 (*Intrinsic)(const uint8* args, unsigned int argsize);
                       uint16 id_##x = UCMachine::ptrToObject(ucptr_##x); \
                       std::string x = UCMachine::get_instance()->getString(id_##x);
 
+#define ARG_LIST(x)   ARG_UINT16(id_##x); \
+                      UCList* x = UCMachine::get_instance()->getList(id_##x);
+
 #define ARG_NULL8(x)  args+=1;
 #define ARG_NULL16(x) args+=2;
 #define ARG_NULL32(x) args+=4;

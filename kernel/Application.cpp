@@ -356,6 +356,7 @@ void Application::setupVirtualPaths()
 #else
 	data = "data";
 #endif
+	pout << "Trying built-in data path" << std::endl;
 	filesystem->AddVirtualPath("@data", data);
 }
 
@@ -363,10 +364,6 @@ void Application::setupVirtualPaths()
 void Application::loadConfig()
 {
 	pout << "Loading configuration files:" << std::endl;
-
-	// TODO:
-	// load system-wide config...
-	// load user-specific config...
 
 	// system-wide config
 	pout << "@data/pentagram.cfg... ";
@@ -548,6 +545,8 @@ void Application::handleEvent(const SDL_Event& event)
 {
 	uint32 eventtime = SDL_GetTicks();
 
+	extern int userchoice; // major hack... see Item::I_ask
+
 	switch (event.type) {
 	case SDL_QUIT:
 	{
@@ -614,7 +613,22 @@ void Application::handleEvent(const SDL_Event& event)
 
 	case SDL_KEYUP:
 	{
-		isRunning = false;
+		switch (event.key.keysym.sym) {
+		case SDLK_0: userchoice = 0; break;
+		case SDLK_1: userchoice = 1; break;
+		case SDLK_2: userchoice = 2; break;
+		case SDLK_3: userchoice = 3; break;
+		case SDLK_4: userchoice = 4; break;
+		case SDLK_5: userchoice = 5; break;
+		case SDLK_6: userchoice = 6; break;
+		case SDLK_7: userchoice = 7; break;
+		case SDLK_8: userchoice = 8; break;
+		case SDLK_9: userchoice = 9; break;
+		case SDLK_a: userchoice = 10; break;
+		case SDLK_b: userchoice = 11; break;
+		case SDLK_c: userchoice = 12; break;
+		default: isRunning = false;
+		}
 	}
 	break;
 

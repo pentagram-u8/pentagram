@@ -26,6 +26,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Item.h"
 #include "Container.h"
 
+#include "ShapeInfo.h" // debugging only
+#include "GameData.h" // ""
+#include "MainShapeFlex.h" // ""
+
 #include "World.h"
 
 //#define DUMP_ITEMS
@@ -121,7 +125,13 @@ void Map::loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds,
 		Item *item = ItemFactory::createItem(shape,frame,quality,flags,
 											 npcnum,mapnum,extendedflags);
 		if (!item) {
-		pout << shape << "," << frame << ":\t(" << x << "," << y << "," << z << "),\t" << std::hex << flags << std::dec << ", " << quality << ", " << npcnum << ", " << mapnum << ", " << next << std::endl;
+			pout << shape << "," << frame << ":\t(" << x << "," << y << "," << z << "),\t" << std::hex << flags << std::dec << ", " << quality << ", " << npcnum << ", " << mapnum << ", " << next;
+
+			ShapeInfo *info = GameData::get_instance()->getMainShapes()->
+				getShapeInfo(shape);
+			if (info) pout << ", family = " << info->family;
+			pout << std::endl;
+
 			pout << "Couldn't create item" << std::endl;
 			continue;
 		}

@@ -885,7 +885,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				UCList* l = new UCList(ui16a);
 				l->copyStringList(*listHeap[ui16b]);
 				p->stack.push2(assignList(l));
-				LOGPF(("push slist\t%s", print_bp(si8a)));				
+				LOGPF(("push slist\t%s", print_bp(si8a)));
 			}
 			break;
 
@@ -1150,7 +1150,7 @@ bool UCMachine::execProcess(UCProcess* p)
 					proc->waitFor(ui16a);
 				} else {
 					perr << "Non-existant process PID in implies" << std::endl;
-					error = true;
+//					error = true;
 				}
 			}
 			break;
@@ -1767,4 +1767,14 @@ void UCMachine::usecodeStats()
 	pout << "Lists    : " << listHeap.size() << "/65534" << std::endl;
 
 
+}
+
+uint32 UCMachine::I_AvatarCanCheat(const uint8* args, unsigned int /*argsize*/)
+{
+	return 1; // of course the avatar can cheat ;-)
+}
+
+uint32 UCMachine::I_dummyProcess(const uint8* args, unsigned int /*argsize*/)
+{
+	return UCMachine::get_instance()->addProcess(new DelayProcess(4));
 }

@@ -46,6 +46,7 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 	case ShapeInfo::SF_QUANTITY:
 	case ShapeInfo::SF_BREAKABLE:
 	case ShapeInfo::SF_REAGENT: // reagents need special handling too
+	case ShapeInfo::SF_15: // what's this?
 	{
 		// 'simple' item
 
@@ -105,7 +106,6 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 		egg->extendedflags = extendedflags;
 		return egg;
 	}
-
 
 	default:
 		return 0;

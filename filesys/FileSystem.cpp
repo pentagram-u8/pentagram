@@ -88,7 +88,7 @@ bool FileSystem::rawopen
 {
 	string name = fname;
 	if (!rewrite_virtual_path(name)) {
-		perr << "Illegal file access" << std::endl;
+//		perr << "Illegal file access" << std::endl;
 		return false;
 	}
 

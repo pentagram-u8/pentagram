@@ -194,3 +194,43 @@ uint32 Item::I_enterFastArea(const uint8* args, unsigned int /*argsize*/)
 	// constant?
 	return item->callUsecodeEvent(15);
 }
+
+//!!!!! major hack
+UCList* answerlist;
+uint32 userchoice;
+class UserChoiceProcess : public Process
+{
+public:
+	virtual bool run(const uint32 /*framenum*/) {
+		if (userchoice >= 0 && userchoice < answerlist->getSize()) {
+			result = answerlist->getStringIndex(userchoice);
+			// we're leaking strings and memory here... (not that I care)
+			pout << "User answer = " << result << ": " << UCMachine::get_instance()->getString(result) << std::endl;
+			terminate();
+		}
+		return false;
+	}
+};
+
+
+uint32 Item::I_ask(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_LIST(answers);
+
+	if (!answers) return 0;
+
+	// display answers and spawn new process (return pid)
+	// process waits for user input and returns the selected answer (as string)
+
+	pout << std::endl << std::endl;
+	for (unsigned int i = 0; i < answers->getSize(); ++i) {
+		pout << i << ": " << UCMachine::get_instance()->getString(answers->getStringIndex(i)) << std::endl;
+	}
+
+	userchoice = -1;
+	answerlist = new UCList(2);
+	answerlist->copyStringList(*answers);
+
+	return UCMachine::get_instance()->addProcess(new UserChoiceProcess());
+}
