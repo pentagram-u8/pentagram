@@ -11,8 +11,8 @@ SRC=.
 SDL_CFLAGS=-I$(SRC)/sdl/include
 SDL_LIBS=-L$(SRC)/sdl/lib -lSDLmain -lSDL
 
-CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -I$(SRC)/conf -I$(SRC)/convert \
-	-I$(SRC)/filesys -I$(SRC)/graphics -I$(SRC)/gumps -I$(SRC)/kernel \
+CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -I$(SRC)/conf -I$(SRC)/convert -I$(SRC)/filesys \
+	-I$(SRC)/graphics -I$(SRC)/graphics/fonts -I$(SRC)/gumps -I$(SRC)/kernel \
 	-I$(SRC)/misc -I$(SRC)/tools/compile -I$(SRC)/tools/disasm \
 	-I$(SRC)/tools/fold -I$(SRC)/usecode -I$(SRC)/world \
 	-I$(SRC)/world/actors -I$(SRC)/gumps/widgets -I$(SRC)/games \
