@@ -31,8 +31,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Container.h"
 
 //#define LOGPF(X) pout.printf X
-//#define LOGPF(X)
-#define LOGPF(X) do { if (p->classid == 68) { pout.printf X; } } while(0)
+#define LOGPF(X)
+//#define LOGPF(X) do { if (p->classid == 68) { pout.printf X; } } while(0)
 
 enum UCSegments {
 	SEG_STACK      = 0x0000,
