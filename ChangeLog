@@ -1,5 +1,7 @@
 2003-05-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* docs/design/items.txt: some notes about Item
+	* world/CurrentMap.*, world/Item.*: move items somewhat more correctly
+	* world/actors/ActorAnimProcess.*: keep link back to Actor as objID
 
 2003-05-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/*, graphics/AnimDat.*: read/play animations

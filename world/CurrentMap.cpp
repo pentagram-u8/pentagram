@@ -180,3 +180,22 @@ void CurrentMap::addItem(Item* item)
 
 	items[cx][cy].push_back(item);
 }
+
+void CurrentMap::removeItemFromList(Item* item, sint32 oldx, sint32 oldy)
+{
+	//! This might a bit too inefficient
+	// if it's really a problem we could change the item lists into sets
+	// or something, but let's see how it turns out
+
+	//! constants
+	if (oldx < 0 || oldy < 0 || oldx >= 512*128 || oldy >= 512*128) {
+		perr << "Skipping item: out of range (" 
+			 << oldx << "," << oldy << ")" << std::endl;
+		return;
+	}
+
+	sint32 cx = oldx / 512;
+	sint32 cy = oldy / 512;
+
+	items[cx][cy].remove(item);
+}

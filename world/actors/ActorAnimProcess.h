@@ -33,7 +33,7 @@ public:
 	virtual bool run(const uint32 framenum);
 
 private:
-	Actor* actor;
+	uint16 actor;
 	AnimAction* animaction;
 	uint32 dir;
 

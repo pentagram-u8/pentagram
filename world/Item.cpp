@@ -64,10 +64,26 @@ Item::~Item()
 
 void Item::setLocation(sint32 X, sint32 Y, sint32 Z)
 {
-	//!!!! need to check if item needs to move to another item list
 	x = X;
 	y = Y;
 	z = Z;
+}
+
+void Item::move(sint32 X, sint32 Y, sint32 Z)
+{
+	//! constant
+
+	if (!parent && (x / 512 != X / 512) || (y / 512 != Y / 512)) {
+		// ! check if item was/should be in CurrentMap in the first place...
+		// just checking for !parent may not be enough
+
+		World::get_instance()->getCurrentMap()->removeItemFromList(this,x,y);
+		setLocation(X, Y, Z);
+		World::get_instance()->getCurrentMap()->addItem(this);
+		return;
+	}
+
+	setLocation(X, Y, Z);
 }
 
 void Item::getLocation(sint32& X, sint32& Y, sint32 &Z) const

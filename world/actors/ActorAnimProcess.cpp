@@ -25,11 +25,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AnimAction.h"
 #include "Actor.h"
 #include "Direction.h"
+#include "World.h"
 
 ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 {
 	assert(actor_);
-	actor = actor_;
+	actor = actor_->getObjId();
 	dir = dir_;
 
 	//! We probably want to mark the actor as being animated somewhere
@@ -37,7 +38,7 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 	//! for terminating the anim
 
 
-	uint32 shape = actor->getShape();
+	uint32 shape = actor_->getShape();
 	animaction = GameData::get_instance()->getMainShapes()->
 		getAnim(shape, action);
 
@@ -47,6 +48,7 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 bool ActorAnimProcess::run(const uint32 framenum)
 {
 	if (!animaction) {
+		// non-existant animation
 		terminate();
 		return false;
 	}
@@ -56,21 +58,28 @@ bool ActorAnimProcess::run(const uint32 framenum)
 	// each frame should last.
 
 	AnimFrame& f = animaction->frames[dir][currentindex];
+	Actor *a = p_dynamic_cast<Actor*>(World::get_instance()->getObject(actor));
+
+	if (!a) {
+		// actor gone
+		terminate();
+		return false;
+	}
 
 	sint32 x, y, z;
-	actor->getLocation(x,y,z);
+	a->getLocation(x,y,z);
 
 	x += 4 * x_fact[dir] * f.deltadir;
 	y += 4 * y_fact[dir] * f.deltadir;
 	z += f.deltaz;
 
-	actor->setLocation(x,y,z);
-	actor->setFrame(f.frame);
+	a->move(x,y,z);
+	a->setFrame(f.frame);
 
 	if (f.is_flipped()) {
-		actor->setFlag(Item::FLG_FLIPPED);
+		a->setFlag(Item::FLG_FLIPPED);
 	} else {
-		actor->clearFlag(Item::FLG_FLIPPED);
+		a->clearFlag(Item::FLG_FLIPPED);
 	}
 
 	currentindex++;

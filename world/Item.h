@@ -37,7 +37,8 @@ public:
 	ENABLE_DYNAMIC_CAST(Item);
 
 	Container* getParent() const { return parent; }
-	void setLocation(sint32 x, sint32 y, sint32 z);
+	void setLocation(sint32 x, sint32 y, sint32 z); // this only sets the loc.
+	void move(sint32 x, sint32 y, sint32 z); // move also handles item lists
 	void getLocation(sint32& x, sint32& y, sint32& z) const;
 	uint16 getFlags() const { return flags; }
 	void setFlag(uint32 mask) { flags |= mask; }

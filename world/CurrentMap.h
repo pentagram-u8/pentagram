@@ -37,6 +37,8 @@ public:
 	uint32 getNum() const;
 
 	void addItem(Item* item);
+	void removeItemFromList(Item* item, sint32 oldx, sint32 oldy);
+
 
 	// Not allowed to modify the list. Remember to use const_iterator
 	const std::list<Item*>* getItemList (sint32 gx, sint32 gy)
