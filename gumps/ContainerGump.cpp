@@ -365,12 +365,26 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 		}
 	}
 
-	if (!targetcontainer) {
-		targetcontainer = p_dynamic_cast<Container*>
-			(World::get_instance()->getItem(owner));
+	if (targetcontainer) {
+		// do not move to containers marked as land or is an NPC,
+		// just in case you decided to start collecting bodies in trunks
+		
+		// Note: this is taking advantage of keyring being marked as land
+		ShapeInfo * targetinfo = targetcontainer->getShapeInfo();
+		if (! targetinfo->is_land() &&
+			! (targetcontainer->getFlags() & Item::FLG_IN_NPC_LIST))
+		{
+			item->moveToContainer(targetcontainer);
+			return;
+		}
 	}
+
+	targetcontainer = p_dynamic_cast<Container*>
+		(World::get_instance()->getItem(owner));
+
 	// add item to container
 	assert(targetcontainer);
+	
 	item->moveToContainer(targetcontainer);
 
 	//!! TODO: this is nonsense when not adding to this container

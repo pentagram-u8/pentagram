@@ -435,6 +435,8 @@ void GameMapGump::DropItem(Item* item, int mx, int my)
 	World *world = World::get_instance();
 	CurrentMap *map = world->getCurrentMap();
 	display_dragging = false;
+	Actor * avatar = world->getMainActor();
+	bool movetoavatar = false;
 
 	// add item to world 
 
@@ -458,7 +460,7 @@ void GameMapGump::DropItem(Item* item, int mx, int my)
 
 	item->getFootpadWorld(dims[0], dims[1], dims[2]);
 
-	dragging_z = world->getMainActor()->getZ() + 8;
+	dragging_z = avatar->getZ() + 8;
 
 	std::list<CurrentMap::SweepItem> collisions;
 	std::list<CurrentMap::SweepItem>::iterator it;
@@ -466,18 +468,34 @@ void GameMapGump::DropItem(Item* item, int mx, int my)
 	{
 		for (it=collisions.begin(); it != collisions.end(); ++it)
 		{
-			Item * item2 = world->getItem(it->item);
-			if (!item2) continue;
-			item2->getFootpadWorld(dims[0], dims[1], dims[2]);
+			it->GetInterpolatedCoords(dims, top, bottom);
 			
-			sint32 iz = item->getZ() + dims[2] + 8;
+			sint32 iz = dims[2] + 8;
 			if (iz > dragging_z)
 			{
 				dragging_z = iz;
+				Item * targetitem = world->getItem(it->item);
+				if (targetitem && targetitem == avatar)
+					movetoavatar = true;
+				else
+					movetoavatar = false;
 			}
 		}
 	}
 
+	if (movetoavatar)
+	{
+		Container* backpack = p_dynamic_cast<Container*>(
+			World::get_instance()->getItem(avatar->getEquip(7))); // constant!
+
+		if (backpack)
+		{
+			item->moveToContainer(backpack);
+			// TODO: find a better place
+			item->setGumpLocation(0, 0);
+			return;
+		}
+	}
 	dragging_x = 2*mx + 4*(my + dragging_z) + cx - 4*cz;
 	dragging_y = -2*mx + 4*(my + dragging_z) + cy - 4*cz;
 

@@ -1,3 +1,9 @@
+2004-06-03  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* gumps/ContainerGump.cpp: Direct dropping items into containers is
+	  only allowed if the container is not marked as land and not an NPC.
+	* gumps/GameMapGump.cpp: Dropping items is more accurate now, and
+	  direct dropping into avatar is allowed.
+
 2004-06-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Pathfinder*.*: some tweaks to the pathfinder
 	* world/actors/Actor.cpp: enabled pathfinder again
