@@ -25,6 +25,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UCMachine.h"
 #include "World.h"
 #include "DelayProcess.h"
+#include "Container.h"
+
+#include "MainShapeFlex.h"
+#include "ShapeInfo.h"
 
 #include "UCStack.h"
 
@@ -69,6 +73,17 @@ void Item::getLocation(sint32& X, sint32& Y, sint32 &Z) const
 	Z = z;
 }
 
+ShapeInfo* Item::getShapeInfo() const
+{
+	return GameData::get_instance()->getMainShapes()->getShapeInfo(shape);
+}
+
+uint16 Item::getFamily() const
+{
+	return (uint16)(getShapeInfo()->family);
+}
+
+
 bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 {
 	// if really necessary this could be made static to prevent news/deletes
@@ -77,6 +92,8 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 	unsigned int i = 0;
 
 	uint16 ui16a, ui16b;
+
+	stack.push2(1); // default to true if script is empty
 
 	while (i < scriptsize) {
 		switch(script[i]) {
@@ -123,7 +140,7 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 			stack.push2(getQuality());
 			break;
 		case '#': // npc num
-			stack.push2(npcnum);
+			stack.push2(getNpcNum());
 			break;
 		case '=': // equal
 			ui16a = stack.pop2();
@@ -166,7 +183,7 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 				stack.push2(0);
 			break;
 		case ':': // item family
-			//!!
+			stack.push2(getFamily());
 			break;
 		case '@': // item shape
 			stack.push2(getShape());
@@ -291,7 +308,7 @@ uint32 Item::I_getShape(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM(item);
 	if (!item) return 0;
 
-	return item->shape;
+	return item->getShape();
 }
 
 uint32 Item::I_getFrame(const uint8* args, unsigned int /*argsize*/)
@@ -299,7 +316,40 @@ uint32 Item::I_getFrame(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM(item);
 	if (!item) return 0;
 
-	return item->frame;
+	return item->getFrame();
+}
+
+uint32 Item::I_getContainer(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	if (!item) return 0;
+
+	Container *parent = item->getParent();
+
+	//! What do we do if item has no parent?
+
+	if (parent)
+		return parent->getObjId();
+	else
+		return 0;
+}
+
+uint32 Item::I_getRootContainer(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	if (!item) return 0;
+
+	Container *parent = item->getParent();
+
+	//! What do we do if item has no parent?
+
+	if (!parent) return 0;
+
+	while (parent->getParent()) {
+		parent = parent->getParent();
+	}
+
+	return parent->getObjId();
 }
 
 uint32 Item::I_getQ(const uint8* args, unsigned int /*argsize*/)
@@ -307,7 +357,44 @@ uint32 Item::I_getQ(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM(item);
 	if (!item) return 0;
 
-	return item->quality;
+	return item->getQuality();
+}
+
+uint32 Item::I_getFamily(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	if (!item) return 0;
+
+	return item->getFamily();
+}
+
+uint32 Item::I_getTypeFlag(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_UINT16(typeflag);
+	if (!item) return 0;
+
+	uint32 flags = item->getShapeInfo()->flags;
+	if (flags & (1 << typeflag))
+		return 1;
+	else
+		return 0;
+}
+
+uint32 Item::I_getStatus(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	if (!item) return 0;
+
+	return item->getFlags();
+}
+
+uint32 Item::I_getWeight(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	if (!item) return 0;
+
+	return item->getShapeInfo()->weight;
 }
 
 uint32 Item::I_bark(const uint8* args, unsigned int /*argsize*/)

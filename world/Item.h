@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "intrinsics.h"
 class Container;
+class ShapeInfo;
 
 class Item : public Object
 {
@@ -44,7 +45,12 @@ public:
 	uint32 getShape() const { return shape; }
 	uint32 getFrame() const { return frame; }
 	uint16 getQuality() const { return quality; }
+	uint16 getNpcNum() const { return npcnum; }
 	uint16 getMapNum() const { return mapnum; }
+
+	uint16 getFamily() const;
+
+	ShapeInfo* getShapeInfo() const;
 
 	Item* getGlobNext() const { return glob_next; }
 	void setGlobNext(Item* i) { glob_next = i; }
@@ -95,7 +101,14 @@ public:
 	INTRINSIC(I_getZ);
 	INTRINSIC(I_getShape);
 	INTRINSIC(I_getFrame);
+	INTRINSIC(I_getContainer);
+	INTRINSIC(I_getRootContainer);
 	INTRINSIC(I_getQ);
+	INTRINSIC(I_getFamily);
+	INTRINSIC(I_getTypeFlag);
+	INTRINSIC(I_getStatus);
+	INTRINSIC(I_getWeight);
+	INTRINSIC(I_getVolume);
 	INTRINSIC(I_bark);
 	INTRINSIC(I_look);
 	INTRINSIC(I_use);
