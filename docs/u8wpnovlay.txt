@@ -1,0 +1,6 @@
+U8's wpnovlay.dat:
+-------------------
+
+wpnovlay.dat is a flex file.
+
+The objects in the flex seem to correspond to combat-related anims.
