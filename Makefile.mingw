@@ -9,7 +9,7 @@ SRC=.
 
 ### Modify these paths
 SDL_CFLAGS=-I$(SRC)/sdl/include
-SDL_LIBS=-L$(SRC)/sdl/lib -lSDL_mixer -lSDLmain -lSDL
+SDL_LIBS=-L$(SRC)/sdl/lib -lSDLmain -lSDL
 
 CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -I$(SRC)/conf -I$(SRC)/convert \
 	-I$(SRC)/filesys -I$(SRC)/graphics -I$(SRC)/gumps -I$(SRC)/kernel \
@@ -87,7 +87,6 @@ dist:   install tools
 	cp COPYING $(U8PATH)/COPYING.txt
 	cp SDL/README-SDL.txt $(U8PATH)
 	cp SDL/lib/SDL.dll $(U8PATH)
-	cp SDL/lib/SDL_mixer.dll $(U8PATH)
 	u2d $(U8PATH)/*.txt
 
 toolsdist: toolsinstall
