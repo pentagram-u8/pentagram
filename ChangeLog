@@ -1,6 +1,8 @@
 2005-03-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/*: only allow specific gumps to be dragged
 	* various: fixed some warnings
+	* audio/SpeechFlex.*: match partial strings when looking for speech
+	* audio/AudioProcess.*: play full speech if it is split into parts
 
 2005-03-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* audio/SpeechFlex.cpp: trim spaces from strings before matching speech

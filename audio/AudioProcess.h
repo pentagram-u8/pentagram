@@ -38,12 +38,15 @@ class AudioProcess :
 		sint32		loops;
 		sint32		channel;
 		std::string barked;
+		uint32		curspeech_start, curspeech_end;
 		
 		SampleInfo() : sfxnum(-1) { }
 		SampleInfo(sint32 s,sint32 p,ObjId o,sint32 l,sint32 c) : 
 			sfxnum(s),priority(p),objid(o),loops(l),channel(c) { }
-		SampleInfo(std::string &b,sint32 shpnum,ObjId o,sint32 c) : 
-			sfxnum(-1),priority(shpnum),objid(o),loops(0),channel(c),barked(b) { }
+		SampleInfo(std::string &b,sint32 shpnum,ObjId o,sint32 c,
+				   uint32 s,uint32 e) : 
+			sfxnum(-1),priority(shpnum),objid(o),loops(0),channel(c),barked(b),
+			curspeech_start(s), curspeech_end(e) { }
 	};
 
 	std::list<SampleInfo>	sample_info;
@@ -66,15 +69,13 @@ public:
 
 	virtual bool run(const uint32 framenum);
 
-	bool loadData(IDataSource* ids, uint32 version);
-
 	void playSFX(int sfxnum, int priority, ObjId objid, int loops);
 	void stopSFX(int sfxnum, ObjId objid);
 	bool isSFXPlaying(int sfxnum);
 
 	bool playSpeech(std::string &barked, int shapenum, ObjId objid);
-	//void stopSpeech(std::string &barked, int shapenum, ObjId objid);
-	//bool isSpeechPlaying(std::string &barked, int shapenum);
+	void stopSpeech(std::string &barked, int shapenum, ObjId objid);
+	bool isSpeechPlaying(std::string &barked, int shapenum);
 
 	//! play a sample (without storing a SampleInfo)
 	//! returns channel sample is played on, or -1
@@ -83,8 +84,15 @@ public:
 	// AudioProcess::playSound console command
 	//static void ConCmd_playSound(const Console::ArgsType &args, const Console::ArgvType &argv);
 
+	bool loadData(IDataSource* ids, uint32 version);
+
 private:
 	virtual void saveData(ODataSource* ods);
+
+	//! play the next speech sample for the text in this SampleInfo
+	//! note: si is reused if successful
+	//! returns true if there was speech left to play, or false if finished
+	bool continueSpeech(SampleInfo& si);
 
 	static AudioProcess	*	the_audio_process;
 };

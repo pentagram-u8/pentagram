@@ -56,17 +56,49 @@ bool AudioProcess::run(const uint32)
 	// Update the channels
 	std::list<SampleInfo>::iterator it;
 	for (it = sample_info.begin(); it != sample_info.end(); ) {
+		bool finished = false;
 		if (!mixer->isPlaying(it->channel)) {
+			if (it->sfxnum == -1)
+				finished = !continueSpeech(*it);
+			else
+				finished = true;
+		}
+
+		if (finished)
 			it = sample_info.erase(it);
-		}
-		else {
-			// Do magic here
+		else
 			++it;
-		}
 	}
 
 	return false;
 }
+
+bool AudioProcess::continueSpeech(SampleInfo& si)
+{
+	assert(si.sfxnum == -1);
+
+	SpeechFlex *speechflex;
+	speechflex = GameData::get_instance()->getSpeechFlex(si.priority);
+	if (!speechflex) return false;
+
+	if (si.curspeech_end >= si.barked.size()) return false;
+
+	si.curspeech_start = si.curspeech_end;
+	int index = speechflex->getIndexForPhrase(si.barked,
+											  si.curspeech_start,
+											  si.curspeech_end);
+	if (!index) return false;
+
+	AudioSample *sample = speechflex->getSample(index);
+	if (!sample) return false;
+
+	// hack to prevent playSample from deleting 'si'
+	si.channel = -1;
+	int channel = playSample(sample,200,0);
+	si.channel = channel;
+	return true;
+}
+
 
 void AudioProcess::saveData(ODataSource* ods)
 {
@@ -242,30 +274,55 @@ bool AudioProcess::playSpeech(std::string &barked, int shapenum, ObjId objid)
 		++it;
 	}
 
-	int index = speechflex->getIndexForPhrase(barked);
+	uint32 speech_start = 0;
+	uint32 speech_end;
+	int index = speechflex->getIndexForPhrase(barked,speech_start,speech_end);
 	if (!index) return false;
 
 	AudioSample *sample = speechflex->getSample(index);
 	if (!sample) return false;
 
-	int channel = mixer->playSample(sample,0,200);
+	int channel = playSample(sample,200,0);
 
 	if (channel == -1) return false;
 
-	// Erase old sample using channel (if any)
+	// Update list
+	sample_info.push_back(SampleInfo(barked,shapenum,objid,channel,
+									 speech_start,speech_end));
+
+	return true;
+}
+
+void AudioProcess::stopSpeech(std::string &barked, int shapenum, ObjId objid)
+{
+	AudioMixer *mixer = AudioMixer::get_instance();
+
+	std::list<SampleInfo>::iterator it;
 	for (it = sample_info.begin(); it != sample_info.end(); ) {
-		if (it->channel == channel) {
+		if (it->sfxnum == -1 && it->priority == shapenum &&
+			it->objid == objid && it->barked == barked)
+		{
+			if (mixer->isPlaying(it->channel)) mixer->stopSample(it->channel);
 			it = sample_info.erase(it);
 		}
 		else {
 			++it;
 		}
 	}
+}
 
-	// Update list
-	sample_info.push_back(SampleInfo(barked,shapenum,objid,channel));
+bool AudioProcess::isSpeechPlaying(std::string &barked, int shapenum)
+{
+	std::list<SampleInfo>::iterator it;
+	for (it = sample_info.begin(); it != sample_info.end(); ++it) {
+		if (it->sfxnum == -1 && it->priority == shapenum &&
+			it->barked == barked)
+		{
+			return true;
+		}
+	}
 
-	return true;
+	return false;
 }
 
 

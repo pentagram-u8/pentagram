@@ -33,7 +33,7 @@ public:
 	SpeechFlex(IDataSource* ds);
 	virtual ~SpeechFlex(void);
 
-	int	getIndexForPhrase(std::string &phrase) const;
+	int	getIndexForPhrase(std::string &phrase, uint32 start,uint32& end) const;
 };
 
 #endif
