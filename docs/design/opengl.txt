@@ -1,0 +1,670 @@
+Pentagram for OpenGL
+====================
+Last modified 2002-04-21
+
+
+What is this?
+-------------
+
+This is meant to document what is required to create an OpenGL renderer for 
+Pentagram.
+
+A later revision will get more into the technical details of what exactly needs
+to be done to implement it.
+
+
+Revision History
+----------------
+ * 2002-04-21 : Added results of first attempt
+ * 2002-04-14 : Added more comments. Includes some implementation details
+                Added Generating Vertices section
+                Added MD3 format section
+ * 2002-04-12 : Added "Comments" section and "Revision History"
+ * 2002-03-20 : Initial Revision
+
+
+Why do it?
+----------
+
+Using 3D Hardware to do rendering would be faster than using software.
+
+In addition it will remove the need to do sorting on opaque shapes as a 
+Z-buffer can be used.
+
+
+Basics
+------
+
+Obviously use SDL to create the frame buffer and GL Context.
+
+SDL_GL_GetProcAddress will be used to get OpenGL functions rather than do
+static links. This would allow for a unified method of accessing extension
+functions on all platforms. Also allows use of multiple OpenGL drivers, and for
+the end user to choose the driver (advanced users only perhaps). It also allows
+OpenGL enabled binaries to run on systems that don't have OpenGL installed, 
+assuming that software renderer support is also enabled.
+
+
+Extensions
+----------
+
+The following OpenGL extensions would be useful, and would be used:
+ - GL_EXT_compiled_vertex_array
+ - GL_EXT_paletted_texture
+
+The following extensions might be used for special effects
+ - GL_ARB_multitexture
+ - GL_ARB_texture_env_combine
+
+
+Shapes -> Textures
+------------------
+
+Converting shapes to textures would be a simple process.
+
+Each frame of every shape gets drawn into a texture that is big enough to hold
+it (note that shapes shouldn't be allowed to touch the edges of textures). 
+
+The offset of the center of the shape in the texture will need to be recorded
+to ensure the shape is drawn at the correct position. 
+
+Paletted textures should be used if possible (user selectable though). This
+will reduce the amount of texture memory required. Next preference would
+probably be ARGB8888 then ARGB1555 and lastly ARGB4444. XFormed shapes need
+more that just a single bit of Alpha, so they would need either 8888 or 4444.
+The preference would be 8888 as 4444 has a really low amount of colours. For
+normal textures the loss of the 1 bit of precision in the palette (the palette
+has 6 bit colours) when using 1555 will be virtually unnoticiable.
+
+Recommended settings would be paletted for both normal and xformed textures if 
+supported, and ARGB1555 for normal and ARGB8888 for Xformed.
+
+
+Scaling
+-------
+
+Prescaling shapes using one of Kreed's scalers should be possible. It would
+probably be a good idea to scale the shape, and it's mask separatly, rather
+than attempting to use a colour key. Using ARGB8888 would pretty much be
+requried.
+
+
+Drawing Shapes
+--------------
+
+Drawing Shapes as sprites isn't sufficent. The shapes need to be mapped to
+their bouding boxes and drawn that way.
+
+A cheap nasty hack could automatically generate the bounding boxes to draw from
+the collision detection boxes. However, many shapes go outside of their bouding
+boxes, and wouldn't be completly drawn. 
+
+So, most shapes will require special custom bounding boxes or meshes be created
+for them with the correct mappings. This would be a fairly simple process to
+do, should a tool be created to do it. Shpdisp could reasonably easily be
+modifed to perform these duties.
+
+It would probably be best to auto generate the meshes and then modify them
+later. This would get something up and running fairly quickly and would
+allow for fine tuning later.
+
+The actual drawing would be as simple as putting the coords of the shape into
+the modelview matrix, putting the shape offset into the texture matrix, putting
+the camera position into the projection matrix, binding the texture, and then
+drawing the tri's that make up the box.
+
+All the boxes could be loaded into one single large vertex array as only a few
+thousand verts would be used, and in many cases, optimizations could be done to
+remove duplicates. Since the vertex array never needs to be modified, compiled
+vertex array will give a speed improvement.
+
+
+Globs
+-----
+
+Glob drawing could in theory be placed into display lists. They will always be
+the same and using display lists will improve efficency. It should improve
+speed somewhat.
+
+Since on screen checking at the shape level wont be done, it will have to be
+done at the glob level. Doing this would be as simple as calculating the
+rectangle of screenspace taken up by all the shapes in the glob combined. It
+has it's inefficencies, but should be good enough. There will never be 'that'
+many triangles, so it's extremely unlikely doing this will cause a
+transformation bottle neck. Using display lists and culling on the glob level
+should more than make up for a few extra triangles being transformed.
+
+
+XForm Handling
+--------------
+
+XForms for the most part just seem to be doing simple alpha blending. When a
+shape is converted to a texture that has the Transparent bit set, it will have
+the XFormed colours converted to equivilant Alpha blended colours.
+
+
+Tracing mouse clicks 
+--------------------
+
+Generally tracing mouse clicks requires sorted shapes. However since the shapes
+are never sorted things can't really be done that way.
+
+However, all is not lost. A mini list of objects could be created that possibly
+might have clicked on (i.e. do bounding checks to determine the possiblity of a
+click). 
+
+So the following can be done when a mouse click occurs:
+ - Do a bounding check for every shape that IS on screen to determine if the
+   mouse was over it at the last render
+ - If the mouse was, add it to a list
+ - Sort the list
+ - Start from the top and traverse down the list to find the first shape that
+   was actually clicked and return that
+
+This method will be fractionally slower than using a list that was sorted when
+rendering but only when the click occurs.
+
+
+Reducing Texture and Driver Memory Usage
+----------------------------------------
+
+One problem is the amount of texture memory usage could be high. The easiest
+way to reduce texture memory usage would be to discard all shapes that are not
+required after a map change. People with 64 or 128 MB cards should be ok, and
+they could probably leave all textures in Memory. However, this will also
+increase the amount of driver memory required! Pentagram will require a
+substantial amount of texture memory. I'm guessing with 8 bit textures, more
+than 20 MB of textures will be used! Double this for 16 bit, and quadruple for
+32 bit!
+
+See "Map Changes" section for more details on what to do.
+
+
+Map Changes
+-----------
+When on a map change the following will occur:
+
+ - Get rid of all old map data
+ - Destroy Glob Display lists
+ - Discard all textures (except for things that will obviously be needed)
+ - Load new map, and mark all the required shapes and globs
+ - Load all the required shapes
+ - Setup Glob Display lists (when first rendered?)
+
+
+Palette Effects
+---------------
+
+Ultima 8 doesn't do palette cycling however it does do some palette blending
+(storms, and rain of fire)
+
+Rather than modfying the global palette (and reuploading all textures in some
+cases), it is a better idea to draw a trans polygon over the entire screen
+and get the hardware to do the blending. This would also allow the world to be
+modified, but text and gumps left alone.
+
+
+Special Effects
+---------------
+
+Shape Blending:
+
+Using multipass to blend certain animated textures can produce pleasing
+effects. Fire textures are a good example. This could be done in Pentagram.
+Note that this will not work on 'all' types of sprites. This is unsuitable for
+shapes that use XForm, and shapes that change their 'shape'. Doing this would
+require special handling of the meshes.
+
+Blending XForm shapes and shapes that change 'shape' requires using
+multitexture and also using the GL_ARB_texture_env_combine extension.
+
+Using an add blend mode (glBlendFunc(GL_ONE, GL_ONE)) on certain fire shapes
+might look quite nice. Incidently using add allows for multiple frames to be
+blended without requiring multitexture and GL_ARB_texture_env_combine.
+
+Perspective Transformations:
+
+It would be possible to add a Diablo 2 like Perspective mode. While it would
+look rather cool, adding such a mode would create numerous annoying issues with
+mouse click detections. It would make it exceedingly difficult to accuractly 
+determine what the user clicked on in some circumstances
+
+Lighting:
+
+It would be possible to create some funky lighting effects for around what
+would be a light source. U8 doesn't define light sources so we would have to do
+it ourselves. Only issue is how to exactly to actually implement the idea.
+i.e. brighten areas around light sources, or darken things away from them.
+Regardless, the lighting system would have to custom designed.
+
+
+Further Possiblities
+--------------------
+
+Sometime in the far future some crazy people may decide to rework the shapes
+and replace them with 3D Models and textures. Adding support for such features
+would be fairly trivial.
+
+
+Comments
+--------
+
+Thinking about it using bouding boxes and z buffering for all shapes may not be
+entirely the best solution. Animated Shapes and Actors can tend to have very
+irregular shapes, and bouding boxes do not fit the shapes at all.
+
+So, currently my thinking is a follows:
+
+ * Render all 'regular' objects with full z buffer enabled. These are objects
+   that can be rendered using a bounding box, and aren't transparent.
+ * Render all 'irregular' and transparent objects as sprites but only z
+   checking. The sprites will be Z sorted.
+
+Over time more complex 3d models could be made to properly fit the irregular
+shapes. Assuming that people just don't decide to create entire animated 3d
+models which would just be so cool... and who knows, I may even do some models
+myself. :-)
+
+I personally think the data should be stored in our XML styled config files.
+For development this could be loaded from an external file, but for public 
+releases it would be put into a flex.
+
+Data required would:
+ * Per frame adjusted bouding boxes
+ * Sprite Flag
+ * Additive Blend Mode Flag
+ * Interpolated animation Flag
+
+More details later...
+
+*** Added 2002-04-14 ***
+
+Just so I remember, here are the matrix settings. There maybe a few negetives
+around the wrong way in places.
+
+Just some comments about the details. The assumption is the bottom left hand
+corner of the screen is 0,0 and Z increase into the screen. This acts as if the
+camera is below the world looking directly up.
+
+This is used to set up the projection and model view matrices for the camera:
+
+	// First edit projection matrix
+	glMatrixMode (GL_PROJECTION);			
+
+	// Load Identity
+	glLoadIdentity ();
+
+	// Setup screen coords
+	gluOrtho (-resx/2, resx/2, -resy/2, resy/2, -256, 256);
+
+	// Now Edit modelview matrix
+	glMatrixMode (GL_MODELVIEW);			
+
+	// Load Identity
+	glLoadIdentity ();
+
+	// Rotate so we have a view that is 60 degree from looking straight down
+	glRotatef (120, 1, 0, 0);
+
+	// Rotate by around z axis by 45 degrees
+	glRotatef (45, 0, 0, 1);
+
+	// Now we move to where the camera is
+	glTranslatef (-camera.x, -camera.y, -camera.z);
+
+These are the changes to the model view marix when rendering each object:
+
+	// Edit modelview matrix
+	glMatrixMode (GL_MODELVIEW);			
+
+	// Push the matrix
+	glPushMatrix();
+
+	// Move it
+	glTranslatef (object.x, object.y, object.x);
+
+	// Rotate it about z axis (only needed for mesh objects)
+	if (object.mesh) {
+		float angle = object.frame_info[object.frame].angle;
+
+		if (object.flags & FLIPPED) angle = -angle;
+	
+		glRotatef (angle, 0, 0, 1);
+	}
+	// or if we are not a mesh and need flipping then do flip.
+	else if (object.flags & FLIPPED) {
+	
+		// Un rotate
+		glRotatef (45, 0, 0, 1);
+
+		// Scale it
+		glScalf (-1, 1, 1);
+
+		// Rotate it so we can scale across x and y at the same time
+		glRotatef (-45, 0, 0, 1);
+	}
+
+	// Render the object
+	object->Render();
+
+	// Pop the matrix
+	glPopMatrix();
+
+
+Now that is out of the way,I get on with more 'thoughts' about things...
+
+I have been considering the format to use for 3D Meshes. I stongly thinking
+about using the MD3 format. There are numerous tools for this format available
+and it pretty much has all the sort of features that I would want. Pentagram
+will not have an skeletal animation, so a deformed mesh object format is
+wanted. Also, if I do use MD3's i wont have to bother about writing file
+format converters.
+
+Textures I think should be supplied using PNGs. Exult pngio could pretty easily
+be used to do this.
+
+The meshes and textures shouldn't be supplied using a flex. There are a few
+reasons for this, mostly being flexes don't have filenames, and it would be
+easier if the models and textures could be accessed using filenames, not
+indices. I'm thinking that a standard zip file should be used, but named
+something like FLZ instead. 
+
+Proposed format of bounding box data config file
+
+"shapes/num"			// Number of shapes defined.
+"shapes/%i"			// Definition for a shape (%i is from 0 to "shapes/num")
+"shapes/%i/shape"		// Actual shape number
+"shapes/%i/box"			// Global bounding box (xfrom yfrom zfrom xto yto zto)
+"shapes/%i/flags"		// Flags for this shape (a=additive, i=interp, m=mesh, s=sprite)
+"shapes/%i/mesh"		// Mesh config filename
+"shapes/%i/overrides"		// Per frame overrides
+"shapes/%i/overrides/num"	// Number of overrider
+"shapes/%i/overrides/%i"	// Frame override
+"shapes/%i/overrides/%i/frame"	// Actual frame of override
+"shapes/%i/overrides/%i/box"	// Bounding box for frame
+
+Not all shapes will require a config file entry. Only those that do not behave
+and go outside of their default bouding box will need one, or mesh objects.
+
+Mesh objects will have a seperate animation config file. This config file will
+map frames in the md3. Since such a huge number of frames is requried I'm
+thinking that conf is not ideal. A quick format is needed. Here is my current 
+idea:
+
+model <modelname>
+frames <framecount>
+<shapeframe> <md3frame> <md3angle>
+<shapeframe> <md3frame> <md3angle>
+...
+<shapeframe> <md3frame> <md3angle>
+<shapeframe> <md3frame> <md3angle>
+
+The format is simple enough and will be quick to read. Things might tend to
+screw up a bit with an invalid file, but I don't really care.
+
+Question: Do we need to support MD3 tags? Yes we do. They need to be used for
+our good friend toaster head and his weapons.
+
+Question: Should we support shaders? Current thinking is no. We don't need that
+flexibility.
+
+
+Generating Vertices
+-------------------
+
+Pentagram will automatically generate the verts for the shapes. The process is
+rather simple. Firstly we get the bounding box. Then we generate the base UV
+map. We can do these at the same time, so we will. Note that the Bottom real
+vert doesn't touch any triangles that are front facing.
+
+void GenerateVertices(Vertex verts[8], TexCoord uv[8], const sint32 xrange[2], const sint32 yrange[2], const sint32 zrange[2])
+{
+	//
+	// Normally these are what the values should be of the range args
+	// should be passed like this:
+	//
+	// xrange[0] = 0;
+	// xrange[1] = ShapeInfo::get_x() * -8;
+	// yrange[0] = 0;
+	// yrange[1] = ShapeInfo::get_x() * -8;
+	// zrange[0] = ShapeInfo::get_x() * 8;
+	// zrange[1] = 0;
+	//
+	// On screen the 8 points will be in these positions. Note this is
+	// ASSUMED in places so you had better be sure you pass the points
+	// correctly
+	//
+	// 0 = Top Front
+	// 1 = Top Left
+	// 2 = Top Right
+	// 3 = Top Rear
+	// 4 = Bottom Front
+	// 5 = Bottom Left
+	// 6 = Bottom Right
+	// 7 = Bottom Rear
+
+	for (int i = 0; i < 8; i++) {
+
+		// Generate verts
+		verts[i].x = xrange[i&1];	// Bit 0 is X
+		verts[i].y = yrange[(i>>1)&1];	// Bit 1 is Y
+		verts[i].z = zrange[(i>>2)&1];	// Bit 2 is Z
+
+		// Generate UV mapping
+		uv[i].u =  verts[i].x - verts[i].y;
+		uv[i].v = (verts[i].x + verts[i].y)/2 - verts[i].z;
+	}
+}
+
+Now that the verts and uvmap is generated, it's time to get the uv scale and
+offsets for each frame. Doing this isn't as simple as it would seem. The
+following needs to be done for each frame in each shape
+
+// Frame texture transform structure
+struct FrameTexTrans {
+	float	scale[2];
+	float	offset[2];
+}
+
+void GenerateFrameTextTrans (FrameTexTrans *textrans, const ShapeFrame *frame, const int texwidth, const int texheight)
+{
+	// Note:
+	//
+	// texwidth and texheight are the actual dimentions of the opengl texture
+	// width and height are the dimentions of the shape
+	// xoff and yoff are the shape offsets
+
+	textrans->scale[0] = ((float) frame->width) / ((float) texwidth);
+	textrans->scale[1] = ((float) frameheight) / ((float) texheight);
+
+	textrans->offset[0] = 1 + frame->xoff;
+	textrans->offset[1] = 1 + frame->yoff;
+}
+
+We need to get the texture size of the texture to create. We do this by just
+getting getting a number that is larger or equal to the dimension that is a 
+power of 2.
+
+void GetTexDims (int &texwidth, int &texheight, const ShapeFrame *frame, const bool square = false)
+{
+	texwidth = 1;
+	while (texwidth < frame->width) texwidth <<= 1;
+
+	texheight = 1;
+	while (texheight < frame->height) texheight <<= 1;
+
+	if (square) {
+		if (texwidth > texheight) texheight = texwidth;
+		else texwidth = texheight;
+	}
+}
+
+
+
+Details on MD3 Format
+---------------------
+
+Here are specs on the MD3 format. Everything uses little endian byte order
+
+struct MD3_Header {
+	char	type[4];	// IDP3
+	uint32	version;	// 15
+	char	name[64];	// Name of model
+	
+	uint32	unknown0;	// Usage???
+
+	uint32	num_frames;	// Number of frame
+	uint32	num_tags;	// Number or tags
+	uint32	num_surfs;	// Number of surfaces
+
+	uint32	unknown1;	// Usage???
+
+	uint32	offset_finfo;	// Offset of frame info (from start of header)
+	uint32	offset_tags;	// Offset of tags
+	uint32	offset_surfs;	// Offset of surfaces
+
+	uint32	offset_end;	// Offset to end of file
+};
+
+struct MD3_FrameInfo {
+	float	box_min[3];	// Bounding Box lower extents
+	float	box_max[3];	// Bounding Box greater extents
+	float	origin[3];	// Local origin (center of model)
+	float	radius;		// Radius from origin
+	char	name[16];	// Name of frame
+};
+
+struct MD3_Tag {
+	char	name[64];	// Tag name
+	float	origin[3];	// Tag origin
+	float	axis[3][3];	// Tag Matrix
+};
+
+struct MD3_Surface {
+	char	type[4];	// IDP3
+	char	name[64];	// Name of surface
+
+	uint32	unknown0;	// Usage???
+	
+	uint32	num_frames;	// Number of frames. Must be the same as in header
+	uint32	num_shaders;	// Number of shaders/textures for this surface
+	uint32	num_verts;	// Number of verts for this surface
+	uint32	num_tris;	// Number of triangles for this surface
+
+	uint32	offset_tris;	// Offset to tris (from start of surf)
+	uint32	offset_shaders;	// Offset to shaders
+	uint32	offset_uv;	// Offset to texture coords 
+	uint32	offset_verts;	// Offset to verts and normals
+
+	uint32	offset_next;	// Offset from start of this surface to next surface
+};
+
+struct MD3_Shader {
+	char	filename[64];	// Filename of shader
+	uint32	index;		// Shader index
+};
+
+struct MD3_Triangle {
+	uint32	indices[3];	// Triangle incidces
+};
+
+struct MD3_TexCoord {
+	float	uv[2];		// UV coords
+};
+
+struct MD3_Vertex {
+	sint16	xyz[3];		// Vertex
+
+	uint8	longitude;	// Normal longigude (0 to 255 == 0 to 2*PI)
+	uint8	latitude;	// Normal latitiude (0 to 255 == 0 to 2*PI)
+
+	// Get the vertex
+	inline void GetVertex(float vertex[3]) {
+		vertex[0] = xyz[0] / 64.0F;
+		vertex[1] = xyz[1] / 64.0F;
+		vertex[2] = xyz[2] / 64.0F;
+	}
+
+	// Get the normal
+	inline void GetNormal(float normal[3]) {
+		normal[0] = cos((longitude*M_PI)/255.0F) * sin((latitude*M_PI)/255.0F);
+		normal[1] = sin((longitude*M_PI)/255.0F) * sin((latitude*M_PI)/255.0F);
+		normal[2] = cos((latitude*M_PI)/255.0F);
+	}
+};
+
+Since the normal long and lat are coded into bytes, converting can be sped up 
+by putting the sin and cos into lookup tables.
+
+Applying tags is simple. This is how to multiple a vertex by a tag:
+
+void Rotate3x3(float out[3], float in[3], float r[3][3])
+{
+	out[0] = in[0]*r[0][0] + in[1]*r[1][0] + in[2]*r[2][0];
+	out[1] = in[0]*r[0][1] + in[1]*r[1][1] + in[2]*r[2][1];
+	out[2] = in[0]*r[0][2] + in[1]*r[1][2] + in[2]*r[2][2];
+}
+
+The following 'should' in thoery generate an opengl matrix to do that, and then
+multiply the current OpenGL matrix by that.
+
+void OGLMatrixRotate3x3(float r[3][3])
+{
+	GLfloat m[16];
+
+	m[0x0]=r[0][0];	m[0x4]=r[1][0];	m[0x8]=r[2][0];	m[0xC]=0;	
+	m[0x1]=r[0][1];	m[0x5]=r[1][1];	m[0x9]=r[2][1];	m[0xD]=0;	
+	m[0x2]=r[0][2];	m[0x6]=r[1][2];	m[0xA]=r[2][2];	m[0XE]=0;	
+	m[0x3]=0;	m[0x7]=0;	m[0xB]=0;	m[0xF]=1;
+
+	glMultMatrixf (m);
+}
+
+
+Results of first attempt
+------------------------
+
+The results of the first attempt at writing an OpenGL renderer was somewhat
+successful. It was fast, which I was kind of not expecting.
+
+The texture usage estimations above appeared correct. Some maps used way more
+textures than others and as such used more texture memory. Daemon's Crag was
+the worst using almost 21 MB of 16 bit textures at Precache Level 3.
+
+Bilinear filtering basically showed up the only issue using OpenGL to render.
+What occuring was if filtering was enabled, gaps and lines would appear between
+the ground flats. This is because they are being painted as sprites and OpenGL
+was attempting to Alpha Blend them. They would either get black edges,
+transparent edges, or in some attempt to fixs the problem, odd looking
+artefacts.
+
+There are 2 things that need to be done to fix this problem. Draw the flats as
+3D objects and unpremodulate the alpha channel This first is easy, the second
+is extremely difficult.
+
+Unpremodulating the alpha is going to be difficult because the flats don't
+always tile with themselves in both directions. When the textures are generated
+I am going to have to know what a suitable texture to put next to the edges
+are. This could be done automatically, but would be slow, or it could be  done
+manually, which would also be slow. I need to think about this. This same issue
+will also appear when using scalers so it needs to be fixed.
+
+Another things I realised was sprites should not be treated the same as flats
+or structure pieces. Sprites were tending to get hard egdes when bilinear
+filtering was enabled. They really needed alpha blending on the edges.
+
+Something that looked really quite cool was running in 4x or 8x FSAA with Alpha
+Blending enabled. When scaling it just fixed up problems with hard edges.
+However when not scaling and using a high screen res the entire screen was
+smoothed out a bit. I was quite surprised that much of the stair stepping in
+the diagonal lines was removed. While it did make things a little fuzzy, this
+tended to get rid of dithering. The overall effect looked really good. I may
+attempt to write a 'scaler' of sorts that has the same effect for software
+rendering.
+
+Texture management can be improved. I was thinking that multiple frames in a
+sprite should be made to use the same texture. This should hopefully reduce the
+amount of wasted texture space. A silimar thing could be done with tiles, but
+it would really need to be handled differently.
+
+That's all for now.

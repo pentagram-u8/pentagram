@@ -1,0 +1,144 @@
+Ultima 8 weapons and armour
+===========================
+v1.10 - 20th of April, 1997
+By: Michael De Piazzi
+
+If you know anything else about the Ultima 8 weapons or armour, please send
+email to me at garydep@iinet.net.au
+
+The latest version of this file should be available on Michael's Homepage at:
+   http://www.iinet.net.au/~garydep/michael.html
+
+Contents
+========
+- Armour
+- Helmets
+- Shields
+- Arm guards
+- Leggings
+- Weapons
+- Magical weapons
+- Explosives
+- Prices
+
+Armour
+======
+
+Fire attacks cut the defense in half.
+
+Description    Armour Class/Weight
+-----------    -------------------
+Clothing       1/1
+Leather        2/5
+Chain mail     3/5
+Steel          4/5
+Silver magic   6/1
+Orange magic   8/1
+
+Helmets
+=======
+Description                                Armour Class/Weight
+-----------                                -------------------
+Chain mail                                 2/3
+Metal with open front                      2/3
+Metal with closed front and orange plume   3/3
+Metal with closed front and grey plume     3/3
+Metal with closed front                    4/3
+Magic                                      5/1
+
+Shields
+=======
+Description        Armour Class/Weight
+-----------        -------------------
+Round steel        3/4
+Triangular steel   4/4
+Magic              5/1
+
+The Magic Shield also makes you immune to fire damage (same effect
+as Armour of Flames spell).
+
+Arm guards
+==========
+Description            Armour Class/Weight
+-----------            -------------------
+Brass                  1/2
+Brass and chain mail   2/2
+Steel and chain mail   2/2
+Steel                  3/2
+Magic                  4/1
+
+Leggings
+========
+Description            Armour Class/Weight
+-----------            -------------------
+Steel and chain mail   2/3
+Steel                  3/3
+Magic                  4/1
+
+
+Weapons
+=======
+I got the damage done by the weapons from an article on UseNet. I'm not sure
+if these are accurate, but they seem right :)
+
+Name         Damage   Weight   Damage Type
+----         ------   ------   ------
+Dagger       3-9      1        Blade
+Long sword   5-17     3        Blade
+Mace         4-14     4        Blunt
+Axe          6-19     5        Blade
+Scimitar     5-16     5        Blade
+Sabre        5-17     6        Blade
+Hammer       4-12     7        Blunt
+
+Magical weapons
+===============
+All magical weapons only weigh 1. I also got the damage done by these weapons
+and some of the properties from an article on UseNet. I'm not sure if these
+are accurate, but they seem right :) NOTE: The dexterity added is not shown
+on your stats, either it just doesn't show the extra dexterity you get or you
+don't get it all...
+
+(All weapons have a 'Magic' DamageType in addition.)
+
+Name                      Damage   DamageType   Properties
+----                      ------   ----------   ----------
+Korghin's Fang            7-13     Blade        +4 attack dexterity, +1 armour
+Deceiver                  8-21     Blade, Blunt +2 armour
+Protector; Nedra's Needle 5-17     Blade        (+4 or +7) defense dexterity, +5 armour
+Scimitar of Khumash-Gor   5-16     Blade        +1 attack dexterity, 2x damage on undead
+Hammer of Stength/        1-19     Blunt        (Nothing? Maybe?)
+   Bone Crusher
+Slayer                    4-14     Blunt        10% chance of fatal blow
+Flame Sting               5-16     Blade, Blunt +1 attack dexterity, +5-10 damage from fire
+Blade of Striking         5-17     Blade        +7 attack dexterity
+
+Explosives
+==========
+Name                          Description
+----                          -----------
+Flask of oil (Green bottle)   Oil bomb
+Flask of oil (Grey pot)       More explosive oil bomb
+Fire gem                      Explosive gem
+Chaos gem                     Throws out three fire gems
+Death disk                    Explosive disk which you can throw
+
+Prices
+======
+Korick the blacksmith
+   Sabre...............................................75
+   Scimitar............................................90
+   Mace................................................15
+   Dagger...............................................5
+   Axe.................................................25
+   Broadsword (Long sword)............................125
+   Leggings (Steel)....................................12
+   Helmet (Metal with closed front)....................13
+   Arm guards (Steel)..................................11
+   Shield (Triangular steel)...........................12
+
+Darion the Arms Master and Captain of the Palace Guard
+   Cuirbolli leather armour (Leather)...................6
+   Leather leggings and boots (Steel and chain mail)...10
+   Leather gloves and bracers (Brass)...................5
+   Helmet (Metal with open front).......................2

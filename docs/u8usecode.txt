@@ -1,0 +1,66 @@
+Basic file structure:
+----------------------
+eusecode.flx is a 'standard' U8 flex file
+(I named the objects in the flex 0.u8o, 1.u8o, ..., 1432.u8o)
+
+0.u8o contains global flag names. (the ones used by opcodes 4E/4F)
+1.u8o contains usecode function names.
+
+after that, 2+x.u8o corresponds to the usecode function for shape number x
+(so, the code for shape 375 (the abacus) is in 377.u8o)
+
+Also, 1026+x.u8o seems to correspond to NPC number x. (However, if this is
+like in Ultima 7's usecode, this is not fixed)
+
+Structure of those usecode function files:
+---
+4 bytes		unknown
+4 bytes		filesize
+4 bytes		unknown. Always seems to be a bit larger than filesize
+32 x 4 bytes	32 'eventid' pointers. (relative to the start of this table)
+rest		the actual usecode
+---
+
+an 'eventid pointer' ties a subroutine in the u8o to a specific event.
+These events are:
+
+ID      Function                Description
+-------------------------------------------
+ 0	Item::look()		on single click 
+ 1	Item::use()		on double click
+ 2	Item::anim()		Animate() (see typeflag.txt to see when called)
+ 3	unused
+ 4	Item::cachein()		on load (functions 232 (MUSIC) and 402 (AVATAR))
+ 5	Item::hit(ushort,short)
+ 6	Item::gotHit(ushort,short) stepped on? (also when an object is placed on it?)
+				could also be 'destroyed' (chair DE is turned into a
+				broken chair 22A)
+ 7	Egg::hatch()
+ 8	Npc::schedule()		AdvanceSchedule() (called when???) - Note avatar has it too, but there
+				it is used to control the stroms.
+ 9	Item::release()		stepped from? (also when object is removed?)
+ A	unused
+ B	unused
+ C	Item::combine()		quantity changed? (only for function 8F (COINS))
+ D	unused
+ E	unused
+ F	Item::enterFastArea()	ProximityClose (was off screen, now on???) 
+10	Item::leaveFastArea()	ProximityFar (was on screen, now off???)
+11	Item::cast(ushort)	attacked?
+12	Item::justMoved()	(only for function 401 (AVATAR))
+13	Item::AvatarStoleSomething(ushort)
+14	unused
+15	Item::guardianBark(int) 
+16	unused
+17	unused
+18	unused
+19	unused
+1A	unused
+1B	unused
+1C	unused
+1D	unused
+1E	unused
+1F	unused
+
+(one pointer is usually 0x80, meaning the code right after the table.
+This is offset 0x8C from the start of the u8o)

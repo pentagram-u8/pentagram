@@ -1,0 +1,16 @@
+U8 Save Game Format by Ryan Nunn
+--------------------------------
+
+Header is as follows:
+
+char name[24];
+short num_entries;
+
+Directly following the header is the first file, followed by all the rest tightly packed.
+
+Format of the file entires is as follows
+
+int name_len;
+char filename[name_len];
+int data_len;
+char data[data_len];

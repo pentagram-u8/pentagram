@@ -1,0 +1,28 @@
+Update by Colourless Dragon 8th April 2002
+
+The sounds are indeed compressed with Sonarc. dcmpsound (included with 
+pentagram) can be used to decompress the sounds. This is done by calling the
+DCMP8 function within U8.EXE and getting it to decompress the sounds for us.
+
+---- Old Contents ----
+
+In U8.exe there is some mention of sonarc.c and therefore it seems that the
+sfx was compressed using a shareware tool named sonarc
+(http://www.firstpr.com.au/audiocomp/lossless/sonarc/). But unfortunately
+it seems Origin used a modified version to the shareware one. The author of
+the sfx is not availlable anymore (email address doesn't exist anymore and
+Google doesn't find him in any other way) and therefore there is no way to
+decompress the sfx for now (and play them any other way than through the
+game).
+
+Josef Drexler aka Aquamarine Dragon helped me to figure this out.
+Unfortunately he reached a dead end:
+
+"... a better person [than the sonarc developer] to talk to would be someone
+who worked on U8 as opposed to the sonarc person.  Anyway, I didn't find out
+anything useful, I tried to do some reverse engineering but because of U8's
+weird memory management I didn't get anywhere.  Sorry, but unless someone has
+a brilliant idea I don't think this is going anywhere (though I suppose it
+couldn't hurt to ask in rgcud if anyone know sonarc, or maybe
+comp.compression too.)"
+

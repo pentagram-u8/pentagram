@@ -1,0 +1,122 @@
+Ultima 8 NPCs
+=============
+v1.01 - 6th of November, 1997
+By Michael De Piazzi (Mad Hatter)
+
+The latest version of this file should be available on Mad Hatter's Ultima 8
+Page at: http://www.iinet.net.au/~garydep/ultima8.html
+
+If you know anything else about the NPCs in Ultima 8, please e-mail me at
+garydep@iinet.net.au
+
+==============================================================================
+ Contents
+==========
+- NPC list sorted by name
+- NPC list sorted by NPC number
+
+==============================================================================
+ NPC list sorted by name
+=========================
+
+Number   Name
+------   ---------------------------------------------------------------------
+    13   Aramina
+    57   Arcadion
+     1   Avatar
+    29   Bane
+    12   Bentic
+    32   Beren
+    52   Cardas
+    15   Corinth
+    22   Cyrrus
+    54   Daemos
+     5   Darion
+     2   Devon
+    60   Emrichol
+    58   Evil sorcerer (In Obsidian Fortress with conflagration spell)
+    31   Gorgrond
+     4   Guard 1 (At the southern gates of Tenebrae near the docks)
+    45   Guard 2 (At the southern guard house in central Tenebrae)
+    11   Guard 3 (At the northern guard house in central Tenebrae)
+    46   Guard 4 (In the south east of the palace)
+    47   Guard 5 (In the south west of the palace)
+    48   Guard 6 (In the north west of the palace)
+    49   Guard 7 (In the north east of the palace)
+    50   Guard 8 (In the centre west of the palace)
+    51   Guard 9 (In the centre east of the palace)
+    61   Guard 10 (In the palace armoury)
+    59   Guard EW (At the eastern gates of Tenebrae towards the north)
+    14   Gwillim
+    24   Jenna
+    16   Kilandra
+     9   Korick
+    56   Kothius
+    27   Malchir
+    53   Mentar
+     7   Mordea
+    33   Mythran
+    10   Orlok
+    18   Rhian
+     3   Salkind
+    19   Shaana
+    23   Stellos
+    55   Tallon
+     8   Tarna
+    26   Torwin
+    28   Vardion
+    21   Vividos
+    25   Xavier
+
+==============================================================================
+ NPC list sorted by NPC number
+===============================
+
+Number   Name
+------   ---------------------------------------------------------------------
+     1   Avatar
+     2   Devon
+     3   Salkind
+     4   Guard 1 (At the southern gates of Tenebrae near the docks)
+     5   Darion
+     7   Mordea
+     8   Tarna
+     9   Korick
+    10   Orlok
+    11   Guard 3 (At the northern guard house in central Tenebrae)
+    12   Bentic
+    13   Aramina
+    14   Gwillim
+    15   Corinth
+    16   Kilandra
+    18   Rhian
+    19   Shaana
+    21   Vividos
+    22   Cyrrus
+    23   Stellos
+    24   Jenna
+    25   Xavier
+    26   Torwin
+    27   Malchir
+    28   Vardion
+    29   Bane
+    31   Gorgrond
+    32   Beren
+    33   Mythran
+    45   Guard 2 (At the southern guard house in central Tenebrae)
+    46   Guard 4 (In the south east of the palace)
+    47   Guard 5 (In the south west of the palace)
+    48   Guard 6 (In the north west of the palace)
+    49   Guard 7 (In the north east of the palace)
+    50   Guard 8 (In the centre west of the palace)
+    51   Guard 9 (In the centre east of the palace)
+    52   Cardas
+    53   Mentar
+    54   Daemos
+    55   Tallon
+    56   Kothius
+    57   Arcadion
+    58   Evil sorcerer (In Obsidian Fortress with conflagration spell)
+    59   Guard EW (At the eastern gates of Tenebrae towards the north)
+    60   Emrichol
+    61   Guard 10 (In the palace armoury)

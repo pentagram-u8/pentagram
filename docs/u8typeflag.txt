@@ -1,0 +1,73 @@
+Ultima 8 Typeflag.dat Information
+=================================
+
+File is split has 8 bytes of info for all 2048 shapes.
+
+Information for each shape is as follows
+
+Byte 0
+------
+bits 0-7 : Unknown
+
+Byte 1
+------
+bits 0-2 : Unknown
+bit  3   : Translucency
+bits 4-7 : 1 = obj has quality, 2 = obj has quantity, 6 = obj is container
+           other values unknown (some magic weapons have F here)
+
+Byte 2
+------
+bits 0-3 : Unknown
+bits 4-7 : X Dim of Shape
+
+Byte 3
+------
+bits 0-3 : Y Dim of Shape
+bits 4-7 : Z Dim of Shape
+
+Byte 4
+------
+bits 0-3 : Anim type 
+bits 4-7 : Anim Data
+	
+Byte 5
+------
+bits 0-3 : Unknown
+bit  4   : editor shape (don't render in-game)
+bit  5   : Unknown, but only set on flaming oils
+bit  6   : non-blocking?
+bit  7   : Unknown, but only set on 'blue field passage gem'
+
+Byte 6
+------
+bits 0-7 : Unknown
+
+Byte 7
+------
+bits 0-7 : Unknown
+
+
+Animation Deatils
+-----------------
+
+The animation function should be called once every game tick.
+
+Type 0:
+ No animation
+
+Type 1 and 3: 
+ If data is 0, cycle through all frames.
+ If data is 1, cycle through all frames, with 50% chance of incrementing
+ Else cycle through data frames from N*data to (N+1)*data-1
+
+Type 2:
+ If data is 0, cycle through all frames, with 50% chance
+ If data is 1, cycle through all frames, with 25% chance
+ else cycle through data frames from N*data to (N+1)*data-1 with 50% chance
+
+Type 4:
+ Animate through all frames with a 1 in data chance of incrementing
+ 
+Type 5:
+ Animated by Usecode Event 0x2

@@ -1,0 +1,89 @@
+U8's anim.dat:
+------------------
+
+anim.dat contains common animation sequences for actors.
+
+at offset 0 is a lookup table containing 2048 4-byte (absolute) offsets into 
+anim.dat (one for each shape). Offset is zero if the shape is no actor.
+
+These shape offsets point at more lookup tables. Each of these tables
+consists of 64 4-byte (absolute) offsets. These point to the actual
+frame sequences. The 64 sequences are specific 'actions'. They're listed below.
+
+Frame sequences have the following format:
+4 byte header: byte 0 is length of sequences. rest unknown
+header is followed by 8 * length 6-byte frame entries: 
+(8 = number of directions, in the order N NE E SE S SW W NW) 
+
+byte 0 + lowest 3 bits of byte 1: frame number
+byte 1, bit 3: footstep?
+	bit 4: unknown (only used for troll,daemon,skeleton,eyebeast, act.14)
+	bit 5-7: unused
+byte 2: change in Z coordinate
+byte 3: SFX# to play (zero for none?)
+byte 4: movement in 'main' direction. (* 4 units)
+byte 5:	bit 0: unknown (only used when moving backwards?)
+	bit 1: interruptable?
+	bit 2: unknown
+	bit 3: unknown
+	bit 4: unknown (only in action 7 for mages. spell trigger?)
+	bit 5: flipped?
+	bits 6-7: unused
+
+
+
+Actions:
+
+ 0: walking
+ 1: running
+ 2: standing
+ 3: jumping straight up
+ 4: recovering from falling down
+ 5: readying weapon
+ 6: unreadying weapon
+ 7: punching?
+ 8: advancing in combat stance
+ 9: retreating in combat stance
+10: two consecutive running jumps
+11: shaking head
+12: taking a small step forward
+13: stepping back while reaching for weapon
+14: falling
+15: standing in combat stance
+16: preparing to jump
+17: jumping
+18: jumping with airwalk
+19-26: climbing up on increasingly high objects
+27-31: casting magic
+32: looking left
+33: looking right
+34: starting to kneel
+35: kneeling
+36: Vividos only: magic?
+37: Mythran only: magic?
+38: Vividos only: ?
+39: unused
+40: attacking with a (slow) weapon
+41: unused
+42: keeping balance
+43: unused
+44: falling backwards
+45: hanging from something
+46: climbing up from hanging
+47: standing with magically glowing hands
+48: idling? (standing, spinning (aerial servant), writing (library guest), ...)
+49: kneeling
+50: getting up from kneeling
+51: Cyrrus, Mordea, Stellos: sitting down
+52: Mordea, Stellos, Cyrrus (dirs 2-4): standing up.
+53: talking
+54: Mythran and Vividos only: magic?
+55: working (smithing, cleaning tables, herding, etc...)
+56: drowning
+57: burning
+58: kicking
+59: blocking
+60: attacking with a (fast) weapon
+61: unused
+62: unused
+63: unused

@@ -1,0 +1,22 @@
+U8's u8fonts.flx:
+------------------
+
+u8fonts.flx contains shapes with frames that map to ascii characters.
+
+Shape 0: Normal Light Blue
+Shape 1: Black (used in books and scrolls)
+Shape 2: Tiny dark blue
+Shape 3: Tiny white
+Shape 4: Tiny black
+Shape 5: Normal Orange
+Shape 6: Normal Red
+Shape 7: Normal Green
+Shape 8: Normal Yellow
+Shape 9: Small Dark Blue
+Shape 10: Gold Sign (Upper & Numbers Only)
+Shape 11: Tomb Stone (Upper & Numbers Only)
+Shape 12: Normal Green (Numbers Only)
+Shape 13: Normal Red (Numbers Only)
+Shape 14: Normal Dark Blue (virtually unreadable)
+Shape 15: Normal Dark Blue (virtually unreadable)
+

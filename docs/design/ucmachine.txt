@@ -1,0 +1,215 @@
+UsecodeMachine question/answer/thoughts list.
+=============================================
+
+What is this?
+-------------
+
+Just a list of questions and thoughts that may be relevant or useful to think
+about in reguards to usecode and the development of a usecode machine, and a
+little bit of pseudocode.
+
+General Thoughts
+----------------
+
+* Does each usecode opcode take exactly one 'time unit' each? For example
+  does a 'and' take the same amount of time as an intrinsic call? This is
+  certainly important in syncronisation of multiple usecode threads.
+
+* When creating a new thread, does the first opcode of the new thread get
+  executed in the same timeslice as the creation of the thread is called in
+  or in the next timeslice? Or is there a multiple timeslice delay?
+
+* Obvious statement: To alter the current frame of a shape, either the usecode
+  machine itself would need to know of the 'world' or a helper function would
+  have to exist to quickly change it.
+
+Saving/Loading
+--------------
+
+* When saving maps, is the state of running usecode saved with them? For
+  example, if a door is halfway through opening as the avatar leaves the map,
+  does the avatar return to a halfway open door, that continues to open where
+  it left off? Or in another state? (Default? Whatever it was before the
+  usecode was executed?)
+
+* Saving and loading of usecode machine state. A simple table text file similar
+  to the one described in the opengl.txt document would be sufficient,
+  recording:
+  * For each function currently executing:
+    * Function number.
+    * Offset into function.
+    * Current stack state.
+    * The details of all the 'suspended' functions that resulted in this
+      function being executed. (Clunky words. For example if X() calls Y(),
+      then X() would be 'suspended' for the duration of Y()'s execution, so all
+      details of X() need to be kept as a function 'traceback'.)
+
+Implementation of 'to pointer' and 'from pointer' opcodes
+---------------------------------------------------------
+
+* Would it be feasable to just 'ignore' them, and just pass a std::string (or
+  whatever) to the appropriate 'intrinsic' function we create?
+
+* Presumably the original U8 would have implemented them as a literal memory
+  pointer. This may cause problems if we try to emulate the same, depending
+  upon how we save/load. It could also make transfer of save files from big
+  to little endian systems (for testing and debugging) problematic.
+
+Random Psudo-code
+-----------------
+
+class UCMachine
+{
+	public:
+		// loading from/saving to the text based usecode state file
+		// described above
+		LoadState(string &filename);
+		LoadState(ifstream &file);
+		SaveState(string &filename);
+		SaveState(ifstream &file);
+		
+		// runs one 'timeslice' of the machine then returns
+		Run();
+		
+	private:
+	
+		// a vector consisting to a pointer to all currently running
+		// threads. storage of threads in 'stasis' are described below.
+		vector<UCThread *> threads;
+}
+
+class UCThread
+{
+	public:
+		// creating a new thread in the world, either by:
+		// * an opcode in another thread calling for a new thread to be created
+		// * the 'world' calling for the instantiation of a new thread.
+		// * a thread without a parent was loaded from a 'state' file.
+		UCThread() : parent(0);
+		
+		// creating a new thread in the world, either by:
+		// * an opcode calling another class/function, then waits for it to
+		//   complete/return a value
+		// * a thread with a parent was loaded from a 'state' file.
+		UCThread(UCThread *uct, const UCStack &parameters) : parent(uct);
+		
+		// executes one 'timeslice' of events.
+		// returns non-zero if a 'special' event occured, such as
+		// UCMachine::Run() needing to spawn another thread
+		unsigned int step();
+		
+	private:
+		// the 'parent' function that called this one, 0 if there was no parent
+		// it remains in 'stasis' until it's the current thread terminates.
+		UCThread *parent;
+};
+
+One problem with the design of UCThread, is that by calling a function within
+the current ucclass, you're incurring the same overhead as an intra-ucclass
+function call. The benefits however, in debugging are that you're guaranteed a
+'known good' state each time you call another function, which may be useful
+until we know more about how the usecode works.
+
+UCMachine::Run()
+{
+	for(currth=threads.begin(); currth=threads.end(); ++currth)
+	{
+		switch(currth->step())
+		{
+			// do nothing on a normal case
+			case 0: break;
+			
+			// do something for each special case
+			case ...: ... break;
+			
+			// (example special case) spawn a new thread.
+			// The 'problem' with this method, is that the first opcode of this
+			// (the INIT) will be executed in this timeslice. Which may not be
+			// correct
+			case SPAWN_NEW_THREAD:
+				threads.push_back(new Thread(currth->ThreadOffset()));
+				break;
+			
+			// die on an abnormal return value
+			default: assert(false);
+		}
+	}
+}
+
+From IRC about pointers
+-----------------------
+
+[01:24] <Colourless> note to self: pointers in usecode should not be pointers
+  of the native machine... should use segment:offset type notation. segment is
+  then used to define what type of pointer it is (i.e. process stack, object,
+  string, etc)
+[01:25] * Darke nodnodnodnodnods!
+[01:26] <Colourless> glad you like it :-)
+[01:26] <Darke> You'll need to have a stack of previous 'base pointers' for the
+  'parent' functions too, either that or it pushes the base pointer onto the
+   stack before it calls the function.
+[01:27] * Darke came to the conclusion that was pretty much the only way to
+  handle it. You'd go insane otherwise. <grin>
+[01:27] <Colourless> yeah me to
+[01:27] <Colourless> o
+[01:27] <Colourless> for pointers to the stack i was thinking the following
+[01:29] <Colourless> you use the process id of the process as the segment. then
+  you just use bp+var as the offset
+[01:29] <Colourless> reserved segments would be used for all strings and
+  objects
+[01:30] * Darke nods. That should work.
+
+
+More on pointers
+----------------
+
+The following types of pointers are at least required as far as I know:
+
+Object (for this pointer)
+Stack (1 per process)
+String Pointers (1 per process)
+
+One suggestion would be to use the following for the pointer segments. It
+allows for 16384 objects and 4096 processes. 
+
+Object Segement = 0 to 0x3FFF (i.e. object number)
+Stack Segment   = 0x4000 to 0x4FFF (0x4000 + process number)
+String Segment  = 0x5000 to 0x5FFF (0x5000 + process number)
+
+For each of the types, the offset will mean the following
+Object     = Assume 0 for now.
+Stack      = Absolute offset in stack buffer
+String     = String number for the process
+
+Example pointer conversion function:
+
+#define OBJECT_SEG_START	0x0000
+#define OBJECT_SEG_END		0x3FFF
+#define STACK_SEG_START		0x4000
+#define STACK_SEG_END		0x4FFF
+#define STRING_SEG_START	0x5000
+#define STRING_SEG_END		0x5FFF
+
+void* upointer_to_pointer(uint16 offset, uint16 segment) {
+
+	// It's an object pointer
+	if (segment >= OBJECT_SEG_START && segment <= OBJECT_SEG_END) {
+		Item *item = get_item(segment);
+		return item;
+	}
+	// It is a pointer to something on a stack
+	else if (segment >= STACK_SEG_START && segment <= STACK_SEG_END) {
+		UsecodeProcess *p = get_usecode_process (segment - STACK_SEG_START);
+		return p->get_stack().getPtr()+offset;
+	}
+	// It is a pointer to a string
+	else if (segment >= STRING_SEG_START && segment <= STRING_SEG_END) {
+		UsecodeProcess *p = get_usecode_process (segment - STRING_SEG_START);
+		return p->get_string(offset);
+	}
+
+	// Pointer was invalid, so throw a usecode seg fault exception
+	throw (usecode_seg_fault());
+
+	return 0;
+}

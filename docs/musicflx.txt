@@ -1,0 +1,72 @@
+Information on Music.flx
+========================
+Written by Ryan Nunn <triforce@merlin.net.au>
+
+General Information
+-------------------
+
+All the songs are in XMIDI format. The Exult XMIDI reader will work with the
+songs. Note that the songs do use the XMIDI for/loop controllers for repeats.
+The Pentagram win_midiout driver supports this.
+
+
+Entry Types
+-----------
+
+Entry 0 is a description file (see below)
+
+Entries 44 through 121 are General Midi
+Entries 172 through 249 are FM Synth (GM + 128)
+
+257 is a text file containing some midi names. Appears useless
+258 is a xmi, usage is unknown
+259 is an unknown format
+260 is a xmi, usage is unknown
+
+
+Entry 0 Details
+---------------
+
+This is a text file that has 2 sections. It uses MSDOS line breaks
+
+
+Section 1:
+
+This Section lists the filenames of all the songs and includes some details
+Format of the entries are as follows:
+
+SONGNAME.XMI a b c
+
+'a' seems to be the track number encoded as a char. If the songs are reordered
+alphabetically, they match the order that they appear in the flex. It appears
+this is the index in the flex for the GM version of the song.
+
+'b' Unknown
+
+'c' Unknown
+
+Example:
+tenebrae.xmi 8 51 1
+
+The ASCII value for '8' is 0x38 as hex, or 56 as Dec. This maps to track 56.
+
+
+Section 2:
+
+Starts with the following
+
+#
+trans.xmi
+#
+#
+
+Following that is transition information. The format is as follows
+
+SONGFROM.XMI SONGTO.XMI ? ? ? ? ? ? ? ? ?
+
+The nature of this is unknonwn
+
+Section is terminated by
+#
+#
+

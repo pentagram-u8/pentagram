@@ -1,0 +1,187 @@
+Ultima 8 map format
+===================
+v1.04 - 3rd of May, 1997
+By Michael De Piazzi (aka Mad Hatter)
+
+Updated 19 January 2002, by Willem Jan Palenstijn:
+* use 0-based file offsets
+* updated glob placement formulas
+
+If you know anything else about the Ultima 8 map format, please send email to
+me at garydep@iinet.net.au
+
+You should be able to find the latest version of this file -somewhere- on my
+homepage at:
+   http://www.iinet.net.au/~garydep/michael.html
+
+Contents
+========
+- Introduction & notes
+- FIXED.DAT and NONFIXED.DAT format
+- GLOB.FLX format
+- ITEMCACH.DAT format
+- Getting data from save games
+
+Introduction & notes
+====================
+Data for the Ultima 8 maps are stored in multiple files. Each files purpose
+and format can be found in the appropriate section of this document. There
+are probably more files relating to the maps, but I haven't worked out which
+ones yet.
+
+All numbers are in decimal.
+
+FIXED.DAT and NONFIXED.DAT format
+=================================
+FIXED.DAT can be found in the static directory and NONFIXED.DAT can be found
+in the GAMEDAT directory or inside U8SAVE.000 in the SAVEGAME directory (See:
+Getting data from save games). FIXED.DAT contains all the objects that are in
+a fixed position (Floor, walls, trees) and NONFIXED.DAT contains all the
+objects that can be moved around and will stay where you put them (Swords,
+keys, etc)
+
+--- Header chunk ---
+This tells you how many maps there are, the file positon of the maps and the
+size of each map
+
+Offset   Size   Description
+    84      2   Number of maps in file (m) (Should be 256)
+   128    m*8   Map information chunks
+
+--- Map information chunk ---
+There should be 256 maps in the file. The first map is Map 0 in the game and
+the 256th map is Map 255 in the game.
+
+Offset   Size   Description
+     0      4   Position in file of beginning of map
+     4      4   Size in bytes of map
+
+--- Map format ---
+To work out how many objects in the map there are, divide the size of the map
+by 16
+
+Each object in the map is defined by:
+
+Offset   Size   Description
+     0      2   Map X position
+     2      2   Map Y position
+     4      1   Map Z position
+     5      2   Type number
+     7      1   Frame number
+     8      2   Flags
+    10      2   * Glob number / Quality
+    12      1   ** NPC number
+    13      1   ** Map number
+    14      2   ID of next object in list (useless for loading?)
+
+* Only applies if object is a glob. I think the object is a glob (See:
+GLOB.FLX format) if the type number is 2, but there's still parts missing when
+you try draw the map
+
+** Only applies if object is a NPC. All of the NPC information is stored in
+map 0 of NONFIXED.DAT
+
+To convert the map XYZ coordinates to screen XY coordinates, use these
+formulas:
+   ScreenX = (MapX - MapY) / 4
+   ScreenY = (MapX + MapY) / 8 - MapZ
+
+GLOB.FLX format
+===============
+This file contains predefined map sections (Such as floors and walls) and can
+be found in the STATIC directory.
+
+--- Header chunk ---
+Offset   Size   Description
+    84      2   Number of globs in file (g)
+   128    g*8   Glob information chunks
+
+--- Glob information chunk ---
+Offset   Size   Description
+     0      4   Position in file of beginning of glob
+                   (Add 1 to this number for actual file position)
+     4      4   Size in bytes of glob
+
+--- Glob format ---
+Offset   Size   Description
+     0      2   Number of objects in GLOB.FLX (n)
+     2    n*6   Object information chunks
+
+--- Object information chunks ---
+Offset   Size   Description
+     0      1   Map X position
+     1      1   Map Y position
+     2      1   Map Z position
+     3      2   Type number
+     5      1   Frame number
+
+To convert the map XYZ coordinates to screen XY coordinates, use these
+formulas:
+   ScreenX = (MapX - MapY) / 2
+   ScreenY = (MapX + MapY) / 4 - MapZ
+
+If you're adding it into the map, use the following formulas:
+      MapX = MapX * 2 + OriginalMapX
+      MapY = MapY * 2 + OriginalMapY
+      MapZ = MapZ + OriginalMapZ
+   ScreenX = (MapX - MapY) / 4
+   ScreenY = (MapX + MapY) / 8 - MapZ
+OriginalMapX, OriginalMapY and OriginalMapZ are the coordinates given when
+the object in FIXED.DAT or NONFIXED.DAT is a glob. 
+Note: DON'T use the 9 lowest bits of OriginalMapX and OriginalMapY
+(OriginalMapX &= ~0x1FF; OriginalMapY &= ~0x1FF)
+
+ITEMCACH.DAT format
+===================
+This file seems to be a temporary item cache for the current map you are on.
+I'm guessing that once you go to another map its data is dumped into the
+NONFIXED.DAT file. It's found in the GAMEDAT directory or inside U8SAVE.000
+in the SAVEGAME directory (See: Getting data from save games).
+
+--- Header chunk ---
+Offset   Size   Description
+    84      2   Number of files inside ITEMCACH.DAT (Should be 2)
+   128    n*8   Information chunks
+
+--- Information chunk ---
+Offset   Size   Description
+     0      4   Position in ITEMCACH.DAT of beginning of file
+                   (Add 1 to this number for actual file position)
+     4      4   Size in bytes of file
+
+I'm not sure what the data in the second file is yet, but I know a bit about
+the format of the first file. It has information on 9216 objects stored in it
+in the following format:
+
+If the object is not an NPC:
+  Offset   Size   Description
+       0  18432   X positions of objects (9216 2 byte numbers)
+   18432  18432   Y positions of objects (9216 2 byte numbers)
+   36864   9216   Z positions of objects (9216 1 byte numbers)
+   46080  18432   Type numbers of objects (9216 2 byte numbers)
+   64512   9216   Frame numbers of objects (9216 1 byte numbers)
+   73728  18432   Flags of objects
+   92160  18432   Qualities of objects
+  110592   9216   * NPC number (9216 1 byte numbers)
+  119808   9216   * Map number (9216 1 byte numbers)
+  129024  18432   Next object IDs
+
+* Only applies if object is a NPC. It seems the first 256 objects are reserved
+for the NPCs
+
+Getting data from save games
+============================
+The format of a savegame is as follows
+
+Offset   Size   Description
+     0     23   Id = `Ultima 8 SaveGame File.'
+    23      1   Null byte (0)
+    24      1   Number of files inside savegame file
+
+Offset   Size   Description
+     0      4   Length of file name (f)
+     4      f   File name (Null terminated string)
+   4+f      4   Length of data (d)
+   8+f      d   Data for file
+
+The original files are stored in U8SAVE.000 in the SAVEGAME directory

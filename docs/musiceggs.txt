@@ -1,0 +1,254 @@
+Music/Jukebox Eggs
+==================
+
+This is information extracted using display about the music eggs
+
+'Globnum' is the GM track to play from MUSIC.FLX. For FM track numbers just add
+128. 
+
+The usecode function for the eggs should automatically called with EventID 4 on
+map change. 
+
+
+Map3: "by the docks of Tenebrae."
+Music Egg (11551,2079,48)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 52
+ npcnum: 0 mapnum: 0
+ unknown2: 4094
+
+Map4: "near Fishermans Reef."
+Music Egg (15295,6975,48)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 57
+ npcnum: 0 mapnum: 0
+ unknown2: 0
+
+Map5: "on the East Road outside of Tenebrae."
+Music Egg (5378,22830,48)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 48
+ npcnum: 0 mapnum: 0
+ unknown2: 3157
+
+Map6: "Cemetery"
+Music Egg (5567,29727,48)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 119
+ npcnum: 0 mapnum: 0
+ unknown2: 0
+
+Map7: "at north of Tenebrae in the Valley."
+Music Egg (14815,26047,48)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 57
+ npcnum: 0 mapnum: 0
+ unknown2: 0
+
+Map8: "on the Plateau."
+Music Egg (14655,11327,48)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 48
+ npcnum: 0 mapnum: 0
+ unknown2: 0
+
+Map12: "at the Daemon's Crag."
+Music Egg (20255,13983,64)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 107
+ npcnum: 0 mapnum: 0
+ unknown2: 0
+
+Map13: "at the Brimstone Cliffs."
+
+Map14: "in the Obsidian Fortress."
+Music Egg (15647,16671,80)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 107
+ npcnum: 0 mapnum: 0
+ unknown2: 0
+
+Map15: "at Treasure Cove."
+Music Egg (15103,15647,0)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 111
+ npcnum: 0 mapnum: 0
+ unknown2: 2851
+
+Map16: "at Carthax Lake."
+Music Egg (19391,9727,104)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 102
+ npcnum: 0 mapnum: 0
+ unknown2: 0
+
+Map21: "at Stone Cove."
+Music Egg (4383,2271,8)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 121
+ npcnum: 0 mapnum: 0
+ unknown2: 2252
+
+Map24: "at the Lava River."
+Music Egg (20191,24991,64)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 107
+ npcnum: 0 mapnum: 0
+ unknown2: 2471
+
+Map25: "at the Lava River."
+Music Egg (20351,24927,64)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 107
+ npcnum: 0 mapnum: 0
+ unknown2: 0
+
+Map26: "at Carthax Lake."
+Music Egg (19231,9631,104)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 102
+ npcnum: 0 mapnum: 0
+ unknown2: 0
+
+Map28: "at Carthax Lake."
+Music Egg (10783,6431,104)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 102
+ npcnum: 0 mapnum: 0
+ unknown2: 0
+
+Map29: "strangeness"
+
+Map31: "in the Hall of the Mountain King."
+Music Egg (27807,22943,128)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 121
+ npcnum: 0 mapnum: 0
+ unknown2: 5957
+
+Map37: "on Argentrock Isle."
+Music Egg (26808,26776,56)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 97
+ npcnum: 0 mapnum: 0
+ unknown2: 0
+
+Map39: "in West Tenebrae."
+Music Egg (9631,11263,104)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 56
+ npcnum: 0 mapnum: 0
+ unknown2: 0
+
+Map40: "in central Tenebrae."
+Music Egg (13311,15039,104)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 56
+ npcnum: 0 mapnum: 0
+ unknown2: 0
+
+Map41: "in east Tenebrae."
+Music Egg (12287,14015,48)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 0
+ npcnum: 0 mapnum: 0
+ unknown2: 0
+Music Egg (13151,14335,104)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 56
+ npcnum: 0 mapnum: 0
+ unknown2: 2312
+
+Map43: "black gate pentagram"
+Music Egg (16351,16831,8)
+ Shape: 562 Frame: 0
+ Unknown1: 1 Globnum: 105
+ npcnum: 0 mapnum: 0
+ unknown2: 1046
+
+Map44: "on the Plain of Fire."
+Music Egg (24016,15328,8)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 107
+ npcnum: 0 mapnum: 0
+ unknown2: 500
+
+Map45: "on the Plain of Water."
+Music Egg (13855,15167,0)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 102
+ npcnum: 0 mapnum: 0
+ unknown2: 2334
+
+Map46: "on the Plain of Air."
+Music Egg (13983,7359,176)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 97
+ npcnum: 0 mapnum: 0
+ unknown2: 0
+
+Map47: "on the Plain of Earth."
+Music Egg (25279,13439,0)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 121
+ npcnum: 0 mapnum: 0
+ unknown2: 0
+
+Map49: "in the Upper Catacombs."
+Music Egg (27295,19551,48)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 114
+ npcnum: 0 mapnum: 0
+ unknown2: 0
+
+Map50: "in the Upper Catacombs."
+Music Egg (11455,9087,48)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 114
+ npcnum: 0 mapnum: 0
+ unknown2: 4313
+Music Egg (21631,10879,48)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 114
+ npcnum: 0 mapnum: 0
+ unknown2: 0
+
+Map51: "in the Lower Catacombs."
+Music Egg (28959,5119,48)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 111
+ npcnum: 0 mapnum: 0
+ unknown2: 0
+Music Egg (29407,4927,0)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 112
+ npcnum: 0 mapnum: 0
+ unknown2: 0
+
+Map54: "in the Shrine of the Ancient Ones."
+Music Egg (10367,2751,8)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 99
+ npcnum: 0 mapnum: 0
+ unknown2: 0
+
+Map57: "in the Pit of the Dead."
+Music Egg (23775,30015,8)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 112
+ npcnum: 0 mapnum: 0
+ unknown2: 1185
+
+Map62: "in the Upper Catacombs."
+Music Egg (1663,14655,48)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 116
+ npcnum: 0 mapnum: 0
+ unknown2: 1252
+
+Map63: "ghost armour"
+Music Egg (16255,16031,48)
+ Shape: 562 Frame: 0
+ Unknown1: 0 Globnum: 57
+ npcnum: 0 mapnum: 0
+ unknown2: 0

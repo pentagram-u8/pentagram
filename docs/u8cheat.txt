@@ -1,0 +1,221 @@
+Ultima 8 cheat mode
+===================
+v1.04 - 23rd of November, 1996
+By: Michael De Piazzi
+
+If you know anything else about the Ultima 8 cheat mode, please send email to
+me at garydep@iinet.net.au
+
+The latest version of this file should be available on Michael's Homepage at:
+   http://www.iinet.net.au/~garydep/michael.html
+
+Contents
+========
+- Avatar cheat
+- Cheat keys
+- Other keys
+- Cheat menus
+- Notes
+
+Avatar cheat
+============
+Left clicking once on the Avatar brings up the following options:
+
+Demo
+----
+    Run Pyros - The summoning of Pyros when Bane or Vardion is dead
+   Run Daemon - ??? Just says `Done!'
+ After Daemon - ??? You can select whether Bane or Vardion won and then it
+                just says `Done!'
+ Make Symbols - Creates the four pentagram symbols from the Obsidian Fortress
+        Pyros - Teleports to the Daemon's Crag
+Malchir Death - Teleports to Malchir's chambers
+      Stratos - Teleports to Windy Point on Argentrock Isle
+    Execution - Teleports to the docks at Tenebrae
+      Casting - View the spell casting animations for any mage
+     Guardian - Listen to any of the guardians speech
+
+Spell Book
+----------
+Cast any spell from Earth, Air, Fire or Ether
+
+Information
+-----------
+Allows you to select any object to display information on
+
+Enemy Caster
+------------
+Allows you to select a sorceror and then select any spell that they have which
+they will then cast on you
+
+Time
+----
+Shows the current time of day
+
+Key
+---
+??? Just says you have the key/don't have the key
+
+Staff
+-----
+??? Just says you have returned the staff/haven't returned the staff
+
+Call Guards
+-----------
+Lets you select an NPC to call the guards on you. It asks you the following
+questions to determine what you did:
+ - Did I kill the person?
+ - Did I steal something?
+
+Blow up!
+--------
+You blow up
+
+Kill me
+-------
+Allows you to select an NPC to kill
+
+EndGame
+-------
+Allows you to create the black rock fragments or the energized black rock
+fragments
+
+Jump ahead.
+-----------
+Select `ginaf' after you click on this to get the following items:
+ - 1 pile of blackmoor            - 1 pile of bone shards
+ - 1 executioner's hood           - 1 vial of blood
+ - 1 deadman's elbow              - 200 obsidian coins
+ - Recall item                    - Chain mail armour
+ - Triangular steel shield        - Key of the Caretaker
+ - Key of the Scion
+Note: This can't be used again once you click on `Nevermind!' after you've
+clicked on `ginaf'
+
+******************************************************************************
+NOTE: The following options are not normally available, but can be made
+available by using the Ultima 8 Cheat Menu Editor which should be available
+on Michael's Homepage at:
+   http://www.iinet.net.au/~garydep/michael.html
+******************************************************************************
+
+Create
+------
+Allows you to create an item
+
+Destroy
+-------
+Allows you to delete items
+
+Give
+----
+Allows you to create an item inside a container
+
+Take
+----
+Allows you to delete an item from inside a container
+
+Contents
+--------
+Lists the type numbers of all the objects you have on you and in your backpack
+
+Cheat keys
+==========
+        F1 - Anim on/off  - ??? Unfreezes the game sometimes when it stops
+        F2 - Anim display - ???
+        F3 - Avatar stats - Modify your strength, dexterity and intelligence
+        F4 - Combat       - Makes an NPC attack another NPC. First click on
+                            the NPC you wish to be the attacker and then click
+                            on the NPC who is going to be attacked
+        F5 - Pathfind     - Makes an NPC move to a point. First click on the
+                            NPC you want to move and then click on the spot
+                            where you want the NPC to move to. NOTE: Make sure
+                            the NPC is not already moving when you use this,
+                            or the game will hang
+        F6 - Int Debug    - ???
+ Ctrl & F1 - Help         - Shows all these keys and a brief description of
+                            each
+ Ctrl & F2 - Debugger     - ???
+ Ctrl & F3 - Info         - ??? Displays some numbers on the screen
+ Ctrl & F4 - Restart      - ???
+ Ctrl & F5 - Profiler     - ??? Creates a file in Ultima 8's main directory
+                            called PROFILER.DAT
+Shift & F1 - Monster      - Allows you to create a monster. The monster won't
+                            come to life until it gets hit or you use Combat
+                            or Pathfind on it
+Shift & F2 - Weapons      - Puts a bunch of weapons around the Avatar
+Shift & F3 - Bombs        - Puts a bunch of bombs around the Avatar
+Shift & F4 - Immortl      - Toggle between Normal, Immortal, and Invincible
+Shift & F5 - Armor        - Puts a bunch of armour around the Avatar
+  Alt & F1 - Unk debug    - ???
+  Alt & F2 - Function     - ??? Creates a file in Ultima 8's main directory
+              Profiler      called FPROFILE.DAT
+  Alt & F3 - Garbage      - ??? I think this removes unneeded data from memory
+              Collect       because it usually gives you extra free memory
+  Alt & F4 - Avatar       - Restores the Avatar's hits and mana to their
+              restore       current maximum values
+  Alt & F5 - Avatar dead  - ??? I think this changes a flag in the game which
+                            doesn't seem to stop you from being able to move
+         
+Other keys         
+==========         
+F7/F9 - Brings up a text screen with the cheat menus on it. These are
+        described below (Version 2.12 of Ultima 8 uses F9 for the cheat menus
+        and earlier versions use F7)
+  F10 - ??? Displays some numbers on the screen
+    U - Switches between two types of screen drawing:
+           - The first type (Default) doesn't draw empty areas of the map
+           - The second type draws empty areas of the map as a cyan colour
+    H - Turns hackmover on/off (See below)
+    P - Turns power avatar on/off (See below)
+    F - Turns footpads on/off (See below)
+
+Cheat menus
+===========
+TOGGLES MENU
+------------
+Hackmover    - Allows you to move any object any distance. Can be toggled by
+               pressing H
+Power Avatar - Acts the same as Immortal. Can be toggled by pressing P
+Footpads     - Draws a wireframe 3D box over all objects on the screen showing
+               the size of every object. Can be toggled by pressing F
+Egg Bounds   - Shows the boundaries for `eggs' in the game (Eggs are areas
+               which trigger an event). It says that you can toggle it by
+               pressing E, but you can't
+
+TELEPORT MENU
+-------------
+NPC                   - Teleport to an NPC. Requires NPC number
+Location              - Teleport to a location. Requires X, Y and Z
+                        coordinates and map number
+Map                   - Teleport to an egg on a map. Requires map number and
+                        egg number
+Happy Hunting Grounds - ??? Teleports to the location below, but there's
+                        nothing there
+                          X:5183  Y:6431  Z:48  Map:61
+Gift Shop             - ??? Teleports to the location below, but there's
+                        nothing there
+                          X:10052  Y:3476  Z:0  Map:1
+
+VIEW/EDIT MENU
+--------------
+NPC Stats     - ???
+Usecode Flags - Allows you to change any flag in the game. Must have the file
+                USECODE\FLAGSYM.DAT or it won't work. Use U8Flag if you don't
+                already have this file. U8Flag should be available on
+                Michael's Homepage at:
+                   http://www.iinet.net.au/~garydep/michael.html
+Time          - Allows you to modify the game's current time in hours
+Item Stats    - Displays info on an item. WARNING: This doesn't work for
+                everything and can hang the game!
+Item Quality  - ??? The writing was grey on my menu
+
+LISTEN MENU
+-----------
+SFX   - ???
+Music - ???
+
+Notes
+=====
+- If the game freezes after coming out of the cheat menus or something else,
+try pressing F1 (This usually works)

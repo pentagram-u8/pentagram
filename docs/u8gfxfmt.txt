@@ -1,0 +1,211 @@
+Ultima 8 Graphics Format
+========================
+v1.04 - 24th of December, 1996
+By: Michael De Piazzi
+
+Updated 19 January 2002, by Willem Jan Palenstijn:
+* use 0-based file offsets
+
+DISCLAIMER: Use at your own risk!
+
+If you know anything else about the Ultima 8 graphics format, please send
+email to me at:
+   garydep@iinet.net.au
+
+The latest version of this file should be available on Michael's Homepage at:
+   http://www.iinet.net.au/~garydep/michael.html
+
+Contents
+========
+- Graphics format
+- Palette format
+- Graphics viewer source code
+
+Graphics format
+===============
+Graphics data for Ultima 8 is stored in the files U8SHAPES.FLX, U8GUMPS.FLX
+and U8FONTS.FLX which are all found in the STATIC directory.
+
+The three files are all in the same format. All numbers are decimal.
+
+--- Header chunk ---
+Offset   Size   Description
+    84      2   Number of types in file (t)
+   128    t*8   Type information chunks
+
+--- Type information chunk ---
+Offset   Size   Description
+     0      4   Position in file of beginning of type chunk
+     4      4   Size in bytes of type
+
+--- Type chunk ---
+Offset   Size   Description
+     0      4   ??? Unknown ???
+     4      2   Number of frames in this type (f)
+     6    f*6   Frame information chunks
+
+--- Frame information chunk ---
+Offset   Size   Description
+     0      3   Position in type of beginning of frame chunk
+                   (Add type position to this number for actual file position)
+     3      1   ??? Unknown ???
+     4      2   Size in bytes of frame
+
+--- Frame chunk ---
+Offset   Size   Description
+     0      2   Type number
+     2      2   Frame number
+     4      4   ??? Unknown ???
+     8      2   Compression method
+    10      2   X length
+    12      2   Y length (y)
+    14      2   X offset
+    16      2   Y offset
+    18    y*2   Line position chunks
+
+--- Line position chunk ---
+Offset   Size   Description
+     0      2   Number of bytes to skip from line position chunk offset to get
+                to the line data chunk
+                   (LineDataChunkOffset = LinePositionChunkOffset + Number)
+
+--- Line data chunk ---
+Step 1. Read one byte for starting X position (XPos)
+Step 2. Read one byte for data length (DLen)
+Step 3. If compression method = 0 then
+           Raw data DLen bytes long
+        If compression method = 1 then and bit 0 of DLen is set then
+           Read 1 byte for line colour and draw a line DLen/2 pixels long
+        If compression method = 1 then and bit 0 of DLen is not set then
+           Raw data DLen/2 bytes long
+Step 4. Add DLen to XPos
+Step 5. If XPos < XLength then read one byte and add it to XPos
+Step 6. If XPos = XLength then go to Step 1 and begin next line otherwise go
+        to Step 2
+
+--- Notes ---
+* Raw data x bytes long means each byte represents a single pixels colour
+* When you begin the next line, make sure you start at the file position for
+that line indicated in the line position chunk
+* If you're unsure about a certain part, have a look at the BASIC source code
+I wrote (See below) to see how it's done
+
+Palette format
+==============
+The palette is in the file STATIC\U8PAL.PAL. I'm not sure what the first 4
+bytes of the file are but the next 768 bytes are the RGB (Red, Green, Blue)
+palette with one byte per value ranging from 0 (0%) to 63 (100%).
+
+Graphics viewer source code
+===========================
+  This program is written in BASIC and works in Visual BASIC for DOS. It may
+work on other BASIC compilers such as QBasic, but I only had Visual Basic for
+DOS to try it on. It displays an image in U8SHAPES.FLX with the type number
+set by GoTyp and the frame number set by GoFrm.
+  I have already made a graphics viewer with more features than this called
+the Ultima 8 Graphics Viewer which should be available on Michael's Homepage
+at:
+   http://www.iinet.net.au/~garydep/michael.html
+
+--- Begin U8VIEW.BAS ---------------------------------------------------------
+' U8VIEW.BAS - By: Michael De Piazzi
+' You can use and modify any of this code, but please give my name a mention
+' if you distribute it
+DEFINT A-Z
+CLEAR
+
+GoTyp = 1: GoFrm = 3     ' Type and frame to display
+
+IF DIR$("STATIC\U8PAL.PAL") = "" THEN PRINT "STATIC\U8PAL.PAL not found": CLEAR : END
+IF DIR$("STATIC\U8SHAPES.FLX") = "" THEN PRINT "STATIC\U8SHAPES.FLX not found": CLEAR : END
+
+DIM TypPos(0 TO 2047) AS LONG
+DIM TypSiz(0 TO 2047) AS LONG
+DIM FrmPos(0 TO 1549) AS LONG
+DIM FrmSiz(0 TO 1549) AS LONG
+DIM LinPos(0 TO 199) AS LONG
+
+SCREEN 13
+CLS
+OPEN "STATIC\U8PAL.PAL" FOR BINARY AS #1
+SEEK #1, 5
+OUT &H3C8, 0
+FOR Ct = 1 TO 768
+ OUT &H3C9, ASC(INPUT$(1, #1))
+NEXT Ct
+CLOSE #1
+
+OPEN "STATIC\U8SHAPES.FLX" FOR BINARY AS #1
+
+GET #1, 85, NumTyp
+IF GoTyp < 0 OR GoTyp > NumTyp - 1 THEN CLOSE #1: CLEAR : END
+SEEK #1, 129
+FOR Ct = 0 TO NumTyp - 1
+ GET #1, , TypPos(Ct): TypPos(Ct) = TypPos(Ct) + 1
+ GET #1, , TypSiz(Ct)
+NEXT Ct
+
+IF TypSiz(GoTyp) < 1 THEN CLOSE #1: CLEAR : END
+SEEK #1, TypPos(GoTyp)
+Unknown$ = INPUT$(4, #1)
+GET #1, , NumFrm
+IF GoFrm < 0 OR GoFrm > NumFrm - 1 THEN CLOSE #1: CLEAR : END
+FOR Ct = 0 TO NumFrm - 1
+ Tmp1 = ASC(INPUT$(1, #1)): Tmp2 = ASC(INPUT$(1, #1)): Tmp3 = ASC(INPUT$(1, #1))
+ FrmPos(Ct) = 65536 * Tmp3 + 256& * Tmp2 + Tmp1 + TypPos(GoTyp)
+ Unknown$ = INPUT$(1, #1)
+ Tmp1 = ASC(INPUT$(1, #1)): Tmp2 = ASC(INPUT$(1, #1))
+ FrmSiz(Ct) = 256& * Tmp2 + Tmp1
+NEXT Ct
+
+IF FrmSiz(GoFrm) < 1 THEN CLOSE #1: CLEAR : END
+SEEK #1, FrmPos(GoFrm)
+GET #1, , TypNum
+GET #1, , FrmNum
+Unknown$ = INPUT$(4, #1)
+GET #1, , Compr
+GET #1, , XLen
+GET #1, , YLen
+GET #1, , XOff
+GET #1, , YOff
+FOR Ct = 0 TO YLen - 1
+ LinPos(Ct) = SEEK(1)
+ Tmp1 = ASC(INPUT$(1, #1)): Tmp2 = ASC(INPUT$(1, #1))
+ TmpPos& = Tmp2 * 256& + Tmp1
+ LinPos(Ct) = LinPos(Ct) + TmpPos&
+NEXT Ct
+
+StXPos = 160 - XOff: StYPos = 150 - YOff
+XPos = XLen: YPos = -1
+DO
+ DO UNTIL XPos < XLen
+  YPos = YPos + 1
+  IF YPos = YLen THEN EXIT DO
+  SEEK #1, LinPos(YPos)
+  XPos = ASC(INPUT$(1, #1))
+ LOOP
+ IF YPos = YLen THEN EXIT DO
+ DatLen = ASC(INPUT$(1, #1))
+ IF Compr = 1 THEN
+  IF (DatLen AND 1) = 1 THEN
+   DatLen = DatLen \ 2
+   LINE (XPos + StXPos, YPos + StYPos)-(XPos + DatLen - 1 + StXPos, YPos + StYPos), ASC(INPUT$(1, #1))
+  ELSE
+   DatLen = DatLen \ 2
+   FOR CtX = XPos TO XPos + DatLen - 1
+    PSET (CtX + StXPos, YPos + StYPos), ASC(INPUT$(1, #1))
+   NEXT CtX
+  END IF
+ ELSE
+  FOR CtX = XPos TO XPos + DatLen - 1
+   PSET (CtX + StXPos, YPos + StYPos), ASC(INPUT$(1, #1))
+  NEXT CtX
+ END IF
+ XPos = XPos + DatLen
+ IF XPos < XLen THEN XPos = XPos + ASC(INPUT$(1, #1))
+LOOP
+
+CLOSE #1
+CLEAR
+END
+--- End U8VIEW.BAS -----------------------------------------------------------

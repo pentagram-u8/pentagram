@@ -1,0 +1,43 @@
+All ->'s are the "official" name given by the stategy guide, PENTOLOGY.
+3: by the docks of Tenebrae. -> Docks
+4: near Fishermans Reef. -> Fisherman's Reef
+5: on the East Road outside of Tenebrae. -> East Road
+6: Cemetery -> same
+7: at north of Tenebrae in the Valley. -> Herdsman's Valley
+8: on the Plateau. -> Plateau
+12: at the Daemon's Crag. -> Daemon's Crag
+14: in the Obsidian Fortress. ->Obsidian Fortress
+15: at Treasure Cove. -> Slayer
+16: at Carthax Lake.(Drained) -> Carthax Lake
+20: strangeness
+21: at Stone Cove. -> Stone Cove
+24: at the Lava River. -> Lava Tunnel
+25: at the Lava River. (after Carthax) -> Lava Tunnel
+26: at Carthax Lake.(Full) -> Carthax Lake
+28: at Carthax Lake. -> Carthax Breaking Ground
+29: strangeness
+31: in the Hall of the Mountain King. -> Hall of the Mountain King
+33: strangeness
+37: on Argentrock Isle. -> Argentrock Isle
+39: in West Tenebrae. -> West Tenebrae
+40: in central Tenebrae. -> Central Tenebrae
+41: in east Tenebrae. -> East Tenebrae
+43: black gate pentagram -> Ethereal Plane
+44: on the Plain of Fire. -> Plane of Fire
+45: on the Plain of Water. -> Plane of Water
+46: on the Plain of Air. -> Plane of Air
+47: on the Plain of Earth. -> Plane of Earth
+49: in the Upper Catacombs. -> Upper Catacombs II
+50: in the Upper Catacombs. -> Upper Catacombs
+51: in the Lower Catacombs. -> Lower Catacombs
+54: in the Shrine of the Ancient Ones. -> Shine
+56: strangeness
+57: in the Pit of the Dead. -> Pit of the Dead
+62: in the Upper Catacombs. -> Ancient Necromancers
+63: ghost armour -> Ghost
+159: strangeness
+200: strangeness
+222: strangeness
+223: strangeness
+243: strangeness
+255: strangeness

@@ -1,0 +1,36 @@
+
+
+The object structure looks like this:
+
+struct OneItem
+{
+  short x,y;
+  unsigned char z;
+ short type;
+ unsigned char frame;
+ unsigned short flags;
+ short quality;
+ unsigned char npcNum;
+ unsigned char mapNum;
+ short next_object;  // Id of next object in container or list.
+};
+
+-Jason Ely
+
+
+Here are a list of some of the flags in the .status field...
+
+#define DISPOSABLE	0x0002
+#define OWNED		0x0004
+#define CONTAINED	0x0008
+#define INVISIBLE	0x0010
+#define FLIPPED		0x0020
+#define IN_NPC_LIST     0x0040
+#define GUMP_OPEN	0x0100
+#define EQUIPPED	0x0200
+#define BOUNCING	0x0400
+#define ETHEREAL	0x0800
+#define HANGING		0x1000
+#define LOW_FRICTION    0x4000
+
+-Jason Ely
