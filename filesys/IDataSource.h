@@ -400,7 +400,7 @@ public:
 	}
 	
 	virtual sint32 read(void *str, sint32 num_bytes) {
-		if (buf_ptr > buf + size) return 0;
+		if (buf_ptr >= buf + size) return 0;
 		sint32 count = num_bytes;
 		if (buf_ptr + num_bytes > buf + size)
 			count = buf - buf_ptr + size;
