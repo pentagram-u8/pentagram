@@ -1,7 +1,10 @@
+2004-06-20  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* FAQ, docs/xml/faq.xml: added anti-piracy stance
+
 2004-06-20  Dominik Reichardt <dominus@users.sourceforge.net>
 	* Readme,FAQ, docs/xml/*.xml, *.xsl: show changes last and minor corrections
 	* docs/xml/Readme: tidied up the docs-generating instructions
-	  
+
 2004-06-16  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* gumps/MenuGump.*: Storing the button ids is not actually needed
 	* gumps/OptionsGump.*: Storing the button ids is not actually needed
