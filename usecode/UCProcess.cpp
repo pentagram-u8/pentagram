@@ -19,14 +19,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "UCProcess.h"
+#include "UCMachine.h"
+#include "Usecode.h"
 
 UCProcess::UCProcess(Usecode* usecode_, uint32 classid_, uint32 offset_) :
 	pid(0xFFFF), item_num(0), type(0), usecode(usecode_),
 	classid(classid_), cs(0,0), suspended(false)
 {
 	// setup code segment
-	cs.load(usecode->get_classdata(classid),
-			usecode->get_classdatasize(classid));
+	cs.load(usecode->get_class(classid),
+			usecode->get_classsize(classid));
 	// seek to correct offset
 	cs.seek(offset_);
 
@@ -45,10 +47,9 @@ UCProcess::~UCProcess()
 
 }
 
-bool UCProcess::Run(const uint32 framenum)
+bool UCProcess::run(const uint32 framenum)
 {
 	// pass to UCMachine for execution
-	// ...
 
-	return false;
+	return UCMachine::get_instance()->execProcess(this);
 }

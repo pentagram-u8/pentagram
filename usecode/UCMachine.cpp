@@ -20,11 +20,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "UCMachine.h"
 #include "UCProcess.h"
+#include "Usecode.h"
+#include "Kernel.h"
 
 #define LOGPF(X) pout.printf X
 
-UCMachine::UCMachine()
+UCMachine* UCMachine::ucmachine = 0;
+
+UCMachine::UCMachine() :
+	globals(0x1000)
 {
+	// zero globals
+	globals.push0(globals.getSize());
+
+	ucmachine = this;
 }
 
 
@@ -32,28 +41,38 @@ UCMachine::~UCMachine()
 {
 }
 
-static const char *print_bp(const int offset)
+static const char *print_bp(const sint8 offset)
 {
 	static char str[32];
-	std::snprintf(str, 32, "[BP%c%02Xh]", offset>0x7F?'-':'+', offset>0x7F?0x100-offset:offset);
+	std::snprintf(str, 32, "[BP%c%02Xh]", offset<0?'-':'+', 
+				  offset<0?-offset:offset);
 	return str;
 }
 
 
-bool UCMachine::ExecProcess(UCProcess* p)
+bool UCMachine::execProcess(UCProcess* p)
 {
+	static uint8 tempbuf[256];
+
 	assert(p);
+
+	//! check if process is suspended?
 
 	pout << "running process " << p->pid << ", class " << p->classid << ", offset " << p->cs.getPos() << std::endl;
 
 	bool cede = false;
+	bool error = false;
 
-	while(!cede)
+	while(!cede && !error)
 	{
+		//! guard against reading past end of class
+		//! guard against other error conditions
+
+		uint32 offset = p->cs.getPos();
 		uint8 opcode = p->cs.read1();
 
-		LOGPF(("sp = %02X; %04X: %02X", p->stack.stacksize(),
-			   p->cs.getPos(), opcode));
+		LOGPF(("sp = %02X; %04X: %02X\t", p->stack.stacksize(),
+			   offset, opcode));
 
 		sint8 si8a;
 		uint16 ui16a, ui16b;
@@ -114,6 +133,7 @@ bool UCMachine::ExecProcess(UCProcess* p)
 		case 0x09:
 			// 09 xx yy zz
 			// pop yy bytes into an element of list bp+xx (or slist if zz is set).
+			// (pop index first, then actual data?)
 			i0 = read1(in); i1 = read1(in); i2 = read1(in);
 			printf("pop element\t%s (%02X) slist==%02X", print_bp(i0), i1, i2);
 			break;
@@ -198,8 +218,8 @@ bool UCMachine::ExecProcess(UCProcess* p)
 				p->classid = new_classid;
 
 				// Update the code segment
-				p->cs.load(p->usecode->get_classdata(new_classid),
-						   p->usecode->get_classdatasize(new_classid));
+				p->cs.load(p->usecode->get_class(new_classid),
+						   p->usecode->get_classsize(new_classid));
 				p->cs.seek(new_offset);
 
 				// Resume execution
@@ -238,28 +258,33 @@ bool UCMachine::ExecProcess(UCProcess* p)
 		case 0x16:
 			// 16
 			// pop two strings from the stack and push the concatenation
+			// (keeping both originals intact?)
 			printf("concat");
 			break;
 		case 0x17:
 			// 17
 			// pop two lists from the stack and push the 'sum' of the lists
+			// (keep duplicates, overwriting the one first pushed?)
 			printf("append");
 			break;
 		case 0x19:
 			// 19 02
 			// add two stringlists
+			// (remove duplicates, overwriting the one first pushed?)
 			i0 = read1(in);
 			printf("append slist\t(%02X)", i0);
 			break;
 		case 0x1A:
 			// 1A
 			// pop two string lists from the stack and remove the 2nd from the 1st
+			// (overwriting the first one)
 			i0 = read1(in);
 			printf("remove slist\t(%02X)", i0);
 			break;
 		case 0x1B:
 			// 1B
 			// pop two lists from the stack and remove the 2nd from the 1st
+			// (overwriting the first one)
 			i0 = read1(in);
 			printf("remove list\t(%02X)", i0);
 			break;
@@ -510,13 +535,18 @@ bool UCMachine::ExecProcess(UCProcess* p)
 			LOGPF(("not"));
 			break;
 
-/*
+
 		case 0x31:
 			// 31
-			// 32 bit boolean not
-			printf("not dword");
+			// 32 bit boolean not (both input and output 32 bit?)
+			ui32a = p->stack.pop4();
+			if (!ui32a) {
+				p->stack.push4(1);
+			} else {
+				p->stack.push4(0);
+			}
+			LOGPF(("not long"));
 			break;
-*/
 
 		case 0x32:
 			// 32
@@ -531,13 +561,18 @@ bool UCMachine::ExecProcess(UCProcess* p)
 			LOGPF(("and"));
 			break;
 
-/*
 		case 0x33:
 			// 33
 			// 32 bit boolean and
-			printf("and dword");
+			ui32a = p->stack.pop4();
+			ui32b = p->stack.pop4();
+			if (ui32a && ui32b) {
+				p->stack.push4(1);
+			} else {
+				p->stack.push4(0);
+			}
+			LOGPF(("and long"));
 			break;
-*/
 
 		case 0x34:
 			// 34
@@ -549,16 +584,21 @@ bool UCMachine::ExecProcess(UCProcess* p)
 			} else {
 				p->stack.push2(0);
 			}
-			LOGPF(("and"));
+			LOGPF(("or"));
 			break;
 
-/*
 		case 0x35:
 			// 35
 			// 32 bit boolean or
-			printf("or dword");
+			ui32a = p->stack.pop4();
+			ui32b = p->stack.pop4();
+			if (ui32a || ui32b) {
+				p->stack.push4(1);
+			} else {
+				p->stack.push4(0);
+			}
+			LOGPF(("or long"));
 			break;
-*/
 
 		case 0x36:
 			// 36
@@ -706,9 +746,6 @@ bool UCMachine::ExecProcess(UCProcess* p)
 			// push 32 pointer address of BP+XX
 			printf("push addr\t%s", print_bp(read1(in)));
 			break;
-*/
-
-/*
 		case 0x4C:
 			// 4C xx
 			// indirect push,
@@ -741,25 +778,300 @@ bool UCMachine::ExecProcess(UCProcess* p)
 			}
 			break;
 
+*/ 
 		case 0x4E:
-			// 4E xx xx xx
-			// push global xx xx xx
-			i0 = read2(in); i1 = read1(in);
-			flag = i0 + (i1<<16);
-			printf("push\t\tglobal [%04X %02X] (%s)", i0, i1, FlagName[flag].c_str());
-			break;
-		case 0x4F:
-			// 4F xx xx xx
-			// pop value into global xx xx xx
-			i0 = read2(in); i1 = read1(in);
-			flag = i0 + (i1<<16);
-			printf("pop\t\tglobal [%04X %02X] (%s)", i0, i1, FlagName[flag].c_str());
+			// 4E xx xx yy
+			// push global xxxx size yy
+			ui16a = p->cs.read2();
+			ui16b = p->cs.read1();
+			// get flagname for output?
+			p->stack.push(globals.access(ui16a), ui16b);
+			LOGPF(("push\t\tglobal [%04X %02X]", ui16a, ui16b));
 			break;
 
-*/
+		case 0x4F:
+			// 4F xx xx yy
+			// pop value into global xxxx size yy
+			ui16a = p->cs.read2();
+			ui16b = p->cs.read1();
+			// get flagname for output?
+			p->stack.pop(tempbuf, ui16b);
+			globals.assign(ui16a, tempbuf, ui16b);
+			LOGPF(("pop\t\tglobal [%04X %02X]", ui16a, ui16b));
+			break;
 
 /*
-  0x50 - 0x76 ...
+
+                case 0x50:
+                        // 50
+                        // return from function
+
+                        // Ok, this is what we should do
+                        // we move the stack to the the location specified by BP                        // we then pop the old bp
+                        // we then pop the instruction pointer for where we were before
+                        // we then pop the previous class we were in
+
+                        // if the ip and previous class are both 0xFFFF we are returning
+                        // from a process
+                        stack.moveSP(bp);
+                        
+                        uint16 new_offset;
+
+                        bp = stack.pop2();                                      // BP+00 Prev BP
+                        new_offset = stack.pop2();                      // BP+02 Prev offset
+                        classid = stack.pop2();                 // BP+04 Prev class
+
+                        //
+                        // TODO Return from process
+                        //
+                        if (new_offset == 0xFFFF && classid == 0xFFFF) {
+                                // TODO
+                                LOGPF(("!ret\t\tfrom process"));
+                                cede = true;
+                                break;
+                        }
+                        LOGPF(("ret\t\tto %04X:%04X", classid, new_offset));
+
+
+                        // Update the UCClassRaw and datasource
+                        cl = &usecode.find(classid);
+                        ds.load(reinterpret_cast<char *>(cl->data), cl->classdatasize);
+                        ds.seek(new_offset);
+
+                        // Resume execution
+                        break;
+*/
+
+		case 0x51:
+			// 51 xx xx
+			// relative jump to xxxx if false
+			si16a = static_cast<sint16>(p->cs.read2());
+			ui16b = p->stack.pop2();
+			if (!ui16b) {
+				p->cs.skip(si16a);
+				LOGPF(("jne\t\t%04Xh\t(to %04X) (taken)", si16a,
+					   p->cs.getPos()));
+			} else {
+				LOGPF(("jne\t\t%04Xh\t(to %04X) (not taken)", si16a,
+					   p->cs.getPos()));
+			}
+			break;
+
+		case 0x52:
+			// 52 xx xx
+			// relative jump to xxxx
+			si16a = static_cast<sint16>(p->cs.read2());
+			p->cs.skip(si16a);
+			LOGPF(("jmp\t\t%04Xh\t(to %04X)", si16a, p->cs.getPos()));
+			break;
+
+		case 0x53:
+			// 53
+			// suspend
+			// TODO!
+			LOGPF(("!suspend\n"));
+			cede=true; 
+			break;
+
+/*
+
+                case 0x57:
+                        // 57 aa tt xx xx yy yy
+                        // spawn process function yyyy in class xxxx
+                        // aa = number of arg bytes pushed (not including this pointer which is 4 bytes)
+                        // tt = sizeof this pointer object
+                        {
+                                // TODO
+                                uint32 arg_bytes = ds.read1();
+                                uint32 this_size = ds.read1();  // Relevance?
+                                uint32 new_class = ds.read2();
+                                uint32 new_func  = ds.read2();
+                                uint32 this_ptr = stack.pop4(); // This pointer is pushed onto the stack. CAN BE NULL!
+                                printf("!spawn\t\t%02X %02X %04X:%04X",
+                                        arg_bytes, this_size, new_class, new_func);
+                                break;
+                        }
+                case 0x58:
+                        // 58 xx xx yy yy zz zz tt uu
+                        // spawn inline process function yyyy in class xxxx at offset zzzz
+                        // tt = size of this pointer
+                        // uu = unknown
+                        i0 = read2(in); i1 = read2(in);
+                        i2 = read2(in);
+                        i4 = read1(in); i5 = read1(in);
+                        printf("spawn inline\t%04X:%04X+%04X=%04X %02X %02X (%s+%04X)",
+                                   i0, i1, i2, i1+i2, i4, i5,functionaddresstostring(i0, i1).c_str(), i2);
+                        break;
+
+*/
+	
+		case 0x59:
+			// 59
+			// push process id
+			p->stack.push2(p->pid);
+			LOGPF(("push\t\tpid = %04Xh", p->pid));
+			break;
+
+		case 0x5A:
+			// 5A xx
+			// init function. xx = local var size
+			// sets xx bytes on stack to 0, moving sp
+			ui16a = p->cs.read1();
+			LOGPF(("init\t\t%02X", ui16a));
+			
+			if (ui16a & 1) ui16a++; // 16-bit align
+			if (ui16a > 0) {
+				p->stack.push0(ui16a);
+			}
+			break;
+
+/*
+               case 0x5D:
+                        // 5D
+                        // push 8 bit value returned from function call
+                        printf("push byte\tretval");
+                        break;
+                case 0x5E:
+                        // 5E
+                        // push 16 bit value returned from function call
+                        printf("push\t\tretval");
+                        break;
+                case 0x5F:
+                        // 5F
+                        // push 32 bit value returned from function call?
+                        printf("push dword\tretval");
+                        break;
+*/
+
+		case 0x60:
+			// 60
+			// convert 16-bit to 32-bit int (sign extend)
+			si32a = static_cast<sint16>(p->stack.pop2());
+			p->stack.push4(si32a);
+			LOGPF(("int to long"));
+			break;
+
+		case 0x61:
+			// 61
+			// convert 32-bit to 16-bit int
+			si16a = static_cast<sint16>(p->stack.pop4());
+			p->stack.push2(si16a);
+			LOGPF(("long to int"));
+			break;
+
+/*
+
+                case 0x63:
+                        // 63 xx
+                        // free the list in var BP+xx
+                        // (This one seems to be similar to 0x64 but only used for lists
+                        //  of strings?)
+                        printf("free slist\t%s", print_bp(read1(in)));
+                        break;
+                case 0x64:
+                        // 64 xx
+                        // free the list in var BP+xx
+                        printf("free list\t%s", print_bp(read1(in)));
+                        break;
+                case 0x65:
+                        // 65 xx
+                        // free string at SP+xx
+                        printf("free string\t%s", print_sp(read1(in)));
+                        break;
+                case 0x66:
+                        // 66 xx
+                        // free the list at SP+xx
+                        printf("free list\t%s", print_sp(read1(in)));
+                        break;
+                case 0x67:
+                        // 66 xx
+                        // free the string list at SP+xx
+                        printf("free slist\t%s", print_sp(read1(in)));
+                        break;
+                case 0x69:
+                        // 69 xx
+                        // push the string in var BP+xx as 32 bit pointer
+                        printf("push strptr\t%s", print_bp(read1(in)));
+                        break;
+                case 0x6B:
+                        // 6B
+                        // pop a string and push 32 bit pointer to string
+                        printf("str to ptr");
+                        break;
+                case 0x6D:
+                        // 6D
+                        // push result of process
+                        printf("push dword\tprocess result");
+                        break;
+*/
+
+		case 0x6E:
+			// 6E xx
+			// add xx to stack pointer
+			si8a = static_cast<sint8>(p->cs.read1());
+			p->stack.addSP(-si8a);
+			LOGPF(("add sp\t\t%s%02Xh", si8a<0?"-":"", si8a<0?-si8a:si8a));
+			break;
+
+/*
+                case 0x6F:
+                        // 6F xx
+                        // push 32 pointer address of SP-xx
+                        printf("push addr\t%s", print_sp(0x100 - read1(in)));
+                        break;
+
+                // loop-related opcodes
+                // Theory: put a 'container object' on the stack, and this will
+                // loop over the objects in there. The 'loopscript' determines
+                // which objects are selected. (By a simple 'shape == x, frame == y'
+                // thing, it seems)
+                // See the abacus code (function 375) for a simple example
+
+                case 0x70:
+                        // 70 xx yy zz
+                        // loop something. Stores 'current object' in var xx
+                        // yy == num bytes in string
+                        // zz == type
+                        i0 = read1(in); i1 = read1(in); i2 = read1(in);
+                        printf("loop\t\t%s %02X %02X", print_bp(i0), i1, i2);
+                        break;
+                case 0x73:
+                        // 73
+                        // next loop object? pushes false if end reached
+                        printf("loopnext");
+                        break;
+                case 0x74:
+                        // 74 xx
+                        // add xx to the current 'loopscript'
+                        i0 = read1(in);
+                        printf("loopscr\t\t%02X \"%c\"", i0, static_cast<char>(i0));
+
+		// 75 appears to have something to do with lists, looks like an enum/next from u7...
+		case 0x75:
+			// 75 xx yy zz zz
+			// xx appears to be the location to store 'current' value from the
+			//   list (BP+xx)
+			// yy is the 'datasize' of the list, identical to the second parameter
+			//   of the create list/slist opcodes
+			// zzzz appears to be the offset to jump to after it's finished the
+			//   iteration, the opcode before is a 'jmp' to the original position
+			//   of the opcode.
+			// (all guesses from Remorse1.21 usecode, _may_ be different in u8,
+			//   unlikely though)
+			// the way it appears to operate is it pops a 'word' off the stack
+			//   (maximum number of items to iterate through? No idea, I've only
+			//   seen 0xFFFF pushed before it (in Remorse1.21)), then pops
+			//   the 'list' off to iterate through
+			op.i0 = read1(ucfile); op.i1 = read1(ucfile); op.i2 = read2(ucfile);
+			break;
+
+		// 76 appears to be identical to 0x75, except it operates on slists
+		case 0x76:
+			// 75 xx yy zz zz
+			op.i0 = read1(ucfile); op.i1 = read1(ucfile); op.i2 = read2(ucfile);
+			break;
+
+
 */
 
 		case 0x77:
@@ -771,13 +1083,33 @@ bool UCMachine::ExecProcess(UCProcess* p)
 			LOGPF(("set info"));
 			break;
 
+		case 0x7A:
+			// 7A
+			// end of function
+			// shouldn't happen
+			LOGPF(("end"));
+			perr.printf("end of function opcode reached!\n");
+			error = true;
+			break;
+
 		default:
 			perr.printf("unhandled opcode %02X\n", opcode);
 			cede = true;
-		}
+
+		} // switch(opcode)
+
+		LOGPF(("\n"));
+
+	} // while(!cede && !error)
+
+	if (error) {
+		perr << "Process " << p->pid << " caused an error. Killing process."
+			 << std::endl;
+
+		// there probably should be a nicer way to abort processes
+		// (which also properly destructs them)
+		Kernel::get_instance()->removeProcess(p);
 	}
-
-
 
 
 	return false;

@@ -30,10 +30,15 @@ public:
 	Kernel();
 	~Kernel();
 
-	void AddProcess(Process *proc);
-	void RemoveProcess(Process *proc);
+	static Kernel* get_instance() { return kernel; }
 
-	bool RunProcesses(uint32 framenum);
+	void addProcess(Process *proc);
+	void removeProcess(Process *proc);
+
+	bool runProcesses(uint32 framenum);
+
+private:
+	static Kernel* kernel;
 };
 
 

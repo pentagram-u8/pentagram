@@ -202,7 +202,7 @@ protected:
 	uint8* buf;
 	uint8* buf_ptr;
 
-	std::size_t size;
+	uint32 size;
 
 public:
 	IBufferDataSource(uint8* data, unsigned int len) {

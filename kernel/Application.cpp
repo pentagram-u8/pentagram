@@ -21,6 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Application.h"
 #include "Kernel.h"
 
+#include "UCProcess.h"
+#include "Usecode.h"
+
 Application::Application(int argc, char *argv[])
 {
 	// Create the kernel
@@ -34,5 +37,11 @@ Application::~Application()
 
 void Application::run()
 {
-	pout << "It's alive!" << std::endl;
+	Usecode* u = new Usecode(0);
+	UCProcess* p = new UCProcess(u, 0, 0);
+	kernel->addProcess(p);
+	uint32 framenum = 0;
+	while (1) {
+		kernel->runProcesses(framenum++);
+	}
 }

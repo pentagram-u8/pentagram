@@ -23,15 +23,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 typedef std::set<Process *>::iterator ProcessIterator;
 
+Kernel* Kernel::kernel = 0;
+
 Kernel::Kernel()
 {
+	kernel = this;
 }
 
 Kernel::~Kernel()
 {
 }
 
-void Kernel::AddProcess(Process* proc)
+void Kernel::addProcess(Process* proc)
 {
 	ProcessIterator it = processes.find (proc);
 
@@ -42,7 +45,7 @@ void Kernel::AddProcess(Process* proc)
 	}
 }
 
-void Kernel::RemoveProcess(Process* proc)
+void Kernel::removeProcess(Process* proc)
 {
 	ProcessIterator it = processes.find (proc);
 
@@ -53,11 +56,18 @@ void Kernel::RemoveProcess(Process* proc)
 	}    
 }
 
-bool Kernel::RunProcesses(uint32 framenum)
+bool Kernel::runProcesses(uint32 framenum)
 {
+	if (processes.size() == 0) {
+		perr << "Process queue is empty?! Aborting.\n";
+
+		//! do this in a cleaner way
+		exit(0);
+	}
+
 	bool dirty = false;
 	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it) {
-		if ((*it)->Run(framenum)) dirty = true;
+		if ((*it)->run(framenum)) dirty = true;
 	}
 
 	return dirty;

@@ -29,7 +29,7 @@ public:
 	UCStack(unsigned int len=0x1000) :
 		IBufferDataSource(new uint8[len],len)
 	{
-		// stack grows downward, so starts at the end
+		// stack grows downward, so start at the end of the buffer
 		buf_ptr = buf + len;
 	}
 

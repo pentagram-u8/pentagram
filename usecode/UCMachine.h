@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef UCMACHINE_H
 #define UCMACHINE_H
 
+#include "UCStack.h"
+
 class UCProcess;
 
 class UCMachine
@@ -27,7 +29,17 @@ public:
 	UCMachine();
 	~UCMachine();
 
-	bool ExecProcess(UCProcess* proc);
+	static UCMachine* get_instance() { return ucmachine; }
+
+	bool execProcess(UCProcess* proc);
+
+private:
+
+	// this technically isn't a stack, but UCStack supports the access 
+	// functions we need
+	UCStack globals;
+
+	static UCMachine* ucmachine;
 };
 
 

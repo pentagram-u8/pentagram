@@ -25,14 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class Usecode;
 
-class Usecode {
-public:
-	uint8* get_classdata(uint32 classid) { return 0; }
-	uint32 get_classdatasize(uint32 classid) { return 0; }
-};
 
-
-// probably won't inherit from Process directly
+// probably won't inherit from Process directly in the future
 class UCProcess : public Process
 {
 	friend class UCMachine;
@@ -41,7 +35,7 @@ public:
 	UCProcess(Usecode* usecode_, uint32 classid_, uint32 offset_);
     ~UCProcess();
 
-	virtual bool Run(const uint32 framenum);
+	virtual bool run(const uint32 framenum);
 
 protected:
 	// process id

@@ -1,3 +1,10 @@
+2002-12-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/*: minor changes
+	* usecode/*: continued implementing opcodes
+	* usecode/UCMachine.cpp: added some extra opcode notes
+	(It won't compile atm because I haven't committed the Usecode class
+	yet. Need to decide how to cache and/or store usecode.)
+
 2002-12-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/*: starting on usecode machine
 	* filesys/IDataSource.h: added IBufferDataSource
