@@ -145,12 +145,6 @@ protected:
 		return (_Tr::not_eof(c));
 	}
 
-	virtual std::streamsize xsputn(const _E *ptr, std::streamsize count)
-	{
-		con.PrintRaw(ptr, count);
-		return count;
-	}
-
 	// Flush
 	virtual int sync()
 	{
@@ -195,12 +189,6 @@ protected:
 	{
 		if (!_Tr::eq_int_type(_Tr::eof(), c)) con.Putchar_err(_Tr::to_char_type(c));
 		return (_Tr::not_eof(c));
-	}
-
-	virtual std::streamsize xsputn(const _E *ptr, std::streamsize count)
-	{
-		con.PrintRaw_err(ptr, count);
-		return count;
 	}
 
 	// Flush
