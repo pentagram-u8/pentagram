@@ -20,8 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "RenderedText.h"
 
-namespace Pentagram {
-
 DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(RenderedText)
 
 RenderedText::RenderedText()
@@ -36,6 +34,3 @@ RenderedText::~RenderedText()
 
 }
 
-
-
-}
