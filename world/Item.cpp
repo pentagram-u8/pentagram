@@ -991,31 +991,29 @@ void Item::grab()
 
 void Item::saveData(ODataSource* ods)
 {
-#if 0
-	if (extendedflags & EXT_INGLOB) {
-		ods->write2(2);
-		Object::saveData(ods);
-		ods->write2(extendedflags);
-		ods->write2(glob_next);
-		return;
-	}
-#endif
 	ods->write2(1); // version
 	Object::saveData(ods);
-	ods->write2(static_cast<uint16>(shape));
-	ods->write2(static_cast<uint16>(frame));
-	ods->write2(static_cast<uint16>(x));
-	ods->write2(static_cast<uint16>(y));
-	ods->write2(static_cast<uint16>(z));
+	ods->write2(static_cast<uint16>(extendedflags));
 	ods->write2(flags);
-	ods->write2(quality);
-	ods->write2(npcnum);
-	ods->write2(mapnum);
+	if (!(extendedflags & EXT_SAVE_GLOBSKIP)) {
+		ods->write2(static_cast<uint16>(shape));
+		ods->write2(static_cast<uint16>(frame));
+		ods->write2(static_cast<uint16>(x));
+		ods->write2(static_cast<uint16>(y));
+		ods->write2(static_cast<uint16>(z));
+		ods->write2(quality);
+		ods->write2(npcnum);
+		ods->write2(mapnum);
+		if (getObjId() != 0xFFFF) {
+			// these only make sense in currently loaded items
+			ods->write2(gump);
+			ods->write2(gravitypid);
+		}
+	} else {
+		assert(gump == 0);
+		assert(gravitypid == 0);
+	}
 	if (getObjId() != 0xFFFF) {
-		// these only make sense in currently loaded items
-		ods->write2(static_cast<uint16>(extendedflags));
-		ods->write2(gump);
-		ods->write2(gravitypid);
 		ods->write2(glob_next);
 	}
 }
@@ -1026,27 +1024,36 @@ bool Item::loadData(IDataSource* ids)
 	if (version != 1) return false;
 	if (!Object::loadData(ids)) return false;
 
-	shape = ids->read2();
-	frame = ids->read2();
-	x = ids->read2();
-	y = ids->read2();
-	z = ids->read2();
+	extendedflags = ids->read2();
 	flags = ids->read2();
-	quality = ids->read2();
-	npcnum = ids->read2();
-	mapnum = ids->read2();
+	if (!(extendedflags & EXT_SAVE_GLOBSKIP)) {
+		shape = ids->read2();
+		frame = ids->read2();
+		x = ids->read2();
+		y = ids->read2();
+		z = ids->read2();
+
+		quality = ids->read2();
+		npcnum = ids->read2();
+		mapnum = ids->read2();
+		if (getObjId() != 0xFFFF) {
+			gump = ids->read2();
+			gravitypid = ids->read2();
+		} else {
+			gump = gravitypid = 0;
+		}
+
+		//!! hackish...
+		if (extendedflags & EXT_INCURMAP) {
+			World::get_instance()->getCurrentMap()->addItem(this);
+		}
+		// if EXT_SAVE_GLOBSKIP is set, this item will be added to 
+		// CurrentMap by GlobEgg::restoreContents()
+	}
 	if (getObjId() != 0xFFFF) {
-		extendedflags = ids->read2();
-		gump = ids->read2();
-		gravitypid = ids->read2();
 		glob_next = ids->read2();
 	} else {
-		extendedflags = gump = gravitypid = glob_next = 0;
-	}
-
-	//!! hackish...
-	if (extendedflags & EXT_INCURMAP) {
-		World::get_instance()->getCurrentMap()->addItem(this);
+		glob_next = 0;
 	}
 
 	return true;

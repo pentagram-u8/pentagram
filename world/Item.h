@@ -436,7 +436,9 @@ public:
 		EXT_FAST1	  = 0x0010,	// They are mutually exclusive
 
 		EXT_HIGHLIGHT = 0x0020,	// Paint the item highlighted
-		EXT_INCURMAP  = 0x0040  // item is in a CurrentMap display list
+		EXT_INCURMAP  = 0x0040, // item is in a CurrentMap display list
+		EXT_SAVE_GLOBSKIP = 0x0080  // only when saving: unchanged glob item
+
 
 	};
 };

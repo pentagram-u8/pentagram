@@ -83,6 +83,88 @@ void GlobEgg::expand()
 	}
 }
 
+void GlobEgg::checkContents()
+{
+	Glob* glob = GameData::get_instance()->getGlob(quality);
+	if (!glob) return;
+
+	Item* item = World::get_instance()->getItem(contents);
+
+	std::vector<GlobItem>::iterator iter;
+	for (iter = glob->contents.begin(); iter != glob->contents.end(); ++iter)
+	{
+		assert(item); // if not, globnext linked list was corrupted
+
+		GlobItem& globitem = *iter;
+
+		// calculate object's world position
+		sint32 gix = (x & ~0x1FF) + 2 * globitem.x;
+		sint32 giy = (y & ~0x1FF) + 2 * globitem.y;
+		sint32 giz = z + globitem.z;
+
+		sint32 ix, iy, iz;
+		item->getLocation(ix, iy, iz);
+
+		if (gix == ix && giy == iy && giz == iz &&
+			item->getShape() == globitem.shape &&
+			item->getFrame() == globitem.frame &&
+			item->getQuality() == 0 &&
+			item->getNpcNum() == 0 &&
+			item->getMapNum() == 0)
+		{
+			item->setExtFlag(Item::EXT_SAVE_GLOBSKIP);
+		} else {
+			item->clearFlag(Item::EXT_SAVE_GLOBSKIP);
+		}
+			
+		item = World::get_instance()->getItem(item->getGlobNext());
+	}
+}
+
+void GlobEgg::restoreContents()
+{
+	Glob* glob = GameData::get_instance()->getGlob(quality);
+	if (!glob) return;
+
+	Item* item = World::get_instance()->getItem(contents);
+
+	std::vector<GlobItem>::iterator iter;
+	for (iter = glob->contents.begin(); iter != glob->contents.end(); ++iter)
+	{
+		assert(item); // if not, globnext linked list was corrupted
+
+		if (item->getExtFlags() & Item::EXT_SAVE_GLOBSKIP)
+		{
+		
+			GlobItem& globitem = *iter;
+			
+			// calculate object's world position
+			sint32 gix = (x & ~0x1FF) + 2 * globitem.x;
+			sint32 giy = (y & ~0x1FF) + 2 * globitem.y;
+			sint32 giz = z + globitem.z;
+			
+			item->setLocation(gix, giy, giz);
+			
+			item->setShape(globitem.shape);
+			item->setFrame(globitem.frame);
+			item->setQuality(0);
+			item->setMapNum(0);
+			item->setNpcNum(0);
+			
+			item->clearExtFlag(Item::EXT_SAVE_GLOBSKIP);
+
+			//!! hackish...
+			if (item->getExtFlags() & EXT_INCURMAP) {
+				World::get_instance()->getCurrentMap()->addItem(item);
+			}
+
+		}
+		
+		item = World::get_instance()->getItem(item->getGlobNext());
+	}
+}
+
+
 // delete expanded contents.
 // needs to clear objIDs, but doesn't need to remove pointer from CurrentMap
 // (since we're probably iterating over object lists in CurrentMap when called)

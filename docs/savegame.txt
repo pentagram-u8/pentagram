@@ -130,14 +130,14 @@ uint16 objid
 
 Item: (v1)
 uint16 version
+uint16 extendedflags
+uint16 flags
 <Object>
-uint16 shape, frame
-uint16 x,y,z
-uint16 flags, quality, npcnum, mapnum
-if (objid != 0xFFFF) {
-   uint16 extendedflags
-   uint16 gump, gravity_pid, glob_next
-}
+if (!EXT_SAVE_GLOBSKIP) uint16 shape, frame
+if (!EXT_SAVE_GLOBSKIP) uint16 x,y,z
+if (!EXT_SAVE_GLOBSKIP) uint16 quality, npcnum, mapnum
+if (objid != 0xFFFF && !EXT_SAVE_GLOBSKIP) uint16 gump, gravity_pid
+if (objid != 0xFFFF) uint16 glob_next
 
 Container: (v1)
 uint16 version

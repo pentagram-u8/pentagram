@@ -175,12 +175,12 @@ void World::loadNonFixed(IDataSource* ds)
 {
 	Flex* f = new Flex(ds);
 
+	pout << "Loading NonFixed items" << std::endl;
+			
 	for (unsigned int i = 0; i < f->get_count(); ++i) {
 
 		// items in this map?
 		if (f->get_size(i) > 0) {
-			pout << "Loading NonFixed items in map " << i << std::endl;
-
 			assert(maps.size() > i);
 			assert(maps[i] != 0);
 
@@ -267,6 +267,7 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 		actor->setHP(npcds->read1());
 		actor->setDir(npcds->read1()); //! is this correct?
 		actor->setLastAnim(npcds->read1());
+
 		// TODO: (decode and) read rest of npcdata.dat...
 
 		ObjectManager::get_instance()->assignActorObjId(actor, i);

@@ -37,10 +37,19 @@ public:
 	void expand();
 
 	//! delete the expanded contents
+	//! currently, this doesn't do anything, as the contents will be
+	//! deleted simply by not saving them. (in switchMap)
 	void unexpand();
 
-	bool loadData(IDataSource* ids);
+	//! check if the contents of this glob have changed
+	//! mark any item which hasn't changed with EXT_SAVE_GLOBSKIP
+	void checkContents();
 
+	//! restore any contents with EXT_SAVE_GLOBSKIP set to their
+	//! original state. Also add those items to the CurrentMap if necessary.
+	void restoreContents();
+
+	bool loadData(IDataSource* ids);
 protected:
 	virtual void saveData(ODataSource* ods);
 
