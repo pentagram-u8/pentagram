@@ -109,7 +109,7 @@ Intrinsic U8Intrinsics[] = {
 	0, // Item::legal_move
 	Actor::I_isNPC,
 	0, //U
-	0, // Item::hurl
+	UCMachine::I_dummyProcess, // process Item::hurl
 	Item::I_shoot,
 	0, // Item::fall
 	0, // Item::grab
@@ -266,9 +266,9 @@ Intrinsic U8Intrinsics[] = {
 	0, // createSprite
 	0, // createSprite
 	Item::I_getFamilyOfType,
-	0, // TimeInGameHours
-	0, // TimeInMinutes
-	0, // TimeInSeconds
+	GUIApp::I_getTimeInGameHours,
+	GUIApp::I_getTimeInMinutes,
+	GUIApp::I_getTimeInSeconds,
 	0, // SetTimeInGameHours
 	0, // SetTimeInMinutes
 	0, // SetTimeInSeconds

@@ -116,6 +116,9 @@ bool Kernel::runProcesses(uint32 framenum)
 	current_process = processes.begin();
 	while (current_process != processes.end()) {
 		Process* p = *current_process;
+
+		if (p->terminate_deferred)
+			p->terminate();
 		if (!p->terminated)
 			if (p->run(framenum)) dirty = true;
 		if (p->terminated) {

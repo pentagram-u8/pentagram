@@ -31,7 +31,7 @@ public:
 
 	Process(uint16 it = 0, uint16 ty = 0) : 
 		pid(0xFFFF), active(false), suspended(false), terminated(false),
-		item_num(it), type(ty), result(0)
+		terminate_deferred(false), item_num(it), type(ty), result(0)
 	{ }
 	virtual ~Process() { }
 
@@ -40,7 +40,8 @@ public:
 
 	bool is_active() const { return active; }
 
-	virtual void terminate();
+	virtual void terminate();	// Terminate NOW!
+	void terminateDeferred() { terminate_deferred = true; } // Terminate next frame
 	void waitFor(uint16 pid);
 	void wakeUp(uint32 result);
 
@@ -48,7 +49,6 @@ public:
 	void setType(uint16 ty) { type = ty; }
 
 	uint16 getPid() { return pid; }
-
 protected:
 	// process id
 	uint16 pid;
@@ -58,6 +58,7 @@ protected:
 	                //! (this may have to be a count instead, if a process
 	                //! is waiting for more than one others)
 	bool terminated;
+	bool terminate_deferred;	// automatically call terminate next frame
 
 	// item we are assigned to
 	uint16 item_num;

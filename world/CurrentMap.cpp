@@ -149,6 +149,9 @@ void CurrentMap::loadItems(list<Item*> itemlist)
 
 		// add item to internal object list
 		addItem(item);
+		
+		// Cachein (do for expanded objects too?)
+		//item->callUsecodeEvent(4);	// CONSTANT 
 
 		GlobEgg* globegg = p_dynamic_cast<GlobEgg*>(item);
 		if (globegg) {
@@ -177,8 +180,15 @@ void CurrentMap::loadMap(Map* map)
 	// !constant
 	for (uint16 i = 0; i < 256; ++i) {
 		Actor* actor = World::get_instance()->getNPC(i);
+
+		// Schedule
+		if (actor) actor->callUsecodeEvent(8);	// CONSTANT 
+
 		if (actor && actor->getMapNum() == getNum()) {
 			addItem(actor);
+
+			// Cachein
+			//actor->callUsecodeEvent(4);	// CONSTANT 
 		}
 	}
 }

@@ -44,7 +44,7 @@ uint16 Egg::hatch()
 
 uint32 Egg::I_getEggXRange(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_EGG(egg);
+	ARG_EGG_FROM_PTR(egg);
 	if (!egg) return 0;
 
 	return static_cast<uint32>(egg->getXRange());
@@ -52,7 +52,7 @@ uint32 Egg::I_getEggXRange(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Egg::I_getEggYRange(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_EGG(egg);
+	ARG_EGG_FROM_PTR(egg);
 	if (!egg) return 0;
 
 	return static_cast<uint32>(egg->getYRange());
@@ -60,7 +60,7 @@ uint32 Egg::I_getEggYRange(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Egg::I_setEggXRange(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_EGG(egg);
+	ARG_EGG_FROM_PTR(egg);
 	ARG_UINT16(xr);
 	if (!egg) return 0;
 
@@ -70,7 +70,7 @@ uint32 Egg::I_setEggXRange(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Egg::I_setEggYRange(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_EGG(egg);
+	ARG_EGG_FROM_PTR(egg);
 	ARG_UINT16(yr);
 	if (!egg) return 0;
 
@@ -80,7 +80,7 @@ uint32 Egg::I_setEggYRange(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Egg::I_getEggId(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_EGG(egg);
+	ARG_EGG_FROM_PTR(egg);
 	if (!egg) return 0;
 
 	return egg->getMapNum();
@@ -88,7 +88,7 @@ uint32 Egg::I_getEggId(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Egg::I_setEggId(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_EGG(egg);
+	ARG_EGG_FROM_PTR(egg);
 	ARG_UINT16(eggid);
 	if (!egg) return 0;
 

@@ -60,6 +60,9 @@ public:
 	INTRINSIC(I_getCurrentTimerTick);
 	INTRINSIC(I_setAvatarInStasis);
 	INTRINSIC(I_getAvatarInStasis);
+	INTRINSIC(I_getTimeInGameHours);
+	INTRINSIC(I_getTimeInMinutes);
+	INTRINSIC(I_getTimeInSeconds);
 	
 	void setAvatarInStasis(bool stat) { avatarInStasis = stat; }
 	bool isAvatarInStasis() const { return avatarInStasis; }

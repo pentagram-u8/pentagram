@@ -804,4 +804,24 @@ uint32 GUIApp::I_getAvatarInStasis(const uint8* /*args*/, unsigned int /*argsize
 		return 0;
 }
 
+uint32 GUIApp::I_getTimeInGameHours(const uint8* /*args*/,
+										unsigned int /*argsize*/)
+{
+	// 1 game hour per every 27000 frames
+	return get_instance()->getFrameNum()/27000;
+}
+
+uint32 GUIApp::I_getTimeInMinutes(const uint8* /*args*/,
+										unsigned int /*argsize*/)
+{
+	// 1 minute per every 1800 frames
+	return get_instance()->getFrameNum()/1800;
+}
+
+uint32 GUIApp::I_getTimeInSeconds(const uint8* /*args*/,
+										unsigned int /*argsize*/)
+{
+	// 1 second per every 30 frames
+	return get_instance()->getFrameNum()/30;
+}
 

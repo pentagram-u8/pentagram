@@ -77,14 +77,14 @@ void Actor::teleport(int newmap, sint32 newx, sint32 newy, sint32 newz)
 
 uint32 Actor::I_isNPC(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ACTOR(actor);
+	ARG_ACTOR_FROM_PTR(actor);
 	if (!actor) return 0;
 	return 1;
 }
 
 uint32 Actor::I_getMap(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ACTOR(actor);
+	ARG_ACTOR_FROM_PTR(actor);
 	if (!actor) return 0;
 
 	return actor->getMapNum();
@@ -92,7 +92,7 @@ uint32 Actor::I_getMap(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Actor::I_teleport(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ACTOR(actor);
+	ARG_ACTOR_FROM_PTR(actor);
 	ARG_UINT16(newx);
 	ARG_UINT16(newy);
 	ARG_UINT16(newz);
@@ -105,7 +105,7 @@ uint32 Actor::I_teleport(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Actor::I_doAnim(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ACTOR(actor);
+	ARG_ACTOR_FROM_PTR(actor);
 	ARG_UINT16(anim);
 	ARG_UINT16(dir); // seems to be 0-8
 	ARG_UINT16(unk1); // this is almost always 10000 in U8.Maybe speed-related?
@@ -131,7 +131,7 @@ uint32 Actor::I_doAnim(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Actor::I_getDir(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ACTOR(actor);
+	ARG_ACTOR_FROM_PTR(actor);
 	if (!actor) return 0;
 
 	return actor->getDir();
@@ -139,7 +139,7 @@ uint32 Actor::I_getDir(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Actor::I_getLastAnimSet(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ACTOR(actor);
+	ARG_ACTOR_FROM_PTR(actor);
 	if (!actor) return 0;
 
 	return actor->getLastAnim();
@@ -147,7 +147,7 @@ uint32 Actor::I_getLastAnimSet(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Actor::I_getStr(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ACTOR(actor);
+	ARG_ACTOR_FROM_PTR(actor);
 	if (!actor) return 0;
 
 	return actor->getStr();
@@ -155,7 +155,7 @@ uint32 Actor::I_getStr(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Actor::I_getDex(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ACTOR(actor);
+	ARG_ACTOR_FROM_PTR(actor);
 	if (!actor) return 0;
 
 	return actor->getDex();
@@ -163,7 +163,7 @@ uint32 Actor::I_getDex(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Actor::I_getInt(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ACTOR(actor);
+	ARG_ACTOR_FROM_PTR(actor);
 	if (!actor) return 0;
 
 	return actor->getInt();
@@ -171,7 +171,7 @@ uint32 Actor::I_getInt(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Actor::I_getHp(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ACTOR(actor);
+	ARG_ACTOR_FROM_PTR(actor);
 	if (!actor) return 0;
 
 	return actor->getHP();
@@ -179,7 +179,7 @@ uint32 Actor::I_getHp(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Actor::I_getMana(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ACTOR(actor);
+	ARG_ACTOR_FROM_PTR(actor);
 	if (!actor) return 0;
 
 	return actor->getMana();
@@ -187,7 +187,7 @@ uint32 Actor::I_getMana(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Actor::I_setStr(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ACTOR(actor);
+	ARG_ACTOR_FROM_PTR(actor);
 	ARG_UINT16(str);
 	if (!actor) return 0;
 
@@ -197,7 +197,7 @@ uint32 Actor::I_setStr(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Actor::I_setDex(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ACTOR(actor);
+	ARG_ACTOR_FROM_PTR(actor);
 	ARG_UINT16(dex);
 	if (!actor) return 0;
 
@@ -207,7 +207,7 @@ uint32 Actor::I_setDex(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Actor::I_setInt(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ACTOR(actor);
+	ARG_ACTOR_FROM_PTR(actor);
 	ARG_UINT16(int_);
 	if (!actor) return 0;
 
@@ -217,7 +217,7 @@ uint32 Actor::I_setInt(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Actor::I_setHp(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ACTOR(actor);
+	ARG_ACTOR_FROM_PTR(actor);
 	ARG_UINT16(hp);
 	if (!actor) return 0;
 
@@ -227,7 +227,7 @@ uint32 Actor::I_setHp(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Actor::I_setMana(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ACTOR(actor);
+	ARG_ACTOR_FROM_PTR(actor);
 	ARG_UINT16(mp);
 	if (!actor) return 0;
 
@@ -237,7 +237,7 @@ uint32 Actor::I_setMana(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Actor::I_isInCombat(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ACTOR(actor);
+	ARG_ACTOR_FROM_PTR(actor);
 	if (!actor) return 0;
 
 	if (actor->getActorFlags() & ACT_INCOMBAT)
@@ -248,7 +248,7 @@ uint32 Actor::I_isInCombat(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Actor::I_isDead(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ACTOR(actor);
+	ARG_ACTOR_FROM_PTR(actor);
 	if (!actor) return 0;
 
 	if (actor->getActorFlags() & ACT_DEAD)
@@ -259,7 +259,7 @@ uint32 Actor::I_isDead(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Actor::I_isImmortal(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ACTOR(actor);
+	ARG_ACTOR_FROM_PTR(actor);
 	if (!actor) return 0;
 
 	if (actor->getActorFlags() & ACT_IMMORTAL)
@@ -270,7 +270,7 @@ uint32 Actor::I_isImmortal(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Actor::I_isWithstandDeath(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ACTOR(actor);
+	ARG_ACTOR_FROM_PTR(actor);
 	if (!actor) return 0;
 
 	if (actor->getActorFlags() & ACT_WITHSTANDDEATH)
@@ -281,7 +281,7 @@ uint32 Actor::I_isWithstandDeath(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Actor::I_isFeignDeath(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ACTOR(actor);
+	ARG_ACTOR_FROM_PTR(actor);
 	if (!actor) return 0;
 
 	if (actor->getActorFlags() & ACT_FEIGNDEATH)
@@ -292,7 +292,7 @@ uint32 Actor::I_isFeignDeath(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Actor::I_pathfindToItem(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ACTOR(actor);
+	ARG_ACTOR_FROM_PTR(actor);
 	ARG_UINT16(id2);
 	Item* item = World::get_instance()->getItem(id2);
 	if (!actor) return 0;
@@ -306,7 +306,7 @@ uint32 Actor::I_pathfindToItem(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Actor::I_isBusy(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_UINT32(ptr);
+	ARG_UC_PTR(ptr);
 	uint16 id = UCMachine::ptrToObject(ptr);
 
 	uint32 count = Kernel::get_instance()->getNumProcesses(id, 0x00F0);
@@ -318,7 +318,7 @@ uint32 Actor::I_isBusy(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Actor::I_createActor(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_UINT32(ptr);
+	ARG_UC_PTR(ptr);
 	ARG_UINT16(shape);
 	ARG_UINT16(unknown); // !!! what's this?
 

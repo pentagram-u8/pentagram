@@ -65,7 +65,7 @@ uint16 MonsterEgg::hatch()
 
 uint32 MonsterEgg::I_monsterEggHatch(const uint8*args,unsigned int /*argsize*/)
 {
-	ARG_EGG(egg);
+	ARG_EGG_FROM_PTR(egg);
 	MonsterEgg* megg = p_dynamic_cast<MonsterEgg*>(egg);
 	if (!megg) return 0;
 
@@ -74,7 +74,7 @@ uint32 MonsterEgg::I_monsterEggHatch(const uint8*args,unsigned int /*argsize*/)
 
 uint32 MonsterEgg::I_getMonId(const uint8*args,unsigned int /*argsize*/)
 {
-	ARG_EGG(egg);
+	ARG_EGG_FROM_PTR(egg);
 	MonsterEgg* megg = p_dynamic_cast<MonsterEgg*>(egg);
 	if (!megg) return 0;
 

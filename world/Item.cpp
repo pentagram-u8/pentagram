@@ -42,6 +42,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GumpNotifyProcess.h"
 #include "ContainerGump.h"
 #include "GameMapGump.h"
+#include "WorldPoint.h"
 
 #include <cstdlib>
 
@@ -611,7 +612,7 @@ void Item::clearGump()
 
 uint32 Item::I_touch(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_NULL32(); // ARG_ITEM(item);
+	ARG_NULL32(); // ARG_ITEM_FROM_PTR(item);
 
 	// Guess: this is used to make sure an item is painted in the original.
 	// Our renderer is different, making this intrinsic unnecessary.
@@ -621,7 +622,7 @@ uint32 Item::I_touch(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getX(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	sint32 x,y,z;
@@ -631,7 +632,7 @@ uint32 Item::I_getX(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getY(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	sint32 x,y,z;
@@ -641,7 +642,7 @@ uint32 Item::I_getY(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getZ(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	sint32 x,y,z;
@@ -651,7 +652,7 @@ uint32 Item::I_getZ(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getCX(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	sint32 x,y,z;
@@ -665,7 +666,7 @@ uint32 Item::I_getCX(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getCY(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	sint32 x,y,z;
@@ -679,7 +680,7 @@ uint32 Item::I_getCY(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getCZ(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	sint32 x,y,z;
@@ -690,29 +691,26 @@ uint32 Item::I_getCZ(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getPoint(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
-	ARG_UINT32(ptr);
+	ARG_ITEM_FROM_PTR(item);
+	ARG_UC_PTR(ptr);
 	if (!item) return 0;
 
 	sint32 x,y,z;
 	item->getLocationAbsolute(x,y,z);
 
-	uint8 buf[5];
+	WorldPoint point;
+	point.setX(x);
+	point.setY(y);
+	point.setZ(z);
 
-	buf[0] = static_cast<uint8>(x);
-	buf[1] = static_cast<uint8>(x >> 8);
-	buf[2] = static_cast<uint8>(y);
-	buf[3] = static_cast<uint8>(y >> 8);
-	buf[4] = static_cast<uint8>(z);
-
-	UCMachine::get_instance()->assignPointer(ptr, buf, 5);
+	UCMachine::get_instance()->assignPointer(ptr, point.buf, 5);
 
 	return 0;
 }
 
 uint32 Item::I_getShape(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	return item->getShape();
@@ -720,7 +718,7 @@ uint32 Item::I_getShape(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_setShape(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	ARG_UINT16(shape);
 	if (!item) return 0;
 
@@ -730,7 +728,7 @@ uint32 Item::I_setShape(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getFrame(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	return item->getFrame();
@@ -738,7 +736,7 @@ uint32 Item::I_getFrame(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_setFrame(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	ARG_UINT16(frame);
 	if (!item) return 0;
 
@@ -748,7 +746,7 @@ uint32 Item::I_setFrame(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getQuality(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	if (item->getFamily() != ShapeInfo::SF_GENERIC)
@@ -759,7 +757,7 @@ uint32 Item::I_getQuality(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getUnkEggType(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	if (item->getFamily() == ShapeInfo::SF_UNKEGG)
@@ -770,7 +768,7 @@ uint32 Item::I_getUnkEggType(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getQuantity(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	if (item->getFamily() == ShapeInfo::SF_QUANTITY ||
@@ -782,7 +780,7 @@ uint32 Item::I_getQuantity(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getContainer(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	Container *parent = item->getParent();
@@ -798,7 +796,7 @@ uint32 Item::I_getContainer(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getRootContainer(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	Container *parent = item->getParent();
@@ -817,7 +815,7 @@ uint32 Item::I_getRootContainer(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getQ(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	return item->getQuality();
@@ -825,7 +823,7 @@ uint32 Item::I_getQ(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_setQ(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	ARG_UINT16(q);
 	if (!item) return 0;
 
@@ -835,7 +833,7 @@ uint32 Item::I_setQ(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_setQuality(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	ARG_UINT16(q);
 	if (!item) return 0;
 
@@ -847,7 +845,7 @@ uint32 Item::I_setQuality(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_setQuantity(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	ARG_UINT16(q);
 	if (!item) return 0;
 
@@ -860,7 +858,7 @@ uint32 Item::I_setQuantity(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getFamily(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	return item->getFamily();
@@ -868,7 +866,7 @@ uint32 Item::I_getFamily(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getTypeFlag(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	ARG_UINT16(typeflag);
 	if (!item) return 0;
 
@@ -885,7 +883,7 @@ uint32 Item::I_getTypeFlag(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getStatus(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	return item->getFlags();
@@ -893,7 +891,7 @@ uint32 Item::I_getStatus(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_orStatus(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	ARG_UINT16(mask);
 	if (!item) return 0;
 
@@ -903,7 +901,7 @@ uint32 Item::I_orStatus(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_andStatus(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	ARG_UINT16(mask);
 	if (!item) return 0;
 
@@ -914,7 +912,7 @@ uint32 Item::I_andStatus(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getWeight(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	return item->getShapeInfo()->weight;
@@ -923,7 +921,7 @@ uint32 Item::I_getWeight(const uint8* args, unsigned int /*argsize*/)
 uint32 Item::I_getWeightIncludingContents(const uint8* args,
 										  unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	return item->getTotalWeight();
@@ -931,7 +929,7 @@ uint32 Item::I_getWeightIncludingContents(const uint8* args,
 
 uint32 Item::I_bark(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	ARG_STRING(str);
 	if (!item) return 0;
 
@@ -961,7 +959,7 @@ uint32 Item::I_bark(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_look(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	// constant
@@ -970,7 +968,7 @@ uint32 Item::I_look(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_use(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	// constant
@@ -979,7 +977,7 @@ uint32 Item::I_use(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_enterFastArea(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	// constant
@@ -988,7 +986,7 @@ uint32 Item::I_enterFastArea(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_ask(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_NULL32(); // ARG_ITEM(item); // currently unused.
+	ARG_NULL32(); // ARG_ITEM_FROM_PTR(item); // currently unused.
 	ARG_LIST(answers);
 
 	if (!answers) return 0;
@@ -1004,25 +1002,14 @@ uint32 Item::I_ask(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_legalCreateAtPoint(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_UINT32(itemptr); // need to store the item id at *itemptr
+	ARG_UC_PTR(itemptr); // need to store the item id at *itemptr
 	ARG_UINT16(shape);
 	ARG_UINT16(frame);
-	ARG_UINT32(ptr);
+	ARG_WORLDPOINT(point);
 
 	//! haven't checked if this does what it should do.
 	// It just creates an item at a worldpoint currently and returns the id.
 	// This may have to check for room at the give spot
-
-	uint8 buf[5];
-	if (!UCMachine::get_instance()->dereferencePointer(ptr, buf, 5)) {
-		perr << "Illegal WorldPoint pointer passed to I_legalCreateAtPoint."
-			 << std::endl;
-		return 0;
-	}
-
-	uint16 x = buf[0] + (buf[1]<<8);
-	uint16 y = buf[2] + (buf[3]<<8);
-	uint16 z = buf[4];
 
 	Item* newitem = ItemFactory::createItem(shape, frame, 0, 0, 0, 0, 0);
 	if (!newitem) {
@@ -1030,10 +1017,11 @@ uint32 Item::I_legalCreateAtPoint(const uint8* args, unsigned int /*argsize*/)
 			 <<	"," << frame << ")." << std::endl;
 		return 0;
 	}
-	newitem->setLocation(x, y, z);
+	newitem->setLocation(point.getX(), point.getY(), point.getZ());
 	uint16 objID = newitem->assignObjId();
 	World::get_instance()->getCurrentMap()->addItem(newitem);
 
+	uint8 buf[2];
 	buf[0] = static_cast<uint8>(objID);
 	buf[1] = static_cast<uint8>(objID >> 8);
 	UCMachine::get_instance()->assignPointer(itemptr, buf, 2);
@@ -1043,7 +1031,7 @@ uint32 Item::I_legalCreateAtPoint(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_legalCreateAtCoords(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_UINT32(itemptr); // need to store the item id at *itemptr
+	ARG_UC_PTR(itemptr); // need to store the item id at *itemptr
 	ARG_UINT16(shape);
 	ARG_UINT16(frame);
 	ARG_UINT16(x);
@@ -1074,13 +1062,12 @@ uint32 Item::I_legalCreateAtCoords(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_legalCreateInCont(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_UINT32(itemptr); // need to store the item id at *itemptr
+	ARG_UC_PTR(itemptr); // need to store the item id at *itemptr
 	ARG_UINT16(shape);
 	ARG_UINT16(frame);
 	ARG_UINT16(container_id);
+	ARG_CONTAINER_FROM_ID(container);
 	ARG_UINT16(unknown); // ?
-	Container *container = p_dynamic_cast<Container*>
-		(World::get_instance()->getItem(container_id));
 
 	//! haven't checked if this does what it should do.
 	// It just creates an item, tries to add it to the given container.
@@ -1113,7 +1100,7 @@ uint32 Item::I_legalCreateInCont(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_destroy(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	item->destroy();
@@ -1123,10 +1110,10 @@ uint32 Item::I_destroy(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getFootpad(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
-	ARG_UINT32(xptr);
-	ARG_UINT32(yptr);
-	ARG_UINT32(zptr);
+	ARG_ITEM_FROM_PTR(item);
+	ARG_UC_PTR(xptr);
+	ARG_UC_PTR(yptr);
+	ARG_UC_PTR(zptr);
 	if (!item) return 0;
 
 	uint8 buf[2];
@@ -1150,9 +1137,8 @@ uint32 Item::I_getFootpad(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_overlaps(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
-	ARG_UINT16(id2);
-	Item* item2 = World::get_instance()->getItem(id2);
+	ARG_ITEM_FROM_PTR(item);
+	ARG_ITEM_FROM_ID(item2);
 	if (!item) return 0;
 	if (!item2) return 0;
 
@@ -1164,9 +1150,8 @@ uint32 Item::I_overlaps(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_overlapsXY(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
-	ARG_UINT16(id2);
-	Item* item2 = World::get_instance()->getItem(id2);
+	ARG_ITEM_FROM_PTR(item);
+	ARG_ITEM_FROM_ID(item2);
 	if (!item) return 0;
 	if (!item2) return 0;
 
@@ -1178,9 +1163,8 @@ uint32 Item::I_overlapsXY(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_isOn(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
-	ARG_UINT16(id2);
-	Item* item2 = World::get_instance()->getItem(id2);
+	ARG_ITEM_FROM_PTR(item);
+	ARG_ITEM_FROM_ID(item2);
 	if (!item) return 0;
 	if (!item2) return 0;
 
@@ -1200,7 +1184,7 @@ uint32 Item::I_getFamilyOfType(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_push(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	//! do we need to check if item is already ethereal?
@@ -1218,7 +1202,7 @@ uint32 Item::I_push(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_create(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_UINT32(itemptr); // need to store the item id at *itemptr (????)
+	ARG_UC_PTR(itemptr); // need to store the item id at *itemptr (????)
 	ARG_UINT16(shape);
 	ARG_UINT16(frame);
 
@@ -1243,7 +1227,7 @@ uint32 Item::I_create(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_pop(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_NULL32(); // ARG_ITEM(item); // unused
+	ARG_NULL32(); // ARG_ITEM_FROM_PTR(item); // unused
 
 	World* w = World::get_instance();
 
@@ -1269,7 +1253,7 @@ uint32 Item::I_pop(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_popToCoords(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_NULL32(); // ARG_ITEM(item); // unused
+	ARG_NULL32(); // ARG_ITEM_FROM_PTR(item); // unused
 	ARG_UINT16(x);
 	ARG_UINT16(y);
 	ARG_UINT16(z);
@@ -1297,13 +1281,11 @@ uint32 Item::I_popToCoords(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_popToContainer(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_NULL32(); // ARG_ITEM(item); // unused
-	ARG_UINT16(container_id);
-	Container *container = p_dynamic_cast<Container*>
-		(World::get_instance()->getItem(container_id));
+	ARG_NULL32(); // ARG_ITEM_FROM_PTR(item); // unused
+	ARG_CONTAINER_FROM_ID(container);
 
 	if (!container) {
-		perr << "Trying to pop item to invalid container (" << container_id << ")." << std::endl;
+		perr << "Trying to pop item to invalid container (" << id_container << ")." << std::endl;
 		return 0;
 	}
 
@@ -1325,13 +1307,11 @@ uint32 Item::I_popToContainer(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_popToEnd(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_NULL32(); // ARG_ITEM(item); // unused
-	ARG_UINT16(container_id);
-	Container *container = p_dynamic_cast<Container*>
-		(World::get_instance()->getItem(container_id));
+	ARG_NULL32(); // ARG_ITEM_FROM_PTR(item); // unused
+	ARG_CONTAINER_FROM_ID(container);
 
 	if (!container) {
-		perr << "Trying to pop item to invalid container (" << container_id << ")." << std::endl;
+		perr << "Trying to pop item to invalid container (" << id_container << ")." << std::endl;
 		return 0;
 	}
 
@@ -1356,7 +1336,7 @@ uint32 Item::I_popToEnd(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_move(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	ARG_UINT16(x);
 	ARG_UINT16(y);
 	ARG_UINT16(z);
@@ -1368,8 +1348,8 @@ uint32 Item::I_move(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_legalMoveToPoint(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
-	ARG_UINT32(ptr);
+	ARG_ITEM_FROM_PTR(item);
+	ARG_WORLDPOINT(point);
 	ARG_UINT16(unknown1); // 0/1
 	ARG_UINT16(unknown2); // always 0
 
@@ -1377,19 +1357,8 @@ uint32 Item::I_legalMoveToPoint(const uint8* args, unsigned int /*argsize*/)
 	// Currently: check if item can exist at point. If so, move it there
 	// and return true. If not, return false.
 
-	uint8 buf[5];
-	if (!UCMachine::get_instance()->dereferencePointer(ptr, buf, 5)) {
-		perr << "Illegal WorldPoint pointer passed to I_legalCreateAtPoint."
-			 << std::endl;
-		return 0;
-	}
-
-	uint16 x = buf[0] + (buf[1]<<8);
-	uint16 y = buf[2] + (buf[3]<<8);
-	uint16 z = buf[4];
-
-	if (item->canExistAt(x, y, z)) {
-		item->move(x, y, z);
+	if (item->canExistAt(point.getX(), point.getY(), point.getZ())) {
+		item->move(point.getX(), point.getY(), point.getZ());
 		return 1;
 	} else {
 		return 0;
@@ -1409,7 +1378,7 @@ uint32 Item::I_getEtherealTop(const uint8* args, unsigned int /*argsize*/)
 //!!! is this correct?
 uint32 Item::I_getMapArray(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	return item->getMapNum();
@@ -1418,7 +1387,7 @@ uint32 Item::I_getMapArray(const uint8* args, unsigned int /*argsize*/)
 //!!! is this correct?
 uint32 Item::I_setMapArray(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	ARG_UINT16(mapnum);
 	if (!item) return 0;
 
@@ -1428,7 +1397,7 @@ uint32 Item::I_setMapArray(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getDirToCoords(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	ARG_UINT16(x);
 	ARG_UINT16(y);
 	if (!item) return 0;
@@ -1441,7 +1410,7 @@ uint32 Item::I_getDirToCoords(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getDirFromCoords(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	ARG_UINT16(x);
 	ARG_UINT16(y);
 	if (!item) return 0;
@@ -1454,9 +1423,8 @@ uint32 Item::I_getDirFromCoords(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getDirToItem(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
-	ARG_UINT16(id2);
-	Item *item2 = World::get_instance()->getItem(id2);
+	ARG_ITEM_FROM_PTR(item);
+	ARG_ITEM_FROM_ID(item2);
 	if (!item) return 0;
 	if (!item2) return 0;
 
@@ -1471,9 +1439,8 @@ uint32 Item::I_getDirToItem(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getDirFromItem(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
-	ARG_UINT16(id2);
-	Item *item2 = World::get_instance()->getItem(id2);
+	ARG_ITEM_FROM_PTR(item);
+	ARG_ITEM_FROM_ID(item2);
 	if (!item) return 0;
 	if (!item2) return 0;
 
@@ -1489,30 +1456,19 @@ uint32 Item::I_getDirFromItem(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_shoot(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
-	ARG_UINT32(ptr);
+	ARG_ITEM_FROM_PTR(item);
+	ARG_WORLDPOINT(point);
 	ARG_UINT16(unk1);
 	ARG_UINT16(unk2);
 	if (!item) return 0;
 
-	uint8 buf[5];
-	if (!UCMachine::get_instance()->dereferencePointer(ptr, buf, 5)) {
-		perr << "Illegal WorldPoint pointer passed to I_shoot."
-			 << std::endl;
-		return 0;
-	}
-
-	uint16 x = buf[0] + (buf[1]<<8);
-	uint16 y = buf[2] + (buf[3]<<8);
-	uint16 z = buf[4];
-
-	return Kernel::get_instance()->addProcess(new ItemMoveProcess(item,x,y,z,
-																  unk1,true));
+	return Kernel::get_instance()->addProcess(new ItemMoveProcess(item,
+							point.getX(),point.getY(),point.getZ(),unk1,true));
 }
 
 uint32 Item::I_openGump(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	ARG_UINT16(gumpshape);
 	if (!item) return 0;
 
@@ -1539,7 +1495,7 @@ uint32 Item::I_openGump(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_closeGump(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
 	if (!(item->flags & FLG_GUMP_OPEN)) return 0;

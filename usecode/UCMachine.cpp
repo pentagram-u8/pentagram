@@ -34,8 +34,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Container.h"
 
 //#define LOGPF(X) pout.printf X
+//#define LOGPF(X) do { if (p->item_num == 19) { pout.printf X; } } while(0)
+
+#ifndef LOGPF
 #define LOGPF(X)
-//#define LOGPF(X) do { if (p->classid == 68) { pout.printf X; } } while(0)
+#endif
 
 //#define DUMPHEAP
 
@@ -113,7 +116,7 @@ bool UCMachine::execProcess(UCProcess* p)
 	bool cede = false;
 	bool error = false;
 
-	while(!cede && !error && !p->terminated)
+	while(!cede && !error && !p->terminated && !p->terminate_deferred)
 	{
 		//! guard against reading past end of class
 		//! guard against other error conditions
@@ -1053,7 +1056,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			if (p->ret()) { // returning from process
 				// TODO
 				LOGPF(("ret\t\tfrom process"));
-				killProcess(p);
+				p->terminateDeferred();
 
 				// return value is going to be stored somewhere,
 				// and some other process is probably waiting for it.
@@ -1695,7 +1698,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			if (Kernel::get_instance()->
 				getNumProcesses(p->item_num, p->type) > 1) {
 				// another process with this (object,type) is already running
-				killProcess(p);
+				p->terminateDeferred();
 				LOGPF(("\t(terminating)"));
 			}
 			

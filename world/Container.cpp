@@ -170,7 +170,7 @@ void Container::containerSearch(UCList* itemlist, const uint8* loopscript,
 
 uint32 Container::I_removeContents(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_CONTAINER(container);
+	ARG_CONTAINER_FROM_PTR(container);
 	if (!container) return 0;
 
 	container->removeContents();
@@ -179,7 +179,7 @@ uint32 Container::I_removeContents(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Container::I_destroyContents(const uint8* args,unsigned int /*argsize*/)
 {
-	ARG_CONTAINER(container);
+	ARG_CONTAINER_FROM_PTR(container);
 	if (!container) return 0;
 
 	container->destroyContents();

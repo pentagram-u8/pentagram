@@ -154,7 +154,7 @@ const char* const ConvertUsecodeU8::_intrinsics[] = {
 	"Item::legal_move(uword*, uword)",
 	"Item::isNpc()",
 	"Item::isInNpc()",							// Unused
-	"Item::hurl(word, word, word, word)",
+	"process Item::hurl(word, word, word, word)",
 	"Item::shoot(WorldPoint*, word, word)",
 	"Item::fall()",
 	"Item::grab()",
