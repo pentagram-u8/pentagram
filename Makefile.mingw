@@ -43,7 +43,7 @@ shapeconv.exe : ShapeConv.o $(CONVERT_OBJS) $(FILESYS_OBJS) $(MISC_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
 clean:
-	rm -f $(FILESYS_OBJS) $(GRAPHICS_OBJS) $(MISC_OBJS) disasm.exe
+	rm -f $(CONVERT_OBJS) $(FILESYS_OBJS) $(GRAPHICS_OBJS) $(MISC_OBJS) amf2mod.exe disasm.exe shapeconv.exe
 
 install: amf2mod.exe disasm.exe shapeconv.exe
 	mkdir -p $(U8PATH)
