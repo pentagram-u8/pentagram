@@ -37,6 +37,7 @@ Egg::~Egg()
 
 uint16 Egg::hatch()
 {
+	//TODO: flag egg as hatched
 	return callUsecodeEvent(7); //! constant
 }
 
