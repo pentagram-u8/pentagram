@@ -1,5 +1,6 @@
 /*
 Copyright (C) 1997-2001 Id Software, Inc.
+Copyright (C) 2003 The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -44,7 +45,7 @@ int Q_strncasecmp (const char *s1, const char *s2, uint32 length)
 			if (c2 >= 'a' && c2 <= 'z')
 				c2 -= ('a' - 'A');
 			if (c1 != c2)
-				return -1;		// strings not equal
+				return (c1 < c2) ? -1 : 1; // strings not equal
 		}
 	} while (c1);
 	
@@ -53,7 +54,7 @@ int Q_strncasecmp (const char *s1, const char *s2, uint32 length)
 
 int Q_strcasecmp (const char *s1, const char *s2)
 {
-	return Q_strncasecmp (s1, s2, 99999);
+	return Q_strncasecmp (s1, s2, 2147483647);
 }
 
 };

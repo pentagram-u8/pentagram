@@ -1,3 +1,6 @@
+2003-12-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* misc/Q_strcasecmp.*: return 1/-1 depending on which string is larger
+
 2003-12-12  Ryan Nunn <colourles@users.sourceforge.net>
 	* graphics/*RenderSurface.* : A few additions realted to a few 
 	  experiments of mine. Some minor changes are planned for a few aspects
