@@ -93,6 +93,7 @@ significant overhead.
 #include <string>
 
 #include "IDataSource.h"
+#include "ODataSource.h"
 
 class FileSystem
 {
@@ -105,6 +106,15 @@ class FileSystem
 			if(!rawopen(*f, vfn, is_text))
 				return 0;
 			return new IFileDataSource(f);
+		};
+
+		// Open a streaming file as readable. Streamed (0 on failure)
+		OFileDataSource *WriteFile(const std::string &vfn, const bool is_text=false)
+		{
+			std::ofstream *f = new std::ofstream();
+			if(!rawopen(*f, vfn, is_text))
+				return 0;
+			return new OFileDataSource(f);
 		};
 
 		bool rawopen

@@ -32,9 +32,19 @@ class IDataSource
 		virtual uint32 read1()=0;
 		virtual uint16 read2()=0;
 		virtual uint16 read2high()=0;
+		virtual uint32 read3()=0;
 		virtual uint32 read4()=0;
 		virtual uint32 read4high()=0;
-		virtual void read(char *str, sint32 num_bytes)=0;
+		virtual void read(void *str, sint32 num_bytes)=0;
+
+		uint32 readX(uint32 num_bytes)
+		{
+			assert(num_bytes > 0 && num_bytes <= 4);
+			if (num_bytes == 1) return read1();
+			else if (num_bytes == 2) return read2();
+			else if (num_bytes == 3) return read3();
+			else return read4();
+		}
 		
 		virtual void seek(uint32 pos)=0;
 		virtual void skip(sint32 delta)=0;
@@ -133,6 +143,16 @@ class IFileDataSource: public IDataSource
 		return val;
 	};
 
+	//	Read a 3-byte value, lsb first.
+	virtual uint32 read3()
+	{
+		uint32 val = 0;
+		val |= static_cast<uint32>(in->get());
+		val |= static_cast<uint32>(in->get()<<8);
+		val |= static_cast<uint32>(in->get()<<16);
+		return val;
+	};
+
 	//	Read a 4-byte long value, lsb first.
 	virtual uint32 read4()
 	{
@@ -155,7 +175,7 @@ class IFileDataSource: public IDataSource
 		return val;
 	};
 
-	void read(char *b, sint32 len) { in->read(b, len); };
+	void read(void *b, sint32 len) { in->read(static_cast<char *>(b), len); };
 
 	virtual void seek(uint32 pos)  { in->seekg(pos); };
 

@@ -1,3 +1,15 @@
+2002-10-28  Ryan Nunn <colourles@users.sourceforge.net>
+	* convert/ConvertShape.*, convert/crusader/ConvertShapeCrusader.*
+	  convert/crusader/ConvertShapeCrusader.* : Shape Conversion
+
+	* filesys/IDataSource.h : Added a few new read methods (read3 and
+	  readX)
+
+	* filesys/FileSystem.h, filesys\ODataSource.h : Added ODataSource
+
+	* tools/shapeconv/ShapeConv.cpp : Crusader<->Ultima8 Shape flex
+	  converter
+
 2002-10-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* misc/Console.cpp: #include <cstdarg>
 	* misc/Q_strcasecmp.cpp: case mismatch
