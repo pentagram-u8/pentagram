@@ -55,7 +55,7 @@ Application::Application(int argc, char *argv[])
 	ucmachine = new UCMachine;
 	pout << "Create FileSystem" << std::endl;
 	filesystem = new FileSystem;
-	setupVirtualPaths(); // setup %home, %data
+	setupVirtualPaths(); // setup @home, @data
 
 	pout << "Create Configuration" << std::endl;
 	config = new Configuration;
@@ -75,7 +75,7 @@ Application::Application(int argc, char *argv[])
 	// Load palette
 	pout << "Load Palette" << std::endl;
 	palettemanager = new PaletteManager(screen);
-	IDataSource *pf = filesystem->ReadFile("%u8/static/u8pal.pal");
+	IDataSource *pf = filesystem->ReadFile("@u8/static/u8pal.pal");
 	if (!pf) {
 		perr << "Unable to load u8pal.pal. Exiting" << std::endl;
 		std::exit(-1);
@@ -85,7 +85,7 @@ Application::Application(int argc, char *argv[])
 
 	// Load main shapes
 	pout << "Load Shapes" << std::endl;
-	IDataSource *sf = filesystem->ReadFile("%u8/static/u8shapes.flx");
+	IDataSource *sf = filesystem->ReadFile("@u8/static/u8shapes.flx");
 	if (!sf) {
 		perr << "Unable to load u8shapes.flx. Exiting" << std::endl;
 		std::exit(-1);
@@ -94,8 +94,8 @@ Application::Application(int argc, char *argv[])
 
 	// Load confont
 	pout << "Load Confont" << std::endl;
-	IDataSource *cf = filesystem->ReadFile("%data/fixedfont.tga");
-	if (cf) confont = Texture::Create(*cf, "%data/fixedfont.tga");
+	IDataSource *cf = filesystem->ReadFile("@data/fixedfont.tga");
+	if (cf) confont = Texture::Create(*cf, "@data/fixedfont.tga");
 	else confont = 0;
 	if (!confont)
 	{
@@ -132,7 +132,7 @@ Application::~Application()
 
 void Application::run()
 {
-	IDataSource* ds = filesystem->ReadFile("%u8/usecode/eusecode.flx");
+	IDataSource* ds = filesystem->ReadFile("@u8/usecode/eusecode.flx");
 	if (!ds) {
 		perr << "Unable to load eusecode.flx. Exiting" << std::endl;
 		std::exit(-1);
@@ -180,9 +180,9 @@ void Application::paint()
 void Application::setupVirtualPaths()
 {
 	// setup the 'base' virtual paths:
-	// %home - $HOME/.pentagram/ - for config files, saves,... (OS dependant)
-	// %data - /usr/share/pentagram/ - for config files, data,.. (OS dependant)
-	//       NB: %data can be overwritten by config files
+	// @home - $HOME/.pentagram/ - for config files, saves,... (OS dependant)
+	// @data - /usr/share/pentagram/ - for config files, data,.. (OS dependant)
+	//       NB: @data can be overwritten by config files
 	//       this should be a default set by configure (or other build systems)
 
 	std::string home;
@@ -193,7 +193,7 @@ void Application::setupVirtualPaths()
 	// TODO: what to do on systems without $HOME?
 	home = ".";
 #endif
-	filesystem->AddVirtualPath("%home", home);
+	filesystem->AddVirtualPath("@home", home);
 
 	std::string data;
 #ifdef DATA_PATH
@@ -201,7 +201,7 @@ void Application::setupVirtualPaths()
 #else
 	data = "data";
 #endif
-	filesystem->AddVirtualPath("%data", data);
+	filesystem->AddVirtualPath("@data", data);
 }
 
 // load configuration files
@@ -214,15 +214,15 @@ void Application::loadConfig()
 	// load user-specific config...
 
 	// system-wide config
-	pout << "%data/pentagram.cfg... ";
-	if (config->readConfigFile("%data/pentagram.cfg", "config"))
+	pout << "@data/pentagram.cfg... ";
+	if (config->readConfigFile("@data/pentagram.cfg", "config"))
 		pout << "Ok" << std::endl;
 	else
 		pout << "Failed" << std::endl;
 
 	// user config
-	pout << "%home/pentagram.cfg... ";
-	if (config->readConfigFile("%home/pentagram.cfg", "config"))
+	pout << "@home/pentagram.cfg... ";
+	if (config->readConfigFile("@home/pentagram.cfg", "config"))
 		pout << "Ok" << std::endl;
 	else
 		pout << "Failed" << std::endl;
@@ -230,15 +230,15 @@ void Application::loadConfig()
 
 	// Question: config files can specify an alternate data path
 	// Do we reload the config files if that path differs from the
-	// hardcoded data path? (since the system-wide config file is in %data)
+	// hardcoded data path? (since the system-wide config file is in @data)
 
 	std::string data;
 	config->value("config/paths/data", data, "");
 	if (data != "") {
-		filesystem->AddVirtualPath("%data", data);
+		filesystem->AddVirtualPath("@data", data);
 	}
 
 	std::string u8;
 	config->value("config/paths/u8", u8, ".");
-	filesystem->AddVirtualPath("%u8", u8);
+	filesystem->AddVirtualPath("@u8", u8);
 }

@@ -24,6 +24,16 @@
 
 #include "exceptions.h"
 
+#ifdef HAVE_SYS_STAT_H
+#include <sys/stat.h>
+#endif
+#ifdef HAVE_SYS_TYPES_H
+#include <sys/types.h>
+#endif
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+
 #include <string>
 using	std::string;
 
@@ -235,8 +245,6 @@ bool FileSystem::base_to_uppercase(string& str, int count)
 
 bool FileSystem::AddVirtualPath(const string &vpath, const string &realpath)
 {
-	// TODO: check stuff
-
 	string vp = vpath, rp = realpath;
 
 	// remove trailing slash
@@ -246,30 +254,47 @@ bool FileSystem::AddVirtualPath(const string &vpath, const string &realpath)
 	if (rp.rfind('/') == rp.size() - 1)
 		rp.erase(rp.rfind('/'));
 
+	if (rp.find("..") != string::npos) {
+		perr << "Error mounting virtual path \"" << vp << "\": "
+			 << "\"..\" not allowed." << std::endl;
+		return false;
+	}
+
+	string fullpath = rp;
+	rewrite_virtual_path(fullpath);
+	if (!IsDir(fullpath)) {
+		perr << "Error mounting virtual path \"" << vp << "\": "
+			 << "directory not found: " << fullpath << std::endl;
+		return false;
+	}
+
 	virtualpaths[vp] = rp;
 	return true;
 }
 
 bool FileSystem::RemoveVirtualPath(const string &vpath)
 {
-	// TODO: check stuff
-
 	string vp = vpath;
 
 	// remove trailing slash
 	if (vp.rfind('/') == vp.size() - 1)
 		vp.erase(vp.rfind('/'));
 
-	virtualpaths.erase(vp);
+	std::map<string, string>::iterator i = virtualpaths.find(vp);
 
-	return true;
+	if (i == virtualpaths.end()) {
+		return false;
+	} else {
+		virtualpaths.erase(vp);
+		return true;
+	}
 }
 
 
 bool FileSystem::rewrite_virtual_path(string &vfn)
 {
 	bool ret = false;
-	std::string::size_type pos = std::string::npos;
+	string::size_type pos = string::npos;
 
 	while ((pos = vfn.rfind('/', pos)) != std::string::npos) {
 //		perr << vfn << ", " << vfn.substr(0, pos) << ", " << pos << std::endl;
@@ -280,7 +305,7 @@ bool FileSystem::rewrite_virtual_path(string &vfn)
 			ret = true;
 			// rewrite first part of path
 			vfn = p->second + vfn.substr(pos);
-			pos = std::string::npos; 
+			pos = string::npos; 
 		} else {
 			if (pos == 0)
 				break;
@@ -288,4 +313,26 @@ bool FileSystem::rewrite_virtual_path(string &vfn)
 		}
 	}
 	return ret;
+}
+
+
+bool FileSystem::IsDir(const string &path)
+{
+	bool exists;
+	struct stat sbuf;
+
+	string name = path;
+
+	int uppercasecount = 0;
+	do {
+		exists = (stat(name.c_str(), &sbuf) == 0);
+		if (exists) {
+			if (S_ISDIR(sbuf.st_mode))
+				return true;  // exists, and is a directory
+			else
+				return false; // exists, but not a directory
+		}
+	} while (base_to_uppercase(name, ++uppercasecount));
+
+	return false; // not found
 }

@@ -131,6 +131,8 @@ class FileSystem
 	void switch_slashes(std::string &name);
 	bool base_to_uppercase(std::string& str, int count);
 
+	bool IsDir(const std::string& path);
+
 	static FileSystem* filesystem;
 
 	// rewrite virtual path in-place (i.e., fvn is replaced)
