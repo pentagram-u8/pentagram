@@ -1379,7 +1379,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// yy == num bytes in string
 			// zz == type
 			{
-				si16a = cs.read1();
+				si16a = cs.readXS(1);
 				uint32 scriptsize = cs.read1();
 				uint32 searchtype = cs.read1();
 
@@ -1498,6 +1498,8 @@ bool UCMachine::execProcess(UCProcess* p)
 				si16a = static_cast<sint16>(p->stack.access2(sp+4));
 //				uint16 scriptsize = p->stack.access2(sp+6);
 //				const uint8* loopscript = p->stack.access(sp+8);
+
+				perr << "si16a = " << si16a << std::endl;
 
 				if (!itemlist) {
 					perr << "Invalid item list in loopnext!" << std::endl;
