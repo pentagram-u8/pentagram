@@ -158,11 +158,9 @@ bool World::switchMap(uint32 newmap)
 	objIDs->clearAll();
 
 	pout << "Loading Fixed items in map " << newmap << std::endl;
-	pout << "-----------------------------------------" << std::endl;
 	IDataSource *items = fixed->get_datasource(newmap);
 	maps[newmap]->loadFixed(items);
 	delete items;
-	pout << "-----------------------------------------" << std::endl;
 
 	currentmap->loadMap(maps[newmap]);
 
@@ -178,7 +176,6 @@ void World::loadNonFixed(IDataSource* ds)
 		// items in this map?
 		if (f->get_size(i) > 0) {
 			pout << "Loading NonFixed items in map " << i << std::endl;
-			pout << "-----------------------------------------" << std::endl;
 
 			assert(maps.size() > i);
 			assert(maps[i] != 0);
@@ -211,7 +208,6 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 	IDataSource* npcds = npcdataflex->get_datasource(0);
 
 	pout << "Loading NPCs" << std::endl;
-	pout << "----------------" << std::endl;
 
 	for (uint32 i = 1; i < 256; ++i) // Get rid of constants?
 	{
