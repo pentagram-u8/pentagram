@@ -1,3 +1,6 @@
+2004-07-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/ActorAnimProcess.*: don't play anim outside of fastarea
+
 2004-07-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/ActorAnimProcess.*: cleaned up error conditions
 	* world/actors/AvatarMoverProcess.*: experimenting with turning a bit

@@ -84,6 +84,12 @@ bool ActorAnimProcess::init()
 	Actor* actor = World::get_instance()->getNPC(item_num);
 	assert(actor);
 
+	if (!(actor->getFlags() & Item::FLG_FASTAREA)) {
+		// not in the fast area? Can't play an animation then.
+		// (If we do, the actor will likely fall because the floor is gone.)
+		return false;
+	}
+
 	if (actor->getActorFlags() & Actor::ACT_ANIMLOCK) {
 		//! What do we do if actor was already animating?
 		//! don't do this animation or kill the previous one?
