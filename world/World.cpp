@@ -252,7 +252,7 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 		pout << shape << "," << frame << ":\t(" << x << "," << y << "," << z << "),\t" << std::hex << flags << std::dec << ", " << quality << ", " << npcnum << ", " << mapnum << ", " << next << std::endl;
 #endif
 
-		Actor *actor = ItemFactory::createActor(shape,frame,flags,quality,
+		Actor *actor = ItemFactory::createActor(shape,frame,quality,flags,
 												npcnum,mapnum,0);
 		if (!actor) {
 #ifdef DUMP_ITEMS

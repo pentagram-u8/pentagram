@@ -118,7 +118,7 @@ void Map::loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds,
 		pout << shape << "," << frame << ":\t(" << x << "," << y << "," << z << "),\t" << std::hex << flags << std::dec << ", " << quality << ", " << npcnum << ", " << mapnum << ", " << next << std::endl;
 #endif
 
-		Item *item = ItemFactory::createItem(shape,frame,flags,quality,
+		Item *item = ItemFactory::createItem(shape,frame,quality,flags,
 											 npcnum,mapnum,extendedflags);
 		if (!item) {
 		pout << shape << "," << frame << ":\t(" << x << "," << y << "," << z << "),\t" << std::hex << flags << std::dec << ", " << quality << ", " << npcnum << ", " << mapnum << ", " << next << std::endl;
@@ -143,6 +143,7 @@ void Map::loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds,
 #endif
 		}
 
+#if 0
 		//! big hack :-)
 		// NB: this causes crashes on map-switches, somehow
 		if (item->getShape() == 180) {
@@ -153,6 +154,7 @@ void Map::loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds,
 //			}
 			alreadydone = true;
 		}
+#endif
 
 	}
 }

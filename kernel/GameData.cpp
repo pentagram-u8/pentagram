@@ -39,6 +39,14 @@ GameData::GameData()
 GameData::~GameData()
 {
 	gamedata = 0;
+
+	globs.clear();
+
+	delete mainusecode;
+	mainusecode = 0;
+
+	delete mainshapes;
+	mainshapes = 0;
 }
 
 Glob* GameData::getGlob(uint32 glob) const
@@ -93,9 +101,10 @@ void GameData::loadU8Data()
 		IDataSource* globds = globflex->get_datasource(i);
 
 		if (globds && globds->getSize()) {
-			Glob* glob = new Glob;
+			glob = new Glob;
 			glob->read(globflex->get_datasource(i));
 		}
+		delete globds;
 
 		globs[i] = glob;
 	}
