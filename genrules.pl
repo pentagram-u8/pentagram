@@ -12,7 +12,6 @@ use strict;
 print "# This file is generated automatically by genrules.pl. Do not edit!\n\n";
 foreach my $product (@ARGV) {
 	# Generate the rules for each product
-	print $product.'_OBJ := $(patsubst %,$(LPATH)/%,$('.$product.'_OBJ))'."\n";
 	print $product.': $(LPATH)/'.$product.'$(EXEEXT)'."\n";
 	print '$(LPATH)/'.$product.'$(EXEEXT): $('.$product.'_OBJ)'."\n";
 	print '	$(CXX) -g -o $@ $+ $(LDFLAGS) $(SDL_LIBS)'."\n";

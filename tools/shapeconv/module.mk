@@ -5,7 +5,15 @@ LPATH := tools/shapeconv
 LSRC := $(wildcard $(LPATH)/*.cpp)
 LPRODUCTS := shapeconv
 
-shapeconv_OBJ = ShapeConv.o ../../misc/Args.o ../../filesys/FileSystem.o ../../misc/Console.o ../../misc/Q_strcasecmp.o ../../convert/u8/ConvertShapeU8.o ../../convert/crusader/ConvertShapeCrusader.o ../../convert/ConvertShape.o
+shapeconv_OBJ = \
+	tools/shapeconv/ShapeConv.o \
+	filesys/FileSystem.o \
+	misc/Args.o \
+	misc/Console.o \
+	misc/Q_strcasecmp.o \
+	convert/u8/ConvertShapeU8.o \
+	convert/crusader/ConvertShapeCrusader.o \
+	convert/ConvertShape.o
 
 # Common rules
 include common.mk
