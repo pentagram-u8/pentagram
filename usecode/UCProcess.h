@@ -50,6 +50,9 @@ public:
 
 	void setReturnValue(uint32 retval) { temp32 = retval; }
 
+	//! dump some info about this process to pout
+	virtual void dumpInfo();
+
 	bool loadData(IDataSource* ids);
 protected:
 	virtual void saveData(ODataSource* ods);

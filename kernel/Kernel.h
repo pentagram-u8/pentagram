@@ -88,6 +88,8 @@ public:
 
 	//! "Kernel::processTypes" console command
 	static void ConCmd_processTypes(const Console::ArgsType &args, const Console::ArgvType &argv);
+	//! "Kernel::listItemProcesses" console command
+	static void ConCmd_listItemProcesses(const Console::ArgsType &args, const Console::ArgvType &argv);
 	
 	INTRINSIC(I_getNumProcesses);
 	INTRINSIC(I_resetRef);

@@ -158,11 +158,14 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	con.AddConsoleCommand("GUIApp::newGame", ConCmd_newGame);
 	con.AddConsoleCommand("HIDManager::bind", HIDManager::ConCmd_bind);
 	con.AddConsoleCommand("HIDManager::unbind", HIDManager::ConCmd_unbind);
-	con.AddConsoleCommand("HIDManager::listbinds", HIDManager::ConCmd_listbinds);
+	con.AddConsoleCommand("HIDManager::listbinds",
+						  HIDManager::ConCmd_listbinds);
 	con.AddConsoleCommand("HIDManager::save", HIDManager::ConCmd_save);
 	con.AddConsoleCommand("Kernel::processTypes", Kernel::ConCmd_processTypes);
+	con.AddConsoleCommand("Kernel::listItemProcesses",
+						  Kernel::ConCmd_listItemProcesses);
 	con.AddConsoleCommand("ObjectManager::objectTypes",
-								   ObjectManager::ConCmd_objectTypes);
+						  ObjectManager::ConCmd_objectTypes);
 	con.AddConsoleCommand("MainActor::teleport", MainActor::ConCmd_teleport);
 	con.AddConsoleCommand("MainActor::mark", MainActor::ConCmd_mark);
 	con.AddConsoleCommand("MainActor::recall", MainActor::ConCmd_recall);

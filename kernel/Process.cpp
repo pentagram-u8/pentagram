@@ -111,6 +111,18 @@ void Process::suspend()
 	suspended = true;
 }
 
+void Process::dumpInfo()
+{
+	pout << "Process " << getPid() << " class "
+		 << GetClassType().class_name << ", item " << item_num
+		 << ", type " << std::hex << type << std::dec << ", status ";
+	if (active) pout << "A";
+	if (suspended) pout << "S";
+	if (terminated) pout << "T";
+	if (terminate_deferred) pout << "t";
+	pout << std::endl;
+}
+
 void Process::save(ODataSource* ods)
 {
 	writeProcessHeader(ods);

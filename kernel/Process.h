@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002,2003 The Pentagram team
+Copyright (C) 2002-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -63,6 +63,9 @@ public:
 	void setType(uint16 ty) { type = ty; }
 
 	ProcId getPid() { return pid; }
+
+	//! dump some info about this process to pout
+	virtual void dumpInfo();
 
 	//! save this process
 	void save(ODataSource* ods);

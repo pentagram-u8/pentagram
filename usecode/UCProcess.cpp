@@ -153,6 +153,11 @@ void UCProcess::terminate()
 	Process::terminate();
 }
 
+void UCProcess::dumpInfo()
+{
+	Process::dumpInfo();
+	pout.printf("IP: %04X:%04X\n", classid, ip);
+}
 
 void UCProcess::saveData(ODataSource* ods)
 {
