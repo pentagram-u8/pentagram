@@ -101,6 +101,29 @@ template<class uintX> void SoftRenderSurface<uintX>::Fill32(uint32 rgb, sint32 s
 	}
 }
 
+// asm version for the uint32 version of Fill32 for gcc/x86
+#if defined(__GNUC__) && defined(i386)
+template<> void SoftRenderSurface<uint32>::Fill32(uint32 rgb, sint32 sx, sint32 sy, sint32 w, sint32 h)
+{
+	int u0, u1, u2;
+	uint8 *pixel = pixels + sy * pitch + sx * 4;
+	uint8 *end = pixel + h * pitch;
+
+	rgb = PACK_RGB8( (rgb>>16)&0xFF , (rgb>>8)&0xFF , rgb&0xFF );
+
+	while (pixel != end)
+	{
+		// borrowed from SDL's src/video/SDL_memops.h (SDL_memset4)
+        __asm__ __volatile__ (                                  \
+				"cld\n\t"                                       \
+                "rep ; stosl\n\t"                               \
+                : "=&D" (u0), "=&a" (u1), "=&c" (u2)            \
+                : "0" (pixel), "1" (rgb), "2" ((Uint32)(w))     \
+                : "memory" );
+		pixel += pitch;
+	}
+}
+#endif
 
 //
 // SoftRenderSurface::Blit(Texture *, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy)
