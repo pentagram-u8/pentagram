@@ -102,6 +102,16 @@ uint32 Flex::get_size(uint32 index)
 	return length;
 }
 
+IDataSource* Flex::get_datasource(uint32 index)
+{
+	if (index >= count) return 0;
+
+	IDataSource* d = new IBufferDataSource(get_object_nodel(index),
+										   get_size(index));
+
+	return d;
+}
+
 // Loads all data into memory
 void Flex::cache()
 {

@@ -32,6 +32,10 @@ public:
 
 	void clear();
 
+	void loadNonFixed(IDataSource* ds);
+
+private:
+
 	// load items from something formatted like 'fixed.dat'
 	void loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds);
 
@@ -40,7 +44,6 @@ public:
 							 IDataSource* itemcach,
 							 IDataSource* npcdata,
 							 unsigned int start, unsigned int end);
-private:
 
 	// Q: How should we store the items in a map.
 	// It might make things more efficient if we order them by 'chunk'

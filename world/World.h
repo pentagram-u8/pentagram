@@ -55,6 +55,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <vector>
 
 class Map;
+class IDataSource;
 
 class World
 {
@@ -65,6 +66,9 @@ public:
 	static World* get_instance() { return world; }
 
 	void clear();
+
+	void initMaps();
+	void loadNonFixed(IDataSource* ds);
 
 private:
 	static World *world;

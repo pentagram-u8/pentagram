@@ -52,6 +52,11 @@ void Map::clear()
 	dynamicitems.clear();
 }
 
+void Map::loadNonFixed(IDataSource* ds)
+{
+	loadFixedFormatObjects(dynamicitems, ds);
+}
+
 
 void Map::loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds)
 {
