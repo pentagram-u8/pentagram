@@ -689,7 +689,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 					gump->DropItem(item,gx,gy);
 				}
 			} else {
-				CANT_HAPPEN();
+				assert(dragging == DRAG_INVALID);
 			}
 
 
@@ -754,7 +754,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 							dragging_item_lastgump = gump->getObjId();
 						}
 					} else {
-						CANT_HAPPEN();
+						dragging = DRAG_INVALID;
 					}
 
 					mouseState[BUTTON_LEFT] |= MBS_HANDLED;

@@ -1,3 +1,7 @@
+2003-06-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/GUIApp.cpp: don't crash when dragging invalid item
+	* world/Item.cpp: fixed or hanging items don't fall
+
 2003-06-27  Ryan Nunn <colourles@users.sourceforge.net>
 	* gumps/GameMapGump.cpp, world/CameraProcess.cpp : Fixing roof popping 
 	  so it checks above where the camera is, not where the avatar is.
@@ -11,7 +15,7 @@
 	* filesys/ListFiles.h : Some std stuff in the windows code
 	* docs/scratch/saving : Added Earthquake stuff.
 
-2003-06-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+2003-06-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/Gump.*, gumps/GumpNotifyProcess.*: pointers -> ids
 
 2003-06-25  Max Horn <max@quendi.de>

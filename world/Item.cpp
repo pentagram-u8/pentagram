@@ -912,6 +912,11 @@ void Item::clearGump()
 
 void Item::fall()
 {
+	if (flags & FLG_HANGING || getShapeInfo()->is_fixed()) {
+		// can't fall
+		return;
+	}
+
 	GravityProcess* p = 0;
 	if (gravitypid) {
 		p = p_dynamic_cast<GravityProcess*>(
