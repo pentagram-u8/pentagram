@@ -117,7 +117,7 @@
 			<header>Do you accept donations?</header>
 			<body>
 				<para>
-					No the <Pent/> team will not accept donations. For us there 
+					No, the <Pent/> team will not accept donations. For us there 
 					are greater legal matters involved, which none of us 
 					particularly want to explore. We do not want to risk the wrath 
 					of EA for directly profiting off Pentagram. If you want to donate 
@@ -181,13 +181,13 @@
 					<strong>Windows Binary</strong>.
 				</para>
 				<para>
-					Source is the code of Pentagram and is only useful for programers that 
+					Source is the code of Pentagram and is only useful for programmers that 
 					want to look at it, compile it or, hopefully, want to contribute to the 
 					project. Once you compile the code you get a binary or in other words 
-					the actual program. If you want to run <Pent/> you need this. CVS 
-					snapshots are the newest source code. Whenever we change some code, 
-					Travis makes a new snapshot the next day. As we currently have no 
-					releases, snapshots are the only way for you to run <Pent/>.
+					the actual program. CVS snapshots are the newest source code. Whenever
+					we change some code, Travis makes a new snapshot the next day. As we
+					currently have no releases, snapshots are the only way for you to
+					run <Pent/>.
 				</para>
 			</body>
 		</sub>
@@ -198,7 +198,7 @@
 					For that you'll have to take a look at <Pent/>'s history.<br/> 
 					The project started out as a pet project by some of the Exult programers. 
 					We tried to figure out the various file formats and used a sub tree of the 
-					Exult source code space. For example ee developed a map viewer, a shapes 
+					Exult source code space. For example we developed a map viewer, a shapes 
 					viewer (shapes are the graphic files of Ultima 8) and many other tools.<br/>
 					Only when the code of <Pent/> became more mature we decided to make it a 
 					separate project. The code developed so far was taken over to the new project 
@@ -213,7 +213,7 @@
 				</para>
 				<ul>
 					<li><strong>unpackshp</strong><br/>
-					the most useful tool now. If you don't have u8shapes.flx in the static 
+					The most useful tool now. If you don't have u8shapes.flx in the static 
 					subdirectory, you have to use this tool on u8shapes.cmp to have it decompressed.
 					</li>
 					<li><strong>dcmpsound</strong><br/>
