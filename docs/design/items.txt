@@ -77,7 +77,7 @@ push/pop
 
 The Item::create(), Item::push(), Item::pop(), Item::popToEnd() intrinsics use
 a stack of items. Its use appears to be doing things with items without
-risking them being displayed, or conditionally delete an item.
+risking them being displayed, or conditionally deleting an item.
 (e.g., when transforming an item: Push old item; try to create new item;
 if succesful, pop new item and destroy old item; if not, pop old item)
 
