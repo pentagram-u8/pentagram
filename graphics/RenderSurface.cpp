@@ -84,6 +84,8 @@ RenderSurface *RenderSurface::SetVideoMode(uint32 width,		// Width of desired mo
 	}
 
 	// Double buffered (sdl will emulate if we don't have)
+	// Um, no, it's been decided that this is a very bad idea
+	// Transparency is very very slow with hardware
 	//flags |= SDL_HWSURFACE|SDL_DOUBLEBUF;
 
 	SDL_Surface *sdl_surf = SDL_SetVideoMode(width, height, bpp, flags);

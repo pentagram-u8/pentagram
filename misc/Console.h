@@ -84,6 +84,9 @@ public:
 	// Set the console font texture
 	void	SetConFont(Texture *cf) { confont = cf; }
 
+	// Get the console font texture
+	Texture *GetConFont() { return confont; }
+
 	// Redirection
 	void	RedirectOutputStream(uint32 mask, ODataSource *ds)
 	{

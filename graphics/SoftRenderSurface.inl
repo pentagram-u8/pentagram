@@ -23,14 +23,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 // Macros to define before including this:
 //
+// #define NO_CLIPPING to disable shape clipping
+//
 // #define FLIP_SHAPES to flip rendering
 //
-// #define NO_CLIPPING to disable shape clipping
+// #define FLIP_CONDITIONAL to an argument of the function so FLIPPING can be 
+// enabled/disabled with a bool
 //
 // #define XFORM_SHAPES to enable XFORMing
 //
 // #define XFORM_CONDITIONAL to an argument of the function so XFORM can be 
 // enabled/disabled with a bool
+//
+// #define INVISIBLE_SHAPES to enable Invisible painting. 
+//
+// #define INVISIBLE_CONDITIONAL to an argument of the function so INVISILBLE
+// painting can be enabled/disabled with a bool
 //
 
 //
@@ -46,6 +54,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // 
 // USE_XFORM_FUNC - Checks to see if we want to use XForm Blending for this pixel
 // 
+// INVIS_BLEND - Final Blend for invisiblity
+//
 
 //
 // XForm = TRUE
@@ -70,7 +80,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // Flipping = TRUE
 //
 #ifdef FLIP_SHAPES
-#define XNEG(x)(-(x))
+
+#ifdef FLIP_CONDITIONAL
+const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
+#define XNEG(x) (((x)+neg)^neg)
+#else
+#define XNEG(x) (-(x))
+#endif
 
 // Flipping = FALSE
 #else
@@ -86,32 +102,48 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define LINE_END_ASSIGN()
 #define NOT_CLIPPED_X (1)
 #define NOT_CLIPPED_Y (1)
-//#define offset_pixels (pixels)
-
-	uint8				*offset_pixels  = static_cast<uint8*>(pixels);
-//	offset_pixels += clip_window.x;
-//	x -= clip_window.x;
+#define OFFSET_PIXELS (pixels)
 
 //
 // No Clipping = FALSE
 //	
 #else
 
-#define LINE_END_ASSIGN() line_end = line_start+scrn_width;
+#define LINE_END_ASSIGN() do { line_end = line_start+scrn_width; } while (0)
 #define NOT_CLIPPED_Y (line >= 0 && line < scrn_height)
 #define NOT_CLIPPED_X (pixptr >= line_start && pixptr < line_end)
 
-	int					scrn_width = this->clip_window.w;
-	int					scrn_height = this->clip_window.h;
+	int					scrn_width = clip_window.w;
+	int					scrn_height = clip_window.h;
 	uintX				*line_end;
 
-	uint8				*offset_pixels  = static_cast<uint8*>(pixels);
-	offset_pixels += clip_window.x*sizeof(uintX) + clip_window.y*pitch;
+#define OFFSET_PIXELS (off_pixels)
+
+	uint8				*off_pixels  = static_cast<uint8*>(pixels) + clip_window.x*sizeof(uintX) + clip_window.y*pitch;
 	x -= clip_window.x;
 	y -= clip_window.y;
 
 #endif
 
+//
+// Invisilibity = TRUE
+//
+#ifdef INVISIBLE_SHAPES
+
+#ifdef INVISIBLE_CONDITIONAL
+#define INVIS_BLEND(src) ((INVISIBLE_CONDITIONAL)?BlendInvisible(src,*pixptr):src)
+#else
+#define INVIS_BLEND(src) BlendInvisible(src,*pixptr)
+#endif
+
+//
+// Invisilibity = FALSE
+//
+#else
+
+#define INVIS_BLEND(src) (src)
+
+#endif
 
 //
 // The Function
@@ -159,7 +191,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 		{
 
 			linedata = rle_data + line_offsets[i];
-			line_start = reinterpret_cast<uintX *>(static_cast<uint8*>(offset_pixels) + pitch*line);
+			line_start = reinterpret_cast<uintX *>(static_cast<uint8*>(OFFSET_PIXELS) + pitch*line);
 
 			LINE_END_ASSIGN();
 
@@ -186,12 +218,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 							xf_func = xform_funcs[*linedata];
 							if (USE_XFORM_FUNC) 
 							{
-								*pixptr = xf_func(*pixptr);
+								*pixptr = INVIS_BLEND(xf_func(*pixptr));
 							}
 							else 
 							#endif
 							{
-								*pixptr = pal[*linedata];
+								*pixptr = INVIS_BLEND(pal[*linedata]);
 							}
 						}
 						pixptr += XNEG(1);
@@ -206,7 +238,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 					{
 						while (pixptr != endrun) 
 						{
-							if (NOT_CLIPPED_X) *pixptr = xf_func(*pixptr);
+							if (NOT_CLIPPED_X) *pixptr = INVIS_BLEND(xf_func(*pixptr));
 							pixptr += XNEG(1);
 						}
 					} 
@@ -218,7 +250,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 						{
 							if (NOT_CLIPPED_X) 
 							{
-								*pixptr = pix;
+								*pixptr = INVIS_BLEND(pix);
 							}
 							pixptr += XNEG(1);
 						}
@@ -240,7 +272,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 		if (NOT_CLIPPED_Y)
 		{
-			line_start = reinterpret_cast<uintX *>(static_cast<uint8*>(offset_pixels) + pitch*line);
+			line_start = reinterpret_cast<uintX *>(static_cast<uint8*>(OFFSET_PIXELS) + pitch*line);
 			LINE_END_ASSIGN();
 
 			do 
@@ -262,12 +294,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 						xf_func = xform_funcs[*linedata];
 						if (USE_XFORM_FUNC) 
 						{
-							*pixptr = xf_func(*pixptr);
+							*pixptr = INVIS_BLEND(xf_func(*pixptr));
 						}
 						else 
 						#endif
 						{
-							*pixptr = pal[*linedata];
+							*pixptr = INVIS_BLEND(pal[*linedata]);
 						}
 					}
 					pixptr += XNEG(1);
@@ -280,6 +312,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 		}
 	}
 
+#undef OFFSET_PIXELS
+#undef INVIS_BLEND
 #undef LINE_END_ASSIGN
 #undef NOT_CLIPPED_X
 #undef NOT_CLIPPED_Y

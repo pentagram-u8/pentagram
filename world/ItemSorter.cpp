@@ -344,8 +344,164 @@ void ItemSorter::BeginDisplayList(RenderSurface *rs, const Palette *palette)
 	order_counter = 0;
 }
 
+void ItemSorter::AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 frame_num, uint32 flags, uint32 item_num)
+{
+	//if (z > skip_lift) return;
+	//if (Application::tgwds && shape == 538) return;
+
+	// First thing, get a SortItem to use
+	
+	if (num_items >= max_items) return;
+
+	SortItem *si = items+num_items;
+
+	si->item_num = item_num;
+	si->shape = shapes->getShape(shape_num);
+	si->frame = frame_num;
+	ShapeFrame *frame = si->shape->getFrame(si->frame);
+
+	ShapeInfo *info = shapes->getShapeInfo(shape_num);
+
+	//if (info->is_editor && !show_editor_items) return;
+	//if (info->z > shape_max_height) return;
+
+	// Dimensions
+	sint32 xd, yd, zd;
+	si->flags = flags;
+
+	// X and Y are flipped
+	if (si->flags & Item::FLG_FLIPPED) 
+	{
+		xd = info->y * 32;	// Multiply by 32 to get actual world size
+		yd = info->x * 32;	// Multiply by 32 to get actual world size
+	}
+	else
+	{
+		xd = info->x * 32;	// Multiply by 32 to get actual world size
+		yd = info->y * 32;	// Multiply by 32 to get actual world size
+	}
+
+	zd = info->z * 8;	// Multiply by 8 to get actual world size
+
+	// Worldspace bounding box
+	si->x = x; si->y = y; si->z = z;
+	si->xleft = si->x - xd;
+	si->yfar = si->y - yd;
+	si->ztop = si->z + zd;
+
+	// Screenspace bounding box left extent    (LNT x coord)
+	si->sxleft = (si->xleft - si->y)/4;
+	// Screenspace bounding box right extent   (RFT x coord)
+	si->sxright= (si->x - si->yfar)/4;
+
+	// Screenspace bounding box top x coord    (LFT x coord)
+	si->sxtop = (si->xleft - si->yfar)/4;
+	// Screenspace bounding box top extent     (LFT y coord)
+	si->sytop = (si->xleft + si->yfar)/8 - si->ztop;
+
+	// Screenspace bounding box bottom x coord (RNB x coord)
+	si->sxbot = (si->x - si->y)/4;
+	// Screenspace bounding box bottom extent  (RNB y coord)
+	si->sybot = (si->x + si->y)/8 - si->z;
+
+//	si->sxleft += swo2;
+//	si->sxright += swo2;
+//	si->sxbot += swo2;
+//	si->sxtop += swo2;
+
+//	si->sytop += sho2;
+//	si->sybot += sho2;
+
+	// Real Screenspace coords
+	si->sx = si->sxbot - frame->xoff;	// Left
+	si->sy = si->sybot - frame->yoff;	// Top
+	si->sx2 = si->sx + frame->width;	// Right
+	si->sy2 = si->sy + frame->height;	// Bottom
+
+	// Do Clipping here
+	si->clipped = surf->CheckClipped(Rect (si->sx,si->sy, frame->width, frame->height));
+	if (si->clipped < 0) return;
+
+	// These help out with sorting. We calc them now, so it will be faster
+	si->f32x32 = xd==128 && yd==128;
+	si->flat = zd == 0;
+
+	/*
+	if (Application::tgwds) {
+		si->draw = false;
+		si->solid = false;
+		si->occl = false;
+		si->roof = false;
+		si->noisy = false;
+		si->anim = false;
+		si->trans = false;
+	}
+	else
+	*/
+	{
+		si->draw = info->is_draw();
+		si->solid = info->is_solid();
+		si->occl = info->is_occl();
+		si->roof = info->is_roof();
+		si->noisy = info->is_noisy();
+		si->anim = info->animtype != 0;
+		si->trans = info->is_translucent();
+	}
+
+	si->occluded = false;
+	si->order = -1;
+
+	// We will clear all the vector memory
+	// Stictly speaking the vector will sort of leak memory, since they
+	// are never deleted
+	si->depends.clear();
+
+	// Iterate the list and compare shapes
+
+	// Ok, 
+	for (SortItem * si2 = items; si2 != si; ++si2)
+	{
+		// Doesn't overlap
+		if (si2->occluded || !si->overlap(*si2)) continue;
+
+		// Attempt to find which is infront
+		if (*si < *si2)
+		{
+			// si2 occludes ss
+			if (si2->occl && si2->occludes(*si))
+			{
+				// No need to do any more checks, this isn't visible
+				// Also, since it's occluded we don't need to add it to the list
+				return;
+			}
+
+			// si1 is behind si2, so add it to si2's dependency list
+			si2->depends.push_back(si);
+		}
+		else
+		{
+			// ss occludes si2. Sadly, we can't remove it from the list.
+			if (si->occl && si->occludes(*si2)) si2->occluded = true;
+			// si2 is behind si1, so add it to si1's dependency list
+			else si->depends.push_back(si2);
+		}
+	}
+
+	if (!si->shape->getPalette()) si->shape->setPalette(pal);
+
+	// Incrementing num_items adds the Item to the list
+	num_items ++;
+}
+
 void ItemSorter::AddItem(Item *add)
 {
+#if 0
+
+	sint32 x, y, z;
+	add->getLerped(x, y, z);
+	AddItem(x,y,z,add->getShape(), add->getFrame(), add->getFlags(), add->getObjId());
+
+#else
 	//if (add->iz > skip_lift) return;
 	//if (Application::tgwds && shape == 538) return;
 
@@ -493,6 +649,7 @@ void ItemSorter::AddItem(Item *add)
 
 	// Incrementing num_items adds the Item to the list
 	num_items ++;
+#endif
 }
 
 void ItemSorter::PaintDisplayList()
@@ -538,7 +695,9 @@ bool ItemSorter::PaintSortItem(SortItem	*si)
 
 //	if (wire) si->info->draw_box_back(s, dispx, dispy, 255);
 
-	if (si->flags & Item::FLG_FLIPPED)
+	if (si->flags & Item::FLG_INVISIBLE)
+		surf->PaintInvisible(si->shape, si->frame, si->sxbot, si->sybot, si->trans, (si->flags&Item::FLG_FLIPPED)!=0);
+	else if (si->flags & Item::FLG_FLIPPED)
 		surf->PaintMirrored(si->shape, si->frame, si->sxbot, si->sybot, si->trans);
 	else if (si->trans)
 		surf->PaintTranslucent(si->shape, si->frame, si->sxbot, si->sybot);

@@ -32,4 +32,6 @@
 typedef uint32 (P_FASTCALL * xformBlendFuncType)(uint32 col); 
 extern const xformBlendFuncType		U8XFormFuncs[256];
 
+uint32 P_FASTCALL BlendInvisible(uint32 src, uint32 dst); 
+
 #endif

@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Shape.h"
 #include "ShapeFrame.h"
 #include "Palette.h"
-
+#include "memset_n.h"
 
 ///////////////////////
 //                   //
@@ -95,12 +95,34 @@ template<class uintX> void SoftRenderSurface<uintX>::Fill32(uint32 rgb, sint32 s
 	}
 }
 
-// asm version for the uint32 version of Fill32 for gcc/x86
-#if defined(__GNUC__) && defined(i386)
+// 16 bit version
+template<> void SoftRenderSurface<uint16>::Fill32(uint32 rgb, sint32 sx, sint32 sy, sint32 w, sint32 h)
+{
+	clip_window.IntersectOther(sx,sy,w,h);
+	if (!w || !h) return;
+
+	// An optimization.
+	if ((w*sizeof(uint16)) == pitch)
+	{
+		w *= h;
+		h = 1;
+	}
+
+	uint8 *pixel = pixels + sy * pitch + sx * sizeof(uint16);
+	uint8 *end = pixel + h * pitch;
+
+	rgb = PACK_RGB8( (rgb>>16)&0xFF , (rgb>>8)&0xFF , rgb&0xFF );
+
+	while (pixel != end)
+	{
+		memset_16(pixel,rgb,w);
+		pixel += pitch;
+	}
+}
+
+// 32 bit version
 template<> void SoftRenderSurface<uint32>::Fill32(uint32 rgb, sint32 sx, sint32 sy, sint32 w, sint32 h)
 {
-	int u0, u1, u2;
-
 	clip_window.IntersectOther(sx,sy,w,h);
 	if (!w || !h) return;
 
@@ -118,142 +140,11 @@ template<> void SoftRenderSurface<uint32>::Fill32(uint32 rgb, sint32 sx, sint32 
 
 	while (pixel != end)
 	{
-		// borrowed from SDL's src/video/SDL_memops.h (SDL_memset4)
-        __asm__ __volatile__ (                                  \
-				"cld\n\t"                                       \
-                "rep ; stosl\n\t"                               \
-                : "=&D" (u0), "=&a" (u1), "=&c" (u2)            \
-                : "0" (pixel), "1" (rgb), "2" ((Uint32)(w))     \
-                : "memory" );
+		memset_32(pixel,rgb,w);
 		pixel += pitch;
 	}
 }
 
-#elif defined(_MSC_VER)
-
-// buf SHOULD be qword aligned
-inline void __cdecl memset_64_mmx(void *buf, uint32 low_dw, uint32 high_dw, uint32 qwords)
-{
-	__asm {
-		cld
-		mov  edi, buf
-		push high_dw
-		push low_dw
-		movq mm0, [esp]
-		add esp, 8
-		mov  ecx, qwords
-repeat:
-		movq [edi], mm0
-		add edi, 8
-		loop repeat
-		emms
-	};
-}
-
-// buf SHOULD be dword aligned
-inline void memset_32_mmx(void *buf, uint32 val, uint32 dwords)
-{
-	// Qword align
-	if ((uint32)(buf) & 4) 
-	{
-		*(reinterpret_cast<uint32*>(buf)) = val;
-		buf = (reinterpret_cast<uint32*>(buf))+1;
-		dwords--;
-	}
-
-	// Now a memset_64
-	if (dwords > 1) memset_64_mmx(buf,val,val,dwords>>1);
-
-	// Final dword
-	if (dwords & 1) 
-		*(reinterpret_cast<uint32*>(buf)) = val;
-}
-
-// buf SHOULD be dword aligned
-inline void memset_32(void *buf, uint32 val, uint32 dwords)
-{
-	__asm {
-		cld
-		mov edi, buf
-		mov eax, val
-		mov ecx, dwords
-		repne stosd
-	};
-}
-
-// buf SHOULD be word aligned
-inline void memset_16(void *buf, sint32 val, uint32 words)
-{
-	val&=0xFFFF;
-	val|=val<<16;
-
-	// Dword align
-	if ((uint32)(buf) & 2) 
-	{
-		*(reinterpret_cast<uint16*>(buf)) = val;
-		buf = (reinterpret_cast<uint16*>(buf))+1;
-		words--;
-	}
-
-	// Now a memset_32 
-	if (words > 1) memset_32_mmx(buf,val,words>>1);
-
-	// Final word
-	if (words & 1) 
-		*(reinterpret_cast<uint16*>(buf)) = val;
-}
-
-// MSVC 16bit version
-template<> void SoftRenderSurface<uint16>::Fill32(uint32 rgb, sint32 sx, sint32 sy, sint32 w, sint32 h)
-{
-	clip_window.IntersectOther(sx,sy,w,h);
-	if (!w || !h) return;
-
-	// An optimization.
-	if ((w*sizeof(uintX)) == pitch)
-	{
-		w *= h;
-		h = 1;
-	}
-
-	uint8 *pixel = pixels + sy * pitch + sx * sizeof(uintX);
-	uint8 *end = pixel + h * pitch;
-
-	rgb = PACK_RGB8( (rgb>>16)&0xFF , (rgb>>8)&0xFF , rgb&0xFF );
-
-	while (pixel != end)
-	{
-		memset_16(pixel,rgb,w);
-		pixel += pitch;
-	}
-}
-
-// MSVC 32bit version
-template<> void SoftRenderSurface<uint32>::Fill32(uint32 rgb, sint32 sx, sint32 sy, sint32 w, sint32 h)
-{
-	clip_window.IntersectOther(sx,sy,w,h);
-	if (!w || !h) return;
-
-	// An optimization.
-	if ((w*sizeof(uintX)) == pitch)
-	{
-		w *= h;
-		h = 1;
-	}
-
-	uint8 *pixel = pixels + sy * pitch + sx * sizeof(uintX);
-	uint8 *end = pixel + h * pitch;
-
-	rgb = PACK_RGB8( (rgb>>16)&0xFF , (rgb>>8)&0xFF , rgb&0xFF );
-
-	while (pixel != end)
-	{
-		memset_32_mmx(pixel,rgb,w);
-		pixel += pitch;
-	}
-}
-
-#endif
 
 //
 // SoftRenderSurface::Blit(Texture *, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy)
@@ -274,7 +165,7 @@ template<class uintX> void SoftRenderSurface<uintX>::Blit(Texture *tex, sint32 s
 	// Clip to texture height (wanted?)
 	if (h > static_cast<sint32>(tex->height)) 
 		return;
-		//w = tex->height;
+		//h = tex->height;
 	
 
 	uint8 *pixel = pixels + dy * pitch + dx * sizeof(uintX);
@@ -422,6 +313,27 @@ template<class uintX> void SoftRenderSurface<uintX>::PaintMirrored(Shape* s, uin
 #undef XFORM_CONDITIONAL
 }
 
+//
+// void SoftRenderSurface::PaintInvisible(Shape* s, uint32 frame, sint32 x, sint32 y, bool mirrored)
+//
+// Desc: Standard shape drawing functions. Invisible, Clips, and conditionally Flips and Xforms
+//
+template<class uintX> void SoftRenderSurface<uintX>::PaintInvisible(Shape* s, uint32 framenum, sint32 x, sint32 y, bool trans, bool mirrored)
+{
+#define FLIP_SHAPES
+#define FLIP_CONDITIONAL mirrored
+#define XFORM_SHAPES
+#define XFORM_CONDITIONAL trans
+#define INVISIBLE_SHAPES
+
+	#include "SoftRenderSurface.inl"
+
+#undef FLIP_SHAPES
+#undef FLIP_CONDITIONAL
+#undef XFORM_SHAPES
+#undef XFORM_CONDITIONAL
+#undef INVISIBLE_SHAPES
+}
 
 //
 // Instantiate the SoftRenderSurface Class

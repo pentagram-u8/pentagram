@@ -277,12 +277,16 @@ void Application::SetupDisplayList()
 // Paint the screen
 void Application::paint()
 {
+	// Begin painting
+	screen->BeginPainting();
+
 	// We need to get the dims
 	Rect dims;
 	screen->GetSurfaceDims(dims);
 
-	screen->BeginPainting();
+	long before_fill = SDL_GetTicks();
 	screen->Fill32(0x3F3F3F, dims.x, dims.y, dims.w, dims.h);
+	long after_fill = SDL_GetTicks();
 
 	// Set the origin to the center of the screen
 	screen->SetOrigin(dims.w/2, dims.h/2);
@@ -299,14 +303,18 @@ void Application::paint()
 	screen->SetOrigin(0,0);
 
  	con.DrawConsole(screen, 0, 0, dims.w, dims.h);
-	screen->EndPainting();
 
 	static long prev = 0;
 	long now = SDL_GetTicks();
 	long diff = now - prev;
 	prev = now;
 
-	con.Printf("\rRendering time %i ms %i FPS - Sort %i ms  Paint %i ms       ", diff, 1000/diff, after_sort-before_sort, after_paint-after_sort);
+	char buf[256];
+	snprintf(buf, 255, "Rendering time %i ms %i FPS - Sort %i ms  Paint %i ms  Fill %i ms", diff, 1000/diff, after_sort-before_sort, after_paint-after_sort, after_fill-before_fill);
+	screen->PrintTextFixed(con.GetConFont(), buf, 8, dims.h-16);
+
+	// End painting
+	screen->EndPainting();
 }
 
 void Application::setupVirtualPaths()

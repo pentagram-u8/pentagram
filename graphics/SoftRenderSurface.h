@@ -74,6 +74,10 @@ public:
 	// TODO: virtual void PaintMirrored(CachedShape* s, uint32 frame, sint32 x, sint32 y, bool trans = false);
 	virtual void PaintMirrored(Shape* s, uint32 frame, sint32 x, sint32 y, bool trans = false);
 
+	// Paint a Invisible Shape
+	// TODO: virtual void PaintInvisible(CachedShape* s, uint32 frame, sint32 x, sint32 y, bool trans, bool mirrored);
+	virtual void PaintInvisible(Shape* s, uint32 frame, sint32 x, sint32 y, bool trans, bool mirrored);
+
 
 	//
 	// Basic Line Drawing
