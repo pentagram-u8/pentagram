@@ -1,3 +1,7 @@
+2004-07-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* games/TreasureLoader.*: added 'map' treasure selector
+	* data/u8.ini, data/u8monsters.ini: some treasure definitions
+
 2004-07-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* games/TreasureLoader.*, graphics/TypeFlags.cpp:
 	  load treasure definitions from .ini files

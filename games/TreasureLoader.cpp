@@ -85,6 +85,7 @@ bool TreasureLoader::internalParse(std::string desc, TreasureInfo& ti,
 
 	ti.special = "";
 	ti.chance = 1;
+	ti.map = 0;
 	ti.shapes.clear();
 	ti.frames.clear();
 	ti.mincount = ti.maxcount = 1;
@@ -122,9 +123,16 @@ bool TreasureLoader::internalParse(std::string desc, TreasureInfo& ti,
 		} else if (key == "chance") {
 			if (!parseDouble(val, ti.chance))
 				return false;
+		} else if (key == "map") {
+			if (val.size() > 1 && val[0] == '!')
+				val[0] = '-'; // HACK: invert map for 'not this map'
+			if (!parseInt(val, ti.map))
+				return false;
 		} else if (key == "special" && loadingDefault) {
 			ti.special = val;
 		} else if (key == "type" && !loadingDefault) {
+			if (loadedDefault)
+				return false;
 			std::map<Pentagram::istring, TreasureInfo>::iterator iter;
 			iter = defaultTreasure.find(val);
 			if (iter != defaultTreasure.end())

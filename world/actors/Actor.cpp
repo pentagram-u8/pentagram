@@ -130,6 +130,14 @@ bool Actor::giveTreasure()
 		TreasureInfo& ti = treasure[i];
 		Item* item;
 
+		// check map
+		int currentmap = World::get_instance()->getCurrentMap()->getNum();
+		if (ti.map != 0 && ((ti.map > 0 && ti.map != currentmap) ||
+							(ti.map < 0 && -ti.map == currentmap)))
+		{
+			continue;
+		}
+
 		// check chance
 		if (ti.chance < 0.999 &&
 			((double)(std::rand()) / RAND_MAX) > ti.chance)
@@ -568,6 +576,7 @@ void Actor::die()
 	// * fill with treasure if appropriate
 	// * some U8 monsters need special actions: skeletons, eyebeasts, etc...
 
+	destroyContents();
 	giveTreasure();
 
 	ShapeInfo* shapeinfo = getShapeInfo();

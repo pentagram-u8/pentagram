@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 struct TreasureInfo {
 	std::string special;
 	double chance;
+	int map;
 	std::vector<uint32> shapes;
 	std::vector<uint32> frames;
 	unsigned int mincount, maxcount;
