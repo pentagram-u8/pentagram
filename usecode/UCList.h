@@ -29,14 +29,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // Question: how are unionList/substractList supposed to know what to do?
 // their behaviour differs if this is a stringlist
-// (stringlists not implemented yet)
 
 // Question: does substractList remove _all_ occurences of elements or only 1?
-
-// the exact behaviour of string push/pop/list opcodes (wrt memory allocation)
-// also needs to be investigated
-
-// Also, do lists use refcounting? (for passing lists to different processes)
 
 class UCList
 {

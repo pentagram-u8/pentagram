@@ -263,21 +263,22 @@ void CurrentMap::areaSearch(UCList* itemlist, const uint8* loopscript,
 
 
 				// check if item is in range?
-				sint32 itemx, itemy, itemz;
-				item->getLocation(itemx, itemy, itemz);
+				sint32 ix, iy, iz;
+				item->getLocation(ix, iy, iz);
 
 				ShapeInfo* info = item->getShapeInfo();
-				sint32 xd, yd;
+				sint32 ixd, iyd;
 
+				//!! constants
 				if (item->getFlags() & Item::FLG_FLIPPED) {
-					xd = 32 * info->y;
-					yd = 32 * info->x;
+					ixd = 32 * info->y;
+					iyd = 32 * info->x;
 				} else {
-					xd = 32 * info->x;
-					yd = 32 * info->y;
+					ixd = 32 * info->x;
+					iyd = 32 * info->y;
 				}
 
-				Rect itemrect(x - xd, y - yd, xd, yd);
+				Rect itemrect(ix - ixd, iy - iyd, ixd, iyd);
 
 				if (!itemrect.Overlaps(searchrange)) continue;
 

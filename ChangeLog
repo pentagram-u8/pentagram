@@ -2,6 +2,7 @@
 	* gumps/AskGump.cpp: Free strings. Still some leaks remaining.
 	* world/CurrentMap.*: canExistAt intrinsic
 	* kernel/GUIApp.cpp: 't' outputs kernel/usecode/world stats
+	* world/CurrentMap.cpp: fixed areaSearch range
 
 2003-06-15	  Ryan Nunn <colourles@users.sourceforge.net>
 	* convert/u8/ConvertUsecodeU8.h, usecode/UCMachine.* : Some nasty hacks

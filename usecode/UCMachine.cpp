@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //#define LOGPF(X) pout.printf X
 #define LOGPF(X)
-//#define LOGPF(X) do { if (p->classid == 1034) { pout.printf X; } } while(0)
+//#define LOGPF(X) do { if (p->classid == 68) { pout.printf X; } } while(0)
 
 enum UCSegments {
 	SEG_STACK      = 0x0000,
@@ -1390,7 +1390,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			break;
 
 		// loop-related opcodes
-		// 0x70 has a different types:
+		// 0x70 has different types:
 		//    02: search the area around an object
 		//    03: search the area around an object, recursing into containers
 		//    04: search a container
