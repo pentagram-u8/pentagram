@@ -43,6 +43,8 @@ uint16 Object::assignObjId()
 
 void Object::clearObjId()
 {
+	if (objid != 0xFFFF)
+		World::get_instance()->clearObjId(objid);
 	objid = 0xFFFF;
 }
 
