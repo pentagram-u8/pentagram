@@ -151,7 +151,7 @@ void CurrentMap::loadItems(list<Item*> itemlist)
 		addItem(item);
 		
 		// Cachein (do for expanded objects too?)
-		//item->callUsecodeEvent(4);	// CONSTANT 
+		item->callUsecodeEvent(4);	// CONSTANT 
 
 		GlobEgg* globegg = p_dynamic_cast<GlobEgg*>(item);
 		if (globegg) {
@@ -188,7 +188,7 @@ void CurrentMap::loadMap(Map* map)
 			addItem(actor);
 
 			// Cachein
-			//actor->callUsecodeEvent(4);	// CONSTANT 
+			actor->callUsecodeEvent(4);	// CONSTANT 
 		}
 	}
 }
