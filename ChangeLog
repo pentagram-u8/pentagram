@@ -1,6 +1,7 @@
 2003-06-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/ItemSorter.cpp: check for valid frame
 	* world/ItemMoveProcess.*: renamed ItemMoveProcess to MissileProcess
+	* Makefile.mingw: use objects.mk
 
 2003-06-17	  Ryan Nunn <colourles@users.sourceforge.net>
 	* gumps/ConsoleGump.*, misc/Console.*, kernel/GUIApp.cpp : Added 4 line

@@ -12,8 +12,10 @@ SDL_CFLAGS=-I$(SRC)/sdl/include
 SDL_LIBS=-L$(SRC)/sdl/lib -lSDLmain -lSDL
 
 CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -I$(SRC)/conf -I$(SRC)/convert \
-	-I$(SRC)/filesys -I$(SRC)/graphics -I$(SRC)/gumps -I$(SRC)/kernel -I$(SRC)/misc -I$(SRC)/tools/compile\
-	-I$(SRC)/tools/disasm -I$(SRC)/tools/fold -I$(SRC)/usecode -I$(SRC)/world -I$(SRC)/world/actors -I$(SRC)/gumps/widgets \
+	-I$(SRC)/filesys -I$(SRC)/graphics -I$(SRC)/gumps -I$(SRC)/kernel \
+	-I$(SRC)/misc -I$(SRC)/tools/compile -I$(SRC)/tools/disasm \
+	-I$(SRC)/tools/fold -I$(SRC)/usecode -I$(SRC)/world \
+	-I$(SRC)/world/actors -I$(SRC)/gumps/widgets \
 	$(SDL_CFLAGS) -DHAVE_SYS_STAT_H -DHAVE_SYS_TYPES_H -DHAVE_UNISTD_H
 CXXFLAGS=-O2
 CXX=g++
@@ -23,44 +25,17 @@ CC=gcc
 LFLAGS=-mwindows
 LIBS=-lmingw32 $(SDL_LIBS)
 
-CONVERT_OBJS=convert/ConvertShape.o convert/crusader/ConvertShapeCrusader.o convert/u8/ConvertShapeU8.o
-
-FILESYS_OBJS=filesys/FileSystem.o filesys/Flex.o filesys/U8Save.o
-
-GRAPHICS_OBJS=graphics/Font.o graphics/FontShapeFlex.o graphics/GumpShapeFlex.o graphics/Texture.o graphics/TextureBitmap.o \
-	graphics/TextureTarga.o graphics/AnimDat.o graphics/BaseSoftRenderSurface.o graphics/MainShapeFlex.o \
-	graphics/Palette.o graphics/PaletteManager.o graphics/RenderSurface.o graphics/Shape.o graphics/ShapeFlex.o \
-	graphics/ShapeFrame.o graphics/ShapeInfo.o graphics/SoftRenderSurface.o graphics/TypeFlags.o graphics/XFormBlend.o
-
-GUMPS_OBJS=gumps/AskGump.o gumps/ConsoleGump.o gumps/GameMapGump.o gumps/Gump.o gumps/ResizableGump.o gumps/BarkGump.o \
-	gumps/DesktopGump.o gumps/GumpNotifyProcess.o gumps/ItemRelativeGump.o gumps/ContainerGump.o
-
-WIDGETS_OBJS=gumps/widgets/SimpleTextWidget.o gumps/widgets/ButtonWidget.o
-
-MISC_OBJS=misc/Args.o misc/Console.o misc/pent_include.o misc/Q_strcasecmp.o misc/util.o
-
-CONF_OBJS=conf/Configuration.o conf/XMLNode.o conf/XMLTree.o
-
-KERNEL_OBJS=kernel/CoreApp.o kernel/GUIApp.o kernel/Kernel.o kernel/Object.o kernel/Process.o kernel/GameData.o \
-	kernel/idMan.o
-
-USECODE_OBJS=usecode/UCList.o usecode/UCMachine.o usecode/UCProcess.o usecode/Usecode.o usecode/UsecodeFlex.o
-
-WORLD_OBJS=world/CameraProcess.o world/Container.o world/CurrentMap.o world/Egg.o world/EggHatcherProcess.o world/Glob.o world/GlobEgg.o \
-	world/Item.o world/ItemFactory.o world/ItemMoveProcess.o world/ItemSorter.o world/Map.o world/MonsterEgg.o \
-	world/TeleportEgg.o world/World.o world/GravityProcess.o
-
-ACTORS_OBJS=world/actors/Actor.o world/actors/ActorAnimProcess.o world/actors/MainActor.o
-
-TOOLS_OBJS=tools/compile/Compile.o tools/compile/CompileProcess.o tools/disasm/DisasmProcess.o tools/compile/llcLexer.o
+include objects.mk
 
 all: pentagram.exe
 
 amf2mod.exe : tools/amf2mod/amf2mod.o
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
-FOLD_OBJCS=filesys/FileSystem.o misc/Args.o misc/Console.o misc/Q_strcasecmp.o tools/fold/CallNodes.o tools/fold/Folder.o \
-	tools/fold/FuncNodes.o tools/fold/IfNode.o tools/fold/OperatorNodes.o tools/fold/Type.o \
+FOLD_OBJCS = \
+	filesys/FileSystem.o misc/Args.o misc/Console.o misc/Q_strcasecmp.o \
+	tools/fold/CallNodes.o tools/fold/Folder.o tools/fold/FuncNodes.o \
+	tools/fold/IfNode.o tools/fold/OperatorNodes.o tools/fold/Type.o \
 	tools/fold/VarNodes.o
 
 disasm.exe : tools/disasm/Disasm.o $(FOLD_OBJCS)
@@ -69,11 +44,13 @@ disasm.exe : tools/disasm/Disasm.o $(FOLD_OBJCS)
 fold.exe : tools/fold/Fold.o $(FOLD_OBJCS)
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
-shapeconv.exe : tools/shapeconv/ShapeConv.o $(CONVERT_OBJS) $(FILESYS_OBJS) $(MISC_OBJS)
+shapeconv.exe : tools/shapeconv/ShapeConv.o $(CONVERT) $(FILESYS) $(MISC) $(ARGS)
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
-PENTAGRAM_OBJS=$(CONF_OBJS) $(CONVERT_OBJS) $(FILESYS_OBJS) $(GRAPHICS_OBJS) $(GUMPS_OBJS) $(KERNEL_OBJS) $(MISC_OBJS) \
-	$(USECODE_OBJS) $(WORLD_OBJS) $(ACTORS_OBJS) $(TOOLS_OBJS) $(WIDGETS_OBJS) pentagram.o
+PENTAGRAM_OBJS = \
+	$(KERNEL) $(KERNEL2) $(USECODE) $(FILESYS) $(CONVERT) $(CONF)\
+	$(GRAPHICS) $(MISC) $(ARGS) $(GUMPS) $(WIDGETS) $(WORLD) $(ACTORS)\
+	$(COMPILE) $(DISASM) kernel/GUIApp.o pentagram.o
 
 pentagram.exe: $(PENTAGRAM_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ $(LIBS)
