@@ -1,5 +1,6 @@
 2005-01-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/CurrentMap.cpp: don't let areaSearch skip passed item
+	* world/Item.cpp: dragging corpses is allowed
 
 2005-01-11  Ryan Nunn <colourles@users.sourceforge.net>
 	* graphics/BaseSoftRenderSurface.*, graphics/RenderSurface.h : Added  

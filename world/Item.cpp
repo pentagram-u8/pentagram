@@ -1520,10 +1520,13 @@ bool Item::canDrag()
 	ShapeInfo* si = getShapeInfo();
 	if (si->is_fixed()) return false;
 
-	// actors can't be moved
-	if (getObjId() < 256) return false; // CONSTANT!
+	Actor* actor = p_dynamic_cast<Actor*>(this);
+	if (actor) {
+		// living actors can't be moved
+		if (!(actor->getActorFlags() & Actor::ACT_DEAD)) return false;
+	}
 
-	// CHECKME: might need more checks here
+	// CHECKME: might need more checks here (weight?)
 
 	return true;
 }
