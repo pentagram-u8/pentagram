@@ -1,4 +1,7 @@
+http://sourceforge.net/projects/modplug-xmms/
+- can possibly play Crusader's music, which is in the 'Asylum' format (amf)
 
+---
 
 The object structure looks like this:
 
@@ -17,6 +20,7 @@ struct OneItem
 
 -Jason Ely
 
+---
 
 Here are a list of some of the flags in the .status field...
 
