@@ -26,6 +26,9 @@ class Actor : public Container
 public:
 	Actor();
 	~Actor();
+
+	// p_dynamic_cast stuff
+	ENABLE_DYNAMIC_CAST(Actor);
 };
 
 

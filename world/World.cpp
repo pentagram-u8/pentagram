@@ -51,12 +51,14 @@ World::~World()
 
 void World::clear()
 {
-	for (unsigned int i = 0; i < maps.size(); ++i) {
+	unsigned int i;
+
+	for (i = 0; i < maps.size(); ++i) {
 		delete maps[i];
 	}
 	maps.clear();
 
-	for (unsigned int i = 0; i < npcs.size(); ++i) {
+	for (i = 0; i < npcs.size(); ++i) {
 		delete npcs[i];
 	}
 	npcs.clear();
@@ -72,7 +74,7 @@ void World::clear()
 	//! Need to check the object delete policy
 	// If everything works out, there shouldn't be any objects left
 	// (maybe NPCs?)
-	for (unsigned int i = 0; i < objects.size(); ++i) {
+	for (i = 0; i < objects.size(); ++i) {
 		objects[i] = 0;
 	}
 	lastobjid = 256;
@@ -296,19 +298,19 @@ void World::clearObjId(uint16 objid)
 
 void World::worldStats()
 {
-	unsigned int npccount = 0, objcount = 0, mapcount = 0;
+	unsigned int i, npccount = 0, objcount = 0, mapcount = 0;
 
 	//!constants
-	for (unsigned int i = 1; i < 256; i++) {
+	for (i = 1; i < 256; i++) {
 		if (objects[i] != 0)
 			npccount++;
 	}
-	for (unsigned int i = 256; i < objects.size(); i++) {
+	for (i = 256; i < objects.size(); i++) {
 		if (objects[i] != 0)
 			objcount++;
 	}
 
-	for (unsigned int i = 0; i < maps.size(); i++) {
+	for (i = 0; i < maps.size(); i++) {
 		if (maps[i] != 0)
 			mapcount++;
 	}

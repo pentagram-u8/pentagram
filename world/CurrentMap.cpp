@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Item.h"
 
 using std::list; // too messy otherwise
+typedef list<Item*> item_list;
 
 CurrentMap::CurrentMap()
 	: current_map(0)
@@ -55,7 +56,7 @@ void CurrentMap::clear()
 	//! get rid of constants
 	for (unsigned int i = 0; i < 128; i++) {
 		for (unsigned int j = 0; j < 128; j++) {
-			list<Item*>::iterator iter;
+			item_list::iterator iter;
 			for (iter = items[i][j].begin(); iter != items[i][j].end(); ++iter)
 				delete *iter;
 			items[i][j].clear();
@@ -82,7 +83,7 @@ void CurrentMap::writeback()
 
 	for (unsigned int i = 0; i < 128; i++) {
 		for (unsigned int j = 0; j < 128; j++) {
-			list<Item*>::iterator iter;
+			item_list::iterator iter;
 			for (iter = items[i][j].begin(); iter != items[i][j].end(); ++iter)
 			{
 				Item* item = *iter;
@@ -102,7 +103,7 @@ void CurrentMap::writeback()
 
 void CurrentMap::loadItems(list<Item*> itemlist)
 {
-	list<Item*>::iterator iter;
+	item_list::iterator iter;
 	for (iter = itemlist.begin(); iter != itemlist.end(); ++iter)
 	{
 		Item* item = *iter;

@@ -1,3 +1,12 @@
+2003-03-21  Ryan Nunn <colourles@users.sourceforge.net>
+	* kernel/Application.cpp : Added some config related output
+	* world/CurrentMap.cpp, world/World.cpp : msvcisms
+	* world/Item.* : Some initial interpolation stuff.
+	* world/GlobEgg.*, world/actors/Actor.*, world/actors/MainActor.* :
+	  p_dynamic_cast stuff
+	* gumps/Gump.* : Some changes reflecting extra thought about mouse
+	  input handling.
+
 2003-03-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Objects.*, world/*: objID stuff
 	* world/World.*, kernel/Kernel.*: more memory stats

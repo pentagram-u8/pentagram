@@ -41,6 +41,22 @@ public:
 	uint32 getShape() const { return shape; }
 	uint32 getFrame() const { return frame; }
 
+	void setupLerp(/* Camera &camera */);	// Setup the lerped info for this frame
+	inline void doLerp(uint32 factor) 		// Does lerping for an in between frame (0-256)
+	{
+		// Should be noted that this does indeed limit us to 'only' 24bit coords
+#if 1
+		// This way while possibly slower is more accurate
+		ix = (l_prev.x*(256-factor) + l_next.x*factor)>>8;
+		iy = (l_prev.y*(256-factor) + l_next.y*factor)>>8;
+		iz = (l_prev.z*(256-factor) + l_next.z*factor)>>8;
+#else
+		ix = l_prev.x + (((l_next.x-l_prev.x)*factor)>>8);
+		iy = l_prev.y + (((l_next.y-l_prev.y)*factor)>>8);
+		iz = l_prev.z + (((l_next.z-l_prev.z)*factor)>>8);
+#endif
+	}
+
 protected:
 	uint32 shape;
 	uint32 frame;
@@ -54,6 +70,17 @@ protected:
 	uint32 extendedflags; // pentagram's own flags
 
 	Container* parent; // container this item is in (or 0 for top-level items)
+
+	// This is stuff that is used for displaing and interpolation
+	struct Lerped
+	{
+		sint32 x,y,z;
+		uint32 shape,frame;
+	};
+	
+	Lerped	l_prev;			// Previous state (relative to camera)
+	Lerped	l_next;			// Next (current) state (relative to camera)
+	sint32	ix,iy,iz;		// Interpolated position in camera space
 
 public:
 	enum {

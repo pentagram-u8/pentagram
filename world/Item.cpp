@@ -60,3 +60,24 @@ void Item::getLocation(sint32& X, sint32& Y, sint32 &Z) const
 	Y = y;
 	Z = z;
 }
+
+//
+// Item::setupLerp(uint32 factor)
+//
+// Desc: Setup the lerped info for this frame
+//
+// factor: Range 0 (prev) to 256 (next)
+// camera: Camera object
+//
+void Item::setupLerp(/* Camera &camera */)
+{
+	// Setup prev values
+	l_prev = l_next;
+
+	l_next.x = ix = x /*- camera.x*/;
+	l_next.y = iy = y /*- camera.y*/;
+	l_next.z = iz = z /*- camera.z*/;
+	l_next.shape = shape;
+	l_next.frame = frame;
+}
+

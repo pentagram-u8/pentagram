@@ -70,7 +70,10 @@ protected:
 
 	RenderSurface	*surface;				// Gump's RenderSurface, if it has one
 
-//	GumpList		*children;				// Child gumps
+	// The Gump list for this gump. This will contain all child gumps, as well as
+	// all gump widgets. It has it's own 'Active' gump selection, handles layering,
+	// painting, and can also issues input commands
+	//GumpList		*children;
 
 public:
 
@@ -78,6 +81,8 @@ public:
 	virtual ~Gump();
 
 	// Get the mouse cursor for position mx, my relative to parents position
+	// Returns true if this gump wants to set the cursor. If false, thet gump list
+	// will attempt to get the cursor shape from the next lower shape.
 	//virtual bool		GetMouseCursor(int mx, int my, Shape &shape, sint32 &frame);
 
 	// Update the RenderSurface of this gump and all children.
@@ -86,10 +91,10 @@ public:
 	// TODO: Change this
 	// RenderSurface is the parent RenderSurface. This is required for gumps
 	// that don't have their own RenderSurfaces
-	virtual void Paint(RenderSurface*);
+	virtual void		Paint(RenderSurface*);
 
 	// Move this gump
-	// virtual void Move(int x, int y);
+	// virtual void		Move(int x, int y);
 
 
 	//
@@ -100,13 +105,22 @@ public:
 	//
 	// return true if handled, false if not handled
 	//
+	// Unhandle input will be passed down to the next lower gump
+	//
 	
-	virtual bool		OnLeft(int mx, int my) { return false; }
-	virtual bool		OnDoubleLeft(int mx, int my) { return false; }
-	virtual bool		OnRight(int mx, int my) { return false; }
-	virtual bool		OnDoubleRight(int mx, int my) { return false; }
+	virtual bool		OnMouseDown(int button, int mx, int my) { return false; }
+	virtual bool		OnMouseUp(int button, int mx, int my) { return false; }
+	virtual bool		OnMouseDouble(int button, int mx, int my) { return false; }
+	virtual bool		OnMouseDrag(int button, int mx, int my) { return false; }
 	virtual bool		OnKeyDown(int key) { return false; }
 	virtual bool		OnKeyUp(int key) { return false; }
+
+	// This is for detecting focus changes for keyboard input. Gets called true
+	// when the GumpList wants to make this the focus gump. It is called false 
+	// when focus is being taken away. If returning false on focus gain, the 
+	// gump states it doesn't want to gain input focus. For OnFocus(false) 
+	// calls return value is ignored
+	virtual bool		OnFocus(bool gain) { return false; }
 };
 
 #endif //GUMP_H_INCLUDED

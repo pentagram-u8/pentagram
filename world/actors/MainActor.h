@@ -27,6 +27,8 @@ public:
 	MainActor();
 	~MainActor();
 
+	// p_dynamic_cast stuff
+	ENABLE_DYNAMIC_CAST(MainActor);
 };
 
 #endif

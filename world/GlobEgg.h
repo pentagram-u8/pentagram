@@ -26,6 +26,9 @@ class GlobEgg : public Item
 public:
 	GlobEgg();
 	virtual ~GlobEgg();
+
+	// p_dynamic_cast stuff
+	ENABLE_DYNAMIC_CAST(GlobEgg);
 };
 
 

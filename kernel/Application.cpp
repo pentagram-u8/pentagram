@@ -296,12 +296,19 @@ void Application::loadConfig()
 	// hardcoded data path? (since the system-wide config file is in @data)
 
 	std::string data;
+	pout << "Reading \"config/paths/data\" config key." << std::endl;
 	config->value("config/paths/data", data, "");
 	if (data != "") {
+		pout << "Data Path: " << data << std::endl;
 		filesystem->AddVirtualPath("@data", data);
+	}
+	else {
+		pout << "Key not found. Data path not set." << std::endl;
 	}
 
 	std::string u8;
+	pout << "Reading \"config/paths/u8\" config key." << std::endl;
 	config->value("config/paths/u8", u8, ".");
 	filesystem->AddVirtualPath("@u8", u8);
+	pout << "U8 Path: " << u8 << std::endl;
 }
