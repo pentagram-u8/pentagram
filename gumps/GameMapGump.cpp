@@ -367,7 +367,7 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 			Actor* devon = World::get_instance()->getNPC(1);
 			PathfinderProcess* pfp = new PathfinderProcess(devon, x, y, z);
 			Kernel::get_instance()->addProcess(pfp);
-#elif 1
+#elif 0
 			if (p_dynamic_cast<Actor*>(item)) {
 				p_dynamic_cast<Actor*>(item)->die(0);
 			} else {
@@ -388,7 +388,7 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 			}
 #elif 0
 			item->receiveHit(1, 0, 1024, 0);
-#else
+#elif 0
 			item->clearFlag(Item::FLG_HANGING);
 #endif
 		}
