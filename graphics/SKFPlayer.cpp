@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2004-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,7 @@
 #include "SoftRenderSurface.h"
 #include "PaletteManager.h"
 #include "MusicProcess.h"
+#include "AudioProcess.h"
 #include "IDataSource.h"
 
 enum SKFAction {
@@ -149,6 +150,7 @@ void SKFPlayer::run()
 	}
 
 	MusicProcess* musicproc = MusicProcess::get_instance();
+	AudioProcess* audioproc = AudioProcess::get_instance();
 
 	// handle events for the current frame
 	while (curevent < events.size() && events[curevent]->frame <= curframe) {
@@ -187,6 +189,7 @@ void SKFPlayer::run()
 			break;
 		case SKF_PlaySFX:
 			pout << "PlaySFX " << events[curevent]->data << std::endl;
+			if (audioproc) audioproc->playSFX(events[curevent]->data,0x60,0,0);
 			break;
 		case SKF_StopSFX:
 			pout << "StopSFX" << std::endl;

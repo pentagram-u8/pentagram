@@ -2,6 +2,7 @@
 	* gumps/CreditsGump.*: fix ending of quotes/credits
 	* games/GameInfo.h: add function to return one-letter language code
 	* games/GameData.*: load correct usecode/speech files for language
+	* graphics/SKFPlayer.cpp: play (some) SFX
 
 2005-03-24  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/MovieGump.*: made MovieGump modal
