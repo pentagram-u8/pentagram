@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -44,8 +44,26 @@ bool GameDetector::detect(std::string path, GameInfo *info)
 		}
 
 	}
-	// for Crusader: No Regret, we can use @detect/static/help1.bmp
-	// for Crusader: No remorse, @detect/static/help1.dat
+
+	if (info->type == GameInfo::GAME_UNKNOWN) {
+
+		ids = fs->ReadFile("@detect/static/help1.dat"); // random remorse file
+		if (ids) {
+			info->type = GameInfo::GAME_REMORSE;
+			delete ids; ids = 0;
+		}
+
+	}
+
+	if (info->type == GameInfo::GAME_UNKNOWN) {
+
+		ids = fs->ReadFile("@detect/static/help1.bmp"); // random regret file
+		if (ids) {
+			info->type = GameInfo::GAME_REGRET;
+			delete ids; ids = 0;
+		}
+
+	}
 
 	//TODO: game version
 

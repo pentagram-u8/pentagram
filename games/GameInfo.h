@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,7 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 struct GameInfo {
 	enum GameType {
 		GAME_UNKNOWN = 0,
-		GAME_U8
+		GAME_U8,
+		GAME_REMORSE,
+		GAME_REGRET 
 	} type;
 
 	//! version number, encoded as 100*major + minor

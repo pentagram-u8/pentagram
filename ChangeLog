@@ -1,6 +1,7 @@
 2004-10-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* games/U8Game.cpp: added 'skipstart' config option
 	* kernel/CoreApp.cpp: fix game detection at startup
+	* games/GameInfo.h, games/GameDetector.cpp: simple Crusader detection
 
 2004-10-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/CurrentMap.*: detect 'touching_floor' in sweepTest
