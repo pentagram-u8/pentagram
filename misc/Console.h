@@ -139,13 +139,13 @@ public:
 protected:
 
 	// Output a character
-	virtual int_type overflow(int_type _C = _Tr::eof())
+	virtual int_type overflow(int_type c = _Tr::eof())
 	{
-		if (!_Tr::eq_int_type(_Tr::eof(), _C)) con.Putchar(_Tr::to_char_type(_C));
-		return (_Tr::not_eof(_C));
+		if (!_Tr::eq_int_type(_Tr::eof(), c)) con.Putchar(_Tr::to_char_type(c));
+		return (_Tr::not_eof(c));
 	}
 
-	virtual std::streamsize xsputn(const char_type *ptr, std::streamsize count)
+	virtual std::streamsize xsputn(const _E *ptr, std::streamsize count)
 	{
 		con.PrintRaw(ptr, count);
 		return count;
@@ -191,13 +191,13 @@ public:
 protected:
 
 	// Output a character
-	virtual int_type overflow(int_type _C = _Tr::eof())
+	virtual int_type overflow(int_type c = _Tr::eof())
 	{
-		if (!_Tr::eq_int_type(_Tr::eof(), _C)) con.Putchar_err(_Tr::to_char_type(_C));
-		return (_Tr::not_eof(_C));
+		if (!_Tr::eq_int_type(_Tr::eof(), c)) con.Putchar_err(_Tr::to_char_type(c));
+		return (_Tr::not_eof(c));
 	}
 
-	virtual std::streamsize xsputn(const char_type *ptr, std::streamsize count)
+	virtual std::streamsize xsputn(const _E *ptr, std::streamsize count)
 	{
 		con.PrintRaw_err(ptr, count);
 		return count;
