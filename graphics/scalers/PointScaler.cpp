@@ -307,13 +307,13 @@ PointScaler::PointScaler() : Scaler()
 	Scale32_888A = PointScalerInternal<uint32, Manip_32_888A, uint32>::Scale;
 }
 
-const uint32 PointScaler::ScaleBits() { return 0xFFFFFFFF; }
-const bool PointScaler::ScaleArbitrary() { return true; }
+const uint32 PointScaler::ScaleBits() const { return 0xFFFFFFFF; }
+const bool PointScaler::ScaleArbitrary() const { return true; }
 
-const char *PointScaler::ScalerName() { return "point"; }
-const char *PointScaler::ScalerDesc() { return "Fast Simple Point Scaler"; }
-const char *PointScaler::ScalerCopyright() { return "Copyright (c) 2005 The Pentagram Team"; }
+const char *PointScaler::ScalerName() const { return "point"; }
+const char *PointScaler::ScalerDesc() const { return "Fast Simple Point Scaler"; }
+const char *PointScaler::ScalerCopyright() const { return "Copyright (C) 2005 The Pentagram Team"; }
 
-PointScaler point_scaler;
+const PointScaler point_scaler;
 
 };

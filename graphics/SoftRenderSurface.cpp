@@ -456,6 +456,29 @@ template<class uintX> void SoftRenderSurface<uintX>::StretchBlit(Texture *textur
 }
 
 //
+// bool SoftRenderSurface::ScalerBlit(Texture *texure, sint32 sx, sint32 sy, sint32 sw, sint32 sh, sint32 dx, sint32 dy, sint32 dw, sint32 dh, const Pentagram::Scaler *scaler, bool clampedges)
+//
+// Desc: Blit a region from a Texture using a scaler
+//
+//
+template<class uintX> bool SoftRenderSurface<uintX>::ScalerBlit(Texture *texture, sint32 sx, sint32 sy, sint32 sw, sint32 sh, sint32 dx, sint32 dy, sint32 dw, sint32 dh, const Pentagram::Scaler *scaler, bool clampedges)
+{
+	// Nothing we can do
+	if ((sh <= 0) || (dh <= 0) || (sw <= 0) || (dw <= 0)) return false;
+
+	// 1x No scaling needed (but still do it anyway, could be a filter????)
+	if (dw == sw && sh == dh)
+	{
+		Blit(texture, sw, sy, sw, sh, dx, dy);
+		return true;
+	}
+
+	uint8 *pixel = pixels + dy * pitch + dx * sizeof(uintX);
+
+	return scaler->Scale(texture,sx,sy,sw,sh,pixel,dw,dh,pitch,clampedges);
+}
+
+//
 // SoftRenderSurface::PrintCharFixed(Texture *, char character, int x, int y)
 //
 // Desc: Draw a fixed width character from a Texture buffer

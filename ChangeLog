@@ -1,3 +1,13 @@
+2005-02-22  Ryan Nunn <colourles@users.sourceforge.net>
+	* graphics/RenderSurface.h, graphics/SoftRenderSurface.*, 
+	  graphics/Scaler.h, gumps/ScalerGump.*, kernel/GUIApp.cpp
+	  graphics/scalers/BilinearScaler.*, graphics/scalers/PointScaler.*,
+	  graphics/scalers/Scale2xScaler.* :
+	  Things getting close to final implementation. Added Scale2x scaler.
+	  Use 'scaler=scale2x' in the ini to use it. Also enabled a cheap and 
+	  nasty hack that will allow any 2x scaler to do 320x200->640x480 
+	  scaling. Good for Scale2x.
+
 2005-02-21  Ryan Nunn <colourles@users.sourceforge.net>
 	* graphics/*RenderSurface.*, graphics/Manips.h, graphics/Scaler.h, 
 	  graphics/scalers/BilinearScaler.*, graphics/scalers/PointScaler.*,

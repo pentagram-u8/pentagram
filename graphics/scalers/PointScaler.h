@@ -28,15 +28,15 @@ class PointScaler : public Scaler
 public:
 	PointScaler();
 
-	virtual const uint32	ScaleBits();		//< bits for supported integer scaling
-	virtual const bool		ScaleArbitrary();	//< supports arbitrary scaling of any degree 
+	virtual const uint32	ScaleBits() const;			//< bits for supported integer scaling
+	virtual const bool		ScaleArbitrary() const;		//< supports arbitrary scaling of any degree 
 
-	virtual const char *	ScalerName();		//< Name Of the Scaler (1 word)
-	virtual const char *	ScalerDesc();		//< Desciption of the Scaler
-	virtual const char *	ScalerCopyright();	//< Scaler Copyright info
+	virtual const char *	ScalerName() const;			//< Name Of the Scaler (1 word)
+	virtual const char *	ScalerDesc() const;			//< Desciption of the Scaler
+	virtual const char *	ScalerCopyright() const;	//< Scaler Copyright info
 };
 
-extern PointScaler point_scaler;
+extern const PointScaler point_scaler;
 
 };
 

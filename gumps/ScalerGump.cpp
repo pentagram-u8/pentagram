@@ -22,12 +22,13 @@
 #include "RenderSurface.h"
 #include "Texture.h"
 #include "GUIApp.h"
+#include "Scaler.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(ScalerGump,DesktopGump);
 
 ScalerGump::ScalerGump(sint32 _x, sint32 _y, sint32 _width, sint32 _height, 
-						sint32 _swidth1, sint32 _sheight1, sint32 _scaler1, 
-						sint32 _swidth2, sint32 _sheight2, sint32 _scaler2)
+						sint32 _swidth1, sint32 _sheight1, const Pentagram::Scaler *_scaler1, 
+						sint32 _swidth2, sint32 _sheight2, const Pentagram::Scaler *_scaler2)
 	: DesktopGump(_x, _y, _width, _height), 
 		swidth1(_swidth1), sheight1(_sheight1), scaler1(_scaler1), buffer1(0),
 		swidth2(_swidth2), sheight2(_sheight2), scaler2(_scaler2), buffer2(0)
@@ -68,35 +69,38 @@ void ScalerGump::Paint(RenderSurface* surf, sint32 lerp_factor)
 	PaintChildren(buffer1, lerp_factor);
 
 	Texture* tex = buffer1->GetSurfaceAsTexture();
+	
+	bool ok = true;
 
-	/*
-	if (height==480 && sheight ==200)
+	// Cheap and nasty method to use a 2x scaler to do a 2.4x scale vertically
+	if (width==640 && swidth1==320 && height==480 && sheight1==200 && !scaler2 && !scaler1->ScaleArbitrary())
 	{
-		surf->StretchBlit(tex, 0, 0, swidth, 1, 0, 0, width, 2, scaler1==1);
+		ok = surf->ScalerBlit(tex, 0, 0, swidth1, 1, 0, 0, width, 2, scaler1);
 
-		int i = 1;
-		int j = 0;
-		int f = 3;
-		while(i<468)
-		{
-			surf->StretchBlit(tex, 0, j, swidth, 3, 0, i, width, 6, scaler1==1);
-			i+=5;
-			j+=2;
+		int d = 1, s = 0;
+		while(d<468 && ok) {
+			ok = surf->ScalerBlit(tex, 0, s, swidth1, 3, 0, d, width, 6, scaler1);
+			d+=5; s+=2;
 
-			surf->StretchBlit(tex, 0, j, swidth, 4, 0, i, width, 8, scaler1==1);
-			i+=7;
-			j+=3;
+			if (!ok) break;
+
+			ok = surf->ScalerBlit(tex, 0, s, swidth1, 4, 0, d, width, 8, scaler1);
+			d+=7; s+=3;
 		}
-		surf->StretchBlit(tex, 0, j, swidth, 3, 0, i, width, 6, scaler1==1);
-		i+=5;
-		j+=2;
 
-		surf->StretchBlit(tex, 0, j, swidth, 3, 0, i, width, 6, scaler1==1);
+		while(d<478 && ok) {
+			ok = surf->ScalerBlit(tex, 0, s, swidth1, 3, 0, d, width, 6, scaler1);
+			d+=5; s+=2;
+		}
 	}
 	else
-	*/
 	{
-		surf->StretchBlit(tex, 0, 0, swidth1, sheight1, 0, 0, width, height, scaler1==1);
+		ok = surf->ScalerBlit(tex, 0, 0, swidth1, sheight1, 0, 0, width, height, scaler1);
+	}
+
+	if (!ok)
+	{
+		surf->StretchBlit(tex, 0, 0, swidth1, sheight1, 0, 0, width, height);
 	}
 
 }

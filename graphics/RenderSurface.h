@@ -30,6 +30,7 @@ namespace Pentagram
 {
 	struct Palette;
 	struct Rect;
+	class Scaler;
 }
 
 #define UNPACK_RGB8(pix,r,g,b) { r = (((pix)&RenderSurface::format.r_mask)>>RenderSurface::format.r_shift)<<RenderSurface::format.r_loss; g = (((pix)&RenderSurface::format.g_mask)>>RenderSurface::format.g_shift)<<RenderSurface::format.g_loss; b = (((pix)&RenderSurface::format.b_mask)>>RenderSurface::format.b_shift)<<RenderSurface::format.b_loss; }
@@ -232,6 +233,9 @@ public:
 
 	// Blit a stretched region from a Texture with 3D Alpha Blending Function (Alpha == 0 -> skipped)
 	// TODO: virtual void StretchAlphaBlit(Texture *, sint32 sx, sint32 sy, sint32 sw, sint32 sh, sint32 dx, sint32 dy, sint32 dw, sint32 dh) = 0;
+
+	// Blit a region from a Texture using a scaler
+	virtual bool ScalerBlit(Texture *, sint32 sx, sint32 sy, sint32 sw, sint32 sh, sint32 dx, sint32 dy, sint32 dw, sint32 dh, const Pentagram::Scaler *, bool clampedges = false) = 0;
 
 
 	////////////////////////////////////////

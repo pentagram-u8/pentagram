@@ -870,13 +870,13 @@ BilinearScaler::BilinearScaler() : Scaler()
 	Scale32_888A = Bilinear_Scale32_888A;
 }
 
-const uint32 BilinearScaler::ScaleBits() { return 0xFFFFFFFF; }
-const bool BilinearScaler::ScaleArbitrary() { return true; }
+const uint32 BilinearScaler::ScaleBits() const { return 0xFFFFFFFF; }
+const bool BilinearScaler::ScaleArbitrary() const { return true; }
 
-const char *BilinearScaler::ScalerName() { return "bilinear"; }
-const char *BilinearScaler::ScalerDesc() { return "Bilinear Filtering Scaler"; }
-const char *BilinearScaler::ScalerCopyright() { return "Copyright (c) 2005 The Pentagram Team"; }
+const char *BilinearScaler::ScalerName() const { return "bilinear"; }
+const char *BilinearScaler::ScalerDesc() const { return "Bilinear Filtering Scaler"; }
+const char *BilinearScaler::ScalerCopyright() const { return "Copyright (C) 2005 The Pentagram Team"; }
 
-BilinearScaler bilinear_scaler;
+const BilinearScaler bilinear_scaler;
 
 };

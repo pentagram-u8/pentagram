@@ -92,7 +92,8 @@ GRAPHICS = \
 
 SCALERS = \
 	graphics/scalers/BilinearScaler.o \
-	graphics/scalers/PointScaler.o
+	graphics/scalers/PointScaler.o \
+	graphics/scalers/Scale2xScaler.o
 
 FONTS = \
 	graphics/fonts/Font.o \

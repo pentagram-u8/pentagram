@@ -49,12 +49,12 @@ public:
 	// Scaler Capabilites
 	//
 
-	virtual const uint32	ScaleBits() = 0;		//< bits for supported integer scaling
-	virtual const bool		ScaleArbitrary() = 0;	//< supports arbitrary scaling of any degree 
+	virtual const uint32	ScaleBits() const = 0;			//< bits for supported integer scaling
+	virtual const bool		ScaleArbitrary() const = 0;		//< supports arbitrary scaling of any degree 
 
-	virtual const char *	ScalerName() = 0;		//< Name Of the Scaler (1 word)
-	virtual const char *	ScalerDesc() = 0;		//< Desciption of the Scaler
-	virtual const char *	ScalerCopyright() = 0;	//< Scaler Copyright info
+	virtual const char *	ScalerName() const = 0;			//< Name Of the Scaler (1 word)
+	virtual const char *	ScalerDesc() const = 0;			//< Desciption of the Scaler
+	virtual const char *	ScalerCopyright() const = 0;	//< Scaler Copyright info
 
 	//
 	// Maybe one day... for now we just grab everything from RenderSurface
@@ -62,43 +62,60 @@ public:
 
 	// Call this to scale a section of the screen
 	inline bool Scale(	Texture *texture, sint32 sx, sint32 sy, sint32 sw, sint32 sh, 
-						uint8* pixel, sint32 dw, sint32 dh, sint32 pitch, bool clamp_src)
+						uint8* pixel, sint32 dw, sint32 dh, sint32 pitch, bool clamp_src) const
 	{
-			if (RenderSurface::format.s_bytes_per_pixel == 4) 
+		// Check to see if we are doing valid integer scalings
+		if (!ScaleArbitrary())
+		{
+			uint32 scale_bits = ScaleBits();
+			int x_factor = dw/sw;
+			int y_factor = dh/sh;
+
+			// Not integer
+			if ((x_factor*sw)!=dw || (y_factor*sh)!=dh) return false;
+
+			// Don't support this
+			if (!(scale_bits & (1<<x_factor))) return false;
+
+			// Don't support this
+			if (!(scale_bits & (1<<y_factor))) return false;
+		}
+
+		if (RenderSurface::format.s_bytes_per_pixel == 4) 
+		{
+			if (texture->format == TEX_FMT_NATIVE || (texture->format == TEX_FMT_STANDARD && 
+				RenderSurface::format.a_mask == TEX32_A_MASK && RenderSurface::format.r_mask == TEX32_R_MASK && 
+				RenderSurface::format.g_mask == TEX32_G_MASK && RenderSurface::format.b_mask == TEX32_B_MASK))
 			{
-				if (texture->format == TEX_FMT_NATIVE || (texture->format == TEX_FMT_STANDARD && 
-					RenderSurface::format.a_mask == TEX32_A_MASK && RenderSurface::format.r_mask == TEX32_R_MASK && 
-					RenderSurface::format.g_mask == TEX32_G_MASK && RenderSurface::format.b_mask == TEX32_B_MASK))
+				if (RenderSurface::format.a_mask == 0xFF000000)
 				{
-					if (RenderSurface::format.a_mask == 0xFF000000)
-					{
-						return Scale32_A888(texture,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
-					}
-					else if (RenderSurface::format.a_mask == 0x000000FF)
-					{
-						return Scale32_888A(texture,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
-					}
-					else 
-					{
-						return Scale32Nat(texture,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
-					}
+					return Scale32_A888(texture,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
 				}
-				else if (texture->format == TEX_FMT_STANDARD)
+				else if (RenderSurface::format.a_mask == 0x000000FF)
 				{
-					return Scale32Sta(texture,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+					return Scale32_888A(texture,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+				}
+				else 
+				{
+					return Scale32Nat(texture,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
 				}
 			}
-			if (RenderSurface::format.s_bytes_per_pixel == 2) 
+			else if (texture->format == TEX_FMT_STANDARD)
 			{
-				if (texture->format == TEX_FMT_NATIVE)
-				{
-					return Scale16Nat(texture,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
-				}
-				else if (texture->format == TEX_FMT_STANDARD)
-				{
-					return Scale16Sta(texture,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
-				}
+				return Scale32Sta(texture,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
 			}
+		}
+		if (RenderSurface::format.s_bytes_per_pixel == 2) 
+		{
+			if (texture->format == TEX_FMT_NATIVE)
+			{
+				return Scale16Nat(texture,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+			}
+			else if (texture->format == TEX_FMT_STANDARD)
+			{
+				return Scale16Sta(texture,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+			}
+		}
 
 		return false;
 	}

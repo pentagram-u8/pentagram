@@ -16,17 +16,17 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef BILINEARSCALER_H_INCLUDED
-#define BILINEARSCALER_H_INCLUDED
+#ifndef SCALE2XSCALER_H_INCLUDED
+#define SCALE2XSCALER_H_INCLUDED
 
 #include "Scaler.h"
 
 namespace Pentagram {
 
-class BilinearScaler : public Scaler
+class Scale2xScaler : public Scaler
 {
 public:
-	BilinearScaler();
+	Scale2xScaler();
 
 	virtual const uint32	ScaleBits() const;			//< bits for supported integer scaling
 	virtual const bool		ScaleArbitrary() const;		//< supports arbitrary scaling of any degree 
@@ -36,7 +36,7 @@ public:
 	virtual const char *	ScalerCopyright() const;	//< Scaler Copyright info
 };
 
-extern const BilinearScaler bilinear_scaler;
+extern const Scale2xScaler scale2x_scaler;
 
 };
 

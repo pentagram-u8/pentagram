@@ -137,6 +137,8 @@ public:
 	// Blit a stretched region from a Texture with 3D Alpha Blending Function (Alpha == 0 -> skipped)
 	// TODO: virtual void StretchAlphaBlit(Texture *, sint32 sx, sint32 sy, sint32 sw, sint32 sh, sint32 dx, sint32 dy, sint32 dw, sint32 dh);
 
+	// Blit a region from a Texture using a scaler
+	virtual bool ScalerBlit(Texture *, sint32 sx, sint32 sy, sint32 sw, sint32 sh, sint32 dx, sint32 dy, sint32 dw, sint32 dh, const Pentagram::Scaler *, bool clampedges = false);
 
 	////////////////////////////////////////
 	// TODO: Add in Abstract 3d code Here //

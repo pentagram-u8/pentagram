@@ -94,6 +94,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "MovieGump.h"
 
+#include "scalers/PointScaler.h"
+#include "scalers/BilinearScaler.h"
+#include "scalers/Scale2xScaler.h"
+
 #include "DisasmProcess.h"
 #include "CompileProcess.h"
 
@@ -1665,16 +1669,20 @@ void GUIApp::setupCoreGumps()
 	screen->GetSurfaceDims(dims);
 
 	// Scaler stuff... should probably be elsewhere
-	int scalex, scaley, scalerindex=0;
-	std::string scaler;
+	int scalex, scaley;
+	std::string scalername;
+	const Pentagram::Scaler *scaler = &Pentagram::point_scaler;
 	settingman->setDefault("scalex", 320);
 	settingman->get("scalex", scalex);
 	settingman->setDefault("scaley", 200);
 	settingman->get("scaley", scaley);
 	settingman->setDefault("scaler", "point");
-	settingman->get("scaler", scaler);
+	settingman->get("scaler", scalername);
 	
-	if (scaler == Pentagram::istring("bilinear")) scalerindex = 1;
+	if (scalername == Pentagram::istring(Pentagram::bilinear_scaler.ScalerName())) 
+		scaler=&Pentagram::bilinear_scaler;
+	else if (scalername == Pentagram::istring(Pentagram::scale2x_scaler.ScalerName())) 
+		scaler=&Pentagram::scale2x_scaler;
 
 	if (scalex < 0) scalex= -scalex;
 	else if (scalex < 100) scalex = dims.w/scalex;
@@ -1682,13 +1690,16 @@ void GUIApp::setupCoreGumps()
 	if (scaley < 0) scaley= -scaley;
 	else if (scaley < 100) scaley = dims.h/scaley;
 
+	if (dims.w!=scalex && dims.h!=scaley)
+		pout << "Using Scaler: " << scaler->ScalerDesc() << ". " << scaler->ScalerCopyright() << std::endl;
+
 	pout << "Create Desktop" << std::endl;
 	desktopGump = new DesktopGump(0,0, dims.w, dims.h);
 	desktopGump->InitGump();
 	desktopGump->MakeFocus();
 
 	pout << "Create Scalergump" << std::endl;
-	scalerGump = new ScalerGump(0,0, dims.w, dims.h,scalex,scaley,scalerindex,-1);
+	scalerGump = new ScalerGump(0,0, dims.w, dims.h,scalex,scaley,scaler);
 	scalerGump->InitGump();
 	desktopGump->AddChild(scalerGump);
 
