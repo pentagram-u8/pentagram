@@ -86,7 +86,15 @@ void MusicProcess::playMusic(int track)
 		if (!info || !info->transitions[track] || !info->transitions[track][measure])
 		{
 			current_track = 0;
-			playMusic(track);
+			if (track == 0)
+			{
+				wanted_track = 0;
+				state = MUSIC_PLAY_WANTED;
+			}
+			else
+			{
+				playMusic(track);
+			}
 			return;
 		}
 

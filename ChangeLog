@@ -1,3 +1,6 @@
+2004-05-16  Ryan Nunn <colourles@users.sourceforge.net>
+	* audio/MusicProcess.cpp : Fixing bug with stop
+
 2004-05-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/MovieGump.*: movie gump
 	* graphics/SKFPlayer.*: u8 skf player
