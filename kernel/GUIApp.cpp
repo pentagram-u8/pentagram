@@ -514,6 +514,7 @@ public:
 			if (ok) break;
 		}
 
+#if 0
 		if (hitting) 
 		{
 			std::list<CurrentMap::SweepItem> items;
@@ -559,9 +560,10 @@ public:
 				}
 			}
 		}
+#endif
 
-		avatar->move(x+dx,y+dy,z+dz);
-		avatar->callUsecodeEvent_justMoved();
+		// Yes, i know, not entirely correct
+		avatar->collideMove(x+dx,y+dy,z+dz, false, true);
 		return true;
 	}
 
@@ -576,6 +578,8 @@ AvatarMoverProcess	*AvatarMoverProcess::amp[6] = { 0, 0, 0, 0, 0, 0 };
 bool AvatarMoverProcess::clipping = false;
 bool AvatarMoverProcess::quarter = false;
 bool AvatarMoverProcess::hitting = false;
+
+bool hitting() { return AvatarMoverProcess::hitting; }
 
 void GUIApp::handleEvent(const SDL_Event& event)
 {
@@ -968,7 +972,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			Actor* avatar = World::get_instance()->getNPC(1);
 			sint32 x,y,z;
 			egg->getLocation(x,y,z);
-			avatar->move(x,y,z);
+			avatar->collideMove(x,y,z,true,true);
 			egg->hatch();
 		} break;
 		default: break;

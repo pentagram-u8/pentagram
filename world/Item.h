@@ -86,6 +86,16 @@ public:
 	bool isOn(Item& item2) const;
 	bool canExistAt(sint32 x, sint32 y, sint32 z) const;
 
+	// Move the object to (x,y,z) colliding with objects in the way.
+	// Set force to force the object to get to the destination without being
+	// blocked by solid objects
+	// Set teleport to move without coliding with objects between source and
+	// destination
+	// Returns 0-0x4000 representing how far it got 
+	// 0 = didn't move
+	// 0x4000 = reached destination
+	sint32 collideMove(sint32 x, sint32 y, sint32 z, bool teleport, bool force);
+
 	void fall();
 
 	void setGravityProcess(uint16 pid) { gravitypid = pid; }

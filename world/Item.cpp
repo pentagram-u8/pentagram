@@ -447,6 +447,190 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 }
 
 
+sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool force)
+{
+	extern bool hitting();
+	World *world = World::get_instance();
+	CurrentMap *map = world->getCurrentMap();
+
+	sint32 end[3] = { dx, dy, dz };
+
+	sint32 start[3];
+	if (parent)
+	{
+		// If we are moving from a container, only check the destination
+		start[0] = end[0];
+		start[1] = end[1];
+		start[2] = end[2];
+	}
+	else
+	{
+		// Otherwise check from where we are to where we want to go
+		getLocation(start[0], start[1], start[2]);
+	}
+
+	sint32 dims[3];
+	getFootpad(dims[0], dims[1], dims[2]);
+	dims[0] *= 32; dims[1] *= 32; dims[2] *= 8;
+
+	// Do the sweep test
+	std::list<CurrentMap::SweepItem> collisions;
+	std::list<CurrentMap::SweepItem>::iterator it;
+	map->sweepTest(start, end, dims, objid, false, &collisions);
+
+	// Ok, now to work out what to do
+
+	// if we are contained, we always teleport
+	if (teleport || parent)
+	{
+		// If teleporting and not force, work out if we can reach the end
+		if (!force) 
+		{
+			for (it = collisions.begin(); it != collisions.end(); it++)
+			{
+				// Wasn't hitting us at the end or were touching
+				if (it->end_time != 0x4000 || it->touching)  
+					continue;
+
+				Item *item = world->getItem(it->item);
+				if (!item) continue;
+				ShapeInfo *info = item->getShapeInfo();
+
+				// Uh oh, we hit something, can't move
+				if (info->is_solid()) return 0;
+
+			}
+		}
+
+		// Trigger all the required events
+		bool we_were_released = false;
+		for (it = collisions.begin(); it != collisions.end(); it++)
+		{
+			Item *item = world->getItem(it->item);
+
+			// Hitting us at the start and end, don't do anything
+			if (!parent && it->hit_time == 0x0000 && 
+					it->end_time == 0x4000)
+			{
+				continue;
+			}
+			// Hitting us at the end (call hit on us, got hit on them)
+			else if (it->end_time == 0x4000)
+			{
+				if (objid == 1 && hitting()) item->setExtFlag(Item::EXT_HIGHLIGHT);
+				item->callUsecodeEvent_gotHit(objid,0);
+				callUsecodeEvent_hit(item->getObjId(),0);
+			}
+			// Hitting us at the start (call release on us and them)
+			else if (!parent && it->hit_time == 0x0000)
+			{
+				if (objid == 1) item->clearExtFlag(Item::EXT_HIGHLIGHT);
+				we_were_released = true;
+				item->callUsecodeEvent_release();
+			}
+		}
+
+		// Call release on us
+		if (we_were_released) callUsecodeEvent_release();
+
+		// Call it (only avatar has it)
+		callUsecodeEvent_justMoved();
+
+		// Move US!
+		move(end[0], end[1], end[2]);
+
+		// We reached the end
+		return 0x4000;
+	}
+	else
+	{
+		sint32 hit = 0x4000;
+
+		// If not force, work out if we can reach the end
+		// if not, need to do 'stuff'
+		// We don't care about items hitting us at the start
+		if (!force) 
+		{
+			for (it = collisions.begin(); it != collisions.end(); it++)
+			{
+				// Was only touching
+				if (it->touching) continue;
+
+				Item *item = world->getItem(it->item);
+				if (!item) continue;
+				ShapeInfo *info = item->getShapeInfo();
+
+				// Uh oh, we hit something
+				if (info->is_solid())
+				{
+					hit = it->hit_time;
+					break;
+				}
+			}
+
+			if (hit != 0x4000)
+			{
+				// Resweep
+				//pout << " Hit time: " << hit << std::endl;
+				//pout << "    Start: " << start[0] << ", "<< start[1] << ", " << start[2] << std::endl;
+				//pout << "      End: " << end[0] << ", "<< end[1] << ", " << end[2] << std::endl;
+				it->GetInterpolatedCoords(end,start,end);
+				//pout << "Collision: " << end[0] << ", "<< end[1] << ", " << end[2] << std::endl;
+				collisions.clear();
+				map->sweepTest(start, end, dims, objid, false, &collisions);
+			}
+		}
+
+
+		// Trigger all the required events
+		bool we_were_released = false;
+		for (it = collisions.begin(); it != collisions.end(); it++)
+		{
+			Item *item = world->getItem(it->item);
+			if (!item) continue;
+
+			uint16 proc_gothit = 0, proc_rel = 0;
+
+			// If hitting at start, we should have already 
+			// called gotHit and hit
+			if (it->hit_time > 0) 
+			{
+				if (objid == 1 && hitting()) item->setExtFlag(Item::EXT_HIGHLIGHT);
+				proc_gothit = item->callUsecodeEvent_gotHit(objid,0);
+				callUsecodeEvent_hit(item->getObjId(), 0);
+			}
+
+			// If not hitting at end, we will need to call release
+			if (it->end_time < 0x4000)
+			{
+				if (objid == 1) item->clearExtFlag(Item::EXT_HIGHLIGHT);
+				we_were_released = true;
+				proc_rel = item->callUsecodeEvent_release();
+			}
+
+			// We want to make sure that release is called AFTER gotHit.
+			if (proc_rel && proc_gothit)
+			{
+				Process *p = Kernel::get_instance()->getProcess(proc_rel);
+				p->waitFor(proc_gothit);
+			}
+		}
+
+		// Call release on us
+		if (we_were_released) callUsecodeEvent_release();
+
+		// Call it (only avatar has it)
+		callUsecodeEvent_justMoved();
+
+		// Move US!
+		move(end[0], end[1], end[2]);
+
+		return hit;
+	}
+
+	return 0;
+}
+
 
 uint32 Item::callUsecodeEvent(uint32 event, const uint8* args, int argsize)
 {
@@ -1459,7 +1643,8 @@ uint32 Item::I_move(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(z);
 	if (!item) return 0;
 
-	item->move(x,y,z);
+	//item->move(x,y,z);
+	item->collideMove(x, y, z, true, true);
 	return 0;
 }
 
@@ -1474,12 +1659,12 @@ uint32 Item::I_legalMoveToPoint(const uint8* args, unsigned int /*argsize*/)
 	// Currently: check if item can exist at point. If so, move it there
 	// and return true. If not, return false.
 
-	if (item->canExistAt(point.getX(), point.getY(), point.getZ())) {
-		item->move(point.getX(), point.getY(), point.getZ());
-		return 1;
-	} else {
-		return 0;
-	}
+//	if (item->canExistAt(point.getX(), point.getY(), point.getZ())) {
+//		item->move(point.getX(), point.getY(), point.getZ());
+//		return 1;
+//	} else {
+	return item->collideMove(point.getX(), point.getY(), point.getZ(), true, false) != 0;
+//	}
 }
 
 

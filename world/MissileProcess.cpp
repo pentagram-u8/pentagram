@@ -74,7 +74,7 @@ bool MissileProcess::run(const uint32 framenum)
 	z = from_z + ((to_z - from_z) * currentpos)/speed;
 	if (curve) z += sinvals[(20*currentpos)/speed]/25;
 
-	it->move(x,y,z);
+	it->collideMove(x,y,z,false,true);	// Ick, should be false for force 
 
 	if (currentpos >= speed) {
 		result = 1; // do we need this? For now it's for the pathfinding hack

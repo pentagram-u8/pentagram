@@ -534,6 +534,8 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3], const sin
 				//last times of overlap along each axis 
 				sint32 u_0[3] = {0x4000,0x4000,0x4000}; // CONSTANTS
 
+				bool touch = false;
+
 				//find the possible first and last times
 				//of overlap along each axis
 				for( long i=0 ; i<3 ; i++ )
@@ -545,6 +547,8 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3], const sin
 
 					if ( vel[i] < 0 && A_max>=B_min )		// A_max>=B_min not required
 					{
+						if (A_max==B_min) touch = true;
+
 						// - want to know when rear of A passes front of B
 						u_0[i] = ((B_max - A_min)*0x4000) / vel[i];
 						// - want to know when front of A passes rear of B
@@ -552,6 +556,8 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3], const sin
 					}
 					else if( vel[i] > 0 && A_min<=B_max)	// A_min<=B_max not required
 					{
+						if (A_min==B_max) touch = true;
+
 						// + want to know when front of A passes rear of B
 						u_0[i] = ((B_min - A_max)*0x4000) / vel[i];
 						// + want to know when rear of A passes front of B
@@ -559,6 +565,7 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3], const sin
 					}
 					else if( vel[i] == 0 && A_max >= B_min && A_min <= B_max)
 					{
+						if (A_min==B_max || A_max==B_min) touch = true;
 						u_0[i] = 0;
 						u_1[i] = 0x4000;
 					}
@@ -608,7 +615,7 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3], const sin
 						if ((*sw_it).hit_time > first) break;
 
 					// Now add it
-					sw_it = hit->insert(sw_it, SweepItem(other_item->getObjId(),first,last));
+					sw_it = hit->insert(sw_it, SweepItem(other_item->getObjId(),first,last,touch));
 					//pout << "Hit item " << other_item->getObjId() << " at (" << first << "," << last << ")" << std::endl;
 					//pout << "hit item      (" << other[0] << ", " << other[1] << ", " << other[2] << ")" << std::endl;
 				}

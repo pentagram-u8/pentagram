@@ -133,7 +133,8 @@ bool ActorAnimProcess::run(const uint32 framenum)
 	y += (dy*(framecount+1))/animaction->framerepeat;
 	z += (dz*(framecount+1))/animaction->framerepeat;
 
-	a->move(x,y,z);
+//	a->move(x,y,z);
+	a->collideMove(x, y, z, false, false);
 	a->setFrame(f.frame);
 
 	if (f.is_flipped()) {

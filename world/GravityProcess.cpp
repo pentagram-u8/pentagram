@@ -94,6 +94,13 @@ bool GravityProcess::run(uint32 framenum)
 	ty = iy + yspeed;
 	tz = iz + zspeed;
 
+	sint32 dist = item->collideMove(tx,ty,tz, false, false);
+	
+	if (dist == 0) terminate();
+	else zspeed -= gravity;
+
+#if 0
+
 	// collision detection. Move in steps half the item's height
 	// (and corresponding amounts in x/y directions)
 	if (izd == 0) izd = 8; //!! cheating a little to prevent 0-height
@@ -145,7 +152,7 @@ bool GravityProcess::run(uint32 framenum)
 
 		terminate();
 	}
-
+#endif
 	return true;
 }
 
