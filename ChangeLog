@@ -1,4 +1,9 @@
 2003-06-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/MainActor.*: teleportToEgg intrinsic
+	* world/Item.*: legalMoveToPoint intrinsic
+	* world/CurrentMap.cpp: fixed collision typo
+
+2003-06-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/AskGump.cpp: Free strings. Still some leaks remaining.
 	* world/CurrentMap.*: canExistAt intrinsic
 	* kernel/GUIApp.cpp: 't' outputs kernel/usecode/world stats
