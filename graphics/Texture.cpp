@@ -28,8 +28,9 @@
 //
 bool Texture::Clear()
 {
-	// release memory
-	delete [] buffer;
+	// Temporary fix to prevent us from freeing a RenderSurface's memory
+	if (format != TEX_FMT_NATIVE)
+		delete [] buffer;
 	buffer = 0;
 		
 	return true;
