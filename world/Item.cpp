@@ -1318,9 +1318,11 @@ uint16 Item::openGump(uint32 gumpshape)
 	ContainerGump* cgump;
 
 	if (getObjId() != 1) { //!! constant
-		cgump = new ContainerGump(shape, 0, objid, Gump::FLAG_ITEM_DEPENDENT);
+		cgump = new ContainerGump(shape, 0, objid, Gump::FLAG_ITEM_DEPENDENT |
+								  Gump::FLAG_DRAGGABLE);
 	} else {
-		cgump = new PaperdollGump(shape, 0, objid, Gump::FLAG_ITEM_DEPENDENT);
+		cgump = new PaperdollGump(shape, 0, objid, Gump::FLAG_ITEM_DEPENDENT |
+								  Gump::FLAG_DRAGGABLE);
 	}
 	//!!TODO: clean up the way this is set
 	//!! having the itemarea associated with the shape through the 

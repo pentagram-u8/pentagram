@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004  The Pentagram Team
+ *  Copyright (C) 2003-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -325,7 +325,7 @@ public:
 	// Gump Flags
 	//
 	enum GumpFlags {
-		FLAG_UNMOVABLE		= 0x01,		// When set, the gump can not be dragged
+		FLAG_DRAGGABLE		= 0x01,		// When set, the gump can be dragged
 		FLAG_HIDDEN			= 0x02,		// When set, the gump will not be drawn
 		FLAG_CLOSING		= 0x04,		// When set, the gump is closing
 		FLAG_CLOSE_AND_DEL	= 0x08,		// When set, the gump is closing and will be deleted
@@ -337,6 +337,7 @@ public:
 
 	inline bool			IsHidden()
 		{ return (flags&FLAG_HIDDEN) || (parent && parent->IsHidden()); }
+	bool				IsDraggable() { return flags&FLAG_DRAGGABLE; }
 	virtual void		HideGump() { flags |= FLAG_HIDDEN; }
 	virtual void		UnhideGump() { flags &= ~FLAG_HIDDEN; }
 

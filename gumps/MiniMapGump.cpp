@@ -31,8 +31,8 @@
 DEFINE_RUNTIME_CLASSTYPE_CODE(MiniMapGump,Gump);
 
 MiniMapGump::MiniMapGump(int x, int y) : 
-	Gump(x,y,MAP_NUM_CHUNKS*2+2,MAP_NUM_CHUNKS*2+2,0,0,LAYER_NORMAL),
-	minimap(), lastMapNum(0)
+	Gump(x,y,MAP_NUM_CHUNKS*2+2,MAP_NUM_CHUNKS*2+2,0,
+		 FLAG_DRAGGABLE,LAYER_NORMAL), minimap(), lastMapNum(0)
 {
 	minimap.format = TEX_FMT_NATIVE;
 	minimap.width = minimap.height = MAP_NUM_CHUNKS*MINMAPGUMP_SCALE;

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2004-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
 	MiniStatsGump();
-	MiniStatsGump(int x, int y, uint32 _Flags = 0,
+	MiniStatsGump(int x, int y, uint32 _Flags = FLAG_DRAGGABLE,
 				  sint32 layer = LAYER_NORMAL);
 	virtual ~MiniStatsGump(void);
 

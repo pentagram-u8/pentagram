@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,7 +28,7 @@
 class MiniMapGump : public Gump
 {
 	Texture				minimap;
-	int					lastMapNum;
+	unsigned int		lastMapNum;
 	uint32				texbuffer[MAP_NUM_CHUNKS*MINMAPGUMP_SCALE][MAP_NUM_CHUNKS*MINMAPGUMP_SCALE];
 
 	uint32				sampleAtPoint(int x, int y, CurrentMap *map);

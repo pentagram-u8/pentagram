@@ -142,7 +142,7 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	  avatarMoverProcess(0), runGraphicSysInit(false), runSDLInit(false),
 	  frameSkip(false), frameLimit(true), interpolate(false),
 	  animationRate(100), avatarInStasis(false), paintEditorItems(false),
-	  painting(false), showTouching(false), flashingcursor(-1), 
+	  painting(false), showTouching(false), flashingcursor(0), 
 	  mouseOverGump(0), dragging(DRAG_NOT), dragging_offsetX(0),
 	  dragging_offsetY(0), inversion(0), timeOffset(0), has_cheated(false),
 	  drawRenderStats(false), ttfoverrides(false), audiomixer(0)
@@ -739,11 +739,11 @@ int GUIApp::getMouseFrame()
 
 	MouseCursor cursor = cursors.top();
 
-	if (flashingcursor >= 0) {
+	if (flashingcursor > 0) {
 		if (SDL_GetTicks() < flashingcursor + 250)
 			cursor = MOUSE_CROSS;
 		else
-			flashingcursor = -1;
+			flashingcursor = 0;
 	}
 
 
@@ -929,8 +929,6 @@ void GUIApp::LoadConsoleFont()
 
 	con.SetConFont(confont);
 }
-
-static int volumelevel = 255;
 
 void GUIApp::enterTextMode(Gump *gump)
 {
@@ -1245,7 +1243,7 @@ void GUIApp::startDragging(int startx, int starty)
 		assert(parent); // can't drag root gump
 		int px = startx, py = starty;
 		parent->ScreenSpaceToGump(px, py);
-		if (parent->StartDraggingChild(gump, px, py))
+		if (gump->IsDraggable() && parent->StartDraggingChild(gump, px, py))
 			dragging = DRAG_OK;
 		else {
 			dragging_objid = 0;

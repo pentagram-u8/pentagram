@@ -947,7 +947,7 @@ Item *CurrentMap::traceTopItem(sint32 x, sint32 y, sint32 ztop, sint32 zbot, Obj
 	if (ztop < zbot) {
 		sint32 temp = ztop;
 		ztop = zbot;
-		zbot = ztop;
+		zbot = temp;
 	}
 
 	int minx, miny, maxx, maxy;

@@ -272,7 +272,7 @@ bool AvatarMoverProcess::handleNormalMode()
 	sint32 mousedir = (guiapp->getMouseDirection(mx,my)+7)%8;
 
 	// Store current idle time. (Also see end of function.)
-	uint32 currentIdleTime = idleTime;
+	sint32 currentIdleTime = idleTime;
 	idleTime = 0;
 
 	// User toggled combat while in combatRun

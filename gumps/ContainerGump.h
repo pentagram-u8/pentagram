@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004  The Pentagram Team
+ *  Copyright (C) 2003-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ public:
 
 	ContainerGump();
 	ContainerGump(Shape* shape, uint32 framenum, uint16 owner,
-				  uint32 _Flags = 0, sint32 layer = LAYER_NORMAL);
+				  uint32 _Flags = FLAG_DRAGGABLE, sint32 layer = LAYER_NORMAL);
 	virtual ~ContainerGump(void);
 
 	void setItemArea(Pentagram::Rect* itemarea_) { itemarea = *itemarea_; }

@@ -236,7 +236,7 @@ private:
 	//! get the current mouse frame
 	int getMouseFrame();
 	std::stack<MouseCursor> cursors;
-	int flashingcursor; // time (SDL_GetTicks) mouse started flashing, or -1
+	uint32 flashingcursor; // time (SDL_GetTicks) mouse started flashing, or 0
 
 	// Hack alert
 	HWMouseCursor			*hwcursors;	// Shape frames converted into system specific format.

@@ -192,7 +192,7 @@ void ButtonWidget::OnMouseLeft()
 void ButtonWidget::saveData(ODataSource* ods)
 {
 	// HACK ALERT
-	int w, h;
+	int w=0, h=0;
 	if (textwidget != 0) {
 		w = dims.w;
 		h = dims.h;

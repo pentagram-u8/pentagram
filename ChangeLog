@@ -1,3 +1,7 @@
+2005-03-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/*: only allow specific gumps to be dragged
+	* various: fixed some warnings
+
 2005-03-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* audio/SpeechFlex.cpp: trim spaces from strings before matching speech
 
