@@ -102,7 +102,8 @@ bool GravityProcess::run(uint32 framenum)
 
 	bool clipped = false;
 
-	// Clip to region
+	// Clip to region. This doesn't work
+#if 0
 	if (tx < 0 && ix >= 0) 
 	{
 		sint32 scale = (ix - tx)>>0x8;
@@ -127,6 +128,7 @@ bool GravityProcess::run(uint32 framenum)
 		tz = 0;
 		clipped = true;
 	}
+#endif
 
 	sint32 dist = item->collideMove(tx,ty,tz,  false, false);
 	

@@ -79,6 +79,16 @@ protected:
 	//! Send a message to the Midi Device
 	virtual void		send(uint32 message)=0;
 
+	//! Send a SysEX message to the Midi Device
+	//
+	// Note that this is slightly different to the API used in ScummVM. 
+	// The 0xF0 status isn't assumed, and the final 0xF7 also isn't assumed, and is the
+	// final byte of the msg buffer. lenght includes the final byte. The reason for the
+	// differences is becuase the midi specifications can have SysEx messages that does 
+	// start with 0xF0 and don't end with 0xF7. Chances are though they will never be
+	// encountered.
+	virtual void		send_sysex(uint8 status, const uint8 *msg, uint16 length) { };
+
 	//! Increate the Thread Priority of the Play (current) thread
 	virtual void		increaseThreadPriority() { };
 

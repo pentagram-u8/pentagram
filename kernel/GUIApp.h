@@ -43,6 +43,12 @@ class ODataSource;
 
 const int NUM_MOUSEBUTTONS = 5;
 
+// Hack alert
+struct HWMouseCursor;
+#if defined(WIN32) && defined(I_AM_COLOURLESS_EXPERIMENTING_WITH_HW_CURSORS)
+#include <windows.h>
+#endif
+
 class GUIApp : public CoreApp
 {
 public:
@@ -189,7 +195,16 @@ private:
 	//! get the current mouse frame
 	int getMouseFrame();
 	std::stack<MouseCursor> cursors;
-	
+
+	// Hack alert
+	HWMouseCursor			*hwcursors;	// Shape frames converted into system specific format.
+
+#if defined(WIN32) && defined(I_AM_COLOURLESS_EXPERIMENTING_WITH_HW_CURSORS)
+	void					CreateHWCursors();
+	static LRESULT CALLBACK	myWindowProc( HWND, UINT, WPARAM, LPARAM );
+
+#endif
+
 	static void	conAutoPaint(void);
 
 	// mouse input state

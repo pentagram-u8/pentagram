@@ -47,11 +47,23 @@ using std::endl;
 #include <winbase.h>
 
 WindowsMidiDriver::WindowsMidiDriver() : 
-	LowLevelMidiDriver(), dev_num(-1), midi_port(0)
+	LowLevelMidiDriver(), dev_num(-1), midi_port(0), _streamEvent(0)
 {
 #ifdef WIN32_USE_DUAL_MIDIDRIVERS
 	midi_port2 = 0;
 #endif
+}
+
+bool WindowsMidiDriver::doMCIError(MMRESULT mmsys_err)
+{
+	if (mmsys_err != MMSYSERR_NOERROR)
+	{
+		char buf[512];
+		midiOutGetErrorText(mmsys_err, buf, 512);
+		perr << buf << endl;
+		return true;
+	}
+	return false;
 }
 
 int WindowsMidiDriver::open()
@@ -89,7 +101,8 @@ int WindowsMidiDriver::open()
 	midiOutGetDevCaps ((UINT) dev_num, &caps, sizeof(caps));
 	pout << "Using device " << dev_num << ": "<< caps.szPname << endl;
 
-	UINT mmsys_err = midiOutOpen (&midi_port, dev_num, 0, 0, 0);
+	_streamEvent = CreateEvent (NULL, true, true, NULL);
+	UINT mmsys_err = midiOutOpen (&midi_port, dev_num, (unsigned long) _streamEvent, 0, CALLBACK_EVENT);
 
 #ifdef WIN32_USE_DUAL_MIDIDRIVERS
 	if (dev_num2 != -2 && mmsys_err != MMSYSERR_NOERROR)
@@ -100,13 +113,11 @@ int WindowsMidiDriver::open()
 	}
 #endif
 
-	if (mmsys_err != MMSYSERR_NOERROR)
+	if (doMCIError(mmsys_err))
 	{
-		char buf[512];
-
-		mciGetErrorString(mmsys_err, buf, 512);
-		perr << "Unable to open device: " << buf << endl;
-
+		perr << "Error: Unable to open win32 midi device" << endl;
+		CloseHandle(_streamEvent);
+		_streamEvent = 0;
 		return 1;
 	}
 
@@ -124,6 +135,8 @@ void WindowsMidiDriver::close()
 #endif
 	midiOutClose (midi_port);
 	midi_port = 0;
+	CloseHandle(_streamEvent);
+	_streamEvent = 0;
 }
 
 void WindowsMidiDriver::send(uint32 message)
@@ -136,6 +149,66 @@ void WindowsMidiDriver::send(uint32 message)
 #else
 	midiOutShortMsg (midi_port,  message);
 #endif
+}
+
+void WindowsMidiDriver::send_sysex (uint8 status, const uint8 *msg, uint16 length)
+{
+#ifdef WIN32_USE_DUAL_MIDIDRIVERS
+	// Hack for multiple devices. Not exactly 'fast'
+	if (midi_port2 != 0) {
+		HMIDIOUT			orig_midi_port = midi_port;
+		HMIDIOUT			orig_midi_port2 = midi_port2;
+
+		// Send to port 1
+		midi_port2 = 0;
+		send_sysex(status, msg, length);
+
+		// Send to port 2
+		midi_port = orig_midi_port2;
+		send_sysex(status, msg, length);
+
+		// Return the ports to normal
+		midi_port = orig_midi_port;
+		midi_port2 = orig_midi_port2;
+	}
+#endif
+
+	if (WaitForSingleObject (_streamEvent, 2000) == WAIT_TIMEOUT) {
+		perr << "Error: Could not send SysEx - MMSYSTEM is still trying to send data after 2 seconds." << std::endl;
+		return;
+	}
+
+	MMRESULT result = midiOutUnprepareHeader (midi_port, &_streamHeader, sizeof (_streamHeader));
+	if (doMCIError(result)) {
+		//check_error (result);
+		perr << "Error: Could not send SysEx - midiOutUnprepareHeader failed." << std::endl;
+		return;
+	}
+
+	_streamBuffer [0] = status;
+	memcpy(&_streamBuffer[1], msg, length);
+
+	_streamHeader.lpData = (char *) _streamBuffer;
+	_streamHeader.dwBufferLength = length + 1;
+	_streamHeader.dwBytesRecorded = length + 1;
+	_streamHeader.dwUser = 0;
+	_streamHeader.dwFlags = 0;
+
+	result = midiOutPrepareHeader (midi_port, &_streamHeader, sizeof (_streamHeader));
+	if (doMCIError(result)) {
+		//check_error (result);
+		perr << "Error: Could not send SysEx - midiOutPrepareHeader failed." << std::endl;
+		return;
+	}
+
+	ResetEvent(_streamEvent);
+	result = midiOutLongMsg (midi_port, &_streamHeader, sizeof (_streamHeader));
+	if (doMCIError(result)) {
+		//check_error(result);
+		perr << "Error: Could not send SysEx - midiOutLongMsg failed." << std::endl;
+		SetEvent(_streamEvent);
+		return;
+	}
 }
 
 void WindowsMidiDriver::increaseThreadPriority()

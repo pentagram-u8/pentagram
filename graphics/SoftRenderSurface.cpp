@@ -50,6 +50,28 @@ template<class uintX> SoftRenderSurface<uintX>::SoftRenderSurface(SDL_Surface *s
 
 
 //
+// SoftRenderSurface::SoftRenderSurface(int w, int h, int bpp, int rsft, int gsft, int bsft)
+//
+// Desc: Create a Generic SoftRenderSurface
+//
+template<class uintX> SoftRenderSurface<uintX>::SoftRenderSurface(int w, int h, int bpp, int rsft, int gsft, int bsft)
+	: BaseSoftRenderSurface(w,h,bpp,rsft,gsft,bsft)
+{
+}
+
+
+//
+// SoftRenderSurface::SoftRenderSurface(int w, int h)
+//
+// Desc: Create a Generic surface that matches current screen parameters
+//
+template<class uintX> SoftRenderSurface<uintX>::SoftRenderSurface(int w, int h, uint8 *buf)
+	: BaseSoftRenderSurface(w,h,buf)
+{
+}
+
+
+//
 // SoftRenderSurface::Fill8(uint8 index, sint32 sx, sint32 sy, sint32 w, sint32 h)
 //
 // Desc: Fill buffer (using a palette index) - Remove????

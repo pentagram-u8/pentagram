@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MainShapeFlex.h"
 #include "GUIApp.h"
 #include "GameMapGump.h"
-#include "IDataSource.h"
+#include "IDataSource.h"	
 #include "ODataSource.h"
 
 using std::list; // too messy otherwise
@@ -64,8 +64,10 @@ CurrentMap::~CurrentMap()
 	//! get rid of constants
 	for (unsigned int i = 0; i < MAP_NUM_CHUNKS; i++) {
 		delete[] items[i];
+		delete[] fast[i];
 	}
 	delete[] items;
+	delete[] fast;
 }
 
 void CurrentMap::clear()
@@ -78,8 +80,10 @@ void CurrentMap::clear()
 				delete *iter;
 			items[i][j].clear();
 		}
+		std::memset(fast[i],false,sizeof(uint32)*MAP_NUM_CHUNKS/32);
 	}
 
+	fast_x_min =  fast_y_min = fast_x_max = fast_y_max = -1;
 	current_map = 0;
 
 	Process* ehp = Kernel::get_instance()->getProcess(egghatcher);
@@ -876,6 +880,11 @@ bool CurrentMap::load(IDataSource* ids)
 			fast[i][j] = ids->read4();
 		}
 	}
+
+	fast_x_min = -1;
+	fast_y_min = -1;
+	fast_x_max = -1;
+	fast_y_max = -1;
 
 	return true;
 }

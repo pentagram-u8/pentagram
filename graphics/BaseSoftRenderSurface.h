@@ -68,6 +68,12 @@ protected:
 	// Create from a SDL_Surface
 	BaseSoftRenderSurface(SDL_Surface *);
 
+	// Create Generic
+	BaseSoftRenderSurface(int w, int h, int bpp, int rsft, int gsft, int bsft);
+	BaseSoftRenderSurface(int w, int h, uint8 *buf);
+	virtual ECode GenericLock()  { return P_NO_ERROR; }
+	virtual ECode GenericUnlock()  { return P_NO_ERROR; }
+
 public:
 
 	// Colour shifting values (should these all be uint32???)
@@ -75,6 +81,7 @@ public:
 	static uint8	r_loss16, g_loss16, b_loss16;
 	static uint8	r_shift,  g_shift,  b_shift;
 	static uint32	r_mask,   g_mask,   b_mask;
+	static uint32	s_bpp;
 
 	// Virtual Destructor
 	virtual ~BaseSoftRenderSurface();

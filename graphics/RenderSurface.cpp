@@ -23,6 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "SoftRenderSurface.h"
 #include <SDL.h>
 
+#if defined(WIN32) && defined(I_AM_COLOURLESS_EXPERIMENTING_WITH_D3D)
+#include "D3D9SoftRenderSurface.h"
+#endif
+
 
 //
 // RenderSurface::SetVideoMode()
@@ -97,9 +101,13 @@ RenderSurface *RenderSurface::SetVideoMode(uint32 width,		// Width of desired mo
 	RenderSurface *surf;
 
 	// TODO: Change this
+#if defined(WIN32) && defined(I_AM_COLOURLESS_EXPERIMENTING_WITH_D3D)
+	if (bpp == 32) surf = new D3D9SoftRenderSurface<uint32>(width,height,fullscreen);
+	else surf = new D3D9SoftRenderSurface<uint16>(width,height,fullscreen);
+#else
 	if (bpp == 32) surf = new SoftRenderSurface<uint32>(sdl_surf);
 	else surf = new SoftRenderSurface<uint16>(sdl_surf);
-
+#endif
 	return surf;
 }
 

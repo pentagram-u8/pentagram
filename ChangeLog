@@ -1,3 +1,22 @@
+2003-12-12  Ryan Nunn <colourles@users.sourceforge.net>
+	* graphics/*RenderSurface.* : A few additions realted to a few 
+	  experiments of mine. Some minor changes are planned for a few aspects
+	  of how colour formats are handled.
+	* audio/midi/LowLevelMidiDriver.h, audio/midi/WindowsMidiDriver.* :
+	  Some midi SysEx stuff. Mostly experimental for now as it's not 
+	  actually implemented entirely.
+	* world/GravityProcess.cpp : A change that i should have committed 
+	  long ago. Removes some broken code.
+	* world/CurrentMap.cpp : Fixing something that may have been broken wrt
+	  fastarea.
+	* kernel/GUIApp.* : My Windows Hardware cursor stuff. Mostly 
+	  experimental. Probably wont work with Win9x. Doesn't work in 
+	  fullscreen (DirectInput messes things up). Other than that it works
+	  great. :-)
+	* FAQ : Time for an update
+	* Other files : Adding some #includes where required, or getting rid 
+	  of warnings.
+	
 2003-12-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/Font.*: moved Font class into namespace Pentagram
 

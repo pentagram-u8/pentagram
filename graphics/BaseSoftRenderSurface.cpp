@@ -37,6 +37,7 @@ uint8	BaseSoftRenderSurface::r_loss,   BaseSoftRenderSurface::g_loss,   BaseSoft
 uint8	BaseSoftRenderSurface::r_loss16, BaseSoftRenderSurface::g_loss16, BaseSoftRenderSurface::b_loss16;
 uint8	BaseSoftRenderSurface::r_shift,  BaseSoftRenderSurface::g_shift,  BaseSoftRenderSurface::b_shift;
 uint32	BaseSoftRenderSurface::r_mask,   BaseSoftRenderSurface::g_mask,   BaseSoftRenderSurface::b_mask;
+uint32	BaseSoftRenderSurface::s_bpp;
 
 
 //
@@ -56,6 +57,7 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(SDL_Surface *s) :
 	bits_per_pixel = sdl_surf->format->BitsPerPixel;
 	bytes_per_pixel = sdl_surf->format->BytesPerPixel;
 
+	s_bpp = bits_per_pixel;
 	r_loss = sdl_surf->format->Rloss;
 	g_loss = sdl_surf->format->Gloss;
 	b_loss = sdl_surf->format->Bloss;
@@ -69,6 +71,84 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(SDL_Surface *s) :
 	g_mask = sdl_surf->format->Gmask;
 	b_mask = sdl_surf->format->Bmask;
 
+}
+
+
+//
+// BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h, int bpp, int rsft, int gsft, int bsft)
+//
+// Desc: Constructor for Generic BaseSoftRenderSurface
+//
+BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h, int bpp, 
+											int rsft, int gsft, int bsft) :
+	pixels(0), pixels00(0), zbuffer(0), zbuffer00(0),
+	bytes_per_pixel(0), bits_per_pixel(0), format_type(0), 
+	ox(0), oy(0), width(0), height(0), pitch(0), zpitch(0),
+	clip_window(0,0,0,0), lock_count(0), sdl_surf(0)
+{
+	clip_window.ResizeAbs(width = w, height = h);
+
+	switch (bpp) {
+		case 15:
+			r_loss = 3;
+			g_loss = 3;
+			b_loss = 3;
+			bpp = 16;
+			break;
+
+		case 16:
+			r_loss = 3;
+			g_loss = 2;
+			b_loss = 3;
+			break;
+
+		case 32:
+			r_loss = 0;
+			g_loss = 0;
+			b_loss = 0;
+			break;
+
+		default:
+			break;
+	}
+
+	pitch = w*bpp/8;
+	bits_per_pixel = bpp;
+	bytes_per_pixel = bpp/8;
+
+	s_bpp = bpp;
+	r_loss16 = r_loss+8;
+	g_loss16 = g_loss+8;
+	b_loss16 = b_loss+8;
+	r_shift = rsft;
+	g_shift = gsft;
+	b_shift = bsft;
+	r_mask = (0xFF>>r_loss)<<rsft;
+	g_mask = (0xFF>>g_loss)<<gsft;
+	b_mask = (0xFF>>b_loss)<<bsft;
+
+}
+
+
+//
+// BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h, uint8 *buf)
+//
+// Desc: Constructor for Generic BaseSoftRenderSurface which matches screen params
+//
+BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h, uint8 *buf) :
+	pixels(0), pixels00(0), zbuffer(0), zbuffer00(0),
+	bytes_per_pixel(0), bits_per_pixel(0), format_type(0), 
+	ox(0), oy(0), width(0), height(0), pitch(0), zpitch(0),
+	clip_window(0,0,0,0), lock_count(0), sdl_surf(0)
+{
+	clip_window.ResizeAbs(width = w, height = h);
+
+	int bpp = s_bpp;
+
+	pitch = w*bpp/8;
+	bits_per_pixel = bpp;
+	bytes_per_pixel = bpp/8;
+	pixels00 = buf;
 }
 
 
@@ -90,31 +170,44 @@ BaseSoftRenderSurface::~BaseSoftRenderSurface()
 //
 ECode BaseSoftRenderSurface::BeginPainting()
 {
-	if (!lock_count && sdl_surf) {
+	if (!lock_count) {
 
-		// SDL_Surface requires locking
-		if (SDL_MUSTLOCK(sdl_surf))
-		{
-			// Did the lock fail?
-			if (SDL_LockSurface(sdl_surf)!=0) {
-				pixels = pixels00 = 0;
-				// TODO: SetLastError(GR_SOFT_ERROR_SDL_LOCK_FAILED, "SDL Surface Lock Failed!");
-				perr << "Error: SDL Surface Lock Failed!" << std::endl;
-				return GR_SOFT_ERROR_SDL_LOCK_FAILED;
+		if (sdl_surf) {
+
+			// SDL_Surface requires locking
+			if (SDL_MUSTLOCK(sdl_surf))
+			{
+				// Did the lock fail?
+				if (SDL_LockSurface(sdl_surf)!=0) {
+					pixels = pixels00 = 0;
+					// TODO: SetLastError(GR_SOFT_ERROR_SDL_LOCK_FAILED, "SDL Surface Lock Failed!");
+					perr << "Error: SDL Surface Lock Failed!" << std::endl;
+					return GR_SOFT_ERROR_SDL_LOCK_FAILED;
+				}
 			}
-		}
 
-		pixels = pixels00 = static_cast<uint8*>(sdl_surf->pixels);
-		pitch = sdl_surf->pitch;
+			// Pixels pointer
+			pixels00 = static_cast<uint8*>(sdl_surf->pixels);
+			pitch = sdl_surf->pitch;
+		}
+		else  {
+			ECode ret = GenericLock();
+			if (ret.failed()) return ret;
+		}
 	}
+
 	lock_count++;
 	
-	if (pixels == 0) 
+	if (pixels00 == 0) 
 	{
 		// TODO: SetLastError(GR_SOFT_ERROR_LOCKED_NULL_PIXELS, "Surface Locked with NULL BaseSoftRenderSurface::pixels pointer!");
 		perr << "Error: Surface Locked with NULL BaseSoftRenderSurface::pixels pointer!" << std::endl;
 		return GR_SOFT_ERROR_LOCKED_NULL_PIXELS;
 	}
+
+	// Origin offset pointers
+	pixels = pixels00 + ox*bytes_per_pixel + oy*pitch;
+	zbuffer = reinterpret_cast<uint16*>(zbuffer00 + ox + oy * zpitch);
 
 	// No error
 	return P_NO_ERROR;
@@ -140,15 +233,21 @@ ECode BaseSoftRenderSurface::EndPainting()
 	// Decrement counter
 	--lock_count;
 
-	if (!lock_count) if (sdl_surf) {
-		// Unlock the SDL_Surface if required
-		if (SDL_MUSTLOCK(sdl_surf)) SDL_UnlockSurface(sdl_surf);
+	if (!lock_count) { 
+		if (sdl_surf) {
+			// Unlock the SDL_Surface if required
+			if (SDL_MUSTLOCK(sdl_surf)) SDL_UnlockSurface(sdl_surf);
 
-		// Clear pointers
-		pixels=pixels00=0;
+			// Clear pointers
+			pixels=pixels00=0;
 
-		// Present
-		SDL_Flip (sdl_surf);
+			// Present
+			SDL_Flip (sdl_surf);
+		}
+		else {
+			ECode ret = GenericUnlock();
+			if (ret.failed()) return ret;
+		}
 	}
 
 	// No error
@@ -167,8 +266,7 @@ void BaseSoftRenderSurface::CreateNativePalette(Pentagram::Palette* palette)
 		sint32 r,g,b;
 
 		// Normal palette
-		palette->native_untransformed[i] = SDL_MapRGB(sdl_surf->format,
-													palette->palette[i*3+0],
+		palette->native_untransformed[i] = PACK_RGB8(palette->palette[i*3+0],
 													palette->palette[i*3+1],
 													palette->palette[i*3+2]);
 
@@ -194,8 +292,8 @@ void BaseSoftRenderSurface::CreateNativePalette(Pentagram::Palette* palette)
 		if (b > 0x7F800) b = 0x7F800;
 
 		// Transformed normal palette
-		palette->native[i] = SDL_MapRGB(sdl_surf->format,
-										static_cast<uint8>(r>>11),
+		// FIXME - Wont work on non SDL SRS Implementations
+		palette->native[i] = PACK_RGB8(static_cast<uint8>(r>>11),
 										static_cast<uint8>(g>>11),
 										static_cast<uint8>(b>>11));
 
@@ -259,8 +357,8 @@ void BaseSoftRenderSurface::SetOrigin(sint32 x, sint32 y)
 	oy = y;
 
 	// The new pointers
-	pixels = pixels00 + x*bytes_per_pixel + y*pitch;
-	zbuffer = reinterpret_cast<uint16*>(zbuffer00 + x + y * zpitch);
+	pixels = pixels00 + ox*bytes_per_pixel + oy*pitch;
+	zbuffer = reinterpret_cast<uint16*>(zbuffer00 + ox + oy * zpitch);
 }
 
 //

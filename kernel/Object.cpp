@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UCMachine.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
-
+#include <stdlib.h>
 
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(Object);

@@ -30,10 +30,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 template<class uintX> class SoftRenderSurface : public BaseSoftRenderSurface
 {
+protected:
+	// Create Generic surface
+	SoftRenderSurface(int w, int h, int bpp, int rsft, int gsft, int bsft);
+
 public:
 
 	// Create from a SDL_Surface
 	SoftRenderSurface(SDL_Surface *);
+
+	// Create a Generic surface that matches current screen parameters
+	SoftRenderSurface(int w, int h, uint8 *buf);
 
 	//
 	// Surface Filling

@@ -43,7 +43,7 @@ public:
 	sint16 getMana() const { return mana; }
 	void setMana(sint16 mp) { mana = mp; }
 
-	bool isInCombat() const { return actorflags & ACT_INCOMBAT; }
+	bool isInCombat() const { return (actorflags & ACT_INCOMBAT) != 0; }
 	void toggleInCombat() { actorflags ^= ACT_INCOMBAT; }
 
 	uint16 getAlignment() const { return alignment; }

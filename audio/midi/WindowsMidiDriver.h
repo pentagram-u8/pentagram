@@ -43,10 +43,17 @@ class WindowsMidiDriver : public LowLevelMidiDriver
 	HMIDIOUT			midi_port2;
 #endif
 
+	// SysEx stuff. Borrowed from ScummVM
+	MIDIHDR _streamHeader;
+	uint8 _streamBuffer [258];	// SysEx blocks should be no larger than 256 bytes
+	HANDLE _streamEvent;
+
 	const static MidiDriverDesc	desc;
 	static MidiDriver *createInstance() {
 		return new WindowsMidiDriver();
 	}
+
+	static bool			doMCIError(MMRESULT res);
 
 public:
 	const static MidiDriverDesc* getDesc() { return &desc; }
@@ -56,6 +63,7 @@ protected:
 	virtual int			open();
 	virtual void		close();
 	virtual void		send(uint32 message);
+	virtual void		send_sysex(uint8 status, const uint8 *msg, uint16 length);
 	virtual void		increaseThreadPriority();
 	virtual void		yield();
 };
