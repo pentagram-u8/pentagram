@@ -251,6 +251,9 @@ public:
 	//! Assign a GravityProcess to this Item
 	void setGravityProcess(ProcId pid) { gravitypid = pid; }
 
+	//! Get the weight of this Item
+	virtual uint32 getWeight();
+
 	//! Get the weight of this Item and its contents, if any
 	virtual uint32 getTotalWeight();
 

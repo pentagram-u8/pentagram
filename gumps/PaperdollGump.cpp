@@ -185,7 +185,7 @@ void PaperdollGump::PaintStats(RenderSurface* surf, sint32 lerp_factor)
 	PaintStat(surf, 3, _TL_("ARMR"), a->getArmourClass());
 	PaintStat(surf, 4, _TL_("HITS"), a->getHP());
 	PaintStat(surf, 5, _TL_("MANA"), a->getMana());
-	PaintStat(surf, 6, _TL_("WGHT"), a->getTotalWeight());
+	PaintStat(surf, 6, _TL_("WGHT"), a->getTotalWeight()/10);
 }
 
 void PaperdollGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)

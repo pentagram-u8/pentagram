@@ -555,9 +555,23 @@ uint16 Item::getFamily()
 	return static_cast<uint16>(getShapeInfo()->family);
 }
 
+uint32 Item::getWeight()
+{
+	uint32 weight = getShapeInfo()->weight;
+
+	switch (getShapeInfo()->family) {
+	case ShapeInfo::SF_QUANTITY:
+		return ((getQuality()*weight)+9)/10;
+	case ShapeInfo::SF_REAGENT:
+		return getQuality()*weight;
+	default:
+		return weight*10;
+	}
+}
+
 uint32 Item::getTotalWeight()
 {
-	return getShapeInfo()->weight;
+	return getWeight();
 }
 
 bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
@@ -2032,7 +2046,7 @@ uint32 Item::I_getWeight(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
-	return item->getShapeInfo()->weight;
+	return item->getWeight();
 }
 
 uint32 Item::I_getWeightIncludingContents(const uint8* args,
