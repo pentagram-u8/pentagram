@@ -1,3 +1,7 @@
+2003-06-27  Ryan Nunn <colourles@users.sourceforge.net>
+	* convert/crusader/ConvertUsecodeCrusader.h : Some No Regret 1.21 
+	  intrinsics.
+
 2003-06-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GUIApp.cpp: don't crash when dragging invalid item
 	* world/Item.cpp: fixed or hanging items don't fall
