@@ -13,8 +13,8 @@ SDL_LIBS=-L$(SRC)/sdl/lib -lSDLmain -lSDL
 
 CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -I$(SRC)/conf -I$(SRC)/convert \
 	-I$(SRC)/filesys -I$(SRC)/graphics -I$(SRC)/gumps -I$(SRC)/kernel -I$(SRC)/misc \
-	-I$(SRC)/tools/disasm -I$(SRC)/tools/fold -I$(SRC)/usecode -I$(SRC)/world $(SDL_CFLAGS) \
-	-DHAVE_SYS_STAT_H -DHAVE_SYS_TYPES_H -DHAVE_UNISTD_H
+	-I$(SRC)/tools/disasm -I$(SRC)/tools/fold -I$(SRC)/usecode -I$(SRC)/world -I$(SRC)/world/actors \
+	$(SDL_CFLAGS) -DHAVE_SYS_STAT_H -DHAVE_SYS_TYPES_H -DHAVE_UNISTD_H
 CXXFLAGS=-O2
 CXX=g++
 
@@ -23,7 +23,7 @@ LIBS=-lmingw32 $(SDL_LIBS)
 
 CONVERT_OBJS=convert/ConvertShape.o convert/crusader/ConvertShapeCrusader.o convert/u8/ConvertShapeU8.o
 
-FILESYS_OBJS=filesys/FileSystem.o filesys/Flex.o
+FILESYS_OBJS=filesys/FileSystem.o filesys/Flex.o filesys/U8Save.o
 
 GRAPHICS_OBJS=graphics/Texture.o graphics/TextureBitmap.o graphics/TextureTarga.o \
 	graphics/BaseSoftRenderSurface.o graphics/MainShapeFlex.o graphics/Palette.o graphics/PaletteManager.o \
@@ -40,7 +40,10 @@ KERNEL_OBJS=kernel/Kernel.o kernel/Application.o kernel/Object.o kernel/Process.
 
 USECODE_OBJS=usecode/UCList.o usecode/UCMachine.o usecode/UCProcess.o usecode/UsecodeFlex.o
 
-WORLD_OBJS=world/Container.o world/Glob.o world/Item.o world/ItemFactory.o world/Map.o world/World.o
+WORLD_OBJS=world/Container.o world/CurrentMap.o world/Glob.o world/GlobEgg.o world/Item.o world/ItemFactory.o world/Map.o \
+	world/World.o
+
+ACTORS_OBJS=world/actors/Actor.o world/actors/MainActor.o
 
 all: amf2mod.exe disasm.exe fold.exe shapeconv.exe pentagram.exe
 
@@ -59,7 +62,8 @@ fold.exe : tools/fold/Fold.o $(FOLD_OBJCS) $(FILESYS_OBJS) $(MISC_OBJS)
 shapeconv.exe : tools/shapeconv/ShapeConv.o $(CONVERT_OBJS) $(FILESYS_OBJS) $(MISC_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
-PENTAGRAM_OBJS=$(CONF_OBJS) $(CONVERT_OBJS) $(FILESYS_OBJS) $(GRAPHICS_OBJS) $(GUMPS_OBJS) $(KERNEL_OBJS) $(MISC_OBJS) $(USECODE_OBJS) $(WORLD_OBJS) pentagram.o
+PENTAGRAM_OBJS=$(CONF_OBJS) $(CONVERT_OBJS) $(FILESYS_OBJS) $(GRAPHICS_OBJS) $(GUMPS_OBJS) $(KERNEL_OBJS) $(MISC_OBJS) \
+	$(USECODE_OBJS) $(WORLD_OBJS) $(ACTORS_OBJS) pentagram.o
 
 pentagram.exe: $(PENTAGRAM_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ $(LIBS)
