@@ -111,7 +111,7 @@ class DCCallNode : public ColNode
 	public:
 		DCCallNode() : ColNode() {};
 		DCCallNode(const uint32 opcode, const uint32 offset, const uint32 newValue1, const uint32 newValue2)
-			: ColNode(opcode, offset, Type(Type::T_VOID)), addSP(0), retVal(0)
+			: ColNode(opcode, offset, Type(Type::T_VOID)), addSP(0), retVal(0), thisP(0)
 			{
 				assert(acceptOp(opcode, 0x0F, 0x11));
 				switch(opcode)
@@ -125,6 +125,22 @@ class DCCallNode : public ColNode
 						ctype = CALL;
 						uclass = newValue1;
 						targetOffset = newValue2;
+						break;
+					default: assert(false);
+				}
+			};
+		DCCallNode(const uint32 opcode, const uint32 offset, const uint32 newValue1, const uint32 newValue2, const uint32 newValue3, const uint32 newValue4)
+			: ColNode(opcode, offset, Type(Type::T_VOID)), addSP(0), retVal(0), thisP(0)
+			{
+				assert(acceptOp(opcode, 0x57));
+				switch(opcode)
+				{
+					case 0x57:
+						ctype = SPAWN;
+						spsize = newValue1;
+						thispsize = newValue2;
+						uclass = newValue3;
+						targetOffset = newValue4;
 						break;
 					default: assert(false);
 				}
@@ -144,17 +160,20 @@ class DCCallNode : public ColNode
 		void setRetVal(DCCallPostfixNode *newRetVal) { retVal = newRetVal; };
 
 	protected:
-		enum calltype { CALLI, CALL /*, SPAWN*/ } ctype;
+		enum calltype { CALLI, CALL, SPAWN } ctype;
 
 	private:
-		uint32 uclass; // call
-		uint32 targetOffset; // call
+		uint32 uclass; // call & spawn
+		uint32 targetOffset; // call & spawn
 		
-		uint32 spsize; // calli
+		uint32 spsize; // calli & spawn
 		uint32 intrinsic; // calli
 		
+		uint32 thispsize; // spawn
+	public: // FIXME: temp debugging!
 		DCCallPostfixNode *addSP;
 		DCCallPostfixNode *retVal;
+		Node *thisP;
 };
 
 

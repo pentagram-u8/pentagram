@@ -39,7 +39,7 @@ void PushRetValToDCCallNode(DCCallPostfixNode *cpn, Node *node)
 
 bool DCCallPostfixNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 {
-	if(acceptOp(nodes.back()->opcode(), 0x0F, 0x11))
+	if(acceptOp(nodes.back()->opcode(), 0x0F, 0x11, 0x57))
 	{
 		switch(ptype)
 		{
@@ -237,6 +237,7 @@ bool DCCallNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 	{
 		case CALL: unit->registerExternFunc(this); break;
 		case CALLI: unit->registerExternIntrinsic(this); break;
+		case SPAWN: unit->registerExternFunc(this); break;
 		default: assert(print_assert(this, unit));
 	}
 	
@@ -250,10 +251,18 @@ bool DCCallNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 	else if(addSP!=0 && retVal==0)
 	{
 		// we need to remove ourselves from the stack before doing anything tricky
-		assert(acceptOp(nodes.back()->opcode(), 0x0F, 0x11));
+		assert(acceptOp(nodes.back()->opcode(), 0x0F, 0x11, 0x57));
 		Node *us=nodes.back();
 		nodes.pop_back();
-
+		
+		// if we're a 'spawn' we need to strip our *this off the stack, before
+		// we do anything funky.
+		if(ctype==SPAWN)
+		{
+			thisP = grab(nodes);
+			//need to make sure it's a dword too.
+			assert(thisP->rtype()==Type::T_DWORD);
+		}
 		// grab the nodes, note the '-', gotta invert the value since it's the number
 		// we're _removing_ from the stack
 		grab_p(nodes, std::abs(static_cast<sint32>(addSP->size())));
@@ -310,6 +319,23 @@ void DCCallNode::print_extern_unk(Console &o, const uint32 /*isize*/) const
 				o.Print(");");
 				break;
 			}
+		case SPAWN:
+			{
+				o.Print("spawn ");
+				if(rtype().type()!=Type::T_INVALID)
+				{
+					o.Print(rtype().name()); o.Putchar('\t');
+				}
+				if(thisP!=0) o.Print(thisP->rtype().name());
+				o.Printf("->class_%04X_function_%04X(", uclass, targetOffset);
+				for(std::deque<Node *>::const_reverse_iterator i=pnode.rbegin(); i!=pnode.rend(); ++i)
+				{
+					if(i!=pnode.rbegin()) o.Print(", ");
+					o.Print((*i)->rtype().name());
+				}
+				o.Print(");");
+				break;
+			}
 		default: assert(print_assert(this)); // can't happen
 	}
 }
@@ -345,6 +371,26 @@ void DCCallNode::print_unk(Console &o, const uint32 isize) const
 				}
 				#endif
 				o.Printf("class_%04X_function_%04X(", uclass, targetOffset);
+				for(std::deque<Node *>::const_reverse_iterator i=pnode.rbegin(); i!=pnode.rend(); ++i)
+				{
+					if(i!=pnode.rbegin()) o.Print(", ");
+					(*i)->print_unk(o, isize);
+				}
+				o.Putchar(')');
+				break;
+			}
+		case SPAWN:
+			{
+				o.Print("spawn ");
+				#if 0
+				if(rtype().type()!=Type::T_VOID)
+				{
+					rtype().print_unk(o); o.Putchar(' ');
+				}
+				#endif
+				assert(thisP!=0);
+				thisP->print_unk(o, isize);
+				o.Printf("->class_%04X_function_%04X(", uclass, targetOffset);
 				for(std::deque<Node *>::const_reverse_iterator i=pnode.rbegin(); i!=pnode.rend(); ++i)
 				{
 					if(i!=pnode.rbegin()) o.Print(", ");
@@ -404,6 +450,28 @@ void DCCallNode::print_asm(Console &o) const
 				//FIXME: o.Printf(" (%s)", functionaddresstostring(uclass, targetOffset, ucfile).c_str());
 				break;
 			}
+		case SPAWN:
+			{
+				for(std::deque<Node *>::const_reverse_iterator i=pnode.rbegin(); i!=pnode.rend(); ++i)
+				{
+					(*i)->print_asm(o); o.Putchar('\n');
+				}
+				assert(thisP!=0);
+				thisP->print_asm(o);
+				Node::print_asm(o);
+				o.Printf("call\t\t%04X:%04X", uclass, targetOffset);
+				o.Putchar('\n');
+				if(addSP!=0)
+					addSP->print_asm(o);
+				if(rtype()!=Type::T_VOID)
+				{
+					assert(retVal!=0);
+					o.Putchar('\n');
+					retVal->print_asm(o);
+				}
+				//FIXME: o.Printf(" (%s)", functionaddresstostring(uclass, targetOffset, ucfile).c_str());
+				break;
+			}
 		default: assert(print_assert(this)); // can't happen
 	}
 }
@@ -437,6 +505,26 @@ void DCCallNode::print_bin(ODequeDataSource &o) const
 				{
 					(*i)->print_bin(o);
 				}
+				o.write1(0x11);
+				o.write2(uclass);
+				o.write2(targetOffset);
+				if(addSP!=0)
+					addSP->print_bin(o);
+				if(rtype()!=Type::T_VOID)
+				{
+					assert(retVal!=0);
+					retVal->print_bin(o);
+				}
+				break;
+			}
+		case SPAWN:
+			{
+				for(std::deque<Node *>::const_reverse_iterator i=pnode.rbegin(); i!=pnode.rend(); ++i)
+				{
+					(*i)->print_bin(o);
+				}
+				assert(thisP!=0);
+				thisP->print_bin(o);
 				o.write1(0x11);
 				o.write2(uclass);
 				o.write2(targetOffset);

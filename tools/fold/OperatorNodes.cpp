@@ -140,6 +140,7 @@ void BinOperatorNode::print_unk(Console &o, const uint32 isize) const
 		case M_LE:  o.Printf(" <= "); break;
 		case M_GT:  o.Printf(" > ");  break;
 		case M_OR:  o.Printf(" or "); break;
+		case M_IMPLIES: o.Printf(" <=> "); break;
 		default: assert(false); // can't happen
 	}
 	rnode->print_unk(o, isize);
@@ -165,6 +166,7 @@ void BinOperatorNode::print_asm(Console &o) const
 		case M_LE:  o.Printf("le");  break;
 		case M_GT:  o.Printf("gt");  break;
 		case M_OR:  o.Printf("or");  break;
+		case M_IMPLIES: o.Printf("implies\t\t01 01"); break;
 		default: assert(false); // can't happen
 	}
 }
@@ -186,6 +188,7 @@ void BinOperatorNode::print_bin(ODequeDataSource &o) const
 		case M_LE:  o.write1(0x2A); break;
 		case M_GT:  o.write1(0x2C); break;
 		case M_OR:  o.write1(0x34); break;
+		case M_IMPLIES: o.write1(0x54); o.write2(0x0101); break;
 		default: assert(false); // can't happen
 	}
 }
@@ -201,11 +204,18 @@ bool BinOperatorNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 		case M_GT:
 		case M_OR:
 			assert(acceptType(nodes.back()->rtype(), Type::T_WORD, Type::T_BYTE));
-			//assert(nodes.back()->rtype()==Type::T_WORD || nodes.back()->rtype()==Type::T_BYTE);
 			grab_r(nodes);
 			//fold_linenum(nodes);
 			assert(acceptType(nodes.back()->rtype(), Type::T_WORD, Type::T_BYTE));
-			//assert(nodes.back()->rtype()==Type::T_WORD || nodes.back()->rtype()==Type::T_BYTE);
+			grab_l(nodes);
+			fold_linenum(nodes);
+			rtype(Type::T_WORD);
+			break;
+		case M_IMPLIES:
+			assert(acceptType(nodes.back()->rtype(), Type::T_WORD, Type::T_BYTE, Type::T_PID) || print_assert(this, unit));
+			grab_r(nodes);
+			//fold_linenum(nodes);
+			assert(acceptType(nodes.back()->rtype(), Type::T_WORD, Type::T_BYTE, Type::T_PID));
 			grab_l(nodes);
 			fold_linenum(nodes);
 			rtype(Type::T_WORD);

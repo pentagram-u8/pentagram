@@ -886,6 +886,22 @@ Node *ConvertUsecode::readOpGeneric(IDataSource *ucfile, uint32 &dbg_symbol_offs
 		case 0x52: // jmp
 			n = new EndNode(opcode, offset, offset + 3 + static_cast<uint16>(read2(ucfile)));
 			break;
+		case 0x54: // implies
+			{ // we'll read and ignore the two parameters to implies, since they're always 01 01
+				uint32 tint1 = read1(ucfile);
+				uint32 tint2 = read1(ucfile);
+				assert(tint1==1 && tint2==1);
+				n = new BinOperatorNode(opcode, offset);
+			}
+			break;
+		case 0x57: // spawn
+			{
+				uint32 tint1 = read1(ucfile);
+				uint32 tint2 = read1(ucfile);
+				uint32 tint3 = read2(ucfile);
+				n = new DCCallNode(opcode, offset, tint1, tint2, tint3, read2(ucfile));
+			}
+			break;
 		case 0x59: // push pid
 			n = new PushVarNode(opcode, offset);
 			break;
