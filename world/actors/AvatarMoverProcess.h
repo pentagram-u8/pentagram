@@ -42,6 +42,8 @@ protected:
 
 	bool handleCombatMode();
 	bool handleNormalMode();
+	
+	bool combatRun;
 
 	uint32 lastframe;
 
