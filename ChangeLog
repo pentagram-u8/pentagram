@@ -12,7 +12,9 @@
 	  up the start sequence, so the code is commented out for now.
 	* usecode/intrinsics.h, world/* : New intrinsic ARG Macros. Including new
 	  WorldPoint sturct.
-	
+	* kernel/GUIApp.*, usecode/u8intrinsics.h : Added I_setTimeInGameHours() so
+	  beds now work. Also added time (minutes + seconds) and gamehour display.
+	  	
 2003-06-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/MainActor.*: teleportToEgg intrinsic
 	* world/Item.*: legalMoveToPoint intrinsic

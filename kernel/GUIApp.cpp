@@ -70,7 +70,7 @@ GUIApp::GUIApp(const int argc, const char * const * const argv)
 	  runGraphicSysInit(false), runSDLInit(false),
 	  frameSkip(false), frameLimit(true), interpolate(true),
 	  animationRate(33), avatarInStasis(false), paintEditorItems(false),
-	  painting(false), dragging(false)
+	  painting(false), dragging(false), timeOffset(0)
 {
 	// Set the console to auto paint, till we have finished initing
 	con.SetAutoPaint(conAutoPaint);
@@ -282,7 +282,7 @@ void GUIApp::paint()
 	prev = now;
 
 	char buf[256];
-	snprintf(buf, 255, "Rendering time %li ms %li FPS - Paint Gumps %li ms", diff, 1000/diff, after_gumps-before_gumps);
+	snprintf(buf, 255, "Rendering time %li ms %li FPS - Paint Gumps %li ms - t %02d:%02d gh %i ", diff, 1000/diff, after_gumps-before_gumps, I_getTimeInMinutes(0,0), I_getTimeInSeconds(0,0)%60, I_getTimeInGameHours(0,0));
 	screen->PrintTextFixed(con.GetConFont(), buf, 8, dims.h-16);
 
 	// End painting
@@ -808,20 +808,32 @@ uint32 GUIApp::I_getTimeInGameHours(const uint8* /*args*/,
 										unsigned int /*argsize*/)
 {
 	// 1 game hour per every 27000 frames
-	return get_instance()->getFrameNum()/27000;
+	return (get_instance()->getFrameNum()+get_instance()->timeOffset)/27000;
 }
 
 uint32 GUIApp::I_getTimeInMinutes(const uint8* /*args*/,
 										unsigned int /*argsize*/)
 {
 	// 1 minute per every 1800 frames
-	return get_instance()->getFrameNum()/1800;
+	return (get_instance()->getFrameNum()+get_instance()->timeOffset)/1800;
 }
 
 uint32 GUIApp::I_getTimeInSeconds(const uint8* /*args*/,
 										unsigned int /*argsize*/)
 {
 	// 1 second per every 30 frames
-	return get_instance()->getFrameNum()/30;
+	return (get_instance()->getFrameNum()+get_instance()->timeOffset)/30;
+}
+
+uint32 GUIApp::I_setTimeInGameHours(const uint8* args,
+										unsigned int /*argsize*/)
+{
+	ARG_UINT16(newhour);
+
+	// 1 game hour per every 27000 frames
+	sint32	absolute = newhour*27000;
+	get_instance()->timeOffset = absolute-get_instance()->getFrameNum();
+
+	return 0;
 }
 

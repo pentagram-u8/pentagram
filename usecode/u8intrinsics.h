@@ -269,7 +269,7 @@ Intrinsic U8Intrinsics[] = {
 	GUIApp::I_getTimeInGameHours,
 	GUIApp::I_getTimeInMinutes,
 	GUIApp::I_getTimeInSeconds,
-	0, // SetTimeInGameHours
+	GUIApp::I_setTimeInGameHours, // SetTimeInGameHours
 	0, // SetTimeInMinutes
 	0, // SetTimeInSeconds
 	UCMachine::I_dummyProcess, //!! process FadeToBlack()

@@ -63,6 +63,7 @@ public:
 	INTRINSIC(I_getTimeInGameHours);
 	INTRINSIC(I_getTimeInMinutes);
 	INTRINSIC(I_getTimeInSeconds);
+	INTRINSIC(I_setTimeInGameHours);
 	
 	void setAvatarInStasis(bool stat) { avatarInStasis = stat; }
 	bool isAvatarInStasis() const { return avatarInStasis; }
@@ -126,6 +127,7 @@ private:
 	bool dragging;
 	uint16 dragging_objid;
 
+	sint32 timeOffset;
 public:
 	enum MouseButton { //!! change this
 		BUTTON_LEFT = 1,
