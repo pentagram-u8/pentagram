@@ -137,11 +137,18 @@ public:
 	INTRINSIC(I_use);
 	INTRINSIC(I_enterFastArea);
 	INTRINSIC(I_ask);
+	INTRINSIC(I_create);
 	INTRINSIC(I_legalCreateAtPoint);
 	INTRINSIC(I_legalCreateAtCoords);
 	INTRINSIC(I_legalCreateInCont);
+	INTRINSIC(I_push);
+	INTRINSIC(I_pop);
+	INTRINSIC(I_popToCoords);
+	INTRINSIC(I_popToContainer);
+	INTRINSIC(I_popToEnd);
 	INTRINSIC(I_destroy);
 	INTRINSIC(I_getFamilyOfType);
+	INTRINSIC(I_getEtherealTop);
 
 protected:
 	uint32 shape;

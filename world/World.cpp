@@ -68,12 +68,15 @@ void World::clear()
 	}
 	npcs.clear();
 
+	while (!ethereal.empty())
+		ethereal.pop();
+
 	if (currentmap)
 		delete currentmap;
 
 	//! Need to check the object delete policy
 	// If everything works out, there shouldn't be any objects left
-	// (maybe NPCs?)
+	// (maybe NPCs? Ethereals?)
 	for (i = 0; i < objects.size(); ++i) {
 		objects[i] = 0;
 	}

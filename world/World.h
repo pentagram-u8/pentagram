@@ -53,6 +53,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //  game data need this, actually.)
 
 #include <vector>
+#include <stack>
 
 class Map;
 class CurrentMap;
@@ -88,6 +89,12 @@ public:
 	Object* getObject(uint16 objid) const;
 	Actor* getNPC(uint16 npcid) const;
 
+	void etherealPush(uint16 objid) { ethereal.push(objid); }
+	bool etherealEmpty() { return ethereal.empty(); }
+	uint16 etherealPop()
+		{ uint16 id = ethereal.top(); ethereal.pop(); return id; }
+	uint16 etherealPeek() { return ethereal.top(); }
+
 	void worldStats();
 
 private:
@@ -96,6 +103,8 @@ private:
 	std::vector<Map*> maps;
 	std::vector<Actor*> npcs;
 	CurrentMap* currentmap;
+
+	std::stack<uint16> ethereal;
 
 	std::vector<Object*> objects;
 	idMan* objIDs;

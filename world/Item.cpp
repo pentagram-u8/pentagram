@@ -73,7 +73,7 @@ void Item::move(sint32 X, sint32 Y, sint32 Z)
 {
 	//! constant
 
-	if ((flags & (FLG_CONTAINED | FLG_EQUIPPED))
+	if ((flags & (FLG_CONTAINED | FLG_EQUIPPED | FLG_ETHEREAL))
 		&& (x / 512 != X / 512) || (y / 512 != Y / 512)) {
 
 		// if item isn't contained or equipped, it's in CurrentMap
@@ -290,7 +290,7 @@ void Item::destroy()
 		// we're in a container, so remove self from parent
 		//!! need to make sure this works for equipped items too...
 		parent->RemoveItem(this);
-	} else {
+	} else if (!(flags & FLG_ETHEREAL)) {
 		// remove self from CurrentMap
 		World::get_instance()->getCurrentMap()->removeItemFromList(this,x,y);
 	}
@@ -830,4 +830,147 @@ uint32 Item::I_getFamilyOfType(const uint8* args, unsigned int /*argsize*/)
 
 	return GameData::get_instance()->getMainShapes()->
 		getShapeInfo(shape)->family;
+}
+
+uint32 Item::I_push(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	if (!item) return 0;
+
+	//! do we need to check if item is already ethereal?
+	//! can equipped or contained items become ethereal?
+	if (item->getFlags() & (FLG_CONTAINED | FLG_EQUIPPED | FLG_ETHEREAL))
+		return 0;
+
+	World::get_instance()->etherealPush(item->getObjId());
+	World::get_instance()->getCurrentMap()->
+		removeItemFromList(item, item->x, item->y);
+	item->setFlag(FLG_ETHEREAL);
+
+	return 0;
+}
+
+uint32 Item::I_create(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_NULL32(); // ARG_ITEM(item); // unused
+	ARG_UINT16(shape);
+	ARG_UINT16(frame);
+
+	Item* newitem = ItemFactory::createItem(shape, frame, 0, 0, 0, 0, 0);
+	if (!newitem) {
+		perr << "I_create failed to create item (" << shape
+			 <<	"," << frame << ")." << std::endl;
+		return 0;
+	}
+	uint16 objID = newitem->assignObjId();
+
+	newitem->setFlag(FLG_ETHEREAL);
+	World::get_instance()->etherealPush(objID);
+	return objID;
+}
+
+uint32 Item::I_pop(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_NULL32(); // ARG_ITEM(item); // unused
+
+	World* w = World::get_instance();
+
+	if (w->etherealEmpty()) return 0; // no items left on stack
+
+	uint16 objid = w->etherealPop();
+	Item* item = p_dynamic_cast<Item*>(w->getObject(objid));
+	if (!item) return 0; // top item was invalid
+
+	item->clearFlag(FLG_ETHEREAL);
+	w->getCurrentMap()->addItem(item);
+
+	//! Anything else?
+
+	return objid;
+}
+
+uint32 Item::I_popToCoords(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_NULL32(); // ARG_ITEM(item); // unused
+	ARG_UINT16(x);
+	ARG_UINT16(y);
+	ARG_UINT16(z);
+
+	World* w = World::get_instance();
+
+	if (w->etherealEmpty()) return 0; // no items left on stack
+
+	uint16 objid = w->etherealPop();
+	Item* item = p_dynamic_cast<Item*>(w->getObject(objid));
+	if (!item) return 0; // top item was invalid
+
+	item->setLocation(x, y, z);
+	item->clearFlag(FLG_ETHEREAL);
+	w->getCurrentMap()->addItem(item);
+
+	//! Anything else?
+
+	return objid;
+}
+
+uint32 Item::I_popToContainer(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_NULL32(); // ARG_ITEM(item); // unused
+	ARG_CONTAINER(container);
+
+	if (!container) {
+		perr << "Trying to pop item to invalid container." << std::endl;
+		return 0;
+	}
+
+	World* w = World::get_instance();
+
+	if (w->etherealEmpty()) return 0; // no items left on stack
+
+	uint16 objid = w->etherealPop();
+	Item* item = p_dynamic_cast<Item*>(w->getObject(objid));
+	if (!item) return 0; // top item was invalid
+
+	item->clearFlag(FLG_ETHEREAL);
+	container->AddItem(item);
+
+	//! Anything else?
+
+	return objid;
+}
+
+uint32 Item::I_popToEnd(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_NULL32(); // ARG_ITEM(item); // unused
+	ARG_CONTAINER(container);
+
+	if (!container) {
+		perr << "Trying to pop item to invalid container." << std::endl;
+		return 0;
+	}
+
+	World* w = World::get_instance();
+
+	if (w->etherealEmpty()) return 0; // no items left on stack
+
+	uint16 objid = w->etherealPop();
+	Item* item = p_dynamic_cast<Item*>(w->getObject(objid));
+	if (!item) return 0; // top item was invalid
+
+	item->clearFlag(FLG_ETHEREAL);
+	container->AddItem(item);
+
+	//! Anything else?
+
+	//! This should probably be different from I_popToContainer, but
+	//! how exactly?
+
+	return objid;
+}
+
+uint32 Item::I_getEtherealTop(const uint8* args, unsigned int /*argsize*/)
+{
+	World* w = World::get_instance();
+	if (w->etherealEmpty()) return 0; // no items left on stack
+	return w->etherealPeek();
 }
