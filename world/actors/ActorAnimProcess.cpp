@@ -46,9 +46,10 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 
 		// for now, just don't play this one.
 		animaction = 0;
-	} else {
-		actor_->animproc = pid;
 	}
+
+	// can't set actor_->animproc here yet, because this process
+	// doesn't have a pid yet
 }
 
 bool ActorAnimProcess::run(const uint32 framenum)
@@ -71,6 +72,14 @@ bool ActorAnimProcess::run(const uint32 framenum)
 		terminate();
 		return false;
 	}
+
+	// set a->animproc now
+	if (a->animproc == 0) {
+		a->animproc = pid;
+	} else {
+		assert(a->animproc == pid);
+	}
+	
 
 	sint32 x, y, z;
 	a->getLocation(x,y,z);
@@ -105,8 +114,10 @@ bool ActorAnimProcess::run(const uint32 framenum)
 void ActorAnimProcess::terminate()
 {
 	Actor *a = p_dynamic_cast<Actor*>(World::get_instance()->getObject(actor));
-	if (a)
+	if (a) {
+		assert(a->animproc == pid);
 		a->animproc = 0;
+	}
 
 	Process::terminate();
 }
