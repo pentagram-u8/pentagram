@@ -70,6 +70,17 @@ uint16 Actor::assignObjId()
 	return objid;
 }
 
+sint16 Actor::getMaxMana() const
+{
+	return static_cast<sint16>(2 * getInt());
+}
+
+uint16 Actor::getMaxHP() const
+{
+	return static_cast<uint16>(2 * getStr());
+}
+
+
 bool Actor::CanAddItem(Item* item, bool checkwghtvol)
 {
 	const unsigned int backpack_shape = 529; //!! *cough* constant
@@ -324,7 +335,7 @@ void Actor::dumpInfo()
 	pout << "hp: " << hitpoints << ", mp: " << mana << ", str: " << strength
 		 << ", dex: " << dexterity << ", int: " << intelligence
 		 << ", ac: " << getArmourClass() << ", defense: " << std::hex
-		 << getDefenseType() << std::dec <<  std::endl;
+		 << getDefenseType() << std::dec << std::endl;
 }
 
 void Actor::saveData(ODataSource* ods)

@@ -101,6 +101,7 @@ GUMPS = \
 	gumps/Gump.o \
 	gumps/GumpNotifyProcess.o \
 	gumps/ItemRelativeGump.o \
+	gumps/MiniStatsGump.o \
 	gumps/ModalGump.o \
 	gumps/PaperdollGump.o \
 	gumps/ResizableGump.o \

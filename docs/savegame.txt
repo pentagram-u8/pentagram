@@ -279,6 +279,11 @@ uint16 version
 uint16 statbuttongump
 
 
+MiniStatsGump: (v1)
+uint16 version
+<Gump>
+
+
 SliderGump: (v1)
 uint16 version
 <ModalGump>

@@ -32,6 +32,8 @@
 #include "RenderedText.h"
 #include "GumpShapeFlex.h"
 #include "ButtonWidget.h"
+#include "MiniStatsGump.h"
+#include "GUIApp.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -381,12 +383,15 @@ void PaperdollGump::DropItem(Item* item, int mx, int my)
 void PaperdollGump::ChildNotify(Gump *child, uint32 message)
 {
 	if (child->getObjId() == statbuttongid &&
-		(message == ButtonWidget::BUTTON_CLICK ||
-		 message == ButtonWidget::BUTTON_DOUBLE))
+		message == ButtonWidget::BUTTON_CLICK)
 	{
-		pout << "Stat Button pressed!" << std::endl;
-
-		// TODO: mini-stats gump
+		// check if there already is an open MiniStatsGump
+		Gump* desktop = GUIApp::get_instance()->getDesktopGump();
+		if (!desktop->FindGump<MiniStatsGump>()) {
+			Gump* gump = new MiniStatsGump(300, 200);
+			gump->InitGump();
+			desktop->AddChild(gump);
+		}
 	}
 }
 

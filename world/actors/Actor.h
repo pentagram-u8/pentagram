@@ -43,6 +43,9 @@ public:
 	sint16 getMana() const { return mana; }
 	void setMana(sint16 mp) { mana = mp; }
 
+	sint16 getMaxMana() const;
+	uint16 getMaxHP() const;
+
 	bool isInCombat() const { return (actorflags & ACT_INCOMBAT) != 0; }
 	void toggleInCombat() { actorflags ^= ACT_INCOMBAT; }
 

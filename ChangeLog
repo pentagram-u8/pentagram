@@ -1,4 +1,8 @@
 2004-04-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/MiniStatsGump.*: mini stats gump
+	* gumps/PaperdollGump.cpp: open mini stats gump
+
+2004-04-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/PaperdollGump.*: show stats, mini-stats button
 	* world/actors/ActorAnimProcess.cpp: fix weapon overlay
 
