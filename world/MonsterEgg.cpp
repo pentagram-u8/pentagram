@@ -56,5 +56,5 @@ uint32 MonsterEgg::I_getMonId(const uint8*args,unsigned int /*argsize*/)
 	MonsterEgg* megg = p_dynamic_cast<MonsterEgg*>(egg);
 	if (!megg) return 0;
 
-	return megg->getMapNum();
+	return megg->getMapNum() >> 3;
 }
