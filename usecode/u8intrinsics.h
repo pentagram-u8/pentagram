@@ -40,6 +40,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "BookGump.h"
 #include "ReadableGump.h"
 #include "TargetGump.h"
+#include "GrantPeaceProcess.h"
 
 // Ultima 8 Intrinsics
 Intrinsic U8Intrinsics[] = {
@@ -239,7 +240,7 @@ Intrinsic U8Intrinsics[] = {
 	CameraProcess::I_scrollTo,
 	UCMachine::I_urandom,
 	UCMachine::I_rndRange,
-	0, // castGrantPeaceSpell
+	GrantPeaceProcess::I_castGrantPeace,
 	UCMachine::I_numToStr,
 	0, //U
 	MusicProcess::I_playMusic,

@@ -53,6 +53,11 @@ namespace Animation
 		climb64 = 25,
 		climb72 = 26,
 		//27-31: casting magic
+		cast1 = 27,
+		cast2 = 28,
+		cast3 = 29,
+		cast4 = 30,
+		cast5 = 31,
 		lookLeft = 32,
 		lookRight = 33,
 		startKneeling = 34,

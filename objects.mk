@@ -163,6 +163,7 @@ ACTORS = \
 	world/actors/ClearFeignDeathProcess.o \
 	world/actors/CombatProcess.o \
 	world/actors/DeleteActorProcess.o \
+	world/actors/GrantPeaceProcess.o \
 	world/actors/LoiterProcess.o \
 	world/actors/MainActor.o \
 	world/actors/Pathfinder.o \
