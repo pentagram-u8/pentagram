@@ -135,9 +135,10 @@ void PopVarNode::print_bin(ODequeDataSource  &o) const
 	}
 }
 
-bool PopVarNode::fold(DCUnit */*unit*/, std::deque<Node *> &nodes)
+bool PopVarNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 {
-	assert(nodes.back()->rtype()==rtype());
+	//con.Printf("RTypes: %d %d", nodes.back()->rtype().type(), rtype().type());
+	assert(nodes.back()->rtype()==rtype() || print_assert(this, unit));
 	grab_n(nodes);
 	fold_linenum(nodes);
 	return true;

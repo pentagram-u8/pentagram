@@ -872,6 +872,7 @@ Node *ConvertUsecode::readOpGeneric(IDataSource *ucfile, uint32 &dbg_symbol_offs
 			break;
 		case 0x14: // add
 		case 0x1C: // sub
+		case 0x1E: // mul
 		case 0x24: // cmp
 		case 0x28: // lt
 		case 0x2A: // le

@@ -166,7 +166,7 @@ class DCCallNode : public ColNode
 
 		// 'special' functions
 		void setAddSP(DCCallPostfixNode *newAddSP) { addSP = newAddSP; };
-		void setRetVal(DCCallPostfixNode *newRetVal) { retVal = newRetVal; };
+		void setRetVal(DCCallPostfixNode *newRetVal) { retVal = newRetVal; rtype(retVal->rtype()); };
 		void addFree(DCCallPostfixNode *newFree) { freenodes.push_back(newFree); };
 
 	protected:

@@ -273,8 +273,10 @@ bool DCCallNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 	if(addSP==0 && retVal==0)
 		return true;
 	// we've just gotten our addsp opcode
-	else if(addSP!=0 && retVal==0)
+	else if((addSP!=0 && retVal==0) // normal
+		|| (ctype==SPAWN && addSP==0 && retVal==0 && spsize==0)) // 'spawn' with thispsize==0
 	{
+		con.Printf("Op %02X %04X\n", nodes.back()->opcode(), nodes.back()->offset());
 		// we need to remove ourselves from the stack before doing anything tricky
 		assert(acceptOp(nodes.back()->opcode(), 0x0F, 0x11, 0x57));
 		Node *us=nodes.back();
@@ -282,7 +284,7 @@ bool DCCallNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 		
 		// if we're a 'spawn' we need to strip our *this off the stack, before
 		// we do anything funky.
-		if(ctype==SPAWN)
+		if(thispsize>0 && ctype==SPAWN)
 		{
 			thisP = grab(nodes);
 			//need to make sure it's a dword too.
@@ -290,8 +292,12 @@ bool DCCallNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 		}
 		// grab the nodes, note the '-', gotta invert the value since it's the number
 		// we're _removing_ from the stack
-		grab_p(nodes, std::abs(static_cast<sint32>(addSP->size())));
-		
+		// if we're a SPAWN, we need to double this
+		if(ctype==SPAWN)
+			grab_p(nodes, std::abs(static_cast<sint32>(addSP->size())) * 2);
+		else
+			grab_p(nodes, std::abs(static_cast<sint32>(addSP->size())));
+
 		// add us back to the stack
 		nodes.push_back(us);
 	}
@@ -302,6 +308,11 @@ bool DCCallNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 		rtype(retVal->rtype());
 	else if(nodes.size()>0 && acceptOp(nodes.back()->opcode(), 0x65))
 	{ /* do nothing... */ }
+	else if(retVal!=0 && nodes.size()>0 && acceptOp(nodes.back()->opcode(), 0x57))
+	{ /* do nothing...
+		since we're just got the retval of a 'spawn' opcode, and there shouldn't be
+		anything else to grab... */
+	}
 	else
 	{
 		con.Printf("Fnord: %d\n", freenodes.size());
@@ -418,8 +429,9 @@ void DCCallNode::print_unk(Console &o, const uint32 isize) const
 					rtype().print_unk(o); o.Putchar(' ');
 				}
 				#endif
-				assert(thisP!=0);
-				thisP->print_unk(o, isize);
+				assert(thispsize>0 || thisP!=0 || print_assert(this));
+				if(thispsize) // only if we have a this we should worry about it.
+					thisP->print_unk(o, isize);
 				o.Printf("->class_%04X_function_%04X(", uclass, targetOffset);
 				for(std::deque<Node *>::const_reverse_iterator i=pnode.rbegin(); i!=pnode.rend(); ++i)
 				{
@@ -493,8 +505,9 @@ void DCCallNode::print_asm(Console &o) const
 				{
 					(*i)->print_asm(o); o.Putchar('\n');
 				}
-				assert(thisP!=0);
-				thisP->print_asm(o);
+				assert((thispsize>0 && thisP!=0) || print_assert(this));
+				if(thispsize) // only if we have a this we should worry about it.
+					thisP->print_asm(o);
 				Node::print_asm(o);
 				o.Printf("call\t\t%04X:%04X", uclass, targetOffset);
 				o.Putchar('\n');
@@ -560,8 +573,9 @@ void DCCallNode::print_bin(ODequeDataSource &o) const
 				{
 					(*i)->print_bin(o);
 				}
-				assert(thisP!=0);
-				thisP->print_bin(o);
+				assert(thispsize>0 || thisP!=0 || print_assert(this));
+				if(thispsize) // only if we have a this we should worry about it.
+					thisP->print_bin(o);
 				o.write1(0x11);
 				o.write2(uclass);
 				o.write2(targetOffset);

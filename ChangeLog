@@ -1,3 +1,7 @@
+2003-11-16	Darke  <darkepaw@users.sf.net>
+	* convert/Convert.h, tools/fold/*: Added mul (0x1E) and attempted
+	  to fix issues correctly folding a 'spawn' call.
+
 2003-10-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* src/RenderSurface.cpp: disable RESIZABLE flag for windowed mode
 

@@ -291,7 +291,6 @@ bool print_assert_nodes(std::deque<Node *> &nodes, uint32 index)
 	indent(con, index);
 	con.Printf("Nodes:");
 	FOR_CONST_DEQUE(Node, nodes, i)
-	//for(std::deque<Node *>::const_iterator i=nodes.begin(); i!=nodes.end(); ++i)
 	{
 		con.Putchar('\n');
 		indent(con, index+1);
@@ -325,11 +324,9 @@ bool print_assert(const Node *n, const DCUnit *u)
 		con.Printf("IfStack:");
 		{
 			FOR_CONST_DEQUE(IfNode, u->ifstack, i)
-			//for(std::deque<IfNode *>::const_iterator i=u->ifstack.begin(); i!=u->ifstack.end(); ++i)
 			{
 				con.Printf("\n    %04X: %02X -> %04X", (*i)->offset(), (*i)->opcode(), (*i)->TargetOffset());
 				FOR_CONST_DEQUE(Node, (*i)->nodes(), j)
-				//for(std::deque<Node *>::const_iterator j=(*i)->nodes().begin(); j!=(*i)->nodes().end(); ++j)
 				{
 					con.Printf("\n        %04X: %02X", (*j)->offset(), (*j)->opcode());
 				}
@@ -341,11 +338,9 @@ bool print_assert(const Node *n, const DCUnit *u)
 		con.Printf("ElseStack:");
 		{
 			FOR_CONST_DEQUE(IfNode, u->elsestack, i)
-			//for(std::deque<IfNode *>::const_iterator i=u->elsestack.begin(); i!=u->elsestack.end(); ++i)
 			{
 				con.Printf("\n    %04X: %02X -> %04X", (*i)->offset(), (*i)->opcode(), (*i)->TargetOffset());
 				FOR_CONST_DEQUE(Node, (*i)->nodes(), j)
-				//for(std::deque<Node *>::const_iterator j=(*i)->nodes().begin(); j!=(*i)->nodes().end(); ++j)
 				{
 					con.Printf("\n        %04X: %02X", (*j)->offset(), (*j)->opcode());
 				}
@@ -357,7 +352,6 @@ bool print_assert(const Node *n, const DCUnit *u)
 		con.Printf("Nodes:");
 		{
 			FOR_CONST_DEQUE(Node, u->nodes, i)
-			//for(std::deque<Node *>::const_iterator i=u->nodes.begin(); i!=u->nodes.end(); ++i)
 			{
 				con.Printf("\n    %04X: %02X", (*i)->offset(), (*i)->opcode());
 			}

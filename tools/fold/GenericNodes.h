@@ -28,8 +28,8 @@
 #include "Console.h"
 
 // 'cause I'm sick of this ugly construct overrunning everything...
-#define FOR_CONST_DEQUE(CLAS, DEQ, I) for(std::deque<CLAS *>::const_iterator I=DEQ.begin(); I!=DEQ.end(); ++I)
-#define FOR_CONST_SET(CLAS, SET, I)   for(std::set<CLAS *>::const_iterator   I=SET.begin(); I!=SET.end(); ++I)
+#define FOR_CONST_DEQUE(CLAS, DEQ, I) for(std::deque<CLAS *>::const_iterator I=(DEQ).begin(); (I)!=DEQ.end(); ++(I))
+#define FOR_CONST_SET(CLAS, SET, I)   for(std::set<CLAS *>::const_iterator   I=(SET).begin(); (I)!=SET.end(); ++(I))
 
 class DCUnit;
 
@@ -279,7 +279,10 @@ class ColNode : public Node
 		{
 			while(tempsize>0)
 			{
+				con.Printf("tempsize=%d\n", tempsize);
 				pnode.push_back(grab(nodes));
+				con.Printf("nodesize=%d\n", pnode.back()->rtype().size());
+				pnode.back()->print_asm(con);
 				tempsize-=pnode.back()->rtype().size();
 			}
 			assert(tempsize==0);
