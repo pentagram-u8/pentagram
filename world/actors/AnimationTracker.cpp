@@ -104,14 +104,6 @@ bool AnimationTracker::step()
 {
 	if (done) return false;
 
-	prevx = x;
-	prevy = y;
-	prevz = z;
-
-	// reset status flags
-	unsupported = false;
-	blocked = false;
-
 	Actor* a = World::get_instance()->getNPC(actor);
 	assert(a);
 
@@ -131,6 +123,15 @@ bool AnimationTracker::step()
 
 		return false;
 	}
+
+	prevx = x;
+	prevy = y;
+	prevz = z;
+
+	// reset status flags
+	unsupported = false;
+	blocked = false;
+
 
 	firstframe = false;
 
@@ -197,7 +198,8 @@ bool AnimationTracker::step()
 		targetok = cm->isValidPosition(x+dx,y+dy,z+dz+8, xd,yd,zd,
 									   actor, 0, 0);
 
-		if (targetok) {
+		// Should only try to increase height if ONGROUND
+		if (targetok && (f.flags & AnimFrame::AFF_ONGROUND)) {
 			dz+=8;
 		} else {
 			blocked = true;

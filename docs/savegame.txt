@@ -370,6 +370,10 @@ uint16 repeatcounter
 uint8 hasTracker (boolean)
 if (hasTracker) AnimationTracker tracker
 
+TargetedAnimProcess: Process (v1)
+uint16 version
+<ActorAnimProcess>
+uint32 x,y,z
 
 AnimationTracker (v1)
 uint16 version

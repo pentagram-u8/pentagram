@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UCList.h"
 #include "World.h"
 #include "ActorAnimProcess.h"
+#include "AnimationTracker.h"
 #include "CurrentMap.h"
 #include "Direction.h"
 #include "GameData.h"
@@ -342,128 +343,54 @@ uint16 Actor::doAnim(Animation::Sequence anim, int dir)
 
 Animation::Result Actor::tryAnim(Animation::Sequence anim, int dir, PathfindingState* state)
 {
-	//!NOTE: this is broken, as it does not take height differences
-	// into account. tryAnim and ActorAnimProcess::run() should be 
-	// unified somehow
-
-	CurrentMap* currentmap = World::get_instance()->getCurrentMap();
-
-	AnimAction* animaction = GameData::get_instance()->getMainShapes()->
-		getAnim(getShape(), anim);
-
-	if (!animaction) return Animation::FAILURE;
 	if (dir < 0 || dir > 7) return Animation::FAILURE;
 
-	sint32 start[3];
-	sint32 end[3];
-	sint32 dims[3];
-	std::list<CurrentMap::SweepItem> hit;
-	bool flipped, firststep;
+	AnimationTracker tracker(this, anim, dir, state);
 
-	if (state == 0) {
-		getLocation(end[0], end[1], end[2]);
-		flipped = (getFlags() & Item::FLG_FLIPPED) != 0;
-		firststep = (getActorFlags() & Actor::ACT_FIRSTSTEP) != 0;
-	} else {
-		end[0] = state->x;
-		end[1] = state->y;
-		end[2] = state->z;
-		flipped = state->flipped;
-		firststep = state->firststep;
+	AnimAction * animaction = tracker.getAnimAction();
+
+	if (!animaction) return Animation::FAILURE;
+
+	while (tracker.step())
+	{
 	}
 
-	getFootpadWorld(dims[0], dims[1], dims[2]);
-
-	// getFootpad gets the footpad of the _current_ item, so curflipped
-	// is also set to the flipped-state of the current item.
-	bool curflipped = (getFlags() & Item::FLG_FLIPPED) != 0;
- 
-	unsigned int startframe, endframe;
-	animaction->getAnimRange(this, dir, startframe, endframe);
-
-	// run through the animation stages
-	for (unsigned int f = startframe; f != endframe; ) {
-		AnimFrame& frame = animaction->frames[dir][f];
-
-		start[0] = end[0]; start[1] = end[1]; start[2] = end[2];
-
-		end[0] = start[0] + 4 * x_fact[dir] * frame.deltadir;
-		end[1] = start[1] + 4 * y_fact[dir] * frame.deltadir;
-		end[2] = start[2] + frame.deltaz;
-
-		if (frame.is_flipped() != curflipped) {
-			sint32 t = dims[0]; dims[0] = dims[1]; dims[1] = t;
-			curflipped = !curflipped;
-		}
-
-		hit.clear();
-		currentmap->sweepTest(start, end, dims, getObjId(), true, &hit);
-
-		std::list<CurrentMap::SweepItem>::iterator iter;
-		for (iter = hit.begin(); iter != hit.end(); ++iter) {
-			if (!iter->touching && iter->hit_time != 0x4000 &&
-				iter->end_time != 0)
-			{
-#if 0
-				perr << "tryAnim: (" << start[0] << "," << start[1]
-					 << "," << start[2] << ")-(" << end[0] << "," << end[1]
-					 << "," << end[2] << ") dims (" << dims[0] << ","
-					 << dims[1] << "," << dims[2] << ")" << std::endl;
-				perr << "tryAnim: blocked by item " << iter->item << ", ";
-				Item *item = World::get_instance()->getItem(iter->item);
-				if (item) {
-					sint32 ix, iy, iz;
-					item->getLocation(ix, iy, iz);
-					perr << item->getShape() << " (" << ix << "," << iy
-						 << "," << iz << ")" << std::endl;
-				} else {
-					perr << "(invalid)" << std::endl;
-				}
-#endif
-				return Animation::FAILURE;
-			}
-		}
-
-		++f;
-		if (f != endframe && f >= animaction->size) {
-			if (animaction->flags & AnimAction::AAF_LOOPING)
-				f = 1;
-			else
-				f = 0;
-		}
-		
+	if (tracker.isBlocked() &&
+		!(animaction->flags & AnimAction::AAF_UNSTOPPABLE))
+	{
+		return Animation::FAILURE;
 	}
 
-	// animation ok. Update state
 	if (state) {
-		// toggle ACT_FIRSTSTEP flag if necessary
-		if (animaction->flags & AnimAction::AAF_TWOSTEP) {
-			state->firststep = !state->firststep;
-		} else {
-			state->firststep = true;
-		}
-
+		tracker.updateState(*state);
 		state->lastanim = anim;
 		state->direction = dir;
-		state->x = end[0];
-		state->y = end[1];
-		state->z = end[2];
 	}
-	
-	//check if the animation completes on solid ground
+
+
+	if (tracker.isUnsupported())
+	{
+		return Animation::END_OFF_LAND;
+	}
+
+	// isUnsupported only checks for AFF_ONGROUND, we need either
+	sint32 end[3], dims[3];
+	getFootpadWorld(dims[0], dims[1], dims[2]);
+	tracker.getPosition(end[0], end[1], end[2]);
+
+	CurrentMap * cm = World::get_instance()->getCurrentMap();
+
 	UCList uclist(2);
 	LOOPSCRIPT(script, LS_TOKEN_TRUE); // we want all items
-	currentmap->surfaceSearch(&uclist, script, sizeof(script),
-										  getObjId(), end, dims,
-										  false, true, false);
-
+	cm->surfaceSearch(&uclist, script, sizeof(script),
+					  getObjId(), end, dims,
+					  false, true, false);
 	for (uint32 i = 0; i < uclist.getSize(); i++)
 	{
 		Item *item = World::get_instance()->getItem(uclist.getuint16(i));
 		if (item->getShapeInfo()->is_land())
 			return Animation::SUCCESS;
 	}
-
 
 	return Animation::END_OFF_LAND;
 }

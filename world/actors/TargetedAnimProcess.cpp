@@ -53,6 +53,11 @@ void TargetedAnimProcess::saveData(ODataSource* ods)
 {
 	ods->write2(1); //version
 	ActorAnimProcess::saveData(ods);
+
+	ods->write4(static_cast<uint32>(x));
+	ods->write4(static_cast<uint32>(y));
+	ods->write4(static_cast<uint32>(z));
+
 }
 
 bool TargetedAnimProcess::loadData(IDataSource* ids)
@@ -60,6 +65,10 @@ bool TargetedAnimProcess::loadData(IDataSource* ids)
 	uint16 version = ids->read2();
 	if (version != 1) return false;
 	if (!ActorAnimProcess::loadData(ids)) return false;
+
+	x = ids->read4();
+	y = ids->read4();
+	z = ids->read4();
 
 	return true;
 }

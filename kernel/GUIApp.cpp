@@ -53,6 +53,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Actor.h"
 #include "ActorAnimProcess.h"
+#include "TargetedAnimProcess.h"
 #include "Font.h"
 #include "FontShapeFlex.h"
 #include "u8intrinsics.h"
@@ -227,6 +228,8 @@ void GUIApp::startup()
 							 ProcessLoader<TeleportToEggProcess>::load);
 	kernel->addProcessLoader("ActorAnimProcess",
 							 ProcessLoader<ActorAnimProcess>::load);
+	kernel->addProcessLoader("TargetedAnimProcess",
+							 ProcessLoader<TargetedAnimProcess>::load);
 	kernel->addProcessLoader("AvatarMoverProcess",
 							 ProcessLoader<AvatarMoverProcess>::load);
 	kernel->addProcessLoader("PathfinderProcess",
