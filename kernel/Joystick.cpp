@@ -45,10 +45,10 @@ static const char * joyButtonName[] = {
 const char* GetJoystickButtonName(uint16 joystick, uint16 button)
 {
 	// Limitations
-	assert(button >= 0 && button < NUM_JOYBUTTONS);
-	assert(joystick < NUM_JOYSTICKS);
+	if (button < NUM_JOYBUTTONS && joystick < NUM_JOYSTICKS)
+		return joyButtonName[button];
 
-	return joyButtonName[button];
+	return 0;
 }
 
 void InitJoystick()

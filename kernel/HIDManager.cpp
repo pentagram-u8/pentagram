@@ -73,6 +73,7 @@ HIDManager::HIDManager()
 	bindingMap.insert( HIDBINDING_PAIR(u8ShapeViewer) );
 	bindingMap.insert( HIDBINDING_PAIR(showMenu) );
 	bindingMap.insert( HIDBINDING_PAIR(quit) );
+	bindingMap.insert( HIDBINDING_PAIR(openQuickItemGump) );
 	bindingMap.insert( HIDBINDING_PAIR(toggleConsole) );
 	bindingMap.insert( HIDBINDING_PAIR(quickMoveUp) );
 	bindingMap.insert( HIDBINDING_PAIR(quickMoveDown) );
@@ -101,24 +102,23 @@ HIDBinding HIDManager::getBinding(const SDL_Event& event)
 	case SDL_KEYUP: case SDL_KEYDOWN:
 	{
 		uint16 key = event.key.keysym.sym;
-		assert (key < SDLK_LAST);
-		binding = keybindings[key];
+		if (key < SDLK_LAST);
+			binding = keybindings[key];
 	}
 	break;
 	case SDL_MOUSEBUTTONDOWN: case SDL_MOUSEBUTTONUP:
 	{
 		uint16 button = event.button.button;
-		assert (button < NUM_MOUSEBUTTONS);
-		binding = mousebindings[button];
+		if (button < NUM_MOUSEBUTTONS);
+			binding = mousebindings[button];
 	}
 	break;
 	case SDL_JOYBUTTONDOWN: case SDL_JOYBUTTONUP:
 	{
 		uint16 js = event.jbutton.which;
 		uint16 button = event.jbutton.button;
-		assert (js < NUM_JOYSTICKS);
-		assert (button < NUM_JOYBUTTONS);
-		binding = joybindings[js][button];
+		if (js < NUM_JOYSTICKS && button < NUM_JOYBUTTONS)
+			binding = joybindings[js][button];
 	}
 	break;
 	}
