@@ -23,8 +23,11 @@ MODULES="tools tools/disasm misc convert convert/crusader convert/u8 filesys"
 
 for subdir in $MODULES; do
   rm -f $subdir/Makefile
-  echo "# This file is generated automatically by bootstrap. Do not edit!\n\n" > $subdir/Makefile
-  echo "LPATH := $subdir\n" >> $subdir/Makefile
+  echo "# This file is generated automatically by bootstrap. Do not edit!" > $subdir/Makefile
+  echo "" >> $subdir/Makefile
+  echo "" >> $subdir/Makefile
+  echo "LPATH := $subdir" >> $subdir/Makefile
+  echo "" >> $subdir/Makefile
   cat >> $subdir/Makefile <<'EOF'
 all: all-$(LPATH) ;
 clean: clean-$(LPATH) ;
