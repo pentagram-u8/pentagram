@@ -81,6 +81,7 @@ GRAPHICS = \
 
 FONTS = \
 	graphics/fonts/Font.o \
+	graphics/fonts/FontManager.o \
 	graphics/fonts/FontShapeFlex.o \
 	graphics/fonts/RenderedText.o \
 	graphics/fonts/ShapeFont.o \

@@ -19,18 +19,9 @@
 #include "TextWidget.h"
 #include "ShapeFont.h"
 #include "RenderedText.h"
-#include "FontShapeFlex.h"
-#include "GameData.h"
+#include "FontManager.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
-
-//#undef USE_SDLTTF
-
-#ifdef USE_SDLTTF
-// HACK
-#include "TTFont.h"
-extern TTFont* ttffont;
-#endif
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(TextWidget,Gump);
 
@@ -61,13 +52,7 @@ void TextWidget::InitGump()
 	Gump::InitGump();
 
 	Pentagram::Font *font;
-#ifdef USE_SDLTTF
-	// HACK
-	if (ttffont)
-	  font = ttffont;
-	else
-#endif
-	  font = GameData::get_instance()->getFonts()->getFont(fontnum);
+	font = FontManager::get_instance()->getFont(fontnum, true);
 
 	// Y offset is always baseline
 	dims.y = -font->getBaseline();
@@ -85,13 +70,7 @@ bool TextWidget::setupNextText()
 	if (current_start >= text.size()) return false;
 
 	Pentagram::Font *font;
-#ifdef USE_SDLTTF
-	// HACK
-	if (ttffont)
-	  font = ttffont;
-	else
-#endif
-	  font = GameData::get_instance()->getFonts()->getFont(fontnum);
+	font = FontManager::get_instance()->getFont(fontnum, true);
 
 	int tx, ty;
 	unsigned int remaining;
@@ -114,13 +93,7 @@ void TextWidget::PaintThis(RenderSurface*surf, sint32 lerp_factor)
 	Gump::PaintThis(surf,lerp_factor);
 
 	Pentagram::Font *font;
-#ifdef USE_SDLTTF
-	// HACK
-	if (ttffont)
-	  font = ttffont;
-	else
-#endif
-	  font = GameData::get_instance()->getFonts()->getFont(fontnum);
+	font = FontManager::get_instance()->getFont(fontnum, true);
 
 	if (!cached_text) {
 		unsigned int remaining;

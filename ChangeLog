@@ -1,3 +1,9 @@
+2004-10-07  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/fonts/FontManager.*: new FontManager for font overrides
+	* kernel/GUIApp.*: init FontManager and setup some (test) overrides
+	* gumps/widget/TextWidget.cpp: use FontManager to get Font
+	* graphics/fonts/TTFont.*: let FontManager handle SDL_ttf
+
 2004-10-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* games/*Game.*: Game class with game initialisation functions
 	* kernel/*App.*: reworked startup sequence to be more flexible

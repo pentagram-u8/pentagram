@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ConfigFileManager.h"
 #include "ObjectManager.h"
 #include "GameInfo.h"
+#include "FontManager.h"
 
 #include "HIDManager.h"
 #include "HIDBinding.h"
@@ -84,13 +85,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "DisasmProcess.h"
 #include "CompileProcess.h"
-
-#ifdef USE_SDLTTF
-#include "SDL_ttf.h"
-#include "TTFont.h"
-// HACK
-TTFont* ttffont;
-#endif
 
 #if defined(WIN32) && defined(COLOURLESS_WANTS_A_DATA_FREE_PENATGRAM)
 #include <windows.h>
@@ -207,11 +201,7 @@ GUIApp::~GUIApp()
 	FORGET_OBJECT(gamedata);
 	FORGET_OBJECT(world);
 	FORGET_OBJECT(ucmachine);
-
-#ifdef USE_SDLTTF
-	if (ttffont)
-		FORGET_OBJECT(ttffont);
-#endif
+	FORGET_OBJECT(fontmanager);
 }
 
 void GUIApp::startup()
@@ -896,19 +886,17 @@ void GUIApp::GraphicSysInit()
 	if(runGraphicSysInit) return;
 	//else...
 
-#ifdef USE_SDLTTF
-	TTF_Init();
-	atexit(TTF_Quit);
-	//HACK;
-//	IDataSource* fontids = FileSystem::get_instance()->ReadFile("@data/verdanab.ttf");
+	fontmanager = new FontManager();
+
 	IDataSource* fontids = FileSystem::get_instance()->ReadFile("@data/VeraBd.ttf");
 	if (fontids)
-	  ttffont = new TTFont(fontids, 0xFFFFFF, 10);
-	else {
-	  ttffont = 0;
-	  perr << "Warning: unable to open @data/VeraBd.ttf" << std::endl;
-	}
-#endif
+		fontmanager->openTTF("vera10", fontids, 10);
+
+	fontmanager->addTTFOverride(0, "vera10", 0xC0C0FF);
+	fontmanager->addTTFOverride(5, "vera10", 0xFFAE00);
+	fontmanager->addTTFOverride(6, "vera10", 0xD00000);
+	fontmanager->addTTFOverride(7, "vera10", 0x00D000);
+	fontmanager->addTTFOverride(8, "vera10", 0xFFF000);
 
 	// Set Screen Resolution
 	pout << "Set Video Mode" << std::endl;

@@ -30,7 +30,7 @@ class IDataSource;
 class TTFont : public Pentagram::Font
 {
 public:
-	TTFont(IDataSource* font, uint32 rgb, int pointsize);
+	TTFont(TTF_Font* font, uint32 rgb);
 	virtual ~TTFont();
 
 	virtual int getHeight();

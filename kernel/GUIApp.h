@@ -39,6 +39,7 @@ class PaletteManager;
 class GameData;
 class World;
 class ObjectManager;
+class FontManager;
 class HIDManager;
 class MidiDriver;
 class AvatarMoverProcess;
@@ -172,6 +173,7 @@ private:
 	PaletteManager *palettemanager;
 	GameData *gamedata;
 	World *world;
+	FontManager* fontmanager;
 	
 	Gump* desktopGump;
 	ConsoleGump *consoleGump;
