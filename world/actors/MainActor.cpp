@@ -347,10 +347,22 @@ void MainActor::ConCmd_listmarks(const Console::ArgsType &args, const Console::A
 	}
 }
 
+void MainActor::ConCmd_maxstats(const Console::ArgsType &args, const Console::ArgvType &argv)
+{
+	MainActor* mainactor = World::get_instance()->getMainActor();
+
+	// constants!!
+	mainactor->setStr(25);
+	mainactor->setDex(25);
+	mainactor->setInt(25);
+	mainactor->setHP(mainactor->getMaxHP());
+	mainactor->setMana(mainactor->getMaxMana());
+}
+
 void MainActor::accumulateStr(int n)
 {
 	// already max?
-	if (strength == 35) return; //!! constant
+	if (strength == 25) return; //!! constant
 
 	accumStr += n;
 	if (accumStr >= 650 || std::rand() % (650 - accumStr) == 0) { //!! constant
@@ -362,7 +374,7 @@ void MainActor::accumulateStr(int n)
 void MainActor::accumulateDex(int n)
 {
 	// already max?
-	if (dexterity == 35) return; //!! constant
+	if (dexterity == 25) return; //!! constant
 
 	accumDex += n;
 	if (accumDex >= 650 || std::rand() % (650 - accumDex) == 0) { //!! constant
@@ -374,7 +386,7 @@ void MainActor::accumulateDex(int n)
 void MainActor::accumulateInt(int n)
 {
 	// already max?
-	if (intelligence == 35) return; //!! constant
+	if (intelligence == 25) return; //!! constant
 
 	accumInt += n;
 	if (accumInt >= 650 || std::rand() % (650 - accumInt) == 0) { //!! constant

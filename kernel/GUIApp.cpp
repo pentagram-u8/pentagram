@@ -160,6 +160,7 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	con.AddConsoleCommand("MainActor::mark", MainActor::ConCmd_mark);
 	con.AddConsoleCommand("MainActor::recall", MainActor::ConCmd_recall);
 	con.AddConsoleCommand("MainActor::listmarks", MainActor::ConCmd_listmarks);
+	con.AddConsoleCommand("MainActor::maxstats", MainActor::ConCmd_maxstats);
 	con.AddConsoleCommand("quit", ConCmd_quit);	
 	con.AddConsoleCommand("GUIApp::quit", ConCmd_quit);	
 	con.AddConsoleCommand("GUIApp::drawRenderStats", ConCmd_drawRenderStats);
@@ -180,6 +181,7 @@ GUIApp::~GUIApp()
 	con.RemoveConsoleCommand("MainActor::mark");
 	con.RemoveConsoleCommand("MainActor::recall");
 	con.RemoveConsoleCommand("MainActor::listmarks");
+	con.RemoveConsoleCommand("MainActor::maxstats");
 	con.RemoveConsoleCommand("quit");
 	con.RemoveConsoleCommand("GUIApp::quit");
 	con.RemoveConsoleCommand("GUIApp::drawRenderStats");

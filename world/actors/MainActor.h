@@ -74,6 +74,8 @@ public:
 	static void ConCmd_recall(const Console::ArgsType &args, const Console::ArgvType &argv);
 	//! "listmarks" console command
 	static void ConCmd_listmarks(const Console::ArgsType &args, const Console::ArgvType &argv);
+	//! "maxstats" console command
+	static void ConCmd_maxstats(const Console::ArgsType &args, const Console::ArgvType &argv);
 
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();

@@ -1,6 +1,8 @@
 2004-07-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Actor.*: get defense type and armour class for monsters
 	* world/actors/MainActor.*: moved defending/attacking dex to MainActor
+	* world/actors/MainActor.cpp: fixed max. stats
+	* world/actors/MainActor.*: added 'MainActor::maxStats' concmd cheat
 
 2004-07-09  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* world/CurrentMap.*: second version of surfaceSearch added
