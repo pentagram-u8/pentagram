@@ -50,7 +50,7 @@ void LoopScriptNode::print_bin(ODequeDataSource &o) const
 	o.write1(scriptTok);
 }
 
-bool LoopScriptNode::fold(DCUnit */*unit*/, std::deque<Node *> &nodes)
+bool LoopScriptNode::fold(DCUnit * /*unit*/, std::deque<Node *> &nodes)
 {
 	fold_linenum(nodes); // TODO: maybe? Might not get line numbers attached since it's rather special...
 
@@ -147,7 +147,7 @@ void LoopNextNode::print_bin(ODequeDataSource &o) const
 	o.write1(0x73);
 }
 
-bool LoopNextNode::fold(DCUnit */*unit*/, std::deque<Node *> &nodes)
+bool LoopNextNode::fold(DCUnit * /*unit*/, std::deque<Node *> &nodes)
 {
 	//fold_linenum(nodes); // should never be a linenum before this
 

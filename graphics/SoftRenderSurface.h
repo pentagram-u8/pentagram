@@ -42,6 +42,9 @@ public:
 	// Create a Generic surface that matches current screen parameters
 	SoftRenderSurface(int w, int h, uint8 *buf);
 
+	// Create a Render to texture surface
+	SoftRenderSurface(int w, int h);
+
 	//
 	// Surface Filling
 	//

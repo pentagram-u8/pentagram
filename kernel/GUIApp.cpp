@@ -87,6 +87,7 @@ TTFont* ttffont;
 #endif
 
 #if defined(WIN32) && defined(I_AM_COLOURLESS_EXPERIMENTING_WITH_HW_CURSORS)
+#include "Shape.h"
 #include "ShapeFrame.h"
 #include "SoftRenderSurface.h"
 #include "SDL_syswm.h"
@@ -1010,6 +1011,11 @@ void GUIApp::GraphicSysInit()
 	settingman->get("height", height);
 	settingman->get("bpp", bpp);
 
+#ifdef UNDER_CE
+	width = 240;
+	height = 320;
+#endif
+
 #if 0
 	// store values in user's config file
 	settingman->set("width", width);
@@ -1058,7 +1064,7 @@ void GUIApp::LoadConsoleFont()
 	HRSRC res = FindResource(NULL,  MAKEINTRESOURCE(IDR_FIXED_FONT_TGA), RT_RCDATA);
 	if (res) filesystem->MountFileInMemory("@data/fixedfont.tga", static_cast<uint8*>(LockResource(LoadResource(NULL, res))), SizeofResource(NULL, res));
 
-	res = FindResource(NULL, MAKEINTRESOURCE(IDR_FIXED_FONT_CFG), RT_RCDATA);
+	res = FindResource(NULL, MAKEINTRESOURCE(IDR_FIXED_FONT_INI), RT_RCDATA);
 	if (res) filesystem->MountFileInMemory("@data/fixedfont.ini", static_cast<uint8*>(LockResource(LoadResource(NULL, res))), SizeofResource(NULL, res));
 #endif
 

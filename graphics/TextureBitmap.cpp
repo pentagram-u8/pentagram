@@ -200,6 +200,7 @@ bool TextureBitmap::Read(IDataSource &ds)
 	// Make sure the width and height are correctly copied
 	width = bitmapinfoheader.biWidth;
 	height = bitmapinfoheader.biHeight;
+	format = TEX_FMT_STANDARD;
 	
 	// Calc texture log2's 
 	CalcLOG2s();

@@ -18,7 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/fmopl.cpp,v 1.4 2004/04/09 19:18:01 colourles Exp $
+ * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/fmopl.cpp,v 1.5 2004/05/15 16:13:11 colourles Exp $
  *
  * LGPL licensed version of MAMEs fmopl (V0.37a modified) by
  * Tatsuyuki Satoh. Included from LGPL'ed AdPlug.
@@ -613,7 +613,7 @@ static int OPLOpenTable( void )
 	}
 	/* make total level table */
 	for (t = 0;t < EG_ENT-1 ;t++){
-		rate = ((1<<TL_BITS)-1)/std::pow(10,EG_STEP*t/20);	/* dB -> voltage */
+		rate = ((1<<TL_BITS)-1)/std::pow(10.0,EG_STEP*t/20);	/* dB -> voltage */
 		TL_TABLE[       t] =  (int)rate;
 		TL_TABLE[TL_MAX+t] = -TL_TABLE[t];
 	}

@@ -388,7 +388,7 @@ void PaperdollGump::ChildNotify(Gump *child, uint32 message)
 	{
 		// check if there already is an open MiniStatsGump
 		Gump* desktop = GUIApp::get_instance()->getDesktopGump();
-		if (!desktop->FindGump<MiniStatsGump>()) {
+		if (!desktop->FindGump(MiniStatsGump::ClassType)) {
 			Gump* gump = new MiniStatsGump(0, 0);
 			gump->InitGump();
 			desktop->AddChild(gump);

@@ -73,8 +73,8 @@ bool AvatarMoverProcess::handleCombatMode()
 	MainActor* avatar = World::get_instance()->getMainActor();
 	Animation::Sequence lastanim = avatar->getLastAnim();
 	Animation::Sequence nextanim = Animation::walk;
-	uint32 direction = avatar->getDir();
-	uint32 nextdir = direction;
+	sint32 direction = avatar->getDir();
+	sint32 nextdir = direction;
 	uint32 now = SDL_GetTicks();
 
 	int mx, my;
@@ -82,7 +82,7 @@ bool AvatarMoverProcess::handleCombatMode()
 	unsigned int mouselength = guiapp->getMouseLength(mx,my);
 
 	// adjust to world direction
-	uint32 mousedir = (guiapp->getMouseDirection(mx,my)+7)%8;
+	sint32 mousedir = (guiapp->getMouseDirection(mx,my)+7)%8;
 
 	// If Avatar has fallen down, stand up.
 	if (lastanim == Animation::die || lastanim == Animation::fallBackwards) {
@@ -230,15 +230,15 @@ bool AvatarMoverProcess::handleNormalMode()
 	MainActor* avatar = World::get_instance()->getMainActor();
 	Animation::Sequence lastanim = avatar->getLastAnim();
 	Animation::Sequence nextanim = Animation::walk;
-	uint32 direction = avatar->getDir();
-	uint32 nextdir = direction;
+	sint32 direction = avatar->getDir();
+	sint32 nextdir = direction;
 
 	int mx, my;
 	guiapp->getMouseCoords(mx, my);
 	unsigned int mouselength = guiapp->getMouseLength(mx,my);
 
 	// adjust to world direction
-	uint32 mousedir = (guiapp->getMouseDirection(mx,my)+7)%8;
+	sint32 mousedir = (guiapp->getMouseDirection(mx,my)+7)%8;
 
 	// User toggled combat while in combatRun
 	if (avatar->isInCombat())

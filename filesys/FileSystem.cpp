@@ -45,6 +45,40 @@ FileSystem::FileSystem(bool noforced) : noforcedvpaths(noforced)
 {
 	assert(filesystem == 0);
 	filesystem = this;
+
+#ifdef UNDER_CE
+	TCHAR module_filename[256];
+	TCHAR *c = module_filename;
+	TCHAR *last = NULL;
+	GetModuleFileName(NULL, module_filename, 256);
+
+	while (*c)
+	{
+		if (*c == '/' || *c == '\\')
+			last = c;
+
+		c++;
+	}
+
+	if (last)
+	{
+		*last = 0;
+	}
+	else
+	{
+		module_filename[0] = '\\';
+		module_filename[1] = 0;
+	}
+
+	size_t len = _tcslen (module_filename) + 1;
+	char *str = (char*) _alloca(len);
+	WideCharToMultiByte(CP_ACP, 0, module_filename, -1, str, len, NULL, NULL);
+
+	AddVirtualPath(".", str);
+
+#endif
+
+
 }
 
 FileSystem::~FileSystem()
@@ -395,6 +429,9 @@ bool FileSystem::IsDir(const string &path)
 		}
 	} while (base_to_uppercase(name, ++uppercasecount));
 #else
+
+	// A little hack
+	if (path == "." || path == "/" || path == "\\" ) return true;
 
 	const TCHAR		*lpszT;
 	WIN32_FIND_DATA	fileinfo;

@@ -24,8 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 #include "istring.h"
 
-#ifndef UNDER_CE
-
 namespace Pentagram {
 
 int strncasecmp (const char *s1, const char *s2, uint32 length)
@@ -59,6 +57,8 @@ int strcasecmp (const char *s1, const char *s2)
 	return strncasecmp (s1, s2, 2147483647);
 }
 
+#ifndef UNDER_CE
+
 bool ichar_traits::eq(const char_type & c1, const char_type & c2)
 {
 	uint32 c3 = c1;
@@ -86,6 +86,7 @@ int ichar_traits::compare(const char_type * s1, const char_type * s2, size_t len
 	return strncasecmp(s1, s2, length);
 }
 
+#endif
+
 };
 
-#endif

@@ -318,7 +318,7 @@ void UniOperatorNode::print_bin(ODequeDataSource &o) const
 	}
 }
 
-bool UniOperatorNode::fold(DCUnit */*unit*/, std::deque<Node *> &nodes)
+bool UniOperatorNode::fold(DCUnit * /*unit*/, std::deque<Node *> &nodes)
 {
 	switch(otype)
 	{

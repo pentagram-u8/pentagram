@@ -140,7 +140,7 @@ class PushVarNode : public Node
 		void print_asm(Console &o) const;
 		void print_bin(ODequeDataSource &o) const;
 
-		bool fold(DCUnit */*unit*/, std::deque<Node *> &/*nodes*/) { return true; /* to be done */ };
+		bool fold(DCUnit * /*unit*/, std::deque<Node *> &/*nodes*/) { return true; /* to be done */ };
 
 		/* NOTE: 'VT_VOID' is not really a vartype, just used for proper typecasting of
 			calls to functions that return no value, DT_DNULL isn't a real datatype either */

@@ -32,6 +32,10 @@ namespace Pentagram
 	struct Rect;
 }
 
+#define UNPACK_RGB8(pix,r,g,b) { r = (((pix)&RenderSurface::r_mask)>>RenderSurface::r_shift)<<RenderSurface::r_loss; g = (((pix)&RenderSurface::g_mask)>>RenderSurface::g_shift)<<RenderSurface::g_loss; b = (((pix)&RenderSurface::b_mask)>>RenderSurface::b_shift)<<RenderSurface::b_loss; }
+#define PACK_RGB8(r,g,b) (((r)>>RenderSurface::r_loss)<<RenderSurface::r_shift) | (((g)>>RenderSurface::g_loss)<<RenderSurface::g_shift) | (((b)>>RenderSurface::b_loss)<<RenderSurface::b_shift)
+#define PACK_RGB16(r,g,b) (((r)>>RenderSurface::r_loss16)<<RenderSurface::r_shift) | (((g)>>RenderSurface::g_loss16)<<RenderSurface::g_shift) | (((b)>>RenderSurface::b_loss16)<<RenderSurface::b_shift)
+
 //
 // RenderSurface
 //
@@ -41,12 +45,22 @@ class RenderSurface
 {
 public:
 
+	// Colour shifting values (should these all be uint32???)
+	static uint32	s_bpp;
+	static uint8	r_loss,   g_loss,   b_loss,   a_loss;
+	static uint8	r_loss16, g_loss16, b_loss16, a_loss16;
+	static uint8	r_shift,  g_shift,  b_shift,  a_shift;
+	static uint32	r_mask,   g_mask,   b_mask,   a_mask;
+
 	//
 	// TODO: Improve the way SDL Surfaces are created. Should be more versatile.
 	//
 
 	// Create a standard RenderSurface
 	static RenderSurface *SetVideoMode(uint32 width, uint32 height, uint32 bpp, bool fullscreen, bool use_opengl);
+
+	// Create a SecondaryRenderSurface with an associated Texture object
+	static RenderSurface *CreateSecondaryRenderSurface(uint32 width, uint32 height);
 
 	// Virtual Destructor
 	virtual ~RenderSurface();
@@ -65,6 +79,11 @@ public:
 	// Returns Error Code on error. Check return code.....
 	virtual ECode EndPainting() = 0;
 
+	// Get the surface as a Texture. Only valid for SecondaryRenderSurfaces
+	// Do not delete the texture. 
+	// Do not assume anything about the contents of the Texture object.
+	// It should only be used with Painting and Blitting methods.
+	virtual Texture *GetSurfaceAsTetxture() = 0;
 
 	//
 	// Surface Properties

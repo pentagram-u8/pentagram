@@ -71,6 +71,17 @@ template<class uintX> SoftRenderSurface<uintX>::SoftRenderSurface(int w, int h, 
 
 
 //
+// SoftRenderSurface::SoftRenderSurface(int w, int h)
+//
+// Desc: Create a Render to texture surface
+//
+template<class uintX> SoftRenderSurface<uintX>::SoftRenderSurface(int w, int h)
+	: BaseSoftRenderSurface(w,h)
+{
+}
+
+
+//
 // SoftRenderSurface::Fill8(uint8 index, sint32 sx, sint32 sy, sint32 w, sint32 h)
 //
 // Desc: Fill buffer (using a palette index) - Remove????
@@ -178,6 +189,75 @@ template<> void SoftRenderSurface<uint32>::Fill32(uint32 rgb, sint32 sx, sint32 
 template<class uintX> void SoftRenderSurface<uintX>::Blit(Texture *tex, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy)
 {
 	// Clamp or wrap or return?
+	if (w > static_cast<sint32>(tex->width)) 
+		return;
+	
+	// Clamp or wrap or return?
+	if (h > static_cast<sint32>(tex->height)) 
+		return;
+	
+	// Clip to window
+	int px = dx, py = dy;
+	clip_window.IntersectOther(dx,dy,w,h);
+	if (!w || !h) return;
+
+	// Adjust source x and y
+	if (px != dx) sx += dx - px;
+	if (py != dy) sy += dy - py;
+
+	uint8 *pixel = pixels + dy * pitch + dx * sizeof(uintX);
+	uint8 *line_end = pixel + w*sizeof(uintX);
+	uint8 *end = pixel + h * pitch;
+	int diff = pitch - w*sizeof(uintX);
+
+	if (tex->format == TEX_FMT_STANDARD)
+	{
+		uint32 *texel = tex->buffer + (sy * tex->width + sx);
+		int tex_diff = tex->width - w;
+
+		while (pixel != end)
+		{
+			while (pixel != line_end)
+			{
+				if (*texel & TEX32_A_MASK)
+				{
+					*(reinterpret_cast<uintX*>(pixel)) = static_cast<uintX>(PACK_RGB8( TEX32_R(*texel), TEX32_G(*texel), TEX32_B(*texel) ));
+				}
+				pixel+=sizeof(uintX);
+				texel++;
+			}
+
+			line_end += pitch;
+			pixel += diff;
+			texel+= tex_diff;
+		}
+	}
+	else if (tex->format == TEX_FMT_NATIVE)
+	{
+		uintX *texel = reinterpret_cast<uintX*>(tex->buffer) + (sy * tex->width + sx);
+		int tex_diff = tex->width - w;
+
+		while (pixel != end)
+		{
+			while (pixel != line_end)
+			{
+				// Uh, not supported right now
+				//if (*texel & RenderSurface::a_mask)
+				{
+					*(reinterpret_cast<uintX*>(pixel)) = *texel;
+				}
+				pixel+=sizeof(uintX);
+				texel++;
+			}
+
+			line_end += pitch;
+			pixel += diff;
+			texel+= tex_diff;
+		}
+	}
+
+/* Old complete code
+	// Clamp or wrap or return?
 #ifndef BLIT_WRAP
 	if (w > static_cast<sint32>(tex->width)) 
 #ifndef BLIT_CLIP
@@ -242,6 +322,8 @@ template<class uintX> void SoftRenderSurface<uintX>::Blit(Texture *tex, sint32 s
 		if (texel == texel_col_end) texel = texel_col_start;
 #endif
 	}
+
+*/
 
 
 }

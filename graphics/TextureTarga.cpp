@@ -72,6 +72,7 @@ bool TextureTarga::Read(IDataSource &ds)
 	// Set Width and Height
 	width	= tga.Width;
 	height	= tga.Height;
+	format = TEX_FMT_STANDARD;
 
 	// Make sure all information is valid
 	if(width <= 0 || height <= 0 || (tga.Bpp != 24 && tga.Bpp !=32))

@@ -63,6 +63,13 @@
 #define	TEX64_R_MASK			0x0000FFFF
 #define	TEX64_R_MASK_H			0x0000FF00
 
+enum TextureFormat
+{
+	TEX_FMT_STANDARD		= 0,	// Standard texture format as defined using Macros above
+	TEX_FMT_NATIVE			= 1		// The native format of the RenderSurface
+};
+
+
 class IDataSource;
 
 //
@@ -73,6 +80,7 @@ struct Texture
 	uint32			*buffer;
 	sint32			width;
 	sint32			height;
+	uint32			format;	
 
 	// Use CalcLOG2s to calculate these (can be -1 which indicates not log2)
 	sint32			wlog2;

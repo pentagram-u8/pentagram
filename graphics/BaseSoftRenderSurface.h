@@ -25,10 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Rect.h"
 #include <SDL.h>
 
-#define UNPACK_RGB8(pix,r,g,b) { r = (((pix)&BaseSoftRenderSurface::r_mask)>>BaseSoftRenderSurface::r_shift)<<BaseSoftRenderSurface::r_loss; g = (((pix)&BaseSoftRenderSurface::g_mask)>>BaseSoftRenderSurface::g_shift)<<BaseSoftRenderSurface::g_loss; b = (((pix)&BaseSoftRenderSurface::b_mask)>>BaseSoftRenderSurface::b_shift)<<BaseSoftRenderSurface::b_loss; }
-#define PACK_RGB8(r,g,b) (((r)>>BaseSoftRenderSurface::r_loss)<<BaseSoftRenderSurface::r_shift) | (((g)>>BaseSoftRenderSurface::g_loss)<<BaseSoftRenderSurface::g_shift) | (((b)>>BaseSoftRenderSurface::b_loss)<<BaseSoftRenderSurface::b_shift)
-#define PACK_RGB16(r,g,b) (((r)>>BaseSoftRenderSurface::r_loss16)<<BaseSoftRenderSurface::r_shift) | (((g)>>BaseSoftRenderSurface::g_loss16)<<BaseSoftRenderSurface::g_shift) | (((b)>>BaseSoftRenderSurface::b_loss16)<<BaseSoftRenderSurface::b_shift)
-
 //
 // Class BaseSoftRenderSurface
 //
@@ -65,8 +61,14 @@ protected:
 	// SDL_Surface
 	SDL_Surface		*sdl_surf;
 
+	// Renderint to a texture
+	Texture			*rtt_tex;
+
 	// Create from a SDL_Surface
 	BaseSoftRenderSurface(SDL_Surface *);
+
+	// Create with Texture
+	BaseSoftRenderSurface(int w, int h);
 
 	// Create Generic
 	BaseSoftRenderSurface(int w, int h, int bpp, int rsft, int gsft, int bsft);
@@ -75,13 +77,6 @@ protected:
 	virtual ECode GenericUnlock()  { return P_NO_ERROR; }
 
 public:
-
-	// Colour shifting values (should these all be uint32???)
-	static uint8	r_loss,   g_loss,   b_loss;
-	static uint8	r_loss16, g_loss16, b_loss16;
-	static uint8	r_shift,  g_shift,  b_shift;
-	static uint32	r_mask,   g_mask,   b_mask;
-	static uint32	s_bpp;
 
 	// Virtual Destructor
 	virtual ~BaseSoftRenderSurface();
@@ -99,7 +94,10 @@ public:
 	// Returns Error Code on error. Check return code.....
 	virtual ECode EndPainting();
 
-	
+	// Get the surface as a Texture. Only valid for SecondaryRenderSurfaces
+	virtual Texture *GetSurfaceAsTetxture();
+
+
 	//
 	// Surface Properties
 	//

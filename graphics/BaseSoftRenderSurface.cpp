@@ -33,13 +33,6 @@ using Pentagram::Rect;
 //                       //
 ///////////////////////////
 
-uint8	BaseSoftRenderSurface::r_loss,   BaseSoftRenderSurface::g_loss,   BaseSoftRenderSurface::b_loss;
-uint8	BaseSoftRenderSurface::r_loss16, BaseSoftRenderSurface::g_loss16, BaseSoftRenderSurface::b_loss16;
-uint8	BaseSoftRenderSurface::r_shift,  BaseSoftRenderSurface::g_shift,  BaseSoftRenderSurface::b_shift;
-uint32	BaseSoftRenderSurface::r_mask,   BaseSoftRenderSurface::g_mask,   BaseSoftRenderSurface::b_mask;
-uint32	BaseSoftRenderSurface::s_bpp;
-
-
 //
 // BaseSoftRenderSurface::BaseSoftRenderSurface(SDL_Surface *s)
 //
@@ -50,26 +43,26 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(SDL_Surface *s) :
 	bytes_per_pixel(0), bits_per_pixel(0), format_type(0), 
 	ox(0), oy(0), width(0), height(0), pitch(0), zpitch(0),
 	clip_window(0,0,0,0), lock_count(0),
-	sdl_surf(s)
+	sdl_surf(s), rtt_tex(0)
 {
 	clip_window.ResizeAbs(width = sdl_surf->w, height = sdl_surf->h);
 	pitch = sdl_surf->pitch;
 	bits_per_pixel = sdl_surf->format->BitsPerPixel;
 	bytes_per_pixel = sdl_surf->format->BytesPerPixel;
 
-	s_bpp = bits_per_pixel;
-	r_loss = sdl_surf->format->Rloss;
-	g_loss = sdl_surf->format->Gloss;
-	b_loss = sdl_surf->format->Bloss;
-	r_loss16 = r_loss+8;
-	g_loss16 = g_loss+8;
-	b_loss16 = b_loss+8;
-	r_shift = sdl_surf->format->Rshift;
-	g_shift = sdl_surf->format->Gshift;
-	b_shift = sdl_surf->format->Bshift;
-	r_mask = sdl_surf->format->Rmask;
-	g_mask = sdl_surf->format->Gmask;
-	b_mask = sdl_surf->format->Bmask;
+	RenderSurface::s_bpp = bits_per_pixel;
+	RenderSurface::r_loss = sdl_surf->format->Rloss;
+	RenderSurface::g_loss = sdl_surf->format->Gloss;
+	RenderSurface::b_loss = sdl_surf->format->Bloss;
+	RenderSurface::r_loss16 = r_loss+8;
+	RenderSurface::g_loss16 = g_loss+8;
+	RenderSurface::b_loss16 = b_loss+8;
+	RenderSurface::r_shift = sdl_surf->format->Rshift;
+	RenderSurface::g_shift = sdl_surf->format->Gshift;
+	RenderSurface::b_shift = sdl_surf->format->Bshift;
+	RenderSurface::r_mask = sdl_surf->format->Rmask;
+	RenderSurface::g_mask = sdl_surf->format->Gmask;
+	RenderSurface::b_mask = sdl_surf->format->Bmask;
 
 }
 
@@ -84,7 +77,7 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h, int bpp,
 	pixels(0), pixels00(0), zbuffer(0), zbuffer00(0),
 	bytes_per_pixel(0), bits_per_pixel(0), format_type(0), 
 	ox(0), oy(0), width(0), height(0), pitch(0), zpitch(0),
-	clip_window(0,0,0,0), lock_count(0), sdl_surf(0)
+	clip_window(0,0,0,0), lock_count(0), sdl_surf(0), rtt_tex(0)
 {
 	clip_window.ResizeAbs(width = w, height = h);
 
@@ -116,16 +109,16 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h, int bpp,
 	bits_per_pixel = bpp;
 	bytes_per_pixel = bpp/8;
 
-	s_bpp = bpp;
-	r_loss16 = r_loss+8;
-	g_loss16 = g_loss+8;
-	b_loss16 = b_loss+8;
-	r_shift = rsft;
-	g_shift = gsft;
-	b_shift = bsft;
-	r_mask = (0xFF>>r_loss)<<rsft;
-	g_mask = (0xFF>>g_loss)<<gsft;
-	b_mask = (0xFF>>b_loss)<<bsft;
+	RenderSurface::s_bpp = bpp;
+	RenderSurface::r_loss16 = r_loss+8;
+	RenderSurface::g_loss16 = g_loss+8;
+	RenderSurface::b_loss16 = b_loss+8;
+	RenderSurface::r_shift = rsft;
+	RenderSurface::g_shift = gsft;
+	RenderSurface::b_shift = bsft;
+	RenderSurface::r_mask = (0xFF>>r_loss)<<rsft;
+	RenderSurface::g_mask = (0xFF>>g_loss)<<gsft;
+	RenderSurface::b_mask = (0xFF>>b_loss)<<bsft;
 
 }
 
@@ -139,16 +132,44 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h, uint8 *buf) :
 	pixels(0), pixels00(0), zbuffer(0), zbuffer00(0),
 	bytes_per_pixel(0), bits_per_pixel(0), format_type(0), 
 	ox(0), oy(0), width(0), height(0), pitch(0), zpitch(0),
-	clip_window(0,0,0,0), lock_count(0), sdl_surf(0)
+	clip_window(0,0,0,0), lock_count(0), sdl_surf(0), rtt_tex(0)
 {
 	clip_window.ResizeAbs(width = w, height = h);
 
-	int bpp = s_bpp;
+	int bpp = RenderSurface::s_bpp;
 
 	pitch = w*bpp/8;
 	bits_per_pixel = bpp;
 	bytes_per_pixel = bpp/8;
 	pixels00 = buf;
+}
+
+//
+// BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h, uint8 *buf)
+//
+// Desc: Constructor for Generic BaseSoftRenderSurface which matches screen params
+//
+BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h) :
+	pixels(0), pixels00(0), zbuffer(0), zbuffer00(0),
+	bytes_per_pixel(0), bits_per_pixel(0), format_type(0), 
+	ox(0), oy(0), width(0), height(0), pitch(0), zpitch(0),
+	clip_window(0,0,0,0), lock_count(0), sdl_surf(0), rtt_tex(0)
+{
+	clip_window.ResizeAbs(width = w, height = h);
+
+	int bpp = RenderSurface::s_bpp;
+
+	pitch = w*bpp/8;
+	bits_per_pixel = bpp;
+	bytes_per_pixel = bpp/8;
+	pixels00 = new uint8[pitch * height];
+
+	rtt_tex = new Texture;
+	rtt_tex->buffer = (uint32*) pixels00;
+	rtt_tex->width = width;
+	rtt_tex->height = height;
+	rtt_tex->format = TEX_FMT_NATIVE;
+	rtt_tex->CalcLOG2s();
 }
 
 
@@ -159,6 +180,17 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h, uint8 *buf) :
 //
 BaseSoftRenderSurface::~BaseSoftRenderSurface()
 {
+	if (rtt_tex)
+	{
+		delete rtt_tex;
+		rtt_tex = 0;
+
+		delete [] pixels00;
+		pixels00 = 0;
+
+		delete [] zbuffer00;
+		zbuffer00 = 0;
+	}
 }
 
 
@@ -252,6 +284,21 @@ ECode BaseSoftRenderSurface::EndPainting()
 
 	// No error
 	return P_NO_ERROR;
+}
+
+//
+// Texture *BaseSoftRenderSurface::GetSurfaceAsTetxture()
+//
+// Desc: Get the surface as a Texture. Only valid for SecondaryRenderSurfaces
+//
+Texture *BaseSoftRenderSurface::GetSurfaceAsTetxture()
+{ 
+	if (!rtt_tex)
+	{
+		perr << "Error: GetSurfaceAsTetxture(): Surface doesn't render-to-texture" << std::endl;
+	}
+
+	return rtt_tex; 
 }
 
 //

@@ -227,7 +227,7 @@ void DCCallMutatorNode::print_bin(ODequeDataSource &o) const
 	}
 }
 
-bool DCCallMutatorNode::fold(DCUnit */*unit*/, std::deque<Node *> &nodes)
+bool DCCallMutatorNode::fold(DCUnit * /*unit*/, std::deque<Node *> &nodes)
 {
 	switch(mtype)
 	{

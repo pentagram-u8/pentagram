@@ -186,6 +186,7 @@ string	gamelanguage;
 string	gametype;
 string	outputdir;
 bool	print_globals=false;
+bool	strings_only=false;
 
 bool crusader=false;
 
@@ -226,10 +227,12 @@ void printglobals()
 
 /* Yes, this is icky and evil. *grin* But it works without modifying anything. */
 #ifdef FOLD
-	#define con_Printf if(print_disasm) con.Printf
+	#define con_Printf if(print_disasm && !strings_only) con.Printf
+	#define con_Printf_s if(print_disasm && strings_only) con.Printf("\n"); if(print_disasm) con.Printf
 //	#define con_Printf con.Printf
 #else
-	#define con_Printf con.Printf
+	#define con_Printf if (!strings_only) con.Printf
+	#define con_Printf_s if (strings_only) con.Printf("\n"); con.Printf
 #endif
 
 
@@ -331,7 +334,15 @@ void just_print(TempOp &op, IDataSource *ucfile)
 			con_Printf("push dword\t%08Xh", op.i0);
 			break;
 		case 0x0D:
-			con_Printf("push string\t\"%s\"", op.str.c_str());
+			
+			if (strings_only)
+			{
+				con_Printf_s("%s\n\n",op.str.c_str());
+			}
+			else
+			{
+				con_Printf("push string\t\"%s\"", op.str.c_str());
+			}
 			break;
 		case 0x0E:
 			con_Printf("create list\t%02X (%02X)", op.i1, op.i0);
@@ -683,7 +694,7 @@ void printfunc(const uint32 func, const uint32 nameoffset, IDataSource *ucfile)
 	
 	convert->readheader(ucfile, uch, curOffset);
 
-	con_Printf("Usecode class %d (%04X %s)\n", func, func, namebuf);
+	con_Printf_s("Usecode class %d (%04X %s)\n", func, func, namebuf);
 
 	convert->readevents(ucfile, uch);
 
@@ -754,6 +765,7 @@ int main(int argc, char **argv)
 	#ifdef FOLD
 	parameters.declare("--disasm",  &print_disasm,  true);
 	#endif
+	parameters.declare("--strings", &strings_only,  true);
 
 	parameters.process(argc, argv);
 

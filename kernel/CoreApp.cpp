@@ -148,8 +148,8 @@ void CoreApp::setupVirtualPaths()
 	SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, MyDocumentsPath);
 	home = MyDocumentsPath;
 	home += "\\Pentagram";
-#elif defined(UNDER_CE)
-	home = "\\\\Pierce\\Moo\\UC";
+//#elif defined(UNDER_CE)
+//	home = "\\\\Pierce\\Moo\\UC";
 #else
 	// TODO: what to do on systems without $HOME?
 	home = ".";

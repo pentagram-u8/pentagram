@@ -343,7 +343,7 @@ void EndNode::print_bin(ODequeDataSource &o) const
 	}
 }
 
-bool EndNode::fold(DCUnit */*unit*/, std::deque<Node *> &nodes)
+bool EndNode::fold(DCUnit * /*unit*/, std::deque<Node *> &nodes)
 {
 	fold_linenum(nodes);
 

@@ -20,7 +20,7 @@
 #define XFORMBLEND_H
 
 #include "Texture.h"
-#include "BaseSoftRenderSurface.h"
+#include "RenderSurface.h"
 
 #ifndef P_FASTCALL
 #ifdef _MSC_VER
