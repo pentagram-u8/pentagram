@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 struct Texture;
 class Shape;
+class Font;
 struct Palette;
 struct Rect;
 
@@ -160,10 +161,10 @@ public:
 	//
 	
 	// Draw from a Font
-	// TODO: virtual void PrintText(Font *, const char *text, int x, int y) = 0;
+	//virtual void PrintText(Font *, const char *text, int x, int y) = 0;
 
 	// Draw a character from a Font
-	// TODO: virtual void PrintChar(Font *, char character, int x, int y) = 0;
+	virtual void PrintChar(Font *, char character, int x, int y) = 0;
 
 	// Draw fixed width from a Texture buffer (16x16 characters fixed width and height)
 	virtual void PrintTextFixed(Texture *, const char *text, int x, int y) = 0;

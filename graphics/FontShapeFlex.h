@@ -16,34 +16,24 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef MAINSHAPEFLEX_H
-#define MAINSHAPEFLEX_H
+#ifndef FONTSHAPEFLEX_H
+#define FONTSHAPEFLEX_H
 
 #include "ShapeFlex.h"
 
-class TypeFlags;
-class ShapeInfo;
-class AnimDat;
-class ActorAnim;
-struct AnimAction;
+class Font;
 
-class MainShapeFlex : public ShapeFlex
+class FontShapeFlex : protected ShapeFlex
 {
 public:
-	MainShapeFlex(IDataSource* ds, Palette* pal = 0,
-				  const ConvertShapeFormat *format = 0);
-	virtual ~MainShapeFlex();
+	FontShapeFlex(IDataSource* ds, Palette* pal = 0,
+				  const ConvertShapeFormat *format = 0) :
+		ShapeFlex(ds, pal, format) { }
+	virtual ~FontShapeFlex() { }
 	
-	void loadTypeFlags(IDataSource *ds);
-	ShapeInfo* getShapeInfo(uint32 shapenum);
+	Font* getFont(uint32 fontnum);
 
-	void loadAnimDat(IDataSource *ds);
-	ActorAnim* getAnim(uint32 shape) const;
-	AnimAction* getAnim(uint32 shape, uint32 action) const;
-	
-protected:
-	TypeFlags* typeFlags;
-	AnimDat* animdat;
+	virtual void cache(uint32 fontnum);
 };
 
 

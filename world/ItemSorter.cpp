@@ -390,14 +390,13 @@ ItemSorter::~ItemSorter()
 	delete [] items;
 }
 
-void ItemSorter::BeginDisplayList(RenderSurface *rs, const Palette *palette)
+void ItemSorter::BeginDisplayList(RenderSurface *rs)
 {
 	// Get the shapes, if required
 	if (!shapes) shapes = GameData::get_instance()->getMainShapes();
 
 	// Set the RenderSurface, and reset the item list
 	surf = rs;
-	pal = palette;
 	num_items = 0;
 	order_counter = 0;
 }
@@ -545,8 +544,6 @@ void ItemSorter::AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 
 			else si->depends.push_back(si2);
 		}
 	}
-
-	if (!si->shape->getPalette()) si->shape->setPalette(pal);
 
 	// Incrementing num_items adds the Item to the list
 	num_items ++;
@@ -704,8 +701,6 @@ void ItemSorter::AddItem(Item *add)
 			else si->depends.push_back(si2);
 		}
 	}
-
-	if (!si->shape->getPalette()) si->shape->setPalette(pal);
 
 	// Incrementing num_items adds the Item to the list
 	num_items ++;

@@ -26,11 +26,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class IDataSource;
 class Shape;
 struct ConvertShapeFormat;
+struct Palette;
 
 class ShapeFlex : protected Flex
 {
 public:
-	ShapeFlex(IDataSource* ds, ConvertShapeFormat *format = 0);
+	ShapeFlex(IDataSource* ds, Palette* pal = 0,
+			  const ConvertShapeFormat *format = 0);
 	virtual ~ShapeFlex();
 
 	Shape* getShape(uint32 shapenum);
@@ -42,6 +44,7 @@ public:
 
 protected:
 	const ConvertShapeFormat *format;
+	Palette* palette;
 	std::vector<Shape*> shapes;
 };
 

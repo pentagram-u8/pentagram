@@ -23,10 +23,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IDataSource.h"
 #include "RenderSurface.h"
 
+PaletteManager* PaletteManager::palettemanager = 0;
+
 PaletteManager::PaletteManager(RenderSurface *rs)
 	: rendersurface(rs)
 {
-
+	assert(palettemanager == 0);
+	palettemanager = this;
 }
 
 PaletteManager::~PaletteManager()
@@ -34,6 +37,8 @@ PaletteManager::~PaletteManager()
 	for (unsigned int i = 0; i < palettes.size(); ++i)
 		delete palettes[i];
 	palettes.clear();
+
+	palettemanager = 0;
 }
 
 void PaletteManager::load(PalIndex index, IDataSource& ds, const xformBlendFuncType *xff)

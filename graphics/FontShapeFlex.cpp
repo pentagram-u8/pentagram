@@ -16,35 +16,37 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef MAINSHAPEFLEX_H
-#define MAINSHAPEFLEX_H
+#include "pent_include.h"
+#include "FontShapeFlex.h"
+#include "Font.h"
 
-#include "ShapeFlex.h"
-
-class TypeFlags;
-class ShapeInfo;
-class AnimDat;
-class ActorAnim;
-struct AnimAction;
-
-class MainShapeFlex : public ShapeFlex
+Font* FontShapeFlex::getFont(uint32 fontnum)
 {
-public:
-	MainShapeFlex(IDataSource* ds, Palette* pal = 0,
-				  const ConvertShapeFormat *format = 0);
-	virtual ~MainShapeFlex();
+	return p_dynamic_cast<Font*>(getShape(fontnum));
+}
+
+
+
+void FontShapeFlex::cache(uint32 shapenum)
+{
+	if (shapenum >= shapes.size()) return;
+	if (shapes[shapenum]) return;
+
+	uint8 *data = get_object(shapenum);
+	uint32 shpsize = get_size(shapenum);
+
+	// Auto detect format
+	if (!format) format = Shape::DetectShapeFormat(data,shpsize);
 	
-	void loadTypeFlags(IDataSource *ds);
-	ShapeInfo* getShapeInfo(uint32 shapenum);
+	if (!format)
+	{
+		delete [] data;
+		perr << "Error: Unable to detect shape format for flex." << std::endl;
+		return;
+	}
 
-	void loadAnimDat(IDataSource *ds);
-	ActorAnim* getAnim(uint32 shape) const;
-	AnimAction* getAnim(uint32 shape, uint32 action) const;
-	
-protected:
-	TypeFlags* typeFlags;
-	AnimDat* animdat;
-};
+	Shape* shape = new Font(data, shpsize, format);
+	if (palette) shape->setPalette(palette);
 
-
-#endif
+	shapes[shapenum] = shape;
+}

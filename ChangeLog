@@ -1,3 +1,8 @@
+2003-05-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/FontShapeFlex.*, graphics/Font.*: fonts
+	* graphics/*ShapeFlex*: default palette for a ShapeFlex
+	* graphics/*RenderSurface*: PrintChar
+	
 2003-05-29	Darke <darkepaw@users.sf.net>
 	* configure.ac: Adding semi-b0rk3n support for linking into a seperate
 	  console-only binary. Almost completely useless, overly linked to objects
@@ -12,6 +17,11 @@
 	* usecode/UCMachine.*: Minor additional abstraction.
 	* kernel/ConApp.*,llc.cpp: Console application abstraction.
 	
+2003-05-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* configure.ac: 'sed' is one of the standard utilities configure uses,
+	so checking for it won't help. Things will break horribly without it.
+	* configure.ac: cleaned up the platform-specific #define's a bit
+
 2003-05-28	Darke <darkepaw@users.sf.net>
 	* configure.ac: Checks for `sed` and reports a warning if it's lacking.
 	* tools/compile/module.mk: Runs a few sed scripts so that it shouldn't

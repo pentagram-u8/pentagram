@@ -44,6 +44,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // just for testing
 #include "Actor.h"
 #include "ActorAnimProcess.h"
+#include "Font.h"
+#include "FontShapeFlex.h"
 
 #include <SDL.h>
 
@@ -403,7 +405,7 @@ void GUIApp::paint()
 	screen->SetOrigin(dims.w/2, dims.h/2);
 
 	// Do display list
-	display_list->BeginDisplayList(screen, palettemanager->getPalette(PaletteManager::Pal_Game));
+	display_list->BeginDisplayList(screen);
 	long before_sort = SDL_GetTicks();
 	SetupDisplayList();
 	long after_sort = SDL_GetTicks();

@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Shape.h"
 #include "ShapeFrame.h"
 #include "Palette.h"
+#include "Font.h"
 #include "memset_n.h"
 
 ///////////////////////
@@ -223,6 +224,14 @@ template<class uintX> void SoftRenderSurface<uintX>::Blit(Texture *tex, sint32 s
 }
 
 
+// Draw a character from a Font
+
+template<class uintX> void SoftRenderSurface<uintX>::PrintChar(Font * f, char character, int x, int y)
+{
+	Paint(f, static_cast<uint32>(character), x, y);
+}
+
+
 //
 // SoftRenderSurface::PrintCharFixed(Texture *, char character, int x, int y)
 //
@@ -296,7 +305,7 @@ template<class uintX> void SoftRenderSurface<uintX>::Paint(Shape*s, uint32 frame
 //
 // void SoftRenderSurface::PaintNoClip(Shape*s, uint32 framenum, sint32 x, sint32 y)
 //
-// Desc: Standard shape drawing functions. Doesn't clips
+// Desc: Standard shape drawing functions. Doesn't clip
 //
 template<class uintX> void SoftRenderSurface<uintX>::PaintNoClip(Shape*s, uint32 framenum, sint32 x, sint32 y)
 {

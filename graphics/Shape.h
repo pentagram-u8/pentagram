@@ -32,7 +32,7 @@ public:
 	// NB: Shape uses data without copying it. It is deleted on destruction
 	// If format is not specified it will be autodetected
 	Shape(const uint8* data, uint32 size, const ConvertShapeFormat *format);
-	~Shape();
+	virtual ~Shape();
 	void setPalette(const Palette* pal) { palette = pal; }
 	const Palette* getPalette() const { return palette; }
 
@@ -42,6 +42,8 @@ public:
 
 	// This will detect the format of a shape
 	static const ConvertShapeFormat *DetectShapeFormat(const uint8* data, uint32 size);
+
+	ENABLE_DYNAMIC_CAST(Object);
 
 protected:
 

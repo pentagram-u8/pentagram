@@ -16,35 +16,7 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef MAINSHAPEFLEX_H
-#define MAINSHAPEFLEX_H
+#include "pent_include.h"
+#include "Font.h"
 
-#include "ShapeFlex.h"
-
-class TypeFlags;
-class ShapeInfo;
-class AnimDat;
-class ActorAnim;
-struct AnimAction;
-
-class MainShapeFlex : public ShapeFlex
-{
-public:
-	MainShapeFlex(IDataSource* ds, Palette* pal = 0,
-				  const ConvertShapeFormat *format = 0);
-	virtual ~MainShapeFlex();
-	
-	void loadTypeFlags(IDataSource *ds);
-	ShapeInfo* getShapeInfo(uint32 shapenum);
-
-	void loadAnimDat(IDataSource *ds);
-	ActorAnim* getAnim(uint32 shape) const;
-	AnimAction* getAnim(uint32 shape, uint32 action) const;
-	
-protected:
-	TypeFlags* typeFlags;
-	AnimDat* animdat;
-};
-
-
-#endif
+DEFINE_DYNAMIC_CAST_CODE(Font,Shape);

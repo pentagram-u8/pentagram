@@ -20,9 +20,11 @@
 
 #include "ShapeFlex.h"
 #include "Shape.h"
+#include "Palette.h"
 
-ShapeFlex::ShapeFlex(IDataSource* ds, ConvertShapeFormat *fmt)
-	: Flex(ds), format(fmt)
+ShapeFlex::ShapeFlex(IDataSource* ds, Palette* pal,
+					 const ConvertShapeFormat *fmt)
+	: Flex(ds), format(fmt), palette(pal)
 {
 	shapes.resize(get_count()); // shape pointers are initialized to 0 by this
 }
@@ -65,6 +67,7 @@ void ShapeFlex::cache(uint32 shapenum)
 	}
 
 	Shape* shape = new Shape(data, shpsize, format);
+	if (palette) shape->setPalette(palette);
 
 	shapes[shapenum] = shape;
 }

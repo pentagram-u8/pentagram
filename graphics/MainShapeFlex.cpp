@@ -23,8 +23,9 @@
 #include "ShapeInfo.h"
 #include "AnimDat.h"
 
-MainShapeFlex::MainShapeFlex(IDataSource* ds, ConvertShapeFormat *format)
-	: ShapeFlex(ds, format), typeFlags(0), animdat(0)
+MainShapeFlex::MainShapeFlex(IDataSource* ds, Palette* pal,
+							 const ConvertShapeFormat *format)
+	: ShapeFlex(ds, pal, format), typeFlags(0), animdat(0)
 {
 
 }

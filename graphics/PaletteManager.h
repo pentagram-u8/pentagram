@@ -32,6 +32,8 @@ public:
 	explicit PaletteManager(RenderSurface* rs);
 	~PaletteManager();
 
+	static PaletteManager* get_instance() { return palettemanager; }
+
 	enum PalIndex {
 		Pal_Game = 0
 	};
@@ -42,6 +44,8 @@ public:
 private:
 	std::vector<Palette*> palettes;
 	RenderSurface *rendersurface;
+
+	static PaletteManager* palettemanager;
 };
 
 #endif
