@@ -17,15 +17,14 @@ automake --foreign --add-missing --copy
 #Create configure script
 autoconf
 
-echo -n "Writing Makefiles"
+echo "Writing Makefiles:"
 
-set MODULES = tools tools/disasm misc convert convert/crusader convert/u8 filesys
+MODULES="tools tools/disasm misc convert convert/crusader convert/u8 filesys"
 
 for subdir in $MODULES; do
-
   rm -f $subdir/Makefile
-  echo -e "# This file is generated automatically by bootstrap. Do not edit!\n\n" > $subdir/Makefile
-  echo -e "LPATH := $subdir\n" >> $subdir/Makefile
+  echo "# This file is generated automatically by bootstrap. Do not edit!\n\n" > $subdir/Makefile
+  echo "LPATH := $subdir\n" >> $subdir/Makefile
   cat >> $subdir/Makefile <<'EOF'
 all: all-$(LPATH) ;
 clean: clean-$(LPATH) ;
@@ -38,7 +37,7 @@ clean: clean-$(LPATH) ;
 
 EOF
 
-  echo -n "."
+  echo "  $subdir/Makefile"
 
 done
 
