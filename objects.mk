@@ -101,7 +101,8 @@ WORLD = \
 	world/TeleportEgg.o \
 	world/World.o \
 	world/MissileProcess.o \
-	world/GravityProcess.o
+	world/GravityProcess.o \
+	world/SpriteProcess.o
 
 ACTORS = \
 	world/actors/Actor.o \
