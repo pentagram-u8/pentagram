@@ -1,6 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(README)
-AM_CONFIG_HEADER(misc/config.h)
+AC_CONFIG_HEADERS(misc/config.h)
 
 # ---------------------------------------------------------------------
 # System/version info
