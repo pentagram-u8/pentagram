@@ -208,11 +208,11 @@ void MenuGump::selectEntry(int entry)
 
 bool MenuGump::OnTextInput(int unicode)
 {
-	switch (unicode)
-	{
-	default:
-		break;
-	}
+	//switch (unicode)
+	//{
+	//default:
+	//	break;
+	//}
 
 	return true;
 }

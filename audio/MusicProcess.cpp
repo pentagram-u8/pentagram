@@ -241,5 +241,26 @@ uint32 MusicProcess::I_musicStop(const uint8* args,
 }
 
 
+void MusicProcess::ConCmd_playMusic(const Console::ArgsType &args, const Console::ArgvType &argv)
+{
+	if (the_music_process) 
+	{
+		if (argv.size() != 2)
+		{
+			pout << "MusicProcess::playMusic (tracknum)" << std::endl;
+		}
+		else
+		{
+			pout << "Playing track " << argv[1] << std::endl;
+			the_music_process->playMusic(atoi(argv[1].c_str()));
+		}
+	}
+	else
+	{
+		pout << "No Music Process" << std::endl;
+	}
+}
+
+
 // protection
 

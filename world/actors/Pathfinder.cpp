@@ -35,8 +35,8 @@ void PathfindingState::load(Actor* actor)
 	actor->getLocation(x, y, z);
 	lastanim = actor->getLastAnim();
 	direction = actor->getDir();
-	firststep = actor->getActorFlags() & Actor::ACT_FIRSTSTEP;
-	flipped = actor->getFlags() & Item::FLG_FLIPPED;
+	firststep = (actor->getActorFlags() & Actor::ACT_FIRSTSTEP) != 0;
+	flipped = (actor->getFlags() & Item::FLG_FLIPPED) != 0;
 }
 
 bool PathfindingState::checkPoint(sint32 x_, sint32 y_, sint32 z_,
@@ -187,7 +187,7 @@ void Pathfinder::expandNode(PathNode* node)
 	for (uint32 dir = 0; dir < 8; ++dir) {
 		state = node->state;
 
-		bool ok = actor->tryAnim(c_walk_anim, dir, &state);
+		bool ok = actor->tryAnim(c_walk_anim, dir, &state) != 0;
 
 		if (ok)
 			ok = !alreadyVisited(state.x, state.y, state.z);

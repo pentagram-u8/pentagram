@@ -49,6 +49,9 @@ public:
 
 	bool loadData(IDataSource* ids);
 
+	// MusicProcess::playMusic console command
+	static void ConCmd_playMusic(const Console::ArgsType &args, const Console::ArgvType &argv);
+
 private:
 	virtual void saveData(ODataSource* ods);
 

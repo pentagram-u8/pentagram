@@ -175,6 +175,7 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	con.AddConsoleCommand("GUIApp::quit", ConCmd_quit);	
 	con.AddConsoleCommand("GUIApp::drawRenderStats", ConCmd_drawRenderStats);
 	con.AddConsoleCommand("MovieGump::play", MovieGump::ConCmd_play);
+	con.AddConsoleCommand("MusicProcess::playMusic", MusicProcess::ConCmd_playMusic);
 }
 
 GUIApp::~GUIApp()
@@ -196,6 +197,7 @@ GUIApp::~GUIApp()
 	con.RemoveConsoleCommand("GUIApp::quit");
 	con.RemoveConsoleCommand("GUIApp::drawRenderStats");
 	con.RemoveConsoleCommand("MovieGump::play");
+	con.RemoveConsoleCommand("MusicProcess::playMusic");
 
 	FORGET_OBJECT(objectmanager);
 	FORGET_OBJECT(hidmanager);
@@ -1519,7 +1521,7 @@ void GUIApp::resetEngine()
 	while (!cursors.empty()) cursors.pop();
 	pushMouseCursor();
 
-	timeOffset = -Kernel::get_instance()->getFrameNum();
+	timeOffset = -(sint32)Kernel::get_instance()->getFrameNum();
 }
 
 bool GUIApp::newGame()

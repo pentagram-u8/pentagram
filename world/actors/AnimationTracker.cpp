@@ -61,8 +61,8 @@ void AnimationTracker::init(Actor* actor_, Animation::Sequence action_,
 	if (state_ == 0) {
 		animaction->getAnimRange(actor_, dir, startframe, endframe);
 		actor_->getLocation(x, y, z);
-		flipped = (actor_->getFlags() & Item::FLG_FLIPPED);
-		firststep = (actor_->getActorFlags() & Actor::ACT_FIRSTSTEP);
+		flipped = (actor_->getFlags() & Item::FLG_FLIPPED) != 0;
+		firststep = (actor_->getActorFlags() & Actor::ACT_FIRSTSTEP) != 0;
 	} else {
 		animaction->getAnimRange(state_->lastanim, state_->direction,
 								 state_->firststep, dir, startframe, endframe);
@@ -161,7 +161,7 @@ bool AnimationTracker::step()
 	}
 
 	// determine footpad
-	bool actorflipped = (a->getFlags() & Item::FLG_FLIPPED);
+	bool actorflipped = (a->getFlags() & Item::FLG_FLIPPED) != 0;
 	sint32 xd, yd, zd;
 	a->getFootpadWorld(xd, yd, zd);
 	if (actorflipped != flipped) {

@@ -102,7 +102,7 @@ int WindowsMidiDriver::open()
 	pout << "Using device " << dev_num << ": "<< caps.szPname << endl;
 
 	_streamEvent = CreateEvent (NULL, true, true, NULL);
-	UINT mmsys_err = midiOutOpen (&midi_port, dev_num, (unsigned long) _streamEvent, 0, CALLBACK_EVENT);
+	UINT mmsys_err = midiOutOpen (&midi_port, dev_num, (uintptr) _streamEvent, 0, CALLBACK_EVENT);
 
 #ifdef WIN32_USE_DUAL_MIDIDRIVERS
 	if (dev_num2 != -2 && mmsys_err != MMSYSERR_NOERROR)

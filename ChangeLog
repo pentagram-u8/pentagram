@@ -1,3 +1,8 @@
+2004-10-27  Ryan Nunn <colourles@users.sourceforge.net>
+	* audio/MusicProcess.*, kernel/GUIApp.cpp : Added a new console command
+	  MusicProcess::playMusic
+	* other files: Getting rid of some warnings
+
 2004-10-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/HIDManager.cpp: fix typos
 	* audio/MusicProcess.cpp: don't kill MusicProcess on map change

@@ -48,9 +48,9 @@ void ShapeRenderedText::draw(RenderSurface* surface, int x, int y)
 		int line_x = x + iter->dims.x;
 		int line_y = y + iter->dims.y;
 
-		unsigned int textsize = iter->text.size();
+		std::size_t textsize = iter->text.size();
 
-		for (unsigned int i = 0; i < textsize; ++i) {
+		for (std::size_t i = 0; i < textsize; ++i) {
 			surface->Paint(font, static_cast<unsigned char>(iter->text[i]),
 						   line_x, line_y);
 			line_x += font->getWidth(iter->text[i])-font->getHlead();
