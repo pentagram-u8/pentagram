@@ -197,7 +197,9 @@ void ConvertShape::Read(IDataSource *source, const ConvertShapeFormat *csf, uint
 
 bool CheckShapeFormat(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len)
 {
+#if 0
 	pout << "Testing " << csf->name << "..." << std::endl;
+#endif
 	bool result = true;
 
 	// Just to be safe
@@ -377,7 +379,9 @@ bool CheckShapeFormat(IDataSource *source, const ConvertShapeFormat *csf, uint32
 
 bool CheckShapeFormatUnsafe(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len)
 {
+#if 0
 	pout << "Testing " << csf->name << "..." << std::endl;
+#endif
 	bool result = true;
 
 	// Just to be safe
