@@ -35,6 +35,7 @@ FlexWriter::FlexWriter(FlexFile * f)
 		{
 			uint32 size;
 			uint8* data = f->getObject(i, &size);
+			if (!data) size = 0;
 			FlexObject o;
 			o.size = size;
 			o.obj = data;
@@ -110,7 +111,8 @@ void FlexWriter::write(ODataSource* ds)
 	std::vector<FlexObject>::iterator it;
 	for (it = objects.begin(); it != objects.end(); ++it)
 	{
-		ds->write(it->obj, it->size);
+		if (it->obj && it->size != 0)
+			ds->write(it->obj, it->size);
 	}	
 }
 
@@ -137,7 +139,7 @@ void FlexWriter::writeHead(ODataSource* ds)
 	std::vector<FlexObject>::iterator it;
 	for (it = objects.begin(); it != objects.end(); ++it)
 	{
-		if (it->size == 0)
+		if (!it->obj || it->size == 0)
 		{
 			ds->write4(0);
 		}

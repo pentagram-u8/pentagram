@@ -153,6 +153,9 @@ int main(int argc, char **argv)
 			FlexFile * flex = new FlexFile(ids);
 			for(index=0; index < flex->getIndexCount(); index++)
 			{
+				uint32 size;
+				uint8* data = flex->getObject(index, &size);
+				if (!data || size == 0) continue;
 				char outfile[32];
 				snprintf(outfile,32,"%04X.%s", index, ext);
 				ods = filesys.WriteFile(outfile);
@@ -162,8 +165,6 @@ int main(int argc, char **argv)
 					delete flex;
 					return 1;
 				}
-				uint32 size;
-				uint8* data = flex->getObject(index, &size);
 				ods->write(data, size);
 				delete[] data;
 				FORGET_OBJECT(ods);
@@ -191,7 +192,9 @@ int main(int argc, char **argv)
 			pout << "-------------------------" << std::endl;
 			pout << "Object\tLength" << std::endl;
 			for(index=0; index < flex->getIndexCount(); index++) {
-				pout << index << "\t" << flex->getSize(index) << std::endl;
+				uint32 size = flex->getSize(index);
+				if (size > 0)
+					pout << index << "\t" << flex->getSize(index) << std::endl;
 			}
 			delete flex;
 		}
