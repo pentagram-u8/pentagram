@@ -1,5 +1,5 @@
 Classes for Pentagram
-======================
+=====================
 
 General Classes
 ---------------
@@ -7,33 +7,36 @@ General Classes
 class Pentagram
  - Base application
 
-class FileSystem
- - Handles all file related matters
- - Used to open files
- - Used to get correct filenames
-
 class InputHandler
  - Handles all user input
- - Does dispatching of input to all the component
- - Controls binding.
+ - Does dispatching of input to all the components
+ - Controls key binding.
 
 
-Kernel and Thread Classes
--------------------------
+File System Classes
+-------------------
 
-class PentagramKernel
- - The Kernel
+class FileSystem
+ - Handles all file related matters
+ - Used to open files (returns DataSource classes?)
+ - Used to get correct filenames
+ - Replaces all the U7??? functions used by Exult and the 'old' pentagram tools
 
-class BasicThread
- - Basic Thread class
+class DataSource
+ - Pure base class for all the various DataSource types
+ - See 'old' DataSource classes
 
-class VolatileThread
- - Basic Volatile Thread class
- - Saved to disk in save games
- - Terminated on map changes
+class StreamDataSource : public DataSource
+ - DataSource for C++ iostreams
 
-class UCThread : public VolatileThread
- - Class for Usecode threads
+class FileDataSource : public DataSource
+ - DataSource for C FILE
+
+class BufferDataSource : public DataSource
+ - DataSource for memory buffers
+
+class StackBufferDataSource : protected BufferDataSource
+ - Variations of BufferDataSource used to implement the usecode stacks
 
 
 Flex Classes
@@ -42,14 +45,23 @@ Flex Classes
 class Flex
  - Base Flex class
  - Basic functionality
+ - Only outputs raw data
+ - Can't resolve entry names
 
 class FlexWriter : public Flex
  - Allows for dynamic flexes
  - Can write to disk
 
 class ShapeFlex : protected Flex
- - Class for Flex files that only contain shapes (u8shapes, u8gumps and u8fonts)
- - Methods return Shape objects
+ - Class for Flexes that only contain shapes (u8shapes, u8gumps and u8fonts)
+ - Methods to return Shape objects.
+ - Has caching functions to cache in used and cache out unused shapes on map
+   changes
+
+class U8ShapeFlex : public ShapeFlex
+ - Class for u8shapes.flx
+ - Difference to ShapeFlex is this has caching functions to cache in used and
+   cache out unused shapes on map changes
 
 class FontFlex : public ShapeFlex
  - Class for flex containing Fonts. (u8fonts)
@@ -58,25 +70,34 @@ class FontFlex : public ShapeFlex
 class MusicFlex : protected Flex
  - Class for Music.flx
  - Returns XMIDI objects
+ - Has method to resolve filenames using the contents of index 0
 
 class SoundFlex : public Flex
  - Class for flexes countaining wave sounds
 
+class SFXFlex : public SoundFlex
+ - Class for flexes countaining the sound effects
+ - Has method to resolve filenames using the contents of index 0
+
 class SpeechFlex : public SoundFlex
  - A sound flex for speech.
+ - Has methods to resolve the indices of the various speech samples using the
+   contents of index 0.
 
 class SKFFlex : protected Flex
  - class for SKF files.
 
 class AnimationFlex : protected Flex
  - class for Anim.dat
+ - Methods return Animation objects
 
 class GlobFlex : protected Flex
  - class for Glob.flx
+ - Methods return Glob objects
 
 class MapFlex : protected Flex
  - class for Fixed.dat and Nonfixed.dat
-
+ 
 class XFormFlex : public Flex
  - Class for XFORMPAL.DAT
 
@@ -85,6 +106,61 @@ class WpnOvlayFlex : protected Flex
 
 class UsecodeFlex : protected Flex
  - Class for Usecode flexes
+ - Returns handles to usecode functions that are used with UCThreads
+
+
+Kernel, Usecode and Thread Classes
+----------------------------------
+
+class PentagramKernel
+ - The Kernel
+
+class BasicThread
+ - Basic Thread class
+
+class VolatileThread : public BasicThread
+ - Basic Volatile Thread class
+ - Saved to disk in save games
+ - Terminated on map changes
+
+class UCThread : public VolatileThread
+ - Class for Usecode threads
+
+class PhysicsThread : public VolatileThread
+ - Class for controlling item physics (i.e. throwing, bouncing, falling item)
+
+class ThreadRegistry
+ - Class to contain a registry of all the VolatileThread types
+ - On program start up all classes that inherit VolatileThread MUST be
+   registered with the ThreadRegistry. Else savegames will be broken
+ - The info that is registered is the function to call when they are recreated
+   when loading the Kernel from a save game, and also their name. The name is
+   used to select which function to call when loading. Using the class name
+   should be sufficent for the name.
+   
+
+World/Map classes
+-----------------
+
+class TheWorld
+ - Class that controls the world itself
+ - Similar to the 'old' Map class.
+ - Contains all the items for the current map in the world
+ - Methods for collision detection
+
+class Gamedat
+ - Class for the currently loaded save game
+ - Replaces the gamedat dir used by the original engine.
+ - Contains all the items in all of the maps
+
+class Glob 
+ - Class for the contents of glob.flx
+
+class Item 
+ - The Item class
+
+class NPC : public Item
+ - Class for NPCs
 
 
 Graphics/Shape Classes
@@ -93,35 +169,64 @@ Graphics/Shape Classes
 class DisplayManger
  - Generates, sorts and paints the display list
  - Used to trace mouse clicks
+ - Sorting is doing using a tree. Leafs in the tree are the objects which
+   don't have any other objects behind them.
+ - Rendering is done by rendering leafs, then rendering the objects that have
+   had all of their dependancies rendered.   
 
 struct DisplayListNode
  - Node in display list
+ - Similar function to the 'old' ScreenShape
+ - Contains a vector of all the nodes that this node depends on being drawn
+   first
 
 class Shape
- - A shape
+ - A shape. 
+ - Based on the 'old' shape. Also contains the old ShapeGL details.
+ - Contains all the various methods required to paint 
 
 class ShapeFrame
  - Paintable shape
+ - Based on the 'old' ShapeFrame. Also contains the old ShapeFrameGL details.
+
+class RenderSurface 
+ - Rendering sufurce
+ - See 'old' RenderSufrace for details
+ - Contains methods to render various generic things (lines, area fills)
 
 class OpenGL
  - OpenGL renderer
-
-class ShapeGL
- - OpenGL Shape
-
-class ShapeFrameGL
- - OpenGL ShapeFrame
+ - See 'old' OpenGL for details
+ - Could possibly be made to inherit RenderSurface
 
 class ShapeInfo
  - Class for TYPEFLAG.DAT data
- - See old ShapeInfo class in old ShapeManager.h
+ - See 'old' ShapeInfo class for details
 
 class Animation
  - Base Class for Animations from Anim.dat
+ - Contains methods to simplify using animations
 
 class AnimationThread : public VolatileThread
  - Class for running an Animation from Anim.dat
+ - Used to apply an 'Animation' to a NPC
 
+class ScalerManager
+ - Class for managing the scalers
+ - Used to select the scaler
+ - Called to do the actual scaling
+ - Simplifies the process of adding new scalers
+ - Possible feature to think about is allowing plugin scalers (with dll's in 
+   windows or similar in other OS's).
+
+struct ScalerInfo 
+ - Class filled with the specifics of a scalers
+ - Passed to the ScalerManager using a RegisterScaler method at program
+   start up. 
+ - Contains the name of the scalers, function pointers to the scaling
+   functions, and the type of scaler (Palleted or RGB) and any other
+   info that may be required about the scaler
+  
 
 Audio Classes
 -------------
@@ -148,30 +253,96 @@ class ModalGump : public Gump
 class MovableGump : public Gump
  - Base class for non static gumps
 
+class ConsoleGump : public Gump
+ - Gumps for the console
+
+class QuitGump : public ModalGump
+ - Class for "Do you want to quit" gump
+
+class JournalGump : public ModalGump
+ - Gump used for the various Journal screens
+
+class MainMenuGump : public JournalGump
+ - Gump for the Main Menu screen of the 'journal'
+
+class OptionsGump : public JournalGump
+ - Gump for the Options Screen
+
+class LoadGump : public JournalGump
+ - Gump for the Load Screen
+
+class SaveGump : public JournalGump
+ - Gump for the Save Screen
+
 class AvatarGump : public MoveableGump
  - Gump for avatar's Paperdoll
+
+class AvatarStats : public Gump
+ - Gump for the stat overlay in the bottom right corner of the screen
 
 class BookLikeGump : public ModalGump
  - Base gump for modal book like based gump
 
 class BookGump : public BookLikeGump
+ - Gump for books
 
 class ScrollGump : public BookLikeGump
+ - Gump for scrolls
 
 class TombStoneGump : public BookLikeGump
+ - Gump for tomb stones
 
 class SignGump : public BookLikeGump
+ - Gump for signs
 
 class ItemGump : public MoveableGump
  - Base class for item gumps
 
 class BarrelGump : public ItemGump
+ - Gump for barrels
 
 class ChestGump : public ItemGump
-
+ - Gump for chests
+ 
 class BoxGump : public ItemGump
+ - Gump for boxes
 
 class CorpseGump : public ItemGump
+ - Gump for corpses
+
+class TextGump : public Gump
+ - Base gump for item text messages
+ 
+class ItemAskGump : public TextGump
+ - Gump for implementing Item::Ask
+
+class ItemBarkGump : public TextGump
+ - Gump for implementing Item::Bark
+ 
+
+Gump Widget Classes
+-------------------
+
+class GumpWidget 
+ - Base class for all GumpWidgets
+
+class MultiWidget : public GumpWidget
+ - Class for combining multiple widgets into a single widget
+
+class TextWidget : public GumpWidget
+ - Widget for basic text strings
+
+class TextInputWidget : public TextWidget
+ - Widget for a text input field
+
+class ButtonWidget : public GumpWidget
+ - Widget for simple buttons
+
+class PushButtonWidget : public ButtonWidget
+ - Widget for push buttons
+
+class ToggleButtonWidget : public ButtonWidget
+ - Widget for toggle buttons
 
 
 Misc Classes
