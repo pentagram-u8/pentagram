@@ -1,3 +1,13 @@
+2005-01-11  Ryan Nunn <colourles@users.sourceforge.net>
+	* graphics/BaseSoftRenderSurface.*, graphics/RenderSurface.h : Added  
+	  option to flip a surface. Note it does have some weirdness. It acts
+	  as if the CURRENT clipping window is being flipped. As such it will
+	  change the logical pixel origin to be in the same relative place to
+	  the clipping window. So need to be careful that things are always 
+	  paired and nested properly. Doing this would be very bad: 
+	    Flip, SetClippingWindow, UnFlip, ResetClippingWindow. 
+	* gumps/InverterGump.cpp : Updated to use the new non-blit flip.
+
 2005-01-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* filesys/Archive.*: reverse order of searching input sources
 
@@ -17,7 +27,8 @@
 	* tools/flexpack/*: properly handle missing objects
 
 2005-01-02  Ryan Nunn <colourles@users.sourceforge.net>
-	* misc/pent_include.h : ShapeFlex.h no longer exists so removing it from PCH includes
+	* misc/pent_include.h : ShapeFlex.h no longer exists so removing it 
+	  from PCH includes
 	* audio/MusicFlex.cpp : Zeroing songs array
 
 2005-01-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>

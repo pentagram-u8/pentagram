@@ -80,6 +80,15 @@ void InverterGump::PaintChildren(RenderSurface* surf, sint32 lerp_factor)
 		DesktopGump::PaintChildren(surf, lerp_factor);
 		return;
 	}
+	else if (state == 0x8000) {
+		bool old_flipped = surf->IsFlipped();
+		surf->SetFlipped(!old_flipped);
+
+		DesktopGump::PaintChildren(surf, lerp_factor);
+
+		surf->SetFlipped(old_flipped);
+		return;
+	}
 
 	int width = dims.w, height = dims.h;
 

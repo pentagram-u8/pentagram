@@ -42,7 +42,7 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(SDL_Surface *s) :
 	pixels(0), pixels00(0), zbuffer(0), zbuffer00(0),
 	bytes_per_pixel(0), bits_per_pixel(0), format_type(0), 
 	ox(0), oy(0), width(0), height(0), pitch(0), zpitch(0),
-	clip_window(0,0,0,0), lock_count(0),
+	flipped(false), clip_window(0,0,0,0), lock_count(0),
 	sdl_surf(s), rtt_tex(0)
 {
 	clip_window.ResizeAbs(width = sdl_surf->w, height = sdl_surf->h);
@@ -64,6 +64,7 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(SDL_Surface *s) :
 	RenderSurface::g_mask = sdl_surf->format->Gmask;
 	RenderSurface::b_mask = sdl_surf->format->Bmask;
 
+	SetPixelsPointer();
 }
 
 
@@ -77,7 +78,7 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h, int bpp,
 	pixels(0), pixels00(0), zbuffer(0), zbuffer00(0),
 	bytes_per_pixel(0), bits_per_pixel(0), format_type(0), 
 	ox(0), oy(0), width(0), height(0), pitch(0), zpitch(0),
-	clip_window(0,0,0,0), lock_count(0), sdl_surf(0), rtt_tex(0)
+	flipped(false), clip_window(0,0,0,0), lock_count(0), sdl_surf(0), rtt_tex(0)
 {
 	clip_window.ResizeAbs(width = w, height = h);
 
@@ -120,6 +121,7 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h, int bpp,
 	RenderSurface::g_mask = (0xFF>>g_loss)<<gsft;
 	RenderSurface::b_mask = (0xFF>>b_loss)<<bsft;
 
+	SetPixelsPointer();
 }
 
 
@@ -132,7 +134,7 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h, uint8 *buf) :
 	pixels(0), pixels00(0), zbuffer(0), zbuffer00(0),
 	bytes_per_pixel(0), bits_per_pixel(0), format_type(0), 
 	ox(0), oy(0), width(0), height(0), pitch(0), zpitch(0),
-	clip_window(0,0,0,0), lock_count(0), sdl_surf(0), rtt_tex(0)
+	flipped(false), clip_window(0,0,0,0), lock_count(0), sdl_surf(0), rtt_tex(0)
 {
 	clip_window.ResizeAbs(width = w, height = h);
 
@@ -142,6 +144,8 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h, uint8 *buf) :
 	bits_per_pixel = bpp;
 	bytes_per_pixel = bpp/8;
 	pixels00 = buf;
+
+	SetPixelsPointer();
 }
 
 //
@@ -153,7 +157,7 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h) :
 	pixels(0), pixels00(0), zbuffer(0), zbuffer00(0),
 	bytes_per_pixel(0), bits_per_pixel(0), format_type(0), 
 	ox(0), oy(0), width(0), height(0), pitch(0), zpitch(0),
-	clip_window(0,0,0,0), lock_count(0), sdl_surf(0), rtt_tex(0)
+	flipped(false), clip_window(0,0,0,0), lock_count(0), sdl_surf(0), rtt_tex(0)
 {
 	clip_window.ResizeAbs(width = w, height = h);
 
@@ -170,6 +174,8 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h) :
 	rtt_tex->height = height;
 	rtt_tex->format = TEX_FMT_NATIVE;
 	rtt_tex->CalcLOG2s();
+
+	SetPixelsPointer();
 }
 
 
@@ -221,6 +227,7 @@ ECode BaseSoftRenderSurface::BeginPainting()
 			// Pixels pointer
 			pixels00 = static_cast<uint8*>(sdl_surf->pixels);
 			pitch = sdl_surf->pitch;
+			if (flipped) pitch = -pitch;
 		}
 		else  {
 			ECode ret = GenericLock();
@@ -238,8 +245,7 @@ ECode BaseSoftRenderSurface::BeginPainting()
 	}
 
 	// Origin offset pointers
-	pixels = pixels00 + ox*bytes_per_pixel + oy*pitch;
-	zbuffer = reinterpret_cast<uint16*>(zbuffer00 + ox + oy * zpitch);
+	SetPixelsPointer();
 
 	// No error
 	return P_NO_ERROR;
@@ -404,8 +410,7 @@ void BaseSoftRenderSurface::SetOrigin(sint32 x, sint32 y)
 	oy = y;
 
 	// The new pointers
-	pixels = pixels00 + ox*bytes_per_pixel + oy*pitch;
-	zbuffer = reinterpret_cast<uint16*>(zbuffer00 + ox + oy * zpitch);
+	SetPixelsPointer();
 }
 
 //
@@ -452,7 +457,6 @@ void BaseSoftRenderSurface::SetClippingRect(const Rect &r)
 //           0 if not clipped, 
 //           1 if clipped
 //
-
 sint16 BaseSoftRenderSurface::CheckClipped(const Rect &c) const 
 {
 	Rect r = c;
@@ -463,3 +467,43 @@ sint16 BaseSoftRenderSurface::CheckClipped(const Rect &c) const
 	else if (r == c) return 0;
 	else return 1;
 }
+
+//
+// void BaseSoftRenderSurface::SetFlipped(bool flipped)
+//
+// Desc: Flip the surface
+//
+void BaseSoftRenderSurface::SetFlipped(bool wantFlipped)
+{
+	// Flipping is not terrible complex
+	// But is a bit of a pain to set up
+
+	// First we check to see if we are currently flipped
+	if (wantFlipped == flipped) return;
+
+	flipped = wantFlipped;
+
+	// What we 'need' to do is negate the pitches, and flip the clipping window
+	// We keep the 'origin' in the same position relative to the clipping window
+
+	oy -= clip_window.y;
+	clip_window.y = height - (clip_window.y + clip_window.h);
+	oy += clip_window.y;
+
+	pitch = -pitch;
+	zpitch = -zpitch;
+
+	SetPixelsPointer();
+
+}
+
+//
+// bool BaseSoftRenderSurface::IsFlipped() const
+//
+// Desc: Has the render surface been flipped?
+//
+bool BaseSoftRenderSurface::IsFlipped() const
+{
+	return flipped;
+}
+

@@ -107,6 +107,12 @@ public:
 	// Check Clipped. -1 if off screen, 0 if not clipped, 1 if clipped
 	virtual sint16 CheckClipped(const Pentagram::Rect &) const = 0;
 
+	// Flip the surface
+	virtual void SetFlipped(bool flipped) = 0;
+
+	// Has the render surface been flipped?
+	virtual bool IsFlipped() const = 0;
+
 
 	//
 	// Surface Palettes

@@ -48,9 +48,10 @@ protected:
 
 	// Dimensions
 	sint32			ox, oy;					// Physical Pixel for Logical Origin
-	uint32			width, height;			// Width and height
-	uint32			pitch;					// Frame buffer pitch (bytes)
-	uint32			zpitch;					// Z Buffer pitch (bytes)
+	sint32			width, height;			// Width and height
+	sint32			pitch;					// Frame buffer pitch (bytes) (could be negated)
+	sint32			zpitch;					// Z Buffer pitch (bytes) (could be negated)
+	bool			flipped;
 
 	// Clipping Rectangle
 	Pentagram::Rect	clip_window;
@@ -75,6 +76,22 @@ protected:
 	BaseSoftRenderSurface(int w, int h, uint8 *buf);
 	virtual ECode GenericLock()  { return P_NO_ERROR; }
 	virtual ECode GenericUnlock()  { return P_NO_ERROR; }
+
+	// Update the Pixels Pointer
+	void	SetPixelsPointer()
+	{
+		uint8 *pix00 = pixels00;
+		uint8 *zbuf00 = zbuffer00;
+
+		if (flipped)
+		{
+			pix00 += -pitch * (height-1);
+			zbuf00 += -zpitch * (height-1);
+		}
+
+		pixels = pix00 + ox*bytes_per_pixel + oy*pitch;
+		zbuffer = reinterpret_cast<uint16*>(zbuf00 + ox + oy * zpitch);
+	}
 
 public:
 
@@ -119,6 +136,12 @@ public:
 
 	// Check Clipped. -1 if off screen, 0 if not clipped, 1 if clipped
 	virtual sint16 CheckClipped(const Pentagram::Rect &) const;
+
+	// Flip the surface
+	virtual void SetFlipped(bool flipped);
+
+	// Has the render surface been flipped?
+	virtual bool IsFlipped() const;
 
 	//
 	// Surface Palettes
