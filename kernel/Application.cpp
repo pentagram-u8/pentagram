@@ -262,8 +262,6 @@ void Application::SetupDisplayList()
 		}
 		else
 			av->getLocation(lx,ly,lz);
-
-		pout << "Camera: " << lx << ", " << ly << ", " << lz << std::endl;
 	}
 
 	sint32 gx = lx/512;

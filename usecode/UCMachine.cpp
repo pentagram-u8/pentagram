@@ -1499,8 +1499,6 @@ bool UCMachine::execProcess(UCProcess* p)
 //				uint16 scriptsize = p->stack.access2(sp+6);
 //				const uint8* loopscript = p->stack.access(sp+8);
 
-				perr << "si16a = " << si16a << std::endl;
-
 				if (!itemlist) {
 					perr << "Invalid item list in loopnext!" << std::endl;
 					error = true;
