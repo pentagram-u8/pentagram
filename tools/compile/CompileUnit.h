@@ -61,8 +61,6 @@ class CompileUnit
 		void setState(const CState cs);
 
 	private:
-//		enum CUState { STATE_NORM, STATE_CLASS };
-
 		// internal print stuff
 		void debugPrintHead(std::ostream &o, CompileNode *n=0) const;
 		void debugPrintBody(std::ostream &o) const;

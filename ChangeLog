@@ -12,6 +12,8 @@
 	* tools/compile/CompileNodes.h: There's got to be a rule that for *every*
 	  major commit I must forget adding at least one file... *sigh*
 
+	* tools/compile/llcLexer.l: Quick cleanup of cruft.
+
 2003-05-20  Ryan Nunn <colourles@users.sourceforge.net>
 	* world/actors/ActorAnimProcess.cpp : Avoiding problems with bounds.
 
