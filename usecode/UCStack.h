@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002,2003 The Pentagram team
+Copyright (C) 2002-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -57,7 +57,7 @@ public:
 		return (buf_ptr - buf);
 	}
 
-	inline void moveSP(unsigned int pos) {
+	inline void setSP(unsigned int pos) {
 		buf_ptr = buf + pos;
 	}
 
