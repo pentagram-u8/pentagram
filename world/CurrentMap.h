@@ -92,12 +92,16 @@ public:
 		}
 	};
 
-	// Do a sweepTest of an item from start to end point.
-	// Bounding size is dims.
-	// item is the item that will be moving
-	// skip will skip all items until item num skip is reached
-	// Returns item hit or 0 if no hit.
-	// end is to the colision point
+	//! Perform a sweepTest for an item move
+	//! \param start Start point to sweep from.
+	//! \param end End point to sweep to.
+	//! \param dims Bounding size of item to check.
+	//! \param item Item num of item being checked (optional).
+	//! \param solid_only If true, only test solid items.
+	//! \param hit Pointer to a list to fill with items hit. Items are sorted
+	//!            by SweepItem::hit_time
+	//! \return false if no items were hit.
+	//!         true if any items were hit
 	bool sweepTest(const sint32 start[3], const sint32 end[3], const sint32 dims[3],
 			uint16 item, bool solid_only, std::list<SweepItem> *hit);
 

@@ -7,7 +7,8 @@
 	* usecode/UCMachine.cpp, world/CurrentMap.* : Surface Search
 	* usecode/u8intrinsics.h, world/Item.* : I_getSurfaceWeight and
 	  I_isExplosive
-	
+	* world/CurrentMap.h : Testing doxygen comments
+		
 2003-06-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/ConsoleGump.h: PointOnGump always returns false
 	* gumps/Gump.*: added FindGump(x,y) to find the gump on that location
