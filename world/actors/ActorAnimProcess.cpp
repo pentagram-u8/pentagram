@@ -30,7 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IDataSource.h"
 #include "ODataSource.h"
 
-//#define WATCHACTOR 19
+//#define WATCHACTOR 2
 
 #ifdef WATCHACTOR
 static const int watchactor = WATCHACTOR;
@@ -79,35 +79,14 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 
 	uint32 startframe = 0;
 
-#if 1
+#if 0
 	if (item_num == 5)
 		animaction->framerepeat = 2; // force Darion to 2 frames
 #endif
 
 	actor_->setActorFlag(Actor::ACT_ANIMLOCK);
 
-	if (animaction->flags & AnimAction::AAF_TWOSTEP) {
-		// two-step animation?
-		if (actor_->getActorFlags() & Actor::ACT_FIRSTSTEP) {
-			if (animaction->flags & AnimAction::AAF_LOOPING) {
-				// for a looping animation, start at the end to
-				// make things more fluid
-				startframe = animaction->size - 1;
-			} else {
-				startframe = 0;
-			}
-		} else {
-			// second step starts halfway
-			startframe = animaction->size / 2;
-		}
-	} else {
-		if (actor_->lastanim == action && actor_->direction == dir_ &&
-			animaction->size > 1)
-		{
-			// skip first frame if repeating an animation
-			startframe = 1;
-		}
-	}
+	animaction->getAnimRange(actor_, dir_, startframe, endframe);
 
 	actor_->lastanim = action;
 	actor_->direction = dir_;
@@ -117,7 +96,8 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 #ifdef WATCHACTOR
 	if (item_num == watchactor)
 		perr << "Animation [" << GUIApp::get_instance()->getFrameNum()
-			 << "] ActorAnimProcess created (" <<action << "," << dir_ << ")"
+			 << "] ActorAnimProcess created (" <<action << "," << dir_
+			 << ", " << startframe << "-" << endframe << ")"
 			 << std::endl;
 #endif
 }
@@ -149,46 +129,19 @@ bool ActorAnimProcess::run(const uint32 framenum)
 
 	// check if we're done
 	if (framecount == 0) {
-		bool done = false;
+		if (frameindex == endframe) {
 
-		if (animaction->flags & AnimAction::AAF_TWOSTEP) {
-			// two-step animation
-			if (a->getActorFlags() & Actor::ACT_FIRSTSTEP) {
-				// end of first step is halfway through the animation
-				//! TODO: check if this causes problem with extremely
-				//        short anims
-				
-				if (frameindex == animaction->size/2)
-				{
+			// if so, toggle ACT_FIRSTSTEP flag if necessary
+			if (animaction->flags & AnimAction::AAF_TWOSTEP) {
+				if (a->getActorFlags() & Actor::ACT_FIRSTSTEP) {
 					a->clearActorFlag(Actor::ACT_FIRSTSTEP);
-					done = true;
 				} else {
-					// loop if necessary
-					if (frameindex >= animaction->size) {
-						if (animaction->flags & AnimAction::AAF_LOOPING) {
-							frameindex = 1;
-						} else {
-							frameindex = 0;
-						}
-					}
+					a->setActorFlag(Actor::ACT_FIRSTSTEP);
 				}
 			} else {
-				if (animaction->flags & AnimAction::AAF_LOOPING) {
-					// end of second step is one frame before the end
-					if (frameindex == animaction->size - 1) {
-						a->setActorFlag(Actor::ACT_FIRSTSTEP);
-						done = true;
-					}
-				}
+				a->setActorFlag(Actor::ACT_FIRSTSTEP);
 			}
-		}
-
-		if (!done && frameindex >= animaction->size) {
-			a->setActorFlag(Actor::ACT_FIRSTSTEP);
-			done = true;
-		}
-		
-		if (done) {
+			
 #ifdef WATCHACTOR
 			if (item_num == watchactor)
 				perr << "Animation [" << GUIApp::get_instance()->getFrameNum()
@@ -197,6 +150,15 @@ bool ActorAnimProcess::run(const uint32 framenum)
 			terminate();
 			return true;
 		}
+
+		// loop if necessary
+		if (frameindex >= animaction->size) {
+			if (animaction->flags & AnimAction::AAF_LOOPING) {
+				frameindex = 1;
+			} else {
+				frameindex = 0;
+			}
+		}	
 
 		currentindex = frameindex * animaction->framerepeat;
 	}
@@ -239,14 +201,15 @@ bool ActorAnimProcess::run(const uint32 framenum)
 		a->clearFlag(Item::FLG_FLIPPED);
 	}
 
-	if (framecount == 0) {
 #ifdef WATCHACTOR
+//	if (framecount == 0) {
 		if (item_num == watchactor)
 			perr << "Animation [" << GUIApp::get_instance()->getFrameNum()
-				 << "] showing new frame (" << frameindex << "/"
-				 << animaction->size << ")" << std::endl;
+				 << "] showing frame (" << frameindex << "/"
+				 << animaction->size << ", " << framecount << "/"
+				 << animaction->framerepeat << ")" << std::endl;
+//	}
 #endif
-	}
 
 	return true;
 }

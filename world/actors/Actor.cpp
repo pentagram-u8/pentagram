@@ -25,6 +25,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "World.h"
 #include "ActorAnimProcess.h"
 #include "CurrentMap.h"
+#include "Direction.h"
+#include "GameData.h"
+#include "MainShapeFlex.h"
+#include "AnimAction.h"
+#include "CurrentMap.h"
 #include "ShapeInfo.h"
 #include "ItemFactory.h"
 #include "IDataSource.h"
@@ -151,6 +156,89 @@ void Actor::teleport(int newmap, sint32 newx, sint32 newy, sint32 newz)
 	}
 } 
 
+uint16 Actor::doAnim(int anim, int dir)
+{
+	if (dir < 0 || dir > 8) {
+		perr << "Actor::doAnim: Invalid direction (" << dir << ")" <<std::endl;
+		return 0;
+	}
+
+#if 0
+	if (tryAnim(anim, dir)) {
+		perr << "Actor::doAnim: tryAnim = Ok!" << std::endl;
+	} else {
+		perr << "Actor::doAnim: tryAnim = bad!" << std::endl;
+	}
+#endif
+
+	if (dir == 8) {
+		//!!! CHECKME
+		//!! what does dir == 8 mean?
+		dir = 0;
+	}
+
+	Process *p = new ActorAnimProcess(this, anim, dir);
+
+	return Kernel::get_instance()->addProcess(p);
+}
+
+bool Actor::tryAnim(int anim, int dir)
+{
+	CurrentMap* currentmap = World::get_instance()->getCurrentMap();
+
+	AnimAction* animaction = GameData::get_instance()->getMainShapes()->
+		getAnim(getShape(), anim);
+
+	sint32 start[3];
+	sint32 end[3];
+	sint32 dims[3];
+	std::list<CurrentMap::SweepItem> hit;
+
+	getLocation(end[0], end[1], end[2]);
+	getFootpad(dims[0], dims[1], dims[2]);
+	dims[0] *= 32; dims[1] *= 32; dims[2] *= 8;
+	bool curflipped = (getFlags() & Item::FLG_FLIPPED);
+ 
+	unsigned int startframe, endframe;
+	animaction->getAnimRange(this, dir, startframe, endframe);
+
+	// run through the animation stages
+	for (unsigned int f = startframe; f != endframe; ) {
+		AnimFrame& frame = animaction->frames[dir][f];
+
+		start[0] = end[0]; start[1] = end[1]; start[2] = end[2];
+
+		end[0] = start[0] + 4 * x_fact[dir] * frame.deltadir;
+		end[1] = start[1] + 4 * y_fact[dir] * frame.deltadir;
+		end[2] = start[2] + frame.deltaz;
+
+		if (frame.is_flipped() != curflipped) {
+			sint32 t = dims[0]; dims[0] = dims[1]; dims[1] = t;
+			curflipped = !curflipped;
+		}
+
+		hit.clear();
+		currentmap->sweepTest(start, end, dims, getObjId(), true, &hit);
+
+		std::list<CurrentMap::SweepItem>::iterator iter;
+		for (iter = hit.begin(); iter != hit.end(); ++iter) {
+			if (!iter->touching) return false;
+		}
+
+		++f;
+		if (f != endframe && f >= animaction->size) {
+			if (animaction->flags & AnimAction::AAF_LOOPING)
+				f = 1;
+			else
+				f = 0;
+		}
+			
+	}
+
+	return true;
+}
+
+
 void Actor::dumpInfo()
 {
 	Container::dumpInfo();
@@ -234,20 +322,7 @@ uint32 Actor::I_doAnim(const uint8* args, unsigned int /*argsize*/)
 
 	if (!actor) return 0;
 
-	if (dir > 8) {
-		perr << "Actor::doAnim: Invalid direction (" << dir << ")" <<std::endl;
-		return 0;
-	}
-
-	if (dir == 8) {
-		//!!! CHECKME
-		//!! what does dir == 8 mean?
-		dir = 0;
-	}
-
-	Process *p = new ActorAnimProcess(actor, anim, dir);
-
-	return Kernel::get_instance()->addProcess(p);
+	return actor->doAnim(anim, dir);
 }
 
 uint32 Actor::I_getDir(const uint8* args, unsigned int /*argsize*/)

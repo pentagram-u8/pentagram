@@ -64,6 +64,14 @@ public:
 
 	uint16 getEquip(uint32 type);
 
+	//! run the given animation
+	//! \return the PID of the ActorAnimProcess
+	uint16 doAnim(int anim, int dir);
+
+	//! check if the given animation can be done from the current location,
+	//! without walking into things
+	bool tryAnim(int anim, int dir);
+
 	virtual uint16 assignObjId(); // assign an NPC objid
 
 	virtual void dumpInfo();

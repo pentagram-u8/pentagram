@@ -47,6 +47,8 @@ protected:
 
 	uint32 currentindex;
 	bool firstframe;
+
+	unsigned int endframe;
 };
 
 

@@ -1,0 +1,57 @@
+/*
+Copyright (C) 2003 The Pentagram team
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
+#include "pent_include.h"
+#include "AnimAction.h"
+#include "Actor.h"
+
+void AnimAction::getAnimRange(Actor* actor, int dir,
+							  unsigned int& startframe, unsigned int& endframe)
+{
+	startframe = 0;
+	endframe = size;
+
+	if (flags & AAF_TWOSTEP) {
+		// two-step animation?
+		if (actor->getActorFlags() & Actor::ACT_FIRSTSTEP) {
+			if (flags & AAF_LOOPING) {
+				// for a looping animation, start at the end to
+				// make things more fluid
+				startframe = size - 1;
+			} else {
+				startframe = 0;
+			}
+			endframe = size/2;
+		} else {
+			// second step starts halfway
+			startframe = size / 2;
+			if (flags & AAF_LOOPING) {
+				endframe = size - 1;
+			}
+		}
+	} else {
+		if (actor->getLastAnim() == action && actor->getDir() == dir &&
+			size > 1)
+		{
+			// skip first frame if repeating an animation
+			startframe = 1;
+		}
+	}
+
+
+}

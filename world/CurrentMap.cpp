@@ -675,9 +675,10 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 // skip will skip all items until item num skip is reached
 // Returns item hit or 0 if no hit.
 // end is set to the colision point
-bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3], const sint32 dims[3],
-								uint16 item, bool solid_only,
-								std::list<SweepItem> *hit)
+bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
+						   const sint32 dims[3],
+						   uint16 item, bool solid_only,
+						   std::list<SweepItem> *hit)
 {
 
 	int i;

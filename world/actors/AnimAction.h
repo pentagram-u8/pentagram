@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define ANIMACTION_H
 
 #include <vector>
+class Actor;
 
 struct AnimFrame
 {
@@ -41,9 +42,18 @@ struct AnimAction {
 	int framerepeat;
 	uint32 flags;
 
+	//! return the range of the animation to play
+	//! \param actor The actor to play the animation for
+	//! \param dir The direction
+	//! \param startframe The first frame to play
+	//! \param endframe The frame after the last frame to play
+	void getAnimRange(Actor* actor, int dir,
+					  unsigned int& startframe, unsigned int& endframe);
+
 	enum {
 		AAF_TWOSTEP = 0x01,
-		AAF_LOOPING = 0x04
+		AAF_LOOPING = 0x04,
+		AAF_HANGING = 0x80
 	} AnimActionFlags;
 };
 

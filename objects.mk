@@ -115,6 +115,7 @@ WORLD = \
 ACTORS = \
 	world/actors/Actor.o \
 	world/actors/ActorAnimProcess.o \
+	world/actors/AnimAction.o \
 	world/actors/MainActor.o \
 	world/actors/TeleportToEggProcess.o
 

@@ -1,3 +1,7 @@
+2003-07-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/AnimAction.*: moved anim start/end to separate function
+	* world/actors/Actor.*: doAnim(), tryAnim()
+
 2003-07-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* docs/savegame.txt: updated
 	* world/actors/AnimAction.h: named some flags

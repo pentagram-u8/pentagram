@@ -1186,8 +1186,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		case SDLK_F2: { // quick animation test
 			if (!avatarInStasis) { 
                 Actor* devon = World::get_instance()->getNPC(2);
-				Process* p = new ActorAnimProcess(devon, 0, 2);
-				Kernel::get_instance()->addProcess(p);
+				devon->doAnim(0, 2);
 			} else { 
 				pout << "Can't: avatarInStasis" << std::endl; 
 			} 
