@@ -1,3 +1,6 @@
+2005-03-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/ActorAnimProcess.cpp: play animation SFX
+
 2005-03-20  Ryan Nunn <colourles@users.sourceforge.net>
 	* Everything: New audio system. Work in progress, but mostly functional
 	  so here it is. There is not sound attenuation at the moment so things

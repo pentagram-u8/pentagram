@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "ShapeInfo.h"
 #include "AnimationTracker.h"
+#include "AudioProcess.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -206,6 +207,12 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 				terminate();
 				return true;
 			}
+		}
+
+		AnimFrame* curframe = tracker->getAnimFrame();
+		if (curframe && curframe->sfx) {
+			AudioProcess::get_instance()->playSFX(curframe->sfx,0x60,
+												  item_num,0);
 		}
 	}
 
