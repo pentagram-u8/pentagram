@@ -69,8 +69,8 @@ install: pentagram.exe
 	mkdir -p $(U8PATH)
 	strip pentagram.exe -o $(U8PATH)/pentagram.exe
 	mkdir -p $(U8PATH)/data
-	cp data/fixedfont.cfg $(U8PATH)/data/
-	cp data/fixedfont.tga $(U8PATH)/data/
+	cp data/fixedfont.* $(U8PATH)/data/
+	cp data/u8bindings.cfg $(U8PATH)/data/
 
 toolsinstall: tools
 	mkdir -p $(U8PATH)/tools
