@@ -1,6 +1,7 @@
 2005-01-19  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GUIApp.cpp: fixed left-over dragging shadows for invalid drops
 	* world/Item.*: fix weight calculations for quantity/reagent items
+	* world/Item.cpp: don't allow dragging zero-weight items
 
 2005-01-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/CurrentMap.cpp: don't let areaSearch skip passed item

@@ -1545,6 +1545,7 @@ bool Item::canDrag()
 {
 	ShapeInfo* si = getShapeInfo();
 	if (si->is_fixed()) return false;
+	if (si->weight == 0) return false;
 
 	Actor* actor = p_dynamic_cast<Actor*>(this);
 	if (actor) {
