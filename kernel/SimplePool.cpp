@@ -46,7 +46,7 @@ SimplePool::SimplePool(size_t nodeCapacity_, uint32 nodes_): Pool(), freeNodePos
 	startOfPool = new uint8[nodeOffset * nodes_];
 	endOfPool = startOfPool + (nodeOffset * nodes_);
 
-	freeNodes = new (SimplePoolNode*)[nodes_];
+	freeNodes = new SimplePoolNode*[nodes_];
 
 /*
 	con.Printf("Pool Info:\n start %X\tend %X\n nodeOffset %X\t nodeCapacity %X\n nodes %X\n",
