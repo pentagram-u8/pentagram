@@ -73,6 +73,26 @@ Item::~Item()
 
 }
 
+void Item::dumpInfo()
+{
+	pout << "Item " << getObjId() << " (class "
+		 << GetClassType().class_name << ", shape "
+		 << getShape() << ", " << getFrame() << ", (";
+
+	if (parent) {
+		sint32 gx, gy;
+		getGumpLocation(gx, gy);
+		pout << gx << "," << gy;
+	} else {
+		pout << x << "," << y << "," << z;
+	}
+
+	pout << ") q:" << getQuality()
+		 << ", m:" << getMapNum() << ", n:" << getNpcNum()
+		 << ", f:" << std::hex << getFlags() << ", ef:"
+		 << getExtFlags() << ")" << std::dec << std::endl;
+}
+
 void Item::setLocation(sint32 X, sint32 Y, sint32 Z)
 {
 	x = X;

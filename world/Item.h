@@ -290,6 +290,9 @@ public:
 	//! \note This can destroy the object
 	virtual void leaveFastArea();
 
+	//! dump some info about this item to pout
+	virtual void dumpInfo();
+
 	bool loadData(IDataSource* ids);
 
 	// Intrinsics

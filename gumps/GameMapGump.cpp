@@ -272,12 +272,7 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 
 			sint32 x,y,z;
 			item->getLocation(x,y,z);
-			pout << "Found item " << objID << " (shape " << item->getShape()
-				 << ", " << item->getFrame() << ", (" << x << "," << y << ","
-				 << z << ") q:" << item->getQuality() << ", m:"
-				 << item->getMapNum() << ", n:" << item->getNpcNum()
-				 << ", f:" << std::hex << item->getFlags() << ", ef:"
-				 << item->getExtFlags() << ")" << std::dec << std::endl;
+			item->dumpInfo();
 			
 			// call the 'look' event
 			item->callUsecodeEvent_look();
@@ -291,11 +286,8 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 		if (item) {
 			sint32 x,y,z;
 			item->getLocation(x,y,z);
-			pout << "Found item " << objID << " (shape " << item->getShape()
-				 << ", " << item->getFrame() << ", (" << x << "," << y << ","
-				 << z << ") q:" << item->getQuality() << ", m:"
-				 << item->getMapNum() << ", n:" << item->getNpcNum()
-				 << ")" << std::endl;
+			item->dumpInfo();
+
 #if 0
 			item->setFlag(Item::FLG_INVISIBLE);
 #else
@@ -326,11 +318,7 @@ void GameMapGump::OnMouseDouble(int button, int mx, int my)
 		if (item) {
 			sint32 x,y,z;
 			item->getLocation(x,y,z);
-			pout << "Found item " << objID << " (shape " << item->getShape()
-				 << ", " << item->getFrame() << ", (" << x << "," << y << ","
-				 << z << ") q:" << item->getQuality() << ", m:"
-				 << item->getMapNum() << ", n:" << item->getNpcNum()
-				 << ")" << std::endl;
+			item->dumpInfo();
 			
 			//!! need to check range
 			

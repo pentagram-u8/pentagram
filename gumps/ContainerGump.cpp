@@ -234,8 +234,7 @@ void ContainerGump::OnMouseClick(int button, int mx, int my)
 		if (item) {
 			extern uint16 targetObject; // major hack number 2
 			targetObject = objID;
-
-			pout << "Found item " << objID << " (shape " << item->getShape() << ", " << item->getFrame() << ", q:" << item->getQuality() << ", m:" << item->getMapNum() << ", n:" << item->getNpcNum() << ")" << std::endl;
+			item->dumpInfo();
 			
 			// call the 'look' event
 			item->callUsecodeEvent_look();
@@ -261,7 +260,7 @@ void ContainerGump::OnMouseDouble(int button, int mx, int my)
 		World *world = World::get_instance();
 		Item *item = world->getItem(objID);
 		if (item) {
-			pout << "Found item " << objID << " (shape " << item->getShape() << ", " << item->getFrame() << ", q:" << item->getQuality() << ", m:" << item->getMapNum() << ", n:" << item->getNpcNum() << ")" << std::endl;
+			item->dumpInfo();
 			
 			// call the 'use' event
 			item->callUsecodeEvent_use();
