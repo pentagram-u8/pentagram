@@ -1,3 +1,11 @@
+2002-12-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* filesys/IDataSource.h, usecode/UCStack.h: const changes
+	* usecode/*: minor changes
+	* filesys/Flex.*: Flex reader
+	* usecode/Usecode.h: abstract Usecode class
+	* usecode/UsecodeFlex.*: Usecode Flex reader
+	* kernel/Application.*: added FileSystem, load eusecode.flx
+	
 2002-12-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCList.h: usecode list
 	* usecode/*: more opcodes, minor structure changes

@@ -16,42 +16,20 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "pent_include.h"
+#ifndef USECODE_H
+#define USECODE_H
 
-#include "Application.h"
-#include "Kernel.h"
-#include "FileSystem.h"
+class IDataSource;
 
-#include "UCMachine.h"
-#include "UCProcess.h"
-#include "UsecodeFlex.h"
-#include "IDataSource.h"
+class Usecode {
+public:
+	Usecode() { }
+	virtual ~Usecode() { }
 
-Application::Application(int argc, char *argv[])
-{
-	// Create the kernel
-	kernel = new Kernel;
-	ucmachine = new UCMachine;
-	filesystem = new FileSystem;
-}
+	virtual const uint8* get_class(uint32 classid)=0;
+	virtual uint32 get_class_size(uint32 classid)=0;
+};
 
-Application::~Application()
-{
-	delete kernel;
-	delete ucmachine;
-	delete filesystem;
-}
 
-void Application::run()
-{
 
-	IDataSource* ds = filesystem->ReadFile("eusecode.flx");
-	Usecode* u = new UsecodeFlex(ds);
-	UCProcess* p = new UCProcess(u, 306, 0x8C);
-	perr << p << std::endl;
-	kernel->addProcess(p);
-	uint32 framenum = 0;
-	while (1) {
-		kernel->runProcesses(framenum++);
-	}
-}
+#endif

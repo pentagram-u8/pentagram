@@ -16,42 +16,41 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "pent_include.h"
+#ifndef FLEX_H
+#define FLEX_H
 
-#include "Application.h"
-#include "Kernel.h"
-#include "FileSystem.h"
-
-#include "UCMachine.h"
-#include "UCProcess.h"
-#include "UsecodeFlex.h"
 #include "IDataSource.h"
 
-Application::Application(int argc, char *argv[])
-{
-	// Create the kernel
-	kernel = new Kernel;
-	ucmachine = new UCMachine;
-	filesystem = new FileSystem;
-}
+class Flex {
+ public:
+	Flex(IDataSource* ds);
+	virtual ~Flex();
 
-Application::~Application()
-{
-	delete kernel;
-	delete ucmachine;
-	delete filesystem;
-}
+	virtual const uint8* get_object_nodel(uint32 index); // return object. DON'T delete or modify!
+	virtual uint8* get_object(uint32 index); //return object. delete afterwards
+	virtual uint32 get_size(uint32 index);
 
-void Application::run()
-{
+	virtual uint32 get_count() const { return count; }
 
-	IDataSource* ds = filesystem->ReadFile("eusecode.flx");
-	Usecode* u = new UsecodeFlex(ds);
-	UCProcess* p = new UCProcess(u, 306, 0x8C);
-	perr << p << std::endl;
-	kernel->addProcess(p);
-	uint32 framenum = 0;
-	while (1) {
-		kernel->runProcesses(framenum++);
-	}
-}
+	// Loads all data into memory
+	virtual void cache();
+
+	// Loads a single item into memory
+	virtual void cache(uint32 index);
+
+	// Free all data from memory
+	virtual void uncache();
+
+	static bool isFlex(IDataSource* ds);
+
+protected:
+	uint8** objects;
+	uint32 count;
+	IDataSource* ds;
+
+	Flex() : objects(0), count(0), ds(0) { }
+
+};
+
+
+#endif

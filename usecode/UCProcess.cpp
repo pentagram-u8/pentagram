@@ -26,9 +26,12 @@ UCProcess::UCProcess(Usecode* usecode_, uint32 classid_, uint32 offset_) :
 	pid(0xFFFF), item_num(0), type(0), usecode(usecode_),
 	classid(classid_), cs(0,0), suspended(false)
 {
+	if (usecode->get_class_size(classid) == 0)
+		perr << "Class is empty..." << std::endl;
+
 	// setup code segment
 	cs.load(usecode->get_class(classid),
-			usecode->get_classsize(classid));
+			usecode->get_class_size(classid));
 	// seek to correct offset
 	cs.seek(offset_);
 

@@ -18,40 +18,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 
-#include "Application.h"
-#include "Kernel.h"
-#include "FileSystem.h"
-
-#include "UCMachine.h"
-#include "UCProcess.h"
 #include "UsecodeFlex.h"
-#include "IDataSource.h"
 
-Application::Application(int argc, char *argv[])
+const uint8* UsecodeFlex::get_class(uint32 classid)
 {
-	// Create the kernel
-	kernel = new Kernel;
-	ucmachine = new UCMachine;
-	filesystem = new FileSystem;
+	return get_object_nodel(classid+2);
 }
 
-Application::~Application()
+uint32 UsecodeFlex::get_class_size(uint32 classid)
 {
-	delete kernel;
-	delete ucmachine;
-	delete filesystem;
-}
-
-void Application::run()
-{
-
-	IDataSource* ds = filesystem->ReadFile("eusecode.flx");
-	Usecode* u = new UsecodeFlex(ds);
-	UCProcess* p = new UCProcess(u, 306, 0x8C);
-	perr << p << std::endl;
-	kernel->addProcess(p);
-	uint32 framenum = 0;
-	while (1) {
-		kernel->runProcesses(framenum++);
-	}
+	return get_size(classid+2);
 }

@@ -138,11 +138,11 @@ bool UCMachine::execProcess(UCProcess* p)
 /*
 		case 0x08:
 			// 08
-			// pop 16bits into result register
+			// pop 32bits into result register
 			//! what is this result register exactly??
+			//! 16 or 32 bit?
 			printf("pop res");
 			break;
-		case 0x09:
 
 */
 
@@ -262,7 +262,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 				// Update the code segment
 				p->cs.load(p->usecode->get_class(new_classid),
-						   p->usecode->get_classsize(new_classid));
+						   p->usecode->get_class_size(new_classid));
 				p->cs.seek(new_offset);
 
 				// Resume execution
@@ -830,6 +830,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			}
 			break;
 
+
 /*
 		case 0x43:
 			// 43 xx
@@ -985,7 +986,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 53
 			// suspend
 			// TODO!
-			LOGPF(("!suspend\n"));
+			LOGPF(("suspend\n"));
 			cede=true; 
 			break;
 
@@ -1094,7 +1095,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			freeList(ui16a);
 			LOGPF(("free list\t%s", print_bp(si8a)));
 			break;
-				  
+	
 /*
 		case 0x65:
 			// 65 xx
@@ -1224,13 +1225,37 @@ bool UCMachine::execProcess(UCProcess* p)
 			LOGPF(("set info"));
 			break;
 
-		case 0x7A:
+		case 0x79: case 0x7A:
 			// 7A
 			// end of function
 			// shouldn't happen
 			LOGPF(("end"));
 			perr.printf("end of function opcode reached!\n");
 			error = true;
+			break;
+
+		case 0x57:
+			p->cs.read4();
+			p->cs.read2();
+			perr.printf("unhandled opcode %02X\n", opcode);
+			cede = true;
+			break;
+		case 0x58:
+			p->cs.read4();
+			p->cs.read4();
+			perr.printf("unhandled opcode %02X\n", opcode);
+			cede = true;
+			break;
+		case 0x44:
+			p->cs.read2();
+			perr.printf("unhandled opcode %02X\n", opcode);
+			cede = true;
+			break;
+		case 0x19: case 0x43: case 0x45: case 0x4C:
+		case 0x4D: case 0x63: case 0x65: case 0x67:
+			p->cs.read1();
+			perr.printf("unhandled opcode %02X\n", opcode);
+			cede = true;
 			break;
 
 		default:

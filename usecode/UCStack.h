@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 // A little-endian stack for use with usecode
 
+//! IBufferDataSource is almost surely not the right base class
 class UCStack : protected IBufferDataSource
 {
 public:
@@ -63,25 +64,25 @@ public:
 	
 	inline void push2(uint16 val) {
 		buf_ptr-=2;
-		buf_ptr[0] =  val     & 0xFF;
-		buf_ptr[1] = (val>>8) & 0xFF;
+		const_cast<uint8*>(buf_ptr)[0] =  val     & 0xFF;
+		const_cast<uint8*>(buf_ptr)[1] = (val>>8) & 0xFF;
 	}
 	inline void push4(uint32 val) {
 		buf_ptr-=4;
-		buf_ptr[0] =  val      & 0xFF;
-		buf_ptr[1] = (val>>8)  & 0xFF;
-		buf_ptr[2] = (val>>16) & 0xFF;
-		buf_ptr[3] = (val>>24) & 0xFF;
+		const_cast<uint8*>(buf_ptr)[0] =  val      & 0xFF;
+		const_cast<uint8*>(buf_ptr)[1] = (val>>8)  & 0xFF;
+		const_cast<uint8*>(buf_ptr)[2] = (val>>16) & 0xFF;
+		const_cast<uint8*>(buf_ptr)[3] = (val>>24) & 0xFF;
 	}
 	// Push an arbitrary number of bytes of 0
 	inline void push0(const uint32 size) { 
 		buf_ptr -= size;
-		std::memset (buf_ptr, 0, size);
+		std::memset (const_cast<uint8*>(buf_ptr), 0, size);
 	}
 	// Push an arbitrary number of bytes
 	inline void push(const uint8 *in, const uint32 size) { 
 		buf_ptr -= size;
-		std::memcpy (buf_ptr, in, size);
+		std::memcpy (const_cast<uint8*>(buf_ptr), in, size);
 	}
 
 	//
@@ -124,21 +125,21 @@ public:
 	//
 
 	inline void assign1(const uint32 offset, const uint8 val) {
-		buf[offset]   =  val     & 0xFF;
+		const_cast<uint8*>(buf_ptr)[offset]   =  val     & 0xFF;
 	}
 	inline void assign2(const uint32 offset, const uint16 val) {
-		buf[offset]   =  val     & 0xFF;
-		buf[offset+1] = (val>>8) & 0xFF;
+		const_cast<uint8*>(buf_ptr)[offset]   =  val     & 0xFF;
+		const_cast<uint8*>(buf_ptr)[offset+1] = (val>>8) & 0xFF;
 	}
 	inline void assign4(const uint32 offset, const uint32 val) {
-		buf[offset]   =  val      & 0xFF;
-		buf[offset+1] = (val>>8)  & 0xFF;
-		buf[offset+2] = (val>>16) & 0xFF;
-		buf[offset+3] = (val>>24) & 0xFF;
+		const_cast<uint8*>(buf_ptr)[offset]   =  val      & 0xFF;
+		const_cast<uint8*>(buf_ptr)[offset+1] = (val>>8)  & 0xFF;
+		const_cast<uint8*>(buf_ptr)[offset+2] = (val>>16) & 0xFF;
+		const_cast<uint8*>(buf_ptr)[offset+3] = (val>>24) & 0xFF;
 	}
 	inline void assign(const uint32 offset, const uint8 *in, const uint32 len)
 	{
-		std::memcpy (buf+offset, in, len);
+		std::memcpy (const_cast<uint8*>(buf)+offset, in, len);
 	}
 };
 

@@ -16,25 +16,20 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef APPLICATION_H
-#define APPLICATION_H
+#ifndef USECODEFLEX_H
+#define USECODEFLEX_H
 
-class Kernel;
-class UCMachine;
-class FileSystem;
+#include "Usecode.h"
+#include "Flex.h"
 
-// extremely simplified stub-ish Application class
-class Application {
-public:
-	Application(int argc, char *argv[]);
-	virtual ~Application();
+// multiple inheritance. um, yes :-)
+class UsecodeFlex : public Usecode, protected Flex {
+ public:
+	UsecodeFlex(IDataSource* ds) : Flex(ds) { }
+	virtual ~UsecodeFlex() { }
 
-	virtual void run();
-
-protected:
-	Kernel* kernel;
-	UCMachine* ucmachine;
-	FileSystem* filesystem;
+	virtual const uint8* get_class(uint32 classid);
+	virtual uint32 get_class_size(uint32 classid);
 };
 
 #endif

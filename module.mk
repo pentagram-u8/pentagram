@@ -11,7 +11,9 @@ pentagram_OBJ = \
 	kernel/Application.o \
 	usecode/UCMachine.o \
 	usecode/UCProcess.o \
+	usecode/UsecodeFlex.o \
 	filesys/FileSystem.o \
+	filesys/Flex.o \
 	misc/Args.o \
 	misc/Console.o \
 	misc/Q_strcasecmp.o

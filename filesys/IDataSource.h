@@ -199,19 +199,19 @@ class IFileDataSource: public IDataSource
 class IBufferDataSource : public IDataSource
 {
 protected:
-	uint8* buf;
-	uint8* buf_ptr;
+	const uint8* buf;
+	const uint8* buf_ptr;
 
 	uint32 size;
 
 public:
-	IBufferDataSource(uint8* data, unsigned int len) {
+	IBufferDataSource(const uint8* data, unsigned int len) {
 		assert(data != 0 || len == 0);
 		buf = buf_ptr = data;
 		size = len;
 	}
 
-	void load(uint8* data, unsigned int len) {
+	void load(const uint8* data, unsigned int len) {
 		assert(data != 0 || len == 0);
 		buf = buf_ptr = data;
 		size = len;
