@@ -158,7 +158,7 @@ Application::Application(int argc, char *argv[])
 	world->switchMap(3);
 	world->switchMap(40);
 	world->switchMap(43);
-	world->switchMap(3);
+  	world->switchMap(3);
 
 	// Create console gump
 	//pout << "Create Graphics Console" << std::endl;

@@ -67,11 +67,11 @@ void Item::getLocation(sint32& X, sint32& Y, sint32 &Z) const
 	Z = z;
 }
 
-void Item::callUsecodeEvent(uint32 event)
+uint32 Item::callUsecodeEvent(uint32 event)
 {
 	Usecode* u = GameData::get_instance()->getMainUsecode();
 
-	callUsecode(shape, u->get_class_event(shape, event), u);
+	return callUsecode(shape, u->get_class_event(shape, event), u);
 }
 
 
@@ -100,6 +100,7 @@ void Item::setupLerp(/* Camera &camera */)
 uint32 Item::I_getX(const uint8* args, unsigned int argsize)
 {
 	ARG_ITEM(item);
+	if (!item) return 0;
 
 	return item->x;
 }
@@ -107,6 +108,7 @@ uint32 Item::I_getX(const uint8* args, unsigned int argsize)
 uint32 Item::I_getY(const uint8* args, unsigned int argsize)
 {
 	ARG_ITEM(item);
+	if (!item) return 0;
 
 	return item->y;
 }
@@ -114,6 +116,7 @@ uint32 Item::I_getY(const uint8* args, unsigned int argsize)
 uint32 Item::I_getZ(const uint8* args, unsigned int argsize)
 {
 	ARG_ITEM(item);
+	if (!item) return 0;
 
 	return item->z;
 }
@@ -121,6 +124,7 @@ uint32 Item::I_getZ(const uint8* args, unsigned int argsize)
 uint32 Item::I_getShape(const uint8* args, unsigned int argsize)
 {
 	ARG_ITEM(item);
+	if (!item) return 0;
 
 	return item->shape;
 }
@@ -128,6 +132,7 @@ uint32 Item::I_getShape(const uint8* args, unsigned int argsize)
 uint32 Item::I_getFrame(const uint8* args, unsigned int argsize)
 {
 	ARG_ITEM(item);
+	if (!item) return 0;
 
 	return item->frame;
 }
@@ -135,6 +140,7 @@ uint32 Item::I_getFrame(const uint8* args, unsigned int argsize)
 uint32 Item::I_getQ(const uint8* args, unsigned int argsize)
 {
 	ARG_ITEM(item);
+	if (!item) return 0;
 
 	return item->quality;
 }
@@ -143,12 +149,43 @@ uint32 Item::I_bark(const uint8* args, unsigned int argsize)
 {
 	ARG_ITEM(item);
 	ARG_STRING(str);
+	if (!item) return 0;
 
-	pout.printf("%08x\n", ucptr_str);
+	return 0;
 
 	pout << std::endl << std::endl << str  << std::endl << std::endl;
 	
 	// wait 4 ticks
 	return UCMachine::get_instance()->addProcess(new DelayProcess(4));
+
+	// of course, in the final version of bark, we'll have to actually do
+	// something after the timeout occurs.
+	// Some kind of 'callback-delay-process' maybe?
 }
 
+uint32 Item::I_look(const uint8* args, unsigned int argsize)
+{
+	ARG_ITEM(item);
+	if (!item) return 0;
+
+	// constant?
+	return item->callUsecodeEvent(0);
+}
+
+uint32 Item::I_use(const uint8* args, unsigned int argsize)
+{
+	ARG_ITEM(item);
+	if (!item) return 0;
+
+	// constant?
+	return item->callUsecodeEvent(1);
+}
+
+uint32 Item::I_enterFastArea(const uint8* args, unsigned int argsize)
+{
+	ARG_ITEM(item);
+	if (!item) return 0;
+
+	// constant?
+	return item->callUsecodeEvent(15);
+}

@@ -1144,7 +1144,8 @@ bool UCMachine::execProcess(UCProcess* p)
 				LOGPF(("implies"));
 
 				Process *proc = Kernel::get_instance()->getProcess(ui16b);
-				if (proc) {
+				Process *proc2 = Kernel::get_instance()->getProcess(ui16a);
+				if (proc && proc2) {
 					proc->waitFor(ui16a);
 				} else {
 					perr << "Non-existant process PID in implies" << std::endl;

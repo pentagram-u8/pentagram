@@ -54,8 +54,8 @@ void Process::waitFor(uint16 pid_)
 
 	// add this process to waiting list of process pid_
 	Process *p = kernel->getProcess(pid_);
-	if (p)
-		p->waiting.push_back(pid);
+	assert(p);
+	p->waiting.push_back(pid);
 
 	suspended = true;
 }

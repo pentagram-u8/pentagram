@@ -1,3 +1,6 @@
+2003-04-08 Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* various: minor changes
+
 2003-04-07 Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/*intrinsics.h, usecode/*: intrinsics
 	* world/Item.*: added some basic item intrinsics
