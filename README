@@ -68,18 +68,22 @@ These commands are likely to change in the future so keep an eye on CHANGELOG as
 
 ~				: hides/restores console
 page up/down	: scrolls console
-arrow keys		: scrolls map
+arrow keys		: moves Avatar around the map (no walking yet)
+a,z				: moves Avatar vertically
+s				: toggles "avatarInStatis"
+t				: outputs kernel/usecode/world/location stats to the console
+e				: toggles editor items
 0-9,a-e			: selects 0-14 in conversations
 ESC,q			: quits pentagram
 [,]				: first ] clears the screen, multiple presses of ]
 				  show the paint order. [ "steps" backward.
 left mouse		: look at item/npc
 right mouse		: use item/talk to npc
+middle mouse	: turn object invisible
 
 
 HACKS TO SHOW OFF
 =================
 
-t				: play test animation (Devon)
 f				: plays first scene (Avatar standing up, speaking to Devon)
 g				: plays execution scene
