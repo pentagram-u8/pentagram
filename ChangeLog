@@ -1,5 +1,6 @@
 2004-06-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.cpp: fixed return value of item creation intrinsics
+	* usecode/UCMachine.cpp: fixed endlines when monitoring classes/items
 
 2004-06-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Pathfinder.cpp: play a stand animation after the path

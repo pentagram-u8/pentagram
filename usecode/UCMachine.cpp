@@ -38,8 +38,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Container.h"
 
-//#define WATCH_CLASS 589
-//#define WATCH_ITEM 66
+//#define WATCH_CLASS 68
+//#define WATCH_ITEM 2982
 
 #ifdef WATCH_CLASS
 #define LOGPF(X) do { if (thisclassid == WATCH_CLASS) { pout.printf X; } } while(0)
@@ -147,7 +147,9 @@ bool UCMachine::execProcess(UCProcess* p)
 	cs.seek(p->ip);
 
 	if (SHOWSTART) {
-		pout << std::hex << "running process " << p->pid << ", item " << p->item_num << ", class " << p->classid << ", offset " << p->ip << std::dec << std::endl;
+		pout << std::hex << "running process " << p->pid
+			 << ", item " << p->item_num << ", class " << p->classid
+			 << ", offset " << p->ip << std::dec << std::endl;
 	}
 
 	bool cede = false;
@@ -184,7 +186,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.pop2();
 			p->stack.assign1(p->bp+si8a, static_cast<uint8>(ui16a));
-			LOGPF(("pop byte\t%s = %02Xh", print_bp(si8a), ui16a));
+			LOGPF(("pop byte\t%s = %02Xh\n", print_bp(si8a), ui16a));
 			break;
 
 		case 0x01:
@@ -193,7 +195,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.pop2();
 			p->stack.assign2(p->bp+si8a, ui16a);
-			LOGPF(("pop\t\t%s = %04Xh", print_bp(si8a), ui16a));
+			LOGPF(("pop\t\t%s = %04Xh\n", print_bp(si8a), ui16a));
 			break;
 
 		case 0x02:
@@ -202,7 +204,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8a = static_cast<sint8>(cs.read1());
 			ui32a = p->stack.pop4();
 			p->stack.assign4(p->bp+si8a, ui32a);
-			LOGPF(("pop dword\t%s = %08Xh", print_bp(si8a), ui32a));
+			LOGPF(("pop dword\t%s = %08Xh\n", print_bp(si8a), ui32a));
 			break;
 
 		case 0x03:
@@ -214,7 +216,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				uint8 buf[256];
 				p->stack.pop(buf, size);
 				p->stack.assign(p->bp+si8a, buf, size);
-				LOGPF(("pop huge\t%s %i", print_bp(si8a), size));
+				LOGPF(("pop huge\t%s %i\n", print_bp(si8a), size));
 			}
 			break;
 
@@ -224,7 +226,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			//! what is this result register exactly??
 			//! probably a member of the Process?
 			//! is the result in 0x08 and 0x6D the same var?
-			LOGPF(("pop dword\tprocess result"));
+			LOGPF(("pop dword\tprocess result\n"));
 			p->result = p->stack.pop4();
 			break;
 
@@ -235,7 +237,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8a = static_cast<sint8>(cs.read1());
 			ui32a = cs.read1();
 			si8b = static_cast<sint8>(cs.read1());
-			LOGPF(("assign element\t%s (%02X) (%02X)",
+			LOGPF(("assign element\t%s (%02X) (%02X)\n",
 				   print_bp(si8a), si8b, si8b));
 			ui16a = p->stack.pop2()-1; // index
 			ui16b = p->stack.access2(p->bp+si8a);
@@ -265,7 +267,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// push sign-extended 8 bit xx onto the stack as 16 bit
 			ui16a = static_cast<sint8>(cs.read1());
 			p->stack.push2(ui16a);
-			LOGPF(("push byte\t%04Xh", ui16a));
+			LOGPF(("push byte\t%04Xh\n", ui16a));
 			break;
 
 		case 0x0B:
@@ -273,7 +275,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// push 16 bit xxxx onto the stack
 			ui16a = cs.read2();
 			p->stack.push2(ui16a);
-			LOGPF(("push\t\t%04Xh", ui16a));
+			LOGPF(("push\t\t%04Xh\n", ui16a));
 			break;
 
 		case 0x0C:
@@ -281,7 +283,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// push 32 bit xxxxxxxx onto the stack
 			ui32a = cs.read4();
 			p->stack.push4(ui32a);
-			LOGPF(("push dword\t%08Xh", ui32a));
+			LOGPF(("push dword\t%08Xh\n", ui32a));
 			break;
 
 		case 0x0D:
@@ -292,7 +294,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				char *str = new char[ui16a+1];
 				cs.read(str, ui16a);
 				str[ui16a] = 0;
-				LOGPF(("push string\t\"%s\"", str));
+				LOGPF(("push string\t\"%s\"\n", str));
 				ui16b = cs.read1();
 				if (ui16b != 0) error = true;
 				p->stack.push2(assignString(str));
@@ -315,7 +317,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				}
 				p->stack.addSP(ui16a * (ui16b + 1));
 				p->stack.push2(assignList(l));
-				LOGPF(("create list\t%02X (%02X)", ui16b, ui16a));
+				LOGPF(("create list\t%02X (%02X)\n", ui16b, ui16a));
 			}
 			break;
 
@@ -331,7 +333,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				//! TODO
 				uint16 arg_bytes = cs.read1();
 				uint16 func = cs.read2();
-				LOGPF(("calli\t\t%04Xh (%02Xh arg bytes) %s ", func, arg_bytes, convuse->intrinsics()[func]));
+				LOGPF(("calli\t\t%04Xh (%02Xh arg bytes) %s \n", func, arg_bytes, convuse->intrinsics()[func]));
 
 				// !constants
 				if (func >= 0x100 || intrinsics[func] == 0) {
@@ -361,7 +363,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			{
 				uint16 new_classid = cs.read2();
 				uint16 new_offset = cs.read2();
-				LOGPF(("call\t\t%04X:%04X", new_classid, new_offset));
+				LOGPF(("call\t\t%04X:%04X\n", new_classid, new_offset));
 
 				p->ip = static_cast<uint16>(cs.getPos());	// Truncates!!
 				p->call(new_classid, new_offset);
@@ -379,7 +381,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 12
 			// pop 16bits into temp register
 			p->temp32 = p->stack.pop2();
-			LOGPF(("pop\t\ttemp = %04X", (p->temp32 & 0xFFFF)));
+			LOGPF(("pop\t\ttemp = %04X\n", (p->temp32 & 0xFFFF)));
 			break;
 
 		case 0x13:
@@ -387,7 +389,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// pop 32bits into temp register
 			// NB: 0x13 isn't used AFAIK, but this is a 'logical' guess
 			p->temp32 = p->stack.pop4();
-			LOGPF(("pop long\t\ttemp = %08X", p->temp32));
+			LOGPF(("pop long\t\ttemp = %08X\n", p->temp32));
 			break;
 
 		// Arithmetic
@@ -398,7 +400,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si16a = static_cast<sint16>(p->stack.pop2());
 			si16b = static_cast<sint16>(p->stack.pop2());
 			p->stack.push2(static_cast<uint16>(si16a + si16b));
-			LOGPF(("add"));
+			LOGPF(("add\n"));
 			break;
 
 		case 0x15:
@@ -407,7 +409,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si32a = static_cast<sint32>(p->stack.pop4());
 			si32b = static_cast<sint32>(p->stack.pop4());
 			p->stack.push4(static_cast<uint32>(si32a + si32b));
-			LOGPF(("add long"));
+			LOGPF(("add long\n"));
 			break;
 
 
@@ -425,7 +427,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			stringHeap[ui16b] += getString(ui16a);
 			freeString(ui16a);
 			p->stack.push2(ui16b);
-			LOGPF(("concat\t\t= %s", stringHeap[ui16b].c_str()));
+			LOGPF(("concat\t\t= %s\n", stringHeap[ui16b].c_str()));
 			break;
 
 		case 0x17:
@@ -451,7 +453,7 @@ bool UCMachine::execProcess(UCProcess* p)
 					p->stack.push2(0);
 				}
 			}
-			LOGPF(("append"));
+			LOGPF(("append\n"));
 			break;
 
 		case 0x19:
@@ -464,7 +466,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			listHeap[ui16b]->unionStringList(*listHeap[ui16a]);
 			freeStringList(ui16a); // contents are actually freed in unionSL
 			p->stack.push2(ui16b);
-			LOGPF(("union slist\t(%02X)", ui32a));
+			LOGPF(("union slist\t(%02X)\n", ui32a));
 			break;
 
 		case 0x1A:
@@ -479,7 +481,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			listHeap[ui16b]->substractStringList(*listHeap[ui16a]);
 			freeStringList(ui16a);
 			p->stack.push2(ui16b);
-			LOGPF(("remove slist\t(%02X)", ui32a));
+			LOGPF(("remove slist\t(%02X)\n", ui32a));
 			break;			
 
 		case 0x1B:
@@ -493,7 +495,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			listHeap[ui16b]->substractList(*listHeap[ui16a]);
 			freeList(ui16a);
 			p->stack.push2(ui16b);
-			LOGPF(("remove list\t(%02X)", ui32a));
+			LOGPF(("remove list\t(%02X)\n", ui32a));
 			break;
 
 		case 0x1C:
@@ -502,7 +504,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si16a = static_cast<sint16>(p->stack.pop2());
 			si16b = static_cast<sint16>(p->stack.pop2());
 			p->stack.push2(static_cast<uint16>(si16b - si16a)); // !! order?
-			LOGPF(("sub"));
+			LOGPF(("sub\n"));
 			break;
 
 		case 0x1D:
@@ -511,7 +513,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si32a = static_cast<sint16>(p->stack.pop4());
 			si32b = static_cast<sint16>(p->stack.pop4());
 			p->stack.push4(static_cast<uint32>(si32b - si32a)); // !! order?
-			LOGPF(("sub long"));
+			LOGPF(("sub long\n"));
 			break;
 
 		case 0x1E:
@@ -520,7 +522,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si16a = static_cast<sint16>(p->stack.pop2());
 			si16b = static_cast<sint16>(p->stack.pop2());
 			p->stack.push2(static_cast<uint16>(si16a * si16b));
-			LOGPF(("mul"));
+			LOGPF(("mul\n"));
 			break;
 
 		case 0x1F:
@@ -529,7 +531,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si32a = static_cast<sint16>(p->stack.pop4());
 			si32b = static_cast<sint16>(p->stack.pop4());
 			p->stack.push4(static_cast<uint32>(si32a * si32b));
-			LOGPF(("mul long"));
+			LOGPF(("mul long\n"));
 			break;
 
 		case 0x20:
@@ -543,7 +545,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				perr.printf("division by zero.\n");
 				p->stack.push2(0);
 			}
-			LOGPF(("div"));
+			LOGPF(("div\n"));
 			break;
 
 		case 0x21:
@@ -557,7 +559,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				perr.printf("division by zero.\n");
 				p->stack.push4(0);
 			}
-			LOGPF(("div"));
+			LOGPF(("div\n"));
 			break;
 
 		case 0x22:
@@ -573,7 +575,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				perr.printf("division by zero.\n");
 				p->stack.push2(0);
 			}
-			LOGPF(("mod"));
+			LOGPF(("mod\n"));
 			break;
 
 		case 0x23:
@@ -588,7 +590,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				perr.printf("division by zero.\n");
 				p->stack.push4(0);
 			}
-			LOGPF(("mod long"));
+			LOGPF(("mod long\n"));
 			break;
 
 		case 0x24:
@@ -601,7 +603,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			} else {
 				p->stack.push2(0);
 			}
-			LOGPF(("cmp"));
+			LOGPF(("cmp\n"));
 			break;
 
 		case 0x25:
@@ -614,7 +616,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			} else {
 				p->stack.push2(0);
 			}
-			LOGPF(("cmp long"));
+			LOGPF(("cmp long\n"));
 			break;
 
 
@@ -630,7 +632,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				p->stack.push2(0);
 			freeString(ui16a);
 			freeString(ui16b);
-			LOGPF(("strcmp"));
+			LOGPF(("strcmp\n"));
 			break;
 
 
@@ -644,7 +646,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			} else {
 				p->stack.push2(0);
 			}
-			LOGPF(("lt"));
+			LOGPF(("lt\n"));
 			break;
 
 		case 0x29:
@@ -657,7 +659,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			} else {
 				p->stack.push2(0);
 			}
-			LOGPF(("lt long"));
+			LOGPF(("lt long\n"));
 			break;
 
 		case 0x2A:
@@ -670,7 +672,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			} else {
 				p->stack.push2(0);
 			}
-			LOGPF(("le"));
+			LOGPF(("le\n"));
 			break;
 
 		case 0x2B:
@@ -683,7 +685,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			} else {
 				p->stack.push2(0);
 			}
-			LOGPF(("le long"));
+			LOGPF(("le long\n"));
 			break;
 
 		case 0x2C:
@@ -696,7 +698,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			} else {
 				p->stack.push2(0);
 			}
-			LOGPF(("gt"));
+			LOGPF(("gt\n"));
 			break;
 
 		case 0x2D:
@@ -709,7 +711,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			} else {
 				p->stack.push2(0);
 			}
-			LOGPF(("gt long"));
+			LOGPF(("gt long\n"));
 			break;
 
 		case 0x2E:
@@ -722,7 +724,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			} else {
 				p->stack.push2(0);
 			}
-			LOGPF(("ge"));
+			LOGPF(("ge\n"));
 			break;
 
 		case 0x2F:
@@ -735,7 +737,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			} else {
 				p->stack.push2(0);
 			}
-			LOGPF(("ge long"));
+			LOGPF(("ge long\n"));
 			break;
 
 		case 0x30:
@@ -747,7 +749,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			} else {
 				p->stack.push2(0);
 			}
-			LOGPF(("not"));
+			LOGPF(("not\n"));
 			break;
 
 
@@ -760,7 +762,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			} else {
 				p->stack.push4(0);
 			}
-			LOGPF(("not long"));
+			LOGPF(("not long\n"));
 			break;
 
 		case 0x32:
@@ -773,7 +775,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			} else {
 				p->stack.push2(0);
 			}
-			LOGPF(("and"));
+			LOGPF(("and\n"));
 			break;
 
 		case 0x33:
@@ -786,7 +788,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			} else {
 				p->stack.push4(0);
 			}
-			LOGPF(("and long"));
+			LOGPF(("and long\n"));
 			break;
 
 		case 0x34:
@@ -799,7 +801,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			} else {
 				p->stack.push2(0);
 			}
-			LOGPF(("or"));
+			LOGPF(("or\n"));
 			break;
 
 		case 0x35:
@@ -812,7 +814,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			} else {
 				p->stack.push4(0);
 			}
-			LOGPF(("or long"));
+			LOGPF(("or long\n"));
 			break;
 
 		case 0x36:
@@ -825,7 +827,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			} else {
 				p->stack.push2(0);
 			}
-			LOGPF(("ne"));
+			LOGPF(("ne\n"));
 			break;
 
 		case 0x37:
@@ -838,7 +840,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			} else {
 				p->stack.push2(0);
 			}
-			LOGPF(("ne long"));
+			LOGPF(("ne long\n"));
 			break;
 
 
@@ -867,7 +869,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 				freeList(ui16b);
 			}
-			LOGPF(("in list\t\t%s slist==%02X", print_bp(ui16a), ui32a));
+			LOGPF(("in list\t\t%s slist==%02X\n", print_bp(ui16a), ui32a));
 			break;
 
 		case 0x39:
@@ -876,7 +878,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			ui16a = p->stack.pop2();
 			ui16b = p->stack.pop2();
 			p->stack.push2(ui16a & ui16b);
-			LOGPF(("bit_and"));
+			LOGPF(("bit_and\n"));
 			break;
 
 		case 0x3A:
@@ -885,7 +887,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			ui16a = p->stack.pop2();
 			ui16b = p->stack.pop2();
 			p->stack.push2(ui16a | ui16b);
-			LOGPF(("bit_or"));
+			LOGPF(("bit_or\n"));
 			break;
 
 		case 0x3B:
@@ -893,7 +895,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 16 bit bitwise not
 			ui16a = p->stack.pop2();
 			p->stack.push2(~ui16a);
-			LOGPF(("bit_not"));
+			LOGPF(("bit_not\n"));
 			break;
 
 		case 0x3C:
@@ -903,7 +905,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si16a = static_cast<sint16>(p->stack.pop2());
 			ui16b = static_cast<sint16>(p->stack.pop2());
 			p->stack.push2(static_cast<uint16>(si16a << ui16b));
-			LOGPF(("lsh"));
+			LOGPF(("lsh\n"));
 			break;
 
 		case 0x3D:
@@ -914,7 +916,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si16a = static_cast<sint16>(p->stack.pop2());
 			ui16b = static_cast<sint16>(p->stack.pop2());
 			p->stack.push2(static_cast<uint16>(si16a >> ui16b));
-			LOGPF(("rsh"));
+			LOGPF(("rsh\n"));
 			break;
 
 		case 0x3E:
@@ -923,7 +925,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8a = static_cast<sint8>(cs.read1());
 			ui16a = static_cast<sint8>(p->stack.access1(p->bp+si8a));
 			p->stack.push2(ui16a);
-			LOGPF(("push byte\t%s = %02Xh", print_bp(si8a), ui16a));
+			LOGPF(("push byte\t%s = %02Xh\n", print_bp(si8a), ui16a));
 			break;
 
 		case 0x3F:
@@ -932,7 +934,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.access2(p->bp+si8a);
 			p->stack.push2(ui16a);
-			LOGPF(("push\t\t%s = %04Xh", print_bp(si8a), ui16a));
+			LOGPF(("push\t\t%s = %04Xh\n", print_bp(si8a), ui16a));
 			break;
 
 		case 0x40:
@@ -941,7 +943,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8a = static_cast<sint8>(cs.read1());
 			ui32a = p->stack.access4(p->bp+si8a);
 			p->stack.push4(ui32a);
-			LOGPF(("push dword\t%s = %08Xh", print_bp(si8a), ui32a));
+			LOGPF(("push dword\t%s = %08Xh\n", print_bp(si8a), ui32a));
 			break;
 
 		case 0x41:
@@ -952,7 +954,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				si8a = static_cast<sint8>(cs.read1());
 				ui16a = p->stack.access2(p->bp+si8a);
 				p->stack.push2(duplicateString(ui16a));
-				LOGPF(("push string\t%s", print_bp(si8a)));
+				LOGPF(("push string\t%s\n", print_bp(si8a)));
 			}
 			break;
 
@@ -973,7 +975,7 @@ bool UCMachine::execProcess(UCProcess* p)
 					// error = true;
 				}
 				p->stack.push2(assignList(l));
-				LOGPF(("push list\t%s", print_bp(si8a)));
+				LOGPF(("push list\t%s\n", print_bp(si8a)));
 			}
 			break;
 
@@ -996,7 +998,7 @@ bool UCMachine::execProcess(UCProcess* p)
 					// error = true;
 				}
 				p->stack.push2(assignList(l));
-				LOGPF(("push slist\t%s", print_bp(si8a)));
+				LOGPF(("push slist\t%s\n", print_bp(si8a)));
 			}
 			break;
 
@@ -1030,7 +1032,7 @@ bool UCMachine::execProcess(UCProcess* p)
 					p->stack.push((*listHeap[ui16b])[ui16a], ui32a);
 				}
 			}
-			LOGPF(("push element\t%02X slist==%02X", ui32a, ui32b));
+			LOGPF(("push element\t%02X slist==%02X\n", ui32a, ui32b));
 		} break;
 
 		case 0x45:
@@ -1039,7 +1041,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8a = static_cast<sint8>(cs.read1());
 			ui16b = cs.read1();
 			p->stack.push(p->stack.access(p->bp+si8a), ui16b);
-			LOGPF(("push huge\t%s %02X", print_bp(si8a), ui16b));
+			LOGPF(("push huge\t%s %02X\n", print_bp(si8a), ui16b));
 			break;
 
 		case 0x4B:
@@ -1047,7 +1049,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// push 32 bit pointer address of BP+XX
 			si8a = static_cast<sint8>(cs.read1());
 			p->stack.push4(stackToPtr(p->pid, p->bp+si8a));
-			LOGPF(("push addr\t%s", print_bp(si8a)));
+			LOGPF(("push addr\t%s\n", print_bp(si8a)));
 			break;
 
 		case 0x4C:
@@ -1067,7 +1069,9 @@ bool UCMachine::execProcess(UCProcess* p)
 
 				LOGPF(("push indirect\t%02Xh bytes", ui16a));
 				if (!error && ui16a == 2) {
-					LOGPF((" = %04X", p->stack.access2(p->stack.getSP())));
+					LOGPF((" = %04X\n", p->stack.access2(p->stack.getSP())));
+				} else {
+					LOGPF(("\n"));
 				}
 			}
 			break;
@@ -1087,7 +1091,7 @@ bool UCMachine::execProcess(UCProcess* p)
 					error = true;
 				}
 
-				LOGPF(("pop indirect\t%02Xh bytes", ui16a));
+				LOGPF(("pop indirect\t%02Xh bytes\n", ui16a));
 			}
 			break;
 
@@ -1100,7 +1104,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 			ui32a = globals->getBits(ui16a, ui16b);
 			p->stack.push2(static_cast<uint16>(ui32a));
-			LOGPF(("push\t\tglobal [%04X %02X] = %02X", ui16a, ui16b, ui32a));
+			LOGPF(("push\t\tglobal [%04X %02X] = %02X\n", ui16a,ui16b,ui32a));
 			break;
 
 		case 0x4F:
@@ -1119,7 +1123,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// paranoid :-)
 			assert(globals->getBits(ui16a, ui16b)==(ui32a & ((1 << ui16b)-1)));
 
-			LOGPF(("pop\t\tglobal [%04X %02X] = %02X", ui16a, ui16b, ui32a));
+			LOGPF(("pop\t\tglobal [%04X %02X] = %02X\n", ui16a, ui16b, ui32a));
 			break;
 
 		case 0x50:
@@ -1128,14 +1132,14 @@ bool UCMachine::execProcess(UCProcess* p)
 
 			if (p->ret()) { // returning from process
 				// TODO
-				LOGPF(("ret\t\tfrom process"));
+				LOGPF(("ret\t\tfrom process\n"));
 				p->terminateDeferred();
 
 				// return value is going to be stored somewhere,
 				// and some other process is probably waiting for it.
 				// So, we can't delete ourselves just yet.
 			} else {
-				LOGPF(("ret\t\tto %04X:%04X", p->classid, p->ip));
+				LOGPF(("ret\t\tto %04X:%04X\n", p->classid, p->ip));
 
 				// return value is stored in temp32 register
 
@@ -1156,10 +1160,10 @@ bool UCMachine::execProcess(UCProcess* p)
 			if (!ui16b) {
 				ui16a = cs.getPos() + si16a;
 				cs.seek(ui16a);
-				LOGPF(("jne\t\t%04hXh\t(to %04X) (taken)", si16a,
+				LOGPF(("jne\t\t%04hXh\t(to %04X) (taken)\n", si16a,
 					   cs.getPos()));
 			} else {
-				LOGPF(("jne\t\t%04hXh\t(to %04X) (not taken)", si16a,
+				LOGPF(("jne\t\t%04hXh\t(to %04X) (not taken)\n", si16a,
 					   cs.getPos()));
 			}
 			break;
@@ -1170,13 +1174,13 @@ bool UCMachine::execProcess(UCProcess* p)
 			si16a = static_cast<sint16>(cs.read2());
 			ui16a = cs.getPos() + si16a;
 			cs.seek(ui16a);
-			LOGPF(("jmp\t\t%04hXh\t(to %04X)", si16a, cs.getPos()));
+			LOGPF(("jmp\t\t%04hXh\t(to %04X)\n", si16a, cs.getPos()));
 			break;
 
 		case 0x53:
 			// 53
 			// suspend
-			LOGPF(("suspend"));
+			LOGPF(("suspend\n"));
 			cede=true; 
 			break;
 
@@ -1206,7 +1210,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				ui16a = p->stack.pop2();
 				ui16b = p->stack.pop2();
 				p->stack.push2(ui16a); //!! which pid do we need to push!?
-				LOGPF(("implies"));
+				LOGPF(("implies\n"));
 
 				Process *proc = Kernel::get_instance()->getProcess(ui16b);
 				Process *proc2 = Kernel::get_instance()->getProcess(ui16a);
@@ -1249,7 +1253,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 				uint32 thisptr = p->stack.pop4();
 				
-				LOGPF(("spawn\t\t%02X %02X %04X:%04X",
+				LOGPF(("spawn\t\t%02X %02X %04X:%04X\n",
 					   arg_bytes, this_size, classid, offset));
 
 				UCProcess* newproc = new UCProcess(classid, offset,
@@ -1282,7 +1286,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				int this_size = cs.read1();
 				uint32 unknown = cs.read1(); // ??
 				
-				LOGPF(("spawn inline\t%04X:%04X+%04X=%04X %02X %02X",
+				LOGPF(("spawn inline\t%04X:%04X+%04X=%04X %02X %02X\n",
 					   classid,offset,delta,offset+delta,this_size, unknown));
 
 				uint32 thisptr = 0;
@@ -1306,7 +1310,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 59
 			// push process id
 			p->stack.push2(p->pid);
-			LOGPF(("push\t\tpid = %04Xh", p->pid));
+			LOGPF(("push\t\tpid = %04Xh\n", p->pid));
 			break;
 
 		case 0x5A:
@@ -1314,7 +1318,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// init function. xx = local var size
 			// sets xx bytes on stack to 0, moving sp
 			ui16a = cs.read1();
-			LOGPF(("init\t\t%02X", ui16a));
+			LOGPF(("init\t\t%02X\n", ui16a));
 			
 			if (ui16a & 1) ui16a++; // 16-bit align
 			if (ui16a > 0) {
@@ -1327,7 +1331,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// push 8 bit value returned from function call
 			// (push temp8 as 16 bit value)
 			p->stack.push2(static_cast<uint8>(p->temp32 & 0xFF));
-			LOGPF(("push byte\tretval = %02X", (p->temp32 & 0xFF)));
+			LOGPF(("push byte\tretval = %02X\n", (p->temp32 & 0xFF)));
 			break;
 
 		case 0x5E:
@@ -1335,7 +1339,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// push 16 bit value returned from function call
 			// (push temp16)
 			p->stack.push2(static_cast<uint16>(p->temp32 & 0xFFFF));
-			LOGPF(("push\t\tretval = %04X", (p->temp32 & 0xFFFF)));
+			LOGPF(("push\t\tretval = %04X\n", (p->temp32 & 0xFFFF)));
 			break;
 
 		case 0x5F:
@@ -1343,7 +1347,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// push 32 bit value returned from function call
 			// (push temp32)
 			p->stack.push4(p->temp32);
-			LOGPF(("push long\t\tretval = %08X", p->temp32));
+			LOGPF(("push long\t\tretval = %08X\n", p->temp32));
 			break;
 
 		case 0x60:
@@ -1351,7 +1355,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// convert 16-bit to 32-bit int (sign extend)
 			si32a = static_cast<sint16>(p->stack.pop2());
 			p->stack.push4(si32a);
-			LOGPF(("int to long"));
+			LOGPF(("int to long\n"));
 			break;
 
 		case 0x61:
@@ -1359,7 +1363,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// convert 32-bit to 16-bit int
 			si16a = static_cast<sint16>(p->stack.pop4());
 			p->stack.push2(si16a);
-			LOGPF(("long to int"));
+			LOGPF(("long to int\n"));
 			break;
 
 		case 0x62:
@@ -1368,7 +1372,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.access2(p->bp+si8a);
 			freeString(ui16a);
-			LOGPF(("free string\t%s", print_bp(si8a)));
+			LOGPF(("free string\t%s\n", print_bp(si8a)));
 			break;
 
 		case 0x63:
@@ -1377,7 +1381,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.access2(p->bp+si8a);
 			freeStringList(ui16a);
-			LOGPF(("free slist\t%s", print_bp(si8a)));
+			LOGPF(("free slist\t%s\n", print_bp(si8a)));
 			break;
 
 		case 0x64:
@@ -1386,7 +1390,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.access2(p->bp+si8a);
 			freeList(ui16a);
-			LOGPF(("free list\t%s", print_bp(si8a)));
+			LOGPF(("free list\t%s\n", print_bp(si8a)));
 			break;
 	
 		case 0x65:
@@ -1397,7 +1401,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.access2(p->stack.getSP()+si8a);
 			freeString(ui16a);
-			LOGPF(("free string\t%s", print_sp(si8a)));
+			LOGPF(("free string\t%s\n", print_sp(si8a)));
 			break;
 
 		case 0x66:
@@ -1406,7 +1410,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.access2(p->stack.getSP()+si8a);
 			freeList(ui16a);
-			LOGPF(("free list\t%s", print_sp(si8a)));
+			LOGPF(("free list\t%s\n", print_sp(si8a)));
 			break;
 
 		case 0x67:
@@ -1415,7 +1419,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.access2(p->stack.getSP()+si8a);
 			freeStringList(ui16a);
-			LOGPF(("free slist\t%s", print_sp(si8a)));
+			LOGPF(("free slist\t%s\n", print_sp(si8a)));
 			break;
 
 		case 0x69:
@@ -1424,7 +1428,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.access2(p->bp+si8a);
 			p->stack.push4(stringToPtr(ui16a));
-			LOGPF(("str to ptr\t%s", print_bp(si8a)));
+			LOGPF(("str to ptr\t%s\n", print_bp(si8a)));
 			break;
 
 		case 0x6B:
@@ -1432,7 +1436,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// pop a string and push 32 bit pointer to string
 			ui16a = p->stack.pop2();
 			p->stack.push4(stringToPtr(ui16a));
-			LOGPF(("str to ptr"));
+			LOGPF(("str to ptr\n"));
 			break;
 
 		case 0x6C:
@@ -1442,7 +1446,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// and add it to the "Free Me" list of the process
 			si8a = cs.read1(); // index
 			ui8a = cs.read1(); // type
-			LOGPF(("param pid chg\t%s, type=%u", print_bp(si8a), ui8a));
+			LOGPF(("param pid chg\t%s, type=%u\n", print_bp(si8a), ui8a));
 
 			ui16a = p->stack.access2(p->bp+si8a);
 			switch (ui8a) {
@@ -1477,7 +1481,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// push 32bit result of process
 			// (of which process? pop anything?)
 			// (also see comment for 0x54 'implies')
-			LOGPF(("push dword\tprocess result"));
+			LOGPF(("push dword\tprocess result\n"));
 			p->stack.push4(p->result);
 			break;
 
@@ -1487,7 +1491,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// (effect on SP is the same as popping xx bytes)
 			si8a = static_cast<sint8>(cs.read1());
 			p->stack.addSP(-si8a);
-			LOGPF(("move sp\t\t%s%02Xh", si8a<0?"-":"", si8a<0?-si8a:si8a));
+			LOGPF(("move sp\t\t%s%02Xh\n", si8a<0?"-":"", si8a<0?-si8a:si8a));
 			break;
 
 
@@ -1496,7 +1500,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// push 32 pointer address of SP-xx
 			si8a = static_cast<sint8>(cs.read1());
 			p->stack.push4(stackToPtr(p->pid, static_cast<uint16>(p->stack.getSP() - si8a)));
-			LOGPF(("push addr\t%s", print_sp(-si8a)));
+			LOGPF(("push addr\t%s\n", print_sp(-si8a)));
 			break;
 
 		// loop-related opcodes
@@ -1635,7 +1639,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 				delete[] script;
 
-				LOGPF(("loop\t\t%s %02X %02X", print_bp(si16a),
+				LOGPF(("loop\t\t%s %02X %02X\n", print_bp(si16a),
 					   scriptsize, searchtype));
 			}
 			// FALL-THROUGH to handle first item
@@ -1691,7 +1695,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				}
 
 				if (opcode == 0x73) { // because of the fall-through
-					LOGPF(("loopnext"));
+					LOGPF(("loopnext\n"));
 				}
 			}
 			break;
@@ -1701,7 +1705,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// add xx to the current 'loopscript'
 			ui8a = cs.read1();
 			p->stack.push1(ui8a);
-			LOGPF(("loopscr\t\t%02X \"%c\"", ui8a, static_cast<char>(ui8a)));
+			LOGPF(("loopscr\t\t%02X \"%c\"\n", ui8a, static_cast<char>(ui8a)));
 			break;
 
 		case 0x75: case 0x76:
@@ -1756,10 +1760,10 @@ bool UCMachine::execProcess(UCProcess* p)
 			}
 			
 			if (opcode == 0x75) {
-				LOGPF(("for each\t%s (%02X) %04hX",
+				LOGPF(("for each\t%s (%02X) %04hX\n",
 					print_bp(si8a), ui32a, si16a));
 			} else {
-				LOGPF(("for each str\t%s (%02X) %04hX",
+				LOGPF(("for each str\t%s (%02X) %04hX\n",
 					print_bp(si8a), ui32a, si16a));
 			}
 			
@@ -1802,7 +1806,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// assigns item number and ProcessType 
 			p->setItemNum(p->stack.pop2());
 			p->setType(p->stack.pop2());
-			LOGPF(("set info"));
+			LOGPF(("set info\n"));
 			break;
 
 		case 0x78:
@@ -1819,7 +1823,9 @@ bool UCMachine::execProcess(UCProcess* p)
 				getNumProcesses(p->item_num, p->type) > 1) {
 				// another process with this (object,type) is already running
 				p->terminateDeferred();
-				LOGPF(("\t(terminating)"));
+				LOGPF(("\t(terminating)\n"));
+			} else {
+				LOGPF(("\n"));
 			}
 			
 
@@ -1831,7 +1837,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// end of function
 			// shouldn't happen
 			//! 0x79 is U8 only. Should be removed
-			LOGPF(("end"));
+			LOGPF(("end\n"));
 			perr.printf("end of function opcode reached!\n");
 			error = true;
 			break;
@@ -1844,8 +1850,6 @@ bool UCMachine::execProcess(UCProcess* p)
 			perr.printf("unhandled opcode %02X\n", opcode);
 
 		} // switch(opcode)
-
-		LOGPF(("\n"));
 
 		// write back IP
 		p->ip = static_cast<uint16>(cs.getPos());	// TRUNCATES!
