@@ -16,38 +16,36 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef ITEM_H
-#define ITEM_H
+#ifndef CURRENTMAP_H
+#define CURRENTMAP_H
 
-#include "Object.h"
-class Container;
+#include <list>
 
-class Item : public Object
+class Map;
+class Item;
+
+class CurrentMap
 {
-	friend class ItemFactory;
-
 public:
-	Item();
-	virtual ~Item();
+	CurrentMap();
+	~CurrentMap();
 
-	// p_dynamic_cast stuff
-	ENABLE_DYNAMIC_CAST(Item);
+	void clear();
+	void writeback();
+	void loadMap(Map* map);
 
-	Container* getParent() const { return parent; }
-	void setLocation(sint32 x, sint32 y, sint32 z);
-	void getLocation(sint32& x, sint32& y, sint32& z) const;
+private:
+	void loadItems(std::list<Item*> itemlist);
 
-protected:
-	uint32 shape;
-	uint32 frame;
+	Map* current_map;
 
-	sint32 x,y,z; // world coordinates
-	uint32 flags;
-	uint16 quality;
-	uint32 npcnum;
-	uint32 mapnum;
+	// item lists. Lots of them :-)
+	// items[x][y]
+	std::list<Item*>** items;
 
-	Container* parent; // container this item is in (or 0 for top-level items)
+	// Q: we need to distinguish between items loaded from fixed and
+	// dynamic items. Do this with an extra item flag?
+	// If so, this should already be set in Map, probably
 };
 
 #endif

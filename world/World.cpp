@@ -25,6 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ItemFactory.h"
 #include "Actor.h"
 
+//#define DUMP_ITEMS
+
 World* World::world = 0;
 
 World::World()
@@ -47,8 +49,12 @@ void World::clear()
 	for (unsigned int i = 0; i < maps.size(); ++i) {
 		delete maps[i];
 	}
-
 	maps.clear();
+
+	for (unsigned int i = 0; i < npcs.size(); ++i) {
+		delete npcs[i];
+	}
+	npcs.clear();
 }
 
 void World::initMaps()
@@ -150,7 +156,7 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 			next = 0;
 		}
 
-#if 1
+#ifdef DUMP_ITEMS
 		pout << shape << "," << frame << ":\t(" << x << "," << y << "," << z << "),\t" << std::hex << flags << std::dec << ", " << quality << ", " << npcnum << ", " << mapnum << ", " << next << std::endl;
 #endif
 

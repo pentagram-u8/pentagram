@@ -53,3 +53,10 @@ void Item::setLocation(sint32 X, sint32 Y, sint32 Z)
 	y = Y;
 	z = Z;
 }
+
+void Item::getLocation(sint32& X, sint32& Y, sint32 &Z) const
+{
+	X = x;
+	Y = y;
+	Z = z;
+}

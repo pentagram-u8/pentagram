@@ -26,6 +26,7 @@ class IDataSource;
 
 class Map
 {
+	friend class CurrentMap;
 public:
 	Map();
 	~Map();

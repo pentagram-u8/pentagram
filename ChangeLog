@@ -1,3 +1,6 @@
+2003-03-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/CurrentMap.*: CurrentMap class in progress
+
 2003-03-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/*: stub Actor/MainActor classes
 	* world/ItemFactory.*: added createActor function

@@ -26,6 +26,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Item.h"
 #include "Container.h"
 
+//#define DUMP_ITEMS
+
 Map::Map()
 {
 
@@ -89,10 +91,14 @@ void Map::loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds)
 		while (contdepth != x && contdepth > 0) {
 			cont.pop();
 			contdepth--;
+#ifdef DUMP_ITEMS
 			pout << "---- Ending container ----" << std::endl;
+#endif
 		}
 
+#ifdef DUMP_ITEMS
 		pout << shape << "," << frame << ":\t(" << x << "," << y << "," << z << "),\t" << std::hex << flags << std::dec << ", " << quality << ", " << npcnum << ", " << mapnum << ", " << next << std::endl;
+#endif
 
 		// Question: how do we handle Globs?
 
@@ -115,7 +121,9 @@ void Map::loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds)
 			// container, so prepare to read contents
 			contdepth++;
 			cont.push(c);
+#ifdef DUMP_ITEMS
 			pout << "---- Starting container ----" << std::endl;
+#endif
 		}
 	}
 }
