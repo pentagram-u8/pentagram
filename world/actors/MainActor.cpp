@@ -29,6 +29,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Configuration.h"
 #include "CoreApp.h"
+#include "GameData.h"
+#include "WpnOvlayDat.h"
+#include "ShapeInfo.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -200,6 +203,31 @@ void MainActor::accumulateInt(int n)
 		intelligence++;
 		accumInt = 0;
 	}
+}
+
+void MainActor::getWeaponOverlay(const WeaponOverlayFrame*& frame,
+								 uint32& shape)
+{
+	shape = 0;
+	frame = 0;
+
+	ObjId weaponid = getEquip(ShapeInfo::SE_WEAPON);
+	Item* weapon = World::get_instance()->getItem(weaponid);
+	if (!weapon) return;
+
+	ShapeInfo* shapeinfo = weapon->getShapeInfo();
+	if (!shapeinfo) return;
+
+	WeaponInfo* weaponinfo = shapeinfo->weaponinfo;
+	if (!weaponinfo) return;
+
+	shape = weaponinfo->overlay_shape;
+
+	WpnOvlayDat* wpnovlay = GameData::get_instance()->getWeaponOverlay();
+	frame = wpnovlay->getOverlayFrame(lastanim, weaponinfo->overlay_type,
+									  direction, animframe);
+
+	if (frame == 0) shape = 0;
 }
 
 void MainActor::saveData(ODataSource* ods)

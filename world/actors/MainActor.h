@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Actor.h"
 
+struct WeaponOverlayFrame;
+
 class MainActor : public Actor
 {
 public:
@@ -69,6 +71,8 @@ public:
 
 protected:
 	virtual void saveData(ODataSource* ods);
+
+	void getWeaponOverlay(const WeaponOverlayFrame*& frame, uint32& shape);
 
 	bool justTeleported;
 
