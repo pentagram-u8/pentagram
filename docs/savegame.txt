@@ -303,8 +303,6 @@ sint16 min
 sint16 max
 sint16 value
 sint16 delta
-uint16 slidergid
-uint16 okbuttongid
 uint16 usecodeNotifyPID
 
 

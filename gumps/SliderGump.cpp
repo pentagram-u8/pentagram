@@ -47,7 +47,7 @@ SliderGump::SliderGump(int x, int y, sint16 min_, sint16 max_,
 					   sint16 value_, sint16 delta_)
 	: ModalGump(x, y, 5, 5), min(min_), max(max_), delta(delta_), value(value_)
 {
-	slidergid = okbuttongid = usecodeNotifyPID = 0;
+	usecodeNotifyPID = 0;
 }
 
 SliderGump::~SliderGump()
@@ -66,6 +66,8 @@ SliderGump::~SliderGump()
 static const int gumpshape = 41;
 static const int gumpframe = 0;
 static const int okshape = 42;
+static const int leftshape = 43;
+static const int rightshape = 44;
 static const int slidershape = 45;
 static const int sliderframe = 0;
 static const int slidery = 17;
@@ -75,17 +77,29 @@ static const int labelx = 161;
 static const int labely = 26;
 static const int labelfont = 0;
 
+static const int OK_INDEX = 1;
+static const int LEFT_INDEX = 2;
+static const int RIGHT_INDEX = 3;
+static const int SLIDER_INDEX = 4;
+
 int SliderGump::getSliderPos()
 {
 	return sliderminx + (value-min)*(slidermaxx-sliderminx)/(max-min);
 }
 
-void SliderGump::setValue(int sliderx)
+void SliderGump::setValueFromSlider(int sliderx)
 {
 	int val = (sliderx-sliderminx)*(max-min)/(slidermaxx-sliderminx) + min;
 	if (val < min) val = min;
 	if (val > max) val = max;
 	value = min + delta*((sint16)(val/delta));
+}
+
+void SliderGump::setSliderPos()
+{
+	Gump* slider = Gump::FindGump(SlidingWidget::ClassType);
+	assert(slider);
+	slider->Move(getSliderPos(), slidery);
 }
 
 void SliderGump::drawText(RenderSurface* surf)
@@ -127,26 +141,56 @@ void SliderGump::InitGump()
 	// Create the SlidingWidget
 	Gump *widget = new SlidingWidget(getSliderPos(),slidery,
 									 childshape,sliderframe);
-	slidergid = widget->getObjId();
+	widget->SetIndex(SLIDER_INDEX);
 	widget->InitGump();
 	AddChild(widget);
 
 	FrameID button_up(GameData::GUMPS, okshape, 0);
 	FrameID button_down(GameData::GUMPS, okshape, 1);
 
-//	widget = new ButtonWidget(20, 17, "OK", labelfont);
 	widget = new ButtonWidget(14, 17, button_up, button_down);
+	widget->SetIndex(OK_INDEX);
 	widget->InitGump();
-	okbuttongid = widget->getObjId();
+	AddChild(widget);
+
+	FrameID buttonleft_up(GameData::GUMPS, leftshape, 0);
+	FrameID buttonleft_down(GameData::GUMPS, leftshape, 1);
+
+	widget = new ButtonWidget(36, 17, buttonleft_up, buttonleft_down);
+	widget->SetIndex(LEFT_INDEX);
+	widget->InitGump();
+	AddChild(widget);
+
+
+	FrameID buttonright_up(GameData::GUMPS, rightshape, 0);
+	FrameID buttonright_down(GameData::GUMPS, rightshape, 1);
+
+	widget = new ButtonWidget(141, 17, buttonright_up, buttonright_down);
+	widget->SetIndex(RIGHT_INDEX);
+	widget->InitGump();
 	AddChild(widget);
 }
 
 void SliderGump::ChildNotify(Gump *child, uint32 message)
 {
-	if (child->getObjId() == okbuttongid &&
-		message == ButtonWidget::BUTTON_CLICK)
-	{
-		Close();
+	pout << "Button: " << message << ", " << child->GetIndex() << std::endl;
+	if (message == ButtonWidget::BUTTON_CLICK) {
+		pout << "CLICK" << std::endl;
+		switch (child->GetIndex()) {
+		case OK_INDEX:
+			Close();
+			break;
+		case LEFT_INDEX:
+			value -= delta;
+			if (value < min) value = min;
+			setSliderPos();
+			break;
+		case RIGHT_INDEX:
+			value += delta;
+			if (value > max) value = max;
+			setSliderPos();
+			break;
+		}
 	}
 }
 
@@ -167,7 +211,7 @@ void SliderGump::Close(bool no_del)
 
 bool SliderGump::StartDraggingChild(Gump* gump, int mx, int my)
 {
-	if (gump->getObjId() == slidergid) {
+	if (gump->GetIndex() == SLIDER_INDEX) {
 		gump->ParentToGump(mx, my);
 		sliderMouseOffset = mx;
 		return true;
@@ -178,8 +222,8 @@ bool SliderGump::StartDraggingChild(Gump* gump, int mx, int my)
 
 void SliderGump::DraggingChild(Gump* gump, int mx, int my)
 {
-	if (gump->getObjId() == slidergid) {
-		setValue(mx-sliderMouseOffset);
+	if (gump->GetIndex() == SLIDER_INDEX) {
+		setValueFromSlider(mx-sliderMouseOffset);
 		gump->Move(getSliderPos(), slidery);
 	}
 }
@@ -193,10 +237,14 @@ bool SliderGump::OnKeyDown(int key, int mod)
 	switch(key)
 	{
 	case SDLK_LEFT:
-		if (value > min) value--;
+		value -= delta;
+		if (value < min) value = min;
+		setSliderPos();
 		break;
 	case SDLK_RIGHT:
-		if (value < max) value++;
+		value += delta;
+		if (value > max) value = max;
+		setSliderPos();
 		break;
 	case SDLK_RETURN:
 		Close();
@@ -223,8 +271,6 @@ void SliderGump::saveData(ODataSource* ods)
 	ods->write2(max);
 	ods->write2(value);
 	ods->write2(delta);
-	ods->write2(slidergid);
-	ods->write2(okbuttongid);
 	ods->write2(usecodeNotifyPID);
 }
 
@@ -238,8 +284,6 @@ bool SliderGump::loadData(IDataSource* ids)
 	max = ids->read2();
 	value = ids->read2();
 	delta = ids->read2();
-	slidergid = ids->read2();
-	okbuttongid = ids->read2();
 	usecodeNotifyPID = ids->read2();
 
 	return true;

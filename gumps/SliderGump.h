@@ -58,12 +58,11 @@ protected:
 
 	int sliderMouseOffset;
 
-	uint16 slidergid;
-	uint16 okbuttongid;
 	uint16 usecodeNotifyPID;
 	
 	int getSliderPos();
-	void setValue(int sliderx);
+	void setSliderPos();
+	void setValueFromSlider(int sliderx);
 	void drawText(RenderSurface* surf);
 };
 
