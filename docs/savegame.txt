@@ -32,7 +32,7 @@ UCGLOBALS: Globals
 UCSTRINGS: Strings
 UCLISTS: Lists
 APP: GUIApp/CoreApp data
-pentagram version (current and starting?)
+pentagram version (current and starting?), current game resolution
 
 
 
