@@ -27,7 +27,8 @@ class ResizableGump;
 class ConsoleGump;
 class RenderSurface;
 class PaletteManager;
-struct Texture;
+class MainShapeFlex;
+class World;
 
 // extremely simplified stub-ish Application class
 class Application {
@@ -49,8 +50,9 @@ protected:
 	ResizableGump* desktop;
 	ConsoleGump* console;
 	RenderSurface *screen;
-	Texture *confont;
 	PaletteManager *palettemanager;
+	MainShapeFlex *mainshapes;
+	World *world;
 };
 
 #endif

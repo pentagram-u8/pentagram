@@ -29,11 +29,13 @@ Kernel* Kernel::kernel = 0;
 
 Kernel::Kernel()
 {
+	assert(kernel == 0);
 	kernel = this;
 }
 
 Kernel::~Kernel()
 {
+	kernel = 0;
 }
 
 uint16 Kernel::addProcess(Process* proc)

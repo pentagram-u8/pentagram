@@ -32,15 +32,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //#include "ConsoleGump.h"
 #include "Shape.h"
 #include "PaletteManager.h"
-#include "ShapeFlex.h"
+#include "MainShapeFlex.h"
 #include "Palette.h"
 #include "XFormBlend.h"
+#include "World.h"
 
 #include <SDL.h>
 #include <cstdlib>
 
 int classid, offset; // only temporary, don't worry :-)
-ShapeFlex* shapes;
 Shape* shape;
 
 Application::Application(int argc, char *argv[])
@@ -92,13 +92,27 @@ Application::Application(int argc, char *argv[])
 		perr << "Unable to load u8shapes.flx. Exiting" << std::endl;
 		std::exit(-1);
 	}
-	shapes = new ShapeFlex(sf);
-	shape = shapes->getShape(1);
+	mainshapes = new MainShapeFlex(sf);
+
+	// Load typeflags
+	IDataSource *tfs = filesystem->ReadFile("@u8/static/typeflag.dat");
+	if (!tfs) {
+		perr << "Unable to load typeflag.dat. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	mainshapes->loadTypeFlags(tfs);
+	delete tfs;
+
+	shape = mainshapes->getShape(1);
 	shape->setPalette(palettemanager->getPalette(PaletteManager::Pal_Game));
+
+	// Initialize world
+	world = new World();
 
 	// Load confont
 	pout << "Load Confont" << std::endl;
 	IDataSource *cf = filesystem->ReadFile("@data/fixedfont.tga");
+	Texture *confont;
 	if (cf) confont = Texture::Create(*cf, "@data/fixedfont.tga");
 	else confont = 0;
 	if (!confont)

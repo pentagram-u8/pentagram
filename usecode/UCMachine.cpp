@@ -41,10 +41,12 @@ UCMachine* UCMachine::ucmachine = 0;
 UCMachine::UCMachine() :
 	globals(0x1000)
 {
+	assert(ucmachine == 0);
+	ucmachine = this;
+
+
 	// zero globals
 	globals.push0(globals.getSize());
-
-	ucmachine = this;
 
 	loop_list = 0;
 	loop_index = 0;
@@ -53,6 +55,7 @@ UCMachine::UCMachine() :
 
 UCMachine::~UCMachine()
 {
+	ucmachine = 0;
 }
 
 static const char *print_bp(const sint16 offset)

@@ -1,4 +1,7 @@
 2003-03-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/World.*: main World class. (Just some comments, for now)
+
+2003-03-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/TypeFlags.*, graphics/ShapeInfo.h: typeflag.dat handling
 	* kernel/Application.cpp: load typeflag.dat
 	* graphics/MainShapeFlex.*: class for the main shapeflex (u8shapes.flx)

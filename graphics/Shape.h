@@ -45,10 +45,10 @@ public:
 
 protected:
 
-	// This will load a u8 style shape 'optimzed'.
+	// This will load a u8 style shape 'optimized'.
 	void LoadU8Format(const uint8* data, uint32 size, const ConvertShapeFormat* format);
 
-	// This will load a pentagram style shape 'optimzed'.
+	// This will load a pentagram style shape 'optimized'.
 	void LoadPentagramFormat(const uint8* data, uint32 size, const ConvertShapeFormat* format);
 
 	// This will load any sort of shape via a ConvertShapeFormat struct

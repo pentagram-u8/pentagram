@@ -37,16 +37,17 @@
 #include <string>
 using	std::string;
 
-FileSystem* FileSystem::filesystem;
+FileSystem* FileSystem::filesystem = 0;
 
 FileSystem::FileSystem(bool noforced) : noforcedvpaths(noforced)
 {
+	assert(filesystem == 0);
 	filesystem = this;
 }
 
 FileSystem::~FileSystem()
 {
-
+	filesystem = 0;
 }
 
 
