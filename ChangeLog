@@ -1,3 +1,6 @@
+2004-07-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/Actor.*: fix combat-stat functions for non-monster Actor
+
 2004-07-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Actor.*: Actors can now also have non-equipped contents
 

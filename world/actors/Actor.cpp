@@ -359,15 +359,19 @@ Animation::Result Actor::tryAnim(Animation::Sequence anim, int dir, PathfindingS
 uint32 Actor::getArmourClass()
 {
 	ShapeInfo* si = getShapeInfo();
-	assert(si->monsterinfo);
-	return si->monsterinfo->armour_class;
+	if (si->monsterinfo)
+		return si->monsterinfo->armour_class;
+	else
+		return 0;
 }
 
 uint16 Actor::getDefenseType()
 {
 	ShapeInfo* si = getShapeInfo();
-	assert(si->monsterinfo);
-	return si->monsterinfo->defense_type;;
+	if (si->monsterinfo)
+		return si->monsterinfo->defense_type;;
+	else
+		return 0;
 }
 
 sint16 Actor::getDefendingDex()
@@ -383,22 +387,27 @@ sint16 Actor::getAttackingDex()
 uint16 Actor::getDamageType()
 {
 	ShapeInfo* si = getShapeInfo();
-	assert(si->monsterinfo);
-	return si->monsterinfo->damage_type;
+	if (si->monsterinfo)
+		return si->monsterinfo->damage_type;
+	else 
+		return WeaponInfo::DMG_NORMAL;
 }
 
 
 int Actor::getDamageAmount()
 {
 	ShapeInfo* si = getShapeInfo();
-	assert(si->monsterinfo);
+	if (si->monsterinfo) {
 
-	int min = static_cast<int>(si->monsterinfo->min_dmg);
-	int max = static_cast<int>(si->monsterinfo->max_dmg);
-
-	int damage = (std::rand() % (max - min + 1)) + min;
-
-	return damage;
+		int min = static_cast<int>(si->monsterinfo->min_dmg);
+		int max = static_cast<int>(si->monsterinfo->max_dmg);
+		
+		int damage = (std::rand() % (max - min + 1)) + min;
+		
+		return damage;
+	} else {
+		return 1;
+	}
 }
 
 
