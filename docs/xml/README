@@ -1,11 +1,37 @@
-To transform the Docs/FAQ you need Xalan (http://xml.apache.org/xalan-j/) and on that page see what else you need (Java Development Kit or Java Runtime). 
-You need xalan.jar, xercesImpl.jar and xml-apis.jar from the Xalan Package.
-Copy these files to the same directory that contains the xml and xsl files of the Pentagram Documentation/FAQ.
-Then use the makefiles provided in the directory.
+Quick and dirty guide to generating our documentation
+=====================================================
 
-To properly use the php files (docs.dat, faq.dat) you have to to strip the
+1. Preparations
+---------------
+
+To transform the Readme/FAQ you need Xalan, found at http://xml.apache.org/xalan-j/ and on that page see what
+else you need (Java Development Kit or Java Runtime). 
+From the Xalan package you need xalan.jar, xercesImpl.jar and xml-apis.jar.
+Copy these files to the same directory that contains the xml and xsl files of the Pentagram Readme/FAQ.
+
+
+2. Generating the docs
+----------------------
+
+- Use the makefiles provided in the directory by running "make".
+
+- Win32 users need to run "make -f makefile.win32" to transform the files.
+
+
+3. What to do with the files
+----------------------------
+
+By running make you get readme.txt/html/dat and faq.txt/html/dat.
+
+- Replace Readme and FAQ in the root directory of the pentagram cvs-module with the text files.
+
+- Copy the text file to the root of the web module and the *.dat files to /content dir of the web module
+- To properly use the php files (readme.dat, faq.dat) you have to to strip the
  <test xmlns="test.dtd"> ... </test> stuff surrounding everything else.
 
-Notes for Win32 users:
-You need to run
-make -f makefile.win32 to transform the files.
+
+4. Misc
+-------
+
+- There is a slight incompatibility with the JDK 1.4.x. 
+See http://xml.apache.org/xalan-j/faq.html#faq-N100CC for details and workaround.
