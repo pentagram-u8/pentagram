@@ -87,7 +87,7 @@ class DataType
 		void print_type_unk(Console &o) const { _vtype.print_unk(o); };
 		void print_value_unk(Console &o) const;
 		void print_value_asm(Console &o) const;
-		void print_value_bin(OBufferDataSource &o) const;
+		void print_value_bin(ODequeDataSource &o) const;
 		
 	private:
 		Type _vtype;

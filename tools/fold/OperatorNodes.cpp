@@ -55,7 +55,7 @@ void UniOperatorNode::print_asm(Console &o) const
 	}
 }
 
-void UniOperatorNode::print_bin(OBufferDataSource &o) const
+void UniOperatorNode::print_bin(ODequeDataSource &o) const
 {
 	assert(rtype().type()!=Type::T_INVALID);
 	switch(otype)
@@ -163,7 +163,7 @@ void BinOperatorNode::print_asm(Console &o) const
 	}
 }
 
-void BinOperatorNode::print_bin(OBufferDataSource &o) const
+void BinOperatorNode::print_bin(ODequeDataSource &o) const
 {
 	assert(rtype().type()!=Type::T_INVALID);
 	assert(lnode!=0);

@@ -40,7 +40,7 @@ class UniOperatorNode : public UniNode
 
 		void print_unk(Console &o, const uint32 isize) const;
 		void print_asm(Console &o) const;
-		void print_bin(OBufferDataSource &o) const;
+		void print_bin(ODequeDataSource  &o) const;
 		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
 
 	protected:
@@ -68,7 +68,7 @@ class BinOperatorNode : public BinNode
 
 		void print_unk(Console &o, const uint32 isize) const;
 		void print_asm(Console &o) const;
-		void print_bin(OBufferDataSource &o) const;
+		void print_bin(ODequeDataSource  &o) const;
 		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
 
 	protected:

@@ -200,12 +200,12 @@ void ConvertShp(IDataSource *readfile, ODataSource *writefile)
 
 const ConvertShapeFormat *GetShapeFormat(const char *game)
 {
-	if (!Q_strcasecmp(game, "u8")) return &U8ShapeFormat;
-	else if (!Q_strcasecmp(game, "u82D")) return &U82DShapeFormat;
-	else if (!Q_strcasecmp(game, "u8skf")) return &U8SKFShapeFormat;
-	else if (!Q_strcasecmp(game, "cru")) return &CrusaderShapeFormat;
-	else if (!Q_strcasecmp(game, "cru2D")) return &Crusader2DShapeFormat;
-	else if (!Q_strcasecmp(game, "pent")) return &PentagramShapeFormat;
+	if (!Pentagram::Q_strcasecmp(game, "u8")) return &U8ShapeFormat;
+	else if (!Pentagram::Q_strcasecmp(game, "u82D")) return &U82DShapeFormat;
+	else if (!Pentagram::Q_strcasecmp(game, "u8skf")) return &U8SKFShapeFormat;
+	else if (!Pentagram::Q_strcasecmp(game, "cru")) return &CrusaderShapeFormat;
+	else if (!Pentagram::Q_strcasecmp(game, "cru2D")) return &Crusader2DShapeFormat;
+	else if (!Pentagram::Q_strcasecmp(game, "pent")) return &PentagramShapeFormat;
 
 	return 0;
 }
@@ -231,7 +231,7 @@ int main(int argc, char **argv)
 
 	parameters.process(argc, argv);
 
-	if (!Q_strcasecmp(ifmt.c_str(), "auto")) read_format = &AutoShapeFormat;
+	if (!Pentagram::Q_strcasecmp(ifmt.c_str(), "auto")) read_format = &AutoShapeFormat;
 	else read_format = GetShapeFormat(ifmt.c_str());
 
 	write_format = GetShapeFormat(ofmt.c_str());
@@ -249,7 +249,7 @@ int main(int argc, char **argv)
 	}
 
 	// Check to see if the file ends in .shp. If it does, assume single shape file
-	if (std::strlen(argv[1]) > 4 && !Q_strcasecmp(argv[1]+std::strlen(argv[1])-4, ".shp"))
+	if (std::strlen(argv[1]) > 4 && !Pentagram::Q_strcasecmp(argv[1]+std::strlen(argv[1])-4, ".shp"))
 		singlefile = true;
 
 	if (singlefile) pout << "Single shape mode" << std::endl;

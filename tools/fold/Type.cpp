@@ -105,7 +105,7 @@ void DataType::print_value_asm(Console &o) const
 	}
 }
 
-void DataType::print_value_bin(OBufferDataSource &o) const
+void DataType::print_value_bin(ODequeDataSource &o) const
 {
 	switch(_dtype)
 	{

@@ -103,7 +103,7 @@ void PopVarNode::print_asm(Console &o) const
 	}
 }
 
-void PopVarNode::print_bin(OBufferDataSource &o) const
+void PopVarNode::print_bin(ODequeDataSource  &o) const
 {
 	assert(node!=0);
 	Node::print_linenum_bin(o);
@@ -283,7 +283,7 @@ void PushVarNode::print_asm(Console &o) const
 	}
 }
 
-void PushVarNode::print_bin(OBufferDataSource &o) const
+void PushVarNode::print_bin(ODequeDataSource  &o) const
 {
 	switch(dtype.dtype())
 	{

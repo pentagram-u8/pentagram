@@ -41,7 +41,7 @@ class EndNode : public Node
 		
 		void print_unk(Console &o, const uint32 isize) const;
 		void print_asm(Console &o) const;
-		void print_bin(OBufferDataSource &o) const;
+		void print_bin(ODequeDataSource &o) const;
 		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
 		
 		inline uint32 TargetOffset() const { return targetOffset; };
@@ -79,7 +79,7 @@ class IfNode : public UniNode
 		
 		void print_unk(Console &o, const uint32 isize) const;
 		void print_asm(Console &o) const;
-		void print_bin(OBufferDataSource &o) const;
+		void print_bin(ODequeDataSource &o) const;
 		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
 		bool fold_else(DCUnit *unit, std::deque<Node *> &nodes);
 		

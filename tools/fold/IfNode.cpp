@@ -167,7 +167,7 @@ void IfNode::print_asm(Console &o) const
 	}
 }
 
-void IfNode::print_bin(OBufferDataSource &o) const
+void IfNode::print_bin(ODequeDataSource &o) const
 {
 	assert(rtype().type()==Type::T_INVALID);
 	Node::print_linenum_bin(o);
@@ -330,7 +330,7 @@ void EndNode::print_asm(Console &o) const
 	}
 }
 
-void EndNode::print_bin(OBufferDataSource &o) const
+void EndNode::print_bin(ODequeDataSource &o) const
 {
 	assert(rtype().type()==Type::T_INVALID);
 	Node::print_linenum_bin(o);

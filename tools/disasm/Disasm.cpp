@@ -866,7 +866,7 @@ int main(int argc, char **argv)
 	}
 
 	// Force crusader mode if we are reading overload.dat
-	if (!Q_strcasecmp(stripped_filename, "overload.dat"))
+	if (!Pentagram::Q_strcasecmp(stripped_filename, "overload.dat"))
 	{
 		pout << "Using \"overload.dat\". Forcing crusader gametype." << std::endl;
 		gametype="crusader";
@@ -903,7 +903,7 @@ int main(int argc, char **argv)
 	readfunctionnames();
 
 	// List functions
-	if (!Q_strcasecmp(argv[2], "-l")) {
+	if (!Pentagram::Q_strcasecmp(argv[2], "-l")) {
 
 		pout << "Listing classes..." << endl << endl;
 
@@ -949,11 +949,11 @@ int main(int argc, char **argv)
 		return 0;
 	}
 	// Overload Table
-	else if (!Q_strcasecmp(argv[2], "-overload")) {
+	else if (!Pentagram::Q_strcasecmp(argv[2], "-overload")) {
 		uint32 end;
 
 		// it's overload.dat
-		if (!Q_strcasecmp(stripped_filename, "overload.dat"))
+		if (!Pentagram::Q_strcasecmp(stripped_filename, "overload.dat"))
 		{
 			end = ucfile->getSize();
 			ucfile->seek(0);
