@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -42,7 +42,7 @@ PaletteManager::~PaletteManager()
 	palettemanager = 0;
 }
 
-void PaletteManager::load(PalIndex index, IDataSource& ds, IDataSource &xformds)
+void PaletteManager::load(PalIndex index, IDataSource& ds,IDataSource &xformds)
 {
 	if (palettes.size() <= static_cast<unsigned int>(index))
 		palettes.resize(index+1);
@@ -52,6 +52,21 @@ void PaletteManager::load(PalIndex index, IDataSource& ds, IDataSource &xformds)
 
 	Pentagram::Palette* pal = new Pentagram::Palette;
 	pal->load(ds,xformds);
+	rendersurface->CreateNativePalette(pal); // convert to native format
+
+	palettes[index] = pal;
+}
+
+void PaletteManager::load(PalIndex index, IDataSource& ds)
+{
+	if (palettes.size() <= static_cast<unsigned int>(index))
+		palettes.resize(index+1);
+
+	if (palettes[index])
+		delete palettes[index];
+
+	Pentagram::Palette* pal = new Pentagram::Palette;
+	pal->load(ds);
 	rendersurface->CreateNativePalette(pal); // convert to native format
 
 	palettes[index] = pal;

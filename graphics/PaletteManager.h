@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram Team
+Copyright (C) 2003-2004 The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -34,7 +34,8 @@ public:
 	static PaletteManager* get_instance() { return palettemanager; }
 
 	enum PalIndex {
-		Pal_Game = 0
+		Pal_Game = 0,
+		Pal_Movie = 1
 	};
 
 	enum PalTransforms {
@@ -66,6 +67,7 @@ public:
 	};
 
 	void load(PalIndex index, IDataSource& ds, IDataSource &xformds);
+	void load(PalIndex index, IDataSource& ds);
 	Pentagram::Palette* getPalette(PalIndex index);
 
 	// Apply a transform matrix to a palette (-4.11 fixed)

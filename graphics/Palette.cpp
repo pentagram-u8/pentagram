@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,6 +28,13 @@ namespace Pentagram
 
 void Palette::load(IDataSource& ds, IDataSource& xformds)
 {
+	load(ds);
+	for (int i = 0; i < 256; i++)
+		xform_untransformed[i] = xformds.read4();
+}
+
+void Palette::load(IDataSource& ds)
+{
 	int i;
 	ds.read(palette, 768);
 
@@ -40,7 +47,7 @@ void Palette::load(IDataSource& ds, IDataSource& xformds)
 	}
 
 	for (i = 0; i < 256; i++)
-		xform_untransformed[i] = xformds.read4();
+		xform_untransformed[i] = 0;
 
 	// Setup the transformation matrix
 	matrix[0] = 0x800;	matrix[1] = 0;		matrix[2] = 0;		matrix[3] = 0;
