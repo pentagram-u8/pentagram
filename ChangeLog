@@ -1,3 +1,7 @@
+2003-04-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/*, kernel/*: added some usecode-call functions
+	* Makefile.mingw: set CFLAGS/CC variables
+
 2003-03-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: minor bugfixes
 	* Gump.h: add OnTextInput event

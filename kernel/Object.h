@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef OBJECT_H
 #define OBJECT_H
 
+class Usecode;
+
 class Object
 {
 public:
@@ -31,6 +33,8 @@ public:
 	uint16 getObjId() const { return objid; }
 	virtual uint16 assignObjId(); //get and assign self (and contents) an objID
 	void clearObjId();
+
+	void callUsecode(uint32 classid, uint32 offset, Usecode *u);
 
 protected:
 	uint16 objid;

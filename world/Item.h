@@ -41,6 +41,8 @@ public:
 	uint32 getShape() const { return shape; }
 	uint32 getFrame() const { return frame; }
 
+	void callUsecodeEvent(uint32 event);
+
 	void setupLerp(/* Camera &camera */);	// Setup the lerped info for this frame
 	inline void doLerp(uint32 factor) 		// Does lerping for an in between frame (0-256)
 	{

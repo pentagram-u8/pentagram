@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "Item.h"
+#include "Application.h"
+#include "Usecode.h"
 
 /*
 My current idea on how to construct items: an ItemFactory class that
@@ -60,6 +62,14 @@ void Item::getLocation(sint32& X, sint32& Y, sint32 &Z) const
 	Y = y;
 	Z = z;
 }
+
+void Item::callUsecodeEvent(uint32 event)
+{
+	Usecode* u = Application::get_instance()->getMainUsecode();
+
+	callUsecode(shape, u->get_class_event(shape, event), u);
+}
+
 
 //
 // Item::setupLerp(uint32 factor)

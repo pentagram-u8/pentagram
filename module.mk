@@ -14,6 +14,7 @@ pentagram_OBJ = \
 	kernel/Object.o \
 	usecode/UCMachine.o \
 	usecode/UCProcess.o \
+	usecode/Usecode.o \
 	usecode/UsecodeFlex.o \
 	usecode/UCList.o \
 	filesys/FileSystem.o \

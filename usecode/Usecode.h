@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002 The Pentagram team
+Copyright (C) 2002-2003 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,6 +28,8 @@ public:
 
 	virtual const uint8* get_class(uint32 classid)=0;
 	virtual uint32 get_class_size(uint32 classid)=0;
+
+	virtual uint32 get_class_event(uint32 classid, uint32 eventid);
 };
 
 

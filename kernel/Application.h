@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002 The Pentagram team
+Copyright (C) 2002-2003 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,21 +28,27 @@ class ConsoleGump;
 class RenderSurface;
 class PaletteManager;
 class MainShapeFlex;
+class Usecode;
 class World;
 
 // extremely simplified stub-ish Application class
 class Application {
 public:
 	Application(int argc, char *argv[]);
-	virtual ~Application();
+	~Application();
 
-	virtual void run();
-	virtual void paint();
+	static Application* get_instance() { return application; }
+	
+	void run();
+	void paint();
 
 	void loadConfig();
 	void setupVirtualPaths();
 
-protected:
+	Usecode* getMainUsecode() const { return mainusecode; }
+	MainShapeFlex* getMainShapes() const { return mainshapes; }
+
+private:
 	Kernel* kernel;
 	UCMachine* ucmachine;
 	FileSystem* filesystem;
@@ -52,7 +58,10 @@ protected:
 	RenderSurface *screen;
 	PaletteManager *palettemanager;
 	MainShapeFlex *mainshapes;
+	Usecode *mainusecode;
 	World *world;
+
+	static Application* application;
 };
 
 #endif

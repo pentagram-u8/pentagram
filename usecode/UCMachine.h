@@ -53,6 +53,12 @@ public:
 
 	void usecodeStats();
 
+	static uint32 listToPtr(uint16 l);
+	static uint32 stringToPtr(uint16 s);
+	static uint32 stackToPtr(uint16 pid, uint16 offset);
+	static uint32 globalToPtr(uint16 offset);
+	static uint32 objectToPtr(uint16 objID);
+
 private:
 
 	// this technically isn't a stack, but UCStack supports the access 
@@ -68,13 +74,6 @@ private:
 
 	uint16 assignString(const char* str);
 	uint16 assignList(UCList* l);
-
-	uint32 listToPtr(uint16 l);
-	uint32 stringToPtr(uint16 s);
-	uint32 stackToPtr(uint16 pid, uint16 offset);
-	uint32 globalToPtr(uint16 offset);
-	uint32 objectToPtr(uint16 objID);
-
 
 	uint16 loop_list;
 	uint32 loop_index;

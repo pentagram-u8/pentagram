@@ -44,11 +44,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <SDL.h>
 #include <cstdlib>
 
+
+Application* Application::application = 0;
+
 int classid, offset; // only temporary, don't worry :-)
 Shape* shape;
 
 Application::Application(int argc, char *argv[])
 {
+	assert(application == 0);
+	application = this;
+
 	// Init sdl
 	pout << "Init SDL" << std::endl;
 	SDL_Init(SDL_INIT_VIDEO);
@@ -128,6 +134,15 @@ Application::Application(int argc, char *argv[])
 	delete cf;
 	con.SetConFont(confont);
 
+
+	IDataSource* uds = filesystem->ReadFile("@u8/usecode/eusecode.flx");
+	if (!uds) {
+		perr << "Unable to load usecode/eusecode.flx. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	mainusecode = new UsecodeFlex(uds);
+
+
 	IDataSource *saveds = filesystem->ReadFile("@u8/savegame/u8save.000");
 	U8Save *u8save = new U8Save(saveds);
 
@@ -162,6 +177,7 @@ Application::Application(int argc, char *argv[])
 		std::exit(-1);
 	}
 	world->loadFixed(fd);
+	// some testing...
 	world->switchMap(3);
 	world->switchMap(40);
 	world->switchMap(43);
@@ -190,22 +206,18 @@ Application::~Application()
 	delete filesystem;
 	delete config;
 	delete palettemanager;
+
+	application = 0;
 }
 
 void Application::run()
 {
-	IDataSource* ds = filesystem->ReadFile("@u8/usecode/eusecode.flx");
-	if (!ds) {
-		perr << "Unable to load eusecode.flx. Exiting" << std::endl;
-		std::exit(-1);
-	}
-	Usecode* u = new UsecodeFlex(ds);
 	UCProcess* p;
 	if (classid != -1) {
-		p = new UCProcess(u, classid, offset);
+		p = new UCProcess(mainusecode, classid, offset);
 	} else {
-//		p = new UCProcess(u, 0xD0, 0x80);
-		p = new UCProcess(u, 0x581, 0x28F9);
+//		p = new UCProcess(mainusecode, 0xD0, 0x80);
+		p = new UCProcess(mainusecode, 0x581, 0x28F9);
 	}
 
     ucmachine->addProcess(p);
@@ -303,7 +315,7 @@ void Application::loadConfig()
 		filesystem->AddVirtualPath("@data", data);
 	}
 	else {
-		pout << "Key not found. Data path not set." << std::endl;
+		pout << "Key not found. Data path set to default." << std::endl;
 	}
 
 	std::string u8;

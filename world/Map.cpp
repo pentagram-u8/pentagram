@@ -142,5 +142,14 @@ void Map::loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds,
 			pout << "---- Starting container ----" << std::endl;
 #endif
 		}
+
+		// !testing
+		if (item->getShape() == 223) {
+			static bool alreadydone = false;
+			if (!alreadydone)
+				item->callUsecodeEvent(0);
+			alreadydone = true;
+		}
+
 	}
 }

@@ -21,6 +21,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Object.h"
 #include "World.h"
 
+#include "UCProcess.h"
+#include "UCMachine.h"
+
+
 // p_dynamic_cast stuff
 DEFINE_DYNAMIC_CAST_CODE_BASE_CLASS(Object);
 
@@ -40,4 +44,11 @@ uint16 Object::assignObjId()
 void Object::clearObjId()
 {
 	objid = 0xFFFF;
+}
+
+void Object::callUsecode(uint32 classid, uint32 offset, Usecode* u)
+{
+	uint32 objptr = UCMachine::objectToPtr(getObjId());
+	UCProcess* p = new UCProcess(u, classid, offset, objptr);
+	UCMachine::get_instance()->addProcess(p);
 }
