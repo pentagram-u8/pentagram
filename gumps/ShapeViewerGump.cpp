@@ -38,6 +38,7 @@
 #include "FileSystem.h"
 #include "u8/ConvertShapeU8.h"
 #include "PaletteManager.h"
+#include "Usecode.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
