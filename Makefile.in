@@ -47,8 +47,8 @@ WARNINGS := @WARNINGS@
 
 # List of all sub modules
 # The ordre is important, be careful if you change it
-MODULES := convert misc tools tools/disasm
-#audio audio/midi_drivers viewer conf tools tools/dcmpsound files usecode suc
+MODULES := convert misc filesys tools tools/disasm
+# tools/fold tools/suc
 
 # look for include files in
 #   each of the modules

@@ -11,7 +11,7 @@ $(LRULES): genrules.pl
 
 # include generated dependencies (we append EMPTY_FILE to avoid warnings if
 # the list happens to be empty)
-LOBJ := $(patsubst %.cc,%.o,$(filter %.cc,$(LSRC)))
+LOBJ := $(patsubst %.cpp,%.o,$(filter %.cpp,$(LSRC)))
 -include $(wildcard $(LPATH)/$(DEPDIR)/*.d) $(EMPTY_FILE)
 
 # Transform LPRODUCTS to have full path information
@@ -24,7 +24,7 @@ all-$(LPATH): $(LPRODUCTS)
 $(LPATH): all-$(LPATH)
 
 # Local clean target
-LOBJ-$(LPATH) := $(patsubst %.cc,%.o,$(filter %.cc,$(LSRC)))
+LOBJ-$(LPATH) := $(patsubst %.cpp,%.o,$(filter %.cpp,$(LSRC)))
 LPRODUCTS-$(LPATH) := $(LPRODUCTS)
 clean-$(LPATH): clean-% :
 	-$(RM) $(LOBJ-$*) $(LPRODUCTS-$*)

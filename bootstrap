@@ -19,13 +19,10 @@ autoconf
 
 echo "Copying Makefiles..."
 cp tools/Makefile tools/disasm
+#cp tools/Makefile tools/fold
+#cp tools/Makefile tools/suc
 cp tools/Makefile misc
 cp tools/Makefile convert
 cp tools/Makefile convert/u8
-#cp /Makefile audio/
-#cp /Makefile audio/midi_drivers
-#cp tools/Makefile conf/
-#cp /Makefile files/
-#cp /Makefile files/zip/
 
 echo "You are now ready to run ./configure ..."

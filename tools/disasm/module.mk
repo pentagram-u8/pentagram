@@ -6,7 +6,7 @@ CXXFLAGS += -I../../..
 LSRC := $(wildcard $(LPATH)/*.cc)
 LPRODUCTS := disasm
 
-disasm_OBJ = ../../misc/args.o disasm.o
+disasm_OBJ = ../../misc/Args.o Disasm.o
 
 # Common rules
 include common.mk

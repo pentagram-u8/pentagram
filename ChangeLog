@@ -1,3 +1,7 @@
+2002-08-31  Darke  <darkepaw@users.sf.net>
+	* various: filename changes from .cc to .cpp so that VisualC++ can wrap
+	  it's poor little mind around them. *grin*
+
 2002-08-26  Darke  <darkepaw@users.sf.net>
 	* convert/, tools/disasm/, misc/args.*: type cleanup and abstraction.
 
