@@ -77,7 +77,7 @@ bool ItemMoveProcess::run(const uint32 framenum)
 	it->move(x,y,z);
 
 	if (currentpos >= speed) {
-		result = 1;
+		result = 1; // do we need this? For now it's for the pathfinding hack
 		terminate();
 	}
 

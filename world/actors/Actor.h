@@ -51,6 +51,8 @@ public:
 	void setActorFlag(uint32 mask) { actorflags |= mask; }
 	void clearActorFlag(uint32 mask) { actorflags &= ~mask; }
 
+	void teleport(int mapnum, sint32 x, sint32 y, sint32 z);
+
 	// p_dynamic_cast stuff
 	ENABLE_DYNAMIC_CAST(Actor);
 
@@ -69,6 +71,7 @@ public:
 	INTRINSIC(I_setHp);
 	INTRINSIC(I_setMana);
 	INTRINSIC(I_getMap);
+	INTRINSIC(I_teleport);
 	INTRINSIC(I_doAnim);
 	INTRINSIC(I_isInCombat);
 	INTRINSIC(I_isDead);

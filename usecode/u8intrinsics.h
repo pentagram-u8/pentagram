@@ -198,7 +198,7 @@ Intrinsic U8Intrinsics[] = {
 	0, //U
 	Actor::I_getDir,
 	Actor::I_getMap,
-	0, // Npc::teleport
+	Actor::I_teleport,
 	Actor::I_doAnim,
 	// 0x0A0
 	Actor::I_getLastAnimSet,

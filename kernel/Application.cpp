@@ -569,7 +569,7 @@ void Application::SDLInit()
 	//else...
 
 	pout << "Init SDL" << std::endl;
-	SDL_Init(SDL_INIT_VIDEO);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_NOPARACHUTE);
 	atexit(SDL_Quit);
 
 	runSDLInit=true;
@@ -692,6 +692,15 @@ void Application::handleEvent(const SDL_Event& event)
 //			lz = 8;
 
 			Item* item = p_dynamic_cast<Item*>(World::get_instance()->getObject(21183)); // *cough*
+			item->callUsecodeEvent(7);
+		} break;
+		case SDLK_g: { // trigger
+			Item* item = p_dynamic_cast<Item*>(World::get_instance()->getObject(21162)); // *cough*
+			Actor* avatar = p_dynamic_cast<Actor*>(World::get_instance()->getObject(1));
+			sint32 x,y,z;
+			item->getLocation(x,y,z);
+			avatar->move(x,y,z);
+			lx = x; ly = y; lz = z;
 			item->callUsecodeEvent(7);
 		} break;
 		default: break;

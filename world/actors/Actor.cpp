@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UCMachine.h"
 #include "World.h"
 #include "ActorAnimProcess.h"
+#include "CurrentMap.h"
 
 #include "ItemMoveProcess.h" // temp. replacement for pathfinding
 
@@ -41,6 +42,24 @@ Actor::~Actor()
 
 }
 
+void Actor::teleport(int newmap, sint32 newx, sint32 newy, sint32 newz)
+{
+	CurrentMap* currentmap = World::get_instance()->getCurrentMap();
+
+	if (getMapNum() == currentmap->getNum()) {
+		// need to remove npc from item lists
+		World::get_instance()->getCurrentMap()->removeItemFromList(this,x,y);
+	}
+
+	setMapNum(newmap);
+	setLocation(newx, newy, newz);
+
+	if (getMapNum() == currentmap->getNum()) {
+		// need to add npc to item lists
+		currentmap->addItem(this);
+	}
+} 
+
 uint32 Actor::I_isNPC(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ACTOR(actor);
@@ -56,6 +75,18 @@ uint32 Actor::I_getMap(const uint8* args, unsigned int /*argsize*/)
 	return actor->getMapNum();
 }
 
+uint32 Actor::I_teleport(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR(actor);
+	ARG_UINT16(newx);
+	ARG_UINT16(newy);
+	ARG_UINT16(newz);
+	ARG_UINT16(newmap);
+	if (!actor) return 0;
+
+	actor->teleport(newmap,newx,newy,newz);
+	return 0;
+}
 
 uint32 Actor::I_doAnim(const uint8* args, unsigned int /*argsize*/)
 {

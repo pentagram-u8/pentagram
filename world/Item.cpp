@@ -706,8 +706,8 @@ uint32 Item::I_bark(const uint8* args, unsigned int /*argsize*/)
 
 	pout << std::endl << std::endl << str  << std::endl << std::endl;
 	
-	// wait 4 ticks
-	return Kernel::get_instance()->addProcess(new DelayProcess(4));
+	// wait a while
+	return Kernel::get_instance()->addProcess(new DelayProcess(50));
 
 	// of course, in the final version of bark, we'll have to actually do
 	// something after the timeout occurs.
