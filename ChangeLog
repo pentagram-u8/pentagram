@@ -8,6 +8,8 @@
 	* world/actors/Actor.*: don't resurrect skeletons when killed by fire
 	* kernel/GUIApp.cpp: add Flame Sting to starting equipment
 	* world/Item.*: gotHit intrinsic
+	* kernel/Kernel.cpp, gumps/GumpNotifyProcess.cpp, kernel/Process.cpp:
+	  fixed double-terminate
 
 2004-08-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.*: Item::ascend intrinsic

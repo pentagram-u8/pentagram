@@ -35,6 +35,8 @@ Process::Process(ObjId it, uint16 ty)
 
 void Process::terminate()
 {
+	assert(!terminated);
+
 	Kernel *kernel = Kernel::get_instance();
 
 	// wake up waiting processes

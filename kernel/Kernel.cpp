@@ -172,7 +172,7 @@ bool Kernel::runProcesses()
 	while (current_process != processes.end()) {
 		Process* p = *current_process;
 
-		if (p->terminate_deferred)
+		if (!p->terminated && p->terminate_deferred)
 			p->terminate();
 		if (!p->terminated && !p->suspended) {
 			runningprocess = p;
@@ -292,6 +292,7 @@ void Kernel::killProcesses(ObjId objid, uint16 processtype)
 		if ((objid == 0 || objid == p->item_num) &&
 			(processtype == 6 || processtype == p->type) && !p->terminated)
 		{
+			pout << "killProcesses: terminating " << p << std::endl;
 			p->terminate();
 		}
 	}
@@ -303,7 +304,7 @@ void Kernel::killObjectProcesses()
 	{
 		Process* p = *it;
 
-		if (p->item_num != 0)
+		if (p->item_num != 0 && !p->terminated)
 			p->terminate();
 	}
 }

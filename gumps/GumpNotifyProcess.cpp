@@ -51,16 +51,17 @@ void GumpNotifyProcess::notifyClosing(int res)
 {
 	gump = 0;
 	result = res;
-	terminate();
+	if (!terminated) terminate();
 }
 
 void GumpNotifyProcess::terminate()
 {
+	Process::terminate();
+
 	if (gump) {
 		Gump* g = GUIApp::get_instance()->getGump(gump);
 		g->Close();
 	}
-	Process::terminate();
 }
 
 bool GumpNotifyProcess::run(const uint32)
