@@ -313,6 +313,9 @@ protected:
 		// Do last byte
 		if (size) *new_buf_ptr = *buf_ptr;
 
+		// Delete old buffer if requested
+		if (free_buffer) delete[] buf;
+
 		buf_ptr = buf = new_buf;
 		size = new_size;
 		free_buffer = true;
@@ -320,16 +323,18 @@ protected:
 	}
 
 public:
-	IBufferDataSource(const void* data, unsigned int len, bool is_text = false) {
+	IBufferDataSource(const void* data, unsigned int len, bool is_text = false,
+					  bool delete_data = false) {
 		assert(data != 0 || len == 0);
 		buf = buf_ptr = static_cast<const uint8 *>(data);
 		size = len;
-		free_buffer = false;
+		free_buffer = delete_data;
 
 		if (is_text) ConvertTextBuffer();
 	}
 
-	virtual void load(const void* data, unsigned int len, bool is_text = false) {
+	virtual void load(const void* data, unsigned int len, bool is_text = false,
+					  bool delete_data = false) {
 		if (free_buffer && buf) delete [] const_cast<uint8 *>(buf);
 		free_buffer = false;
 		buf = buf_ptr = 0;
@@ -337,7 +342,7 @@ public:
 		assert(data != 0 || len == 0);
 		buf = buf_ptr = static_cast<const uint8 *>(data);
 		size = len;
-		free_buffer = false;
+		free_buffer = delete_data;
 
 		if (is_text) ConvertTextBuffer();
 	}
@@ -395,6 +400,7 @@ public:
 	}
 	
 	virtual sint32 read(void *str, sint32 num_bytes) {
+		if (buf_ptr > buf + size) return 0;
 		sint32 count = num_bytes;
 		if (buf_ptr + num_bytes > buf + size)
 			count = buf - buf_ptr + size;
