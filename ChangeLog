@@ -1,4 +1,7 @@
-2003-06-24  Max Horn <max@quendi.de>
+2003-06-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/Gump.*, gumps/GumpNotifyProcess.*: pointers -> ids
+
+2003-06-25  Max Horn <max@quendi.de>
 	* usecode/UCMachine.cpp, usecode/UCProcess.cpp, usecode/UCStack.h:
 	  rewrote UCStack to not inherit from IDataSource
 	* kernel/CoreApp.h, kernel/GUIApp.h, kernel/Process.h: turned some

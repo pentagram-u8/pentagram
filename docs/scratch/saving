@@ -56,7 +56,7 @@ Gump: Object:
 	Shape* shape!!
 	uint32 framenum
 	Gump* focus_child!!
-	GumpNotifyProcess* notifier!!
+	uint16 notifier
 	uint32 process_result
 
 	reconstruct:
@@ -167,7 +167,7 @@ GravityProcess: Process:
 	int xspeed, yspeed, zspeed
 
 GumpNotifyProcess: Process:
-	Gump* gump!!
+	uint16 gump
 
 
 MissileProcess: Process:

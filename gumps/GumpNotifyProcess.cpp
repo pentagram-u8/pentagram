@@ -19,6 +19,7 @@
 #include "pent_include.h"
 #include "GumpNotifyProcess.h"
 #include "Gump.h"
+#include "GUIApp.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(GumpNotifyProcess,Process);
 
@@ -31,6 +32,12 @@ GumpNotifyProcess::~GumpNotifyProcess(void)
 {
 }
 
+void GumpNotifyProcess::setGump(Gump *g)
+{
+	gump = g->getObjId();
+}
+
+
 void GumpNotifyProcess::notifyClosing(int res)
 {
 	gump = 0;
@@ -40,7 +47,10 @@ void GumpNotifyProcess::notifyClosing(int res)
 
 void GumpNotifyProcess::terminate()
 {
-	if (gump) gump->Close();
+	if (gump) {
+		Gump* g = GUIApp::get_instance()->getGump(gump);
+		g->Close();
+	}
 	Process::terminate();
 }
 

@@ -25,8 +25,8 @@
 
 class RenderSurface;
 class Shape;
-class GumpNotifyProcess;
 class Item;
+class GumpNotifyProcess;
 
 //
 // Class Gump
@@ -58,7 +58,7 @@ protected:
 	std::list<Gump*>	children;		// List of all gumps
 	Gump *				focus_child;	// The child that has focus
 
-	GumpNotifyProcess	*notifier;		// Process to notify when we're closing
+	uint16				notifier;		// Process to notify when we're closing
 	uint32				process_result;	// Result for the notifier process
 
 public:
@@ -70,7 +70,7 @@ public:
 	virtual ~Gump();
 
 	virtual void				CreateNotifier();
-	inline GumpNotifyProcess*	GetNotifyProcess() { return notifier; }
+	GumpNotifyProcess*			GetNotifyProcess();
 
 	//! Set the Gump's shape/frame
 	inline void					SetShape(Shape *_shape, uint32 _framenum)

@@ -25,7 +25,7 @@ class Gump;
 
 class GumpNotifyProcess : public Process
 {
-	Gump	*gump;
+	uint16 gump;
 
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
@@ -33,8 +33,8 @@ public:
 	GumpNotifyProcess(uint16 it);
 	virtual ~GumpNotifyProcess(void);
 
-	void setGump(Gump *g) { gump = g; }
-	Gump *getGump() const { return gump; }
+	void setGump(Gump *g);
+	uint16 getGump() const { return gump; }
 
 	virtual void notifyClosing(int res);
 

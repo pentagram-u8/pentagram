@@ -66,14 +66,24 @@ void Gump::InitGump()
 void Gump::CreateNotifier()
 {
 	// Create us a GumpNotifyProcess
-	notifier = new GumpNotifyProcess(owner);
-	notifier->setGump(this);
-	Kernel::get_instance()->addProcess(notifier);
+	GumpNotifyProcess *p = new GumpNotifyProcess(owner);
+	p->setGump(this);
+	notifier = Kernel::get_instance()->addProcess(p);
 }
+
+GumpNotifyProcess* Gump::GetNotifyProcess()
+{
+	return p_dynamic_cast<GumpNotifyProcess*>(Kernel::get_instance()->
+											  getProcess(notifier));
+}
+
 
 void Gump::Close(bool no_del)
 {
-	if (notifier) notifier->notifyClosing(process_result);
+	GumpNotifyProcess* p = GetNotifyProcess();
+	if (p) {
+		p->notifyClosing(process_result);
+	}
 	notifier = 0;
 
 	if (!parent) 
