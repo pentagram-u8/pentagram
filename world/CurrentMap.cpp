@@ -255,14 +255,14 @@ void CurrentMap::removeItemFromList(Item* item, sint32 oldx, sint32 oldy)
 }
 
 void CurrentMap::areaSearch(UCList* itemlist, const uint8* loopscript,
-							uint32 scriptsize, Item* item, uint16 range,
+							uint32 scriptsize, Item* check, uint16 range,
 							bool recurse, sint32 x, sint32 y)
 {
 	sint32 z;
 	// if item != 0, search an area around item. Otherwise, search an area
 	// around (x,y)
-	if (item)
-		item->getLocation(x,y,z);
+	if (check)
+		check->getLocation(x,y,z);
 
 	//!! do the dimensions of item have to be included too?
 	Rect searchrange(x-range,y-range,2*range,2*range);
@@ -287,6 +287,7 @@ void CurrentMap::areaSearch(UCList* itemlist, const uint8* loopscript,
 
 				Item* item = *iter;
 
+				if (item == check) continue;
 
 				// check if item is in range?
 				sint32 ix, iy, iz;
@@ -330,15 +331,15 @@ void CurrentMap::areaSearch(UCList* itemlist, const uint8* loopscript,
 }
 
 void CurrentMap::surfaceSearch(UCList* itemlist, const uint8* loopscript,
-					uint32 scriptsize, Item* item, bool above, bool below,
+					uint32 scriptsize, Item* check, bool above, bool below,
 					bool recurse)
 {
 	sint32 x,y,z;
 	sint32 xd,yd,zd;
 	// if item != 0, search an area around item. Otherwise, search an area
 	// around (x,y)
-	item->getLocation(x,y,z);
-	item->getFootpad(xd,yd,zd);
+	check->getLocation(x,y,z);
+	check->getFootpad(xd,yd,zd);
 	xd *= 32;
 	yd *= 32;
 	zd *= 8;
@@ -365,6 +366,7 @@ void CurrentMap::surfaceSearch(UCList* itemlist, const uint8* loopscript,
 
 				Item* item = *iter;
 
+				if (item == check) continue;
 
 				// check if item is in range?
 				sint32 ix, iy, iz;

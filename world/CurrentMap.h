@@ -96,12 +96,13 @@ public:
 	//! \param start Start point to sweep from.
 	//! \param end End point to sweep to.
 	//! \param dims Bounding size of item to check.
-	//! \param item Item num of item being checked (optional).
+	//! \param item ObjID of the item being checked. This will allow item to
+	//!             be skipped from being tested against. Use 0 for no item.
 	//! \param solid_only If true, only test solid items.
 	//! \param hit Pointer to a list to fill with items hit. Items are sorted
 	//!            by SweepItem::hit_time
 	//! \return false if no items were hit.
-	//!         true if any items were hit
+	//!         true if any items were hit.
 	bool sweepTest(const sint32 start[3], const sint32 end[3], const sint32 dims[3],
 			uint16 item, bool solid_only, std::list<SweepItem> *hit);
 

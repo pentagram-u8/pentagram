@@ -34,6 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MonsterEgg.h"
 #include "CurrentMap.h"
 #include "PaletteFaderProcess.h"
+#include "SpriteProcess.h"
 
 // Ultima 8 Intrinsics
 Intrinsic U8Intrinsics[] = {
@@ -264,8 +265,8 @@ Intrinsic U8Intrinsics[] = {
 	GUIApp::I_getCurrentTimerTick,
 	UCMachine::I_true, // canGetThere
 	CurrentMap::I_canExistAt,
-	0, // createSprite
-	0, // createSprite
+	SpriteProcess::I_createSprite,
+	SpriteProcess::I_createSprite,
 	Item::I_getFamilyOfType,
 	GUIApp::I_getTimeInGameHours,
 	GUIApp::I_getTimeInMinutes,

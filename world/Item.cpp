@@ -95,10 +95,14 @@ void Item::move(sint32 X, sint32 Y, sint32 Z)
 		World::get_instance()->getCurrentMap()->removeItemFromList(this,x,y);
 		setLocation(X, Y, Z);
 		World::get_instance()->getCurrentMap()->addItem(this);
-		return;
+	}
+	else
+	{
+    	setLocation(X, Y, Z);
 	}
 
-	setLocation(X, Y, Z);
+	// Call just moved
+	callUsecodeEvent_justMoved();
 }
 
 void Item::getLocation(sint32& X, sint32& Y, sint32& Z) const
@@ -554,8 +558,8 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 		// Call release on us
 		if (we_were_released) callUsecodeEvent_release();
 
-		// Call it (only avatar has it)
-		callUsecodeEvent_justMoved();
+		// Remove us from our parent
+		if (parent) parent->RemoveItem(this);
 
 		// Move US!
 		move(end[0], end[1], end[2]);
@@ -640,9 +644,6 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 		// Call release on us
 		if (we_were_released) callUsecodeEvent_release();
 
-		// Call it (only avatar has it)
-		callUsecodeEvent_justMoved();
-
 		// Move US!
 		move(end[0], end[1], end[2]);
 
@@ -651,7 +652,6 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 
 	return 0;
 }
-
 
 uint32 Item::callUsecodeEvent(uint32 event, const uint8* args, int argsize)
 {
@@ -1591,7 +1591,6 @@ uint32 Item::I_popToCoords(const uint8* args, unsigned int /*argsize*/)
 	item->setLocation(x, y, z);
 	item->clearFlag(FLG_ETHEREAL);
 	w->getCurrentMap()->addItem(item);
-
 #if 0
 	perr << "Popping item into map: " << item->getShape() << "," << item->getFrame() << " at (" << x << "," << y << "," << z << ")" << std::endl;
 #endif
@@ -1664,8 +1663,8 @@ uint32 Item::I_move(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(z);
 	if (!item) return 0;
 
-	//item->move(x,y,z);
-	item->collideMove(x, y, z, true, true);
+	item->move(x,y,z);
+	//item->collideMove(x, y, z, true, true);
 	return 0;
 }
 
@@ -1684,7 +1683,7 @@ uint32 Item::I_legalMoveToPoint(const uint8* args, unsigned int /*argsize*/)
 //		item->move(point.getX(), point.getY(), point.getZ());
 //		return 1;
 //	} else {
-	return item->collideMove(point.getX(), point.getY(), point.getZ(), true, false) != 0;
+	return item->collideMove(point.getX(), point.getY(), point.getZ(), true, false) == 0x4000;
 //	}
 }
 
