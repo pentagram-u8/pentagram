@@ -1,3 +1,8 @@
+2005-01-02  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* Makefile.in, configure.ac: Add option to build gimp plugin
+	* tools/gimp-plugin/*: Initial version of our gimp plugin - supports
+	  loading only
+
 2005-01-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* tools/flexpack/*: properly handle missing objects
 

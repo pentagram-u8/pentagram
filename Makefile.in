@@ -45,11 +45,19 @@ CXXFLAGS += -g @CXXFLAGS@ @DEFS@ @PROFILE@ -DDATA_PATH=\"@DATAPATH@\"
 LDFLAGS += @LIBS@ @PROFILE@
 WARNINGS := @WARNINGS@
 
+GIMPTOOL = @GIMPTOOL@
+GIMP_INCLUDES = @GIMP_INCLUDES@
+GIMP_LIBS = @GIMP_LIBS@
+GIMP_PLUGIN_PREFIX = @GIMP_PLUGIN_PREFIX@
+
+@GIMP_PLUGIN_TRUE@GIMP_PLUGIN_MODULES = tools/gimp-plugin
+@GIMP_PLUGIN_FALSE@GIMP_PLUGIN_MODULES = 
+
 # List of all submodules
 # The order is important, be careful if you change it
 MODULES := convert convert/u8 convert/crusader misc filesys filesys/zip \
 	tools tools/disasm tools/compile tools/flexpack tools/fold \
-	tools/shapeconv \
+	tools/shapeconv $(GIMP_PLUGIN_MODULES)\
 	kernel games graphics graphics/fonts audio audio/midi \
 	audio/midi/timidity usecode world world/actors gumps \
 	gumps/widgets conf .
