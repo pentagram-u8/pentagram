@@ -23,6 +23,7 @@
 
 #include "pent_include.h"
 #include <fstream>
+#include <cmath>
 
 class IDataSource
 {
@@ -59,12 +60,34 @@ class IDataSource
 		/* FIXME: Dubious conversion between float and int */
 		float readf()
 		{
+#if 1
 			union {
 				uint32	i;
 				float	f;
 			} int_float;
 			int_float.i = read4();
 			return int_float.f;
+#else
+			uint32 i = read4();
+			uint32 mantissa = i & 0x3FFFFF;
+			sint32 exponent = ((i >> 23) & 0xFF);
+
+			// Zero
+			if (!exponent && !mantissa) 
+				return 0.0F;
+			// Infinity and NaN (don't handle them)
+			else if (exponent == 0xFF)
+				return 0.0F;
+			// Normalized - Add the leading one
+			else if (exponent) 
+				mantissa |= 0x400000;
+			// Denormalized - Set the exponent to 1
+			else 
+				exponent = 1;
+
+			float f = std::ldexp(mantissa/8388608.0,exponent-127);
+			return (i >> 31)?-f:f;
+#endif
 		}
 
 		virtual void seek(uint32 pos)=0;

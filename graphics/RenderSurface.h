@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 struct Texture;
 class Shape;
 struct Palette;
+struct Rect;
 
 //
 // RenderSurface
@@ -70,6 +71,9 @@ public:
 
 	// Set Clipping Rectangle
 	// TODO: virtual void SetClippingRect(Rect &) = 0;
+
+	// Check Clipped. -1 if off screen, 0 if not clipped, 1 if clipped
+	virtual sint16 CheckClipped(const Rect &) const = 0;
 
 
 	//
@@ -118,7 +122,7 @@ public:
 	// TODO: virtual void Paint(CachedShape* s, uint32 frame, sint32 x, sint32 y) = 0;
 	virtual void Paint(Shape*s, uint32 frame, sint32 x, sint32 y) = 0;
 
-	// Paint an Shape without clipping
+	// Paint a Shape without clipping
 	// TODO: virtual void PaintNoClip(CachedShape*s, uint32 frame, sint32 x, sint32 y) = 0;
 	virtual void PaintNoClip(Shape*s, uint32 frame, sint32 x, sint32 y) = 0;
 

@@ -61,6 +61,10 @@ class Actor;
 class Flex;
 class Object;
 
+class ItemSorter;	// TODO: Remove this
+
+
+
 class World
 {
 public:
@@ -87,6 +91,9 @@ public:
 	Object* getObject(uint16 objid) const;
 
 	void worldStats();
+
+	void SetupDisplayList(ItemSorter *display_list);
+	void SetupDisplayListNPCs(ItemSorter *display_list);
 	
 private:
 	static World *world;

@@ -155,6 +155,8 @@ template<class uintX> void SoftRenderSurface<uintX>::PrintCharFixed(Texture *tex
 	int char_width = texture->width/16;
 	int char_height = texture->height/16;
 
+	if (character == ' ') return;	// Don't paint spaces
+
 	if (char_width == 16 && char_height == 16)
 	{
 		SoftRenderSurface::Blit(texture, (character&0x0F) << 4, character&0xF0, 16, 16, x, y);

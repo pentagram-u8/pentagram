@@ -30,7 +30,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "RenderSurface.h"
 #include "Texture.h"
 //#include "ConsoleGump.h"
-#include "Shape.h"
 #include "PaletteManager.h"
 #include "MainShapeFlex.h"
 #include "Palette.h"
@@ -41,6 +40,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Map.h" // temp
 #include "U8Save.h"
 
+#include "Item.h"
+#include "ItemSorter.h" // TODO MOVE THIS TO GameMapGump
+#include "CurrentMap.h"
 
 #include <SDL.h>
 #include <cstdlib>
@@ -49,11 +51,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 Application* Application::application = 0;
 
 int classid, offset; // only temporary, don't worry :-)
-Shape* shape;
 
 Application::Application(int argc, char *argv[])
 	: kernel(0), ucmachine(0), filesystem(0), config(0), desktop(0),
 	  console(0), screen(0), palettemanager(0), gamedata(0), world(0),
+	  display_list(0),
 	  runMinimalSysInit(false), runGraphicSysInit(false), runSDLInit(false),
 	  isRunning(false)
 {
@@ -136,8 +138,9 @@ void Application::U8Playground(int argc, char *argv[])
 	gamedata = new GameData();
 	gamedata->loadU8Data();
 
-	shape = gamedata->getMainShapes()->getShape(1);
-	shape->setPalette(palettemanager->getPalette(PaletteManager::Pal_Game));
+	// Create ItemSorter *** TODO MOVE THIS TO GameMapGump
+	pout << "Create display_list ItemSorter object" << std::endl;
+	display_list = new ItemSorter();
 
 	// Initialize world
 	pout << "Initialize World" << std::endl;
@@ -179,9 +182,9 @@ void Application::U8Playground(int argc, char *argv[])
 	world->loadFixed(fd);
 	// some testing...
 	world->switchMap(3);
-	world->switchMap(40);
-	world->switchMap(43);
-  	world->switchMap(3);
+	//world->switchMap(40);
+	//world->switchMap(43);
+  	//world->switchMap(3);
 
 	// Create console gump
 	//pout << "Create Graphics Console" << std::endl;
@@ -203,11 +206,21 @@ void Application::paint()
 {
 	screen->BeginPainting();
 	screen->Fill32(0x3F3F3F, 0, 0, 640, 480);
- 	con.DrawConsole(screen, 0, 0, 640, 480);
-	screen->Paint(shape,2,320,240);
-	screen->EndPainting();
-}
 
+	display_list->BeginDisplayList(screen, palettemanager->getPalette(PaletteManager::Pal_Game));
+	world->SetupDisplayList(display_list);
+	display_list->PaintDisplayList();
+
+ 	con.DrawConsole(screen, 0, 0, 640, 480);
+	screen->EndPainting();
+
+	static long prev = 0;
+	long now = SDL_GetTicks();
+	long diff = now - prev;
+	prev = now;
+
+	con.Printf("Rendering time %i ms %i FPS        \r", diff, 1000/diff);
+}
 
 void Application::setupVirtualPaths()
 {
@@ -416,13 +429,13 @@ void Application::handleEvent(const SDL_Event& event)
 	
 	case SDL_KEYDOWN:
 	{
-		
+
 	}
 	break;
 	
 	case SDL_KEYUP:
 	{
-		
+		isRunning = false;		
 	}
 	break;
 

@@ -60,8 +60,8 @@ void GlobEgg::expand()
 
 
 		// calculate object's world position
-		sint32 itemx = (x & 0x1FF) + 2 * globitem.x;
-		sint32 itemy = (y & 0x1FF) + 2 * globitem.y;
+		sint32 itemx = (x & ~0x1FF) + 2 * globitem.x;
+		sint32 itemy = (y & ~0x1FF) + 2 * globitem.y;
 		sint32 itemz = z + globitem.z;
 
 		item->setLocation(itemx, itemy, itemz);

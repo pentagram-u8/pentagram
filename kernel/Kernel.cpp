@@ -83,6 +83,7 @@ void Kernel::removeProcess(Process* proc)
 bool Kernel::runProcesses(uint32 framenum)
 {
 	if (processes.size() == 0) {
+		return true;//
 		perr << "Process queue is empty?! Aborting.\n";
 
 		kernelStats();

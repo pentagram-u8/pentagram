@@ -99,19 +99,43 @@ extern const std::string c_empty_string;
 // For things that really can't happen. Or shouldn't anyway.
 //
 #define CANT_HAPPEN() do { assert(false); } while(0)
+
 //
 // Can't happen return.
 // Were we're guaranteed to return before this, but we want to shut the compiler warning up.
 //
 #define CANT_HAPPEN_RETURN() do { return 0; assert(false); } while(0)
 
+// 
+// Can't happen with a message 
+//
+// Allows a message to be supplied.
+// May not work on all compilers or run times as expected
+//
+#define CANT_HAPPEN_MSG(msg) do { assert(msg && false); } while(0)
+
 
 //
 // Precompiled Header Support
 //
 #ifdef USE_PRECOMPILED_HEADER
+
+// C Standard Library and STL
 #include <fstream>
 #include <cstdio>
+#include <list>
+#include <vector>
+
+// Useful Pentagram header
+//#include "Kernel.h"
+//#include "Object.h"
+//#include "Item.h"
+//#include "FileSystem.h"
+//#include "IDataSource.h"
+//#include "Flex.h"
+//#include "ShapeFlex.h"
+//#include "RenderSurface.h"
+//#include "Shape.h"
 #endif
 
 #endif //PENT_INCLUDE_H

@@ -156,7 +156,7 @@ ECode BaseSoftRenderSurface::EndPainting()
 //
 // void BaseSoftRenderSurface::CreateNativePalette(Palette* palette)
 //
-// Create a palette of colours native to the surface
+// Desc: Create a palette of colours native to the surface
 //
 void BaseSoftRenderSurface::CreateNativePalette(Palette* palette)
 {
@@ -169,5 +169,22 @@ void BaseSoftRenderSurface::CreateNativePalette(Palette* palette)
 	}
 }
 
+//
+// sint16 BaseSoftRenderSurface::CheckClipped(Rect &r)
+//
+// Desc: Check for a clipped rectangle
+// Returns: -1 if off screen, 
+//           0 if not clipped, 
+//           1 if clipped
+//
 
+sint16 BaseSoftRenderSurface::CheckClipped(const Rect &c) const 
+{
+	Rect r = c;
+	r.Intersect(clip_window);
 
+	// Clipped away to the void
+	if (!r.IsValid()) return -1;
+	else if (r == c) return 0;
+	else return 1;
+}

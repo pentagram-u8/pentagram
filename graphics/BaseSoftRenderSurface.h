@@ -103,6 +103,8 @@ public:
 	// Set Clipping Rectangle
 	// TODO: virtual void SetClippingRect(Rect &);
 
+	// Check Clipped. -1 if off screen, 0 if not clipped, 1 if clipped
+	virtual sint16 CheckClipped(const Rect &) const;
 
 	//
 	// Surface Palettes

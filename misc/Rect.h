@@ -27,6 +27,9 @@ struct Rect {
 	Rect(int nx, int ny, int nw, int nh) : x(nx), y(ny), w(nw), h(nh) {}
 	Rect(const Rect& o) : x(o.x), y(o.y), w(o.w), h(o.h) {}
 	
+	void	Set(int nx, int ny, int nw, int nh) { x=nx; y=ny; w=nw; h=nh; }
+	void	Set(Rect &o) { *this = o; }
+
 	// Check to see if a Rectangle is 'valid'
 	bool	IsValid() { return w > 0 && h > 0; }
 
@@ -94,6 +97,10 @@ struct Rect {
 		return (result+=o);
 	}
 
+	bool operator == (const Rect& o) const
+	{
+		return x == o.x && y == o.y && w == o.w && h == o.h;
+	}
 
 };
 

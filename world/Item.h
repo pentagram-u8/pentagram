@@ -43,28 +43,48 @@ public:
 	uint32 getExtFlags() const { return extendedflags; }
 	uint32 getShape() const { return shape; }
 	uint32 getFrame() const { return frame; }
+	uint32 getMapNum() const { return mapnum; }
 
 	Item* getGlobNext() const { return glob_next; }
 	void setGlobNext(Item* i) { glob_next = i; }
 
 	uint32 callUsecodeEvent(uint32 event);
 
-	void setupLerp(/* Camera &camera */);	// Setup the lerped info for this frame
+	void setupLerp(sint32 cx, sint32 cy, sint32 cz);	// Setup the lerped info for this frame
+
+	inline void getLerped(sint32& x, sint32& y, sint32& z) const // Get lerped location
+		{ x = ix; y = iy; z = iz; }
+
 	inline void doLerp(uint32 factor) 		// Does lerping for an in between frame (0-256)
 	{
 		// Should be noted that this does indeed limit us to 'only' 24bit coords
+		if (factor == 256)
+		{
+			ix = l_next.x;
+			iy = l_next.y;
+			iz = l_next.z;
+		}
+		else if (factor == 0)
+		{
+			ix = l_prev.x;
+			iy = l_prev.y;
+			iz = l_prev.z;
+		}
+		else
+		{
 #if 1
-		// This way while possibly slower is more accurate
-		ix = (l_prev.x*(256-factor) + l_next.x*factor)>>8;
-		iy = (l_prev.y*(256-factor) + l_next.y*factor)>>8;
-		iz = (l_prev.z*(256-factor) + l_next.z*factor)>>8;
+			// This way while possibly slower is more accurate
+			ix = (l_prev.x*(256-factor) + l_next.x*factor)>>8;
+			iy = (l_prev.y*(256-factor) + l_next.y*factor)>>8;
+			iz = (l_prev.z*(256-factor) + l_next.z*factor)>>8;
 #else
-		ix = l_prev.x + (((l_next.x-l_prev.x)*factor)>>8);
-		iy = l_prev.y + (((l_next.y-l_prev.y)*factor)>>8);
-		iz = l_prev.z + (((l_next.z-l_prev.z)*factor)>>8);
-#endif
-	}
+			ix = l_prev.x + (((l_next.x-l_prev.x)*factor)>>8);
+			iy = l_prev.y + (((l_next.y-l_prev.y)*factor)>>8);
+			iz = l_prev.z + (((l_next.z-l_prev.z)*factor)>>8);
 
+#endif
+		}
+	}
 
 	// Intrinsics
 	INTRINSIC(I_getX);
@@ -108,6 +128,21 @@ private:
 	Item* glob_next; // next item in glob
 
 public:
+	enum {
+		FLG_DISPOSABLE	 = 0x0002,
+		FLG_OWNED		 = 0x0004,
+		FLG_CONTAINED	 = 0x0008,
+		FLG_INVISIBLE	 = 0x0010,
+		FLG_FLIPPED		 = 0x0020,
+		FLG_IN_NPC_LIST	 = 0x0040,
+		FLG_GUMP_OPEN	 = 0x0100,
+		FLG_EQUIPPED	 = 0x0200,
+		FLG_BOUNCING	 = 0x0400,
+		FLG_ETHEREAL	 = 0x0800,
+		FLG_HANGING		 = 0x1000,
+		FLG_LOW_FRICTION = 0x4000
+	} statusflags;
+
 	enum {
 		EXT_FIXED  = 0x0001, // item came from FIXED
 		EXT_INGLOB = 0x0002  // item is part of a glob

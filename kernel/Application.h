@@ -31,6 +31,7 @@ class RenderSurface;
 class PaletteManager;
 class GameData;
 class World;
+class ItemSorter;	// TODO MOVE THIS TO GameMapGump
 
 // extremely simplified stub-ish Application class
 class Application {
@@ -60,6 +61,7 @@ private:
 	PaletteManager *palettemanager;
 	GameData *gamedata;
 	World *world;
+	ItemSorter *display_list;	// TODO MOVE THIS TO GameMapGump
 
 	static Application* application;
 
@@ -69,6 +71,8 @@ private:
 	void GraphicSysInit(); // starts the graphics subsystem
 	void SDLInit(); // start sdl
 	void UCMachineInit(); // start usecode machine
+
+	void SetupDisplayList();	// TODO MOVE THIS TO GameMapGump
 
 	// Various dependancy flags
 	bool runMinimalSysInit;
