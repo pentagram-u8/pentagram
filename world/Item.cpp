@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -513,6 +513,16 @@ bool Item::canExistAt(sint32 x, sint32 y, sint32 z) const
 	return cm->isValidPosition(x, y, z, xd, yd, zd, getObjId(), 0, 0);
 }
 
+int Item::getDirToItem(Item& item2) const
+{
+	sint32 ix,iy,iz;
+	getLocationAbsolute(ix,iy,iz);
+
+	sint32 i2x,i2y,i2z;
+	item2.getLocationAbsolute(i2x,i2y,i2z);
+
+	return Get_WorldDirection(i2y - iy, i2x - ix);
+}
 
 ShapeInfo* Item::getShapeInfo()
 {
@@ -1847,7 +1857,7 @@ uint32 Item::I_legalCreateAtPoint(const uint8* args, unsigned int /*argsize*/)
 	buf[1] = static_cast<uint8>(objID >> 8);
 	UCMachine::get_instance()->assignPointer(itemptr, buf, 2);
 
-	return objID;
+	return 1;
 }
 
 uint32 Item::I_legalCreateAtCoords(const uint8* args, unsigned int /*argsize*/)
@@ -1877,7 +1887,7 @@ uint32 Item::I_legalCreateAtCoords(const uint8* args, unsigned int /*argsize*/)
 	buf[1] = static_cast<uint8>(objID >> 8);
 	UCMachine::get_instance()->assignPointer(itemptr, buf, 2);
 
-	return objID;
+	return 1;
 }
 
 uint32 Item::I_legalCreateInCont(const uint8* args, unsigned int /*argsize*/)
@@ -1912,7 +1922,7 @@ uint32 Item::I_legalCreateInCont(const uint8* args, unsigned int /*argsize*/)
 		buf[1] = static_cast<uint8>(objID >> 8);
 		UCMachine::get_instance()->assignPointer(itemptr, buf, 2);
 
-		return objID;
+		return 1;
 	} else {
 		perr << "I_legalCreateInCont failed to add item to container (" 
 			 << container->getObjId() << ")" << std::endl;
@@ -2038,7 +2048,7 @@ uint32 Item::I_create(const uint8* args, unsigned int /*argsize*/)
 	buf[1] = static_cast<uint8>(objID >> 8);
 	UCMachine::get_instance()->assignPointer(itemptr, buf, 2);
 
-	return objID;
+	return 1;
 }
 
 uint32 Item::I_pop(const uint8* args, unsigned int /*argsize*/)
@@ -2262,13 +2272,7 @@ uint32 Item::I_getDirToItem(const uint8* args, unsigned int /*argsize*/)
 	if (!item) return 0;
 	if (!item2) return 0;
 
-	sint32 ix,iy,iz;
-	item->getLocationAbsolute(ix,iy,iz);
-
-	sint32 i2x,i2y,i2z;
-	item2->getLocationAbsolute(i2x,i2y,i2z);
-
-	return Get_WorldDirection(i2y - iy, i2x - ix);
+	return item->getDirToItem(*item2);
 }
 
 uint32 Item::I_getDirFromItem(const uint8* args, unsigned int /*argsize*/)
