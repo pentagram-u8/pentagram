@@ -51,9 +51,19 @@ void Kernel::addProcess(Process* proc)
 
 void Kernel::removeProcess(Process* proc)
 {
+	//! the way to remove processes has to be thought over sometime
+	//! we probably want to flag them as terminated before actually
+	//! removing/deleting it or something
+	//! also have to look out for deleting processes while iterating
+	//! over the list. (Hence the special 'erase' in runProcs below, which
+	//! is very std::list-specific, incidentally)
+
 	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it) {
 		if (*it == proc) {
 			proc->active = false;
+
+			perr << "[Kernel] Removing process " << proc << std::endl;
+
 			processes.erase(it);
 			return;
 		}

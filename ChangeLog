@@ -2,6 +2,7 @@
 	* usecode/*: bugfixes
 	* kernel/Kernel.cpp: output UCMachine mem.stats on exit
 	* usecode/*: indirect push/pop
+	* usecode/*: 'for each'
 
 2002-12-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/*: basic call/ret support

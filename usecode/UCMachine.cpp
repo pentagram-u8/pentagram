@@ -44,6 +44,9 @@ UCMachine::UCMachine() :
 	globals.push0(globals.getSize());
 
 	ucmachine = this;
+
+	loop_list = 0;
+	loop_index = 0;
 }
 
 
@@ -1090,6 +1093,12 @@ bool UCMachine::execProcess(UCProcess* p)
 
 			// 'implies' seems to push a value too, although it is very
 			// often ignored
+
+			// additionally, it is possible that 'implies' puts the result
+			// of a process in the 'process result' variable
+			// 0x6D (push process result) only seems to occur soon after
+			// an 'implies'
+
 			cs.read2(); // skip the 01 01
 			ui16a = p->stack.pop2();
 			ui16b = p->stack.pop2();
@@ -1297,6 +1306,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 6D
 			// push result of process
 			// (of which process? pop anything?)
+			// (also see comment for 0x54 'implies')
 			printf("push dword\tprocess result");
 			break;
 */
@@ -1346,10 +1356,10 @@ bool UCMachine::execProcess(UCProcess* p)
 			i0 = read1(in);
 			printf("loopscr\t\t%02X \"%c\"", i0, static_cast<char>(i0));
 
-
-		// 75 appears to have something to do with lists, looks like an enum/next from u7...
-		case 0x75:
+*/
+		case 0x75: case 0x76:
 			// 75 xx yy zz zz
+			// 76 xx yy zz zz
 			// xx appears to be the location to store 'current' value from the
 			//   list (BP+xx)
 			// yy is the 'datasize' of the list, identical to the second parameter
@@ -1363,17 +1373,81 @@ bool UCMachine::execProcess(UCProcess* p)
 			//   (maximum number of items to iterate through? No idea, I've only
 			//   seen 0xFFFF pushed before it (in Remorse1.21)), then pops
 			//   the 'list' off to iterate through
-			op.i0 = read1(ucfile); op.i1 = read1(ucfile); op.i2 = read2(ucfile);
+
+			// it seems as if there's no way provided to store index
+			// and list. Assuming there are no nested loops, this isn't
+			// a problem. If there -are- nested loops, we could use a stack
+			// for these.
+			// There may be problems with jumps from inside the loop to outside
+			// Either these are forbidden, or we have to detect when jumping
+			// to outside a loop? (yuck)
+			// (this will be _very_ messy when combined with nested loops,
+			//  let's hope it won't be necessary)
+
+			// random idea: maybe the 0xFFFF on the stack is used to
+			// indicate the start of a loop? Would be mildly ugly, but could
+			// be useful for nested loops or loop-escaping jumps
+
+			// other random idea: 0xFFFF could also be the loop index
+			// to start with minus 1. (This would clean up the 'loop_index=0'
+			// or 'loop_index++' distinction a bit)
+
+			// 75 is for lists, 76 for slists
+			// Only difference should be in the freeing afterwards.
+			// Strings are _not_ duplicated when putting them in the loopvar
+			// Lists _are_ freed afterwards
+
+
+			si8a = cs.read1(); // loop variable
+			ui32a = cs.read1(); // list size
+			si16a = cs.read2(); // jump offset
+
+			if (opcode == 0x76 && ui32a != 2) {
+				error = true;
+			}
+			
+			if (opcode == 0x75) {
+				LOGPF(("for each\t%s (%02X) %04hX",
+					   print_bp(si8a), ui32a, si16a));
+			} else {
+				LOGPF(("for each str\t%s (%02X) %04hX",
+					   print_bp(si8a), ui32a, si16a));
+			}
+			
+			if (loop_list == 0) { // not in loop yet
+				ui16a = p->stack.pop2(); // 0xFFFF !?
+				loop_list = p->stack.pop2(); // list to loop over
+				loop_index = 0;
+			} else {
+				loop_index++;
+			}
+			
+			if (loop_index >= listHeap[loop_list]->getSize()) {
+				// loop done
+				
+				// free loop list
+				if (opcode == 0x75) {
+					freeList(loop_list);
+				} else {
+					freeStringList(loop_list);
+				}
+				
+				// reset 'global' loop vars
+				loop_list = 0;
+				loop_index = 0;
+				
+				// jump out
+				cs.skip(si16a);					
+			}
+			else
+			{
+				// loop iteration
+				// place next element from list in [bp+si8a]
+				// (not duplicating any strings)
+				
+				p->stack.push((*listHeap[loop_list])[loop_index], ui32a);
+			}
 			break;
-
-		// 76 appears to be identical to 0x75, except it operates on slists
-		case 0x76:
-			// 75 xx yy zz zz
-			op.i0 = read1(ucfile); op.i1 = read1(ucfile); op.i2 = read2(ucfile);
-			break;
-
-
-*/
 
 		case 0x77:
 			// 77
@@ -1413,7 +1487,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
 		case 0x6C: // parameter passing?
-		case 0x70: case 0x73: case 0x74: case 0x75: case 0x76: // loops
+		case 0x70: case 0x73: case 0x74: // loopscripts
 			error = true;
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;

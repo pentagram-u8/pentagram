@@ -78,6 +78,9 @@ private:
 	uint32 objectToPtr(uint16 objID);
 
 
+	uint16 loop_list;
+	uint32 loop_index;
+
 	static UCMachine* ucmachine;
 };
 
