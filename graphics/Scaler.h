@@ -21,6 +21,7 @@
 
 #include "Texture.h"
 #include "RenderSurface.h"
+#include "ScalerManager.h"
 
 namespace Pentagram {
 
@@ -43,7 +44,7 @@ protected:
 	ScalerFunc	Scale32_A888;
 	ScalerFunc	Scale32_888A;
 
-	Scaler() { }
+	Scaler() { ScalerManager::get_instance()->AddScaler(this); }
 public:
 	//
 	// Scaler Capabilites

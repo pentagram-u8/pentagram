@@ -94,9 +94,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "MovieGump.h"
 
-#include "scalers/PointScaler.h"
-#include "scalers/BilinearScaler.h"
-#include "scalers/Scale2xScaler.h"
+#include "ScalerManager.h"
+#include "Scaler.h"
 
 #include "DisasmProcess.h"
 #include "CompileProcess.h"
@@ -1674,7 +1673,7 @@ void GUIApp::setupCoreGumps()
 	// Scaler stuff... should probably be elsewhere
 	int scalex, scaley;
 	std::string scalername;
-	const Pentagram::Scaler *scaler = &Pentagram::point_scaler;
+	const Pentagram::Scaler *scaler;
 	settingman->setDefault("scalex", 320);
 	settingman->get("scalex", scalex);
 	settingman->setDefault("scaley", 200);
@@ -1682,10 +1681,8 @@ void GUIApp::setupCoreGumps()
 	settingman->setDefault("scaler", "point");
 	settingman->get("scaler", scalername);
 	
-	if (scalername == Pentagram::istring(Pentagram::bilinear_scaler.ScalerName())) 
-		scaler=&Pentagram::bilinear_scaler;
-	else if (scalername == Pentagram::istring(Pentagram::scale2x_scaler.ScalerName())) 
-		scaler=&Pentagram::scale2x_scaler;
+	scaler = ScalerManager::get_instance()->GetScaler(scalername);
+	if (!scaler) scaler = ScalerManager::get_instance()->GetPointScaler();
 
 	if (scalex < 0) scalex= -scalex;
 	else if (scalex < 100) scalex = dims.w/scalex;

@@ -88,12 +88,15 @@ GRAPHICS = \
 	graphics/MainShapeArchive.o \
 	graphics/XFormBlend.o \
 	graphics/TypeFlags.o \
-	graphics/WpnOvlayDat.o
+	graphics/WpnOvlayDat.o \
+	graphics/ScalerManager.o
 
 SCALERS = \
 	graphics/scalers/BilinearScaler.o \
 	graphics/scalers/PointScaler.o \
-	graphics/scalers/Scale2xScaler.o
+	graphics/scalers/Scale2xScaler.o \
+	graphics/scalers/hq2xScaler.o \
+	graphics/scalers/2xSaIScalers.o
 
 FONTS = \
 	graphics/fonts/Font.o \

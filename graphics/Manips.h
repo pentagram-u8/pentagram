@@ -33,6 +33,11 @@ public:
 	static uintX merge(uint8 r, uint8 g, uint8 b, uint8 a) {
 		return PACK_RGBA8(r, g, b, a);
 	}
+	static uint16 to16bit(uintX src) { 
+		uint8 r,g,b;
+		UNPACK_RGB(src,r,g,b);
+		return (r>>3)|((g&0xFC)<<3)|((b&F8)<<8);
+	}
 };
 
 class Manip_Nat2Nat_16
@@ -46,6 +51,9 @@ public:
 	static uint16 merge(uint8 r, uint8 g, uint8 b, uint8 a) {
 		return PACK_RGBA8(r, g, b, a);
 	}
+	static uint16 to16bit(uint16 src) { 
+		return src;
+	}
 };
 
 class Manip_Nat2Nat_32
@@ -58,6 +66,11 @@ public:
 	}
 	static uint32 merge(uint8 r, uint8 g, uint8 b, uint8 a) {
 		return PACK_RGBA8(r, g, b, a);
+	}
+	static uint16 to16bit(uint32 src) { 
+		uint8 r,g,b;
+		UNPACK_RGB8(src,r,g,b);
+		return (r>>3)|((g&0xFC)<<3)|((b&0xF8)<<8);
 	}
 };
 
@@ -77,6 +90,9 @@ public:
 	static uintX merge(uint8 r, uint8 g, uint8 b, uint8 a) {
 		return PACK_RGBA8(r, g, b, a);
 	}
+	static uint16 to16bit(uint32 src) { 
+		return (src>>3)|((src>>5)&0x7E0)|((src>>8)&0xF800);
+	}
 };
 
 class Manip_Sta2Nat_16
@@ -94,6 +110,9 @@ public:
 	}
 	static uint16 merge(uint8 r, uint8 g, uint8 b, uint8 a) {
 		return PACK_RGBA8(r, g, b, a);
+	}
+	static uint16 to16bit(uint32 src) { 
+		return (src>>3)|((src>>5)&0x7E0)|((src>>8)&0xF800);
 	}
 };
 
@@ -113,8 +132,12 @@ public:
 	static uint32 merge(uint8 r, uint8 g, uint8 b, uint8 a) {
 		return PACK_RGBA8(r, g, b, a);
 	}
+	static uint16 to16bit(uint32 src) { 
+		return (src>>3)|((src>>5)&0x7E0)|((src>>8)&0xF800);
+	}
 };
 
+// Assumption, ABGR (but doesn't matter)
 class Manip_32_A888
 {
 public:
@@ -126,8 +149,12 @@ public:
 	static uint32 merge(uint8 c0, uint8 c1, uint8 c2, uint8 a) {
 		return c0|(c1<<8)|(c2<<16)|(a<<24);
 	}
+	static uint16 to16bit(uint32 src) { 
+		return (src>>3)|((src>>5)&0x7E0)|((src>>8)&0xF800);
+	}
 };
 
+// Assumption, RGBA (but doesn't matter)
 class Manip_32_888A
 {
 public:
@@ -138,6 +165,9 @@ public:
 	}
 	static uint32 merge(uint8 c0, uint8 c1, uint8 c2, uint8 a) {
 		return a|(c2<<8)|(c1<<16)|(c0<<24);
+	}
+	static uint16 to16bit(uint32 src) { 
+		return (src>>27)|((src>>13)&0x7E0)|((src<<8)&0xF800);
 	}
 };
 

@@ -3,6 +3,13 @@
 	  accept keyboard input
 	* graphics/scalers/BilinearScaler.cpp : Fixing overun crashes when
 	  doing Arbitrary scaling due rounding/accuracy problems.
+	* kernel/GUIApp.cpp, graphics/ScalerManager.*, graphics/Scaler.h,
+	  graphics/scalers/2xSaIScalers.*, graphics/scalers/hq2xScaler.*,
+	  misc/version.cpp, objects.mk :
+	  Added the ScalerManager that will just handle getting scalers. 
+	  Added 2xSaI, Super2xSaI and SuperEagle scalers. Also added hq2x
+	  scaler, but that will only be compiled in if USE_HQ2X_SCALER is
+	  defined.
 
 2005-02-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* games/GameData.*: use ttf overrides from u8.ini instead of hardcoded
