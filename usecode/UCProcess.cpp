@@ -36,6 +36,8 @@ UCProcess::UCProcess(Usecode* usecode_, uint32 classid_,
 	ip = 0xFFFF;
 	bp = 0x0000;
 
+	//Q: Devon's use() usecode also accesses BP+0A. What's that?
+
 	stack.push4(this_ptr); // BP+06 this pointer
 
 	call(classid_, offset_);

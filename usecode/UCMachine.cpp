@@ -95,7 +95,7 @@ bool UCMachine::execProcess(UCProcess* p)
 	bool cede = false;
 	bool error = false;
 
-	while(!cede && !error)
+	while(!cede && !error && !p->terminated)
 	{
 		//! guard against reading past end of class
 		//! guard against other error conditions
@@ -1091,9 +1091,8 @@ bool UCMachine::execProcess(UCProcess* p)
 
 			if (p->ret()) { // returning from process
 				// TODO
-				LOGPF(("!ret\t\tfrom process"));
-				cede = true;
-				error = true; // for now
+				LOGPF(("ret\t\tfrom process"));
+				killProcess(p);
 
 				// return value is going to be stored somewhere,
 				// and some other process is probably waiting for it.
@@ -1139,8 +1138,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x53:
 			// 53
 			// suspend
-			// TODO!
-			LOGPF(("!suspend"));
+			LOGPF(("suspend"));
 			cede=true; 
 			break;
 
@@ -1205,7 +1203,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				uint32 offset = cs.read2();
 				uint32 this_ptr = p->stack.pop4(); // can be NULL
 				
-				LOGPF(("!spawn\t\t%02X %02X %04X:%04X",
+				LOGPF(("spawn\t\t%02X %02X %04X:%04X",
 					   arg_bytes, this_size, classid, offset));
 
 				UCProcess* newproc = new UCProcess(p->usecode, classid,

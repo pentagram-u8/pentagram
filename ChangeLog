@@ -1,4 +1,7 @@
 2003-05-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/UCMachine.cpp: cleaned up a bit
+
+2003-05-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Application.cpp: right-click uses an item
 	* usecode/UCMachine.cpp: bugfixes
 	* usecode/u8intrinsics.h: 'process' intrinsics return a dummy process
