@@ -4,7 +4,8 @@
 	  Added item->collideMove() function. You should use this function to moves
 	  whenever possible since is will properly call all the hit and wasHit 
 	  functions.
-
+	* usecode/UCMachine.cpp, world/CurrentMap.* : Surface Search
+	
 2003-06-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/ConsoleGump.h: PointOnGump always returns false
 	* gumps/Gump.*: added FindGump(x,y) to find the gump on that location

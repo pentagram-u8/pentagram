@@ -329,6 +329,90 @@ void CurrentMap::areaSearch(UCList* itemlist, const uint8* loopscript,
 	}
 }
 
+void CurrentMap::surfaceSearch(UCList* itemlist, const uint8* loopscript,
+					uint32 scriptsize, Item* item, bool above, bool below,
+					bool recurse)
+{
+	sint32 x,y,z;
+	sint32 xd,yd,zd;
+	// if item != 0, search an area around item. Otherwise, search an area
+	// around (x,y)
+	item->getLocation(x,y,z);
+	item->getFootpad(xd,yd,zd);
+	xd *= 32;
+	yd *= 32;
+	zd *= 8;
+
+	Rect searchrange(x-xd,y-yd,xd,yd);
+
+	int minx, miny, maxx, maxy;
+
+	//! constants
+	minx = ((x-xd)/512) - 1;
+	maxx = ((x)/512) + 1;
+	miny = ((y-yd)/512) - 1;
+	maxy = ((y)/512) + 1;
+	if (minx < 0) minx = 0;
+	if (maxx > 127) maxx = 127;
+	if (miny < 0) miny = 0;
+	if (miny > 127) maxy = 127;
+
+	for (int cx = minx; cx <= maxx; cx++) {
+		for (int cy = miny; cy <= maxy; cy++) {
+			item_list::iterator iter;
+			for (iter = items[cx][cy].begin();
+				 iter != items[cx][cy].end(); ++iter) {
+
+				Item* item = *iter;
+
+
+				// check if item is in range?
+				sint32 ix, iy, iz;
+				item->getLocation(ix, iy, iz);
+				sint32 ixd, iyd, izd;
+				item->getFootpad(ixd, iyd, izd);
+				//!! constants
+				ixd *= 32;
+				iyd *= 32;
+				izd *= 8;
+
+				Rect itemrect(ix - ixd, iy - iyd, ixd, iyd);
+
+				if (!itemrect.Overlaps(searchrange)) continue;
+
+				bool ok = false;
+				
+				if (above && iz == (z + zd)) 
+				{
+					ok = true;
+					// Only recursive if tops aren't same (i.e. NOT flat)
+					if (recurse && (izd+iz != zd+z) )
+						surfaceSearch(itemlist, loopscript, scriptsize, item, true, false, true);
+				}
+				
+				if (below && z == (iz + izd)) 
+				{
+					ok = true;
+					// Only recursive if bottoms aren't same (i.e. NOT flat)
+					if (recurse && (izd != zd) )
+						surfaceSearch(itemlist, loopscript, scriptsize, item, false, true, true);
+				}
+
+				if (!ok) continue;
+
+				// check item against loopscript
+				if ((*iter)->checkLoopScript(loopscript, scriptsize)) {
+					uint16 objid = (*iter)->getObjId();
+					uint8 buf[2];
+					buf[0] = static_cast<uint8>(objid);
+					buf[1] = static_cast<uint8>(objid >> 8);
+					itemlist->append(buf);				
+				}
+			}
+		}
+	}
+}
+
 TeleportEgg* CurrentMap::findDestination(uint16 id)
 {
 	//! constants

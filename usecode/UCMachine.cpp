@@ -1520,8 +1520,23 @@ bool UCMachine::execProcess(UCProcess* p)
 				}
 				case 6:
 				{
+					// Surface search
 					stacksize = 0x3D;
-					//!!!!!! fall-through for now
+
+					bool above = ui16a != 0xFFFF;
+					bool below = ui16b != 0xFFFF;
+					Item* item = world->getItem( below?ui16b:ui16a );
+
+					if (item) {
+						world->getCurrentMap()->surfaceSearch(itemlist, script,
+														   scriptsize, item,
+														   above, below);
+					} else {
+						// return error or return empty list?
+						perr << "Warning: invalid item passed to surface search"
+							 << std::endl;
+					}
+					break;
 				}
 				default:
 					perr << "Unhandled search type " << searchtype <<std::endl;
