@@ -95,9 +95,6 @@ private:
 	uint16 assignString(const char* str);
 	uint16 assignList(UCList* l);
 
-	uint16 loop_list;
-	uint32 loop_index;
-
 	static UCMachine* ucmachine;
 };
 

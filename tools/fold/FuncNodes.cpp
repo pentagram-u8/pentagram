@@ -119,7 +119,7 @@ bool FuncMutatorNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 
 void DCFuncNode::print_unk(Console &o, const uint32 isize) const
 {
-	for(deque<Node *>::const_iterator i=funcnodes.begin(); i!=funcnodes.end(); ++i)
+	for(std::deque<Node *>::const_iterator i=funcnodes.begin(); i!=funcnodes.end(); ++i)
 	{
 		indent(o, isize);
 		(*i)->print_unk(o, isize);
@@ -129,7 +129,7 @@ void DCFuncNode::print_unk(Console &o, const uint32 isize) const
 
 void DCFuncNode::print_asm(Console &o) const
 {
-	for(deque<Node *>::const_iterator i=funcnodes.begin(); i!=funcnodes.end(); ++i)
+	for(std::deque<Node *>::const_iterator i=funcnodes.begin(); i!=funcnodes.end(); ++i)
 	{
 		(*i)->print_asm(o);
 		o.Putchar('\n');
@@ -138,13 +138,13 @@ void DCFuncNode::print_asm(Console &o) const
 
 void DCFuncNode::print_bin(OBufferDataSource &o) const
 {
-	for(deque<Node *>::const_iterator i=funcnodes.begin(); i!=funcnodes.end(); ++i)
+	for(std::deque<Node *>::const_iterator i=funcnodes.begin(); i!=funcnodes.end(); ++i)
 	{
 		o.clear();
 		(*i)->print_mac(con);
 		(*i)->print_bin(o);
 		// FIXME: The following is a bit of a hack, just so we get some 'real' output
-		for(deque<char>::const_iterator i=o.buf().begin(); i!=o.buf().end(); ++i)
+		for(std::deque<char>::const_iterator i=o.buf().begin(); i!=o.buf().end(); ++i)
 			con.Printf("%02X ", static_cast<uint8>(*i));
 		con.Putchar('\n');
 	}

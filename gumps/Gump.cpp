@@ -88,6 +88,7 @@ void Gump::Close(bool no_del)
 
 	if (!parent) 
 	{
+		flags |= FLAG_CLOSING;
 		if (!no_del) delete this;
 	}
 	else

@@ -33,6 +33,7 @@ class ItemSorter
 
 	uint32		max_items;
 	uint32		num_items;
+	uint32		num_extra;
 	SortItem	*items;
 	sint32		sort_limit;
 

@@ -116,9 +116,9 @@ int FileSystem::ListFiles(const std::string mask, FileList& files)
 	handle = FindFirstFile (lpszT, &fileinfo);
 
 	stripped_path = new char [path.length()+1];
-	strcpy (stripped_path, path.c_str());
+	std::strcpy (stripped_path, path.c_str());
 
-	for (i = strlen (stripped_path)-1; i; i--)
+	for (i = std::strlen (stripped_path)-1; i; i--)
 		if (stripped_path[i] == '\\' || stripped_path[i] == '/')
 			break;
 
@@ -135,7 +135,7 @@ int FileSystem::ListFiles(const std::string mask, FileList& files)
 	{
 		do
 		{
-			nLen = strlen(stripped_path);
+			nLen = std::strlen(stripped_path);
 
 #ifdef UNICODE
 			nLen2 = wcslen (fileinfo.cFileName)+1;
@@ -143,10 +143,10 @@ int FileSystem::ListFiles(const std::string mask, FileList& files)
 			strcpy (filename, stripped_path);
 			WideCharToMultiByte(CP_ACP, 0, fileinfo.cFileName, -1, filename+nLen, nLen2, NULL, NULL);
 #else
-			nLen2 = strlen (fileinfo.cFileName)+1;
+			nLen2 = std::strlen (fileinfo.cFileName)+1;
 			char *filename = new char [nLen+nLen2];
-			strcpy (filename, stripped_path);
-			strcat (filename, fileinfo.cFileName);
+			std::strcpy (filename, stripped_path);
+			std::strcat (filename, fileinfo.cFileName);
 #endif
 
 			files.push_back(filename);

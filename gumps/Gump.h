@@ -71,6 +71,7 @@ public:
 
 	virtual void				CreateNotifier();
 	GumpNotifyProcess*			GetNotifyProcess();
+	inline uint32				GetResult() { return process_result; }
 
 	//! Set the Gump's shape/frame
 	inline void					SetShape(Shape *_shape, uint32 _framenum)
@@ -148,6 +149,9 @@ public:
 	//! Close the gump
 	//! \param no_del If true, do not delete after closing
 	virtual void		Close(bool no_del = false);
+
+	//! Check to see if a Gump is Closing
+	bool				IsClosing() { return (flags&FLAG_CLOSING)!=0; }
 
 	//! Move this gump
 	virtual void		Move(int x_, int y_) { x = x_; y = y_; }

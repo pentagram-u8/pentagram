@@ -526,7 +526,7 @@ inline bool SortItem::operator<<(const SortItem& si2) const
 //
 
 ItemSorter::ItemSorter(int Max_Items) : 
-		shapes(0), surf(0), max_items(Max_Items), num_items(0), sort_limit(0)
+		shapes(0), surf(0), max_items(Max_Items), num_items(0), num_extra(0), sort_limit(0)
 {
 	if (max_items <= 0) max_items = Max_Items = 2048;
 	items = new SortItem [max_items];
@@ -543,10 +543,18 @@ void ItemSorter::BeginDisplayList(RenderSurface *rs,
 	// Get the shapes, if required
 	if (!shapes) shapes = GameData::get_instance()->getMainShapes();
 
+	// Need to resize
+	if (num_extra)
+	{
+		delete [] items;
+		max_items += num_extra*2;
+		items = new SortItem [max_items];
+	}
 	// Set the RenderSurface, and reset the item list
 	surf = rs;
 	num_items = 0;
 	order_counter = 0;
+	num_extra = 0;
 
 	// Screenspace bounding box bottom x coord (RNB x coord)
 	cam_sx = (camx - camy)/4;
@@ -561,7 +569,11 @@ void ItemSorter::AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 
 
 	// First thing, get a SortItem to use
 	
-	if (num_items >= max_items) return;
+	if (num_items >= max_items)
+	{
+		num_extra++;
+		return;
+	}
 
 	SortItem *si = items+num_items;
 
@@ -724,7 +736,11 @@ void ItemSorter::AddItem(Item *add)
 
 	// First thing, get a SortItem to use
 	
-	if (num_items >= max_items) return;
+	if (num_items >= max_items)
+	{
+		num_extra++;
+		return;
+	}
 
 	SortItem *si = items+num_items;
 

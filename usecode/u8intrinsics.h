@@ -35,6 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "PaletteFaderProcess.h"
 #include "SpriteProcess.h"
+#include "SpriteProcess.h"
 
 // Ultima 8 Intrinsics
 Intrinsic U8Intrinsics[] = {
@@ -249,8 +250,8 @@ Intrinsic U8Intrinsics[] = {
 	0, //U
 	0, //U
 	0, //U
-	0, // Camera::startQuake
-	0, // Camera::stopQuake
+	CameraProcess::I_startQuake,
+	CameraProcess::I_stopQuake,
 	0, // Camera::invertScreen
 	0, //U
 	Kernel::I_getNumProcesses,

@@ -94,9 +94,6 @@ UCMachine::UCMachine(Intrinsic *iset) :
 	// zero globals
 	globals.push0(globals.getSize());
 
-	loop_list = 0;
-	loop_index = 0;
-
 	convuse = new ConvertUsecodeU8; //!...
 	loadIntrinsics(iset); //!...
 }
@@ -1691,10 +1688,12 @@ bool UCMachine::execProcess(UCProcess* p)
 			// Strings are _not_ duplicated when putting them in the loopvar
 			// Lists _are_ freed afterwards
 
-
-			si8a = cs.read1(); // loop variable
+			si8a = cs.read1();	// loop variable
 			ui32a = cs.read1(); // list size
 			si16a = cs.read2(); // jump offset
+
+			ui16a = p->stack.access2(p->stack.getSP());		// Loop index
+			ui16b = p->stack.access2(p->stack.getSP()+2);	// Loop list
 
 			if (opcode == 0x76 && ui32a != 2) {
 				error = true;
@@ -1702,34 +1701,28 @@ bool UCMachine::execProcess(UCProcess* p)
 			
 			if (opcode == 0x75) {
 				LOGPF(("for each\t%s (%02X) %04hX",
-					   print_bp(si8a), ui32a, si16a));
+					print_bp(si8a), ui32a, si16a));
 			} else {
 				LOGPF(("for each str\t%s (%02X) %04hX",
-					   print_bp(si8a), ui32a, si16a));
+					print_bp(si8a), ui32a, si16a));
 			}
 			
-			if (loop_list == 0) { // not in loop yet
-				ui16a = p->stack.pop2(); // 0xFFFF !?
-				loop_list = p->stack.pop2(); // list to loop over
-				loop_index = 0;
-			} else {
-				loop_index++;
-			}
+			// Intcrement the counter
+			if (ui16a == 0xFFFF) ui16a = 0;
+			else ui16a++;
 			
-			if (loop_index >= listHeap[loop_list]->getSize()) {
+			if (ui16a >= listHeap[ui16b]->getSize()) {
 				// loop done
 				
 				// free loop list
 				if (opcode == 0x75) {
-					freeList(loop_list);
+					freeList(ui16b);
 				} else {
-					freeStringList(loop_list);
+					freeStringList(ui16b);
 				}
 				
-				// reset 'global' loop vars
-				loop_list = 0;
-				loop_index = 0;
-				
+				p->stack.addSP(4);	// Pop list and counter
+
 				// jump out
 				ui16a = cs.getPos() + si16a;
 				cs.seek(ui16a);
@@ -1737,11 +1730,13 @@ bool UCMachine::execProcess(UCProcess* p)
 			else
 			{
 				// loop iteration
-				// place next element from list in [bp+si8a]
 				// (not duplicating any strings)
+				
+				// updated loop index
+				p->stack.assign2(p->stack.getSP(),ui16a);		
 
-				p->stack.assign(p->bp+si8a, (*listHeap[loop_list])[loop_index],
-								ui32a);
+				// place next element from list in [bp+si8a]
+				p->stack.assign(p->bp+si8a, (*listHeap[ui16b])[ui16a], ui32a);
 			}
 			break;
 

@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ShapeInfo.h"
 #include "Kernel.h"
 #include "CoreApp.h"
+#include <cstdlib>
 
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(CameraProcess,Process);
@@ -35,6 +36,9 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(CameraProcess,Process);
 // Statics
 //
 CameraProcess *CameraProcess::camera = 0;
+sint32 CameraProcess::earthquake = 0;
+sint32 CameraProcess::eq_x = 0;
+sint32 CameraProcess::eq_y = 0;
 
 uint16 CameraProcess::SetCameraProcess(CameraProcess *cam)
 {
@@ -67,6 +71,12 @@ void CameraProcess::GetCameraLocation(sint32 &x, sint32 &y, sint32 &z)
 		}
 		else
 			av->getLocation(x,y,z);
+
+		if (earthquake)
+		{
+			x += 2*eq_x + 4*eq_y;
+			y += -2*eq_x + 4*eq_y;
+		}
 	}
 	else
 	{
@@ -120,24 +130,20 @@ CameraProcess::CameraProcess(sint32 _x, sint32 _y, sint32 _z, sint32 _time) :
 
 bool CameraProcess::run(const uint32 /* framenum */)
 {
+	if (earthquake)
+	{
+		eq_x = (std::rand()%(earthquake*2+1))-earthquake;
+		eq_y = (std::rand()%(earthquake*2+1))-earthquake;
+	}
+	else
+	{
+		eq_x = 0;
+		eq_y = 0;
+	}
+
 	if (time && elapsed>time)
 	{
 		result = 0; // do we need this
-
-		// This is a bit of a hack. If we are looking at avatar,
-		// then follow avatar
-		/* - Shouldn't be needed. I_setCenterOn(1) is called
-		Actor *av = World::get_instance()->getNPC(1);
-		sint32 ax, ay, az;
-		av->getLocation(ax,ay,az);
-
-		if (ex == ax && ey == ay && ez == (az+20))
-		{
-			pout << "Hack to scroll with Avatar" << std::endl;
-			getGUIInstance()->SetCameraProcess(new CameraProcess(1));
-		}
-		else 
-		*/
 		CameraProcess::SetCameraProcess(0);	// This will terminate us
 		return false;
 	}
@@ -221,7 +227,26 @@ void CameraProcess::GetLerped(sint32 &x, sint32 &y, sint32 &z, sint32 factor)
 		y = ((lsy*(256-factor) + ley*factor)>>8);
 		z = ((lsz*(256-factor) + lez*factor)>>8);
 	}
+
+	if (earthquake)
+	{
+		x += 2*eq_x + 4*eq_y;
+		y += -2*eq_x + 4*eq_y;
+	}
 }
+
+uint16 CameraProcess::FindRoof(sint32 factor)
+{
+	sint32 x,y,z;
+	sint32 earthquake_old = earthquake;
+	earthquake = 0;
+	GetLerped(x,y,z,factor);
+	earthquake = earthquake_old;
+	uint16 roofid;
+	World::get_instance()->getCurrentMap()->isValidPosition(x, y, z, 32, 32, 8, 1, 0, &roofid);
+	return roofid;
+}
+
 
 //	"Camera::move_to(uword, uword, ubyte, word)",
 uint32 CameraProcess::I_move_to(const uint8* args, unsigned int /*argsize*/)
@@ -250,5 +275,20 @@ uint32 CameraProcess::I_scrollTo(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT8(z);
 	ARG_SINT16(unk);
 	return CameraProcess::SetCameraProcess(new CameraProcess(x,y,z, 15));
+}
+
+//	Camera::startQuake(word)
+uint32 CameraProcess::I_startQuake(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_UINT16(strength);
+	earthquake = strength;
+	return 0;
+}
+
+//	Camera::stopQuake()
+uint32 CameraProcess::I_stopQuake(const uint8* args, unsigned int /*argsize*/)
+{
+	earthquake = 0;
+	return 0;
 }
 

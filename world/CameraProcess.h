@@ -46,9 +46,16 @@ public:
 	// You will notice that this isn't the same as how Item::GetLerped works
 	void GetLerped(sint32 &x, sint32 &y, sint32 &z, sint32 factor);
 
+	//! Find the roof above the camera. 
+	//! /param factor Interpolation factor for this frame
+	//! /return 0 if no roof found, objid of roof if found
+	uint16 FindRoof(sint32 factor);
+
 	INTRINSIC(I_setCenterOn);
 	INTRINSIC(I_move_to);
 	INTRINSIC(I_scrollTo);
+	INTRINSIC(I_startQuake);
+	INTRINSIC(I_stopQuake);
 
 	static void				GetCameraLocation(sint32 &x, sint32 &y, sint32 &z);
 	static CameraProcess*	GetCameraProcess() { return camera; }
@@ -66,6 +73,8 @@ private:
 	uint32 last_framenum;
 
 	static CameraProcess	*camera;
+	static sint32 earthquake;
+	static sint32 eq_x, eq_y;
 };
 
 #endif //CAMERAPROCESS_H

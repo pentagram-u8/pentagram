@@ -1,3 +1,16 @@
+2003-06-27  Ryan Nunn <colourles@users.sourceforge.net>
+	* gumps/GameMapGump.cpp, world/CameraProcess.cpp : Fixing roof popping 
+	  so it checks above where the camera is, not where the avatar is.
+	* world/CameraProcess.*, usecode/u8intrinsics.h : Added Earthquakes.
+	* usecode/UCMachine.* : Making the for each loops safe so multiple
+	  proceses and nested loops don't step on each others toes.
+	* tools/fold/FuncNodes.cpp : Making compaatible with MSVC.
+	* world/ItemSorter.cpp : The item sorter will now resize if it's too 
+	  small. However, this will occur next frame, not this frame, so the 
+	  current sorted list is not invalidated.
+	* filesys/ListFiles.h : Some std stuff in the windows code
+	* docs/scratch/saving : Added Earthquake stuff.
+
 2003-06-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/Gump.*, gumps/GumpNotifyProcess.*: pointers -> ids
 

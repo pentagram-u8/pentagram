@@ -151,7 +151,8 @@ CameraProcess: Process:
 	sint32 time
 	sint32 elapsed
 	uint16 itemnum
-
+	static sint32 earthquake;
+	static sint32 eq_x, eq_y;
 	reset:
 		uint32 last_framenum (I think?)
 

@@ -114,19 +114,9 @@ void GameMapGump::GetCameraLocation(sint32& lx, sint32& ly, sint32& lz,
 									int lerp_factor)
 {
 	CameraProcess *camera = CameraProcess::GetCameraProcess();
-	if (!camera) {
-
-		int map_num = World::get_instance()->getCurrentMap()->getNum();
-		Actor* av = World::get_instance()->getNPC(1);
-		
-		if (!av || av->getMapNum() != map_num)
-		{
-			lx = 8192;
-			ly = 8192;
-			lz = 64;
-		}
-		else
-			av->getLocation(lx,ly,lz);
+	if (!camera) 
+	{
+		CameraProcess::GetCameraLocation(lx,ly,lz);
 	}
 	else
 	{
@@ -148,15 +138,24 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 	int lx, ly, lz;
 	GetCameraLocation(lx, ly, lz, lerp_factor);
 
-	// Check roof
-	//!! This is _not_ the right place for this...
-	sint32 ax, ay, az, axd, ayd, azd;
+	CameraProcess *camera = CameraProcess::GetCameraProcess();
+
+	uint16 roofid = 0;
 	int zlimit = 1 << 16; // should be high enough
-	Actor* av = world->getNPC(1);
-	av->getLocation(ax, ay, az);
-	av->getFootpad(axd, ayd, azd);
-	uint16 roofid;
-	map->isValidPosition(ax, ay, az, axd*32, ayd*32, azd*8, 1, 0, &roofid);
+
+	if (!camera)
+	{
+		// Check roof
+		//!! This is _not_ the right place for this...
+		sint32 ax, ay, az, axd, ayd, azd;
+		Actor* av = world->getNPC(1);
+		av->getLocation(ax, ay, az);
+		av->getFootpad(axd, ayd, azd);
+		map->isValidPosition(ax, ay, az, 32, 32, 8, 1, 0, &roofid);
+	}
+	else
+		roofid = camera->FindRoof(lerp_factor);
+
 	Item* roof = world->getItem(roofid);
 	if (roof) {
 		zlimit = roof->getZ();
