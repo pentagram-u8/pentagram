@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram Team
+Copyright (C) 2003 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,22 +16,20 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef PALETTE_H
-#define PALETTE_H
+#include "pent_include.h"
 
-class IDataSource;
+#include "Palette.h"
+#include "IDataSource.h"
 
-struct Palette
+void Palette::load(IDataSource& ds)
 {
-	void load(IDataSource& ds);
+	ds.read(palette, 768);
 
-	// 256 rgb entries
-	uint8 palette[768];
-
-	// native format palette. Created by the RenderSurface
-	uint32 native[256];
-};
-
-
-
-#endif
+	// convert from 0-63 to 0-255 palette
+	for (int i = 0; i < 256; i++)
+	{
+		palette[i*3] = (palette[i*3]*255)/63;
+		palette[i*3+1] = (palette[i*3+1]*255)/63;
+		palette[i*3+2] = (palette[i*3+2]*255)/63;
+	}
+}

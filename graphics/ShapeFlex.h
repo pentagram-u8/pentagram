@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002 The Pentagram team
+Copyright (C) 2003 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,40 +16,31 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef APPLICATION_H
-#define APPLICATION_H
+#ifndef SHAPEFLEX_H
+#define SHAPEFLEX_H
 
-class Kernel;
-class UCMachine;
-class FileSystem;
-class Configuration;
-class ResizableGump;
-class ConsoleGump;
-class RenderSurface;
-class PaletteManager;
-struct Texture;
+#include <vector>
 
-// extremely simplified stub-ish Application class
-class Application {
+#include "Flex.h"
+
+class IDataSource;
+class Shape;
+
+class ShapeFlex : protected Flex
+{
 public:
-	Application(int argc, char *argv[]);
-	virtual ~Application();
+	ShapeFlex(IDataSource* ds);
+	virtual ~ShapeFlex();
 
-	virtual void run();
-	virtual void paint();
+	Shape* getShape(uint32 shapenum);
 
-	void loadConfig();
+	void cache(); // cache all shapes
+	void cache(uint32 shapenum); // cache one shape
+	void uncache(uint32 shapenum); // uncache one shape
 
 protected:
-	Kernel* kernel;
-	UCMachine* ucmachine;
-	FileSystem* filesystem;
-	Configuration* config;
-	ResizableGump* desktop;
-	ConsoleGump* console;
-	RenderSurface *screen;
-	Texture *confont;
-	PaletteManager *palettemanager;
+	std::vector<Shape*> shapes;
 };
+
 
 #endif

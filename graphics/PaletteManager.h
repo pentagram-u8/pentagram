@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002 The Pentagram team
+Copyright (C) 2003 The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,40 +16,31 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef APPLICATION_H
-#define APPLICATION_H
+#ifndef PALETTEMANAGER_H
+#define PALETTEMANAGER_H
 
-class Kernel;
-class UCMachine;
-class FileSystem;
-class Configuration;
-class ResizableGump;
-class ConsoleGump;
+#include <vector>
+
+struct Palette;
+class IDataSource;
 class RenderSurface;
-class PaletteManager;
-struct Texture;
 
-// extremely simplified stub-ish Application class
-class Application {
+class PaletteManager
+{
 public:
-	Application(int argc, char *argv[]);
-	virtual ~Application();
+	explicit PaletteManager(RenderSurface* rs);
+	~PaletteManager();
 
-	virtual void run();
-	virtual void paint();
+	enum PalIndex {
+		Pal_Game = 0
+	};
 
-	void loadConfig();
+	void load(PalIndex index, IDataSource& ds);
+	Palette* getPalette(PalIndex index);
 
-protected:
-	Kernel* kernel;
-	UCMachine* ucmachine;
-	FileSystem* filesystem;
-	Configuration* config;
-	ResizableGump* desktop;
-	ConsoleGump* console;
-	RenderSurface *screen;
-	Texture *confont;
-	PaletteManager *palettemanager;
+private:
+	std::vector<Palette*> palettes;
+	RenderSurface *rendersurface;
 };
 
 #endif

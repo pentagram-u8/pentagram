@@ -29,6 +29,9 @@ pentagram_OBJ = \
 	graphics/TextureBitmap.o \
 	graphics/Shape.o \
 	graphics/ShapeFrame.o \
+	graphics/Palette.o \
+	graphics/PaletteManager.o \
+	graphics/ShapeFlex.o \
 	conf/Configuration.o \
 	conf/XMLTree.o \
 	conf/XMLNode.o

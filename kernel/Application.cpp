@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002 The Pentagram team
+Copyright (C) 2002-2003 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -31,11 +31,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Texture.h"
 //#include "ConsoleGump.h"
 #include "Shape.h"
+#include "PaletteManager.h"
+#include "ShapeFlex.h"
 #include "Palette.h"
 
 #include <SDL.h>
 
 int classid, offset; // only temporary, don't worry :-)
+ShapeFlex* shapes;
 
 Application::Application(int argc, char *argv[])
 {
@@ -65,6 +68,26 @@ Application::Application(int argc, char *argv[])
 	}
 	pout << "Resize Console" << std::endl;
 	con.CheckResize(640);
+
+	// Load palette
+	pout << "Load Palette" << std::endl;
+	palettemanager = new PaletteManager(screen);
+	IDataSource *pf = filesystem->ReadFile("u8pal.pal");
+	if (!pf) {
+		perr << "Unable to load u8pal.pal. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	pf->seek(4); // seek past header
+	palettemanager->load(PaletteManager::Pal_Game, *pf);
+
+	// Load main shapes
+	pout << "Load Shapes" << std::endl;
+	IDataSource *sf = filesystem->ReadFile("u8shapes.flx");
+	if (!sf) {
+		perr << "Unable to load u8shapes.flx. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	shapes = new ShapeFlex(sf);
 
 	// Load confont
 	pout << "Load Confont" << std::endl;
@@ -101,6 +124,7 @@ Application::~Application()
 	delete ucmachine;
 	delete filesystem;
 	delete config;
+	delete palettemanager;
 }
 
 void Application::run()

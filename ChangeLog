@@ -1,3 +1,8 @@
+2003-02-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/Palette.*: load palette from datasource
+	* graphics/PaletteManager.*: palette manager
+	* graphics/ShapeFlex.*: shape flex class
+
 2003-02-07  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/DelayProcess.h: process that waits a number of ticks
 	* graphics/Shape.*, graphics/ShapeFrame.*: shape, frame classes
