@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Kernel.h"
 #include "DelayProcess.h"
 
+#include "u8intrinsics.h"
+
 #define LOGPF(X) pout.printf X
 
 enum UCSegments {
@@ -50,6 +52,8 @@ UCMachine::UCMachine() :
 
 	loop_list = 0;
 	loop_index = 0;
+
+	intrinsics = U8Intrinsics; //!...
 }
 
 
@@ -255,9 +259,19 @@ bool UCMachine::execProcess(UCProcess* p)
 				uint16 func = cs.read2();
 				LOGPF(("!calli\t\t%04Xh (%02Xh arg bytes)", func, arg_bytes));
 
-				temp32 = addProcess(new DelayProcess(4));
+				// !constants
+				if (func >= 0x100 || intrinsics[func] == 0) {
+					temp32 = addProcess(new DelayProcess(4));
+					perr << "Unhandled intrinsic called" << std::endl;
+				} else {
+					uint8 *argbuf = new uint8[arg_bytes];
+					p->stack.pop(argbuf, arg_bytes);
+					p->stack.addSP(-arg_bytes); // don't really pop the args
 
-//				temp32 = 0x11223344; //!
+					temp32 = intrinsics[func](argbuf, arg_bytes);
+
+					delete[] argbuf;
+				}
 			}
 			break;
 
@@ -1679,6 +1693,46 @@ uint32 UCMachine::objectToPtr(uint16 objID)
 	ptr += objID;
 	return ptr;
 }
+
+//static
+uint16 UCMachine::ptrToObject(uint32 ptr)
+{
+	//! This function is a bit of a misnomer, since it's more general than this
+
+	uint16 segment = (uint16)(ptr >> 16);
+	uint16 offset = (uint16)(ptr);
+	if (segment >= SEG_STACK_FIRST && segment <= SEG_STACK_LAST)
+	{
+		UCProcess *proc = p_dynamic_cast<UCProcess*>
+			(Kernel::get_instance()->getProcess(segment));
+
+		// reference to the stack of pid 'segment'
+		if (!proc) {
+			// segfault :-)
+			perr << "Trying to access stack of non-existent "
+				 << "process (pid: " << std::hex << segment
+				 << std::dec << ")" << std::endl;
+			return 0;
+		} else {
+			return proc->stack.access2(offset);
+		}
+	}
+	else if (segment == SEG_OBJ || segment == SEG_STRING)
+	{
+		return offset;
+	}
+	else if (segment == SEG_GLOBAL)
+	{
+		return ucmachine->globals.access2(offset);
+	}
+	else
+	{
+		perr << "Trying to access segment " << std::hex
+			 << segment << std::dec << std::endl;
+		return 0;
+	}
+}
+
 
 uint16 UCMachine::addProcess(Process* p)
 {

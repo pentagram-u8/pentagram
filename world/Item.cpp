@@ -22,6 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Application.h"
 #include "Usecode.h"
 #include "GameData.h"
+#include "UCMachine.h"
+#include "World.h"
+#include "DelayProcess.h"
 
 /*
 My current idea on how to construct items: an ItemFactory class that
@@ -90,5 +93,62 @@ void Item::setupLerp(/* Camera &camera */)
 	l_next.z = iz = z /*- camera.z*/;
 	l_next.shape = shape;
 	l_next.frame = frame;
+}
+
+
+
+uint32 Item::I_getX(const uint8* args, unsigned int argsize)
+{
+	ARG_ITEM(item);
+
+	return item->x;
+}
+
+uint32 Item::I_getY(const uint8* args, unsigned int argsize)
+{
+	ARG_ITEM(item);
+
+	return item->y;
+}
+
+uint32 Item::I_getZ(const uint8* args, unsigned int argsize)
+{
+	ARG_ITEM(item);
+
+	return item->z;
+}
+
+uint32 Item::I_getShape(const uint8* args, unsigned int argsize)
+{
+	ARG_ITEM(item);
+
+	return item->shape;
+}
+
+uint32 Item::I_getFrame(const uint8* args, unsigned int argsize)
+{
+	ARG_ITEM(item);
+
+	return item->frame;
+}
+
+uint32 Item::I_getQ(const uint8* args, unsigned int argsize)
+{
+	ARG_ITEM(item);
+
+	return item->quality;
+}
+
+uint32 Item::I_bark(const uint8* args, unsigned int argsize)
+{
+	ARG_ITEM(item);
+	ARG_STRING(str);
+
+	pout.printf("%08x\n", ucptr_str);
+
+	pout << std::endl << std::endl << str  << std::endl << std::endl;
+	
+	// wait 4 ticks
+	return UCMachine::get_instance()->addProcess(new DelayProcess(4));
 }
 

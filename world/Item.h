@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define ITEM_H
 
 #include "Object.h"
+
+#include "intrinsics.h"
 class Container;
 
 class Item : public Object
@@ -58,6 +60,16 @@ public:
 		iz = l_prev.z + (((l_next.z-l_prev.z)*factor)>>8);
 #endif
 	}
+
+
+	// Intrinsics
+	INTRINSIC(I_getX);
+	INTRINSIC(I_getY);
+	INTRINSIC(I_getZ);
+	INTRINSIC(I_getShape);
+	INTRINSIC(I_getFrame);
+	INTRINSIC(I_getQ);
+	INTRINSIC(I_bark);
 
 protected:
 	uint32 shape;

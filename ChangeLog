@@ -1,4 +1,8 @@
 2003-04-07 Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/*intrinsics.h, usecode/*: intrinsics
+	* world/Item.*: added some basic item intrinsics
+
+2003-04-07 Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GameData.*: GameData class for storing datafile objects
 	* docs/maps.txt: some object count info
 

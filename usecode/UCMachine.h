@@ -25,6 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UCStack.h"
 #include "UCList.h"
 
+#include "intrinsics.h"
+
 class Process;
 class UCProcess;
 
@@ -59,7 +61,11 @@ public:
 	static uint32 globalToPtr(uint16 offset);
 	static uint32 objectToPtr(uint16 objID);
 
+	static uint16 ptrToObject(uint32 ptr);
+
 private:
+
+	Intrinsic* intrinsics;
 
 	// this technically isn't a stack, but UCStack supports the access 
 	// functions we need
