@@ -47,7 +47,7 @@ WARNINGS := @WARNINGS@
 
 # List of all sub modules
 # The order is important, be careful if you change it
-MODULES := convert convert/u8 convert/crusader misc filesys tools tools/disasm tools/fold tools/shapeconv kernel graphics audio usecode world world/actors gumps .
+MODULES := convert convert/u8 convert/crusader misc filesys tools tools/disasm tools/fold tools/shapeconv kernel graphics audio usecode world world/actors gumps conf .
 # tools/fold tools/suc
 
 # look for include files in
@@ -80,7 +80,7 @@ $(DEPDIRS):
 
 # custom compile rule which calculates dependencies
 %.o: %.cpp
-	$(MKDIR) $(*D)/$(DEPDIR)
+	@$(MKDIR) $(*D)/$(DEPDIR)
 	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).d",-MQ,"$@",-MP $(WARNINGS) $(CXXFLAGS) $(SDL_CFLAGS) -c -o $@ $<
 
 # rule to rebuild Makefile if necessary

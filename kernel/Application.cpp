@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Application.h"
 #include "Kernel.h"
 #include "FileSystem.h"
+#include "Configuration.h"
 
 #include "UCMachine.h"
 #include "UCProcess.h"
@@ -48,6 +49,9 @@ Application::Application(int argc, char *argv[])
 	ucmachine = new UCMachine;
 	pout << "Create FileSystem" << std::endl;
 	filesystem = new FileSystem;
+	pout << "Create Configuration" << std::endl;
+	config = new Configuration;
+	loadConfig();
 
 	// Set Screen Resolution
 	pout << "Set Video Mode" << std::endl;
@@ -136,4 +140,29 @@ void Application::paint()
 	screen->Fill32(0x3F3F3F, 0, 0, 640, 480);
 	con.DrawConsole(screen, 0, 0, 640, 480);
 	screen->EndPainting();
+}
+
+
+// load configuration files
+void Application::loadConfig()
+{
+	pout << "Loading configuration files:" << std::endl;
+
+	// TODO:
+	// load system-wide config...
+	// load user-specific config...
+
+	// for now:
+	pout << "pentagram.cfg... ";
+	if (config->readConfigFile("pentagram.cfg", "config"))
+		pout << "Ok" << std::endl;
+	else
+		pout << "Failed" << std::endl;
+
+
+	pout << "test.cfg... ";
+	if (config->readConfigFile("test.cfg", "config"))
+		pout << "Ok" << std::endl;
+	else
+		pout << "Failed" << std::endl;
 }

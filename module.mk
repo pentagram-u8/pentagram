@@ -18,11 +18,15 @@ pentagram_OBJ = \
 	misc/Args.o \
 	misc/Console.o \
 	misc/Q_strcasecmp.o \
+	misc/pent_include.o \
 	graphics/RenderSurface.o \
 	graphics/SoftRenderSurface.o \
 	graphics/Texture.o \
 	graphics/TextureTarga.o \
-	graphics/TextureBitmap.o
+	graphics/TextureBitmap.o \
+	conf/Configuration.o \
+	conf/XMLTree.o \
+	conf/XMLNode.o
 
 # Common rules
 include common.mk

@@ -1,3 +1,7 @@
+2002-12-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* conf/*: added Configuration classes
+	* kernel/Application.*: create Configuration
+
 2002-12-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* module.mk: updated
 	* misc/Errors.h: compile error
