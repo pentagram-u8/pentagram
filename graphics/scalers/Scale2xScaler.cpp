@@ -36,6 +36,8 @@
 #include "Scale2xScaler.h"
 #include "Manips.h"
 
+// SDL_cpuinfo.h needs SDL_types.h, but fails to include it
+#include <SDL_types.h>
 #include <SDL_cpuinfo.h>
 
 namespace Pentagram {
