@@ -33,6 +33,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ShapeInfo.h"
 #include "Pathfinder.h"
 #include "Animation.h"
+#include "DelayProcess.h"
+#include "ResurrectionProcess.h"
 
 #include "ItemFactory.h"
 #include "IDataSource.h"
@@ -459,6 +461,22 @@ void Actor::die()
 	// TODO: Lots, including, but not limited to:
 	// * fill with treasure if appropriate
 	// * some U8 monsters need special actions: skeletons, eyebeasts, etc...
+
+	ShapeInfo* shapeinfo = getShapeInfo();
+	MonsterInfo* mi = 0;
+	if (shapeinfo) mi = shapeinfo->monsterinfo;
+	if (mi && mi->resurrection) {
+		// this monster will resurrect after a while
+
+		int timeout = ((std::rand() % 25) + 5) * 30; // 5-30 seconds
+
+		Process* resproc = new ResurrectionProcess(this);
+		Kernel::get_instance()->addProcess(resproc);
+		Process* delayproc = new DelayProcess(timeout);
+		Kernel::get_instance()->addProcess(delayproc);
+
+		resproc->waitFor(delayproc);
+	}
 }
 
 int Actor::calculateAttackDamage(uint16 other, int damage, uint16 damage_type)

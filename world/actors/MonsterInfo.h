@@ -30,6 +30,7 @@ struct MonsterInfo {
 	bool unk;
 	uint16 damage_type;
 	uint16 defense_type;
+	bool resurrection;
 };
 
 

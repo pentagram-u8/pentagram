@@ -71,6 +71,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ItemFactory.h"
 #include "PathfinderProcess.h"
 #include "AvatarMoverProcess.h"
+#include "ResurrectionProcess.h"
 
 #include "MovieGump.h"
 
@@ -235,6 +236,8 @@ void GUIApp::startup()
 							 ProcessLoader<UCProcess>::load);
 	kernel->addProcessLoader("GumpNotifyProcess",
 							 ProcessLoader<GumpNotifyProcess>::load);
+	kernel->addProcessLoader("ResurrectionProcess",
+							 ProcessLoader<ResurrectionProcess>::load);
 
 	gamedata = new GameData();
 
@@ -308,7 +311,8 @@ void GUIApp::init_midi()
 #if 1
 	// Open SDL Audio (even though we may not need it)
 	SDL_InitSubSystem(SDL_INIT_AUDIO);
-	SDL_OpenAudio(&desired, &obtained);
+	int ret = SDL_OpenAudio(&desired, &obtained);
+	bool audio_ok = (ret == 0);
 
 	// Now, add the drivers in order of priority.
 	// Do OS Native drivers first, then then Timidity, then FMOpl
@@ -333,7 +337,7 @@ void GUIApp::init_midi()
 	const char * drv = desired_driver.c_str();
 
 	// Has the config file specified disabled midi?
-	if (Pentagram::strcasecmp(drv, "disabled"))
+	if (audio_ok && Pentagram::strcasecmp(drv, "disabled"))
 	{
 		std::vector<const MidiDriver::MidiDriverDesc*>::iterator it;
 

@@ -154,6 +154,7 @@ ACTORS = \
 	world/actors/MainActor.o \
 	world/actors/Pathfinder.o \
 	world/actors/PathfinderProcess.o \
+	world/actors/ResurrectionProcess.o \
 	world/actors/TeleportToEggProcess.o
 
 AUDIO = \

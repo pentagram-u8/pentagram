@@ -265,6 +265,12 @@ void TypeFlags::loadMonsterInfo()
 		config->get(k + "/defense_type", val);
 		mi->defense_type = static_cast<uint16>(val);
 
+		if (config->exists(k + "/resurrection")) {
+			config->get(k + "/resurrection", val);
+			mi->resurrection = (val != 0);
+		} else
+			mi->resurrection = false;
+
 		assert(mi->shape < shapeInfo.size());
 		shapeInfo[mi->shape].monsterinfo = mi;
 	}

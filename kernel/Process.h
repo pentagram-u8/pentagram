@@ -44,6 +44,13 @@ public:
 
 	//! suspend until process 'pid' returns. If pid is 0, suspend indefinitely
 	void waitFor(ProcId pid);
+
+	//! suspend until process returns. If proc is 0, suspend indefinitely
+	void waitFor(Process* proc);
+
+	//! suspend process
+	void suspend();
+
 	void wakeUp(uint32 result);
 
 	void setItemNum(ObjId it) { item_num = it; }

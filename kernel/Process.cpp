@@ -73,6 +73,19 @@ void Process::waitFor(ProcId pid_)
 	suspended = true;
 }
 
+void Process::waitFor(Process* proc)
+{
+	ProcId pid_ = 0;
+	if (proc) pid_ = proc->getPid();
+
+	waitFor(pid_);
+}
+
+void Process::suspend()
+{
+	suspended = true;
+}
+
 void Process::save(ODataSource* ods)
 {
 	writeProcessHeader(ods);

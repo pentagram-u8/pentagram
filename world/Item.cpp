@@ -2401,7 +2401,7 @@ uint32 Item::I_getSliderInput(const uint8* args, unsigned int /*argsize*/)
 	GUIApp *app = GUIApp::get_instance();
 	app->getDesktopGump()->AddChild(gump);
 
-	current->waitFor(0); // suspend
+	current->suspend();
 
 	return 0;
 }
