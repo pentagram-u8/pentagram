@@ -68,15 +68,6 @@ bool SplitItemProcess::run(const uint32 framenum)
 	pout << "SplitItemProcess splitting: " << movecount << ": "
 		 << origcount << "-" << targetcount << std::endl;
 		
-
-	if (origcount > 0) {
-		original->setQuality(origcount);
-		original->callUsecodeEvent_combine();
-	} else {
-		original->destroy();
-		original = 0;
-	}
-
 	if (targetcount > 0) {
 		targetitem->setQuality(targetcount);
 		targetitem->callUsecodeEvent_combine();
@@ -85,8 +76,18 @@ bool SplitItemProcess::run(const uint32 framenum)
 		targetitem = 0;
 	}
 
+	if (origcount > 0) {
+		original->setQuality(origcount);
+		original->callUsecodeEvent_combine();
+	} else {
+		original->destroy(); // note: this terminates us
+		original = 0;
+	}
+
 	result = 0;
-	terminate();
+
+	if (!terminated)
+		terminate();
 
 	return true;
 }
