@@ -133,8 +133,20 @@ void Shape::LoadGenericFormat(const uint8* data, uint32 size, const ConvertShape
 	uint32 framesize;
 	IBufferDataSource ds(data,size);
 
-	// Skip ident, unknown
-	ds.skip(format->bytes_ident + format->bytes_header_unk);
+	if (format->bytes_ident) {
+		uint8* ident = new uint8[format->bytes_ident];
+		ds.read(ident, format->bytes_ident);
+		bool match = std::memcmp(ident,format->ident,format->bytes_ident) == 0;
+		delete[] ident;
+
+		if (!match) {
+			frames.clear();
+			return;
+		}
+	}
+
+	// Skip unknown
+	ds.skip(format->bytes_header_unk);
 
 	// Read framecount, default 1 if no
 	if (format->bytes_num_frames) framecount = ds.readX(format->bytes_num_frames);

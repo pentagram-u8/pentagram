@@ -1,5 +1,6 @@
 2004-05-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/BookGump.cpp, ScrollGump.cpp: don't save text twice
+	* graphics/Shape.cpp: check shape ident string
 
 2004-05-16  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* data/u8bindings.ini: Organized and added showMenu to the default
