@@ -38,12 +38,6 @@ AnimationTracker::AnimationTracker()
 
 }
 
-AnimationTracker::AnimationTracker(Actor* actor_, Animation::Sequence action_,
-								   uint32 dir_, PathfindingState* state_)
-{
-	init(actor_, action_, dir_, state_);
-}
-
 AnimationTracker::~AnimationTracker()
 {
 

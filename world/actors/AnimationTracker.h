@@ -32,8 +32,6 @@ class AnimationTracker
 {
 public:
 	AnimationTracker();
-	AnimationTracker(Actor* actor, Animation::Sequence action, uint32 dir,
-					 PathfindingState* state=0);
 	~AnimationTracker();
 
 	//! initialize the AnimationTracker for the given actor, action, dir
