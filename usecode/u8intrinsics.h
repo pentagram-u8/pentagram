@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CameraProcess.h"
 #include "GUIApp.h"
 #include "Egg.h"
+#include "MonsterEgg.h"
 
 // Ultima 8 Intrinsics
 Intrinsic U8Intrinsics[] = {
@@ -162,8 +163,8 @@ Intrinsic U8Intrinsics[] = {
 	Egg::I_getEggId,
 	Egg::I_setEggId,
 	0, //U
-	0, // MonsterEgg::hatch
-	0, // MonsterEgg::getMonId
+	MonsterEgg::I_monsterEggHatch,
+	MonsterEgg::I_getMonId,
 	0, //U
 	0, //U
 	0, //U

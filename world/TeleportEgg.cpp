@@ -36,7 +36,7 @@ TeleportEgg::~TeleportEgg()
 
 uint16 TeleportEgg::hatch()
 {
-	if (!teleporter) return 0; // teleport target
+	if (!isTeleporter()) return 0; // teleport target
 
 	// find right destination egg (teleport_id) in new map (mapnum)
 	// teleport to destination egg

@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "MonsterEgg.h"
+#include "World.h"
+#include "UCMachine.h"
 
 DEFINE_DYNAMIC_CAST_CODE(MonsterEgg,Egg);
 
@@ -37,4 +39,22 @@ uint16 MonsterEgg::hatch()
 {
 	// create monster...
 	return 0;
+}
+
+uint32 MonsterEgg::I_monsterEggHatch(const uint8*args,unsigned int /*argsize*/)
+{
+	ARG_EGG(egg);
+	MonsterEgg* megg = p_dynamic_cast<MonsterEgg*>(egg);
+	if (!megg) return 0;
+
+	return megg->hatch();
+}
+
+uint32 MonsterEgg::I_getMonId(const uint8*args,unsigned int /*argsize*/)
+{
+	ARG_EGG(egg);
+	MonsterEgg* megg = p_dynamic_cast<MonsterEgg*>(egg);
+	if (!megg) return 0;
+
+	return megg->getMapNum();
 }

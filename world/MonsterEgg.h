@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define MONSTEREGG_H
 
 #include "Egg.h"
+#include "intrinsics.h"
 
 class MonsterEgg : public Egg
 {
@@ -30,11 +31,13 @@ public:
 
 	ENABLE_DYNAMIC_CAST(MonsterEgg);
 
+	int getProb() const { return (quality >> 12) & 0xF; }
+	int getMonsterShape() const { return quality & 0xFFF; }
+
 	virtual uint16 hatch();
 
-protected:
-	int prob;
-	int monstershape;
+	INTRINSIC(I_monsterEggHatch);
+	INTRINSIC(I_getMonId);
 };
 
 
