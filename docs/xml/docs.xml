@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE readme SYSTEM "docs.dtd">
+<readme title="Pentagram" changed="24 May 2004 (GMT)">
+	<section title="Changes to the Documentation">
+		<sub name="24052004">
+			<header>- 24 May 2004</header>
+			<body>
+				<para>
+					No changes yet, first xml-generated version.
+				</para>
+			</body>
+		</sub>
+	</section>
+	<section title="Building CVS">
+		<sub name="building_linux">
+			<header>Linux/Unix</header>
+			<body>
+				<ol>
+					<li> Run the "bootstrap" script to create the "configure" script<br/>				
+						<kbd>./bootstrap</kbd></li>
+					<li>Now run configure<br/>
+						<kbd>./configure</kbd></li>
+					<li>Finally, start the build as usual<br/>
+						<kbd>make</kbd></li>
+				</ol>
+			</body>
+		</sub>
+		<sub name="building_win32">
+			<header>Windows</header>
+			<body>
+				<para>
+					nothing here yet
+				</para>
+			</body>
+		</sub>	
+	</section>
+	<section title="Configuration">
+		<sub name="quick_ini">
+			<header>Quick guide</header>
+			<body>
+				<para>
+					<Pent/> needs a pentagram.ini file to point it to the game data files.
+					In Linux, this has to be in a <kbd>~/.pentagram</kbd> directory.
+					In Windows, it has to be in the current directory.<br/>
+					<Pent/> also needs a u8bindings.ini file to load the keybindings
+					for Ultima 8. The default u8bindings.ini is already in the data directory.<br/>
+					A sample pentagram.ini is included below (this is all that is needed at the
+					moment to run <Pent/>). Comments are marked with <kbd>#</kbd> and are above the ini-entries.<br/>
+					You can copy/paste these settings with the comments to your ini file as <Pent/> will ignore
+					lines beginning with <kbd>#</kbd>.
+				</para>
+				<configdesc>
+					<configsec name="pentagram">
+							<configtag name="data">
+							path to pentagram data dir
+							<comment># replace 'path to pentagram data dir' with the pentagram data directory</comment>
+							<comment># (that's the directory that contains fixedfont.tga)</comment>
+							</configtag>
+					</configsec>
+					<configsec name="u8">
+							<configtag name="path">
+							path to U8 directory
+							<comment># replace 'path to pentagram data dir' with the directory containing 'u8.exe'</comment>
+							</configtag>
+					</configsec>
+				</configdesc>
+			</body>
+		</sub>
+		<sub name="advanced_ini">
+			<header>Advanced Configuration</header>
+			<body>
+				<para>
+					Right now <Pent/> assumes some default settings that don't need to be set to
+					make <Pent/> work. If you want to change the music driver or the resoultion
+					<Pent/> runs in, you see the defaults below.
+				</para>
+				<configdesc>
+					<configsec name="pentagram">
+						<configtag name="data">
+							path to pentagram data dir
+							<comment># replace 'path to pentagram data dir' with the pentagram data directory</comment>
+							<comment># (that's the directory that contains fixedfont.tga)</comment>
+						</configtag>
+						<configtag name="defaultgame">
+							u8
+						</configtag>
+						<configtag name="fullscreen">
+							no
+						</configtag>
+						<configtag name="width">
+							640
+						</configtag>
+						<configtag name="height">
+							480
+						</configtag>
+						<configtag name="bpp">
+							32
+						</configtag>
+						<configtag name="midi_driver">
+							disabled/windows/fmopl/timidity/coreaudio
+							<comment># If you don't specify midi_driver, Pentagram will automatically select one,</comment>
+							<comment># based on your platform.</comment>
+							<comment>#(Note: Windows will only work on Windows. CoreAudio only on MacOSX.)</comment> 
+						</configtag>
+						<configtag name="timiditycfg">
+							path to timidity.cfg
+							<comment># You may need to set timiditycfg if you choose midi_driver=timidity.</comment>
+						</configtag>
+					</configsec>
+					<configsec name="u8">
+						<configtag name="path">
+							path to U8 directory
+							<comment># replace 'path to pentagram data dir' with the directory containing 'u8.exe'</comment>
+						</configtag>
+						<configtag name="save">
+							path to U8 savegames directory
+							<comment># replace with the directory you want Pentagramto save games to.</comment>
+							<comment># (no, loading of the original's savegames is not supported)</comment>
+						</configtag>
+					</configsec>
+				</configdesc>
+				<para>
+					You may also override some settings under [pentagram] by writing them
+					under [u8]. The ones that can be oerriden are midi_driver, fullscreen,
+					width, height, bpp, timiditycfg.<br/>
+					Right now this is not necessary as we only support U8 but if we start to
+					support other games it might come in handy.
+				</para>
+			</body>
+		</sub>
+	</section>
+	<section title="Movement and Keys">
+		<sub name="movement">
+			<header>Movement</header>
+			<body>
+				<ul>					
+					<li>Double-click with the right mouse button will make the Avatar
+						find a path to the selected spot.</li>
+					<li>Left-click on NPCs orobjects to identify them.</li>
+					<li>Double-left-click on NPCs orobjects to initiate conversations or use the item.</li>
+					<li>On pressing the right mouse button down the Avatar walks or runs 
+						(depending on distance between cursor and Avatar).</li>
+					<li>Pressing right and left mouse button, makes the Avatar jump or while running a running jump.</li>
+					<li>You can also move the Avatar with the keypad. Details are in the keycommands table below.</li>
+				</ul>
+				<para>
+					Note that on Mac OS you have to hold down the <key>Cmd</key> key and the
+					mouse button to have the functionality of a right mouse button.
+				</para>
+  			</body>
+		</sub>
+		<sub name="pent_keys">
+			<header>Keyboard commands</header>
+			<body>
+				<para>
+					All key commands of <Pent/> can be changed by editing u8bindings.ini or via the options menu in the game.
+					<key>KP</key> means keypad.
+				</para>
+				<keytable title="Default keyboard commands">
+					<keydesc name="~">hides/restores console</keydesc>
+					<keydesc name="arrow keys">moves Avatar around the map (no walking)</keydesc>
+					<keydesc name="home,end">moves Avatar vertically </keydesc>
+					<keydesc name="KP">Avatar walks (one animation cycle)</keydesc>
+					<keydesc name="Shift+KP">Avatar runs (one animation cycle)</keydesc>
+					<keydesc name="Ctrl+KP">Avatar makes a little step (one animation cycle)</keydesc>
+					<keydesc name="Alt+KP">Avatar jumps long (one animation cycle)</keydesc>
+					<keydesc name="s">toggles "avatarInStasis"</keydesc>
+					<keydesc name="t">outputs kernel/usecode/world/location stats to the console</keydesc>
+					<keydesc name="e">toggles editor items</keydesc>
+					<keydesc name="h">highlights any item you are "hitting", colliding with</keydesc>
+					<keydesc name="c">enables clipping</keydesc>
+					<keydesc name="i">open backpack</keydesc>
+					<keydesc name="z">open paperdoll/status</keydesc>
+					<keydesc name="r">recall</keydesc>
+					<keydesc name="m">switches combat mode on/off</keydesc>
+					<keydesc name="x">item locator</keydesc>
+					<keydesc name="ESC">quits Pentagram</keydesc>
+					<keydesc name="ctrl+q">quits without confirmation </keydesc>
+					<keydesc name="F1">Options Menu</keydesc>
+					<keydesc name="F7">Quicksave (savegames are not yet stable!)</keydesc>
+					<keydesc name="F8">Quickload</keydesc>
+					<keydesc name="F11">Shapeviewer</keydesc>
+					<keydesc name="F12">toggles frame by frame</keydesc>
+					<keydesc name="shift">quarter speed mode. needs to be held down</keydesc>
+					<keydesc name="[">clears the screen, multiple presses show the paint order</keydesc>
+					<keydesc name="]">above backwards</keydesc>
+				</keytable>
+			</body>
+		</sub>
+		<sub name="pent_hacks">
+			<header>Hacks to show off</header>
+			<body>
+				<para>
+					Some keyboard commands that are only there to trigger some scenes.
+				</para>
+				<keytable title="Hacks">
+					<keydesc name="f">plays first scene (Avatar standing up, speaking to Devon)</keydesc>
+					<keydesc name="g">plays execution scene</keydesc>
+				</keytable>
+				<para>
+					If you copy VeraBd.ttf to the <Pent/> data directory the font of U8 gets replaced by it. 
+					Looks better in conversations but you loose the different colors.
+				</para>
+			</body>
+		</sub>
+  	</section>
+  	<section title="Other stuff">
+		<sub name="games_versions">
+			<header>Supported games and versions</header>
+			<body>
+				<para>
+					At the moment we only support the English version of Ultima 8 regardless of the
+					game version. Other languages might work but we can't be sure.
+					The games we don't support are defined in the <extref doc="faq" target="tgwds_tgyds"/>.
+				</para>
+			</body>
+		</sub>
+	</section>
+</readme>

@@ -1,144 +1,154 @@
-This repository contains code snippets and documents related to Origin's
-Ultima 8:Pagan.
+Pentagram Documentation
+last changed: 24 May 2004 (GMT)
+
+The latest version of this document can be found at http://pentagram.sourceforge.net/docs.php
 
 
-BUILDING FROM CVS
-=================
+0. Changes to the Documentation
+0.1. - 24 May 2004
 
-Linux/Unix:
+1. Building CVS
+1.1. Linux/Unix
+1.2. Windows
 
-1) Run the "bootstrap" script to create the "configure" script
-  ./bootstrap
-2) Now run configure
-  ./configure
-3) Finally, start the build as usual
-  make
+2. Configuration
+2.1. Quick guide
+2.2. Advanced Configuration
+
+3. Movement and Keys
+3.1. Movement
+3.2. Keyboard commands
+3.3. Hacks to show off
+
+4. Other stuff
+4.1. Supported games and versions
+
+
+--------------------------------------------------------------------------------
+
+0. Changes to the Documentation
+0.1. - 24 May 2004
+No changes yet, first xml-generated version.
 
 
 
-Windows:
- ...
+--------------------------------------------------------------------------------
+
+1. Building CVS
+1.1. Linux/Unix
+1. Run the "bootstrap" script to create the "configure" script ./bootstrap
+2. Now run configure ./configure
+3. Finally, start the build as usual make
 
 
-CONFIGURATION
-=============
 
-Pentagram needs a pentagram.ini file to point it to the game data files.
-In Linux, this has to be in a ~/.pentagram directory.
-In Windows, it has to be in the current directory.
+1.2. Windows
+nothing here yet
 
-Pentagram also needs a u8bindings.ini file to load the keybindings
-for Ultima 8. The default u8bindings.ini is already in the data directory.
 
-A sample pentagram.ini is included below (this is all that is needed at the
-moment to run Pentagram):
 
+--------------------------------------------------------------------------------
+
+2. Configuration
+2.1. Quick guide
+needs a pentagram.ini file to point it to the game data files. In Linux, this has to be in a ~/.pentagram directory. In Windows, it has to be in the current directory. also needs a u8bindings.ini file to load the keybindings for Ultima 8. The default u8bindings.ini is already in the data directory. A sample pentagram.ini is included below (this is all that is needed at the moment to run ). Comments are marked with # and are above the ini-entries. You can copy/paste these settings with the comments to your ini file as will ignore lines beginning with #.
 [pentagram]
+# replace 'path to pentagram data dir' with the pentagram data directory
+# (that's the directory that contains fixedfont.tga)
 data=path to pentagram data dir
-
 [u8]
+# replace 'path to pentagram data dir' with the directory containing 'u8.exe'
 path=path to U8 directory
 
 
-Replace 'path to pentagram data dir' with the pentagram data directory (that's
-the directory that contains fixedfont.tga).
-Replace 'path to pentagram data dir' with the directory containing 'u8.exe'.
-
-
-ADVANCED CONFIGURATION
-======================
-
-Right now Pentagram assumes some default settings that don't need to be set to
-make Pentagram work. If you want to change the music driver or the resoultion
-Pentagram runs in, you see the defaults below:
-
+2.2. Advanced Configuration
+Right now assumes some default settings that don't need to be set to make work. If you want to change the music driver or the resoultion runs in, you see the defaults below.
 [pentagram]
+# replace 'path to pentagram data dir' with the pentagram data directory
+# (that's the directory that contains fixedfont.tga)
 data=path to pentagram data dir
 defaultgame=u8
 fullscreen=no
-width=640
+width=640 
 height=480
 bpp=32
+# If you don't specify midi_driver, Pentagram will automatically select one,
+# based on your platform.
+#(Note: Windows will only work on Windows. CoreAudio only on MacOSX.)
 midi_driver=disabled/windows/fmopl/timidity/coreaudio
+# You may need to set timiditycfg if you choose midi_driver=timidity.
 timiditycfg=path to timidity.cfg
-
 [u8]
+# replace 'path to pentagram data dir' with the directory containing 'u8.exe'
 path=path to U8 directory
+# replace with the directory you want Pentagramto save games to.
+# (no, loading of the original's savegames is not supported)
 save=path to U8 savegames directory
+You may also override some settings under [pentagram] by writing them under [u8]. The ones that can be oerriden are midi_driver, fullscreen, width, height, bpp, timiditycfg. Right now this is not necessary as we only support U8 but if we start to support other games it might come in handy.
 
 
-Replace 'path to pentagram data dir' with the pentagram data directory (that's
-the directory that contains fixedfont.tga).
-Replace 'path to pentagram data dir' with the directory containing 'u8.exe'.
-Replace 'path to U8 savegames directory' with the directory you want Pentagram
-to save games to (no, loading of the original's savegames is not supported).
 
-Pick one of the midi drivers: disabled, windows, fmopl, timidity, coreaudio.
-If you don't specify one, Pentagram will automatically select one, based on
-your platform.
-(Note: Windows will only work on Windows. CoreAudio only on MacOSX.)
-(Note: for timidity you'll need a timidity patch set, and you may have
- to set the timiditycfg= entry to the full path of timidity.cfg.)
+--------------------------------------------------------------------------------
 
-You may also override some settings under [pentagram] by writing them
-under [u8]. The ones that can be oerriden are midi_driver, fullscreen,
-width, height, bpp, timiditycfg.
-Right now this is not necessary as we only support U8 but if we start to
-support other games it might come in handy.
+3. Movement and Keys
+3.1. Movement
+* Double-click with the right mouse button will make the Avatar find a path to the selected spot.
+* Left-click on NPCs orobjects to identify them.
+* Double-left-click on NPCs orobjects to initiate conversations or use the item.
+* On pressing the right mouse button down the Avatar walks or runs (depending on distance between cursor and Avatar).
+* Pressing right and left mouse button, makes the Avatar jump or while running a running jump.
+* You can also move the Avatar with the keypad. Details are in the keycommands table below.
+
+Note that on Mac OS you have to hold down the 'Cmd' key and the mouse button to have the functionality of a right mouse button.
 
 
-KEYBOARD COMMANDS
-=================
+3.2. Keyboard commands
+All key commands of can be changed by editing u8bindings.ini or via the options menu in the game. 'KP' means keypad.
 
-These commands are likely to change in the future so keep an eye on CHANGELOG
-as well.
-
-Many of these can be changed in your u8bindings.cfg file.
-
-
-left mouse	: look at item/NPC,
-doubleclick left mouse: uses item/talks to NPC
-right mouse	: walk/run (depending on distance between cursor and Avatar)
-left mouse+right mouse	: jump or while running a running jump
-middle mouse	: feature test button :-) likely to change very often.
-		  At the moment it gives details on clicked objects.
-
-~		: hides/restores console
-page up/down	: scrolls console
-arrow keys	: moves Avatar around the map (no walking yet)
-home,end	: moves Avatar vertically
-s		: toggles "avatarInStasis"
-t		: outputs kernel/usecode/world/location stats to the console
-e		: toggles editor items
-h		: highlights any item you are "hitting", colliding with
-c		: enables clipping
-i		: open backpack
-z		: open paperdoll/status
-r		: recall
-m		: switches combat mode on/off
-x		: item locator
-ESC,q	: quits pentagram
-F7		: Quicksave (savegames get broken a lot, so don't rely on that)
-F8		: Quickload
-F12		: toggles frame by frame
-[,]		: first ] clears the screen, multiple presses of ]
-		  show the paint order. [ "steps" backward.
-shift		: quarter speed mode. needs to be held down.
+Default keyboard commands
+~ : hides/restores console
+arrow keys : moves Avatar around the map (no walking)
+home,end : moves Avatar vertically 
+KP : Avatar walks (one animation cycle)
+Shift+KP : Avatar runs (one animation cycle)
+Ctrl+KP : Avatar makes a little step (one animation cycle)
+Alt+KP : Avatar jumps long (one animation cycle)
+s : toggles "avatarInStasis"
+t : outputs kernel/usecode/world/location stats to the console
+e : toggles editor items
+h : highlights any item you are "hitting", colliding with
+c : enables clipping
+i : open backpack
+z : open paperdoll/status
+r : recall
+m : switches combat mode on/off
+x : item locator
+ESC : quits Pentagram
+ctrl+q : quits without confirmation 
+F1 : Options Menu
+F7 : Quicksave (savegames are not yet stable!)
+F8 : Quickload
+F11 : Shapeviewer
+F12 : toggles frame by frame
+shift : quarter speed mode. needs to be held down
+[ : clears the screen, multiple presses show the paint order
+] : above backwards
 
 
-HACKS TO SHOW OFF
-=================
+3.3. Hacks to show off
+Some keyboard commands that are only there to trigger some scenes.
 
-f		: plays first scene (Avatar standing up, speaking to Devon)
-g		: plays execution scene
+Hacks
+f : plays first scene (Avatar standing up, speaking to Devon)
+g : plays execution scene
+If you copy VeraBd.ttf to the data directory the font of U8 gets replaced by it. Looks better in conversations but you loose the different colors.
 
-If you copy VeraBd.ttf to the Pentagram data directory the font of U8
-gets replaced by it.
 
-SUPPORTED GAMES AND VERSIONS
-============================
 
-At the moment we only support the English version of Ultima 8 regardless of the
-game version. Other languages might work but we can't be sure.
+--------------------------------------------------------------------------------
 
-The games we don't support are defined in the FAQ.
+4. Other stuff
+4.1. Supported games and versions
+At the moment we only support the English version of Ultima 8 regardless of the game version. Other languages might work but we can't be sure. The games we don't support are defined in the FAQ.txt.
+
+

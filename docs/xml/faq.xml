@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE faqs SYSTEM "docs.dtd">
+<faqs title="Pentagram" changed="24 May 2004 (GMT)">
+	<section title="Changes to the FAQ">
+		<sub name="24052004">
+			<header>- 24 May 2004</header>
+			<body>
+				<para>
+					No changes yet, first xml-generated version
+				</para>
+			</body>
+		</sub>
+	</section>
+	<section title="Introduction">
+		<sub name="pent_is">
+			<header>What is <Pent/>?</header>
+			<body>
+				<para>
+					<Pent/> is not Exult. Any similarities between <Pent/> and Exult are purely coincidental.
+				</para>
+			</body>
+		</sub>
+		<sub name="exult_u8">
+			<header>Is it Exult for Ultima 8?</header>
+			<body>
+				<para>
+					Of course not. As stated in <ref target="pent_is"/> "<Pent/> is not Exult". Anyway, what sort of fool 
+					would attempt such a thing anyway.
+				</para>
+			</body>
+		</sub>
+		<sub name="when_playable">
+			<header>When will <Pent/> be playable?</header>
+			<body>
+				<para>
+					Define 'playable'
+				</para>
+			</body>
+		</sub>
+		<sub name="support_crusader">
+			<header>Does <Pent/> support Crusader? </header>
+			<body>
+				<para>
+					Crusader? What's that?
+				</para>
+			</body>
+		</sub>
+		<sub name="multiplayer">
+			<header>Will <Pent/> be Multiplayer/Online?</header>
+			<body>
+				<para>
+					HELL NO!
+				</para>
+			</body>
+		</sub>
+		<sub name="tgwds_tgyds">
+			<header>What are TGWDS or TGYDS?</header>
+			<body>
+				<para>
+					The Games We/You Don't Support.
+				</para>
+			</body>
+		</sub>
+		<sub name="really_tgwds">
+			<header>But what _are_ TGWDS/TGYDS?</header>
+			<body>
+				<para>
+					You don't need to know what they are, since we don't support them. QED.
+				</para>
+			</body>
+		</sub>
+		<sub name="lost_vale">
+			<header>Will we finish The Lost Vale?</header>
+			<body>
+				<para>
+					See the answer to <ref target="multiplayer"/>.
+				</para>
+			</body>
+		</sub>
+		<sub name="feature_x">
+			<header>Why doesn't feature X work properly?</header>
+			<body>
+				<para>
+					We prefer playing games to be a challenge.
+				</para>
+			</body>
+		</sub>
+		<sub name="feature_y">
+			<header>Why isn't feature Y implemented?</header>
+			<body>
+				<para>
+					It's better this way. Trust us.
+				</para>
+			</body>
+		</sub>
+	</section>
+</faqs>

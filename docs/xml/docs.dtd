@@ -1,0 +1,74 @@
+<!-- block and inline elements -->
+
+<!ENTITY % inline "#PCDATA|br|em|extref|kbd|key|q|ref|ref1|section_ref|strong|Pent|img" >
+
+<!ENTITY % lists "ul|ol" >
+
+<!ENTITY % block "cite|configdesc|keytable|para|%lists;" >
+
+
+<!-- ****************** elements ****************** -->
+<!ELEMENT faqs (section*)>
+<!ELEMENT readme (section*)>
+<!ELEMENT studiodoc (section*)>
+<!ELEMENT section (sub*)>
+<!ELEMENT sub (header, body)>
+<!ELEMENT header (#PCDATA|Pent)*>
+<!ELEMENT body (%block;)*>
+
+<!ELEMENT para ( %inline; )*>
+<!ELEMENT cite ( %inline; )*>
+<!ELEMENT ol (li*)>
+<!ELEMENT ul (li*)>
+<!ELEMENT li ( %inline; )*>
+
+<!ELEMENT key (#PCDATA)>
+<!ELEMENT kbd (#PCDATA)>
+<!ELEMENT strong (#PCDATA)>
+<!ELEMENT em (#PCDATA)>
+
+<!ELEMENT ref (#PCDATA)>
+<!ELEMENT ref1 (#PCDATA)>
+<!ELEMENT section_ref (#PCDATA)>
+<!ELEMENT extref (#PCDATA)>
+
+<!ELEMENT img (#PCDATA)>
+
+<!ELEMENT q (#PCDATA)>
+
+<!-- Empty elements -->
+<!ELEMENT br (#PCDATA)>
+<!ELEMENT Pent (#PCDATA)>
+
+<!ELEMENT configdesc (configsec|configtag*)>
+<!ELEMENT comment (#PCDATA|ref|key|q)*>
+<!ELEMENT configsec (#PCDATA|configtag|comment)*>
+<!ELEMENT configtag (#PCDATA|configtag|comment)*>
+
+
+<!ELEMENT keytable (keydesc*)>
+<!ELEMENT keydesc (#PCDATA)>
+
+<!-- ****************** attributes ****************** -->
+<!ATTLIST	faqs		title	CDATA	#REQUIRED>
+<!ATTLIST	faqs		changed	CDATA	"">
+<!ATTLIST	readme		title	CDATA	#REQUIRED>
+<!ATTLIST	readme		changed	CDATA	"">
+<!ATTLIST	section		title	CDATA	#REQUIRED>
+
+<!ATTLIST	sub		name	CDATA	"">
+<!ATTLIST	cite		name	CDATA	"">
+<!ATTLIST	keytable	title	CDATA	#REQUIRED>
+<!ATTLIST	keydesc		name	CDATA	"">
+
+<!ATTLIST	ref		target	CDATA	#REQUIRED>
+<!ATTLIST	ref1		target	CDATA	#REQUIRED>
+<!ATTLIST	section_ref		target	CDATA	#REQUIRED>
+<!ATTLIST	extref		target	CDATA	#REQUIRED>
+<!ATTLIST	extref		doc	(faq|docs|studio)	#IMPLIED>
+<!ATTLIST	img		src 	CDATA	#REQUIRED>
+<!ATTLIST	img		alt 	CDATA	#REQUIRED>
+
+<!ATTLIST	configsec	name	CDATA	#REQUIRED>
+<!ATTLIST	configtag	name	CDATA	#REQUIRED>
+<!ATTLIST	configtag	closing-tag (yes|no) "yes">

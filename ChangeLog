@@ -1,3 +1,8 @@
+2004-05-23  Dominik Reichardt <dominus@users.sourceforge.net>
+	* Readme,FAQ: replaced with xml/xsl generated version
+	* docs/xml/*.*: everything needed to generate the ReadMe, FAQ and the dat 
+					files for our future website is in hhere
+	
 2004-05-23  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* gumps/GameMapGump.*: Always send mouse clicks to the AvatarMoverProcess
 	* gumps/MenuGump.cpp: Correction to make other laguages look right

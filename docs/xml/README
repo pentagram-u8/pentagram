@@ -1,0 +1,11 @@
+To transform the Docs/FAQ you need Xalan (http://xml.apache.org/xalan-j/) and on that page see what else you need (Java Development Kit or Java Runtime). 
+You need xalan.jar, xercesImpl.jar and xml-apis.jar from the Xalan Package.
+Copy these files to the same directory that contains the xml and xsl files of the Pentagram Documentation/FAQ.
+Then use the makefiles provided in the directory.
+
+To properly use the php files (docs.dat, faq.dat) you have to to strip the
+ <test xmlns="test.dtd"> ... </test> stuff surrounding everything else.
+
+Notes for Win32 users:
+You need to run
+make -f makefile.win32 to transform the files.
