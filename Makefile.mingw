@@ -13,7 +13,8 @@ SDL_LIBS=-L$(SRC)/sdl/lib -lSDLmain -lSDL
 
 CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -I$(SRC)/conf -I$(SRC)/convert \
 	-I$(SRC)/filesys -I$(SRC)/graphics -I$(SRC)/gumps -I$(SRC)/kernel -I$(SRC)/misc \
-	-I$(SRC)/tools/disasm -I$(SRC)/tools/fold -I$(SRC)/usecode $(SDL_CFLAGS)
+	-I$(SRC)/tools/disasm -I$(SRC)/tools/fold -I$(SRC)/usecode $(SDL_CFLAGS) \
+	-DHAVE_SYS_STAT_H -DHAVE_SYS_TYPES_H -DHAVE_UNISTD_H
 CXXFLAGS=-O2
 CXX=g++
 
