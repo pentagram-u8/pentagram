@@ -284,8 +284,8 @@ public:
 	uint32 callUsecodeEvent_use();								// event 1
 	uint32 callUsecodeEvent_anim();								// event 2
 	uint32 callUsecodeEvent_cachein();							// event 4
-	uint32 callUsecodeEvent_hit(ObjId hitted, sint16 unk);		// event 5
-	uint32 callUsecodeEvent_gotHit(ObjId hitter, sint16 unk);	// event 6
+	uint32 callUsecodeEvent_hit(ObjId hitted, sint16 hitforce);	// event 5
+	uint32 callUsecodeEvent_gotHit(ObjId hitter, sint16 hitforce);// event 6
 	uint32 callUsecodeEvent_hatch();							// event 7
 	uint32 callUsecodeEvent_schedule(uint32 time);				// event 8
 	uint32 callUsecodeEvent_release();							// event 9

@@ -772,6 +772,16 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 
 	// Ok, now to work out what to do
 
+
+	// the force of the hit, used for the gotHit/hit usecode calls
+	int deltax = abs(start[0] - end[0])/4;
+	int deltay = abs(start[1] - end[1])/4;
+	int deltaz = abs(start[2] - end[2]);
+	int maxdirdelta = deltay;
+	if (deltay > maxdirdelta) maxdirdelta = deltay;
+	if (deltaz > maxdirdelta) maxdirdelta = deltaz;
+	int hitforce = (deltax+deltay+deltaz+maxdirdelta)/2;
+
 	// if we are contained, we always teleport
 	if (teleport || parent)
 	{
@@ -813,8 +823,9 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 			{
 				if (objid == 1 && guiapp->isShowTouchingItems())
 					item->setExtFlag(Item::EXT_HIGHLIGHT);
-				item->callUsecodeEvent_gotHit(objid,0);
-				callUsecodeEvent_hit(item->getObjId(),0);
+
+				item->callUsecodeEvent_gotHit(objid, hitforce);
+				callUsecodeEvent_hit(item->getObjId(), hitforce);
 			}
 			// Hitting us at the start (call release on us and them)
 			else if (!parent && it->hit_time == 0x0000)
@@ -894,8 +905,9 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 			{
 				if (objid == 1 && guiapp->isShowTouchingItems())
 					item->setExtFlag(Item::EXT_HIGHLIGHT);
-				proc_gothit = item->callUsecodeEvent_gotHit(objid,0);
-				callUsecodeEvent_hit(item->getObjId(), 0);
+
+				proc_gothit = item->callUsecodeEvent_gotHit(objid, hitforce);
+				callUsecodeEvent_hit(item->getObjId(), hitforce);
 			}
 
 			// If not hitting at end, we will need to call release
@@ -968,18 +980,18 @@ uint32 Item::callUsecodeEvent_cachein()							// event 4
 	return callUsecodeEvent(4);	// CONSTANT
 }
 
-uint32 Item::callUsecodeEvent_hit(uint16 hitter, sint16 unk)	// event 5
+uint32 Item::callUsecodeEvent_hit(uint16 hitter, sint16 hitforce)// event 5
 {
 	UCStack	arg_stack(4);
-	arg_stack.push2(unk);
+	arg_stack.push2(hitforce);
 	arg_stack.push2(hitter);
 	return callUsecodeEvent(5, arg_stack.access(), 4);	// CONSTANT 5
 }
 
-uint32 Item::callUsecodeEvent_gotHit(uint16 hitter, sint16 unk)	// event 6
+uint32 Item::callUsecodeEvent_gotHit(uint16 hitter, sint16 hitforce)// event 6
 {
 	UCStack	arg_stack(4);
-	arg_stack.push2(unk);
+	arg_stack.push2(hitforce);
 	arg_stack.push2(hitter);
 	return callUsecodeEvent(6, arg_stack.access(), 4);	// CONSTANT 6
 }
