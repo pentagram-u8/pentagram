@@ -38,21 +38,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "MainActor.h"
 
-//#define WATCH_CLASS 124
-//#define WATCH_ITEM 6637
+#define LOGPF(X) do { if (trace_show(trace_pid, trace_objid, trace_classid)) pout.printf X; } while (0)
 
-#ifdef WATCH_CLASS
-#define LOGPF(X) do { if (thisclassid == WATCH_CLASS) { pout.printf X; } } while(0)
-#define SHOWSTART (p->classid == WATCH_CLASS)
-#elif defined WATCH_ITEM
-#define LOGPF(X) do { if (p->item_num == WATCH_ITEM) { pout.printf X; } } while(0)
-#define SHOWSTART (p->item_num == WATCH_ITEM)
-#endif
 
-//#define LOGPF(X) pout.printf X
-//#define SHOWSTART true
-
-#ifdef LOGPF
 static const char *print_bp(const sint16 offset)
 {
 	static char str[32];
@@ -68,13 +56,7 @@ static const char *print_sp(const sint16 offset)
 				  offset<0?-offset:offset);
 	return str;
 }
-#else
-#define LOGPF(X)
-#endif
 
-#ifndef SHOWSTART
-#define SHOWSTART false
-#endif
 
 //#define DUMPHEAP
 
@@ -106,6 +88,10 @@ UCMachine::UCMachine(Intrinsic *iset)
 
 	con.AddConsoleCommand("UCMachine::getGlobal", ConCmd_getGlobal);
 	con.AddConsoleCommand("UCMachine::setGlobal", ConCmd_setGlobal);
+	con.AddConsoleCommand("UCMachine::traceObjID", ConCmd_traceObjID);
+	con.AddConsoleCommand("UCMachine::tracePID", ConCmd_tracePID);
+	con.AddConsoleCommand("UCMachine::traceClass", ConCmd_traceClass);
+	con.AddConsoleCommand("UCMachine::stopTrace", ConCmd_stopTrace);
 }
 
 
@@ -113,6 +99,10 @@ UCMachine::~UCMachine()
 {
 	con.RemoveConsoleCommand("UCMachine::getGlobal");
 	con.RemoveConsoleCommand("UCMachine::setGlobal");
+	con.RemoveConsoleCommand("UCMachine::traceObjID");
+	con.RemoveConsoleCommand("UCMachine::tracePID");
+	con.RemoveConsoleCommand("UCMachine::traceClass");
+	con.RemoveConsoleCommand("UCMachine::stopTrace");
 
 	ucmachine = 0;
 
@@ -148,7 +138,7 @@ bool UCMachine::execProcess(UCProcess* p)
 						 p->usecode->get_class_size(p->classid));
 	cs.seek(p->ip);
 
-	if (SHOWSTART) {
+	if (trace_show(p->pid, p->item_num, p->classid)) {
 		pout << std::hex << "running process " << p->pid
 			 << ", item " << p->item_num << ", class " << p->classid
 			 << ", offset " << p->ip << std::dec << std::endl;
@@ -164,9 +154,9 @@ bool UCMachine::execProcess(UCProcess* p)
 
 		uint8 opcode = cs.read1();
 
-#ifdef WATCH_CLASS
-		uint16 thisclassid = p->classid;
-#endif
+		uint16 trace_classid = p->classid;
+		ObjId trace_objid = p->item_num;
+		ProcId trace_pid = p->pid;
 
 		LOGPF(("sp = %02X; %04X:%04X: %02X\t",
 			   p->stack.stacksize(), p->classid, p->ip, opcode));
@@ -1292,7 +1282,7 @@ bool UCMachine::execProcess(UCProcess* p)
 												   arg_bytes);
 				p->temp32 = Kernel::get_instance()->addProcessExec(newproc);
 
-				if (SHOWSTART) {
+				if (trace_show(p->pid, p->item_num, p->classid)) {
 					pout << std::hex << "(still) running process " << p->pid
 						 << ", item " << p->item_num << ", class " <<p->classid
 						 << ", offset " << p->ip << std::dec << std::endl;
@@ -1333,7 +1323,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 				uint16 newpid= Kernel::get_instance()->addProcessExec(newproc);
 
-				if (SHOWSTART) {
+				if (trace_show(p->pid, p->item_num, p->classid)) {
 					pout << std::hex << "(still) running process " << p->pid
 						 << ", item " << p->item_num << ", class " <<p->classid
 						 << ", offset " << p->ip << std::dec << std::endl;
@@ -2339,7 +2329,8 @@ uint32 UCMachine::I_rndRange(const uint8* args, unsigned int /*argsize*/)
 }
 
 
-void UCMachine::ConCmd_getGlobal(const Console::ArgsType & /*args*/, const Console::ArgvType &argv)
+void UCMachine::ConCmd_getGlobal(const Console::ArgsType & /*args*/,
+								 const Console::ArgvType &argv)
 {
 	UCMachine *uc = UCMachine::get_instance();
 	if (argv.size() != 3) {
@@ -2354,7 +2345,8 @@ void UCMachine::ConCmd_getGlobal(const Console::ArgsType & /*args*/, const Conso
 				uc->globals->getBits(offset, size));
 }
 
-void UCMachine::ConCmd_setGlobal(const Console::ArgsType & /*args*/, const Console::ArgvType &argv)
+void UCMachine::ConCmd_setGlobal(const Console::ArgsType & /*args*/,
+								 const Console::ArgvType &argv)
 {
 	UCMachine *uc = UCMachine::get_instance();
 	if (argv.size() != 4) {
@@ -2370,4 +2362,65 @@ void UCMachine::ConCmd_setGlobal(const Console::ArgsType & /*args*/, const Conso
 
 	pout.printf("[%04X %02X] = %d\n", offset, size,
 				uc->globals->getBits(offset, size));
+}
+
+void UCMachine::ConCmd_tracePID(const Console::ArgsType & /*args*/,
+								const Console::ArgvType &argv)
+{
+	if (argv.size() != 2) {
+		pout << "Usage: UCMachine::tracePID pid" << std::endl;
+		return;
+	}
+
+	uint16 pid = strtol(argv[1].c_str(), 0, 0);
+
+	UCMachine *uc = UCMachine::get_instance();
+	uc->tracing_enabled = true;
+	uc->trace_PIDs.insert(pid);
+
+	pout << "UCMachine: tracing process " << pid << std::endl;
+}
+
+void UCMachine::ConCmd_traceObjID(const Console::ArgsType &/*args*/,
+								  const Console::ArgvType &argv)
+{
+	if (argv.size() != 2) {
+		pout << "Usage: UCMachine::traceObjID objid" << std::endl;
+		return;
+	}
+
+	uint16 objid = strtol(argv[1].c_str(), 0, 0);
+
+	UCMachine *uc = UCMachine::get_instance();
+	uc->tracing_enabled = true;
+	uc->trace_ObjIDs.insert(objid);
+
+	pout << "UCMachine: tracing object " << objid << std::endl;
+}
+
+void UCMachine::ConCmd_traceClass(const Console::ArgsType &/*args*/,
+								  const Console::ArgvType &argv)
+{
+	if (argv.size() != 2) {
+		pout << "Usage: UCMachine::traceClass class" << std::endl;
+		return;
+	}
+
+	uint16 ucclass = strtol(argv[1].c_str(), 0, 0);
+
+	UCMachine *uc = UCMachine::get_instance();
+	uc->tracing_enabled = true;
+	uc->trace_classes.insert(ucclass);
+
+	pout << "UCMachine: tracing class " << ucclass << std::endl;
+}
+
+void UCMachine::ConCmd_stopTrace(const Console::ArgsType &/*args*/,
+								 const Console::ArgvType &/*argv*/)
+{
+	UCMachine *uc = UCMachine::get_instance();
+	uc->trace_ObjIDs.clear();
+	uc->trace_PIDs.clear();
+	uc->trace_classes.clear();
+	uc->tracing_enabled = false;
 }

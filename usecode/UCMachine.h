@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define UCMACHINE_H
 
 #include <map>
-#include <string>
+#include <set>
 
 #include "intrinsics.h"
 
@@ -106,6 +106,27 @@ private:
 
 	static void		ConCmd_getGlobal(const Console::ArgsType &args, const Console::ArgvType &argv);
 	static void		ConCmd_setGlobal(const Console::ArgsType &args, const Console::ArgvType &argv);
+
+
+	// tracing
+	bool tracing_enabled;
+	std::set<ObjId> trace_ObjIDs;
+	std::set<ProcId> trace_PIDs;
+	std::set<uint16> trace_classes;
+
+	inline bool trace_show(ProcId pid, ObjId objid, uint16 ucclass) {
+		if (!tracing_enabled) return false;
+		if (trace_ObjIDs.find(objid) != trace_ObjIDs.end()) return true;
+		if (trace_PIDs.find(pid) != trace_PIDs.end()) return true;
+		if (trace_classes.find(ucclass) != trace_classes.end()) return true;
+		return false;
+	}
+
+	static void		ConCmd_tracePID(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void		ConCmd_traceObjID(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void		ConCmd_traceClass(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void		ConCmd_stopTrace(const Console::ArgsType &args, const Console::ArgvType &argv);
+
 };
 
 #endif
