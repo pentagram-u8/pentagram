@@ -1356,19 +1356,18 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		mouseButton[button].downX = mx;
 		mouseButton[button].downY = my;
 
+		// Always send mouse up to the gump
+		Gump* gump = getGump(mouseButton[button].downGump);
+		if (gump)
+		{
+			gump->OnMouseUp(button, mx, my);
+			handled = true;
+		}
+
 		if (button == BUTTON_LEFT && dragging != DRAG_NOT) {
 			stopDragging(mx, my);
 			handled = true;
 			break;
-		}
-
-		if (dragging == DRAG_NOT) {
-			Gump* gump = getGump(mouseButton[button].downGump);
-			if (gump)
-			{
-				gump->OnMouseUp(button, mx, my);
-				handled = true;
-			}
 		}
 	}
 	break;
@@ -1444,7 +1443,6 @@ void GUIApp::handleEvent(const SDL_Event& event)
 	}
 
 	if (dragging == DRAG_NOT && ! handled) {
-
 		HIDBinding binding = hidmanager->getBinding(event);
 
 		if (binding) {
