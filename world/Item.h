@@ -482,7 +482,8 @@ public:
 		EXT_LERP_NOPREV	= 0x0008,	//!< Item can't be lerped this frame
 		EXT_HIGHLIGHT	= 0x0010,	//!< Item should be Painted highlighted
 		EXT_CAMERA		= 0x0020,	//!< Item is being followed by the camera
-		EXT_SPRITE		= 0x0040	//!< Item is a sprite
+		EXT_SPRITE		= 0x0040,	//!< Item is a sprite
+		EXT_TRANSPARENT = 0x0080    //!< Item should be painted transparent
 	};
 };
 

@@ -420,7 +420,7 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 			splittarget = ItemFactory::createItem(
 				item->getShape(), item->getFrame(), 0,
 				item->getFlags() & (Item::FLG_DISPOSABLE | Item::FLG_OWNED | Item::FLG_INVISIBLE | Item::FLG_FLIPPED | Item::FLG_FAST_ONLY | Item::FLG_LOW_FRICTION), item->getNpcNum(), item->getMapNum(),
-				item->getExtFlags() & (Item::EXT_SPRITE | Item::EXT_HIGHLIGHT));
+				item->getExtFlags() & (Item::EXT_SPRITE | Item::EXT_HIGHLIGHT | Item::EXT_TRANSPARENT));
 			if (!splittarget) {
 				perr << "ContainerGump failed to create item ("
 					 << item->getShape() << "," << item->getFrame()
@@ -447,8 +447,7 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 		GUIApp::get_instance()->getDesktopGump()->AddChild(slidergump);
 		slidergump->CreateNotifier(); // manually create notifier
 		Process* notifier = slidergump->GetNotifyProcess();
-		SplitItemProcess* splitproc = new SplitItemProcess(item,
-															   splittarget);
+		SplitItemProcess* splitproc = new SplitItemProcess(item, splittarget);
 		Kernel::get_instance()->addProcess(splitproc);
 		splitproc->waitFor(notifier);
 

@@ -678,7 +678,7 @@ void ItemSorter::AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 
 	{
 		si->draw = info->is_draw();
 		si->solid = info->is_solid();
-		si->occl = info->is_occl() && !(si->flags & Item::FLG_INVISIBLE);
+		si->occl = info->is_occl() && !(si->ext_flags & Item::FLG_INVISIBLE);
 		si->roof = info->is_roof();
 		si->noisy = info->is_noisy();
 		si->anim = info->animtype != 0;
@@ -943,7 +943,7 @@ bool ItemSorter::PaintSortItem(SortItem	*si)
 
 	if (si->ext_flags & Item::EXT_HIGHLIGHT)
 		surf->PaintHighlight(si->shape, si->frame, si->sxbot, si->sybot, si->trans, (si->flags&Item::FLG_FLIPPED)!=0, 0x7F7F0000);
-	else if (si->flags & Item::FLG_INVISIBLE)
+	else if (si->ext_flags & Item::EXT_TRANSPARENT)
 		surf->PaintInvisible(si->shape, si->frame, si->sxbot, si->sybot, si->trans, (si->flags&Item::FLG_FLIPPED)!=0);
 	else if (si->flags & Item::FLG_FLIPPED)
 		surf->PaintMirrored(si->shape, si->frame, si->sxbot, si->sybot, si->trans);

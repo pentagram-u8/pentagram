@@ -15,6 +15,9 @@
 	* world/actors/LoiterProcess.*: loiter
 	* gumps/ContainerGump.*: don't let position depend on parent's Gump
 	* gumps/PaperdollGump.*: don't close backpack when closing paperdoll
+	* world/Item.h, world/ItemSorter.cpp: don't draw invisible items,
+	  added EXT_TRANSPARENT flag to draw item transparently
+	
 
 2004-09-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/SplitItemProcess.cpp: fixed double-terminate

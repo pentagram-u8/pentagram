@@ -179,6 +179,8 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 					continue;
 				if (!paintEditorItems && item->getShapeInfo()->is_editor())
 					continue;
+				if (item->getFlags() & Item::FLG_INVISIBLE)
+					continue;
 				display_list->AddItem(item);
 			}
 		}
@@ -189,8 +191,7 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 	if (display_dragging) {
 		display_list->AddItem(dragging_pos[0],dragging_pos[1],dragging_pos[2],
 							  dragging_shape, dragging_frame,
-							  dragging_flags | Item::FLG_INVISIBLE, //!! change this to transp?
-							  0);
+							  dragging_flags, Item::EXT_TRANSPARENT);
 	}
 
 
