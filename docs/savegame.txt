@@ -502,6 +502,11 @@ uint16 version
 <Process>
 
 
+ClearFeignDeathProcess: Process (v1)
+uint16 version
+<Process>
+
+
 SplitItemProcess: Process (v1)
 uint16 version
 <Process>
