@@ -38,7 +38,7 @@ MISC_OBJS=misc/Args.o misc/Console.o misc/pent_include.o misc/Q_strcasecmp.o mis
 
 CONF_OBJS=conf/Configuration.o conf/XMLNode.o conf/XMLTree.o 
 
-KERNEL_OBJS=kernel/Kernel.o kernel/Application.o kernel/Object.o kernel/Process.o kernel/GameData.o
+KERNEL_OBJS=kernel/Kernel.o kernel/Application.o kernel/Object.o kernel/Process.o kernel/GameData.o kernel/idMan.o
 
 USECODE_OBJS=usecode/UCList.o usecode/UCMachine.o usecode/UCProcess.o usecode/UsecodeFlex.o usecode/Usecode.o
 

@@ -13,6 +13,7 @@ pentagram_OBJ = \
 	kernel/Process.o \
 	kernel/Object.o \
 	kernel/GameData.o \
+	kernel/idMan.o \
 	usecode/UCMachine.o \
 	usecode/UCProcess.o \
 	usecode/Usecode.o \
