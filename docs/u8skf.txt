@@ -21,9 +21,10 @@ Type 0x05 : Play SFX. Data is num in sound.flx
 Type 0x06 : Stop SFX.
 Type 0x07 : Set Speed (FPS????)
 Type 0x08 : Fade to black
-Type 0x09 : Fade to palette (Data is palette index in skf)
+Type 0x09 : Fade in (used both after fade to black and fade to white)
 Type 0x0C : Wait
 Type 0x0E : Play sound (Data is index in the skf)
+Type 0x0F : Fade to white
 Type 0x12 : Clear subtitles???
 
 The rest of the indices contain the actual frames. There are various types of
