@@ -94,6 +94,7 @@ GUMPS = \
 	gumps/AskGump.o \
 	gumps/BarkGump.o \
 	gumps/BindGump.o \
+	gumps/BookGump.o \
 	gumps/ConsoleGump.o \
 	gumps/ContainerGump.o \
 	gumps/ControlsGump.o \

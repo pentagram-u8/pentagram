@@ -17,7 +17,7 @@
  */
 
 #include "pent_include.h"
-#include "ScrollGump.h"
+#include "BookGump.h"
 #include "TextWidget.h"
 #include "GUIApp.h"
 #include "GameData.h"
@@ -33,39 +33,43 @@
 #include "IDataSource.h"
 #include "ODataSource.h"
 
-DEFINE_RUNTIME_CLASSTYPE_CODE(ScrollGump,ModalGump);
+DEFINE_RUNTIME_CLASSTYPE_CODE(BookGump,ModalGump);
 
 // TODO: Remove all the hacks
 
-ScrollGump::ScrollGump()
+BookGump::BookGump()
 	: ModalGump()
 {
 
 }
 
-ScrollGump::ScrollGump(ObjId owner, std::string msg) :
+BookGump::BookGump(ObjId owner, std::string msg) :
 	ModalGump(0, 0, 100, 100, owner), text(msg)
 {
 }
 
-ScrollGump::~ScrollGump(void)
+BookGump::~BookGump(void)
 {
 }
 
-void ScrollGump::InitGump()
+void BookGump::InitGump()
 {
 	ModalGump::InitGump();
 
-	// Create the TextWidget
-	Gump *widget = new TextWidget(25,25,text,9,196,125); //!! constants
+	// Create the TextWidgets (NOTE: they _must_ have exactly the same dims)
+	TextWidget *widget = new TextWidget(15,10,text,9,120,125); //!! constants
 	widget->InitGump();
-
-	textwidget = widget->getObjId();
-
-	// Add it to us
+	textwidgetL = widget->getObjId();
 	AddChild(widget);
+	
+	widget = new TextWidget(150,10,text,9,120,125); //!! constants
+	widget->InitGump();
+	textwidgetR = widget->getObjId();
+	AddChild(widget);
+	widget->setupNextText();
 
-	Shape* shape = GameData::get_instance()->getGumps()->getShape(19);
+	//!! constant
+	Shape* shape = GameData::get_instance()->getGumps()->getShape(6);
 
 	SetShape(shape, 0);
 
@@ -76,31 +80,37 @@ void ScrollGump::InitGump()
 	dims.h = sf->height;
 }
 
-void ScrollGump::NextText()
+void BookGump::NextText()
 {
-	TextWidget *widget = p_dynamic_cast<TextWidget*>
-		(GUIApp::get_instance()->getGump(textwidget));
-	assert(widget);
-	if (!widget->setupNextText()) {
+	TextWidget *widgetL = p_dynamic_cast<TextWidget*>
+		(GUIApp::get_instance()->getGump(textwidgetL));
+	TextWidget *widgetR = p_dynamic_cast<TextWidget*>
+		(GUIApp::get_instance()->getGump(textwidgetR));
+	assert(widgetL);
+	assert(widgetR);
+	if (!widgetR->setupNextText()) {
 		Close();
 	}
+	widgetL->setupNextText();
+	widgetL->setupNextText();
+	widgetR->setupNextText();
 }
 
-bool ScrollGump::Run(const uint32 framenum)
+bool BookGump::Run(const uint32 framenum)
 {
 	ModalGump::Run(framenum);
 
 	return true;	// Always repaint, even though we really could just try to detect it
 }
 
-Gump *ScrollGump::OnMouseDown(int button, int mx, int my)
+Gump *BookGump::OnMouseDown(int button, int mx, int my)
 {
-	// Scroll to next text, if possible
+	// Scrol to next text, if possible
 	NextText();
 	return this;
 }
 
-uint32 ScrollGump::I_readScroll(const uint8* args, unsigned int /*argsize*/)
+uint32 BookGump::I_readBook(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM_FROM_PTR(item);
 	ARG_STRING(str);
@@ -110,7 +120,7 @@ uint32 ScrollGump::I_readScroll(const uint8* args, unsigned int /*argsize*/)
 	assert(app);
 
 	Gump *desktop = app->getDesktopGump();
-	Gump *gump = new ScrollGump(item->getObjId(), str);
+	Gump *gump = new BookGump(item->getObjId(), str);
 	gump->InitGump();
 	desktop->AddChild(gump);
 	gump->setRelativePosition(CENTER);
@@ -118,23 +128,25 @@ uint32 ScrollGump::I_readScroll(const uint8* args, unsigned int /*argsize*/)
 	return gump->GetNotifyProcess()->getPid();
 }
 
-void ScrollGump::saveData(ODataSource* ods)
+void BookGump::saveData(ODataSource* ods)
 {
 	ods->write2(1); //version
 	ModalGump::saveData(ods);
 
-	ods->write2(textwidget);
+	ods->write2(textwidgetL);
+	ods->write2(textwidgetR);
 	ods->write4(text.size());
 	ods->write(text.c_str(), text.size());
 }
 
-bool ScrollGump::loadData(IDataSource* ids)
+bool BookGump::loadData(IDataSource* ids)
 {
 	uint16 version = ids->read2();
 	if (version != 1) return false;
 	if (!ModalGump::loadData(ids)) return false;
 
-	textwidget = ids->read2();
+	textwidgetL = ids->read2();
+	textwidgetR = ids->read2();
 	uint32 slen = ids->read4();
 	if (slen > 0) {
 		char* buf = new char[slen+1];
@@ -148,4 +160,3 @@ bool ScrollGump::loadData(IDataSource* ids)
 
 	return true;
 }
-

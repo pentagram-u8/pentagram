@@ -37,6 +37,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "SpriteProcess.h"
 #include "MusicProcess.h"
 #include "ScrollGump.h"
+#include "BookGump.h"
 #include "TargetGump.h"
 
 // Ultima 8 Intrinsics
@@ -158,7 +159,7 @@ Intrinsic U8Intrinsics[] = {
 	0, //U
 	0, //U
 	Item::I_guardianBark,
-	UCMachine::I_dummyProcess, //!! process Book::read(char*)
+	BookGump::I_readBook,
 	ScrollGump::I_readScroll,
 	// 0x070
 	UCMachine::I_dummyProcess, //!! process Grave::read(word,char*)

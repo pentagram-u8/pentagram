@@ -261,7 +261,16 @@ uint16 version
 <ModalGump>
 uint16 textwidget
 uint32 strlen
-char barked[strlen]
+char text[strlen]
+
+
+BookGump: (v1)
+uint16 version
+<ModalGump>
+uint16 textwidgetL
+uint16 textwidgetR
+uint32 strlen
+char text[strlen]
 
 
 ContainerGump: (v1)
