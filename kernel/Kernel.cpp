@@ -297,14 +297,17 @@ void Kernel::killProcesses(ObjId objid, uint16 processtype)
 	}
 }
 
-void Kernel::killObjectProcesses()
+void Kernel::killProcessesNotOfType(ObjId objid, uint16 processtype)
 {
 	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it)
 	{
 		Process* p = *it;
 
-		if (p->item_num != 0 && !p->terminated)
+		if ((objid == 0 || objid == p->item_num) &&
+			(p->type != processtype) && !p->terminated)
+		{
 			p->terminate();
+		}
 	}
 }
 

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -43,6 +43,7 @@ AvatarMoverProcess::AvatarMoverProcess() : Process()
 	lastframe = 0;
 	mouseButton[0].state = MBS_HANDLED; mouseButton[1].state = MBS_HANDLED;
 	combatRun = false;
+	type = 1; // CONSTANT! (type 1 = persistent)
 }
 
 
@@ -558,6 +559,8 @@ bool AvatarMoverProcess::loadData(IDataSource* ids)
 	uint16 version = ids->read2();
 	if (version != 1) return false;
 	if (!Process::loadData(ids)) return false;
+
+	type = 1; // HACK! (to fix old savegames which had it set to 0)
 
 	return true;
 }

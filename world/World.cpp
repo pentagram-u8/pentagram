@@ -113,7 +113,7 @@ bool World::switchMap(uint32 newmap)
 	//   deletes the EggHatcher
 	//   resets all eggs
 	// swap out fixed items in old map
-	// kill all processes attached to items
+	// kill all processes (except those of type 1)
 	// load fixed items in new map
 	// load new map into CurrentMap, which also
 	//   assigns objIDs to fixed items
@@ -155,10 +155,8 @@ bool World::switchMap(uint32 newmap)
 		maps[oldmap]->unloadFixed();
 	}
 
-	// Kill any processes that need killing
-	// (specifically, all processes assigned to an object)
-	// this leaves processes with item_num == 0 running
-	Kernel::get_instance()->killObjectProcesses();
+	// Kill any processes that need killing (those with type != 1)
+	Kernel::get_instance()->killProcessesNotOfType(0, 1);
 
 	pout << "Loading Fixed items in map " << newmap << std::endl;
 	IDataSource *items = GameData::get_instance()->getFixed()
