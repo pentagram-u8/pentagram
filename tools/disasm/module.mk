@@ -2,7 +2,7 @@
 # includes us, since that has to know our path anyway.
 LPATH := tools/disasm
 
-LSRC := $(wildcard $(LPATH)/*.cpp)
+LSRC := $(wildcard $(srcdir)/$(LPATH)/*.cpp)
 LPRODUCTS := disasm
 
 include $(srcdir)/objects.mk

@@ -2,7 +2,7 @@
 # includes us, since that has to know our path anyway.
 LPATH := .
 
-LSRC := $(wildcard $(LPATH)/*.cpp)
+LSRC := $(wildcard $(srcdir)/$(LPATH)/*.cpp)
 LPRODUCTS := pentagram llc
 LINSTALL := pentagram
 

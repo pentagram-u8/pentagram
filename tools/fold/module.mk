@@ -2,7 +2,7 @@
 # includes us, since that has to now our path anyway.
 LPATH := tools/fold
 
-LSRC := $(wildcard $(LPATH)/*.cpp)
+LSRC := $(wildcard $(srcdir)/$(LPATH)/*.cpp)
 LPRODUCTS := fold
 
 fold_OBJ = \

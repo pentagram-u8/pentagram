@@ -61,12 +61,11 @@ else
 PCHEADER :=
 endif
 
-# look for include files in
-#   each of the modules
-CXXFLAGS += $(patsubst %,-I$(top_srcdir)/%,$(MODULES)) -I.
-
-# config.h will be in $(top_builddir)/misc
+# config.h will be in $(top_builddir)/misc (and so will the precompiled header)
 CXXFLAGS += -I$(top_builddir)/misc
+
+# look for include files in each of the modules
+CXXFLAGS += $(patsubst %,-I$(top_srcdir)/%,$(MODULES)) -I.
 
 # list of all .deps subdirs
 DEPDIRS = $(patsubst %,%/$(top_builddir)/$(DEPDIR),$(MODULES))
@@ -110,7 +109,7 @@ $(DEPDIRS):
 # custom compile rule for the precompiled header
 %.h.gch: %.h
 	@$(MKDIR) $(*D)/$(DEPDIR)
-	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).h.gch.d",-MQ,"$@",-MP $(WARNINGS) $(CXXFLAGS) $(SDL_CFLAGS) -x c++-header -c $<
+	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).h.gch.d",-MQ,"$@",-MP $(WARNINGS) $(CXXFLAGS) $(SDL_CFLAGS) -x c++-header -c -o $@ $<
 
 
 # rule to rebuild Makefile if necessary

@@ -1,3 +1,6 @@
+2004-09-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* */module.mk, common.mk, Makefile.in: fix building from outside srcdir
+
 2004-09-11  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* kernel/GUIApp.cpp: always send mouse up event to gumps - fixes combat
 	  lock

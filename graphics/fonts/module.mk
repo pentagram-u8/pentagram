@@ -2,7 +2,7 @@
 # includes us, since that has to know our path anyway.
 LPATH := graphics/fonts
 
-LSRC := $(wildcard $(LPATH)/*.cpp)
+LSRC := $(wildcard $(srcdir)/$(LPATH)/*.cpp)
 LPRODUCTS :=
 
 # Common rules
