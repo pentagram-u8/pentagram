@@ -42,6 +42,12 @@
 
 
 //
+// p_dynamic_cast support
+//
+#include "p_dynamic_cast.h"
+
+
+//
 // assert
 //
 #include <cassert>
