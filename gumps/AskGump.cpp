@@ -84,7 +84,8 @@ void AskGump::InitGump()
 
 		Pentagram::Rect cd;
 		child->GetDims(cd);
-		cd.h += child->getVlead();
+		if (i+1 < answers->getSize())
+			cd.h += child->getVlead();
 
 		if (px+cd.w > 160 && px != 0) 
 		{
