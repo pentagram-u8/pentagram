@@ -1,5 +1,5 @@
 2004-05-22  Matthew Jimenez <mjimenez@users.sourceforge.net>
-	* gumps/BindGump.cpp: Text in BindGumop is now represented as a single
+	* gumps/BindGump.cpp: Text in BindGump is now represented as a single
 	  TextWidget instead of 3 separate TextWidgets.
 
 2004-05-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
