@@ -45,7 +45,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IDataSource.h"
 #include "ODataSource.h"
 
-#include "MissileProcess.h" // hack
 #include "PathfinderProcess.h"
 
 // p_dynamic_cast stuff
@@ -1053,8 +1052,21 @@ uint32 Actor::I_pathfindToItem(const uint8* args, unsigned int /*argsize*/)
 
 	return Kernel::get_instance()->addProcess(
 		new PathfinderProcess(actor,id2));
-//		new MissileProcess(actor,x,y,z,100));
 }
+
+uint32 Actor::I_pathfindToPoint(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	ARG_UINT16(x);
+	ARG_UINT16(y);
+	ARG_UINT16(z);
+	ARG_NULL16(); // unknown.
+	if (!actor) return 0;
+
+	return Kernel::get_instance()->addProcess(
+		new PathfinderProcess(actor,x,y,z));
+}
+
 
 uint32 Actor::I_isBusy(const uint8* args, unsigned int /*argsize*/)
 {

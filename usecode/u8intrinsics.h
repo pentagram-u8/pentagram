@@ -215,7 +215,7 @@ Intrinsic U8Intrinsics[] = {
 	Actor::I_doAnim,
 	// 0x0A0
 	Actor::I_getLastAnimSet,
-	UCMachine::I_dummyProcess, //!! process Npc::pathfind(uword, uword, uword, uword)
+	Actor::I_pathfindToPoint,
 	Actor::I_pathfindToItem,
 	Actor::I_getStr,
 	Actor::I_getInt,

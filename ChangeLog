@@ -7,6 +7,7 @@
 	* misc/idMan.*: don't break the list when freeing ID zero.
 	* world/actor/Actor.*: {set,get}AirWalkEnabled intrinsics
 	* kernel/GUIApp.cpp: add Theurgy foci to Avatar's starting equipment
+	* world/actor/Actor.*: pathfindToPoint intrinsic
 
 2004-08-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: uninitialized variables

@@ -125,6 +125,7 @@ public:
 	INTRINSIC(I_getDir);
 	INTRINSIC(I_getLastAnimSet);
 	INTRINSIC(I_pathfindToItem);
+	INTRINSIC(I_pathfindToPoint);
 	INTRINSIC(I_getStr);
 	INTRINSIC(I_getDex);
 	INTRINSIC(I_getInt);
