@@ -1,4 +1,9 @@
 2004-10-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Item.cpp: don't make legalMoveToPoint teleport an item
+	* world/Item.cpp: fixed collideMove to also call Hit on items that
+	  prevent an item from moving at all
+
+2004-10-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Kernel.*: added Kernel::listItemProcesses console command
 	* kernel/Process.*, usecode/UCProcess.*: Process::dumpInfo
 	* world/actors/AvatarMoverProcess.cpp: removed some noise

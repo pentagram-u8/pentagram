@@ -858,17 +858,17 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 
 			if (hit != 0x4000)
 			{
-				// Resweep
-				//pout << " Hit time: " << hit << std::endl;
-				//pout << "    Start: " << start[0] << ", "<< start[1] << ", " << start[2] << std::endl;
-				//pout << "      End: " << end[0] << ", "<< end[1] << ", " << end[2] << std::endl;
+#if 0
+				pout << " Hit time: " << hit << std::endl;
+				pout << "    Start: " << start[0] << ", "<< start[1] << ", " << start[2] << std::endl;
+				pout << "      End: " << end[0] << ", "<< end[1] << ", " << end[2] << std::endl;
+#endif
 				it->GetInterpolatedCoords(end,start,end);
-				//pout << "Collision: " << end[0] << ", "<< end[1] << ", " << end[2] << std::endl;
-				collisions.clear();
-				map->sweepTest(start, end, dims, objid, false, &collisions);
+#if 0
+				pout << "Collision: " << end[0] << ", "<< end[1] << ", " << end[2] << std::endl;
+#endif
 			}
 		}
-
 
 		// Trigger all the required events
 		bool we_were_released = false;
@@ -877,11 +877,19 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 			Item *item = world->getItem(it->item);
 			if (!item) continue;
 
+			// Did we go past the endpoint of the move?
+			if (it->hit_time > hit) break;
+
 			uint16 proc_gothit = 0, proc_rel = 0;
 
 			// If hitting at start, we should have already 
-			// called gotHit and hit
-			if (it->hit_time > 0) 
+			// called gotHit and hit, unless this item is preventing
+			// us from moving at all.
+			// NOTE: In the latter case, we can not require that the hit
+			// item is solid. This breaks spiky spheres, which need to hit
+			// (non-solid) shape 503.
+			if (it->hit_time > 0 ||
+				(it->hit_time == 0 && hit == 0 && !it->touching))
 			{
 				if (objid == 1 && guiapp->isShowTouchingItems())
 					item->setExtFlag(Item::EXT_HIGHLIGHT);
@@ -890,7 +898,7 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 			}
 
 			// If not hitting at end, we will need to call release
-			if (it->end_time < 0x4000)
+			if (it->end_time < hit)
 			{
 				if (objid == 1) item->clearExtFlag(Item::EXT_HIGHLIGHT);
 				we_were_released = true;
@@ -2353,15 +2361,11 @@ uint32 Item::I_legalMoveToPoint(const uint8* args, unsigned int /*argsize*/)
 
 	//! What should this do to ethereal items?
 
-	//! haven't checked if this does what it should do.
-	// Currently: check if item can exist at point. If so, move it there
-	// and return true. If not, return false.
-
 //	if (item->canExistAt(point.getX(), point.getY(), point.getZ())) {
 //		item->move(point.getX(), point.getY(), point.getZ());
 //		return 1;
 //	} else {
-	return item->collideMove(point.getX(), point.getY(), point.getZ(), true, force==1) == 0x4000;
+	return item->collideMove(point.getX(), point.getY(), point.getZ(), false, force==1) == 0x4000;
 //	}
 }
 
