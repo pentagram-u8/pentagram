@@ -95,6 +95,18 @@ extern const std::string c_empty_string;
 
 
 //
+// Can't happen.
+// For things that really can't happen. Or shouldn't anyway.
+//
+#define CANT_HAPPEN() do { assert(false); } while(0)
+//
+// Can't happen return.
+// Were we're guaranteed to return before this, but we want to shut the compiler warning up.
+//
+#define CANT_HAPPEN_RETURN() do { return 0; assert(false); } while(0)
+
+
+//
 // Precompiled Header Support
 //
 #ifdef USE_PRECOMPILED_HEADER

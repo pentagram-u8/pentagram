@@ -87,7 +87,7 @@ struct ConvertShapeFrame
 class ConvertShape
 {
 	uint8				header_unknown[4];
-	int					num_frames;
+	uint32				num_frames;
 	ConvertShapeFrame	*frames;
 
 public:
@@ -102,10 +102,10 @@ public:
 
 	void Free()
 	{
-		if (frames) for (int i = 0; i < num_frames; i++)
-		{
-			frames[i].Free();
-		}
+		if (frames)
+			for(uint32 i = 0; i < num_frames; ++i)
+				frames[i].Free();
+		
 		delete [] frames;
 		frames = 0;
 		num_frames = 0;

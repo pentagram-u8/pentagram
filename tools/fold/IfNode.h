@@ -1,7 +1,7 @@
 /*
  *	IfNode.h -
  *
- *  Copyright (C) 2002 The Pentagram Team
+ *  Copyright (C) 2002-2003 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -42,7 +42,7 @@ class EndNode : public Node
 		void print_unk(Console &o, const uint32 isize) const;
 		void print_asm(Console &o) const;
 		void print_bin(OBufferDataSource &o) const;
-		bool fold(Unit *unit, std::deque<Node *> &nodes);
+		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
 		
 		inline uint32 TargetOffset() const { return targetOffset; };
 		
@@ -61,10 +61,12 @@ class IfNode : public UniNode
 		enum iftype { I_IF, I_IF_ELSE, I_IF_ELSE_IF, I_ELSE_IF, I_ELSE_IF_ELSE, I_ELSE };
 		
 		IfNode(const iftype newItype, const uint32 newTargetOffset)
-			: UniNode(0x51, 0x0000, Type(Type::T_INVALID)), itype(newItype), targetOffset(newTargetOffset), jmpnode(0), elsenode(0)
+			: UniNode(0x51, 0x0000, Type(Type::T_INVALID)), itype(newItype),
+			targetOffset(newTargetOffset), jmpnode(0), elsenode(0)
 			{};
 		IfNode(const uint32 opcode, const uint32 offset, const uint32 newTargetOffset)
-			: UniNode(opcode, offset, Type(Type::T_INVALID)), targetOffset(newTargetOffset), jmpnode(0), elsenode(0)
+			: UniNode(opcode, offset, Type(Type::T_INVALID)),
+			targetOffset(newTargetOffset), jmpnode(0), elsenode(0)
 			{
 				assert(acceptOp(opcode, 0x51));
 				switch(opcode)
@@ -78,7 +80,8 @@ class IfNode : public UniNode
 		void print_unk(Console &o, const uint32 isize) const;
 		void print_asm(Console &o) const;
 		void print_bin(OBufferDataSource &o) const;
-		bool fold(Unit *unit, std::deque<Node *> &nodes);
+		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
+		bool fold_else(DCUnit *unit, std::deque<Node *> &nodes);
 		
 		inline uint32 TargetOffset() const
 		{

@@ -811,7 +811,7 @@ and that the child threads are indeed placed infront of the parent thread.
 /* This needs to be shuffled into two different readOp() functions, one in Convert*Crusader, and
 	the other in Convert*U8 */
 Node *ConvertUsecode::readOpGeneric(IFileDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols,
-	bool &/*done*/, const bool /*crusader*/)
+	bool &done, const bool /*crusader*/)
 {
 	Node *n=0;
 	uint32 opcode=0;
@@ -843,13 +843,13 @@ Node *ConvertUsecode::readOpGeneric(IFileDataSource *ucfile, uint32 &dbg_symbol_
 		case 0x0F: // calli
 			{
 				uint32 tint=read1(ucfile);
-				n = new CallNode(opcode, offset, tint, read2(ucfile));
+				n = new DCCallNode(opcode, offset, tint, read2(ucfile));
 			}
 			break;
 		case 0x11: // call
 			{
 				uint32 tint=read2(ucfile);
-				n = new CallNode(opcode, offset, tint, read2(ucfile));
+				n = new DCCallNode(opcode, offset, tint, read2(ucfile));
 			}
 			break;
 		case 0x24: // cmp
@@ -872,7 +872,7 @@ Node *ConvertUsecode::readOpGeneric(IFileDataSource *ucfile, uint32 &dbg_symbol_
 			n = new PushVarNode(opcode, offset, read1(ucfile));
 			break;
 		case 0x4C: // push indirect
-			n = new CallMutatorNode(opcode, offset, read1(ucfile));
+			n = new DCCallMutatorNode(opcode, offset, read1(ucfile));
 			break;
 		case 0x50: // ret
 			n = new FuncMutatorNode(opcode, offset);
@@ -898,16 +898,20 @@ Node *ConvertUsecode::readOpGeneric(IFileDataSource *ucfile, uint32 &dbg_symbol_
 			break;
 		case 0x5D: // push byte retval
 		case 0x5E: // push retval
-			n = new CallPostfixNode(opcode, offset);
+			n = new DCCallPostfixNode(opcode, offset);
 			break;
 		case 0x6E: // add sp
-			n = new CallPostfixNode(opcode, offset, read1(ucfile));
+			n = new DCCallPostfixNode(opcode, offset, read1(ucfile));
 			break;
 		case 0x77: // set info
-			n = new CallMutatorNode(opcode, offset);
+			n = new DCCallMutatorNode(opcode, offset);
 			break;
 		case 0x78: // process exclude
-			n = new CallMutatorNode(opcode, offset);
+			n = new DCCallMutatorNode(opcode, offset);
+			break;
+		case 0x7A: // end
+			n = new FuncMutatorNode(opcode, offset);
+			done = true;
 			break;
 		
 		// can't happen.

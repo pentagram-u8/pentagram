@@ -1,7 +1,7 @@
 /*
  *	Folder.h - The core of the folding utility
  *
- *  Copyright (C) 2002 The Pentagram Team
+ *  Copyright (C) 2002-2003 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,27 +24,38 @@
 #include "GenericNodes.h"
 #include "IfNode.h"
 #include "CallNodes.h"
+#include "FuncNodes.h"
+#include "CommonBases.h"
 
 #include <deque>
 #include <set>
-#include <utility>
 
 class Unit
 {
 	public:
-		Unit() : debugOffset(0) {};
-		
-		void fold(Node *n);
-		
 		void print_extern_unk(Console &o, const uint32 isize) const;
 		void print_unk(Console &o, const uint32 isize) const;
 		void print_asm(Console &o) const;
 		void print_bin(OBufferDataSource &o) const;
 		
+		std::string name; // the cannonical name of the unit
+		
+		std::set<DCCallNode *>   externFuncs;
+		std::set<DCCallNode *>   externIntrinsics;
+		std::deque<DCFuncNode *> functions;
+};
+
+class DCUnit : public Unit
+{
+	public:
+		DCUnit() : debugOffset(0) {};
+		
+		const bool fold(Node *n);
+		
 		void setDebugOffset(const uint32 newDebugOffset) { debugOffset=newDebugOffset; };
 		void setClassName(const std::string &newName) { name=newName; };
-		void registerExternIntrinsic(CallNode *i) { externIntrinsics.insert(i); };
-		void registerExternFunc(CallNode *f) { externFuncs.insert(f); };
+		void registerExternIntrinsic(DCCallNode *i) { externIntrinsics.insert(i); };
+		void registerExternFunc(DCCallNode *f) { externFuncs.insert(f); };
 		
 		void setJump(IfNode *in) { ifstack.push_back(in); };
 		const std::deque<IfNode *> &IfStack() const { return ifstack; };
@@ -57,15 +68,11 @@ class Unit
 		*/
 		std::deque<IfNode *> ifstack;
 		std::deque<IfNode *> elsestack;
-		//DELstd::deque<uint32>   jneoffsets; // the 'jump to' offsets for jne
 		
 		uint32 debugOffset;
 		std::string name;
 
-		std::set<CallNode *> externFuncs;
-		std::set<CallNode *> externIntrinsics;
-		
-		friend bool print_assert(const Node *n, const Unit *u);
+		friend bool print_assert(const Node *n, const DCUnit *u);
 };
 
 class Folder
@@ -82,12 +89,12 @@ class Folder
 		inline void NewUnit()
 		{
 			if(curr!=0) units.push_back(curr);
-			curr = new Unit();
+			curr = new DCUnit();
 		};
 
 	private:
-		Unit *curr;
-		std::deque<Unit *> units;
+		DCUnit *curr;
+		std::deque<DCUnit *> units;
 		uint32 num;
 };
 

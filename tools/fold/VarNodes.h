@@ -1,7 +1,7 @@
 /*
  *	VarNodes.h -
  *
- *  Copyright (C) 2002 The Pentagram Team
+ *  Copyright (C) 2002-2003 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -46,7 +46,7 @@ class PopVarNode : public UniNode
 		void print_asm(Console &o) const;
 		void print_bin(OBufferDataSource &o) const;
 
-		bool fold(Unit */*unit*/, std::deque<Node *> &nodes);
+		bool fold(DCUnit */*unit*/, std::deque<Node *> &nodes);
 
 	protected:
 
@@ -92,7 +92,7 @@ class PushVarNode : public Node
 		void print_asm(Console &o) const;
 		void print_bin(OBufferDataSource &o) const;
 
-		bool fold(Unit */*unit*/, std::deque<Node *> &/*nodes*/) { return true; /* to be done */ };
+		bool fold(DCUnit */*unit*/, std::deque<Node *> &/*nodes*/) { return true; /* to be done */ };
 
 		/* NOTE: 'VT_VOID' is not really a vartype, just used for proper typecasting of
 			calls to functions that return no value, DT_DNULL isn't a real datatype either */

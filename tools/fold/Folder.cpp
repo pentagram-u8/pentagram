@@ -1,7 +1,7 @@
 /*
  *	Folder.cpp - The core of the folding utility
  *
- *  Copyright (C) 2002 The Pentagram Team
+ *  Copyright (C) 2002-2003 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
  */
 
 #include "Folder.h"
+#include "FuncNodes.h"
 
 #include <deque>
 using	std::deque;
@@ -28,8 +29,70 @@ using	std::set;
 /****************************************************************************
 	Unit
  ****************************************************************************/
- 
-void Unit::fold(Node *n)
+
+void Unit::print_extern_unk(Console &o, const uint32 isize) const
+{
+	o.Print("// External Functions:\n");
+	for(std::set<DCCallNode *>::const_iterator i=externFuncs.begin(); i!=externFuncs.end(); ++i)
+	{
+		indent(o, isize+1);
+		(*i)->print_extern_unk(o, isize+1);
+		o.Putchar('\n');
+	}
+	o.Print("// External Intrinsics:\n");
+	{
+		for(std::set<DCCallNode *>::const_iterator i=externIntrinsics.begin(); i!=externIntrinsics.end(); ++i)
+		{
+			indent(o, isize+1);
+			(*i)->print_extern_unk(o, isize+1);
+			o.Putchar('\n');
+		}
+	}
+}
+
+void Unit::print_unk(Console &o, const uint32 isize) const
+{
+	for(std::deque<DCFuncNode *>::const_iterator i=functions.begin(); i!=functions.end(); ++i)
+	{
+		indent(o, isize);
+		o.Print("{\n");
+		//indent(o, isize+1);
+		(*i)->print_unk(o, isize+1);
+		//o.Putchar('\n');
+		indent(o, isize);
+		o.Print("}\n");
+	}
+}
+
+void Unit::print_asm(Console &o) const
+{
+	for(std::deque<DCFuncNode *>::const_iterator i=functions.begin(); i!=functions.end(); ++i)
+	{
+		(*i)->print_asm(o);
+		o.Putchar('\n');
+	}
+}
+
+void Unit::print_bin(OBufferDataSource &o) const
+{
+	for(std::deque<DCFuncNode *>::const_iterator i=functions.begin(); i!=functions.end(); ++i)
+	{
+		o.clear();
+		(*i)->print_mac(con);
+		(*i)->print_bin(o);
+		// FIXME: The following is a bit of a hack, just so we get some 'real' output
+		for(std::deque<char>::const_iterator i=o.buf().begin(); i!=o.buf().end(); ++i)
+			con.Printf("%02X ", static_cast<uint8>(*i));
+		con.Putchar('\n');
+	}
+}
+
+/****************************************************************************
+	DCUnit
+ ****************************************************************************/
+
+/* returns true if we've finished folding the current function */
+const bool DCUnit::fold(Node *n)
 {
 	if(n==0)
 	{
@@ -65,21 +128,19 @@ void Unit::fold(Node *n)
 		{
 			assert(elsestack.back()->elsenode==0 || print_assert(elsestack.back(), this));
 			elsestack.back()->elsenode=last;
+			#if UNITDEBUG
 			print_assert(0, this);
+			#endif
 		}
 
 		assert(ifstack.size()>0 || print_assert(0, this));
 		if(last!=ifstack.back() && last->elsenode==0)
 		{
 			IfNode *newnode = new IfNode(IfNode::I_ELSE, last->TargetOffset());
-			newnode->fold(this, ifstack.back()->nodes());
-			con.Print("\n>>>Mu:\n");
-			print_assert(last, this);
+			newnode->fold_else(this, ifstack.back()->nodes());
 			assert(last->elsenode==0 || print_assert(last->elsenode, this));
-			//last->elsenode = newnode;
 			assert(ifstack.back()->opcode()==0x51);
 			ifstack.back()->nodes().push_back(newnode);
-			//ifstack.push_back(newnode);
 		}
 	}
 
@@ -87,7 +148,9 @@ void Unit::fold(Node *n)
 	{
 		IfNode *last = ifstack.back();
 		ifstack.pop_back();
+		#if UNITDEBUG
 		con.Printf("Popping offset: %04X at %04X\n", last->offset(), n->offset());
+		#endif
 		// fold the last if node once more, with the 'parent' stack,
 		// just in case it wants to do anything funky (FIXME: Be just a _tad_ more specific here)
 		if(ifstack.size()==0)
@@ -118,69 +181,45 @@ void Unit::fold(Node *n)
 	{
 		if(n->fold(this, ifstack.back()->nodes()))
 			ifstack.back()->nodes().push_back(n);
-		// if we're a jump opcode we have to do Special Stuff(tm). (see comment in IfNode::fold()
-		/*END if(n->opcode()==0x52)
-		{
-			con.Printf("\n>>> FOO! <<<\n");
-			assert(ifstack.back()->nodes.size()>0);
-			ifstack.back()->fold(this, ifstack.back()->nodes);
-		}*/
 	}
+	
+	// special handling for jmp...
 	if(n->opcode()==0x51)
-		setJump(dynamic_cast<IfNode *>(n));
-}
-
-void Unit::print_extern_unk(Console &o, const uint32 isize) const
-{
-	o.Print("// External Functions:\n");
-	for(std::set<CallNode *>::const_iterator i=externFuncs.begin(); i!=externFuncs.end(); ++i)
+		setJump(static_cast<IfNode *>(n));
+	
+	// are we at the end of a function...
+	if(n->opcode()==0x50)
 	{
-		indent(o, isize+1);
-		(*i)->print_extern_unk(o, isize+1);
-		o.Putchar('\n');
+		// doesn't handle spawn inline, will have to handle it sometime
+		// should just be a case of making sure to pass the appropriate
+		// 'nodes' array to fold, like:
+		/*if(ifstack.size()==0)
+			if(n->fold(this, nodes))
+				nodes.push_back(n);
+		else
+			if(n->fold(this, ifstack.back()->nodes()))
+				ifstack.back()->nodes().push_back(n);
+		*/
+		
+		assert(elsestack.size()==0);
+		DCFuncNode *func = new DCFuncNode();
+		assert(ifstack.size()==0);
+		
+		if(func->fold(this, nodes))
+			nodes.push_back(func);
 	}
-	o.Print("// External Intrinsics:\n");
+	
+	// special handling for 'end' opcodes
+	if(n->opcode()==0x7A)
 	{
-		for(std::set<CallNode *>::const_iterator i=externIntrinsics.begin(); i!=externIntrinsics.end(); ++i)
-		{
-			indent(o, isize+1);
-			(*i)->print_extern_unk(o, isize+1);
-			o.Putchar('\n');
-		}
+		con.Print("<< Assign func\n");
+		assert(nodes.back()->opcode()==0xFFFF);
+		functions.push_back(static_cast<DCFuncNode *>(nodes.back()));
+		nodes.pop_back();
+		assert(nodes.size()==0);
+		return true;
 	}
-}
-
-void Unit::print_unk(Console &o, const uint32 isize) const
-{
-	for(std::deque<Node *>::const_iterator i=nodes.begin(); i!=nodes.end(); ++i)
-	{
-		indent(o, isize+1);
-		(*i)->print_unk(o, isize+1);
-		o.Putchar('\n');
-	}
-}
-
-void Unit::print_asm(Console &o) const
-{
-	for(std::deque<Node *>::const_iterator i=nodes.begin(); i!=nodes.end(); ++i)
-	{
-		(*i)->print_asm(o);
-		o.Putchar('\n');
-	}
-}
-
-void Unit::print_bin(OBufferDataSource &o) const
-{
-	for(std::deque<Node *>::const_iterator i=nodes.begin(); i!=nodes.end(); ++i)
-	{
-		o.clear();
-		(*i)->print_mac(con);
-		(*i)->print_bin(o);
-		// FIXME: The following is a bit of a hack, just so we get some 'real' output
-		for(std::deque<char>::const_iterator i=o.buf().begin(); i!=o.buf().end(); ++i)
-			con.Printf("%02X ", static_cast<uint8>(*i));
-		con.Putchar('\n');
-	}
+	return false;
 }
 
 /****************************************************************************
@@ -189,12 +228,19 @@ void Unit::print_bin(OBufferDataSource &o) const
 
 void Folder::fold(Node *n)
 {
-	curr->fold(n);
+	if(curr->fold(n))
+	{
+		assert(curr!=0);
+		units.push_back(curr);
+		curr = 0;
+		
+	}
 }
 
 void Folder::print_unk(Console &o) const
 {
-	for(std::deque<Unit *>::const_iterator i=units.begin(); i!=units.end(); ++i)
+	con.Printf("Printing... %d\n", units.size());
+	for(std::deque<DCUnit *>::const_iterator i=units.begin(); i!=units.end(); ++i)
 	{
 		(*i)->print_unk(o, 0);
 	}
@@ -202,7 +248,7 @@ void Folder::print_unk(Console &o) const
 
 void Folder::print_asm(Console &o) const
 {
-	for(std::deque<Unit *>::const_iterator i=units.begin(); i!=units.end(); ++i)
+	for(std::deque<DCUnit *>::const_iterator i=units.begin(); i!=units.end(); ++i)
 	{
 		(*i)->print_asm(o);
 	}
@@ -210,7 +256,7 @@ void Folder::print_asm(Console &o) const
 
 void Folder::print_bin(OBufferDataSource &o) const
 {
-	for(std::deque<Unit *>::const_iterator i=units.begin(); i!=units.end(); ++i)
+	for(std::deque<DCUnit *>::const_iterator i=units.begin(); i!=units.end(); ++i)
 	{
 		(*i)->print_bin(o);
 	}
@@ -220,7 +266,7 @@ void Folder::print_bin(OBufferDataSource &o) const
 	Useful Funcs
  ****************************************************************************/
 
-bool print_assert(const Node *n, const Unit *u)
+bool print_assert(const Node *n, const DCUnit *u)
 {
 	if(n!=0)
 	{
@@ -238,7 +284,7 @@ bool print_assert(const Node *n, const Unit *u)
 				con.Printf("\n    %04X: %02X -> %04X", (*i)->offset(), (*i)->opcode(), (*i)->TargetOffset());
 			}
 		}
-		if(u->ifstack.size()) con.Printf("  <- head");
+		if(u->ifstack.size()) con.Printf("  <-");
 		con.Putchar('\n');
 		
 		con.Printf("ElseStack:");
@@ -248,7 +294,7 @@ bool print_assert(const Node *n, const Unit *u)
 				con.Printf("\n    %04X: %02X -> %04X", (*i)->offset(), (*i)->opcode(), (*i)->TargetOffset());
 			}
 		}
-		if(u->elsestack.size()) con.Printf("  <- head\n");
+		if(u->elsestack.size()) con.Printf("  <-");
 		con.Putchar('\n');
 
 		con.Printf("Nodes:");
@@ -258,11 +304,11 @@ bool print_assert(const Node *n, const Unit *u)
 				con.Printf("\n    %04X: %02X", (*i)->offset(), (*i)->opcode());
 			}
 		}
-		if(u->nodes.size()) con.Printf("  <- head\n");
+		if(u->nodes.size()) con.Printf("  <-\n");
 		con.Putchar('\n');
 
 		/*con.Printf("FuncStack:");
-		for(deque<Unit *>::const_iterator k=units.begin(); k!=units.end(); ++k)
+		for(deque<DCUnit *>::const_iterator k=units.begin(); k!=units.end(); ++k)
 		{
 			con.Printf("\n    %04X: %02X", (*k)->offset(), (*k)->opcode());
 			if((*k)->opcode()==0x51)

@@ -1,7 +1,7 @@
 /*
  *	Type.h - General type object
  *
- *  Copyright (C) 2002 The Pentagram Team
+ *  Copyright (C) 2002-2003 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,12 +25,11 @@
 #include "Console.h"
 #include "ODataSource.h"
  
-/* FIXME: end conveniently placed functions... */
-
 class Type
 {
 	public:
-		enum ttype { T_VOID=0, T_BYTE, T_WORD, T_DWORD, T_STRING, T_PID, T_VAR, T_LIST, T_SLIST, T_STRPTR, T_INVALID };
+		enum ttype { T_VOID=0, T_BYTE, T_WORD, T_DWORD, T_STRING,
+			T_PID, T_VAR, T_LIST, T_SLIST, T_STRPTR, T_INVALID };
 
 		Type(const ttype t) : _type(t) {};
 		Type() : _type(T_INVALID) {};
@@ -99,4 +98,24 @@ class DataType
 };
 
 
+/* FIXME: end conveniently placed functions... */
+
+namespace suc
+{
+	inline const char * const print_bp(const sint32 offset)
+	{
+		static char str[32];
+		snprintf(str, 32, "[BP%c%02Xh]", offset>0x7F?'-':'+', offset>0x7F?0x100-offset:offset);
+		return str;
+	}
+	
+	inline const char * const print_sp(const sint32 offset)
+	{
+		static char str[32];
+		snprintf(str, 32, "[SP%c%02Xh]", offset>0x7F?'-':'+', offset>0x7F?0x100-offset:offset);
+		return str;
+	}
+}
+
 #endif
+

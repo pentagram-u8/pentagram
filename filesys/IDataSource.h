@@ -55,7 +55,8 @@ class IDataSource
 			else if (num_bytes == 3) return (((static_cast<sint32>(read3())) << 8)>>8);
 			else return static_cast<sint32>(read4());
 		}
-		
+
+		/* FIXME: Dubious conversion between float and int */
 		float readf()
 		{
 			union {
@@ -72,60 +73,12 @@ class IDataSource
 		virtual uint32 getPos()=0;
 };
 
-/*//	Read a 2-byte value from a buffer.
-inline uint16 Read2
-	(
-	uint8 *& in
-	)
-	{
-	uint8 b0 = *in++;
-	uint8 b1 = *in++;
-	return (b0 | (b1 << 8));
-	}
-
-//	Read a 2-byte value from a buffer.
-inline uint16 Read2high
-	(
-	uint8 *& in
-	)
-	{
-	uint8 b0 = *in++;
-	uint8 b1 = *in++;
-	return ((b0 << 8) | b1);
-	}
-
-//	Read a 4-byte value from a buffer.
-inline uint32 Read4
-	(
-	uint8 *& in
-	)
-	{
-	uint8 b0 = *in++;
-	uint8 b1 = *in++;
-	uint8 b2 = *in++;
-	uint8 b3 = *in++;
-	return (b0 | (b1<<8) | (b2<<16) | (b3<<24));
-	}
-
-//	Read a 4-byte value from a buffer.
-inline uint32 Read4high
-	(
-	uint8 *& in
-	)
-	{
-	uint8 b0 = *in++;
-	uint8 b1 = *in++;
-	uint8 b2 = *in++;
-	uint8 b3 = *in++;
-	return ((b0<<24) | (b1<<16) | (b2<<8) | b3);
-	}*/
-
 
 class IFileDataSource: public IDataSource
 {
 	private:
 		std::ifstream *in;
-	
+
 	public:
 	IFileDataSource(std::ifstream *data_stream)
 	{
@@ -138,7 +91,7 @@ class IFileDataSource: public IDataSource
 	}
 
 	bool good() const { return in->good(); }
-	
+
 	//	Read a byte value
 	virtual uint32 read1()
 	{

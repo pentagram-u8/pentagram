@@ -1,7 +1,7 @@
 /*
  *	OperatorNodes.cpp -
  *
- *  Copyright (C) 2002 The Pentagram Team
+ *  Copyright (C) 2002-2003 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,7 +16,7 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
- */
+*/
 
 #include "OperatorNodes.h"
 #include "Folder.h"
@@ -28,7 +28,7 @@
 void UniOperatorNode::print_unk(Console &o, const uint32 isize) const
 {
 	assert(rtype().type()!=Type::T_INVALID);
-	switch(mtype)
+	switch(otype)
 	{
 		case NOT:
 			assert(node!=0);
@@ -42,7 +42,7 @@ void UniOperatorNode::print_unk(Console &o, const uint32 isize) const
 void UniOperatorNode::print_asm(Console &o) const
 {
 	assert(rtype().type()!=Type::T_INVALID);
-	switch(mtype)
+	switch(otype)
 	{
 		case NOT:
 			assert(node!=0);
@@ -58,7 +58,7 @@ void UniOperatorNode::print_asm(Console &o) const
 void UniOperatorNode::print_bin(OBufferDataSource &o) const
 {
 	assert(rtype().type()!=Type::T_INVALID);
-	switch(mtype)
+	switch(otype)
 	{
 		case NOT:
 			assert(node!=0);
@@ -69,12 +69,13 @@ void UniOperatorNode::print_bin(OBufferDataSource &o) const
 	}
 }
 
-bool UniOperatorNode::fold(Unit */*unit*/, std::deque<Node *> &nodes)
+bool UniOperatorNode::fold(DCUnit */*unit*/, std::deque<Node *> &nodes)
 {
-	switch(mtype)
+	switch(otype)
 	{
 		case NOT:
-			assert(nodes.back()->rtype()==Type::T_WORD || nodes.back()->rtype()==Type::T_BYTE);
+			assert(acceptType(nodes.back()->rtype(), Type::T_WORD, Type::T_BYTE));
+			//assert(nodes.back()->rtype()==Type::T_WORD || nodes.back()->rtype()==Type::T_BYTE);
 			grab_n(nodes);
 			break;
 		default: assert(false);
@@ -91,7 +92,7 @@ bool UniOperatorNode::fold(Unit */*unit*/, std::deque<Node *> &nodes)
 
 	switch(_opcode)
 	{
-		case 0x3B: mtype=BITNOT;	rtype=Type::T_WORD; break;
+		case 0x3B: otype=BITNOT;	rtype=Type::T_WORD; break;
 		default: assert(false); // can't happen
 	}
 
@@ -109,7 +110,7 @@ bool UniOperatorNode::fold(Unit */*unit*/, std::deque<Node *> &nodes)
 
 	printf("(%s) (", rtype.name());
 
-	switch(mtype)
+	switch(otype)
 	{
 		case BITNOT:	printf("~");		break;
 		default:	assert(false); // can't happen
@@ -131,7 +132,7 @@ void BinOperatorNode::print_unk(Console &o, const uint32 isize) const
 	
 	lnode->print_unk(o, isize);
 	Node::print_linenum_unk(o, isize);
-	switch(mtype)
+	switch(otype)
 	{
 		case M_CMP: o.Printf(" == "); break;
 		case M_GT:  o.Printf(" > ");  break;
@@ -153,7 +154,7 @@ void BinOperatorNode::print_asm(Console &o) const
 	rnode->print_asm(o);
 	o.Putchar('\n');
 	Node::print_asm(o);
-	switch(mtype)
+	switch(otype)
 	{
 		case M_CMP: o.Printf("cmp"); break;
 		case M_GT:  o.Printf("gt");  break;
@@ -171,7 +172,7 @@ void BinOperatorNode::print_bin(OBufferDataSource &o) const
 	Node::print_linenum_bin(o);
 	lnode->print_bin(o);
 	rnode->print_bin(o);
-	switch(mtype)
+	switch(otype)
 	{
 		case M_CMP: o.write1(0x24); break;
 		case M_GT:  o.write1(0x2C); break;
@@ -180,17 +181,19 @@ void BinOperatorNode::print_bin(OBufferDataSource &o) const
 	}
 }
 
-bool BinOperatorNode::fold(Unit *unit, std::deque<Node *> &nodes)
+bool BinOperatorNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 {
-	switch(mtype)
+	switch(otype)
 	{
 		case M_CMP:
 		case M_GT:
 		case M_OR:
-			assert(nodes.back()->rtype()==Type::T_WORD || nodes.back()->rtype()==Type::T_BYTE);
+			assert(acceptType(nodes.back()->rtype(), Type::T_WORD, Type::T_BYTE));
+			//assert(nodes.back()->rtype()==Type::T_WORD || nodes.back()->rtype()==Type::T_BYTE);
 			grab_r(nodes);
 			//fold_linenum(nodes);
-			assert(nodes.back()->rtype()==Type::T_WORD || nodes.back()->rtype()==Type::T_BYTE);
+			assert(acceptType(nodes.back()->rtype(), Type::T_WORD, Type::T_BYTE));
+			//assert(nodes.back()->rtype()==Type::T_WORD || nodes.back()->rtype()==Type::T_BYTE);
 			grab_l(nodes);
 			fold_linenum(nodes);
 			rtype(Type::T_WORD);

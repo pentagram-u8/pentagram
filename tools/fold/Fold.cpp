@@ -1,7 +1,7 @@
 /*
  *	fold.cpp - parts of a disassembler for u8usecode
  *
- *  Copyright (C) 2002 The Pentagram Team
+ *  Copyright (C) 2002-2003 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ void initfolding()
 {
 	// if we're crusader, we don't have to do any initialisation since
 	// there's no known intrinsics
-	if(crusader) return;
+	//if(crusader) return;
 	
 	const char * const *i=convert->intrinsics();
 	

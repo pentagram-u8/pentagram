@@ -47,8 +47,10 @@ WARNINGS := @WARNINGS@
 
 # List of all sub modules
 # The order is important, be careful if you change it
-MODULES := convert convert/u8 convert/crusader misc filesys tools tools/disasm tools/fold tools/shapeconv kernel graphics audio usecode world world/actors gumps conf .
-# tools/fold tools/suc
+MODULES := convert convert/u8 convert/crusader misc filesys \
+	tools tools/disasm tools/fold tools/shapeconv \
+	kernel graphics audio usecode world world/actors gumps  \
+	conf .
 
 # look for include files in
 #   each of the modules

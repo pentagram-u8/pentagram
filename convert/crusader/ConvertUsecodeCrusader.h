@@ -405,8 +405,8 @@ const char * const ConvertUsecodeCrusader::_event_names[] = {
 	"anim()",						// 0x02
 	"setActivity()",				// 0x03
 	"cachein()",					// 0x04
-	"hit(ushort,short)",			// 0x05
-	"gotHit(ushort,short)",			// 0x06
+	"hit(uword, word)",				// 0x05
+	"gotHit(uword, word)",			// 0x06
 	"hatch()",						// 0x07
 	"schedule()",					// 0x08
 	"release()",					// 0x09
@@ -418,11 +418,11 @@ const char * const ConvertUsecodeCrusader::_event_names[] = {
 	"enterFastArea()",				// 0x0F
 
 	"leaveFastArea()",				// 0x10
-	"cast(ushort)",					// 0x11
+	"cast(uword)",					// 0x11
 	"justMoved()",					// 0x12
-	"AvatarStoleSomething(ushort)",	// 0x13
+	"AvatarStoleSomething(uword)",	// 0x13
 	"animGetHit()",					// 0x14
-	"guardianBark(int)",			// 0x15
+	"guardianBark(word)",			// 0x15
 	"func16",						// 0x16
 	"func17",						// 0x17
 	"func18",						// 0x18

@@ -28,7 +28,7 @@ extern int shapenum;
 void ConvertShape::Read(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len)
 {
 	// Just to be safe
-	int start_pos = source->getPos();
+	uint32 start_pos = source->getPos();
 
 	// Read the ident
 	if (csf->bytes_ident)
@@ -70,7 +70,7 @@ void ConvertShape::Read(IDataSource *source, const ConvertShapeFormat *csf, uint
 	std::memset (frames, 0, num_frames * sizeof(ConvertShapeFrame));
 
 	// Now read the frames
-	for (int f = 0; f < num_frames; f++) 
+	for(uint32 f = 0; f < num_frames; ++f) 
 	{
 #ifdef COMP_SHAPENUM
 		if (shapenum == COMP_SHAPENUM) pout << "Frame " << f << std::endl;
@@ -154,7 +154,7 @@ void ConvertShape::Read(IDataSource *source, const ConvertShapeFormat *csf, uint
 			// Line offsets
 			frame->line_offsets = new uint32 [frame->height];
 
-			for (int i = 0; i < frame->height; i++) 
+			for(sint32 i = 0; i < frame->height; ++i) 
 			{
 				source->seek(start_pos + frame_offset + csf->len_frameheader2 + i*csf->bytes_line_offset);
 				frame->line_offsets[i] = source->readX(csf->bytes_line_offset);
@@ -486,7 +486,7 @@ bool CheckShapeFormatUnsafe(IDataSource *source, const ConvertShapeFormat *csf, 
 void ConvertShape::Write(ODataSource *dest, const ConvertShapeFormat *csf, uint32 &write_len)
 {
 	// Just to be safe
-	int start_pos = dest->getPos();
+	uint32 start_pos = dest->getPos();
 
 	// Write the ident
 	if (csf->bytes_ident) dest->write(csf->ident, csf->bytes_ident);
@@ -506,7 +506,7 @@ void ConvertShape::Write(ODataSource *dest, const ConvertShapeFormat *csf, uint3
 	for (uint32 i = 0; i < num_frames*csf->len_frameheader; i++) dest->write1(0);
 
 	// Now write the frames
-	for (sint32 f = 0; f < num_frames; f++) 
+	for(uint32 f = 0; f < num_frames; f++) 
 	{
 		ConvertShapeFrame *frame = frames+f;
 
@@ -545,7 +545,7 @@ void ConvertShape::Write(ODataSource *dest, const ConvertShapeFormat *csf, uint3
 		// Line offsets
 		for (sint32 i = 0; i < frame->height; i++) 
 		{
-			int actual_offset = frame->line_offsets[i];
+			sint32 actual_offset = frame->line_offsets[i];
 			
 			// Unfudge the value and write it, if requiretd
 			if (!csf->line_offset_absolute)  

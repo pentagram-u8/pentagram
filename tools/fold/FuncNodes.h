@@ -1,7 +1,7 @@
 /*
  *	FuncNodes.h -
  *
- *  Copyright (C) 2002 The Pentagram Team
+ *  Copyright (C) 2002-2003 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,7 +29,8 @@ class FuncMutatorNode : public Node
 {
 	public:
 		FuncMutatorNode(const uint32 opcode, const uint32 offset, const uint32 newValue1)
-			: Node(opcode, offset, Type(Type::T_INVALID)), _initsize(newValue1), _linenum(newValue1)
+			: Node(opcode, offset, Type(Type::T_INVALID)),
+			_initsize(newValue1), _linenum(newValue1)
 			{
 				assert(acceptOp(opcode, 0x5A, 0x5B));
 				switch(opcode)
@@ -39,8 +40,10 @@ class FuncMutatorNode : public Node
 					default: assert(false);
 				}
 			};
-		FuncMutatorNode(const uint32 opcode, const uint32 offset, const uint32 newSymbolOffset, const std::string &newClassName)
-			: Node(opcode, offset, Type(Type::T_INVALID)), _symboloffset(newSymbolOffset), _classname(newClassName)
+		FuncMutatorNode(const uint32 opcode, const uint32 offset, const uint32 newSymbolOffset,
+			const std::string &newClassName)
+			: Node(opcode, offset, Type(Type::T_INVALID)),
+			_symboloffset(newSymbolOffset), _classname(newClassName)
 			{
 				assert(acceptOp(opcode, 0x5C));
 				mtype = SYMBOL_INFO;
@@ -48,10 +51,11 @@ class FuncMutatorNode : public Node
 		FuncMutatorNode(const uint32 opcode, const uint32 offset)
 			: Node(opcode, offset, Type(Type::T_INVALID))
 			{
-				assert(acceptOp(opcode, 0x50));
+				assert(acceptOp(opcode, 0x50, 0x7A));
 				switch(opcode)
 				{
 					case 0x50: mtype = RET; break;
+					case 0x7A: mtype = END; break;
 					default: assert(false);
 				}
 			};
@@ -60,10 +64,10 @@ class FuncMutatorNode : public Node
 		void print_unk(Console &o, const uint32 isize) const;
 		void print_asm(Console &o) const;
 		void print_bin(OBufferDataSource &o) const;
-		bool fold(Unit *unit, std::deque<Node *> &nodes);
+		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
 
 	protected:
-		enum mutatortype { RET, INIT, LINE_NUMBER, SYMBOL_INFO } mtype;
+		enum mutatortype { RET, INIT, LINE_NUMBER, SYMBOL_INFO, END } mtype;
 
 	private:
 		uint32 _initsize; // init
@@ -72,23 +76,24 @@ class FuncMutatorNode : public Node
 		std::string _classname; // symbol info
 };
 
-class FuncNode : public ColNode
+class DCFuncNode : public ColNode
 {
 	public:
-		FuncNode(const uint32 opcode, const uint32 offset)
-			: ColNode(opcode, offset, Type(Type::T_INVALID))
+		DCFuncNode()//const uint32 opcode, const uint32 offset)
+			: ColNode(0xFFFF, 0x0000, Type(Type::T_INVALID))
 			{
-				assert(acceptOp(opcode, 0x7A));
 			};
-		~FuncNode() {};
+		~DCFuncNode() {};
 
 		void print_unk(Console &o, const uint32 isize) const;
 		void print_asm(Console &o) const;
 		void print_bin(OBufferDataSource &o) const;
-		bool fold(Unit *unit, std::deque<Node *> &nodes);
-
+		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
+		void addEnd(Node *n) { assert(n!=0); funcnodes.push_back(n); };
+		
 	protected:
-	
+		std::deque<Node *> funcnodes;
+		
 	private:
 };
 

@@ -1,3 +1,13 @@
+2003-04-21  Darke  <darkepaw@users.sf.net>
+	* convert/*: Altered prototype usecode function names. Changed from a
+	  mishmash of short/ushort/whatever originally defined, corrected to
+	  byte/short/ushort/etc.
+	* filesys/IDataSource.h: Cleanup/warning.
+	* misc/pent_include.h: A couple of useful CANT_HAPPEN defines.
+	* tools/disasm/Disasm.cpp: Minor code cleanup.
+	* tools/fold/*: Code reorgnising to make it a bit more compatable with
+	  a compiler that will hopefully be finished sometime this century. *grin*
+
 2003-04-20  Darke  <darkepaw@users.sf.net>
 	* conf/Configuration.cpp, convert/ConvertShape.cpp, convert/ConvertShape.h,
 	  filesys/IDataSource.h, filesys/ODataSource.h, filesys/U8Save.cpp,

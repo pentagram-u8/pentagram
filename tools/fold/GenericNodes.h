@@ -1,7 +1,7 @@
 /*
  *	GenericNodes.h - The base node types from which all other nodes are derived.
  *
- *  Copyright (C) 2002 The Pentagram Team
+ *  Copyright (C) 2002-2003 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,22 +27,33 @@
 #include <vector>
 #include "Console.h"
 
-class Unit;
+class DCUnit;
 
 inline bool acceptOp(const uint32 opcode, const uint32 want1)
 	{ return ((opcode==want1) ? true : false); };
 inline bool acceptOp(const uint32 opcode, const uint32 want1, const uint32 want2)
-	{ return ((opcode==want1) ? true :
+	{ return (acceptOp(opcode, want1) ? true :
 		(opcode==want2) ? true : false); };
 inline bool acceptOp(const uint32 opcode, const uint32 want1, const uint32 want2, const uint32 want3)
-	{ return ((opcode==want1) ? true :
-		(opcode==want2) ? true :
+	{ return (acceptOp(opcode, want1, want2) ? true :
 			(opcode==want3) ? true : false); };
 inline bool acceptOp(const uint32 opcode, const uint32 want1, const uint32 want2, const uint32 want3, const uint32 want4)
-	{ return ((opcode==want1) ? true :
-		(opcode==want2) ? true :
-			(opcode==want3) ? true :
+	{ return (acceptOp(opcode, want1, want2, want3) ? true :
 				(opcode==want4) ? true : false); };
+
+inline bool acceptType(const Type &opcode, const Type::ttype want1, const Type::ttype want2)
+	{ return ((opcode==want1) ? true :
+		(opcode==want2) ? true : false); };
+
+/*inline bool acceptOp(const uint32 opcode, const uint32 want1)
+{ return acceptIt(opcode, want1); }
+inline bool acceptOp(const uint32 opcode, const uint32 want1, const uint32 want2)
+{ return acceptIt(opcode, want1, want2); }
+inline bool acceptOp(const uint32 opcode, const uint32 want1, const uint32 want2, const uint32 want3)
+{ return acceptIt(opcode, want1, want2, want3); }
+inline bool acceptOp(const uint32 opcode, const uint32 want1, const uint32 want2, const uint32 want3, const uint32 want4)
+{ return acceptIt(opcode, want1, want2, want3, want4); }*/
+
 
 inline void indent(Console &o, uint32 size)
 {
@@ -87,7 +98,7 @@ class Node
 			pushed, but there are exeptional opcodes that will include
 			themselves in the previous opcode, these will return false.
 		*/
-		virtual bool fold(Unit *unit, std::deque<Node *> &nodes)=0;
+		virtual bool fold(DCUnit *unit, std::deque<Node *> &nodes)=0;
 		
 		// outputs 'unk' formatted script
 		inline virtual void print_unk(Console &o, const uint32 isize) const=0;
@@ -249,8 +260,6 @@ class ColNode : public Node
 			: Node(newOpcode, newOffset, newRType), pnode(0) {};
 		virtual ~ColNode() {};
 
-		//DELvirtual bool fold(Unit *unit, std::deque<Node *> &nodes)=0;
-
 	protected:
 		void grab_p(std::deque<Node *> &nodes, sint32 tempsize)
 		{
@@ -272,9 +281,9 @@ class ColNode : public Node
 	Defnitions in Folder.cpp, for 'obvious' reasons.
  ****************************************************************************/
 
-class Unit;
+class DCUnit;
 
-bool print_assert(const Node *n, const Unit *u=0);
+bool print_assert(const Node *n, const DCUnit *u=0);
 
 #endif
 

@@ -1,7 +1,7 @@
 /*
  *	IfNode.cpp -
  *
- *  Copyright (C) 2002 The Pentagram Team
+ *  Copyright (C) 2002-2003 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -195,7 +195,7 @@ void IfNode::print_bin(OBufferDataSource &o) const
 	}
 }
 
-bool IfNode::fold(Unit *unit, std::deque<Node *> &nodes)
+bool IfNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 {
 	//print_assert(this, unit);
 	//con.Printf("\n>>> Nodes: %d <<<\n", nodes.size());
@@ -206,7 +206,8 @@ bool IfNode::fold(Unit *unit, std::deque<Node *> &nodes)
 		// "If I were an ifnode, lalala lalalaLAlaLAlala. I would be a very iffy ifnode..." *ahem*
 		case I_IF:
 		case I_ELSE_IF:
-			// if this is the first time we do this, the only thing we grab is the parameters of the if.
+			// if this is the first time we do this, the only thing we grab
+			// is the parameters of the if.
 			if(node==0)
 			{
 				assert(nodes.size()>0);
@@ -217,7 +218,7 @@ bool IfNode::fold(Unit *unit, std::deque<Node *> &nodes)
 				if(/*(itype!=I_ELSE_IF) &&*/ nodes.size()>0 && nodes.back()->opcode()==0x51)
 				{
 					// Bad Darke! Time to get out the whips and paddles...
-					IfNode *n=dynamic_cast<IfNode *>(nodes.back());
+					IfNode *n=static_cast<IfNode *>(nodes.back());
 					// a hack, let's see if it works...
 					//nodes.pop_back();
 					//unit->setJump(n);
@@ -246,7 +247,7 @@ bool IfNode::fold(Unit *unit, std::deque<Node *> &nodes)
 			// as a special case
 			else if(jmpnode==0 && ifnodes.size()>0 && ifnodes.back()->opcode()==0x52)
 			{
-				jmpnode=dynamic_cast<EndNode *>(ifnodes.back());
+				jmpnode=static_cast<EndNode *>(ifnodes.back());
 				ifnodes.pop_back();
 				switch(itype)
 				{
@@ -255,7 +256,25 @@ bool IfNode::fold(Unit *unit, std::deque<Node *> &nodes)
 					default: assert(print_assert(this, unit));
 				}
 			}
+			//else
+			//	assert(print_assert(this, unit));
 			break;
+			break;
+		case I_IF_ELSE:
+		case I_IF_ELSE_IF:
+		case I_ELSE_IF_ELSE:
+			break;
+		default: assert(print_assert(this, unit));
+	}
+	
+	return true;
+}
+
+bool IfNode::fold_else(DCUnit *unit, std::deque<Node *> &nodes)
+{
+	switch(itype)
+	{
+		// "If I were an ifnode, lalala lalalaLAlaLAlala. I would be a very iffy ifnode..." *ahem*
 		case I_ELSE:
 			if(ifnodes.size()==0)
 			{
@@ -266,7 +285,7 @@ bool IfNode::fold(Unit *unit, std::deque<Node *> &nodes)
 					if(nodes.back()->opcode()==0x51)
 						if(static_cast<IfNode *>(nodes.back())->TargetOffset()==TargetOffset())
 							finished=true;
-					
+
 					if(!finished)
 					{
 						ifnodes.push_front(nodes.back());
@@ -275,14 +294,9 @@ bool IfNode::fold(Unit *unit, std::deque<Node *> &nodes)
 				}
 			}
 			break;
-		case I_IF_ELSE:
-		case I_IF_ELSE_IF:
-		case I_ELSE_IF_ELSE:
-			break;
 		default: assert(print_assert(this, unit));
 	}
-	
-	return true;
+	return false; // can't happen
 }
 
 /****************************************************************************
@@ -330,7 +344,7 @@ void EndNode::print_bin(OBufferDataSource &o) const
 	}
 }
 
-bool EndNode::fold(Unit */*unit*/, std::deque<Node *> &nodes)
+bool EndNode::fold(DCUnit */*unit*/, std::deque<Node *> &nodes)
 {
 	fold_linenum(nodes);
 

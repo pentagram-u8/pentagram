@@ -1,7 +1,7 @@
 /*
  *	CallNodes.cpp -
  *
- *  Copyright (C) 2002 The Pentagram Team
+ *  Copyright (C) 2002-2003 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,29 +22,29 @@
 #include "Folder.h"
 // FIXME: Fix this
 /* 'cause we don't have dynamic binding. c++ sucks. */
-void AddSpToCallNode(CallPostfixNode *cpn, Node *node)
+void AddSpToDCCallNode(DCCallPostfixNode *cpn, Node *node)
 {
-	CallNode *cn = dynamic_cast<CallNode *>(node);
+	DCCallNode *cn = static_cast<DCCallNode *>(node);
 	cn->setAddSP(cpn);
 }
-void PushRetValToCallNode(CallPostfixNode *cpn, Node *node)
+void PushRetValToDCCallNode(DCCallPostfixNode *cpn, Node *node)
 {
-	CallNode *cn = dynamic_cast<CallNode *>(node);
+	DCCallNode *cn = static_cast<DCCallNode *>(node);
 	cn->setRetVal(cpn);
 }
 
 /****************************************************************************
-	CallPostfixNode
+	DCCallPostfixNode
  ****************************************************************************/
 
-bool CallPostfixNode::fold(Unit *unit, std::deque<Node *> &nodes)
+bool DCCallPostfixNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 {
 	if(acceptOp(nodes.back()->opcode(), 0x0F, 0x11))
 	{
 		switch(ptype)
 		{
-			case PUSH_RETVAL: PushRetValToCallNode(this, nodes.back()); break;
-			case ADDSP: AddSpToCallNode(this, nodes.back()); break;
+			case PUSH_RETVAL: PushRetValToDCCallNode(this, nodes.back()); break;
+			case ADDSP: AddSpToDCCallNode(this, nodes.back()); break;
 			default: assert(print_assert(this));
 		}
 		nodes.back()->fold(unit, nodes);
@@ -52,7 +52,7 @@ bool CallPostfixNode::fold(Unit *unit, std::deque<Node *> &nodes)
 	return false;
 }
 
-void CallPostfixNode::print_unk(Console &o, const uint32 /*isize*/) const
+void DCCallPostfixNode::print_unk(Console &o, const uint32 /*isize*/) const
 {
 	switch(ptype)
 	{
@@ -73,7 +73,7 @@ void CallPostfixNode::print_unk(Console &o, const uint32 /*isize*/) const
 	}
 }
 
-void CallPostfixNode::print_asm(Console &o) const
+void DCCallPostfixNode::print_asm(Console &o) const
 {
 	Node::print_asm(o);
 	switch(ptype)
@@ -95,7 +95,7 @@ void CallPostfixNode::print_asm(Console &o) const
 	}
 }
 
-void CallPostfixNode::print_bin(OBufferDataSource &o) const
+void DCCallPostfixNode::print_bin(OBufferDataSource &o) const
 {
 	switch(ptype)
 	{
@@ -118,10 +118,10 @@ void CallPostfixNode::print_bin(OBufferDataSource &o) const
 }
 
 /****************************************************************************
-	CallMutatorNode
+	DCCallMutatorNode
  ****************************************************************************/
 
-void CallMutatorNode::print_unk(Console &o, const uint32 isize) const
+void DCCallMutatorNode::print_unk(Console &o, const uint32 isize) const
 {
 	switch(mtype)
 	{
@@ -147,7 +147,7 @@ void CallMutatorNode::print_unk(Console &o, const uint32 isize) const
 	}
 }
 
-void CallMutatorNode::print_asm(Console &o) const
+void DCCallMutatorNode::print_asm(Console &o) const
 {
 	switch(mtype)
 	{
@@ -176,7 +176,7 @@ void CallMutatorNode::print_asm(Console &o) const
 	}
 }
 
-void CallMutatorNode::print_bin(OBufferDataSource &o) const
+void DCCallMutatorNode::print_bin(OBufferDataSource &o) const
 {
 	switch(mtype)
 	{
@@ -202,7 +202,7 @@ void CallMutatorNode::print_bin(OBufferDataSource &o) const
 	}
 }
 
-bool CallMutatorNode::fold(Unit */*unit*/, std::deque<Node *> &nodes)
+bool DCCallMutatorNode::fold(DCUnit */*unit*/, std::deque<Node *> &nodes)
 {
 	switch(mtype)
 	{
@@ -226,11 +226,11 @@ bool CallMutatorNode::fold(Unit */*unit*/, std::deque<Node *> &nodes)
 };
 
 /****************************************************************************
-	CallNode
+	DCCallNode
 	Handles 'call', 'calli' opcodes.
  ****************************************************************************/
 
-bool CallNode::fold(Unit *unit, std::deque<Node *> &nodes)
+bool DCCallNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 {
 	// register ourselves so we're printed as an 'extern', even if we really aren't.
 	switch(ctype)
@@ -276,7 +276,7 @@ bool CallNode::fold(Unit *unit, std::deque<Node *> &nodes)
 	return false;
 }
 
-void CallNode::print_extern_unk(Console &o, const uint32 /*isize*/) const
+void DCCallNode::print_extern_unk(Console &o, const uint32 /*isize*/) const
 {
 	switch(ctype)
 	{
@@ -314,7 +314,7 @@ void CallNode::print_extern_unk(Console &o, const uint32 /*isize*/) const
 	}
 }
 
-void CallNode::print_unk(Console &o, const uint32 isize) const
+void DCCallNode::print_unk(Console &o, const uint32 isize) const
 {
 	print_linenum_unk(o, isize);
 	switch(ctype)
@@ -357,7 +357,7 @@ void CallNode::print_unk(Console &o, const uint32 isize) const
 	}
 }
 
-void CallNode::print_asm(Console &o) const
+void DCCallNode::print_asm(Console &o) const
 {
 	print_linenum_asm(o);
 	switch(ctype)
@@ -408,7 +408,7 @@ void CallNode::print_asm(Console &o) const
 	}
 }
 
-void CallNode::print_bin(OBufferDataSource &o) const
+void DCCallNode::print_bin(OBufferDataSource &o) const
 {
 	print_linenum_bin(o);
 	switch(ctype)
@@ -456,7 +456,7 @@ void CallNode::print_bin(OBufferDataSource &o) const
 
 ///////////////////////////////////////////////////////
 
-/* Takes an opcode number and returns true if it's potential CallNode */
+/* Takes an opcode number and returns true if it's potential DCCallNode */
 /*bool is_call(uint32 op)
 {
 	switch(op)
@@ -470,14 +470,14 @@ void CallNode::print_bin(OBufferDataSource &o) const
 	return false; // can't happen
 }
 
-class CallNode : public ColNode
+class DCCallNode : public ColNode
 {
 	public:
-		CallNode() : ColNode("Call"), sp_size(0),
+		DCCallNode() : ColNode("Call"), sp_size(0),
 			num_bytes(0), intrinsic_num(0),
 			target_class(0), target_func(0),
 			param_size(0), this_size(0) {};
-		~CallNode() {};
+		~DCCallNode() {};
 
 		void print() const;
 		void fold(const uint32 pos);
@@ -504,7 +504,7 @@ class CallNode : public ColNode
 		uint32 this_size;
 };
 
-void CallNode::fold(const uint32 end)
+void DCCallNode::fold(const uint32 end)
 {
 	PTRACE(("(Call)\t\tPOS: %4d\tOP: %04X offset: %04X\n", end, foldops[end].op(), foldops[end].offset));
 	assert(foldops[end].deleted==false);
@@ -540,7 +540,7 @@ void CallNode::fold(const uint32 end)
 	assert(tempsize==0);
 }
 
-void CallNode::print() const
+void DCCallNode::print() const
 {
 	printf("(%s) ", rtype.name());
 
@@ -570,7 +570,7 @@ void CallNode::print() const
 	printf(")");
 }
 
-void CallNode::get_return(const uint32 end)
+void DCCallNode::get_return(const uint32 end)
 {
 	// then do the same thing for the three return types.
 	for(unsigned int ret=end+1; ret<foldops.size(); ++ret)

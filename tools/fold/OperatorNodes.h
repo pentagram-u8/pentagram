@@ -1,7 +1,7 @@
 /*
  *	OperatorNodes.h -
  *
- *  Copyright (C) 2002 The Pentagram Team
+ *  Copyright (C) 2002-2003 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ class UniOperatorNode : public UniNode
 				assert(acceptOp(opcode, 0x30));
 				switch(opcode)
 				{
-					case 0x30: mtype = NOT; rtype(Type::T_WORD); break;
+					case 0x30: otype = NOT; rtype(Type::T_WORD); break;
 					default: assert(false);
 				}
 			};
@@ -41,10 +41,10 @@ class UniOperatorNode : public UniNode
 		void print_unk(Console &o, const uint32 isize) const;
 		void print_asm(Console &o) const;
 		void print_bin(OBufferDataSource &o) const;
-		bool fold(Unit *unit, std::deque<Node *> &nodes);
+		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
 
 	protected:
-		enum mathtype { NOT/*, BITNOT*/ } mtype;
+		enum optype { NOT/*, BITNOT*/ } otype;
 
 	private:
 };
@@ -58,9 +58,9 @@ class BinOperatorNode : public BinNode
 				assert(acceptOp(opcode, 0x24, 0x2C, 0x34));
 				switch(opcode)
 				{
-					case 0x24: mtype = M_CMP; rtype(Type::T_WORD); break;
-					case 0x2C: mtype = M_GT;  rtype(Type::T_WORD); break;
-					case 0x34: mtype = M_OR;  rtype(Type::T_WORD); break;
+					case 0x24: otype = M_CMP; rtype(Type::T_WORD); break;
+					case 0x2C: otype = M_GT;  rtype(Type::T_WORD); break;
+					case 0x34: otype = M_OR;  rtype(Type::T_WORD); break;
 					default: assert(false);
 				}
 			};
@@ -69,10 +69,10 @@ class BinOperatorNode : public BinNode
 		void print_unk(Console &o, const uint32 isize) const;
 		void print_asm(Console &o) const;
 		void print_bin(OBufferDataSource &o) const;
-		bool fold(Unit *unit, std::deque<Node *> &nodes);
+		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
 
 	protected:
-		enum mathtype { M_CMP, M_OR, M_GT } mtype;
+		enum optype { M_CMP, M_OR, M_GT } otype;
 
 	private:
 };

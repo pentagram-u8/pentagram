@@ -1,7 +1,7 @@
 /*
  *	CallNodes.h -
  *
- *  Copyright (C) 2002 The Pentagram Team
+ *  Copyright (C) 2002-2003 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,11 +23,11 @@
 
 #include "GenericNodes.h"
 
-class CallPostfixNode : public Node
+class DCCallPostfixNode : public Node
 {
 	public:
-		CallPostfixNode() : Node() {};
-		CallPostfixNode(const uint32 opcode, const uint32 offset, const uint32 newSP)
+		DCCallPostfixNode() : Node() {};
+		DCCallPostfixNode(const uint32 opcode, const uint32 offset, const uint32 newSP)
 			: Node(opcode, offset, Type(Type::T_INVALID)), sp(newSP)
 			{
 				assert(acceptOp(opcode, 0x6E));
@@ -37,7 +37,7 @@ class CallPostfixNode : public Node
 					default: assert(false);
 				}
 			};
-		CallPostfixNode(const uint32 opcode, const uint32 offset)
+		DCCallPostfixNode(const uint32 opcode, const uint32 offset)
 			: Node(opcode, offset, Type(Type::T_INVALID)), sp(0)
 			{
 				assert(acceptOp(opcode, 0x5D, 0x5E));
@@ -48,14 +48,14 @@ class CallPostfixNode : public Node
 					default: assert(false);
 				}
 			};
-		~CallPostfixNode() {};
+		~DCCallPostfixNode() {};
 
 		void print() const {};
 		void print_unk(Console &o, const uint32 isize) const;
 		void print_asm(Console &o) const;
 		void print_bin(OBufferDataSource &o) const;
 
-		bool fold(Unit *unit, std::deque<Node *> &nodes);
+		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
 
 		sint32 size() const { return static_cast<sint8>(sp); };
 
@@ -66,10 +66,10 @@ class CallPostfixNode : public Node
 		uint32 sp;
 };
 
-class CallMutatorNode : public BinNode
+class DCCallMutatorNode : public BinNode
 {
 	public:
-		CallMutatorNode(const uint32 opcode, const uint32 offset, const uint32 newNumBytes)
+		DCCallMutatorNode(const uint32 opcode, const uint32 offset, const uint32 newNumBytes)
 			: BinNode(opcode, offset, Type(Type::T_INVALID)), numBytes(newNumBytes)
 			{
 				assert(acceptOp(opcode, 0x4C));
@@ -80,7 +80,7 @@ class CallMutatorNode : public BinNode
 					default: assert(false);
 				}
 			};
-		CallMutatorNode(const uint32 opcode, const uint32 offset)
+		DCCallMutatorNode(const uint32 opcode, const uint32 offset)
 			: BinNode(opcode, offset, Type(Type::T_INVALID))
 			{
 				assert(acceptOp(opcode, 0x77, 0x78));
@@ -91,13 +91,13 @@ class CallMutatorNode : public BinNode
 					default: assert(false);
 				}
 			};
-		~CallMutatorNode() {};
+		~DCCallMutatorNode() {};
 
 		void print_unk(Console &o, const uint32 isize) const;
 		void print_asm(Console &o) const;
 		void print_bin(OBufferDataSource &o) const;
 
-		bool fold(Unit *unit, std::deque<Node *> &nodes);
+		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
 
 	protected:
 		enum mutatortype { PUSH_INDIRECT, SET_INFO, PROCESS_EXCLUDE } mtype;
@@ -106,11 +106,11 @@ class CallMutatorNode : public BinNode
 		uint32 numBytes;
 };
 
-class CallNode : public ColNode
+class DCCallNode : public ColNode
 {
 	public:
-		CallNode() : ColNode() {};
-		CallNode(const uint32 opcode, const uint32 offset, const uint32 newValue1, const uint32 newValue2)
+		DCCallNode() : ColNode() {};
+		DCCallNode(const uint32 opcode, const uint32 offset, const uint32 newValue1, const uint32 newValue2)
 			: ColNode(opcode, offset, Type(Type::T_VOID)), addSP(0), retVal(0)
 			{
 				assert(acceptOp(opcode, 0x0F, 0x11));
@@ -129,7 +129,7 @@ class CallNode : public ColNode
 					default: assert(false);
 				}
 			};
-		~CallNode() {};
+		~DCCallNode() {};
 
 		void print() const {};
 		void print_extern_unk(Console &o, const uint32 isize) const;
@@ -137,11 +137,11 @@ class CallNode : public ColNode
 		void print_asm(Console &o) const;
 		void print_bin(OBufferDataSource &o) const;
 
-		bool fold(Unit *unit, std::deque<Node *> &nodes);
+		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
 
 		// 'special' functions
-		void setAddSP(CallPostfixNode *newAddSP) { addSP = newAddSP; };
-		void setRetVal(CallPostfixNode *newRetVal) { retVal = newRetVal; };
+		void setAddSP(DCCallPostfixNode *newAddSP) { addSP = newAddSP; };
+		void setRetVal(DCCallPostfixNode *newRetVal) { retVal = newRetVal; };
 
 	protected:
 		enum calltype { CALLI, CALL /*, SPAWN*/ } ctype;
@@ -153,8 +153,8 @@ class CallNode : public ColNode
 		uint32 spsize; // calli
 		uint32 intrinsic; // calli
 		
-		CallPostfixNode *addSP;
-		CallPostfixNode *retVal;
+		DCCallPostfixNode *addSP;
+		DCCallPostfixNode *retVal;
 };
 
 
