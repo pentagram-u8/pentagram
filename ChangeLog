@@ -1,4 +1,7 @@
 2003-08-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/AvatarMoverProcess.*: move the avatar.
+
+2003-08-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/CurrentMap.cpp: do a (time) range-check in sweepTest
 	* world/actors/Actor.cpp: properly interpret sweepTest in tryAnim
 

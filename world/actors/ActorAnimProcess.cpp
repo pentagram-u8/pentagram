@@ -218,7 +218,12 @@ bool ActorAnimProcess::run(const uint32 framenum)
 		a->clearFlag(Item::FLG_FLIPPED);
 	}
 
-	if (dist != 0x4000) {
+	if (dist < 0x4000) {
+#ifdef WATCHACTOR
+			if (item_num == watchactor)
+				perr << "Animation [" << GUIApp::get_instance()->getFrameNum()
+					 << "] blocked (dist = " << dist << ")" << std::endl;
+#endif
 		// didn't reach destination, so we need to abort
 		// one exception: if walking, we can step up 8
 		// TODO: walking up stairs
@@ -237,6 +242,12 @@ bool ActorAnimProcess::run(const uint32 framenum)
 
 		// FIXME: using a bit of a hack for now:
 		if (a->canExistAt(x,y,z-8)) {
+
+#ifdef WATCHACTOR
+			if (item_num == watchactor)
+				perr << "Animation [" << GUIApp::get_instance()->getFrameNum()
+					 << "] falling" << std::endl;
+#endif
 			if (a->canExistAt(x,y,z-16)) {
 				// too far...
 				aborted = true;

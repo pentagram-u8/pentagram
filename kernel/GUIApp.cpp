@@ -107,7 +107,7 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	  runGraphicSysInit(false), runSDLInit(false),
 	  frameSkip(false), frameLimit(true), interpolate(true),
 	  animationRate(100), avatarInStasis(false), paintEditorItems(false),
-	  painting(false), mouseSet(false), dragging(DRAG_NOT), timeOffset(0),
+	  painting(false), dragging(DRAG_NOT), timeOffset(0),
 	  midi_driver(0), midi_volume(255)
 {
 	application = this;
@@ -177,6 +177,7 @@ void GUIApp::startup()
 	GraphicSysInit();
 
 	SDL_ShowCursor(SDL_DISABLE);
+	SDL_GetMouseState(&mouseX, &mouseY);
 
 	U8Playground();
 
@@ -654,8 +655,6 @@ int GUIApp::getMouseFrame()
 	switch (cursor) {
 	case MOUSE_NORMAL:
 	{
-		if (!mouseSet) return -1;
-
 		bool combat = false; //!!! fixme
 
 		// Calculate frame based on direction
@@ -1063,7 +1062,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 	{
 		int mx = event.button.x;
 		int my = event.button.y;
-		mouseX = mx; mouseY = my; mouseSet = true;
+		mouseX = mx; mouseY = my;
 		if (dragging == DRAG_NOT && !avatarInStasis) {
 			if (mouseState[BUTTON_LEFT] & MBS_DOWN) {
 				int startx = mouseDownX[BUTTON_LEFT];

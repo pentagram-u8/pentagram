@@ -27,12 +27,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IDataSource.h"
 #include "ODataSource.h"
 
+#include "SDL.h"
+
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(AvatarMoverProcess,Process);
 
 AvatarMoverProcess::AvatarMoverProcess() : Process()
 {
 	lastframe = 0;
+	mouseState[0] = MBS_HANDLED; mouseState[1] = MBS_HANDLED;
 }
 
 
@@ -54,8 +57,10 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 	const unsigned int jumpupanim = 3;
 	const unsigned int runningjumpanim = 10;
 
+	GUIApp* guiapp = GUIApp::get_instance();
+
 	// in stasis, so don't move
-	if (GUIApp::get_instance()->isAvatarInStasis()) {
+	if (guiapp->isAvatarInStasis()) {
 		return false;
 	}
 
@@ -76,26 +81,71 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 		return false;
 	}
 
-#if 0
-	// NOTE: this is some testing code that 'polls' the mouse directly,
-	// which is not how things should be, IMO (-wjp)
+	int mx, my;
+	guiapp->getMouseCoords(mx, my);
+	unsigned int mouselength = guiapp->getMouseLength(mx,my);
 
-	// Now check movement input
-	GUIApp* guiapp = GUIApp::get_instance();
-	bool leftdown = guiapp->isMouseDown(GUIApp::BUTTON_LEFT);
-	bool rightdown = guiapp->isMouseDown(GUIApp::BUTTON_RIGHT);
-	int mouselength = guiapp->getMouseLength();
-	int mousedir = (guiapp->getMouseDirection()+7)%8; // adjust to world dir.
+	// adjust to world direction
+	unsigned int mousedir = (guiapp->getMouseDirection(mx,my)+7)%8;
 
-	//!! TODO: combat
-	//!! TODO: button-press delays
+	// check mouse state to see what needs to be done
 
-	if (rightdown && !leftdown) { // normal movement
-		//!! CHECKME: currently, first turn in the right direction
+	if (!(mouseState[1] & MBS_HANDLED) &&
+		SDL_GetTicks() - lastMouseDown[1] > 200) //!! constant
+	{
+		mouseState[1] |= MBS_HANDLED;
+	}
+
+	if (mouseState[1] & MBS_DOWN || !(mouseState[1] & MBS_HANDLED))
+	{
+		// right mouse button down, but maybe not long enough to really
+		// start walking. Check if we need to turn.
+		// CHECKME: currently, first turn in the right direction
 		if (mousedir != direction) {
+			pout << "AvatarMover: turn" << std::endl;
 			waitFor(avatar->doAnim(standanim, mousedir));
 			return false;
 		}
+
+	}
+
+	if (mouseState[0] & MBS_DOWN || !(mouseState[0] & MBS_HANDLED))
+	{
+		mouseState[0] |= MBS_HANDLED;
+		mouseState[1] |= MBS_HANDLED;
+		// We got a left mouse down.
+		// Note that this automatically means right was down at the time too.
+
+		// jump.
+
+		// check if we need to do a running jump
+		if (lastanim == runanim || lastanim == runningjumpanim) {
+			pout << "AvatarMover: running jump" << std::endl;
+			waitFor(avatar->doAnim(runningjumpanim, direction));
+			return false;
+		}
+
+		if (mouselength > 0) {
+			pout << "AvatarMover: jump" << std::endl;
+			waitFor(avatar->doAnim(jumpanim, direction));
+			return false;
+		}
+
+		// jumping straight up.
+		// check if there's something we can climb up onto here
+
+		waitFor(avatar->doAnim(jumpupanim, direction));
+		return false;
+
+		// TODO: post-patch targeted jumping
+		// TODO: airwalk
+		// TODO: climbing up onto things
+		// CHECKME: check what needs to happen when keeping left pressed
+	}
+
+	if (mouseState[1] & MBS_DOWN && mouseState[1] & MBS_HANDLED)
+	{
+		// right mouse button is down long enough to act on it
 
 		// if facing right direction, walk
 		//!! TODO: check if you can actually take this step
@@ -106,27 +156,14 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 		else if (mouselength == 2)
 			anim = runanim;
 
+		pout << "AvatarMover: walk" << std::endl;
+
 		waitFor(avatar->doAnim(anim, mousedir));
 		return false;
-	} else if (rightdown && leftdown) { // jumping
-		//!! TODO: fix this... (direction, type of jump, climbing...)
-
-		if (lastanim == runanim || lastanim == runningjumpanim) {
-			waitFor(avatar->doAnim(runningjumpanim, direction));
-			return false;
-		}
-
-		if (mouselength > 0) {
-			waitFor(avatar->doAnim(jumpanim, direction));
-			return false;
-		}
-
-		waitFor(avatar->doAnim(jumpupanim, direction));
-		return false;
 	}
-#endif
 
 	// not doing anything in particular? stand
+	// TODO: make sure falling works properly.
 	if (lastanim != standanim) {
 		waitFor(avatar->doAnim(standanim, direction));
 		return false;
@@ -135,21 +172,39 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 	return false;
 }
 
-void AvatarMoverProcess::OnMouseDown(int button)
+void AvatarMoverProcess::OnMouseDown(int button, int mx, int my)
 {
 	//TODO: mark button as down (and also store time, since we want
 	// clicks to 'expire' if they're not handled in time)
 
-	if (button == GUIApp::BUTTON_LEFT) perr << "AMP: left down" << std::endl;
-	if (button == GUIApp::BUTTON_RIGHT) perr << "AMP: right down" << std::endl;
+	int bid = 0;
 
+	if (button == GUIApp::BUTTON_LEFT) {
+		bid = 0;
+	} else if (button == GUIApp::BUTTON_RIGHT) {
+		bid = 1;
+	} else {
+		CANT_HAPPEN_MSG("invalid MouseDown passed to AvatarMoverProcess");
+	}
+
+	lastMouseDown[bid] = SDL_GetTicks();
+	mouseState[bid] |= MBS_DOWN;
+	mouseState[bid] &= ~MBS_HANDLED;
 }
 
 void AvatarMoverProcess::OnMouseUp(int button)
 {
-	if (button == GUIApp::BUTTON_LEFT) perr << "AMP: left up" << std::endl;
-	if (button == GUIApp::BUTTON_RIGHT) perr << "AMP: right up" << std::endl;
+	int bid = 0;
 
+	if (button == GUIApp::BUTTON_LEFT) {
+		bid = 0;
+	} else if (button == GUIApp::BUTTON_RIGHT) {
+		bid = 1;
+	} else {
+		CANT_HAPPEN_MSG("invalid MouseUp passed to AvatarMoverProcess");
+	}
+
+	mouseState[bid] &= ~MBS_DOWN;
 }
 
 

@@ -245,16 +245,19 @@ bool GameMapGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 
 Gump* GameMapGump::OnMouseDown(int button, int mx, int my)
 {
+	int sx = mx, sy = my;
+	GumpToScreenSpace(sx, sy);
+
 	AvatarMoverProcess* amp = GUIApp::get_instance()->getAvatarMoverProcess();
 	if (button == GUIApp::BUTTON_RIGHT) {
-		amp->OnMouseDown(button);
+		amp->OnMouseDown(button, sx, sy);
 	}
 
 	if (button == GUIApp::BUTTON_LEFT &&
 		GUIApp::get_instance()->isMouseDown(GUIApp::BUTTON_RIGHT))
 	{
 		// if right button is down, AvatarMoverProcess wants left clicks too
-		amp->OnMouseDown(button);
+		amp->OnMouseDown(button, sx, sy);
 		leftDownToAvatarMover = true;
 	} else if (button == GUIApp::BUTTON_LEFT) {
 		leftDownToAvatarMover = false;

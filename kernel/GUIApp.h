@@ -100,6 +100,9 @@ public:
 	//! get mouse cursor direction. 0 = up, 1 = up-right, 2 = right, etc...
 	int getMouseDirection(int mx, int my);
 
+	//! get current mouse cursor location
+	void getMouseCoords(int& mx, int& my) { mx = mouseX; my = mouseY; }
+
 	enum MouseButton {
 		BUTTON_LEFT = 1,
 		BUTTON_MIDDLE = 2,
@@ -182,7 +185,6 @@ private:
 	bool painting;			//!< Set true when painting
 
 	int mouseX, mouseY;
-	bool mouseSet;			//!< mouse coordinates initialized?
 
 	//! get the current mouse frame
 	int getMouseFrame();

@@ -32,7 +32,7 @@ public:
 
 	virtual bool run(const uint32 framenum);
 
-	void OnMouseDown(int button);
+	void OnMouseDown(int button, int mx, int my);
 	void OnMouseUp(int button);
 
 	bool loadData(IDataSource* ids);
@@ -40,6 +40,13 @@ protected:
 	virtual void saveData(ODataSource* ods);
 
 	uint32 lastframe;
+
+	uint32 lastMouseDown[2];
+	int mouseState[2];
+	enum MouseButtonState {
+		MBS_DOWN = 0x1,
+		MBS_HANDLED = 0x2
+	};
 };
 
 
