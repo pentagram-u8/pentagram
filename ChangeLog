@@ -1,3 +1,7 @@
+2003-03-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* various: minor bugfixes
+	* Gump.h: add OnTextInput event
+
 2003-03-21  Ryan Nunn <colourles@users.sourceforge.net>
 	* kernel/Application.cpp : Added some config related output
 	* world/CurrentMap.cpp, world/World.cpp : msvcisms

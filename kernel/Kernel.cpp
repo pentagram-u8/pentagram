@@ -120,17 +120,17 @@ Process* Kernel::getProcess(uint16 pid)
 
 uint16 Kernel::getNewPID()
 {
-	static uint16 count = 1; // 0 is reserved, higher than 0x7FFF too
+	static uint16 count = 0; // 0 is reserved, higher than 0x7FFF too
 
 	// I'm not pretty sure this isn't the most efficient way to do this :-)
 
 	// find unused PID
-	while (getProcess(count)) {
+	do {
 		count++;
 		if (count > 0x7FFE) count = 1;
-	}
+	} while (getProcess(count));
 
-	return count++;
+	return count;
 }
 
 void Kernel::kernelStats()

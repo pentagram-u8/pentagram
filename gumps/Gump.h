@@ -115,6 +115,8 @@ public:
 	virtual bool		OnKeyDown(int key) { return false; }
 	virtual bool		OnKeyUp(int key) { return false; }
 
+	virtual bool		OnTextInput(int unicode) { return false; }
+
 	// This is for detecting focus changes for keyboard input. Gets called true
 	// when the GumpList wants to make this the focus gump. It is called false 
 	// when focus is being taken away. If returning false on focus gain, the 

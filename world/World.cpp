@@ -281,14 +281,14 @@ uint16 World::assignObjId(Object* obj)
 	//! infinite loop when too many objects
 
 	// find unassigned element
-	while (objects[lastobjid] != 0) {
+	do {
 		lastobjid++;
 		if (lastobjid > 0xFFFE) lastobjid = 256;
-	}
+	} while (objects[lastobjid] != 0);
 
 	objects[lastobjid] = obj;
 
-	return lastobjid++;
+	return lastobjid;
 }
 
 void World::clearObjId(uint16 objid)

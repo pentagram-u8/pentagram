@@ -1561,21 +1561,21 @@ bool UCMachine::execProcess(UCProcess* p)
 
 uint16 UCMachine::assignString(const char* str)
 {
-	static uint16 count = 1; // 0 is reserved
+	static uint16 count = 0; // 0 is reserved
 
 	// I'm not exactly sure if this is the most efficient way to do this
 
 	//! infinite loop when too many strings
 
 	// find unassigned element
-	while (stringHeap.find(count) != stringHeap.end()) {
+	do {
 		count++;
 		if (count > 0xFFFE) count = 1;
-	}
+	} while (stringHeap.find(count) != stringHeap.end());
 
 	stringHeap[count] = str;
 
-	return count++;
+	return count;
 }
 
 uint16 UCMachine::duplicateString(uint16 str)
@@ -1586,21 +1586,21 @@ uint16 UCMachine::duplicateString(uint16 str)
 
 uint16 UCMachine::assignList(UCList* l)
 {
-	static uint16 count = 1; // 0 is reserved
+	static uint16 count = 0; // 0 is reserved
 
 	// I'm not exactly sure if this is the most efficient way to do this
 
 	//! infinite loop when too many lists
 
 	// find unassigned element
-	while (listHeap.find(count) != listHeap.end()) {
+	do {
 		count++;
 		if (count > 0xFFFE) count = 1;
-	}
+	} while (listHeap.find(count) != listHeap.end());
 
 	listHeap[count] = l;
 
-	return count++;
+	return count;
 }
 
 void UCMachine::freeString(uint16 s)
