@@ -29,5 +29,9 @@ const uint8* UsecodeFlex::get_class(uint32 classid)
 uint32 UsecodeFlex::get_class_size(uint32 classid)
 {
 	// 0x0C = header size. Clean up.
-	return get_size(classid+2) - 0x0C;
+	uint32 size = get_size(classid+2);
+	if (size >= 0x0C)
+		return size - 0x0C;
+	else
+		return 0;
 }

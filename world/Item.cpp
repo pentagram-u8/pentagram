@@ -71,11 +71,14 @@ uint32 Item::callUsecodeEvent(uint32 event)
 {
 	uint32	class_id = shape;
 
-	// Ok, for Permanent npcs we do it differnetly. they use NPC num + 1024
+	// Ok, for Permanent npcs we do it differently. they use NPC num + 1024
 	if (npcnum && !(flags & FLG_DISPOSABLE)) class_id = npcnum + 1024;
 
 	Usecode* u = GameData::get_instance()->getMainUsecode();
-	return callUsecode(class_id, u->get_class_event(class_id, event), u);
+	uint32 offset = u->get_class_event(class_id, event);
+	if (!offset) return 0;
+
+	return callUsecode(class_id, offset, u);
 }
 
 

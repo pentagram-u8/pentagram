@@ -1,3 +1,6 @@
+2003-05-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/*: some error checking
+
 2003-05-10  Ryan Nunn <colourles@users.sourceforge.net>
 	* world/World.cpp : Fixing assignObjId();
 	* world/Item.cpp : A hack for handling NPC usecode funcs

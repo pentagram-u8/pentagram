@@ -25,6 +25,8 @@ uint32 Usecode::get_class_event(uint32 classid, uint32 eventid)
 	// constants; clean up
 	assert(eventid < 32);
 
+	if (get_class_size(classid) == 0) return 0;
+
 	const uint8* data = get_class(classid);
 
 	// ...
