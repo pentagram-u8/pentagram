@@ -20,9 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "FontShapeFlex.h"
 #include "Font.h"
 
-Font* FontShapeFlex::getFont(uint32 fontnum)
+Pentagram::Font* FontShapeFlex::getFont(uint32 fontnum)
 {
-	return p_dynamic_cast<Font*>(getShape(fontnum));
+	return p_dynamic_cast<Pentagram::Font*>(getShape(fontnum));
 }
 
 
@@ -45,7 +45,7 @@ void FontShapeFlex::cache(uint32 shapenum)
 		return;
 	}
 
-	Shape* shape = new Font(data, shpsize, format);
+	Shape* shape = new Pentagram::Font(data, shpsize, format);
 	if (palette) shape->setPalette(palette);
 
 	shapes[shapenum] = shape;

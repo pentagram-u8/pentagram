@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "ShapeFlex.h"
 
-class Font;
+namespace Pentagram { class Font; }
 
 class FontShapeFlex : protected ShapeFlex
 {
@@ -31,7 +31,7 @@ public:
 		ShapeFlex(ds, pal, format) { }
 	virtual ~FontShapeFlex() { }
 	
-	Font* getFont(uint32 fontnum);
+	Pentagram::Font* getFont(uint32 fontnum);
 
 	virtual void cache(uint32 fontnum);
 };

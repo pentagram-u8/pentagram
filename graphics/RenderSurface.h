@@ -25,11 +25,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 struct Texture;
 class Shape;
-class Font;
 namespace Pentagram
 {
 	struct Palette;
 	struct Rect;
+	class Font;
 }
 
 //
@@ -170,12 +170,15 @@ public:
 	//
 	
 	// Draw from a Font
-	virtual void PrintText(Font *, const char *text, int x, int y) = 0;
+	virtual void PrintText(Pentagram::Font *, const char *text,
+						   int x, int y) = 0;
 
 	// Draw a character from a Font
-	virtual void PrintChar(Font *, char character, int x, int y) = 0;
+	virtual void PrintChar(Pentagram::Font *, char character,
+						   int x, int y) = 0;
 
-	// Draw fixed width from a Texture buffer (16x16 characters fixed width and height)
+	// Draw fixed width from a Texture buffer
+	// (16x16 characters fixed width and height)
 	virtual void PrintTextFixed(Texture *, const char *text, int x, int y) = 0;
 
 	// Draw a fixed width character from a Texture buffer

@@ -1,3 +1,6 @@
+2003-12-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/Font.*: moved Font class into namespace Pentagram
+
 2003-12-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GUIApp.cpp: adjusted 'Hanoi' coordinates to a free spot
 	* filesys/SavegameWriter.*: changed return types from void to bool

@@ -99,10 +99,10 @@ public:
 	//
 	
 	// Draw from a Font
-	virtual void PrintText(Font *, const char *text, int x, int y);
+	virtual void PrintText(Pentagram::Font *, const char *text, int x, int y);
 
 	// Draw a character from a Font
-	virtual void PrintChar(Font *, char character, int x, int y);
+	virtual void PrintChar(Pentagram::Font *, char character, int x, int y);
 
 	// Draw fixed width from a Texture buffer (16x16 characters fixed width and height)
 	virtual void PrintTextFixed(Texture *, const char *text, int x, int y);

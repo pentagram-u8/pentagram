@@ -228,12 +228,12 @@ template<class uintX> void SoftRenderSurface<uintX>::Blit(Texture *tex, sint32 s
 
 // Draw a character from a Font
 
-template<class uintX> void SoftRenderSurface<uintX>::PrintChar(Font * f, char character, int x, int y)
+template<class uintX> void SoftRenderSurface<uintX>::PrintChar(Pentagram::Font * f, char character, int x, int y)
 {
 	Paint(f, static_cast<unsigned char>(character), x, y);
 }
 
-template<class uintX> void SoftRenderSurface<uintX>::PrintText(Font * f, const char* s, int x, int y)
+template<class uintX> void SoftRenderSurface<uintX>::PrintText(Pentagram::Font * f, const char* s, int x, int y)
 {
 	//!!! TODO: constants...
 	int x_start = x;

@@ -45,7 +45,8 @@ void SimpleTextWidget::InitGump()
 {
 	Gump::InitGump();
 
-	Font *font = GameData::get_instance()->getFonts()->getFont(fontnum);
+	Pentagram::Font *font = GameData::get_instance()->
+		getFonts()->getFont(fontnum);
 
 	// Y offset is always baseline
 	dims.y = -font->getBaseline();
@@ -69,7 +70,8 @@ void SimpleTextWidget::PaintThis(RenderSurface*surf, sint32 lerp_factor)
 {
 	Gump::PaintThis(surf,lerp_factor);
 
-	Font *font = GameData::get_instance()->getFonts()->getFont(fontnum);
+	Pentagram::Font *font = GameData::get_instance()->
+		getFonts()->getFont(fontnum);
 	surf->PrintText(font, text.c_str(), 0, 0);
 }
 

@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Font.h"
 #include "ShapeFrame.h"
 
+namespace Pentagram {
+
 DEFINE_RUNTIME_CLASSTYPE_CODE(Font,Shape);
 
 sint32 Font::getWidth(char c)
@@ -81,4 +83,6 @@ void Font::getTextSize(const char *text, sint32 &x, sint32 &y)
 	}
 	if (width > x) x = width;
 	y = vlead + lines * (getHeight()-vlead);
+}
+
 }
