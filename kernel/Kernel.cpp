@@ -48,6 +48,7 @@ Kernel::~Kernel()
 {
 	kernel = 0;
 
+	reset();
 	delete pIDs;
 }
 

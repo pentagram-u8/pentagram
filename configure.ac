@@ -422,14 +422,14 @@ AC_MSG_CHECKING(whether to build the GIMP plugin)
 if test x$enable_gimp_plugin = xyes; then
 	AC_MSG_RESULT(yes)
 	AC_MSG_CHECKING(for gimptool)
-	AC_CHECK_PROGS(GIMPTOOL, gimptool-2.0 gimptool)
+	AC_CHECK_PROGS(GIMPTOOL, gimptool-2.2 gimptool-2.0 gimptool)
 	if test -z "$GIMPTOOL"; then
 		AC_MSG_RESULT(no, not building GIMP plugin)
 	else
 		AC_MSG_CHECKING(for GIMP version)
 		gimp_version=`$GIMPTOOL --version |  awk 'BEGIN { FS = "."; } { print $1 * 1000 + $2*100+$3;}'`
-		if test "$gimp_version" -ge 2000; then
-			AC_MSG_RESULT(found >= 2.0.0)
+		if test "$gimp_version" -ge 2200; then
+			AC_MSG_RESULT(found >= 2.2.0)
 			AC_SUBST(GIMPTOOL)
 			AM_CONDITIONAL(GIMP_PLUGIN, true)
 			GIMP_PLUGIN_PREFIX=`$GIMPTOOL --gimpplugindir`
@@ -441,7 +441,7 @@ if test x$enable_gimp_plugin = xyes; then
 			AC_SUBST(GIMP_INCLUDES)
 			AC_SUBST(GIMP_LIBS)
 		else
-			AC_MSG_RESULT(found < 1.3.12 - disabling plugin)
+			AC_MSG_RESULT(found < 2.2.0 - disabling plugin)
 		fi
 	fi
 else

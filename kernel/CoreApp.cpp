@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "FileSystem.h"
 #include "ConfigFileManager.h"
 #include "SettingManager.h"
+#include "MemoryManager.h"
 
 #include "UCMachine.h"
 #include "UCProcess.h"
@@ -51,8 +52,8 @@ CoreApp* CoreApp::application = 0;
 
 CoreApp::CoreApp(int argc_, const char* const* argv_)
 	: isRunning(false), gameinfo(0), kernel(0), filesystem(0),
-	  configfileman(0), settingman(0), argc(argc_), argv(argv_), oHelp(false),
-	  oQuiet(false), oVQuiet(false)
+	  configfileman(0), settingman(0), memorymanager(0), argc(argc_),
+	  argv(argv_), oHelp(false), oQuiet(false), oVQuiet(false)
 {
 	assert(application == 0);
 	application = this;
@@ -66,6 +67,7 @@ CoreApp::~CoreApp()
 	FORGET_OBJECT(configfileman);
 	FORGET_OBJECT(gameinfo);
 
+	FORGET_OBJECT(memorymanager);
 	application = 0;
 }
 
@@ -133,6 +135,10 @@ void CoreApp::sysInit()
 	settingman = new SettingManager();
 	settingman->setDomainName(SettingManager::DOM_GLOBAL, "pentagram");
 	settingman->setCurrentDomain(SettingManager::DOM_GLOBAL);
+
+	con.Print(MM_INFO, "Creating MemoryManager...\n");
+	memorymanager = new MemoryManager();
+
 }
 
 void CoreApp::setupVirtualPaths()

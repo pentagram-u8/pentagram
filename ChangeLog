@@ -1,3 +1,15 @@
+2005-03-13  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* kernel/*Pool.*, kernel/*Allocator.*, kernel/MemoryManager.*: new
+	  classes to handle memory pooling.
+	* misc/pent_include.h: Macro to declare an object to use memory
+	  management.
+	* kernel/Object.*, kernel/Process.*, usecode/UCProcess.*: use memory
+	  pooling.
+	* kernel/CoreApp.*: initialize the MemoryManager
+	* kernel/Kernel.cpp: reset the kernel when destructing to delete
+	  remaining processes.
+	* configure.ac: check for gimp 2.2 instead of 2.0
+
 2005-03-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCProcess.cpp: use get_class_name in UCProcess::dumpInfo
 

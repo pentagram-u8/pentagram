@@ -2,6 +2,11 @@ KERNEL = \
 	kernel/DelayProcess.o \
 	kernel/Kernel.o \
 	kernel/CoreApp.o \
+	kernel/MemoryManager.o \
+	kernel/Allocator.o \
+	kernel/SimpleAllocator.o \
+	kernel/Pool.o \
+	kernel/SimplePool.o \
 	kernel/Process.o
 
 KERNEL2 = \

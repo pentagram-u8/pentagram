@@ -32,6 +32,9 @@ public:
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 
+	// memory pooling stuff
+	ENABLE_CUSTOM_MEMORY_ALLOCATION();
+
 	//! get this Object's objID
 	ObjId getObjId() const { return objid; }
 
@@ -59,6 +62,7 @@ public:
 					   const uint8* args=0, int argsize=0);
 
 	bool loadData(IDataSource* ids, uint32 version);
+
 protected:
 	//! write the Object savegame header (mainly consisting of the classname)
 	void writeObjectHeader(ODataSource* ods);
