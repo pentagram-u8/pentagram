@@ -56,6 +56,17 @@ struct AnimAction {
 	void getAnimRange(Actor* actor, int dir,
 					  unsigned int& startframe, unsigned int& endframe);
 
+	//! return the range of the animation to play
+	//! \param lastanim The lastanim of the Actor
+	//! \param lastdir The direction of the Actor
+	//! \param firststep The firststep flag of the Actor
+	//! \param dir The direction
+	//! \param startframe The first frame to play
+	//! \param endframe The frame after the last frame to play
+	void getAnimRange(unsigned int lastanim, int lastdir,
+					  bool firststep, int dir,
+					  unsigned int& startframe, unsigned int& endframe);
+
 	enum AnimActionFlags {
 		AAF_TWOSTEP     = 0x01,
 		AAF_ATTACK      = 0x02,

@@ -23,6 +23,7 @@
 
 class BarkGump : public ItemRelativeGump
 {
+protected:
 	std::string	barked;
 	sint32 counter;
 	ObjId textwidget;

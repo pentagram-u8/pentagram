@@ -29,6 +29,7 @@ struct PathfindingState;
 class Actor : public Container
 {
 	friend class ActorAnimProcess;
+	friend class AnimationTracker;
 public:
 	Actor();
 	~Actor();

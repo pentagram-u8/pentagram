@@ -20,15 +20,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AnimAction.h"
 #include "Actor.h"
 
-void AnimAction::getAnimRange(Actor* actor, int dir,
-							  unsigned int& startframe, unsigned int& endframe)
+void AnimAction::getAnimRange(unsigned int lastanim, int lastdir,
+					  bool firststep, int dir,
+					  unsigned int& startframe, unsigned int& endframe)
 {
 	startframe = 0;
 	endframe = size;
 
 	if (flags & AAF_TWOSTEP) {
 		// two-step animation?
-		if (actor->getActorFlags() & Actor::ACT_FIRSTSTEP) {
+		if (firststep) {
 			if (flags & AAF_LOOPING) {
 				// for a looping animation, start at the end to
 				// make things more fluid
@@ -45,13 +46,18 @@ void AnimAction::getAnimRange(Actor* actor, int dir,
 			}
 		}
 	} else {
-		if (actor->getLastAnim() == action && actor->getDir() == dir &&
-			size > 1)
+		if (lastanim == action && lastdir == dir && size > 1)
 		{
 			// skip first frame if repeating an animation
 			startframe = 1;
 		}
 	}
+}
 
-
+void AnimAction::getAnimRange(Actor* actor, int dir,
+							  unsigned int& startframe, unsigned int& endframe)
+{
+	getAnimRange(actor->getLastAnim(), actor->getDir(),
+				 (actor->getActorFlags() & Actor::ACT_FIRSTSTEP),
+				 dir, startframe, endframe);
 }

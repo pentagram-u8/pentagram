@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class Actor;
 struct AnimAction;
+class AnimationTracker;
 
 class ActorAnimProcess : public Process
 {
@@ -47,17 +48,17 @@ protected:
 
 	ObjId checkWeaponHit(int dir, int range);
 
-	AnimAction* animaction;
+	Animation::Sequence action;
 	uint32 dir;
 
-	uint32 currentindex;
+	AnimationTracker* tracker;
+	int repeatcounter;
+
 	bool firstframe;
 
 	bool animAborted;
 
-	unsigned int endframe;
-
-	bool hitSomething; // attacked and hit something with this animation
+	bool attackedSomething; // attacked and hit something with this animation
 };
 
 

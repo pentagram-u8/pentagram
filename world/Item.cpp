@@ -1828,7 +1828,7 @@ uint32 Item::I_bark(const uint8* args, unsigned int /*argsize*/)
 	if (id_item == 666) item = World::get_instance()->getItem(1);
 	if (!item) return 0;	// Hack!
 
-	GUIApp *app = p_dynamic_cast<GUIApp*>(GUIApp::get_instance());
+	GUIApp *app = GUIApp::get_instance();
 
 	if (!app)
 	{

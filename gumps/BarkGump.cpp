@@ -128,8 +128,6 @@ void BarkGump::saveData(ODataSource* ods)
 
 	ods->write4(static_cast<uint32>(counter));
 	ods->write2(textwidget);
-	ods->write4(barked.size());
-	ods->write(barked.c_str(), barked.size());
 }
 
 bool BarkGump::loadData(IDataSource* ids)
@@ -140,16 +138,6 @@ bool BarkGump::loadData(IDataSource* ids)
 
 	counter = static_cast<sint32>(ids->read4());
 	textwidget = ids->read2();
-	uint32 slen = ids->read4();
-	if (slen > 0) {
-		char* buf = new char[slen+1];
-		ids->read(buf, slen);
-		buf[slen] = 0;
-		barked = buf;
-		delete[] buf;
-	} else {
-		barked = "";
-	}
 
 	return true;
 }

@@ -253,8 +253,6 @@ uint16 version
 <ItemRelativeGump>
 sint32 counter
 uint16 textwidget
-uint32 strlen
-char barked[strlen]
 
 
 ScrollGump: (v1)
@@ -365,11 +363,31 @@ uint16 version
 <Process>
 uint8 firstframe (boolean)
 uint8 animAborted (boolean)
-uint8 hitSomething (boolean)
-uint32 dir
-uint32 currentindex
+uint8 attackedSomething (boolean)
+uint8 dir
+uint16 action
+uint16 repeatcounter
+uint8 hasTracker (boolean)
+if (hasTracker) AnimationTracker tracker
+
+
+AnimationTracker (v1)
+uint16 version
+uint32 startframe, endframe
+uint8 firstframe (boolean)
+uint32 currentframe
+uint16 actor
+uint8 dir
 uint32 shapenum
 uint32 action
+uint32 prevx, prevy, prevz
+uint32 x,y,z
+uint8 firststep (boolean)
+uint8 flipped (boolean)
+uint32 shapeframe
+uint8 done (boolean)
+uint8 blocked (boolean)
+uint8 supported (boolean)
 
 
 CameraProcess: Process (v1)

@@ -1,3 +1,10 @@
+2004-08-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/AnimationTracker.*: a class to handle animations
+	* world/actors/ActorAnimProcess.*: use AnimationTracker internally
+	* world/actors/PathfindingProcess.*: set ACT_PATHFINDING flag
+	* gumps/BarkGump.*: don't save string unnecessarily
+	* kernel/Kernel.cpp: fixed double-terminate bug
+
 2004-07-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: fixed tetxture typo
 

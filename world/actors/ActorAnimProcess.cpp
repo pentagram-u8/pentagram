@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "LoopScript.h"
 #include "CurrentMap.h"
 #include "ShapeInfo.h"
+#include "AnimationTracker.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -46,40 +47,34 @@ static const int watchactor = WATCHACTOR;
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(ActorAnimProcess,Process);
 
-ActorAnimProcess::ActorAnimProcess() : Process()
+ActorAnimProcess::ActorAnimProcess() : Process(), tracker(0)
 {
 
 }
 
-ActorAnimProcess::ActorAnimProcess(Actor* actor_, Animation::Sequence action, uint32 dir_)
+ActorAnimProcess::ActorAnimProcess(Actor* actor_, Animation::Sequence action_,
+								   uint32 dir_)
 {
 	assert(actor_);
 	item_num = actor_->getObjId();
 	dir = dir_;
-
-	uint32 shape = actor_->getShape();
-	animaction = GameData::get_instance()->getMainShapes()->
-		getAnim(shape, action);
+	action = action_;
 
 	type = 0x00F0; // CONSTANT !
 	firstframe = true;
+	tracker = 0;
 }
 
 bool ActorAnimProcess::init()
 {
-	if (!animaction) {
-		// invalid animation
-		return false;
-	}
-
 	if (dir > 7) {
 		// invalid direction
 		return false;
 	}
 
-	currentindex = 0;
+	repeatcounter = 0;
 	animAborted = false;
-	hitSomething = false;
+	attackedSomething = false;
 
 	Actor* actor = World::get_instance()->getNPC(item_num);
 	assert(actor);
@@ -102,29 +97,19 @@ bool ActorAnimProcess::init()
 		return false;
 	}
 
-	uint32 startframe = 0;
-
-#if 0
-	if (item_num == 5)
-		animaction->framerepeat = 2; // force Darion to 2 frames
-#endif
-
 	actor->setActorFlag(Actor::ACT_ANIMLOCK);
 
-	animaction->getAnimRange(actor, dir, startframe, endframe);
+	tracker = new AnimationTracker(actor, action, dir);
 
-	actor->lastanim = static_cast<Animation::Sequence>(animaction->action);
+	actor->lastanim = action;
 	actor->direction = dir;
 
-	currentindex = startframe * animaction->framerepeat;
-	actor->animframe = startframe;
 
 #ifdef WATCHACTOR
 	if (item_num == watchactor)
 		pout << "Animation [" << Kernel::get_instance()->getFrameNum()
 			 << "] ActorAnimProcess " << getPid() << " created ("
-			 << animaction->action << "," << dir << ", " << startframe << "-"
-			 << endframe << ")" << std::endl;
+			 << action << "," << dir << ")" << std::endl;
 #endif
 
 	return true;
@@ -147,23 +132,108 @@ bool ActorAnimProcess::run(const uint32 framenum)
 		return false;
 	}
 
-	// this assert is to check if my refactoring worked out - wjp (20040702)
-	assert(animaction);
+	assert(tracker);
+
+	if (!firstframe)
+		repeatcounter++;
+	if (repeatcounter >= tracker->getAnimAction()->framerepeat)
+		repeatcounter = 0;
 
 	Actor *a = World::get_instance()->getNPC(item_num);
-
 	if (!a) {
 		// actor gone
 		terminate();
 		return false;
 	}
 
-	if (!firstframe) {
-		currentindex++;
-	} else {
-		firstframe = false;
+	firstframe = false;
+
+
+	bool result = true;
+	if (repeatcounter == 0) {
+		// next step:
+		result = tracker->step();
+		tracker->updateActorFlags();
+
+		if (!result) {
+			// check possible error conditions
+
+			if (tracker->isDone()) {
+				// all done
+#ifdef WATCHACTOR
+				if (item_num == watchactor)
+					pout << "Animation ["
+						 << Kernel::get_instance()->getFrameNum()
+						 << "] ActorAnimProcess done; terminating"
+						 << std::endl;
+#endif
+			terminate();
+			return true;
+			}
+
+
+			if (tracker->isBlocked() &&
+				!(tracker->getAnimAction()->flags&AnimAction::AAF_UNSTOPPABLE))
+			{
+#ifdef WATCHACTOR
+				if (item_num == watchactor)
+					pout << "Animation ["
+						 << Kernel::get_instance()->getFrameNum()
+						 << "] ActorAnimProcess blocked; terminating"
+						 << std::endl;
+#endif
+				terminate();
+				return true;
+			}
+		}
 	}
 
+	sint32 x,y,z;
+	tracker->getInterpolatedPosition(x,y,z,repeatcounter+1);
+
+#ifdef WATCHACTOR
+	if (repeatcounter == 0 && item_num == watchactor)
+		pout << "Animation [" << Kernel::get_instance()->getFrameNum()
+			 << "] showing next frame (" << x << "," << y << "," << z << ")"
+			 << std::endl;
+#endif
+
+
+	a->collideMove(x, y, z, false, true); // forced move
+	a->setFrame(tracker->getFrame());
+
+	if (repeatcounter == 0) {
+		if (!result && tracker->isUnsupported()) {
+			animAborted = true;
+			GravityProcess* gp = new GravityProcess(a, 4);
+			uint16 gppid = Kernel::get_instance()->addProcess(gp);
+			// TODO: inertia
+			
+			// CHECKME: do we need to wait for the fall to finish?
+			waitFor(gppid);
+			return true;
+		}
+
+		// attacking?
+		if ((tracker->getAnimAction()->flags & AnimAction::AAF_ATTACK) && 
+			!attackedSomething && tracker->getAnimFrame()->attack_range()) {
+			
+			// check if there's anything in range
+			ObjId hit = checkWeaponHit(dir, tracker->getAnimFrame()->
+									   attack_range());
+			
+			if (hit) {
+				attackedSomething = true;
+				Item* hit_item = World::get_instance()->getItem(hit);
+				assert(hit_item);
+				hit_item->receiveHit(item_num, dir, 0, 0); // CHECKME: dir?
+			}
+		}
+	}
+
+	return true;
+
+#if 0
 	unsigned int frameindex = currentindex / animaction->framerepeat;
 	int framecount = currentindex % animaction->framerepeat;
 
@@ -331,6 +401,7 @@ bool ActorAnimProcess::run(const uint32 framenum)
 #endif
 
 	return true;
+#endif
 }
 
 
@@ -338,10 +409,11 @@ void ActorAnimProcess::terminate()
 {
 	Actor *a = World::get_instance()->getNPC(item_num);
 	if (a) {
-		if (animaction) { // if we were really animating...
+		if (tracker) // if we were really animating...
 			a->clearActorFlag(Actor::ACT_ANIMLOCK);
-		}
 	}
+
+	delete tracker;
 
 	Process::terminate();
 }
@@ -400,17 +472,17 @@ void ActorAnimProcess::saveData(ODataSource* ods)
 	ods->write1(ff);
 	uint8 ab = animAborted ? 1 : 0;
 	ods->write1(ab);
-	uint8 hit = hitSomething ? 1 : 0;
-	ods->write1(hit);
-	ods->write4(dir);
-	ods->write4(currentindex);
-	if (animaction) {
-		ods->write4(animaction->shapenum);
-		ods->write4(animaction->action);
-	} else {
-		ods->write4(0);
-		ods->write4(0);
-	}
+	uint8 attacked = attackedSomething ? 1 : 0;
+	ods->write1(attacked);
+	ods->write1(static_cast<uint8>(dir));
+	ods->write2(static_cast<uint16>(action));
+	ods->write2(static_cast<uint16>(repeatcounter));
+
+	if (tracker) {
+		ods->write1(1);
+		tracker->save(ods);
+	} else
+		ods->write1(0);
 }
 
 bool ActorAnimProcess::loadData(IDataSource* ids)
@@ -421,18 +493,16 @@ bool ActorAnimProcess::loadData(IDataSource* ids)
 
 	firstframe = (ids->read1() != 0);
 	animAborted = (ids->read1() != 0);
-	hitSomething = (ids->read1() != 0);
-	dir = ids->read4();
-	currentindex = ids->read4();
+	attackedSomething = (ids->read1() != 0);
+	dir = ids->read1();
+	action = static_cast<Animation::Sequence>(ids->read2());
+	repeatcounter = ids->read2();
 
-	uint32 shapenum = ids->read4();
-	uint32 action = ids->read4();
-
-	if (shapenum == 0) {
-		animaction = 0;
-	} else {
-		animaction = GameData::get_instance()->getMainShapes()->
-			getAnim(shapenum, action);
+	assert(tracker == 0);
+	if (ids->read1() != 0) {
+		tracker = new AnimationTracker();
+		if (!tracker->load(ids))
+			return false;
 	}
 
 	return true;

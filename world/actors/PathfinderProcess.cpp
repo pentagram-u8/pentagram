@@ -41,6 +41,8 @@ PathfinderProcess::PathfinderProcess(Actor* actor_, ObjId item_)
 {
 	assert(actor_);
 	item_num = actor_->getObjId();
+	type = 0x0204; // CONSTANT !
+
 
 	Item* item = World::get_instance()->getItem(item_);
 	if (!item) {
@@ -67,6 +69,9 @@ PathfinderProcess::PathfinderProcess(Actor* actor_, ObjId item_)
 		terminateDeferred();
 		return;
 	}
+
+	// TODO: check if flag already set? kill other pathfinders?
+	actor_->setActorFlag(Actor::ACT_PATHFINDING);
 }
 
 PathfinderProcess::PathfinderProcess(Actor* actor_,
@@ -95,11 +100,26 @@ PathfinderProcess::PathfinderProcess(Actor* actor_,
 		terminateDeferred();
 		return;
 	}
+
+	// TODO: check if flag already set? kill other pathfinders?
+	actor_->setActorFlag(Actor::ACT_PATHFINDING);
 }
 
 PathfinderProcess::~PathfinderProcess()
 {
 
+}
+
+void PathfinderProcess::terminate()
+{
+	Actor* actor = World::get_instance()->getNPC(item_num);
+	if (actor) {
+		// TODO: only clear if it was set by us?
+		// (slightly more complicated if we kill other pathfinders on startup)
+		actor->clearActorFlag(Actor::ACT_PATHFINDING);
+	}
+
+	Process::terminate();
 }
 
 bool PathfinderProcess::run(const uint32 framenum)
