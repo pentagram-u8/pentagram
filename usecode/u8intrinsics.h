@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Item.h"
 #include "UCMachine.h"
 #include "Container.h"
+#include "Actor.h"
 
 
 // Ultima 8 Intrinsics
@@ -198,7 +199,7 @@ Intrinsic U8Intrinsics[] = {
 	0,
 	0,
 	0,
-	UCMachine::I_dummyProcess, //!! process Npc::doAnim(AnimSet, word, word, ubyte)
+	Actor::I_doAnim,
 	// 0x0A0
 	0,
 	UCMachine::I_dummyProcess, //!! process Npc::pathfind(uword, uword, uword, uword)
