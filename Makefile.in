@@ -50,7 +50,7 @@ WARNINGS := @WARNINGS@
 MODULES := convert convert/u8 convert/crusader misc filesys \
 	tools tools/disasm tools/compile tools/fold tools/shapeconv \
 	kernel graphics audio usecode world world/actors gumps  \
-	conf .
+	gumps/widgets conf .
 
 # look for include files in
 #   each of the modules
