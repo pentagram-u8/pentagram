@@ -249,7 +249,9 @@ class IFileDataSource: public IDataSource
 	sint32 read(void *b, sint32 len)
 	{
 		in->read(static_cast<char *>(b), len);
-		return in->gcount();
+		sint32 count = in->gcount();
+		if (in->eof()) in->clear(); // clear eof state
+		return count;
 	}
 
 	virtual void seek(uint32 pos)  { in->seekg(pos); }
