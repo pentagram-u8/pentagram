@@ -1012,11 +1012,13 @@ void GUIApp::GraphicSysInit()
 	settingman->get("height", height);
 	settingman->get("bpp", bpp);
 
+#if 0
 	// store values in user's config file
 	settingman->set("width", width);
 	settingman->set("height", height);
 	settingman->set("bpp", bpp);
 	settingman->set("fullscreen", fullscreen);
+#endif
 
 	screen = RenderSurface::SetVideoMode(width, height, bpp,
 										 fullscreen, false);
@@ -1067,7 +1069,7 @@ void GUIApp::LoadConsoleFont()
 	std::string confontini("@data/fixedfont.ini");
 
 	pout << "Searching for alternate console font... ";
-	if (settingman->get("console-font", data)) {
+	if (settingman->get("console_font", data)) {
 		confontini = data;
 		pout << "Found." << std::endl;
 	}
