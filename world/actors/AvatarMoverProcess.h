@@ -40,6 +40,9 @@ public:
 protected:
 	virtual void saveData(ODataSource* ods);
 
+	bool handleCombatMode();
+	bool handleNormalMode();
+
 	uint32 lastframe;
 
 	MButton mouseButton[2];

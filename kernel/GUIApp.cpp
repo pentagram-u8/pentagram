@@ -150,6 +150,7 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	ConsoleGump::AddConsoleCommand("teleport", MainActor::ConCmd_teleport);
 	ConsoleGump::AddConsoleCommand("mark", MainActor::ConCmd_mark);
 	ConsoleGump::AddConsoleCommand("recall", MainActor::ConCmd_recall);
+	ConsoleGump::AddConsoleCommand("listmarks", MainActor::ConCmd_listmarks);
 	ConsoleGump::AddConsoleCommand("quit", ConCmd_quit);	
 }
 
@@ -162,6 +163,7 @@ GUIApp::~GUIApp()
 	ConsoleGump::RemoveConsoleCommand("teleport");
 	ConsoleGump::RemoveConsoleCommand("mark");
 	ConsoleGump::RemoveConsoleCommand("recall");
+	ConsoleGump::RemoveConsoleCommand("listmarks");
 	ConsoleGump::RemoveConsoleCommand("quit");
 
 	FORGET_OBJECT(objectmanager);
@@ -1346,6 +1348,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		else
 			mouseButton[button].downGump = 0;
 
+		mouseButton[button].curDown = now;
 		mouseButton[button].downX = mx;
 		mouseButton[button].downY = my;
 		mouseButton[button].state |= MBS_DOWN;

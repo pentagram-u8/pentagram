@@ -169,6 +169,18 @@ void MainActor::ConCmd_recall(const Pentagram::istring& args)
 	mainactor->teleport(t[0], t[1], t[2], t[3]);
 }
 
+void MainActor::ConCmd_listmarks(const Pentagram::istring& args)
+{
+	Configuration* config = CoreApp::get_instance()->getConfig();
+	std::set<Pentagram::istring> marks;
+	marks = config->listKeys("config/u8marks", false);
+	for (std::set<Pentagram::istring>::iterator iter = marks.begin();
+		 iter != marks.end(); ++iter)
+	{
+		pout << (*iter).c_str() << std::endl;
+	}
+}
+
 void MainActor::accumulateStr(int n)
 {
 	// already max?

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -36,8 +36,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef WATCHACTOR
 static const int watchactor = WATCHACTOR;
-
-#include "GUIApp.h"
 #endif
 
 // p_dynamic_cast stuff
@@ -99,7 +97,7 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 
 #ifdef WATCHACTOR
 	if (item_num == watchactor)
-		perr << "Animation [" << GUIApp::get_instance()->getFrameNum()
+		pout << "Animation [" << Kernel::get_instance()->getFrameNum()
 			 << "] ActorAnimProcess created (" <<action << "," << dir_
 			 << ", " << startframe << "-" << endframe << ")"
 			 << std::endl;
@@ -150,7 +148,7 @@ bool ActorAnimProcess::run(const uint32 framenum)
 			
 #ifdef WATCHACTOR
 			if (item_num == watchactor)
-				perr << "Animation [" << GUIApp::get_instance()->getFrameNum()
+				pout << "Animation [" << Kernel::get_instance()->getFrameNum()
 					 << "] ActorAnimProcess terminating" << std::endl;
 #endif		 
 			terminate();
@@ -225,7 +223,7 @@ bool ActorAnimProcess::run(const uint32 framenum)
 	if (dist < 0x4000) {
 #ifdef WATCHACTOR
 			if (item_num == watchactor)
-				perr << "Animation [" << GUIApp::get_instance()->getFrameNum()
+				pout << "Animation [" << Kernel::get_instance()->getFrameNum()
 					 << "] blocked (dist = " << dist << ")" << std::endl;
 #endif
 		// didn't reach destination, so we need to abort
@@ -249,7 +247,7 @@ bool ActorAnimProcess::run(const uint32 framenum)
 
 #ifdef WATCHACTOR
 			if (item_num == watchactor)
-				perr << "Animation [" << GUIApp::get_instance()->getFrameNum()
+				pout << "Animation [" << Kernel::get_instance()->getFrameNum()
 					 << "] falling" << std::endl;
 #endif
 			if (a->canExistAt(x,y,z-16)) {
@@ -272,7 +270,7 @@ bool ActorAnimProcess::run(const uint32 framenum)
 #ifdef WATCHACTOR
 //	if (framecount == 0) {
 		if (item_num == watchactor)
-			perr << "Animation [" << GUIApp::get_instance()->getFrameNum()
+			pout << "Animation [" << Kernel::get_instance()->getFrameNum()
 				 << "] showing frame (" << frameindex << "/"
 				 << animaction->size << ", " << framecount << "/"
 				 << animaction->framerepeat << ")" << std::endl;

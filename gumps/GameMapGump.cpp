@@ -251,14 +251,17 @@ Gump* GameMapGump::OnMouseDown(int button, int mx, int my)
 	GumpToScreenSpace(sx, sy);
 
 	AvatarMoverProcess* amp = GUIApp::get_instance()->getAvatarMoverProcess();
+	MainActor* avatar = World::get_instance()->getMainActor();
 	if (button == BUTTON_RIGHT) {
 		amp->OnMouseDown(button, sx, sy);
 	}
 
 	if (button == BUTTON_LEFT &&
-		GUIApp::get_instance()->isMouseDown(BUTTON_RIGHT))
+		(GUIApp::get_instance()->isMouseDown(BUTTON_RIGHT) ||
+		 avatar->isInCombat()))
 	{
-		// if right button is down, AvatarMoverProcess wants left clicks too
+		// if right button is down, or in combat mode,
+		// AvatarMoverProcess wants left clicks too
 		amp->OnMouseDown(button, sx, sy);
 		leftDownToAvatarMover = true;
 	} else if (button == BUTTON_LEFT) {
@@ -358,6 +361,8 @@ void GameMapGump::OnMouseDouble(int button, int mx, int my)
 	switch (button) {
 	case BUTTON_LEFT:
 	{
+		if (leftDownToAvatarMover) break;
+
 		if (GUIApp::get_instance()->isAvatarInStasis()) {
 			pout << "Can't: avatarInStasis" << std::endl; 
 			break;

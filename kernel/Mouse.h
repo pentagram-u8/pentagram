@@ -26,6 +26,7 @@ struct MButton
 {
 	uint16 downGump;
 	uint32 lastDown;
+	uint32 curDown;
 	int downX, downY;
 	int state;
 };

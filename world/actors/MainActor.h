@@ -60,6 +60,8 @@ public:
 	static void MainActor::ConCmd_mark(const Pentagram::istring& args);
 	//! "recall" console command
 	static void MainActor::ConCmd_recall(const Pentagram::istring& args);
+	//! "listmarks" console command
+	static void MainActor::ConCmd_listmarks(const Pentagram::istring& args);
 
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
@@ -69,10 +71,12 @@ public:
 	INTRINSIC(I_accumulateDexterity);
 	INTRINSIC(I_accumulateIntelligence);
 
-protected:
-	virtual void saveData(ODataSource* ods);
 
 	void getWeaponOverlay(const WeaponOverlayFrame*& frame, uint32& shape);
+
+
+protected:
+	virtual void saveData(ODataSource* ods);
 
 	bool justTeleported;
 
