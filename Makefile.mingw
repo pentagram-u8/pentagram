@@ -52,8 +52,8 @@ shapeconv.exe : tools/shapeconv/ShapeConv.o $(CONVERT) $(FILESYS) $(MISC) $(ARGS
 PENTAGRAM_OBJS = \
 	$(KERNEL) $(KERNEL2) $(USECODE) $(FILESYS) $(CONVERT) $(CONF)\
 	$(GRAPHICS) $(MISC) $(ARGS) $(GUMPS) $(WIDGETS) $(WORLD) $(ACTORS)\
-	$(COMPILE) $(DISASM) $(AUDIO) $(MIDI) $(TIMIDITY) $(GAMES) $(FONTS) \
-	kernel/GUIApp.o pentagram.o
+	$(COMPILE) $(DISASM) $(AUDIO) $(MIDI) $(TIMIDITY) $(GAMES) $(GAMES2) \
+	$(FONTS) kernel/GUIApp.o pentagram.o
 
 pentagram.exe: $(PENTAGRAM_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ $(LIBS)
