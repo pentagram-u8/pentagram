@@ -148,6 +148,8 @@ void Actor::teleport(int newmap, sint32 newx, sint32 newy, sint32 newz)
 	// Move it to this map
 	if (newmap == World::get_instance()->getCurrentMap()->getNum())
 	{
+		perr << "Actor::teleport: " << getObjId() << " to " << newmap << ","
+			 << newx << "," << newy << "," << newz << std::endl;
 		move(newx, newy, newz);
 	}
 	// Move it to another map
@@ -298,7 +300,19 @@ bool Actor::tryAnim(int anim, int dir, PathfindingState* state)
 	return true;
 }
 
-void Actor::receiveHit(uint16 other, int dir, int damage, uint16 type)
+uint32 Actor::getArmourClass()
+{
+	// TODO: implement this
+	return 0;
+}
+
+uint16 Actor::getDefenseType()
+{
+	// TODO: implement this
+	return 0;
+}
+
+void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 {
 	// TODO: implement this
 }
@@ -308,7 +322,9 @@ void Actor::dumpInfo()
 	Container::dumpInfo();
 
 	pout << "hp: " << hitpoints << ", mp: " << mana << ", str: " << strength
-		 << ", dex: " << dexterity << ", int: " << intelligence << std::endl;
+		 << ", dex: " << dexterity << ", int: " << intelligence
+		 << ", ac: " << getArmourClass() << ", defense: " << std::hex
+		 << getDefenseType() << std::dec <<  std::endl;
 }
 
 void Actor::saveData(ODataSource* ods)

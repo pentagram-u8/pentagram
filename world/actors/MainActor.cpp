@@ -88,6 +88,45 @@ void MainActor::teleport(int mapnum, int teleport_id)
 	justTeleported = true;
 }
 
+uint16 MainActor::getDefenseType()
+{
+	uint16 type = 0;
+
+	std::list<Item*>::iterator iter;
+	for (iter = contents.begin(); iter != contents.end(); ++iter)
+	{
+		uint32 shape = (*iter)->getShape();
+		uint32 frame = (*iter)->getFrame();
+		ShapeInfo* si = (*iter)->getShapeInfo();
+		if (si->armourinfo) {
+			type |= si->armourinfo[frame].defense_type;
+		}
+	}
+
+	return type;
+}
+
+uint32 MainActor::getArmourClass()
+{
+	uint32 armour = 0;
+
+	std::list<Item*>::iterator iter;
+	for (iter = contents.begin(); iter != contents.end(); ++iter)
+	{
+		uint32 shape = (*iter)->getShape();
+		uint32 frame = (*iter)->getFrame();
+		ShapeInfo* si = (*iter)->getShapeInfo();
+		if (si->armourinfo) {
+			armour += si->armourinfo[frame].armour_class;
+		}
+		if (si->weaponinfo) {
+			armour += si->weaponinfo->armour_bonus;
+		}
+	}
+
+	return armour;
+}
+
 void MainActor::ConCmd_teleport(const Pentagram::istring& args)
 {
 	MainActor* mainactor = World::get_instance()->getMainActor();

@@ -121,9 +121,10 @@ void GameData::loadU8Data()
 	}
 	mainshapes = new MainShapeFlex(sf, PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
 
-	// Load weapon info
+	// Load weapon, armour info
 	Configuration* config = CoreApp::get_instance()->getConfig();
 	config->readConfigFile("@data/u8weapons.cfg", "weapons", true);
+	config->readConfigFile("@data/u8armour.cfg", "armour", true);
 
 	// Load typeflags
 	IDataSource *tfs = filesystem->ReadFile("@u8/static/typeflag.dat");

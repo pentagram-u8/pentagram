@@ -1,3 +1,8 @@
+2004-04-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* data/u8armour.cfg: U8 armour values
+	* world/ArmourInfo.h, graphics/TypeFlags.*: load armour info
+	* world/actors/Actor.*, world/actors/MainActor.*: use armour info
+
 2004-04-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Animation.*: blocking animation indices
 	* world/actors/MainActor.*: listmarks console command

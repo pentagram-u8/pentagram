@@ -1309,9 +1309,6 @@ void Item::explode()
 	destroy(); // delete self
 	// WARNING: we are deleted at this point
 
-	// TODO: call receiveHit on items in range
-	//  (note: _no_ hitter, since we're gone)
-
 	UCList itemlist(2);
 	LOOPSCRIPT(script, LS_TOKEN_TRUE); // we want all items
 	CurrentMap* currentmap = World::get_instance()->getCurrentMap();

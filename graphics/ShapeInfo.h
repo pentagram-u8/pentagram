@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define SHAPEINFO_H
 
 #include "WeaponInfo.h"
+#include "ArmourInfo.h"
 
 class ShapeInfo
 {
@@ -76,6 +77,7 @@ public:
 	uint32 weight, volume;
 
 	WeaponInfo* weaponinfo;
+	ArmourInfo* armourinfo;
 
 	inline bool is_fixed() const { return (flags & SI_FIXED) != 0; }
 	inline bool is_solid() const { return (flags & SI_SOLID) != 0; }

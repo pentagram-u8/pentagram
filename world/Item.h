@@ -185,7 +185,6 @@ public:
 	//! Close this Item's gump, if any
 	void closeGump();
 
-
 	//! Destroy self.
 	virtual void destroy();
 

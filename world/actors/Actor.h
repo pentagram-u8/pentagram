@@ -68,6 +68,9 @@ public:
 
 	uint16 getEquip(uint32 type);
 
+	virtual uint32 getArmourClass();
+	virtual uint16 getDefenseType();
+
 	virtual void receiveHit(uint16 other, int dir, int damage, uint16 type);
 
 	//! run the given animation
@@ -122,7 +125,7 @@ public:
 	INTRINSIC(I_createActor);
 	INTRINSIC(I_getEquip);
 
-	enum {
+	enum ActorFlags {
 		ACT_INVINCIBLE     = 0x000001, // flags from npcdata byte 0x1B
 		ACT_ASCENDING      = 0x000002,
 		ACT_DESCENDING     = 0x000004,
@@ -139,7 +142,7 @@ public:
 		ACT_STUNNED        = 0x200000,
 		ACT_POISONED       = 0x400000,
 		ACT_PATHFINDING    = 0x800000
-	} ActorFlags;
+	};
 
 protected:
 	virtual void saveData(ODataSource* ods);

@@ -22,6 +22,9 @@
 #include "IDataSource.h"
 #include "Configuration.h"
 #include "CoreApp.h"
+#include "GameData.h"
+#include "MainShapeFlex.h"
+#include "Shape.h"
 
 TypeFlags::TypeFlags()
 {
@@ -98,11 +101,13 @@ void TypeFlags::load(IDataSource *ds)
 		si.volume = data[7];
 
 		si.weaponinfo = 0;
+		si.armourinfo = 0;
 		
 		shapeInfo[i] = si;
 	}
 
 	loadWeaponInfo();
+	loadArmourInfo();
 }
 
 
@@ -171,5 +176,63 @@ void TypeFlags::loadWeaponInfo()
 
 		assert(wi->shape < shapeInfo.size());
 		shapeInfo[wi->shape].weaponinfo = wi;
+	}
+}
+
+
+void TypeFlags::loadArmourInfo()
+{
+	Configuration* config = CoreApp::get_instance()->getConfig();
+	MainShapeFlex* msf = GameData::get_instance()->getMainShapes();
+
+	// load weapons
+	std::set<Pentagram::istring> armourkeys;
+	armourkeys = config->listKeys("armour", true);	
+	for (std::set<Pentagram::istring>::iterator iter = armourkeys.begin();
+		 iter != armourkeys.end(); ++iter)
+	{
+		Pentagram::istring k = *iter;
+		ArmourInfo ai;
+
+		int val;
+
+		config->value(k + "/shape", val);
+		ai.shape = static_cast<uint32>(val);
+
+		assert(ai.shape < shapeInfo.size());
+		assert(msf->getShape(ai.shape));
+		unsigned int framecount = msf->getShape(ai.shape)->frameCount();
+		ArmourInfo* aia = shapeInfo[ai.shape].armourinfo;
+		if (!aia) {
+			aia = new ArmourInfo[framecount];
+			shapeInfo[ai.shape].armourinfo = aia;
+			for (unsigned int i = 0; i < framecount; ++i) {
+				aia[i].shape = 0;
+				aia[i].frame = 0;
+				aia[i].armour_class = 0;
+				aia[i].defense_type = 0;
+				aia[i].kick_attack_bonus = 0;
+			}
+		}
+
+		config->value(k + "/frame", val);
+		ai.frame = static_cast<uint32>(val);
+
+		assert(ai.frame < framecount);
+
+		config->value(k + "/armour", val);
+		ai.armour_class = static_cast<uint16>(val);
+
+		config->value(k + "/type", val);
+		ai.defense_type = static_cast<uint16>(val);
+
+		config->value(k + "/kick_bonus", val);
+		ai.kick_attack_bonus = static_cast<uint16>(val);
+
+		pout << "shape: " << ai.shape << ", frame " << ai.frame << ", ac: "
+			 << ai.armour_class << std::endl;
+			
+
+		aia[ai.frame] = ai;
 	}
 }

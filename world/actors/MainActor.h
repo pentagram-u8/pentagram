@@ -52,6 +52,9 @@ public:
 	//! one int. point. (There's a chance you gain int. sooner)
 	void accumulateInt(int n);
 
+	virtual uint32 getArmourClass();
+	virtual uint16 getDefenseType();
+
 	bool loadData(IDataSource* ids);
 
 	//! "teleport" console command
