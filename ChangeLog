@@ -1,4 +1,7 @@
 2003-05-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/*: dummy getName() intrinsic (returns 'Avatar')
+
+2003-05-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.*: loopscript support in Item
 	* world/*: changed some fields in Item to uint16
 	* usecode/UCMachine.*: one (out of three) loopscript opcodes

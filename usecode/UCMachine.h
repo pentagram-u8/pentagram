@@ -63,8 +63,10 @@ public:
 
 	static uint16 ptrToObject(uint32 ptr);
 
+	// dummies...
 	INTRINSIC(I_AvatarCanCheat);
 	INTRINSIC(I_dummyProcess);
+	INTRINSIC(I_getName);
 
 private:
 

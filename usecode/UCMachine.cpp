@@ -1827,3 +1827,8 @@ uint32 UCMachine::I_dummyProcess(const uint8* args, unsigned int /*argsize*/)
 {
 	return UCMachine::get_instance()->addProcess(new DelayProcess(4));
 }
+
+uint32 UCMachine::I_getName(const uint8* args, unsigned int /*argsize*/)
+{
+	return UCMachine::get_instance()->assignString("Avatar");
+}

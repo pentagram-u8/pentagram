@@ -228,7 +228,7 @@ Intrinsic U8Intrinsics[] = {
 	0,
 	0,
 	0,
-	0,
+	UCMachine::I_getName,
 	0,
 	0,
 	0,
