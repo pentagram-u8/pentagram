@@ -1284,16 +1284,18 @@ void Item::leaveFastArea()
 	flags &= ~FLG_FASTAREA;
 
 	// CHECKME: what do we need to do exactly?
-	// currently, if an actor, schedule deletion; otherwise, do nothing
-	Actor* a = p_dynamic_cast<Actor*>(this);
-	if (a) {
-		Process* dap = new DeleteActorProcess(a);
-		Kernel::get_instance()->addProcess(dap);
-	}
-#if 0
+	// currently, if an actor, schedule deletion; otherwise, destroy object
+
 	// Kill us if we are fast only
-	if (flags & FLG_FAST_ONLY) 
-		destroy();
+	if (flags & FLG_FAST_ONLY) {
+		Actor* a = p_dynamic_cast<Actor*>(this);
+		if (a) {
+			Process* dap = new DeleteActorProcess(a);
+			Kernel::get_instance()->addProcess(dap);
+		} else {
+			destroy();
+		}
+	}
 	// If we have a gravity process, move us to the ground
 	else if (gravitypid)
 	{
@@ -1304,7 +1306,6 @@ void Item::leaveFastArea()
 			collideMove(x,y,0,true,false);
 		}
 	}
-#endif
 }
 
 uint16 Item::openGump(uint32 gumpshape)
