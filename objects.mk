@@ -170,9 +170,11 @@ MIDI = \
 	audio/midi/LowLevelMidiDriver.o \
 	audio/midi/fmopl.o \
 	audio/midi/FMOplMidiDriver.o \
+	audio/midi/ALSAMidiDriver.o \
 	audio/midi/CoreAudioMidiDriver.o \
 	audio/midi/WindowsMidiDriver.o \
-	audio/midi/TimidityMidiDriver.o
+	audio/midi/TimidityMidiDriver.o \
+	audio/midi/UnixSeqMidiDriver.o
 
 TIMIDITY = \
 	audio/midi/timidity/timidity.o \
