@@ -33,11 +33,22 @@ PagedGump::PagedGump(int left, int right, int top, int shape):
 	gumpShape(shape), nextButton(0), prevButton(0)
 {
 	current = gumps.end();
+	GUIApp * guiapp = GUIApp::get_instance();
+	guiapp->pushMouseCursor();
+	guiapp->setMouseCursor(GUIApp::MOUSE_HAND);
 }
 
 PagedGump::~PagedGump(void)
 {
 	gumps.clear();
+}
+
+void PagedGump::Close(bool no_del)
+{
+	GUIApp* guiapp = GUIApp::get_instance();
+	guiapp->popMouseCursor();
+
+	ModalGump::Close(no_del);
 }
 
 static const int pageOverShape = 34;
@@ -135,6 +146,11 @@ void PagedGump::addPage(Gump * g)
 
 	current = gumps.begin();
 	(*current)->UnhideGump();
+	
+	if (current + 1 == gumps.end())
+		nextButton->HideGump();
+	else
+		nextButton->UnhideGump();
 }
 
 bool PagedGump::loadData(IDataSource* ids)

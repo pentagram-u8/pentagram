@@ -110,6 +110,7 @@ GUMPS = \
 	gumps/MenuGump.o \
 	gumps/ModalGump.o \
 	gumps/MovieGump.o \
+	gumps/OptionsGump.o \
 	gumps/PagedGump.o \
 	gumps/PaperdollGump.o \
 	gumps/ReadableGump.o \

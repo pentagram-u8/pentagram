@@ -1,3 +1,9 @@
+2004-06-15  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* gumps/ControlsGump.cpp: does not set mouse cursor anymore
+	* gumps/MenuGump.cpp: attached OptionsGump to Options
+	* gumps/OptionsGump.*: initial version of options menu
+	* gumps/PagedGump.*: responsible for setting mouse cursor now
+
 2004-06-13  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* gumps/widgets/ButtonWidget.cpp: verify mouse is on button during
 	  click.

@@ -16,38 +16,32 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef PAGEDGUMP_H
-#define PAGEDGUMP_H
+#ifndef OPTIONSGUMP_H
+#define OPTIONSGUMP_H
 
-#include "ModalGump.h"
+#include "Gump.h"
 
-class PagedGump : public ModalGump
+class OptionsGump : public Gump
 {
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	PagedGump(int left, int right, int top, int shape);
-	virtual ~PagedGump(void);
+	OptionsGump();
+	virtual ~OptionsGump(void);
 
 	// Init the gump, call after construction
 	virtual void InitGump();
-	virtual void Close(bool no_del = false);
 
 	// Paint the Gump
 	virtual void PaintThis(RenderSurface*, sint32 lerp_factor);
 
 	virtual bool OnKeyDown(int key, int mod);
 	virtual void ChildNotify(Gump *child, uint32 message);
-	void addPage(Gump * g);
 
 	bool loadData(IDataSource* ids);
 protected:
 	virtual void saveData(ODataSource* ods);
-	int leftOff, rightOff, topOff, gumpShape;
-	std::vector<Gump *> gumps;
-	Gump * nextButton;
-	Gump * prevButton;
-	std::vector<Gump *>::iterator current;
+	ObjId entryGumps[6];
 };
 
 #endif

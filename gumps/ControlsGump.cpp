@@ -120,14 +120,10 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(ControlsGump,Gump);
 
 ControlsGump::ControlsGump(): Gump(0, 0, 5, 5)
 {
-	GUIApp * app = GUIApp::get_instance();
-	app->pushMouseCursor();
-	app->setMouseCursor(GUIApp::MOUSE_HAND);
 }
 
 ControlsGump::~ControlsGump()
 {
-	GUIApp::get_instance()->popMouseCursor();
 }
 
 void ControlsGump::InitGump()

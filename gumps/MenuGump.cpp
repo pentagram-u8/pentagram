@@ -29,6 +29,7 @@
 #include "TextWidget.h"
 #include "QuitGump.h"
 #include "ControlsGump.h"
+#include "OptionsGump.h"
 #include "PagedGump.h"
 
 #include "IDataSource.h"
@@ -81,7 +82,6 @@ void MenuGump::InitGump()
 	int x = dims.w / 2 + 14;
 	int y = 18;
 	Gump * widget;
-	Pentagram::Rect rect;
 	for (int i = 0; i < 8; ++i)
 	{
 		FrameID frame_up(GameData::GUMPS, menuEntryShape, i * 2);
@@ -92,12 +92,12 @@ void MenuGump::InitGump()
 		widget->InitGump();
 		AddChild(widget);
 		entryGumps[i] = widget->getObjId();
-		widget->GetDims(rect);
 		y+= 14;
 	}
 	
 	// Should be Avatar's name.
 	//!! Hardcoded English String
+	Pentagram::Rect rect;
 	widget = new TextWidget(0, 0, "Pentagram", 6);
 	widget->InitGump();
 	widget->GetDims(rect);
@@ -134,10 +134,11 @@ bool MenuGump::OnKeyDown(int key, int mod)
 	} break;	
 	case SDLK_4:
 	{	// Options
+		OptionsGump * options = new OptionsGump();
+		options->InitGump();
 		PagedGump * gump = new PagedGump(34, -38, 3, gumpShape);
 		gump->InitGump();
-		gump->addPage(ControlsGump::showEngineMenu());
-		gump->addPage(ControlsGump::showU8Menu());
+		gump->addPage(options);
 		AddChild(gump);
 		gump->setRelativePosition(CENTER);
 	} break;
@@ -170,46 +171,9 @@ void MenuGump::ChildNotify(Gump *child, uint32 message)
 		{
 			if (cid == entryGumps[i])
 			{
-				switch (i + 1)
-				{
-				case 1:
-				{	// Intro
-				} break;
-				case 2:
-				{	// Read Diary
-					// I'm lazy - MJ
-					GUIApp::get_instance()->loadGame("@save/quicksave");
-				} break;
-				case 3:
-				{	// Write Diary
-					// I'm lazy - MJ
-					GUIApp::get_instance()->saveGame("@save/quicksave");
-				} break;
-				case 4:
-				{	// Options
-					PagedGump * gump = new PagedGump(34, -38, 3, gumpShape);
-					gump->InitGump();
-					gump->addPage(ControlsGump::showEngineMenu());
-					gump->addPage(ControlsGump::showU8Menu());
-					AddChild(gump);
-					gump->setRelativePosition(CENTER);
-				} break;
-				case 5:
-				{	// Credits
-				} break;
-				case 6:
-				{	// Quit
-					QuitGump::verifyQuit();
-				} break;
-				case 7:
-				{	// Quotes
-				} break;
-				case 8:
-				{	// End Game
-				} break;
-				default:
-					break;
-				}
+				//! Hack! Taking advantage of key ordering because
+				// I'm tired of writing code twice.
+				OnKeyDown(i + SDLK_1, 0);
 			}
 		}
 	}
