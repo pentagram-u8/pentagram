@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -46,7 +46,7 @@ MissileProcess::MissileProcess(Item* item_, sint32 to_x_, sint32 to_y_,
 
 	item_->getLocation(from_x, from_y, from_z);
 
-	speed = speed_;
+	speed = speed_*5;
 	curve = curve_;
 
 	currentpos = 0;

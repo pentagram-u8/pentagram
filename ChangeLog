@@ -1,6 +1,7 @@
 2004-05-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.*: some more intrinsics (legalMoveToContainer, getRange)
 	* world/CurrentMap.cpp: fixed isValidPosition
+	* world/Item.cpp, world/MissileProcess.cpp: darts now look a bit better
 
 2004-05-07  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/widgets/ButtonWidget.*: register clicks in the entire button
