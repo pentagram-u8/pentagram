@@ -22,7 +22,7 @@
 #include "Shape.h"
 #include "Palette.h"
 
-ShapeFlex::ShapeFlex(IDataSource* ds, Palette* pal,
+ShapeFlex::ShapeFlex(IDataSource* ds, Pentagram::Palette* pal,
 					 const ConvertShapeFormat *fmt)
 	: Flex(ds), format(fmt), palette(pal)
 {

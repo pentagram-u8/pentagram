@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <vector>
 
-struct Palette;
+namespace Pentagram { struct Palette; }
 class IDataSource;
 class RenderSurface;
 
@@ -66,7 +66,7 @@ public:
 	};
 
 	void load(PalIndex index, IDataSource& ds, IDataSource &xformds);
-	Palette* getPalette(PalIndex index);
+	Pentagram::Palette* getPalette(PalIndex index);
 
 	// Apply a transform matrix to a palette (-4.11 fixed)
 	void transformPalette(PalIndex index, sint16 matrix[12]);
@@ -79,7 +79,7 @@ public:
 	static void getTransformMatrix(sint16 matrix[12], uint32 col32);	
 
 private:
-	std::vector<Palette*> palettes;
+	std::vector<Pentagram::Palette*> palettes;
 	RenderSurface *rendersurface;
 
 	static PaletteManager* palettemanager;

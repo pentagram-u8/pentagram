@@ -23,6 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Texture.h"
 #include <cstring>
 
+namespace Pentagram
+{
+
 void Palette::load(IDataSource& ds, IDataSource& xformds)
 {
 	int i;
@@ -45,4 +48,6 @@ void Palette::load(IDataSource& ds, IDataSource& xformds)
 	matrix[8] = 0;		matrix[9] = 0;		matrix[10] = 0x800;	matrix[11] = 0;
 
 	transform=PaletteManager::Transform_None;
+}
+
 }

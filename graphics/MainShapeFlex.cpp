@@ -23,7 +23,7 @@
 #include "ShapeInfo.h"
 #include "AnimDat.h"
 
-MainShapeFlex::MainShapeFlex(IDataSource* ds, Palette* pal,
+MainShapeFlex::MainShapeFlex(IDataSource* ds, Pentagram::Palette* pal,
 							 const ConvertShapeFormat *format)
 	: ShapeFlex(ds, pal, format), typeFlags(0), animdat(0)
 {

@@ -131,7 +131,7 @@ public:
 	// Get The Surface Palette
 	// TODO: virtual void GetPalette(uint8 palette[768]);
 
-	virtual void CreateNativePalette(Palette* palette);
+	virtual void CreateNativePalette(Pentagram::Palette* palette);
 
 };
 

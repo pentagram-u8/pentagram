@@ -42,7 +42,7 @@ PaletteFaderProcess::PaletteFaderProcess(PaletteManager::PalTransforms trans,
 		counter(frames), max_counter(frames)
 {
 	PaletteManager	*pm = PaletteManager::get_instance();
-	Palette *pal = pm->getPalette(PaletteManager::Pal_Game);
+	Pentagram::Palette *pal = pm->getPalette(PaletteManager::Pal_Game);
 	for (int i = 0; i < 12; i++) old_matrix[i] = pal->matrix[i];
 	pm->getTransformMatrix(new_matrix,trans);
 	pal->transform = trans;
@@ -53,7 +53,7 @@ PaletteFaderProcess::PaletteFaderProcess(uint32 col32, bool from,
 		counter(frames), max_counter(frames)
 {
 	PaletteManager	*pm = PaletteManager::get_instance();
-	Palette *pal = pm->getPalette(PaletteManager::Pal_Game);
+	Pentagram::Palette *pal = pm->getPalette(PaletteManager::Pal_Game);
 	if (!from)
 	{
 		if (current)

@@ -1652,7 +1652,7 @@ void GUIApp::save(ODataSource* ods)
 	ods->write4(static_cast<uint32>(timeOffset));
 	ods->write4(framenum);
 
-	Palette *pal = PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game);
+	Pentagram::Palette *pal = PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game);
 	for (int i = 0; i < 16; i++) ods->write2(pal->matrix[i]);
 	ods->write2(pal->transform);
 }
@@ -1671,7 +1671,7 @@ bool GUIApp::load(IDataSource* ids)
 		matrix[i] = ids->read2();
 
 	PaletteManager::get_instance()->transformPalette(PaletteManager::Pal_Game, matrix);
-	Palette *pal = PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game);
+	Pentagram::Palette *pal = PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game);
 	pal->transform = static_cast<PaletteManager::PalTransforms>(ids->read2());
 
 	return true;

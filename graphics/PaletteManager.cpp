@@ -50,14 +50,14 @@ void PaletteManager::load(PalIndex index, IDataSource& ds, IDataSource &xformds)
 	if (palettes[index])
 		delete palettes[index];
 
-	Palette* pal = new Palette;
+	Pentagram::Palette* pal = new Pentagram::Palette;
 	pal->load(ds,xformds);
 	rendersurface->CreateNativePalette(pal); // convert to native format
 
 	palettes[index] = pal;
 }
 
-Palette* PaletteManager::getPalette(PalIndex index)
+Pentagram::Palette* PaletteManager::getPalette(PalIndex index)
 {
 	if (static_cast<unsigned int>(index) > palettes.size())
 		return 0;
@@ -67,7 +67,7 @@ Palette* PaletteManager::getPalette(PalIndex index)
 
 void PaletteManager::transformPalette(PalIndex index, sint16 matrix[12])
 {
-	Palette *pal = getPalette(index);
+	Pentagram::Palette *pal = getPalette(index);
 
 	if (!pal) return;
 

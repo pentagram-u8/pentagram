@@ -1,3 +1,7 @@
+2003-07-17  Max Horn <max@quendi.de>
+	* misc/Palette.*: Moved struct Palette into namespace Pentagram
+	* various: adapted to Palette now being in namespace Pentagram
+
 2003-07-17  Dominik Reichardt <dominus@users.sourceforge.net>
 	* kernel/GUIApp.cpp: changed Quicksave/load to F7/F8 (like the original)
 	* readme: mentioned savegame keys

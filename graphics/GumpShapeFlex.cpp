@@ -22,7 +22,7 @@
 #include "Rect.h"
 #include "IDataSource.h"
 
-GumpShapeFlex::GumpShapeFlex(IDataSource* ds, Palette* pal,
+GumpShapeFlex::GumpShapeFlex(IDataSource* ds, Pentagram::Palette* pal,
 							 const ConvertShapeFormat *format)
 	: ShapeFlex(ds, pal, format)
 {

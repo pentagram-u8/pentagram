@@ -26,7 +26,7 @@ class Font;
 class FontShapeFlex : protected ShapeFlex
 {
 public:
-	FontShapeFlex(IDataSource* ds, Palette* pal = 0,
+	FontShapeFlex(IDataSource* ds, Pentagram::Palette* pal = 0,
 				  const ConvertShapeFormat *format = 0) :
 		ShapeFlex(ds, pal, format) { }
 	virtual ~FontShapeFlex() { }

@@ -26,8 +26,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 struct Texture;
 class Shape;
 class Font;
-struct Palette;
-namespace Pentagram { struct Rect; }
+namespace Pentagram
+{
+	struct Palette;
+	struct Rect;
+}
 
 //
 // RenderSurface
@@ -89,7 +92,6 @@ public:
 	//
 	// Surface Palettes
 	//
-	// TODO: Make a Palette class
 	// TODO: Handle Ultima8 and Crusader Xforms
 	//
 
@@ -102,7 +104,7 @@ public:
 	// Get The Surface Palette
 	// TODO: virtual void GetPalette(uint8 palette[768]) = 0;
 
-	virtual void CreateNativePalette(Palette* palette) = 0;
+	virtual void CreateNativePalette(Pentagram::Palette* palette) = 0;
 
 
 	//

@@ -30,7 +30,7 @@ struct AnimAction;
 class MainShapeFlex : public ShapeFlex
 {
 public:
-	MainShapeFlex(IDataSource* ds, Palette* pal = 0,
+	MainShapeFlex(IDataSource* ds, Pentagram::Palette* pal = 0,
 				  const ConvertShapeFormat *format = 0);
 	virtual ~MainShapeFlex();
 	

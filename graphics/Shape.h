@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <vector>
 
 class ShapeFrame;
-struct Palette;
+namespace Pentagram { struct Palette; }
 struct ConvertShapeFormat;
 class IDataSource;
 
@@ -35,8 +35,8 @@ public:
 	Shape(const uint8* data, uint32 size, const ConvertShapeFormat *format);
 	Shape(IDataSource *src, const ConvertShapeFormat *format);
 	virtual ~Shape();
-	void setPalette(const Palette* pal) { palette = pal; }
-	const Palette* getPalette() const { return palette; }
+	void setPalette(const Pentagram::Palette* pal) { palette = pal; }
+	const Pentagram::Palette* getPalette() const { return palette; }
 
 	unsigned int frameCount() const { return frames.size(); }
 
@@ -62,7 +62,7 @@ protected:
 
 	std::vector<ShapeFrame*> frames;
 
-	const Palette* palette;
+	const Pentagram::Palette* palette;
 
 	const uint8* data;
 	uint32 size;

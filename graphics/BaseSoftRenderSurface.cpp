@@ -160,7 +160,7 @@ ECode BaseSoftRenderSurface::EndPainting()
 //
 // Desc: Create a palette of colours native to the surface
 //
-void BaseSoftRenderSurface::CreateNativePalette(Palette* palette)
+void BaseSoftRenderSurface::CreateNativePalette(Pentagram::Palette* palette)
 {
 	for (int i = 0; i < 256; i++)
 	{

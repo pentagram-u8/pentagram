@@ -26,12 +26,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class IDataSource;
 class Shape;
 struct ConvertShapeFormat;
-struct Palette;
+namespace Pentagram { struct Palette; }
 
 class ShapeFlex : protected Flex
 {
 public:
-	ShapeFlex(IDataSource* ds, Palette* pal = 0,
+	ShapeFlex(IDataSource* ds, Pentagram::Palette* pal = 0,
 			  const ConvertShapeFormat *format = 0);
 	virtual ~ShapeFlex();
 
@@ -44,7 +44,7 @@ public:
 
 protected:
 	const ConvertShapeFormat *format;
-	Palette* palette;
+	Pentagram::Palette* palette;
 	std::vector<Shape*> shapes;
 };
 
