@@ -1,3 +1,7 @@
+2004-07-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* audio/midi/UnixSeqMidiDriver.*: ported UNIX sequencer device MIDI
+	  driver from ScummVM
+
 2004-07-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* games/TreasureLoader.*: added 'map' treasure selector
 	* data/u8.ini, data/u8monsters.ini: some treasure definitions

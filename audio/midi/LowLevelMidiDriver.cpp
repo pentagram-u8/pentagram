@@ -287,7 +287,7 @@ void LowLevelMidiDriver::unlockComMessage()
 
 int LowLevelMidiDriver::initThreadedSynth()
 {
-	// Create the therad
+	// Create the thread
 	giveinfo();
 	
 	ComMessage message(LLMD_MSG_THREAD_INIT);

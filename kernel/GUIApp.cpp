@@ -123,6 +123,9 @@ struct HWMouseCursor {
 #ifdef USE_TIMIDITY_MIDI
 #include "TimidityMidiDriver.h"
 #endif
+#ifdef UNIX
+#include "UnixSeqMidiDriver.h"
+#endif
 
 using std::string;
 
@@ -320,7 +323,7 @@ void GUIApp::init_midi()
 	bool audio_ok = (ret == 0);
 
 	// Now, add the drivers in order of priority.
-	// Do OS Native drivers first, then then Timidity, then FMOpl
+	// Do OS Native drivers first, then Timidity, then FMOpl
 
 #ifdef MACOSX
 	midi_drivers.push_back(CoreAudioMidiDriver::getDesc());
@@ -333,6 +336,10 @@ void GUIApp::init_midi()
 #endif
 #ifdef USE_FMOPL_MIDI
 	midi_drivers.push_back(FMOplMidiDriver::getDesc());
+#endif
+#ifdef UNIX
+	midi_drivers.push_back(UnixSeqMidiDriver::getDesc());
+	pout << "UnixSeqMidiDriver" << std::endl;
 #endif
 
 	// First thing attempt to find the Midi driver as specified in the config
