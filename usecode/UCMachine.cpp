@@ -38,7 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Container.h"
 
-//#define WATCH_CLASS 836
+//#define WATCH_CLASS 109
 //#define WATCH_ITEM 121
 
 #ifdef WATCH_CLASS
@@ -1288,7 +1288,9 @@ bool UCMachine::execProcess(UCProcess* p)
 				LOGPF(("spawn inline\t%04X:%04X+%04X=%04X %02X %02X",
 					   classid,offset,delta,offset+delta,this_size, unknown));
 
-				uint32 thisptr = stackToPtr(p->pid, p->bp+6);
+				uint32 thisptr = 0;
+				if (this_size > 0)
+					uint32 thisptr = p->stack.access4(p->bp+6);
 				UCProcess* newproc = new UCProcess(classid, offset + delta,
 												   thisptr, this_size);
 

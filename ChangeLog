@@ -1,3 +1,6 @@
+2004-03-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/UCMachine.cpp: fixed spawn inline opcode (invalid thisptr)
+
 2004-03-07  Max Horn <max@quendi.de>
 	* audio/midi/LowLevelMidiDriver.cpp: Fix deadlock on quit (Ryan told me
 	  this fix a long time ago, but for some reasons it was never committed)
