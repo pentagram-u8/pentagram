@@ -84,6 +84,8 @@ public:
 	void toggleAvatarInStasis() { avatarInStasis = !avatarInStasis; }
 	bool isPaintEditorItems() const { return paintEditorItems; }
 	void togglePaintEditorItems() { paintEditorItems = !paintEditorItems; }
+	bool isShowTouchingItems() const { return showTouching; }
+	void toggleShowTouchingItems() { showTouching = !showTouching; }
 
 	uint32 getGameTimeInSeconds();
 	
@@ -194,6 +196,8 @@ private:
 	bool paintEditorItems;  //!< If true, paint items with the SI_EDITOR flag
 	
 	bool painting;			//!< Set true when painting
+
+	bool showTouching;			//!< If true, highlight items touching Avatar
 
 	int mouseX, mouseY;
 

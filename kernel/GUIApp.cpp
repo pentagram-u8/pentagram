@@ -144,7 +144,7 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	  runGraphicSysInit(false), runSDLInit(false),
 	  frameSkip(false), frameLimit(true), interpolate(false),
 	  animationRate(100), avatarInStasis(false), paintEditorItems(false),
-	  painting(false), dragging(DRAG_NOT),
+	  painting(false), showTouching(false), dragging(DRAG_NOT),
 	  dragging_offsetX(0), dragging_offsetY(0), timeOffset(0),
 	  midi_driver(0), midi_volume(255), drawRenderStats(false)
 {
@@ -1238,7 +1238,6 @@ public:
 	static  QuickAvatarMoverProcess	*amp[6];
 	static	bool				clipping;
 	static	bool				quarter;
-	static	bool				hitting;
 
 	QuickAvatarMoverProcess(int x, int y, int z, int _dir) : Process(1), dx(x), dy(y), dz(z), dir(_dir)
 	{
@@ -1274,7 +1273,7 @@ public:
 			if (j == 1) dx = 0;
 			else if (j == 2) dy = 0;
 
-			if (quarter) 
+			if (quarter)
 			{
 				dx /= 4;
 				dy /= 4;
@@ -1309,7 +1308,7 @@ public:
 						{
 							dz = -32;
 						}
-					}					
+					}
 					ok = true;
 					break;
 				}
@@ -1326,54 +1325,6 @@ public:
 			if (ok) break;
 		}
 
-#if 0
-		if (hitting) 
-		{
-			std::list<CurrentMap::SweepItem> items;
-
-			sint32 start[3] = { x, y, z };
-			sint32 end[3] = { x+dx, y+dy, z+dz };
-			sint32 dims[3] = { ixd, iyd, izd };
-			uint16 skip = 0;
-
-			bool hit = cm->sweepTest(start,end,dims,1,false,&items);
-
-			if (hit)
-			{
-				std::list<CurrentMap::SweepItem>::iterator it;
-
-				for (it = items.begin(); it != items.end(); it++)
-				{
-					Item *item = World::get_instance()->getItem((*it).item);
-
-					uint16 proc_gothit = 0, proc_rel = 0;
-
-					// If hitting at start, we should have already 
-					// called gotHit
-					if ((*it).hit_time > 0) 
-					{
-						item->setExtFlag(Item::EXT_HIGHLIGHT);
-						proc_gothit = item->callUsecodeEvent_gotHit(1,0);
-					}
-
-					// If not hitting at end, we will need to call release
-					if ((*it).end_time < 0x4000)
-					{
-						item->clearExtFlag(Item::EXT_HIGHLIGHT);
-						proc_rel = item->callUsecodeEvent_release();
-					}
-
-					// We want to make sure that release is called AFTER gotHit.
-					if (proc_rel && proc_gothit)
-					{
-						Process *p = Kernel::get_instance()->getProcess(proc_rel);
-						p->waitFor(proc_gothit);
-					}
-				}
-			}
-		}
-#endif
-
 		// Yes, i know, not entirely correct
 		avatar->collideMove(x+dx,y+dy,z+dz, false, true);
 		return true;
@@ -1389,9 +1340,7 @@ public:
 QuickAvatarMoverProcess	*QuickAvatarMoverProcess::amp[6] = { 0, 0, 0, 0, 0, 0 };
 bool QuickAvatarMoverProcess::clipping = false;
 bool QuickAvatarMoverProcess::quarter = false;
-bool QuickAvatarMoverProcess::hitting = false;
 
-bool hitting() { return QuickAvatarMoverProcess::hitting; }
 
 static int volumelevel = 255;
 
@@ -1571,8 +1520,8 @@ void GUIApp::handleEvent(const SDL_Event& event)
 				pout << "QuickAvatarMoverProcess::clipping = " << QuickAvatarMoverProcess::clipping << std::endl; 
 			} break;
 			case SDLK_h: {
-				QuickAvatarMoverProcess::hitting = !QuickAvatarMoverProcess::hitting;
-				pout << "QuickAvatarMoverProcess::hitting = " << QuickAvatarMoverProcess::hitting << std::endl; 
+				toggleShowTouchingItems();
+				pout << "ShowTouchingItems = " << isShowTouchingItems() << std::endl; 
 			} break;
 			case SDLK_UP: {
 				if (!avatarInStasis) { 
@@ -1677,35 +1626,6 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		case SDLK_LEFTBRACKET: gameMapGump->IncSortOrder(-1); break;
 		case SDLK_RIGHTBRACKET: gameMapGump->IncSortOrder(+1); break;
 
-		case SDLK_KP1: case SDLK_KP2: case SDLK_KP3:
-		case SDLK_KP4: case SDLK_KP6: case SDLK_KP7:
-		case SDLK_KP8: case SDLK_KP9: { // quick animation test
-			if (!avatarInStasis) { 
-				int dir;
-				Animation::Sequence action = Animation::walk;
-				if (event.key.keysym.mod & KMOD_LSHIFT) action = Animation::run;
-				if (event.key.keysym.mod & KMOD_LCTRL) action = Animation::step;
-				if (event.key.keysym.mod & KMOD_LALT) action = Animation::jump;
-				switch (event.key.keysym.sym) {
-				case SDLK_KP1: dir=4; break;
-				case SDLK_KP2: dir=3; break;
-				case SDLK_KP3: dir=2; break;
-				case SDLK_KP4: dir=5; break;
-				case SDLK_KP6: dir=1; break;
-				case SDLK_KP7: dir=6; break;
-				case SDLK_KP8: dir=7; break;
-				case SDLK_KP9: dir=0; break;
-				default: dir=0; break;
-				}
-                MainActor* av = World::get_instance()->getMainActor();
-				if (!av->tryAnim(action, dir)) {
-					perr << "tryAnim: failed!" << std::endl;
-				}
-				av->doAnim(action, dir);
-			} else { 
-				pout << "Can't: avatarInStasis" << std::endl; 
-			} 
-		} break;
 		default: break;
 		}
 	}

@@ -1,8 +1,10 @@
-2004-08-15  Matthew Jimenez <mjimenez@users.sourceforge.net>
+2004-08-29  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* kernel/CoreApp.cpp: pass SDL_INIT_JOYSTICK to SDL_Init
 	* kernel/Joystick.*: limited support for joystick
 	* kernel/HIDManager.*: allow bindings to joystick buttons from
 	  console only.
+	* kernel/GUIApp.*: removed animation test code, removed hitting
+	  code in QuickAvatarMoverProcess and moved hitting flag to GUIApp
 
 2004-08-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Actor.*: areEnemiesNear intrinsic

@@ -740,7 +740,7 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 
 sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool force)
 {
-	extern bool hitting();
+	GUIApp *guiapp = GUIApp::get_instance();
 	World *world = World::get_instance();
 	CurrentMap *map = world->getCurrentMap();
 
@@ -807,7 +807,8 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 			// Hitting us at the end (call hit on us, got hit on them)
 			else if (it->end_time == 0x4000)
 			{
-				if (objid == 1 && hitting()) item->setExtFlag(Item::EXT_HIGHLIGHT);
+				if (objid == 1 && guiapp->isShowTouchingItems())
+					item->setExtFlag(Item::EXT_HIGHLIGHT);
 				item->callUsecodeEvent_gotHit(objid,0);
 				callUsecodeEvent_hit(item->getObjId(),0);
 			}
@@ -882,7 +883,8 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 			// called gotHit and hit
 			if (it->hit_time > 0) 
 			{
-				if (objid == 1 && hitting()) item->setExtFlag(Item::EXT_HIGHLIGHT);
+				if (objid == 1 && guiapp->isShowTouchingItems())
+					item->setExtFlag(Item::EXT_HIGHLIGHT);
 				proc_gothit = item->callUsecodeEvent_gotHit(objid,0);
 				callUsecodeEvent_hit(item->getObjId(), 0);
 			}
