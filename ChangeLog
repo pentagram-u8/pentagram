@@ -5,6 +5,7 @@
 	* world/Item.*: openGump(), closeGump() functions
 	* world/Object.cpp, world/Item.cpp: changed Object/Item savegame format
 	* world/GlobEgg.*, world/Item.cpp: don't save unchanged in-glob items
+	* usecode/UCMachine.cpp, usecode/BitSet.cpp: some bugfixes
 
 2003-07-06  Max Horn <max@quendi.de>
 	* audio/midi/CoreAudioMidiDriver.*: Fixed some GCC 3.3 warnings;

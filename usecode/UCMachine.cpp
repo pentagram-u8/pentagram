@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Container.h"
 
-//#define WATCH_CLASS 0x581
+//#define WATCH_CLASS 1057
 //#define WATCH_ITEM 19
 
 #ifdef WATCH_CLASS
@@ -1003,9 +1003,11 @@ bool UCMachine::execProcess(UCProcess* p)
 			ui16b = p->stack.pop2(); // list
 			UCList* l = getList(ui16b);
 			if (!l) {
-				perr << "push element from invalid list (" << ui16b << ")"
-					 << std::endl;
-				error = true;
+//				perr << "push element from invalid list (" << ui16b << ")"
+//					 << std::endl;
+				// This is necessary for closing the backpack to work
+				p->stack.push0(ui32a);
+//				error = true;
 			} else {
 				if (ui32b) {
 					uint16 s = listHeap[ui16b]->getStringIndex(ui16a);
@@ -1095,7 +1097,14 @@ bool UCMachine::execProcess(UCProcess* p)
 			// TODO: get flagname for output?
 			ui32a = p->stack.pop2();
 			globals->setBits(ui16a, ui16b, ui32a);
-			assert(globals->getBits(ui16a, ui16b) == ui32a); // paranoid :-)
+
+			if (ui32a & ~(((1 << ui16b)-1))) {
+				perr << "Warning: value popped into a bitflag it doesn't fit in" << std::endl;
+			}
+
+			// paranoid :-)
+			assert(globals->getBits(ui16a, ui16b)==(ui32a & ((1 << ui16b)-1)));
+
 			LOGPF(("pop\t\tglobal [%04X %02X] = %02X", ui16a, ui16b, ui32a));
 			break;
 
@@ -1558,7 +1567,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				case 4: case 5:
 				{
 					// container search (4 = recursive)
-					stacksize = 0x281;
+					stacksize = 0x28;
 					if (searchtype == 5) { stacksize += 2; recurse = true; }
 
 					// ui16a = 0xFFFF (?), ui16b = container

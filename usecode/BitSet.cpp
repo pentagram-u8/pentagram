@@ -95,7 +95,7 @@ void BitSet::setBits(unsigned int pos, unsigned int n, uint32 bits)
 	unsigned int lastbyte = (pos + n - 1) / 8;
 
 	if (firstbyte == lastbyte) {
-		data[firstbyte] &= ~((1 << n) - 1) << (pos % 8);
+		data[firstbyte] &= ~(((1 << n) - 1) << (pos % 8));
 		data[firstbyte] |= (bits & ((1 << n) - 1)) << (pos % 8);
 		return;
 	}
