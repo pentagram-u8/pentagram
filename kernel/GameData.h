@@ -16,27 +16,35 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef GLOB_H
-#define GLOB_H
+#ifndef GAMEDATA_H
+#define GAMEDATA_H
 
-#include <vector>
+class MainShapeFlex;
+class Usecode;
+class Flex;
 
-struct GlobItem {
-	int x;
-	int y;
-	int z;
-	int shape;
-	int frame;
-};
-
-class Glob
+class GameData
 {
 public:
-	Glob();
-	~Glob();
+	GameData();
+	~GameData();
+
+	static GameData* get_instance() { return gamedata; }
+
+	void loadU8Data(); // probably only temporary
+
+	Usecode* getMainUsecode() const { return mainusecode; }
+	MainShapeFlex* getMainShapes() const { return mainshapes; }
+	Flex* getGlobs() const { return globs; }
 
 private:
-	std::vector<GlobItem*> contents;
+
+	MainShapeFlex* mainshapes;
+	Usecode* mainusecode;
+	Flex* globs;
+
+	static GameData* gamedata;
 };
+
 
 #endif

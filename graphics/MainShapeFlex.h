@@ -29,17 +29,12 @@ class MainShapeFlex : public ShapeFlex
 public:
 	MainShapeFlex(IDataSource* ds, ConvertShapeFormat *format = 0);
 	virtual ~MainShapeFlex();
-
-	static MainShapeFlex* get_instance() { return mainShapeFlex; }
 	
 	void loadTypeFlags(IDataSource *ds);
 	ShapeInfo* getShapeInfo(uint32 shapenum);
 
 protected:
 	TypeFlags* typeFlags;
-
-private:
-	static MainShapeFlex* mainShapeFlex;
 };
 
 

@@ -1,3 +1,7 @@
+2003-04-07 Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/GameData.*: GameData class for storing datafile objects
+	* docs/maps.txt: some object count info
+
 2003-04-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/*, kernel/*: added some usecode-call functions
 	* Makefile.mingw: set CFLAGS/CC variables

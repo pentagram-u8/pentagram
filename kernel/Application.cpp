@@ -35,6 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MainShapeFlex.h"
 #include "Palette.h"
 #include "XFormBlend.h"
+#include "GameData.h"
 #include "World.h"
 
 #include "Map.h" // temp
@@ -95,25 +96,10 @@ Application::Application(int argc, char *argv[])
 	pf->seek(4); // seek past header
 	palettemanager->load(PaletteManager::Pal_Game, *pf, U8XFormFuncs);
 
-	// Load main shapes
-	pout << "Load Shapes" << std::endl;
-	IDataSource *sf = filesystem->ReadFile("@u8/static/u8shapes.flx");
-	if (!sf) {
-		perr << "Unable to load static/u8shapes.flx. Exiting" << std::endl;
-		std::exit(-1);
-	}
-	mainshapes = new MainShapeFlex(sf);
+	gamedata = new GameData();
+	gamedata->loadU8Data();
 
-	// Load typeflags
-	IDataSource *tfs = filesystem->ReadFile("@u8/static/typeflag.dat");
-	if (!tfs) {
-		perr << "Unable to load static/typeflag.dat. Exiting" << std::endl;
-		std::exit(-1);
-	}
-	mainshapes->loadTypeFlags(tfs);
-	delete tfs;
-
-	shape = mainshapes->getShape(1);
+	shape = gamedata->getMainShapes()->getShape(1);
 	shape->setPalette(palettemanager->getPalette(PaletteManager::Pal_Game));
 
 	// Initialize world
@@ -133,15 +119,6 @@ Application::Application(int argc, char *argv[])
 	}
 	delete cf;
 	con.SetConFont(confont);
-
-
-	IDataSource* uds = filesystem->ReadFile("@u8/usecode/eusecode.flx");
-	if (!uds) {
-		perr << "Unable to load usecode/eusecode.flx. Exiting" << std::endl;
-		std::exit(-1);
-	}
-	mainusecode = new UsecodeFlex(uds);
-
 
 	IDataSource *saveds = filesystem->ReadFile("@u8/savegame/u8save.000");
 	U8Save *u8save = new U8Save(saveds);
@@ -213,11 +190,12 @@ Application::~Application()
 void Application::run()
 {
 	UCProcess* p;
+	Usecode* u = GameData::get_instance()->getMainUsecode();
 	if (classid != -1) {
-		p = new UCProcess(mainusecode, classid, offset);
+		p = new UCProcess(u, classid, offset);
 	} else {
-//		p = new UCProcess(mainusecode, 0xD0, 0x80);
-		p = new UCProcess(mainusecode, 0x581, 0x28F9);
+//		p = new UCProcess(u, 0xD0, 0x80);
+		p = new UCProcess(u, 0x581, 0x28F9);
 	}
 
     ucmachine->addProcess(p);

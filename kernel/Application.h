@@ -27,8 +27,7 @@ class ResizableGump;
 class ConsoleGump;
 class RenderSurface;
 class PaletteManager;
-class MainShapeFlex;
-class Usecode;
+class GameData;
 class World;
 
 // extremely simplified stub-ish Application class
@@ -45,9 +44,6 @@ public:
 	void loadConfig();
 	void setupVirtualPaths();
 
-	Usecode* getMainUsecode() const { return mainusecode; }
-	MainShapeFlex* getMainShapes() const { return mainshapes; }
-
 private:
 	Kernel* kernel;
 	UCMachine* ucmachine;
@@ -57,8 +53,7 @@ private:
 	ConsoleGump* console;
 	RenderSurface *screen;
 	PaletteManager *palettemanager;
-	MainShapeFlex *mainshapes;
-	Usecode *mainusecode;
+	GameData *gamedata;
 	World *world;
 
 	static Application* application;

@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Item.h"
 #include "Application.h"
 #include "Usecode.h"
+#include "GameData.h"
 
 /*
 My current idea on how to construct items: an ItemFactory class that
@@ -65,7 +66,7 @@ void Item::getLocation(sint32& X, sint32& Y, sint32 &Z) const
 
 void Item::callUsecodeEvent(uint32 event)
 {
-	Usecode* u = Application::get_instance()->getMainUsecode();
+	Usecode* u = GameData::get_instance()->getMainUsecode();
 
 	callUsecode(shape, u->get_class_event(shape, event), u);
 }

@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "ItemFactory.h"
+#include "GameData.h"
 #include "MainShapeFlex.h"
 #include "ShapeInfo.h"
 #include "Item.h"
@@ -31,7 +32,8 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 							  uint32 flags, uint32 npcnum, uint32 mapnum)
 {
 	// check what class to create
-	ShapeInfo *info = MainShapeFlex::get_instance()->getShapeInfo(shape);
+	ShapeInfo *info = GameData::get_instance()->getMainShapes()->
+		getShapeInfo(shape);
 	if (info == 0) return 0;
 
 	uint32 family = info->family;
@@ -80,6 +82,8 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 		globegg->flags = flags;
 		globegg->npcnum = npcnum;
 		globegg->mapnum = mapnum;
+
+		globegg->glob = 0; // where do we get the globs from?
 		return globegg;
 
 		return 0;

@@ -22,14 +22,10 @@
 #include "TypeFlags.h"
 #include "ShapeInfo.h"
 
-MainShapeFlex* MainShapeFlex::mainShapeFlex = 0;
-
 MainShapeFlex::MainShapeFlex(IDataSource* ds, ConvertShapeFormat *format)
 	: ShapeFlex(ds, format), typeFlags(0)
 {
-	assert(mainShapeFlex == 0);
 
-	mainShapeFlex = this;
 }
 
 
@@ -39,8 +35,6 @@ MainShapeFlex::~MainShapeFlex()
 		delete typeFlags;
 		typeFlags = 0;
 	}
-
-	mainShapeFlex = 0;
 }
 	
 void MainShapeFlex::loadTypeFlags(IDataSource *ds)

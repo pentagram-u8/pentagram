@@ -1,3 +1,6 @@
+U8 maps
+----------
+
 All ->'s are the "official" name given by the stategy guide, PENTOLOGY.
 3: by the docks of Tenebrae. -> Docks
 4: near Fishermans Reef. -> Fisherman's Reef
@@ -41,3 +44,158 @@ All ->'s are the "official" name given by the stategy guide, PENTOLOGY.
 223: strangeness
 243: strangeness
 255: strangeness
+
+
+
+3: ~20K objects
+4: ~37K objects
+5: ~20K objects
+6: ~20K objects
+7: ~24K objects
+8: ~30K objects
+12: ~22K objects
+14: ~21K objects
+15: ~8K objects
+16: ~13K objects
+(20: ~11K objects)
+21: ~10K objects
+24: ~6K objects
+25: ~8K objects
+26: ~11K objects
+28: ~15K objects
+(29: ~3K objects)
+31: ~27K objects
+(33: <1K objects)
+37: ~32K objects
+39: ~30K objects
+40: ~18K objects
+41: ~31K objects
+43: ~3K objects
+44: ~18K objects
+45: ~13K objects
+46: ~4K objects
+47: ~24K objects
+49: ~21K objects
+50: ~24K objects
+51: ~18K objects
+54: ~18K objects
+(56: ~2K objects)
+57: ~25K objects
+62: ~37K objects
+63: ~4K objects
+(159: <1K objects)
+(200: <1K objects)
+(222: ~2K objects)
+(223: ~27K objects)
+(243: <1K objects)
+(255: ~8K objects)
+
+
+
+
+Crusader: No Regret maps:
+
+1: ~9K
+2: ~5K
+3: ~14K
+5: ~7K
+6: ~5K
+7: ~6K
+8: ~5K
+9: ~12K
+10: ~9K
+11: ~9K
+13: ~7K
+14: ~5K
+15: ~12K
+16: ~9K
+17: ~10K
+18: ~4K
+19: ~4K
+20: ~6K
+21: ~2K
+22: ~1K
+25: ~1K
+26: ~1K
+27: ~1K
+28: ~6K
+29: ~5K
+30: ~5K
+39: ~9K
+44: ~7K
+100: ~1K
+200: ~7K
+201: ~7K
+215: ~13K
+224: ~2K
+230: ~1K
+248: <1K
+249: ~1K
+250: ~2K
+254: ~1K
+
+
+Crusader: No Remorse maps:
+
+1: ~18K
+2: ~5K
+3: ~10K
+4: ~8K
+5: ~14K
+6: ~11K
+7: ~17K
+8: ~3K
+9: ~11K
+10: ~6K
+11: ~8K
+13: ~14K
+14: ~11K
+15: ~14K
+16: ~12K
+17: ~10K
+19: ~12K
+21: ~10K
+22: <1K
+23: ~7K
+24: ~5K
+25: ~15K
+26: ~14K
+27: ~15K
+28: ~16K
+29: ~13K
+33: ~35K
+34: <1K
+41: ~1K
+42: ~10K
+47: ~8K
+55: ~10K
+56: ~10K
+60: ~18K
+62: ~8K
+64: ~14K
+69: ~8K
+116: ~13K
+141: ~14K
+142: ~10K
+149: ~14K
+150: ~8K
+160: ~13K
+170: ~14K
+180: ~14K
+189: <1K
+216: <1K
+223: ~14K
+224: ~1K
+237: ~7K
+239: ~7K
+243: ~1K
+244: segfault?
+245: ~10K
+246: ~1K
+248: ~18K
+249: ~10K
+251: ~1K
+252: ~1K
+253: <1K
+254: ~2K
+255: ~3K

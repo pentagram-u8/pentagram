@@ -21,14 +21,20 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Item.h"
 
+class Glob;
+
 class GlobEgg : public Item
 {
+	friend class ItemFactory;
 public:
 	GlobEgg();
 	virtual ~GlobEgg();
 
 	// p_dynamic_cast stuff
 	ENABLE_DYNAMIC_CAST(GlobEgg);
+
+protected:
+	Glob* glob;
 };
 
 
