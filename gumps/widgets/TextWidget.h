@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004  The Pentagram Team
+ *  Copyright (C) 2003-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@ class TextWidget : public Gump
 protected:
 	std::string		text;
 	int				fontnum;
+	uint32 			blendColour;
 
 	unsigned int	current_start; //!< start of currently displaying text
 	unsigned int	current_end;   //!< start of remaining text
@@ -59,6 +60,8 @@ public:
 	// Overloadable method to Paint just this Gump (RenderSurface is relative to this)
 	virtual void			PaintThis(RenderSurface*, sint32 lerp_factor);
 
+	virtual Gump* OnMouseMotion(int mx, int my);
+
 	//! display the next part of the text
 	//! \return false if there is no more text to display
 	bool setupNextText();
@@ -69,6 +72,9 @@ public:
 	void getCurrentText(unsigned int& start, unsigned int& end) const {
 		start = current_start; end = current_end;
 	}
+
+	//! set the colour to blend the rendered text with. (0 to disable)
+	void setBlendColour(uint32 col) { blendColour = col; }
 		
 
 	bool loadData(IDataSource* ids, uint32 version);

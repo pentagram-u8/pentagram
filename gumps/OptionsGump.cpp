@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2004-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -55,25 +55,25 @@ void OptionsGump::InitGump()
 	int y = 4;
 	Gump * widget;
 
-	widget = new ButtonWidget(x, y, "1. Video", font);
+	widget = new ButtonWidget(x, y, "1. Video", font, 0x804000B0);
 	widget->InitGump();
 	widget->SetIndex(1);
 	AddChild(widget);
 	y+= 14;
 
-	widget = new ButtonWidget(x, y, "2. Audio", font);
+	widget = new ButtonWidget(x, y, "2. Audio", font, 0x804000B0);
 	widget->InitGump();
 	widget->SetIndex(2);
 	AddChild(widget);
 	y+= 14;
 
-	widget = new ButtonWidget(x, y, "3. Controls", font);
+	widget = new ButtonWidget(x, y, "3. Controls", font, 0x804000B0);
 	widget->InitGump();
 	widget->SetIndex(3);
 	AddChild(widget);
 	y+= 14;
 
-	widget = new ButtonWidget(x, y, "4. Gameplay", font);
+	widget = new ButtonWidget(x, y, "4. Gameplay", font, 0x804000B0);
 	widget->InitGump();
 	widget->SetIndex(4);
 	AddChild(widget);

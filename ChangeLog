@@ -5,6 +5,9 @@
 	* kernel/GUIApp.cpp: don't allow saving if avatar is dead
 	* graphics/fonts/TTFont.cpp: added special case for bordersize==1
 	  to enable loop unrolling
+	* graphics/fonts/*RenderedText.*: added paintBlended method
+	* gumps/widgets/{Text,Button}Widget.*: added blended mouse-over mode
+	* gumps/OptionsGump.cpp, gumps/ControlsGump.cpp: mouse-over
 
 2005-01-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* data/u8bindings.ini: set c to combat mode, insert to clipping

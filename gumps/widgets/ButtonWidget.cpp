@@ -38,11 +38,13 @@ ButtonWidget::ButtonWidget()
 }
 
 ButtonWidget::ButtonWidget(int X, int Y, std::string txt, int font,
-						   int w, int h) :
+						   uint32 mouseOverBlendCol_, int w, int h) :
 	Gump(X,Y,w,h), shape_up(0), shape_down(0), mouseOver(false)
 {
 	TextWidget* widget = new TextWidget(0,0,txt,font,w,h);
 	textwidget = widget->getObjId();
+	mouseOverBlendCol = mouseOverBlendCol_;
+	mouseOver = (mouseOverBlendCol != 0);
 }
 
 ButtonWidget::ButtonWidget(int X, int Y, FrameID frame_up, FrameID frame_down, 							  bool _mouseOver)
@@ -149,16 +151,30 @@ void ButtonWidget::OnMouseDouble(int button, int mx, int my)
 void ButtonWidget::OnMouseOver()
 {
 	if (mouseOver) {
-		shape = shape_down;
-		framenum = framenum_down;
+		if (textwidget) {
+			Gump* widget = GUIApp::get_instance()->getGump(textwidget);
+			TextWidget* textwidget = p_dynamic_cast<TextWidget*>(widget);
+			assert(textwidget);
+			textwidget->setBlendColour(mouseOverBlendCol);
+		} else {
+			shape = shape_down;
+			framenum = framenum_down;
+		}
 	}
 }
 
 void ButtonWidget::OnMouseLeft()
 {
 	if (mouseOver) {
-		shape = shape_up;
-		framenum = framenum_up;
+		if (textwidget) {
+			Gump* widget = GUIApp::get_instance()->getGump(textwidget);
+			TextWidget* textwidget = p_dynamic_cast<TextWidget*>(widget);
+			assert(textwidget);
+			textwidget->setBlendColour(0);
+		} else {
+			shape = shape_up;
+			framenum = framenum_up;
+		}
 	}
 }
 

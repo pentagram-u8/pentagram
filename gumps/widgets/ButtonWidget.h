@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004  The Pentagram Team
+ *  Copyright (C) 2003-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ public:
 
 	ButtonWidget();
 	ButtonWidget(int X, int Y, std::string txt, int font,
-				 int width = 0, int height = 0);
+				 uint32 mouseOverBlendCol = 0, int width = 0, int height = 0);
 	ButtonWidget(int X, int Y, FrameID frame_up, FrameID frame_down,
 				 bool mouseOver = false);
 	virtual ~ButtonWidget(void);
@@ -64,6 +64,7 @@ protected:
 	Shape *shape_down;
 	uint32 framenum_down;
 	uint16 textwidget;
+	uint32 mouseOverBlendCol;
 	bool mouseOver;
 
 public:

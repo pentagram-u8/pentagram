@@ -77,7 +77,7 @@ void ControlEntryGump::InitGump()
 	Gump * widget;
 
 	Pentagram::Rect rect;
-	button = new ButtonWidget(0, 0, displayedName, font);
+	button = new ButtonWidget(0, 0, displayedName, font, 0x80D000D0);
 	button->InitGump();
 	AddChild(button);
 	button->GetDims(rect);

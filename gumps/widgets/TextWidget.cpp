@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004  The Pentagram Team
+ *  Copyright (C) 2003-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,8 +33,8 @@ TextWidget::TextWidget()
 
 TextWidget::TextWidget(int X, int Y, std::string txt, int font,
 					   int w, int h, Font::TextAlign align) :
-	Gump(X, Y, w, h), text(txt), fontnum(font), current_start(0),
-	current_end(0), targetwidth(w), targetheight(h),
+	Gump(X, Y, w, h), text(txt), fontnum(font), blendColour(0),
+	current_start(0), current_end(0), targetwidth(w), targetheight(h),
 	cached_text(0), textalign(align)
 {
 
@@ -100,8 +100,19 @@ void TextWidget::PaintThis(RenderSurface*surf, sint32 lerp_factor)
 		cached_text = font->renderText(text.substr(current_start, current_end-current_start),
 									   remaining, targetwidth, targetheight, textalign);
 	}
-	cached_text->draw(surf, 0, 0);
+
+	if (!blendColour)
+		cached_text->draw(surf, 0, 0);
+	else
+		cached_text->drawBlended(surf, 0, 0, blendColour);
 }
+
+// don't handle any mouse motion events, so let parent handle them for us.
+Gump* TextWidget::OnMouseMotion(int mx, int my)
+{
+	return 0;
+}
+
 
 void TextWidget::saveData(ODataSource* ods)
 {
