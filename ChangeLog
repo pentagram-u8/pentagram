@@ -1,6 +1,7 @@
 2004-08-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/ActorAnimProcess.cpp: kill anim when leaving fastarea
 	* world/actors/Pathfinder*.cpp: removed debugging output
+	* world/Item.cpp: don't knock back zero-weight items when hit
 
 2004-08-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/*, kernel/GUIApp.*: fix item dragging offset; cleanup

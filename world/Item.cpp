@@ -1424,7 +1424,7 @@ void Item::receiveHit(uint16 other, int dir, int damage, uint16 type)
 		return;
 	}
 
-	if (getShapeInfo()->is_fixed()) {
+	if (getShapeInfo()->is_fixed() || getShapeInfo()->weight == 0) {
 		// can't move
 		return;
 	}
