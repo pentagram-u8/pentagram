@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003  The Pentagram Team
+ *  Copyright (C) 2003-2004  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -48,7 +48,7 @@ ButtonWidget::ButtonWidget(int X, int Y, Shape* shape_up_, uint32 framenum_up_,
 	Gump(X,Y,5,5), shape_up(shape_up_), framenum_up(framenum_up_),
 	shape_down(shape_down_), framenum_down(framenum_down_), textwidget(0)
 {
-	
+
 }
 
 
@@ -78,6 +78,20 @@ void ButtonWidget::InitGump()
 		dims.w = sf->width;
 		dims.h = sf->height;
 	}
+}
+
+bool ButtonWidget::PointOnGump(int mx, int my)
+{
+	// CHECKME: this makes the ButtonWidget accept any point in its rectangle,
+	// effectively ignoring shape transparency. For some buttons (like those
+	// in U8's diary), this is desirable. For others it may not be, so this
+	// behaviour may need to be changed. (bool ignoreShapeTransparency or
+	// something)
+
+	int gx = mx, gy = my;
+	ParentToGump(gx,gy);
+
+	return dims.InRect(gx,gy);
 }
 
 Gump *ButtonWidget::OnMouseDown(int button, int mx, int my)

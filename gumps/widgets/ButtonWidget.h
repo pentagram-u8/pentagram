@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003  The Pentagram Team
+ *  Copyright (C) 2003-2004  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@ public:
 	// Init the gump, call after construction
 	virtual void InitGump();
 	virtual uint16 TraceObjId(int mx, int my);
+	virtual bool PointOnGump(int mx, int my);
 
 	virtual Gump* OnMouseDown(int button, int mx, int my);
 	virtual void OnMouseUp(int  button, int mx, int my);
