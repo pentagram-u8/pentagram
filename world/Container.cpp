@@ -145,6 +145,8 @@ bool Container::moveItemToEnd(Item* item)
 
 void Container::removeContents()
 {
+	// CHECKME: ethereal items?
+
 	Container* parent = getParentAsContainer();
 	if (parent) {
 		// move contents to parent

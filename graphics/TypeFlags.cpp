@@ -271,6 +271,12 @@ void TypeFlags::loadMonsterInfo()
 		} else
 			mi->resurrection = false;
 
+		if (config->exists(k + "/vanish")) {
+			config->get(k + "/vanish", val);
+			mi->vanish = (val != 0);
+		} else
+			mi->vanish = false;
+
 		if (config->exists(k + "/explode")) {
 			config->get(k + "/explode", val);
 			mi->explode = val;

@@ -35,6 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Animation.h"
 #include "DelayProcess.h"
 #include "ResurrectionProcess.h"
+#include "DeleteActorProcess.h"
 #include "Shape.h"
 
 #include "ItemFactory.h"
@@ -478,7 +479,7 @@ void Actor::die()
 
 	Kernel::get_instance()->killProcesses(getObjId(), 6); // CONSTANT!
 
-	doAnim(Animation::die, getDir());
+	ProcId animprocid = doAnim(Animation::die, getDir());
 
 	// TODO: Lots, including, but not limited to:
 	// * fill with treasure if appropriate
@@ -490,6 +491,8 @@ void Actor::die()
 
 	if (mi && mi->resurrection) {
 		// this monster will resurrect after a while
+
+		pout << "Actor::die: scheduling resurrection" << std::endl;
 
 		int timeout = ((std::rand() % 25) + 5) * 30; // 5-30 seconds
 
@@ -536,6 +539,17 @@ void Actor::die()
 						10 + (std::rand()%10),
 						4); // (wrong?) CONSTANTS!
 		}
+	}
+
+	if (mi && mi->vanish) {
+		// body disappears after the death animation
+
+		pout << "Actor::die: scheduling vanishing" << std::endl;
+
+		Process* vanishproc = new DeleteActorProcess(this);
+		Kernel::get_instance()->addProcess(vanishproc);
+
+		vanishproc->waitFor(animprocid);
 	}
 }
 

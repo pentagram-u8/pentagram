@@ -37,6 +37,8 @@ ResurrectionProcess::ResurrectionProcess(Actor* actor_)
 {
 	assert(actor_);
 	item_num = actor_->getObjId();
+
+	type = 0x229; // CONSTANT !
 }
 
 bool ResurrectionProcess::run(const uint32 framenum)

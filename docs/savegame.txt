@@ -465,3 +465,13 @@ sint16 new_matrix[12]
 AvatarMoverProcess: Process (v1)
 uint16 version
 <Process>
+
+
+ResurrectionProcess: Process (v1)
+uint16 version
+<Process>
+
+
+DeleteActorProcess: Process (v1)
+uint16 version
+<Process>

@@ -72,6 +72,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "PathfinderProcess.h"
 #include "AvatarMoverProcess.h"
 #include "ResurrectionProcess.h"
+#include "DeleteActorProcess.h"
 
 #include "MovieGump.h"
 
@@ -238,6 +239,8 @@ void GUIApp::startup()
 							 ProcessLoader<GumpNotifyProcess>::load);
 	kernel->addProcessLoader("ResurrectionProcess",
 							 ProcessLoader<ResurrectionProcess>::load);
+	kernel->addProcessLoader("DeleteActorProcess",
+							 ProcessLoader<DeleteActorProcess>::load);
 
 	gamedata = new GameData();
 

@@ -2,6 +2,9 @@
 	* data/u8monsters.ini: mark seeker as exploding
 	* world/actors/Actor.cpp: let seekers explode on death
 	* world/Container.cpp: removeContents()
+	* data/u8monsters.ini: mark various monsters with vanishing bodies
+	* world/actors/DeleteActorProcess.*: process that deletes a dead actor
+	* world/actors/Actor.cpp: make body of various monsters vanish
 
 2004-07-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.*: make Item::grab() also call the release event

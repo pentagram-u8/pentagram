@@ -151,6 +151,7 @@ ACTORS = \
 	world/actors/AvatarMoverProcess.o \
 	world/actors/AnimAction.o \
 	world/actors/Animation.o \
+	world/actors/DeleteActorProcess.o \
 	world/actors/MainActor.o \
 	world/actors/Pathfinder.o \
 	world/actors/PathfinderProcess.o \
