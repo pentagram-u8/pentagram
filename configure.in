@@ -13,8 +13,9 @@ VER_EXTRA=cvs
 VERSION=$VER_MAJOR.$VER_MINOR$VER_EXTRA
 
 # check host/target systems
-# (build = system we're building on, host = system we're building for,
-# target = system the program we're building will build for)
+# (build  = system we're building on,
+#  host   = system we're building for,
+#  target = system the program we're building will build for)
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
@@ -33,7 +34,7 @@ AC_EXEEXT
 AC_DEFINE(PENTAGRAM, 1, [Is this Pentagram?])
 AC_DEFINE(HAVE_MIDI, 1, [Do we have midi support?])
 
-# Path to an empty file (will be overridne for windows)
+# Path to an empty file (will be overriden for windows)
 EMPTY_FILE=/dev/null
 AC_SUBST(EMPTY_FILE)
 
@@ -55,14 +56,12 @@ case "$host_os" in
 		WINDOWING_SYSTEM="-DBEOS"
 		AC_MSG_RESULT(BeOS)
 		LIBS="$LIBS -lbe -lmidi"
-		enable_kmid="no"
 		enable_timidity="no"
 		;;
 	mingw32* )
 		WINDOWING_SYSTEM="-DWIN32"
 		AC_MSG_RESULT(Win32 (mingw32))
 		LIBS="$LIBS -lwinmm -lstdc++"
-		enable_kmid="no"
 		enable_timidity="no"
 		EMPTY_FILE=nul
 		;;
@@ -71,7 +70,6 @@ case "$host_os" in
 		AC_DEFINE(CYGWIN, 1, [Compiling using Cygwin])
 		AC_MSG_RESULT(Win32 (cygwin))
 		LIBS="$LIBS -lwinmm"
-		enable_kmid="no"
 		enable_timidity="no"
 		EMPTY_FILE=nul
 		;;
@@ -211,8 +209,7 @@ Makefile
 echo
 echo Pentagram v$VERSION
 echo
-echo SDL ....................... : $SDL_VERSION
-#`$SDL_CONFIG --version`
+echo SDL ....................... :  `$SDL_CONFIG --version`
 echo Warning level ............. : $WARNING_LEVEL
 
 echo

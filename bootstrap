@@ -19,7 +19,7 @@ autoconf
 
 echo "Writing Makefiles:"
 
-MODULES="tools tools/disasm misc convert convert/crusader convert/u8 filesys"
+MODULES="tools tools/disasm misc convert filesys"
 
 for subdir in $MODULES; do
   rm -f $subdir/Makefile

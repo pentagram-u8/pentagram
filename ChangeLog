@@ -1,5 +1,11 @@
 2002-10-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* bootstrap: removed Makefiles from convert/u8 convert/crusader
+	* configure.in: removed kmid, fixed some cosmetic errors
+
+2002-10-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: added some .cvsignore files
+	* bootstrap: generate Makefiles automatically with proper relative path
+	* genrules.pl: fixed typo
 
 2002-10-30  Ryan Nunn <colourles@users.sourceforge.net>
 	* convert/ConvertShape.*,  tools/shapeconv/ShapeConv.cpp : Fixing a few
