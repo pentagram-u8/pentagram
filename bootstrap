@@ -17,23 +17,30 @@ automake --foreign --add-missing --copy
 #Create configure script
 autoconf
 
-echo -n "Copying Makefiles"
-cp tools/Makefile tools/disasm
-echo -n "."
-#cp tools/Makefile tools/fold
-#echo -n "."
-#cp tools/Makefile tools/suc
-#echo -n "."
-cp tools/Makefile misc
-echo -n "."
-cp tools/Makefile convert
-echo -n "."
-cp tools/Makefile convert/crusader
-echo -n "."
-cp tools/Makefile convert/u8
-echo -n "."
-cp tools/Makefile filesys
-echo -n "."
+echo -n "Writing Makefiles"
+
+set MODULES = tools tools/disasm misc convert convert/crusader convert/u8 filesys
+
+for subdir in $MODULES; do
+
+  rm -f $subdir/Makefile
+  echo -e "# This file is generated automatically by bootstrap. Do not edit!\n\n" > $subdir/Makefile
+  echo -e "LPATH := $subdir\n" >> $subdir/Makefile
+  cat >> $subdir/Makefile <<'EOF'
+all: all-$(LPATH) ;
+clean: clean-$(LPATH) ;
+
+# Catch all rule - call Makefile in parent dir
+%::
+	cd .. && $(MAKE) $@
+
+.PHONY: all clean
+
+EOF
+
+  echo -n "."
+
+done
 
 echo ""
 echo "You are now ready to run ./configure ..."
