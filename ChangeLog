@@ -1,9 +1,13 @@
+2003-06-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/Object.h, world/Item.h, world/Container.h: doxygen comments
+
 2003-06-21	  Ryan Nunn <colourles@users.sourceforge.net>
-	* kernel/GUIApp.cpp, world/CurrentMap.*, world/actors/ActorAnimProcess.cpp,
-	  world/Item.*, world/MissileProcess.cpp, world/GravityProcess.cpp :
-	  Added item->collideMove() function. You should use this function to moves
-	  whenever possible since is will properly call all the hit and wasHit 
-	  functions.
+	* kernel/GUIApp.cpp, world/CurrentMap.*,
+	  world/actors/ActorAnimProcess.cpp, world/Item.*,
+	  world/MissileProcess.cpp, world/GravityProcess.cpp:
+	  Added item->collideMove() function. You should use this function to
+	  moves whenever possible since is will properly call all the hit and
+	  wasHit functions.
 	* usecode/UCMachine.cpp, world/CurrentMap.* : Surface Search
 	* usecode/u8intrinsics.h, world/Item.* : I_getSurfaceWeight and
 	  I_isExplosive

@@ -30,11 +30,24 @@ public:
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 
+	//! get this Object's objID
 	uint16 getObjId() const { return objid; }
-	virtual uint16 assignObjId(); //get and assign self (and contents) an objID
-	virtual void clearObjId(); // clear objID of self (and contents)
 
-	uint32 callUsecode(uint16 classid, uint16 offset, Usecode *u, const uint8* args=0, int argsize=0);
+	//! Assign self and contents (if any) an objID
+	//! \return the assiged ID
+	virtual uint16 assignObjId();
+
+	//! Clear objID of self and contents (if any)
+	virtual void clearObjId();
+
+	//! Spawn a usecode function on this object
+	//! \param classid The usecode class to run
+	//! \param offset The offset in that class to run
+	//! \param u The Usecode object containing the class
+	//! \param args Optional arguments to the spawned process
+	//! \param argsize The size (in bytes) of the optional arguments
+	//! \return the PID of the spawned process
+	uint16 callUsecode(uint16 classid, uint16 offset, Usecode *u, const uint8* args=0, int argsize=0);
 
 protected:
 	uint16 objid;

@@ -37,18 +37,51 @@ public:
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	bool AddItem(Item* item);
+	//! Check if an item can be added to the container
+	//! \param item The item to check
+	//! \param checkwghtvol Need to check weight and volume?
+	//! \return true if item can be added, false if not
+	bool CanAddItem(Item* item, bool checkwghtvol=false);
+
+	//! Add an item to the container
+	//! \param item The item to add
+	//! \param checkwghtvol Need to check weight and volume?
+	//! \return true if item was added, false if failed
+	bool AddItem(Item* item, bool checkwghtvol=false);
+
+	//! Remove an item from the container
+	//! \param item The item to remove
+	//! \return true if succesful, false if item wasn't in container
 	bool RemoveItem(Item* item);
+
+	//! Remove all contents, moving them to this container's
+	//! parent. (Or into the world if this container has no parent.)
+	//! Note: not yet implemented
 	void removeContents();
+
+	//! Destroy all contents.
 	void destroyContents();
 
+	//! Search the container for items matching the given loopscript.
+	//! \param itemlist The matching items are appended to this list
+	//! \param loopscript The loopscript to match items against
+	//! \param scriptsize The size (in bytes) of the loopscript
+	//! \param recurse If true, search through child-containers too
 	void containerSearch(UCList* itemlist, const uint8* loopscript,
 						 uint32 scriptsize, bool recurse);
+
+	//! Get the weight of the container and its contents
+	//! \return weight
 	virtual uint32 getTotalWeight();
 
-	virtual uint16 assignObjId(); //get and assign self (and contents) an objID
-	virtual void clearObjId(); // clear objID of self (and contents)
+	//! Assign self and contents an objID
+	//! \return the assiged ID
+	virtual uint16 assignObjId();
 
+	//! Clear objIDs of self and contents
+	virtual void clearObjId();
+
+	//! Destroy self
 	virtual void destroy();
 
 	INTRINSIC(I_removeContents);

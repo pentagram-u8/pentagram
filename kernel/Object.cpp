@@ -52,7 +52,7 @@ void Object::clearObjId()
 	objid = 0xFFFF;
 }
 
-uint32 Object::callUsecode(uint16 classid, uint16 offset, Usecode* u, const uint8* args, int argsize)
+uint16 Object::callUsecode(uint16 classid, uint16 offset, Usecode* u, const uint8* args, int argsize)
 {
 	uint32 objptr = UCMachine::objectToPtr(getObjId());
 	UCProcess* p = new UCProcess(u);

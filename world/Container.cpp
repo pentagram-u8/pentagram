@@ -62,9 +62,9 @@ void Container::clearObjId()
 }
 
 
-bool Container::AddItem(Item* item)
+bool Container::CanAddItem(Item* item, bool checkwghtvol)
 {
-	if (item == 0) return false;
+	if (!item) return false;
 
 	Container *c = p_dynamic_cast<Container*>(item);
 	if (c) {
@@ -76,9 +76,19 @@ bool Container::AddItem(Item* item)
 		} while ((p = p->getParent()) != 0);
 	}
 
+	if (checkwghtvol) {
+		// check weight and volume
 
-	// TODO: Check weight, volume, if item is already in the container?
-	// (These checks should be skippable)
+	}
+
+	return true;
+}
+
+bool Container::AddItem(Item* item, bool checkwghtvol)
+{
+	if (!CanAddItem(item, checkwghtvol)) return false;
+
+	if (item->getParent() == this) return true; // already added
 
 	contents.push_back(item);
 
@@ -92,8 +102,6 @@ bool Container::AddItem(Item* item)
 bool Container::RemoveItem(Item* item)
 {
 	std::list<Item*>::iterator iter;
-
-	// TODO: I'm sure there are things to check for here
 
 	for (iter = contents.begin(); iter != contents.end(); ++iter) {
 		if (*iter == item) {

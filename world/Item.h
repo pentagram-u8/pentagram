@@ -38,69 +38,169 @@ public:
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 
+	//! Get the Container this Item is in, if any. (NULL if not in a Container)
 	Container* getParent() const { return parent; }
+
+	//! Set the parent container of this item.
 	void setParent(Container* p) { parent = p; }
+
+	//! Set item location. This strictly sets the location, and does not
+	//! even update CurrentMap
 	void setLocation(sint32 x, sint32 y, sint32 z); // this only sets the loc.
+
+	//! Move an item. This moves an item to the new location, and updates
+	//! CurrentMap if necessary.
 	void move(sint32 x, sint32 y, sint32 z); // move also handles item lists
+
+	//! Get the location of the top-most container this Item is in, or
+	//! this Item's location if not in a container.
 	void getLocationAbsolute(sint32& x, sint32& y, sint32& z) const;
+
+	//! Get this Item's location. Note that this does not return
+	//! 'usable' coordinates if the Item is contained or equipped.
 	void getLocation(sint32& x, sint32& y, sint32& z) const;
+
+	//! Get this Item's Z coordinate.
 	sint32 getZ() const;
+
+	//! Get this Item's location in a ContainerGump. Undefined if the Item 
+	//! is not in a Container.
 	void getGumpLocation(sint32& x, sint32& y) const;
+
+	//! Set the Item's location in a ContainerGump. NOP if the Item
+	//! is not in a Container.
 	void setGumpLocation(sint32 x, sint32 y);
+
+	//! Get the world coordinates of the Item's centre. Undefined if the Item
+	//! is contained or equipped.
 	void getCentre(sint32& x, sint32& y, sint32& z) const;
+
+	//! Get the size of this item's 3D bounding box. (Note that the coordinates
+	//! are not in the same unit as world coordinates)
 	void getFootpad(sint32& x, sint32& y, sint32& z) const;
+
+	//! Get flags
 	uint16 getFlags() const { return flags; }
+
+	//! Set the flags set in the given mask.
 	void setFlag(uint32 mask) { flags |= mask; }
+
+	//! Clear the flags set in the given mask.
 	void clearFlag(uint32 mask) { flags &= ~mask; }
+
+	//! Set extendedflags
 	void setExtFlags(uint32 f) { extendedflags = f; }
+
+	//! Get extendedflags
 	uint32 getExtFlags() const { return extendedflags; }
+
+	//! Set the extendedflags set in the given mask.
 	void setExtFlag(uint32 mask) { extendedflags |= mask; }
+
+	//! Clear the extendedflags set in the given mask.
 	void clearExtFlag(uint32 mask) { extendedflags &= ~mask; }
+
+	//! Get this Item's shape number
 	uint32 getShape() const { return shape; }
+
+	//! Set this Item's shape number
 	// Hack Alert!
 	void setShape(uint32 shape_) { *const_cast<uint32*>(&shape) = shape_; cachedShapeInfo = 0; cachedShape = 0; }
+
+	//! Get this Item's frame number
 	uint32 getFrame() const { return frame; }
+
+	//! Set this Item's frame number
 	void setFrame(uint32 frame_) { frame = frame_; }
+
+	//! Get this Item's quality (a.k.a. 'Q')
 	uint16 getQuality() const { return quality; }
+
+	//! Set this Item's quality (a.k.a 'Q');
 	void setQuality(uint16 quality_) { quality = quality_; }
+
+	//! Get the 'NpcNum' of this Item. Note that this can represent various
+	//! things depending on the family of this Item.
 	uint16 getNpcNum() const { return npcnum; }
+
+	//! Set the 'NpcNum' of this Item. Note that this can represent various
+	//! things depending on the family of this Item.
 	void setNpcNum(uint16 npcnum_) { npcnum = npcnum_; }
+
+	//! Get the 'MapNum' of this Item. Note that this can represent various
+	//! things depending on the family of this Item.
 	uint16 getMapNum() const { return mapnum; }
+
+	//! Set the 'NpcNum' of this Item. Note that this can represent various
+	//! things depending on the family of this Item.
 	void setMapNum(uint16 mapnum_) { mapnum = mapnum_; }
+
+	//! Get the ShapeInfo object for this Item. (The pointer will be cached.)
 	ShapeInfo* getShapeInfo();
+
+	//! Get the ShapeInfo object for this Item, bypassing the cached pointer.
 	ShapeInfo* getShapeInfoNoCache() const;
+
+	//! Get the Shape object for this Item. (The pointer will be cached.)
 	Shape* getShapeObject();
+
+	//! Get the Shape object for this Item, bypassing the cached pointer.
 	Shape* getShapeObjectNoCache() const;
+
+	//! Get the family of the shape number of this Item. (This is a
+	//! member of the ShapeInfo object.)
 	uint16 getFamily();
 
+	//! Get the open ContainerGump for this Item, if any. (NULL if not open.)
 	Gump* getGump() { return gump; }
+	//! Call this to notify the Item's open Gump has closed.
 	void clearGump(); // set gump to 0 and clear the GUMP_OPEN flag
 
+	//! Get the next Item in the Glob this Item belongs to
 	Item* getGlobNext() const { return glob_next; }
+	//! Set the next Item in the Glob this Item belongs to.
 	void setGlobNext(Item* i) { glob_next = i; }
 
+	//! Destroy self.
 	virtual void destroy();
 
+	//! Check if this item overlaps another item in 3D world-space
 	bool overlaps(Item& item2) const;
+
+	//! Check if this item overlaps another item in the xy dims in 3D space
 	bool overlapsxy(Item& item2) const;
+
+	//! Check if this item is on top another item
 	bool isOn(Item& item2) const;
+
+	//! Check if this item can exist at the given coordinates
 	bool canExistAt(sint32 x, sint32 y, sint32 z) const;
 
-	// Move the object to (x,y,z) colliding with objects in the way.
-	// Set force to force the object to get to the destination without being
-	// blocked by solid objects
-	// Set teleport to move without coliding with objects between source and
-	// destination
-	// Returns 0-0x4000 representing how far it got 
-	// 0 = didn't move
-	// 0x4000 = reached destination
-	sint32 collideMove(sint32 x, sint32 y, sint32 z, bool teleport, bool force);
+	//! Move the object to (x,y,z) colliding with objects in the way.
+	//! \param teleport move without colliding with objects between source and
+	//!        destination
+	//! \param force force the object to get to the destination without being
+	//!        blocked by solid objects
+	//! \returns 0-0x4000 representing how far it got.
+	//!          0 = didn't move
+	//!          0x4000 = reached destination
+	sint32 collideMove(sint32 x,sint32 y,sint32 z, bool teleport, bool force);
 
+	//! Make the item fall down.
+	//! This creates a GravityProcess to do the actual work if the Item
+	//! doesn't already have one.
 	void fall();
 
+	//! Assign a GravityProcess to this Item
 	void setGravityProcess(uint16 pid) { gravitypid = pid; }
 
-	virtual uint32 getTotalWeight(); // weight including contents (if any)
+	//! Get the weight of this Item and its contents, if any
+	virtual uint32 getTotalWeight();
+
+	//! Check this Item against the given loopscript
+	//! \param script The loopscript to run
+	//! \param scriptsize The size (in bytes) of the loopscript
+	//! \return true if the item matches, false otherwise
 	bool checkLoopScript(const uint8* script, uint32 scriptsize);
 	
 	uint32 callUsecodeEvent_look();								// event 0
@@ -120,10 +220,13 @@ public:
 	uint32 callUsecodeEvent_AvatarStoleSomething(uint16 unk);	// event 14
 	uint32 callUsecodeEvent_guardianBark(sint16 unk);			// event 15
 
-	inline void getLerped(sint32& x, sint32& y, sint32& z) const // Get lerped location
+	//! Get lerped location.
+	inline void getLerped(sint32& x, sint32& y, sint32& z) const
 		{ x = ix; y = iy; z = iz; }
 
-	// Does lerping for an in between frame (0-256)
+	//! Do lerping for an in between frame (0-256)
+	//! The result can be retrieved with getLerped(x,y,z)
+	//! \param factor The lerp factor: 0 is start of move, 256 is end of move
 	inline void doLerp(sint32 factor)
 	{
 	// Should be noted that this does indeed limit us to 'only' 24bit coords
@@ -156,11 +259,18 @@ public:
 		}
 	}
 
-	// fastArea Handling. Note that these are intended to call the usecode funcs,
-	// and do other stuff
-	void inFastArea(int even_odd, int framenum);		// Called when an item has entered or is in the fast area
-	void leavingFastArea();				// Called when an item is leaving the fast area
 
+	// fastArea Handling. Note that these are intended to call the usecode
+	// funcs, and do other stuff
+
+	//! This is called when an item has entered or is in the fast area
+	//! \param even_odd Used internally for tracking when items enter/leave
+	//!        the fast area.
+	//! \param framenum The current framenum.
+	void inFastArea(int even_odd, int framenum); 
+
+	//! This is called when an item is leaving the fast area
+	void leavingFastArea();
 
 	// Intrinsics
 	INTRINSIC(I_touch);
@@ -263,7 +373,7 @@ protected:
 
 private:
 
-	// Call a Usecode Event. Use the separate functions instead!
+	//! Call a Usecode Event. Use the separate functions instead!
 	uint32 callUsecodeEvent(uint32 event, const uint8* args=0, int argsize=0);
 
 	Item* glob_next; // next item in glob
@@ -271,10 +381,10 @@ private:
 	// The frame setupLerp was last called on
 	uint32	last_setup;	
 
-	// Animate the item (called by inFastArea)
+	//! Animate the item (called by inFastArea)
 	void animateItem();
 
-	// Setup the lerped info for this frame (called by inFastArea)
+	//! Setup the lerped info for this frame (called by inFastArea)
 	void setupLerp(bool post);		
 
 public:
