@@ -148,6 +148,16 @@ bool ActorAnimProcess::run(const uint32 framenum)
 
 	firstframe = false;
 
+	if (!(a->getFlags() & Item::FLG_FASTAREA)) {
+		// not in the fast area? Pause play an animation then.
+		//! TODO: Decide if this is the right move.
+		//  Animation could do one of three things: pause, move
+		//  without allowing actor to fall, or pretend to move and
+		//  complete the entire movement as the actor reappears
+		//  in fast area (still may need to pause when
+		//  AnimationTracker is done.)
+		return true;
+	}
 
 	bool result = true;
 	if (repeatcounter == 0) {

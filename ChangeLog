@@ -1,3 +1,7 @@
+2004-08-08  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* world/actors/ActorAnimProcess.cpp: pause animation when actor leaves
+	  fast area
+
 2004-08-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AnimationTracker.cpp: fixed weapon overlays
 	* world/actors/ActorAnimProcess.cpp: removed old code
