@@ -40,6 +40,11 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 	animaction = GameData::get_instance()->getMainShapes()->
 		getAnim(shape, action);
 
+	if (dir > 7) {
+		// invalid direction
+		animaction = 0;
+	}
+
 	currentindex = 0;
 
 	if (actor_->animproc != 0) {

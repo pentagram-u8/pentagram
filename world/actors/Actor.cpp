@@ -48,7 +48,12 @@ uint32 Actor::I_doAnim(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(unk2); // appears to be 0 or 1. Some flag?
 	if (!actor) return 0;
 
-	Process *p = new ActorAnimProcess(actor, anim, dir);
+	if (dir < 1 || dir > 8) {
+		perr << "Actor::doAnim: Invalid direction (" << dir << ")" <<std::endl;
+		return 0;
+	}
+
+	Process *p = new ActorAnimProcess(actor, anim, dir-1);
 
 	return Kernel::get_instance()->addProcess(p);
 }

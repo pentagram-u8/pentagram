@@ -1,3 +1,6 @@
+2003-05-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/*: check for invalid direction in animations
+	
 2003-05-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/ActorAnimProcess.*: forgot p_dynamic_cast
 	* world/*: marked some issues with equipped items
