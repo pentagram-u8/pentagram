@@ -1,3 +1,7 @@
+2003-06-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/GameDetector.cpp: fixed crash for non-U8 games
+
+
 2003-06-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Kernel.*, world/World.cpp: kill any process belonging to an
 	  object on map change
@@ -16,7 +20,7 @@
 	* world/CameraProcess.*, usecode/u8intrinsics.h : Added Earthquakes.
 	* usecode/UCMachine.* : Making the for each loops safe so multiple
 	  proceses and nested loops don't step on each others toes.
-	* tools/fold/FuncNodes.cpp : Making compaatible with MSVC.
+	* tools/fold/FuncNodes.cpp : Making compatible with MSVC.
 	* world/ItemSorter.cpp : The item sorter will now resize if it's too 
 	  small. However, this will occur next frame, not this frame, so the 
 	  current sorted list is not invalidated.

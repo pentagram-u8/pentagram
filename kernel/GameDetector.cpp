@@ -56,26 +56,30 @@ bool GameDetector::detect(std::string path, GameInfo *info)
 	if (info->language == GameInfo::GAMELANG_UNKNOWN) {
 		ids = fs->ReadFile("@detect/usecode/eusecode.flx");
 		if (ids) {
-			// distinguish between english and spanish
-			Flex* f = new Flex(ids);
-			const char* buf = (const char*)(f->get_object_nodel(183));
-			unsigned int size = f->get_size(183);
-			for (unsigned int i = 0; i < size - 9; ++i) {
-				if (strncmp(buf+i, "tableware", 9) == 0) {
-					info->language = GameInfo::GAMELANG_ENGLISH;
-					break;
+			if (info->type == GameInfo::GAME_U8) {
+				// distinguish between english and spanish
+				Flex* f = new Flex(ids);
+				const char* buf = (const char*)(f->get_object_nodel(183));
+				unsigned int size = f->get_size(183);
+				if (buf) {
+					for (unsigned int i = 0; i + 9 < size; ++i) {
+						if (strncmp(buf+i, "tableware", 9) == 0) {
+							info->language = GameInfo::GAMELANG_ENGLISH;
+							break;
+						}
+						if (strncmp(buf+i, "vajilla", 7) == 0) {
+							info->language = GameInfo::GAMELANG_SPANISH;
+							break;
+						}
+					}
 				}
-				if (strncmp(buf+i, "vajilla", 7) == 0) {
-					info->language = GameInfo::GAMELANG_SPANISH;
-					break;
-				}
+				delete f;
 			}
 
 			// if still unsure, English
 			if (info->language == GameInfo::GAMELANG_UNKNOWN)
 				info->language = GameInfo::GAMELANG_ENGLISH;
 
-			delete f;
 			delete ids; ids = 0;
 		}
 	}
