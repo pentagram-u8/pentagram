@@ -1983,9 +1983,19 @@ uint32 Item::I_legalCreateAtPoint(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(frame);
 	ARG_WORLDPOINT(point);
 
-	//! haven't checked if this does what it should do.
-	// It just creates an item at a worldpoint currently and returns the id.
-	// This may have to check for room at the give spot
+	// check if item can exist
+	int xd, yd, zd;
+	ShapeInfo* si = GameData::get_instance()->
+		getMainShapes()->getShapeInfo(shape);
+	//!! constants
+	xd = si->x * 32;
+	yd = si->y * 32;
+	zd = si->z * 8;
+	CurrentMap* cm = World::get_instance()->getCurrentMap();
+	bool valid = cm->isValidPosition(point.getX(), point.getY(), point.getZ(),
+									 xd, yd, zd, 0, 0, 0);
+	if (!valid)
+		return 0;
 
 	Item* newitem = ItemFactory::createItem(shape, frame, 0, 0, 0, 0, 0);
 	if (!newitem) {
@@ -2013,10 +2023,20 @@ uint32 Item::I_legalCreateAtCoords(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(y);
 	ARG_UINT16(z);
 
-	//! haven't checked if this does what it should do.
-	// It just creates an item at given coords currently and returns the id
-	// This may have to check for room at the give spot
+	// check if item can exist
+	int xd, yd, zd;
+	ShapeInfo* si = GameData::get_instance()->
+		getMainShapes()->getShapeInfo(shape);
+	//!! constants
+	xd = si->x * 32;
+	yd = si->y * 32;
+	zd = si->z * 8;
+	CurrentMap* cm = World::get_instance()->getCurrentMap();
+	bool valid = cm->isValidPosition(x, y, z, xd, yd, zd, 0, 0, 0);
+	if (!valid)
+		return 0;
 
+	// if yes, create it
 	Item* newitem = ItemFactory::createItem(shape, frame, 0, 0, 0, 0, 0);
 	if (!newitem) {
 		perr << "I_legalCreateAtCoords failed to create item (" << shape
