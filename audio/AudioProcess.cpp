@@ -121,6 +121,27 @@ bool AudioProcess::loadData(IDataSource* ids, uint32 version)
 	return true;
 }
 
+int AudioProcess::playSample(AudioSample* sample, int priority, int loops)
+{
+	AudioMixer *mixer = AudioMixer::get_instance();
+	int channel = mixer->playSample(sample,loops,priority);
+
+	if (channel == -1) return channel;
+
+	// Erase old sample using channel (if any)
+	std::list<SampleInfo>::iterator it;
+	for (it = sample_info.begin(); it != sample_info.end(); ) {
+		if (it->channel == channel) {
+			it = sample_info.erase(it);
+		}
+		else {
+			++it;
+		}
+	}
+
+	return channel;
+}
+
 void AudioProcess::playSFX(int sfxnum, int priority, ObjId objid, int loops)
 {
 	//con.Printf("playSFX(%i, %i, 0x%X, %i)\n", sfxnum, priority, objid, loops);
@@ -152,20 +173,8 @@ void AudioProcess::playSFX(int sfxnum, int priority, ObjId objid, int loops)
 	AudioSample *sample = soundflx->getSample(sfxnum);
 	if (!sample) return;
 
-	int channel = mixer->playSample(sample,loops,priority);
-
+	int channel = playSample(sample,priority,loops);
 	if (channel == -1) return;
-
-	// Erase old sample using channel (if any)
-	for (it = sample_info.begin(); it != sample_info.end(); ) {
-		if (it->channel == channel) {
-			mixer->stopSample(it->channel);
-			it = sample_info.erase(it);
-		}
-		else {
-			++it;
-		}
-	}
 
 	// Update list
 	sample_info.push_back(SampleInfo(sfxnum,priority,objid,loops,channel));

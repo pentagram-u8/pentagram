@@ -29,6 +29,13 @@
 #include "AudioProcess.h"
 #include "IDataSource.h"
 
+#include "AudioMixer.h"
+#include "RawAudioSample.h"
+#include "Font.h"
+#include "FontManager.h"
+#include "RenderedText.h"
+
+
 enum SKFAction {
 	SKF_PlayMusic = 3,
 	SKF_SlowStopMusic = 4,
@@ -56,7 +63,7 @@ static const int FADESTEPS = 16; // HACK: half speed
 SKFPlayer::SKFPlayer(RawArchive* movie, int width_, int height_)
 	: width(width_), height(height_), skf(movie),
 	  curframe(0), curobject(0), curaction(0), curevent(0), playing(false),
-	  timer(0), fadecolour(0), fadelevel(0), buffer(0)
+	  timer(0), fadecolour(0), fadelevel(0), buffer(0), subs(0)
 {
 	IDataSource* eventlist = skf->get_datasource(0);
 	if (!eventlist)
@@ -78,6 +85,7 @@ SKFPlayer::~SKFPlayer()
 
 	delete skf;
 	delete buffer;
+	delete subs;
 }
 
 void SKFPlayer::parseEventList(IDataSource* eventlist)
@@ -117,12 +125,16 @@ void SKFPlayer::paint(RenderSurface* surf, int /*lerp*/)
 
 	Texture* tex = buffer->GetSurfaceAsTexture();
 
-	if (!fadelevel)
+	if (!fadelevel) {
 		surf->Blit(tex, 0, 0, width, height, 0, 0);
-	else {
+		if (subs)
+			subs->draw(surf, 80, subtitley);
+	} else {
 		uint32 fade = TEX32_PACK_RGBA(fadecolour,fadecolour,fadecolour,
 									  (fadelevel*255)/FADESTEPS);
 		surf->FadedBlit(tex, 0, 0, width, height, 0, 0, fade);
+		if (subs)
+			subs->drawBlended(surf, 80, subtitley, fade);
 	}
 }
 
@@ -151,6 +163,7 @@ void SKFPlayer::run()
 
 	MusicProcess* musicproc = MusicProcess::get_instance();
 	AudioProcess* audioproc = AudioProcess::get_instance();
+	Pentagram::Font* redfont = FontManager::get_instance()->getFont(6, true);
 
 	// handle events for the current frame
 	while (curevent < events.size() && events[curevent]->frame <= curframe) {
@@ -198,10 +211,42 @@ void SKFPlayer::run()
 			pout << "SetSpeed " << events[curevent]->data << std::endl;
 			break;
 		case SKF_PlaySound:
+		{
 			pout << "PlaySound " << events[curevent]->data << std::endl;
+
+			if (audioproc) {
+				uint8* buffer = skf->get_object(events[curevent]->data);
+				uint32 bufsize = skf->get_size(events[curevent]->data);
+				Pentagram::AudioSample* s;
+				uint32 rate = buffer[6] + (buffer[7]<<8);
+				bool stereo = (buffer[8] == 2);
+				s = new Pentagram::RawAudioSample(buffer+34, bufsize-34,
+												  rate, true, stereo);
+				audioproc->playSample(s, 0x60, 0);
+				// FIXME: memory leak! (sample is never deleted)
+			}
+
+			// subtitles
+			char* textbuf = reinterpret_cast<char*>(
+				skf->get_object(events[curevent]->data-1));
+			uint32 textsize = skf->get_size(events[curevent]->data-1);
+			if (textsize > 7) {
+				std::string subtitle = (textbuf+6);
+				delete subs;
+				subtitley = textbuf[4] + (textbuf[5]<<8);
+				unsigned int remaining;
+				subs = redfont->renderText(subtitle, remaining, 160, 0,
+										   Pentagram::Font::TEXT_CENTER);
+			}
+			delete textbuf;
+
+
 			break;
+		}
 		case SKF_ClearSubs:
 			pout << "ClearSubs" << std::endl;
+			delete subs;
+			subs = 0;
 			break;
 		default:
 			pout << "Unknown action" << std::endl;

@@ -217,6 +217,7 @@ AUDIO = \
 	audio/AudioMixer.o \
 	audio/AudioProcess.o \
 	audio/AudioSample.o \
+	audio/RawAudioSample.o \
 	audio/SonarcAudioSample.o \
 	audio/SoundFlex.o \
 	audio/SpeechFlex.o

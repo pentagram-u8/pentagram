@@ -24,6 +24,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <list>
 #include <string>
 
+namespace Pentagram {
+	class AudioSample;
+}
+
 class AudioProcess :
 	public Process
 {
@@ -71,6 +75,10 @@ public:
 	bool playSpeech(std::string &barked, int shapenum, ObjId objid);
 	//void stopSpeech(std::string &barked, int shapenum, ObjId objid);
 	//bool isSpeechPlaying(std::string &barked, int shapenum);
+
+	//! play a sample (without storing a SampleInfo)
+	//! returns channel sample is played on, or -1
+	int playSample(Pentagram::AudioSample* sample, int priority, int loops);
 
 	// AudioProcess::playSound console command
 	//static void ConCmd_playSound(const Console::ArgsType &args, const Console::ArgvType &argv);
