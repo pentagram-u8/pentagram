@@ -1,4 +1,9 @@
 2003-05-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/UCMachine.cpp, usecode/UCProcess.cpp:
+	spawn now puts arguments on the stack before the this pointer
+	* usecode/UCMachine.cpp: push globals pushes 1 byte flags as 16 bit
+
+2003-05-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCMachine.cpp: cleaned up a bit
 
 2003-05-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>

@@ -46,9 +46,9 @@ UCMachine::UCMachine() :
 	assert(ucmachine == 0);
 	ucmachine = this;
 
-
 	// zero globals
 	globals.push0(globals.getSize());
+	pout << "Flag 5A: " << (int)(globals.access1(0x5A)) << std::endl;
 
 	loop_list = 0;
 	loop_index = 0;
@@ -1070,7 +1070,13 @@ bool UCMachine::execProcess(UCProcess* p)
 			ui16a = cs.read2();
 			ui16b = cs.read1();
 			// get flagname for output?
-			p->stack.push(globals.access(ui16a), ui16b);
+			switch (ui16b) {
+			case 1: // push a 1 byte flag as 2 bytes
+				p->stack.push2(globals.access1(ui16a));
+				break;
+			default:
+				p->stack.push(globals.access(ui16a), ui16b);
+			}
 			LOGPF(("push\t\tglobal [%04X %02X]", ui16a, ui16b));
 			break;
 
@@ -1201,14 +1207,14 @@ bool UCMachine::execProcess(UCProcess* p)
 				uint32 this_size = cs.read1(); // Relevance?
 				uint32 classid = cs.read2();
 				uint32 offset = cs.read2();
-				uint32 this_ptr = p->stack.pop4(); // can be NULL
 				
 				LOGPF(("spawn\t\t%02X %02X %04X:%04X",
 					   arg_bytes, this_size, classid, offset));
 
 				UCProcess* newproc = new UCProcess(p->usecode, classid,
-												   offset, this_ptr);
-				newproc->stack.push(p->stack.access(), arg_bytes);
+												   offset, p->stack.access(),
+												   arg_bytes + 4);
+				// arg_bytes + 4 = arguments + this pointer
 				//!! CHECKME
 				//!! it looks like these arguments may have to be put
 				//!! earlier on the stack than this

@@ -34,6 +34,8 @@ class UCProcess : public Process
 public:
 	UCProcess(Usecode* usecode_, uint32 classid_,
 			  uint32 offset_, uint32 this_ptr = 0);
+	UCProcess(Usecode* usecode_, uint32 classid_,
+			  uint32 offset_, const uint8* args, uint32 argsize);
     ~UCProcess();
 
 	// p_dynamic_cast stuff

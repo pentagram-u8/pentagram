@@ -36,13 +36,26 @@ UCProcess::UCProcess(Usecode* usecode_, uint32 classid_,
 	ip = 0xFFFF;
 	bp = 0x0000;
 
-	//Q: Devon's use() usecode also accesses BP+0A. What's that?
-
 	stack.push4(this_ptr); // BP+06 this pointer
 
 	call(classid_, offset_);
 }
 
+UCProcess::UCProcess(Usecode* usecode_, uint32 classid_,
+					 uint32 offset_, const uint8* args, uint32 argsize) :
+	item_num(0), type(0), usecode(usecode_), classid(classid_)
+{
+	if (usecode->get_class_size(classid) == 0)
+		perr << "Class is empty..." << std::endl;
+
+	classid = 0xFFFF;
+	ip = 0xFFFF;
+	bp = 0x0000;
+
+	stack.push(args, argsize);
+
+	call(classid_, offset_);
+}
 
 UCProcess::~UCProcess()
 {

@@ -575,7 +575,7 @@ void Application::handleEvent(const SDL_Event& event)
 		// Ok, a bit of a hack for now
 		if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
 		{
-			pout << std::endl << "Tracing left mouse click: ";
+			pout << std::endl << "Tracing mouse click: ";
 
 			Rect dims;
 			screen->GetSurfaceDims(dims);
