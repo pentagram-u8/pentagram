@@ -133,6 +133,7 @@ GUMPS = \
 	gumps/PaperdollGump.o \
 	gumps/ReadableGump.o \
 	gumps/ResizableGump.o \
+	gumps/ScalerGump.o \
 	gumps/ScrollGump.o \
 	gumps/ShapeViewerGump.o \
 	gumps/SliderGump.o \
