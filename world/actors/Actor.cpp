@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "World.h"
 #include "ActorAnimProcess.h"
 
+#include "ItemMoveProcess.h" // temp. replacement for pathfinding
+
 // p_dynamic_cast stuff
 DEFINE_DYNAMIC_CAST_CODE(Actor,Container);
 
@@ -240,4 +242,18 @@ uint32 Actor::I_isFeignDeath(const uint8* args, unsigned int /*argsize*/)
 		return 1;
 	else
 		return 0;
+}
+
+uint32 Actor::I_pathfindToItem(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR(actor);
+	ARG_UINT16(id2);
+	Item* item = p_dynamic_cast<Item*>(World::get_instance()->getObject(id2));
+	if (!actor) return 0;
+	if (!item) return 0;
+
+	sint32 x,y,z;
+	item->getLocation(x,y,z);
+
+	return Kernel::get_instance()->addProcess(new ItemMoveProcess(actor,x,y,z,100));
 }

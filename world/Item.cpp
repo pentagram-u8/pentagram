@@ -1126,6 +1126,7 @@ uint32 Item::I_move(const uint8* args, unsigned int /*argsize*/)
 	if (!item) return 0;
 
 	item->move(x,y,z);
+	return 0;
 }
 
 uint32 Item::I_getEtherealTop(const uint8* args, unsigned int /*argsize*/)
@@ -1197,5 +1198,5 @@ uint32 Item::I_shoot(const uint8* args, unsigned int /*argsize*/)
 	uint16 y = buf[2] + (buf[3]<<8);
 	uint16 z = buf[4];
 
-	return Kernel::get_instance()->addProcess(new ItemMoveProcess(item,x,y,z,unk1));
+	return Kernel::get_instance()->addProcess(new ItemMoveProcess(item,x,y,z,unk1,true));
 }

@@ -28,7 +28,7 @@ class ItemMoveProcess : public Process
 public:
 	//! note: this probably needs some more parameters
 	ItemMoveProcess(Item* item, sint32 to_x, sint32 to_y, sint32 to_z,
-					int speed);
+					int speed, bool curve=false);
 
 	// p_dynamic_cast stuff
 	ENABLE_DYNAMIC_CAST(ItemMoveProcess);
@@ -42,6 +42,7 @@ private:
 	sint32 to_x, to_y, to_z;
 
 	int speed;
+	bool curve;
 
 	int currentpos;
 };

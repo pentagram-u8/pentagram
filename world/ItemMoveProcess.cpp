@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 DEFINE_DYNAMIC_CAST_CODE(ItemMoveProcess,Process);
 
 ItemMoveProcess::ItemMoveProcess(Item* item_, sint32 to_x_, sint32 to_y_,
-								 sint32 to_z_, int speed_)
+								 sint32 to_z_, int speed_, bool curve_)
 {
 	assert(item_);
 	item = item_->getObjId();
@@ -38,6 +38,7 @@ ItemMoveProcess::ItemMoveProcess(Item* item_, sint32 to_x_, sint32 to_y_,
 	item_->getLocation(from_x, from_y, from_z);
 
 	speed = speed_;
+	curve = curve_;
 
 	currentpos = 0;
 }
@@ -67,16 +68,18 @@ bool ItemMoveProcess::run(const uint32 framenum)
 	currentpos += 1;
 	if (currentpos > speed) currentpos = speed;
 
-	// trajectory is rather boring currently
-	// also speed doesn't work the way it (probably) should this way
+	//!! speed doesn't work the way it (probably) should...
 	x = from_x + ((to_x - from_x) * currentpos)/speed;
 	y = from_y + ((to_y - from_y) * currentpos)/speed;
-	z = from_z + ((to_z - from_z) * currentpos)/speed + sinvals[(20*currentpos)/speed]/25;
+	z = from_z + ((to_z - from_z) * currentpos)/speed;
+	if (curve) z += sinvals[(20*currentpos)/speed]/25;
 
 	it->move(x,y,z);
 
-	if (currentpos >= speed)
+	if (currentpos >= speed) {
+		result = 1;
 		terminate();
+	}
 
 	return true;
 }
