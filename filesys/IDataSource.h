@@ -1,7 +1,7 @@
 /*
  *	IDataSource.h - DataSource type for loading data, only needs read only access
  *
- *  Copyright (C) 2002-2004 The Pentagram Team
+ *  Copyright (C) 2002-2005 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,7 +37,7 @@ class IDataSource
 		virtual uint32 read3()=0;
 		virtual uint32 read4()=0;
 		virtual uint32 read4high()=0;
-		virtual void read(void *str, sint32 num_bytes)=0;
+		virtual sint32 read(void *str, sint32 num_bytes)=0;
 
 		uint32 readX(uint32 num_bytes)
 		{
@@ -140,12 +140,9 @@ class IDataSource
 		{
 			IDataSource*ids = static_cast<IDataSource*>
 				(context->hidden.unknown.data1);
-			if (ids->getPos() + size >= ids->getSize())
-				return 0;
-			int count = (ids->getSize() - ids->getPos()) / size;
-			if (count > maxnum) count = maxnum;
-			ids->read(ptr, count*size);
-			return count;
+			if (size == 0) return 0;
+			int nbytes = ids->read(ptr, maxnum*size);
+			return (nbytes/size);
 		}
 		static int rw_write(SDL_RWops * /*context*/, const void * /*ptr*/,
 							int /*size*/, int /*num*/)
@@ -249,7 +246,11 @@ class IFileDataSource: public IDataSource
 		return val;
 	}
 
-	void read(void *b, sint32 len) { in->read(static_cast<char *>(b), len); }
+	sint32 read(void *b, sint32 len)
+	{
+		in->read(static_cast<char *>(b), len);
+		return in->gcount();
+	}
 
 	virtual void seek(uint32 pos)  { in->seekg(pos); }
 
@@ -391,9 +392,13 @@ public:
 		return (b0 | (b1<<8) | (b2<<16) | (b3<<24));
 	}
 	
-	virtual void read(void *str, sint32 num_bytes) {
-		std::memcpy(str, buf_ptr, num_bytes);
-		buf_ptr += num_bytes;
+	virtual sint32 read(void *str, sint32 num_bytes) {
+		sint32 count = num_bytes;
+		if (buf_ptr + num_bytes > buf + size)
+			count = buf - buf_ptr + size;
+		std::memcpy(str, buf_ptr, count);
+		buf_ptr += count;
+		return count;
 	}
 
 	virtual void seek(uint32 pos) {

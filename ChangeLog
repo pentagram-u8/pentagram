@@ -1,3 +1,6 @@
+2005-01-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* filesys/IDataSource.h: read() now returns number of bytes read
+
 2004-12-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* *: get rid of per-object/process savegame versions
 	* tools/compile/llcLexer.l: remove double pent_include.h include
