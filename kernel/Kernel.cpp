@@ -178,8 +178,7 @@ bool Kernel::runProcesses()
 		{
 			p->terminate();
 		}
-		if (!(p->flags & (Process::PROC_TERMINATED |
-						  Process::PROC_SUSPENDED)) &&
+		if (!(p->is_terminated() || p->is_suspended()) &&
 			(!paused || (p->flags & Process::PROC_RUNPAUSED)))
 		{
 			runningprocess = p;
@@ -318,8 +317,7 @@ uint32 Kernel::getNumProcesses(ObjId objid, uint16 processtype)
 		Process* p = *it;
 
 		// Don't count us, we are not really here
-		if (p->flags & (Process::PROC_TERM_DEFERRED |
-						Process::PROC_TERMINATED)) continue;
+		if (p->is_terminated()) continue;
 
 		if ((objid == 0 || objid == p->item_num) &&
 			(processtype == 6 || processtype == p->type))
@@ -336,8 +334,7 @@ Process* Kernel::findProcess(ObjId objid, uint16 processtype)
 		Process* p = *it;
 
 		// Don't count us, we are not really here
-		if (p->flags & (Process::PROC_TERM_DEFERRED |
-						Process::PROC_TERMINATED)) continue;
+		if (p->is_terminated()) continue;
 
 		if ((objid == 0 || objid == p->item_num) &&
 			(processtype == 6 || processtype == p->type))

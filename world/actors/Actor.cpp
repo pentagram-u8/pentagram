@@ -42,6 +42,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Shape.h"
 #include "LoiterProcess.h"
 #include "CombatProcess.h"
+#include "AudioProcess.h"
+#include "SpriteProcess.h"
 
 #include "ItemFactory.h"
 #include "LoopScript.h"
@@ -488,10 +490,6 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 	if (getActorFlags() & ACT_DEAD)
 		return; // already dead, so don't bother
 
-	pout << "Actor " << getObjId() << " received hit from " << other
-		 << " (dmg=" << damage << ",type=" << std::hex << damage_type
-		 << std::dec << "). ";
-
 	Item* hitter = World::get_instance()->getItem(other);
 	Actor* attacker = World::get_instance()->getNPC(other);
 
@@ -503,6 +501,9 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 		damage_type = hitter->getDamageType();
 	}
 
+	pout << "Actor " << getObjId() << " received hit from " << other
+		 << " (dmg=" << damage << ",type=" << std::hex << damage_type
+		 << std::dec << "). ";
 
 	damage = calculateAttackDamage(other, damage, damage_type);
 
@@ -520,6 +521,20 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 	if (getActorFlags() & (ACT_IMMORTAL | ACT_INVINCIBLE))
 		return; // invincible
  
+	if (damage >= 4 && objid == 1 && other) {
+		// play blood sprite
+		int start = 0, end = 12;
+		if (getDirToItemCentre(*attacker) > 2) {
+			start = 13; end = 25;
+		}
+
+		sint32 x,y,z;
+		getLocation(x,y,z);
+		z += (std::rand() % 24);
+		Process *sp = new SpriteProcess(620, start, end, 1, 1, x, y, z);
+		Kernel::get_instance()->addProcess(sp);
+	}
+
 	if (damage >= hitpoints) {
 		// we're dead
 
@@ -527,13 +542,78 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 			// or maybe not...
 
 			setHP(getMaxHP());
-			// TODO: SFX
+			AudioProcess* audioproc = AudioProcess::get_instance();
+			if (audioproc) audioproc->playSFX(59, 0x60, objid, 0);
 			clearActorFlag(ACT_WITHSTANDDEATH);
 		} else {
 			die(damage_type);
 		}
-	} else {
-		setHP(static_cast<uint16>(hitpoints - damage));
+		return;
+	}
+
+	// not dead yet
+	setHP(static_cast<uint16>(hitpoints - damage));
+
+	if (objid == 1 && (damage_type & WeaponInfo::DMG_FALLING) && damage >= 6) {
+		// high falling damage knocks you down
+		doAnim(Animation::fallBackwards, 8);
+
+		// TODO: shake head after getting back up when not in combat
+		return;
+	}
+
+	// if avatar was blocking; do a quick stopblock/startblock and play SFX
+	if (objid == 1 && getLastAnim() == Animation::startblock) {
+		ProcId anim1pid = doAnim(Animation::stopblock, 8);
+		ProcId anim2pid = doAnim(Animation::startblock, 8);
+
+		Process* anim1proc = Kernel::get_instance()->getProcess(anim1pid);
+		Process* anim2proc = Kernel::get_instance()->getProcess(anim2pid);
+		assert(anim1proc);
+		assert(anim2proc);
+		anim2proc->waitFor(anim1proc);
+
+		int sfx;
+		if (damage)
+			sfx = 50 + (std::rand() % 2); // constants!
+		else
+			sfx = 20 + (std::rand() % 3); // constants!
+		AudioProcess* audioproc = AudioProcess::get_instance();
+		if (audioproc) audioproc->playSFX(sfx, 0x60, objid, 0);
+		return;
+	}
+
+	// TODO: target needs to stumble/fall/call for help/...(?)
+
+	if (objid != 1) {
+		ObjId target = 1;
+		if (attacker)
+			target = attacker->getObjId();
+		if (!isInCombat())
+			setInCombat();
+
+		CombatProcess* cp = getCombatProcess();
+		assert(cp);
+		cp->setTarget(target);
+
+		if (target == 1) {
+			// call for help
+		}
+	}
+
+	if (damage) {
+		ProcId anim1pid = doAnim(Animation::stumbleBackwards, 8);
+		ProcId anim2pid;
+		if (isInCombat())
+			// not doing this would cause you to re-draw your weapon when hit
+			anim2pid = doAnim(Animation::combat_stand, 8);
+		else
+			anim2pid = doAnim(Animation::stand, 8);
+		Process* anim1proc = Kernel::get_instance()->getProcess(anim1pid);
+		Process* anim2proc = Kernel::get_instance()->getProcess(anim2pid);
+		assert(anim1proc);
+		assert(anim2proc);
+		anim2proc->waitFor(anim1proc);
 	}
 }
 
@@ -542,13 +622,15 @@ ProcId Actor::die(uint16 damageType)
 	setHP(0);
 	setActorFlag(ACT_DEAD);
 
+	ProcId animprocid = 0;
+#if 1
+	animprocid = killAllButFallAnims(true);
+#else
 	Kernel::get_instance()->killProcesses(getObjId(), 6, true); // CONSTANT!
+#endif
 
-	ProcId animprocid = doAnim(Animation::die, getDir());
-
-	// TODO: Lots, including, but not limited to:
-	// * fill with treasure if appropriate
-	// * some U8 monsters need special actions: skeletons, eyebeasts, etc...
+	if (!animprocid)
+		animprocid = doAnim(Animation::die, getDir());
 
 	destroyContents();
 	giveTreasure();
@@ -623,6 +705,67 @@ ProcId Actor::die(uint16 damageType)
 	return animprocid;
 }
 
+void Actor::killAllButCombatProcesses()
+{
+	// loop over all processes, keeping only the relevant ones
+	ProcessIter iter = Kernel::get_instance()->getProcessBeginIterator();
+	ProcessIter endproc = Kernel::get_instance()->getProcessEndIterator();
+	for (; iter != endproc; ++iter) {
+		Process* p = *iter;
+		if (!p) continue;
+		if (p->getItemNum() != objid) continue;
+		if (p->is_terminated()) continue;
+
+		uint16 type = p->getType();
+
+		if (type != 0xF0 && type != 0xF2 && type != 0x208 && type != 0x21D &&
+			type != 0x220 && type != 0x238 && type != 0x243)
+		{
+			p->fail();
+		}
+	}
+}
+
+ProcId Actor::killAllButFallAnims(bool death)
+{
+	ProcId fallproc = 0;
+
+	Kernel* kernel = Kernel::get_instance();
+
+	if (death) {
+		// if dead, we want to kill everything but animations
+		kernel->killProcessesNotOfType(objid, 0xF0, true);
+	} else {
+		// otherwise, need to focus on combat, so kill everything else
+		killAllButCombatProcesses();
+	}
+
+	// loop over all animation processes, keeping only the relevant ones
+	ProcessIter iter = Kernel::get_instance()->getProcessBeginIterator();
+	ProcessIter endproc = Kernel::get_instance()->getProcessEndIterator();
+	for (; iter != endproc; ++iter) {
+		ActorAnimProcess* p = p_dynamic_cast<ActorAnimProcess*>(*iter);
+		if (!p) continue;
+		if (p->getItemNum() != objid) continue;
+		if (p->is_terminated()) continue;
+
+		Animation::Sequence action = p->getAction();
+
+		if (action == Animation::die) {
+			fallproc = p->getPid();
+			continue;
+		}
+
+		if (!death && action == Animation::standUp) {
+			fallproc = p->getPid();
+		} else {
+			p->fail();
+		}
+	}
+
+	return fallproc;
+}
+
 int Actor::calculateAttackDamage(uint16 other, int damage, uint16 damage_type)
 {
 	Actor* attacker = World::get_instance()->getNPC(other);
@@ -647,15 +790,16 @@ int Actor::calculateAttackDamage(uint16 other, int damage, uint16 damage_type)
 	if (damage && damage_type)
 	{
 		if (damage_type & WeaponInfo::DMG_SLAYER) {
-			if (std::rand() % 10 == 0)
+			if (std::rand() % 10 == 0) {
+				slayer = true;
 				damage = 255; // instant kill
+			}
 		}
 
 		if ((damage_type & WeaponInfo::DMG_UNDEAD) &&
 			(defense_type & WeaponInfo::DMG_UNDEAD))
 		{
 			damage *= 2; // double damage against undead
-			slayer = true;
 		}
 
 		if ((defense_type & WeaponInfo::DMG_PIERCE) &&
@@ -737,8 +881,10 @@ void Actor::setInCombat()
 
 	assert(getCombatProcess() == 0);
 
+	// kill any processes belonging to this actor
+	Kernel::get_instance()->killProcesses(getObjId(), 6, true);
+
 	// perform special actions
-	// CHECKME: what should the argument to cast be?
 	ProcId castproc = callUsecodeEvent_cast(0);
 
 	CombatProcess* cp = new CombatProcess(this);
@@ -749,9 +895,6 @@ void Actor::setInCombat()
 		cp->waitFor(castproc);
 
 	setActorFlag(ACT_INCOMBAT);
-
-	// CHECKME: should we kill any processes belonging to this actor when
-	// starting combat?
 }
 
 void Actor::clearInCombat()

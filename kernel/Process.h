@@ -40,7 +40,11 @@ public:
 	// memory pooling stuff
 	ENABLE_CUSTOM_MEMORY_ALLOCATION();
 
+	uint32 getProcessFlags() const { return flags; }
 	bool is_active() const { return (flags & PROC_ACTIVE); }
+	bool is_terminated() const { return (flags & (PROC_TERMINATED |
+												  PROC_TERM_DEFERRED)); }
+	bool is_suspended() const { return (flags & PROC_SUSPENDED); }
 
 	//! terminate the process and recursively fail all processes waiting for it
 	void fail();
@@ -65,7 +69,9 @@ public:
 	void setItemNum(ObjId it) { item_num = it; }
 	void setType(uint16 ty) { type = ty; }
 
-	ProcId getPid() { return pid; }
+	ProcId getPid() const { return pid; }
+	ObjId getItemNum() const { return item_num; }
+	uint16 getType() const { return type; }
 
 	//! dump some info about this process to pout
 	virtual void dumpInfo();

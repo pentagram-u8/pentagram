@@ -30,6 +30,7 @@ class IDataSource;
 class ODataSource;
 
 typedef Process* (*ProcessLoadFunc)(IDataSource*, uint32 version);
+typedef std::list<Process*>::const_iterator ProcessIter;
 
 class Kernel {
 public:
@@ -72,6 +73,10 @@ public:
 	//! \param type the type not to kill
 	//! \param fail if true, fail the processes instead of terminating them
 	void killProcessesNotOfType(ObjId objid, uint16 processtype, bool fail);
+
+	//! get an iterator of the process list.
+	ProcessIter getProcessBeginIterator() { return processes.begin(); }
+	ProcessIter getProcessEndIterator() { return processes.end(); }
 
 	void kernelStats();
 	void processTypes();

@@ -42,6 +42,8 @@ public:
 
 	virtual void dumpInfo();
 
+	Animation::Sequence getAction() const { return action; }
+
 	bool loadData(IDataSource* ids, uint32 version);
 protected:
 	virtual void saveData(ODataSource* ods);

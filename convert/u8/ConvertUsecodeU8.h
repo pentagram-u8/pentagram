@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2002-2003 The Pentagram Team
+ *  Copyright (C) 2002-2005 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -34,7 +34,6 @@ public:
 			uint32 maxOffset;
 		};
 		uint32 read4(IDataSource *) { return 0; }
-		uint32 EventMap[2];
 		uint32 curOffset;
 
 		virtual const char* const *intrinsics()=0;
@@ -59,14 +58,17 @@ class ConvertUsecodeU8 : public ConvertUsecode
 		void readheader(IDataSource *ucfile, UsecodeHeader &uch, uint32 &curOffset);
 		void readevents(IDataSource *ucfile, const UsecodeHeader &/*uch*/)
 		{
+#ifndef INCLUDE_CONVERTUSECODEU8_WITHOUT_BRINGING_IN_FOLD
+			EventMap.clear();
 			for (uint32 i=0; i<32; ++i)
 			{
 				uint32 offset = read4(ucfile);
 				EventMap[offset] = i;
-				#ifdef DISASM_DEBUG
+#ifdef DISASM_DEBUG
 				pout << "Event " << i << ": " << std::hex << std::setw(4) << offset << std::dec << endl;
-				#endif
+#endif
 			}
+#endif
 		}
 
 		void readOp(TempOp &op, IDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols, bool &done)

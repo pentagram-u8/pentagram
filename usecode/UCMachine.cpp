@@ -164,8 +164,7 @@ bool UCMachine::execProcess(UCProcess* p)
 	bool cede = false;
 	bool error = false;
 
-	while(!cede && !error && !(p->flags & (Process::PROC_TERMINATED |
-										   Process::PROC_TERM_DEFERRED)))
+	while(!cede && !error && !p->is_terminated())
 	{
 		//! guard against reading past end of class
 		//! guard against other error conditions

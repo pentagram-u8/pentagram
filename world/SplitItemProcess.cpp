@@ -86,7 +86,7 @@ bool SplitItemProcess::run(const uint32 /*framenum*/)
 
 	result = 0;
 
-	if (!(flags & PROC_TERMINATED))
+	if (!is_terminated())
 		terminate();
 
 	return true;

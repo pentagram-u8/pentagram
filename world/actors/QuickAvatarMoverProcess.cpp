@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2004 The Pentagram team
+Copyright (C) 2002-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -151,7 +151,7 @@ void QuickAvatarMoverProcess::terminateMover(int _dir)
 	QuickAvatarMoverProcess * p =
 		p_dynamic_cast<QuickAvatarMoverProcess *>(kernel->getProcess(amp[_dir]));
 
-	if (p && !(p->flags & PROC_TERMINATED))
+	if (p && !p->is_terminated())
 		p->terminate();
 }
 

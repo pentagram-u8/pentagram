@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ClearFeignDeathProcess.h"
 #include "World.h"
 #include "Actor.h"
+#include "AudioProcess.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -53,8 +54,8 @@ bool ClearFeignDeathProcess::run(const uint32 /*framenum*/)
 
 	a->clearActorFlag(Actor::ACT_FEIGNDEATH);
 
-	// TODO: play sound
-
+	AudioProcess* audioproc = AudioProcess::get_instance();
+	if (audioproc) audioproc->playSFX(59, 0x60, item_num, 0);
 
 	// done
 	terminate();

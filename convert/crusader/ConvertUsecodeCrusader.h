@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2002-2003 The Pentagram Team
+ *  Copyright (C) 2002-2005 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,6 +31,7 @@ class ConvertUsecodeCrusader : public ConvertUsecode
 		void readheader(IDataSource *ucfile, UsecodeHeader &uch, uint32 &curOffset);
 		void readevents(IDataSource *ucfile, const UsecodeHeader &uch)
 		{
+			EventMap.clear();
 			uint32 num_crusader_routines = uch.offset / 6;
 			for (uint32 i=0; i < num_crusader_routines; i++) {
 				/*uint32 size =*/ read2(ucfile);

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -32,14 +32,15 @@ struct WeaponInfo {
 	uint16 damage_type;
 
 	enum DmgType {
-		DMG_NORMAL = 0x01,
-		DMG_BLADE  = 0x02,
-		DMG_BLUNT  = 0x04,
-		DMG_FIRE   = 0x08,
-		DMG_UNDEAD = 0x10,
-		DMG_MAGIC  = 0x20,
-		DMG_SLAYER = 0x40,
-		DMG_PIERCE = 0x80
+		DMG_NORMAL = 0x0001,
+		DMG_BLADE  = 0x0002,
+		DMG_BLUNT  = 0x0004,
+		DMG_FIRE   = 0x0008,
+		DMG_UNDEAD = 0x0010,
+		DMG_MAGIC  = 0x0020,
+		DMG_SLAYER = 0x0040,
+		DMG_PIERCE = 0x0080,
+		DMG_FALLING= 0x0100
 	};
 };
 

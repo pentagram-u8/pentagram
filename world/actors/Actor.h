@@ -115,6 +115,13 @@ public:
 	//! \return the process ID of the death animation
 	virtual ProcId die(uint16 damageType);
 
+	//! kill all processes except those related to combat
+	void killAllButCombatProcesses();
+
+	//! kill all animation processes except those related to dying/falling
+	//! \return PID of animprocess doing the falling (or getting up)
+	ProcId killAllButFallAnims(bool death);
+
 	//! check if NPCs are near which are in combat mode and hostile
 	bool areEnemiesNear();
 

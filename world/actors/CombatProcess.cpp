@@ -85,7 +85,8 @@ bool CombatProcess::run(const uint32 /*framenum*/)
 	if (inAttackRange()) {
 		combatmode = CM_ATTACKING;
 
-		pout << "[COMBAT " << item_num << "] target in range" << std::endl;
+		pout << "[COMBAT " << item_num << "] target (" << target
+			 << ") in range" << std::endl;
 
 		// attack
 		ProcId attackanim = a->doAnim(Animation::attack, a->getDir());

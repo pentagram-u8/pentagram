@@ -177,7 +177,8 @@ int AudioProcess::playSample(AudioSample* sample, int priority, int loops)
 	return channel;
 }
 
-void AudioProcess::playSFX(int sfxnum, int priority, ObjId objid, int loops)
+void AudioProcess::playSFX(int sfxnum, int priority, ObjId objid, int loops,
+						   bool no_duplicates)
 {
 	//con.Printf("playSFX(%i, %i, 0x%X, %i)\n", sfxnum, priority, objid, loops);
 
@@ -185,24 +186,28 @@ void AudioProcess::playSFX(int sfxnum, int priority, ObjId objid, int loops)
 	
 	AudioMixer *mixer = AudioMixer::get_instance();
 
-	std::list<SampleInfo>::iterator it;
-	for (it = sample_info.begin(); it != sample_info.end(); ) {
-		if (it->sfxnum == sfxnum && it->objid == objid && it->loops == loops) {
-
-			// Exactly the same (and playing) so just return
-			//if (it->priority == priority) 
-			if (mixer->isPlaying(it->channel))
+	if (no_duplicates) {
+		std::list<SampleInfo>::iterator it;
+		for (it = sample_info.begin(); it != sample_info.end(); ) {
+			if (it->sfxnum == sfxnum && it->objid == objid &&
+				it->loops == loops)
 			{
-				pout << "Sound already playing" << std::endl;
-				return;
-			}
-			else {
-				it = sample_info.erase(it);
-				continue;
-			}
-		}
 
-		++it;
+				// Exactly the same (and playing) so just return
+				//if (it->priority == priority) 
+				if (mixer->isPlaying(it->channel))
+				{
+					pout << "Sound already playing" << std::endl;
+					return;
+				}
+				else {
+					it = sample_info.erase(it);
+					continue;
+				}
+			}
+
+			++it;
+		}
 	}
 
 	AudioSample *sample = soundflx->getSample(sfxnum);
@@ -383,7 +388,7 @@ uint32 AudioProcess::I_playAmbientSFX(const uint8* args, unsigned int argsize)
 
 //	con.Printf("playAmbientSFX(%i, %i, 0x%X)\n", sfxnum, priority, objID);
 	AudioProcess *ap = AudioProcess::get_instance();
-	if(ap) ap->playSFX(sfxnum,priority,objid,-1);
+	if(ap) ap->playSFX(sfxnum,priority,objid,-1,true);
 	else perr << "Error: No AudioProcess" << std::endl;
 
 	return 4;

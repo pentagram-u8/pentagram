@@ -64,19 +64,20 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 	if (lastAttack == 0xFFFFFFFF)
 		lastAttack = framenum;
 
+	// only run once per frame
+	if (framenum == lastframe) return false;
+	lastframe = framenum;
 
 
 	GUIApp* guiapp = GUIApp::get_instance();
 
-	// in stasis, so don't move
-	if (guiapp->isAvatarInStasis()) {
+	// in stasis or busy, so don't move
+	if (guiapp->isAvatarInStasis() ||
+		Kernel::get_instance()->getNumProcesses(1, 0x00F0) > 0)
+	{
 		idleTime = 0;
 		return false;
 	}
-
-	// only run once per frame
-	if (framenum == lastframe) return false;
-	lastframe = framenum;
 
 	MainActor* avatar = World::get_instance()->getMainActor();
 

@@ -127,7 +127,7 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 		bool ret = init();
 		if (!ret) {
 			// initialization failed
-			terminate();
+			terminateDeferred();
 			return false;
 		}
 	}

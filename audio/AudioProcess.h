@@ -69,7 +69,8 @@ public:
 
 	virtual bool run(const uint32 framenum);
 
-	void playSFX(int sfxnum, int priority, ObjId objid, int loops);
+	void playSFX(int sfxnum, int priority, ObjId objid, int loops,
+				 bool no_duplicates=false);
 	void stopSFX(int sfxnum, ObjId objid);
 	bool isSFXPlaying(int sfxnum);
 
