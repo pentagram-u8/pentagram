@@ -89,7 +89,7 @@ Intrinsic U8Intrinsics[] = {
 	0, //U
 	0, //U
 	0, //U
-	0, // Item::ascend
+	Item::I_ascend,
 	Item::I_getWeight,
 	Item::I_getWeightIncludingContents,
 	Item::I_getSurfaceWeight,

@@ -1,3 +1,7 @@
+2004-08-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Item.*: Item::ascend intrinsic
+	* world/CurrentMap.cpp: allow slight overlap in some cases
+
 2004-08-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: uninitialized variables
 	* world/actors/PathfinderProcess.cpp: save/load properly

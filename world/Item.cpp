@@ -850,6 +850,8 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 				// Uh oh, we hit something
 				if (info->is_solid())
 				{
+					pout << "Hit: "; item->dumpInfo();
+
 					hit = it->hit_time;
 					break;
 				}
@@ -1292,6 +1294,62 @@ void Item::clearGump()
 {
 	gump = 0;
 	flags &= ~FLG_GUMP_OPEN;
+}
+
+sint32 Item::ascend(int delta)
+{
+//	pout << "Ascend: objid=" << getObjId() << ", delta=" << delta << std::endl;
+
+	if (delta == 0) return 0x4000;
+
+	// * gather all items on top of this item (recursively?)
+	// * etherealize all those items to get them out of the way
+	// * move self up/down
+	// * attempt to rematerialize the items up/down
+	// (going through etherealness to avoid having to sort the supported items)
+
+	UCList uclist(2);
+	LOOPSCRIPT(script, LS_TOKEN_TRUE); // we want all items
+	World* world= World::get_instance();
+	world->getCurrentMap()->surfaceSearch(&uclist, script, sizeof(script),
+										  this, true, false, false);
+	for (uint32 i = 0; i < uclist.getSize(); i++)
+	{
+		Item *item = world->getItem(uclist.getuint16(i));
+		if (!item) continue;
+		if (item->getShapeInfo()->is_fixed()) continue;
+
+		item->moveToEtherealVoid();
+	}
+
+	// move self
+	sint32 ix,iy,iz;
+	getLocation(ix,iy,iz);
+	int dist = collideMove(ix, iy, iz+delta, false, false);
+	delta = (delta * dist) / 0x4000;
+
+//	pout << "Ascend: dist=" << dist << std::endl;
+
+	// move other items
+	for (uint32 i = 0; i < uclist.getSize(); i++)
+	{
+		Item *item = world->getItem(uclist.getuint16(i));
+		if (!item) continue;
+		if (item->getShapeInfo()->is_fixed()) continue;
+
+		item->getLocation(ix, iy, iz);
+
+		if (item->canExistAt(ix, iy, iz+delta)) {
+			item->move(ix, iy, iz+delta); // automatically un-etherealizes item
+		} else {
+			// uh oh...
+			// CHECKME: what do we do here?
+			item->move(ix, iy, iz);
+			if (delta < 0) item->fall();
+		}
+	}
+
+	return dist;
 }
 
 void Item::fall()
@@ -1804,6 +1862,19 @@ uint32 Item::I_andStatus(const uint8* args, unsigned int /*argsize*/)
 	return 0;
 }
 
+uint32 Item::I_ascend(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM_FROM_PTR(item);
+	ARG_SINT16(delta);
+	if (!item) return 0;
+
+	int dist = item->ascend(delta);
+
+	if (dist == 0x4000)
+		return 1;
+	else
+		return 0;
+}
 
 uint32 Item::I_getWeight(const uint8* args, unsigned int /*argsize*/)
 {
@@ -2407,7 +2478,7 @@ uint32 Item::I_grab(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_getSliderInput(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM_FROM_PTR(item);
+	ARG_NULL32(); //	ARG_ITEM_FROM_PTR(item);
 	ARG_SINT16(minval);
 	ARG_SINT16(maxval);
 	ARG_SINT16(step);

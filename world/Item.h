@@ -215,6 +215,14 @@ public:
 	//! \note This can destroy the object
 	sint32 collideMove(sint32 x,sint32 y,sint32 z, bool teleport, bool force);
 
+	//! Make the item move up (delta>0) or down (delta<0),
+	//! including any items on top of it
+	//! \param delta distance in Z-direction to move
+	//! \returns 0-0x4000 representing how far it got.
+	//!          0 = didn't move
+	//!          0x4000 = reached destination
+	sint32 ascend(int delta);
+
 	//! Make the item fall down.
 	//! This creates a GravityProcess to do the actual work if the Item
 	//! doesn't already have one.
@@ -358,6 +366,7 @@ public:
 	INTRINSIC(I_overlaps);
 	INTRINSIC(I_overlapsXY);
 	INTRINSIC(I_isOn);
+	INTRINSIC(I_ascend);
 	INTRINSIC(I_getWeight);
 	INTRINSIC(I_getWeightIncludingContents);
 	INTRINSIC(I_getVolume);
