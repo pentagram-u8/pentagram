@@ -594,6 +594,9 @@ void Application::handleEvent(const SDL_Event& event)
 				pout << "Didn't find an item" << std::endl;
 			else
 			{
+				extern uint16 targetObject; // major hack number 2
+				targetObject = objID;
+
 				World *world = World::get_instance();
 				Item *item = p_dynamic_cast<Item*>(world->getObject(objID));
 

@@ -1843,6 +1843,7 @@ void UCMachine::usecodeStats()
 
 }
 
+
 uint32 UCMachine::I_AvatarCanCheat(const uint8* /*args*/, unsigned int /*argsize*/)
 {
 	return 1; // of course the avatar can cheat ;-)
@@ -1888,4 +1889,34 @@ uint32 UCMachine::I_rndRange(const uint8* args, unsigned int /*argsize*/)
 	if (hi <= lo) return lo;
 
 	return (lo + (std::rand() % (hi-lo+1)));
+}
+
+
+
+// major hack number 2
+
+uint16 targetObject = 0;
+class TargetProcess : public Process
+{
+public:
+	virtual bool run(const uint32 /*framenum*/) {
+		if (targetObject != 0) {
+			result = targetObject;
+			// we're leaking strings and memory here... (not that I care)
+			pout << "Target result = " << result << std::endl;
+			terminate();
+		}
+		return false;
+	}
+};
+
+
+uint32 UCMachine::I_target(const uint8* /*args*/, unsigned int /*argsize*/)
+{
+	targetObject = 0;
+
+	pout << std::endl << std::endl << "Target: (select an object)"
+		 << std::endl;
+
+	return UCMachine::get_instance()->addProcess(new TargetProcess());
 }

@@ -152,19 +152,5 @@ void Map::loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds,
 			pout << "---- Starting container ----" << std::endl;
 #endif
 		}
-
-#if 0
-		//! big hack :-)
-		// NB: this causes crashes on map-switches, somehow
-		if (item->getShape() == 180) {
-			static bool alreadydone = false;
-//			if (!alreadydone) {
-				item->assignObjId();
-				item->callUsecodeEvent(0);
-//			}
-			alreadydone = true;
-		}
-#endif
-
 	}
 }

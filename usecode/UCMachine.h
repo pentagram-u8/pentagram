@@ -67,7 +67,7 @@ public:
 	bool dereferencePointer(uint32 ptr, uint8* data, uint32 size);
 
 
-	// dummies...
+	INTRINSIC(I_target);
 	INTRINSIC(I_AvatarCanCheat);
 	INTRINSIC(I_dummyProcess);
 	INTRINSIC(I_getName);

@@ -1,4 +1,8 @@
 2003-05-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/Application.cpp, usecode/UCMachine.*: target intrinsic hack
+	* world/Item.*: some item creation intrinsics
+
+2003-05-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.cpp, graphics/ShapeInfo.*: moved getTypeFlag to ShapeInfo
 
 2003-05-14  Ryan Nunn <colourles@users.sourceforge.net>

@@ -131,6 +131,9 @@ public:
 	INTRINSIC(I_use);
 	INTRINSIC(I_enterFastArea);
 	INTRINSIC(I_ask);
+	INTRINSIC(I_legalCreateAtPoint);
+	INTRINSIC(I_legalCreateAtCoords);
+	INTRINSIC(I_legalCreateInCont);
 
 
 protected:

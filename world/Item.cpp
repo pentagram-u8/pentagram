@@ -29,6 +29,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "MainShapeFlex.h"
 #include "ShapeInfo.h"
+#include "ItemFactory.h"
+#include "CurrentMap.h"
 
 #include "UCStack.h"
 
@@ -643,4 +645,97 @@ uint32 Item::I_ask(const uint8* args, unsigned int /*argsize*/)
 	answerlist->copyStringList(*answers);
 
 	return UCMachine::get_instance()->addProcess(new UserChoiceProcess());
+}
+
+uint32 Item::I_legalCreateAtPoint(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item); // unused?
+	ARG_UINT16(shape);
+	ARG_UINT16(frame);
+	ARG_UINT32(ptr);
+
+	//! haven't checked if this does what it should do.
+	// It just creates an item at a worldpoint currently and returns the id.
+	// This may have to check for room at the give spot
+
+	uint8 buf[5];
+	if (!UCMachine::get_instance()->dereferencePointer(ptr, buf, 5)) {
+		perr << "Illegal WorldPoint pointer passed to I_legalCreateAtPoint."
+			 << std::endl;
+		return 0;
+	}
+
+	uint16 x = buf[0] + (buf[1]<<8);
+	uint16 y = buf[2] + (buf[3]<<8);
+	uint16 z = buf[4];
+
+	Item* newitem = ItemFactory::createItem(shape, frame, 0, 0, 0, 0, 0);
+	if (!newitem) {
+		perr << "I_legalCreateAtPoint failed to create item (" << shape
+			 <<	"," << frame << ")." << std::endl;
+		return 0;
+	}
+	newitem->setLocation(x, y, z);
+	uint16 objID = newitem->assignObjId();
+	World::get_instance()->getCurrentMap()->addItem(newitem);
+
+	return objID;
+}
+
+uint32 Item::I_legalCreateAtCoords(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item); // unused?
+	ARG_UINT16(shape);
+	ARG_UINT16(frame);
+	ARG_UINT16(x);
+	ARG_UINT16(y);
+	ARG_UINT16(z);
+
+	//! haven't checked if this does what it should do.
+	// It just creates an item at given coords currently and returns the id
+	// This may have to check for room at the give spot
+
+	Item* newitem = ItemFactory::createItem(shape, frame, 0, 0, 0, 0, 0);
+	if (!newitem) {
+		perr << "I_legalCreateAtCoords failed to create item (" << shape
+			 <<	"," << frame << ")." << std::endl;
+		return 0;
+	}
+	newitem->setLocation(x, y, z);
+	uint16 objID = newitem->assignObjId();
+	World::get_instance()->getCurrentMap()->addItem(newitem);
+
+	return objID;
+}
+
+uint32 Item::I_legalCreateInCont(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item); // unused?
+	ARG_UINT16(shape);
+	ARG_UINT16(frame);
+	ARG_CONTAINER(container);
+	ARG_UINT16(unknown); // ?
+
+	//! haven't checked if this does what it should do.
+	// It just creates an item, tries to add it to the given container.
+	// If it first, return id; otherwise return 0.
+
+	Item* newitem = ItemFactory::createItem(shape, frame, 0, 0, 0, 0, 0);
+	if (!newitem) {
+		perr << "I_legalCreateInCont failed to create item (" << shape
+			 <<	"," << frame << ")." << std::endl;
+		return 0;
+	}
+
+	if (container->AddItem(newitem)) {
+		uint16 objID = newitem->assignObjId();
+
+		return objID;
+	} else {
+		// failed to add (weight, volume, ...)
+		// clean up
+		delete newitem;
+
+		return 0;
+	}
 }

@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // Ultima 8 Intrinsics
 Intrinsic U8Intrinsics[] = {
 	// 0x000
-	UCMachine::I_dummyProcess, //!! process target()
+	UCMachine::I_target,
 	0,
 	0,
 	Item::I_getX,
@@ -81,10 +81,10 @@ Intrinsic U8Intrinsics[] = {
 	0,
 	// 0x030
 	0,
+	Item::I_legalCreateAtCoords,//the 'legalCreate's are just educated guesses
 	0,
-	0,
-	0,
-	0,
+	Item::I_legalCreateAtPoint,
+	Item::I_legalCreateInCont,
 	0,
 	0,
 	0,
