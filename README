@@ -1,5 +1,5 @@
 Pentagram Documentation
-last changed: 19 June 2004 (GMT)
+last changed: 14 October 2004 (GMT)
 
 The latest version of this document can be found at http://pentagram.sourceforge.net/readme.php
 
@@ -21,7 +21,7 @@ The latest version of this document can be found at http://pentagram.sourceforge
 4.1. Supported games and versions
 
 5. Changes to the Documentation
-5.1. - 19 June 2004
+5.1. - 14 October 2004
 
 
 --------------------------------------------------------------------------------
@@ -64,6 +64,8 @@ fullscreen=no
 width=640
 height=480
 bpp=32
+# Enable this to use the BitStream Vera font for conversations.
+ttf=no
 # If you don't specify midi_driver, Pentagram will automatically select one,
 # based on your platform.
 #(Note: Windows will only work on Windows. CoreAudio only on MacOSX.)
@@ -76,7 +78,7 @@ path=path to U8 directory
 # replace with the directory you want Pentagram to save games to.
 # (no, loading of the original's savegames is not supported)
 save=path to U8 savegames directory
-You may also override some settings under [pentagram] by writing them under [u8]. The ones that can be overriden are midi_driver, fullscreen, width, height, bpp, timiditycfg. Right now this is not necessary as we only support U8 but if we start to support other games it might come in handy.
+You may also override some settings under [pentagram] by writing them under [u8]. The ones that can be overriden are midi_driver, fullscreen, width, height, bpp, ttf, timiditycfg. Right now this is not necessary as we only support U8 but if we start to support other games it might come in handy.
 
 
 
@@ -133,7 +135,7 @@ Some keyboard commands that are only there to trigger some scenes.
 Hacks
 f : plays first scene (Avatar standing up, speaking to Devon)
 g : plays execution scene
-If you copy VeraBd.ttf to the Pentagram data directory the font of U8 gets replaced by it. Looks better in conversations but you loose the different colors.
+If you copy VeraBd.ttf to the Pentagram data directory and enable the ttf configuration option, the font of U8 gets replaced by it. This font should be more readable than the original U8 font in conversations.
 
 
 
@@ -148,7 +150,7 @@ At the moment we only support the English version of Ultima 8 regardless of the 
 --------------------------------------------------------------------------------
 
 5. Changes to the Documentation
-5.1. - 19 June 2004
-No changes yet, first xml-generated version.
+5.1. - 14 October 2004
+2.2. Advanced Configuration enable font replacement.
 
 

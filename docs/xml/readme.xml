@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE readme SYSTEM "docs.dtd">
-<readme title="Pentagram" changed="19 June 2004 (GMT)">	
+<readme title="Pentagram" changed="14 October 2004 (GMT)">	
 	<section title="Building CVS">
 		<sub name="building_linux">
 			<header>Linux/Unix</header>
@@ -212,11 +212,11 @@
 		</sub>
 	</section>
 	<section title="Changes to the Documentation">
-		<sub name="19062004">
-			<header>- 19 June 2004</header>
+		<sub name="14102004">
+			<header>- 14 October 2004</header>
 			<body>
 				<para>
-					No changes yet, first xml-generated version.
+					<ref1 target="advanced_ini"/> enable font replacement.
 				</para>
 			</body>
 		</sub>

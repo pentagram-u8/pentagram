@@ -1,3 +1,7 @@
+2004-10-14  Dominik Reichardt <dominus@users.sourceforge.net>
+	* FAQ: updated with old spelling corrections
+	* Readme, docs/xml/readme.xml: show font replacement options
+	
 2004-10-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/CameraProcess.*: add destructor for clearing static camera
 	* kernel/GUIApp.cpp: hide console and reset time when starting new game
