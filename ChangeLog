@@ -1,7 +1,10 @@
 2004-12-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/GUIApp.cpp, games/U8Game.cpp: reserve some more objids
+
+2004-12-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Object.*: Object::dumpInfo()
 	* kernel/ObjectManager.*: reserveObjId() function in objectmanager
-	* kernel/U8Game.cpp: moved reserveObjId(666) to U8Game
+	* games/U8Game.cpp: moved reserveObjId(666) to U8Game
 	* kernel/ObjectManager.*: ObjectManager::objectInfo console command
 	* kernel/GUIApp.cpp: reserve 32 objids for core gumps
 	* world/actors/Pathfinder.cpp: silenced some debugging messages

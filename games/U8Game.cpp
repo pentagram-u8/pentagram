@@ -75,8 +75,14 @@ bool U8Game::startGame()
 
 	pout << "Starting new Ultima 8 game." << std::endl;
 
+	ObjectManager* objman = ObjectManager::get_instance();
+
+	// reserve a number of objids just in case we'll need them sometime
+	for (uint16 i = 384; i < 512; ++i)
+		objman->reserveObjId(i);
+
 	// reserve ObjId 666 for the Guardian Bark hack
-	ObjectManager::get_instance()->reserveObjId(666); 
+	objman->reserveObjId(666);
 
 	IDataSource *saveds = FileSystem::get_instance()->ReadFile("@u8/savegame/u8save.000");
 	if (!saveds) {

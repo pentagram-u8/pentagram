@@ -1605,7 +1605,7 @@ void GUIApp::setupCoreGumps()
 	assert(gameMapGump->getObjId() == 259);
 
 
-	for (uint16 i = 260; i < 288; ++i)
+	for (uint16 i = 260; i < 384; ++i)
 		objectmanager->reserveObjId(i);
 }
 
