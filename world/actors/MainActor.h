@@ -64,13 +64,13 @@ public:
 	bool loadData(IDataSource* ids);
 
 	//! "teleport" console command
-	static void MainActor::ConCmd_teleport(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void ConCmd_teleport(const Console::ArgsType &args, const Console::ArgvType &argv);
 	//! "mark" console command
-	static void MainActor::ConCmd_mark(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void ConCmd_mark(const Console::ArgsType &args, const Console::ArgvType &argv);
 	//! "recall" console command
-	static void MainActor::ConCmd_recall(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void ConCmd_recall(const Console::ArgsType &args, const Console::ArgvType &argv);
 	//! "listmarks" console command
-	static void MainActor::ConCmd_listmarks(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void ConCmd_listmarks(const Console::ArgsType &args, const Console::ArgvType &argv);
 
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();

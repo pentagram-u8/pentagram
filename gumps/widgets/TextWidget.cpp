@@ -128,7 +128,6 @@ void TextWidget::PaintThis(RenderSurface*surf, sint32 lerp_factor)
 									   remaining, targetwidth, targetheight, textalign);
 	}
 	cached_text->draw(surf, 0, 0);
-//	surf->PrintText(font, text.c_str(), 0, 0);
 }
 
 void TextWidget::saveData(ODataSource* ods)
