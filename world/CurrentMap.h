@@ -166,7 +166,7 @@ public:
 	INTRINSIC(I_canExistAt);
 
 private:
-	void loadItems(std::list<Item*> itemlist);
+	void loadItems(std::list<Item*> itemlist, bool callCacheIn);
 	void createEggHatcher();
 
 	Map* current_map;

@@ -1,3 +1,6 @@
+2004-10-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/CurrentMap.*: don't call cachein when loading games
+	* world/CurrentMap.cpp: disabled cachein for actors (temporarily?)
 
 2004-10-10  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* gumps/Gump.*, kernel/GUIApp.*: added mouse motion support for gumps

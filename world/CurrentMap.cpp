@@ -165,7 +165,7 @@ void CurrentMap::writeback()
 	egghatcher = 0;
 }
 
-void CurrentMap::loadItems(list<Item*> itemlist)
+void CurrentMap::loadItems(list<Item*> itemlist, bool callCacheIn)
 {
 	item_list::iterator iter;
 	for (iter = itemlist.begin(); iter != itemlist.end(); ++iter)
@@ -179,13 +179,17 @@ void CurrentMap::loadItems(list<Item*> itemlist)
 
 		// add item to internal object list
 		addItemToEnd(item);
-		
-		item->callUsecodeEvent_cachein();
+
+		if (callCacheIn)
+			item->callUsecodeEvent_cachein();
 	}
 }
 
 void CurrentMap::loadMap(Map* map)
 {
+	// don't call the cachein events at startup or when loading a savegame
+	bool callCacheIn = (current_map != 0);
+
 	current_map = map;
 
 	createEggHatcher();
@@ -199,8 +203,8 @@ void CurrentMap::loadMap(Map* map)
 	fast_x_max = -1;
 	fast_y_max = -1;
 
-	loadItems(map->fixeditems);
-	loadItems(map->dynamicitems);
+	loadItems(map->fixeditems, callCacheIn);
+	loadItems(map->dynamicitems, callCacheIn);
 
 	// we take control of the items in map, so clear the pointers
 	map->fixeditems.clear();
@@ -220,8 +224,11 @@ void CurrentMap::loadMap(Map* map)
 		if (actor->getMapNum() == getNum()) {
 			addItemToEnd(actor);
 
-			// Cachein
-			actor->callUsecodeEvent_cachein();
+#if 0
+			// the avatar's cachein function is very strange; disabled for now
+			if (callCacheIn)
+				actor->callUsecodeEvent_cachein();
+#endif
 		}
 	}
 	}
