@@ -29,8 +29,18 @@ struct WeaponInfo {
 	uint8 dex_attack_bonus;
 	uint8 dex_defend_bonus;
 	uint8 armour_bonus;
-	uint16 damage_type; // 0x02 = blade, 0x04 = blunt, 0x08 = fire?
-	                    // 0x10 = anti-undead?, 0x20 = fire?, 0x40 = slayer?
+	uint16 damage_type;
+
+	enum DmgType {
+		DMG_NORMAL = 0x01,
+		DMG_BLADE  = 0x02,
+		DMG_BLUNT  = 0x04,
+		DMG_FIRE   = 0x08,
+		DMG_UNDEAD = 0x10,
+		DMG_MAGIC  = 0x20,
+		DMG_SLAYER = 0x40,
+		DMG_PIERCE = 0x80
+	};
 };
 
 

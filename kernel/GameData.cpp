@@ -125,6 +125,7 @@ void GameData::loadU8Data()
 	Configuration* config = CoreApp::get_instance()->getConfig();
 	config->readConfigFile("@data/u8weapons.cfg", "weapons", true);
 	config->readConfigFile("@data/u8armour.cfg", "armour", true);
+	config->readConfigFile("@data/u8monsters.cfg", "monsters", true);
 
 	// Load typeflags
 	IDataSource *tfs = filesystem->ReadFile("@u8/static/typeflag.dat");

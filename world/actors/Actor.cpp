@@ -32,6 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "ShapeInfo.h"
 #include "Pathfinder.h"
+#include "Animation.h"
 
 #include "ItemFactory.h"
 #include "IDataSource.h"
@@ -323,9 +324,187 @@ uint16 Actor::getDefenseType()
 	return 0;
 }
 
+sint16 Actor::getDefendingDex()
+{
+	sint16 dex = getDex();
+
+	Item* weapon = World::get_instance()->getItem(
+		getEquip(ShapeInfo::SE_WEAPON));
+	if (weapon) {
+		ShapeInfo* si = weapon->getShapeInfo();
+		assert(si->weaponinfo);
+		dex += si->weaponinfo->dex_defend_bonus;
+	}
+
+	return dex;
+}
+
+sint16 Actor::getAttackingDex()
+{
+	sint16 dex = getDex();
+
+	Item* weapon = World::get_instance()->getItem(
+		getEquip(ShapeInfo::SE_WEAPON));
+	if (weapon) {
+		ShapeInfo* si = weapon->getShapeInfo();
+		assert(si->weaponinfo);
+		dex += si->weaponinfo->dex_attack_bonus;
+	}
+
+	return dex;
+}
+
+uint16 Actor::getDamageType()
+{
+	ShapeInfo* si = getShapeInfo();
+	assert(si->monsterinfo);
+	return si->monsterinfo->damage_type;
+}
+
+
+int Actor::getDamageAmount()
+{
+	ShapeInfo* si = getShapeInfo();
+	assert(si->monsterinfo);
+
+	int min = static_cast<int>(si->monsterinfo->min_dmg);
+	int max = static_cast<int>(si->monsterinfo->max_dmg);
+
+	int damage = (std::rand() % (max - min + 1)) + min;
+
+	return damage;
+}
+
+
 void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 {
+	if (getActorFlags() & ACT_DEAD)
+		return; // already dead, so don't bother
+
+	damage = calculateAttackDamage(other, damage, damage_type);
+
+	if (!damage)
+		return; // attack missed
+
+	// TODO: accumulate strength for avatar kicks
+	// TODO: accumulate dexterity for avatar hits
+
+	if (damage >= hitpoints) {
+		// we're dead
+		die();
+	} else {
+		setHP(static_cast<uint16>(hitpoints - damage));
+	}
+}
+
+void Actor::die()
+{
+	setHP(0);
+
 	// TODO: implement this
+}
+
+int Actor::calculateAttackDamage(uint16 other, int damage, uint16 damage_type)
+{
+	Item* hitter = World::get_instance()->getItem(other);
+	Actor* attacker = World::get_instance()->getNPC(other);
+
+	if (damage == 0 && attacker) {
+		damage = attacker->getDamageAmount();
+	}
+
+	if (damage_type == 0 && hitter) {
+		damage_type = hitter->getDamageType();
+	}
+
+	uint16 defense_type = getDefenseType();
+
+	// most damage types are blocked straight away by defense types
+	damage_type &= ~(defense_type & ~(WeaponInfo::DMG_MAGIC  |
+									  WeaponInfo::DMG_UNDEAD |
+									  WeaponInfo::DMG_PIERCE));
+
+	// immunity to non-magical weapons
+	if ((defense_type & WeaponInfo::DMG_MAGIC) &&
+		!(damage_type & WeaponInfo::DMG_MAGIC))
+	{
+		damage = 0;
+	}
+
+	bool slayer = false;
+
+	// special attacks
+	if (damage && damage_type)
+	{
+		if (damage_type & WeaponInfo::DMG_SLAYER) {
+			if (std::rand() % 10 == 0)
+				damage = 255; // instant kill
+		}
+
+		if ((damage_type & WeaponInfo::DMG_UNDEAD) &&
+			(defense_type & WeaponInfo::DMG_UNDEAD))
+		{
+			damage *= 2; // double damage against undead
+			slayer = true;
+		}
+
+		if ((defense_type & WeaponInfo::DMG_PIERCE) &&
+			!(damage_type & (WeaponInfo::DMG_BLADE |
+							 WeaponInfo::DMG_FIRE  |
+							 WeaponInfo::DMG_PIERCE)))
+		{
+			damage /= 2; // resistance to blunt damage
+		}
+	} else {
+		damage = 0;
+	}
+
+	// armour
+	if (damage && !(damage_type & WeaponInfo::DMG_PIERCE) && !slayer)
+	{
+		// blocking?
+		if ((getLastAnim() == Animation::startblock ||
+			 getLastAnim() == Animation::stopblock) &&
+			!(getActorFlags() & ACT_STUNNED))
+		{
+			damage -= getStr() / 5;
+		}
+
+		int ACmod = 3 * getArmourClass();
+		if (damage_type & WeaponInfo::DMG_FIRE)
+			ACmod /= 2; // armour doesn't protect from fire as well
+
+		if (getActorFlags() & ACT_STUNNED)
+			ACmod /= 2; // stunned?
+
+		if (ACmod > 100) ACmod = 100;
+
+		// TODO: replace rounding bias by something random
+		damage = ((100 - ACmod) * damage) / 100;
+
+		if (damage < 0) damage = 0;
+	}
+
+	// to-hit
+	if (damage && !(damage_type & WeaponInfo::DMG_PIERCE) && attacker)
+	{
+		bool hit = false;
+		if ((getActorFlags() & ACT_STUNNED) ||
+			(rand() % (attacker->getAttackingDex() + 3) >
+			 rand() % (getDefendingDex())))
+		{
+			hit = true;
+		}
+
+		// TODO: give avatar an extra chance to hit monsters
+		//       with defense_type DMG_PIERCE
+
+		if (!hit) {
+			damage = 0;
+		}
+	}
+
+	return damage;
 }
 
 void Actor::dumpInfo()

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2004 The Pentagram team
+Copyright (C) 2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,15 +16,21 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef UTIL_H
-#define UTIL_H
+#ifndef MONSTERINFO_H
+#define MONSTERINFO_H
 
-#include <string>
-#include <vector>
-#include "istring.h"
 
-std::string to_uppercase(std::string s);
+struct MonsterInfo {
+	uint32 shape;
+	uint16 min_hp, max_hp;
+	uint16 min_dex, max_dex;
+	uint16 min_dmg, max_dmg;
+	uint16 armour_class;
+	uint8 alignment;
+	bool unk;
+	uint16 damage_type;
+	uint16 defense_type;
+};
 
-template<class T> void StringToArgv(const T &args, std::vector<T> &argv);
 
 #endif

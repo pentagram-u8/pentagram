@@ -346,7 +346,7 @@ class console_ostream : public std::basic_ostream<_E, _Tr>
 //#endif
 
 public:	
-	console_ostream() : _Fb(), std::basic_ostream<_E, _Tr>(&_Fb) {}
+	console_ostream() : std::basic_ostream<_E, _Tr>(&_Fb), _Fb() {}
 	console_ostream(console_streambuf<_E, _Tr> *Fb) : std::basic_ostream<_E, _Tr>(Fb) {}
 	virtual ~console_ostream() { }
 
@@ -376,7 +376,7 @@ extern console_ostream<char>		*ppout;
 extern console_ostream<char>		*ppout;
 #endif
 
-template<> console_ostream<char>;
+template class console_ostream<char>;
 
 //
 // Error Output Streambuf
@@ -417,7 +417,7 @@ class console_err_ostream : public std::basic_ostream<_E, _Tr>
 //#endif
 
 public:	
-	console_err_ostream() : _Fb(), std::basic_ostream<_E, _Tr>(&_Fb) {}
+	console_err_ostream() : std::basic_ostream<_E, _Tr>(&_Fb), _Fb() {}
 	console_err_ostream(console_err_streambuf<_E, _Tr> *Fb) : std::basic_ostream<_E, _Tr>(Fb) {}
 	virtual ~console_err_ostream() { }
 
@@ -448,6 +448,6 @@ extern console_err_ostream<char>	*pperr;
 extern console_err_ostream<char>	*pperr;
 #endif
 
-template<> console_err_ostream<char>;
+template class console_err_ostream<char>;
 
 #endif // CONSOLE_H

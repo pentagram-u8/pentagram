@@ -1,3 +1,9 @@
+2004-04-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* various: compile errors
+	* data/u8monsters.cfg: monster data
+	* world/actors/MonsterInfo.h: monster data
+	* world/actors/*Actor.*: combat mechanics
+
 2004-04-09  Ryan Nunn <colourles@users.sourceforge.net>
 	* misc/istring.* : New and improved istring. Hopefully it works for all
 	* misc/util.* :  StringToArgs function (handles quoted strings)

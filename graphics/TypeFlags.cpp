@@ -108,6 +108,7 @@ void TypeFlags::load(IDataSource *ds)
 
 	loadWeaponInfo();
 	loadArmourInfo();
+	loadMonsterInfo();
 }
 
 
@@ -186,7 +187,7 @@ void TypeFlags::loadArmourInfo()
 	Configuration* config = CoreApp::get_instance()->getConfig();
 	MainShapeFlex* msf = GameData::get_instance()->getMainShapes();
 
-	// load weapons
+	// load armour
 	std::set<Pentagram::istring> armourkeys;
 	armourkeys = config->listKeys("armour", true);	
 	for (std::set<Pentagram::istring>::iterator iter = armourkeys.begin();
@@ -231,5 +232,61 @@ void TypeFlags::loadArmourInfo()
 		ai.kick_attack_bonus = static_cast<uint16>(val);
 
 		aia[ai.frame] = ai;
+	}
+}
+
+void TypeFlags::loadMonsterInfo()
+{
+	Configuration* config = CoreApp::get_instance()->getConfig();
+
+	// load monsters
+	std::set<Pentagram::istring> monsterkeys;
+	monsterkeys = config->listKeys("monsters/", true);	
+	for (std::set<Pentagram::istring>::iterator iter = monsterkeys.begin();
+		 iter != monsterkeys.end(); ++iter)
+	{
+		Pentagram::istring k = *iter;
+		MonsterInfo* mi = new MonsterInfo;
+
+		int val;
+
+		config->value(k + "/shape", val);
+		mi->shape = static_cast<uint32>(val);
+
+		config->value(k + "/hp_min", val);
+		mi->min_hp = static_cast<uint16>(val);
+
+		config->value(k + "/hp_max", val);
+		mi->max_hp = static_cast<uint16>(val);
+
+		config->value(k + "/dex_min", val);
+		mi->min_dex = static_cast<uint16>(val);
+
+		config->value(k + "/dex_max", val);
+		mi->max_dex = static_cast<uint16>(val);
+
+		config->value(k + "/damage_min", val);
+		mi->min_dmg = static_cast<uint16>(val);
+
+		config->value(k + "/damage_max", val);
+		mi->max_dmg = static_cast<uint16>(val);
+
+		config->value(k + "/armour", val);
+		mi->armour_class = static_cast<uint16>(val);
+
+		config->value(k + "/alignment", val);
+		mi->alignment = static_cast<uint8>(val);
+
+		config->value(k + "/unk", val);
+		mi->unk = (val != 0);
+
+		config->value(k + "/damage_type", val);
+		mi->damage_type = static_cast<uint16>(val);
+
+		config->value(k + "/defense_type", val);
+		mi->defense_type = static_cast<uint16>(val);
+
+		assert(mi->shape < shapeInfo.size());
+		shapeInfo[mi->shape].monsterinfo = mi;
 	}
 }

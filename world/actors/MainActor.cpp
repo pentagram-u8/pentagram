@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Kernel.h"
 #include "TeleportToEggProcess.h"
 #include "CameraProcess.h"
+#include "Animation.h"
 
 #include "Configuration.h"
 #include "CoreApp.h"
@@ -95,7 +96,6 @@ uint16 MainActor::getDefenseType()
 	std::list<Item*>::iterator iter;
 	for (iter = contents.begin(); iter != contents.end(); ++iter)
 	{
-		uint32 shape = (*iter)->getShape();
 		uint32 frame = (*iter)->getFrame();
 		ShapeInfo* si = (*iter)->getShapeInfo();
 		if (si->armourinfo) {
@@ -113,7 +113,6 @@ uint32 MainActor::getArmourClass()
 	std::list<Item*>::iterator iter;
 	for (iter = contents.begin(); iter != contents.end(); ++iter)
 	{
-		uint32 shape = (*iter)->getShape();
 		uint32 frame = (*iter)->getFrame();
 		ShapeInfo* si = (*iter)->getShapeInfo();
 		if (si->armourinfo) {
@@ -125,6 +124,88 @@ uint32 MainActor::getArmourClass()
 	}
 
 	return armour;
+}
+
+uint16 MainActor::getDamageType()
+{
+	Item* weapon = World::get_instance()->getItem(
+		getEquip(ShapeInfo::SE_WEAPON));
+
+	if (weapon) {
+		// weapon equipped?
+
+		ShapeInfo* si = weapon->getShapeInfo();
+		assert(si->weaponinfo);
+
+		return si->weaponinfo->damage_type;
+	}
+
+	return Actor::getDamageType();
+}
+
+int MainActor::getDamageAmount()
+{
+	int damage = 0;
+
+	if (getLastAnim() == Animation::kick) {
+		// kick
+
+		int kick_bonus = 0;
+		Item* legs = World::get_instance()->getItem(
+			getEquip(ShapeInfo::SE_LEGS));
+		if (legs) {
+			ShapeInfo* si = legs->getShapeInfo();
+			assert(si->armourinfo);
+			kick_bonus = si->armourinfo[legs->getFrame()].kick_attack_bonus;
+		}
+
+		damage = (std::rand() % (getStr()/2 + 1)) + kick_bonus;
+
+		return damage;
+
+	}
+
+	Item* weapon = World::get_instance()->getItem(
+		getEquip(ShapeInfo::SE_WEAPON));
+	
+	
+	if (weapon) {
+		// weapon equipped?
+		
+		ShapeInfo* si = weapon->getShapeInfo();
+		assert(si->weaponinfo);
+			
+		int base = si->weaponinfo->base_damage;
+		int mod = si->weaponinfo->damage_modifier;
+		
+		damage = (std::rand() % (mod + 1)) + base + getStr()/5;
+		
+		return damage;
+	}
+	
+	// no weapon?
+	
+	damage = (std::rand() % (getStr()/2 + 1)) + 1;
+	
+	return damage;
+}
+
+void MainActor::receiveHit(uint16 other, int dir, int damage,
+						   uint16 damage_type)
+{
+	Actor::receiveHit(other, dir, damage, damage_type);
+
+	if (damage > 3 && other)
+	{
+		// TODO: spray blood
+	}
+}
+
+void MainActor::die()
+{
+	Actor::die();
+
+	// TODO: implement this
 }
 
 void MainActor::ConCmd_teleport(const Console::ArgsType &args, const Console::ArgvType &argv)

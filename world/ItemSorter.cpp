@@ -28,6 +28,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Rect.h"
 #include "GameData.h"
 
+// temp
+#include "World.h"
+#include "WeaponOverlay.h"
+#include "MainActor.h"
+// --
+
 using Pentagram::Rect;
 
 #if 0
@@ -949,6 +955,21 @@ bool ItemSorter::PaintSortItem(SortItem	*si)
 		surf->Paint(si->shape, si->frame, si->sxbot, si->sybot);
 		
 //	if (wire) si->info->draw_box_front(s, dispx, dispy, 255);
+
+	// weapon overlay
+	// FIXME: use highlight/invisibility, also add to Trace() ?
+	if (si->shape_num == 1 && si->item_num == 1) {
+		MainActor* av = p_dynamic_cast<MainActor*>(World::get_instance()->getNPC(1));
+		const WeaponOverlayFrame* wo_frame = 0;
+		uint32 wo_shapenum;
+		av->getWeaponOverlay(wo_frame, wo_shapenum);
+		if (wo_frame) {
+			Shape* wo_shape = GameData::get_instance()->getMainShapes()->getShape(wo_shapenum);
+			surf->Paint(wo_shape, wo_frame->frame,
+						si->sxbot + wo_frame->xoff,
+						si->sybot + wo_frame->yoff);
+		}
+	}
 
 	if (sort_limit) {
 		if (order_counter == sort_limit) {

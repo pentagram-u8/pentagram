@@ -1326,6 +1326,16 @@ void Item::explode()
 	}
 }
 
+uint16 Item::getDamageType()
+{
+	ShapeInfo* si = getShapeInfo();
+	if (si->weaponinfo) {
+		return si->weaponinfo->damage_type;
+	}	
+
+	return 0;
+}
+
 void Item::receiveHit(uint16 other, int dir, int damage, uint16 type)
 {
 	// first, check if the item has a 'gotHit' usecode event

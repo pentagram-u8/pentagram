@@ -54,6 +54,12 @@ public:
 
 	virtual uint32 getArmourClass();
 	virtual uint16 getDefenseType();
+	virtual uint16 getDamageType();
+	virtual int getDamageAmount();
+
+	virtual void receiveHit(uint16 other, int dir, int damage, uint16 type);
+
+	virtual void die();
 
 	bool loadData(IDataSource* ids);
 

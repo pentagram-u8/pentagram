@@ -73,8 +73,22 @@ public:
 
 	virtual uint32 getArmourClass();
 	virtual uint16 getDefenseType();
+	sint16 getAttackingDex();
+	sint16 getDefendingDex();
+
+	virtual uint16 getDamageType();
+	virtual int getDamageAmount();
+
+	//! calculate the damage an attack against this Actor does.
+	//! \param other the attacker (can be zero)
+	//! \param damage base damage, or zero to use attacker's  default
+	//! \param type damage type, or zero to use attacker's default
+	//! \return the amount of damage to be applied. Zero if attack missed.
+	int calculateAttackDamage(uint16 other, int damage, uint16 type);
 
 	virtual void receiveHit(uint16 other, int dir, int damage, uint16 type);
+
+	virtual void die();
 
 	//! run the given animation
 	//! \return the PID of the ActorAnimProcess

@@ -40,7 +40,7 @@ template<class T> void StringToArgv(const T &args, std::vector<T> &argv)
 	argv.clear();
 
 	bool quoted = false;
-	T::const_iterator it;
+	typename T::const_iterator it;
 	int ch;
 	T arg;
 
@@ -58,7 +58,7 @@ template<class T> void StringToArgv(const T &args, std::vector<T> &argv)
 		// Handle \\, \", \', \n, \r, \t
 		if (ch == '\\')
 		{
-			T::const_iterator next = it+1;
+			typename T::const_iterator next = it+1;
 			if (next != args.end())
 			{
 				if (*next == '\\' || *next == '\"' || *next == '\'')

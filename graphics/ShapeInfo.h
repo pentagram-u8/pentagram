@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "WeaponInfo.h"
 #include "ArmourInfo.h"
+#include "MonsterInfo.h"
 
 class ShapeInfo
 {
@@ -78,6 +79,7 @@ public:
 
 	WeaponInfo* weaponinfo;
 	ArmourInfo* armourinfo;
+	MonsterInfo* monsterinfo;
 
 	inline bool is_fixed() const { return (flags & SI_FIXED) != 0; }
 	inline bool is_solid() const { return (flags & SI_SOLID) != 0; }
@@ -99,6 +101,7 @@ public:
 	~ShapeInfo() {
 		delete weaponinfo;
 		delete[] armourinfo;
+		delete monsterinfo;
 	}
 
 };

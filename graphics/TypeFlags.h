@@ -36,6 +36,7 @@ public:
 private:
 	void loadWeaponInfo();
 	void loadArmourInfo();
+	void loadMonsterInfo();
 
 	std::vector<ShapeInfo> shapeInfo;
 };

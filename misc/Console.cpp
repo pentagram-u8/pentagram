@@ -624,7 +624,7 @@ void Console::AddCharacterToCommandBuffer(int ch)
 
 						while (it1 != common.end())
 						{
-							if (!common.traits_type::eq(*it1,*it2)) break;
+							if (!Pentagram::istring::traits_type::eq(*it1,*it2)) break;
 							
 							comsize++;
 							++it1;

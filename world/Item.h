@@ -230,11 +230,14 @@ public:
 	//! explode
 	void explode();
 
+	//! get the damage type this object does when hitting something
+	virtual uint16 getDamageType();
+
 	//! receive a hit
 	//! \param other The item delivering the hit
 	//! \param dir The direction the hit is coming from (or inverse? CHECKME!)
-	//! \param damage The force of the hit (not sure in which unit. CHECKME!)
-	//! \param type The type of damage done (not sure of the meaning. CHECKME!)
+	//! \param damage The force of the hit. Zero for default
+	//! \param type The type of damage done. Zero for default
 	virtual void receiveHit(ObjId other, int dir, int damage, uint16 type);
 
 	//! Check this Item against the given loopscript
