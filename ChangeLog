@@ -1,3 +1,6 @@
+2005-02-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* misc/idMan.cpp: fixed integer overflow bug
+
 2005-02-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* configure.ac: add --enable-hq2x option
 	* graphics/ScalerManager.*: changed comments into doxygen comments

@@ -95,9 +95,12 @@ uint16 idMan::getNewID()
 
 void idMan::expand()
 {
+	if (end == max_end) return;
+
 	uint16 old_end = end;
-	end *= 2;
-	if (end > max_end) end = max_end;
+	unsigned int new_end = end * 2;
+	if (new_end > max_end) new_end = max_end;
+	end = new_end;
 	ids.resize(end+1);
 
 #if 0
