@@ -264,6 +264,13 @@ public:
 	//! \param type The type of damage done. Zero for default
 	virtual void receiveHit(ObjId other, int dir, int damage, uint16 type);
 
+	//! can this item be dragged?
+	bool canDrag();
+
+	//! how far can this item be thrown?
+	//! \return range, or 0 if item can't be thrown
+	int getThrowRange();
+
 	//! Check this Item against the given loopscript
 	//! \param script The loopscript to run
 	//! \param scriptsize The size (in bytes) of the loopscript

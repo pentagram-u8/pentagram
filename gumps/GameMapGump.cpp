@@ -435,10 +435,7 @@ bool GameMapGump::StartDraggingItem(Item* item, int mx, int my)
 {
 //	ParentToGump(mx, my);
 
-	// check if item can be moved
-	ShapeInfo* si = item->getShapeInfo();
-	if (si->is_fixed()) return false;
-	//!! need more checks here
+	if (!item->canDrag()) return false;
 
 	MainActor* avatar = World::get_instance()->getMainActor();
 	if (!avatar->canReach(item, 128)) return false;  // CONSTANT!
@@ -474,14 +471,13 @@ bool GameMapGump::DraggingItem(Item* item, int mx, int my)
 						  dragging_pos[0], dragging_pos[1], dragging_pos[2]))
 	{
 		// can't reach, so see if we can throw
-		// TODO: check weight
-		if (!avatar->canReach(item, 256, // CONSTANT!
-							  dragging_pos[0], dragging_pos[1],
-							  dragging_pos[2]))
+		int throwrange = item->getThrowRange();
+		if (throwrange && avatar->canReach(item, throwrange, dragging_pos[0],
+										   dragging_pos[1], dragging_pos[2]))
 		{
-			return false;
-		} else {
 			throwing = true;
+		} else {
+			return false;
 		}
 	}
 

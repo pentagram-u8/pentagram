@@ -225,7 +225,8 @@ void Container::dumpInfo()
 {
 	Item::dumpInfo();
 
-	pout << "Volume: " << getShapeInfo()->volume << std::endl;
+	pout << "Volume: " << getShapeInfo()->volume << ", total weight: "
+		 << getTotalWeight() << std::endl;
 }
 
 void Container::saveData(ODataSource* ods)

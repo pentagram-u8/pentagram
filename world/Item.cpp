@@ -1510,6 +1510,28 @@ void Item::receiveHit(uint16 other, int dir, int damage, uint16 type)
 	p->move(-16*x_fact[dir],-16*y_fact[dir],16);
 }
 
+bool Item::canDrag()
+{
+	ShapeInfo* si = getShapeInfo();
+	if (si->is_fixed()) return false;
+
+	// actors can't be moved
+	if (getObjId() < 256) return false; // CONSTANT!
+
+	// CHECKME: might need more checks here
+
+	return true;
+}
+
+int Item::getThrowRange()
+{
+	if (!canDrag()) return 0;
+
+	// TODO: implement this. (Depends on weight)
+
+	return 256;
+}
+
 bool Item::canReach(Item* other, int range,
 					sint32 otherX, sint32 otherY, sint32 otherZ)
 {

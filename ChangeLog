@@ -1,3 +1,8 @@
+2004-11-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Item.*: added canDrag() and getThrowRange() functions
+	* gumps/GameMapGump.cpp: use canDrag/getThrowRange
+	* world/Container.cpp: let dumpInfo() output total weight
+
 2004-11-14	Darke  <darkepaw@users.sf.net>
 	* *: Lots of changes to remove warnings.
 	* world/Item.*: Changed Item::Lerped::{shape|frame} to be uint32,
