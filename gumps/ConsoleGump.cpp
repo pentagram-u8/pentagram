@@ -213,7 +213,7 @@ void ConsoleGump::ShowConsole()
 
 bool ConsoleGump::ConsoleIsVisible()
 {
-	return scroll_state == NORMAL_DISPLAY;
+	return scroll_state != NOTIFY_OVERLAY;
 }
 
 bool ConsoleGump::Run(const uint32 framenum)

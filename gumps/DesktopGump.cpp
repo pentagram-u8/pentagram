@@ -22,6 +22,7 @@
 #include "GUIApp.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
+#include "ConsoleGump.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(DesktopGump,Gump);
 
@@ -43,8 +44,13 @@ DesktopGump::~DesktopGump(void)
 
 void DesktopGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 {
-	// Just fill it
-	surf->Fill32(0x3f3f3f, 0, 0, dims.w, dims.h);
+	// Just fill it (only if console showing, or in debug mode)
+
+#ifndef DEBUG
+	ConsoleGump *console = GUIApp::get_instance()->getConsoleGump();
+	if (console->ConsoleIsVisible()) 
+#endif
+		surf->Fill32(0x3f3f3f, 0, 0, dims.w, dims.h);
 }
 
 bool DesktopGump::StartDraggingChild(Gump* gump, int mx, int my)
