@@ -1,3 +1,6 @@
+2004-06-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/MenuGump.cpp: hacky intro/endgame support
+
 2004-06-15  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* gumps/ControlsGump.cpp: does not set mouse cursor anymore
 	* gumps/MenuGump.cpp: attached OptionsGump to Options

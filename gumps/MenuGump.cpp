@@ -35,6 +35,11 @@
 #include "IDataSource.h"
 #include "ODataSource.h"
 
+// for the movies (temporary)
+#include "FileSystem.h"
+#include "MovieGump.h"
+// --
+
 DEFINE_RUNTIME_CLASSTYPE_CODE(MenuGump,ModalGump);
 
 MenuGump::MenuGump(): ModalGump(0, 0, 5, 5)
@@ -152,6 +157,17 @@ void MenuGump::selectEntry(int entry)
 	{
 	case 1:
 	{	// Intro
+		//!! FIXME: Hack, english only, etc, etc...
+		std::string filename = "@u8/static/eintro.skf";
+		FileSystem* filesys = FileSystem::get_instance();
+		IDataSource* skf = filesys->ReadFile(filename);
+		if (!skf) {
+			pout << "movie not found." << std::endl;
+			return;
+		}
+		
+		Flex* flex = new Flex(skf);
+		MovieGump::U8MovieViewer(flex);
 	} break;
 	case 2:
 	{	// Read Diary
@@ -185,6 +201,17 @@ void MenuGump::selectEntry(int entry)
 	} break;
 	case 8:
 	{	// End Game
+		//!! FIXME: Hack, english only, etc, etc...
+		std::string filename = "@u8/static/endgame.skf";
+		FileSystem* filesys = FileSystem::get_instance();
+		IDataSource* skf = filesys->ReadFile(filename);
+		if (!skf) {
+			pout << "movie not found." << std::endl;
+			return;
+		}
+		
+		Flex* flex = new Flex(skf);
+		MovieGump::U8MovieViewer(flex);
 	} break;
 	default:
 		break;
