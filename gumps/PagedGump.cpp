@@ -155,10 +155,12 @@ void PagedGump::addPage(Gump * g)
 
 bool PagedGump::loadData(IDataSource* ids)
 {
+	CANT_HAPPEN_MSG("Trying to load ModalGump");
 	return false;
 }
 
 void PagedGump::saveData(ODataSource* ods)
 {
+	CANT_HAPPEN_MSG("Trying to save ModalGump");
 }
 

@@ -108,8 +108,10 @@ private:
 	void setupVirtualPaths();
 
 	//! load configuration files
-	//! Note: currently this also does game selection. Needs to change
 	void loadConfig();
+
+	//! select and init game
+	void initGame();
 	
 	bool oHelp;
 	bool oQuiet;

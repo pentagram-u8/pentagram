@@ -42,7 +42,7 @@
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(MenuGump,ModalGump);
 
-MenuGump::MenuGump(): ModalGump(0, 0, 5, 5)
+MenuGump::MenuGump(): ModalGump(0, 0, 5, 5, 0, FLAG_DONT_SAVE)
 {
 	GUIApp * app = GUIApp::get_instance();
 	app->pushMouseCursor();
@@ -165,7 +165,7 @@ void MenuGump::selectEntry(int entry)
 	case 3:
 	{	// Write Diary
 		// I'm lazy - MJ
-		GUIApp::get_instance()->saveGame("@save/quicksave");
+		GUIApp::get_instance()->saveGame("@save/quicksave", true);
 	} break;
 	case 4:
 	{	// Options
@@ -229,16 +229,21 @@ void MenuGump::showMenu()
 
 bool MenuGump::loadData(IDataSource* ids)
 {
+	CANT_HAPPEN_MSG("Trying to load ModalGump");
+#if 0
 	uint16 version = ids->read2();
 	if (version != 1) return false;
 	if (!ModalGump::loadData(ids)) return false;
-
+#endif
 	return true;
 }
 
 void MenuGump::saveData(ODataSource* ods)
 {
+	CANT_HAPPEN_MSG("Trying to save ModalGump");
+#if 0
 	ods->write2(1); //version
 	ModalGump::saveData(ods);
+#endif
 }
 

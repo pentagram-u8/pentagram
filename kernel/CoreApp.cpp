@@ -94,6 +94,7 @@ void CoreApp::startup()
 
 	setupVirtualPaths(); // setup @home, @data
 	loadConfig(); // load config files
+	initGame();
 }
 
 void CoreApp::DeclareArgs()
@@ -196,9 +197,10 @@ void CoreApp::loadConfig()
 	else {
 		con.Print(MM_MINOR_WARN, "Key not found. Data path set to default.\n");
 	}
+}
 
-
-	//!! move this to some other init function
+void CoreApp::initGame()
+{
 	std::vector<Pentagram::istring> games;
 	games = settingman->listGames();
 	con.Print(MM_INFO, "Scanning config file for games:\n");

@@ -95,12 +95,17 @@ Gump* ModalGump::OnMouseDown(int button, int mx, int my)
 
 void ModalGump::saveData(ODataSource* ods)
 {
+	CANT_HAPPEN_MSG("Trying to save ModalGump");
+#if 0
 	ods->write2(1); //version
 	Gump::saveData(ods);
+#endif
 }
 
 bool ModalGump::loadData(IDataSource* ids)
 {
+	CANT_HAPPEN_MSG("Trying to load ModalGump");
+#if 0
 	uint16 version = ids->read2();
 	if (version != 1) return false;
 	if (!Gump::loadData(ids)) return false;
@@ -109,6 +114,6 @@ bool ModalGump::loadData(IDataSource* ids)
 	GUIApp::get_instance()->enterTextMode(this);
 
 	Kernel::get_instance()->pause();
-
+#endif
 	return true;
 }

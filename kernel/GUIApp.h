@@ -99,7 +99,7 @@ public:
 	//! save a game
 	//! \param filename the file to save to
 	//! \return true if succesful
-	bool saveGame(std::string filename);
+	bool saveGame(std::string filename, bool ignore_modals=false);
 
 	//! load a game
 	//! \param filename the savegame to load

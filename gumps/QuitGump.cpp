@@ -159,10 +159,12 @@ void QuitGump::verifyQuit()
 
 bool QuitGump::loadData(IDataSource* ids)
 {
+	CANT_HAPPEN_MSG("Trying to load ModalGump");
 	return true;
 }
 
 void QuitGump::saveData(ODataSource* ods)
 {
+	CANT_HAPPEN_MSG("Trying to save ModalGump");
 }
 

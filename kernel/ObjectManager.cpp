@@ -44,14 +44,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "PaperdollGump.h"
 #include "TextWidget.h"
 #include "ButtonWidget.h"
-#include "SliderGump.h"
 #include "SlidingWidget.h"
-#include "ScrollGump.h"
 #include "MiniStatsGump.h"
-#include "TargetGump.h"
-#include "BookGump.h"
-#include "ReadableGump.h"
-#include "MenuGump.h"
 
 ObjectManager* ObjectManager::objectmanager = 0;
 
@@ -212,13 +206,14 @@ void ObjectManager::save(ODataSource* ods)
 		Object* object = objects[i];
 		if (!object) continue;
 
-		// we need to ensure container contents are stored directly after
-		// the container, and gump children directly after their parent
-		// hackish...
+		// child items/gumps are saved by their parent.
 		Item* item = p_dynamic_cast<Item*>(object);
 		if (item && item->getParent()) continue;
 		Gump* gump = p_dynamic_cast<Gump*>(object);
 		if (gump && gump->GetParent()) continue;
+
+		// some gumps shouldn't be saved (MenuGump)
+		if (gump && !gump->mustSave()) continue;
 
 		object->save(ods);
 	}
@@ -270,6 +265,7 @@ Object* ObjectManager::loadObject(IDataSource* ids)
 	Object* obj = (*(iter->second))(ids);
 
 	if (!obj) {
+		perr << "Error loading object of type " << classname << std::endl;
 		return 0;
 	}
 	uint16 objid = obj->getObjId();
@@ -301,13 +297,7 @@ void ObjectManager::setupLoaders()
 	addObjectLoader("PaperdollGump", ObjectLoader<PaperdollGump>::load);
 	addObjectLoader("TextWidget", ObjectLoader<TextWidget>::load);
 	addObjectLoader("ButtonWidget", ObjectLoader<ButtonWidget>::load);
-	addObjectLoader("SliderGump", ObjectLoader<SliderGump>::load);
 	addObjectLoader("SlidingWidget", ObjectLoader<SlidingWidget>::load);
-	addObjectLoader("ScrollGump", ObjectLoader<ScrollGump>::load);
-	addObjectLoader("BookGump", ObjectLoader<BookGump>::load);
-	addObjectLoader("ReadableGump", ObjectLoader<ReadableGump>::load);
 	addObjectLoader("MiniStatsGump", ObjectLoader<MiniStatsGump>::load);
-	addObjectLoader("TargetGump", ObjectLoader<TargetGump>::load);
-	addObjectLoader("MenuGump", ObjectLoader<MenuGump>::load);
 }
 

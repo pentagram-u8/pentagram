@@ -693,10 +693,21 @@ void Gump::saveData(ODataSource* ods)
 		ods->write2(0);
 	ods->write2(notifier);
 	ods->write4(process_result);
-	// write children:
-	ods->write4(children.size());
+
+	unsigned int childcount = 0;
 	std::list<Gump*>::iterator it;
 	for (it = children.begin(); it != children.end(); ++it) {
+		// some gumps shouldn't be saved (MenuGump)
+		if (!(*it)->mustSave()) continue;
+		childcount++;
+	}
+	
+	// write children:
+	ods->write4(childcount);
+	for (it = children.begin(); it != children.end(); ++it) {
+		// some gumps shouldn't be saved (MenuGump)
+		if (!(*it)->mustSave()) continue;
+
 		(*it)->save(ods);
 	}
 }

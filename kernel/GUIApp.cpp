@@ -1616,9 +1616,15 @@ void GUIApp::stopDragging(int mx, int my)
 	popMouseCursor();
 }
 
-bool GUIApp::saveGame(std::string filename)
+bool GUIApp::saveGame(std::string filename, bool ignore_modals)
 {
 	pout << "Saving..." << std::endl;
+
+	// Don't allow saving with Modals open
+	if (!ignore_modals && desktopGump->FindGump<ModalGump>()) {
+		pout << "Can't save: modal gump open." << std::endl;
+		return false;
+	}
 
 	ODataSource* ods = filesystem->WriteFile(filename);
 	if (!ods) return false;
@@ -1627,7 +1633,7 @@ bool GUIApp::saveGame(std::string filename)
 	sgw->start(10); // 9 files + version
 	sgw->writeVersion(1);
 
-	// We'll make it 2KB intially
+	// We'll make it 2KB initially
 	OAutoBufferDataSource buf(2048);
 
 	kernel->save(&buf);

@@ -95,10 +95,11 @@ Gump * BindGump::OnMouseDown(int button, int mx, int my)
 
 bool BindGump::loadData(IDataSource* ids)
 {
+	CANT_HAPPEN_MSG("Trying to load ModalGump");
 	return true;
 }
 
 void BindGump::saveData(ODataSource* ods)
 {
+	CANT_HAPPEN_MSG("Trying to save ModalGump");
 }
-

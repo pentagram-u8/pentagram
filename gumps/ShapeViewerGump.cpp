@@ -280,10 +280,11 @@ void ShapeViewerGump::U8ShapeViewer()
 
 bool ShapeViewerGump::loadData(IDataSource* ids)
 {
+	CANT_HAPPEN_MSG("Trying to load ModalGump");
 	return false;
 }
 
 void ShapeViewerGump::saveData(ODataSource* ods)
 {
-
+	CANT_HAPPEN_MSG("Trying to save ModalGump");
 }
