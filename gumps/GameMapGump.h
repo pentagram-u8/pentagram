@@ -56,6 +56,8 @@ public:
 	virtual Gump *		OnMouseDown(int button, int mx, int my);
 	virtual void		OnMouseClick(int button, int mx, int my);
 	virtual void		OnMouseDouble(int button, int mx, int my);
+
+	void IncSortOrder(int count);
 };
 
 #endif //GameMapGUMP_H_INCLUDED

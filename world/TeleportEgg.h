@@ -28,7 +28,7 @@ public:
 	TeleportEgg();
 	virtual ~TeleportEgg();
 
-	bool isTeleporter() const { return (quality & 0xFF00) != 0; }
+	bool isTeleporter() const { return frame != 1; }
 	int getTeleportId() const { return (quality & 0xFF); }
 
 	ENABLE_RUNTIME_CLASSTYPE();

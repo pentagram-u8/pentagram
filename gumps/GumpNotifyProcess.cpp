@@ -20,6 +20,8 @@
 #include "GumpNotifyProcess.h"
 #include "Gump.h"
 
+DEFINE_RUNTIME_CLASSTYPE_CODE(GumpNotifyProcess,Process);
+
 GumpNotifyProcess::GumpNotifyProcess(uint16 it) : Process(it), gump(0)
 {
 	result = 0;

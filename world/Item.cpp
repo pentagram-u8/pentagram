@@ -38,6 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Direction.h"
 #include "ItemMoveProcess.h"
 #include "BarkGump.h"
+#include "AskGump.h"
 #include "GumpNotifyProcess.h"
 #include "ContainerGump.h"
 #include "GameMapGump.h"
@@ -969,24 +970,6 @@ uint32 Item::I_enterFastArea(const uint8* args, unsigned int /*argsize*/)
 	return item->callUsecodeEvent(15);
 }
 
-//HACK !!!!! major hack
-UCList* answerlist;
-int userchoice;
-class UserChoiceProcess : public Process
-{
-public:
-	virtual bool run(const uint32 /*framenum*/) {
-		if (userchoice >= 0 && static_cast<uint32>(userchoice) < answerlist->getSize()) {
-			result = answerlist->getStringIndex(userchoice);
-			// we're leaking strings and memory here... (not that I care)
-			pout << "User answer = " << result << ": " << UCMachine::get_instance()->getString(static_cast<uint16>(result)) << std::endl;
-			terminate();
-		}
-		return false;
-	}
-};
-
-
 uint32 Item::I_ask(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_NULL32(); // ARG_ITEM(item); // currently unused.
@@ -994,36 +977,13 @@ uint32 Item::I_ask(const uint8* args, unsigned int /*argsize*/)
 
 	if (!answers) return 0;
 
-	// display answers and spawn new process (return pid)
-	// process waits for user input and returns the selected answer (as string)
-
-	std::string str_answers;
-
-	pout << std::endl << std::endl;
-	for (unsigned int i = 0; i < answers->getSize(); ++i) {
-		pout << i << ": " << UCMachine::get_instance()->getString(answers->getStringIndex(i)) << std::endl;
-		char buf[32];
-		str_answers += "@";
-		snprintf(buf,32,"%i: ", i);
-		str_answers += buf;
-		str_answers += UCMachine::get_instance()->getString(answers->getStringIndex(i));
-		str_answers += "\n";
-	}
-
-	// Hack using a bark gump
+	// Use AskGump
 	GUIApp *app = p_dynamic_cast<GUIApp*>(GUIApp::get_instance());
-	if (app)
-	{
-		Gump *desktop = app->getDesktopGump();
-		Gump *gump = new BarkGump(1, str_answers);
-		gump->InitGump();
-		desktop->AddChild(gump);
-	}
-	userchoice = -1;
-	answerlist = new UCList(2);
-	answerlist->copyStringList(*answers);
-
-	return Kernel::get_instance()->addProcess(new UserChoiceProcess());
+	Gump *desktop = app->getDesktopGump();
+	Gump *gump = new AskGump(1, answers);
+	gump->InitGump();
+	desktop->AddChild(gump);
+	return gump->GetNotifyProcess()->getPid();
 }
 
 uint32 Item::I_legalCreateAtPoint(const uint8* args, unsigned int /*argsize*/)

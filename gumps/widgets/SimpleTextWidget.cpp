@@ -22,6 +22,8 @@
 #include "GameData.h"
 #include "RenderSurface.h"
 
+DEFINE_RUNTIME_CLASSTYPE_CODE(SimpleTextWidget,Gump);
+
 SimpleTextWidget::SimpleTextWidget(int X, int Y, std::string txt, int font, int w, int h) :
 	Gump(X, Y, w, h), text(txt), fontnum(font)
 {

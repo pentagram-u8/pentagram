@@ -47,6 +47,8 @@ protected:
 	uint32				flags;			// Gump flags
 	sint32				layer;			// gump ordering layer
 
+	sint32				index;			// 'Index'
+
 	Shape				*shape;			// The gumps shape (always painted at 0,0)
 	uint32				framenum;
 
@@ -125,7 +127,7 @@ public:
 	virtual void		Close(bool no_del = false);
 
 	// Move this gump
-	virtual void		Move(int x, int y) { }
+	virtual void		Move(int x_, int y_) { x = x_; y = y_; }
 
 	//
 	// Points and Coords
@@ -224,9 +226,9 @@ public:
 
 	// This function is used by our children to notifty us of 'something'
 	// Think of it as a generic call back function
-protected:
 	virtual void		ChildNotify(Gump *child, uint32 message) { }
-public:
+	void				SetIndex(sint32 i) { index = i; }
+	sint32				GetIndex() { return index; }
 
 	// Dragging
 	virtual void		StartDraggingChild(Gump* gump, int mx, int my);

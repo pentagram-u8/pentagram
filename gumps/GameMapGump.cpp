@@ -380,4 +380,10 @@ void GameMapGump::OnMouseDouble(int button, int mx, int my)
 	}
 }
 
+void GameMapGump::IncSortOrder(int count)
+{
+	if (count>0) display_list->IncSortLimit();
+	else display_list->DecSortLimit();
+}
+
 // Colourless Protection

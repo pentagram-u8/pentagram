@@ -398,11 +398,11 @@ void GUIApp::LoadConsoleFont()
 
 class AvatarMoverProcess : public Process
 {
-	int dx, dy, dir;
+	int dx, dy, dz, dir;
 public:
-	static  AvatarMoverProcess	*amp[4];
+	static  AvatarMoverProcess	*amp[6];
 
-	AvatarMoverProcess(int x, int y, int _dir) : Process(1), dx(x), dy(y), dir(_dir)
+	AvatarMoverProcess(int x, int y, int z, int _dir) : Process(1), dx(x), dy(y), dz(z), dir(_dir)
 	{
 		if (amp[dir]) amp[dir]->terminate();
 		amp[dir] = this;
@@ -418,7 +418,7 @@ public:
 		Actor* avatar = World::get_instance()->getNPC(1);
 		sint32 x,y,z;
 		avatar->getLocation(x,y,z);
-		avatar->move(x+dx,y+dy,z);
+		avatar->move(x+dx,y+dy,z+dz);
 		return true;
 	}
 
@@ -429,11 +429,10 @@ public:
 	}
 };
 
-AvatarMoverProcess	*AvatarMoverProcess::amp[4] = { 0, 0, 0, 0};
+AvatarMoverProcess	*AvatarMoverProcess::amp[6] = { 0, 0, 0, 0, 0, 0 };
 
 void GUIApp::handleEvent(const SDL_Event& event)
 {
-	extern int userchoice; // major hack... see Item::I_ask
 	uint32 now = SDL_GetTicks();
 
 	switch (event.type) {
@@ -585,7 +584,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		switch (event.key.keysym.sym) {
 			case SDLK_UP: {
 				if (!avatarInStasis) { 
-					Process *p = new AvatarMoverProcess(-64,-64,0);
+					Process *p = new AvatarMoverProcess(-64,-64,0,0);
 					Kernel::get_instance()->addProcess(p);
 				} else { 
 					pout << "Can't: avatarInStasis" << std::endl; 
@@ -593,7 +592,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			} break;
 			case SDLK_DOWN: {
 				if (!avatarInStasis) { 
-					Process *p = new AvatarMoverProcess(+64,+64,1);
+					Process *p = new AvatarMoverProcess(+64,+64,0,1);
 					Kernel::get_instance()->addProcess(p);
 				} else { 
 					pout << "Can't: avatarInStasis" << std::endl; 
@@ -601,7 +600,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			} break;
 			case SDLK_LEFT: {
 				if (!avatarInStasis) { 
-					Process *p = new AvatarMoverProcess(-64,+64,2);
+					Process *p = new AvatarMoverProcess(-64,+64,0,2);
 					Kernel::get_instance()->addProcess(p);
 				} else { 
 					pout << "Can't: avatarInStasis" << std::endl; 
@@ -609,7 +608,23 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			} break;
 			case SDLK_RIGHT: {
 				if (!avatarInStasis) { 
-					Process *p = new AvatarMoverProcess(+64,-64,3);
+					Process *p = new AvatarMoverProcess(+64,-64,0,3);
+					Kernel::get_instance()->addProcess(p);
+				} else { 
+					pout << "Can't: avatarInStasis" << std::endl; 
+				}
+			} break;
+			case SDLK_a: {
+				if (!avatarInStasis) { 
+					Process *p = new AvatarMoverProcess(0,0,8,4);
+					Kernel::get_instance()->addProcess(p);
+				} else { 
+					pout << "Can't: avatarInStasis" << std::endl; 
+				}
+			} break;
+			case SDLK_z: {
+				if (!avatarInStasis) { 
+					Process *p = new AvatarMoverProcess(0,0,-8,5);
 					Kernel::get_instance()->addProcess(p);
 				} else { 
 					pout << "Can't: avatarInStasis" << std::endl; 
@@ -625,22 +640,6 @@ void GUIApp::handleEvent(const SDL_Event& event)
 	case SDL_KEYUP:
 	{
 		switch (event.key.keysym.sym) {
-		case SDLK_0: userchoice = 0; break;
-		case SDLK_1: userchoice = 1; break;
-		case SDLK_2: userchoice = 2; break;
-		case SDLK_3: userchoice = 3; break;
-		case SDLK_4: userchoice = 4; break;
-		case SDLK_5: userchoice = 5; break;
-		case SDLK_6: userchoice = 6; break;
-		case SDLK_7: userchoice = 7; break;
-		case SDLK_8: userchoice = 8; break;
-		case SDLK_9: userchoice = 9; break;
-		case SDLK_a: userchoice = 10; break;
-		case SDLK_b: userchoice = 11; break;
-		case SDLK_c: userchoice = 12; break;
-		case SDLK_d: userchoice = 13; break;
-		case SDLK_e: userchoice = 14; break;
-
 		case SDLK_UP: {
 			if (AvatarMoverProcess::amp[0]) AvatarMoverProcess::amp[0]->terminate();
 		} break;
@@ -653,6 +652,12 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		case SDLK_RIGHT: {
 			if (AvatarMoverProcess::amp[3]) AvatarMoverProcess::amp[3]->terminate();
 		} break;
+		case SDLK_a: {
+			if (AvatarMoverProcess::amp[4]) AvatarMoverProcess::amp[4]->terminate();
+		} break;
+		case SDLK_z: {
+			if (AvatarMoverProcess::amp[5]) AvatarMoverProcess::amp[5]->terminate();
+		} break;
 
 		case SDLK_BACKQUOTE: {
 			if (consoleGump->IsHidden())
@@ -661,6 +666,8 @@ void GUIApp::handleEvent(const SDL_Event& event)
 				consoleGump->HideGump();
 			break;
 		}
+		case SDLK_LEFTBRACKET: gameMapGump->IncSortOrder(-1); break;
+		case SDLK_RIGHTBRACKET: gameMapGump->IncSortOrder(+1); break;
 		case SDLK_ESCAPE: case SDLK_q: isRunning = false; break;
 		case SDLK_PAGEUP: {
 			if (!consoleGump->IsHidden()) con.ScrollConsole(-3);
@@ -670,8 +677,6 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			if (!consoleGump->IsHidden()) con.ScrollConsole(3); 
 			break;
 		}
-		//case SDLK_LEFTBRACKET: display_list->DecSortLimit(); break;
-		//case SDLK_RIGHTBRACKET: display_list->IncSortLimit(); break;
 		case SDLK_t: { // quick animation test
 
 			if (!avatarInStasis) { 
@@ -681,6 +686,11 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			} else { 
 				pout << "Can't: avatarInStasis" << std::endl; 
 			} 
+		} break;
+		case SDLK_s: { // toggle avatarInStasis
+
+			avatarInStasis = !avatarInStasis;
+			pout << "avatarInStasis = " << avatarInStasis << std::endl; 
 		} break;
 		case SDLK_f: { // trigger 'first' egg
 			if (avatarInStasis) {

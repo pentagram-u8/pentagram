@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class Process;
 class UCProcess;
+class ConvertUsecode;
 
 class UCMachine
 {
@@ -81,6 +82,7 @@ protected:
 
 private:
 
+	ConvertUsecode*	convuse;
 	Intrinsic* intrinsics;
 
 	// this technically isn't a stack, but UCStack supports the access 

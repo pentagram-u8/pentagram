@@ -28,6 +28,8 @@ class GumpNotifyProcess : public Process
 	Gump	*gump;
 
 public:
+	ENABLE_RUNTIME_CLASSTYPE();
+
 	GumpNotifyProcess(uint16 it);
 	virtual ~GumpNotifyProcess(void);
 

@@ -19,7 +19,37 @@
 #ifndef CONVERTUSECODEU8_H
 #define CONVERTUSECODEU8_H
 
+#ifndef HACK_TO_INCLUDE_CONVERTUSECODEU8_THIS_IN_UCMACHINE_WITHOUT_BRINGING_IN_FOLD
 #include "Convert.h"
+#else
+
+class ConvertUsecode
+{
+public:
+		class TempOp;
+		class Node;
+		typedef int DebugSymbol;
+		struct UsecodeHeader
+		{
+			uint32 maxOffset;
+		};
+		uint32 read4(IDataSource *) { return 0; }
+		uint32 EventMap[2];
+		uint32 curOffset;
+
+		virtual const char* const *intrinsics()=0;
+		virtual const char* const *event_names()=0;
+		virtual void readheader(IDataSource *ucfile, UsecodeHeader &uch, uint32 &curOffset)=0;
+		virtual void readevents(IDataSource *ucfile, const UsecodeHeader &uch)=0;
+		virtual void readOp(TempOp &op, IDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols, bool &done)=0;
+		virtual Node *readOp(IDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols, bool &done)=0;
+		void readOpGeneric(TempOp &, IDataSource *, uint32 &, std::vector<DebugSymbol> &,
+			bool &, const bool ) { }
+		Node *readOpGeneric(IDataSource *, uint32 &, std::vector<DebugSymbol> &,
+			bool &, const bool ) { return 0; }
+};
+
+#endif
 
 class ConvertUsecodeU8 : public ConvertUsecode
 {

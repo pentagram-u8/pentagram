@@ -28,6 +28,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "World.h"
 
+#define HACK_TO_INCLUDE_CONVERTUSECODEU8_THIS_IN_UCMACHINE_WITHOUT_BRINGING_IN_FOLD
+#include "U8/ConvertUsecodeU8.h"
+
 #include "Container.h"
 
 //#define LOGPF(X) pout.printf X
@@ -58,6 +61,7 @@ UCMachine::UCMachine(Intrinsic *iset) :
 	loop_list = 0;
 	loop_index = 0;
 
+	convuse = new ConvertUsecodeU8; //!...
 	loadIntrinsics(iset); //!...
 }
 
@@ -270,13 +274,13 @@ bool UCMachine::execProcess(UCProcess* p)
 				//! TODO
 				uint16 arg_bytes = cs.read1();
 				uint16 func = cs.read2();
-				LOGPF(("calli\t\t%04Xh (%02Xh arg bytes)", func, arg_bytes));
+				LOGPF(("calli\t\t%04Xh (%02Xh arg bytes) %s ", func, arg_bytes, convuse->intrinsics()[func]));
 
 				// !constants
 				if (func >= 0x100 || intrinsics[func] == 0) {
 //					p->temp32 = addProcess(new DelayProcess(4));
 					p->temp32 = 0;
-					perr << "Unhandled intrinsic (" << std::hex << func << std::dec << ") called" << std::endl;
+					perr << "Unhandled intrinsic \'" << convuse->intrinsics()[func] << "\' (" << std::hex << func << std::dec << ") called" << std::endl;
 				} else {
 					uint8 *argbuf = new uint8[arg_bytes];
 					p->stack.pop(argbuf, arg_bytes);
