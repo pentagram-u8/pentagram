@@ -20,7 +20,7 @@
 #include "SKFPlayer.h"
 
 #include "u8/ConvertShapeU8.h"
-#include "Flex.h"
+#include "RawArchive.h"
 #include "Shape.h"
 #include "Texture.h"
 #include "SoftRenderSurface.h"
@@ -52,7 +52,7 @@ struct SKFEvent {
 static const int FADESTEPS = 16; // HACK: half speed
 
 
-SKFPlayer::SKFPlayer(Flex* movie, int width_, int height_)
+SKFPlayer::SKFPlayer(RawArchive* movie, int width_, int height_)
 	: width(width_), height(height_), skf(movie),
 	  curframe(0), curobject(0), curaction(0), curevent(0), playing(false),
 	  timer(0), fadecolour(0), fadelevel(0), buffer(0)
@@ -216,7 +216,7 @@ void SKFPlayer::run()
 	uint16 objecttype = 0;
 	do {
 		curobject++;
-		if (curobject >= skf->get_count()) {
+		if (curobject >= skf->getCount()) {
 			stop(); // done
 			return;
 		}
@@ -228,7 +228,8 @@ void SKFPlayer::run()
 
 		objecttype = object->read2();
 
-		pout << "Object " << curobject << "/" << skf->get_count() << ", type = " << objecttype << std::endl;
+		pout << "Object " << curobject << "/" << skf->getCount()
+			 << ", type = " << objecttype << std::endl;
 
 
 		if (objecttype == 1) {

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2004-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 #include "pent_include.h"
 #include "ShapeViewerGump.h"
 
-#include "ShapeFlex.h"
+#include "ShapeArchive.h"
 #include "RenderSurface.h"
 #include "GUIApp.h"
 #include "Shape.h"
@@ -30,9 +30,9 @@
 #include "FontManager.h"
 
 #include "GameData.h"
-#include "FontShapeFlex.h"
-#include "MainShapeFlex.h"
-#include "GumpShapeFlex.h"
+#include "FontShapeArchive.h"
+#include "MainShapeArchive.h"
+#include "GumpShapeArchive.h"
 #include "DesktopGump.h"
 
 #include "FileSystem.h"
@@ -51,7 +51,7 @@ ShapeViewerGump::ShapeViewerGump()
 }
 
 ShapeViewerGump::ShapeViewerGump(int width, int height,
-					 std::vector<std::pair<std::string,ShapeFlex*> >& flexes_,
+					 std::vector<std::pair<std::string,ShapeArchive*> >& flexes_,
 					 uint32 _Flags, sint32 layer)
 	: ModalGump(50, 50, width, height, 0, _Flags, layer),
 	  flexes(flexes_), curflex(0), curshape(0), curframe(0), background(0)
@@ -106,7 +106,7 @@ void ShapeViewerGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 	rendtext->draw(surf, 20, 20);
 	delete rendtext;
 	
-	MainShapeFlex* mainshapes = p_dynamic_cast<MainShapeFlex*>(flex);
+	MainShapeArchive* mainshapes = p_dynamic_cast<MainShapeArchive*>(flex);
 	if (!mainshapes || !shape) return;
 	
 	char buf3[128];
@@ -139,18 +139,18 @@ bool ShapeViewerGump::OnKeyDown(int key, int mod)
 	switch(key)
 	{
 	case SDLK_UP:
-		if (delta >= flex->get_count()) delta = 1;
+		if (delta >= flex->getCount()) delta = 1;
 		if (curshape < delta)
-			curshape = flex->get_count() + curshape - delta;
+			curshape = flex->getCount() + curshape - delta;
 		else
 			curshape -= delta;
 		shapechanged = true;
 		curframe = 0;
 		break;
 	case SDLK_DOWN:
-		if (delta >= flex->get_count()) delta = 1;
-		if (curshape + delta >= flex->get_count())
-			curshape = curshape + delta - flex->get_count();
+		if (delta >= flex->getCount()) delta = 1;
+		if (curshape + delta >= flex->getCount())
+			curshape = curshape + delta - flex->getCount();
 		else
 			curshape += delta;
 		curframe = 0;
@@ -240,8 +240,8 @@ void ShapeViewerGump::U8ShapeViewer()
 {
 	GameData* gamedata = GameData::get_instance();
 
-	std::vector<std::pair<std::string,ShapeFlex*> > flexes;
-	std::pair<std::string,ShapeFlex*> flex;
+	std::vector<std::pair<std::string,ShapeArchive*> > flexes;
+	std::pair<std::string,ShapeArchive*> flex;
 	flex.first = "u8shapes";
 	flex.second = gamedata->getMainShapes();
 	flexes.push_back(flex);
@@ -254,7 +254,7 @@ void ShapeViewerGump::U8ShapeViewer()
 	FileSystem* filesys = FileSystem::get_instance();
 	IDataSource* eintro = filesys->ReadFile("@u8/static/eintro.skf");
 	if (eintro) {
-		ShapeFlex* eintroshapes = new ShapeFlex(eintro, GameData::OTHER,
+		ShapeArchive* eintroshapes = new ShapeArchive(eintro, GameData::OTHER,
 			PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game),
 			&U8SKFShapeFormat);
 		flex.first = "eintro";
@@ -265,7 +265,7 @@ void ShapeViewerGump::U8ShapeViewer()
 
 	IDataSource* endgame = filesys->ReadFile("@u8/static/endgame.skf");
 	if (endgame) {
-		ShapeFlex* endgameshapes = new ShapeFlex(endgame, GameData::OTHER,
+		ShapeArchive* endgameshapes = new ShapeArchive(endgame, GameData::OTHER,
 			PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game),
 			&U8SKFShapeFormat);
 		flex.first = "endgame";

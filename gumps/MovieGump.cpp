@@ -19,7 +19,7 @@
 #include "pent_include.h"
 #include "MovieGump.h"
 
-#include "Flex.h"
+#include "RawArchive.h"
 #include "SKFPlayer.h"
 #include "GUIApp.h"
 #include "DesktopGump.h"
@@ -37,7 +37,7 @@ MovieGump::MovieGump()
 
 }
 
-MovieGump::MovieGump(int width, int height, Flex* movie,
+MovieGump::MovieGump(int width, int height, RawArchive* movie,
 					 uint32 _Flags, sint32 layer)
 	: Gump(50, 50, width, height, 0, _Flags, layer)
 {
@@ -88,7 +88,7 @@ bool MovieGump::OnKeyDown(int key, int mod)
 }
 
 //static
-void MovieGump::U8MovieViewer(Flex* movie)
+void MovieGump::U8MovieViewer(RawArchive* movie)
 {
 	Gump* desktopGump = GUIApp::get_instance()->getDesktopGump();
 	Gump* gump = new MovieGump(320, 200, movie);
@@ -114,7 +114,7 @@ void MovieGump::ConCmd_play(const Console::ArgsType &args,
 		return;
 	}
 
-	Flex* flex = new Flex(skf);
+	RawArchive* flex = new RawArchive(skf);
 	U8MovieViewer(flex);
 }
 

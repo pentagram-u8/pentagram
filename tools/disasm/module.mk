@@ -14,7 +14,15 @@ disasm_OBJ = \
 	$(KERNEL) \
 	$(GAMES) \
 	filesys/FileSystem.o \
-	filesys/Flex.o \
+	filesys/RawArchive.o \
+	filesys/Archive.o \
+	filesys/ArchiveFile.o \
+	filesys/FlexFile.o \
+	filesys/ZipFile.o \
+	filesys/U8SaveFile.o \
+	filesys/DirFile.o \
+	filesys/zip/ioapi.o \
+	filesys/zip/unzip.o \
 	tools/disasm/Disasm.o \
 	tools/fold/Type.o \
 	tools/fold/IfNode.o \

@@ -47,7 +47,7 @@ WARNINGS := @WARNINGS@
 
 # List of all submodules
 # The order is important, be careful if you change it
-MODULES := convert convert/u8 convert/crusader misc filesys \
+MODULES := convert convert/u8 convert/crusader misc filesys filesys/zip \
 	tools tools/disasm tools/compile tools/flexpack tools/fold \
 	tools/shapeconv \
 	kernel games graphics graphics/fonts audio audio/midi \

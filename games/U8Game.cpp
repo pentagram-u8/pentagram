@@ -25,7 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "FileSystem.h"
 #include "GameData.h"
 #include "XFormBlend.h"
-#include "U8Save.h"
+#include "U8SaveFile.h"
 #include "World.h"
 #include "MainActor.h"
 #include "ItemFactory.h"
@@ -89,27 +89,27 @@ bool U8Game::startGame()
 		perr << "Unable to load savegame/u8save.000." << std::endl;
 		return false;
 	}
-	U8Save *u8save = new U8Save(saveds);
+	U8SaveFile *u8save = new U8SaveFile(saveds);
 
-	IDataSource *nfd = u8save->get_datasource("NONFIXED.DAT");
+	IDataSource *nfd = u8save->getDataSource("NONFIXED.DAT");
 	if (!nfd) {
 		perr << "Unable to load savegame/u8save.000/NONFIXED.DAT." <<std::endl;
 		return false;
 	}
-	World::get_instance()->loadNonFixed(nfd);
+	World::get_instance()->loadNonFixed(nfd); // deletes nfd
 
-	IDataSource *icd = u8save->get_datasource("ITEMCACH.DAT");
+	IDataSource *icd = u8save->getDataSource("ITEMCACH.DAT");
 	if (!icd) {
 		perr << "Unable to load savegame/u8save.000/ITEMCACH.DAT." <<std::endl;
 		return false;
 	}
-	IDataSource *npcd = u8save->get_datasource("NPCDATA.DAT");
+	IDataSource *npcd = u8save->getDataSource("NPCDATA.DAT");
 	if (!npcd) {
 		perr << "Unable to load savegame/u8save.000/NPCDATA.DAT." << std::endl;
 		return false;
 	}
 
-	World::get_instance()->loadItemCachNPCData(icd, npcd);
+	World::get_instance()->loadItemCachNPCData(icd, npcd); // deletes icd, npcd
 	delete u8save;
 
 	MainActor* av = World::get_instance()->getMainActor();

@@ -1,3 +1,17 @@
+2005-01-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* filesys/ArchiveFile.*: new backend archive-file (flex, zip, ...)
+	  reading class
+	* filesys/Archive.*: new frontend archive class; can handle multiple
+	  ArchiveFiles as input sources; replaces the old 'Flex' class
+	* filesys/*File.*: ZipFile, U8SaveFile, FlexFile, DirFile file types
+	* graphics/*ShapeArchive.*: *ShapeArchive replace *ShapeFlex
+	* filesys/zip/*: unzip/zip code
+	* filesys/Savegame.*: read from ZipFile
+	* filesys/SavegameWriter.*: output zipped savegame
+	* *: use new classes instead of old Flex classes
+	* configure.ac: detect zlib
+	* configure.ac: enable SDL_ttf by default
+
 2005-01-01  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* graphics/Palette*.*: Moved the PalTransforms enum to Palette.h
 	* graphics/Shape.*: Added another DetectShapeFormat to directly use

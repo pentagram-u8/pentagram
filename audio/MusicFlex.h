@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003  The Pentagram Team
+Copyright (C) 2003-2005  The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,13 +19,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef MUSICFLEX_H_INCLUDED
 #define MUSICFLEX_H_INCLUDED
 
-#include "Flex.h"
+#include "Archive.h"
 
 class XMidiFile;
 
-class MusicFlex : protected Flex
+class MusicFlex : public Pentagram::Archive
 {
 public:
+	ENABLE_RUNTIME_CLASSTYPE();
+
 	struct SongInfo
 	{
 		SongInfo();
@@ -56,20 +58,11 @@ public:
 	}
 
 	//! Get the Adlib Timbres (index 259)
-	IDataSource * getAdlibTimbres() 
-	{ 
-		Flex::cache(259);
-		return get_datasource(259); 
-	}
+	IDataSource * getAdlibTimbres();
 
-	//! Loads all data into memory
-	virtual void cache();
-
-	//! Loads a single item into memory
 	virtual void cache(uint32 index);
-
-	//! Free all data from memory
-	virtual void uncache();
+	virtual void uncache(uint32 index);
+	virtual bool isCached(uint32 index);
 
 private:
 	SongInfo		*info[128];

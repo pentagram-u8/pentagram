@@ -21,7 +21,7 @@
 #include "RenderSurface.h"
 #include "Shape.h"
 #include "ShapeFrame.h"
-#include "ShapeFlex.h"
+#include "ShapeArchive.h"
 #include "GameData.h"
 #include "GumpNotifyProcess.h"
 #include "Kernel.h"
@@ -770,7 +770,7 @@ bool Gump::loadData(IDataSource* ids, uint32 version)
 	index = static_cast<sint32>(ids->read4());
 
 	shape = 0;
-	ShapeFlex * flex = GameData::get_instance()->getShapeFlex(ids->read2());
+	ShapeArchive * flex = GameData::get_instance()->getShapeFlex(ids->read2());
 	uint32 shapenum = ids->read4();
 	if (flex)
 	{

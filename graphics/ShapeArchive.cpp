@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003 The Pentagram Team
+ *  Copyright (C) 2003-2005 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,45 +18,34 @@
 
 #include "pent_include.h"
 
-#include "ShapeFlex.h"
+#include "ShapeArchive.h"
 #include "Shape.h"
 #include "Palette.h"
 
-DEFINE_RUNTIME_CLASSTYPE_CODE(ShapeFlex,Flex);
+DEFINE_RUNTIME_CLASSTYPE_CODE(ShapeArchive,Pentagram::Archive);
 
-ShapeFlex::ShapeFlex(IDataSource* ds, const uint16 ident, Pentagram::Palette* pal,
-					 const ConvertShapeFormat *fmt)
-	: Flex(ds), id(ident), format(fmt), palette(pal)
+ShapeArchive::~ShapeArchive()
 {
-	shapes.resize(get_count()); // shape pointers are initialized to 0 by this
+	Archive::uncache();
 }
 
-
-ShapeFlex::~ShapeFlex()
+Shape* ShapeArchive::getShape(uint32 shapenum)
 {
-	for (unsigned int i = 0; i < shapes.size(); i++)
-	{
-		delete shapes[i];
-	}
-	shapes.clear();
-}
-
-Shape* ShapeFlex::getShape(uint32 shapenum)
-{
-	if (shapenum >= shapes.size()) return 0;
-
+	if (shapenum >= count) return 0;
 	cache(shapenum);
 
 	return shapes[shapenum];
 }
 
-void ShapeFlex::cache(uint32 shapenum)
+void ShapeArchive::cache(uint32 shapenum)
 {
-	if (shapenum >= shapes.size()) return;
+	if (shapenum >= count) return;
+	if (shapes.empty()) shapes.resize(count);
+
 	if (shapes[shapenum]) return;
 
-	uint8 *data = get_object(shapenum);
-	uint32 shpsize = get_size(shapenum);
+	uint32 shpsize;
+	uint8 *data = getRawObject(shapenum, &shpsize);
 
 	if (!data || shpsize == 0) return;
 
@@ -76,16 +65,19 @@ void ShapeFlex::cache(uint32 shapenum)
 	shapes[shapenum] = shape;
 }
 
-void ShapeFlex::cache()
+void ShapeArchive::uncache(uint32 shapenum)
 {
-	for (unsigned int i = 0; i < shapes.size(); i++)
-		cache(i);
-}
-
-void ShapeFlex::uncache(uint32 shapenum)
-{
-	if (shapenum >= shapes.size()) return;
+	if (shapenum >= count) return;
+	if (shapes.empty()) return;
 
 	delete shapes[shapenum];
 	shapes[shapenum] = 0;
+}
+
+bool ShapeArchive::isCached(uint32 shapenum)
+{
+	if (shapenum >= count) return false;
+	if (shapes.empty()) return false;
+
+	return (shapes[shapenum] != 0);
 }

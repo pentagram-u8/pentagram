@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003 The Pentagram Team
+ *  Copyright (C) 2003-2005 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,22 +18,15 @@
 
 #include "pent_include.h"
 
-#include "MainShapeFlex.h"
+#include "MainShapeArchive.h"
 #include "TypeFlags.h"
 #include "ShapeInfo.h"
 #include "AnimDat.h"
 
-DEFINE_RUNTIME_CLASSTYPE_CODE(MainShapeFlex,ShapeFlex);
-
-MainShapeFlex::MainShapeFlex(IDataSource* ds, const uint16 id = 0, Pentagram::Palette* pal,
-							 const ConvertShapeFormat *format)
-	: ShapeFlex(ds, id, pal, format), typeFlags(0), animdat(0)
-{
-
-}
+DEFINE_RUNTIME_CLASSTYPE_CODE(MainShapeArchive,ShapeArchive);
 
 
-MainShapeFlex::~MainShapeFlex()
+MainShapeArchive::~MainShapeArchive()
 {
 	if (typeFlags) {
 		delete typeFlags;
@@ -46,7 +39,7 @@ MainShapeFlex::~MainShapeFlex()
 	}
 }
 	
-void MainShapeFlex::loadTypeFlags(IDataSource *ds)
+void MainShapeArchive::loadTypeFlags(IDataSource *ds)
 {
 	if (typeFlags) {
 		delete typeFlags;
@@ -57,14 +50,14 @@ void MainShapeFlex::loadTypeFlags(IDataSource *ds)
 	typeFlags->load(ds);
 }
 
-ShapeInfo* MainShapeFlex::getShapeInfo(uint32 shapenum)
+ShapeInfo* MainShapeArchive::getShapeInfo(uint32 shapenum)
 {
 	assert(typeFlags);
 
 	return typeFlags->getShapeInfo(shapenum);
 }
 
-void MainShapeFlex::loadAnimDat(IDataSource *ds)
+void MainShapeArchive::loadAnimDat(IDataSource *ds)
 {
 	if (animdat) {
 		delete animdat;
@@ -75,14 +68,14 @@ void MainShapeFlex::loadAnimDat(IDataSource *ds)
 	animdat->load(ds);
 }
 
-ActorAnim* MainShapeFlex::getAnim(uint32 shape) const
+ActorAnim* MainShapeArchive::getAnim(uint32 shape) const
 {
 	assert(animdat);
 
 	return animdat->getAnim(shape);
 }
 
-AnimAction* MainShapeFlex::getAnim(uint32 shape, uint32 action) const
+AnimAction* MainShapeArchive::getAnim(uint32 shape, uint32 action) const
 {
 	assert(animdat);
 

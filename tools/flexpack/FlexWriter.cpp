@@ -19,21 +19,26 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "FlexWriter.h"
-#include "Flex.h"
+#include "FlexFile.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(FlexWriter);
 
-FlexWriter::FlexWriter(Flex * f)
+FlexWriter::FlexWriter(FlexFile * f)
 {
 	if (f)
 	{
 		uint32 i;
-		uint32 count = f->get_count();
+		uint32 count = f->getIndexCount();
 		for (i = 0; i < count; ++i)
 		{
-			add_object(f->get_object_nodel(i), f->get_size(i));
+			uint32 size;
+			uint8* data = f->getObject(i, &size);
+			FlexObject o;
+			o.size = size;
+			o.obj = data;
+			objects.push_back(o);
 		}
 		delete f;
 	}

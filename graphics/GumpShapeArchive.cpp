@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003 The Pentagram Team
+ *  Copyright (C) 2003-2005 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,26 +18,20 @@
 
 #include "pent_include.h"
 
-#include "GumpShapeFlex.h"
+#include "GumpShapeArchive.h"
 #include "Rect.h"
 #include "IDataSource.h"
 
-GumpShapeFlex::GumpShapeFlex(IDataSource* ds, const uint16 id, Pentagram::Palette* pal,
-							 const ConvertShapeFormat *format)
-	: ShapeFlex(ds, id, pal, format)
-{
+DEFINE_RUNTIME_CLASSTYPE_CODE(GumpShapeArchive,ShapeArchive);
 
-}
-
-
-GumpShapeFlex::~GumpShapeFlex()
+GumpShapeArchive::~GumpShapeArchive()
 {
 	for (unsigned int i = 0; i < gumpItemArea.size(); ++i)
 		delete gumpItemArea[i];
 	gumpItemArea.clear();
 }
 
-void GumpShapeFlex::loadGumpage(IDataSource* ds)
+void GumpShapeArchive::loadGumpage(IDataSource* ds)
 {
 	unsigned int count = ds->getSize() / 8;
 	gumpItemArea.resize(count+1);
@@ -52,7 +46,7 @@ void GumpShapeFlex::loadGumpage(IDataSource* ds)
 	}
 }
 
-Pentagram::Rect* GumpShapeFlex::getGumpItemArea(uint32 shapenum)
+Pentagram::Rect* GumpShapeArchive::getGumpItemArea(uint32 shapenum)
 {
 	if (shapenum >= gumpItemArea.size()) return 0;
 	return gumpItemArea[shapenum];

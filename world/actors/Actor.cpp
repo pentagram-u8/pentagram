@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "Direction.h"
 #include "GameData.h"
-#include "MainShapeFlex.h"
+#include "MainShapeArchive.h"
 #include "AnimAction.h"
 #include "ShapeInfo.h"
 #include "Pathfinder.h"

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,29 +16,33 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef U8SAVE_H
-#define U8SAVE_H
+#ifndef DIRFILE_H
+#define DIRFILE_H
 
-#include "NamedFlex.h"
-#include <string>
-#include <vector>
-#include <map>
+#include "NamedArchiveFile.h"
 
-class IDataSource;
-
-class U8Save : public NamedFlex
-{
+class DirFile : public NamedArchiveFile {
 public:
-	explicit U8Save(IDataSource* ds);
-	virtual ~U8Save();
+	ENABLE_RUNTIME_CLASSTYPE();
+
+	//! create DirFile from path
+	explicit DirFile(const std::string& path);
+	virtual ~DirFile();
+
+	virtual bool exists(const std::string& name);
+
+	virtual uint8* getObject(const std::string& name, uint32* size=0);
+
+	virtual uint32 getSize(const std::string& name);
+
+	virtual uint32 getCount() { return count; }
 
 protected:
-	virtual uint32 get_size(uint32 index);
-	virtual uint32 get_offset(uint32 index);
+	bool readMetadata();
 
-	std::vector<uint32> offsets;
-	std::vector<uint32> sizes;
-	std::vector<std::string> names;
+	std::string path;
+	uint32 count;
 };
+
 
 #endif

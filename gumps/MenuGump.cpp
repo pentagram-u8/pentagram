@@ -20,7 +20,8 @@
 #include "MenuGump.h"
 
 #include "GameData.h"
-#include "GumpShapeFlex.h"
+#include "GumpShapeArchive.h"
+#include "RawArchive.h"
 #include "Shape.h"
 #include "ShapeFrame.h"
 #include "GUIApp.h"
@@ -154,7 +155,7 @@ void MenuGump::selectEntry(int entry)
 			return;
 		}
 		
-		Flex* flex = new Flex(skf);
+		RawArchive* flex = new RawArchive(skf);
 		MovieGump::U8MovieViewer(flex);
 	} break;
 	case 2:
@@ -198,7 +199,7 @@ void MenuGump::selectEntry(int entry)
 			return;
 		}
 		
-		Flex* flex = new Flex(skf);
+		RawArchive* flex = new RawArchive(skf);
 		MovieGump::U8MovieViewer(flex);
 	} break;
 	default:

@@ -22,7 +22,7 @@
 #include "GUIApp.h"
 #include "GameData.h"
 #include "ShapeFrame.h"
-#include "ShapeFlex.h"
+#include "ShapeArchive.h"
 #include "Shape.h"
 #include "Mouse.h"
 
@@ -194,7 +194,7 @@ bool ButtonWidget::loadData(IDataSource* ids, uint32 version)
 	if (!Gump::loadData(ids, version)) return false;
 
 	shape_up = 0;
-	ShapeFlex * flex = GameData::get_instance()->getShapeFlex(ids->read2());
+	ShapeArchive * flex = GameData::get_instance()->getShapeFlex(ids->read2());
 	uint32 shapenum = ids->read4();
 	if (flex)
 	{

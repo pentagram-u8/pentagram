@@ -23,13 +23,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class IDataSource;
 class ODataSource;
-class Flex;
+class FlexFile;
 
 class FlexWriter {
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	explicit FlexWriter(Flex * f = 0);
+	explicit FlexWriter(FlexFile * f = 0);
 	virtual ~FlexWriter();
 
 	virtual void add_object(const uint8* obj, uint32 size);

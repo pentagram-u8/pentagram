@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,14 +25,11 @@ class OAutoBufferDataSource;
 class SavegameWriter
 {
 public:
-	SavegameWriter() : ds(0), writtencount(0), realcount(0) { }
 	explicit SavegameWriter(ODataSource* ds);
 	virtual ~SavegameWriter();
 
-	//! write the savegame header
-	//! \param count the number of files in this savegame
-	//!              (can be written later if unknown)
-	virtual bool start(uint32 count=0);
+	//! write the savegame's description.
+	bool writeDescription(const std::string& desc);
 
 	//! write the savegame's global version
 	bool writeVersion(uint32 version);
@@ -43,20 +40,18 @@ public:
 	//! \param size (in bytes) of data
 	virtual bool writeFile(const char* name, const uint8* data, uint32 size);
 
-	//! write a file to the savegame from an OBufferDataSource
+	//! write a file to the savegame from an OAutoBufferDataSource
 	//! \param name name of the file
 	//! \param buf the OBufferDataSource to save
 	bool writeFile(const char* name, OAutoBufferDataSource* buf);
 
-	//! finish the savegame.
-	//! (writes the written number of files into the savegame header,
-	//! if necessary)
-	virtual bool finish();
+	//! finish savegame
+	bool finish();
 
 protected:
 	ODataSource* ds;
-	uint32 writtencount;
-	uint32 realcount;
+	std::string comment;
+	void* zipfile;
 };
 
 #endif

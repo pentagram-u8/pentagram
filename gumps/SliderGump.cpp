@@ -21,7 +21,7 @@
 
 #include "GameData.h"
 #include "ShapeFrame.h"
-#include "GumpShapeFlex.h"
+#include "GumpShapeArchive.h"
 #include "Shape.h"
 #include "SlidingWidget.h"
 #include "Font.h"

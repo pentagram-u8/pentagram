@@ -29,11 +29,21 @@ DISASM = \
 	tools/disasm/DisasmProcess.o
 
 FILESYS = \
+	filesys/Archive.o \
+	filesys/ArchiveFile.o \
+	filesys/DirFile.o \
 	filesys/FileSystem.o \
-	filesys/Flex.o \
-	filesys/U8Save.o \
+	filesys/FlexFile.o \
+	filesys/RawArchive.o \
+	filesys/U8SaveFile.o \
 	filesys/Savegame.o \
-	filesys/SavegameWriter.o
+	filesys/SavegameWriter.o \
+	filesys/ZipFile.o
+
+UNZIP = \
+	filesys/zip/unzip.o \
+	filesys/zip/ioapi.o \
+	filesys/zip/zip.o
 
 CONVERT = \
 	convert/ConvertShape.o \
@@ -61,7 +71,7 @@ GRAPHICS = \
 	graphics/RenderSurface.o \
 	graphics/BaseSoftRenderSurface.o \
 	graphics/FrameID.o \
-	graphics/GumpShapeFlex.o \
+	graphics/GumpShapeArchive.o \
 	graphics/InverterProcess.o \
 	graphics/SoftRenderSurface.o \
 	graphics/Texture.o \
@@ -73,9 +83,9 @@ GRAPHICS = \
 	graphics/Palette.o \
 	graphics/PaletteManager.o \
 	graphics/PaletteFaderProcess.o \
-	graphics/ShapeFlex.o \
+	graphics/ShapeArchive.o \
 	graphics/ShapeInfo.o \
-	graphics/MainShapeFlex.o \
+	graphics/MainShapeArchive.o \
 	graphics/XFormBlend.o \
 	graphics/TypeFlags.o \
 	graphics/WpnOvlayDat.o
@@ -83,7 +93,7 @@ GRAPHICS = \
 FONTS = \
 	graphics/fonts/Font.o \
 	graphics/fonts/FontManager.o \
-	graphics/fonts/FontShapeFlex.o \
+	graphics/fonts/FontShapeArchive.o \
 	graphics/fonts/RenderedText.o \
 	graphics/fonts/ShapeFont.o \
 	graphics/fonts/ShapeRenderedText.o \

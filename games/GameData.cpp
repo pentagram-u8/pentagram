@@ -22,10 +22,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "FileSystem.h"
 #include "IDataSource.h"
 #include "UsecodeFlex.h"
-#include "MainShapeFlex.h"
-#include "FontShapeFlex.h"
-#include "GumpShapeFlex.h"
-#include "Flex.h"
+#include "MainShapeArchive.h"
+#include "FontShapeArchive.h"
+#include "GumpShapeArchive.h"
+#include "RawArchive.h"
 #include "Glob.h"
 #include "PaletteManager.h"
 #include "Shape.h"
@@ -87,7 +87,7 @@ Glob* GameData::getGlob(uint32 glob) const
 		return 0;
 }
 
-ShapeFlex* GameData::getShapeFlex(uint16 flexId) const
+ShapeArchive* GameData::getShapeFlex(uint16 flexId) const
 {
 	switch (flexId) {
 		case MAINSHAPES:
@@ -102,7 +102,7 @@ ShapeFlex* GameData::getShapeFlex(uint16 flexId) const
 
 Shape* GameData::getShape(FrameID f) const
 {
-	ShapeFlex* sf = getShapeFlex(f.flexid);
+	ShapeArchive* sf = getShapeFlex(f.flexid);
 	if (!sf) return 0;
 	Shape* shape = sf->getShape(f.shapenum);
 	return shape;
@@ -213,7 +213,7 @@ void GameData::loadU8Data()
 		perr << "Unable to load static/fixed.dat. Exiting" << std::endl;
 		std::exit(-1);
 	}
-	fixed = new Flex(fd);
+	fixed = new RawArchive(fd);
 
 	IDataSource* uds = filesystem->ReadFile("@u8/usecode/eusecode.flx");
 
@@ -236,7 +236,7 @@ void GameData::loadU8Data()
 		perr << "Unable to load static/u8shapes.flx. Exiting" << std::endl;
 		std::exit(-1);
 	}
-	mainshapes = new MainShapeFlex(sf, MAINSHAPES,
+	mainshapes = new MainShapeArchive(sf, MAINSHAPES,
 		PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
 
 	// Load weapon, armour info
@@ -270,7 +270,7 @@ void GameData::loadU8Data()
 		perr << "Unable to load static/wpnovlay.dat. Exiting" << std::endl;
 		std::exit(-1);
 	}
-	Flex* overlayflex = new Flex(wod);
+	RawArchive* overlayflex = new RawArchive(wod);
 	weaponoverlay = new WpnOvlayDat();
 	weaponoverlay->load(overlayflex);
 	delete overlayflex;
@@ -281,10 +281,10 @@ void GameData::loadU8Data()
 		perr << "Unable to load static/glob.flx. Exiting" << std::endl;
 		std::exit(-1);
 	}
-	Flex* globflex = new Flex(gds);
+	RawArchive* globflex = new RawArchive(gds);
 	globs.clear();
-	globs.resize(globflex->get_count());
-	for (unsigned int i = 0; i < globflex->get_count(); ++i) {
+	globs.resize(globflex->getCount());
+	for (unsigned int i = 0; i < globflex->getCount(); ++i) {
 		Glob* glob = 0;
 		IDataSource* globds = globflex->get_datasource(i);
 
@@ -304,7 +304,7 @@ void GameData::loadU8Data()
 		perr << "Unable to load static/u8fonts.flx. Exiting" << std::endl;
 		std::exit(-1);
 	}
-	fonts = new FontShapeFlex(fds, OTHER,
+	fonts = new FontShapeArchive(fds, OTHER,
 		PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
 
 	// Load mouse
@@ -322,7 +322,7 @@ void GameData::loadU8Data()
 		perr << "Unable to load static/u8gumps.flx. Exiting" << std::endl;
 		std::exit(-1);
 	}
-	gumps = new GumpShapeFlex(gumpds, GUMPS,
+	gumps = new GumpShapeArchive(gumpds, GUMPS,
 		PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
 
 	IDataSource *gumpageds = filesystem->ReadFile("@u8/static/gumpage.dat");

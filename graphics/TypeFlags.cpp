@@ -23,7 +23,7 @@
 #include "ConfigFileManager.h"
 #include "CoreApp.h"
 #include "GameData.h"
-#include "MainShapeFlex.h"
+#include "MainShapeArchive.h"
 #include "Shape.h"
 #include "TreasureLoader.h"
 
@@ -165,7 +165,7 @@ void TypeFlags::loadWeaponInfo()
 void TypeFlags::loadArmourInfo()
 {
 	ConfigFileManager* config = ConfigFileManager::get_instance();
-	MainShapeFlex* msf = GameData::get_instance()->getMainShapes();
+	MainShapeArchive* msf = GameData::get_instance()->getMainShapes();
 
 	// load armour
 	std::vector<Pentagram::istring> armourkeys;

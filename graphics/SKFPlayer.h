@@ -22,14 +22,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <vector>
 
 struct SKFEvent;
-class Flex;
+class RawArchive;
 class RenderSurface;
 class IDataSource;
 namespace Pentagram { struct Palette; }
 
 class SKFPlayer {
 public:
-	SKFPlayer(Flex* movie, int width, int height);
+	SKFPlayer(RawArchive* movie, int width, int height);
 	~SKFPlayer();
 
 	void run();
@@ -44,7 +44,7 @@ private:
 	void parseEventList(IDataSource* eventlist);
 
 	int width, height;
-	Flex* skf;
+	RawArchive* skf;
 	std::vector<SKFEvent*> events;
 	unsigned int curframe, curobject;
 	unsigned int curaction;

@@ -23,7 +23,7 @@
 #include "GUIApp.h"
 #include "GameData.h"
 #include "Shape.h"
-#include "GumpShapeFlex.h"
+#include "GumpShapeArchive.h"
 #include "ShapeFrame.h"
 #include "UCMachine.h"
 #include "GumpNotifyProcess.h"

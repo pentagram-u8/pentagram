@@ -22,11 +22,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <vector>
 #include "FrameID.h"
 
-class Flex;
-class MainShapeFlex;
-class FontShapeFlex;
-class GumpShapeFlex;
-class ShapeFlex;
+class RawArchive;
+class MainShapeArchive;
+class FontShapeArchive;
+class GumpShapeArchive;
+class ShapeArchive;
 class Usecode;
 class Glob;
 class Shape;
@@ -45,16 +45,16 @@ public:
 	void loadU8Data(); // probably only temporary
 
 	Usecode* getMainUsecode() const { return mainusecode; }
-	MainShapeFlex* getMainShapes() const { return mainshapes; }
-	Flex* getFixed() const { return fixed; }
+	MainShapeArchive* getMainShapes() const { return mainshapes; }
+	RawArchive* getFixed() const { return fixed; }
 	Glob* getGlob(uint32 glob) const;
-	FontShapeFlex* getFonts() const { return fonts; }
-	GumpShapeFlex* getGumps() const { return gumps; }
+	FontShapeArchive* getFonts() const { return fonts; }
+	GumpShapeArchive* getGumps() const { return gumps; }
 	Shape* getMouse() const { return mouse; }
 	MusicFlex* getMusic() const { return music; }
 	WpnOvlayDat* getWeaponOverlay() const { return weaponoverlay; }
 
-	ShapeFlex* getShapeFlex(uint16 flexId) const;
+	ShapeArchive* getShapeFlex(uint16 flexId) const;
 	Shape* getShape(FrameID frameid) const;
 	ShapeFrame* getFrame(FrameID frameid) const;
 
@@ -69,12 +69,12 @@ public:
 private:
 	void loadTranslation();
 
-	Flex* fixed;
-	MainShapeFlex* mainshapes;
+	RawArchive* fixed;
+	MainShapeArchive* mainshapes;
 	Usecode* mainusecode;
 	std::vector<Glob*> globs;
-	FontShapeFlex* fonts;
-	GumpShapeFlex* gumps;
+	FontShapeArchive* fonts;
+	GumpShapeArchive* gumps;
 	Shape* mouse;
 	MusicFlex* music;
 	WpnOvlayDat* weaponoverlay;

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,54 +20,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Savegame.h"
 #include "IDataSource.h"
+#include "ZipFile.h"
 
-Savegame::Savegame(IDataSource* ds_)
-	: NamedFlex()
+Savegame::Savegame(IDataSource* ds)
 {
-	ds = ds_;
-
-	if (ds->getSize() < 21) {
-		// 17 for "PentagramSavegame", 4 for number of entries
-		count = 0;
-		return;
-	}
-
-	char idbuf[17];
-	ds->read(idbuf, 17);
-	if (memcmp(idbuf, "PentagramSavegame", 17) != 0) {
-		count = 0;
-		return;
-	}
-
-	count = ds->read4();
-
-	offsets.resize(count);
-	sizes.resize(count);
-	names.resize(count);
-
-	for (unsigned int i = 0; i < count; ++i)
-	{
-		uint32 namelen = ds->read4();
-		char* buf = new char[namelen+1];
-		ds->read(buf, static_cast<sint32>(namelen));
-		buf[namelen] = 0;
-		names[i] = buf;
-		indices[names[i]] = i;
-		delete[] buf;
-		sizes[i] = ds->read4();
-		offsets[i] = ds->getPos();
-		ds->skip(sizes[i]); // skip data
-	}
+	zipfile = new ZipFile(ds);
 }
 
 Savegame::~Savegame()
 {
-
+	delete zipfile;
 }
 
 uint32 Savegame::getVersion()
 {
-	IDataSource* ids = get_datasource("VERSION");
+	IDataSource* ids = getDataSource("VERSION");
 	if (!ids || ids->getSize() != 4) return 0;
 
 	uint32 version = ids->read4();
@@ -76,14 +43,9 @@ uint32 Savegame::getVersion()
 	return version;
 }
 
-uint32 Savegame::get_size(uint32 index)
+IDataSource* Savegame::getDataSource(const std::string& name)
 {
-	if (index >= count) return 0;
-	return sizes[index];
-}
-
-uint32 Savegame::get_offset(uint32 index)
-{
-	if (index >= count) return 0;
-	return offsets[index];
+	uint32 size;
+	uint8* data = zipfile->getObject(name, &size);
+	return new IBufferDataSource(data, size, false, true);
 }

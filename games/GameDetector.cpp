@@ -21,7 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GameDetector.h"
 #include "FileSystem.h"
 #include "GameInfo.h"
-#include "Flex.h"
+#include "RawArchive.h"
 
 bool GameDetector::detect(std::string path, GameInfo *info)
 {
@@ -76,7 +76,7 @@ bool GameDetector::detect(std::string path, GameInfo *info)
 		if (ids) {
 			if (info->type == GameInfo::GAME_U8) {
 				// distinguish between english and spanish
-				Flex* f = new Flex(ids);
+				RawArchive* f = new RawArchive(ids);
 				const char* buf = reinterpret_cast<const char*>((f->get_object_nodel(183)));
 				unsigned int size = f->get_size(183);
 				if (buf) {

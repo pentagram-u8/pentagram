@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,23 +17,27 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "pent_include.h"
-#include "FontShapeFlex.h"
+#include "FontShapeArchive.h"
 #include "ShapeFont.h"
 
-ShapeFont* FontShapeFlex::getFont(uint32 fontnum)
+DEFINE_RUNTIME_CLASSTYPE_CODE(FontShapeArchive,ShapeArchive);
+
+ShapeFont* FontShapeArchive::getFont(uint32 fontnum)
 {
 	return p_dynamic_cast<ShapeFont*>(getShape(fontnum));
 }
 
-
-
-void FontShapeFlex::cache(uint32 shapenum)
+void FontShapeArchive::cache(uint32 shapenum)
 {
-	if (shapenum >= shapes.size()) return;
+	if (shapenum >= count) return;
+	if (shapes.empty()) shapes.resize(count);
+
 	if (shapes[shapenum]) return;
 
-	uint8 *data = get_object(shapenum);
-	uint32 shpsize = get_size(shapenum);
+	uint32 shpsize;
+	uint8 *data = getRawObject(shapenum, &shpsize);
+
+	if (!data || shpsize == 0) return;
 
 	// Auto detect format
 	if (!format) format = Shape::DetectShapeFormat(data,shpsize);

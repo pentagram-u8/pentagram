@@ -20,7 +20,7 @@
 #include "QuitGump.h"
 
 #include "GameData.h"
-#include "GumpShapeFlex.h"
+#include "GumpShapeArchive.h"
 #include "Shape.h"
 #include "ShapeFrame.h"
 #include "GUIApp.h"

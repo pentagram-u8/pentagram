@@ -23,7 +23,7 @@
 
 #include <vector>
 
-class ShapeFlex;
+class ShapeArchive;
 
 
 class ShapeViewerGump : public ModalGump
@@ -33,7 +33,7 @@ public:
 
 	ShapeViewerGump();
 	ShapeViewerGump(int width, int height,
-					std::vector<std::pair<std::string,ShapeFlex*> >& flexes,
+					std::vector<std::pair<std::string,ShapeArchive*> >& flexes,
 					uint32 _Flags = 0, sint32 layer = LAYER_MODAL);
 	virtual ~ShapeViewerGump(void);
 
@@ -52,9 +52,9 @@ public:
 protected:
 	virtual void saveData(ODataSource* ods);
 
-	std::vector<std::pair<std::string,ShapeFlex*> > flexes;	
+	std::vector<std::pair<std::string,ShapeArchive*> > flexes;	
 	unsigned int curflex;
-	ShapeFlex* flex;
+	ShapeArchive* flex;
 	uint32 curshape;
 	uint32 curframe;
 

@@ -252,6 +252,13 @@ AM_PATH_SDL($SDL_VERSION,
 )
 AC_LANG_CPLUSPLUS
 
+# -----
+# zlib
+# -----
+
+AC_CHECK_HEADER(zlib.h,,AC_MSG_ERROR([*** zlib not found!]))
+LIBS="$LIBS -lz"
+
 # ------------------
 # Warning level
 # ------------------
@@ -367,7 +374,7 @@ CPPFLAGS="$CPPFLAGS $SDL_CFLAGS"
 AC_CHECK_HEADER(SDL_ttf.h, HAVESDLTTF=yes, HAVESDLTTF=no)
 CPPFLAGS="$BACKUPCPPFLAGS"
 
-AC_ARG_ENABLE(ttf, [  --enable-ttf            Enable TTF font support],,enable_ttf=no)
+AC_ARG_ENABLE(ttf, [  --disable-ttf           Disable TTF font support],,enable_ttf=yes)
 
 AC_MSG_CHECKING(if we want to use optional SDL_ttf fonts)
 if test x$HAVESDLTTF = xyes; then

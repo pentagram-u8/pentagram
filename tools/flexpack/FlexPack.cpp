@@ -17,8 +17,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "pent_include.h"
-#include "Flex.h"
 #include "FlexWriter.h"
+#include "FlexFile.h"
 #include "ODataSource.h"
 #include "IDataSource.h"
 #include "FileSystem.h"
@@ -144,14 +144,14 @@ int main(int argc, char **argv)
 				perr << "Flex not found" << std::endl;
 				return 1;
 			}
-			else if (! Flex::isFlex(ids))
+			else if (! FlexFile::isFlexFile(ids))
 			{
 				perr << "File is not a Flex" << std::endl;
 				delete ids;
 				return 1;
 			}
-			Flex * flex = new Flex(ids);
-			for(index=0; index < flex->get_count(); index++)
+			FlexFile * flex = new FlexFile(ids);
+			for(index=0; index < flex->getIndexCount(); index++)
 			{
 				char outfile[32];
 				snprintf(outfile,32,"%04X.%s", index, ext);
@@ -162,7 +162,10 @@ int main(int argc, char **argv)
 					delete flex;
 					return 1;
 				}
-				ods->write(flex->get_object_nodel(index), flex->get_size(index));
+				uint32 size;
+				uint8* data = flex->getObject(index, &size);
+				ods->write(data, size);
+				delete[] data;
 				FORGET_OBJECT(ods);
 			}
 			delete flex;
@@ -176,20 +179,19 @@ int main(int argc, char **argv)
 				perr << "Flex not found" << std::endl;
 				return 1;
 			}
-			else if (! Flex::isFlex(ids))
+			else if (! FlexFile::isFlexFile(ids))
 			{
 				perr << "File is not a Flex" << std::endl;
 				delete ids;
 				return 1;
 			}
-			Flex * flex = new Flex(ids);
+			FlexFile * flex = new FlexFile(ids);
 			pout << "Archive: " << flexfile << std::endl;
-			pout << "Size: " << flex->get_count() << std::endl;
+			pout << "Size: " << flex->getIndexCount() << std::endl;
 			pout << "-------------------------" << std::endl;
-			pout << "Object\tOffset\tLength" << std::endl;
-			for(index=0; index < flex->get_count(); index++) {
-				pout << index << "\t" << flex->get_offset(index) 
-					 << "\t" << flex->get_size(index) << std::endl;
+			pout << "Object\tLength" << std::endl;
+			for(index=0; index < flex->getIndexCount(); index++) {
+				pout << index << "\t" << flex->getSize(index) << std::endl;
 			}
 			delete flex;
 		}
@@ -202,14 +204,14 @@ int main(int argc, char **argv)
 				perr << "Flex not found" << std::endl;
 				return 1;
 			}
-			else if (! Flex::isFlex(ids))
+			else if (! FlexFile::isFlexFile(ids))
 			{
 				perr << "File is not a Flex" << std::endl;
 				delete ids;
 				return 1;
 			}
 
-			Flex * flex = new Flex(ids);
+			FlexFile * flex = new FlexFile(ids);
 			fw = new FlexWriter(flex);
 			ids = filesys.ReadFile(file_name);
 			if (!ids)
@@ -240,14 +242,14 @@ int main(int argc, char **argv)
 				perr << "Flex not found" << std::endl;
 				return 1;
 			}
-			else if (! Flex::isFlex(ids))
+			else if (! FlexFile::isFlexFile(ids))
 			{
 				perr << "File is not a Flex" << std::endl;
 				delete ids;
 				return 1;
 			}
 
-			Flex * flex = new Flex(ids);
+			FlexFile * flex = new FlexFile(ids);
 			fw = new FlexWriter(flex);
 			std::vector<std::string>::iterator it;
 			for (it = file_names.begin(); it != file_names.end(); ++it)

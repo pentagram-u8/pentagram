@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2004 The Pentagram team
+Copyright (C) 2002-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -43,7 +43,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Direction.h"
 #include "Game.h"
 
-#include "U8Save.h"
 #include "SavegameWriter.h"
 #include "Savegame.h"
 
@@ -58,13 +57,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Actor.h"
 #include "ActorAnimProcess.h"
 #include "TargetedAnimProcess.h"
-#include "Font.h"
-#include "FontShapeFlex.h"
 #include "u8intrinsics.h"
 #include "Egg.h"
 #include "CurrentMap.h"
-#include "UCList.h"
-#include "LoopScript.h"
 #include "InverterProcess.h"
 
 #include "EggHatcherProcess.h" // for a hack
@@ -1515,8 +1510,8 @@ bool GUIApp::saveGame(std::string filename, bool ignore_modals)
 	save_count++;
 
 	SavegameWriter* sgw = new SavegameWriter(ods);
-	sgw->start(11); // 10 files + version
 	sgw->writeVersion(1);
+	sgw->writeDescription("No Description");
 
 	// We'll make it 2KB initially
 	OAutoBufferDataSource buf(2048);
@@ -1562,6 +1557,7 @@ bool GUIApp::saveGame(std::string filename, bool ignore_modals)
 	buf.clear();
 
 	sgw->finish();
+
 	delete sgw;
 
 	// Restore mouse over
@@ -1701,19 +1697,19 @@ bool GUIApp::loadGame(std::string filename)
 
 	// UCSTRINGS, UCGLOBALS, UCLISTS don't depend on anything else,
 	// so load these first
-	ds = sg->get_datasource("UCSTRINGS");
+	ds = sg->getDataSource("UCSTRINGS");
 	ok = ucmachine->loadStrings(ds, version);
 	totalok &= ok;
 	perr << "UCSTRINGS: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
 
-	ds = sg->get_datasource("UCGLOBALS");
+	ds = sg->getDataSource("UCGLOBALS");
 	ok = ucmachine->loadGlobals(ds, version);
 	totalok &= ok;
 	perr << "UCGLOBALS: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
 
-	ds = sg->get_datasource("UCLISTS");
+	ds = sg->getDataSource("UCLISTS");
 	ok = ucmachine->loadLists(ds, version);
 	totalok &= ok;
 	perr << "UCLISTS: " << (ok ? "ok" : "failed")<< std::endl;
@@ -1721,38 +1717,38 @@ bool GUIApp::loadGame(std::string filename)
 
 	// KERNEL must be before OBJECTS, for the egghatcher
 	// KERNEL must be before APP, for the avatarMoverProcess
-	ds = sg->get_datasource("KERNEL");
+	ds = sg->getDataSource("KERNEL");
 	ok = kernel->load(ds, version);
 	totalok &= ok;
 	perr << "KERNEL: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
 
-	ds = sg->get_datasource("APP");
+	ds = sg->getDataSource("APP");
 	ok = load(ds, version);
 	totalok &= ok;
 	perr << "APP: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
 
 	// WORLD must be before OBJECTS, for the egghatcher
-	ds = sg->get_datasource("WORLD");
+	ds = sg->getDataSource("WORLD");
 	ok = world->load(ds, version);
 	totalok &= ok;
 	perr << "WORLD: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
 
-	ds = sg->get_datasource("CURRENTMAP");
+	ds = sg->getDataSource("CURRENTMAP");
 	ok = world->getCurrentMap()->load(ds, version);
 	totalok &= ok;
 	perr << "CURRENTMAP: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
 
-	ds = sg->get_datasource("OBJECTS");
+	ds = sg->getDataSource("OBJECTS");
 	ok = objectmanager->load(ds, version);
 	totalok &= ok;
 	perr << "OBJECTS: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
 
-	ds = sg->get_datasource("MAPS");
+	ds = sg->getDataSource("MAPS");
 	ok = world->loadMaps(ds, version);
 	totalok &= ok;
 	perr << "MAPS: " << (ok ? "ok" : "failed") << std::endl;

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004 The Pentagram Team
+ *  Copyright (C) 2004-2005 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,9 +22,9 @@
 
 #include "IDataSource.h"
 #include "WeaponOverlay.h"
-#include "Flex.h"
+#include "RawArchive.h"
 #include "GameData.h"
-#include "MainShapeFlex.h"
+#include "MainShapeArchive.h"
 #include "AnimAction.h"
 
 WpnOvlayDat::WpnOvlayDat()
@@ -56,15 +56,15 @@ const WeaponOverlayFrame* WpnOvlayDat::getOverlayFrame(uint32 action, int type,
 }
 
 
-void WpnOvlayDat::load(Flex *overlaydat)
+void WpnOvlayDat::load(RawArchive *overlaydat)
 {
 	WeaponOverlayFrame f;
 
-	MainShapeFlex* msf = GameData::get_instance()->getMainShapes();
+	MainShapeArchive* msf = GameData::get_instance()->getMainShapes();
 	assert(msf);
 
 	// CONSTANT!
-	overlay.resize(overlaydat->get_count());
+	overlay.resize(overlaydat->getCount());
 
 	for (unsigned int action = 0; action < overlay.size(); action++)
 	{

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,7 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
-#include "Flex.h"
+#include "FlexFile.h"
+#include "RawArchive.h"
 #include "ItemFactory.h"
 #include "Actor.h"
 #include "MainActor.h"
@@ -175,18 +176,18 @@ bool World::switchMap(uint32 newmap)
 
 void World::loadNonFixed(IDataSource* ds)
 {
-	Flex* f = new Flex(ds);
+	FlexFile* f = new FlexFile(ds);
 
 	pout << "Loading NonFixed items" << std::endl;
 			
-	for (unsigned int i = 0; i < f->get_count(); ++i) {
+	for (unsigned int i = 0; i < f->getCount(); ++i) {
 
 		// items in this map?
-		if (f->get_size(i) > 0) {
+		if (f->getSize(i) > 0) {
 			assert(maps.size() > i);
 			assert(maps[i] != 0);
 
-			IDataSource *items = f->get_datasource(i);
+			IDataSource *items = f->getDataSource(i);
 
 			maps[i]->loadNonFixed(items);
 
@@ -200,11 +201,14 @@ void World::loadNonFixed(IDataSource* ds)
 
 void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 {
-	Flex* itemcachflex = new Flex(itemcach);
-	Flex* npcdataflex = new Flex(npcdata);
+	FlexFile* itemcachflex = new FlexFile(itemcach);
+	FlexFile* npcdataflex = new FlexFile(npcdata);
 
-	IDataSource* itemds = itemcachflex->get_datasource(0);
-	IDataSource* npcds = npcdataflex->get_datasource(0);
+	IDataSource* itemds = itemcachflex->getDataSource(0);
+	IDataSource* npcds = npcdataflex->getDataSource(0);
+
+	delete itemcachflex;
+	delete npcdataflex;
 
 	pout << "Loading NPCs" << std::endl;
 
@@ -294,8 +298,6 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 		ObjectManager::get_instance()->assignActorObjId(actor, i);
 	}
 
-	delete itemcachflex;
-	delete npcdataflex;
 	delete itemds;
 	delete npcds;
 }

@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Shape.h"
 #include "ShapeFrame.h"
 #include "ShapeInfo.h"
-#include "MainShapeFlex.h"
+#include "MainShapeArchive.h"
 #include "RenderSurface.h"
 #include "Rect.h"
 #include "GameData.h"

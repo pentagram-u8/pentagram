@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003  The Pentagram Team
+Copyright (C) 2003-2005  The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,12 +22,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "XMidiFile.h"
 #include "IDataSource.h"
 
-MusicFlex::MusicFlex(IDataSource* ds) : Flex(ds)
-{
-	songs = new XMidiFile * [count];
+DEFINE_RUNTIME_CLASSTYPE_CODE(MusicFlex,Pentagram::Archive);
 
+
+MusicFlex::MusicFlex(IDataSource* ds) : Archive(ds)
+{
+	songs = 0;
 	std::memset(info,0, sizeof(SongInfo*)*128);
-	std::memset(songs,0, sizeof(XMidiFile*)*count);
 	loadSongInfo();
 }
 
@@ -40,12 +41,7 @@ MusicFlex::~MusicFlex()
 		info[i] = 0;
 	}
 
-	for (i = 0; i < count; i++)
-	{
-		delete songs[i];
-		songs[i] = 0;
-	}
-
+	Archive::uncache();
 	delete [] songs;
 }
 
@@ -67,12 +63,13 @@ MusicFlex::SongInfo::~SongInfo()
 void MusicFlex::cache(uint32 index)
 {
 	if (index >= count) return;
+	if (!songs) songs = new XMidiFile * [count];
 
 	if (songs[index]) return;
 
 	// This will cache the data
-	uint8 *buf = get_object(index);
-	uint32 size = get_size(index);
+	uint32 size;
+	uint8 *buf = getRawObject(index, &size);
 
 	if (!buf || !size) return;
 	IBufferDataSource ds(buf,size);
@@ -87,28 +84,34 @@ void MusicFlex::cache(uint32 index)
 	delete [] buf;
 }
 
-void MusicFlex::cache()
+void MusicFlex::uncache(uint32 index)
 {
-	for (uint32 i = 0; i < count; i++)
-	{
-		cache(i);
-	}
+	if (index >= count) return;
+	if (!songs) return;
+
+	delete songs[index];
+	songs[index] = 0;
 }
 
-void MusicFlex::uncache()
+bool MusicFlex::isCached(uint32 index)
 {
-	for (uint32 i = 0; i < count; i++)
-	{
-		delete songs[i];
-		songs[i] = 0;
-	}
+	if (index >= count) return false;
+	if (!songs) return false;
+
+	return (songs[index] != 0);
+}
+
+IDataSource* MusicFlex::getAdlibTimbres()
+{
+	uint32 size;
+	uint8* data = getRawObject(259, &size);
+	return new IBufferDataSource(data, size, false, true);
 }
 
 void MusicFlex::loadSongInfo()
 {
-	// This will cache the data
-	uint8 *buf = get_object(0);
-	uint32 size = get_size(0);
+	uint32 size;
+	uint8 *buf = getRawObject(0, &size);
 
 	if (!buf || !size)
 	{

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef WPNOVLAYDAT_H
 #define WPNOVLAYDAT_H
 
-class Flex;
+class RawArchive;
 struct AnimWeaponOverlay;
 struct WeaponOverlayFrame;
 
@@ -33,7 +33,7 @@ public:
 
 	//! load weapon overlay data from wpnovlay.dat
 	//! NB: anim.dat must have already been read
-	void load(Flex* overlaydat);
+	void load(RawArchive* overlaydat);
 
 	const AnimWeaponOverlay* getAnimOverlay(uint32 action) const;
 	const WeaponOverlayFrame* getOverlayFrame(uint32 action, int type,

@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Font.h"
 #include "GameData.h"
 #include "ShapeFont.h"
-#include "FontShapeFlex.h"
+#include "FontShapeArchive.h"
 #include "IDataSource.h"
 
 #ifdef USE_SDLTTF
@@ -80,8 +80,8 @@ bool FontManager::openTTF(Pentagram::istring name, IDataSource* ds, int size)
 	TTF_Font* font = TTF_OpenFontRW(ds->getRWops(), 1, size);
 
 	if (!font) {
-		delete ds;
-		perr << "Failed to open TTF " << name << "." << std::endl;
+		perr << "Failed to open TTF " << name << ": " << TTF_GetError()
+			 << std::endl;
 		return false;
 	}
 

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,19 +16,33 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef GUMPSHAPEFLEX_H
-#define GUMPSHAPEFLEX_H
+#ifndef GUMPSHAPEARCHIVE_H
+#define GUMPSHAPEARCHIVE_H
 
-#include "ShapeFlex.h"
+#include "ShapeArchive.h"
 
 namespace Pentagram { struct Rect; }
 
-class GumpShapeFlex : public ShapeFlex
+class GumpShapeArchive : public ShapeArchive
 {
 public:
-	GumpShapeFlex(IDataSource* ds, const uint16 id, Pentagram::Palette* pal = 0,
-				  const ConvertShapeFormat *format = 0);
-	virtual ~GumpShapeFlex();
+	ENABLE_RUNTIME_CLASSTYPE();
+
+	GumpShapeArchive(uint16 id_, Pentagram::Palette* pal_ = 0,
+			  const ConvertShapeFormat *format_ = 0)
+		: ShapeArchive(id_, pal_, format_) { }
+	GumpShapeArchive(ArchiveFile* af, uint16 id_, Pentagram::Palette* pal_ = 0,
+			  const ConvertShapeFormat *format_ = 0)
+		: ShapeArchive(af, id_, pal_, format_) { }
+	GumpShapeArchive(IDataSource* ds, uint16 id_, Pentagram::Palette* pal_ = 0,
+			  const ConvertShapeFormat *format_ = 0)
+		: ShapeArchive(ds, id_, pal_, format_) { }
+	GumpShapeArchive(const std::string& path, uint16 id_,
+				 Pentagram::Palette* pal_ = 0,
+				 const ConvertShapeFormat *format_ = 0)
+		: ShapeArchive(path, id_, pal_, format_) { }
+
+	virtual ~GumpShapeArchive();
 	
 	void loadGumpage(IDataSource *ds);
 	Pentagram::Rect* getGumpItemArea(uint32 shapenum);

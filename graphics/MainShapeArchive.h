@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,10 +16,10 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef MAINSHAPEFLEX_H
-#define MAINSHAPEFLEX_H
+#ifndef MAINSHAPEARCHIVE_H
+#define MAINSHAPEARCHIVE_H
 
-#include "ShapeFlex.h"
+#include "ShapeArchive.h"
 
 class TypeFlags;
 class ShapeInfo;
@@ -27,14 +27,26 @@ class AnimDat;
 class ActorAnim;
 struct AnimAction;
 
-class MainShapeFlex : public ShapeFlex
+class MainShapeArchive : public ShapeArchive
 {
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	MainShapeFlex(IDataSource* ds, const uint16 id, Pentagram::Palette* pal = 0,
-				  const ConvertShapeFormat *format = 0);
-	virtual ~MainShapeFlex();
+	MainShapeArchive(uint16 id_, Pentagram::Palette* pal_ = 0,
+			  const ConvertShapeFormat *format_ = 0)
+		: ShapeArchive(id_, pal_, format_), typeFlags(0), animdat(0) { }
+	MainShapeArchive(ArchiveFile* af, uint16 id_, Pentagram::Palette* pal_ = 0,
+			  const ConvertShapeFormat *format_ = 0)
+		: ShapeArchive(af, id_, pal_, format_), typeFlags(0), animdat(0) { }
+	MainShapeArchive(IDataSource* ds, uint16 id_, Pentagram::Palette* pal_ = 0,
+			  const ConvertShapeFormat *format_ = 0)
+		: ShapeArchive(ds, id_, pal_, format_), typeFlags(0), animdat(0) { }
+	MainShapeArchive(const std::string& path, uint16 id_,
+				 Pentagram::Palette* pal_ = 0,
+				 const ConvertShapeFormat *format_ = 0)
+		: ShapeArchive(path, id_, pal_, format_), typeFlags(0), animdat(0) { }
+
+	virtual ~MainShapeArchive();
 	
 	void loadTypeFlags(IDataSource *ds);
 	ShapeInfo* getShapeInfo(uint32 shapenum);

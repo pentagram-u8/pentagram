@@ -28,7 +28,7 @@
 #include "GUIApp.h"
 #include "Kernel.h"
 #include "GameData.h"
-#include "MainShapeFlex.h"
+#include "MainShapeArchive.h"
 #include "Mouse.h"
 #include "SliderGump.h"
 #include "GumpNotifyProcess.h"

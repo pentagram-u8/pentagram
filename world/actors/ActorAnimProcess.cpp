@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "ActorAnimProcess.h"
 #include "GameData.h"
-#include "MainShapeFlex.h"
 #include "Animation.h"
 #include "AnimDat.h"
 #include "AnimAction.h"

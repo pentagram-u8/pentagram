@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2004-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@
 #include "GUIApp.h"
 #include "GameData.h"
 #include "Shape.h"
-#include "GumpShapeFlex.h"
+#include "GumpShapeArchive.h"
 #include "ShapeFrame.h"
 #include "UCMachine.h"
 #include "GumpNotifyProcess.h"

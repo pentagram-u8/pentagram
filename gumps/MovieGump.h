@@ -21,7 +21,7 @@
 
 #include "Gump.h"
 
-class Flex;
+class RawArchive;
 class SKFPlayer;
 
 class MovieGump : public Gump
@@ -30,7 +30,7 @@ public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
 	MovieGump();
-	MovieGump(int width, int height, Flex* skf,
+	MovieGump(int width, int height, RawArchive* skf,
 			  uint32 _Flags = 0, sint32 layer = LAYER_MODAL);
 	virtual ~MovieGump(void);
 
@@ -44,7 +44,7 @@ public:
 
 	virtual bool OnKeyDown(int key, int mod);
 
-	static void U8MovieViewer(Flex* skf);
+	static void U8MovieViewer(RawArchive* skf);
 
 	//! "play" console command
 	static void ConCmd_play(const Console::ArgsType &args,

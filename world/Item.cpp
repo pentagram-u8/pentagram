@@ -31,8 +31,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Kernel.h"
 #include "ObjectManager.h"
 
-#include "MainShapeFlex.h"
-#include "GumpShapeFlex.h"
+#include "MainShapeArchive.h"
+#include "GumpShapeArchive.h"
 #include "Shape.h"
 #include "ShapeInfo.h"
 #include "ItemFactory.h"
