@@ -1,5 +1,5 @@
 # TODO - it would be nice if LPATH could be set by the Makefile that
-# includes us, since that has to now our path anyway.
+# includes us, since that has to know our path anyway.
 LPATH := tools
 
 LSRC := $(wildcard $(LPATH)/*.cc)
