@@ -68,6 +68,10 @@ public:
 	//! \return true if a MonsterInfo struct was found, false otherwise
 	bool loadMonsterStats();
 
+	//! add treasure according to the TreasureInfo in the MonsterInfo
+	//! \return true if a MonsterInfo struct was found, false otherwise
+	bool giveTreasure();
+
 	virtual void teleport(int mapnum, sint32 x, sint32 y, sint32 z);
 
 	virtual bool removeItem(Item* item);

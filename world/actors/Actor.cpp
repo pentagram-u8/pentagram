@@ -116,6 +116,110 @@ bool Actor::loadMonsterStats()
 	return true;
 }
 
+bool Actor::giveTreasure()
+{
+	ShapeInfo* shapeinfo = getShapeInfo();
+	MonsterInfo* mi = 0;
+	if (shapeinfo) mi = shapeinfo->monsterinfo;
+	if (!mi)
+		return false;
+
+	std::vector<TreasureInfo>& treasure = mi->treasure;
+
+	for (unsigned int i = 0; i < treasure.size(); ++i) {
+		TreasureInfo& ti = treasure[i];
+		Item* item;
+
+		// check chance
+		if (ti.chance < 0.999 &&
+			((double)(std::rand()) / RAND_MAX) > ti.chance)
+		{
+			continue;
+		}
+
+		// determine count/quantity
+		int count;
+		if (ti.mincount >= ti.maxcount)
+			count = ti.mincount;
+		else
+			count = ti.mincount + (std::rand() % (ti.maxcount - ti.mincount));
+
+		// TODO: 'special'
+		if (!ti.special.empty()) {
+			pout << "Unhandled special treasure: " << ti.special << std::endl;
+			continue;
+		}
+
+		// if shapes.size() == 1 and the given shape is SF_QUANTITY,
+		// then produce a stack of that shape (ignoring frame)
+
+		if (ti.shapes.size() == 1) {
+			uint32 shape = ti.shapes[0];
+			ShapeInfo* si = GameData::get_instance()->getMainShapes()->
+				getShapeInfo(shape);
+			if (!si) {
+				perr << "Trying to create treasure with an invalid shape ("
+					 << shape << ")" << std::endl;
+				continue;
+			}
+			if (si->hasQuantity()) {
+				// CHECKME: which flags?
+				item = ItemFactory::createItem(shape,
+											   0, // frame
+											   count, // quality
+											   Item::FLG_DISPOSABLE, // flags
+											   0, // npcnum,
+											   0, // mapnum
+											   0); // ext. flags
+				item->assignObjId();
+				item->moveToContainer(this);
+				item->callUsecodeEvent_combine(); // this sets the right frame
+				continue;
+			}
+		}
+
+		if (ti.shapes.empty() || ti.frames.empty()) {
+			perr << "No shape/frame set in treasure" << std::endl;
+			continue;
+		}
+
+		// we need to produce a number of items
+		for (int i = 0; i < count; ++i) {
+			// pick shape
+			int n = std::rand() % ti.shapes.size();
+			uint32 shape = ti.shapes[n];
+
+			// pick frame
+			n = std::rand() % ti.frames.size();
+			uint32 frame = ti.frames[n];
+
+			ShapeInfo* si = GameData::get_instance()->getMainShapes()->
+				getShapeInfo(shape);
+			if (!si) {
+				perr << "Trying to create treasure with an invalid shape ("
+					 << shape << ")" << std::endl;
+				continue;
+			}
+			uint16 qual = 0;
+			if (si->hasQuantity())
+				qual = 1;
+
+			// CHECKME: flags?
+			item = ItemFactory::createItem(shape,
+										   frame, // frame
+										   qual, // quality
+										   Item::FLG_DISPOSABLE, // flags
+										   0, // npcnum,
+										   0, // mapnum
+										   0); // ext. flags
+			item->assignObjId();
+			item->moveToContainer(this);
+		}
+	}
+
+	return true;
+}
+
 bool Actor::removeItem(Item* item)
 {
 	if (!Container::removeItem(item)) return false;
@@ -464,10 +568,7 @@ void Actor::die()
 	// * fill with treasure if appropriate
 	// * some U8 monsters need special actions: skeletons, eyebeasts, etc...
 
-	Item* potion = ItemFactory::createItem(766, 1, 0, 0, 0, 0, 0);
-	potion->assignObjId();
-	potion->moveToContainer(this);
-	potion->setGumpLocation(20, 20);
+	giveTreasure();
 
 	ShapeInfo* shapeinfo = getShapeInfo();
 	MonsterInfo* mi = 0;

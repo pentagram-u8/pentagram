@@ -48,6 +48,7 @@ GAMES = \
 
 GAMES2 = \
 	games/GameData.o \
+	games/TreasureLoader.o \
 	games/u8bindings.o \
 	games/stdbindings.o
 

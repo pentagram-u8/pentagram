@@ -96,6 +96,9 @@ public:
 	inline bool is_editor() const { return (flags & SI_EDITOR) != 0; }
 	inline bool is_explode() const { return (flags & SI_EXPLODE) != 0; }
 
+	bool hasQuantity() const
+		{ return (family == SF_QUANTITY || family == SF_REAGENT); }
+
 	bool getTypeFlag(int typeflag);
 
 	ShapeInfo() : weaponinfo(0), armourinfo(0), monsterinfo(0) { }

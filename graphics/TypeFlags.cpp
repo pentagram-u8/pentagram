@@ -25,6 +25,7 @@
 #include "GameData.h"
 #include "MainShapeFlex.h"
 #include "Shape.h"
+#include "TreasureLoader.h"
 
 TypeFlags::TypeFlags()
 {
@@ -218,6 +219,9 @@ void TypeFlags::loadMonsterInfo()
 {
 	ConfigFileManager* config = ConfigFileManager::get_instance();
 
+	TreasureLoader treasureLoader;
+	treasureLoader.loadDefaults();
+
 	// load monsters
 	std::vector<Pentagram::istring> monsterkeys;
 	monsterkeys = config->listSections("monsters", true);	
@@ -265,23 +269,32 @@ void TypeFlags::loadMonsterInfo()
 		config->get(k + "/defense_type", val);
 		mi->defense_type = static_cast<uint16>(val);
 
-		if (config->exists(k + "/resurrection")) {
-			config->get(k + "/resurrection", val);
+		if (config->get(k + "/resurrection", val))
 			mi->resurrection = (val != 0);
-		} else
+		else
 			mi->resurrection = false;
 
-		if (config->exists(k + "/vanish")) {
-			config->get(k + "/vanish", val);
+		if (config->get(k + "/vanish", val))
 			mi->vanish = (val != 0);
-		} else
+		else
 			mi->vanish = false;
 
-		if (config->exists(k + "/explode")) {
-			config->get(k + "/explode", val);
+		if (config->get(k + "/explode", val))
 			mi->explode = val;
-		} else
+		else
 			mi->explode = 0;
+
+		std::string treasure;
+		if (config->get(k + "/treasure", treasure)) {
+			bool ok = treasureLoader.parse(treasure, mi->treasure);
+			if (!ok) {
+				perr << "failed to parse treasure info for monster '" << k
+					 << "'"  << std::endl;
+				mi->treasure.clear();
+			}
+		} else {			
+			mi->treasure.clear();
+		}
 
 		assert(mi->shape < shapeInfo.size());
 		shapeInfo[mi->shape].monsterinfo = mi;

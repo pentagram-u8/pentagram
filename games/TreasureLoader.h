@@ -16,27 +16,34 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef MONSTERINFO_H
-#define MONSTERINFO_H
+#ifndef TREASURELOADER_H
+#define TREASURELOADER_H
 
 #include "TreasureInfo.h"
+#include <map>
+#include <vector>
 
-struct MonsterInfo {
-	uint32 shape;
-	uint16 min_hp, max_hp;
-	uint16 min_dex, max_dex;
-	uint16 min_dmg, max_dmg;
-	uint16 armour_class;
-	uint8 alignment;
-	bool unk;
-	uint16 damage_type;
-	uint16 defense_type;
-	bool resurrection; // auto-resurrection after being killed
-	bool vanish; // body disappears after being killed
-	uint32 explode; // shape to hurl around after being killed (or 0)
+class TreasureLoader
+{
+public:
+	TreasureLoader();
+	~TreasureLoader();
 
-	std::vector<TreasureInfo> treasure;
+	//! load defaults from 'game' ini section
+	void loadDefaults();
+
+	//! parse treasure string into vector of TreasureInfo objects
+	bool parse(std::string, std::vector<TreasureInfo>& treasure);
+
+private:
+	std::map<Pentagram::istring, TreasureInfo> defaultTreasure;
+
+	bool internalParse(std::string desc, TreasureInfo& ti,bool loadingDefault);
+
+	bool parseUInt32Vector(std::string val, std::vector<uint32>& vec);
+	bool parseUIntRange(std::string val, unsigned int& min, unsigned int& max);
+	bool parseDouble(std::string val, double& d);
+	bool parseInt(std::string val, int& i);
 };
-
 
 #endif

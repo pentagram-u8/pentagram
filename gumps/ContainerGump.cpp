@@ -72,12 +72,6 @@ void ContainerGump::InitGump()
 
 	if (!c) return; // Container gone!?
 
-	std::list<Item*>& contents = c->contents;
-	std::list<Item*>::iterator iter;
-	for (iter = contents.begin(); iter != contents.end(); ++iter) {
-		(*iter)->enterFastArea();
-	}
-
 	// Position isn't like in the original
 	// U8 puts a container gump slightly to the left of an object
 }
@@ -343,8 +337,7 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 			int family = item->getShapeInfo()->family;
 
 			// item with quantity?
-			if (family == ShapeInfo::SF_QUANTITY ||
-				family == ShapeInfo::SF_REAGENT)
+			if (item->getShapeInfo()->hasQuantity())
 			{
 				if (targetitem->getShape() == item->getShape() &&
 					(targetitem->getFrame() == item->getFrame() ||

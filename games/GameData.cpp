@@ -241,6 +241,7 @@ void GameData::loadU8Data()
 	config->readConfigFile("@data/u8weapons.ini", "weapons", true);
 	config->readConfigFile("@data/u8armour.ini", "armour", true);
 	config->readConfigFile("@data/u8monsters.ini", "monsters", true);
+	config->readConfigFile("@data/u8.ini", "game", true);
 
 	// Load typeflags
 	IDataSource *tfs = filesystem->ReadFile("@u8/static/typeflag.dat");

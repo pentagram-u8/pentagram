@@ -16,26 +16,18 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef MONSTERINFO_H
-#define MONSTERINFO_H
+#ifndef TREASUREINFO_H
+#define TREASUREINFO_H
 
-#include "TreasureInfo.h"
+#include <vector>
+#include <string>
 
-struct MonsterInfo {
-	uint32 shape;
-	uint16 min_hp, max_hp;
-	uint16 min_dex, max_dex;
-	uint16 min_dmg, max_dmg;
-	uint16 armour_class;
-	uint8 alignment;
-	bool unk;
-	uint16 damage_type;
-	uint16 defense_type;
-	bool resurrection; // auto-resurrection after being killed
-	bool vanish; // body disappears after being killed
-	uint32 explode; // shape to hurl around after being killed (or 0)
-
-	std::vector<TreasureInfo> treasure;
+struct TreasureInfo {
+	std::string special;
+	double chance;
+	std::vector<uint32> shapes;
+	std::vector<uint32> frames;
+	unsigned int mincount, maxcount;
 };
 
 

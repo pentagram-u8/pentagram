@@ -1,3 +1,12 @@
+2004-07-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* games/TreasureLoader.*, graphics/TypeFlags.cpp:
+	  load treasure definitions from .ini files
+	* world/actors/Actor.*: give actors treasure on death
+	* world/actors/TreasureInfo.h: TreasureInfo struct
+	* world/actors/MonsterInfo.h: added TreasureInfo vector to MonsterInfo
+	* graphics/ShapeInfo.h: added hasQuantity() function
+	* data/u8.ini: temporary treasure definition
+
 2004-07-12  Ryan Nunn <colourles@users.sourceforge.net>
 	* gumps/ConsoleGump.cpp : Clear command buffer when closing
 	* misc/Console.cpp : Fixing crash when closing console with chars typed
