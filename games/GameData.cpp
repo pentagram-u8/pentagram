@@ -229,16 +229,20 @@ void GameData::loadU8Data()
 	}
 	fixed = new RawArchive(fd);
 
-	IDataSource* uds = filesystem->ReadFile("@u8/usecode/eusecode.flx");
+	GameInfo* gameinfo = CoreApp::get_instance()->getGameInfo();
+	char langletter = gameinfo->getLanguageFileLetter();
+	if (!langletter) {
+		perr << "Unknown language. Unable to open usecode." << std::endl;
+		std::exit(-1);
+	}
+	std::string filename = "@u8/usecode/";
+	filename += langletter;
+	filename += "usecode.flx";
 
-	//!! hack alert
-	if (!uds)
-		uds = filesystem->ReadFile("@u8/usecode/gusecode.flx");
-	if (!uds)
-		uds = filesystem->ReadFile("@u8/usecode/fusecode.flx");
 
+	IDataSource* uds = filesystem->ReadFile(filename);
 	if (!uds) {
-		perr << "Unable to load usecode/eusecode.flx. Exiting" << std::endl;
+		perr << "Unable to load " << filename << ". Exiting" << std::endl;
 		std::exit(-1);
 	}
 	mainusecode = new UsecodeFlex(uds);
@@ -436,14 +440,14 @@ SpeechFlex* GameData::getSpeechFlex(uint32 shapenum)
 	char num_flx [32];
 	snprintf(num_flx ,32,"%i.flx", shapenum);
 
-	IDataSource* sflx = filesystem->ReadFile(u8_sound_ + 'e' + num_flx);
+	GameInfo* gameinfo = CoreApp::get_instance()->getGameInfo();
+	char langletter = gameinfo->getLanguageFileLetter();
+	if (!langletter) {
+		perr << "GameData::getSpeechFlex: Unknown language." << std::endl;
+		return 0;
+	}
 
-	//!! hack alert
-	if (!sflx)
-		sflx = filesystem->ReadFile(u8_sound_ + 'g' + num_flx);
-	if (!sflx)
-		sflx = filesystem->ReadFile(u8_sound_ + 'f' + num_flx);
-
+	IDataSource* sflx = filesystem->ReadFile(u8_sound_ + langletter + num_flx);
 	if (sflx) {
 		*s = new SpeechFlex(sflx);
 	}

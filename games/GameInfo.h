@@ -41,6 +41,21 @@ struct GameInfo {
 		GAMELANG_SPANISH
 	} language;
 
+	char getLanguageFileLetter() {
+		switch (language) {
+		case GAMELANG_ENGLISH:
+			return 'e';
+		case GAMELANG_FRENCH:
+			return 'f';
+		case GAMELANG_GERMAN:
+			return 'g';
+		case GAMELANG_SPANISH:
+			return 'e';
+		default:
+			return 0;
+		}
+	}
+
 	GameInfo() : type(GAME_UNKNOWN), version(0), language(GAMELANG_UNKNOWN) { }
 };
 

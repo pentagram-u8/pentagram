@@ -313,24 +313,15 @@ bool U8Game::startInitialUsecode()
 void U8Game::playIntroMovie()
 {
 	GameInfo* gameinfo = CoreApp::get_instance()->getGameInfo();
-
-	std::string filename = "@u8/static/";
-
-	switch (gameinfo->language) {
-	case GameInfo::GAMELANG_ENGLISH:
-	case GameInfo::GAMELANG_SPANISH:
-		filename += "eintro.skf";
-		break;
-	case GameInfo::GAMELANG_FRENCH:
-		filename += "fintro.skf";
-		break;
-	case GameInfo::GAMELANG_GERMAN:
-		filename += "gintro.skf";
-		break;
-	default:
+	char langletter = gameinfo->getLanguageFileLetter();
+	if (!langletter) {
 		perr << "U8Game::playIntro: Unknown language." << std::endl;
 		return;
 	}
+
+	std::string filename = "@u8/static/";
+	filename += langletter;
+	filename += "intro.skf";
 
 	FileSystem* filesys = FileSystem::get_instance();
 	IDataSource* skf = filesys->ReadFile(filename);
@@ -360,24 +351,14 @@ void U8Game::playEndgameMovie()
 void U8Game::playCredits()
 {
 	GameInfo* gameinfo = CoreApp::get_instance()->getGameInfo();
-
-	std::string filename = "@u8/static/";
-
-	switch (gameinfo->language) {
-	case GameInfo::GAMELANG_ENGLISH:
-	case GameInfo::GAMELANG_SPANISH:
-		filename += "ecredits.dat";
-		break;
-	case GameInfo::GAMELANG_FRENCH:
-		filename += "fcredits.dat";
-		break;
-	case GameInfo::GAMELANG_GERMAN:
-		filename += "gcredits.dat";
-		break;
-	default:
+	char langletter = gameinfo->getLanguageFileLetter();
+	if (!langletter) {
 		perr << "U8Game::playCredits: Unknown language." << std::endl;
 		return;
 	}
+	std::string filename = "@u8/static/";
+	filename += langletter;
+	filename += "credits.dat";
 
 	IDataSource* ids = FileSystem::get_instance()->ReadFile(filename);
 	if (!ids) {
