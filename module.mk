@@ -95,7 +95,7 @@ WORLD = \
 	world/actors/Actor.o \
 	world/actors/ActorAnimProcess.o \
 	world/actors/MainActor.o
-	
+
 pentagram_OBJ = \
 	$(KERNEL) \
 	$(USECODE) \
@@ -122,7 +122,7 @@ llc_OBJ = \
 	$(WORLD) \
 	$(COMPILE) \
 	$(DISASM) \
-	llc.o
+	tools/compile/llc.o
 
 # Common rules
 include common.mk
