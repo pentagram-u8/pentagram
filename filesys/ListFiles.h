@@ -385,14 +385,6 @@ int U7ListFiles(const std::string mask, FileList& files)
 int FileSystem::ListFiles(const std::string mask, FileList& files)
 
 {
-	if(mask[0]!='@')
-	{
-		perr << "Warning: FileSystem sandbox violation when accessing:" << std::endl
-			<< "\t" << mask << std::endl
-			<< "Exiting now..." << std::endl;
-		exit(-1);
-	}
-	
 	glob_t globres;
 	std::string name(mask);
 	
@@ -400,7 +392,11 @@ int FileSystem::ListFiles(const std::string mask, FileList& files)
 	const std::string rootpath(name.substr(0, name.find('/')));
 
 	// munge the path to a 'real' one.
-	rewrite_virtual_path(name);
+	if (!rewrite_virtual_path(name)) {
+		perr << "Warning: FileSystem sandbox violation when accessing:"
+			 << std::endl << "\t" << mask << std::endl;
+		return -1;
+	}
 	
 #if 0
 	pout << "Root: " << rootpath << std::endl;
