@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -46,6 +46,14 @@ bool quickLoad(const SDL_Event& event);
 // ! binding to quicksave
 // ! \see HIDBinding
 bool quickSave(const SDL_Event& event);
+
+// ! binding to toggle frame-by-frame mode
+// ! \see HIDBinding
+bool toggleFrameByFrame(const SDL_Event& event);
+
+// ! binding to go to the next frame in frame-by-frame mode
+// ! \see HIDBinding
+bool advanceFrameByFrame(const SDL_Event& event);
 
 };
 

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002,2003 The Pentagram team
+Copyright (C) 2002-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -47,6 +47,7 @@ Kernel::Kernel() : loading(false)
 	framenum = 0;
 	paused = 0;
 	runningprocess = 0;
+	framebyframe = false;
 }
 
 Kernel::~Kernel()
@@ -68,6 +69,9 @@ void Kernel::reset()
 
 	paused = 0;
 	runningprocess = 0;
+
+	// if we're in frame-by-frame mode, reset to a paused state
+	if (framebyframe) paused = 1;
 }
 
 ProcId Kernel::assignPID(Process* proc)
@@ -196,6 +200,8 @@ bool Kernel::runProcesses()
 		else
 			++current_process;
 	}
+
+	if (framebyframe) pause();
 
 	return dirty;
 }

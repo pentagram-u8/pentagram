@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -128,6 +128,47 @@ bool quickSave(const SDL_Event& event)
 	{
 		handled = true;
 		GUIApp::get_instance()->saveGame("@save/quicksave");
+	}
+	break;
+
+	}
+	return handled;
+}
+
+bool toggleFrameByFrame(const SDL_Event& event)
+{
+	bool handled = false;
+	switch (event.type) {
+	case HID_DOWN:
+	{
+		handled = true;
+		Kernel* kernel = Kernel::get_instance();
+		bool fbf = !kernel->isFrameByFrame();
+		kernel->setFrameByFrame(fbf);
+		pout << "FrameByFrame = " << fbf << std::endl;
+		if (fbf)
+			kernel->pause();
+		else
+			kernel->unpause();
+	}
+	break;
+
+	}
+	return handled;
+}
+
+bool advanceFrameByFrame(const SDL_Event& event)
+{
+	bool handled = false;
+	switch (event.type) {
+	case HID_DOWN:
+	{
+		Kernel* kernel = Kernel::get_instance();
+		if (kernel->isFrameByFrame()) {
+			handled = true;
+			kernel->unpause();
+			pout << "FrameByFrame: Next Frame" << std::endl;
+		}
 	}
 	break;
 

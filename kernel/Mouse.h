@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef MOUSE_H
 #define MOUSE_H
 
-const int DOUBLE_CLICK_TIMEOUT = 200;
+const unsigned int DOUBLE_CLICK_TIMEOUT = 200;
 const int NUM_MOUSEBUTTONS = 10;
 
 struct MButton

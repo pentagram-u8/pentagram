@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002,2003 The Pentagram team
+Copyright (C) 2002-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -69,6 +69,9 @@ public:
 	void unpause() { if (paused > 0) paused--; }
 	bool isPaused() const { return paused > 0; }
 
+	void setFrameByFrame(bool fbf) { framebyframe = fbf; }
+	bool isFrameByFrame() const { return framebyframe; }
+
 	void addProcessLoader(std::string classname, ProcessLoadFunc func)
 		{ processloaders[classname] = func; }
 
@@ -90,6 +93,7 @@ private:
 
 	uint32 framenum;
 	unsigned int paused;
+	bool framebyframe;
 
 	Process* runningprocess;
 

@@ -1,3 +1,6 @@
+2004-01-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/*: added a frame-by-frame mode (F12 toggles, space advances)
+
 2004-01-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/HIDManager.cpp: added missing break
 	* conf/*: dump() returns a string, not an istring

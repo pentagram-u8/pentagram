@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2003 The Pentagram team
+Copyright (C) 2002-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -415,7 +415,8 @@ void GUIApp::run()
 			// Calculate the lerp_factor
 			lerpFactor = ((animationRate-diff)*256)/animationRate;
 			//pout << "lerpFactor: " << lerpFactor << " framenum: " << framenum << std::endl;
-			if (!interpolate || lerpFactor > 256) lerpFactor = 256;
+			if (!interpolate || kernel->isPaused() || lerpFactor > 256)
+				lerpFactor = 256;
 		}
 
 
@@ -1250,7 +1251,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		mouseButton[button].state |= MBS_DOWN;
 		mouseButton[button].state &= ~MBS_HANDLED;
 
-		if (now - mouseButton[button].lastDown < DOUBLE_CLICK_TIMEOUT) { //!! constant
+		if (now - mouseButton[button].lastDown < DOUBLE_CLICK_TIMEOUT) {
 			if (dragging == DRAG_NOT) {
 				Gump* gump = getGump(mouseButton[button].downGump);
 				if (gump)
@@ -1389,10 +1390,8 @@ void GUIApp::handleEvent(const SDL_Event& event)
 				pout << "Midi Volume is now: " << midi_volume << std::endl; 
 				if (midi_driver) midi_driver->setGlobalVolume(midi_volume);
 			} break;
-			case SDLK_F12: {
-			    SliderGump* sg = new SliderGump(100, 100, 0, 100, 50);
-				sg->InitGump();
-				desktopGump->AddChild(sg);
+			case SDLK_p: {
+				kernel->pause();
 			} break;
 			default:
 				break;
@@ -1502,7 +1501,7 @@ void GUIApp::handleDelayedEvents()
 	uint32 now = SDL_GetTicks();
 	for (int button = 0; button <= NUM_MOUSEBUTTONS; ++button) {
 		if (!(mouseButton[button].state & (MBS_HANDLED | MBS_DOWN)) &&
-			now - mouseButton[button].lastDown > DOUBLE_CLICK_TIMEOUT) // !constant
+			now - mouseButton[button].lastDown > DOUBLE_CLICK_TIMEOUT)
 		{
 			Gump* gump = getGump(mouseButton[button].downGump);
 			if (gump)
