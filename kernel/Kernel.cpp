@@ -292,7 +292,6 @@ void Kernel::killProcesses(ObjId objid, uint16 processtype)
 		if ((objid == 0 || objid == p->item_num) &&
 			(processtype == 6 || processtype == p->type) && !p->terminated)
 		{
-			pout << "killProcesses: terminating " << p << std::endl;
 			p->terminate();
 		}
 	}
