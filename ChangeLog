@@ -1,3 +1,6 @@
+2003-06-15	  Ryan Nunn <colourles@users.sourceforge.net>
+	* world/ItemSorter.cpp : Fixing the positively absolutely busted ItemSorter
+	
 2003-06-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/ItemSorter.cpp: invisible items don't occlude
 	* graphics/AnimDat.cpp: deltaz is (of course) signed
