@@ -140,7 +140,7 @@
 <!-- Internal Link Templates -->
 <xsl:template match="ref">
 	<a><xsl:attribute name="href">#<xsl:value-of select="@target"/></xsl:attribute>
-		<xsl:value-of select="count(key('sub_ref',@target)/parent::section/preceding-sibling::section)"/>
+		<xsl:value-of select="count(key('sub_ref',@target)/parent::section/preceding-sibling::section)+1"/>
 		<xsl:text>.</xsl:text>
 		<xsl:value-of select="count(key('sub_ref',@target)/preceding-sibling::sub)+1"/>
 		<xsl:text>.</xsl:text>
@@ -150,7 +150,7 @@
 
 <xsl:template match="ref1">
 	<a><xsl:attribute name="href">#<xsl:value-of select="@target"/></xsl:attribute>
-		<xsl:value-of select="count(key('sub_ref',@target)/parent::section/preceding-sibling::section)"/>
+		<xsl:value-of select="count(key('sub_ref',@target)/parent::section/preceding-sibling::section)+1"/>
 		<xsl:text>.</xsl:text>
 		<xsl:value-of select="count(key('sub_ref',@target)/preceding-sibling::sub)+1"/>
 		<xsl:text>. </xsl:text>
@@ -161,7 +161,7 @@
 
 <xsl:template match="section_ref">
 	<a><xsl:attribute name="href">#<xsl:value-of select="@target"/></xsl:attribute>
-		<xsl:value-of select="count(key('section_ref',@target)/preceding-sibling::section)"/>
+		<xsl:value-of select="count(key('section_ref',@target)/preceding-sibling::section)+1"/>
 		<xsl:text>. </xsl:text>
   		<xsl:apply-templates select="key('section_ref',@target)/@title"/>
 	</a>

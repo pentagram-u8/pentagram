@@ -28,7 +28,7 @@
 <!ELEMENT em (#PCDATA)>
 
 <!ELEMENT ref (#PCDATA)>
-<!ELEMENT ref1 (#PCDATA)>
+<!ELEMENT ref1 (#PCDATA|Pent)*>
 <!ELEMENT section_ref (#PCDATA)>
 <!ELEMENT extref (#PCDATA)>
 
