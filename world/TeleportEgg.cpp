@@ -42,13 +42,6 @@ uint16 TeleportEgg::hatch()
 	// teleport to destination egg
 	perr << "Teleport!!!!!!!!" << std::endl;
 
-	//! hack to prevent immediate return-teleports
-	//! need to figure out how to properly prevent this
-	if (mapnum != 40) {
-		perr << "(ignoring)" << std::endl;
-		return 0;
-	}
-
 	MainActor* av = p_dynamic_cast<MainActor*>(
 		World::get_instance()->getNPC(1));
 	av->teleport(mapnum, getTeleportId());
