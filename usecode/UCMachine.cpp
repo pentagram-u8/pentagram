@@ -383,7 +383,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 				// Update the code segment
 				cs.load(p->usecode->get_class(p->classid),
-						p->usecode->get_class_size(p->ip));
+						p->usecode->get_class_size(p->classid));
 				cs.seek(p->ip);
 
 				// Resume execution
@@ -1174,7 +1174,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 				// Update the code segment
 				cs.load(p->usecode->get_class(p->classid),
-						p->usecode->get_class_size(p->ip));
+						p->usecode->get_class_size(p->classid));
 				cs.seek(p->ip);
 			}
 

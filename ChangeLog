@@ -1,5 +1,6 @@
 2005-01-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/CombatProcess.cpp: fixed saving
+	* usecode/UCMachine.cpp: fixed broken call, ret opcodes
 
 2005-01-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* filesys/zip/*: converted to something resembling C++
