@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,6 +28,8 @@ bool Animation::isCombatAnim(const unsigned int anim)
 		case retreat:
 		case attack:
 		case kick:
+		case startblock:
+		case stopblock:
 			return true;
 	}
 	return false;
