@@ -226,8 +226,8 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 	if (repeatcounter == 0) {
 		if (!result && tracker->isUnsupported()) {
 			animAborted = true;
-			GravityProcess* gp = new GravityProcess(a, 4);
-			Kernel::get_instance()->addProcess(gp);
+
+			a->fall();
 			// TODO: inertia
 			
 			// Note: do not wait for the fall to finish: this breaks
