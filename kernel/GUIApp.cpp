@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "GUIApp.h"
 
+//!! a lot of these includes are just for some hacks... clean up sometime
 #include "Kernel.h"
 #include "FileSystem.h"
 #include "Configuration.h"
@@ -38,23 +39,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GameMapGump.h"
 #include "BarkGump.h"
 
-// TODO MOVE THIS STUFF TO GameMapGump or somewhere else
-#include "Item.h"
-#include "Actor.h"
-#include "MainActor.h"
-#include "ItemSorter.h"
-#include "CurrentMap.h"
-#include "Rect.h"
-#include "CameraProcess.h"
-// END TODO
-
-// just for testing
 #include "Actor.h"
 #include "ActorAnimProcess.h"
 #include "Font.h"
 #include "FontShapeFlex.h"
 #include "u8intrinsics.h"
 #include "Egg.h"
+#include "CurrentMap.h"
+#include "UCList.h"
 
 #include <SDL.h>
 
@@ -641,35 +633,56 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			} 
 		} break;
 		case SDLK_f: { // trigger 'first' egg
-//			lx = 14527 + 3*512;
-//			ly = 5887 + 3*512;
-//			lz = 8;
+			if (avatarInStasis) {
+				pout << "Can't: avatarInStasis" << std::endl;
+				break;
+			}
 
-			if (!avatarInStasis) {
-				Egg* egg = p_dynamic_cast<Egg*>(Kernel::get_instance()->getObject(21185)); // *cough*
-				if (!egg || egg->getQuality() != 36)
-					egg = p_dynamic_cast<Egg*>(Kernel::get_instance()->getObject(21186)); // *cough*
-				sint32 ix, iy, iz;
-				egg->getLocation(ix,iy,iz);
-				CameraProcess::SetCameraProcess(new CameraProcess(ix,iy,iz)); // Center on egg
-				egg->hatch();
-			} else { 
-				pout << "Can't: avatarInStasis" << std::endl; 
-			} 
+			CurrentMap* currentmap = World::get_instance()->getCurrentMap();
+			UCList uclist(2);
+			// (shape == 73 && quality == 36)
+			char* script = "@%\x49\x00=*%\x24\x00=&$";
+			currentmap->areaSearch(&uclist, (uint8*)script, 12,
+								   0, 256, false, 16188, 7500);
+			if (uclist.getSize() < 1) {
+				perr << "Unable to find FIRST egg!" << std::endl;
+				break;
+			}
+			uint16 objid = uclist.getuint16(0);
+
+			Egg* egg = p_dynamic_cast<Egg*>(
+				Kernel::get_instance()->getObject(objid));
+			sint32 ix, iy, iz;
+			egg->getLocation(ix,iy,iz);
+			// Center on egg
+			CameraProcess::SetCameraProcess(new CameraProcess(ix,iy,iz));
+			egg->hatch();
 		} break;
 		case SDLK_g: { // trigger 'execution' egg
-			if (!avatarInStasis) {
-				Egg* egg = p_dynamic_cast<Egg*>(Kernel::get_instance()->getObject(21164)); // *cough*
-				if (!egg || egg->getQuality() != 4)
-					egg = p_dynamic_cast<Egg*>(Kernel::get_instance()->getObject(21165)); // *cough*
-				Actor* avatar = World::get_instance()->getNPC(1);
-				sint32 x,y,z;
-				egg->getLocation(x,y,z);
-				avatar->move(x,y,z);
-				egg->hatch();
-			} else { 
-				pout << "Can't: avatarInStasis" << std::endl; 
-			} 
+			if (avatarInStasis) {
+				pout << "Can't: avatarInStasis" << std::endl;
+				break;
+			}
+
+			CurrentMap* currentmap = World::get_instance()->getCurrentMap();
+			UCList uclist(2);
+			// (shape == 73 && quality == 4)
+			char* script = "@%\x49\x00=*%\x04\x00=&$";
+			currentmap->areaSearch(&uclist, (uint8*)script, 12,
+								   0, 256, false, 11732, 5844);
+			if (uclist.getSize() < 1) {
+				perr << "Unable to find EXCUTION egg!" << std::endl;
+				break;
+			}
+			uint16 objid = uclist.getuint16(0);
+
+			Egg* egg = p_dynamic_cast<Egg*>(
+				Kernel::get_instance()->getObject(objid));
+			Actor* avatar = World::get_instance()->getNPC(1);
+			sint32 x,y,z;
+			egg->getLocation(x,y,z);
+			avatar->move(x,y,z);
+			egg->hatch();
 		} break;
 		default: break;
 		}

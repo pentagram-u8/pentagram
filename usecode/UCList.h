@@ -64,6 +64,13 @@ class UCList
 		return &(elements[index * elementsize]);
 	}
 
+	uint16 getuint16(uint32 index) {
+		assert(elementsize == 2);
+		uint16 t = elements[index * elementsize];
+		t += elements[index * elementsize + 1] << 8;
+		return t;
+	}
+
 	void append(const uint8* e) {
 		elements.resize((size + 1) * elementsize);
 		for (unsigned int i = 0; i < elementsize; i++)

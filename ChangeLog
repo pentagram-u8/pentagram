@@ -1,4 +1,7 @@
 2003-06-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/GUIApp.cpp: cleaned up FIRST/EXCUTION hacks
+
+2003-06-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GUIApp.*, gumps/*: gump dragging
 
 2003-06-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
@@ -7,7 +10,7 @@
 	* kernel/GUIApp.*, gumps/*: changed gump mouse input handling again
 	* kernel/Kernel.*: new/signalled processes are run immediately
 
-2003-06-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+2003-06-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GUIApp.h: made GUIApp::get_instance() return a GUIApp*
 	* kernel/GUIApp.*, gumps/*: mouse events
 	* various: minor bugfixes, typos
@@ -348,8 +351,8 @@
 	* */.cvsignore: Added CVSROOT/cvsignore, so removed all .deps/Makefile
 	  entries and entire files if that's all they held.
 
-	* filesys/FileSystem.*: Add ability for it to create directories on request
-	  should they not exist.
+	* filesys/FileSystem.*: Add ability for it to create directories on
+	  request should they not exist.
 	* kernel/Applications.*: Added 'work' directory stuff. Directory gets
 	  mounted on @work, and is defined either by the config file:
 	  <config>
@@ -362,9 +365,9 @@
 	  or $HOME/.pentagram/gamename-work for a game named 'gamename'.
 	  Also has yet-another --param option too, that doesn't exist.
 	* misc/Args.*: Constness.
-	* tools/compile/*: Doesn't exist. You're imaging there's something there
-	  that does nothing. There's nothing there, and it most certainly does
-	  nothing.
+	* tools/compile/*: Doesn't exist. You're imaging there's something
+	  there that does nothing. There's nothing there, and it most certainly
+	  does nothing.
 	
 2003-05-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/World.*, kernel/GameData.*: moved fixed from World to GameData
@@ -394,10 +397,10 @@
 	* kernel/Application.cpp: press 't' to make Devon walk a bit	
 
 2003-05-15  Ryan Nunn <colourles@users.sourceforge.net>
-	* world/Map.cpp, world/World.cpp : Fixing 'lamp' problem (coords must be 
-	  read as unsigned)
-	* kernel/Application.cpp, world/ItemSorter.* : Sort debugging ([ and ]) and
-	  fixing a few incorrect sort order problems.
+	* world/Map.cpp, world/World.cpp : Fixing 'lamp' problem (coords must
+	  be read as unsigned)
+	* kernel/Application.cpp, world/ItemSorter.* : Sort debugging ([ and ])
+	  and fixing a few incorrect sort order problems.
 
 2003-05-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Application.cpp, usecode/UCMachine.*: target intrinsic hack
@@ -416,10 +419,10 @@
 	* graphics/ShapeInfo.h, graphics/TypeFlags.cpp : Added some new unknown
 	  typeflags.
 	  
-	* kernel/Application.cpp, misc/Console.* : Clicking an item will return its
-	  quality. Added ability to scroll console with Pageup and Pagedown.
+	* kernel/Application.cpp, misc/Console.* : Clicking an item will return
+	  its quality. Added ability to scroll console with Pageup and Pagedown
 
-	* world/Item.cpp : Changed the NPC classid detecion in callUsecodeEvent 
+	* world/Item.cpp : Changed the NPC classid detecion in callUsecodeEvent
 	  since npcs aren't the only items to have somehing in npcnum. Fixed up
 	  I_getTypeFlag which was seriously broken. The new code is horrible
 	  to look at.
@@ -429,8 +432,8 @@
 	  
 	* world/ItemSorter.cpp : Added a few consts. A few other minor changes.
 	
-	* usecode/u8intrinsics.h : All unimplemented processes should now be dummy 
-	  processes.
+	* usecode/u8intrinsics.h : All unimplemented processes should now be
+	  dummy processes.
 
 2003-05-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.cpp: use quality+0x47F as usecode class for unkeggs
@@ -608,8 +611,8 @@
 
 2003-04-29  Darke <darkepaw@users.sf.net>
 	* Various .h/.cpp files: Pointless Copyright year update when noticed.
-	* kernel/Application.*: Abstraction of core constructor into appropriately
-	  named functions.
+	* kernel/Application.*: Abstraction of core constructor into
+	  appropriately named functions.
 
 2003-04-21  Darke  <darkepaw@users.sf.net>
 	* convert/*: Altered prototype usecode function names. Changed from a
@@ -619,15 +622,15 @@
 	* misc/pent_include.h: A couple of useful CANT_HAPPEN defines.
 	* tools/disasm/Disasm.cpp: Minor code cleanup.
 	* tools/fold/*: Code reorgnising to make it a bit more compatable with
-	  a compiler that will hopefully be finished sometime this century. *grin*
+	  a compiler that will hopefully be finished sometime this century.
 
 	* tools/fold/CommonBases.h: Added file forgotten.
 
 2003-04-20  Darke  <darkepaw@users.sf.net>
-	* conf/Configuration.cpp, convert/ConvertShape.cpp, convert/ConvertShape.h,
-	  filesys/IDataSource.h, filesys/ODataSource.h, filesys/U8Save.cpp,
-	  graphics/BaseSoftRenderSurface.cpp, graphics/Shape.cpp,
-	  graphics/ShapeFlex.h, graphics/ShapeFrame.cpp,
+	* conf/Configuration.cpp, convert/ConvertShape.cpp,
+	  convert/ConvertShape.h, filesys/IDataSource.h, filesys/ODataSource.h,
+	  filesys/U8Save.cpp, graphics/BaseSoftRenderSurface.cpp,
+	  graphics/Shape.cpp, graphics/ShapeFlex.h, graphics/ShapeFrame.cpp,
 	  graphics/SoftRenderSurface.cpp, graphics/SoftRenderSurface.inl,
 	  graphics/Texture.h, graphics/TextureBitmap.cpp,
 	  graphics/TextureTarga.cpp, graphics/XFormBlend.cpp,
@@ -636,8 +639,8 @@
 	  misc/p_dynamic_cast.h, tools/fold/Fold.cpp,
 	  tools/shapeconv/ShapeConv.cpp, usecode/UCMachine.cpp,
 	  usecode/UCProcess.cpp, world/Item.cpp:
-	  Most warnings elminiated and a potential data initilisation bug or two
-	  fixed along the way. F33r my static_casts d00dz! *cough* Ahem.
+	  Most warnings elminiated and a potential data initilisation bug or
+	  two fixed along the way. F33r my static_casts d00dz! *cough* Ahem.
 
 2003-04-14 Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/*: cleaned up globegg code a bit
@@ -774,8 +777,8 @@
 	* world/Item.*, world/Container.*: item/container classes
 
 2003-03-03  Max Horn <max@quendi.de>
-	* misc/Console.h: work around a bug in Apple's GCC by forcing printf methods
-	  to not be inlined.
+	* misc/Console.h: work around a bug in Apple's GCC by forcing printf
+	  methods to not be inlined.
 
 2003-02-24  Ryan Nunn <colourles@users.sourceforge.net>
 	* misc/pent_include.h, misc/p_dynamic_cast.h : Adding p_dynamic_cast 

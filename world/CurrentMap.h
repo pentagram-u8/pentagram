@@ -43,7 +43,8 @@ public:
 	void removeItemFromList(Item* item, sint32 oldx, sint32 oldy);
 
 	void areaSearch(UCList* itemlist, const uint8* loopscript,
-					uint32 scriptsize, Item* item, uint16 range, bool recurse);
+					uint32 scriptsize, Item* item, uint16 range, bool recurse,
+					sint32 x=0, sint32 y=0);
 
 	TeleportEgg* findDestination(uint16 id);
 

@@ -228,10 +228,13 @@ void CurrentMap::removeItemFromList(Item* item, sint32 oldx, sint32 oldy)
 
 void CurrentMap::areaSearch(UCList* itemlist, const uint8* loopscript,
 							uint32 scriptsize, Item* item, uint16 range,
-							bool recurse)
+							bool recurse, sint32 x, sint32 y)
 {
-	sint32 x,y,z;
-	item->getLocation(x,y,z);
+	sint32 z;
+	// if item != 0, search an area around item. Otherwise, search an area
+	// around (x,y)
+	if (item)
+		item->getLocation(x,y,z);
 
 	//!! do the dimensions of item have to be included too?
 	Rect searchrange(x-range,y-range,2*range,2*range);

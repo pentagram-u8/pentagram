@@ -294,13 +294,18 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 		}
 
 		uint16 objID = TraceObjID(mx, my);
-		pout << objID << std::endl;
 		Item *item = World::get_instance()->getItem(objID);
 		if (item) {
 			extern uint16 targetObject; // major hack number 2
 			targetObject = objID;
 
-			pout << "Found item " << objID << " (shape " << item->getShape() << ", " << item->getFrame() << ", q:" << item->getQuality() << ", m:" << item->getMapNum() << ", n:" << item->getNpcNum() << ")" << std::endl;
+			sint32 x,y,z;
+			item->getLocation(x,y,z);
+			pout << "Found item " << objID << " (shape " << item->getShape()
+				 << ", " << item->getFrame() << ", (" << x << "," << y << ","
+				 << z << ") q:" << item->getQuality() << ", m:"
+				 << item->getMapNum() << ", n:" << item->getNpcNum()
+				 << ")" << std::endl;
 			
 			// call the 'look' event
 			item->callUsecodeEvent(0);	// CONSTANT
@@ -323,10 +328,15 @@ void GameMapGump::OnMouseDouble(int button, int mx, int my)
 		}
 
 		uint16 objID = TraceObjID(mx, my);
-
 		Item *item = World::get_instance()->getItem(objID);
 		if (item) {
-			pout << "Found item " << objID << " (shape " << item->getShape() << ", " << item->getFrame() << ", q:" << item->getQuality() << ", m:" << item->getMapNum() << ", n:" << item->getNpcNum() << ")" << std::endl;
+			sint32 x,y,z;
+			item->getLocation(x,y,z);
+			pout << "Found item " << objID << " (shape " << item->getShape()
+				 << ", " << item->getFrame() << ", (" << x << "," << y << ","
+				 << z << ") q:" << item->getQuality() << ", m:"
+				 << item->getMapNum() << ", n:" << item->getNpcNum()
+				 << ")" << std::endl;
 			
 			//!! need to check range
 			
