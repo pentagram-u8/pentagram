@@ -97,7 +97,7 @@ bool XMLTree::readConfigString(string s)
 	return true;
 }
 
-istring XMLTree::dump()
+string XMLTree::dump()
 {
 	return tree->dump();
 }
@@ -110,7 +110,7 @@ void XMLTree::write()
 	ODataSource *f = FileSystem::get_instance()->WriteFile(filename, true);
 	if (!f) return;
 
-	istring s = dump();
+	std::string s = dump();
 	const char *cstr = s.c_str();
 	f->write(cstr,strlen(cstr));
 

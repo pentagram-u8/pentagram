@@ -61,7 +61,7 @@ public:
 					 const Pentagram::istring currkey, const unsigned int pos);
 	void selectpairs(KeyTypeList &ktl, const Pentagram::istring currkey);
 	
-	Pentagram::istring dump(int depth = 0);
+	std::string dump(int depth = 0);
 	
 	void xmlassign(const Pentagram::istring &key, const std::string &value);
 	void xmlparse(const std::string &s,std::size_t &pos);

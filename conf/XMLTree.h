@@ -37,7 +37,7 @@ class XMLTree
 
 	void clear(Pentagram::istring root);
 
-	Pentagram::istring dump();
+	std::string dump();
 	void write();
 
 	void setReadonly() { readonly = true; }

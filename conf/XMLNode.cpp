@@ -25,7 +25,7 @@ using std::vector;
 using std::endl;
 using Pentagram::istring;
 
-static	istring	encode_entity(const string &s);
+static	string	encode_entity(const string &s);
 static	istring	close_tag(const istring &s);
 
 XMLNode::~XMLNode()
@@ -99,12 +99,12 @@ const XMLNode *XMLNode::subtree(const istring &h) const
 }
 
 
-istring XMLNode::dump(int depth)
+string XMLNode::dump(int depth)
 {
-	istring s(depth,' ');
+	string s(depth,' ');
 
 	s+="<";
-	s+=id;
+	s+=id.c_str();
 	s+=">\n";
 	if(id[id.length()-1] != '/')
 	{
@@ -116,7 +116,7 @@ istring XMLNode::dump(int depth)
 
 		if(content.length())
 		{
-			s += istring(depth,' ');
+			s += string(depth,' ');
 			s += encode_entity(content);
 		}
 		if(id[0] == '?')
@@ -128,10 +128,10 @@ istring XMLNode::dump(int depth)
 
 		if(!no_close)
 		{
-			s += istring(depth,' ');
+			s += string(depth,' ');
 		
 			s += "</";
-			s += close_tag(id);
+			s += close_tag(id).c_str();
 			s += ">\n";
 		}
 	}
@@ -186,9 +186,9 @@ void XMLNode::listkeys(const istring &key, vector<istring> &vs,
 	}
 }
 
-static istring encode_entity(const string &s)
+static string encode_entity(const string &s)
 {
-	istring	ret;
+	string	ret;
 
 	for(string::const_iterator it = s.begin(); it != s.end(); ++it)
 	{
