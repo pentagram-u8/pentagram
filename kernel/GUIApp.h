@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define GUIAPP_H
 
 #include <vector>
+#include <stack>
 
 #include "SDL_events.h"
 #include "intrinsics.h"
@@ -90,6 +91,26 @@ public:
 
 	MidiDriver* getMidiDriver() const { return midi_driver; }
 
+	enum MouseCursor {
+		MOUSE_NORMAL = 0,
+		MOUSE_NONE = 1,
+		MOUSE_TARGET = 2,
+		MOUSE_PENTAGRAM = 3,
+		MOUSE_HAND = 4,
+		MOUSE_QUILL = 5,
+		MOUSE_MAGGLASS = 6,
+		MOUSE_CROSS = 7
+	};
+
+	//! set the current mouse cursor
+	void setMouseCursor(MouseCursor cursor);
+
+	//! push the current mouse cursor to the stack
+	void pushMouseCursor();
+
+	//! pop the last mouse cursor from the stack
+	void popMouseCursor();
+
 protected:
 	virtual void DeclareArgs();
 
@@ -138,6 +159,13 @@ private:
 	bool paintEditorItems;  //!< If true, paint items with the SI_EDITOR flag
 	
 	bool painting;			//!< Set true when painting
+
+	int mouseX, mouseY;
+	bool mouseSet;			//!< mouse coordinates initialized?
+
+	//! get the current mouse frame
+	int getMouseFrame();
+	std::stack<MouseCursor> cursors;
 	
 	static void	conAutoPaint(void);
 
@@ -159,6 +187,10 @@ private:
 	uint16 dragging_objid;
 	uint16 dragging_item_startgump;
 	uint16 dragging_item_lastgump;
+
+	void startDragging(int mx, int my);
+	void moveDragging(int mx, int my);
+	void stopDragging(int mx, int my);
 
 	sint32 timeOffset;
 

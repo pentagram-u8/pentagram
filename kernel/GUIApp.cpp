@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "PaletteManager.h"
 #include "GameData.h"
 #include "World.h"
+#include "Direction.h"
 
 #include "U8Save.h"
 #include "SavegameWriter.h"
@@ -560,6 +561,16 @@ void GUIApp::paint()
 	desktopGump->Paint(screen, lerpFactor);
 	long after_gumps = SDL_GetTicks();
 
+	// Mouse
+	if (gamedata) {
+		Shape* mouse = gamedata->getMouse();
+		if (mouse) {
+			int frame = getMouseFrame();
+			if (frame >= 0)
+				screen->Paint(mouse, frame, mouseX, mouseY);
+		}
+	}
+
 	static long prev = 0;
 	long now = SDL_GetTicks();
 	long diff = now - prev;
@@ -574,6 +585,96 @@ void GUIApp::paint()
 	screen->EndPainting();
 
 	painting = false;
+}
+
+int GUIApp::getMouseFrame()
+{
+	// Ultima 8 mouse cursors:
+
+	// 0-7 = short (0 = up, 1 = up-right, 2 = right, ...)
+	// 8-15 = medium
+	// 16-23 = long
+	// 24 = blue dot
+	// 25-32 = combat
+	// 33 = red dot
+	// 34 = target
+	// 35 = pentagram
+	// 36 = skeletal hand
+	// 38 = quill
+	// 39 = magnifying glass
+	// 40 = red cross
+
+	MouseCursor cursor = cursors.top();
+	switch (cursor) {
+	case MOUSE_NORMAL:
+	{
+		if (!mouseSet) return -1;
+
+		Pentagram::Rect dims;
+		screen->GetSurfaceDims(dims);
+
+		// For now, reference point is the center of the screen
+		int				dx = mouseX - dims.w/2;
+		int				dy = (dims.h/2+14) - mouseY; //! constant
+		bool combat = false; //!!! fixme
+
+		// Calculate frame based on direction
+		int frame = ((Get_direction(dy*2, dx))+1)%8;
+
+		if (combat) {
+			frame += 25;
+		} else {
+			int shortsq = (dims.w / 8);
+			if (dims.h / 6 < shortsq)
+				shortsq = (dims.h / 6);
+			shortsq = shortsq*shortsq;
+			
+			int mediumsq = ((dims.w * 4) / 10);
+			if (((dims.h * 4) / 10) < mediumsq)
+				mediumsq = ((dims.h * 4) / 10);
+			mediumsq = mediumsq * mediumsq;
+			
+			int dsq = dx*dx+dy*dy;
+			
+			// determine length of arrow
+			if (dsq <= shortsq) {
+				frame += 0;
+			} else if (dsq <= mediumsq) {
+				frame += 8;
+			} else {
+				frame += 16;
+			}
+		}
+
+		return frame;
+	}
+	//!! constants...
+	case MOUSE_NONE: return -1;
+	case MOUSE_TARGET: return 34;
+	case MOUSE_PENTAGRAM: return 35;
+	case MOUSE_HAND: return 36;
+	case MOUSE_QUILL: return 38;
+	case MOUSE_MAGGLASS: return 39;
+	case MOUSE_CROSS: return 40;
+	default: return -1;
+	}
+
+}
+
+void GUIApp::setMouseCursor(MouseCursor cursor)
+{
+	cursors.pop();
+	cursors.push(cursor);
+}
+
+void GUIApp::pushMouseCursor()
+{
+	cursors.push(MOUSE_NORMAL);
+}
+
+void GUIApp::popMouseCursor()
+{
+	cursors.pop();
 }
 
 void GUIApp::GraphicSysInit()
@@ -626,6 +727,9 @@ void GUIApp::GraphicSysInit()
 	screen->GetSurfaceDims(dims);
 
 	runGraphicSysInit=true;
+
+	// setup normal mouse cursor
+	pushMouseCursor();
 
 	// Do initial console paint
 	paint();
@@ -917,39 +1021,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		mouseState[button] &= ~MBS_DOWN;
 
 		if (button == BUTTON_LEFT && dragging != DRAG_NOT) {
-			// stop dragging
-
-			perr << "Dropping object " << dragging_objid << std::endl;
-
-			Gump *gump = getGump(dragging_objid);
-			Item *item= World::get_instance()->getItem(dragging_objid);
-			// for a Gump: notify parent
-			if (gump) {
-				Gump *parent = gump->GetParent();
-				assert(parent); // can't drag root gump
-				parent->StopDraggingChild(gump);
-			} else 
-			// for an item: notify gumps
-			if (item) {
-				if (dragging != DRAG_INVALID) {
-					Gump *startgump = getGump(dragging_item_startgump);
-					assert(startgump); // can't have disappeared
-					bool moved = (dragging == DRAG_OK);
-					startgump->StopDraggingItem(item, moved);
-				}
-
-				if (dragging == DRAG_OK) {
-					gump = desktopGump->FindGump(mx, my);
-					int gx = mx, gy = my;
-					gump->ScreenSpaceToGump(gx, gy);
-					gump->DropItem(item,gx,gy);
-				}
-			} else {
-				assert(dragging == DRAG_INVALID);
-			}
-
-
-			dragging = DRAG_NOT;
+			stopDragging(mx, my);
 			break;
 		}
 
@@ -963,95 +1035,25 @@ void GUIApp::handleEvent(const SDL_Event& event)
 	{
 		int mx = event.button.x;
 		int my = event.button.y;
-		if (dragging == DRAG_NOT) {
+		if (!mouseSet) {
+			SDL_ShowCursor(SDL_DISABLE);
+			mouseSet = true;
+		}
+		mouseX = mx; mouseY = my;
+		if (dragging == DRAG_NOT && !avatarInStasis) {
 			if (mouseState[BUTTON_LEFT] & MBS_DOWN) {
 				int startx = mouseDownX[BUTTON_LEFT];
 				int starty = mouseDownY[BUTTON_LEFT];
 				if (abs(startx - mx) > 2 ||
 					abs(starty - my) > 2)
 				{
-					dragging_objid = desktopGump->TraceObjID(startx, starty);
-					perr << "Dragging object " << dragging_objid << std::endl;
-
-					dragging = DRAG_OK;
-
-					//!! need to pause the kernel
-
-					Gump *gump = getGump(dragging_objid);
-					Item *item= World::get_instance()->getItem(dragging_objid);
-
-					// for a Gump, notify the Gump's parent that we started
-					// dragging:
-					if (gump) {
-						Gump *parent = gump->GetParent();
-						assert(parent); // can't drag root gump
-						int px = startx, py = starty;
-						parent->ScreenSpaceToGump(px, py);
-						parent->StartDraggingChild(gump, px, py);
-					} else
-					// for an Item, notify the gump the item is in that we 
-					// started dragging
-					if (item) {
-						// find gump item was in
-						gump = desktopGump->FindGump(startx, starty);
-						int gx = startx, gy = starty;
-						gump->ScreenSpaceToGump(gx, gy);
-						bool ok = !isAvatarInStasis() &&
-							gump->StartDraggingItem(item,gx,gy);
-						if (!ok) {
-							dragging = DRAG_INVALID;
-						} else {
-							dragging = DRAG_OK;
-
-							// this is the gump that'll get StopDraggingItem
-							dragging_item_startgump = gump->getObjId();
-
-							// this is the gump the item is currently over
-							dragging_item_lastgump = gump->getObjId();
-						}
-					} else {
-						dragging = DRAG_INVALID;
-					}
-
-					mouseState[BUTTON_LEFT] |= MBS_HANDLED;
+					startDragging(startx, starty);
 				}
 			}
 		}
 
 		if (dragging == DRAG_OK || dragging == DRAG_TEMPFAIL) {
-			Gump* gump = getGump(dragging_objid);
-			Item *item= World::get_instance()->getItem(dragging_objid);
-
-			// for a gump, notify Gump's parent that it was dragged
-			if (gump) {
-				Gump *parent = gump->GetParent();
-				assert(parent); // can't drag root gump
-				int px = mx, py = my;
-				parent->ScreenSpaceToGump(px, py);
-				parent->DraggingChild(gump, px, py);
-			} else
-			// for an item, notify the gump it's on
-			if (item) {
-				gump = desktopGump->FindGump(mx, my);
-				assert(gump);
-
-				if (gump->getObjId() != dragging_item_lastgump) {
-					// item switched gump, so notify previous gump item left
-					Gump *last = getGump(dragging_item_lastgump);
-					if (last) last->DraggingItemLeftGump(item);
-				}
-				dragging_item_lastgump = gump->getObjId();
-				int gx = mx, gy = my;
-				gump->ScreenSpaceToGump(gx, gy);
-				bool ok = gump->DraggingItem(item,gx,gy);
-				if (!ok) {
-					dragging = DRAG_TEMPFAIL;
-				} else {
-					dragging = DRAG_OK;
-				}
-			} else {
-				CANT_HAPPEN();
-			}
+			moveDragging(mx, my);
 		}
 	}
 	break;
@@ -1329,6 +1331,139 @@ void GUIApp::handleDelayedEvents()
 		}
 	}
 
+}
+
+void GUIApp::startDragging(int startx, int starty)
+{
+	dragging_objid = desktopGump->TraceObjID(startx, starty);
+	perr << "Dragging object " << dragging_objid << std::endl;
+	
+	dragging = DRAG_OK;
+	pushMouseCursor();
+	setMouseCursor(MOUSE_NORMAL);
+	
+	//!! need to pause the kernel
+	
+	Gump *gump = getGump(dragging_objid);
+	Item *item= World::get_instance()->getItem(dragging_objid);
+	
+	// for a Gump, notify the Gump's parent that we started
+	// dragging:
+	if (gump) {
+		Gump *parent = gump->GetParent();
+		assert(parent); // can't drag root gump
+		int px = startx, py = starty;
+		parent->ScreenSpaceToGump(px, py);
+		parent->StartDraggingChild(gump, px, py);
+	} else
+	// for an Item, notify the gump the item is in that we started dragging
+	if (item) {
+		// find gump item was in
+		gump = desktopGump->FindGump(startx, starty);
+		int gx = startx, gy = starty;
+		gump->ScreenSpaceToGump(gx, gy);
+		bool ok = !isAvatarInStasis() &&
+			gump->StartDraggingItem(item,gx,gy);
+		if (!ok) {
+			dragging = DRAG_INVALID;
+		} else {
+			dragging = DRAG_OK;
+			
+			// this is the gump that'll get StopDraggingItem
+			dragging_item_startgump = gump->getObjId();
+			
+			// this is the gump the item is currently over
+			dragging_item_lastgump = gump->getObjId();
+		}
+	} else {
+		dragging = DRAG_INVALID;
+	}
+	
+	mouseState[BUTTON_LEFT] |= MBS_HANDLED;
+
+	if (dragging == DRAG_INVALID) {
+		setMouseCursor(MOUSE_CROSS);
+	}
+}
+
+void GUIApp::moveDragging(int mx, int my)
+{
+	Gump* gump = getGump(dragging_objid);
+	Item *item= World::get_instance()->getItem(dragging_objid);
+
+	setMouseCursor(MOUSE_NORMAL);
+	
+	// for a gump, notify Gump's parent that it was dragged
+	if (gump) {
+		Gump *parent = gump->GetParent();
+		assert(parent); // can't drag root gump
+		int px = mx, py = my;
+		parent->ScreenSpaceToGump(px, py);
+		parent->DraggingChild(gump, px, py);
+	} else
+	// for an item, notify the gump it's on
+	if (item) {
+		gump = desktopGump->FindGump(mx, my);
+		assert(gump);
+			
+		if (gump->getObjId() != dragging_item_lastgump) {
+			// item switched gump, so notify previous gump item left
+			Gump *last = getGump(dragging_item_lastgump);
+			if (last) last->DraggingItemLeftGump(item);
+		}
+		dragging_item_lastgump = gump->getObjId();
+		int gx = mx, gy = my;
+		gump->ScreenSpaceToGump(gx, gy);
+		bool ok = gump->DraggingItem(item,gx,gy);
+		if (!ok) {
+			dragging = DRAG_TEMPFAIL;
+		} else {
+			dragging = DRAG_OK;
+		}
+	} else {
+		CANT_HAPPEN();
+	}
+
+	if (dragging == DRAG_TEMPFAIL) {
+		setMouseCursor(MOUSE_CROSS);
+	}
+}
+
+
+void GUIApp::stopDragging(int mx, int my)
+{
+	perr << "Dropping object " << dragging_objid << std::endl;
+	
+	Gump *gump = getGump(dragging_objid);
+	Item *item= World::get_instance()->getItem(dragging_objid);
+	// for a Gump: notify parent
+	if (gump) {
+		Gump *parent = gump->GetParent();
+		assert(parent); // can't drag root gump
+		parent->StopDraggingChild(gump);
+	} else 
+	// for an item: notify gumps
+	if (item) {
+		if (dragging != DRAG_INVALID) {
+			Gump *startgump = getGump(dragging_item_startgump);
+			assert(startgump); // can't have disappeared
+			bool moved = (dragging == DRAG_OK);
+			startgump->StopDraggingItem(item, moved);
+		}
+		
+		if (dragging == DRAG_OK) {
+			gump = desktopGump->FindGump(mx, my);
+			int gx = mx, gy = my;
+			gump->ScreenSpaceToGump(gx, gy);
+			gump->DropItem(item,gx,gy);
+		}
+	} else {
+		assert(dragging == DRAG_INVALID);
+	}
+
+	dragging = DRAG_NOT;
+
+	popMouseCursor();
 }
 
 bool GUIApp::saveGame(std::string filename)

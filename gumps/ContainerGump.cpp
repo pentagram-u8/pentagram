@@ -306,8 +306,6 @@ void ContainerGump::DraggingItemLeftGump(Item* item)
 
 void ContainerGump::StopDraggingItem(Item* item, bool moved)
 {
-	perr << "ContainerGump:: StopDraggingItem, moved = " << moved << std::endl;
-
 	if (!moved) return; // nothing to do
 
 	// remove item from container

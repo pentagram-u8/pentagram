@@ -110,7 +110,7 @@ CameraProcess::CameraProcess(uint16 _itemnum) :
 		if (item)
 		{
 			item->getLocation(ex,ey,ez);
-			ez += 20;
+			ez += 20; //!!constant
 		}
 		return;
 	}
@@ -192,7 +192,7 @@ void CameraProcess::GetLerped(sint32 &x, sint32 &y, sint32 &z, sint32 factor)
 					sy = ey;
 					sz = ez;
 					item->getLocation(ex,ey,ez);
-					ez += 20;
+					ez += 20; //!!constant
 				}
 			}
 		}
