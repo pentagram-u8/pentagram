@@ -61,15 +61,14 @@ public:
 	INTRINSIC(I_getCurrentTimerTick);
 	INTRINSIC(I_setAvatarInStasis);
 
-	// Bad Darke! *pawslap!* Will make this private again soon.
-	static Application* application;
-
 	// To be moved 'somewhere' else
 	void GetCamera(sint32 &x, sint32 &y, sint32 &z);
 	uint16 SetCameraProcess(CameraProcess *);	// Set the current camera process. Adds process. Return PID
 	void setAvatarInStasis(bool stat) { avatarInStasis = stat; }
 
 private:
+	static Application* application;
+
 	// minimal system
 	Kernel* kernel;
 	UCMachine* ucmachine;

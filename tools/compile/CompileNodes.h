@@ -25,6 +25,7 @@
 #include "llcTokens.h"
 
 #include <string>
+#include <list>
 
 // Basic Node Class *********************************************************
 class CompileNode
@@ -62,7 +63,18 @@ class VarIdentNode : public CStringNode
 
 };
 
-// Classes *******************************************************************
+// Classes, functions and statements. (Oh my!) *******************************
+
+class FuncNode : public CompileNode
+{
+	public:
+		FuncNode(const uint32 _linenum) : CompileNode(_linenum) {};
+
+		void print_unk(std::ostream &o) {};
+		bool isA(const LLCToken &tok) { return false; }; //FIXME:!
+
+};
+
 class ClassNode : public CompileNode
 {
 	public:
@@ -79,7 +91,35 @@ class ClassNode : public CompileNode
 		bool isA(const LLCToken &tok) { return tok==LLC_CLASS; };
 
 		std::string name;
+		std::list<FuncNode *> functions;
 };
+
+// Randoms... ****************************************************************
+// Just general pointless classes that are 'just' tokens and aren't use for
+// anything other then making parsing easier...
+
+class FencePostNode : public CompileNode
+{
+	public:
+		FencePostNode(const LLCToken _tok, const uint32 _linenum) :
+			CompileNode(_linenum), iTok(_tok) {};
+		virtual ~FencePostNode() {};
+
+		virtual void print_unk(std::ostream &o)
+		{
+			switch(iTok)
+			{
+				case LLC_OPEN_BRACE:	o << '{'; break;
+				case LLC_CLOSE_BRACE:	o << '}'; break;
+				default:				assert(false);
+			}
+		};
+		virtual bool isA(const LLCToken &tok) { return tok==iTok; };
+
+	private:
+		const LLCToken iTok;
+};
+
 
 #endif
 

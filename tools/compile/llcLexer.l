@@ -229,6 +229,7 @@ CStringConst "\'"[^\']*"\'"
   ***************************************************************************/
 
 "class"				{ return LLC_CLASS;			}
+"inherits"			{ return LLC_INHERITS;		}
 "is"{WS}"a"			{ return LLC_IS_A;			}
 "are"				{ return LLC_ARE;			}
 "address"{WS}"of"	{ return LLC_ADDRESS_OF;	}

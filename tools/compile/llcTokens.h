@@ -56,7 +56,7 @@ enum LLCToken
 	// overloadable functions
 	LLC_OF_LOOK, LLC_OF_USE,
 	// misc
-	LLC_CLASS, LLC_IS_A, LLC_ARE,
+	LLC_CLASS, LLC_INHERITS, LLC_IS_A, LLC_ARE,
 	LLC_ADDRESS_OF,
 	// idenfitiers
 	LLC_FUNC_IDENT, LLC_IDENT,

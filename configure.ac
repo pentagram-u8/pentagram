@@ -248,6 +248,29 @@ else
 fi
 
 # ------------------
+# Semi-pointless compiler, compilation flags
+# ------------------
+AC_MSG_CHECKING(if we want quirky compiler comments)
+AC_ARG_ENABLE(compiler_quirks, [  --enable-compiler-quirks       Enable quirky compiler comments [default yes]],,enable_compiler_quirks=yes)
+if test x$enable_compiler_quirks = xyes; then
+	AC_MSG_RESULT(yes)
+	AC_DEFINE(USE_CQUIRKS, 1, [Random quirky comments, rather then default normalness])
+else
+	AC_MSG_RESULT(no)
+fi
+
+AC_MSG_CHECKING(if we want usecode compiler regression tester built)
+AC_ARG_ENABLE(compiler_tester, [  --enable-compiler-tester       Usecode compiler regression tester [default no]],,enable_compiler_tester=no)
+if test x$enable_compiler_tester = xyes; then
+	AC_MSG_RESULT(yes)
+	AC_DEFINE(COMPILER_TEST, 1, [Enable the compiler regression tester])
+else
+	AC_MSG_RESULT(no)
+fi
+
+
+
+# ------------------
 # Generate output
 # ------------------
 AC_SUBST(WINDOWING_SYSTEM)

@@ -39,7 +39,7 @@ bool DisasmProcess::run(const uint32 /*framenum*/)
 		return false;
 
 	if(termCounter==0)
-		Application::application->ForceQuit();
+		Application::get_instance()->ForceQuit();
 
 	termCounter--;
 

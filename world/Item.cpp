@@ -225,7 +225,7 @@ Shape* Item::getShapeObjectNoCache() const
 
 uint16 Item::getFamily()
 {
-	return (uint16)(getShapeInfo()->family);
+	return static_cast<uint16>(getShapeInfo()->family);
 }
 
 uint32 Item::getTotalWeight()
@@ -347,7 +347,7 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 			int count = script[i] - '@';
 			for (int j = 0; j < count; i++) {
 				//! check for i out of bounds
-				if (getShape() == (uint32)(script[i+1] + (script[i+2]<<8)))
+				if (getShape() == static_cast<uint32>(script[i+1] + (script[i+2]<<8)))
 					match = true;
 				i += 2;
 			}
@@ -370,7 +370,7 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 			int count = script[i] - '`';
 			for (int j = 0; j < count; i++) {
 				//! check for i out of bounds
-				if (getFrame() == (uint32)(script[i+1] + (script[i+2]<<8)))
+				if (getFrame() == static_cast<uint32>(script[i+1] + (script[i+2]<<8)))
 					match = true;
 				i += 2;
 			}

@@ -53,14 +53,22 @@ const char * const random_generic_errors[] =
 	""
 };
 
+#ifdef USE_CQUIRKS
+#define QUIRK(X, Y) X
+#else
+#define QURIK(X, Y) Y
+#endif
+
+#define ICE_ME(X) { msg(MT_ICE, X, this); return true; }
+
 /****************************************************************************
 	Warning Messages
  ****************************************************************************/
-enum MessageType { MT_MSG, MT_WARN, MT_ERR, MT_ICE };
+enum MsgType { MT_MSG, MT_WARN, MT_ERR, MT_ICE };
 
 class CompileUnit;
 
-void msg(const MessageType msgType, const char * const msgDetails, CompileUnit *cu=0, const sint32 retCode=-1);
+MsgType msg(const MsgType msgType, const char * const msgDetails, CompileUnit *cu=0);
 /****************************************************************************/
 
 // Compile Unit **************************************************************
@@ -87,9 +95,6 @@ void CompileUnit::debugPrintHead(std::ostream &o, CompileNode *n) const
 	else
 		if(nodes.size())
 			o << std::setw(4) << nodes.front()->linenum << ": ";
-		else
-			assert(false); // this really shouldn't be able to happen...
-
 }
 
 void CompileUnit::debugPrintBody(std::ostream &o) const
@@ -102,7 +107,7 @@ void CompileUnit::debugPrintBody(std::ostream &o) const
 	}
 }
 
-#ifdef WANT_COMPILE_TEST
+#ifdef COMPILER_TEST
 
 enum TestX { TEST_END=0, TEST_XFAIL, TEST_XPASS, TEST_XWARN };
 
@@ -114,6 +119,7 @@ struct CTestS
 
 CTestS ctests[] = {
 	{ "@data/test-warn/empty-class.llc",	TEST_XPASS },
+	{ "@data/test-err/invalid-class-3.llc",	TEST_XFAIL },
 	{ "@data/test-warn/nothing.llc",		TEST_XWARN },
 	{ "@data/test-err/invalid-block.llc", 	TEST_XFAIL },
 	{ "@data/test-err/invalid-class-2.llc",	TEST_XFAIL },
@@ -122,6 +128,16 @@ CTestS ctests[] = {
 };
 
 #endif
+
+bool CompileUnit::consume(const LLCToken &tok)
+{
+	if(found(tok))
+		nodes.pop_front();
+	else
+		ICE_ME("Errornous token encountered in stream in CompileUnit::consume()");
+		
+	return false;
+}
 
 bool CompileUnit::parse()
 {
@@ -135,8 +151,9 @@ bool CompileUnit::parse()
 
 	if(!parser)
 	{
-		#ifdef WANT_COMPILE_TEST
+		#ifdef COMPILER_TEST
 		fname = ctests[testidx].filename;
+		pout << "Testing: " << fname << "..." << std::endl;
 		#endif
 
 		idatasource = filesys->ReadFile(fname.c_str());
@@ -160,8 +177,12 @@ bool CompileUnit::parse()
 			break;
 		case LLC_OPEN_BRACE:
 			// adding this is rather pointless, but makes error reporting cleaner
-			nodes.push_back(new CStringNode("{", parser->lineno()));
+			nodes.push_back(new FencePostNode(LLC_OPEN_BRACE, parser->lineno()));
 			return parse_openblock();
+			break;
+		case LLC_CLOSE_BRACE:
+			nodes.push_back(new FencePostNode(LLC_CLOSE_BRACE, parser->lineno()));
+			return parse_closeblock();
 			break;
 		/*case LLC_UNIT:
 			{
@@ -177,7 +198,6 @@ bool CompileUnit::parse()
 			}
 			break;*/
 		case LLC_EOF:
-			debugPrint(pout);
 			if(currclass==0)
 				msg(MT_WARN, "Encountered end-of-file without encountering a class definition.");
 			setState(CSTATE_FINISHED); // FIXME: Should handle multiple files in the future...
@@ -207,29 +227,56 @@ bool CompileUnit::parse_openblock()
 
 	// first see if we *have* any nodes, if we don't then we've got serious problems.
 	if(nodes.size()==0)
-		msg(MT_ICE, "Empty nodes stack should not occur within CompileUnit::parse_openblock()", this);
+		ICE_ME("Empty nodes stack should not occur within CompileUnit::parse_openblock()");
 
-	// class Fnord {
-	// class Fnord inherits FnordBase {
-	if(found(LLC_CLASS)) //(nodes.front()->isA(LLC_CLASS))
+	// >class< Fnord {
+	// >class< Fnord inherits class FnordBase {
+	if(found(LLC_CLASS))
 	{
-		ClassNode *c = static_cast<ClassNode *>(nodes.front());
+		if(currclass!=0)
+		{
+			msg(MT_ERR, "Class already defined in this file.", this);
+			return true;
+		}
+		
+		currclass = static_cast<ClassNode *>(nodes.front());
 		nodes.pop_front();
+		
+		// class >Fnord< {
+		// class >Fnord< inherits class FnordBase {
 		if(!found(LLC_IDENT))
 		{
-			nodes.push_front(c);
+			nodes.push_front(currclass); currclass=0;
 			msg(MT_ERR, "Class name not found in declaration.", this);
 			return true;
 		}
-		else
+		
+		currclass->name=static_cast<VarIdentNode *>(nodes.front())->str;
+		nodes.pop_front();
+
+		if(!found(LLC_INHERITS) && !found(LLC_OPEN_BRACE))
 		{
-			c->name=static_cast<VarIdentNode *>(nodes.front())->str;
-			nodes.pop_front();
-			return false;
+			nodes.push_front(currclass); currclass=0;
+			msg(MT_ERR, "Badly formed class expression: 'inherits' or '{' expected.", this);
+			return true;
 		}
+		
+		// class Fnord >{<
+		if(found(LLC_OPEN_BRACE))
+		{
+			consume(LLC_OPEN_BRACE);
+			return true;
+		}
+		
+		if(found(LLC_INHERITS))
+		{
+
+		}
+
+		return false;
 	}
 	// general case where we've got a 'block' but nothing to define it. Really shouldn't happen...
-	else if(found(LLC_STRING) && static_cast<CStringNode *>(nodes.front())->str=="{")
+	else if(found(LLC_OPEN_BRACE))
 	{
 		msg(MT_ERR, "Incorrectly defined block {", this);
 		return true;
@@ -239,11 +286,33 @@ bool CompileUnit::parse_openblock()
 		debugPrint(pout); assert(false); //FIXME: Error checking!
 	}
 
-	debugPrint(pout);
 	return false;
 };
 
-void CompileUnit::setState(const CState cs)
+
+bool CompileUnit::parse_closeblock()
+{
+	CTRACE("CompileUnit::parse_openblock()");
+	/* This should handle the closing of any opened blocks.
+		Basically it should 'just' be a '}' on the nodes stack, and it should
+		just have to finish off any special things one might need to do terminate
+		a function/class/if/whatever block.
+	*/
+
+	// first see if we *have* any nodes, if we don't then we've got serious problems.
+	if(nodes.size()==0)
+		ICE_ME("Empty nodes stack should not occur within CompileUnit::parse_closeblock()");
+	
+	// honestly, there shouldn't be anything on the stack except a }, if there is... we've got problems!
+	if(nodes.size()>1 || !found(LLC_CLOSE_BRACE))
+		ICE_ME("Unknown tokens before block terminator.");
+	
+	consume(LLC_CLOSE_BRACE);
+
+	return false;
+}
+
+bool CompileUnit::setState(const CState cs)
 {
 	switch(cs)
 	{
@@ -251,7 +320,7 @@ void CompileUnit::setState(const CState cs)
 		case CSTATE_NEW:
 			// if we've just succeeded, there should be no nodes...
 			if(_state==CSTATE_FINISHED && nodes.size()!=0)
-				msg(MT_ICE, "Nodes stack should be empty on successful compile, it isn't! CompileUnit::setState()", this);
+				ICE_ME("Nodes stack should be empty on successful compile, it isn't! CompileUnit::setState()");
 			nodes.clear(); // remove any excess nodes, should they be there...
 			if(currclass!=0)
 				tailclasses.push_back(currclass); // archive our class, should we need it's info later...
@@ -270,12 +339,13 @@ void CompileUnit::setState(const CState cs)
 			CANT_HAPPEN();
 			break;
 	}
+	return false;
 }
 
 /****************************************************************************
 	Warning Messages
  ****************************************************************************/
-void msg(const MessageType msgType, const char * const msgDetails, CompileUnit *cu, const sint32 retCode)
+MsgType msg(const MsgType msgType, const char * const msgDetails, CompileUnit *cu)
 {
 	switch(msgType)
 	{
@@ -291,7 +361,6 @@ void msg(const MessageType msgType, const char * const msgDetails, CompileUnit *
 			cu->debugPrint(pout);
 			con.Printf_err("Error: %s\n", msgDetails);
 			cu->setState(CompileUnit::CSTATE_FAIL);
-			//Application::application->ForceQuit();
 			break;
 		case MT_ICE:
 			con.Printf_err("Internal Compile Error: %s\n", msgDetails);
@@ -299,11 +368,11 @@ void msg(const MessageType msgType, const char * const msgDetails, CompileUnit *
 			assert(cu!=0);
 			cu->debugPrint(pout);
 			cu->setState(CompileUnit::CSTATE_FAIL);
-			//Application::application->ForceQuit();
 			break;
 		default:
 			assert(false); // can't happen
 	}
+	return msgType;
 }
 
 

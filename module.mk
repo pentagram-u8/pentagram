@@ -41,15 +41,7 @@ CONF = \
 	conf/XMLTree.o \
 	conf/XMLNode.o
 
-pentagram_OBJ = \
-	$(KERNEL) \
-	$(USECODE) \
-	$(FILESYS) \
-	misc/Console.o \
-	misc/Args.o \
-	misc/Q_strcasecmp.o \
-	misc/pent_include.o \
-	misc/util.o \
+GRAPHICS = \
 	graphics/AnimDat.o \
 	graphics/RenderSurface.o \
 	graphics/BaseSoftRenderSurface.o \
@@ -65,7 +57,21 @@ pentagram_OBJ = \
 	graphics/ShapeInfo.o \
 	graphics/MainShapeFlex.o \
 	graphics/XFormBlend.o \
-	graphics/TypeFlags.o \
+	graphics/TypeFlags.o
+
+MISC = \
+	misc/Console.o \
+	misc/Q_strcasecmp.o \
+	misc/Args.o \
+	misc/pent_include.o \
+	misc/util.o
+
+pentagram_OBJ = \
+	$(KERNEL) \
+	$(USECODE) \
+	$(FILESYS) \
+	$(GRAPHICS) \
+	$(MISC) \
 	gumps/ConsoleGump.o \
 	gumps/GameMapGump.o \
 	gumps/Gump.o \

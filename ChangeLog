@@ -1,3 +1,11 @@
+2003-05-26	Darke <darkepaw@users.sf.net>
+	* configure.ac: Couple of relevant only to the usecode compiler config
+	  flags.
+	* module.mk: More random sorting...
+	* kernel/Application.h: Hiding what I shouldn't have unhidden. *grin*
+	* tools/compile/*: More compiler stuff, still doesn't do anything really.
+	* world/Item.cpp: Removal of old-style casts.
+	
 2003-05-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCMachine.cpp: process exclude
 

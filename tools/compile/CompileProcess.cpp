@@ -30,7 +30,6 @@ DEFINE_DYNAMIC_CAST_CODE(CompileProcess,Process);
 CompileProcess::CompileProcess(FileSystem *filesystem) : termCounter(10)
 {
 	cu = new CompileUnit(filesystem);
-
 }
 
 
@@ -47,18 +46,16 @@ bool CompileProcess::run(const uint32 /*framenum*/)
 		cu->parse();
 
 	if(cu->state()==CompileUnit::CSTATE_FAIL)
-		Application::application->ForceQuit();
-	//while(!cu->parse())
-	//	;
+		Application::get_instance()->ForceQuit();
 
 	if(cu->state()==CompileUnit::CSTATE_FINISHED)
 	{
 		terminate(); //FIXME: Needs to handle multiple files and such...
-		Application::application->ForceQuit();
+		Application::get_instance()->ForceQuit();
 	}
 	
 	if(termCounter==0)
-		Application::application->ForceQuit();
+		Application::get_instance()->ForceQuit();
 
 	pout << "Countdown to Term...: " << termCounter << std::endl;
 	termCounter--;
