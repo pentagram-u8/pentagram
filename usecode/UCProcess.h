@@ -34,14 +34,14 @@ class UCProcess : public Process
 	friend class UCMachine;
 	friend class Kernel;
 public:
-	UCProcess(Usecode* usecode=0);
+	UCProcess();
+	UCProcess(uint16 classid_, uint16 offset_, uint32 this_ptr = 0,
+			  int thissize = 0, const uint8* args = 0, int argsize = 0);
     ~UCProcess();
 
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	void load(uint16 classid_, uint16 offset_, uint32 this_ptr = 0,
-			  int thissize = 0, const uint8* args = 0, int argsize = 0);
 	virtual bool run(const uint32 framenum);
 
 	virtual void terminate();
@@ -52,6 +52,8 @@ public:
 protected:
 	virtual void saveData(ODataSource* ods);
 
+	void load(uint16 classid_, uint16 offset_, uint32 this_ptr = 0,
+			  int thissize = 0, const uint8* args = 0, int argsize = 0);
 	void call(uint16 classid_, uint16 offset_);
 	bool ret();
 

@@ -151,6 +151,14 @@ void Actor::teleport(int newmap, sint32 newx, sint32 newy, sint32 newz)
 	}
 } 
 
+void Actor::dumpInfo()
+{
+	Container::dumpInfo();
+
+	pout << "hp: " << hitpoints << ", mp: " << mana << ", str: " << strength
+		 << ", dex: " << dexterity << ", int: " << intelligence << std::endl;
+}
+
 void Actor::saveData(ODataSource* ods)
 {
 	ods->write2(1); //version
@@ -492,7 +500,9 @@ uint32 Actor::I_createActor(const uint8* args, unsigned int /*argsize*/)
 	buf[1] = static_cast<uint8>(objID >> 8);
 	UCMachine::get_instance()->assignPointer(ptr, buf, 2);
 
+#if 0
 	perr << "I_createActor: created actor #" << objID << " with shape " << shape << std::endl;
+#endif
 
 	return objID;
 }

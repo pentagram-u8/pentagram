@@ -52,7 +52,7 @@ public:
 	//! \param args Optional arguments to the spawned process
 	//! \param argsize The size (in bytes) of the optional arguments
 	//! \return the PID of the spawned process
-	uint16 callUsecode(uint16 classid, uint16 offset, Usecode *u,
+	uint16 callUsecode(uint16 classid, uint16 offset,
 					   const uint8* args=0, int argsize=0);
 
 	bool loadData(IDataSource* ids);

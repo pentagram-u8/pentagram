@@ -41,9 +41,16 @@ public:
 	void reset();
 
 	uint16 addProcess(Process *proc); // returns pid of new process
+
+	//! add a process and run it immediately
+	//! \return pid of process
+	uint16 addProcessExec(Process *proc); 
+
 	void removeProcess(Process *proc);
 	bool runProcesses(uint32 framenum);
 	Process* getProcess(uint16 pid);
+
+	uint16 assignPID(Process* proc);
 
 	void setNextProcess(Process *proc);
 
@@ -71,6 +78,8 @@ private:
 	std::list<Process*>::iterator current_process;
 
 	std::map<std::string, ProcessLoadFunc> processloaders;
+
+	bool loading;
 
 	static Kernel* kernel;
 };

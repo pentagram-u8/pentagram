@@ -84,6 +84,8 @@ public:
 	//! Destroy self
 	virtual void destroy();
 
+	virtual void dumpInfo();
+
 	bool loadData(IDataSource* ids);
 
 	INTRINSIC(I_removeContents);

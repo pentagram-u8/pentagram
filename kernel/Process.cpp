@@ -26,6 +26,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(Process);
 
+Process::Process(uint16 it, uint16 ty)
+	: pid(0xFFFF), active(false), suspended(false), terminated(false),
+	terminate_deferred(false), item_num(it), type(ty), result(0)
+{
+	Kernel::get_instance()->assignPID(this);
+}
+
 void Process::terminate()
 {
 	Kernel *kernel = Kernel::get_instance();

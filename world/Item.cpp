@@ -865,7 +865,7 @@ uint32 Item::callUsecodeEvent(uint32 event, const uint8* args, int argsize)
 
 	return callUsecode(static_cast<uint16>(class_id), 
 						static_cast<uint16>(offset),
-						u, args, argsize);
+						args, argsize);
 }
 
 uint32 Item::callUsecodeEvent_look()							// event 0

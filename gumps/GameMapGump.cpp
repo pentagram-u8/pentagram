@@ -18,8 +18,6 @@
 
 #include "pent_include.h"
 
-#include <SDL.h>
-
 #include "GameMapGump.h"
 #include "RenderSurface.h"
 
@@ -256,7 +254,7 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 	extern uint16 targetObject; // major hack number 2
 
 	switch (button) {
-	case SDL_BUTTON_LEFT:
+	case GUIApp::BUTTON_LEFT:
 	{
 		if (GUIApp::get_instance()->isAvatarInStasis()) {
 			pout << "Can't: avatarInStasis" << std::endl;
@@ -279,7 +277,7 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 		}
 		break;
 	}
-	case SDL_BUTTON_MIDDLE:
+	case GUIApp::BUTTON_MIDDLE:
 	{
 		uint16 objID = TraceObjID(mx, my);
 		Item *item = World::get_instance()->getItem(objID);
@@ -287,15 +285,6 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 			sint32 x,y,z;
 			item->getLocation(x,y,z);
 			item->dumpInfo();
-
-#if 0
-			item->setFlag(Item::FLG_INVISIBLE);
-#else
-			GravityProcess* p = new GravityProcess(item, 4);
-			Kernel::get_instance()->addProcess(p);
-			p->init();
-			p->move(0, -32, 32);
-#endif
 		}
 	}
 	default:
@@ -306,7 +295,7 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 void GameMapGump::OnMouseDouble(int button, int mx, int my)
 {
 	switch (button) {
-	case SDL_BUTTON_LEFT:
+	case GUIApp::BUTTON_LEFT:
 	{
 		if (GUIApp::get_instance()->isAvatarInStasis()) {
 			pout << "Can't: avatarInStasis" << std::endl; 

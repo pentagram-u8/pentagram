@@ -1245,12 +1245,12 @@ bool UCMachine::execProcess(UCProcess* p)
 				LOGPF(("spawn\t\t%02X %02X %04X:%04X",
 					   arg_bytes, this_size, classid, offset));
 
-				UCProcess* newproc = new UCProcess(p->usecode);
-				p->temp32 = Kernel::get_instance()->addProcess(newproc);
-
-				newproc->load(classid, offset, thisptr, this_size,
-							  p->stack.access(), arg_bytes);
-
+				UCProcess* newproc = new UCProcess(classid, offset,
+												   thisptr,
+												   this_size,
+												   p->stack.access(),
+												   arg_bytes);
+				p->temp32 = Kernel::get_instance()->addProcessExec(newproc);
 				//!! CHECKME
 				//!! is order of execution of this process and the new one
 				//!! relevant? It might be, since 0x6C and freeing opcodes
@@ -1259,9 +1259,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				//!! of the execution list, so it's guaranteed to be run
 				//!! before the current process
 
-//				newproc->run(CoreApp::get_instance()->getFrameNum());
-
-				cede = true;
+				// cede = true;
 			}
 			break;
 
@@ -1285,16 +1283,15 @@ bool UCMachine::execProcess(UCProcess* p)
 				LOGPF(("spawn inline\t%04X:%04X+%04X=%04X %02X %02X",
 					   classid,offset,delta,offset+delta,this_size, unknown));
 
-				UCProcess* newproc = new UCProcess(p->usecode);
-
 				uint32 thisptr = stackToPtr(p->pid, p->bp+6);
-				uint16 newpid = Kernel::get_instance()->addProcess(newproc);
+				UCProcess* newproc = new UCProcess(classid, offset + delta,
+												   thisptr, this_size);
 
-				newproc->load(classid, offset + delta, thisptr, this_size);
+				uint16 newpid= Kernel::get_instance()->addProcessExec(newproc);
 
 				p->stack.push2(newpid); //! push pid of newproc?
 
-				cede = true;
+				// cede = true;
 			}
 			break;
 	
@@ -2008,8 +2005,7 @@ bool UCMachine::assignPointer(uint32 ptr, const uint8* data, uint32 size)
 		if (!proc) {
 			// segfault :-)
 			perr << "Trying to access stack of non-existent "
-				 << "process (pid: " << std::hex << segment
-				 << std::dec << ")" << std::endl;
+				 << "process (pid: " << segment << ")" << std::endl;
 			return false;
 		} else {
 			proc->stack.assign(offset, data, size);
@@ -2052,8 +2048,7 @@ bool UCMachine::dereferencePointer(uint32 ptr, uint8* data, uint32 size)
 		if (!proc) {
 			// segfault :-)
 			perr << "Trying to access stack of non-existent "
-				 << "process (pid: " << std::hex << segment
-				 << std::dec << ")" << std::endl;
+				 << "process (pid: " << segment << ")" << std::endl;
 			return false;
 		} else {
 			std::memcpy(data, proc->stack.access(offset), size);
@@ -2100,8 +2095,7 @@ uint16 UCMachine::ptrToObject(uint32 ptr)
 		if (!proc) {
 			// segfault :-)
 			perr << "Trying to access stack of non-existent "
-				 << "process (pid: " << std::hex << segment
-				 << std::dec << ")" << std::endl;
+				 << "process (pid: " << segment << ")" << std::endl;
 			return 0;
 		} else {
 			return proc->stack.access2(offset);

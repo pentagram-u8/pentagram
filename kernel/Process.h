@@ -31,10 +31,7 @@ public:
 	// returns true if screen needs to be repainted
 	virtual bool run(const uint32 framenum) = 0;
 
-	Process(uint16 it = 0, uint16 ty = 0) : 
-		pid(0xFFFF), active(false), suspended(false), terminated(false),
-		terminate_deferred(false), item_num(it), type(ty), result(0)
-	{ }
+	Process(uint16 item_num=0, uint16 type=0);
 	virtual ~Process() { }
 
 	// p_dynamic_cast stuff

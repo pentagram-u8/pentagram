@@ -27,6 +27,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ODataSource.h"
 #include "ItemFactory.h"
 
+#include "ShapeInfo.h"
+
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(Container,Item);
 
@@ -183,6 +185,13 @@ void Container::containerSearch(UCList* itemlist, const uint8* loopscript,
 			itemlist->append(buf);
 		}
 	}	
+}
+
+void Container::dumpInfo()
+{
+	Item::dumpInfo();
+
+	pout << "Volume: " << getShapeInfo()->volume << std::endl;
 }
 
 void Container::saveData(ODataSource* ods)

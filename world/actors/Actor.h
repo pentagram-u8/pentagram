@@ -66,6 +66,8 @@ public:
 
 	virtual uint16 assignObjId(); // assign an NPC objid
 
+	virtual void dumpInfo();
+
 	bool loadData(IDataSource* ids);
 
 	// p_dynamic_cast stuff

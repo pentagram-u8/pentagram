@@ -29,6 +29,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Actor.h"
 
+#include "CoreApp.h" // only for getFrameNum
+
 //#define DUMP_PROCESSTYPES
 
 #ifdef DUMP_PROCESSTYPES
@@ -40,7 +42,7 @@ typedef std::list<Process *>::iterator ProcessIterator;
 
 Kernel* Kernel::kernel = 0;
 
-Kernel::Kernel()
+Kernel::Kernel() : loading(false)
 {
 	assert(kernel == 0);
 	kernel = this;
@@ -66,15 +68,27 @@ void Kernel::reset()
 	pIDs->clearAll();
 }
 
+uint16 Kernel::assignPID(Process* proc)
+{
+	// to prevent new processes from getting a PID while loading
+	if (loading) return 0xFFFF;
+
+	// Get a pID
+	proc->pid = pIDs->getNewID();
+
+	return proc->pid;
+}
+
 uint16 Kernel::addProcess(Process* proc)
 {
+#if 0
 	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it) {
 		if (*it == proc)
 			return 0;
 	}
+#endif
 
-	// Get a pID
-	proc->pid = pIDs->getNewID();
+	assert(proc->pid != 0 && proc->pid != 0xFFFF);
 
 #if 0
 	perr << "[Kernel] Adding process " << proc
@@ -84,7 +98,29 @@ uint16 Kernel::addProcess(Process* proc)
 //	processes.push_back(proc);
 //	proc->active = true;
 	setNextProcess(proc);
+	return proc->pid;
+}
 
+uint16 Kernel::addProcessExec(Process* proc)
+{
+#if 0
+	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it) {
+		if (*it == proc)
+			return 0;
+	}
+#endif
+
+	assert(proc->pid != 0 && proc->pid != 0xFFFF);
+
+#if 0
+	perr << "[Kernel] Adding process " << proc
+		 << ", pid = " << proc->pid << std::endl;
+#endif
+
+	processes.push_back(proc);
+	proc->active = true;
+
+	proc->run(CoreApp::get_instance()->getFrameNum());
 	return proc->pid;
 }
 
@@ -300,7 +336,12 @@ Process* Kernel::loadProcess(IDataSource* ids)
 		return 0;
 	}
 
+
+	loading = true;
+
 	Process* p = (*(iter->second))(ids);
+
+	loading = false;
 
 	return p;
 }

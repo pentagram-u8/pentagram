@@ -28,20 +28,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(UCProcess,Process);
 
-UCProcess::	UCProcess(Usecode* usecode_)
-	: classid(0)
+UCProcess::UCProcess() : Process()// !! fixme
+{
+	usecode = GameData::get_instance()->getMainUsecode();
+}
+
+UCProcess::UCProcess(uint16 classid_, uint16 offset_, uint32 this_ptr,
+					  int thissize, const uint8* args, int argsize)
+	: Process()
 {
 	classid = 0xFFFF;
 	ip = 0xFFFF;
 	bp = 0x0000;
-	usecode = usecode_;
-	if (usecode == 0)
-		usecode = GameData::get_instance()->getMainUsecode();
-	else {
-		// just to be careful
-		// saving/loading doesn't support alternate Usecode's yet
-		assert(usecode == GameData::get_instance()->getMainUsecode());
-	}
+	usecode = GameData::get_instance()->getMainUsecode();
+
+	load(classid_, offset_, this_ptr, thissize, args, argsize);
 }
 
 UCProcess::~UCProcess()

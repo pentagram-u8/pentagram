@@ -1,3 +1,9 @@
+2003-07-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Container.*, world/actors/Actor.*: dumpInfo()
+	* kernel/*: give Processes a pid on construction (except when loading)
+	* usecode/*: make spawned UCProcesses run immediately, without
+	  suspending the calling process
+
 2003-07-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.*: Item::dumpInfo()
 

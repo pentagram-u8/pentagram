@@ -204,7 +204,8 @@ private:
 public:
 	enum MouseButton { //!! change this
 		BUTTON_LEFT = 1,
-		BUTTON_RIGHT = 2
+		BUTTON_MIDDLE = 2,
+		BUTTON_RIGHT = 3
 	};
 };
 
