@@ -1,0 +1,14 @@
+Ancient Ones, second speech:
+
+class 048B (ANCTONES) uses a mutex flag 'startedConvo' [0000 01] to
+(try to) make sure that only one conversation with the Ancient Ones is started.
+This is necessary because there are two eggs which trigger this conversation
+to cover the entire area.
+
+However, for the second speech, this flag is only set _after_ waiting for a
+Camera::scrollTo to finish, which gives a second process enough time to
+pass the !startedConvo check.
+
+WORKAROUND:
+Serious hack in UCMachine which sets startedConvo to true as soon as
+setAvatarInStasis is called. This makes sure the flag is set at the right time.

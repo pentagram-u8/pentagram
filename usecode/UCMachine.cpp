@@ -38,7 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Container.h"
 
-//#define WATCH_CLASS 1161
+//#define WATCH_CLASS 1163
 //#define WATCH_ITEM 6637
 
 #ifdef WATCH_CLASS
@@ -353,6 +353,17 @@ bool UCMachine::execProcess(UCProcess* p)
 
 					delete[] argbuf;
 				}
+
+
+
+				// REALLY MAJOR HACK:
+				// https://sourceforge.net/tracker/index.php?func=detail&aid=1018748&group_id=53819&atid=471709
+
+				// FIXME: need to make this U8-only
+				if (p->classid == 0x48B && func == 0xD0) { // setAvatarInStasis
+					globals->setBits(0, 1, 1);
+				}
+
 			}
 			break;
 

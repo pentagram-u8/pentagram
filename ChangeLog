@@ -1,3 +1,7 @@
+2004-08-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/UCMachine.cpp: added workaround to U8 usecode bug (see below)
+	* docs/u8bugs.txt: starting to document some bugs in U8's usecode/data
+
 2004-08-29  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* kernel/CoreApp.cpp: pass SDL_INIT_JOYSTICK to SDL_Init
 	* kernel/Joystick.*: limited support for joystick
