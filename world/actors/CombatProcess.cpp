@@ -73,6 +73,12 @@ bool CombatProcess::run(const uint32 /*framenum*/)
 			 << target << std::endl;
 	}
 
+	int targetdir = getTargetDirection();
+	if (a->getDir() != targetdir) {
+		turnToDirection(targetdir);
+		return false;
+	}
+
 	if (inAttackRange()) {
 		pout << "[COMBAT " << item_num << "] target in range" << std::endl;
 
@@ -180,6 +186,44 @@ ObjId CombatProcess::seekTarget()
 
 	// no suitable targets
 	return 0;
+}
+
+int CombatProcess::getTargetDirection()
+{
+	Actor* a = World::get_instance()->getNPC(item_num);
+	Actor* t = World::get_instance()->getNPC(target);
+
+	return a->getDirToItemCentre(*t);
+}
+
+void CombatProcess::turnToDirection(int direction)
+{
+	Actor* a = World::get_instance()->getNPC(item_num);
+	int curdir = a->getDir();
+	int step = 1;
+	if ((curdir - direction + 8) % 8 < 4) step = -1;
+	Animation::Sequence turnanim = Animation::combat_stand;
+
+	ProcId prevpid = 0;
+	bool done = false;
+
+	for (int dir = curdir; !done; ) {
+		ProcId animpid = a->doAnim(turnanim, dir);
+
+		if (dir == direction) done = true;
+
+		if (prevpid) {
+			Process* proc = Kernel::get_instance()->getProcess(animpid);
+			assert(proc);
+			proc->waitFor(prevpid);
+		}
+
+		prevpid = animpid;
+
+		dir = (dir + step + 8) % 8;
+	}
+
+	if (prevpid) waitFor(prevpid);	
 }
 
 bool CombatProcess::inAttackRange()

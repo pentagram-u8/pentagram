@@ -47,6 +47,8 @@ protected:
 	bool isEnemy(Actor* target);
 	ObjId seekTarget();
 	bool inAttackRange();
+	int getTargetDirection();
+	void turnToDirection(int direction);
 
 	ObjId target;
 	ObjId fixedTarget;
