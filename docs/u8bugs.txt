@@ -18,6 +18,28 @@ setAvatarInStasis is called. This makes sure the flag is set at the right time.
 
 
 
+Ethereal spell Monster Summoning:
+
+class 0585 (ETHRSPEL) doesn't set FAST_ONLY on the summoned monster. This
+means that Item::callUsecodeEvent erroneously thinks the monster is a full
+NPC with its own usecode and calls usecode function 1024+ObjId instead of
+the usecode belonging to the monster's shape/type.
+
+Confirmed with the original: summoning a monster and then clicking on it
+does not produce the monster's name. Setting the FAST_ONLY flag (0x0080)
+in the savegame manually makes the monster's name appear.
+
+There are more cases of usecode calling Npc::create() without setting
+the FAST_ONLY flag. Need to investigate this further.
+
+FIX:
+Unknown
+
+WORKAROUND:
+Unknown
+
+
+
 Typos:
 
 class 0181 (STRATOS)
