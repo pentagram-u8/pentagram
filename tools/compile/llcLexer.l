@@ -1,5 +1,4 @@
 %{
-#include "pent_include.h"
 #include "llcTokens.h"
 
 %}
