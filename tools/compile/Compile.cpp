@@ -108,7 +108,7 @@ enum TestX { TEST_END=0, TEST_XFAIL, TEST_XPASS, TEST_XWARN };
 
 struct CTestS
 {
-	const char * const filename;
+	const char * filename;
 	TestX xpect;
 };
 
