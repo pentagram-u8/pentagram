@@ -9,7 +9,7 @@ SRC=.
 
 ### Modify these paths
 SDL_CFLAGS=-I$(SRC)/sdl/include
-SDL_LIBS=-L$(SRC)/sdl/lib -lSDLmain -lSDL
+SDL_LIBS=-L$(SRC)/sdl/lib -lSDL_mixer -lSDLmain -lSDL
 
 CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -I$(SRC)/conf -I$(SRC)/convert \
 	-I$(SRC)/filesys -I$(SRC)/graphics -I$(SRC)/gumps -I$(SRC)/kernel \
@@ -17,7 +17,7 @@ CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -I$(SRC)/conf -I$(SRC)/convert \
 	-I$(SRC)/tools/fold -I$(SRC)/usecode -I$(SRC)/world \
 	-I$(SRC)/world/actors -I$(SRC)/gumps/widgets \
 	-I$(SRC)/audio -I$(SRC)/audio/midi \
-	$(SDL_CFLAGS) -DHAVE_SYS_STAT_H -DHAVE_SYS_TYPES_H -DHAVE_UNISTD_H
+	$(SDL_CFLAGS) -DHAVE_SYS_STAT_H -DHAVE_SYS_TYPES_H -DHAVE_UNISTD_H -DUSE_FMOPL_MIDI
 CXXFLAGS=-O2
 CXX=g++
 CFLAGS=-O2
@@ -86,6 +86,7 @@ dist:   install tools
 	cp COPYING $(U8PATH)/COPYING.txt
 	cp SDL/README-SDL.txt $(U8PATH)
 	cp SDL/lib/SDL.dll $(U8PATH)
+	cp SDL/lib/SDL_mixer.dll $(U8PATH)
 	u2d $(U8PATH)/*.txt
 
 toolsdist: toolsinstall
