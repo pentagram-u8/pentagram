@@ -932,7 +932,8 @@ void GUIApp::GraphicSysInit()
 	TTF_Init();
 	atexit(TTF_Quit);
 	//HACK;
-	ttffont = new TTFont("verdanab.ttf", 12);
+	IDataSource* fontids = FileSystem::get_instance()->ReadFile("@data/verdanab.ttf");
+	ttffont = new TTFont(fontids, 10);
 #endif
 
 	// Set Screen Resolution

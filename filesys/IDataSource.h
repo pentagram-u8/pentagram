@@ -1,7 +1,7 @@
 /*
  *	IDataSource.h - DataSource type for loading data, only needs read only access
  *
- *  Copyright (C) 2002, 2003 The Pentagram Team
+ *  Copyright (C) 2002-2004 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include "pent_include.h"
 #include <fstream>
 #include <cmath>
+#include "SDL_rwops.h"
 
 class IDataSource
 {
@@ -112,6 +113,65 @@ class IDataSource
 
 		virtual std::ifstream *GetRawIfstream() { 
 			return 0; 
+		}
+
+		/* SDL_RWops functions: */
+
+		static int rw_seek(SDL_RWops *context, int offset, int whence)
+		{
+			IDataSource*ids = static_cast<IDataSource*>
+				(context->hidden.unknown.data1);
+			switch (whence) {
+			case SEEK_SET:
+				ids->seek(offset);
+				break;
+			case SEEK_CUR:
+				ids->skip(offset);
+				break;
+			case SEEK_END:
+				ids->seek(ids->getSize()+offset);
+				break;
+			default:
+				return -1;
+				break;
+			}
+			return ids->getPos();
+		}
+		static int rw_read(SDL_RWops *context, void *ptr, int size, int maxnum)
+		{
+			IDataSource*ids = static_cast<IDataSource*>
+				(context->hidden.unknown.data1);
+			if (ids->getPos() + size >= ids->getSize())
+				return 0;
+			int count = (ids->getSize() - ids->getPos()) / size;
+			if (count > maxnum) count = maxnum;
+			ids->read(ptr, count*size);
+			return count;
+		}
+		static int rw_write(SDL_RWops *context, const void *ptr,
+							int size, int num)
+		{
+			return 0;
+		}
+		static int rw_close(SDL_RWops *context)
+		{
+			IDataSource* ids = static_cast<IDataSource*>
+				(context->hidden.unknown.data1);
+			delete ids;
+			SDL_FreeRW(context);
+			return 0;
+		}
+
+		//! Create an SDL_RWops structure from this IDataSource.
+		//! It will delete the IDataSource (and itself) when closed.
+		SDL_RWops* getRWops() {
+			SDL_RWops* rwops = SDL_AllocRW();
+			rwops->seek = rw_seek;
+			rwops->read = rw_read;
+			rwops->write = rw_write;
+			rwops->close = rw_close;
+			rwops->hidden.unknown.data1 = static_cast<void*>(this);
+			return rwops;
 		}
 };
 

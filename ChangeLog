@@ -1,4 +1,8 @@
 2004-01-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* IDataSource.h: getRWops creates an SDL_RWops struct from IDataSource
+	* TTFont.*: load font from IDataSource
+
+2004-01-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/fonts: added directory
 	* graphics/fonts/ShapeFont.*, ShapeRenderedText.*: the old Font class
 	* graphics/fonts/TTFont.*, TTFRenderedText.*: experimental TTF support

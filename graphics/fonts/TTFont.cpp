@@ -25,14 +25,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "TTFont.h"
 #include "TTFRenderedText.h"
 #include "Texture.h"
+#include "IDataSource.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(TTFont,Pentagram::Font);
 
 
-TTFont::TTFont(std::string fontfile, int pointsize)
+TTFont::TTFont(IDataSource* font, int pointsize)
 {
-	// FIXME: FileSystem-ize this
-	ttf_font = TTF_OpenFont(fontfile.c_str(), pointsize);
+	// open font using SDL_RWops.
+	// Note: The RWops and IDataSource will be deleted by the TTF_Font
+	ttf_font = TTF_OpenFontRW(font->getRWops(), 1, pointsize);
 }
 
 TTFont::~TTFont()

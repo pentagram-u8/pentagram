@@ -25,11 +25,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "SDL_ttf.h"
 
+class IDataSource;
+
 class TTFont : public Pentagram::Font
 {
 public:
 	// TODO: font colour
-	TTFont(std::string fontfile, int pointsize);
+	TTFont(IDataSource* font, int pointsize);
 	virtual ~TTFont();
 
 	virtual int getHeight();
