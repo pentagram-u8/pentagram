@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -46,7 +46,7 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(Actor,Container);
 Actor::Actor()
 	: strength(0), dexterity(0), intelligence(0),
 	  hitpoints(0), mana(0), alignment(0), enemyalignment(0),
-	  lastanim(0), direction(0), actorflags(0)
+	  lastanim(0), animframe(0), direction(0), actorflags(0)
 {
 
 }
@@ -323,6 +323,7 @@ void Actor::saveData(ODataSource* ods)
 	ods->write2(alignment);
 	ods->write2(enemyalignment);
 	ods->write2(lastanim);
+	ods->write2(animframe);
 	ods->write2(direction);
 	ods->write4(actorflags);
 }
@@ -341,6 +342,7 @@ bool Actor::loadData(IDataSource* ids)
 	alignment = ids->read2();
 	enemyalignment = ids->read2();
 	lastanim = ids->read2();
+	animframe = ids->read2();
 	direction = ids->read2();
 	actorflags = ids->read4();
 

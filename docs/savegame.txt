@@ -165,7 +165,7 @@ sint16 str, dex, int
 uint16 hp
 sint16 mana
 uint16 alignment, enemyalignment
-uint16 lastanim, direction
+uint16 lastanim, animframe, direction
 uint32 actorflags
 TODO: more...?
 

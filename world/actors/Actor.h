@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -153,6 +153,7 @@ protected:
 	uint16 alignment, enemyalignment;
 
 	uint16 lastanim;
+	uint16 animframe;
 	uint16 direction;
 
 	uint32 actorflags;

@@ -95,6 +95,7 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 	actor_->direction = dir_;
 
 	currentindex = startframe * animaction->framerepeat;
+	actor_->animframe = startframe;
 
 #ifdef WATCHACTOR
 	if (item_num == watchactor)
@@ -130,6 +131,8 @@ bool ActorAnimProcess::run(const uint32 framenum)
 	unsigned int frameindex = currentindex / animaction->framerepeat;
 	unsigned int framecount = currentindex % animaction->framerepeat;
 
+	a->animframe = frameindex;
+
 	// check if we're done
 	if (framecount == 0) {
 		if (frameindex == endframe) {
@@ -164,6 +167,7 @@ bool ActorAnimProcess::run(const uint32 framenum)
 		}	
 
 		currentindex = frameindex * animaction->framerepeat;
+		a->animframe = frameindex;
 	}
 
 	AnimFrame& f = animaction->frames[dir][frameindex];
