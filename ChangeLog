@@ -1,4 +1,8 @@
 2003-05-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Item.*: intrinsics
+	* usecode/*: rearranged spawn opcode (again)
+
+2003-05-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* misc/Rect.h: Rect::Overlaps
 	* world/CurrentMap.*: area searches
 	* world/Container.*: container searches

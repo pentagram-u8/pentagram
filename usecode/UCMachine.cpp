@@ -266,15 +266,15 @@ bool UCMachine::execProcess(UCProcess* p)
 
 				// !constants
 				if (func >= 0x100 || intrinsics[func] == 0) {
-//					temp32 = addProcess(new DelayProcess(4));
-					temp32 = 0;
+//					p->temp32 = addProcess(new DelayProcess(4));
+					p->temp32 = 0;
 					perr << "Unhandled intrinsic called" << std::endl;
 				} else {
 					uint8 *argbuf = new uint8[arg_bytes];
 					p->stack.pop(argbuf, arg_bytes);
 					p->stack.addSP(-arg_bytes); // don't really pop the args
 
-					temp32 = intrinsics[func](argbuf, arg_bytes);
+					p->temp32 = intrinsics[func](argbuf, arg_bytes);
 
 					delete[] argbuf;
 				}
@@ -305,16 +305,16 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x12:
 			// 12
 			// pop 16bits into temp register
-			temp32 = p->stack.pop2();
-			LOGPF(("pop\t\ttemp = %04X", (temp32 & 0xFFFF)));
+			p->temp32 = p->stack.pop2();
+			LOGPF(("pop\t\ttemp = %04X", (p->temp32 & 0xFFFF)));
 			break;
 
 		case 0x13:
 			// 13
 			// pop 32bits into temp register
 			// NB: 0x13 isn't used AFAIK, but this is a 'logical' guess
-			temp32 = p->stack.pop4();
-			LOGPF(("pop long\t\ttemp = %08X", temp32));
+			p->temp32 = p->stack.pop4();
+			LOGPF(("pop long\t\ttemp = %08X", p->temp32));
 			break;
 
 		// Arithmetic
@@ -1122,7 +1122,15 @@ bool UCMachine::execProcess(UCProcess* p)
 
 					// (Example: AVATAR::Look(), the spawn FREE:29D8)
 
-					perr << "Non-existant process PID in implies" << std::endl;
+					perr << "Non-existant process PID (";
+					if (!proc && !proc2) {
+						perr << ui16a << "," << ui16b;
+					} else if (!proc) {
+						perr << ui16b;
+					} else {
+						perr << ui16a;
+					}
+					perr << ") in implies" << std::endl;
 //					error = true;
 				}
 			}
@@ -1137,24 +1145,20 @@ bool UCMachine::execProcess(UCProcess* p)
 			// put PID of spawned process in temp			
 			{
 				uint32 arg_bytes = cs.read1();
-				uint32 this_size = cs.read1(); // Relevance?
+				uint32 this_size = cs.read1();
 				uint16 classid = cs.read2();
 				uint16 offset = cs.read2();
+
+				uint32 thisptr = p->stack.pop4();
 				
 				LOGPF(("spawn\t\t%02X %02X %04X:%04X",
 					   arg_bytes, this_size, classid, offset));
 
-				UCProcess* newproc = new UCProcess(p->usecode, classid,
-												   offset, p->stack.access(),
-												   arg_bytes + 4);
-				// arg_bytes + 4 = arguments + this pointer
-				//!! CHECKME
-				//!! it looks like these arguments may have to be put
-				//!! earlier on the stack than this
-				//!! (i.e., even before the this pointer)
-				//!! (check for instance METHOD::091C)
+				UCProcess* newproc = new UCProcess(p->usecode);
+				p->temp32 = addProcess(newproc);
 
-				temp32 = addProcess(newproc);
+				newproc->load(classid, offset, thisptr, this_size,
+							  p->stack.access(), arg_bytes);
 
 				//!! CHECKME
 				//!! is order of execution of this process and the new one
@@ -1187,11 +1191,14 @@ bool UCMachine::execProcess(UCProcess* p)
 				LOGPF(("spawn inline\t%04X:%04X+%04X=%04X %02X %02X",
 					   classid,offset,delta,offset+delta,this_size, unknown));
 
-				UCProcess* newproc = new UCProcess(p->usecode, classid,
-												   offset + delta,
-												   p->stack.access4(p->bp+6));
+				UCProcess* newproc = new UCProcess(p->usecode);
 
-				p->stack.push2(addProcess(newproc)); //! push pid of newproc?
+				uint32 thisptr = stackToPtr(p->pid, p->bp+6);
+				uint16 newpid = addProcess(newproc);
+
+				newproc->load(classid, offset + delta, thisptr, this_size);
+
+				p->stack.push2(newpid); //! push pid of newproc?
 			}
 			cede = true;
 			break;
@@ -1220,24 +1227,24 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 5D
 			// push 8 bit value returned from function call
 			// (push temp8 as 16 bit value)
-			p->stack.push2(static_cast<uint8>(temp32 & 0xFF));
-			LOGPF(("push byte\tretval = %02X", (temp32 & 0xFF)));
+			p->stack.push2(static_cast<uint8>(p->temp32 & 0xFF));
+			LOGPF(("push byte\tretval = %02X", (p->temp32 & 0xFF)));
 			break;
 
 		case 0x5E:
 			// 5E
 			// push 16 bit value returned from function call
 			// (push temp16)
-			p->stack.push2(static_cast<uint16>(temp32 & 0xFFFF));
-			LOGPF(("push\t\tretval = %04X", (temp32 & 0xFFFF)));
+			p->stack.push2(static_cast<uint16>(p->temp32 & 0xFFFF));
+			LOGPF(("push\t\tretval = %04X", (p->temp32 & 0xFFFF)));
 			break;
 
 		case 0x5F:
 			// 5F
 			// push 32 bit value returned from function call
 			// (push temp32)
-			p->stack.push4(temp32);
-			LOGPF(("push long\t\tretval = %08X", temp32));
+			p->stack.push4(p->temp32);
+			LOGPF(("push long\t\tretval = %08X", p->temp32));
 			break;
 
 		case 0x60:

@@ -83,9 +83,6 @@ private:
 	// functions we need
 	UCStack globals;
 
-	// temp register. Used for retvals
-	uint32 temp32;
-
 	// this probably won't be the final way of storing these
 	std::map<uint16, UCList*> listHeap;
 	std::map<uint16, std::string> stringHeap;

@@ -32,8 +32,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ShapeInfo.h"
 #include "ItemFactory.h"
 #include "CurrentMap.h"
-
 #include "UCStack.h"
+#include "Direction.h"
 
 /*
 My current idea on how to construct items: an ItemFactory class that
@@ -986,3 +986,46 @@ uint32 Item::I_getEtherealTop(const uint8* args, unsigned int /*argsize*/)
 	if (w->etherealEmpty()) return 0; // no items left on stack
 	return w->etherealPeek();
 }
+
+uint32 Item::I_getDirToCoords(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_UINT16(x);
+	ARG_UINT16(y);
+	if (!item) return 0;
+
+	return Get_direction(item->x - x, item->y - y);
+}
+
+uint32 Item::I_getDirFromCoords(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_UINT16(x);
+	ARG_UINT16(y);
+	if (!item) return 0;
+
+	return Get_direction(x - item->x, y - item->y);
+}
+
+uint32 Item::I_getDirToItem(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_UINT16(id2);
+	Item *item2 = p_dynamic_cast<Item*>(World::get_instance()->getObject(id2));
+	if (!item) return 0;
+	if (!item2) return 0;
+
+	return Get_direction(item->x - item2->x, item->y - item2->y);
+}
+
+uint32 Item::I_getDirFromItem(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_UINT16(id2);
+	Item *item2 = p_dynamic_cast<Item*>(World::get_instance()->getObject(id2));
+	if (!item) return 0;
+	if (!item2) return 0;
+
+	return Get_direction(item2->x - item->x, item2->y - item->y);
+}
+

@@ -32,15 +32,14 @@ class UCProcess : public Process
 	friend class UCMachine;
 	friend class Kernel;
 public:
-	UCProcess(Usecode* usecode_, uint16 classid_,
-			  uint16 offset_, uint32 this_ptr = 0);
-	UCProcess(Usecode* usecode_, uint16 classid_,
-			  uint16 offset_, const uint8* args, uint32 argsize);
+	UCProcess(Usecode* usecode_);
     ~UCProcess();
 
 	// p_dynamic_cast stuff
 	ENABLE_DYNAMIC_CAST(UCProcess);
 
+	void load(uint16 classid_, uint16 offset_, uint32 this_ptr = 0,
+			  uint32 thissize = 0, const uint8* args = 0, uint32 argsize = 0);
 	virtual bool run(const uint32 framenum);
 
 protected:
@@ -59,6 +58,8 @@ protected:
 
 	uint16 classid;
 	uint16 ip;
+
+	uint32 temp32;
 
 	// data stack
 	UCStack stack;

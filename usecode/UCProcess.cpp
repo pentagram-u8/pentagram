@@ -25,41 +25,52 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // p_dynamic_cast stuff
 DEFINE_DYNAMIC_CAST_CODE(UCProcess,Process);
 
-UCProcess::UCProcess(Usecode* usecode_, uint16 classid_,
-					 uint16 offset_, uint32 this_ptr) :
-	item_num(0), type(0), usecode(usecode_), classid(classid_)
+UCProcess::	UCProcess(Usecode* usecode_)
+	: item_num(0), type(0), usecode(usecode_), classid(0)
 {
-	if (usecode->get_class_size(classid) == 0)
-		perr << "Class is empty..." << std::endl;
-
 	classid = 0xFFFF;
 	ip = 0xFFFF;
 	bp = 0x0000;
-
-	stack.push4(this_ptr); // BP+06 this pointer
-
-	call(classid_, offset_);
-}
-
-UCProcess::UCProcess(Usecode* usecode_, uint16 classid_,
-					 uint16 offset_, const uint8* args, uint32 argsize) :
-	item_num(0), type(0), usecode(usecode_), classid(classid_)
-{
-	if (usecode->get_class_size(classid) == 0)
-		perr << "Class is empty..." << std::endl;
-
-	classid = 0xFFFF;
-	ip = 0xFFFF;
-	bp = 0x0000;
-
-	stack.push(args, argsize);
-
-	call(classid_, offset_);
 }
 
 UCProcess::~UCProcess()
 {
 
+}
+
+void UCProcess::load(uint16 classid_, uint16 offset_, uint32 this_ptr,
+					 uint32 thissize, const uint8* args, uint32 argsize)
+{
+	if (usecode->get_class_size(classid) == 0)
+		perr << "Class is empty..." << std::endl;
+
+	classid = 0xFFFF;
+	ip = 0xFFFF;
+	bp = 0x0000;
+	uint16 thissp = 0;
+
+	// first, push the derefenced this pointer
+	if (this_ptr != 0 && thissize > 0) {
+		stack.addSP(-thissize);
+		UCMachine::get_instance()->
+			dereferencePointer(this_ptr, const_cast<uint8*>(stack.access()),
+							   thissize);
+		thissp = stack.getSP();
+	}
+
+	// next, push the arguments
+	stack.push(args, argsize);
+
+	// then, push the new this pointer
+	if (thissp) {
+		stack.push4(UCMachine::stackToPtr(pid, thissp));
+	} else {
+		stack.push4(0);
+	}
+
+
+	// finally, call the specified function
+	call(classid_, offset_);
 }
 
 bool UCProcess::run(const uint32 /*framenum*/)

@@ -136,6 +136,10 @@ public:
 	INTRINSIC(I_getWeightIncludingContents);
 	INTRINSIC(I_getVolume);
 	INTRINSIC(I_bark);
+	INTRINSIC(I_getDirToCoords);
+	INTRINSIC(I_getDirFromCoords);
+	INTRINSIC(I_getDirToItem);
+	INTRINSIC(I_getDirFromItem);
 	INTRINSIC(I_look);
 	INTRINSIC(I_use);
 	INTRINSIC(I_enterFastArea);
