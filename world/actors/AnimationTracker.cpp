@@ -303,7 +303,9 @@ void AnimationTracker::checkWeaponHit()
 
 	int range = animaction->frames[dir][currentframe].attack_range();
 
+#if 0
 	pout << "Checking hit (" << range << "): ";
+#endif
 
 	Actor *a = World::get_instance()->getNPC(actor);
 	assert(a);
@@ -335,15 +337,19 @@ void AnimationTracker::checkWeaponHit()
 			//        the right direction
 			// FIXME: shouldn't only allow hitting NPCs
 			hit = itemid;
+#if 0
 			pout << "hit ";
 			item->dumpInfo();
+#endif
 			break;
 		}
 	}
 
+#if 0
 	if (!hit) {
 		pout << "nothing" << std::endl;
 	}
+#endif
 
 	hitobject = hit;
 }

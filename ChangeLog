@@ -1,5 +1,6 @@
 2004-11-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/CombatProcess.*: make monster turn to face target
+	* world/actors/AnimationTracker.cpp: silenced hit checks
 
 2004-11-24  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/CombatProcess.cpp: slow down attacks depending on dex
