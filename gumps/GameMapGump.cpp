@@ -440,7 +440,8 @@ bool GameMapGump::StartDraggingItem(Item* item, int mx, int my)
 	if (si->is_fixed()) return false;
 	//!! need more checks here
 
-	// TODO: check if item is in range
+	MainActor* avatar = World::get_instance()->getMainActor();
+	if (!avatar->canReach(item, 128)) return false;  // CONSTANT!
 	
 	// get item offset
 	int itemx, itemy;
@@ -461,13 +462,34 @@ bool GameMapGump::DraggingItem(Item* item, int mx, int my)
 	dragging_flags = item->getFlags();
 	display_dragging = true;
 
+	// determine if item can be dropped here
+
 	if (!TraceCoordinates(mx, my, dragging_pos, dox, doy, item))
 		return false;
 
-	// determine if item can be dropped here
+	bool throwing = false;
+
+	MainActor* avatar = World::get_instance()->getMainActor();
+	if (!avatar->canReach(item, 128, // CONSTANT!
+						  dragging_pos[0], dragging_pos[1], dragging_pos[2]))
+	{
+		// can't reach, so see if we can throw
+		// TODO: check weight
+		if (!avatar->canReach(item, 256, // CONSTANT!
+							  dragging_pos[0], dragging_pos[1],
+							  dragging_pos[2]))
+		{
+			return false;
+		} else {
+			throwing = true;
+		}
+	}
+
 	if (!item->canExistAt(dragging_pos[0], dragging_pos[1], dragging_pos[2]))
 		return false;
 
+	if (throwing)
+		GUIApp::get_instance()->setMouseCursor(GUIApp::MOUSE_TARGET);
 
 	return true;
 }

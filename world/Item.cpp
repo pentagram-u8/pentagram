@@ -1510,18 +1510,20 @@ void Item::receiveHit(uint16 other, int dir, int damage, uint16 type)
 	p->move(-16*x_fact[dir],-16*y_fact[dir],16);
 }
 
-bool Item::canReach(Item* other, int range)
+bool Item::canReach(Item* other, int range,
+					sint32 otherX, sint32 otherY, sint32 otherZ)
 {
 	// get location and dimensions of self and other (or their root containers)
 	sint32 thisX, thisY, thisZ;
-	sint32 otherX, otherY, otherZ;
 	sint32 thisXd, thisYd, thisZd;
 	sint32 otherXd, otherYd, otherZd;
 	sint32 thisXmin, thisYmin;
 	sint32 otherXmin, otherYmin;
 
 	getLocationAbsolute(thisX, thisY, thisZ);
-	other->getLocationAbsolute(otherX, otherY, otherZ);
+	if (otherX == 0)
+		other->getLocationAbsolute(otherX, otherY, otherZ);
+		
 	getFootpadWorld(thisXd, thisYd, thisZd);
 	other->getFootpadWorld(otherXd, otherYd, otherZd);
 

@@ -204,10 +204,13 @@ public:
 	//! Undefined if either item is contained or equipped.
 	int getDirToItemCentre(Item& item2) const;
 
-	//! can this item reach another item?
+	//! Check if this item can reach another item.
 	//! \param other item to be reached
 	//! \param range range
-	bool canReach(Item* other, int range);
+	//! \param x x coordinate of other to use, If zero, use real coords.
+	//! \param y y coordinate of other to use
+	//! \param z z coordinate of other to use.
+	bool canReach(Item* other, int range, sint32 x=0, sint32 y=0, sint32 z=0);
 
 	//! Move the object to (x,y,z) colliding with objects in the way.
 	//! \param teleport move without colliding with objects between source and

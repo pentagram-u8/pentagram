@@ -349,7 +349,7 @@ bool ContainerGump::DraggingItem(Item* item, int mx, int my)
 {
 	int dox, doy;
 	GUIApp::get_instance()->getDraggingOffset(dox, doy);	
-
+	GUIApp::get_instance()->setMouseCursor(GUIApp::MOUSE_TARGET);
 	display_dragging = true;
 
 	dragging_shape = item->getShape();

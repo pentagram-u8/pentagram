@@ -2,6 +2,8 @@
 	* world/Item.*: canReach intrinsic
 	* gumps/GameMapGump.cpp, gumps/ContainerGump.cpp:
 	  use canReach when using items
+	* gumps/GameMapGump.cpp, gumps/ContainerGump.cpp:
+	  use canReach when dragging items; use target cursor when necessary
 
 2004-11-07  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/Gump.h: typo in gump flag name (s/DEPENDANT/DEPENDENT/)
