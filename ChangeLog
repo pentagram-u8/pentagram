@@ -1,3 +1,6 @@
+2003-04-30 Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/*: very very basic event handling
+
 2003-04-29  Darke <darkepaw@users.sf.net>
 	* Various .h/.cpp files: Pointless Copyright year update when noticed.
 	* kernel/Application.*: Abstraction of core constructor into appropriately

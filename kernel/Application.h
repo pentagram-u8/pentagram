@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef APPLICATION_H
 #define APPLICATION_H
 
+#include "SDL_events.h"
+
 class Kernel;
 class UCMachine;
 class FileSystem;
@@ -40,6 +42,7 @@ public:
 	
 	void run();
 	void paint();
+	void handleEvent(const SDL_Event& event);
 
 	void loadConfig();
 	void setupVirtualPaths();
@@ -71,6 +74,8 @@ private:
 	bool runMinimalSysInit;
 	bool runGraphicSysInit;
 	bool runSDLInit;
+
+	bool isRunning;
 };
 
 #endif

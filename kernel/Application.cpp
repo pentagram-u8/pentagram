@@ -51,8 +51,11 @@ Application* Application::application = 0;
 int classid, offset; // only temporary, don't worry :-)
 Shape* shape;
 
-Application::Application(int argc, char *argv[]) : runMinimalSysInit(false),
-		runGraphicSysInit(false), runSDLInit(false)
+Application::Application(int argc, char *argv[])
+	: kernel(0), ucmachine(0), filesystem(0), config(0), desktop(0),
+	  console(0), screen(0), palettemanager(0), gamedata(0), world(0),
+	  runMinimalSysInit(false), runGraphicSysInit(false), runSDLInit(false),
+	  isRunning(false)
 {
 	assert(application == 0);
 	application = this;
@@ -89,23 +92,31 @@ void Application::run()
 	}
 
     ucmachine->addProcess(p);
+
+
+	isRunning = true;
+
 	uint32 framenum = 0;
 	SDL_Event event;
-	while (1) {
+	while (isRunning) {
+		// this needs some major changes, including possibly:
+		// - handling events in-between processes?
+		//   (so have a kernel->runProcess() that runs a single process)
+		// - smarter painting
+		//    - dirty rectangles?
+		//    - more/less often depending on speed
+		//    ...
+		// ...
+
 		kernel->runProcesses(framenum++);
 
-		pout << "Pausing execution. Press a key (in graphics window) to continue" << std::endl;
+		// get & handle all events in queue
+		while (isRunning && SDL_PollEvent(&event)) {
+			handleEvent(event);
+		}
 
 		// Paint Screen
 		paint();
-
-		while (1)
-		{
-			if (SDL_PollEvent(&event))
-			{
-				if (event.type == SDL_KEYDOWN) break;
-			}
-		}
 	}
 }
 
@@ -361,4 +372,63 @@ void Application::UCMachineInit()
 
 	pout << "Create UCMachine" << std::endl;
 	ucmachine = new UCMachine;
+}
+
+
+void Application::handleEvent(const SDL_Event& event)
+{
+	uint32 eventtime = SDL_GetTicks();
+
+	switch (event.type) {
+	case SDL_QUIT:
+	{
+		isRunning = false;
+	}
+	break;
+
+	case SDL_ACTIVEEVENT:
+	{
+		// pause when lost focus?
+	}
+	break;
+	
+
+	// most of these events will probably be passed to a gump manager,
+	// since almost all (all?) user input will be handled by a gump
+	
+	case SDL_MOUSEBUTTONDOWN:
+	{
+		
+	}
+	break;
+	
+	case SDL_MOUSEBUTTONUP:
+	{
+		
+	}
+	break;
+	
+	case SDL_MOUSEMOTION:
+	{
+		
+	}
+	break;
+	
+	case SDL_KEYDOWN:
+	{
+		
+	}
+	break;
+	
+	case SDL_KEYUP:
+	{
+		
+	}
+	break;
+
+	// any more useful events?
+	
+	default:
+		break;
+	}
 }

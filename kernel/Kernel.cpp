@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 
-#include "Process.h"
 #include "Kernel.h"
+#include "Process.h"
 
 #include "UCMachine.h" // only for usecodeStats.
 #include "World.h" // only for worldStats
@@ -78,6 +78,8 @@ void Kernel::removeProcess(Process* proc)
 	}
 }
 
+
+//Q: is returning a 'dirty' flag really useful?
 bool Kernel::runProcesses(uint32 framenum)
 {
 	if (processes.size() == 0) {
