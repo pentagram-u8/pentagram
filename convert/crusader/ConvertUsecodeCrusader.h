@@ -32,7 +32,7 @@ class ConvertUsecodeCrusader : public ConvertUsecode
 		void readevents(IFileDataSource *ucfile, const UsecodeHeader &uch)
 		{ 
 			int num_crusader_routines = uch.offset / 6;
-			for (unsigned int i=0; i < num_crusader_routines; i++) {
+			for (int i=0; i < num_crusader_routines; i++) {
 				uint32 size = read2(ucfile);
 				uint32 offset = read4(ucfile);
 				EventMap[offset] = i;
