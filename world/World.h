@@ -62,6 +62,7 @@ class Actor;
 class Flex;
 class Object;
 class idMan;
+class Item;
 
 
 class World
@@ -75,7 +76,6 @@ public:
 	void clear();
 
 	void initMaps();
-	void initNPCs();
 	void loadNonFixed(IDataSource* ds); // delete ds afterwards
 	void loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata);
 
@@ -87,6 +87,7 @@ public:
 	void clearObjId(uint16 objid);
 
 	Object* getObject(uint16 objid) const;
+	Item* getItem(uint16 itemid) const;
 	Actor* getNPC(uint16 npcid) const;
 
 	void etherealPush(uint16 objid) { ethereal.push(objid); }
@@ -101,7 +102,6 @@ private:
 	static World *world;
 
 	std::vector<Map*> maps;
-	std::vector<Actor*> npcs;
 	CurrentMap* currentmap;
 
 	std::stack<uint16> ethereal;

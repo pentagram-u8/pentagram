@@ -25,6 +25,7 @@ class Map;
 class Item;
 class UCList;
 class TeleportEgg;
+class EggHatcherProcess;
 
 class CurrentMap
 {
@@ -63,9 +64,7 @@ private:
 	// items[x][y]
 	std::list<Item*>** items;
 
-	// Q: we need to distinguish between items loaded from fixed and
-	// dynamic items. Do this with an extra item flag?
-	// If so, this should already be set in Map, probably
+	EggHatcherProcess* egghatcher;
 };
 
 #endif

@@ -27,6 +27,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Actor.h"
 #include "idMan.h"
 #include "GameData.h"
+#include "Kernel.h"
+#include "GUIApp.h"
+#include "CameraProcess.h" // for resetting the camera; move to GUIApp?
 
 //#define DUMP_ITEMS
 
@@ -63,11 +66,6 @@ void World::clear()
 	}
 	maps.clear();
 
-	for (i = 0; i < npcs.size(); ++i) {
-		delete npcs[i];
-	}
-	npcs.clear();
-
 	while (!ethereal.empty())
 		ethereal.pop();
 
@@ -98,14 +96,6 @@ void World::initMaps()
 	currentmap = new CurrentMap();
 }
 
-void World::initNPCs()
-{
-	// Q: How do we determine which NPCs to create?
-
-	// automatically initialized to 0
-	npcs.resize(256);
-}
-
 bool World::switchMap(uint32 newmap)
 {
 	assert(currentmap);
@@ -129,9 +119,16 @@ bool World::switchMap(uint32 newmap)
 
 	// NB: not only World has to perform actions on a map switch
 	// other things that should/could also happen:
-	// - usecode processes have to be terminated (forcefully?)
+	// - processes have to be terminated (all processes?)
 	// - autosave?
+	// - camera reset?
 	// - ...?
+
+	// kill camera
+	dynamic_cast<GUIApp*>(GUIApp::get_instance())->ResetCamera();
+
+	// kill ALL processes:
+	Kernel::get_instance()->killProcesses(0,6); // !constant
 
 	uint32 oldmap = currentmap->getNum();
 
@@ -163,6 +160,9 @@ bool World::switchMap(uint32 newmap)
 	delete items;
 
 	currentmap->loadMap(maps[newmap]);
+
+	// reset camera
+	dynamic_cast<GUIApp*>(GUIApp::get_instance())->SetCameraProcess(new CameraProcess(1));
 
 	return true;
 }
@@ -268,7 +268,6 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 		actor->setLastAnim(npcds->read1());
 		// TODO: (decode and) read rest of npcdata.dat...
 
-		npcs[i] = actor;
 		objects[i] = actor;
 	}
 
@@ -290,6 +289,7 @@ uint16 World::assignObjId(Object* obj)
 
 void World::clearObjId(uint16 objid)
 {
+	assert(objid >= 256);
 	objIDs->clearID(objid);
 	objects[objid] = 0;
 }
@@ -324,10 +324,13 @@ Object* World::getObject(uint16 objid) const
 	return objects[objid];
 }
 
+Item* World::getItem(uint16 itemid) const
+{
+	return p_dynamic_cast<Item*>(objects[itemid]);
+}
+
 Actor* World::getNPC(uint16 npcid) const
 {
-	if (npcid >= npcs.size()) return 0;
-
-	return npcs[npcid];
+	return p_dynamic_cast<Actor*>(objects[npcid]);
 }
 

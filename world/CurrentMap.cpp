@@ -29,12 +29,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UCList.h"
 #include "ShapeInfo.h"
 #include "TeleportEgg.h"
+#include "EggHatcherProcess.h"
+#include "Kernel.h"
 
 using std::list; // too messy otherwise
 typedef list<Item*> item_list;
 
 CurrentMap::CurrentMap()
-	: current_map(0)
+	: current_map(0), egghatcher(0)
 {
 	items = new list<Item*>*[128]; //! get rid of constants
 	for (unsigned int i = 0; i < 128; i++) {
@@ -72,6 +74,10 @@ void CurrentMap::clear()
 	}
 
 	current_map = 0;
+
+	if (egghatcher)
+		egghatcher->terminate(); // kernel will delete egghatcher
+	egghatcher = 0;
 }
 
 uint32 CurrentMap::getNum() const
@@ -97,7 +103,7 @@ void CurrentMap::writeback()
 				Item* item = *iter;
 
 				// delete items inside globs
-				if (item->getExtFlags() | Item::EXT_INGLOB) {
+				if (item->getExtFlags() & Item::EXT_INGLOB) {
 					item->clearObjId();
 					delete item;
 					continue;
@@ -110,10 +116,10 @@ void CurrentMap::writeback()
 				}
 
 				// this item isn't from the Map. (like NPCs)
-				if (item->getExtFlags() | Item::EXT_NOTINMAP)
+				if (item->getExtFlags() & Item::EXT_NOTINMAP)
 					continue;
 
-				if (item->getExtFlags() | Item::EXT_FIXED) {
+				if (item->getExtFlags() & Item::EXT_FIXED) {
 					// item came from fixed
 					current_map->fixeditems.push_back(item);
 				} else {
@@ -123,6 +129,10 @@ void CurrentMap::writeback()
 			items[i][j].clear();
 		}
 	}
+
+	if (egghatcher)
+		egghatcher->terminate(); // kernel will delete egghatcher
+	egghatcher = 0;
 }
 
 void CurrentMap::loadItems(list<Item*> itemlist)
@@ -132,11 +142,10 @@ void CurrentMap::loadItems(list<Item*> itemlist)
 	{
 		Item* item = *iter;
 
-		// add item to internal object list
-		addItem(item);
-
 		item->assignObjId();
 
+		// add item to internal object list
+		addItem(item);
 
 		GlobEgg* globegg = p_dynamic_cast<GlobEgg*>(item);
 		if (globegg) {
@@ -149,13 +158,17 @@ void CurrentMap::loadMap(Map* map)
 {
 	current_map = map;
 
+	if (egghatcher)
+		egghatcher->terminate();
+	egghatcher = new EggHatcherProcess();
+	Kernel::get_instance()->addProcess(egghatcher);
+
 	loadItems(map->fixeditems);
 	loadItems(map->dynamicitems);
 
 	// we take control of the items in map, so clear the pointers
 	map->fixeditems.clear();
 	map->dynamicitems.clear();
-
 
 	// load relevant NPCs to the item lists
 	// !constant
@@ -184,6 +197,12 @@ void CurrentMap::addItem(Item* item)
 	sint32 cy = iy / 512;
 
 	items[cx][cy].push_back(item);
+
+	Egg* egg = p_dynamic_cast<Egg*>(item);
+	if (egg) {
+		assert(egghatcher);
+		egghatcher->addEgg(egg);
+	}
 }
 
 void CurrentMap::removeItemFromList(Item* item, sint32 oldx, sint32 oldy)
@@ -288,7 +307,7 @@ TeleportEgg* CurrentMap::findDestination(uint16 id)
 			{
 				TeleportEgg* egg = p_dynamic_cast<TeleportEgg*>(*iter);
 				if (egg) {
-					if (egg->isTeleporter() && egg->getTeleportId() == id)
+					if (!egg->isTeleporter() && egg->getTeleportId() == id)
 						return egg;
 				}
 			}

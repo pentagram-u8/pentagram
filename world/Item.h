@@ -151,6 +151,8 @@ public:
 	INTRINSIC(I_getWeightIncludingContents);
 	INTRINSIC(I_getVolume);
 	INTRINSIC(I_bark);
+	INTRINSIC(I_getMapArray);
+	INTRINSIC(I_setMapArray);
 	INTRINSIC(I_getDirToCoords);
 	INTRINSIC(I_getDirFromCoords);
 	INTRINSIC(I_getDirToItem);

@@ -197,7 +197,6 @@ void GUIApp::U8Playground()
 		perr << "Unable to load savegame/u8save.000/NPCDATA.DAT. Exiting" << std::endl;
 		std::exit(-1);
 	}
-	world->initNPCs();
 	world->loadItemCachNPCData(icd, npcd);
 	delete icd;
 	delete npcd;
@@ -205,7 +204,8 @@ void GUIApp::U8Playground()
 	delete saveds;
 
 	Actor* av = world->getNPC(1);
-//	av->teleport(40, 16240, 15240, 64);
+//	av->teleport(40, 16240, 15240, 64); // central Tenebrae
+	av->teleport(3, 11391, 1727, 64); // docks, near gate
 	if (av)
 		world->switchMap(av->getMapNum());
 	else
@@ -252,6 +252,12 @@ void GUIApp::GetCamera(sint32 &x, sint32 &y, sint32 &z)
 	{
 		camera->GetLerped(false, x, y, z, 256);
 	}
+}
+
+void GUIApp::ResetCamera()
+{
+	if (camera) camera->terminate();
+	camera = 0;
 }
 
 void GUIApp::SetupDisplayList()
@@ -421,9 +427,6 @@ void GUIApp::paint()
 	char buf[256];
 	snprintf(buf, 255, "Rendering time %li ms %li FPS - Sort %li ms  Paint %li ms  Fill %li ms", diff, 1000/diff, after_sort-before_sort, after_paint-after_sort, after_fill-before_fill);
 	screen->PrintTextFixed(con.GetConFont(), buf, 8, dims.h-16);
-
-	Font *f = GameData::get_instance()->getFonts()->getFont(5);
-	screen->PrintText(f, "Test!", 100, 100);
 
 	// End painting
 	screen->EndPainting();
@@ -613,7 +616,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 				Actor* avatar = World::get_instance()->getNPC(1);
 				sint32 x,y,z;
 				avatar->getLocation(x,y,z);
-				avatar->move(x-512,y-512,z);
+				avatar->move(x-64,y-64,z);
 			} else { 
 				pout << "Can't: avatarInStasis" << std::endl; 
 			}
@@ -623,7 +626,8 @@ void GUIApp::handleEvent(const SDL_Event& event)
 				Actor* avatar = World::get_instance()->getNPC(1);
 				sint32 x,y,z;
 				avatar->getLocation(x,y,z);
-				avatar->move(x+512,y+512,z);
+				avatar->move(x+64,y+64,z);
+				perr << "Moving to " << x << "," << y << "," << z << std::endl;
 			} else { 
 				pout << "Can't: avatarInStasis" << std::endl; 
 			}
@@ -633,7 +637,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 				Actor* avatar = World::get_instance()->getNPC(1);
 				sint32 x,y,z;
 				avatar->getLocation(x,y,z);
-				avatar->move(x-512,y+512,z);
+				avatar->move(x-64,y+64,z);
 			} else { 
 				pout << "Can't: avatarInStasis" << std::endl; 
 			}
@@ -643,7 +647,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 				Actor* avatar = World::get_instance()->getNPC(1);
 				sint32 x,y,z;
 				avatar->getLocation(x,y,z);
-				avatar->move(x+512,y-512,z);
+				avatar->move(x+64,y-64,z);
 			} else { 
 				pout << "Can't: avatarInStasis" << std::endl; 
 			}

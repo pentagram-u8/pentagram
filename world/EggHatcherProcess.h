@@ -16,28 +16,32 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef MAINACTOR_H
-#define MAINACTOR_H
+#ifndef EGGHATCHERPROCESS_H
+#define EGGHATCHERPROCESS_H
 
-#include "Actor.h"
+#include "Process.h"
 
-class MainActor : public Actor
+#include <vector>
+
+class Egg;
+
+class EggHatcherProcess : public Process
 {
 public:
-	MainActor();
-	virtual ~MainActor();
-
-	virtual void teleport(int mapnum, sint32 x, sint32 y, sint32 z);
-	void teleport(int mapnum, int teleport_id); // to teleportegg
-
-	bool hasJustTeleported() const { return justTeleported; }
-	void setJustTeleported(bool t) { justTeleported = t; }
+	EggHatcherProcess();
+	virtual ~EggHatcherProcess();
 
 	// p_dynamic_cast stuff
-	ENABLE_DYNAMIC_CAST(MainActor);
+	ENABLE_DYNAMIC_CAST(EggHatcherProcess);
+
+	virtual bool run(const uint32 framenum);
+
+	void addEgg(Egg* egg);
+	void addEgg(uint16 egg);
 
 private:
-	bool justTeleported;
+	std::vector<uint16> eggs;
 };
+
 
 #endif

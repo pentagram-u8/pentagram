@@ -279,7 +279,7 @@ uint32 Actor::I_pathfindToItem(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ACTOR(actor);
 	ARG_UINT16(id2);
-	Item* item = p_dynamic_cast<Item*>(World::get_instance()->getObject(id2));
+	Item* item = World::get_instance()->getItem(id2);
 	if (!actor) return 0;
 	if (!item) return 0;
 

@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "TeleportEgg.h"
 #include "World.h"
+#include "MainActor.h"
 
 DEFINE_DYNAMIC_CAST_CODE(TeleportEgg,Egg);
 
@@ -38,8 +39,19 @@ uint16 TeleportEgg::hatch()
 {
 	if (!isTeleporter()) return 0; // teleport target
 
-	// find right destination egg (teleport_id) in new map (mapnum)
 	// teleport to destination egg
+	perr << "Teleport!!!!!!!!" << std::endl;
+
+	//! hack to prevent immediate return-teleports
+	//! need to figure out how to properly prevent this
+	if (mapnum != 40) {
+		perr << "(ignoring)" << std::endl;
+		return 0;
+	}
+
+	MainActor* av = p_dynamic_cast<MainActor*>(
+		World::get_instance()->getNPC(1));
+	av->teleport(mapnum, getTeleportId());
 
 	return 0;
 }

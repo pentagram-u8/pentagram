@@ -19,11 +19,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "MainActor.h"
+#include "World.h"
+#include "TeleportEgg.h"
+#include "CurrentMap.h"
 
 // p_dynamic_cast stuff
 DEFINE_DYNAMIC_CAST_CODE(MainActor,Actor);
 
-MainActor::MainActor()
+MainActor::MainActor() : justTeleported(false)
 {
 
 }
@@ -31,4 +34,47 @@ MainActor::MainActor()
 MainActor::~MainActor()
 {
 
+}
+
+void MainActor::teleport(int mapnum, sint32 x, sint32 y, sint32 z)
+{
+	World* world = World::get_instance();
+	CurrentMap* currentmap = world->getCurrentMap();
+
+	// (attempt to) load the new map
+	if (!world->switchMap(mapnum)) {
+		perr << "MainActor::teleport(): switchMap() failed!" << std::endl;
+		return;
+	}
+
+	Actor::teleport(mapnum, x, y, z);
+
+	justTeleported = true;
+}
+
+// teleport to TeleportEgg
+//NB: This is _not_ suitable for the teleportToEgg intrinsic,
+// as it will kill all running UCProcesses
+// (maybe we shouldn't kill currently running processes in switchMap()?)
+void MainActor::teleport(int mapnum, int teleport_id)
+{
+	World* world = World::get_instance();
+	CurrentMap* currentmap = world->getCurrentMap();
+
+	// (attempt to) load the new map
+	if (!world->switchMap(mapnum)) {
+		perr << "MainActor::teleport(): switchMap() failed!" << std::endl;
+		return;
+	}
+
+	// find destination
+	TeleportEgg* egg = currentmap->findDestination(teleport_id);
+	sint32 x,y,z;
+	egg->getLocation(x,y,z);
+
+	perr << "Found destination: " << x << "," << y << "," << z << std::endl;
+
+	Actor::teleport(mapnum, x, y, z);
+
+	justTeleported = true;
 }

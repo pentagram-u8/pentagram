@@ -29,8 +29,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "u8intrinsics.h"
 
-#define LOGPF(X) pout.printf X
-//#define LOGPF(X)
+//#define LOGPF(X) pout.printf X
+#define LOGPF(X)
 
 enum UCSegments {
 	SEG_STACK      = 0x0000,
@@ -1438,7 +1438,7 @@ bool UCMachine::execProcess(UCProcess* p)
 					if (searchtype == 3) recurse = true;
 
 					// ui16a = item, ui16b = range
-					Item* item= p_dynamic_cast<Item*>(world->getObject(ui16a));
+					Item* item = world->getItem(ui16a);
 
 					if (item) {
 					    world->getCurrentMap()->areaSearch(itemlist, script,
@@ -1459,7 +1459,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 					// ui16a = 0xFFFF (?), ui16b = container
 					Container* container = p_dynamic_cast<Container*>
-						(world->getObject(ui16b));
+						(world->getItem(ui16b));
 
 					if (ui16b != 0xFFFF) {
 						perr << "Warning: non-FFFF value passed to "
@@ -1530,8 +1530,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 					p->stack.assign(p->bp+si16a, (*itemlist)[index], 2);
 					uint16 objid = p->stack.access2(p->bp+si16a);
-					if (p_dynamic_cast<Item*>(World::get_instance()->
-											  getObject(objid))) {
+					if (World::get_instance()->getItem(objid)) {
 						valid = true;
 					} else {
 						valid = false;

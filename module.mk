@@ -82,6 +82,7 @@ GUMPS = \
 WORLD = \
 	world/CameraProcess.o \
 	world/Egg.o \
+	world/EggHatcherProcess.o \
 	world/Item.o \
 	world/Container.o \
 	world/ItemFactory.o \

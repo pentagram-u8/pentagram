@@ -120,9 +120,9 @@ Intrinsic U8Intrinsics[] = {
 	0, //U
 	0, //U
 	// 0x050
-	0, // Item::getMapArray
+	Item::I_getMapArray,
 	0, //U
-	0, // Item::setMapArray
+	Item::I_setMapArray,
 	0, // Item::receiveHit
 	0, // Item::explode
 	0, // Item::canReach

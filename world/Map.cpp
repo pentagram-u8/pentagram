@@ -119,9 +119,10 @@ void Map::loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds,
 #endif
 		}
 
-#ifdef DUMP_ITEMS
+//#ifdef DUMP_ITEMS
+		if (shape == 508)
 		pout << shape << "," << frame << ":\t(" << x << "," << y << "," << z << "),\t" << std::hex << flags << std::dec << ", " << quality << ", " << npcnum << ", " << mapnum << ", " << next << std::endl;
-#endif
+//#endif
 
 		Item *item = ItemFactory::createItem(shape,frame,quality,flags,
 											 npcnum,mapnum,extendedflags);

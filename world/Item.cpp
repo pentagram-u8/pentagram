@@ -473,7 +473,7 @@ void Item::animateItem(int even_odd)
 			if (shp && frame == shp->frameCount()) frame = 0;
 		}
 		else {
-			int num = (frame-1) / anim_data;
+			unsigned int num = (frame-1) / anim_data;
 			if (frame == ((num+1)*anim_data)) frame = num*anim_data;
 		}
 		dirty = true;
@@ -501,7 +501,7 @@ void Item::animateItem(int even_odd)
 		else {
 			if (!(frame % anim_data)) break;
 			frame ++;
-			int num = (frame-1) / anim_data;
+			unsigned int num = (frame-1) / anim_data;
 			if (frame == ((num+1)*anim_data)) frame = num*anim_data+1;
 		}
 		dirty = true;
@@ -528,6 +528,10 @@ void Item::inFastArea(int even_odd)
 	if (flags & FLG_FASTAREA) return;
 
 	flags |= FLG_FASTAREA;
+
+
+	//!! HACK to get rid of endless SFX loops
+	if (shape == 0x2c8) return;
 
 	// Call usecode here
 	callUsecodeEvent(0x0F);		// CONSTANT!
@@ -1071,7 +1075,7 @@ uint32 Item::I_overlaps(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM(item);
 	ARG_UINT16(id2);
-	Item* item2 = p_dynamic_cast<Item*>(World::get_instance()->getObject(id2));
+	Item* item2 = World::get_instance()->getItem(id2);
 	if (!item) return 0;
 	if (!item2) return 0;
 
@@ -1085,7 +1089,7 @@ uint32 Item::I_overlapsXY(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM(item);
 	ARG_UINT16(id2);
-	Item* item2 = p_dynamic_cast<Item*>(World::get_instance()->getObject(id2));
+	Item* item2 = World::get_instance()->getItem(id2);
 	if (!item) return 0;
 	if (!item2) return 0;
 
@@ -1099,7 +1103,7 @@ uint32 Item::I_isOn(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM(item);
 	ARG_UINT16(id2);
-	Item* item2 = p_dynamic_cast<Item*>(World::get_instance()->getObject(id2));
+	Item* item2 = World::get_instance()->getItem(id2);
 	if (!item) return 0;
 	if (!item2) return 0;
 
@@ -1169,7 +1173,7 @@ uint32 Item::I_pop(const uint8* args, unsigned int /*argsize*/)
 	if (w->etherealEmpty()) return 0; // no items left on stack
 
 	uint16 objid = w->etherealPop();
-	Item* item = p_dynamic_cast<Item*>(w->getObject(objid));
+	Item* item = w->getItem(objid);
 	if (!item) return 0; // top item was invalid
 
 	item->clearFlag(FLG_ETHEREAL);
@@ -1192,7 +1196,7 @@ uint32 Item::I_popToCoords(const uint8* args, unsigned int /*argsize*/)
 	if (w->etherealEmpty()) return 0; // no items left on stack
 
 	uint16 objid = w->etherealPop();
-	Item* item = p_dynamic_cast<Item*>(w->getObject(objid));
+	Item* item = w->getItem(objid);
 	if (!item) return 0; // top item was invalid
 
 	item->setLocation(x, y, z);
@@ -1219,7 +1223,7 @@ uint32 Item::I_popToContainer(const uint8* args, unsigned int /*argsize*/)
 	if (w->etherealEmpty()) return 0; // no items left on stack
 
 	uint16 objid = w->etherealPop();
-	Item* item = p_dynamic_cast<Item*>(w->getObject(objid));
+	Item* item = w->getItem(objid);
 	if (!item) return 0; // top item was invalid
 
 	item->clearFlag(FLG_ETHEREAL);
@@ -1245,7 +1249,7 @@ uint32 Item::I_popToEnd(const uint8* args, unsigned int /*argsize*/)
 	if (w->etherealEmpty()) return 0; // no items left on stack
 
 	uint16 objid = w->etherealPop();
-	Item* item = p_dynamic_cast<Item*>(w->getObject(objid));
+	Item* item = w->getItem(objid);
 	if (!item) return 0; // top item was invalid
 
 	item->clearFlag(FLG_ETHEREAL);
@@ -1278,6 +1282,27 @@ uint32 Item::I_getEtherealTop(const uint8* args, unsigned int /*argsize*/)
 	return w->etherealPeek();
 }
 
+
+//!!! is this correct?
+uint32 Item::I_getMapArray(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	if (!item) return 0;
+
+	return item->getMapNum();
+}
+
+//!!! is this correct?
+uint32 Item::I_setMapArray(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_UINT16(mapnum);
+	if (!item) return 0;
+
+	item->setMapNum(mapnum);
+	return 0;
+}
+
 uint32 Item::I_getDirToCoords(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM(item);
@@ -1302,7 +1327,7 @@ uint32 Item::I_getDirToItem(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM(item);
 	ARG_UINT16(id2);
-	Item *item2 = p_dynamic_cast<Item*>(World::get_instance()->getObject(id2));
+	Item *item2 = World::get_instance()->getItem(id2);
 	if (!item) return 0;
 	if (!item2) return 0;
 
@@ -1313,7 +1338,7 @@ uint32 Item::I_getDirFromItem(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM(item);
 	ARG_UINT16(id2);
-	Item *item2 = p_dynamic_cast<Item*>(World::get_instance()->getObject(id2));
+	Item *item2 = World::get_instance()->getItem(id2);
 	if (!item) return 0;
 	if (!item2) return 0;
 

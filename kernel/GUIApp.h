@@ -59,6 +59,7 @@ class GUIApp : public CoreApp
 		// To be moved 'somewhere' else
 		void GetCamera(sint32 &x, sint32 &y, sint32 &z);
 		uint16 SetCameraProcess(CameraProcess *);	// Set the current camera process. Adds process. Return PID
+		void ResetCamera(); // Kill camera process
 		void setAvatarInStasis(bool stat) { avatarInStasis = stat; }
 
 	private:

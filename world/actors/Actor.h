@@ -51,7 +51,7 @@ public:
 	void setActorFlag(uint32 mask) { actorflags |= mask; }
 	void clearActorFlag(uint32 mask) { actorflags &= ~mask; }
 
-	void teleport(int mapnum, sint32 x, sint32 y, sint32 z);
+	virtual void teleport(int mapnum, sint32 x, sint32 y, sint32 z);
 
 	// p_dynamic_cast stuff
 	ENABLE_DYNAMIC_CAST(Actor);

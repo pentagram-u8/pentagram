@@ -27,6 +27,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Direction.h"
 #include "World.h"
 
+#include "GUIApp.h" // debugging
+
+//#define WATCHACTOR 5
+
+#ifdef WATCHACTOR
+static const int watchactor = WATCHACTOR;
+#endif
+
 // p_dynamic_cast stuff
 DEFINE_DYNAMIC_CAST_CODE(ActorAnimProcess,Process);
 
@@ -58,6 +66,10 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 		animaction = 0;
 	}
 
+	if (item_num == 5)
+		animaction->framerepeat = 2; // force Darion to 2 frames
+
+
 	if (animaction) {
 		actor_->setActorFlag(Actor::ACT_ANIMLOCK);
 
@@ -69,6 +81,12 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 		actor_->lastanim = action;
 		actor_->direction = dir_;
 	}
+
+#ifdef WATCHACTOR
+	if (item_num == watchactor)
+		perr << "Animation [" << GUIApp::get_instance()->getFrameNum()
+			 << "] ActorAnimProcess created" << std::endl;
+#endif
 }
 
 bool ActorAnimProcess::run(const uint32 framenum)
@@ -96,6 +114,11 @@ bool ActorAnimProcess::run(const uint32 framenum)
 	}
 
 	if (framecount == 0) {
+#ifdef WATCHACTOR
+		if (item_num == watchactor)
+			perr << "Animation [" << GUIApp::get_instance()->getFrameNum()
+				 << "] showing new frame" << std::endl;
+#endif
 		sint32 x, y, z;
 		a->getLocation(x,y,z);
 
@@ -116,6 +139,12 @@ bool ActorAnimProcess::run(const uint32 framenum)
 	currentindex++;
 
 	if (currentindex >= animaction->size * animaction->framerepeat) {
+#ifdef WATCHACTOR
+		if (item_num == watchactor)
+			perr << "Animation [" << GUIApp::get_instance()->getFrameNum()
+				 << "] ActorAnimProcess terminating" << std::endl;
+#endif		 
+
 		//? do we need to terminate now or when we're about to show the next
 		// frame?
 		terminate();
