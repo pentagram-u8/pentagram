@@ -43,8 +43,11 @@ public:
 	void setExtFlags(uint32 f) { extendedflags = f; }
 	uint32 getExtFlags() const { return extendedflags; }
 	uint32 getShape() const { return shape; }
+	void setShape(uint32 shape_) { shape = shape_; }
 	uint32 getFrame() const { return frame; }
+	void setFrame(uint32 frame_) { frame = frame_; }
 	uint16 getQuality() const { return quality; }
+	void setQuality(uint16 quality_) { quality = quality_; }
 	uint16 getNpcNum() const { return npcnum; }
 	uint16 getMapNum() const { return mapnum; }
 
@@ -99,14 +102,28 @@ public:
 	INTRINSIC(I_getX);
 	INTRINSIC(I_getY);
 	INTRINSIC(I_getZ);
+	INTRINSIC(I_getCX);
+	INTRINSIC(I_getCY);
+	INTRINSIC(I_getCZ);
+	INTRINSIC(I_getPoint);
 	INTRINSIC(I_getShape);
+	INTRINSIC(I_setShape);
 	INTRINSIC(I_getFrame);
+	INTRINSIC(I_setFrame);
+	INTRINSIC(I_getQuality);
+	INTRINSIC(I_getUnkEggType);
+	INTRINSIC(I_getQuantity);
 	INTRINSIC(I_getContainer);
 	INTRINSIC(I_getRootContainer);
 	INTRINSIC(I_getQ);
+	INTRINSIC(I_setQ);
+	INTRINSIC(I_setQuality);
+	INTRINSIC(I_setQuantity);
 	INTRINSIC(I_getFamily);
 	INTRINSIC(I_getTypeFlag);
 	INTRINSIC(I_getStatus);
+	INTRINSIC(I_orStatus);
+	INTRINSIC(I_andStatus);
 	INTRINSIC(I_getWeight);
 	INTRINSIC(I_getVolume);
 	INTRINSIC(I_bark);

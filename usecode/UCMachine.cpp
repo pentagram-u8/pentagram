@@ -965,57 +965,15 @@ bool UCMachine::execProcess(UCProcess* p)
 			// indirect push,
 			// pops a 32 bit pointer off the stack and pushes xx bytes
 			// from the location referenced by the pointer
-
-			// this one is a bit tricky. There's no way we can support
-			// all possible pointers, so we're just going to do a few:
-			// * stack pointers
-			// * object pointers, as long as xx == 02. (i.e., push objref)
-			// * global pointers
 			{
 				ui16a = cs.read1();
 				ui32a = p->stack.pop4();
-				uint16 segment = ui32a >> 16;
-				uint16 offset = ui32a;
 
-				if (segment >= SEG_STACK_FIRST && segment <= SEG_STACK_LAST)
-				{
-					UCProcess *proc = p_dynamic_cast<UCProcess*>
-						(Kernel::get_instance()->getProcess(segment));
-
-					// reference to the stack of pid 'segment'
-					if (!proc) {
-						// segfault :-)
-						perr << "Trying to access stack of non-existent "
-							 << "process (pid: " << std::hex << segment
-							 << std::dec << ")" << std::endl;
-						error = true;
-					} else {
-						p->stack.push(proc->stack.access(offset), ui16a);
-					}
-				}
-				else if (segment == SEG_OBJ)
-				{
-					if (ui16a != 2) {
-						perr << "Trying to read other than 2 bytes from objptr"
-							 << std::endl;
-						error = true;
-					} else {
-						// push objref
-						p->stack.push2(offset);
-					}
-				}
-				else if (segment == SEG_GLOBAL)
-				{
-					p->stack.push(globals.access(offset), ui16a);
-				}
-				else
-				{
-					perr << "Trying to access segment " << std::hex
-						 << segment << std::dec << std::endl;
-//					error = true;
-					p->stack.push0(ui16a); //!
-				}
-				LOGPF(("push indirect\t%02Xh bytes", ui16a));
+				p->stack.addSP(-ui16a);
+				if (!dereferencePointer(ui32a,
+										const_cast<uint8*>(p->stack.access()),
+										ui16a))
+					error = true;
 			}
 			break;
 
@@ -1024,45 +982,15 @@ bool UCMachine::execProcess(UCProcess* p)
 			// indirect pop
 			// pops a 32 bit pointer off the stack and pushes xx bytes
 			// from the location referenced by the pointer
-
-			// like 0x4C. Only implemented the following:
-			// * stack pointers
-			// * global pointers
 			{
 				ui16a = cs.read1();
 				ui32a = p->stack.pop4();
-				uint16 segment = ui32a >> 16;
-				uint16 offset = ui32a;
 
-				if (segment >= SEG_STACK_FIRST && segment <= SEG_STACK_LAST)
-				{
-					UCProcess *proc = p_dynamic_cast<UCProcess*>
-						(Kernel::get_instance()->getProcess(segment));
-
-					// reference to the stack of pid 'segment'
-					if (!proc) {
-						// segfault :-)
-						perr << "Trying to access stack of non-existent "
-							 << "process (pid: " << std::hex << segment
-							 << std::dec << ")" << std::endl;
-						error = true;
-					} else {
-						proc->stack.assign(offset, p->stack.access(), ui16a);
-						p->stack.addSP(ui16a);
-					}
-				}
-				else if (segment == SEG_GLOBAL)
-				{
-					globals.assign(offset, p->stack.access(), ui16a);
+				if (assignPointer(ui32a, p->stack.access(), ui16a)) {
 					p->stack.addSP(ui16a);
-				}
-				else
-				{
-					perr << "Trying to access segment " << std::hex
-						 << segment << std::dec << std::endl;
+				} else {
 					error = true;
 				}
-				LOGPF(("pop indirect\t%02Xh bytes", ui16a));
 			}
 			break;
 
@@ -1743,6 +1671,103 @@ uint32 UCMachine::objectToPtr(uint16 objID)
 	ptr <<= 16;
 	ptr += objID;
 	return ptr;
+}
+
+bool UCMachine::assignPointer(uint32 ptr, const uint8* data, uint32 size)
+{
+	// Only implemented the following:
+	// * stack pointers
+	// * global pointers
+
+
+	//! range checking...
+
+	uint16 segment = ptr >> 16;
+	uint16 offset = (uint16)ptr;
+
+	if (segment >= SEG_STACK_FIRST && segment <= SEG_STACK_LAST)
+	{
+		UCProcess *proc = p_dynamic_cast<UCProcess*>
+			(Kernel::get_instance()->getProcess(segment));
+		
+		// reference to the stack of pid 'segment'
+		if (!proc) {
+			// segfault :-)
+			perr << "Trying to access stack of non-existent "
+				 << "process (pid: " << std::hex << segment
+				 << std::dec << ")" << std::endl;
+			return false;
+		} else {
+			proc->stack.assign(offset, data, size);
+		}
+	}
+	else if (segment == SEG_GLOBAL)
+	{
+		globals.assign(offset, data, size);
+	}
+	else
+	{
+		perr << "Trying to access segment " << std::hex
+			 << segment << std::dec << std::endl;
+		return false;
+	}
+
+	return true;
+}
+
+bool UCMachine::dereferencePointer(uint32 ptr, uint8* data, uint32 size)
+{
+	// this one is a bit tricky. There's no way we can support
+	// all possible pointers, so we're just going to do a few:
+	// * stack pointers
+	// * object pointers, as long as xx == 02. (i.e., get objref)
+	// * global pointers
+
+
+	//! range checking...
+
+	uint16 segment = ptr >> 16;
+	uint16 offset = ptr;
+	
+	if (segment >= SEG_STACK_FIRST && segment <= SEG_STACK_LAST)
+	{
+		UCProcess *proc = p_dynamic_cast<UCProcess*>
+			(Kernel::get_instance()->getProcess(segment));
+		
+		// reference to the stack of pid 'segment'
+		if (!proc) {
+			// segfault :-)
+			perr << "Trying to access stack of non-existent "
+				 << "process (pid: " << std::hex << segment
+				 << std::dec << ")" << std::endl;
+			return false;
+		} else {
+			memcpy(data, proc->stack.access(offset), size);
+		}
+	}
+	else if (segment == SEG_OBJ)
+	{
+		if (size != 2) {
+			perr << "Trying to read other than 2 bytes from objptr"
+				 << std::endl;
+			return false;
+		} else {
+			// push objref
+			data[0] = offset;
+			data[1] = offset>>8;
+		}
+	}
+	else if (segment == SEG_GLOBAL)
+	{
+		memcpy(data, globals.access(offset), size);
+	}
+	else
+	{
+		perr << "Trying to access segment " << std::hex
+			 << segment << std::dec << std::endl;
+		return false;
+	}
+	return true;
 }
 
 //static

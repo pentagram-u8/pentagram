@@ -278,7 +278,6 @@ void Item::setupLerp(sint32 cx, sint32 cy, sint32 cz)
 	l_next.frame = frame;
 }
 
-
 uint32 Item::I_getX(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM(item);
@@ -303,6 +302,55 @@ uint32 Item::I_getZ(const uint8* args, unsigned int /*argsize*/)
 	return item->z;
 }
 
+uint32 Item::I_getCX(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	if (!item) return 0;
+
+	if (item->flags & FLG_FLIPPED)
+		return item->x + item->getShapeInfo()->y * 16;
+	else
+		return item->x + item->getShapeInfo()->x * 16;
+}
+
+uint32 Item::I_getCY(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	if (!item) return 0;
+
+	if (item->flags & FLG_FLIPPED)
+		return item->y + item->getShapeInfo()->x * 16;
+	else
+		return item->y + item->getShapeInfo()->y * 16;
+}
+
+uint32 Item::I_getCZ(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	if (!item) return 0;
+
+	return item->z + item->getShapeInfo()->z * 4;
+}
+
+uint32 Item::I_getPoint(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_UINT32(ptr);
+	if (!item) return 0;
+
+	uint8 buf[5];
+
+	buf[0] = item->x;
+	buf[1] = item->x >> 8;
+	buf[2] = item->y;
+	buf[3] = item->y >> 8;
+	buf[4] = item->z;
+
+	UCMachine::get_instance()->assignPointer(ptr, buf, 5);
+
+	return 0;
+}
+
 uint32 Item::I_getShape(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM(item);
@@ -311,12 +359,66 @@ uint32 Item::I_getShape(const uint8* args, unsigned int /*argsize*/)
 	return item->getShape();
 }
 
+uint32 Item::I_setShape(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_UINT16(shape);
+	if (!item) return 0;
+
+	item->setShape(shape);
+	return 0;
+}
+
 uint32 Item::I_getFrame(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM(item);
 	if (!item) return 0;
 
 	return item->getFrame();
+}
+
+uint32 Item::I_setFrame(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_UINT16(frame);
+	if (!item) return 0;
+
+	item->setFrame(frame);
+	return 0;
+}
+
+uint32 Item::I_getQuality(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	if (!item) return 0;
+
+	if (item->getFamily() != ShapeInfo::SF_GENERIC)
+		return item->getQuality();
+	else
+		return 0;
+}
+
+uint32 Item::I_getUnkEggType(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	if (!item) return 0;
+
+	if (item->getFamily() == ShapeInfo::SF_UNKEGG)
+		return item->getQuality();
+	else
+		return 0;
+}
+
+uint32 Item::I_getQuantity(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	if (!item) return 0;
+
+	if (item->getFamily() == ShapeInfo::SF_QUANTITY ||
+		item->getFamily() == ShapeInfo::SF_REAGENT)
+		return item->getQuality();
+	else
+		return 0;
 }
 
 uint32 Item::I_getContainer(const uint8* args, unsigned int /*argsize*/)
@@ -360,6 +462,41 @@ uint32 Item::I_getQ(const uint8* args, unsigned int /*argsize*/)
 	return item->getQuality();
 }
 
+uint32 Item::I_setQ(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_UINT16(q);
+	if (!item) return 0;
+
+	item->setQuality(q);
+	return 0;
+}
+
+uint32 Item::I_setQuality(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_UINT16(q);
+	if (!item) return 0;
+
+	if (item->getFamily() != ShapeInfo::SF_GENERIC)
+		item->setQuality(q);
+
+	return 0;
+}
+
+uint32 Item::I_setQuantity(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_UINT16(q);
+	if (!item) return 0;
+
+	if (item->getFamily() == ShapeInfo::SF_QUANTITY ||
+		item->getFamily() == ShapeInfo::SF_REAGENT)
+		item->setQuality(q);
+
+	return 0;
+}
+
 uint32 Item::I_getFamily(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM(item);
@@ -388,6 +525,27 @@ uint32 Item::I_getStatus(const uint8* args, unsigned int /*argsize*/)
 
 	return item->getFlags();
 }
+
+uint32 Item::I_orStatus(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_UINT16(mask);
+	if (!item) return 0;
+
+	item->flags |= mask;
+	return 0;
+}
+
+uint32 Item::I_andStatus(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_UINT16(mask);
+	if (!item) return 0;
+
+	item->flags &= mask;
+	return 0;
+}
+
 
 uint32 Item::I_getWeight(const uint8* args, unsigned int /*argsize*/)
 {

@@ -63,6 +63,10 @@ public:
 
 	static uint16 ptrToObject(uint32 ptr);
 
+	bool assignPointer(uint32 ptr, const uint8* data, uint32 size);
+	bool dereferencePointer(uint32 ptr, uint8* data, uint32 size);
+
+
 	// dummies...
 	INTRINSIC(I_AvatarCanCheat);
 	INTRINSIC(I_dummyProcess);
