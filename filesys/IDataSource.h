@@ -21,7 +21,7 @@
 #ifndef IDATASOURCE_H
 #define IDATASOURCE_H
 
-#include "common_types.h"
+#include "pent_include.h"
 #include <fstream>
 
 class IDataSource

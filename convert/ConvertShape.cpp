@@ -23,7 +23,7 @@
 
 //extern int shapenum;
 
-void ConvertShape::Read(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len)
+void ConvertShape::Read(IDataSource *source, const ConvertShapeFormat *csf, uint32 /*real_len*/)
 {
 	// Just to be safe
 	int start_pos = source->getPos();
@@ -141,10 +141,10 @@ void ConvertShape::Write(ODataSource *dest, const ConvertShapeFormat *csf, uint3
 	dest->writeX(num_frames, csf->bytes_num_frames);
 
 	// Write filler space for the frame details
-	for (int i = 0; i < num_frames*csf->len_frameheader; i++) dest->write1(0);
+	for (uint32 i = 0; i < num_frames*csf->len_frameheader; i++) dest->write1(0);
 
 	// Now write the frames
-	for (int f = 0; f < num_frames; f++) 
+	for (sint32 f = 0; f < num_frames; f++) 
 	{
 		ConvertShapeFrame *frame = frames+f;
 
@@ -178,7 +178,7 @@ void ConvertShape::Write(ODataSource *dest, const ConvertShapeFormat *csf, uint3
 		dest->writeX(frame->yoff, csf->bytes_frame_yoff);
 
 		// Line offsets
-		for (int i = 0; i < frame->height; i++) 
+		for (sint32 i = 0; i < frame->height; i++) 
 		{
 			// Unfudge the value and write it
 			int actual_offset = frame->line_offsets[i] + (frame->height-i)*csf->bytes_line_offset;

@@ -1,4 +1,4 @@
 .deps
 Makefile
-disasm
+fold
 disasm_output.txt

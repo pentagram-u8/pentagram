@@ -49,6 +49,72 @@ using	std::string;
 #include <iomanip>
 #endif
 
+/* A temporary opcode class as I slowly transition to returning pure Node* from
+	the relevant readOp functions */
+class TempOp
+{
+	public:
+		TempOp(const uint32 offset_=0, const sint32 opcode_=0,
+			const uint32 nextoffset_=0,
+			const sint32 i0_=0, const sint32 i1_=0, const sint32 i2_=0,
+			const sint32 i3_=0, const sint32 i4_=0, const string &str_=string())
+			: offset(offset_), nextoffset(nextoffset_), i0(i0_), i1(i1_), i2(i2_),
+			i3(i3_), i4(i4_), str(str_),
+			sp_size(0), ret_size(0), opcode(opcode_) {};
+
+		~TempOp() {};
+
+		void op(const int opcode_) { opcode = opcode_; };
+		int op() const { return opcode; };
+
+		uint32 offset;
+		uint32 nextoffset;
+		sint32 i0, i1, i2, i3, i4;
+		string str;
+
+		// added for calli preprocessor
+		uint32 sp_size;
+		uint32 ret_size;
+
+	protected:
+		int opcode;
+};
+
+/* curOffset is the current offset from the start of the current data section
+   thus the specialised read functions */
+
+uint32 curOffset;
+
+inline uint32 read1(IFileDataSource *ucfile) { curOffset+=1; return ucfile->read1(); };
+inline uint32 read2(IFileDataSource *ucfile) { curOffset+=2; return ucfile->read2(); };
+inline uint32 read4(IFileDataSource *ucfile) { curOffset+=4; return ucfile->read4(); };
+/* read string until null terninator */
+inline std::string readstr(IFileDataSource *ucfile)
+{
+	string s;
+	while(char c = static_cast<char>(read1(ucfile)))
+		s += c;
+//	for (uint32 i=0; i < 8; ++i)
+//			 op.str += static_cast<char>(read1(ucfile));
+//			if(read1(ucfile)!=0) assert(false); // trailing 0
+	return s;
+}
+/* read 'n' characters into a string */
+inline std::string readnstr(IFileDataSource *ucfile, uint32 n)
+{
+	string s;
+	while(n-->0)
+		s += static_cast<char>(read1(ucfile));
+//	for (uint32 i=0; i < 8; ++i)
+//			 op.str += static_cast<char>(read1(ucfile));
+//			if(read1(ucfile)!=0) assert(false); // trailing 0
+	return s;
+}
+
+std::map<int, string> ScriptExpressions;
+
+map<uint32, uint32> EventMap;
+
 class UsecodeHeader
 {
 	public:
@@ -62,18 +128,19 @@ class UsecodeHeader
 		uint32 fixupTable;
 };
 
-/* curOffset is the current offset from the start of the current data section
-   thus the specialised read functions */
+const char * const print_bp(const sint32 offset)
+{
+	static char str[32];
+	snprintf(str, 32, "[BP%c%02Xh]", offset>0x7F?'-':'+', offset>0x7F?0x100-offset:offset);
+	return str;
+}
 
-uint32 curOffset;
-
-inline uint32 read1(IFileDataSource *ucfile) { curOffset+=1; return ucfile->read1(); };
-inline uint32 read2(IFileDataSource *ucfile) { curOffset+=2; return ucfile->read2(); };
-inline uint32 read4(IFileDataSource *ucfile) { curOffset+=4; return ucfile->read4(); };
-
-std::map<int, std::string> ScriptExpressions;
-
-map<uint32, uint32> EventMap;
+const char * const print_sp(const sint32 offset)
+{
+	static char str[32];
+	snprintf(str, 32, "[SP%c%02Xh]", offset>0x7F?'-':'+', offset>0x7F?0x100-offset:offset);
+	return str;
+}
 
 #include "u8/ConvertUsecodeU8.h"
 #include "crusader/ConvertUsecodeCrusader.h"
@@ -95,7 +162,7 @@ ConvertUsecode *convert = new ConvertUsecodeU8();
 
 
 // Overload Table
-void printoverloads(IFileDataSource *ucfile, int endpos);
+void printoverloads(IFileDataSource *ucfile, uint32 endpos);
 
 
 class GlobalName
@@ -181,7 +248,7 @@ string functionaddresstostring(const sint32 i0, const sint32 i1, IFileDataSource
 
 	// Get details
 	sint32 offset = ucfile->read4();
-	sint32 length = ucfile->read4();
+	/*sint32 length =*/ ucfile->read4();
 
 	// Seek to name entry
 	ucfile->seek(offset + i0*13 + 4);
@@ -222,49 +289,23 @@ string functionaddresstostring(const sint32 i0, const sint32 i1, IFileDataSource
 	return "unknown";
 }
 
-const char * const print_bp(const sint32 offset)
-{
-	static char str[32];
-	snprintf(str, 32, "[BP%c%02Xh]", offset>0x7F?'-':'+', offset>0x7F?0x100-offset:offset);
-	return str;
-}
-
-const char * const print_sp(const sint32 offset)
-{
-	static char str[32];
-	snprintf(str, 32, "[SP%c%02Xh]", offset>0x7F?'-':'+', offset>0x7F?0x100-offset:offset);
-	return str;
-}
-
 /* Yes, this is icky and evil. *grin* But it works without modifying anything. */
 #ifdef FOLD
 	#define con_Printf if(print_disasm) con.Printf
+//	#define con_Printf con.Printf
 #else
 	#define con_Printf con.Printf
 #endif
 
-uint32 read_dbg_symbols(IFileDataSource *ucfile)
-{
-	uint32 count=read1(ucfile);
 
-	for(uint32 i=0; i<count; ++i)
-	{
-		uint32 unknown1 = read1(ucfile);
-		uint32 type     = read1(ucfile);
-		uint32 unknown2 = read1(ucfile);
-		uint32 unknown3 = read1(ucfile);
-		std::string s;
-		uint32 tchar;
-		while ((tchar = read1(ucfile)))
-			s += static_cast<char>(tchar);
-		con_Printf("%02X: %02X type=%02X (%c) %s (%02X) %02X %s\n",
-			i, unknown1, type, type, print_bp(unknown2), unknown2, unknown3, s.c_str());
-	}
-	count = read1(ucfile);
-	assert(count==0x7a); //end
-	return count;
-}
+// should be passed to readfunction, except that would make it dependaing upon Fold.cpp
+// which is not what I'm intending atm.
+#ifdef FOLD
+#include "tools/fold/Folder.h"
+Folder *folder = new Folder();
+#endif
 
+void just_print(TempOp &op, IFileDataSource *ucfile);
 bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader &uch)
 {
 	std::string str;
@@ -286,31 +327,435 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 
 	con_Printf(":\n");
 
+	std::vector<DebugSymbol> debugSymbols;
 	uint32 dbg_symbol_offset=0;
 	bool done = false;
-	sint32 i;
+	
+	#ifdef FOLD
+	folder->NewUnit();
+	#endif
+	
+	while (!done)
+	{
+		if (!ucfile->good())
+			return false;
 
-	while (!done) {
-		short s0;
+		TempOp op;
+		#ifdef FOLD
+		//foldops.push_back(FoldOp(op.offset, op.op(), op.nextoffset, op.i0, op.i1, op.i2, op.i3, op.i4, op.str));
+		folder->fold(convert->readOp(ucfile, dbg_symbol_offset, debugSymbols, done));
+		#else
+		convert->readOp(op, ucfile, dbg_symbol_offset, debugSymbols, done);
+		#endif
+		just_print(op, ucfile);
+		
+	}
+	//printbytes(ucfile, 20);
+	return true;
+}
+
+void just_print(TempOp &op, IFileDataSource *ucfile)
+{
+		// point to the location of the opcode we just grabbed
+		con_Printf("    %04X:", op.offset);
+
+		con_Printf(" %02X\t", op.op());
+
+		switch(op.op()) {
+
+		// Poping to variables
+		case 0x00:
+			con_Printf("pop byte\t%s", print_bp(op.i0));
+			break;
+		case 0x01:
+			con_Printf("pop\t\t%s", print_bp(op.i0));
+			break;
+		case 0x02:
+			con_Printf("pop dword\t%s", print_bp(op.i0));
+			break;
+		case 0x03:
+			con_Printf("pop huge\t%s %i", print_bp(op.i0), op.i1);
+			break;
+
+		case 0x08:
+			con_Printf("pop res");
+			break;
+		case 0x09:
+			con_Printf("pop element\t%s (%02X) slist==%02X", print_bp(op.i0), op.i1, op.i2);
+			break;
+
+		// Constant pushing
+		case 0x0A:
+			con_Printf("push byte\t%02Xh", op.i0);
+			break;
+		case 0x0B:
+			con_Printf("push\t\t%04Xh", op.i0);
+			break;
+		case 0x0C:
+			con_Printf("push dword\t%08Xh", op.i0);
+			break;
+		case 0x0D:
+			con_Printf("push string\t\"%s\"", op.str.c_str());
+			break;
+		case 0x0E:
+			con_Printf("create list\t%02X (%02X)", op.i1, op.i0);
+			break;
+
+		// Usecode function and intrinsic calls
+		case 0x0F:
+			con_Printf("calli\t\t%02Xh %04Xh (%s)", op.i0, op.i1, convert->intrinsics()[op.i1]);
+			break;
+		case 0x11:
+			con_Printf("call\t\t%04X:%04X (%s)", op.i0, op.i1,
+				functionaddresstostring(op.i0, op.i1, ucfile).c_str());
+			break;
+		case 0x12:
+			con_Printf("pop\t\ttemp");
+			break;
+
+		case 0x14:
+			con_Printf("add");
+			break;
+		case 0x15:
+			con_Printf("add dword");
+			break;
+		case 0x16:
+			con_Printf("concat");
+			break;
+		case 0x17:
+			con_Printf("append");
+			break;
+		case 0x19:
+			con_Printf("append slist\t(%02X)", op.i0);
+			break;
+		case 0x1A:
+			con_Printf("remove slist\t(%02X)", op.i0);
+			break;
+		case 0x1B:
+			con_Printf("remove list\t(%02X)", op.i0);
+			break;
+		case 0x1C:
+			con_Printf("sub");
+			break;
+		case 0x1D:
+			con_Printf("sub dword");
+			break;
+		case 0x1E:
+			con_Printf("mul");
+			break;
+		case 0x1F:
+			con_Printf("mul dword");
+			break;
+		case 0x20:
+			con_Printf("div");
+			break;
+		case 0x21:
+			con_Printf("div dword");
+			break;
+		case 0x22:
+			con_Printf("mod");
+			break;
+		case 0x23:
+			con_Printf("mod dword");
+			assert(false); // Guessed opcode
+			break;
+		case 0x24:
+			con_Printf("cmp");
+			break;
+		case 0x25:
+			con_Printf("cmp dword");
+			assert(false); // Guessed opcode
+			break;
+		case 0x26:
+			con_Printf("strcmp");
+			break;
+		case 0x28:
+			con_Printf("lt");
+			break;
+		case 0x29:
+			con_Printf("lt dword");
+			break;
+		case 0x2A:
+			con_Printf("le");
+			break;
+		case 0x2B:
+			con_Printf("le dword");
+			break;
+		case 0x2C:
+			con_Printf("gt");
+			break;
+		case 0x2D:
+			con_Printf("gt dword");
+			break;
+		case 0x2E:
+			con_Printf("ge");
+			break;
+		case 0x2F:
+			con_Printf("ge dword");
+			break;
+		case 0x30:
+			con_Printf("not");
+			break;
+		case 0x31:
+			con_Printf("not dword");
+			break;
+		case 0x32:
+			con_Printf("and");
+			break;
+		case 0x33:
+			con_Printf("and dword");
+			break;
+		case 0x34:
+			con_Printf("or");
+			break;
+		case 0x35:
+			con_Printf("or dword");
+			break;
+		case 0x36:
+			con_Printf("ne");
+			break;
+		case 0x37:
+			con_Printf("ne dword");
+			break;
+
+		case 0x38:
+			con_Printf("in list\t\t%02X slist==%02X", op.i0, op.i1);
+			break;
+
+		case 0x39:
+			con_Printf("bit_and");
+			break;
+		case 0x3A:
+			con_Printf("bit_or");
+			break;
+		case 0x3B:
+			con_Printf("bit_not");
+			break;
+		case 0x3C:
+			con_Printf("lsh");
+			break;
+		case 0x3D:
+			con_Printf("rsh");
+			break;
+
+		case 0x3E:
+			con_Printf("push byte\t%s", print_bp(op.i0));
+			break;
+		case 0x3F:
+			con_Printf("push\t\t%s", print_bp(op.i0));
+			break;
+		case 0x40:
+			con_Printf("push dword\t%s", print_bp(op.i0));
+			break;
+		case 0x41:
+			con_Printf("push string\t%s", print_bp(op.i0));
+			break;
+		case 0x42:
+			con_Printf("push list\t%s (%02X)", print_bp(op.i0), op.i1);
+			break;
+		case 0x43:
+			con_Printf("push slist\t%s", print_bp(op.i0));
+			break;
+		case 0x44:
+			con_Printf("push element\t(%02X) slist==%02X", op.i0, op.i1);
+			break;
+		case 0x45:
+			con_Printf("push huge\t%02X %02X", op.i0, op.i1);
+			break;
+		case 0x4B:
+			con_Printf("push addr\t%s", print_bp(op.i0));
+			break;
+		case 0x4C:
+			con_Printf("push indirect\t%02Xh bytes", op.i0);
+			break;
+		case 0x4D:
+			con_Printf("pop indirect\t%02Xh bytes", op.i0);
+			break;
+
+		case 0x4E:
+			con_Printf("push\t\tglobal [%04X %02X] (%s)", op.i0, op.i1,
+				GlobalNames[op.i0].name.c_str());
+			break;
+		case 0x4F:
+			con_Printf("pop\t\tglobal [%04X %02X] (%s)", op.i0, op.i1,
+				GlobalNames[op.i0].name.c_str());
+			break;
+
+		case 0x50:
+			con_Printf("ret");
+			break;
+		case 0x51:
+			con_Printf("jne\t\t%04Xh\t(to %04X)", op.i0, op.nextoffset + static_cast<short>(op.i0));
+			break;
+		case 0x52:
+			con_Printf("jmp\t\t%04Xh\t(to %04X)", op.i0, op.nextoffset + static_cast<short>(op.i0));
+			break;
+
+		case 0x53:
+			con_Printf("suspend");
+			break;
+
+		case 0x54:
+			con_Printf("implies\t\t%02X %02X", op.i0, op.i1);
+			break;
+
+		case 0x57:
+			con_Printf("spawn\t\t%02X %02X %04X:%04X (%s)",
+				   op.i0, op.i1, op.i2, op.i3, functionaddresstostring(op.i2, op.i3, ucfile).c_str());
+			break;
+		case 0x58:
+			con_Printf("spawn inline\t%04X:%04X+%04X=%04X %02X %02X (%s+%04X)",
+				   op.i0, op.i1, op.i2, op.i1+op.i2, op.i3, op.i4,
+				   functionaddresstostring(op.i0, op.i1, ucfile).c_str(), op.i2);
+			break;
+		case 0x59:
+			con_Printf("push\t\tpid");
+			break;
+
+		case 0x5A:
+			con_Printf("init\t\t%02X", op.i0);
+			break;
+
+		case 0x5B:
+			con_Printf ("line number\t%i (%04Xh)", op.i0, op.i0);
+			break;
+		case 0x5C:
+			con_Printf("symbol info\toffset %04Xh = \"%s\"", op.i0, op.str.c_str());
+			break;
+
+		case 0x5D:
+			con_Printf("push byte\tretval");
+			break;
+		case 0x5E:
+			con_Printf("push\t\tretval");
+			break;
+		case 0x5F:
+			con_Printf("push dword\tretval");
+			break;
+
+		case 0x60:
+			con_Printf("word to dword");
+			break;
+		case 0x61:
+			con_Printf("dword to word");
+			break;
+
+		case 0x62:
+			con_Printf("free string\t%s", print_bp(op.i0));
+			break;
+		case 0x63:
+			con_Printf("free slist\t%s", print_bp(op.i0));
+			break;
+		case 0x64:
+			con_Printf("free list\t%s", print_bp(op.i0));
+			break;
+		case 0x65:
+			con_Printf("free string\t%s", print_sp(op.i0));
+			break;
+		case 0x66:
+			con_Printf("free list\t%s", print_sp(op.i0));
+			break;
+		case 0x67:
+			con_Printf("free slist\t%s", print_sp(op.i0));
+			break;
+		case 0x69:
+			con_Printf("push strptr\t%s", print_bp(op.i0));
+			break;
+		case 0x6B:
+			con_Printf("str to ptr");
+			break;
+
+		case 0x6C:
+			con_Printf("param pid chg\t%s %02X", print_bp(op.i0), op.i1);
+			break;
+
+		case 0x6D:
+			con_Printf("push dword\tprocess result");
+			break;
+		case 0x6E:
+			con_Printf("add sp\t\t%s%02Xh", op.i0>0x7F?"-":"", op.i0>0x7F?0x100-op.i0:op.i0);
+			break;
+		case 0x6F:
+			con_Printf("push addr\t%s", print_sp(0x100 - op.i0));
+			break;
+
+		case 0x70:
+			con_Printf("loop\t\t%s %02X %02X", print_bp(op.i0), op.i1, op.i2);
+			break;
+		case 0x73:
+			con_Printf("loopnext");
+			break;
+		case 0x74:
+			con_Printf("loopscr\t\t%02X \"%c\" - %s", op.i0, static_cast<char>(op.i0),ScriptExpressions[op.i0].c_str());
+			break;
+
+		case 0x75:
+			con_Printf("foreach list\t%s (%02X) %04X", print_bp(op.i0), op.i1, op.i2);
+			break;
+
+		case 0x76:
+			con_Printf("foreach slist\t%s (%02X) %04X", print_bp(op.i0), op.i1, op.i2);
+			break;
+
+		case 0x77:
+			con_Printf("set info");
+			break;
+
+		case 0x78:
+			con_Printf("process exclude");
+			break;
+
+		case 0x79:
+			con_Printf("global_address\t%04X", op.i0);
+			break;
+
+		case 0x7A:
+			con_Printf("end");
+
+			if(op.str.size())
+			{
+				con_Printf("\tsize of dbg symbols %04X", op.str.size());
+			}
+
+			break;
+
+		// can't happen.
+		default:
+			con_Printf("db\t\t%02x", op.op());
+			assert(false);
+		}
+		con_Printf("\n");
+}
+
+
+#if 0
+/* I'm going to be butchering this, so I need a stable reference. In theory, no-one should
+	ever see this. *grin* */
+void just_a_temp_function(TempOp &op, IFileDataSource *ucfile, uint32 &dbg_symbol_offset)
+{
+		bool done; //blearg
+
 		sint32 i0=0, i1=0, i2=0, i3=0, i4=0;
 		std::string str0;
 
 		#ifdef FOLD
-		uint32 startOffset = curOffset;
+		//uint32 startOffset = curOffset;
 		#endif
 
 		uint32 opcode;
 
 		if(dbg_symbol_offset==curOffset)
-			opcode = read_dbg_symbols(ucfile);
+		{
+			//read_dbg_symbols(ucfile); // function renamed
+			op.op(read1(ucfile));
+			assert(op.op()==0x7a);
+		}
 		else
-			opcode = read1(ucfile);
+			op.op(read1(ucfile));
 
+		opcode = op.op();
 		// point to the location of the opcode we just grabbed
 		con_Printf("    %04X:", curOffset-1);
-
-		if (!ucfile->good())
-			return false;
 
 		/*
 		  Guesses of opcodes. I'm reasonably sure about most of them,
@@ -318,7 +763,7 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 		  (Questionmarks generally indicate uncertainty)
 		*/
 
-		con_Printf(" %02X\t", opcode);
+		con_Printf(" %02X\t", op.op());
 
 		switch(opcode) {
 
@@ -727,14 +1172,14 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 		case 0x51:
 			// 51 xx xx
 			// relative jump to xxxx if false
-			i0 = read2(ucfile); s0 = static_cast<short>(i0);
-			con_Printf("jne\t\t%04Xh\t(to %04X)", i0, curOffset + s0);
+			i0 = read2(ucfile);
+			con_Printf("jne\t\t%04Xh\t(to %04X)", i0, curOffset + static_cast<short>(i0));
 			break;
 		case 0x52:
 			// 52 xx xx
 			// relative jump to xxxx
-			i0 = read2(ucfile); s0 = static_cast<short>(i0);
-			con_Printf("jmp\t\t%04Xh\t(to %04X)", i0, curOffset + s0);
+			i0 = read2(ucfile);
+			con_Printf("jmp\t\t%04Xh\t(to %04X)", i0, curOffset + static_cast<short>(i0));
 			break;
 
 		case 0x53:
@@ -805,7 +1250,7 @@ bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader
 			i0 = read2(ucfile);
 			i0 = curOffset + (static_cast<short>(i0));
 			str0 = "";
-			for (i=0; i < 8; ++i)
+			for (uint32 i=0; i < 8; ++i)
 			 str0 += static_cast<char>(read1(ucfile));
 			if(read1(ucfile)!=0) assert(false); // trailing 0
 			con_Printf("symbol info\toffset %04x = \"%s\"", i0, str0.c_str());
@@ -1084,11 +1529,10 @@ and that the child threads are indeed placed infront of the parent thread.
 		con_Printf("\n");
 
 		#ifdef FOLD
-		foldops.push_back(FoldOp(startOffset, opcode, curOffset, i0, i1, i2, i3, i4, str0));
+		//foldops.push_back(FoldOp(startOffset, opcode, curOffset, i0, i1, i2, i3, i4, str0));
 		#endif
-	}
-	return true;
 }
+#endif
 
 void printfunc(const uint32 func, const uint32 nameoffset, IFileDataSource *ucfile)
 {
@@ -1116,9 +1560,12 @@ void printfunc(const uint32 func, const uint32 nameoffset, IFileDataSource *ucfi
 	while (readfunction(ucfile, namebuf, uch));
 
 	#ifdef FOLD
-	fold(func);
-	printfolding();
-	clearfolding(); // clear in case we need to do another function
+	//fold(func);
+	//folder->print_unk(pout);
+	folder->print_unk(con);
+	//delete folder;
+	//folder = new Folder();
+	//clearfolding(); // clear in case we need to do another function
 	#endif
 }
 #undef con_Printf // undef the evil define
@@ -1164,6 +1611,8 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
+	con.DisableWordWrap();
+	
 	Args parameters;
 	
 	parameters.declare("--lang",    &gamelanguage,  "unknown");
@@ -1255,7 +1704,7 @@ int main(int argc, char **argv)
 	// List functions
 	if (!Q_strcasecmp(argv[2], "-l")) {
 
-		pout << "Listing functions..." << endl << endl;
+		pout << "Listing classes..." << endl << endl;
 
 		// Read num entries
 		ucfile->seek( 0x54);
@@ -1263,9 +1712,11 @@ int main(int argc, char **argv)
 
 		ucfile->seek(0x80 + 8);
 		sint32 nameoffset = read4(ucfile);
-		sint32 namelength = read4(ucfile);
+		/*sint32 namelength =*/ read4(ucfile);
 
 		pout.setf(std::ios::uppercase);
+
+		con.Printf("Class         Name     Offset     Routines   MaxOffset  Offset     ExternTab  FixupTab\n");
 
 		sint32 actual_num = 0;
 		for(uint32 func = 0; func < entries; ++func)
@@ -1280,16 +1731,25 @@ int main(int argc, char **argv)
 
 			if (length == 0) continue;
 
-			pout << "Usecode function " << func << " (0x" << std::hex << func
-				<< std::dec << ") (" << namebuf << ")" << endl;
+			//cout << "Usecode function " << func << " (0x" << std::hex << func
+			//	<< std::dec << ") (" << namebuf << ")" << endl;
+
+			ucfile->seek(offset);
+			UsecodeHeader uch;
+			convert->readheader(ucfile, uch, curOffset);
+			
+			con.Printf("%4d (0x%04X) %-8s 0x%08X 0x%08X 0x%08X 0x%08X 0x%08X 0x%08X 0x%08d\n",
+				func, func, namebuf, offset, uch.routines, uch.maxOffset,
+				uch.offset, uch.externTable, uch.fixupTable, uch.fixupTable - uch.externTable);
+			
 			++actual_num;
 		}
-		pout << endl << actual_num << " Usecode functions" << endl;
+		pout << endl << actual_num << " Usecode classes" << endl;
 		return 0;
 	}
 	// Overload Table
 	else if (!Q_strcasecmp(argv[2], "-overload")) {
-		int end;
+		uint32 end;
 
 		// it's overload.dat
 		if (!Q_strcasecmp(stripped_filename, "overload.dat"))
@@ -1345,7 +1805,7 @@ int main(int argc, char **argv)
 
 	ucfile->seek(0x80 + 8);
 	uint32 nameoffset = read4(ucfile);
-	uint32 namelength = read4(ucfile);
+	/*uint32 namelength =*/ read4(ucfile);
 
 	if(std::strcmp(argv[2], "-a")==0)
 	{
@@ -1365,7 +1825,7 @@ int main(int argc, char **argv)
 }
 
 // Overload Table
-void printoverloads(IFileDataSource *ucfile, int endpos)
+void printoverloads(IFileDataSource *ucfile, uint32 endpos)
 {
 	con.Printf ("Overload Table:\n");
 

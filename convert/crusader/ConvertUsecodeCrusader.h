@@ -30,10 +30,10 @@ class ConvertUsecodeCrusader : public ConvertUsecode
 		const char* const *event_names() { return _event_names; };
 		void readheader(IFileDataSource *ucfile, UsecodeHeader &uch, uint32 &curOffset);
 		void readevents(IFileDataSource *ucfile, const UsecodeHeader &uch)
-		{ 
-			int num_crusader_routines = uch.offset / 6;
-			for (int i=0; i < num_crusader_routines; i++) {
-				uint32 size = read2(ucfile);
+		{
+			uint32 num_crusader_routines = uch.offset / 6;
+			for (uint32 i=0; i < num_crusader_routines; i++) {
+				/*uint32 size =*/ read2(ucfile);
 				uint32 offset = read4(ucfile);
 				EventMap[offset] = i;
 				#ifdef DISASM_DEBUG
@@ -42,11 +42,19 @@ class ConvertUsecodeCrusader : public ConvertUsecode
 			}
 		};
 		
+		// as weird as this may seem, we'll start this with Crusader's opcodes first.
+		// They're both simpler and more complex. *grin*
+		void readOp(TempOp &op, IFileDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols, bool &done)
+		{ readOpGeneric(op, ucfile, dbg_symbol_offset, debugSymbols, done, true); };
+		Node *readOp(IFileDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols, bool &done)
+		{ return readOpGeneric(ucfile, dbg_symbol_offset, debugSymbols, done, true); };
+
 	private:
 		static const char* const _intrinsics[];
 		static const char* const _event_names[];
 };
 
+// current discovered intrinsics are for regret1.21 only
 const char* const ConvertUsecodeCrusader::_intrinsics[] = {
 	// 0000
 	"Intrinsic0000()",
@@ -162,7 +170,7 @@ const char* const ConvertUsecodeCrusader::_intrinsics[] = {
 	"Intrinsic0068()",
 	"Intrinsic0069()",
 	"Intrinsic006A()",
-	"Intrinsic006B()",
+	"is_violent()",
 	"Intrinsic006C()",
 	"Intrinsic006D()",
 	"Intrinsic006E()",
@@ -267,7 +275,7 @@ const char* const ConvertUsecodeCrusader::_intrinsics[] = {
 	"Intrinsic00CB()",
 	"Intrinsic00CC()",
 	"Intrinsic00CD()",
-	"Intrinsic00CE()",
+	"is_game_compile()",
 	"Intrinsic00CF()",
 	// 00D0
 	"Intrinsic00D0()",
@@ -446,5 +454,10 @@ void ConvertUsecodeCrusader::readheader(IFileDataSource *ucfile, UsecodeHeader &
 	#endif
 	curOffset = 1-uch.offset;
 };
+
+/*void ConvertUsecodeCrusader::readOp(TempOp &op, IFileDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols, bool &done)
+{
+
+};*/
 
 #endif

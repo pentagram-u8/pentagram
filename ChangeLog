@@ -1,3 +1,21 @@
+2002-12-04  Darke  <darkepaw@users.sf.net>
+	* configure.in: Removed 'Is this Pentagram' flag; added dancer's
+	  mmx/3dnow flags from exult's configure.in; added profiling options.
+	* FAQ, docs/scratch/quotes.txt: updated.
+	* convert/ConvertShape.*, convert/u8/ConvertShapeU8.h,
+	  misc/Q_strcasecmp.*, tools/shapeconv/ShapeConv.cpp: Code tidying.
+	* convert/Convert.h, convert/crusader/ConvertUsecodeCrusader.h,
+	  convert/u8/ConvertUsecodeU8.h2:
+	  Shuffled usecode parsing from disasm to them.
+	* filesys/ODataSource.h: Added basic and somewhat b0rk3n OBufferSource.
+	* filesys/IDataSource.h: Added correct #include.
+	* misc/Console.h: fixed typedefs.
+	* tools/disasm/Disasm.cpp: Split read opcode, from write opcode and
+	  moved write opcode to convert/Convert.h.
+	* tools/disasm/module.mk, module.mk, tools/fold/module.mk: Updated for
+	  fold.
+	* tools/fold: Added kinda-working decompiler. Yay!
+	
 2002-11-04  Darke  <darkepaw@users.sf.net>
 	* convert/u8/ConvertUsecodeU8.h: Tidying function names.
 	* filesys/ODataSource.h: Fixed compiler error.

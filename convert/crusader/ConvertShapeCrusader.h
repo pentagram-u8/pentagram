@@ -25,6 +25,6 @@
 bool AutoDetectShapeCrusader(IDataSource *source);
 
 // Shape format configuration for Crusader
-const extern ConvertShapeFormat		CrusaderShapeFormat;
+extern const ConvertShapeFormat		CrusaderShapeFormat;
 
 #endif //CONVERTSHAPECRUSADER_H

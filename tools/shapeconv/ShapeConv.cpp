@@ -36,7 +36,7 @@ const ConvertShapeFormat *write_format = &U8ShapeFormat;
 void ConvertFlexes(IFileDataSource *readfile, OFileDataSource *writefile)
 {
 	ConvertShape	shape;
-	int				i;
+	uint32			i;
 
 	// Number of flex entries
 	readfile->seek(0x54);
@@ -49,14 +49,14 @@ void ConvertFlexes(IFileDataSource *readfile, OFileDataSource *writefile)
 	writefile->write4(num_entries);
 
 	// Offset to begin writing a shape at
-	int	write_offset = 0x80 + 8 * num_entries;
+	uint32	write_offset = 0x80 + 8 * num_entries;
 
 	// Write blank index table
 	for (i = 0x58; i < write_offset; i++)  writefile->write1(0);
 
 	// Convert shapes
 	con.Printf ("Convering %i shapes...\n", num_entries);
-	for (int s = 0; s < num_entries; s++)
+	for (uint32 s = 0; s < num_entries; s++)
 	{
 		//shapenum = s;
 

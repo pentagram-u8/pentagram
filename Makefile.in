@@ -41,13 +41,13 @@ EMPTY_FILE := @EMPTY_FILE@
 DEPDIR := .deps
 SDL_CFLAGS := @SDL_CFLAGS@
 SDL_LIBS := @SDL_LIBS@
-CXXFLAGS += -g @CXXFLAGS@ @DEFS@
-LDFLAGS += @LIBS@
+CXXFLAGS += -g @CXXFLAGS@ @DEFS@ @PROFILE@
+LDFLAGS += @LIBS@ @PROFILE@
 WARNINGS := @WARNINGS@
 
 # List of all sub modules
 # The order is important, be careful if you change it
-MODULES := convert convert/u8 convert/crusader misc filesys tools tools/disasm tools/shapeconv
+MODULES := convert convert/u8 convert/crusader misc filesys tools tools/disasm tools/fold tools/shapeconv
 # tools/fold tools/suc
 
 # look for include files in

@@ -1,0 +1,102 @@
+/*
+ *	Type.h - General type object
+ *
+ *  Copyright (C) 2002 The Pentagram Team
+ *
+ *  This program is free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 2 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU Library General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program; if not, write to the Free Software
+ *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+ */
+
+#ifndef TYPE_H
+#define TYPE_H
+
+#include "pent_include.h"
+#include "Console.h"
+#include "ODataSource.h"
+ 
+/* FIXME: end conveniently placed functions... */
+
+class Type
+{
+	public:
+		enum ttype { T_VOID=0, T_BYTE, T_WORD, T_DWORD, T_STRING, T_PID, T_VAR, T_LIST, T_SLIST, T_STRPTR, T_INVALID };
+
+		Type(const ttype t) : _type(t) {};
+		Type() : _type(T_INVALID) {};
+
+		inline Type &operator=(const ttype t) { _type = t; return *this; };
+		inline bool operator==(const ttype t) const { return _type == t; };
+		inline bool operator!=(const ttype t) const { return _type != t; };
+		inline Type &operator=(const Type &t) { _type = t._type; return *this; };
+		inline bool operator==(const Type &t) const { return _type == t._type; };
+		inline bool operator!=(const Type &t) const { return _type != t._type; };
+
+		inline ttype type() const { return _type; };
+		inline const char *name() const { return _namearr[_type]; };
+		inline uint32 size() const
+		{
+			switch(_type)
+			{
+				case T_VOID:	return 0; break;
+				case T_BYTE:	return 2; break;
+				case T_WORD:	return 2; break;
+				case T_DWORD:	return 4; break;
+				case T_STRING:	return 2; break;
+				case T_PID:		return 2; break; // maybe?
+				case T_VAR:		assert(false); break; // can't handle this atm
+				case T_LIST:	return 2; break; // 'almost' correct
+				case T_SLIST:	return 2; break;
+				case T_STRPTR:	return 4; break;
+				case T_INVALID:	return 0; break; // it's not possible for this to return
+				default: assert(false); // can't happen;
+			}
+			return 0; // can't happen
+		};
+		void print_unk(Console &o) const;
+		
+	private:
+		ttype _type;
+		static const char * const _namearr[];
+};
+
+class DataType
+{
+	public:
+		enum datatype { DT_NULL, DT_BYTES, DT_BP, DT_BPLIST, DT_BPADDR, DT_BPSTRPTR,
+			DT_SP, DT_SPADDR, DT_CHARS, DT_DPID, DT_PRESULT, DT_RESULT, DT_GLOBAL };
+		
+		DataType(const Type &newVType=Type::T_VOID, const datatype newDType=DT_NULL, const sint32 newValue=0)
+			: _vtype(newVType), _dtype(newDType), _value(newValue) {};
+		DataType(const Type::ttype &newVType, const datatype newDType, const std::string &newStrValue)
+			: _vtype(newVType), _dtype(newDType), _strvalue(newStrValue) {};
+		
+		const Type &type() const { return _vtype; };
+		const datatype &dtype() const { return _dtype; };
+		sint32 value() const { return _value; };
+		
+		void print_type_unk(Console &o) const { _vtype.print_unk(o); };
+		void print_value_unk(Console &o) const;
+		void print_value_asm(Console &o) const;
+		void print_value_bin(OBufferDataSource &o) const;
+		
+	private:
+		Type _vtype;
+		datatype _dtype;
+		sint32 _value;
+		std::string _strvalue;
+		//uint32 _size; // for globals
+};
+
+
+#endif

@@ -31,7 +31,6 @@ AC_DEFINE_UNQUOTED(VER_EXTRA, "$VER_EXTRA", [Version Number Extra])
 # ---------------------------------------------------------------------
 AC_EXEEXT
 
-AC_DEFINE(PENTAGRAM, 1, [Is this Pentagram?])
 AC_DEFINE(HAVE_MIDI, 1, [Do we have midi support?])
 
 # Path to an empty file (will be overriden for windows)
@@ -160,6 +159,27 @@ AC_CHECK_SIZEOF(int, 4)
 AC_CHECK_SIZEOF(long, 4)
 AC_CHECK_SIZEOF(long long, 8)
 
+# ---------------------------------------------------------------------
+# Architecture dependent optimisations
+# ---------------------------------------------------------------------
+
+AC_MSG_CHECKING(if we should optimise for MMX)
+AC_ARG_ENABLE(timidity, [  --enable-mmx       Use MMX optimisations [defult no]],,enable_mmx=no)
+if test x$enable_mmx = xyes; then
+	AC_MSG_RESULT(yes)
+	CXXFLAGS="$CXXFLAGS -mmmx"
+else
+	AC_MSG_RESULT(no)
+fi
+
+AC_MSG_CHECKING(if we should optimise for 3DNOW)
+AC_ARG_ENABLE(timidity, [  --enable-3dnow       Use 3DNOW optimisations [defult no]],,enable_3dnow=no)
+if test x$enable_3dnow = xyes; then
+	AC_MSG_RESULT(yes)
+	CXXFLAGS="$CXXFLAGS -m3dnow"
+else
+	AC_MSG_RESULT(no)
+fi
 
 # ---------------------------------------------------------------------
 # SDL
@@ -191,11 +211,20 @@ else
 fi
 
 # ------------------
+# Profiling!
+# ------------------
+AC_ARG_ENABLE(profiling, [  --enable-profiling       Enable Profiling [default no]],,enable_profiling=no)
+if test x$enable_profiling = xyes; then
+	PROFILE="-pg -fprofile-arcs"
+fi
+
+# ------------------
 # Generate output
 # ------------------
 AC_SUBST(WINDOWING_SYSTEM)
 AC_SUBST(WARNINGS)
 AC_SUBST(PACKAGE)
+AC_SUBST(PROFILE)
 
 AC_OUTPUT([
 Makefile

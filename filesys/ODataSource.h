@@ -23,6 +23,8 @@
 
 #include "common_types.h"
 #include <fstream>
+#include <deque>
+#include <vector>
 
 class ODataSource
 {
@@ -36,7 +38,7 @@ class ODataSource
 		virtual void write3(uint32)=0;
 		virtual void write4(uint32)=0;
 		virtual void write4high(uint32)=0;
-		virtual void write(const void *str, sint32 num_bytes)=0;
+		virtual void write(const void *str, uint32 num_bytes)=0;
 
 		void writeX(uint32 val, uint32 num_bytes)
 		{
@@ -54,7 +56,81 @@ class ODataSource
 };
 
 
-class OFileDataSource: public ODataSource
+class OBufferDataSource : public ODataSource
+{
+	private:
+		std::deque<char> out;
+
+	public:
+	OBufferDataSource() {};
+
+	virtual ~OBufferDataSource() {};
+
+	const std::deque<char> &buf() const { return out; };
+
+	virtual void write1(uint32 val)
+	{
+		out.push_back(static_cast<char> (val&0xff));
+	};
+
+	virtual void write2(uint16 val)
+	{
+		out.push_back(static_cast<char> (val&0xff));
+		out.push_back(static_cast<char> ((val>>8)&0xff));
+	};
+
+	virtual void write2high(uint16 val)
+	{
+		out.push_back(static_cast<char> ((val>>8)&0xff));
+		out.push_back(static_cast<char> (val&0xff));
+	};
+
+	virtual void write3(uint32 val)
+	{
+		out.push_back(static_cast<char> (val&0xff));
+		out.push_back(static_cast<char> ((val>>8)&0xff));
+		out.push_back(static_cast<char> ((val>>16)&0xff));
+	};
+
+	virtual void write4(uint32 val)
+	{
+		out.push_back(static_cast<char> (val&0xff));
+		out.push_back(static_cast<char> ((val>>8)&0xff));
+		out.push_back(static_cast<char> ((val>>16)&0xff));
+		out.push_back(static_cast<char> ((val>>24)&0xff));
+	};
+
+	virtual void write4high(uint32 val)
+	{
+		out.push_back(static_cast<char> ((val>>24)&0xff));
+		out.push_back(static_cast<char> ((val>>16)&0xff));
+		out.push_back(static_cast<char> ((val>>8)&0xff));
+		out.push_back(static_cast<char> (val&0xff));
+	};
+
+	virtual void write(const void *b, const uint32 length) { write(b, length, length); };
+	
+	virtual void write(const void *b, const uint32 length, uint32 pad_length)
+	{
+		for(uint32 i=0; i<length; i++)
+			out.push_back(static_cast<const char *>(b)[i]);
+		if(pad_length>length)
+			for(pad_length-=length; pad_length>0; --pad_length)
+				out.push_back(static_cast<char>(0x00));
+	};
+
+	virtual void clear()          { out.clear(); };
+
+	virtual void seek(uint32 pos) { /*out->seekp(pos); FIXME: Do something here. */ };
+	virtual void skip(sint32 pos) { /*out->seekp(pos, std::ios::cur); FIXME: Do something here. */ };
+
+	virtual uint32 getSize()      { return out.size(); };
+	
+	virtual uint32 getPos() { return out.size(); /*return out->tellp(); FIXME: Do something here. */ };
+
+};
+
+class OFileDataSource : public ODataSource
 {
 	private:
 		std::ofstream *out;
@@ -112,7 +188,7 @@ class OFileDataSource: public ODataSource
 		out->put(static_cast<char> (val&0xff));
 	};
 
-	virtual void write(const void *b, sint32 len) 
+	virtual void write(const void *b, uint32 len) 
 	{ 
 		out->write(static_cast<const char *>(b), len); 
 	};
@@ -132,6 +208,5 @@ class OFileDataSource: public ODataSource
 
 	virtual uint32 getPos() { return out->tellp(); };
 };
-
 
 #endif

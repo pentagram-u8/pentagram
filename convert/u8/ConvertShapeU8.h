@@ -25,6 +25,6 @@
 bool AutoDetectShapeU8 (IDataSource *source);
 
 // Shape format configuration for Ultima 8
-const extern ConvertShapeFormat		U8ShapeFormat;
+extern const ConvertShapeFormat		U8ShapeFormat;
 
 #endif //CONVERTSHAPEU8_H
