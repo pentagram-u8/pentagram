@@ -1,3 +1,6 @@
+2005-03-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Egg.h: fixed setXRange/setYRange
+
 2005-02-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* misc/idMan.cpp: fixed integer overflow bug
 	* world/Item.cpp: made leaveFastArea destroy items again, but no actors
