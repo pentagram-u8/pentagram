@@ -32,6 +32,11 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 	actor = actor_;
 	dir = dir_;
 
+	//! We probably want to mark the actor as being animated somewhere
+	//! possibly add a pointer to this process to the actor to allow
+	//! for terminating the anim
+
+
 	uint32 shape = actor->getShape();
 	animaction = GameData::get_instance()->getMainShapes()->
 		getAnim(shape, action);
@@ -71,6 +76,8 @@ bool ActorAnimProcess::run(uint32 framenum)
 	currentindex++;
 
 	if (currentindex >= animaction->size) {
+		//? do we need to terminate now or when we're about to show the next
+		// frame?
 		terminate();
 	}
 
