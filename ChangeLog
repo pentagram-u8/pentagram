@@ -1,6 +1,6 @@
 2003-06-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/ItemSorter.cpp: invisible items don't occlude
-
+	* graphics/AnimDat.cpp: deltaz is (of course) signed
 
 2003-06-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/GumpShapeFlex.*: load gumpage.dat

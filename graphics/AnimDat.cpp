@@ -103,7 +103,7 @@ void AnimDat::load(IDataSource *ds)
 					f.frame = ds->read1(); // & 0x7FF;
 					uint8 x = ds->read1();
 					f.frame += (x & 0x7) << 8;
-					f.deltaz = ds->read1();
+					f.deltaz = ds->readXS(1);
 					f.sfx = ds->read1();
 					f.deltadir = ds->readXS(1);
 					f.flags = ds->read1();
