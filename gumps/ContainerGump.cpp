@@ -181,8 +181,9 @@ void ContainerGump::Close(bool no_del)
 	std::list<Item*>::iterator iter;
 	for (iter = contents.begin(); iter != contents.end(); ++iter) {
 		Item* item = *iter;
-		if (item->getGump()) {
-			item->getGump()->Close(); //!! what about no_del?
+		Gump* g = GUIApp::get_instance()->getGump(item->getGump());
+		if (g) {
+			g->Close(); //!! what about no_del?
 		}
 	}
 

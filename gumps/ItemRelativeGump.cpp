@@ -23,6 +23,7 @@
 #include "World.h"
 #include "Container.h"
 #include "ShapeInfo.h"
+#include "GUIApp.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(ItemRelativeGump,Gump);
 
@@ -81,7 +82,7 @@ void ItemRelativeGump::GetItemLocation(sint32 lerp_factor)
 	{
 		prev = it;
 		it = next;
-		gump = it->getGump();
+		gump = GUIApp::get_instance()->getGump(it->getGump());
 		if (gump) break;
 	}
 

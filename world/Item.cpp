@@ -1861,7 +1861,7 @@ uint32 Item::I_openGump(const uint8* args, unsigned int /*argsize*/)
 	GUIApp *app = GUIApp::get_instance();
 	app->getDesktopGump()->AddChild(cgump);
 	item->flags |= FLG_GUMP_OPEN;
-	item->gump = cgump;
+	item->gump = cgump->getObjId();
 
 	return 0;
 }
@@ -1872,9 +1872,10 @@ uint32 Item::I_closeGump(const uint8* args, unsigned int /*argsize*/)
 	if (!item) return 0;
 
 	if (!(item->flags & FLG_GUMP_OPEN)) return 0;
-	assert(item->gump);
 
-	item->gump->Close();
+	Gump* g = GUIApp::get_instance()->getGump(item->getGump());
+	assert(g);
+	g->Close();
 
 	// can we already clear gump here, or do we need to wait for the gump
 	// to really close??

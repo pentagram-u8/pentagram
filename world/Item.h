@@ -154,14 +154,14 @@ public:
 	uint16 getFamily();
 
 	//! Get the open ContainerGump for this Item, if any. (NULL if not open.)
-	Gump* getGump() { return gump; }
+	uint16 getGump() { return gump; }
 	//! Call this to notify the Item's open Gump has closed.
 	void clearGump(); // set gump to 0 and clear the GUMP_OPEN flag
 
 	//! Get the next Item in the Glob this Item belongs to
-	Item* getGlobNext() const { return glob_next; }
+	uint16 getGlobNext() const { return glob_next; }
 	//! Set the next Item in the Glob this Item belongs to.
-	void setGlobNext(Item* i) { glob_next = i; }
+	void setGlobNext(Item* i) { glob_next = i->getObjId(); }
 
 	//! Destroy self.
 	virtual void destroy();
@@ -376,7 +376,7 @@ protected:
 	Lerped	l_next;			// Next (current) state (relative to camera)
 	sint32	ix,iy,iz;		// Interpolated position in camera space
 
-	Gump* gump;				// Item's gump
+	uint16 gump;			// Item's gump
 	uint16 gravitypid;		// Item's GravityTracker (or 0)
 
 private:
@@ -384,7 +384,7 @@ private:
 	//! Call a Usecode Event. Use the separate functions instead!
 	uint32 callUsecodeEvent(uint32 event, const uint8* args=0, int argsize=0);
 
-	Item* glob_next; // next item in glob
+	uint16 glob_next; // next item in glob
 
 	// The frame setupLerp was last called on
 	uint32	last_setup;	
