@@ -73,7 +73,6 @@ HIDManager::HIDManager()
 	bindingMap.insert( HIDBINDING_PAIR(u8ShapeViewer) );
 	bindingMap.insert( HIDBINDING_PAIR(showMenu) );
 	bindingMap.insert( HIDBINDING_PAIR(quit) );
-	bindingMap.insert( HIDBINDING_PAIR(openQuickItemGump) );
 	bindingMap.insert( HIDBINDING_PAIR(toggleConsole) );
 	bindingMap.insert( HIDBINDING_PAIR(quickMoveUp) );
 	bindingMap.insert( HIDBINDING_PAIR(quickMoveDown) );
