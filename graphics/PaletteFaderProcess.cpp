@@ -83,7 +83,8 @@ PaletteFaderProcess::PaletteFaderProcess(sint16 from[12], sint16 to[12],
 
 PaletteFaderProcess::~PaletteFaderProcess(void)
 {
-	fader = 0;
+	if (fader == this)
+		fader = 0;
 }
 
 bool PaletteFaderProcess::run(const uint32)
@@ -149,7 +150,7 @@ uint32 PaletteFaderProcess::I_fadeToPaletteTransform(const uint8* args,
 	
 	// If current fader has higher priority, we do nothing
 	if (fader && fader->priority > priority) return 0;
-	else if (fader) delete fader;
+	else if (fader) fader->terminate();
 
 	fader = new PaletteFaderProcess(static_cast<PaletteManager::PalTransforms>(transform),
 				priority, 45);
@@ -161,7 +162,7 @@ uint32 PaletteFaderProcess::I_fadeToBlack(const uint8* args,
 										unsigned int /*argsize*/)
 {
 	if (fader && fader->priority > 0x7FFF) return 0;
-	else if (fader) delete fader;
+	else if (fader) fader->terminate();
 
 	fader = new PaletteFaderProcess(0x00000000, false, 0x7FFF, 30, true);
 	return Kernel::get_instance()->addProcess(fader);
@@ -171,7 +172,7 @@ uint32 PaletteFaderProcess::I_fadeFromBlack(const uint8* args,
 										unsigned int /*argsize*/)
 {
 	if (fader && fader->priority > 0x7FFF) return 0;
-	else if (fader) delete fader;
+	else if (fader) fader->terminate();
 
 	fader = new PaletteFaderProcess(0x00000000, true, 0x7FFF, 30, false);
 	return Kernel::get_instance()->addProcess(fader);
@@ -181,7 +182,7 @@ uint32 PaletteFaderProcess::I_fadeToWhite(const uint8* args,
 										unsigned int /*argsize*/)
 {
 	if (fader && fader->priority > 0x7FFF) return 0;
-	else if (fader) delete fader;
+	else if (fader) fader->terminate();
 
 	fader = new PaletteFaderProcess(0x00FFFFFF, false, 0x7FFF, 30, true);
 	return Kernel::get_instance()->addProcess(fader);
@@ -191,7 +192,7 @@ uint32 PaletteFaderProcess::I_fadeFromWhite(const uint8* args,
 										unsigned int /*argsize*/)
 {
 	if (fader && fader->priority > 0x7FFF) return 0;
-	else if (fader) delete fader;
+	else if (fader) fader->terminate();
 
 	fader = new PaletteFaderProcess(0x00FFFFFF, true, 0x7FFF, 30, false);
 	return Kernel::get_instance()->addProcess(fader);
@@ -201,7 +202,7 @@ uint32 PaletteFaderProcess::I_lightningBolt(const uint8* args,
 										unsigned int /*argsize*/)
 {
 	if (fader && fader->priority > 0xFFFF) return 0;
-	else if (fader) delete fader;
+	else if (fader) fader->terminate();
 
 	fader = new PaletteFaderProcess(0x3FCFCFCF, true, 0xFFFF, 10, false);
 	return Kernel::get_instance()->addProcess(fader);
