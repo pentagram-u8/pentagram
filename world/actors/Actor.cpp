@@ -38,6 +38,21 @@ Actor::~Actor()
 
 }
 
+uint32 Actor::I_isNPC(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR(actor);
+	if (!actor) return 0;
+	return 1;
+}
+
+uint32 Actor::I_getMap(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR(actor);
+	if (!actor) return 0;
+
+	return actor->getMapNum();
+}
+
 
 uint32 Actor::I_doAnim(const uint8* args, unsigned int /*argsize*/)
 {
@@ -46,6 +61,7 @@ uint32 Actor::I_doAnim(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(dir); // seems to be 1-8
 	ARG_UINT16(unk1); // this is almost always 10000 in U8.Maybe speed-related?
 	ARG_UINT16(unk2); // appears to be 0 or 1. Some flag?
+
 	if (!actor) return 0;
 
 	if (dir < 1 || dir > 8) {

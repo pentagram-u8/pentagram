@@ -54,6 +54,8 @@ public:
 	uint16 getNpcNum() const { return npcnum; }
 	uint16 getMapNum() const { return mapnum; }
 
+	virtual uint32 getTotalWeight(); // weight including contents (if any)
+
 	uint16 getFamily() const;
 
 	ShapeInfo* getShapeInfo() const;
@@ -131,6 +133,7 @@ public:
 	INTRINSIC(I_andStatus);
 	INTRINSIC(I_getFootpad);
 	INTRINSIC(I_getWeight);
+	INTRINSIC(I_getWeightIncludingContents);
 	INTRINSIC(I_getVolume);
 	INTRINSIC(I_bark);
 	INTRINSIC(I_look);

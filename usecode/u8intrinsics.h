@@ -78,7 +78,7 @@ Intrinsic U8Intrinsics[] = {
 	0,
 	0,
 	Item::I_getWeight,
-	0,
+	Item::I_getWeightIncludingContents,
 	0,
 	0,
 	// 0x030
@@ -101,7 +101,7 @@ Intrinsic U8Intrinsics[] = {
 	// 0x040
 	0,
 	0,
-	0,
+	Actor::I_isNPC,
 	0,
 	0,
 	0,
@@ -197,7 +197,7 @@ Intrinsic U8Intrinsics[] = {
 	0,
 	0,
 	0,
-	0,
+	Actor::I_getMap,
 	0,
 	Actor::I_doAnim,
 	// 0x0A0

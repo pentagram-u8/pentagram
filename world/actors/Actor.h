@@ -34,6 +34,8 @@ public:
 	// p_dynamic_cast stuff
 	ENABLE_DYNAMIC_CAST(Actor);
 
+	INTRINSIC(I_isNPC);
+	INTRINSIC(I_getMap);
 	INTRINSIC(I_doAnim);
 
 private:

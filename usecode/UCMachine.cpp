@@ -1372,8 +1372,10 @@ bool UCMachine::execProcess(UCProcess* p)
 			// loop something. Stores 'current object' in var xx
 			// yy == num bytes in string
 			// zz == type
-			i0 = read1(in); i1 = read1(in); i2 = read1(in);
-			printf("loop\t\t%s %02X %02X", print_bp(i0), i1, i2);
+			si8a = cs.read1();
+			ui32a = cs.read1();
+			ui32b = cs.read1();
+			LOGPF(("!loop\t\t%s %02X %02X", print_bp(si8a), ui32a, ui32b));
 			break;
 		case 0x73:
 			// 73
@@ -1381,6 +1383,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			printf("loopnext");
 			break;
 */
+
 		case 0x74:
 			// 74 xx
 			// add xx to the current 'loopscript'

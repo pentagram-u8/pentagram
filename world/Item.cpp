@@ -103,6 +103,10 @@ uint16 Item::getFamily() const
 	return (uint16)(getShapeInfo()->family);
 }
 
+uint32 Item::getTotalWeight()
+{
+	return getShapeInfo()->weight;
+}
 
 bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 {
@@ -599,6 +603,15 @@ uint32 Item::I_getWeight(const uint8* args, unsigned int /*argsize*/)
 	if (!item) return 0;
 
 	return item->getShapeInfo()->weight;
+}
+
+uint32 Item::I_getWeightIncludingContents(const uint8* args,
+										  unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	if (!item) return 0;
+
+	return item->getTotalWeight();
 }
 
 uint32 Item::I_bark(const uint8* args, unsigned int /*argsize*/)

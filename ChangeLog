@@ -1,5 +1,6 @@
 2003-05-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/World*, world/Item.*: ethereal items, push/pop intrinsics
+	* world/actors/Actor.*, world/Item.*: more intrinsics
 
 2003-05-17  Darke <darkepaw@users.sf.net>
 	* */.cvsignore: Added CVSROOT/cvsignore, so removed all .deps/Makefile

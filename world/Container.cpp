@@ -67,6 +67,7 @@ bool Container::AddItem(Item* item)
 
 
 	// TODO: Check weight, volume, if item is already in the container?
+	// (These checks should be skippable)
 
 	contents.push_back(item);
 
@@ -117,6 +118,18 @@ void Container::destroy()
 	Item::destroy();
 }
 
+uint32 Container::getTotalWeight()
+{
+	uint32 weight = Item::getTotalWeight();
+
+	std::list<Item*>::iterator iter;
+	
+	for (iter = contents.begin(); iter != contents.end(); ++iter) {	
+		weight += (*iter)->getTotalWeight();
+	}
+
+	return weight;
+}
 
 uint32 Container::I_removeContents(const uint8* args, unsigned int /*argsize*/)
 {
