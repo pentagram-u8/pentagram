@@ -28,7 +28,7 @@
 #include <cctype>
 
 #include "args.h"
-#include "u8/intrinsics.h"
+#include "u8/ConvertUsecode.h"
 #if 0 // FIXME: Add conf/
 #include "Configuration.h"
 #endif
@@ -48,21 +48,26 @@ using std::ifstream;
 using std::pair;
 
 #ifndef HAVE_SNPRINTF
-extern int snprintf(char *, size_t, const char *, /*args*/ ...);
+extern sint32 snprintf(char *, size_t, const char *, /*args*/ ...);
 namespace std {
 using ::snprintf;
 }
 #endif
 
+/* this should be set depending upon what we're converting, but currently
+	since we really only support u8 properly here, we'll just set it as the
+	default and worry about it later */
+ConvertUsecode *convert = new ConvertUsecodeU8();
+
 const std::string c_empty_string;
 
-std::map<unsigned int, unsigned int> EventMap;
+std::map<uint32, uint32> EventMap;
 /* GlobalName.find().first == the offset into the char[]
 	GlobalName.find().second.first == the number of bytes stored in the global
 	GlobalName.find().second.second == the name of the global
 	Additional note: The maximum size of the globals array would be 64k.
 */
-std::map<unsigned int, pair<unsigned int, std::string> > GlobalName;
+std::map<uint32, pair<uint32, std::string> > GlobalName;
 std::map<std::string, std::string> FuncNames;
 uint32 curOffset;
 uint32 maxOffset;
@@ -74,42 +79,7 @@ bool        print_globals=false;
 
 bool crusader=false;
 
-const char * const event_names[0x20] = {
-	"look()",
-	"use()",
-	"anim()",
-	"unknown",
-	"cachein()",
-	"hit(ushort,short)",
-	"gotHit(ushort,short)",
-	"hatch()",
-	"schedule()",
-	"release()",
-	"unknown",
-	"unknown",
-	"combine()",
-	"unknown",
-	"unknown",
-	"enterFastArea()",
-	"leaveFastArea()",
-	"cast(ushort)",
-	"justMoved()",
-	"AvatarStoleSomething(ushort)",
-	"unknown",
-	"guardianBark(int)",
-	"unknown",
-	"unknown",
-	"unknown",
-	"unknown",
-	"unknown",
-	"unknown",
-	"unknown",
-	"unknown",
-	"unknown",
-	"unknown"
-};
-
-unsigned int read1(ifstream& in)
+uint32 read1(ifstream& in)
 {
 	unsigned char b0;
 	b0 = in.get();
@@ -117,7 +87,7 @@ unsigned int read1(ifstream& in)
 	return b0;
 }
 
-signed int read1s(ifstream& in)
+sint32 read1s(ifstream& in)
 {
 	unsigned char b0;
 	b0 = in.get();
@@ -125,7 +95,7 @@ signed int read1s(ifstream& in)
 	return (b0 <= 127 ? b0 : b0 - 255); 
 }
 
-unsigned int read2(ifstream& in)
+uint32 read2(ifstream& in)
 {
 	unsigned char b0, b1;
 	b0 = in.get();
@@ -134,10 +104,10 @@ unsigned int read2(ifstream& in)
 	return (b0 + (b1<<8));
 }
 
-signed int read2s(ifstream& in)
+sint32 read2s(ifstream& in)
 {
 	unsigned char b0, b1;
-	signed int i0;
+	sint32 i0;
 	b0 = in.get();
 	b1 = in.get();
 	curOffset += 2;
@@ -146,7 +116,7 @@ signed int read2s(ifstream& in)
 	return (i0);
 }
 
-unsigned int read4(ifstream& in)
+uint32 read4(ifstream& in)
 {
 	unsigned char b0, b1, b2, b3;
 	b0 = in.get();
@@ -161,11 +131,11 @@ void readheader(ifstream& in)
 {
 	if (crusader)
 	{
-		unsigned int Routines = read4(in); // routines
+		uint32 Routines = read4(in); // routines
 		maxOffset = read4(in);  // total code size,
-		unsigned int offset = read4(in)-20; // code offset,
-		unsigned int extern_table = read4(in); // extern symbol table offset
-		unsigned int fixup_table = read4(in); // fixup table offset
+		uint32 offset = read4(in)-20; // code offset,
+		uint32 extern_table = read4(in); // extern symbol table offset
+		uint32 fixup_table = read4(in); // fixup table offset
 		#ifdef DISASM_DEBUG
 		printf("Routines:\t%04X\n", Routines);
 		printf("MaxOffset:\t%04X\nOffset:\t\t%04X\n", maxOffset, offset);
@@ -203,8 +173,8 @@ void readheader(ifstream& in)
 
 void readevents(ifstream& in)
 {
-	for (unsigned int i=0; i < 32; i++) {
-		unsigned int offset = read4(in);
+	for (uint32 i=0; i < 32; i++) {
+		uint32 offset = read4(in);
 		EventMap[offset] = i;
 		#ifdef DISASM_DEBUG
 		cout << "Event " << i << ": " << std::hex << std::setw(4) << offset << std::dec << endl;
@@ -217,38 +187,38 @@ void readglobals(ifstream& in)
 	char buf[60];
 	char c;
 	in.seekg(0x80);
-	int offset = read4(in);
-	int length = read4(in);
+	sint32 offset = read4(in);
+	sint32 length = read4(in);
 
-	int curoff = 0;
+	sint32 curoff = 0;
 
 	in.seekg(offset);
 	while (curoff < length-1) {
-		int i = 0;
+		sint32 i = 0;
 		do {
 			c = in.get();
 			curoff++;
 			buf[i++] = c;
 		} while (c != 0);
-		unsigned int i0 = read1(in);
-		unsigned int i1 = read1(in);
-		unsigned int i2 = read1(in);
+		uint32 i0 = read1(in);
+		uint32 i1 = read1(in);
+		uint32 i2 = read1(in);
 		read1(in);
 		curoff+=4;
 
-		//int flag = i0 + (i1<<8) + (i2<<16);
-		unsigned int flag = i0 + (i1<<8);
-		GlobalName[flag] = pair<unsigned int, std::string>(i2, std::string(buf));
+		//sint32 flag = i0 + (i1<<8) + (i2<<16);
+		uint32 flag = i0 + (i1<<8);
+		GlobalName[flag] = pair<uint32, std::string>(i2, std::string(buf));
 	}
 }
 
 void printglobals()
 {
-	for(std::map<unsigned int, pair<unsigned int, std::string> >::iterator i=GlobalName.begin(); i!=GlobalName.end(); ++i)
+	for(std::map<uint32, pair<uint32, std::string> >::iterator i=GlobalName.begin(); i!=GlobalName.end(); ++i)
 		printf("[%04X %02X] (%s)\n", i->first, i->second.first, i->second.second.c_str());
 }
 
-std::string functionaddresstostring(int i0, int i1)
+std::string functionaddresstostring(sint32 i0, sint32 i1)
 {
 	char buf[10];
 	std::map<std::string, std::string>::iterator funcoffset = FuncNames.find(buf);
@@ -261,14 +231,14 @@ std::string functionaddresstostring(int i0, int i1)
 		return funcoffset->second;
 }
 
-char *print_bp(int offset)
+char *print_bp(sint32 offset)
 {
 	static char str[32];
 	std::snprintf(str, 32, "[BP%c%02Xh]", offset>0x7F?'-':'+', offset>0x7F?0x100-offset:offset);
 	return str;
 }
 
-char *print_sp(int offset)
+char *print_sp(sint32 offset)
 {
 	static char str[32];
 	std::snprintf(str, 32, "[SP%c%02Xh]", offset>0x7F?'-':'+', offset>0x7F?0x100-offset:offset);
@@ -308,10 +278,10 @@ bool readfunction(ifstream& in, const char *name)
 	
 	printf("Func_%X", curOffset);
 	
-	std::map<unsigned int, unsigned int>::iterator it = EventMap.find(curOffset);
+	std::map<uint32, uint32>::iterator it = EventMap.find(curOffset);
 	if (it != EventMap.end())
 	{
-		printf(" (Event %X) %s::%s", it->second, name, event_names[it->second]);
+		printf(" (Event %X) %s::%s", it->second, name, convert->event_names()[it->second]);
 	}
 	printf(":\n");
 	
@@ -319,12 +289,12 @@ bool readfunction(ifstream& in, const char *name)
 	bool done = false;
 	while (!done) {
 		short s0;
-		int i0=0, i1=0, i2=0, i3=0, i4=0, i5=0;
-		//int flag;
+		sint32 i0=0, i1=0, i2=0, i3=0, i4=0, i5=0;
+		//sint32 flag;
 		std::string str0;
 		
 		#ifdef FOLD
-		unsigned int startOffset = curOffset;
+		uint32 startOffset = curOffset;
 		#endif
 		
 		uint32 opcode;
@@ -447,7 +417,7 @@ bool readfunction(ifstream& in, const char *name)
 			}
 			else
 			{
-				printf("calli\t\t%02Xh %04X (%s)", i0, i1, u8intrinsics[i1]);
+				printf("calli\t\t%02Xh %04X (%s)", i0, i1, convert->intrinsics()[i1]);
 			}
 			break;
 		case 0x11:
@@ -825,7 +795,7 @@ bool readfunction(ifstream& in, const char *name)
 			i0 = read2(in);
 			i0 = curOffset + (static_cast<short>(i0));
 			str0 = "";
-			for (unsigned int i=0; i < 8; i++)
+			for (uint32 i=0; i < 8; i++)
 			 str0 += static_cast<char>(read1(in));
 			if(read1(in)!=0) assert(false); // trailing 0
 			printf("symbol info\toffset %04x = \"%s\"", i0, str0.c_str());
@@ -1037,11 +1007,11 @@ bool readfunction(ifstream& in, const char *name)
 	return true;
 }
 
-void printfunc(const unsigned int func, const unsigned int nameoffset, ifstream &ucfile)
+void printfunc(const uint32 func, const uint32 nameoffset, ifstream &ucfile)
 {
 	ucfile.seekg(0x80 + 8*(func+2));
-	unsigned int offset = read4(ucfile);
-	unsigned int length = read4(ucfile);
+	uint32 offset = read4(ucfile);
+	uint32 length = read4(ucfile);
 	
 	if (length == 0) return;
 	
@@ -1095,7 +1065,7 @@ void readfunctionnames(void)
 #endif
 }
 
-int main(int argc, char**argv)
+int main(int argc, char **argv)
 {
 	ifstream ucfile;
 	
@@ -1115,7 +1085,7 @@ int main(int argc, char**argv)
 	parameters.declare("--disasm",  &print_disasm,  true);
 	#endif
 	
-	parameters.process(argc,argv);
+	parameters.process(argc, argv);
 	
 	if (gamelanguage=="unknown")  // try to determine game language from file name
 	{
@@ -1157,20 +1127,20 @@ int main(int argc, char**argv)
 
 		// Read num entries
 		ucfile.seekg( 0x54);
-		unsigned int entries = read4(ucfile)-2;
+		uint32 entries = read4(ucfile)-2;
 
 		ucfile.seekg(0x80 + 8);
-		int nameoffset = read4(ucfile);
-		int namelength = read4(ucfile);
+		sint32 nameoffset = read4(ucfile);
+		sint32 namelength = read4(ucfile);
 
 		cout.setf(std::ios::uppercase);
 
-		int actual_num = 0;
-		for(unsigned int func = 0; func < entries; func++)
+		sint32 actual_num = 0;
+		for(uint32 func = 0; func < entries; func++)
 		{
 			ucfile.seekg(0x80 + 8*(func+2));
-			int offset = read4(ucfile);
-			int length = read4(ucfile);
+			sint32 offset = read4(ucfile);
+			sint32 length = read4(ucfile);
 			
 			ucfile.seekg(nameoffset + 4 + (13 * func));
 			char namebuf[9];
@@ -1198,19 +1168,19 @@ int main(int argc, char**argv)
 	#endif
 	
 	ucfile.seekg(0x80 + 8);
-	unsigned int nameoffset = read4(ucfile);
-	unsigned int namelength = read4(ucfile);
+	uint32 nameoffset = read4(ucfile);
+	uint32 namelength = read4(ucfile);
 	
 	if(std::strcmp(argv[2], "-a")==0)
 	{
 		ucfile.seekg(0x54); // Seek to the 'start' of the FLEX
-		unsigned int entries = read4(ucfile)-2;
+		uint32 entries = read4(ucfile)-2;
 		
-		for(unsigned int func=0; func<entries; ++func)
+		for(uint32 func=0; func<entries; ++func)
 			printfunc(func, nameoffset, ucfile);
 	}
 	
-	unsigned int func = std::strtol(argv[2], 0, 0);
+	uint32 func = std::strtol(argv[2], 0, 0);
 	
 	printfunc(func, nameoffset, ucfile);
 	

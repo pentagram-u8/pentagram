@@ -16,11 +16,23 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-
 #ifndef _U8_INTRINSICS
 #define _U8_INTRINSICS
 
-const char* u8intrinsics[] = {
+#include "Convert.h"
+
+class ConvertUsecodeU8 : public ConvertUsecode
+{
+	public:
+		const char* const *intrinsics()  { return _intrinsics;  };
+		const char* const *event_names() { return _event_names; };
+	
+	private:
+		static const char* const _intrinsics[];
+		static const char* const _event_names[];
+};
+
+const char* const ConvertUsecodeU8::_intrinsics[] = {
 	// 0000
 	"target()",	
 	"Item::getNext()",							// Unused
@@ -298,5 +310,40 @@ const char* u8intrinsics[] = {
 	0
 };
 
+const char * const ConvertUsecodeU8::_event_names[] = {
+	"look()",
+	"use()",
+	"anim()",
+	"unknown",
+	"cachein()",
+	"hit(ushort,short)",
+	"gotHit(ushort,short)",
+	"hatch()",
+	"schedule()",
+	"release()",
+	"unknown",
+	"unknown",
+	"combine()",
+	"unknown",
+	"unknown",
+	"enterFastArea()",
+	"leaveFastArea()",
+	"cast(ushort)",
+	"justMoved()",
+	"AvatarStoleSomething(ushort)",
+	"unknown",
+	"guardianBark(int)",
+	"unknown",
+	"unknown",
+	"unknown",
+	"unknown",
+	"unknown",
+	"unknown",
+	"unknown",
+	"unknown",
+	"unknown",
+	"unknown",
+	0
+};
 
 #endif

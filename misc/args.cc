@@ -20,10 +20,7 @@
 #  include <config.h>
 #endif
 
-#ifndef ALPHA_LINUX_CXX
-#  include <iostream>
-#endif
-
+#include <iostream>
 #include "args.h"
 
 using std::cerr;
@@ -32,11 +29,11 @@ using std::string;
 using std::strtol;
 using std::strtoul;
 
-void	Args::process(int argc,char **argv)
+void Args::process(sint32 argc, char **argv)
 {
-	for(int i=1;i<argc;i++)
+	for(sint32 i=1; i<argc; ++i)
 	{
-		for(unsigned int j=0;j<options.size() && i<argc;j++)
+		for(uint32 j=0; (j<options.size()) && (i<argc); ++j)
 		{
 			switch(options[j].valuetype)
 			{
@@ -91,5 +88,4 @@ void	Args::process(int argc,char **argv)
 			}
 		}
 	}
-
 }
