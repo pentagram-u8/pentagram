@@ -1,4 +1,8 @@
 2003-07-03  Ryan Nunn <colourles@users.sourceforge.net>
+	* audio/MusicProcess.cpp : Fixing a problem with tracks that have been
+	  stopped.
+
+2003-07-03  Ryan Nunn <colourles@users.sourceforge.net>
 	* audio/midi/MidiDriver.h : Added some extra functions. 
 	  setSequenceSpeed() and a few for the FMOplMidiDriver (and could 
 	  probably be used by others, but probably wont be). Also added 

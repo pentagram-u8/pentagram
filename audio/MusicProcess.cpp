@@ -54,6 +54,10 @@ void MusicProcess::playMusic(int track)
 		return;
 	}
 
+	// No current track if not playing
+	if (!driver->isSequencePlaying(0))
+		current_track = 0;
+
 	// It's already playing and we are not transitioning
 	if (current_track == track && state == MUSIC_NORMAL)
 	{
@@ -121,6 +125,9 @@ bool MusicProcess::run(const uint32)
 	switch (state)
 	{
 	case MUSIC_NORMAL:
+		// If it's stopped playing, we aren't playing anything anymore
+		if (!driver->isSequencePlaying(0)) 
+			current_track = wanted_track = 0;
 		break;
 
 	case MUSIC_TRANSITION:
