@@ -507,7 +507,7 @@ Details on MD3 Format
 Here are specs on the MD3 format. Everything uses little endian byte order
 
 struct MD3_Header {
-	char	type[4];	// IDP3
+	char	type[4];	// "IDP3"
 	uint32	version;	// 15
 	char	name[64];	// Name of model
 	
@@ -537,11 +537,11 @@ struct MD3_FrameInfo {
 struct MD3_Tag {
 	char	name[64];	// Tag name
 	float	origin[3];	// Tag origin
-	float	axis[3][3];	// Tag Matrix
+	float	axis[3][3];	// Tag Matrix (vectors forward=0, right=1 and up=2)
 };
 
 struct MD3_Surface {
-	char	type[4];	// IDP3
+	char	type[4];	// "IDP3"
 	char	name[64];	// Name of surface
 
 	uint32	unknown0;	// Usage???

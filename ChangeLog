@@ -1,3 +1,10 @@
+2002-10-07  Ryan Nunn <colourles@users.sourceforge.net>
+	* graphics/ : Pretty obvious what this is for, but don't expect
+	  anything in there to work quite yet. Files are missing
+	* graphics/Texture*.* : Some basic 32 bit Texture classes.
+	* graphics/MD3_Model.* : Classes to load and use MD3 models.
+	* ChangeLog : Changed my email address
+
 2002-09-22  Darke  <darkepaw@users.sf.net>
 	* convert/crusader/ConvertUsecodeCrusader.h, filesys/FileSystem.h,
 	  tools/disasm/Disasm.cpp: Docs & code cleanup.
@@ -30,15 +37,15 @@
 	  compile disasm.cc. Hopefully it works, although I expect it not to.
 	  *grin*
 
-2002-08-06  Ryan Nunn <triforce@merlin.net.au>
+2002-08-06  Ryan Nunn <colourles@users.sourceforge.net>
 	* docs/musicflx.txt : Updated info about one of the flex entries
 
-2002-05-22  Ryan Nunn <triforce@merlin.net.au>
+2002-05-22  Ryan Nunn <colourles@users.sourceforge.net>
 	* docs/design/classes.txt : Added some more classes. Added more details
 	  about the functions of various classes. Corrected a few errors with
 	  some of the classes.
 
-2002-05-22  Ryan Nunn <triforce@merlin.net.au>
+2002-05-22  Ryan Nunn <colourles@users.sourceforge.net>
 	* docs/u8skf.txt : Some initial work on decoding the skf files. Is a
 	  work in progress
 	* docs/design/classes.txt : Some proposed classes for Pentagram. Work
