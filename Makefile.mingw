@@ -32,10 +32,10 @@ GRAPHICS_OBJS=graphics/Font.o graphics/FontShapeFlex.o graphics/GumpShapeFlex.o 
 	graphics/Palette.o graphics/PaletteManager.o graphics/RenderSurface.o graphics/Shape.o graphics/ShapeFlex.o \
 	graphics/ShapeFrame.o graphics/ShapeInfo.o graphics/SoftRenderSurface.o graphics/TypeFlags.o graphics/XFormBlend.o
 
-GUMPS_OBJS=gumps/ConsoleGump.o gumps/GameMapGump.o gumps/Gump.o gumps/ResizableGump.o gumps/BarkGump.o \
+GUMPS_OBJS=gumps/AskGump.o gumps/ConsoleGump.o gumps/GameMapGump.o gumps/Gump.o gumps/ResizableGump.o gumps/BarkGump.o \
 	gumps/DesktopGump.o gumps/GumpNotifyProcess.o gumps/ItemRelativeGump.o gumps/ContainerGump.o
 
-WIDGETS_OBJS=gumps/widgets/SimpleTextWidget.o
+WIDGETS_OBJS=gumps/widgets/SimpleTextWidget.o gumps/widgets/ButtonWidget.o
 
 MISC_OBJS=misc/Args.o misc/Console.o misc/pent_include.o misc/Q_strcasecmp.o misc/util.o
 

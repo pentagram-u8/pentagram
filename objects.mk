@@ -69,6 +69,7 @@ ARGS = \
 	misc/Args.o \
 
 GUMPS = \
+	gumps/AskGump.o \
 	gumps/BarkGump.o \
 	gumps/ConsoleGump.o \
 	gumps/ContainerGump.o \
@@ -78,6 +79,7 @@ GUMPS = \
 	gumps/GumpNotifyProcess.o \
 	gumps/ItemRelativeGump.o \
 	gumps/ResizableGump.o \
+	gumps/widgets/ButtonWidget.o \
 	gumps/widgets/SimpleTextWidget.o
 
 WORLD = \
