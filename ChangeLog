@@ -2,6 +2,7 @@
 	* kernel/Kernel.*: added Kernel::listItemProcesses console command
 	* kernel/Process.*, usecode/UCProcess.*: Process::dumpInfo
 	* world/actors/AvatarMoverProcess.cpp: removed some noise
+	* world/actors/ActorAnimProcess.cpp: some extra debugging output
 
 2004-10-14  Dominik Reichardt <dominus@users.sourceforge.net>
 	* FAQ: updated with old spelling corrections

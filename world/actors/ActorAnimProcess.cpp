@@ -257,6 +257,13 @@ bool ActorAnimProcess::run(const uint32 framenum)
 
 void ActorAnimProcess::terminate()
 {
+#ifdef WATCHACTOR
+				if (item_num == watchactor)
+					pout << "Animation ["
+						 << Kernel::get_instance()->getFrameNum()
+						 << "] ActorAnimProcess terminating"
+						 << std::endl;
+#endif
 	Actor *a = World::get_instance()->getNPC(item_num);
 	if (a) {
 		if (tracker) // if we were really animating...
