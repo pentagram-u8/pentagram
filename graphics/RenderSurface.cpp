@@ -72,9 +72,6 @@ RenderSurface *RenderSurface::SetVideoMode(uint32 width,		// Width of desired mo
 			// TODO: Set Error Code
 			return 0;
 		}
-
-		// Enable Resizable
-		flags |= SDL_RESIZABLE;
 	}
 	// Fullscreen Specific 
 	else

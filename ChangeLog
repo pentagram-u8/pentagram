@@ -1,3 +1,6 @@
+2003-10-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* src/RenderSurface.cpp: disable RESIZABLE flag for windowed mode
+
 2003-10-05	Darke  <darkepaw@users.sf.net>
 	* tools/fold/*: Fixed minor 'call' asm output bug. Attempted
 	  cleaning up and 'prettyfying' the llc output format.
