@@ -91,11 +91,7 @@ Application::Application(const int argc, const char * const * const argv)
 	{
 		pout << "We Are Compiling..." << std::endl;
 		MinimalSysInit();
-#ifndef WIN32
 		kernel->addProcess(new CompileProcess(filesystem));
-#else
-		pout << "Then again, maybe not" << std::endl;
-#endif
 	}
 	else
 	{
@@ -294,7 +290,7 @@ void Application::GetCamera(sint32 &x, sint32 &y, sint32 &z)
 	}
 	else
 	{
-		camera->GetLerped(x, y, z, 256);
+		camera->GetLerped(false, x, y, z, 256);
 	}
 }
 
@@ -327,8 +323,8 @@ void Application::SetupDisplayList()
 	// By default the fastArea is the screensize plus a border of no more
 	// than 256 pixels wide and 384 pixels high
 
-	sint32 sx_limit = resx/256 + 2;
-	sint32 sy_limit = resy/128 + 6;
+	sint32 sx_limit = resx/256 + 3;
+	sint32 sy_limit = resy/128 + 7;
 	sint32 xy_limit = (sy_limit+sx_limit)/2;
 	CurrentMap *map = world->getCurrentMap();
 
@@ -357,7 +353,7 @@ void Application::SetupDisplayList()
 	}
 	else
 	{
-		camera->GetLerped(lx, ly, lz, lerpFactor);
+		camera->GetLerped(inBetweenFrame, lx, ly, lz, lerpFactor);
 	}
 
 	sint32 gx = lx/512;

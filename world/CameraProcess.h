@@ -45,7 +45,7 @@ public:
 	virtual bool run(const uint32 framenum);
 
 	// You will notice that this isn't the same as how Item::GetLerped works
-	void GetLerped(sint32 &x, sint32 &y, sint32 &z, sint32 factor);
+	void GetLerped(bool inBetween, sint32 &x, sint32 &y, sint32 &z, sint32 factor);
 
 	INTRINSIC(I_setCenterOn);
 	INTRINSIC(I_move_to);

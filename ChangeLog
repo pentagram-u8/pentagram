@@ -1,3 +1,7 @@
+2003-05-26  Ryan Nunn <colourles@users.sourceforge.net>
+	* kernel/Application.cpp, world/CameraProcess.* : A tweek to the lerping when
+	  following an item.
+	  
 2003-05-26	Darke <darkepaw@users.sf.net>
 	* configure.ac: Couple of relevant only to the usecode compiler config
 	  flags.

@@ -98,39 +98,42 @@ bool CameraProcess::run(const uint32 /* framenum */)
 
 	elapsed++;
 
-	if (time == 0)
-	{
-		sx = ex;
-		sy = ey;
-		sz = ez;
-		return true;
-	}
-
 	return true;
 }
 
-void CameraProcess::GetLerped(sint32 &x, sint32 &y, sint32 &z, sint32 factor)
+void CameraProcess::GetLerped(bool inBetween, sint32 &x, sint32 &y, sint32 &z, sint32 factor)
 {
-	if (itemnum)
-	{
-		Object *obj = World::get_instance()->getObject(itemnum);
-
-		// Got it
-		if (obj) 
-		{
-			Item *item = p_dynamic_cast<Item*>(obj);
-
-			// Got it
-			if (item)
-			{
-				item->getLocation(ex,ey,ez);
-				ez += 20;
-			}
-		}
-	}
-
 	if (time == 0)
 	{
+		
+		if (!inBetween)
+		{
+			sx = ex;
+			sy = ey;
+			sz = ez;
+
+			if (itemnum)
+			{
+				Object *obj = World::get_instance()->getObject(itemnum);
+
+				// Got it
+				if (obj) 
+				{
+					Item *item = p_dynamic_cast<Item*>(obj);
+
+					// Got it
+					if (item)
+					{
+						sx = ex;
+						sy = ey;
+						sz = ez;
+						item->getLocation(ex,ey,ez);
+						ez += 20;
+					}
+				}
+			}
+		}
+
 		if (factor == 256)
 		{
 			x = ex; y = ey; z = ez;
@@ -149,7 +152,7 @@ void CameraProcess::GetLerped(sint32 &x, sint32 &y, sint32 &z, sint32 factor)
 	}
 	else
 	{
-		// Do a quadratic interpolation here, but not yet
+		// Do a quadratic interpolation here of velocity, but not yet
 		sint32 sfactor = elapsed;
 		sint32 efactor = elapsed+1;
 
