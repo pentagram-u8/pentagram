@@ -116,7 +116,7 @@ public:
 		void GetInterpolatedCoords(sint32 out[3], sint32 start[3], sint32 end[3])
 		{
 			for (int i = 0; i < 3; i++)
-				out[i] = start[i] + ((end[i]-start[i])*hit_time)/0x4000;
+				out[i] = start[i] + ((end[i]-start[i])*hit_time+(end[i] > start[i] ? 0x2000 : -0x2000) )/0x4000;
 		}
 	};
 

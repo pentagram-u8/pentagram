@@ -3,6 +3,7 @@
 	* filesys/SavegameWriter.*: changed return types from void to bool
 	* world/Item.*: added getFootpadWorld to return footpad in world coords
 	* various: use getFootpadWorld
+	* world/CurrentMap.h: rounding error in collision detection
 
 2003-11-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AvatarMoverProcess.*: retreating/running in combat
