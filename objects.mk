@@ -86,6 +86,7 @@ GUMPS = \
 	gumps/Gump.o \
 	gumps/GumpNotifyProcess.o \
 	gumps/ItemRelativeGump.o \
+	gumps/PaperdollGump.o \
 	gumps/ResizableGump.o
 
 WIDGETS = \
