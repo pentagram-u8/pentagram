@@ -24,9 +24,9 @@
 #include "GumpShapeFlex.h"
 #include "Shape.h"
 #include "SlidingWidget.h"
-#include "ShapeFont.h"
+#include "Font.h"
 #include "RenderedText.h"
-#include "FontShapeFlex.h"
+#include "FontManager.h"
 #include "ButtonWidget.h"
 #include "UCProcess.h"
 #include "Kernel.h"
@@ -104,8 +104,7 @@ void SliderGump::setSliderPos()
 
 void SliderGump::drawText(RenderSurface* surf)
 {
-	ShapeFont *font = GameData::get_instance()->
-		getFonts()->getFont(labelfont);
+	Pentagram::Font *font = FontManager::get_instance()->getFont(labelfont);
 	char buf[10]; // more than enough for a sint16
 	sprintf(buf, "%d", value);
 

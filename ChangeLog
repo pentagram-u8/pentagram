@@ -1,3 +1,6 @@
+2004-10-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/PaperdollGump.cpp, gumps/SliderGump.cpp: use FontManager
+
 2004-10-07  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* kernel/GUIApp.cpp: clean up the textmodes input handling for possible
 	  additions to type of input it could handle.

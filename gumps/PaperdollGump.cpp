@@ -27,8 +27,8 @@
 #include "RenderSurface.h"
 #include "GameData.h"
 #include "MainShapeFlex.h"
-#include "ShapeFont.h"
-#include "FontShapeFlex.h"
+#include "Font.h"
+#include "FontManager.h"
 #include "RenderedText.h"
 #include "GumpShapeFlex.h"
 #include "ButtonWidget.h"
@@ -150,9 +150,10 @@ void PaperdollGump::PaintStat(RenderSurface* surf, unsigned int n,
 {
 	assert(n < 7); // constant!
 
-	ShapeFont* font = GameData::get_instance()->getFonts()->getFont(statfont);
-	ShapeFont* descfont = GameData::get_instance()->
-		getFonts()->getFont(statdescfont);
+	Pentagram::Font *font, *descfont;
+
+	font = FontManager::get_instance()->getFont(statfont);
+	descfont = FontManager::get_instance()->getFont(statdescfont);
 	char buf[16]; // enough for uint32
 	unsigned int remaining;
 
@@ -168,6 +169,7 @@ void PaperdollGump::PaintStat(RenderSurface* surf, unsigned int n,
 		cached_text[2*n+1] = font->renderText(buf, remaining,
 											  statwidth, statheight,
 											  Pentagram::Font::TEXT_RIGHT);
+		cached_val[n] = val;
 	}
 	cached_text[2*n+1]->draw(surf, statcoords[n].x, statcoords[n].y);
 }
