@@ -1,3 +1,6 @@
+2004-10-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/HIDManager.cpp: fix typos
+
 2004-10-18  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* kernel/Joystick.cpp, kernel/HIDManager.cpp: replace bad asserts
 

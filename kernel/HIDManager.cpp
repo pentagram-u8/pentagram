@@ -101,14 +101,14 @@ HIDBinding HIDManager::getBinding(const SDL_Event& event)
 	case SDL_KEYUP: case SDL_KEYDOWN:
 	{
 		uint16 key = event.key.keysym.sym;
-		if (key < SDLK_LAST);
+		if (key < SDLK_LAST)
 			binding = keybindings[key];
 	}
 	break;
 	case SDL_MOUSEBUTTONDOWN: case SDL_MOUSEBUTTONUP:
 	{
 		uint16 button = event.button.button;
-		if (button < NUM_MOUSEBUTTONS);
+		if (button < NUM_MOUSEBUTTONS)
 			binding = mousebindings[button];
 	}
 	break;
