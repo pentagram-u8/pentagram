@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //#include "Scaler.h"
 #include "Texture.h"
 
-// Very very simple pointer scaler
+// Very very simple point scaler
 template<class uintX, class Manip, class uintS=uintX> class PointScaler
 {
 public:
@@ -38,8 +38,41 @@ public:
 		bool x_intscale = ((dw / sw) * sw) == dw;
 		bool y_intscale = ((dh / sh) * sh) == dh;
 
+		//
+		// 2x 
+		//
+		if ((sw*2 == dw) && (sh*2 == dh))
+		{
+			uint8 *pixel2 = pixel+pitch;
+			int p_diff    = (pitch*2)-(dw*sizeof(uintX));
+
+			// Src Loop Y
+			do {
+				// Src Loop X
+				do {
+					uintX p = Manip::copy(*texel);
+
+					*(reinterpret_cast<uintX*>(pixel+0)) = p;
+					*(reinterpret_cast<uintX*>(pixel+sizeof(uintX))) = p;
+					*(reinterpret_cast<uintX*>(pixel2+0)) = p;
+					*(reinterpret_cast<uintX*>(pixel2+sizeof(uintX))) = p;
+					pixel  += sizeof(uintX)*2;
+					pixel2 += sizeof(uintX)*2;
+					texel++;
+				} while (texel != tline_end);
+
+				pixel  += p_diff;
+				pixel2 += p_diff;
+
+				texel += tex_diff;
+				tline_end += tpitch;
+			} while (texel != tex_end);
+
+		}
+		//
 		// Integer scaling, x and y
-		if (x_intscale && y_intscale)
+		//
+		else if (x_intscale && y_intscale)
 		{
 			int xf = dw/sw;
 			int yf = dh/sh;
@@ -53,35 +86,32 @@ public:
 			int p_diff = block_h - dw*sizeof(uintX);
 
 			// Src Loop Y
-			while (texel != tex_end)
-			{
+			do {
 				// Src Loop X
-				while (texel != tline_end)
-				{
+				do {
 					uintX p = Manip::copy(*texel);
-					texel++;
 
 					//
 					// Inner loops
 					//
 
 					// Dest Loop Y
-					while (pixel != py_end)
-					{
+					do {
 						// Dest Loop X
-						while (pixel != px_end)
-						{
+						do {
 							*(reinterpret_cast<uintX*>(pixel)) = p;
 							pixel+=sizeof(uintX);
-						}
+						} while (pixel != px_end);
+
 						pixel+=block_xdiff;
 						px_end+=pitch;
-					}
+					} while (pixel != py_end);
 
 					pixel  += block_w-block_h;
 					px_end += block_w-block_h;
 					py_end += block_w;
-				}
+					texel++;
+				} while (texel != tline_end);
 
 				pixel += p_diff;
 				py_end += p_diff;
@@ -89,50 +119,143 @@ public:
 
 				texel += tex_diff;
 				tline_end += tpitch;
-			}
+			} while (texel != tex_end);
 
 		}
-		// Arbitrary scaling X and Y
 		//
+		// 2x X and Arbitrary Upscaled Y 
+		// Specifically to handle 320x200 -> 640x480
 		//
-		//
-		else 
+		else if ((sw*2 == dw) && (dh >= sh))
 		{
-			uint32 pos_y, pos_x;
+			uint32 pos_y;
 			uint32 end_y = dh;
 			uint32 dst_y = 0;
-			uint8* block_start = 0;
-			uint8* next_line = pixel;
 			uint8* next_block = 0;
 
 			// Src Loop Y
-			while (texel != tex_end)
+			do 
 			{
-				uint32 end_x = dw;
-				uint32 dst_x = 0;
-
-				next_block = next_line;
-				next_line = 0;
+				next_block = pixel;
 
 				// Src Loop X
-				while (texel != tline_end)
+				do
 				{
 					pos_y = dst_y;
 
 					uintX p = Manip::copy(*texel);
-					texel++;
 
 					//
 					// Inner loops
 					//
-					block_start = next_block;
+					pixel = next_block;
+					next_block = next_block+sizeof(uintX)*2;
+
+					// Dest Loop Y
+					do
+					{
+						*(reinterpret_cast<uintX*>(pixel+0)) = p;
+						*(reinterpret_cast<uintX*>(pixel+sizeof(uintX))) = p;
+						pixel += pitch;
+						pos_y += sh;
+					} while (pos_y < end_y);
+
+					texel++;
+				} while (texel != tline_end);
+
+				pixel -= sizeof(uintX)*(dw-2);
+				dst_y = pos_y;
+				end_y += dh;
+
+				texel += tex_diff;
+				tline_end += tpitch;
+			} while (texel != tex_end);
+		}
+		//
+		// 1x X and Arbitrary Upscaled Y 
+		// Specifically to handle 640x400 -> 640x480
+		//
+		else if ((sw == dw) && (dh >= sh))
+		{
+			uint32 pos_y;
+			uint32 end_y = dh;
+			uint32 dst_y = 0;
+			uint8* next_block = 0;
+
+			// Src Loop Y
+			do 
+			{
+				next_block = pixel;
+
+				// Src Loop X
+				do
+				{
+					pos_y = dst_y;
+
+					uintX p = Manip::copy(*texel);
+
+					//
+					// Inner loops
+					//
+					pixel = next_block;
+					next_block = next_block+sizeof(uintX);
+
+					// Dest Loop Y
+					do
+					{
+						*(reinterpret_cast<uintX*>(pixel)) = p;
+						pixel += pitch;
+						pos_y += sh;
+					} while (pos_y < end_y);
+
+					texel++;
+				} while (texel != tline_end);
+
+				pixel -= sizeof(uintX)*(dw-1);
+				dst_y = pos_y;
+				end_y += dh;
+
+				texel += tex_diff;
+				tline_end += tpitch;
+			} while (texel != tex_end);
+		}
+		//
+		// Arbitrary scaling X and Y (optimized for upscaling)
+		//
+		else
+		{
+			uint32 pos_y, pos_x;
+			uint32 end_y = dh;
+			uint32 dst_y = 0;
+			uint8* blockline_start = 0;
+			uint8* next_block = 0;
+
+			// Src Loop Y
+			do 
+			{
+				uint32 end_x = dw;
+				uint32 dst_x = 0;
+
+				next_block = pixel;
+
+				// Src Loop X
+				do
+				{
+					pos_y = dst_y;
+
+					uintX p = Manip::copy(*texel);
+
+					//
+					// Inner loops
+					//
+					blockline_start = next_block;
 					next_block = 0;
 
 					// Dest Loop Y
 					while (pos_y < end_y)
 					{
 						pos_x = dst_x;
-						pixel = block_start;
+						pixel = blockline_start;
 
 						// Dest Loop X
 						while (pos_x < end_x)
@@ -143,25 +266,26 @@ public:
 							pos_x += sw;
 						}
 						if (!next_block) next_block = pixel;
-						block_start += pitch;
+
+						blockline_start += pitch;
 
 						pos_y += sh;
 					}
 
-					if (!next_line) next_line = block_start;
-
 					dst_x = pos_x;
 					end_x += dw;
-				}
+					texel++;
+				} while (texel != tline_end);
+
+				pixel += pitch - sizeof(uintX)*(dw);
 
 				dst_y = pos_y;
 				end_y += dh;
 
 				texel += tex_diff;
 				tline_end += tpitch;
-			}
+			} while (texel != tex_end);
 		}
-
 
 		return true;
 	}
