@@ -35,6 +35,7 @@
 #include "ItemSorter.h"
 #include "CameraProcess.h"
 #include "GUIApp.h"
+#include "ShapeInfo.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(GameMapGump,Gump);
 
@@ -196,6 +197,8 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 
 	uint32 framenum = CoreApp::get_instance()->getFrameNum();
 
+	bool paintEditorItems = GUIApp::get_instance()->isPaintEditorItems();
+
 	// Get all the required items
 	for (int y = -xy_limit; y <= xy_limit; y++)
 	{
@@ -224,6 +227,8 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 				item->doLerp(lerp_factor);
 
 				if (item->getZ() >= zlimit) continue;
+				if (paintEditorItems && item->getShapeInfo()->is_editor())
+					continue;
 				display_list->AddItem(item);
 			}
 		}

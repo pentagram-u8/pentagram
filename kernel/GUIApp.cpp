@@ -69,8 +69,8 @@ GUIApp::GUIApp(const int argc, const char * const * const argv)
 	  consoleGump(0), gameMapGump(0),
 	  runGraphicSysInit(false), runSDLInit(false),
 	  frameSkip(false), frameLimit(true), interpolate(true),
-	  animationRate(33), avatarInStasis(false), painting(false),
-	  dragging(false)
+	  animationRate(33), avatarInStasis(false), paintEditorItems(false),
+	  painting(false), dragging(false)
 {
 	// Set the console to auto paint, till we have finished initing
 	con.SetAutoPaint(conAutoPaint);
@@ -686,6 +686,10 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			Kernel::get_instance()->kernelStats();
 			UCMachine::get_instance()->usecodeStats();
 			World::get_instance()->worldStats();
+		} break;
+		case SDLK_e: { // editor objects toggle
+			paintEditorItems = !paintEditorItems;
+			pout << "paintEditorItems = " << paintEditorItems << std::endl;
 		} break;
 		case SDLK_f: { // trigger 'first' egg
 			if (avatarInStasis) {

@@ -63,6 +63,7 @@ public:
 	
 	void setAvatarInStasis(bool stat) { avatarInStasis = stat; }
 	bool isAvatarInStasis() const { return avatarInStasis; }
+	bool isPaintEditorItems() const { return paintEditorItems; }
 	
 	GameMapGump *getGameMapMapGump() { return gameMapGump; }
 	Gump *getDesktopGump() { return desktopGump; }
@@ -104,6 +105,7 @@ private:
 	
 	bool avatarInStasis;    // If this is set to true, Avatar can't move, 
 	                        // nor can Avatar start more usecode
+	bool paintEditorItems;  // If true, paint items with the SI_EDITOR flag
 	
 	bool painting;			// Set true when painting
 	

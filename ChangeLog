@@ -3,6 +3,7 @@
 	* world/CurrentMap.*: canExistAt intrinsic
 	* kernel/GUIApp.cpp: 't' outputs kernel/usecode/world stats
 	* world/CurrentMap.cpp: fixed areaSearch range
+	* kernel/GUIApp.*, gumps/GameMapGump.cpp: 'e' toggles editor items
 
 2003-06-15	  Ryan Nunn <colourles@users.sourceforge.net>
 	* convert/u8/ConvertUsecodeU8.h, usecode/UCMachine.* : Some nasty hacks
