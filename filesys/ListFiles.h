@@ -409,7 +409,7 @@ int FileSystem::ListFiles(const std::string mask, FileList& files)
 
 	switch (err) {
 		case 0:  //OK
-			for(uint32 i=0; i<globres.gl_pathc; i++)
+			for(int i=0; i<globres.gl_pathc; i++)
 			{
 				std::string newfname(globres.gl_pathv[i]);
 				#if 0
