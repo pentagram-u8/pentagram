@@ -36,7 +36,14 @@ SpeechFlex::SpeechFlex(IDataSource* ds) : SoundFlex(ds)
 		char *end = reinterpret_cast<char*>(std::memchr(strings,0,size));
 		if (!end) end = strend;
 
-		phrases.push_back(Pentagram::istring(strings,end-strings));
+		Pentagram::istring text = Pentagram::istring(strings,end-strings);
+		std::string::size_type pos1 = text.find_first_not_of(' ');
+		std::string::size_type pos2 = text.find_last_not_of(' ');
+		text = text.substr(pos1, pos2-pos1+1);
+
+//		pout << "Found string: \"" << text << "\"" << std::endl;
+
+		phrases.push_back(text);
 
 		strings = end+1;
 	}
@@ -54,11 +61,19 @@ int	SpeechFlex::getIndexForPhrase(std::string &phrase) const
 	std::vector<Pentagram::istring>::const_iterator it;
 	int i = 1;
 
+	std::string::size_type pos1 = phrase.find_first_not_of(' ');
+	std::string::size_type pos2 = phrase.find_last_not_of(' ');
+	std::string text = phrase.substr(pos1, pos2-pos1+1);
+
+//	pout << "Looking for string: \"" << text << "\"" << std::endl;
+
 	for(it = phrases.begin(); it != phrases.end(); ++it)
 	{
-		if (phrase == *it) return i;
+		if (text == *it) return i;
 		i++;
 	}
+
+//	pout << "Not found" << std::endl;
 
 	return 0;
 }
