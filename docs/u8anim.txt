@@ -14,9 +14,9 @@ Frame sequences have the following format:
 4 byte header:
 byte 0: length of sequences
 byte 1: flags: bit 0: two-step animation
-	       bit 1: unknown (attack animation?)
+	       bit 1: attack
                bit 2: looping animation
-	       bit 3: unknown (don't stop animation if blocked?)
+	       bit 3: unstoppable (don't stop animation if blocked)
 	       bit 4: unknown
 	       bit 5: unknown
 	       bit 6: unknown
