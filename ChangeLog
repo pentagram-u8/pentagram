@@ -1,4 +1,7 @@
 2004-04-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* docs/u8anim.txt: corrected some animation info
+
+2004-04-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: patch #893176 by watt (HIDManager::Bind and cleanup)
 
 2004-04-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>

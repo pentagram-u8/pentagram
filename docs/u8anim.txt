@@ -59,7 +59,7 @@ Actions:
 11: shaking head
 12: taking a small step forward
 13: stepping back while reaching for weapon
-14: falling
+14: falling/dying
 15: standing in combat stance
 16: preparing to jump (or landing from a fall?)
 17: jumping
