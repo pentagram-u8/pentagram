@@ -268,7 +268,12 @@ else
 	AC_MSG_RESULT(no)
 fi
 
+# ------------------
+# Checking for various, necessary programs
+# ------------------
 
+# Since I'm using sed, it'd be good to check for it...
+AC_CHECK_PROG(have_sed, "sed", yes, no)
 
 # ------------------
 # Generate output
@@ -294,5 +299,12 @@ echo SDL ....................... :  `$SDL_CONFIG --version`
 echo
 echo Warning level ............. : $WARNING_LEVEL
 
-echo
+if test x$have_sed = xyes; then
+	echo
+else
+	echo
+	AC_MSG_RESULT(WARNING: \`sed\` was not found in your PATH. The usecode compiler's lex file (tools/compile/llcLexer.l) will not successfully rebuild _if_ modified.)
+	echo
+fi
+
 echo "Now type 'make' to build Pentagram"

@@ -1,3 +1,12 @@
+2003-05-28	Darke <darkepaw@users.sf.net>
+	* configure.ac: Checks for `sed` and reports a warning if it's lacking.
+	* tools/compile/module.mk: Runs a few sed scripts so that it shouldn't
+	  be necessary to hack-make a correct FlexLexer.h or prepend a
+	  #include "pent_include.h"
+	* tools/compile/llcLexer.cpp: The updated 'should work' file.
+	  Of course this needs a little testing on a system that's just slightly
+	  more broken then mine. *grin*
+	
 2003-05-27	Darke <darkepaw@users.sf.net>
 	* kernel/CoreApp.*, kernel/GUIApp.*: Split up Application into a 'Core'
 	  base class and a 'GUI' subsystem, and removed the original
