@@ -333,7 +333,6 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 
 		if (GUIApp::get_instance()->isAvatarInStasis()) {
 			pout << "Can't: avatarInStasis" << std::endl;
-			uint16 objID = TraceObjId(mx, my); //!! hack
 			break;
 		}
 
