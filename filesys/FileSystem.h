@@ -100,27 +100,56 @@ significant overhead.
 class FileSystem
 {
  public:
-	typedef std::list<std::string> FileList;
-
+	//! \param noforcedvpaths if true, all file operations must use vpaths
 	FileSystem(bool noforcedvpaths = false);
 	~FileSystem();
 
 	static FileSystem* get_instance() { return filesystem; }
 
-	// Open a streaming file as readable. Streamed (0 on failure)
+	//! Open a file as readable. Streamed.
+	//! \param vfn the (virtual) filename
+	//! \param is_text open in text mode?
+	//! \return (0 on failure)
 	IDataSource *ReadFile(const std::string &vfn, bool is_text=false);
 
-	// Open a streaming file as readable. Streamed (0 on failure)
+	//! Open a file as writable. Streamed.
+	//! \param vfn the (virtual) filename
+	//! \param is_text open in text mode?
+	//! \return (0 on failure)
 	ODataSource *WriteFile(const std::string &vfn, bool is_text=false);
 
+	//! Mount a virtual path
+	//! \param vpath the name of the vpath (should start with '@')
+	//! \param realpath the name of the path to mount (note that this can
+	//!                 be a virtual path itself)
+	//! \param create create realpath directory if it doesn't exist?
+	//! \return true if succesful
 	bool AddVirtualPath(const std::string &vpath, const std::string &realpath,
 						bool create=false);
+
+	//! Unmount a virtual path
 	bool RemoveVirtualPath(const std::string &vpath);
-	
+
+	//! Mount a buffer as a file in memory
+	//! \param vpath the vpath under which to mount the file.
+	//!              (Preferably starting with '@memory', but not required.)
+	//! \param data the data
+	//! \param len size (in bytes) of data
+	//! \return true if succesful
 	bool MountFileInMemory(const std::string &vpath, const uint8 *data,
 						   const uint32 len);
 
-	int  MkDir(const std::string& path); // can handle both paths and vpaths
+	//! Create a directory
+	//! \param path the directory to create. (Can be virtual)
+	//! \return OS-specific (FIXME!)
+	int MkDir(const std::string& path); // can handle both paths and vpaths
+
+	typedef std::list<std::string> FileList;
+
+	//! List files matching a mask
+	//! \param mask the mask to match
+	//! \param files the FileList to which the found files are appended
+	//! \param return OS-specific (FIXME!)
 	int ListFiles(const std::string mask, FileList& files);
 
  private:
