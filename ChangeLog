@@ -1,3 +1,6 @@
+2003-07-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/UCMachine.cpp: some error checks
+
 2003-07-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* everything: saving/loading
 	* usecode/BitSet.*: a bitset for the globals

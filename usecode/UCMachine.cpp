@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Container.h"
 
-//#define WATCH_CLASS 1026
+//#define WATCH_CLASS 0x581
 //#define WATCH_ITEM 19
 
 #ifdef WATCH_CLASS
@@ -217,6 +217,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x09:
 			// 09 xx yy zz
 			// pop yy bytes into an element of list bp+xx (or slist if zz set)
+		{
 			si8a = static_cast<sint8>(cs.read1());
 			ui32a = cs.read1();
 			si8b = static_cast<sint8>(cs.read1());
@@ -224,6 +225,13 @@ bool UCMachine::execProcess(UCProcess* p)
 				   print_bp(si8a), si8b, si8b));
 			ui16a = p->stack.pop2()-1; // index
 			ui16b = p->stack.access2(p->bp+si8a);
+			UCList* l = getList(ui16b);
+			if (!l) {
+				perr << "assign element to an invalid list (" << ui16b << ")"
+					 << std::endl;
+				error = true;
+				break;
+			}
 			if (si8b) { // slist?
 				// what special behaviour do we need here?
 				// probably just that the overwritten element has to be freed?
@@ -234,7 +242,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				listHeap[ui16b]->assign(ui16a, p->stack.access());
 				p->stack.moveSP(ui32a);
 			}
-			break;
+		} break;
 
 		// PUSH opcodes
 
@@ -988,19 +996,26 @@ bool UCMachine::execProcess(UCProcess* p)
 			// duplicate string if YY? yy = 1 only occurs
 			// in two places in U8: once it pops into temp afterwards,
 			// once it is indeed freed. So, guessing we should duplicate.
-
+		{
 			ui32a = cs.read1();
 			ui32b = cs.read1();
 			ui16a = p->stack.pop2()-1; // index
 			ui16b = p->stack.pop2(); // list
-			if (ui32b) {
-				uint16 s = listHeap[ui16b]->getStringIndex(ui16a);
-				p->stack.push2(duplicateString(s));
+			UCList* l = getList(ui16b);
+			if (!l) {
+				perr << "push element from invalid list (" << ui16b << ")"
+					 << std::endl;
+				error = true;
 			} else {
-				p->stack.push((*listHeap[ui16b])[ui16a], ui32a);
+				if (ui32b) {
+					uint16 s = listHeap[ui16b]->getStringIndex(ui16a);
+					p->stack.push2(duplicateString(s));
+				} else {
+					p->stack.push((*listHeap[ui16b])[ui16a], ui32a);
+				}
 			}
 			LOGPF(("push element\t%02X slist==%02X", ui32a, ui32b));
-			break;
+		} break;
 
 		case 0x45:
 			// 45 xx yy
@@ -1081,7 +1096,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			ui32a = p->stack.pop2();
 			globals->setBits(ui16a, ui16b, ui32a);
 			assert(globals->getBits(ui16a, ui16b) == ui32a); // paranoid :-)
-			LOGPF(("pop\t\tglobal [%04X %02X] = %02X", ui16a, ui16b, ui8a));
+			LOGPF(("pop\t\tglobal [%04X %02X] = %02X", ui16a, ui16b, ui32a));
 			break;
 
 		case 0x50:
@@ -1250,8 +1265,8 @@ bool UCMachine::execProcess(UCProcess* p)
 				uint16 classid = cs.read2();
 				uint16 offset = cs.read2();
 				uint16 delta = cs.read2();
-				int this_size = cs.read1(); // relevance?
-				/*uint32 unknown =*/ cs.read1(); // ??
+				int this_size = cs.read1();
+				uint32 unknown = cs.read1(); // ??
 				
 				LOGPF(("spawn inline\t%04X:%04X+%04X=%04X %02X %02X",
 					   classid,offset,delta,offset+delta,this_size, unknown));
