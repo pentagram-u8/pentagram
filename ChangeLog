@@ -5,6 +5,7 @@
 	* usecode/*: basic pointer opcodes, bugfixes
 	* kernel/*: rearranged process queue a bit
 	* usecode/*: spawn opcode
+	* usecode/*: more pointer opcodes, partial spawn inline
 
 2002-12-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* filesys/IDataSource.h, usecode/UCStack.h: const changes

@@ -26,8 +26,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define LOGPF(X) pout.printf X
 
 enum UCSegments {
+	SEG_STACK  = 0x0000,
 	SEG_STRING = 0x8000,
-	SEG_LIST   = 0x8001
+	SEG_LIST   = 0x8001, // I don't think this is used
+	SEG_OBJ    = 0x8002,
+	SEG_GLOBAL = 0x8003
 };
 
 UCMachine* UCMachine::ucmachine = 0;
@@ -144,7 +147,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 08
 			// pop 32bits into result register
 			//! what is this result register exactly??
-			//! 16 or 32 bit?
+			//! probably a member of the UCProcess?
 			printf("pop res");
 			break;
 
@@ -892,12 +895,15 @@ bool UCMachine::execProcess(UCProcess* p)
 			LOGPF(("push huge\t%s %02X", print_bp(si8a), ui16b));
 			break;
 
-/*
 		case 0x4B:
 			// 4B xx
-			// push 32 pointer address of BP+XX
-			printf("push addr\t%s", print_bp(read1(in)));
+			// push 32 bit pointer address of BP+XX
+			si8a = static_cast<sint8>(cs.read1());
+			p->stack.push4(stackToPtr(p->pid, p->bp+si8a));
+			LOGPF(("push addr\t%s", print_bp(si8a)));
 			break;
+
+/*
 		case 0x4C:
 			// 4C xx
 			// indirect push,
@@ -958,17 +964,18 @@ bool UCMachine::execProcess(UCProcess* p)
 
 			if (p->ret()) { // returning from process
 				// TODO
-
-				// what do we need to do here?
-				// return value?
 				LOGPF(("!ret\t\tfrom process"));
 				cede = true;
 				error = true; // for now
+
+				// return value is going to be stored somewhere,
+				// and some other process is probably waiting for it.
+				// So, we can't delete ourselves just yet.
+				// Question is of course when we can...
 			} else {
 				LOGPF(("ret\t\tto %04X:%04X", p->classid, p->ip));
 
-				// what do we need to do here?
-				// return value?
+				// return value is stored in temp32 register
 
 				// Update the code segment
 				cs.load(p->usecode->get_class(p->classid),
@@ -1010,6 +1017,26 @@ bool UCMachine::execProcess(UCProcess* p)
 			cede=true; 
 			break;
 
+		case 0x54:
+			// 54 01 01
+			// implies
+			// this seems to link two processes (two pids are popped)
+			// the '01 01' variety most likely causes one process
+			// to wait for the other to finish.
+			// AFAICT, the first pid pushed is always the current pid in U8
+
+			// question: can multiple processes be waiting for a single proc?
+			// can a process be waiting for multiple processes?
+
+			// 'implies' seems to push a value too, although it is very
+			// often ignored
+			cs.read2(); // skip the 01 01
+			ui16a = p->stack.pop2();
+			ui16b = p->stack.pop2();
+			p->stack.push2(0);
+			perr.printf("unhandled opcode %02X\n", opcode);
+			LOGPF(("!implies"));
+			break;
 
 		case 0x57:
 			// 57 aa tt xx xx yy yy
@@ -1045,20 +1072,32 @@ bool UCMachine::execProcess(UCProcess* p)
 			cede = true; // give new process a chance to run
 			break;
 
-/*
-                case 0x58:
-                        // 58 xx xx yy yy zz zz tt uu
-                        // spawn inline process function yyyy in class xxxx at offset zzzz
-                        // tt = size of this pointer
-                        // uu = unknown
-                        i0 = read2(in); i1 = read2(in);
-                        i2 = read2(in);
-                        i4 = read1(in); i5 = read1(in);
-                        printf("spawn inline\t%04X:%04X+%04X=%04X %02X %02X (%s+%04X)",
-                                   i0, i1, i2, i1+i2, i4, i5,functionaddresstostring(i0, i1).c_str(), i2);
-                        break;
 
-*/
+		case 0x58:
+			// 58 xx xx yy yy zz zz tt uu
+			// spawn inline process function yyyy in class xxxx at offset zzzz
+			// tt = size of this pointer
+			// uu = unknown (occuring values: 00, 02, 05)
+
+			//! What to do with this new process?
+			//! The inlined code does use 'var06' (this) sometimes, so
+			//! maybe it should copy the this pointer from the current proc?
+			{
+				uint32 classid = cs.read2();
+				uint32 offset = cs.read2();
+				uint32 delta = cs.read2();
+				uint32 this_size = cs.read1(); // relevance?
+				uint32 unknown = cs.read1(); // ??
+				
+				LOGPF(("spawn inline\t%04X:%04X+%04X=%04X %02X %02X",
+					   classid,offset,delta,offset+delta,this_size, unknown));
+
+				UCProcess* newproc = new UCProcess(p->usecode, classid,
+												   offset + delta);
+				addProcess(newproc); // pid of newproc isn't stored anywhere?
+			}
+			cede = true;
+			break;
 	
 		case 0x59:
 			// 59
@@ -1202,13 +1241,15 @@ bool UCMachine::execProcess(UCProcess* p)
 			LOGPF(("move sp\t\t%s%02Xh", si8a<0?"-":"", si8a<0?-si8a:si8a));
 			break;
 
-/*
+
 		case 0x6F:
 			// 6F xx
 			// push 32 pointer address of SP-xx
-			printf("push addr\t%s", print_sp(0x100 - read1(in)));
+			si8a = static_cast<sint8>(cs.read1());
+			p->stack.push4(stackToPtr(p->pid, p->stack.getSP() - si8a));
+			LOGPF(("push addr\t%s", print_sp(-si8a)));
 			break;
-
+/*
 		// loop-related opcodes
 		// Theory: put a 'container object' on the stack, and this will
 		// loop over the objects in there. The 'loopscript' determines
@@ -1298,11 +1339,6 @@ bool UCMachine::execProcess(UCProcess* p)
 			p->stack.pop4();
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
-		case 0x4B: // push address of BP+XX
-			cs.read1();
-			p->stack.push4(0);
-			perr.printf("unhandled opcode %02X\n", opcode);
-			break;
 		case 0x4C: // indirect push
 			p->stack.pop4();
 			p->stack.addSP(-cs.read1());
@@ -1313,27 +1349,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			p->stack.addSP(cs.read1());
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
-		case 0x54: // implies
-			cs.read1();
-			cs.read1();
-			p->stack.pop2();
-			p->stack.pop2();
-			p->stack.push2(0);
-			perr.printf("unhandled opcode %02X\n", opcode);
-			break;
-		case 0x58: // spawn inline
-			p->stack.pop4();
-			cs.read4();
-			cs.read4();
-			temp32 = 0x11223344;
-			perr.printf("unhandled opcode %02X\n", opcode);
-			break;
 		case 0x6D: // push process result 
-			p->stack.push4(0);
-			perr.printf("unhandled opcode %02X\n", opcode);
-			break;
-		case 0x6F: // push address of SP-xx
-			cs.read1();
 			p->stack.push4(0);
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
@@ -1460,6 +1476,22 @@ uint32 UCMachine::stringToPtr(uint16 s)
 	uint32 ptr = SEG_STRING;
 	ptr <<= 16;
 	ptr += s;
+	return ptr;
+}
+
+uint32 UCMachine::stackToPtr(uint16 pid, uint16 offset)
+{
+	uint32 ptr = SEG_STACK + pid;
+	ptr <<= 16;
+	ptr += offset;
+	return ptr;
+}
+
+uint32 UCMachine::globalToPtr(uint16 offset)
+{
+	uint32 ptr = SEG_GLOBAL;
+	ptr <<= 16;
+	ptr += offset;
 	return ptr;
 }
 

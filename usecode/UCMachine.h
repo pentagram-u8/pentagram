@@ -73,6 +73,9 @@ private:
 
 	uint32 listToPtr(uint16 l);
 	uint32 stringToPtr(uint16 s);
+	uint32 stackToPtr(uint16 pid, uint16 offset);
+	uint32 globalToPtr(uint16 offset);
+
 
 	static UCMachine* ucmachine;
 };
