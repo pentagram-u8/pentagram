@@ -114,7 +114,7 @@ bool World::switchMap(uint32 newmap)
 	//   deletes the EggHatcher
 	//   resets all eggs
 	// swap out fixed items in old map
-	// kill all processes (except those of type 1)
+	// kill all processes (except those of type 1 or of item 0)
 	// load fixed items in new map
 	// load new map into CurrentMap, which also
 	//   assigns objIDs to fixed items

@@ -185,6 +185,7 @@ ACTORS = \
 	world/actors/PathfinderProcess.o \
 	world/actors/QuickAvatarMoverProcess.o \
 	world/actors/ResurrectionProcess.o \
+	world/actors/SchedulerProcess.o \
 	world/actors/TargetedAnimProcess.o \
 	world/actors/TeleportToEggProcess.o
 

@@ -1,3 +1,6 @@
+2005-02-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/SchedulerProcess.*: call NPC::schedule every hour
+
 2005-01-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AvatarMoverProcess.*: fixed turning, cleaned up
 	* world/actors/AvatarMoverProcess.cpp: dblclk on avatar toggles combat
