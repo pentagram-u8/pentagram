@@ -19,6 +19,7 @@ $(LPATH)/pentshp$(EXEEXT): $(pentshp_OBJ) $(LPATH)/pentshp.o
 	$(CXX) -g -o $@ $+ $(LDFLAGS) $(GIMP_LIBS)
 
 $(LPATH)/pentshp.o: $(LPATH)/pentshp.cpp
+	@$(MKDIR) $(*D)/$(DEPDIR)
 	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).d",-MQ,"$@",-MP $(WARNINGS) $(CXXFLAGS) $(SDL_CFLAGS) $(GIMP_INCLUDES) -c -o $@ $<
 
 # Common rules

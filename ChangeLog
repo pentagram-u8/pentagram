@@ -1,5 +1,6 @@
 2005-01-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* tools/shapeconv/ShapeConv.cpp: output 0x1A bytes to ID flex
+	* bootstrap, tools/gimp-plugin/module.mk: add Makefile, create .deps
 
 2005-01-02  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* Makefile.in, configure.ac: Add option to build gimp plugin
