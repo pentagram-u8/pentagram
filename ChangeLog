@@ -1,4 +1,7 @@
 2002-12-13  Ryan Nunn <colourles@users.sourceforge.net>
+	* tools/disasm/Disasm.cpp : Undoing my damage
+
+2002-12-13  Ryan Nunn <colourles@users.sourceforge.net>
 	* filesys/ODataSource.h	: Fixing a const problem
 	* convert/Convert.h, tools/disasm/Disasm.cpp, tools/fold/CallNodes.cpp,
 	  tools/fold/Folder.cpp, tools/fold/IfNode.cpp : MSVC hacks

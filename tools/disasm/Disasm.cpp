@@ -1600,8 +1600,6 @@ void readfunctionnames(void)
 int main(int argc, char **argv)
 {
 	if (argc < 3) {
-//		PLOG(1,"THIS IS A TEST");
-		perr << std::endl << debug_level();
 		perr << "Usage: disasm <file> [<function number>|-a] {--game [u8|crusader]} {--lang [english|german|french]}" << endl;
 		perr << "or" << endl;
 		perr << "Usage: disasm <file> -l" << endl;
