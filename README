@@ -1,4 +1,4 @@
-This repository contains code snippets and documents related to Origin's 
+This repository contains code snippets and documents related to Origin's
 Ultima 8:Pagan.
 
 
@@ -38,14 +38,41 @@ A sample pentagram.cfg is included below:
   <path>
    /path/to/u8
   </path>
+  <work>
+   /path/to/u8/work/dir
+  </work>
  </u8>
  <general>
   <data>
    /path/to/pentagram/data
   </data>
  </general>
+ <video>
+  <fullscreen>
+   no
+  </fullscreen>
+ </video>
 </config>
 
 Replace '/path/to/u8' with the directory containing 'u8.exe'.
+Replace '/path/to/u8/work/dir' with the work directory (not used and 
+necessary yet - don't ask).
 Replace '/path/to/pentagram/data' with the pentagram data directory (that's
 the directory that contains fixedfont.tga).
+
+
+KEYBOARD COMMANDS
+=================
+
+These commands are likely to change in the future so keep an eye on CHANGELOG as well.
+
+~				: hides/restores console
+page up/down	: scrolls console
+arrow keys		: scrolls map
+t				: play test animation (Devon)
+0-9,a-e			: selects 0-14 in conversations
+ESC,q			: quits pentagram
+[,]				: first ] clears the screen, multiple presses of ]
+				  show the paint order. [ "steps" backward.
+left mouse		: look at item/npc
+right mouse		: use item/talk to npc
