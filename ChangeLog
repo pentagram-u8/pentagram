@@ -2,6 +2,7 @@
 	* kernel/idMan.*: added function to mark any ID as used
 	* world/MonsterEgg.*: monster hatching
 	* world/actors/Actor.*: createActor intrinsic
+	* world/Item.cpp: fixed pop to container
 
 2003-05-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/EggHatcherProcess.*: an egg hatcher

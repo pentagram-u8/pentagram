@@ -1179,6 +1179,12 @@ uint32 Item::I_pop(const uint8* args, unsigned int /*argsize*/)
 	item->clearFlag(FLG_ETHEREAL);
 	w->getCurrentMap()->addItem(item);
 
+#if 0
+	sint32 x,y,z;
+	item->getLocation(x,y,z);
+	perr << "Popping item into map: " << item->getShape() << "," << item->getFrame() << " at (" << x << "," << y << "," << z << ")" << std::endl;
+#endif
+
 	//! Anything else?
 
 	return objid;
@@ -1203,6 +1209,10 @@ uint32 Item::I_popToCoords(const uint8* args, unsigned int /*argsize*/)
 	item->clearFlag(FLG_ETHEREAL);
 	w->getCurrentMap()->addItem(item);
 
+#if 0
+	perr << "Popping item into map: " << item->getShape() << "," << item->getFrame() << " at (" << x << "," << y << "," << z << ")" << std::endl;
+#endif
+
 	//! Anything else?
 
 	return objid;
@@ -1211,10 +1221,12 @@ uint32 Item::I_popToCoords(const uint8* args, unsigned int /*argsize*/)
 uint32 Item::I_popToContainer(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_NULL32(); // ARG_ITEM(item); // unused
-	ARG_CONTAINER(container);
+	ARG_UINT16(container_id);
+	Container *container = p_dynamic_cast<Container*>
+		(World::get_instance()->getItem(container_id));
 
 	if (!container) {
-		perr << "Trying to pop item to invalid container." << std::endl;
+		perr << "Trying to pop item to invalid container (" << container_id << ")." << std::endl;
 		return 0;
 	}
 
@@ -1237,10 +1249,12 @@ uint32 Item::I_popToContainer(const uint8* args, unsigned int /*argsize*/)
 uint32 Item::I_popToEnd(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_NULL32(); // ARG_ITEM(item); // unused
-	ARG_CONTAINER(container);
+	ARG_UINT16(container_id);
+	Container *container = p_dynamic_cast<Container*>
+		(World::get_instance()->getItem(container_id));
 
 	if (!container) {
-		perr << "Trying to pop item to invalid container." << std::endl;
+		perr << "Trying to pop item to invalid container (" << container_id << ")." << std::endl;
 		return 0;
 	}
 

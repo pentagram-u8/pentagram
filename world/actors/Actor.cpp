@@ -111,8 +111,6 @@ uint32 Actor::I_doAnim(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(unk1); // this is almost always 10000 in U8.Maybe speed-related?
 	ARG_UINT16(unk2); // appears to be 0 or 1. Some flag?
 
-	perr << "I_doAnim: objID: " << id_obj_actor << std::endl;
-
 	if (!actor) return 0;
 
 	if (dir > 8) {
