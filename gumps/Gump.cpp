@@ -637,6 +637,33 @@ Gump *Gump::OnMouseDown(int button, int mx, int my)
 	return handled;
 }
 
+Gump *Gump::OnMouseMotion(int mx, int my)
+{
+	// Convert to local coords
+	ParentToGump(mx,my);
+
+	Gump *handled = 0;
+
+	// Iterate children backwards
+	std::list<Gump*>::reverse_iterator it;
+	for (it = children.rbegin(); it != children.rend(); ++it) {
+		Gump *g = *it;
+
+		// Not if closing
+		if (g->flags & FLAG_CLOSING || g->IsHidden()) continue;
+
+		// It's got the point
+		if (g->PointOnGump(mx,my)) handled = g->OnMouseMotion(mx, my);
+
+		if (handled) break;
+	}
+
+	// All gumps need to handle mouse motion
+	if (!handled) handled = this;
+
+	return handled;
+}
+
 //
 // KeyInput
 //

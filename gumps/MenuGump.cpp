@@ -94,7 +94,7 @@ void MenuGump::InitGump()
 		FrameID frame_down(GameData::GUMPS, menuEntryShape, i * 2 + 1);
 		frame_up = _TL_SHP_(frame_up);
 		frame_down = _TL_SHP_(frame_down);
-		widget = new ButtonWidget(x, y, frame_up, frame_down);
+		widget = new ButtonWidget(x, y, frame_up, frame_down, true);
 		widget->InitGump();
 		widget->SetIndex(i + 1);
 		AddChild(widget);

@@ -293,7 +293,7 @@ uint16 shape_downFlexId
 uint32 shape_downNum
 uint32 framenum_down
 uint16 textwidget
-
+uint8 mouseOver (boolean)
 
 SlidingWidget: (v1)
 uint16 version

@@ -1,4 +1,10 @@
 
+2004-10-10  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* gumps/Gump.*, kernel/GUIApp.*: added mouse motion support for gumps
+	* gumps/widgets/ButtonWidget.cpp: option to change shape on mouse over
+	* gumps/MenuGump.cpp: menu options now light up on mouse over like
+	  original
+
 2004-10-08  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* world/actors/AnimationTracker.*: targeted jump do not affect z.
 	  Avatar should not be able to jump higher, and gravity + inertia

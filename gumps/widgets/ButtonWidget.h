@@ -31,7 +31,8 @@ public:
 	ButtonWidget();
 	ButtonWidget(int X, int Y, std::string txt, int font,
 				 int width = 0, int height = 0);
-	ButtonWidget(int X, int Y, FrameID frame_up, FrameID frame_down);
+	ButtonWidget(int X, int Y, FrameID frame_up, FrameID frame_down,
+				 bool mouseOver = false);
 	virtual ~ButtonWidget(void);
 
 	// Init the gump, call after construction
@@ -43,6 +44,9 @@ public:
 	virtual void OnMouseUp(int  button, int mx, int my);
 	virtual void OnMouseClick(int button, int mx, int my);
 	virtual void OnMouseDouble(int button, int mx, int my);
+
+	virtual void OnMouseOver();
+	virtual void OnMouseLeft();
 
 	//void SetShapeDown(Shape *_shape, uint32 _framenum);
 	//void SetShapeUp(Shape *_shape, uint32 _framenum);
@@ -60,6 +64,7 @@ protected:
 	Shape *shape_down;
 	uint32 framenum_down;
 	uint16 textwidget;
+	bool mouseOver;
 
 public:
 	bool loadData(IDataSource* ids);

@@ -214,6 +214,9 @@ public:
 	// OnMouseDown returns the Gump that handled the Input, if it was handled.
 	// The MouseUp,MouseDouble events will be sent to the same gump.
 	//
+	// OnMouseMotion works like OnMouseDown,
+	// but independently of the other methods.
+	//
 	// Unhandled input will be passed down to the next lower gump.
 	//
 	// A mouse click on a gump will make it focus, IF it wants it.
@@ -224,6 +227,12 @@ public:
 	virtual void		OnMouseUp(int  button, int mx, int my) { }
 	virtual void		OnMouseClick(int button, int mx, int my) { }
 	virtual void		OnMouseDouble(int button, int mx, int my) { }
+	virtual Gump *		OnMouseMotion(int mx, int my);
+
+	// OnMouseOver is only call when the mouse first passes over the gump
+	// OnMouseLeft is call as the mouse leaves the gump.
+	virtual void		OnMouseOver() { };
+	virtual void		OnMouseLeft() { };
 
 	// Keyboard input gets sent to the FocusGump. Or if there isn't one, it
 	// will instead get sent to the default key handler. TextInput requires

@@ -141,9 +141,9 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	  runGraphicSysInit(false), runSDLInit(false),
 	  frameSkip(false), frameLimit(true), interpolate(false),
 	  animationRate(100), avatarInStasis(false), paintEditorItems(false),
-	  painting(false), showTouching(false), dragging(DRAG_NOT),
-	  dragging_offsetX(0), dragging_offsetY(0), timeOffset(0),
-	  midi_driver(0), midi_volume(255), drawRenderStats(false)
+	  painting(false), showTouching(false), mouseOverGump(0),
+	  dragging(DRAG_NOT), dragging_offsetX(0), dragging_offsetY(0),
+	  timeOffset(0), midi_driver(0), midi_volume(255), drawRenderStats(false)
 {
 	application = this;
 
@@ -1162,6 +1162,17 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		int mx = event.button.x;
 		int my = event.button.y;
 		mouseX = mx; mouseY = my;
+		Gump * gump = desktopGump->OnMouseMotion(mx, my);
+		if (gump && mouseOverGump != gump->getObjId())
+		{
+			Gump * oldGump = getGump(mouseOverGump);
+			if (oldGump)
+				oldGump->OnMouseLeft();
+
+			mouseOverGump = gump->getObjId();
+			gump->OnMouseOver();
+		}
+
 		if (dragging == DRAG_NOT) {
 			if (mouseButton[BUTTON_LEFT].state & MBS_DOWN) {
 				int startx = mouseButton[BUTTON_LEFT].downX;
@@ -1411,6 +1422,10 @@ bool GUIApp::saveGame(std::string filename, bool ignore_modals)
 		return false;
 	}
 
+	// Hack - don't save mouse over status for gumps
+	Gump * gump = getGump(mouseOverGump);
+	if (gump) gump->OnMouseLeft();
+
 	ODataSource* ods = filesystem->WriteFile(filename);
 	if (!ods) return false;
 
@@ -1459,6 +1474,9 @@ bool GUIApp::saveGame(std::string filename, bool ignore_modals)
 
 	sgw->finish();
 	delete sgw;
+
+	// Restore mouse over
+	if (gump) gump->OnMouseOver();
 
 	pout << "Done" << std::endl;
 
@@ -1688,6 +1706,10 @@ bool GUIApp::load(IDataSource* ids)
 	if (version != 1) return false;
 
 	avatarInStasis = (ids->read1() != 0);
+
+	// no gump should be moused over after load
+	mouseOverGump = 0;
+
 	sint32 absoluteTime = static_cast<sint32>(ids->read4());
 	timeOffset = absoluteTime - Kernel::get_instance()->getFrameNum();
 

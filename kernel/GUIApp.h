@@ -229,6 +229,9 @@ private:
 
 	// mouse input state
 	MButton mouseButton[NUM_MOUSEBUTTONS+1];
+
+	uint16 mouseOverGump;
+
 	enum DraggingState {
 		DRAG_NOT = 0,
 		DRAG_OK = 1,

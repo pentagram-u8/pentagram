@@ -39,14 +39,14 @@ ButtonWidget::ButtonWidget()
 
 ButtonWidget::ButtonWidget(int X, int Y, std::string txt, int font,
 						   int w, int h) :
-	Gump(X,Y,w,h), shape_up(0), shape_down(0)
+	Gump(X,Y,w,h), shape_up(0), shape_down(0), mouseOver(false)
 {
 	TextWidget* widget = new TextWidget(0,0,txt,font,w,h);
 	textwidget = widget->getObjId();
 }
 
-ButtonWidget::ButtonWidget(int X, int Y, FrameID frame_up, FrameID frame_down)
-	: Gump(X,Y,5,5), textwidget(0)
+ButtonWidget::ButtonWidget(int X, int Y, FrameID frame_up, FrameID frame_down, 							  bool _mouseOver)
+	: Gump(X,Y,5,5), textwidget(0), mouseOver(_mouseOver)
 {
 	shape_up = GameData::get_instance()->getShape(frame_up);
 	shape_down = GameData::get_instance()->getShape(frame_down);
@@ -104,8 +104,10 @@ Gump *ButtonWidget::OnMouseDown(int button, int mx, int my)
 	if (button == BUTTON_LEFT)
 	{
 		// CHECKME: change dimensions or not?
-		shape = shape_down;
-		framenum = framenum_down;
+		if (!mouseOver) {
+			shape = shape_down;
+			framenum = framenum_down;
+		}
 		return this;
     }
 	return 0;
@@ -123,8 +125,10 @@ uint16 ButtonWidget::TraceObjId(int mx, int my)
 void ButtonWidget::OnMouseUp(int button, int mx, int my)
 {
 	if (button == BUTTON_LEFT) {
-		shape = shape_up;
-		framenum = framenum_up;
+		if (!mouseOver) {
+			shape = shape_up;
+			framenum = framenum_up;
+		}
 		parent->ChildNotify(this,BUTTON_UP);
 	}
 }
@@ -140,6 +144,22 @@ void ButtonWidget::OnMouseClick(int button, int mx, int my)
 void ButtonWidget::OnMouseDouble(int button, int mx, int my)
 {
 	parent->ChildNotify(this,BUTTON_DOUBLE);
+}
+
+void ButtonWidget::OnMouseOver()
+{
+	if (mouseOver) {
+		shape = shape_down;
+		framenum = framenum_down;
+	}
+}
+
+void ButtonWidget::OnMouseLeft()
+{
+	if (mouseOver) {
+		shape = shape_up;
+		framenum = framenum_up;
+	}
 }
 
 void ButtonWidget::saveData(ODataSource* ods)
@@ -165,6 +185,9 @@ void ButtonWidget::saveData(ODataSource* ods)
 	ods->write4(shapenum);
 	ods->write4(framenum_down);
 	ods->write2(textwidget);
+
+	uint8 m = (mouseOver ? 1 : 0);
+	ods->write1(m);
 }
 
 bool ButtonWidget::loadData(IDataSource* ids)
@@ -191,6 +214,7 @@ bool ButtonWidget::loadData(IDataSource* ids)
 	}
 	framenum_down = ids->read4();
 	textwidget = ids->read2();
+	mouseOver = (ids->read1() != 0);
 
 	return true;
 }
