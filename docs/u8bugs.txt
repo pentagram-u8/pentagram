@@ -36,7 +36,11 @@ FIX:
 Unknown
 
 WORKAROUND:
-Unknown
+Added a new extended item flag EXT_PERMANENT_NPC which is set on all
+NPCs with a fixed ObjId (i.e., those loaded in World::loadItemCachNPCData).
+This is used to determine if an item's usecode class is (1024+ObjId).
+To improve compatibility with the original, callUsecodeEvent doesn't call any
+usecode when EXT_PERMANENT_NPC and FLG_FAST_ONLY are both unset.
 
 
 
