@@ -294,8 +294,7 @@
 </xsl:template>
 
 <xsl:template match="comment">
-	<font color="grey"><xsl:value-of select="@name"/></font>
-	<xsl:apply-templates/><br/>
+	<font color="grey"><xsl:value-of select="normalize-space(text())"/></font><br/>
 </xsl:template>
 
 
