@@ -268,8 +268,6 @@ uint16 version
 sint32 fontnum
 uint16 shapenum
 uint16 textwidget
-uint32 strlen
-char text[strlen]
 
 
 BookGump: (v1)

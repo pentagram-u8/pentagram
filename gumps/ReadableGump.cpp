@@ -128,8 +128,6 @@ void ReadableGump::saveData(ODataSource* ods)
 	ods->write4(static_cast<uint32>(fontnum));
 	ods->write2(shapenum);
 	ods->write2(textwidget);
-	ods->write4(text.size());
-	ods->write(text.c_str(), text.size());
 }
 
 bool ReadableGump::loadData(IDataSource* ids)
@@ -141,16 +139,6 @@ bool ReadableGump::loadData(IDataSource* ids)
 	fontnum = static_cast<int>(ids->read4());
 	shapenum = ids->read2();
 	textwidget = ids->read2();
-	uint32 slen = ids->read4();
-	if (slen > 0) {
-		char* buf = new char[slen+1];
-		ids->read(buf, slen);
-		buf[slen] = 0;
-		text = buf;
-		delete[] buf;
-	} else {
-		text = "";
-	}
 
 	return true;
 }
