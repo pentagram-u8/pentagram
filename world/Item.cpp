@@ -392,6 +392,7 @@ void Item::setGumpLocation(sint32 X, sint32 Y)
 
 void Item::getCentre(sint32& X, sint32& Y, sint32& Z) const
 {
+	// constants!
 	ShapeInfo *shapeinfo = getShapeInfoNoCache();
 	if (flags & FLG_FLIPPED)
 	{
@@ -513,13 +514,13 @@ bool Item::canExistAt(sint32 x, sint32 y, sint32 z) const
 	return cm->isValidPosition(x, y, z, xd, yd, zd, getObjId(), 0, 0);
 }
 
-int Item::getDirToItem(Item& item2) const
+int Item::getDirToItemCentre(Item& item2) const
 {
 	sint32 ix,iy,iz;
-	getLocationAbsolute(ix,iy,iz);
+	getCentre(ix,iy,iz);
 
 	sint32 i2x,i2y,i2z;
-	item2.getLocationAbsolute(i2x,i2y,i2z);
+	item2.getCentre(i2x,i2y,i2z);
 
 	return Get_WorldDirection(i2y - iy, i2x - ix);
 }
@@ -2272,7 +2273,13 @@ uint32 Item::I_getDirToItem(const uint8* args, unsigned int /*argsize*/)
 	if (!item) return 0;
 	if (!item2) return 0;
 
-	return item->getDirToItem(*item2);
+	sint32 ix,iy,iz;
+	item->getLocationAbsolute(ix,iy,iz);
+
+	sint32 i2x,i2y,i2z;
+	item2->getLocationAbsolute(i2x,i2y,i2z);
+
+	return Get_WorldDirection(i2y - iy, i2x - ix);
 }
 
 uint32 Item::I_getDirFromItem(const uint8* args, unsigned int /*argsize*/)

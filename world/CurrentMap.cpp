@@ -405,20 +405,23 @@ void CurrentMap::areaSearch(UCList* itemlist, const uint8* loopscript,
 							bool recurse, sint32 x, sint32 y)
 {
 	sint32 z;
+	sint32 xd = 0, yd = 0, zd = 0;
+
 	// if item != 0, search an area around item. Otherwise, search an area
 	// around (x,y)
-	if (check)
+	if (check) {
 		check->getLocation(x,y,z);
+		check->getFootpadWorld(xd,yd,zd);
+	}
 
-	//!! do the dimensions of item have to be included too?
-	Rect searchrange(x-range,y-range,2*range,2*range);
+	Rect searchrange(x-xd-range,y-yd-range,2*range+xd,2*range+yd);
 
 	int minx, miny, maxx, maxy;
 
 	//! constants
-	minx = ((x-range)/MAP_CHUNK_SIZE) - 1;
+	minx = ((x-xd-range)/MAP_CHUNK_SIZE) - 1;
 	maxx = ((x+range)/MAP_CHUNK_SIZE) + 1;
-	miny = ((y-range)/MAP_CHUNK_SIZE) - 1;
+	miny = ((y-yd-range)/MAP_CHUNK_SIZE) - 1;
 	maxy = ((y+range)/MAP_CHUNK_SIZE) + 1;
 	if (minx < 0) minx = 0;
 	if (maxx >= MAP_NUM_CHUNKS) maxx = MAP_NUM_CHUNKS-1;

@@ -365,6 +365,7 @@ uint16 version
 <Process>
 uint8 firstframe (boolean)
 uint8 aborted (boolean)
+uint8 hitSomething (boolean)
 uint32 dir
 uint32 currentindex
 uint32 shapenum

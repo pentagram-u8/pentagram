@@ -200,8 +200,9 @@ public:
 	//! Check if this item can exist at the given coordinates
 	bool canExistAt(sint32 x, sint32 y, sint32 z) const;
 
-	//! Get direction to another item
-	int getDirToItem(Item& item2) const;
+	//! Get direction from centre to another item's centre.
+	//! Undefined if either item is contained or equipped.
+	int getDirToItemCentre(Item& item2) const;
 
 	//! Move the object to (x,y,z) colliding with objects in the way.
 	//! \param teleport move without colliding with objects between source and

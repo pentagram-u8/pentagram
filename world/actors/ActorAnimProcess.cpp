@@ -29,6 +29,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "World.h"
 #include "GravityProcess.h"
 #include "Kernel.h"
+#include "UCList.h"
+#include "LoopScript.h"
+#include "CurrentMap.h"
+#include "ShapeInfo.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -67,6 +71,7 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, Animation::Sequence action, ui
 	currentindex = 0;
 	firstframe = true;
 	aborted = false;
+	hitSomething = false;
 
 	if (actor_->getActorFlags() & Actor::ACT_ANIMLOCK) {
 		//! What do we do if actor was already animating?
@@ -75,6 +80,9 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, Animation::Sequence action, ui
 
 		// for now, just don't play this one.
 		animaction = 0;
+
+		perr << "ActorAnimProcess: ANIMLOCK set on actor "
+			 << actor_->getObjId() << std::endl;
 	}
 
 	if (!animaction) return;
@@ -99,16 +107,16 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, Animation::Sequence action, ui
 #ifdef WATCHACTOR
 	if (item_num == watchactor)
 		pout << "Animation [" << Kernel::get_instance()->getFrameNum()
-			 << "] ActorAnimProcess created (" <<action << "," << dir_
-			 << ", " << startframe << "-" << endframe << ")"
-			 << std::endl;
+			 << "] ActorAnimProcess " << getPid() << " created ("
+			 << action << "," << dir_ << ", " << startframe << "-"
+			 << endframe << ")" << std::endl;
 #endif
 }
 
 bool ActorAnimProcess::run(const uint32 framenum)
 {
 	if (!animaction || aborted) {
-		// non-existant animation or aborted
+		// non-existent animation or aborted
 		terminate();
 		return false;
 	}
@@ -266,6 +274,23 @@ bool ActorAnimProcess::run(const uint32 framenum)
 		}
 	}
 
+
+	// attacking?
+	if ((animaction->flags && AnimAction::AAF_ATTACK) && 
+		!hitSomething && f.attack_range()) {
+
+		// check if there's anything in range
+		ObjId hit = checkWeaponHit(dir, f.attack_range());
+
+		if (hit) {
+			hitSomething = true;
+			Item* hit_item = World::get_instance()->getItem(hit);
+			assert(hit_item);
+			hit_item->receiveHit(item_num, dir, 0, 0); // CHECKME: dir?
+		}
+	}
+
+
 #ifdef WATCHACTOR
 //	if (framecount == 0) {
 		if (item_num == watchactor)
@@ -292,6 +317,50 @@ void ActorAnimProcess::terminate()
 	Process::terminate();
 }
 
+ObjId ActorAnimProcess::checkWeaponHit(int dir, int range)
+{
+	pout << "Checking hit (" << range << "): ";
+
+	Actor *a = World::get_instance()->getNPC(item_num);
+	assert(a);
+
+	CurrentMap* cm = World::get_instance()->getCurrentMap();
+
+	UCList itemlist(2);
+	LOOPSCRIPT(script, LS_TOKEN_END);
+
+	// CHECKME: check range
+	cm->areaSearch(&itemlist, script, sizeof(script), a, 16*range, false);
+
+	ObjId hit = 0;
+	for (unsigned int i = 0; i < itemlist.getSize(); ++i) {
+		ObjId itemid = itemlist.getuint16(i);
+		Item* item = World::get_instance()->getItem(itemid);
+		assert(item);
+		sint32 ix,iy,iz;
+		item->getLocationAbsolute(ix,iy,iz);
+		sint32 ax,ay,az;
+		a->getLocationAbsolute(ax,ay,az);
+		int dirdelta = abs(a->getDirToItemCentre(*item) - dir);
+		if ((dirdelta <= 1 || dirdelta >= 7) &&
+			!a->getShapeInfo()->is_fixed() && itemid < 256) {
+			// FIXME: should allow item to be only slightly outside of
+			//        the right direction
+			// FIXME: shouldn't only allow hitting NPCs
+			hit = itemid;
+			pout << "hit ";
+			item->dumpInfo();
+			break;
+		}
+	}
+
+	if (!hit) {
+		pout << "nothing" << std::endl;
+	}
+
+	return hit;
+}
+
 
 void ActorAnimProcess::saveData(ODataSource* ods)
 {
@@ -302,6 +371,8 @@ void ActorAnimProcess::saveData(ODataSource* ods)
 	ods->write1(ff);
 	uint8 ab = aborted ? 1 : 0;
 	ods->write1(ab);
+	uint8 hit = hitSomething ? 1 : 0;
+	ods->write1(hit);
 	ods->write4(dir);
 	ods->write4(currentindex);
 	if (animaction) {
@@ -321,6 +392,7 @@ bool ActorAnimProcess::loadData(IDataSource* ids)
 
 	firstframe = (ids->read1() != 0);
 	aborted = (ids->read1() != 0);
+	hitSomething = (ids->read1() != 0);
 	dir = ids->read4();
 	currentindex = ids->read4();
 
