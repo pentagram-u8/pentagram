@@ -49,7 +49,7 @@ AnimationTracker::~AnimationTracker()
 
 }
 
-void AnimationTracker::init(Actor* actor_, Animation::Sequence action_,
+bool AnimationTracker::init(Actor* actor_, Animation::Sequence action_,
 							uint32 dir_, PathfindingState* state_)
 {
 	assert(actor_);
@@ -57,6 +57,7 @@ void AnimationTracker::init(Actor* actor_, Animation::Sequence action_,
 	uint32 shape = actor_->getShape();
 	animaction = GameData::get_instance()->getMainShapes()->
 		getAnim(shape, action_);
+	if (!animaction) return false;
 
 	dir = dir_;
 
@@ -82,6 +83,8 @@ void AnimationTracker::init(Actor* actor_, Animation::Sequence action_,
 	unsupported = false;
 	hitobject = 0;
 	mode = NormalMode;
+
+	return true;
 }
 
 unsigned int AnimationTracker::getNextFrame(unsigned int frame)

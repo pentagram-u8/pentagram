@@ -39,7 +39,7 @@ public:
 	//! initialize the AnimationTracker for the given actor, action, dir
 	//! if state is non-zero, start from that state instead of the Actor's
 	//! current state
-	void init(Actor* actor, Animation::Sequence action, uint32 dir,
+	bool init(Actor* actor, Animation::Sequence action, uint32 dir,
 			  PathfindingState* state=0);
 
 	//! do a single step of the animation

@@ -97,9 +97,11 @@ bool ActorAnimProcess::init()
 		return false;
 	}
 
-	actor->setActorFlag(Actor::ACT_ANIMLOCK);
+	tracker = new AnimationTracker();
+	if (!tracker->init(actor, action, dir))
+		return false;
 
-	tracker = new AnimationTracker(actor, action, dir);
+	actor->setActorFlag(Actor::ACT_ANIMLOCK);
 
 	actor->lastanim = action;
 	actor->direction = dir;

@@ -1,3 +1,6 @@
+2004-12-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/AnimationTracker.*: properly detect missing animations
+
 2004-12-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GUIApp.cpp, games/U8Game.cpp: reserve some more objids
 

@@ -347,7 +347,9 @@ Animation::Result Actor::tryAnim(Animation::Sequence anim, int dir, PathfindingS
 {
 	if (dir < 0 || dir > 7) return Animation::FAILURE;
 
-	AnimationTracker tracker(this, anim, dir, state);
+	AnimationTracker tracker;
+	if (!tracker.init(this, anim, dir, state))
+		return Animation::FAILURE;
 
 	AnimAction * animaction = tracker.getAnimAction();
 

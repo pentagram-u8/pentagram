@@ -243,7 +243,9 @@ void CombatProcess::turnToDirection(int direction)
 bool CombatProcess::inAttackRange()
 {
 	Actor* a = World::get_instance()->getNPC(item_num);
-	AnimationTracker tracker(a, Animation::attack, a->getDir(), 0);
+	AnimationTracker tracker;
+	if (!tracker.init(a, Animation::attack, a->getDir(), 0))
+		return false;
 
 	while (tracker.step()) {
 		if (tracker.hitSomething()) break;
