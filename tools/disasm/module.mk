@@ -21,7 +21,9 @@ disasm_OBJ = \
 	tools/fold/Folder.o \
 	tools/fold/CallNodes.o \
 	tools/fold/VarNodes.o \
-	tools/fold/FuncNodes.o
+	tools/fold/FuncNodes.o \
+	tools/fold/LoopScriptNodes.o
+
 
 # ../../filesys/Flex.o
 # Common rules
