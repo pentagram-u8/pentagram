@@ -1238,7 +1238,7 @@ void Item::grab()
 void Item::explode()
 {
 	Process *p = new SpriteProcess(578, 20, 34, 1, 1, //!! constants
-								   x-128, y, z);
+								   x, y, z);
 	Kernel::get_instance()->addProcess(p);
 
 	// TODO: play SFX
