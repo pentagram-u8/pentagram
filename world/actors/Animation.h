@@ -44,6 +44,14 @@ namespace Animation
 		jump = 17,
 		airwalkJump = 18,
 		//19-26: climbing up on increasingly high objects
+		climb16 = 19,
+		climb24 = 20,
+		climb32 = 21,
+		climb40 = 22,
+		climb48 = 23,
+		climb56 = 24,
+		climb64 = 25,
+		climb72 = 26,
 		//27-31: casting magic
 		lookLeft = 32,
 		lookRight = 33,
@@ -53,13 +61,13 @@ namespace Animation
 		//37: Mythran only: magic?
 		//38: Vividos only: ?
 		//39: unused
-		//40: ?
+		//40: ? - could be a slow attack or quick block ???
 		//41: unused
 		keepBalance = 42,
 		//43: unused
 		fallBackwards = 44,
 		hang = 45,
-		climb = 46,
+		climbUp = 46,
 		magicallyGlowingHands = 47,
 		idle = 48,
 		kneel2 = 49,
@@ -77,6 +85,13 @@ namespace Animation
 		//61: unused
 		//62: unused
 		//63: unused
+	};
+
+	enum Result {
+		FAILURE = 0,
+		SUCCESS = 1,
+		// Animation completed but possible not safe
+		INDETERMINATE = 2
 	};
 
 	bool isCombatAnim(const Sequence anim);

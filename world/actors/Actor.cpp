@@ -232,7 +232,7 @@ uint16 Actor::doAnim(Animation::Sequence anim, int dir)
 	return Kernel::get_instance()->addProcess(p);
 }
 
-bool Actor::tryAnim(Animation::Sequence anim, int dir, PathfindingState* state)
+Animation::Result Actor::tryAnim(Animation::Sequence anim, int dir, PathfindingState* state)
 {
 	//!NOTE: this is broken, as it does not take height differences
 	// into account. tryAnim and ActorAnimProcess::run() should be 
@@ -243,8 +243,8 @@ bool Actor::tryAnim(Animation::Sequence anim, int dir, PathfindingState* state)
 	AnimAction* animaction = GameData::get_instance()->getMainShapes()->
 		getAnim(getShape(), anim);
 
-	if (!animaction) return false;
-	if (dir < 0 || dir > 7) return false;
+	if (!animaction) return Animation::FAILURE;
+	if (dir < 0 || dir > 7) return Animation::FAILURE;
 
 	sint32 start[3];
 	sint32 end[3];
@@ -312,7 +312,7 @@ bool Actor::tryAnim(Animation::Sequence anim, int dir, PathfindingState* state)
 					perr << "(invalid)" << std::endl;
 				}
 #endif
-				return false;
+				return Animation::FAILURE;
 			}
 		}
 
@@ -341,7 +341,24 @@ bool Actor::tryAnim(Animation::Sequence anim, int dir, PathfindingState* state)
 		state->y = end[1];
 		state->z = end[2];
 	}
-	return true;
+	
+
+	//check if the animation completes on solid ground
+	start[0] = end[0]; start[1] = end[1]; start[2] = end[2];
+	end[2] -= 8;
+	hit.clear();
+	currentmap->sweepTest(start, end, dims, getObjId(), true, &hit);
+
+	std::list<CurrentMap::SweepItem>::iterator iter;
+	for (iter = hit.begin(); iter != hit.end(); ++iter) {
+		Item * item = World::get_instance()->getItem(iter->item);
+		if (item->getShapeInfo()->is_solid())
+		{
+			return Animation::SUCCESS;
+		}
+	}
+
+	return Animation::INDETERMINATE;
 }
 
 uint32 Actor::getArmourClass()

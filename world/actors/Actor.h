@@ -106,7 +106,7 @@ public:
 	//! \param anim Action to try
 	//! \param dir direction to walk in
 	//! \param state the state to start from, or 0 to use the current state
-	bool tryAnim(Animation::Sequence anim, int dir, PathfindingState* state=0);
+	Animation::Result tryAnim(Animation::Sequence anim, int dir, PathfindingState* state=0);
 
 	virtual uint16 assignObjId(); // assign an NPC objid
 
