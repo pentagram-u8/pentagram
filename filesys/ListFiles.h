@@ -22,8 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <iostream>
 
 //using std::vector;
-//using std::cout;
-//using std::cerr;
+//using pout;
+//using perr;
 //using std::endl;
 //using std::free;
 //using std::malloc;
@@ -87,19 +87,21 @@ static bool MatchString( const char *str, const std::string& inPat )
 
 // System Specific Code for Windows
 #if defined(WIN32)
-#error "ListFiles(): Hi Colourless! I guess this is your job! *grin*"
 
 // Need this for _findfirst, _findnext, _findclose
 #include <windows.h>
 
 int FileSystem::ListFiles(const std::string mask, FileList& files)
 {
-	string			path(get_system_path(mask));
+	std::string		path(mask);
 	const TCHAR		*lpszT;
 	WIN32_FIND_DATA	fileinfo;
 	HANDLE			handle;
 	char			*stripped_path;
 	int				i, nLen, nLen2;
+
+	if(path[0]=='@')
+		rewrite_virtual_path(path);
 
 #ifdef UNICODE
 	const char *name = path.c_str();
@@ -125,7 +127,7 @@ int FileSystem::ListFiles(const std::string mask, FileList& files)
 
 
 #ifdef DEBUG
-	std::cerr << "U7ListFiles: " << mask << " = " << path << std::endl;
+	perr << "FileSystem::ListFiles(): " << mask << " = " << path << std::endl;
 #endif
 
 	// Now search the files
@@ -149,7 +151,7 @@ int FileSystem::ListFiles(const std::string mask, FileList& files)
 
 			files.push_back(filename);
 #ifdef DEBUG
-			std::cerr << filename << std::endl;
+			perr << filename << std::endl;
 #endif
 			delete [] filename;
 		} while (FindNextFile( handle, &fileinfo ));
@@ -168,12 +170,12 @@ int FileSystem::ListFiles(const std::string mask, FileList& files)
 			0,
 			NULL 
 		);
-		std::cerr << "Error while listing files: " << ((char *) lpMsgBuf) << std::endl;
+		perr << "FileSystem::ListFiles(): Error while listing files: " << ((char *) lpMsgBuf) << std::endl;
 		LocalFree( lpMsgBuf );
 	}
 
 #ifdef DEBUG
-	std::cerr << files.size() << " filenames" << std::endl;
+	perr << files.size() << " filenames" << std::endl;
 #endif
 
 	delete [] stripped_path;
@@ -264,7 +266,7 @@ int U7ListFiles(const std::string pathMask, FileList& files)
 				CopyPascalStringToC(itemName, filename);
 				if (MatchString(filename, mask))
 				{
-					cout << "File name: " << filename << endl;
+					pout << "File name: " << filename << endl;
 					files.push_back(filename);
 				}
 			}
@@ -322,7 +324,7 @@ int U7ListFiles(const std::string pathMask, FileList& files)
 
 		entry.GetName(filename);
 		if (MatchString(filename, mask)) {
-			cout << "Filename: " << filename << endl;
+			pout << "Filename: " << filename << endl;
  			files.push_back(filename);				
 		}
 	} while (true);
@@ -364,7 +366,7 @@ int U7ListFiles(const std::string mask, FileList& files)
 	  MatchEnd( &ap );
   }
   else
-	  cout << "ParsePattern() failed." << endl;
+	  pout << "ParsePattern() failed." << endl;
 
   return 0;
 }

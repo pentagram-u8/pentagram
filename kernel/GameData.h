@@ -27,6 +27,7 @@ class FontShapeFlex;
 class ShapeFlex;
 class Usecode;
 class Glob;
+class Shape;
 
 class GameData
 {
@@ -44,6 +45,7 @@ public:
 	Glob* getGlob(uint32 glob) const;
 	FontShapeFlex* getFonts() const { return fonts; }
 	ShapeFlex* getGumps() const { return gumps; }
+	Shape* getMouse() const { return mouse; }
 
 private:
 	Flex* fixed;
@@ -52,6 +54,7 @@ private:
 	std::vector<Glob*> globs;
 	FontShapeFlex* fonts;
 	ShapeFlex* gumps;
+	Shape* mouse;
 
 	static GameData* gamedata;
 };

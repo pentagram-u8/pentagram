@@ -28,7 +28,7 @@ class GumpNotifyProcess : public Process
 	Gump	*gump;
 
 public:
-	GumpNotifyProcess(void);
+	GumpNotifyProcess(uint16 it);
 	virtual ~GumpNotifyProcess(void);
 
 	void setGump(Gump *g) { gump = g; }

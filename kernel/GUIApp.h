@@ -59,7 +59,7 @@ class GUIApp : public CoreApp
 		void setAvatarInStasis(bool stat) { avatarInStasis = stat; }
 
 		GameMapGump *getGameMapMapGump() { return gameMapGump; }
-		Gump *getDestkopGump() { return desktopGump; }
+		Gump *getDesktopGump() { return desktopGump; }
 
 	private:
 		
@@ -97,6 +97,8 @@ class GUIApp : public CoreApp
 								// nor can Avatar start more usecode
 
 		bool painting;			// Set true when painting
+
+		static void	conAutoPaint(void);
 };
 
 inline GUIApp *getGUIInstance() { return static_cast<GUIApp *>(CoreApp::get_instance()); };

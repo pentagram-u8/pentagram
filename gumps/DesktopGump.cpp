@@ -23,7 +23,7 @@
 DEFINE_RUNTIME_CLASSTYPE_CODE(DesktopGump,Gump);
 
 DesktopGump::DesktopGump(sint32 _x, sint32 _y, sint32 _width, sint32 _height) :
-	Gump(_x, _y, _width, _height, 0, LAYER_DESKTOP)
+	Gump(_x, _y, _width, _height, 0, 0, LAYER_DESKTOP)
 {
 }
 

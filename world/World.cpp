@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Kernel.h"
 #include "GUIApp.h"
 #include "CameraProcess.h" // for resetting the camera
+#include "Gump.h" // For MapChanged notification
 
 //#define DUMP_ITEMS
 
@@ -137,6 +138,13 @@ bool World::switchMap(uint32 newmap)
 	// kill ALL processes:
 	Kernel::get_instance()->killProcesses(0,6); // !constant
 
+	// Notify all the gumps of the mapchange
+	GUIApp *gui = getGUIInstance();
+	if (gui) 
+	{
+		Gump *desktop = gui->getDesktopGump();
+		if (desktop) desktop->MapChanged();
+	}
 
 #if 0
 	// get rid of any remaining ethereal items

@@ -22,7 +22,7 @@
 DEFINE_RUNTIME_CLASSTYPE_CODE(ConsoleGump,Gump);
 
 ConsoleGump::ConsoleGump(int X, int Y, int Width, int Height) :
-	Gump(X,Y,Width,Height, 0, LAYER_CONSOLE), scroll_state(NOT_SCROLLING)
+	Gump(X,Y,Width,Height, 0, 0, LAYER_CONSOLE), scroll_state(NOT_SCROLLING)
 {
 	// Resize it
 	con.CheckResize(Width);
@@ -70,9 +70,9 @@ void ConsoleGump::HideGump()
 		scroll_state = WAITING_TO_HIDE;
 }
 
-void ConsoleGump::SetupLerp()
+bool ConsoleGump::Run(const uint32 framenum)
 {
-	Gump::SetupLerp();
+	Gump::Run(framenum);
 
 	switch (scroll_state)
 	{
@@ -122,6 +122,8 @@ void ConsoleGump::SetupLerp()
 		scroll_state = NOT_SCROLLING;
 		break;
 	}
+
+	return true;	// Always repaint, even though we really could just try to detect it
 }
 
 // Colourless Protection

@@ -43,10 +43,25 @@ sint32 Font::getHeight()
 	return height;
 }
 
+sint32 Font::getBaseline()
+{
+	if (baseline == 0)
+	{
+		for (uint32 i = 0; i < frameCount(); i++) 
+		{
+			int b = getFrame(i)->yoff;
+			
+			if (b > baseline) baseline = b;
+		}
+	}
+
+	return baseline;
+}
+
 void Font::getTextSize(const char *text, sint32 &x, sint32 &y)
 {
-	sint32 lines = 2;
-	sint32 width = 0;
+	sint32 lines = 1;
+	sint32 width = hlead;
 
 	x = 0;
 	y = 0;
@@ -57,13 +72,13 @@ void Font::getTextSize(const char *text, sint32 &x, sint32 &y)
 	{
 		if (*text == '\n' || (*text == ' ' && width > 160 && *(text+1) != '\n') )
 		{
-			++lines;
+			if (*(text+1)) ++lines;
 			if (width > x) x = width;
-			width = 0;
+			width = hlead;
 		}
 		else if (*text != '\r')
-			width += getWidth(*text);
+			width += getWidth(*text)-hlead;
 	}
 	if (width > x) x = width;
-	y = lines * getHeight();
+	y = vlead + lines * (getHeight()-vlead);
 }

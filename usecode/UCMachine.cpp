@@ -1667,8 +1667,8 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 77
 			// set info
 			// assigns item number and ProcessType 
-			p->item_num = p->stack.pop2();
-			p->type = p->stack.pop2();
+			p->setItemNum(p->stack.pop2());
+			p->setType(p->stack.pop2());
 			LOGPF(("set info"));
 			break;
 

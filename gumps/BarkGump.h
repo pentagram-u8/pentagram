@@ -29,10 +29,10 @@ class BarkGump : public ItemRelativeGump
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	BarkGump(uint16 itemid, std::string msg);
+	BarkGump(uint16 owner, std::string msg);
 	virtual ~BarkGump(void);
 
-	virtual void				SetupLerp();
+	virtual bool				Run(const uint32 framenum);
 
 	// Init the gump, call after construction
 	virtual void				InitGump();

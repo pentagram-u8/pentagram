@@ -63,10 +63,10 @@ bool EggHatcherProcess::run(const uint32 framenum)
 		egg->getLocation(x,y,z);
 
 		//! constants (is 8 the right scale?)
-		sint32 x1 = x - 8 * egg->getXRange();
-		sint32 x2 = x + 8 * egg->getXRange();
-		sint32 y1 = y - 8 * egg->getYRange();
-		sint32 y2 = y + 8 * egg->getYRange();
+		sint32 x1 = x - 32 * egg->getXRange();
+		sint32 x2 = x + 32 * egg->getXRange();
+		sint32 y1 = y - 32 * egg->getYRange();
+		sint32 y2 = y + 32 * egg->getYRange();
 
 		// get avatar location
 		sint32 ax,ay,az;

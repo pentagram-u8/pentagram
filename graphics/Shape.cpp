@@ -23,6 +23,7 @@
 #include "ConvertShape.h"
 #include "u8/ConvertShapeU8.h"
 #include "crusader/ConvertShapeCrusader.h"
+#include "IDataSource.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(Shape);
 
@@ -32,6 +33,34 @@ Shape::Shape(const uint8* data, uint32 size, const ConvertShapeFormat *format)
 
 	this->data = data;
 	this->size = size;
+	this->palette = 0;
+
+	if (!format) format = DetectShapeFormat(data,size);
+	
+	if (!format) 
+	{
+		// Should be fatal?
+		perr << "Error: Unable to detect shape format" << std::endl;
+		return;
+	}
+
+	// Load it as u8
+	if (format == &U8ShapeFormat || format == &U82DShapeFormat)
+		LoadU8Format(data,size,format);
+	else if (format == &PentagramShapeFormat)
+		LoadPentagramFormat(data,size,format);
+	else 
+		LoadGenericFormat(data,size,format);
+}
+
+Shape::Shape(IDataSource *src, const ConvertShapeFormat *format)
+{
+	// NB: U8 style!
+
+	this->size = src->getSize();
+	uint8 *d = new uint8[this->size];
+	this->data = d;
+	src->read(d, this->size);
 	this->palette = 0;
 
 	if (!format) format = DetectShapeFormat(data,size);

@@ -78,7 +78,7 @@ GUIApp::GUIApp(const int argc, const char * const * const argv)
 	  animationRate(33), avatarInStasis(false), painting(false)
 {
 	// Set the console to auto paint, till we have finished initing
-	con.SetAutoPaint(true);
+	con.SetAutoPaint(conAutoPaint);
 
 	application = this;
 
@@ -92,7 +92,7 @@ GUIApp::GUIApp(const int argc, const char * const * const argv)
 	U8Playground();
 
 	// Unset the console auto paint, since we have finished initing
-	con.SetAutoPaint(false);
+	con.SetAutoPaint(0);
 }
 
 GUIApp::~GUIApp()
@@ -127,7 +127,9 @@ void GUIApp::run()
 		if (!frameLimit) {
 			repaint = false;
 			
-			if (kernel->runProcesses(framenum++)) repaint = true;
+			if (kernel->runProcesses(framenum)) repaint = true;
+			desktopGump->Run(framenum);
+			framenum++;
 			inBetweenFrame = false;
 			next_ticks = animationRate + SDL_GetTicks();
 			lerpFactor = 256;
@@ -140,7 +142,9 @@ void GUIApp::run()
 
 			while (diff < 0) {
 				next_ticks += animationRate;
-				if (kernel->runProcesses(framenum++)) repaint = true;
+				if (kernel->runProcesses(framenum)) repaint = true;
+				desktopGump->Run(framenum);
+				framenum++;
 	
 				inBetweenFrame = false;
 
@@ -251,6 +255,12 @@ void GUIApp::U8Playground()
 	paint();
 }
 
+// conAutoPaint hackery
+void GUIApp::conAutoPaint(void)
+{
+	GUIApp *app = getGUIInstance();
+	if (app && !app->isPainting()) app->paint();
+}
 
 // Paint the screen
 void GUIApp::paint()
@@ -267,10 +277,6 @@ void GUIApp::paint()
 	Rect dims;
 	screen->GetSurfaceDims(dims);
 
-	long before_gumps_setup_lerp = SDL_GetTicks();
-	desktopGump->SetupLerp();
-	long after_gumps_setup_lerp = SDL_GetTicks();
-
 	long before_gumps = SDL_GetTicks();
 	desktopGump->Paint(screen, lerpFactor);
 	long after_gumps = SDL_GetTicks();
@@ -281,7 +287,7 @@ void GUIApp::paint()
 	prev = now;
 
 	char buf[256];
-	snprintf(buf, 255, "Rendering time %li ms %li FPS - Lerp %li ms  Paint Gumps %li ms", diff, 1000/diff, after_gumps_setup_lerp-before_gumps_setup_lerp, after_gumps-before_gumps);
+	snprintf(buf, 255, "Rendering time %li ms %li FPS - Paint Gumps %li ms", diff, 1000/diff, after_gumps-before_gumps);
 	screen->PrintTextFixed(con.GetConFont(), buf, 8, dims.h-16);
 
 	// End painting

@@ -20,7 +20,7 @@
 #include "GumpNotifyProcess.h"
 #include "Gump.h"
 
-GumpNotifyProcess::GumpNotifyProcess(void) : Process(), gump(0)
+GumpNotifyProcess::GumpNotifyProcess(uint16 it) : Process(it), gump(0)
 {
 	result = 0;
 }

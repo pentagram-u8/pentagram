@@ -39,6 +39,7 @@ protected:
 
 	friend class GumpList;
 
+	uint16				owner;			// Owner item
 	Gump *				parent;			// Parent gump
 	sint32				x, y;			// Gumps position. This is always the upper left corner!
 
@@ -61,13 +62,14 @@ public:
 
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	Gump(int x, int y, int width, int height, uint32 _Flags = 0, sint32 layer = LAYER_NORMAL);
+	Gump(int x, int y, int width, int height, uint16 owner = 0, uint32 _Flags = 0, sint32 layer = LAYER_NORMAL);
 	virtual ~Gump();
 
-	inline void			SetNotifyProcess(GumpNotifyProcess*p) { notifier = p; }
+	virtual void				CreateNotifier();
+	inline GumpNotifyProcess*	GetNotifyProcess() { return notifier; }
 
-	inline void			SetShape(Shape *_shape, uint32 _framenum) { shape = _shape; framenum = _framenum; }
-	inline void			SetFramenum(uint32 _framenum) { framenum = _framenum; }
+	inline void					SetShape(Shape *_shape, uint32 _framenum) { shape = _shape; framenum = _framenum; }
+	inline void					SetFramenum(uint32 _framenum) { framenum = _framenum; }
 
 	// Init the gump, call after construction
 	virtual void				InitGump();
@@ -87,8 +89,11 @@ public:
 	//virtual bool		DeviceChanged();
 
 
-	// Setup Lerping, for lerping gumps. Called only on non in between frames
-	virtual void		SetupLerp();
+	// Run the gump (returns true if repaint required)
+	virtual bool		Run(const uint32 framenum);
+
+	// Called when there is a map change (so the gumps can self terminate among other things)
+	virtual void		MapChanged(void);
 
 	// Paint the Gump (RenderSurface is relative to parent). Calls PaintThis and PaintChildren
 	virtual void		Paint(RenderSurface*, sint32 lerp_factor);
@@ -200,10 +205,11 @@ public:
 	// Gump Flags
 	//
 	enum GumpFlags {
-		FLAG_UNMOVABLE		= 1,		// When set, a gump can not be dragged
-		FLAG_HIDDEN			= 2,		// When set, a gump will not be drawn
-		FLAG_CLOSING		= 4,		// When set, a the gump is closing
-		FLAG_CLOSE_AND_DEL	= 8			// When set, a the gump is closing and will be deleted
+		FLAG_UNMOVABLE		= 0x01,		// When set, the gump can not be dragged
+		FLAG_HIDDEN			= 0x02,		// When set, the gump will not be drawn
+		FLAG_CLOSING		= 0x04,		// When set, the gump is closing
+		FLAG_CLOSE_AND_DEL	= 0x08,		// When set, the gump is closing and will be deleted
+		FLAG_ITEM_DEPENDANT	= 0x10		// When set, the gump will be deleted on MapChange
 	};
 
 	inline bool			IsHidden() { return (flags&FLAG_HIDDEN) != 0; }
@@ -217,7 +223,7 @@ public:
 		LAYER_DESKTOP		= -16,		// Layer for Desktop 'bottom most'
 		LAYER_GAMEMAP		= -8,		// Layer for the World Gump
 		LAYER_NORMAL		= 0,		// Layer for Normal gumps
-		LAYER_ON_TOP		= 8,		// Layer for Always on top Gumps
+		LAYER_ABOVE_NORMAL	= 8,		// Layer for Always on top Gumps
 		LAYER_CONSOLE		= 16		// Layer for the console
 	};
 };

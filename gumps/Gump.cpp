@@ -22,11 +22,12 @@
 #include "Shape.h"
 #include "ShapeFrame.h"
 #include "GumpNotifyProcess.h"
+#include "Kernel.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(Gump,Object);
 
-Gump::Gump(int _X, int _Y, int Width, int Height, uint32 _Flags, sint32 _Layer) : 
-	Object(), parent(0), x(_X), y(_Y), dims(0,0,Width,Height), layer(_Layer), 
+Gump::Gump(int _X, int _Y, int Width, int Height, uint16 _Owner, uint32 _Flags, sint32 _Layer) : 
+	Object(), owner(_Owner), parent(0), x(_X), y(_Y), dims(0,0,Width,Height), layer(_Layer), 
 	flags(_Flags), shape(0), framenum(0), children(), focus_child(0),
 	notifier(0), process_result(0)
 {
@@ -56,6 +57,16 @@ void Gump::InitGump()
 {
 	// Not yet...
 	// assignObjId();
+
+	if (owner) CreateNotifier();
+}
+
+void Gump::CreateNotifier()
+{
+	// Create us a GumpNotifyProcess
+	notifier = new GumpNotifyProcess(owner);
+	notifier->setGump(this);
+	Kernel::get_instance()->addProcess(notifier);
 }
 
 void Gump::Close(bool no_del)
@@ -74,9 +85,45 @@ void Gump::Close(bool no_del)
 	}
 }
 
-void Gump::SetupLerp()
+bool Gump::Run(const uint32 framenum)
 {
 	// Iterate all children
+	std::list<Gump*>::iterator	it = children.begin();
+	std::list<Gump*>::iterator	end = children.end();
+	bool repaint = false;
+
+	while (it != end)
+	{
+		Gump *g = *it;
+
+		// Run the child if it's not closing
+		if (!(g->flags & FLAG_CLOSING)) if (g->Run(framenum)) repaint = true;
+
+		// If closing, we can kill it
+		if (g->flags & FLAG_CLOSING)
+		{
+			it = children.erase(it);
+			FindNewFocusChild();
+			 if (g->flags & FLAG_CLOSE_AND_DEL) delete g;
+		}
+		else
+		{
+			++it;
+		}
+	}	
+	return repaint;
+}
+
+void Gump::MapChanged()
+{
+	// Close it, and return
+	if (flags & FLAG_ITEM_DEPENDANT) 
+	{
+		Close();
+		return;
+	}
+
+	// Pass the MapChanged message to all the children
 	std::list<Gump*>::iterator	it = children.begin();
 	std::list<Gump*>::iterator	end = children.end();
 
@@ -84,14 +131,14 @@ void Gump::SetupLerp()
 	{
 		Gump *g = *it;
 
-		// Setup the lerp of the child
-		g->SetupLerp();
+		// Pass to child if it's not closing
+		if (!(g->flags & FLAG_CLOSING)) g->MapChanged();
 
+		// If closing, we can kill it
 		if (g->flags & FLAG_CLOSING)
 		{
 			it = children.erase(it);
 			FindNewFocusChild();
-			// Uh, why does this cause crashes...
 			 if (g->flags & FLAG_CLOSE_AND_DEL) delete g;
 		}
 		else
@@ -103,7 +150,7 @@ void Gump::SetupLerp()
 
 void Gump::Paint(RenderSurface *surf, sint32 lerp_factor)
 {
-	// Don't paint if hidder
+	// Don't paint if hidden
 	if (IsHidden()) return;
 
 	// Get old Origin
@@ -161,10 +208,14 @@ void Gump::PaintChildren(RenderSurface *surf, sint32 lerp_factor)
 	std::list<Gump*>::iterator	it = children.begin();
 	std::list<Gump*>::iterator	end = children.end();
 
-	for (;it != end; ++it)
+	while (it != end)
 	{
-		// Paint if not hidden
-		(*it)->Paint(surf, lerp_factor);
+		Gump *g = *it;
+		// Paint if not closing
+		if (!(g->flags & FLAG_CLOSING)) 
+			g->Paint(surf, lerp_factor);
+
+		++it;
 	}	
 }
 
@@ -241,6 +292,9 @@ uint16 Gump::TraceObjID(int mx, int my)
 	{
 		Gump *g = *--it;
 
+		// Not if closing
+		if (g->flags & FLAG_CLOSING) continue;
+
 		// It's got the point
 		if (g->PointOnGump(mx,my)) objid = g->TraceObjID(mx, my);
 
@@ -275,6 +329,9 @@ Gump* Gump::FindGump(const RunTimeClassType &t, bool recursive, bool no_inhertan
 	{
 		Gump *g = *it;
 
+		// Not if closing
+		if (g->flags & FLAG_CLOSING) continue;
+
 		if (g->GetClassType() == t) return g;
 		else if (!no_inhertance && g->IsOfType(t)) return g;
 	}
@@ -287,8 +344,13 @@ Gump* Gump::FindGump(const RunTimeClassType &t, bool recursive, bool no_inhertan
 
 	for (;it != end; ++it)
 	{
-		Gump *g = (*it)->FindGump(t,recursive,no_inhertance);
+		Gump *g = (*it);
 			
+		// Not if closing
+		if (g->flags & FLAG_CLOSING) continue;
+
+		g = g->FindGump(t,recursive,no_inhertance);
+
 		if (g) return g;
 	}
 
@@ -338,6 +400,10 @@ void Gump::AddChild(Gump *gump, bool take_focus)
 	for (;it != end; ++it)
 	{
 		Gump *other = *it;
+
+		// Why don't we check for FLAG_CLOSING here?
+		// Because we want to make sure that the sort order is always valid
+
 		// If we are same layer as focus and we wont take it, we will not be placed in front of it
 		if (!take_focus && other == focus_child && other->layer == gump->layer) break;
 
@@ -398,6 +464,9 @@ Gump *Gump::OnMouseDown(int button, int mx, int my)
 	while (it != begin)
 	{
 		Gump *g = *--it;
+
+		// Not if closing
+		if (g->flags & FLAG_CLOSING) continue;
 
 		// It's got the point
 		if (g->PointOnGump(mx,my)) handled = g->OnMouseDown(button, mx, my);

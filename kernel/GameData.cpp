@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Flex.h"
 #include "Glob.h"
 #include "PaletteManager.h"
+#include "Shape.h"
 
 GameData* GameData::gamedata = 0;
 
@@ -142,12 +143,13 @@ void GameData::loadU8Data()
 	fonts = new FontShapeFlex(fds, PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
 	//! we're leaking fds here
 
-	// Load fonts
-	IDataSource *gmds = filesystem->ReadFile("@u8/static/u8gumps.flx");
-	if (!gmds) {
-		perr << "Unable to load static/u8gumps.flx. Exiting" << std::endl;
+	// Load mouse
+	IDataSource *msds = filesystem->ReadFile("@u8/static/u8mouse.shp");
+	if (!msds) {
+		perr << "Unable to load static/u8mouse.shp. Exiting" << std::endl;
 		std::exit(-1);
 	}
-	gumps = new ShapeFlex(gmds, PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
-	//! we're leaking gmds here
+	mouse = new Shape(msds, 0);
+	mouse->setPalette(PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
+	delete msds;
 }

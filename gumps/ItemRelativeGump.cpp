@@ -26,8 +26,8 @@
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(ItemRelativeGump,Gump);
 
-ItemRelativeGump::ItemRelativeGump(uint16 _Item_num, int x, int y, int width, int height, uint32 _Flags) :
-	Gump(x, y, width, height, _Flags), item_num(_Item_num), ix(0), iy(0)
+ItemRelativeGump::ItemRelativeGump(int x, int y, int width, int height, uint16 owner, uint32 _Flags, sint32 _Layer) :
+	Gump(x, y, width, height, owner, _Flags, _Layer), ix(0), iy(0)
 {
 	int num_lines = 0;
 }
@@ -68,6 +68,12 @@ void ItemRelativeGump::GetItemLocation(sint32 lerp_factor)
 	Gump *gump = 0;
 
 	it = World::get_instance()->getItem(item_num);
+
+	if (!it) // This shouldn't ever happen, the GumpNotifyProcess should close us before we get here
+	{
+		Close();
+		return;
+	}
 
 	while ((next = it->getParent()) != 0)
 	{

@@ -50,6 +50,7 @@ public:
 	void clearFlag(uint32 mask) { flags &= ~mask; }
 	void setExtFlags(uint32 f) { extendedflags = f; }
 	uint32 getExtFlags() const { return extendedflags; }
+	void clearExtFlag(uint32 mask) { extendedflags &= ~mask; }
 	uint32 getShape() const { return shape; }
 	// Hack Alert!
 	void setShape(uint32 shape_) { *const_cast<uint32*>(&shape) = shape_; cachedShapeInfo = 0; cachedShape = 0; }
@@ -118,7 +119,7 @@ public:
 
 	// fastArea Handling. Note that these are intended to call the usecode funcs,
 	// and do other stuff
-	void inFastArea(int even_odd);		// Called when an item has entered or is in the fast area
+	void inFastArea(int even_odd, int framenum);		// Called when an item has entered or is in the fast area
 	void leavingFastArea();				// Called when an item is leaving the fast area
 
 
@@ -214,11 +215,14 @@ protected:
 private:
 	Item* glob_next; // next item in glob
 
+	// The frame setupLerp was last called on
+	uint32	last_setup;	
+
 	// Animate the item (called by inFastArea)
-	void animateItem(int even_odd);
+	void animateItem();
 
 	// Setup the lerped info for this frame (called by inFastArea)
-	void setupLerp();		
+	void setupLerp(bool post);		
 
 public:
 	enum statusflags {

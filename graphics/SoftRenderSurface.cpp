@@ -238,13 +238,13 @@ template<class uintX> void SoftRenderSurface<uintX>::PrintText(Font * f, const c
 	while (*s) {
 		if (*s == '\n' || (*s == ' ' && (x-x_start) > 160 && *(s+1) != '\n')) 
 		{
-			y += f->getHeight();
+			y += f->getHeight()-f->getVlead();
 			x = x_start;
 		}
 		else if (*s != '\r')
 		{
 			Paint(f, static_cast<uint32>(*s), x, y);
-			x += f->getWidth(*s);
+			x += f->getWidth(*s)-f->getHlead();
 		}
 		s++;
 	}

@@ -27,13 +27,13 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(BarkGump,ItemRelativeGump);
 
 // TODO: Remove all the hacks
 
-BarkGump::BarkGump(uint16 itemid, std::string msg) :
-	ItemRelativeGump(itemid, 0,0, 100, 100, 0), barked(msg), fontnum(0), counter(100)
+BarkGump::BarkGump(uint16 owner, std::string msg) :
+	ItemRelativeGump(0, 0, 100, 100, owner, 0, LAYER_ABOVE_NORMAL), barked(msg), fontnum(0), counter(100)
 {
 	// OK, this is a bit of a hack, but it's how it's has to be
-	if (itemid == 1) fontnum = 6;
-	else if (itemid > 256) fontnum = 8;
-	else switch (itemid%3) {
+	if (owner == 1) fontnum = 6;
+	else if (owner > 256) fontnum = 8;
+	else switch (owner%3) {
 		case 1:
 			fontnum = 5;
 			break;
@@ -54,6 +54,8 @@ BarkGump::~BarkGump(void)
 
 void BarkGump::InitGump()
 {
+	ItemRelativeGump::InitGump();
+
 	// Create the TextWidget... ok, I couldn't care less at the moment,
 	// This is just a hack
 
@@ -66,10 +68,13 @@ void BarkGump::InitGump()
 	counter = ty*5;
 }
 
-void BarkGump::SetupLerp()
+bool BarkGump::Run(const uint32 framenum)
 {
+	Gump::Run(framenum);
+
 	// Auto close
 	if (!--counter) Close();
+	return true;	// Always repaint, even though we really could just try to detect it
 }
 
 // Overloadable method to Paint just this Gumps (RenderSurface is relative to this)
@@ -78,7 +83,7 @@ void BarkGump::PaintThis(RenderSurface*surf, sint32 lerp_factor)
 	ItemRelativeGump::PaintThis(surf,lerp_factor);
 	Font *font = GameData::get_instance()->getFonts()->getFont(fontnum);
 
-	surf->PrintText(font,barked.c_str(), 0, font->getHeight());
+	surf->PrintText(font,barked.c_str(), 0, font->getBaseline());
 }
 
 // Colourless Protection

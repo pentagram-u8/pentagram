@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class ShapeFrame;
 struct Palette;
 struct ConvertShapeFormat;
+class IDataSource;
 
 class Shape 
 {
@@ -32,6 +33,7 @@ public:
 	// NB: Shape uses data without copying it. It is deleted on destruction
 	// If format is not specified it will be autodetected
 	Shape(const uint8* data, uint32 size, const ConvertShapeFormat *format);
+	Shape(IDataSource *src, const ConvertShapeFormat *format);
 	virtual ~Shape();
 	void setPalette(const Palette* pal) { palette = pal; }
 	const Palette* getPalette() const { return palette; }

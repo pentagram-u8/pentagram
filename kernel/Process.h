@@ -29,9 +29,9 @@ public:
 	// returns true if screen needs to be repainted
 	virtual bool run(const uint32 framenum) = 0;
 
-	Process() : 
+	Process(uint16 it = 0, uint16 ty = 0) : 
 		pid(0xFFFF), active(false), suspended(false), terminated(false),
-		item_num(0), type(0), result(0)
+		item_num(it), type(ty), result(0)
 	{ }
 	virtual ~Process() { }
 
@@ -43,6 +43,11 @@ public:
 	virtual void terminate();
 	void waitFor(uint16 pid);
 	void wakeUp(uint32 result);
+
+	void setItemNum(uint16 it) { item_num = it; }
+	void setType(uint16 ty) { type = ty; }
+
+	uint16 getPid() { return pid; }
 
 protected:
 	// process id

@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "Object.h"
+#include "Kernel.h"
 #include "World.h"
 
 #include "UCProcess.h"
@@ -43,6 +44,9 @@ uint16 Object::assignObjId()
 
 void Object::clearObjId()
 {
+	// On clearObjId we terminate all processes that belonged to us
+	Kernel::get_instance()->killProcesses(objid, 6);
+
 	if (objid != 0xFFFF)
 		World::get_instance()->clearObjId(objid);
 	objid = 0xFFFF;

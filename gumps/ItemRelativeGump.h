@@ -30,7 +30,7 @@ protected:
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	ItemRelativeGump(uint16 item_num, sint32 x, sint32 y, sint32 width, sint32 height, uint32 _Flags = 0);
+	ItemRelativeGump(sint32 x, sint32 y, sint32 width, sint32 height, uint16 owner, uint32 _Flags = 0, sint32 layer = LAYER_NORMAL);
 	virtual ~ItemRelativeGump(void);
 
 	// Paint the Gump (RenderSurface is relative to parent). Calls PaintThis and PaintChildren

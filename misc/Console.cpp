@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 #include "ODataSource.h"
 #include "RenderSurface.h"
-#include "CoreApp.h"
 
 #include <cstdio>
 #include <cstring>
@@ -180,7 +179,8 @@ void Console::CheckResize (int scrwidth)
 Console::Console () : current(0), x(0), display(0), linewidth(-1),
 					 totallines(0), vislines(0), wordwrap(true), cr(false),
 					 putchar_count(0), std_output_enabled(0xFFFFFFFF),
-					 stdout_redir(0), stderr_redir(0), confont(0)
+					 stdout_redir(0), stderr_redir(0), confont(0),
+					 auto_paint(0)
 {
 	linewidth = -1;
 
@@ -320,11 +320,7 @@ void Console::Linefeed (void)
 	current++;
 	std::memset (&text[(current%totallines)*linewidth], ' ', linewidth);
 
-	if (auto_paint)
-	{
-		CoreApp *app = CoreApp::get_instance();
-		if (app && !app->isPainting()) app->paint();
-	}
+	if (auto_paint) auto_paint();
 }
 
 // Print a text string to the console

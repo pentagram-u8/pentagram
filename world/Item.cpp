@@ -59,7 +59,7 @@ Item::Item()
 	  flags(0), quality(0), npcnum(0), mapnum(0),
 	  extendedflags(0), parent(0), 
 	  cachedShape(0), cachedShapeInfo(0),
-	  gump(0), glob_next(0)
+	  gump(0), glob_next(0),last_setup(0)
 {
 
 }
@@ -446,10 +446,10 @@ void Item::destroy()
 //
 // Desc: Setup the lerped info for this frame
 //
-void Item::setupLerp()
+void Item::setupLerp(bool post)
 {
 	// Setup prev values, but only if fast
-	if (flags & FLG_FASTAREA) l_prev = l_next;
+	if (!post) l_prev = l_next;
 
 	l_next.x = ix = x;
 	l_next.y = iy = y;
@@ -458,11 +458,11 @@ void Item::setupLerp()
 	l_next.frame = frame;
 
 	// Setup prev values, if not fast
-	if (!(flags & FLG_FASTAREA)) l_prev = l_next;
+	if (post) l_prev = l_next;
 }
 
 // Animate the item
-void Item::animateItem(int even_odd)
+void Item::animateItem()
 {
 	ShapeInfo *info = getShapeInfo();
 	Shape *shp = getShapeObject();
@@ -473,7 +473,7 @@ void Item::animateItem(int even_odd)
 	int anim_data = info->animdata; 
 	bool dirty = false;
 
-	switch(info->animtype) {
+	if ((last_setup%6) == (objid%6) || info->animtype == 1) switch(info->animtype) {
 	case 2:
 		// 50 % chance
 		if (std::rand() & 1) break;
@@ -530,13 +530,17 @@ void Item::animateItem(int even_odd)
 
 
 // Called when an item has entered the fast area
-void Item::inFastArea(int even_odd)
+void Item::inFastArea(int even_odd, int framenum)
 {
 	extendedflags &= ~(EXT_FAST0|EXT_FAST1);
 	extendedflags |= EXT_FAST0<<even_odd;
 
-	setupLerp();
-	animateItem(even_odd);
+	if (!last_setup || framenum != last_setup || !(flags & FLG_FASTAREA))
+	{
+		setupLerp(!last_setup || (framenum-last_setup)>1 || !(flags & FLG_FASTAREA));
+		last_setup = framenum;
+		if ((framenum%3) == (objid%3)) animateItem();
+	}
 
 	// Only do it if not already fast
 	if (flags & FLG_FASTAREA) return;
@@ -893,17 +897,12 @@ uint32 Item::I_bark(const uint8* args, unsigned int /*argsize*/)
 	}
 	else
 	{
-		Gump *desktop = app->getDestkopGump();
+		Gump *desktop = app->getDesktopGump();
 		Gump *gump = new BarkGump(item->getObjId(), str);
 		gump->InitGump();
 		desktop->AddChild(gump);
 
-		GumpNotifyProcess *proc = new GumpNotifyProcess();
-		proc->setGump(gump);
-		gump->SetNotifyProcess(proc);
-
-		return Kernel::get_instance()->addProcess(proc);
-
+		return gump->GetNotifyProcess()->getPid();
 	}
 	// of course, in the final version of bark, we'll have to actually do
 	// something after the timeout occurs.
@@ -982,7 +981,7 @@ uint32 Item::I_ask(const uint8* args, unsigned int /*argsize*/)
 	GUIApp *app = p_dynamic_cast<GUIApp*>(GUIApp::get_instance());
 	if (app)
 	{
-		Gump *desktop = app->getDestkopGump();
+		Gump *desktop = app->getDesktopGump();
 		Gump *gump = new BarkGump(1, str_answers);
 		gump->InitGump();
 		desktop->AddChild(gump);

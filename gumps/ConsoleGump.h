@@ -48,7 +48,7 @@ public:
 	virtual void UnhideGump();
 	virtual void HideGump();
 
-	virtual void SetupLerp();
+	virtual bool Run(const uint32 framenum);
 
 	virtual void PaintThis(RenderSurface *surf, sint32 lerp_factor);
 };

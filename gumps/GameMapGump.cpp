@@ -21,8 +21,8 @@
 #include "GameMapGump.h"
 #include "RenderSurface.h"
 
+#include "CoreApp.h"
 #include "Kernel.h"
-#include "CameraProcess.h"
 
 #include "World.h"
 #include "Map.h"
@@ -31,12 +31,13 @@
 #include "Actor.h"
 #include "MainActor.h"
 #include "ItemSorter.h"
+#include "CameraProcess.h"
 
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(GameMapGump,Gump);
 
 GameMapGump::GameMapGump(int X, int Y, int Width, int Height) :
-	Gump(X,Y,Width,Height,0, LAYER_GAMEMAP),
+	Gump(X,Y,Width,Height, 0, 0, LAYER_GAMEMAP),
 	display_list(0), fastArea(0)
 
 {
@@ -50,10 +51,67 @@ GameMapGump::GameMapGump(int X, int Y, int Width, int Height) :
 
 GameMapGump::~GameMapGump()
 {
+	World *world = World::get_instance();
+	if (!world) return;	// Is it possible the world doesn't exist?
+
+	// All items leave the fast area on close
+	std::vector<uint16>::iterator it  = fastAreas[fastArea].begin();
+	std::vector<uint16>::iterator end  = fastAreas[fastArea].end();
+
+	for (;it != end; ++it)
+	{
+		Object *obj = world->getObject(*it);
+
+		// No object, continue
+		if (!obj) continue;
+
+		Item *item = p_dynamic_cast<Item*>(obj);
+
+		// Not an item, continue
+		if (!item) continue;
+
+		// leave the Fast area
+		item->leavingFastArea();
+	}
 }
 
-void GameMapGump::SetupLerp()
+bool GameMapGump::Run(const uint32 framenum)
 {
+	Gump::Run(framenum);
+	return true; // Always repaint, even though we really could just try to detect it
+}
+
+void GameMapGump::MapChanged()
+{
+	Gump::MapChanged();
+
+	World *world = World::get_instance();
+	if (!world) return;	// Is it possible the world doesn't exist?
+
+	// All items leave the fast area on close
+	std::vector<uint16>::iterator it  = fastAreas[fastArea].begin();
+	std::vector<uint16>::iterator end  = fastAreas[fastArea].end();
+
+	for (;it != end; ++it)
+	{
+		Object *obj = world->getObject(*it);
+
+		// No object, continue
+		if (!obj) continue;
+
+		Item *item = p_dynamic_cast<Item*>(obj);
+
+		// Not an item, continue
+		if (!item) continue;
+
+		// set the Fast area left
+		item->clearFlag(Item::FLG_FASTAREA);
+		item->clearExtFlag(Item::EXT_FAST0|Item::EXT_FAST1);
+	}
+
+	// Clear the fast areas
+	fastAreas[0].clear();
+	fastAreas[1].clear();
 }
 
 void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
@@ -66,7 +124,10 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 void GameMapGump::SetupFastAreaDisplayList(sint32 lerp_factor)
 {
 	World *world = World::get_instance();
+	if (!world) return;	// Is it possible the world doesn't exist?
+
 	CurrentMap *map = world->getCurrentMap();
+	if (!map) return;	// Is it possible the map doesn't exist?
 
 	sint32 resx = dims.w, resy = dims.h;
 
@@ -129,6 +190,8 @@ void GameMapGump::SetupFastAreaDisplayList(sint32 lerp_factor)
 	sint32 gx = lx/512;
 	sint32 gy = ly/512;
 
+	uint32 framenum = CoreApp::get_instance()->getFrameNum();
+
 	// Get all the required items
 	for (int y = -xy_limit; y <= xy_limit; y++)
 	{
@@ -151,7 +214,7 @@ void GameMapGump::SetupFastAreaDisplayList(sint32 lerp_factor)
 				Item *item = *it;
 				if (!item) continue;
 
-				item->inFastArea(fastArea);
+				item->inFastArea(fastArea, framenum);
 				fast->push_back(item->getObjId());
 				item->doLerp(lx,ly,lz,lerp_factor);
 				display_list->AddItem(item);

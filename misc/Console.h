@@ -58,14 +58,14 @@ class Console
 
 	uint32		std_output_enabled;		
 
-	bool		auto_paint;
-
 	// stdout and stderr redirection
 	ODataSource	*stdout_redir;
 	ODataSource	*stderr_redir;
 
 	// Confont texture
 	Texture		*confont;
+
+	void		(*auto_paint)(void);
 
 public:
 	Console();
@@ -90,7 +90,7 @@ public:
 	Texture *GetConFont() { return confont; }
 
 	// Autopaint will cause the GUIApp to re-paint everything after a linefeed
-	void	SetAutoPaint(bool state) { auto_paint = state; }
+	void	SetAutoPaint(void (*func)(void)) { auto_paint = func; }
 
 	// Scroll through the console. - is up + is down
 	void	ScrollConsole(sint32 lines);
