@@ -26,6 +26,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "util.h"
 
+using std::string;
+using Pentagram::istring;
+
 XMLTree::XMLTree()
 	: tree(new XMLNode("config")), root("config"), is_file(false),
 	  readonly(false)
@@ -33,7 +36,7 @@ XMLTree::XMLTree()
 
 }
 
-XMLTree::XMLTree(std::string fname, std::string root_)
+XMLTree::XMLTree(string fname, istring root_)
 	: tree (new XMLNode(root_)), root(root_), is_file(true),
 	  readonly(false)
 {
@@ -45,7 +48,7 @@ XMLTree::~XMLTree()
 	delete tree;
 }
 
-void XMLTree::clear(std::string root_)
+void XMLTree::clear(istring root_)
 {
 	delete tree;
 	tree = new XMLNode(root_);
@@ -54,12 +57,12 @@ void XMLTree::clear(std::string root_)
 	readonly = false;
 }
 
-bool XMLTree::readConfigFile(std::string fname)
+bool XMLTree::readConfigFile(string fname)
 {
 	IDataSource *f = FileSystem::get_instance()->ReadFile(fname, true);
 	if (!f) return false;
 
-	std::string sbuf, line;
+	string sbuf, line;
 	while (!f->eof()) {
 		f->readline(line);
 		sbuf += line;
@@ -75,11 +78,11 @@ bool XMLTree::readConfigFile(std::string fname)
 	return true;
 }
 
-bool XMLTree::readConfigString(std::string s)
+bool XMLTree::readConfigString(string s)
 {
 	is_file = false;
 
-	std::string sbuf(s);
+	string sbuf(s);
 	std::size_t nn=0;
 	while(isspace(s[nn])) ++nn;
 
@@ -94,7 +97,7 @@ bool XMLTree::readConfigString(std::string s)
 	return true;
 }
 
-std::string XMLTree::dump()
+istring XMLTree::dump()
 {
 	return tree->dump();
 }
@@ -107,14 +110,14 @@ void XMLTree::write()
 	ODataSource *f = FileSystem::get_instance()->WriteFile(filename, true);
 	if (!f) return;
 
-	std::string s = dump();
+	istring s = dump();
 	const char *cstr = s.c_str();
 	f->write(cstr,strlen(cstr));
 
 	delete f;
 }
 
-bool XMLTree::hasNode(std::string key) const
+bool XMLTree::hasNode(istring key) const
 {
 	const XMLNode *sub = tree->subtree(key);
 	if (sub)
@@ -123,14 +126,13 @@ bool XMLTree::hasNode(std::string key) const
 		return false;
 }
 
-bool XMLTree::checkRoot(std::string key) const
+bool XMLTree::checkRoot(istring key) const
 {
-	std::string k = key.substr(0, key.find('/'));
+	istring k = key.substr(0, key.find('/'));
 	return (k == root);
 }
 
-void XMLTree::value(std::string key, std::string &ret,
-					const char *defaultvalue) const
+void XMLTree::value(istring key, string &ret, const char *defaultvalue) const
 {
 	const XMLNode *sub = tree->subtree(key);
 	if (sub)
@@ -139,8 +141,7 @@ void XMLTree::value(std::string key, std::string &ret,
 		ret = defaultvalue;
 }
 
-void XMLTree::value(std::string key, int &ret,
-					int defaultvalue) const
+void XMLTree::value(istring key, int &ret, int defaultvalue) const
 {
 	const XMLNode *sub = tree->subtree(key);
 	if (sub)
@@ -149,8 +150,7 @@ void XMLTree::value(std::string key, int &ret,
 		ret = defaultvalue;
 }
 
-void XMLTree::value(std::string key, bool &ret,
-					bool defaultvalue) const
+void XMLTree::value(istring key, bool &ret,	bool defaultvalue) const
 {
 	const XMLNode *sub = tree->subtree(key);
 	if (sub)
@@ -159,24 +159,24 @@ void XMLTree::value(std::string key, bool &ret,
 		ret = defaultvalue;
 }
 
-void XMLTree::set(std::string key, std::string value)
+void XMLTree::set(istring key, string value)
 {
 	tree->xmlassign(key, value);
 }
 
-void XMLTree::set(std::string key, const char* value)
+void XMLTree::set(istring key, const char* value)
 {
 	tree->xmlassign(key, value);
 }
 
-void XMLTree::set(std::string key, int value)
+void XMLTree::set(istring key, int value)
 {
 	char buf[32];
 	snprintf(buf, 32, "%d", value);
 	set(key, buf);
 }
 
-void XMLTree::set(std::string key, bool value)
+void XMLTree::set(istring key, bool value)
 {
 	if (value)
 		set(key, "yes");
@@ -184,9 +184,9 @@ void XMLTree::set(std::string key, bool value)
 		set(key, "no");
 }
 
-std::vector<std::string> XMLTree::listKeys(std::string key, bool longformat)
+std::vector<istring> XMLTree::listKeys(istring key, bool longformat)
 {
-	std::vector<std::string> keys;
+	std::vector<istring> keys;
 	const XMLNode *sub = tree->subtree(key);
 	if (sub)
 		sub->listkeys(key, keys, longformat);
@@ -194,7 +194,7 @@ std::vector<std::string> XMLTree::listKeys(std::string key, bool longformat)
 	return keys;
 }
 
-void XMLTree::getSubkeys(KeyTypeList &ktl, std::string basekey)
+void XMLTree::getSubkeys(KeyTypeList &ktl, istring basekey)
 {
-	tree->searchpairs(ktl, basekey, std::string(), 0);
+	tree->searchpairs(ktl, basekey, istring(), 0);
 }

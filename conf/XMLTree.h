@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <string>
 #include <vector>
+#include "istring.h"
 
 class XMLNode;
 
@@ -28,48 +29,48 @@ class XMLTree
 {
  public:
 	XMLTree();
-	XMLTree(std::string fname, std::string root);
+	XMLTree(std::string fname, Pentagram::istring root);
 	~XMLTree();
 
 	bool readConfigFile(std::string fname);
 	bool readConfigString(std::string s);
 
-	void clear(std::string root);
+	void clear(Pentagram::istring root);
 
-	std::string dump();
+	Pentagram::istring dump();
 	void write();
 
 	void setReadonly() { readonly = true; }
 	bool isReadonly() const { return readonly; }
 
-	bool hasNode(std::string key) const;
-	bool checkRoot(std::string key) const;
+	bool hasNode(Pentagram::istring key) const;
+	bool checkRoot(Pentagram::istring key) const;
 
 	// get value
-	void value(std::string key, std::string &ret,
+	void value(Pentagram::istring key, std::string &ret,
 			   const char *defaultvalue="") const;
-	void value(std::string key, int &ret,
+	void value(Pentagram::istring key, int &ret,
 			   int defaultvalue=0) const;
-	void value(std::string key, bool &ret,
+	void value(Pentagram::istring key, bool &ret,
 			   bool defaultvalue=false) const;
 
 	// set value
-	void set(std::string key, std::string value);
-	void set(std::string key, const char* value);
-	void set(std::string key, int value);
-	void set(std::string key, bool value);
+	void set(Pentagram::istring key, std::string value);
+	void set(Pentagram::istring key, const char* value);
+	void set(Pentagram::istring key, int value);
+	void set(Pentagram::istring key, bool value);
 
-	std::vector<std::string> listKeys(std::string key, bool longformat=false);
+	std::vector<Pentagram::istring> listKeys(Pentagram::istring key, bool longformat=false);
 
-	typedef std::pair<std::string, std::string> KeyType;
+	typedef std::pair<Pentagram::istring, std::string> KeyType;
 	typedef std::vector<KeyType> KeyTypeList;
 	
-	void getSubkeys(KeyTypeList &ktl, std::string basekey);
+	void getSubkeys(KeyTypeList &ktl, Pentagram::istring basekey);
 
  private:
 	XMLNode *tree;
 	std::string filename;
-	std::string root;
+	Pentagram::istring root;
 	bool is_file;
 	bool readonly;
 };

@@ -22,6 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "XMLTree.h"
 #include "ConfigNode.h"
 
+using std::string;
+using Pentagram::istring;
+
 Configuration::Configuration()
 {
 
@@ -36,7 +39,7 @@ Configuration::~Configuration()
 	}
 }
 
-bool Configuration::readConfigFile(std::string fname, std::string root,
+bool Configuration::readConfigFile(string fname, istring root,
 								   bool /*readonly*/)
 {
 	XMLTree* tree = new XMLTree();
@@ -70,8 +73,7 @@ void Configuration::clear()
 	trees.clear();
 }
 
-void Configuration::value(std::string key, std::string &ret,
-						  const char *defaultvalue)
+void Configuration::value(istring key, string &ret, const char *defaultvalue)
 {
 	for (std::vector<XMLTree*>::reverse_iterator i = trees.rbegin();
 		 i != trees.rend(); ++i)
@@ -85,7 +87,7 @@ void Configuration::value(std::string key, std::string &ret,
 	ret = defaultvalue;
 }
 
-void Configuration::value(std::string key, int &ret, int defaultvalue)
+void Configuration::value(istring key, int &ret, int defaultvalue)
 {
 	for (std::vector<XMLTree*>::reverse_iterator i = trees.rbegin();
 		 i != trees.rend(); ++i)
@@ -99,7 +101,7 @@ void Configuration::value(std::string key, int &ret, int defaultvalue)
 	ret = defaultvalue;
 }
 
-void Configuration::value(std::string key, bool &ret, bool defaultvalue)
+void Configuration::value(istring key, bool &ret, bool defaultvalue)
 {
 	for (std::vector<XMLTree*>::reverse_iterator i = trees.rbegin();
 		 i != trees.rend(); ++i)
@@ -113,7 +115,7 @@ void Configuration::value(std::string key, bool &ret, bool defaultvalue)
 	ret = defaultvalue;
 }
 
-bool Configuration::set(std::string key, std::string value)
+bool Configuration::set(istring key, string value)
 {
 	// Currently a value is written to the last writable tree with
 	// the correct root.
@@ -135,33 +137,13 @@ bool Configuration::set(std::string key, std::string value)
 	return false;
 }
 
-bool Configuration::set(std::string key, const char* value)
+bool Configuration::set(istring key, const char* value)
 {
-	return set(key, std::string(value));
+	return set(key, string(value));
 }
 
 
-bool Configuration::set(std::string key, int value)
-{
-	// Currently a value is written to the last writable tree with
-	// the correct root.
-
-	for (std::vector<XMLTree*>::reverse_iterator i = trees.rbegin();
-		 i != trees.rend(); ++i)
-	{
-		if (!((*i)->isReadonly()) && 
-			(*i)->checkRoot(key))
-		{
-			(*i)->set(key, value);
-			return true;
-		}
-	}
-
-	PERR("No writable config file found: unable to set value");
-	return false;
-}
-
-bool Configuration::set(std::string key, bool value)
+bool Configuration::set(istring key, int value)
 {
 	// Currently a value is written to the last writable tree with
 	// the correct root.
@@ -181,19 +163,39 @@ bool Configuration::set(std::string key, bool value)
 	return false;
 }
 
-ConfigNode* Configuration::getNode(std::string key)
+bool Configuration::set(istring key, bool value)
+{
+	// Currently a value is written to the last writable tree with
+	// the correct root.
+
+	for (std::vector<XMLTree*>::reverse_iterator i = trees.rbegin();
+		 i != trees.rend(); ++i)
+	{
+		if (!((*i)->isReadonly()) && 
+			(*i)->checkRoot(key))
+		{
+			(*i)->set(key, value);
+			return true;
+		}
+	}
+
+	PERR("No writable config file found: unable to set value");
+	return false;
+}
+
+ConfigNode* Configuration::getNode(istring key)
 {
 	return new ConfigNode(*this, key);
 }
 
-std::set<std::string> Configuration::listKeys(std::string key, bool longformat)
+std::set<istring> Configuration::listKeys(istring key, bool longformat)
 {
-	std::set<std::string> keys;
+	std::set<istring> keys;
 	for (std::vector<XMLTree*>::iterator i = trees.begin();
 		 i != trees.end(); ++i)
 	{
-		std::vector<std::string> k = (*i)->listKeys(key, longformat);
-		for (std::vector<std::string>::iterator iter = k.begin();
+		std::vector<istring> k = (*i)->listKeys(key, longformat);
+		for (std::vector<istring>::iterator iter = k.begin();
 			 iter != k.end(); ++iter)
 		{
 			keys.insert(*iter);
@@ -202,7 +204,7 @@ std::set<std::string> Configuration::listKeys(std::string key, bool longformat)
 	return keys;
 }
 
-void Configuration::getSubkeys(KeyTypeList &ktl, std::string basekey)
+void Configuration::getSubkeys(KeyTypeList &ktl, istring basekey)
 {
 	for (std::vector<XMLTree*>::iterator tree = trees.begin();
 		 tree != trees.end(); ++tree)

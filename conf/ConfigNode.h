@@ -20,12 +20,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define CONFIGNODE_H
 
 #include <string>
+#include "istring.h"
 #include "Configuration.h"
 
 class ConfigNode
 {
 	friend class Configuration;
-	ConfigNode(Configuration& config_, std::string key_)
+	ConfigNode(Configuration& config_, Pentagram::istring key_)
 		: config(config_), key(key_)
 	{ }
 	
@@ -63,7 +64,7 @@ class ConfigNode
 
  private:
 	Configuration& config;
-	std::string key;
+	Pentagram::istring key;
 
 };
 

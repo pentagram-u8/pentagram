@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define CONFIGURATION_H
 
 #include <string>
+#include "istring.h"
 #include <vector>
 #include <set>
 
@@ -57,7 +58,7 @@ class Configuration
 	//! \param root The name of the root node in the file
 	//! \param readonly If true, don't write to this file's tree (or the file)
 	//! \return true if succesful
-	bool readConfigFile(std::string fname, std::string root,
+	bool readConfigFile(std::string fname, Pentagram::istring root,
 						bool readonly=false);
 
 	//! write all (writable) config files
@@ -67,40 +68,40 @@ class Configuration
 	void clear();
 
 	//! get value
-	void value(std::string key, std::string &ret, const char *defaultvalue="");
+	void value(Pentagram::istring key, std::string &ret, const char *defaultvalue="");
 	//! get value
-	void value(std::string key, int &ret, int defaultvalue=0);
+	void value(Pentagram::istring key, int &ret, int defaultvalue=0);
 	//! get value
-	void value(std::string key, bool &ret, bool defaultvalue=false);
+	void value(Pentagram::istring, bool &ret, bool defaultvalue=false);
 
 
 	//! set value
-	bool set(std::string key, std::string value);
+	bool set(Pentagram::istring key, std::string value);
 	//! set value
-	bool set(std::string key, const char* value);
+	bool set(Pentagram::istring key, const char* value);
 	//! set value
-	bool set(std::string key, int value);
+	bool set(Pentagram::istring key, int value);
 	//! set value
-	bool set(std::string key, bool value);
+	bool set(Pentagram::istring key, bool value);
 
 
 	//! get node ref. (Delete it afterwards)
-	ConfigNode* getNode(std::string key);
+	ConfigNode* getNode(Pentagram::istring key);
 
 	//! list all subkeys of a key
 	//! \param key The key to return setkeys of
 	//! \param longformat If true, return the full key name, instead of
 	//!                   just the last part
 	//! \return the subkeys. They have no guaranteed order.
-	std::set<std::string> listKeys(std::string key, bool longformat = false);
+	std::set<Pentagram::istring> listKeys(Pentagram::istring key, bool longformat = false);
 
-	typedef std::pair<std::string, std::string> KeyType;
+	typedef std::pair<Pentagram::istring, std::string> KeyType;
 	typedef std::vector<KeyType> KeyTypeList;
 
 	//! list all key-value pairs under the given basekey.
 	//! \param ktl The list in which key-value pairs are returned
 	//! \param basekey The key to search
-	void getSubkeys(KeyTypeList &ktl, std::string basekey);
+	void getSubkeys(KeyTypeList &ktl, Pentagram::istring basekey);
 
  private:
 

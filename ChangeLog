@@ -1,3 +1,6 @@
+2004-01-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* conf/*: configuration keys are now case insensitive (patch #867505)
+
 2004-01-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* docs/shapes.cmp.txt: u8shapes.cmp format
 

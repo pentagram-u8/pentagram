@@ -79,7 +79,7 @@ void HIDManager::loadBindings()
 	Configuration::KeyTypeList ktl;
 	config->getSubkeys(ktl, "bindings");
 
-	for( std::vector<Configuration::KeyType>::iterator i = ktl.begin();
+	for (Configuration::KeyTypeList::iterator i = ktl.begin();
 		i != ktl.end(); ++i)
 	{
 		Pentagram::istring bindingName = (*i).second.c_str();
@@ -88,8 +88,7 @@ void HIDManager::loadBindings()
 		{
 			for (uint16 key=0; key < SDLK_LAST; ++key)
 			{
-				if (! Pentagram::Q_strcasecmp((*i).first.c_str(),
-					SDL_GetKeyName((SDLKey) key)))
+				if ((*i).first == SDL_GetKeyName((SDLKey) key))
 				{
 					pout << "Binding \"" << SDL_GetKeyName((SDLKey) key)
 						<< "\" to " << (*i).second << std::endl;

@@ -193,12 +193,12 @@ void CoreApp::loadConfig()
 
 
 	//!! move this to some other init function
-	std::set<std::string> games;
+	std::set<Pentagram::istring> games;
 	games = config->listKeys("config/games", false);
 	con.Print(MM_INFO, "Scanning config file for games:\n");
-	std::set<std::string>::iterator iter;
+	std::set<Pentagram::istring>::iterator iter;
 	for (iter = games.begin(); iter != games.end(); ++iter) {
-		std::string game = *iter;
+		std::string game = (*iter).c_str();
 		GameInfo info;
 		bool detected = getGameInfo(game, &info);
 		con.Printf(MM_INFO, "%s: ", game.c_str());
@@ -230,7 +230,7 @@ void CoreApp::loadConfig()
 			game = defaultgame;
 		} else if (games.size() == 1) {
 			// only one game in config file, so pick that
-			game = *(games.begin());
+			game = (*(games.begin())).c_str();
 		} else if (games.size() == 0) {
 			perr << "No games set up in configuration. "
 				 << "Please read the README for instructions." << std::endl;
@@ -248,7 +248,7 @@ void CoreApp::loadConfig()
 
 	pout << "Selected game: " << game << std::endl;
 
-	if (games.find(game) == games.end()) {
+	if (games.find(Pentagram::istring(game.c_str())) == games.end()) {
 		perr << "Game \"" << game << "\" not found." << std::endl;
 		exit(1);
 	}
@@ -268,7 +268,8 @@ bool CoreApp::getGameInfo(std::string& game, GameInfo* gameinfo)
 	gameinfo->version = 0;
 	gameinfo->language = GameInfo::GAMELANG_UNKNOWN;
 
-	std::string gamekey = "config/games/"+game;
+	Pentagram::istring gamekey = "config/games/";
+	gamekey += game.c_str();
 
 	std::string gametype;
 	config->value(gamekey+"/type", gametype, "unknown");
@@ -316,7 +317,8 @@ bool CoreApp::getGameInfo(std::string& game, GameInfo* gameinfo)
 
 void CoreApp::setupGamePaths(std::string& game, GameInfo* gameinfo)
 {
-	std::string gamekey = "config/games/"+game;
+	Pentagram::istring gamekey = "config/games/";
+	gamekey += game.c_str();
 
 	// load main game data path
 	std::string gpath;

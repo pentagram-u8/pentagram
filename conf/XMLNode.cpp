@@ -23,9 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using std::string;
 using std::vector;
 using std::endl;
+using Pentagram::istring;
 
-static	string	encode_entity(const string &s);
-static	string	close_tag(const string &s);
+static	istring	encode_entity(const string &s);
+static	istring	close_tag(const istring &s);
 
 XMLNode::~XMLNode()
 {
@@ -36,7 +37,7 @@ XMLNode::~XMLNode()
 	}
 }
 
-const string& XMLNode::reference(const string &h, bool &exists)
+const string& XMLNode::reference(const istring &h, bool &exists)
 {
 	if(h.find('/')==string::npos)
 	{
@@ -53,9 +54,9 @@ const string& XMLNode::reference(const string &h, bool &exists)
 		// then locate the branch to walk, and pass the rest
 		// down.
 
-		string k;
+		istring k;
 		k = h.substr(h.find('/')+1);
-		string k2 = k.substr(0,k.find('/'));
+		istring k2 = k.substr(0,k.find('/'));
 		for(std::vector<XMLNode*>::iterator it = nodelist.begin();
 			it != nodelist.end(); ++it)
 		{
@@ -69,7 +70,7 @@ const string& XMLNode::reference(const string &h, bool &exists)
 }
 
 
-const XMLNode *XMLNode::subtree(const string &h) const
+const XMLNode *XMLNode::subtree(const istring &h) const
 {
 	if(h.find('/') == string::npos)
 	{
@@ -83,9 +84,9 @@ const XMLNode *XMLNode::subtree(const string &h) const
 		// then locate the branch to walk, and pass the rest
 		// down.
 
-		string k;
+		istring k;
 		k = h.substr(h.find('/')+1);
-		string k2 = k.substr(0,k.find('/'));
+		istring k2 = k.substr(0,k.find('/'));
 		for(std::vector<XMLNode*>::const_iterator it = nodelist.begin();
 			it != nodelist.end(); ++it)
 		{
@@ -98,9 +99,9 @@ const XMLNode *XMLNode::subtree(const string &h) const
 }
 
 
-string XMLNode::dump(int depth)
+istring XMLNode::dump(int depth)
 {
-	string s(depth,' ');
+	istring s(depth,' ');
 
 	s+="<";
 	s+=id;
@@ -115,7 +116,7 @@ string XMLNode::dump(int depth)
 
 		if(content.length())
 		{
-			s += string(depth,' ');
+			s += istring(depth,' ');
 			s += encode_entity(content);
 		}
 		if(id[0] == '?')
@@ -127,7 +128,7 @@ string XMLNode::dump(int depth)
 
 		if(!no_close)
 		{
-			s += string(depth,' ');
+			s += istring(depth,' ');
 		
 			s += "</";
 			s += close_tag(id);
@@ -138,7 +139,7 @@ string XMLNode::dump(int depth)
 	return s;
 }
 
-void XMLNode::xmlassign(const string &key, const string &value)
+void XMLNode::xmlassign(const istring &key, const string &value)
 {
 	if(key.find('/') == string::npos)
 	{
@@ -149,9 +150,9 @@ void XMLNode::xmlassign(const string &key, const string &value)
 			PERR("Walking the XML tree failed to create a final node.");
 		return;
 	}
-	string k;
+	istring k;
 	k = key.substr(key.find('/')+1);
-	string k2 = k.substr(0,k.find('/'));
+	istring k2 = k.substr(0,k.find('/'));
 	for(std::vector<XMLNode*>::iterator it = nodelist.begin();
 		it != nodelist.end(); ++it)
 	{
@@ -169,10 +170,10 @@ void XMLNode::xmlassign(const string &key, const string &value)
 }
 
 
-void XMLNode::listkeys(const string &key, vector<string> &vs,
+void XMLNode::listkeys(const istring &key, vector<istring> &vs,
 					   bool longformat) const
 {
-	string s(key);
+	istring s(key);
 	s+="/";
 
 	for(std::vector<XMLNode*>::const_iterator it = nodelist.begin();
@@ -185,9 +186,9 @@ void XMLNode::listkeys(const string &key, vector<string> &vs,
 	}
 }
 
-static string encode_entity(const string &s)
+static istring encode_entity(const string &s)
 {
-	string	ret;
+	istring	ret;
 
 	for(string::const_iterator it = s.begin(); it != s.end(); ++it)
 	{
@@ -239,7 +240,7 @@ static string decode_entity(const string &s, std::size_t &pos)
 	return s.substr(old_pos, entity_name_len+2);
 }
 
-static string close_tag(const string &s)
+static istring close_tag(const istring &s)
 {
 	if(s.find(" ") == string::npos)
 		return s;
@@ -334,8 +335,8 @@ void XMLNode::xmlparse(const string &s,std::size_t &pos)
 	Ignores comments (<!-- ... --> and doesn't return them.
 	Returns true if search is 'finished'
 */
-bool XMLNode::searchpairs(KeyTypeList &ktl, const string &basekey,
-						  const string currkey, const unsigned int pos)
+bool XMLNode::searchpairs(KeyTypeList &ktl, const istring &basekey,
+						  const istring currkey, const unsigned int pos)
 {
 	/* If our 'current key' is longer then the key we're serching for
 		we've obviously gone too deep in this branch, and we won't find
@@ -363,7 +364,7 @@ bool XMLNode::searchpairs(KeyTypeList &ktl, const string &basekey,
 }
 
 /* Just adds every key->value pair under the this node to the ktl */
-void XMLNode::selectpairs(KeyTypeList &ktl, const std::string currkey)
+void XMLNode::selectpairs(KeyTypeList &ktl, const istring currkey)
 {
 	ktl.push_back(KeyType(currkey + id, content));
 	

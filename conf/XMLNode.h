@@ -21,12 +21,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <string>
 #include <vector>
+#include "istring.h"
 
 
 class	XMLNode
 {
 protected:
-	std::string				id;
+	Pentagram::istring		id;
 	std::string				content;
 	std::vector<XMLNode*>	nodelist;
 	bool					no_close;
@@ -34,7 +35,7 @@ protected:
 public:
 	XMLNode() : no_close(false)
 		{  }
-	XMLNode(const std::string &i) : id(i), no_close(false)
+	XMLNode(const Pentagram::istring &i) : id(i), no_close(false)
 		{  }
 	XMLNode(const XMLNode &n)
 		: id(n.id),content(n.content),nodelist(n.nodelist), no_close(false)
@@ -46,26 +47,26 @@ public:
 		return *this;
 	}
 
-	const std::string &reference(const std::string &,bool &);
-	const XMLNode *subtree(const std::string &) const;
+	const std::string &reference(const Pentagram::istring &,bool &);
+	const XMLNode *subtree(const Pentagram::istring &) const;
 	
 	const std::string &value(void) const { 
 		return content;
 	}
 	
-	typedef std::pair<std::string, std::string> KeyType;
+	typedef std::pair<Pentagram::istring, std::string> KeyType;
 	typedef std::vector<KeyType> KeyTypeList;
 	
-	bool searchpairs(KeyTypeList &ktl, const std::string &basekey,
-					 const std::string currkey, const unsigned int pos);
-	void selectpairs(KeyTypeList &ktl, const std::string currkey);
+	bool searchpairs(KeyTypeList &ktl, const Pentagram::istring &basekey,
+					 const Pentagram::istring currkey, const unsigned int pos);
+	void selectpairs(KeyTypeList &ktl, const Pentagram::istring currkey);
 	
-	std::string dump(int depth = 0);
+	Pentagram::istring dump(int depth = 0);
 	
-	void xmlassign(const std::string &key, const std::string &value);
+	void xmlassign(const Pentagram::istring &key, const std::string &value);
 	void xmlparse(const std::string &s,std::size_t &pos);
 
-	void listkeys(const std::string &,std::vector<std::string> &,
+	void listkeys(const Pentagram::istring &,std::vector<Pentagram::istring> &,
 				  bool longformat=true) const;
 };
 
