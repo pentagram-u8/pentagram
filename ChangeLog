@@ -1,3 +1,36 @@
+2003-05-03  Ryan Nunn <colourles@users.sourceforge.net>
+	* kernel/Application.cpp : More info about rendering times
+
+2003-05-03  Ryan Nunn <colourles@users.sourceforge.net>
+	* kernel/Kernel.cpp : Uh oh, changed it so the kernel will NOT 
+	  terminate when there are no more processes.
+
+	* kernel/Application.cpp : Pressing a key will now quit Pentagram. The 
+	  World will now be displayed as the background. This is temporary
+
+	* world/ItemSorter.* : Added ItemSorter. Not completely finished
+	  yet, but it works.
+
+	 * world/GlobEgg.cpp : Fixed an allignment issue.
+
+	 * world/Item.* : Status flags, and some interpolation stuff
+
+	 * misc/Rect.h : Added operator == 
+
+	 * world/World.* : Adding items to display list. Doing it like this is
+	   temporary
+
+	* filesys/IDataSource.h : Adding an unhack for the float stuff. Not 
+	  usable yet.
+
+	* graphics/*RenderSurface.* : Adding a clipping check function. 
+	  Slightly optimized text rendering.
+
+	* misc/pent_include.h : Added another CANT_HAPPEN macro. This one in 
+	  theory allows a string to be passed to the Macro that 'should' be 
+	  displayed when the assertion fails. However that is going to be 
+	  compiler and runtime dependant
+
 2003-04-30 Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/*: very very basic event handling
 

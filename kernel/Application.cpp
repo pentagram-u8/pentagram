@@ -208,8 +208,11 @@ void Application::paint()
 	screen->Fill32(0x3F3F3F, 0, 0, 640, 480);
 
 	display_list->BeginDisplayList(screen, palettemanager->getPalette(PaletteManager::Pal_Game));
+	long before_sort = SDL_GetTicks();
 	world->SetupDisplayList(display_list);
+	long after_sort = SDL_GetTicks();
 	display_list->PaintDisplayList();
+	long after_paint = SDL_GetTicks();
 
  	con.DrawConsole(screen, 0, 0, 640, 480);
 	screen->EndPainting();
@@ -219,7 +222,7 @@ void Application::paint()
 	long diff = now - prev;
 	prev = now;
 
-	con.Printf("Rendering time %i ms %i FPS        \r", diff, 1000/diff);
+	con.Printf("Rendering time %i ms %i FPS - Sort %i ms  Paint %i ms       \r", diff, 1000/diff, after_sort-before_sort, after_paint-after_sort);
 }
 
 void Application::setupVirtualPaths()
