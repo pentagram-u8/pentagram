@@ -30,6 +30,8 @@
 const ConvertShapeFormat *read_format = &CrusaderShapeFormat;
 const ConvertShapeFormat *write_format = &U8ShapeFormat;
 
+//int shapenum;
+
 // Nasty yucky stuff
 void ConvertFlexes(IFileDataSource *readfile, OFileDataSource *writefile)
 {
@@ -56,6 +58,8 @@ void ConvertFlexes(IFileDataSource *readfile, OFileDataSource *writefile)
 	con.Printf ("Convering %i shapes...\n", num_entries);
 	for (int s = 0; s < num_entries; s++)
 	{
+		//shapenum = s;
+
 		// Get the read offset and size
 		readfile->seek(0x80 + 8*s);
 		uint32 read_offset = readfile->read4();
@@ -81,6 +85,9 @@ void ConvertFlexes(IFileDataSource *readfile, OFileDataSource *writefile)
 
 		// Update the write_offset
 		write_offset += write_size;
+
+		// Free it
+		shape.Free();
 	}
 	pout << "Done!" << std::endl;
 }

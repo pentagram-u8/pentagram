@@ -53,10 +53,10 @@ struct ConvertShapeFrame
 
 	uint8				unknown[8];
 	uint32				compression;
-	uint32				width;
-	uint32				height;
-	uint32				xoff;
-	uint32				yoff;
+	sint32				width;
+	sint32				height;
+	sint32				xoff;
+	sint32				yoff;
 
 	uint32				*line_offsets;		// Note these are offsets into rle_data
 

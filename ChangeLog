@@ -1,3 +1,10 @@
+2002-10-30  Ryan Nunn <colourles@users.sourceforge.net>
+	* convert/ConvertShape.*,  tools/shapeconv/ShapeConv.cpp : Fixing a few
+	  shape conversion problems
+
+	* tools/amf2mod/amf2mod.c : A simple Crusader AMF to MOD converter that
+	  I found. Source should be platform portable.
+
 2002-10-29  Ryan Nunn <colourles@users.sourceforge.net>
 	* filesys/FileSystem.cpp : The functions will no longer throw 
 	  exceptions

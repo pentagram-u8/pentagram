@@ -19,6 +19,10 @@
 #include "pent_include.h"
 #include "ConvertShape.h"
 
+//#define COMP_SHAPENUM 901
+
+//extern int shapenum;
+
 void ConvertShape::Read(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len)
 {
 	// Just to be safe
@@ -27,11 +31,11 @@ void ConvertShape::Read(IDataSource *source, const ConvertShapeFormat *csf, uint
 	// Read the header unknown
 	if (csf->bytes_header_unk) source->read(header_unknown, csf->bytes_header_unk);
 
-	//pout << std::hex;
+	//if (shapenum == COMP_SHAPENUM) pout << std::hex;
 
 	// Now read num_frames
 	num_frames = source->readX(csf->bytes_num_frames);
-	//pout << "num_frames " << num_frames << std::endl;
+	//if (shapenum == COMP_SHAPENUM) pout << "num_frames " << num_frames << std::endl;
 
 	// Create frames array
 	frames = new ConvertShapeFrame[num_frames];
@@ -40,33 +44,37 @@ void ConvertShape::Read(IDataSource *source, const ConvertShapeFormat *csf, uint
 	// Now read the frames
 	for (int f = 0; f < num_frames; f++) 
 	{
-		//pout << "Frame " << f << std::endl;
+		//if (shapenum == COMP_SHAPENUM) pout << "Frame " << f << std::endl;
 		ConvertShapeFrame *frame = frames+f;
+
+		//if (shapenum == COMP_SHAPENUM) pout << "Seeking to " << (csf->len_header + (csf->len_frameheader*f)) << std::endl;
+		//if (shapenum == COMP_SHAPENUM) pout << "Real " << (csf->len_header + (csf->len_frameheader*f)) << std::endl;
 
 		// Seek to initial pos
 		source->seek(start_pos + csf->len_header + (csf->len_frameheader*f));
 
 		// Read the offset
 		uint32 frame_offset = source->readX(csf->bytes_frame_offset);
-		//pout << "frame_offset " << frame_offset << std::endl;
+		//if (shapenum == COMP_SHAPENUM) pout << "frame_offset " << frame_offset << std::endl;
 
 		// Read the unknown
 		if (csf->bytes_frameheader_unk) source->read(frame->header_unknown, csf->bytes_frameheader_unk);
 
 		// Read frame_length
 		uint32 frame_length = source->readX(csf->bytes_frame_length);
-		//pout << "frame_length " << frame_length << std::endl;
+		//if (shapenum == COMP_SHAPENUM) pout << "frame_length " << frame_length << std::endl;
 
 		// Read next frame offset (assuming we are not end) 
-		uint32 next_offset;
-		if (f != (num_frames-1)) next_offset = source->readX(csf->bytes_frame_offset);
-		else next_offset = real_len;
+		//uint32 next_offset;
+		//if (f != (num_frames-1)) next_offset = source->readX(csf->bytes_frame_offset);
+		//else next_offset = real_len;
+
+		//if (shapenum == COMP_SHAPENUM) pout << "next_offset " << next_offset << std::endl;
 
 		// Fudge the framelen
-		frame_length = next_offset - frame_offset;
+		// frame_length = next_offset - frame_offset;
 
-		//pout << "frame_length " << frame_length << std::endl;
-
+		//if (shapenum == COMP_SHAPENUM) pout << "frame_length " << frame_length << std::endl;
 
 		// Seek to start of frame
 		source->seek(start_pos + frame_offset);
@@ -81,11 +89,14 @@ void ConvertShape::Read(IDataSource *source, const ConvertShapeFormat *csf, uint
 		frame->xoff = source->readX(csf->bytes_frame_xoff);
 		frame->yoff = source->readX(csf->bytes_frame_yoff);
 
-		//pout << "compression " << frame->compression << std::endl;
-		//pout << "width " << frame->width << std::endl;
-		//pout << "height " << frame->height << std::endl;
-		//pout << "xoff " << frame->xoff << std::endl;
-		//pout << "yoff " << frame->yoff << std::endl;
+		//if (frame->width <= 0 || frame->height <= 0  ||shapenum == COMP_SHAPENUM )
+		//{
+		//	pout << "compression " << frame->compression << std::endl;
+		//	pout << "width " << frame->width << std::endl;
+		//	pout << "height " << frame->height << std::endl;
+		//	pout << "xoff " << frame->xoff << std::endl;
+		//	pout << "yoff " << frame->yoff << std::endl;
+		//}
 
 		if (frame->height) {
 			// Line offsets
@@ -115,7 +126,7 @@ void ConvertShape::Read(IDataSource *source, const ConvertShapeFormat *csf, uint
 			frame->rle_data = 0;
 	}
 
-	//ypout << std::dec;
+	//if (shapenum == COMP_SHAPENUM) pout << std::dec;
 }
 
 void ConvertShape::Write(ODataSource *dest, const ConvertShapeFormat *csf, uint32 &write_len)
