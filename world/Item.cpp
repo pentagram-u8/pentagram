@@ -978,9 +978,11 @@ uint32 Item::callUsecodeEvent_hatch()							// event 7
 	return callUsecodeEvent(7);		// CONSTANT
 }
 
-uint32 Item::callUsecodeEvent_schedule()						// event 8
+uint32 Item::callUsecodeEvent_schedule(uint32 time)				// event 8
 {
-	return callUsecodeEvent(8);		// CONSTANT
+	UCStack	arg_stack(4);
+	arg_stack.push4(time);
+	return callUsecodeEvent(8, arg_stack.access(), 4);  // CONSTANT 8
 }
 
 uint32 Item::callUsecodeEvent_release()							// event 9

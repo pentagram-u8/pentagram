@@ -269,7 +269,7 @@ public:
 	uint32 callUsecodeEvent_hit(ObjId hitted, sint16 unk);		// event 5
 	uint32 callUsecodeEvent_gotHit(ObjId hitter, sint16 unk);	// event 6
 	uint32 callUsecodeEvent_hatch();							// event 7
-	uint32 callUsecodeEvent_schedule();							// event 8
+	uint32 callUsecodeEvent_schedule(uint32 time);				// event 8
 	uint32 callUsecodeEvent_release();							// event 9
 	uint32 callUsecodeEvent_combine();							// event C
 	uint32 callUsecodeEvent_enterFastArea();					// event F

@@ -232,11 +232,11 @@ Intrinsic U8Intrinsics[] = {
 	Actor::I_setAirWalkEnabled,
 	// 0x0B0
 	Actor::I_getAirWalkEnabled,
-	0, // Npc::schedule
+	Actor::I_schedule,
 	Actor::I_getEquip,
 	Actor::I_setEquip,
 	0, // closeAllGumps
-	CameraProcess::I_scrollTo, //!! process Camera::scrollTo(uword, uword, ubyte, word)
+	CameraProcess::I_scrollTo,
 	UCMachine::I_urandom,
 	UCMachine::I_rndRange,
 	0, // castGrantPeaceSpell

@@ -77,6 +77,9 @@ public:
 
 	virtual bool removeItem(Item* item);
 
+	//! \return the PID of the spawned usecode process if any (otherwise 0)
+	uint16 schedule(uint32 time);
+
 	bool setEquip(Item* item, bool checkwghtvol=false);
 	uint16 getEquip(uint32 type);
 
@@ -163,6 +166,7 @@ public:
 	INTRINSIC(I_createActor);
 	INTRINSIC(I_setAirWalkEnabled);
 	INTRINSIC(I_getAirWalkEnabled);
+	INTRINSIC(I_schedule);
 	INTRINSIC(I_getEquip);
 	INTRINSIC(I_setEquip);
 

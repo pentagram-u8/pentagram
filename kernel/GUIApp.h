@@ -84,6 +84,8 @@ public:
 	void toggleAvatarInStasis() { avatarInStasis = !avatarInStasis; }
 	bool isPaintEditorItems() const { return paintEditorItems; }
 	void togglePaintEditorItems() { paintEditorItems = !paintEditorItems; }
+
+	uint32 getGameTimeInSeconds();
 	
 	GameMapGump *getGameMapMapGump() { return gameMapGump; }
 	ConsoleGump *getConsoleGump() { return consoleGump; }

@@ -1,5 +1,8 @@
 2004-08-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
-	* world/actor/Actor.*: areEnemiesNear intrinsic
+	* world/actors/Actor.*: areEnemiesNear intrinsic
+	* world/Item.*: the schedule usecode event takes a uint32 time argument
+	* world/actors/Actor.*: schedule intrinsic
+	* kernel/GUIApp.*: export getGameTimeInSeconds function
 
 2004-08-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.*: Item::ascend intrinsic
@@ -8,9 +11,9 @@
 	* usecode/UCMachine.cpp: release string/list IDs when freeing them
 	* usecode/UCList.h: minor tweaks to allow appending a list to itself
 	* misc/idMan.*: don't break the list when freeing ID zero.
-	* world/actor/Actor.*: {set,get}AirWalkEnabled intrinsics
+	* world/actors/Actor.*: {set,get}AirWalkEnabled intrinsics
 	* kernel/GUIApp.cpp: add Theurgy foci to Avatar's starting equipment
-	* world/actor/Actor.*: pathfindToPoint intrinsic
+	* world/actors/Actor.*: pathfindToPoint intrinsic
 
 2004-08-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: uninitialized variables

@@ -211,11 +211,13 @@ void CurrentMap::loadMap(Map* map)
 	{
 	for (uint16 i = 0; i < 256; ++i) {
 		Actor* actor = World::get_instance()->getNPC(i);
+		if (!actor) continue;
 
 		// Schedule
-		if (actor) actor->callUsecodeEvent_schedule();
-
-		if (actor && actor->getMapNum() == getNum()) {
+		// CHECKME: is this the right time to pass?
+		actor->schedule(GUIApp::get_instance()->getGameTimeInSeconds()/60);
+		
+		if (actor->getMapNum() == getNum()) {
 			addItemToEnd(actor);
 
 			// Cachein

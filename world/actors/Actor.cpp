@@ -707,6 +707,17 @@ bool Actor::areEnemiesNear()
 	return false;
 }
 
+uint16 Actor::schedule(uint32 time)
+{
+	if (getActorFlags() & ACT_DEAD)
+		return 0;
+
+	uint32 ret = callUsecodeEvent_schedule(time);
+
+	return static_cast<uint16>(ret);
+}
+
+
 void Actor::dumpInfo()
 {
 	Container::dumpInfo();
@@ -1182,6 +1193,16 @@ uint32 Actor::I_getAirWalkEnabled(const uint8* args, unsigned int /*argsize*/)
 	else
 		return 0;
 }
+
+uint32 Actor::I_schedule(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	ARG_UINT32(time);
+	if (!actor) return 0;
+
+	return actor->schedule(time);
+}
+
 
 uint32 Actor::I_getEquip(const uint8* args, unsigned int /*argsize*/)
 {

@@ -2079,6 +2079,13 @@ Gump* GUIApp::getGump(uint16 gumpid)
 								 getObject(gumpid));
 }
 
+uint32 GUIApp::getGameTimeInSeconds()
+{
+	// 1 second per every 30 frames
+	return (Kernel::get_instance()->getFrameNum()+timeOffset)/30; // constant!
+}
+
+
 void GUIApp::save(ODataSource* ods)
 {
 	ods->write2(1); //version
@@ -2191,22 +2198,21 @@ uint32 GUIApp::I_getAvatarInStasis(const uint8* /*args*/, unsigned int /*argsize
 uint32 GUIApp::I_getTimeInGameHours(const uint8* /*args*/,
 										unsigned int /*argsize*/)
 {
-	// 1 game hour per every 27000 frames
-	return (Kernel::get_instance()->getFrameNum()+get_instance()->timeOffset)/27000;
+	// 900 seconds per game hour
+	return get_instance()->getGameTimeInSeconds() / 900;
 }
 
 uint32 GUIApp::I_getTimeInMinutes(const uint8* /*args*/,
 										unsigned int /*argsize*/)
 {
-	// 1 minute per every 1800 frames
-	return (Kernel::get_instance()->getFrameNum()+get_instance()->timeOffset)/1800;
+	// 60 seconds per minute
+	return get_instance()->getGameTimeInSeconds() / 60;
 }
 
 uint32 GUIApp::I_getTimeInSeconds(const uint8* /*args*/,
 										unsigned int /*argsize*/)
 {
-	// 1 second per every 30 frames
-	return (Kernel::get_instance()->getFrameNum()+get_instance()->timeOffset)/30;
+	return get_instance()->getGameTimeInSeconds();
 }
 
 uint32 GUIApp::I_setTimeInGameHours(const uint8* args,
