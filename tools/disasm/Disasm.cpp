@@ -224,73 +224,6 @@ void printglobals()
 		con.Printf("[%04X %02X] (%s)\n", i->first, i->second.size, i->second.name.c_str());
 }
 
-/* This looks _real_ dubious. Instead of loading all the offsets from the
-   files and converting them to pair<uint32, uint32>, we're storing them in
-   memory as strings, then having to convert the class:offset pair into a
-   string, and strcmping against them. So instead of having a 2*O(N) operation
-   at read, and a 2*O(1)*O(logN) at search. We've got a O(N) operation at read,
-   and a O(N)*O(logN) for _each_ search. */
-string functionaddresstostring(const sint32 i0, const sint32 i1, IDataSource *ucfile)
-{
-	char buf[10];
-	std::map<string, string>::iterator funcoffset = FuncNames.find(buf);
-
-	snprintf(buf, 10, "%04X:%04X", i0, i1);
-	funcoffset = FuncNames.find(buf);
-	if (funcoffset != FuncNames.end())
-		return funcoffset->second;
-
-	// Attempt to grab function name of the requested func
-
-	// Save the original pos
-	uint32 origpos = ucfile->getPos();
-
-	// Seek to index table entry 1
-	ucfile->seek(0x80 + 8);
-
-	// Get details
-	sint32 offset = ucfile->read4();
-	/*sint32 length =*/ ucfile->read4();
-
-	// Seek to name entry
-	ucfile->seek(offset + i0*13 + 4);
-
-	// Read name
-	ucfile->read(buf, 9);
-
-	// Return to the pos
-	ucfile->seek(origpos);
-
-	// Couldn't get name, just use number
-	if (!buf[0]) snprintf(buf, 10, "%04X", i0);
-
-	// String to return
-	std::string str = buf;
-
-	// This will only work in crusader
-	if (crusader)
-	{
-		if (i1 < 0x20)
-		{
-			return str + "::" + convert->event_names()[i1];
-		}
-		else
-		{
-			snprintf(buf, 10, "%02X", i1);
-			return str + "::ordinal" + buf;
-		}
-	}
-	// For Ultima 8
-	else
-	{
-		snprintf(buf, 10, "%04X", i1);
-		return str + "::" + buf;
-	}
-
-	// Shouldn't ever get here
-	return "unknown";
-}
-
 /* Yes, this is icky and evil. *grin* But it works without modifying anything. */
 #ifdef FOLD
 	#define con_Printf if(print_disasm) con.Printf
@@ -308,7 +241,7 @@ Folder *folder = new Folder();
 #endif
 
 void just_print(TempOp &op, IDataSource *ucfile);
-bool readfunction(IDataSource *ucfile, const char *name, const UsecodeHeader &uch)
+bool readfunction(IDataSource *ucfile, const char *name, const UsecodeHeader &uch, const uint32 func)
 {
 	std::string str;
 
@@ -334,7 +267,7 @@ bool readfunction(IDataSource *ucfile, const char *name, const UsecodeHeader &uc
 	bool done = false;
 	
 	#ifdef FOLD
-	folder->NewUnit();
+	folder->SelectUnit(func);
 	#endif
 	
 	while (!done)
@@ -410,7 +343,7 @@ void just_print(TempOp &op, IDataSource *ucfile)
 			break;
 		case 0x11:
 			con_Printf("call\t\t%04X:%04X (%s)", op.i0, op.i1,
-				functionaddresstostring(op.i0, op.i1, ucfile).c_str());
+				convert->UsecodeFunctionAddressToString(op.i0, op.i1, ucfile, crusader).c_str());
 			break;
 		case 0x12:
 			con_Printf("pop\t\ttemp");
@@ -604,12 +537,12 @@ void just_print(TempOp &op, IDataSource *ucfile)
 
 		case 0x57:
 			con_Printf("spawn\t\t%02X %02X %04X:%04X (%s)",
-				   op.i0, op.i1, op.i2, op.i3, functionaddresstostring(op.i2, op.i3, ucfile).c_str());
+				   op.i0, op.i1, op.i2, op.i3, convert->UsecodeFunctionAddressToString(op.i2, op.i3, ucfile, crusader).c_str());
 			break;
 		case 0x58:
 			con_Printf("spawn inline\t%04X:%04X+%04X=%04X %02X %02X (%s+%04X)",
 				   op.i0, op.i1, op.i2, op.i1+op.i2, op.i3, op.i4,
-				   functionaddresstostring(op.i0, op.i1, ucfile).c_str(), op.i2);
+				   convert->UsecodeFunctionAddressToString(op.i0, op.i1, ucfile, crusader).c_str(), op.i2);
 			break;
 		case 0x59:
 			con_Printf("push\t\tpid");
@@ -754,7 +687,7 @@ void printfunc(const uint32 func, const uint32 nameoffset, IDataSource *ucfile)
 
 	convert->readevents(ucfile, uch);
 
-	while (readfunction(ucfile, namebuf, uch));
+	while (readfunction(ucfile, namebuf, uch, func));
 
 	#ifdef FOLD
 	//fold(func);

@@ -27,6 +27,10 @@
 #include <vector>
 #include "Console.h"
 
+// 'cause I'm sick of this ugly construct overrunning everything...
+#define FOR_CONST_DEQUE(CLAS, DEQ, I) for(std::deque<CLAS *>::const_iterator I=DEQ.begin(); I!=DEQ.end(); ++I)
+#define FOR_CONST_SET(CLAS, SET, I)   for(std::set<CLAS *>::const_iterator   I=SET.begin(); I!=SET.end(); ++I)
+
 class DCUnit;
 
 inline bool acceptOp(const uint32 opcode, const uint32 want1)
@@ -280,6 +284,7 @@ class ColNode : public Node
 class DCUnit;
 
 bool print_assert(const Node *n, const DCUnit *u=0);
+bool print_assert_nodes(std::deque<Node *> &nodes, uint32 index);
 
 #endif
 

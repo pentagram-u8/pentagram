@@ -280,7 +280,7 @@ bool IfNode::fold_else(DCUnit *unit, std::deque<Node *> &nodes)
 				bool finished=false;
 				while(!finished)
 				{
-					assert(nodes.size()>0);
+					assert(nodes.size()>0 || print_assert(this, unit));
 					if(nodes.back()->opcode()==0x51 || nodes.back()->opcode()==0x52)
 						if(static_cast<IfNode *>(nodes.back())->TargetOffset()==TargetOffset())
 							finished=true;

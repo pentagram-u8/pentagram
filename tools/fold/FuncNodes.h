@@ -81,7 +81,8 @@ class DCFuncNode : public ColNode
 {
 	public:
 		DCFuncNode()//const uint32 opcode, const uint32 offset)
-			: ColNode(0xFFFF, 0x0000, Type(Type::T_INVALID))
+			: ColNode(0xFFFF, 0x0000, Type(Type::T_INVALID)),
+			initnode(0), retnode(0), endnode(0)
 			{
 			};
 		~DCFuncNode() {};
@@ -90,11 +91,14 @@ class DCFuncNode : public ColNode
 		void print_asm(Console &o) const;
 		void print_bin(ODequeDataSource &o) const;
 		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
-		void addEnd(Node *n) { assert(n!=0); funcnodes.push_back(n); };
+		void addEnd(FuncMutatorNode *n) { assert(n!=0 && endnode==0); endnode=n; };
 		
 	protected:
 		std::deque<Node *> funcnodes;
-		
+		FuncMutatorNode *initnode;
+		FuncMutatorNode *retnode;
+		FuncMutatorNode *endnode;
+
 	private:
 };
 

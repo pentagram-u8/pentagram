@@ -124,9 +124,11 @@ namespace suc
 	}
 }
 
+inline bool acceptType(const Type &opcode, const Type::ttype want1)
+	{ return ((opcode==want1) ? true : false); };
 inline bool acceptType(const Type &opcode, const Type::ttype want1, const Type::ttype want2)
-	{ return ((opcode==want1) ? true :
-		(opcode==want2) ? true : false); };
+	{ return (acceptType(opcode, want1) ? true :
+			(opcode==want2) ? true : false); };
 inline bool acceptType(const Type &opcode, const Type::ttype want1, const Type::ttype want2, const Type::ttype want3)
 	{ return (acceptType(opcode, want1, want2) ? true :
 			(opcode==want3) ? true : false); };

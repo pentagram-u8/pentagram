@@ -32,6 +32,11 @@ void PushRetValToDCCallNode(DCCallPostfixNode *cpn, Node *node)
 	DCCallNode *cn = static_cast<DCCallNode *>(node);
 	cn->setRetVal(cpn);
 }
+void AddFreeToDCCallNode(DCCallPostfixNode *cpn, Node *node)
+{
+	DCCallNode *cn = static_cast<DCCallNode *>(node);
+	cn->addFree(cpn);
+}
 
 /****************************************************************************
 	DCCallPostfixNode
@@ -44,6 +49,7 @@ bool DCCallPostfixNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 		switch(ptype)
 		{
 			case PUSH_RETVAL: PushRetValToDCCallNode(this, nodes.back()); break;
+			case FREESTR: AddFreeToDCCallNode(this, nodes.back()); break;
 			case ADDSP: AddSpToDCCallNode(this, nodes.back()); break;
 			default: assert(print_assert(this));
 		}
@@ -64,6 +70,10 @@ void DCCallPostfixNode::print_unk(Console &o, const uint32 /*isize*/) const
 				case Type::T_WORD: o.Printf("push_retval_NOPRINT()"); break;
 				default: assert(print_assert(this));
 			}
+			break;
+		case FREESTR:
+			assert(rtype().type()==Type::T_INVALID);
+			o.Printf("free_str_NOPRINT(%s)", suc::print_sp(sp));
 			break;
 		case ADDSP:
 			assert(rtype().type()==Type::T_INVALID);
@@ -87,6 +97,10 @@ void DCCallPostfixNode::print_asm(Console &o) const
 				default: assert(false);
 			}
 			break;
+		case FREESTR:
+			assert(rtype().type()==Type::T_INVALID);
+			o.Printf("free string\t%s", suc::print_sp(sp));
+			break;
 		case ADDSP:
 			assert(rtype().type()==Type::T_INVALID);
 			o.Printf("add sp\t\t%s%02Xh", sp>0x7F?"-":"", sp>0x7F?0x100-sp:sp);
@@ -107,6 +121,11 @@ void DCCallPostfixNode::print_bin(ODequeDataSource &o) const
 				case Type::T_WORD: o.write1(0x5E); break;
 				default: assert(print_assert(this));
 			}
+			break;
+		case FREESTR:
+			assert(rtype().type()==Type::T_INVALID);
+			o.write1(0x65);
+			o.write1(sp);
 			break;
 		case ADDSP:
 			assert(rtype().type()==Type::T_INVALID);
@@ -275,8 +294,13 @@ bool DCCallNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 		rtype(retVal->rtype());
 	else if(addSP!=0 && retVal!=0)
 		rtype(retVal->rtype());
+	else if(nodes.size()>0 && acceptOp(nodes.back()->opcode(), 0x65))
+	{ /* do nothing... */ }
 	else
+	{
+		con.Printf("Fnord: %d\n", freenodes.size());
 		assert(print_assert(this, unit)); // need to add the case where there's no return value and/or no addSP.
+	}
 	
 	// potential line numbers come 'before' the pushed values, so we need to grab
 	// them after the values
@@ -416,6 +440,10 @@ void DCCallNode::print_asm(Console &o) const
 				}
 				Node::print_asm(o);
 				o.Printf("calli\t\t%02Xh %04Xh", spsize, intrinsic);
+				for(std::list<DCCallPostfixNode *>::const_reverse_iterator i=freenodes.rbegin(); i!=freenodes.rend(); ++i)
+				{
+					(*i)->print_asm(o); o.Putchar('\n');
+				}
 				//FIXME: o.Printf(" (%s)", convert->intrinsics()[op.i1]);
 				if(addSP!=0)
 				{

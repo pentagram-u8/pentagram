@@ -122,25 +122,48 @@ bool FuncMutatorNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 
 void DCFuncNode::print_unk(Console &o, const uint32 isize) const
 {
+	indent(o, isize);
+	initnode->print_unk(o, isize);
+	o.Putchar('\n');
+	
 	for(std::deque<Node *>::const_iterator i=funcnodes.begin(); i!=funcnodes.end(); ++i)
 	{
 		indent(o, isize);
 		(*i)->print_unk(o, isize);
 		o.Putchar('\n');
 	}
+	indent(o, isize);
+	retnode->print_unk(o, isize);
+	o.Putchar('\n');
+	
+	indent(o, isize);
+	endnode->print_unk(o, isize);
+	o.Putchar('\n');
+	
 }
 
 void DCFuncNode::print_asm(Console &o) const
 {
+	initnode->print_asm(o);
+	o.Putchar('\n');
+	
 	for(std::deque<Node *>::const_iterator i=funcnodes.begin(); i!=funcnodes.end(); ++i)
 	{
 		(*i)->print_asm(o);
 		o.Putchar('\n');
 	}
+	retnode->print_asm(o);
+	o.Putchar('\n');
+	endnode->print_asm(o);
+	o.Putchar('\n');
 }
 
 void DCFuncNode::print_bin(ODequeDataSource &o) const
 {
+	assert(initnode!=0);
+	initnode->print_mac(con);
+	initnode->print_bin(o);
+	
 	for(std::deque<Node *>::const_iterator i=funcnodes.begin(); i!=funcnodes.end(); ++i)
 	{
 		o.clear();
@@ -151,23 +174,51 @@ void DCFuncNode::print_bin(ODequeDataSource &o) const
 			con.Printf("%02X ", static_cast<uint8>(*i));
 		con.Putchar('\n');
 	}
+	
+	assert(retnode!=0);
+	retnode->print_mac(con);
+	retnode->print_bin(o);
+
+	assert(endnode!=0);
+	endnode->print_mac(con);
+	endnode->print_bin(o);
 }
 
 bool DCFuncNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 {
 	assert(nodes.size()>0);
+	
+	// we get our 'end' later...
+	
+	// ... get our 'ret'
+	assert(nodes.size() && nodes.back()->opcode()==0x50);
+	retnode = static_cast<FuncMutatorNode *>(nodes.back());
+	nodes.pop_back();
+	
 	// while we haven't gotten init
 	bool read_last=false;
-	while(nodes.size() && (!read_last))
+	while(nodes.size() && nodes.back()->opcode()!=0x5A)
 	{
-		if(nodes.back()->opcode()==0x5A)
-			read_last=true;
-		
-		funcnodes.push_front(nodes.back());
+		/*switch(nodes.back()->opcode())
+		{
+			case 0x5A:
+				assert(initnode==0);
+				initnode = nodes.back();
+				read_last=true;
+				break;
+			default:*/
+				funcnodes.push_front(nodes.back());
+		//}
 		nodes.pop_back();
 	}
+
+	// ... and our 'init'
+	assert(nodes.size() && nodes.back()->opcode()==0x5A);
+	initnode = static_cast<FuncMutatorNode *>(nodes.back());
+	nodes.pop_back();
 	
-	
+	// FIXME: This will obviously be false when we're finally implementing
+	// inline functions.
 	assert((nodes.size()==0) || print_assert(0, unit));
 	
 	return true;

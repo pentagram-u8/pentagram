@@ -59,6 +59,11 @@ class ConvertUsecode
 		Node *readOpGeneric(IDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols,
 			bool &done, const bool crusader);
 		void printDbgSymbols(std::vector<DebugSymbol> &debugSymbols);
+		
+		std::string UsecodeFunctionAddressToString(const sint32 uclass, const sint32 coffset, IDataSource *ucfile, const bool crusader);
+	
+	private:
+		static const uint32 MAX_UCFUNC_NAMELEN = 256; // max usecode function name length
 };
 
 /* This needs to go into Convert*Crusader only too */
@@ -812,7 +817,7 @@ and that the child threads are indeed placed infront of the parent thread.
 /* This needs to be shuffled into two different readOp() functions, one in Convert*Crusader, and
 	the other in Convert*U8 */
 Node *ConvertUsecode::readOpGeneric(IDataSource *ucfile, uint32 &dbg_symbol_offset, std::vector<DebugSymbol> &debugSymbols,
-	bool &done, const bool /*crusader*/)
+	bool &done, const bool crusader)
 {
 	Node *n=0;
 	uint32 opcode=0;
@@ -939,6 +944,12 @@ Node *ConvertUsecode::readOpGeneric(IDataSource *ucfile, uint32 &dbg_symbol_offs
 		case 0x5E: // push retval
 			n = new DCCallPostfixNode(opcode, offset);
 			break;
+		case 0x65: // free string
+			n = new DCCallPostfixNode(opcode, offset, read1(ucfile));
+			break;
+		case 0x6B: // str to ptr
+			n = new UniOperatorNode(opcode, offset);
+			break;
 		case 0x6E: // add sp
 			n = new DCCallPostfixNode(opcode, offset, read1(ucfile));
 			break;
@@ -947,10 +958,6 @@ Node *ConvertUsecode::readOpGeneric(IDataSource *ucfile, uint32 &dbg_symbol_offs
 				uint32 currobj = read1(ucfile);
 				uint32 strsize = read1(ucfile);
 				uint32 type = read1(ucfile);
-			// 70 xx yy zz
-			// loop something. Stores 'current object' in var xx
-			// yy == num bytes in string
-			// zz == type
 				n = new LoopNode(opcode, offset, currobj, strsize, type);
 			}
 			break;
@@ -966,6 +973,17 @@ Node *ConvertUsecode::readOpGeneric(IDataSource *ucfile, uint32 &dbg_symbol_offs
 		case 0x78: // process exclude
 			n = new DCCallMutatorNode(opcode, offset);
 			break;
+		case 0x79: // end of function / global_address
+			if (crusader) // it's not eof for crusader...
+			{
+				assert(false); //TODO: Implement!: op.i0 = read2(ucfile);
+			}
+			else // but it is for U8
+			{
+				n = new FuncMutatorNode(0x7A, offset); // we'll translate it to the crusader's end to simplify things
+				done = true;
+			}
+			break;
 		case 0x7A: // end
 			n = new FuncMutatorNode(opcode, offset);
 			done = true;
@@ -980,6 +998,77 @@ Node *ConvertUsecode::readOpGeneric(IDataSource *ucfile, uint32 &dbg_symbol_offs
 	}
 	
 	return n;
+}
+/* This looks _real_ dubious. Instead of loading all the offsets from the
+   files and converting them to pair<uint32, uint32>, we're storing them in
+   memory as strings, then having to convert the class:offset pair into a
+   string, and strcmping against them. So instead of having a 2*O(N) operation
+   at read, and a 2*O(1)*O(logN) at search. We've got a O(N) operation at read,
+   and a O(N)*O(logN) for _each_ search. */
+std::string ConvertUsecode::UsecodeFunctionAddressToString(const sint32 uclass, const sint32 coffset, IDataSource *ucfile, const bool crusader)
+{
+	char buf[MAX_UCFUNC_NAMELEN];
+	
+	#if 0 // FuncName stuff doesn't seem to be used anymore...
+	std::map<string, string>::iterator funcoffset = FuncNames.find(buf);
+
+	snprintf(buf, MAX_UCFUNC_NAMELEN, "%04X:%04X", uclass, coffset);
+	funcoffset = FuncNames.find(buf);
+	if (funcoffset != FuncNames.end())
+		return funcoffset->second;
+	#endif
+	
+	// Attempt to grab function name of the requested func
+
+	// Save the original pos
+	uint32 origpos = ucfile->getPos();
+
+	// Seek to index table entry 1
+	ucfile->seek(0x80 + 8);
+
+	// Get details
+	sint32 offset = ucfile->read4();
+	/*sint32 length =*/ ucfile->read4();
+
+	// Seek to name entry
+	ucfile->seek(offset + uclass*13 + 4);
+
+	// Read name
+	buf[0]='\0';
+	ucfile->read(buf, 9);
+
+	// Return to the pos
+	ucfile->seek(origpos);
+
+	// Couldn't get name, just use number
+	if (!buf[0]) snprintf(buf, MAX_UCFUNC_NAMELEN, "%04X", uclass);
+
+	// String to return
+	std::string str = buf;
+
+	// This will only work in crusader
+	if (crusader)
+	{
+		if (coffset < 0x20)
+		{
+			return str + "::" + event_names()[coffset];
+		}
+		else
+		{
+			snprintf(buf, MAX_UCFUNC_NAMELEN, "%02X", coffset);
+			return str + "::ordinal" + buf;
+		}
+	}
+	// For Ultima 8
+	else
+	{
+		snprintf(buf, MAX_UCFUNC_NAMELEN, "%04X", coffset);
+		return str + "::" + buf;
+	}
+	
+	CANT_HAPPEN();
+	// Shouldn't ever get here
+	return "unknown";
 }
 
 #endif

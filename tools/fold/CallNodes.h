@@ -30,9 +30,10 @@ class DCCallPostfixNode : public Node
 		DCCallPostfixNode(const uint32 opcode, const uint32 offset, const uint32 newSP)
 			: Node(opcode, offset, Type(Type::T_INVALID)), sp(newSP)
 			{
-				assert(acceptOp(opcode, 0x6E));
+				assert(acceptOp(opcode, 0x65, 0x6E));
 				switch(opcode)
 				{
+					case 0x65: ptype=FREESTR; break;
 					case 0x6E: ptype=ADDSP; break;
 					default: assert(false);
 				}
@@ -60,7 +61,7 @@ class DCCallPostfixNode : public Node
 		sint32 size() const { return static_cast<sint8>(sp); };
 
 	protected:
-		enum callpostfixtype { PUSH_RETVAL, ADDSP } ptype;
+		enum callpostfixtype { PUSH_RETVAL, FREESTR, ADDSP } ptype;
 
 	private:
 		uint32 sp;
@@ -158,6 +159,7 @@ class DCCallNode : public ColNode
 		// 'special' functions
 		void setAddSP(DCCallPostfixNode *newAddSP) { addSP = newAddSP; };
 		void setRetVal(DCCallPostfixNode *newRetVal) { retVal = newRetVal; };
+		void addFree(DCCallPostfixNode *newFree) { freenodes.push_back(newFree); };
 
 	protected:
 		enum calltype { CALLI, CALL, SPAWN } ctype;
@@ -174,6 +176,7 @@ class DCCallNode : public ColNode
 		DCCallPostfixNode *addSP;
 		DCCallPostfixNode *retVal;
 		Node *thisP;
+		std::list<DCCallPostfixNode *> freenodes;
 };
 
 

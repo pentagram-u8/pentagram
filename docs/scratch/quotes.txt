@@ -21,8 +21,8 @@ Darke moves his periscope out of the way. There, that should help Colourless.
 (On IRC, where else? *grin* Colourless' typos corrected by me.)
 
 
-Jett persists in trying to work out how you 'stimulate' a virgin.
-(Jett aka Darke on IRC)
+Darke persists in trying to work out how you 'stimulate' a virgin.
+(Darke on IRC)
 
 
 That's *simulate*! STIM... err... SIM-U-LATE!
@@ -67,3 +67,31 @@ I presume this is what you use as your excuse for creating YAN MIN.
 
 pentagram's gaming stuff? damn, i was looking for satanism...
 (geiusly on IRC)
+
+
+<wjp> can you imagine pentagram reading out "bedroll" aloud when you click on it? :-)
+<Colourless> uh, it's possible :-)
+<Colourless> penatagram, for the visually impared :-)
+<wjp> we'd be better off improving the font :-)
+(Do I detect some bitterness? *grin* -- Darke)
+
+
+Pentagram: Program Design is Law!
+(Colourless pontificating.)
+
+
+Pentagram: implementation can wait until next week/month/year! ;-)
+(wjp being *slightly* more realistic...)
+
+
+> The FLEX Object File Format.
+> I was thinking F-OFF. :-)
+> Could be worse. Could be the Flex Usecode Object File Format.
+> FUcOFF.
+> Or even Flex Usecode Kernel Object File Format. :-)
+(Colourless brainstorming (hallucinating?) bad ideas for names of file formats.)
+
+so in order to build wilderness they needed the forest gump :P
+(GodBeastX on the u8 editor, on IRC, and heading down the sliperly slope to
+kick-bansville.)
+

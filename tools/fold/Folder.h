@@ -33,12 +33,15 @@
 class Unit
 {
 	public:
+		Unit(const uint32 _id) : id(_id) {};
+		
 		void print_extern_unk(Console &o, const uint32 isize) const;
 		void print_unk(Console &o, const uint32 isize) const;
 		void print_asm(Console &o) const;
 		void print_bin(ODequeDataSource &o) const;
 		
 		std::string name; // the cannonical name of the unit
+		uint32 id; // the cannonical id number of the class
 		
 		std::set<DCCallNode *>   externFuncs;
 		std::set<DCCallNode *>   externIntrinsics;
@@ -48,7 +51,7 @@ class Unit
 class DCUnit : public Unit
 {
 	public:
-		DCUnit() : debugOffset(0) {};
+		DCUnit(const uint32 _id) : Unit(_id), debugOffset(0) {};
 		
 		const bool fold(Node *n);
 		
@@ -70,7 +73,6 @@ class DCUnit : public Unit
 		std::deque<IfNode *> elsestack;
 		
 		uint32 debugOffset;
-		std::string name;
 
 		friend bool print_assert(const Node *n, const DCUnit *u);
 };
@@ -86,10 +88,19 @@ class Folder
 		void print_asm(Console &o) const;
 		void print_bin(ODequeDataSource &o) const;
 
-		inline void NewUnit()
+		inline void SelectUnit(const uint32 id)
+		{
+			if(curr!=0 && curr->id!=id)
+				NewUnit(id);
+			else if(curr==0)
+				NewUnit(id);
+			// else, the id==the old one, so we don't need to change units, return.
+		};
+		
+		inline void NewUnit(const uint32 id)
 		{
 			if(curr!=0) units.push_back(curr);
-			curr = new DCUnit();
+			curr = new DCUnit(id);
 		};
 
 	private:

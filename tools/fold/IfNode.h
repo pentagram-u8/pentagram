@@ -94,7 +94,8 @@ class IfNode : public UniNode
 		void AddJmp(EndNode *jmp) { assert(jmpnode==0); jmpnode=jmp; };
 		
 		std::deque<Node *> &nodes() { return ifnodes; };
-		
+		IfNode *elsen() { return elsenode; };
+
 		/* IF, IF_ELSE, and IF_ELSE_IF are all technically the same type,
 			what they represent is the state the function is in.
 
@@ -102,7 +103,7 @@ class IfNode : public UniNode
 			our basic block yet, or we're 'just' a plain if(){} statement.
 			* If we're at IF_ELSE, then we've found our associated 'cmp' opcode,
 			just before our targetOffset, and we're either an if(){}else{} statment
-			or we've not tripped over the next 'if' statemtn in an if/else if/else
+			or we've not tripped over the next 'if' statement in an if/else if/else
 			series.
 			* If we're at IF_ELSE_IF, and IF node has been parsed coming after us,
 			and we were already an IF_ELSE flagged node.

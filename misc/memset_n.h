@@ -149,7 +149,7 @@ inline void memset_32(void *buf, uint32 val, uint32 dwords)
 		dwords--;
 
 		// Ok, shift along by 1 byte
-		if (((uint32)(buf) & 1))
+		if ((reinterpret_cast<uint32>(buf) & 1))
 		{
 			*reinterpret_cast<uint8*>(buf) = static_cast<uint8>(val&0xFF); 
 			buf = (reinterpret_cast<uint8*>(buf))+1;
@@ -158,7 +158,7 @@ inline void memset_32(void *buf, uint32 val, uint32 dwords)
 		}
 
 		// Ok, shift along by 2 bytes
-		if (((uint32)(buf) & 2))
+		if ((reinterpret_cast<uint32>(buf) & 2))
 		{
 			*reinterpret_cast<uint16*>(buf) = static_cast<uint16>(val&0xFFFF); 
 			buf = (reinterpret_cast<uint16*>(buf))+1;

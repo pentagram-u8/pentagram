@@ -195,31 +195,31 @@ void CoreApp::loadConfig()
 	//!! move this to some other init function
 	std::set<std::string> games;
 	games = config->listKeys("config/games", false);
-	pout << "Scanning config file for games:" << std::endl;
+	con.Print(MM_INFO, "Scanning config file for games:\n");
 	std::set<std::string>::iterator iter;
 	for (iter = games.begin(); iter != games.end(); ++iter) {
 		std::string game = *iter;
 		GameInfo info;
 		bool detected = getGameInfo(game, &info);
-		pout << game << ": ";
+		con.Printf(MM_INFO, "%s: ", game.c_str());
 		if (detected) {
 			if (info.type == GameInfo::GAME_U8) {
-				pout << "U8, ";
+				con.Print(MM_INFO, "U8, ");
 			} /* else...*/
 
 			if (info.language == GameInfo::GAMELANG_ENGLISH) {
-				pout << "English";
+				con.Print(MM_INFO, "English");
 			} else if (info.language == GameInfo::GAMELANG_FRENCH) {
-				pout << "French";
+				con.Print(MM_INFO, "French");
 			} else if (info.language == GameInfo::GAMELANG_GERMAN) {
-				pout << "German";
+				con.Print(MM_INFO, "German");
 			} else if (info.language == GameInfo::GAMELANG_SPANISH) {
-				pout << "Spanish";
+				con.Print(MM_INFO, "Spanish");
 			} /* else...*/
 		} else {
-			pout << "(unknown)";
+			con.Print(MM_INFO, "(unknown)");
 		}
-		pout << std::endl;
+		con.Print(MM_INFO, "\n");
 	}
 
 	if (game == "") {

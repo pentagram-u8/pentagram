@@ -33,7 +33,8 @@ using	std::set;
 void Unit::print_extern_unk(Console &o, const uint32 isize) const
 {
 	o.Print("// External Functions:\n");
-	for(std::set<DCCallNode *>::const_iterator i=externFuncs.begin(); i!=externFuncs.end(); ++i)
+	FOR_CONST_SET(DCCallNode, externFuncs, i)
+	//for(std::set<DCCallNode *>::const_iterator i=externFuncs.begin(); i!=externFuncs.end(); ++i)
 	{
 		indent(o, isize+1);
 		(*i)->print_extern_unk(o, isize+1);
@@ -41,7 +42,8 @@ void Unit::print_extern_unk(Console &o, const uint32 isize) const
 	}
 	o.Print("// External Intrinsics:\n");
 	{
-		for(std::set<DCCallNode *>::const_iterator i=externIntrinsics.begin(); i!=externIntrinsics.end(); ++i)
+		FOR_CONST_SET(DCCallNode, externIntrinsics, i)
+		//for(std::set<DCCallNode *>::const_iterator i=externIntrinsics.begin(); i!=externIntrinsics.end(); ++i)
 		{
 			indent(o, isize+1);
 			(*i)->print_extern_unk(o, isize+1);
@@ -52,8 +54,11 @@ void Unit::print_extern_unk(Console &o, const uint32 isize) const
 
 void Unit::print_unk(Console &o, const uint32 isize) const
 {
-	for(std::deque<DCFuncNode *>::const_iterator i=functions.begin(); i!=functions.end(); ++i)
+	FOR_CONST_DEQUE(DCFuncNode, functions, i)
 	{
+		// function header
+
+		// main function body
 		indent(o, isize);
 		o.Print("{\n");
 		//indent(o, isize+1);
@@ -66,7 +71,7 @@ void Unit::print_unk(Console &o, const uint32 isize) const
 
 void Unit::print_asm(Console &o) const
 {
-	for(std::deque<DCFuncNode *>::const_iterator i=functions.begin(); i!=functions.end(); ++i)
+	FOR_CONST_DEQUE(DCFuncNode, functions, i)
 	{
 		(*i)->print_asm(o);
 		o.Putchar('\n');
@@ -75,7 +80,7 @@ void Unit::print_asm(Console &o) const
 
 void Unit::print_bin(ODequeDataSource &o) const
 {
-	for(std::deque<DCFuncNode *>::const_iterator i=functions.begin(); i!=functions.end(); ++i)
+	FOR_CONST_DEQUE(DCFuncNode, functions, i)
 	{
 		o.clear();
 		(*i)->print_mac(con);
@@ -109,7 +114,7 @@ const bool DCUnit::fold(Node *n)
 	// DEBUGGING. Will produce _lots_ of output.
 	//print_asm(con);
 	//print_assert(n, this);
-	//con.Printf("currop.offset: %04X\tifstack.size: %d\telsestack.size: %d\n", n->offset(), ifstack.size(), elsestack.size());
+	con.Printf("currop.offset: %04X\tifstack.size: %d\telsestack.size: %d\n", n->offset(), ifstack.size(), elsestack.size());
 	
 	while(elsestack.size()>0 && n->offset()==elsestack.back()->TargetOffset())
 	{
@@ -225,7 +230,7 @@ const bool DCUnit::fold(Node *n)
 	// special handling for 'end' opcodes
 	if(n->opcode()==0x7A)
 	{
-		con.Print("<< Assign func\n");
+		con.Printf("<< Assign func %d\n", functions.size()+1);
 		assert(nodes.back()->opcode()==0xFFFF);
 		functions.push_back(static_cast<DCFuncNode *>(nodes.back()));
 		nodes.pop_back();
@@ -243,9 +248,9 @@ void Folder::fold(Node *n)
 {
 	if(curr->fold(n))
 	{
-		assert(curr!=0);
-		units.push_back(curr);
-		curr = 0;
+		//assert(curr!=0);
+		//units.push_back(curr);
+		//curr = 0;
 		
 	}
 }
@@ -253,7 +258,7 @@ void Folder::fold(Node *n)
 void Folder::print_unk(Console &o) const
 {
 	con.Printf("Printing... %d\n", units.size());
-	for(std::deque<DCUnit *>::const_iterator i=units.begin(); i!=units.end(); ++i)
+	FOR_CONST_DEQUE(DCUnit, units, i)
 	{
 		(*i)->print_unk(o, 0);
 	}
@@ -261,7 +266,7 @@ void Folder::print_unk(Console &o) const
 
 void Folder::print_asm(Console &o) const
 {
-	for(std::deque<DCUnit *>::const_iterator i=units.begin(); i!=units.end(); ++i)
+	FOR_CONST_DEQUE(DCUnit, units, i)
 	{
 		(*i)->print_asm(o);
 	}
@@ -269,7 +274,7 @@ void Folder::print_asm(Console &o) const
 
 void Folder::print_bin(ODequeDataSource &o) const
 {
-	for(std::deque<DCUnit *>::const_iterator i=units.begin(); i!=units.end(); ++i)
+	FOR_CONST_DEQUE(DCUnit, units, i)
 	{
 		(*i)->print_bin(o);
 	}
@@ -278,6 +283,22 @@ void Folder::print_bin(ODequeDataSource &o) const
 /****************************************************************************
 	Useful Funcs
  ****************************************************************************/
+
+bool print_assert_nodes(std::deque<Node *> &nodes, uint32 index)
+{
+	indent(con, index);
+	con.Printf("Nodes:");
+	FOR_CONST_DEQUE(Node, nodes, i)
+	//for(std::deque<Node *>::const_iterator i=nodes.begin(); i!=nodes.end(); ++i)
+	{
+		con.Putchar('\n');
+		indent(con, index+1);
+		con.Printf("%04X: %02X", (*i)->offset(), (*i)->opcode());
+	}
+	if(nodes.size()) con.Printf("  <-\n");
+	con.Putchar('\n');
+	return false;
+}
 
 bool print_assert(const Node *n, const DCUnit *u)
 {
@@ -288,15 +309,24 @@ bool print_assert(const Node *n, const DCUnit *u)
 		con.Printf("========================================\n");
 		//n->print_unk(con, 0);
 	}
-	
+
 	if(u!=0)
 	{
+		con.Printf("Num functions parsed: %d\n", u->functions.size());
+		//for(std::deque<DCFuncNode *>::const_iterator i=u->functions.begin(); i!=u->functions.end(); ++i)
+		//{
+		//	(*i)->print_unk(con, 1);
+		//}
+		u->print_unk(con, 0);
+
 		con.Printf("IfStack:");
 		{
-			for(std::deque<IfNode *>::const_iterator i=u->ifstack.begin(); i!=u->ifstack.end(); ++i)
+			FOR_CONST_DEQUE(IfNode, u->ifstack, i)
+			//for(std::deque<IfNode *>::const_iterator i=u->ifstack.begin(); i!=u->ifstack.end(); ++i)
 			{
 				con.Printf("\n    %04X: %02X -> %04X", (*i)->offset(), (*i)->opcode(), (*i)->TargetOffset());
-				for(std::deque<Node *>::const_iterator j=(*i)->nodes().begin(); j!=(*i)->nodes().end(); ++j)
+				FOR_CONST_DEQUE(Node, (*i)->nodes(), j)
+				//for(std::deque<Node *>::const_iterator j=(*i)->nodes().begin(); j!=(*i)->nodes().end(); ++j)
 				{
 					con.Printf("\n        %04X: %02X", (*j)->offset(), (*j)->opcode());
 				}
@@ -307,10 +337,12 @@ bool print_assert(const Node *n, const DCUnit *u)
 		
 		con.Printf("ElseStack:");
 		{
-			for(std::deque<IfNode *>::const_iterator i=u->elsestack.begin(); i!=u->elsestack.end(); ++i)
+			FOR_CONST_DEQUE(IfNode, u->elsestack, i)
+			//for(std::deque<IfNode *>::const_iterator i=u->elsestack.begin(); i!=u->elsestack.end(); ++i)
 			{
 				con.Printf("\n    %04X: %02X -> %04X", (*i)->offset(), (*i)->opcode(), (*i)->TargetOffset());
-				for(std::deque<Node *>::const_iterator j=(*i)->nodes().begin(); j!=(*i)->nodes().end(); ++j)
+				FOR_CONST_DEQUE(Node, (*i)->nodes(), j)
+				//for(std::deque<Node *>::const_iterator j=(*i)->nodes().begin(); j!=(*i)->nodes().end(); ++j)
 				{
 					con.Printf("\n        %04X: %02X", (*j)->offset(), (*j)->opcode());
 				}
@@ -321,7 +353,8 @@ bool print_assert(const Node *n, const DCUnit *u)
 
 		con.Printf("Nodes:");
 		{
-			for(std::deque<Node *>::const_iterator i=u->nodes.begin(); i!=u->nodes.end(); ++i)
+			FOR_CONST_DEQUE(Node, u->nodes, i)
+			//for(std::deque<Node *>::const_iterator i=u->nodes.begin(); i!=u->nodes.end(); ++i)
 			{
 				con.Printf("\n    %04X: %02X", (*i)->offset(), (*i)->opcode());
 			}
