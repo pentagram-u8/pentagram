@@ -1,6 +1,7 @@
 2002-12-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Kernel.*, Process.h: basic kernel classes
 	* pentagram.cpp, kernel/Application.*: very basic application classes
+	* various: updated build system for above
 
 2002-12-04  Darke  <darkepaw@users.sf.net>
 	* configure.in: Removed 'Is this Pentagram' flag; added dancer's

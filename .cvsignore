@@ -10,3 +10,5 @@ install-sh
 ltmain.sh
 missing
 mkinstalldirs
+.deps
+pentagram
