@@ -1,3 +1,7 @@
+2003-08-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/MonsterEgg.*: changed baseclass of MonsterEgg from Egg to Item
+	* docs/savegame.txt: updated (note: savegames broken)
+
 2003-08-31  Darke  <darkepaw@users.sf.net>
 	* convert/Convert.h, tools/fold/*: More opcodes folded. sub(0x1C),
 	  loop(0x70), loopnext(0x73), loopscr(0x74), so loopscript support

@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IDataSource.h"
 #include "ODataSource.h"
 
-DEFINE_RUNTIME_CLASSTYPE_CODE(MonsterEgg,Egg);
+DEFINE_RUNTIME_CLASSTYPE_CODE(MonsterEgg,Item);
 
 MonsterEgg::MonsterEgg()
 {
@@ -69,22 +69,22 @@ uint16 MonsterEgg::hatch()
 void MonsterEgg::saveData(ODataSource* ods)
 {
 	ods->write2(1); //version
-	Egg::saveData(ods);
+	Item::saveData(ods);
 }
 
 bool MonsterEgg::loadData(IDataSource* ids)
 {
 	uint16 version = ids->read2();
 	if (version != 1) return false;
-	if (!Egg::loadData(ids)) return false;
+	if (!Item::loadData(ids)) return false;
 
 	return true;
 }
 
 uint32 MonsterEgg::I_monsterEggHatch(const uint8*args,unsigned int /*argsize*/)
 {
-	ARG_EGG_FROM_PTR(egg);
-	MonsterEgg* megg = p_dynamic_cast<MonsterEgg*>(egg);
+	ARG_ITEM_FROM_PTR(item);
+	MonsterEgg* megg = p_dynamic_cast<MonsterEgg*>(item);
 	if (!megg) return 0;
 
 	return megg->hatch();
@@ -92,8 +92,8 @@ uint32 MonsterEgg::I_monsterEggHatch(const uint8*args,unsigned int /*argsize*/)
 
 uint32 MonsterEgg::I_getMonId(const uint8*args,unsigned int /*argsize*/)
 {
-	ARG_EGG_FROM_PTR(egg);
-	MonsterEgg* megg = p_dynamic_cast<MonsterEgg*>(egg);
+	ARG_ITEM_FROM_PTR(item);
+	MonsterEgg* megg = p_dynamic_cast<MonsterEgg*>(item);
 	if (!megg) return 0;
 
 	return megg->getMapNum() >> 3;

@@ -19,10 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef MONSTEREGG_H
 #define MONSTEREGG_H
 
-#include "Egg.h"
+#include "Item.h"
 #include "intrinsics.h"
 
-class MonsterEgg : public Egg
+class MonsterEgg : public Item
 {
 	friend class ItemFactory;
 public:
@@ -34,7 +34,7 @@ public:
 	int getProb() const { return (quality >> 11) & 0x1F; }
 	int getMonsterShape() const { return quality & 0x7FF; }
 
-	virtual uint16 hatch();
+	uint16 hatch();
 
 	bool loadData(IDataSource* ids);
 
