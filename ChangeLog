@@ -1,3 +1,6 @@
+2005-04-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/MainActor.cpp: play SFX when stats increase
+
 2005-03-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/fonts/*: allow disabling interpreting of special characters
 	* gumps/CreditsGump.cpp: fix double percent sign

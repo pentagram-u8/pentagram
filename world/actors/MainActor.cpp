@@ -36,6 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GameData.h"
 #include "WpnOvlayDat.h"
 #include "ShapeInfo.h"
+#include "AudioProcess.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -441,6 +442,9 @@ void MainActor::ConCmd_maxstats(const Console::ArgsType &args, const Console::Ar
 	mainactor->setInt(25);
 	mainactor->setHP(mainactor->getMaxHP());
 	mainactor->setMana(mainactor->getMaxMana());
+
+	AudioProcess* audioproc = AudioProcess::get_instance();
+	if (audioproc) audioproc->playSFX(0x36, 0x60, 1, 0); //constants!!
 }
 
 void MainActor::accumulateStr(int n)
@@ -452,6 +456,8 @@ void MainActor::accumulateStr(int n)
 	if (accumStr >= 650 || std::rand() % (650 - accumStr) == 0) { //!! constant
 		strength++;
 		accumStr = 0;
+		AudioProcess* audioproc = AudioProcess::get_instance();
+		if (audioproc) audioproc->playSFX(0x36, 0x60, 1, 0); //constants!!
 	}
 }
 
@@ -464,6 +470,8 @@ void MainActor::accumulateDex(int n)
 	if (accumDex >= 650 || std::rand() % (650 - accumDex) == 0) { //!! constant
 		dexterity++;
 		accumDex = 0;
+		AudioProcess* audioproc = AudioProcess::get_instance();
+		if (audioproc) audioproc->playSFX(0x36, 0x60, 1, 0); //constants!!
 	}
 }
 
@@ -476,6 +484,8 @@ void MainActor::accumulateInt(int n)
 	if (accumInt >= 650 || std::rand() % (650 - accumInt) == 0) { //!! constant
 		intelligence++;
 		accumInt = 0;
+		AudioProcess* audioproc = AudioProcess::get_instance();
+		if (audioproc) audioproc->playSFX(0x36, 0x60, 1, 0); //constants!!
 	}
 }
 
