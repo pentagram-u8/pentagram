@@ -253,7 +253,7 @@ istring SettingManager::getConfigKey(istring key, Domain dom)
 		ckey = "settings/" + domains[dom];
 	}
 
-	unsigned int pos = key.find('/');
+	istring::size_type pos = key.find('/');
 
 	if (pos != istring::npos) {
 		ckey += ":" + key;
