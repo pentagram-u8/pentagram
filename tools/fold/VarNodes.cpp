@@ -293,6 +293,13 @@ void PushVarNode::print_asm(Console &o) const
 				default: assert(false); // can't happen
 			}
 			break;
+		case DataType::DT_STRING:
+			switch(dtype.type().type())
+			{
+				case Type::T_STRING: o.Printf("push string\t"); dtype.print_value_asm(o); break;
+				default: assert(false); // can't happen
+			}
+			break;
 		case DataType::DT_PID:
 			assert(dtype.type().type()==Type::T_PID);
 			o.Printf("push\t\tpid");
@@ -326,6 +333,13 @@ void PushVarNode::print_bin(ODequeDataSource  &o) const
 			switch(dtype.type().type())
 			{
 				case Type::T_DWORD: o.write1(0x4B); dtype.print_value_bin(o); break;
+				default: assert(false); // can't happen
+			}
+			break;
+		case DataType::DT_STRING:
+			switch(dtype.type().type())
+			{
+				case Type::T_STRING: o.write1(0x0D); dtype.print_value_bin(o); break;
 				default: assert(false); // can't happen
 			}
 			break;

@@ -99,6 +99,20 @@ class PushVarNode : public Node
 			}
 			rtype(dtype.type());
 		};
+		PushVarNode(const uint32 opcode, const uint32 offset, const uint32 strSize, const std::string &str)
+			: Node(opcode, offset)
+		{
+			assert(acceptOp(opcode, 0x0D));
+			switch(opcode)
+			{
+				case 0x0D: // pushing a string (2 bytes)
+					assert(strSize==str.size());
+					dtype = DataType(Type::T_STRING, DataType::DT_STRING, str);
+					break;
+				default: assert(false);
+			}
+			rtype(dtype.type());
+		};
 		PushVarNode(const uint32 opcode, const uint32 offset)
 			: Node(opcode, offset)
 		{

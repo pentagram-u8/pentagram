@@ -58,8 +58,8 @@ void DataType::print_value_unk(Console &o) const
 		case DT_BPADDR:    o.Printf("addressof(%s)", suc::print_bp(_value)); break;
 		/*case DT_BPSTRPTR:  o.Printf("strptr(%s)", print_bp(value));    break;
 		case DT_SP:        o.Printf("%s", print_sp(value));            break;
-		case DT_SPADDR:    o.Printf("addressof(%s)", print_sp(value)); break;
-		case DT_CHARS:     o.Printf("\"%s\"", strval.c_str());         break;*/
+		case DT_SPADDR:    o.Printf("addressof(%s)", print_sp(value)); break;*/
+		case DT_STRING:    o.Printf("\"%s\"", _strvalue.c_str());         break;
 		case DT_PID:       o.Printf("pid");                            break;
 		/*case DT_PRESULT:   o.Printf("presult");                        break;
 		case DT_RESULT:    o.Printf("result");                         break;
@@ -99,6 +99,13 @@ void DataType::print_value_asm(Console &o) const
 				default: assert(false);
 			}
 			break;
+		case DT_STRING:
+			switch(_vtype.type())
+			{
+				case Type::T_STRING: o.Printf("\"%s\"", _strvalue.c_str()); break;
+				default: assert(false);
+			}
+			break;
 		case DT_PID:
 		case DT_TEMP:
 			//do nothing, I think...
@@ -134,6 +141,17 @@ void DataType::print_value_bin(ODequeDataSource &o) const
 			switch(_vtype.type())
 			{
 				case Type::T_DWORD: o.write1(_value); break;
+				default: assert(false);
+			}
+			break;
+		case DT_STRING:
+			switch(_vtype.type())
+			{
+				case Type::T_STRING:
+					o.write2(_strvalue.size());
+					for(uint16 i = 0; i<_strvalue.size(); i++)
+						o.write1(_strvalue[i]);
+					break;
 				default: assert(false);
 			}
 			break;

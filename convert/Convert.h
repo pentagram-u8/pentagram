@@ -816,6 +816,7 @@ Node *ConvertUsecode::readOpGeneric(IDataSource *ucfile, uint32 &dbg_symbol_offs
 {
 	Node *n=0;
 	uint32 opcode=0;
+	static std::string tstring;
 	
 	if(dbg_symbol_offset==curOffset)
 	{
@@ -840,6 +841,14 @@ Node *ConvertUsecode::readOpGeneric(IDataSource *ucfile, uint32 &dbg_symbol_offs
 			break;
 		case 0x0C: // pushing a dword (4 bytes)
 			n = new PushVarNode(opcode, offset, read4(ucfile));
+			break;
+		case 0x0D: // push string (xxxx bytes)
+			{
+				uint32 tint = read2(ucfile);
+				tstring.clear();
+				while (char c = static_cast<char>(read1(ucfile))) tstring += c;
+				n = new PushVarNode(opcode, offset, tint, tstring);
+			}
 			break;
 		case 0x0F: // calli
 			{

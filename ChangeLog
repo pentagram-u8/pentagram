@@ -1,3 +1,6 @@
+2003-08-31	Darke  <darkepaw@users.sf.net>
+	* convert/Convert.h, tools/fold/*: Folds push string(0x0D).
+
 2003-09-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/*App.*: @save path
 
