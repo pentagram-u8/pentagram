@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -36,6 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "PaletteFaderProcess.h"
 #include "SpriteProcess.h"
 #include "MusicProcess.h"
+#include "ScrollGump.h"
 
 // Ultima 8 Intrinsics
 Intrinsic U8Intrinsics[] = {
@@ -157,7 +158,7 @@ Intrinsic U8Intrinsics[] = {
 	0, //U
 	Item::I_guardianBark,
 	UCMachine::I_dummyProcess, //!! process Book::read(char*)
-	UCMachine::I_dummyProcess, //!! process Scroll::read(char*)
+	ScrollGump::I_readScroll,
 	// 0x070
 	UCMachine::I_dummyProcess, //!! process Grave::read(word,char*)
 	UCMachine::I_dummyProcess, //!! process Plaque::read(word,char*)

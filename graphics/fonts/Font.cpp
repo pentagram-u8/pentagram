@@ -35,17 +35,30 @@ Font::~Font()
 
 }
 
+static inline bool isSpace(char c)
+{
+	return (c == ' ' || c == '\t' || c == '%' || c == '\n' || c == '\r' ||
+			c == '~');			
+}
+
+static inline bool isTab(char c)
+{
+	return (c == '\t' || c == '%');
+}
+
+static inline bool isBreak(char c)
+{
+	return (c == '\n' || c == '~');
+}
+
 
 static unsigned int findWordEnd(std::string& text, unsigned int start)
 {
-	// FIXME: currently considering everything but space/tab/CR/LF a word char
 	unsigned int index = start;
 	while (index < text.size()) {
-		if (text[index] == ' ' || text[index] == '\t' ||
-			text[index] == '\n' || text[index] == '\r')
-		{
+		if (isSpace(text[index]))
 			return index; 
-		}
+
 		index++;
 	}
 	return index;
@@ -53,14 +66,11 @@ static unsigned int findWordEnd(std::string& text, unsigned int start)
 
 static unsigned int passSpace(std::string& text, unsigned int start)
 {
-	// FIXME: currently considering everything but space/tab/CR/LF a word char
 	unsigned int index = start;
 	while (index < text.size()) {
-		if (text[index] != ' ' && text[index] != '\t' &&
-			text[index] != '\n' && text[index] != '\r')
-		{
+		if (!isSpace(text[index]))
 			return index; 
-		}
+
 		index++;
 	}
 	return index;
@@ -77,6 +87,16 @@ void Font::getTextSize(std::string text,
 												resultwidth, resultheight);
 }
 
+/*
+  Special characters in U8:
+
+@ = bullet for conversation options
+~ = line break
+% = tab
+CHECKME: any others? (page breaks for books?)
+
+*/
+
 std::list<PositionedText> Font::typesetText(std::string& text,
 											unsigned int& remaining,
 											int width, int height,
@@ -85,7 +105,8 @@ std::list<PositionedText> Font::typesetText(std::string& text,
 											int& resultheight)
 {
 #if 0
-	pout << "typeset: " << text << std::endl;
+	pout << "typeset (" << width << "," << height << ") : "
+		 << text << std::endl;
 #endif
 
 	// be optimistic and assume everything will fit
@@ -105,7 +126,9 @@ std::list<PositionedText> Font::typesetText(std::string& text,
 	bool breakhere = false;
 	while (true)
 	{
-		if (i >= text.size() || breakhere || text[i] == '\n') { // LF
+		if (i >= text.size() || breakhere || isBreak(text[i]))
+		{
+			// break here
 			int stringwidth = 0, stringheight = 0;
 			getStringSize(curline, stringwidth, stringheight);
 			line.dims.x = 0; line.dims.y = totalheight;
@@ -120,7 +143,7 @@ std::list<PositionedText> Font::typesetText(std::string& text,
 			curline = "";
 
 			if (i >= text.size())
-				break;
+				break; // done
 
 			if (breakhere) {
 				breakhere = false;
@@ -139,10 +162,27 @@ std::list<PositionedText> Font::typesetText(std::string& text,
 
 			// see if next word still fits on the current line
 			unsigned int nextword = passSpace(text, i);
+
+			// process spaces
+			bool foundLF = false;
+			std::string spaces;
+			for (; i < nextword; ++i) {
+				if (isBreak(text[i])) {
+					foundLF = true;
+					break;
+				} else if (isTab(text[i])) {
+					spaces.append("    ");
+				} else if (!curline.empty()){
+					spaces.append(" ");
+				}
+			}
+			if (foundLF) continue;
+
+			// process word
 			unsigned int endofnextword = findWordEnd(text, nextword);
 			int stringwidth = 0, stringheight = 0;
-			std::string newline = text.substr(curlinestart,
-											  endofnextword-curlinestart);
+			std::string newline = curline + spaces +
+				text.substr(nextword,endofnextword-nextword);
 			getStringSize(newline, stringwidth, stringheight);
 
 			// if not, break line before this word
@@ -151,17 +191,8 @@ std::list<PositionedText> Font::typesetText(std::string& text,
 				i = nextword;
 				continue;
 			} else {
-				bool foundLF = false;
-				for (; i < nextword; ++i) {
-					if (text[i] == '\n') {
-						foundLF = true;
-						break;
-					}
-				}
-				if (foundLF) continue;
-
-				// no LF, so copy next word into curline
-				curline = text.substr(curlinestart,endofnextword-curlinestart);
+				// copy next word into curline
+				curline = newline;
 				i = endofnextword;
 			}
 		}

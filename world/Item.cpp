@@ -1773,7 +1773,6 @@ uint32 Item::I_bark(const uint8* args, unsigned int /*argsize*/)
 	// TODO:
 	// * If multiple things are barked for a single item, they
 	//   shouldn't be placed on top of eachother.
-	// * We shouldn't output more than 5 lines at once.
 }
 
 uint32 Item::I_look(const uint8* args, unsigned int /*argsize*/)

@@ -1,3 +1,10 @@
+2004-02-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/ScrollGump.*: a scroll gump
+	* graphics/font/Font.cpp: handle special scroll characters
+	* graphics/font/TTFont.cpp: hacked in temporary unicode support
+	  (so french, german work now with ttf)
+	* gumps/BarkGump.cpp: adjusted text box size to match original better
+
 2004-01-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* docs/u8encoding.txt: U8's character encoding
 	* gumps/widgets/TextWidget.cpp: use correct width/height when rendering

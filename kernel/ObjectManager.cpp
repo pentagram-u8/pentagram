@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002,2003 The Pentagram team
+Copyright (C) 2002-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -46,6 +46,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ButtonWidget.h"
 #include "SliderGump.h"
 #include "SlidingWidget.h"
+#include "ScrollGump.h"
 
 //#define DUMP_OBJECTTYPES
 
@@ -297,4 +298,5 @@ void ObjectManager::setupLoaders()
 	addObjectLoader("ButtonWidget", ObjectLoader<ButtonWidget>::load);
 	addObjectLoader("SliderGump", ObjectLoader<SliderGump>::load);
 	addObjectLoader("SlidingWidget", ObjectLoader<SlidingWidget>::load);
+	addObjectLoader("ScrollGump", ObjectLoader<ScrollGump>::load);
 }	

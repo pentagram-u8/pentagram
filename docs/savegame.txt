@@ -256,6 +256,14 @@ uint32 strlen
 char barked[strlen]
 
 
+ScrollGump: (v1)
+uint16 version
+<ModalGump>
+uint16 textwidget
+uint32 strlen
+char barked[strlen]
+
+
 ContainerGump: (v1)
 uint16 version
 <ItemRelativeGump>

@@ -67,7 +67,7 @@ void BarkGump::InitGump()
 	}
 
 	// Create the TextWidget
-	Gump *widget = new TextWidget(0,0,barked,fontnum,180,50);
+	Gump *widget = new TextWidget(0,0,barked,fontnum,194,55);
 	widget->InitGump();
 
 	textwidget = widget->getObjId();

@@ -103,6 +103,7 @@ GUMPS = \
 	gumps/ModalGump.o \
 	gumps/PaperdollGump.o \
 	gumps/ResizableGump.o \
+	gumps/ScrollGump.o \
 	gumps/SliderGump.o
 
 WIDGETS = \
