@@ -24,24 +24,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 UCProcess::UCProcess(Usecode* usecode_, uint32 classid_, uint32 offset_) :
 	pid(0xFFFF), item_num(0), type(0), usecode(usecode_),
-	classid(classid_), cs(0,0), suspended(false)
+	classid(classid_), suspended(false)
 {
 	if (usecode->get_class_size(classid) == 0)
 		perr << "Class is empty..." << std::endl;
 
-	// setup code segment
-	cs.load(usecode->get_class(classid),
-			usecode->get_class_size(classid));
-	// seek to correct offset
-	cs.seek(offset_);
+	classid = 0xFFFF;
+	ip = 0xFFFF;
+	bp = 0x0000;
 
-	// setup stack (push a 'last-stack-frame marker')
-	stack.push4(0x11223344);	// BP+06 This pointer
-	stack.push2(0xFFFF);		// BP+04 Prev CLASS
-	stack.push2(0xFFFF);		// BP+02 Prev IP
-	stack.push2(0x0000);		// BP+00 Prev BP
+	stack.push4(0x11223344); // obj-to-ptr(itemnum)?
 
-	bp = stack.getSP();
+	call(classid_, offset_);
 }
 
 
@@ -55,4 +49,29 @@ bool UCProcess::run(const uint32 framenum)
 	// pass to UCMachine for execution
 
 	return UCMachine::get_instance()->execProcess(this);
+}
+
+void UCProcess::call(uint32 classid_, uint32 offset_)
+{
+	stack.push2(classid); // BP+04 prev class
+	stack.push2(ip);      // BP+02 prev IP
+	stack.push2(bp);      // BP+00 prev BP
+
+	classid = classid_;
+	ip = offset_;
+	bp = stack.getSP();
+}
+
+bool UCProcess::ret()
+{
+	stack.moveSP(bp);
+
+	bp = stack.pop2();
+	ip = stack.pop2();
+	classid = stack.pop2();
+
+	if (ip == 0xFFFF && classid == 0xFFFF)
+		return true;
+	else
+		return false;
 }

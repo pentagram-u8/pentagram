@@ -63,13 +63,13 @@ bool UCMachine::execProcess(UCProcess* p)
 
 	assert(p);
 
+	IBufferDataSource cs(p->usecode->get_class(p->classid),
+						 p->usecode->get_class_size(p->classid));
+	cs.seek(p->ip);
+
 	//! check if process is suspended? (or do that in UCProcess::run?)
 
-	// It might be a good idea to move cs from UCProcess to in here,
-	// and only store the IP in UCProcess. This would make swapping out
-	// usecode functions easier, I think
-
-	pout << "running process " << p->pid << ", class " << p->classid << ", offset " << p->cs.getPos() << std::endl;
+	pout << "running process " << p->pid << ", class " << p->classid << ", offset " << p->ip << std::endl;
 
 	bool cede = false;
 	bool error = false;
@@ -79,11 +79,10 @@ bool UCMachine::execProcess(UCProcess* p)
 		//! guard against reading past end of class
 		//! guard against other error conditions
 
-		uint32 offset = p->cs.getPos();
-		uint8 opcode = p->cs.read1();
+		uint8 opcode = cs.read1();
 
 		LOGPF(("sp = %02X; %04X: %02X\t", p->stack.stacksize(),
-			   offset, opcode));
+			   p->ip, opcode));
 
 		sint8 si8a, si8b;
 		uint16 ui16a, ui16b;
@@ -98,7 +97,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x00:
 			// 00 xx
 			// pop 16 bit int, and assign LS 8 bit int into bp+xx
-			si8a = static_cast<sint8>(p->cs.read1());
+			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.pop2();
 			p->stack.assign1(p->bp+si8a, ui16a);
 			LOGPF(("pop byte\t%s = %02Xh", print_bp(si8a), ui16a));
@@ -107,7 +106,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x01:
 			// 01 xx
 			// pop 16 bit int into bp+xx
-			si8a = static_cast<sint8>(p->cs.read1());
+			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.pop2();
 			p->stack.assign2(p->bp+si8a, ui16a);
 			LOGPF(("pop\t\t%s = %04Xh", print_bp(si8a), ui16a));
@@ -116,7 +115,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x02:
 			// 02 xx
 			// pop 32 bit int into bp+xx
-			si8a = static_cast<sint8>(p->cs.read1());
+			si8a = static_cast<sint8>(cs.read1());
 			ui32a = p->stack.pop4();
 			p->stack.assign4(p->bp+si8a, ui32a);
 			LOGPF(("pop dword\t%s = %08Xh", print_bp(si8a), ui32a));
@@ -126,8 +125,8 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 03 xx yy
 			// pop yy bytes into bp+xx
 			{
-				si8a = static_cast<sint8>(p->cs.read1());
-				uint8 size = p->cs.read1();
+				si8a = static_cast<sint8>(cs.read1());
+				uint8 size = cs.read1();
 				uint8 buf[256];
 				p->stack.pop(buf, size);
 				p->stack.assign(p->bp+si8a, buf, size);
@@ -149,9 +148,9 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x09:
 			// 09 xx yy zz
 			// pop yy bytes into an element of list bp+xx (or slist if zz set)
-			si8a = static_cast<sint8>(p->cs.read1());
-			ui32a = p->cs.read1();
-			si8b = static_cast<sint8>(p->cs.read1());
+			si8a = static_cast<sint8>(cs.read1());
+			ui32a = cs.read1();
+			si8b = static_cast<sint8>(cs.read1());
 			LOGPF(("assign element\t%s (%02X) (%02X)",
 				   print_bp(si8a), si8b, si8b));
 			ui16a = p->stack.pop2(); // index
@@ -172,7 +171,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x0A:
 			// 0A xx
 			// push sign-extended 8 bit xx onto the stack as 16 bit
-			ui16a = static_cast<sint8>(p->cs.read1());
+			ui16a = static_cast<sint8>(cs.read1());
 			p->stack.push2(ui16a);
 			LOGPF(("push byte\t%04Xh", ui16a));
 			break;
@@ -180,7 +179,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x0B:
 			// 0B xx xx
 			// push 16 bit xxxx onto the stack
-			ui16a = p->cs.read2();
+			ui16a = cs.read2();
 			p->stack.push2(ui16a);
 			LOGPF(("push\t\t%04Xh", ui16a));
 			break;
@@ -188,7 +187,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x0C:
 			// 0C xx xx xx xx
 			// push 32 bit xxxxxxxx onto the stack
-			ui32a = p->cs.read4();
+			ui32a = cs.read4();
 			p->stack.push4(ui32a);
 			LOGPF(("push dword\t%08Xh", ui32a));
 			break;
@@ -197,11 +196,11 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 0D xx xx yy ... yy 00
 			// push string (yy ... yy) of length xx xx onto the stack
 			{
-				ui16a = p->cs.read2();
+				ui16a = cs.read2();
 				char *str = new char[ui16a];
-				p->cs.read(str, ui16a);
+				cs.read(str, ui16a);
 				LOGPF(("push string\t\"%s\"", str));
-				ui16b = p->cs.read1();
+				ui16b = cs.read1();
 				if (ui16b != 0) error = true;
 				p->stack.push2(assignString(str));
 				delete[] str;
@@ -212,8 +211,8 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 0E xx yy
 			// pop yy values of size xx and push the resulting list
 			{
-				ui16a = p->cs.read1();
-				ui16b = p->cs.read1();
+				ui16a = cs.read1();
+				ui16b = cs.read1();
 				UCList* l = new UCList(ui16a, ui16b);
 				for (unsigned int i = 0; i < ui16b; i++) {
 					l->append(p->stack.access());
@@ -234,8 +233,8 @@ bool UCMachine::execProcess(UCProcess* p)
 			// NB: do not actually pop these argument bytes
 			{
 				//! TODO
-				uint16 arg_bytes = p->cs.read1();
-				uint16 func = p->cs.read2();
+				uint16 arg_bytes = cs.read1();
+				uint16 func = cs.read2();
 				LOGPF(("!calli\t\t%04Xh (%02Xh arg bytes)", func, arg_bytes));
 			}
 			break;
@@ -245,25 +244,17 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 11 xx xx yy yy
 			// call the function at offset yy yy of class xx xx
 			{
-				uint16 new_classid = p->cs.read2();
-				uint16 new_offset = p->cs.read2();
+				uint16 new_classid = cs.read2();
+				uint16 new_offset = cs.read2();
 				LOGPF(("call\t\t%04X:%04X", new_classid, new_offset));
 
-				// Push old stuff
-				p->stack.push2(p->classid);		// BP+04 Prev class
-				p->stack.push2(p->cs.getPos());	// BP+02 Prev offset
-				p->stack.push2(p->bp);			// BP+00 Prev BP
-
-				// Update bp
-				p->bp = p->stack.getSP();
-
-				// Update the classid
-				p->classid = new_classid;
+				p->ip = cs.getPos();
+				p->call(new_classid, new_offset);
 
 				// Update the code segment
-				p->cs.load(p->usecode->get_class(new_classid),
-						   p->usecode->get_class_size(new_classid));
-				p->cs.seek(new_offset);
+				cs.load(p->usecode->get_class(p->classid),
+						p->usecode->get_class_size(p->ip));
+				cs.seek(p->ip);
 
 				// Resume execution
 			}
@@ -348,7 +339,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// (free the originals? order?)
 			// why do we need elementsize?
 			// only occurs in crusader.
-			ui32a = p->cs.read1(); // elementsize
+			ui32a = cs.read1(); // elementsize
 			ui16a = p->stack.pop2();
 			ui16b = p->stack.pop2();
 			listHeap[ui16b]->substractList(*listHeap[ui16a]);
@@ -711,8 +702,8 @@ bool UCMachine::execProcess(UCProcess* p)
 			// would this mean that we're supposed to destroy the list here?
 			// I guess it would make sense if 'push list' duplicates a list
 
-			ui16a = p->cs.read1();
-			ui32a = p->cs.read1();
+			ui16a = cs.read1();
+			ui32a = cs.read1();
 			ui16b = p->stack.pop2();
 			if (ui32a) { // stringlist
 				//! TODO
@@ -779,7 +770,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x3E:
 			// 3E xx
 			// push the value of the 8 bit local var xx
-			si8a = static_cast<sint8>(p->cs.read1());
+			si8a = static_cast<sint8>(cs.read1());
 			ui16a = static_cast<sint8>(p->stack.access1(p->bp+si8a));
 			p->stack.push2(ui16a);
 			LOGPF(("push byte\t%s = %02Xh", print_bp(si8a), ui16a));
@@ -788,7 +779,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x3F:
 			// 3F xx
 			// push the value of the 16 bit local var xx
-			si8a = static_cast<sint8>(p->cs.read1());
+			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.access2(p->bp+si8a);
 			p->stack.push2(ui16a);
 			LOGPF(("push\t\t%s = %04Xh", print_bp(si8a), ui16a));
@@ -797,7 +788,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x40:
 			// 40 xx
 			// push the value of the 32 bit local var xx
-			si8a = static_cast<sint8>(p->cs.read1());
+			si8a = static_cast<sint8>(cs.read1());
 			ui32a = p->stack.access4(p->bp+si8a);
 			p->stack.push4(ui32a);
 			LOGPF(("push dword\t%s = %08Xh", print_bp(si8a), ui32a));
@@ -808,7 +799,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// push the string local var xx
 			// duplicating the string?
 			{
-				si8a = static_cast<sint8>(p->cs.read1());
+				si8a = static_cast<sint8>(cs.read1());
 				ui16a = p->stack.access2(p->bp+si8a);
 				p->stack.push2(assignString(stringHeap[ui16a].c_str()));
 				LOGPF(("push string\t%s", print_bp(si8a)));
@@ -820,8 +811,8 @@ bool UCMachine::execProcess(UCProcess* p)
 			// push the list (with yy size elements) at BP+xx
 			// duplicating the list?
 			{
-				si8a = static_cast<sint8>(p->cs.read1());
-				ui16a = p->cs.read1();
+				si8a = static_cast<sint8>(cs.read1());
+				ui16a = cs.read1();
 				ui16b = p->stack.access2(p->bp+si8a);
 				UCList* l = new UCList(ui16a);
 				l = listHeap[ui16b];
@@ -899,8 +890,8 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x4E:
 			// 4E xx xx yy
 			// push global xxxx size yy
-			ui16a = p->cs.read2();
-			ui16b = p->cs.read1();
+			ui16a = cs.read2();
+			ui16b = cs.read1();
 			// get flagname for output?
 			p->stack.push(globals.access(ui16a), ui16b);
 			LOGPF(("push\t\tglobal [%04X %02X]", ui16a, ui16b));
@@ -909,84 +900,69 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x4F:
 			// 4F xx xx yy
 			// pop value into global xxxx size yy
-			ui16a = p->cs.read2();
-			ui16b = p->cs.read1();
+			ui16a = cs.read2();
+			ui16b = cs.read1();
 			// get flagname for output?
 			p->stack.pop(tempbuf, ui16b);
 			globals.assign(ui16a, tempbuf, ui16b);
 			LOGPF(("pop\t\tglobal [%04X %02X]", ui16a, ui16b));
 			break;
 
-/*
+		case 0x50:
+			// 50
+			// return from function
 
-                case 0x50:
-                        // 50
-                        // return from function
+			if (p->ret()) { // returning from process
+				// TODO
 
-                        // Ok, this is what we should do
-                        // we move the stack to the the location specified by BP                        // we then pop the old bp
-                        // we then pop the instruction pointer for where we were before
-                        // we then pop the previous class we were in
+				// what do we need to do here?
+				// return value?
+				LOGPF(("!ret\t\tfrom process"));
+				cede = true;
+				error = true; // for now
+			} else {
+				LOGPF(("ret\t\tto %04X:%04X", p->classid, p->ip));
 
-                        // if the ip and previous class are both 0xFFFF we are returning
-                        // from a process
-                        stack.moveSP(bp);
-                        
-                        uint16 new_offset;
+				// what do we need to do here?
+				// return value?
 
-                        bp = stack.pop2();                                      // BP+00 Prev BP
-                        new_offset = stack.pop2();                      // BP+02 Prev offset
-                        classid = stack.pop2();                 // BP+04 Prev class
+				// Update the code segment
+				cs.load(p->usecode->get_class(p->classid),
+						p->usecode->get_class_size(p->ip));
+				cs.seek(p->ip);
+			}
 
-                        //
-                        // TODO Return from process
-                        //
-                        if (new_offset == 0xFFFF && classid == 0xFFFF) {
-                                // TODO
-                                LOGPF(("!ret\t\tfrom process"));
-                                cede = true;
-                                break;
-                        }
-                        LOGPF(("ret\t\tto %04X:%04X", classid, new_offset));
-
-
-                        // Update the UCClassRaw and datasource
-                        cl = &usecode.find(classid);
-                        ds.load(reinterpret_cast<char *>(cl->data), cl->classdatasize);
-                        ds.seek(new_offset);
-
-                        // Resume execution
-                        break;
-*/
+			// Resume execution
+			break;
 
 		case 0x51:
 			// 51 xx xx
 			// relative jump to xxxx if false
-			si16a = static_cast<sint16>(p->cs.read2());
+			si16a = static_cast<sint16>(cs.read2());
 			ui16b = p->stack.pop2();
 			if (!ui16b) {
-				p->cs.skip(si16a);
+				cs.skip(si16a);
 				LOGPF(("jne\t\t%04Xh\t(to %04X) (taken)", si16a,
-					   p->cs.getPos()));
+					   cs.getPos()));
 			} else {
 				LOGPF(("jne\t\t%04Xh\t(to %04X) (not taken)", si16a,
-					   p->cs.getPos()));
+					   cs.getPos()));
 			}
 			break;
 
 		case 0x52:
 			// 52 xx xx
 			// relative jump to xxxx
-			si16a = static_cast<sint16>(p->cs.read2());
-			p->cs.skip(si16a);
-			LOGPF(("jmp\t\t%04Xh\t(to %04X)", si16a, p->cs.getPos()));
+			si16a = static_cast<sint16>(cs.read2());
+			cs.skip(si16a);
+			LOGPF(("jmp\t\t%04Xh\t(to %04X)", si16a, cs.getPos()));
 			break;
 
 		case 0x53:
 			// 53
 			// suspend
 			// TODO!
-			LOGPF(("suspend\n"));
+			LOGPF(("!suspend\n"));
 			cede=true; 
 			break;
 
@@ -1033,7 +1009,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 5A xx
 			// init function. xx = local var size
 			// sets xx bytes on stack to 0, moving sp
-			ui16a = p->cs.read1();
+			ui16a = cs.read1();
 			LOGPF(("init\t\t%02X", ui16a));
 			
 			if (ui16a & 1) ui16a++; // 16-bit align
@@ -1080,7 +1056,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x63:
 			// 63 xx
 			// free the stringlist in var BP+xx
-			si8a = static_cast<sint8>(p->cs.read1());
+			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.access2(p->bp+si8a);
 			freeStringList(ui16a);
 			LOGPF(("free slist\t%s", print_bp(si8a)));
@@ -1090,7 +1066,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x64:
 			// 64 xx
 			// free the list in var BP+xx
-			si8a = static_cast<sint8>(p->cs.read1());
+			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.access2(p->bp+si8a);
 			freeList(ui16a);
 			LOGPF(("free list\t%s", print_bp(si8a)));
@@ -1101,7 +1077,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 65 xx
 			// free the string at SP+xx
 			// sometimes the 32-bit string pointer at SP+xx????
-			si8a = static_cast<sint8>(p->cs.read1());
+			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.access2(p->stack.getSP()+si8a);
 			freeString(ui16a);
 			LOGPF(("free string\t%s", print_sp(si8a)));
@@ -1111,7 +1087,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x66:
 			// 66 xx
 			// free the list at SP+xx
-			si8a = static_cast<sint8>(p->cs.read1());
+			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.access2(p->stack.getSP()+si8a);
 			freeList(ui16a);
 			LOGPF(("free list\t%s", print_sp(si8a)));
@@ -1121,7 +1097,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x67:
 			// 67 xx
 			// free the string list at SP+xx
-			si8a = static_cast<sint8>(p->cs.read1());
+			si8a = static_cast<sint8>(cs.read1());
 			ui16a = p->stack.access2(p->stack.getSP()+si8a);
 			freeStringList(ui16a);
 			LOGPF(("free slist\t%s", print_sp(si8a)));
@@ -1148,7 +1124,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 6E xx
 			// substract xx from stack pointer
 			// (effect on SP is the same as popping xx bytes)
-			si8a = static_cast<sint8>(p->cs.read1());
+			si8a = static_cast<sint8>(cs.read1());
 			p->stack.addSP(-si8a);
 			LOGPF(("move sp\t\t%s%02Xh", si8a<0?"-":"", si8a<0?-si8a:si8a));
 			break;
@@ -1229,42 +1205,41 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 7A
 			// end of function
 			// shouldn't happen
+			//! 0x79 is U8 only. Should be removed
 			LOGPF(("end"));
 			perr.printf("end of function opcode reached!\n");
 			error = true;
 			break;
 
 		case 0x57:
-			p->cs.read4();
-			p->cs.read2();
+			cs.read4();
+			cs.read2();
 			perr.printf("unhandled opcode %02X\n", opcode);
-			cede = true;
 			break;
 		case 0x58:
-			p->cs.read4();
-			p->cs.read4();
+			cs.read4();
+			cs.read4();
 			perr.printf("unhandled opcode %02X\n", opcode);
-			cede = true;
 			break;
 		case 0x44:
-			p->cs.read2();
+			cs.read2();
 			perr.printf("unhandled opcode %02X\n", opcode);
-			cede = true;
 			break;
 		case 0x19: case 0x43: case 0x45: case 0x4C:
 		case 0x4D: case 0x63: case 0x65: case 0x67:
-			p->cs.read1();
+			cs.read1();
 			perr.printf("unhandled opcode %02X\n", opcode);
-			cede = true;
 			break;
 
 		default:
 			perr.printf("unhandled opcode %02X\n", opcode);
-			cede = true;
 
 		} // switch(opcode)
 
 		LOGPF(("\n"));
+
+		// write back IP
+		p->ip = cs.getPos();
 
 	} // while(!cede && !error)
 

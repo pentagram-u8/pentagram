@@ -22,10 +22,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 const uint8* UsecodeFlex::get_class(uint32 classid)
 {
-	return get_object_nodel(classid+2);
+	// 0x0C = header size. Clean up.
+	return get_object_nodel(classid+2) + 0x0C;
 }
 
 uint32 UsecodeFlex::get_class_size(uint32 classid)
 {
-	return get_size(classid+2);
+	// 0x0C = header size. Clean up.
+	return get_size(classid+2) - 0x0C;
 }

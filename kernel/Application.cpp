@@ -47,7 +47,7 @@ void Application::run()
 
 	IDataSource* ds = filesystem->ReadFile("eusecode.flx");
 	Usecode* u = new UsecodeFlex(ds);
-	UCProcess* p = new UCProcess(u, 306, 0x8C);
+	UCProcess* p = new UCProcess(u, 0x581, 0x28F9);
 	perr << p << std::endl;
 	kernel->addProcess(p);
 	uint32 framenum = 0;

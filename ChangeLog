@@ -1,4 +1,7 @@
 2002-12-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/*: basic call/ret support
+
+2002-12-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* filesys/IDataSource.h, usecode/UCStack.h: const changes
 	* usecode/*: minor changes
 	* filesys/Flex.*: Flex reader

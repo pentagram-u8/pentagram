@@ -38,6 +38,10 @@ public:
 	virtual bool run(const uint32 framenum);
 
 protected:
+
+	void call(uint32 classid_, uint32 offset_);
+	bool ret();
+
 	// process id
 	uint16 pid;
 
@@ -52,9 +56,7 @@ protected:
 	Usecode* usecode;
 
 	uint32 classid;
-
-	// code segment (IBufferDS isn't the right class for this; only temp.)
-	IBufferDataSource cs;
+	uint16 ip;
 
 	// data stack
 	UCStack stack;
