@@ -24,7 +24,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GUIApp.h"
 #include "MainActor.h"
 #include "World.h"
+#include "GameMapGump.h"
 #include "Kernel.h"
+#include "ActorAnimProcess.h"
+#include "TargetedAnimProcess.h"
+#include "ShapeInfo.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -308,6 +312,31 @@ bool AvatarMoverProcess::handleNormalMode()
 			if (mousedir != nextdir)
 			{
 				nextanim = Animation::stand;
+			}
+
+			// Replace with a targeted jump
+			//! TODO: Make this a gameplay option
+			if (nextanim == Animation::jump || nextanim == Animation::jumpUp)
+			{
+				sint32 coords[3];
+				GameMapGump * gameMap = guiapp->getGameMapMapGump();
+				// We need the Gump's x/y for TraceCoordinates
+				gameMap->ParentToGump(mx,my);
+				ObjId targetId = gameMap->TraceCoordinates(mx,my,coords);
+				Item * target = World::get_instance()->getItem(targetId);
+
+				if (target && target->getShapeInfo()->is_land())
+				{
+					Process *p = new TargetedAnimProcess(avatar,
+							Animation::jumpUp, nextdir, coords);
+					waitFor(Kernel::get_instance()->addProcess(p));
+					return false;
+				}
+				else
+				{
+					waitFor(avatar->doAnim(Animation::shakeHead, nextdir));
+					return false;
+				}
 			}
 
 			nextanim = Animation::checkWeapon(nextanim, lastanim);

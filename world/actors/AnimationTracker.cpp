@@ -78,6 +78,7 @@ void AnimationTracker::init(Actor* actor_, Animation::Sequence action_,
 	done = false;
 	blocked = false;
 	unsupported = false;
+	mode = NormalMode;
 }
 
 unsigned int AnimationTracker::getNextFrame(unsigned int frame)
@@ -143,6 +144,13 @@ bool AnimationTracker::step()
 	sint32 dy = 4 * y_fact[dir] * f.deltadir;
 	sint32 dz = f.deltaz;
 
+	if (mode == TargetMode && !(f.flags & AnimFrame::AFF_ONGROUND))
+	{
+		dx += target_dx;
+		dy += target_dy;
+		dz += target_dz;
+	}
+
 	// determine footpad
 	bool actorflipped = (a->getFlags() & Item::FLG_FLIPPED);
 	sint32 xd, yd, zd;
@@ -197,6 +205,7 @@ bool AnimationTracker::step()
 		}
 	}
 
+
 	x += dx;
 	y += dy;
 	z += dz;
@@ -234,6 +243,35 @@ bool AnimationTracker::step()
 AnimFrame* AnimationTracker::getAnimFrame()
 {
 	return &animaction->frames[dir][currentframe];
+}
+
+void AnimationTracker::setTargetedMode(sint32 x_, sint32 y_, sint32 z_)
+{
+	unsigned int i;
+	int totaldir = 0;
+	int offGround = 0;
+	sint32 end_dx, end_dy, end_dz = 0;
+
+	for (i=currentframe; i != endframe; i = getNextFrame(i))
+	{
+		AnimFrame& f = animaction->frames[dir][i];
+		totaldir += f.deltadir;  // This line sometimes seg faults.. ????
+		end_dz += f.deltaz;
+		if (!(f.flags & AnimFrame::AFF_ONGROUND))
+			++offGround;
+	}
+
+	end_dx = 4 * x_fact[dir] * totaldir;
+	end_dy = 4 * y_fact[dir] * totaldir;
+
+	if (offGround)
+	{
+		mode = TargetMode;
+		target_dx = (x_ - x - end_dx) / offGround;
+		target_dy = (y_ - y - end_dy) / offGround;
+		target_dz = (z_ - z - end_dz) / offGround;
+	}
+
 }
 
 void AnimationTracker::updateState(PathfindingState& state)
@@ -303,6 +341,11 @@ void AnimationTracker::save(ODataSource* ods)
 	ods->write4(static_cast<uint32>(x));
 	ods->write4(static_cast<uint32>(y));
 	ods->write4(static_cast<uint32>(z));
+
+	ods->write2(static_cast<uint16>(mode));
+	ods->write4(static_cast<uint32>(target_dx));
+	ods->write4(static_cast<uint32>(target_dy));
+	ods->write4(static_cast<uint32>(target_dz));
 	uint8 fs = firststep ? 1 : 0;
 	ods->write1(fs);
 	uint8 fl = flipped ? 1 : 0;
@@ -346,6 +389,12 @@ bool AnimationTracker::load(IDataSource* ids)
 	x = ids->read4();
 	y = ids->read4();
 	z = ids->read4();
+
+	mode = (Mode) ids->read2();
+	target_dx = ids->read4();
+	target_dy = ids->read4();
+	target_dz = ids->read4();
+
 	firststep = (ids->read1() != 0);
 	flipped = (ids->read1() != 0);
 	shapeframe = ids->read4();

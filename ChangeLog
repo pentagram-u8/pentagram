@@ -1,3 +1,9 @@
+2004-08-08  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* world/actors/AnimationTracker.*: added TargetMode for targeted jumps
+	* world/actors/TargetedAnimProcess.*: very small process for targeted
+	  jumps
+	* world/actors/AvatarMoverProcess.cpp: added targeted jumping
+
 2004-08-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AnimationTracker.*: moved next frame code to sep. func.
 

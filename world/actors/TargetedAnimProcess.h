@@ -16,29 +16,22 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef ACTORANIMPROCESS_H
-#define ACTORANIMPROCESS_H
+#ifndef TARGETEDANIMPROCESS_H
+#define TARGETEDANIMPROCESS_H
 
-#include "Process.h"
+#include "ActorAnimProcess.h"
 #include "Animation.h"
 
-class Actor;
-struct AnimAction;
-class AnimationTracker;
-
-class ActorAnimProcess : public Process
+class TargetedAnimProcess : public ActorAnimProcess
 {
 public:
-	ActorAnimProcess();
+	TargetedAnimProcess();
 	//! note: this probably needs some more parameters
-	ActorAnimProcess(Actor* actor, Animation::Sequence action, uint32 dir);
+	TargetedAnimProcess(Actor* actor, Animation::Sequence action, uint32 dir,
+						sint32 coords[3]);
 
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
-
-	virtual bool run(const uint32 framenum);
-
-	virtual void terminate();
 
 	bool loadData(IDataSource* ids);
 protected:
@@ -46,19 +39,7 @@ protected:
 
 	virtual bool init();
 
-	ObjId checkWeaponHit(int dir, int range);
-
-	Animation::Sequence action;
-	uint32 dir;
-
-	AnimationTracker* tracker;
-	int repeatcounter;
-
-	bool firstframe;
-
-	bool animAborted;
-
-	bool attackedSomething; // attacked and hit something with this animation
+	sint32 x,y,z;
 };
 
 

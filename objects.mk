@@ -158,6 +158,7 @@ ACTORS = \
 	world/actors/Pathfinder.o \
 	world/actors/PathfinderProcess.o \
 	world/actors/ResurrectionProcess.o \
+	world/actors/TargetedAnimProcess.o \
 	world/actors/TeleportToEggProcess.o
 
 AUDIO = \

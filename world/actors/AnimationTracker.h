@@ -68,6 +68,8 @@ public:
 	//! get the current AnimFrame
 	AnimFrame* getAnimFrame();
 
+	void setTargetedMode(sint32 x_, sint32 y_, sint32 z_);
+
 	bool isDone() const { return done; }
 	bool isBlocked() const { return blocked; }
 	bool isUnsupported() const { return unsupported; }
@@ -76,6 +78,12 @@ public:
 	void save(ODataSource* ods);
 
 private:
+	enum Mode
+	{
+		NormalMode = 0,
+		TargetMode
+	};
+
 	unsigned int getNextFrame(unsigned int frame);
 
 	unsigned int startframe, endframe;
@@ -90,6 +98,7 @@ private:
 	// actor state
 	sint32 prevx,prevy,prevz;
 	sint32 x,y,z;
+	sint32 target_dx,target_dy,target_dz;
 	bool firststep, flipped;
 	uint32 shapeframe;
 
@@ -97,6 +106,8 @@ private:
 	bool done;
 	bool blocked;
 	bool unsupported;
+
+	Mode mode;
 };
 
 
