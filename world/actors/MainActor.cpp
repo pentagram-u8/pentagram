@@ -27,6 +27,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "TeleportToEggProcess.h"
 #include "CameraProcess.h"
 #include "Animation.h"
+#include "GUIApp.h"
+#include "AvatarDeathProcess.h"
+#include "DelayProcess.h"
 
 #include "SettingManager.h"
 #include "CoreApp.h"
@@ -291,12 +294,34 @@ void MainActor::receiveHit(uint16 other, int dir, int damage,
 	}
 }
 
-void MainActor::die(uint16 damageType)
+ProcId MainActor::die(uint16 damageType)
 {
-	Actor::die(damageType);
+	ProcId animprocid = Actor::die(damageType);
 
-	// TODO: implement this
+	GUIApp *app = p_dynamic_cast<GUIApp*>(GUIApp::get_instance());
+	assert(app);
+
+	app->setAvatarInStasis(true);
+
+	Process* deathproc = new AvatarDeathProcess();
+	Kernel::get_instance()->addProcess(deathproc);
+
+	Process* delayproc = new DelayProcess(30*5); // 5 seconds
+	Kernel::get_instance()->addProcess(delayproc);
+
+	Process* animproc = Kernel::get_instance()->getProcess(animprocid);
+
+	if (animproc)
+		delayproc->waitFor(animproc);
+
+	deathproc->waitFor(delayproc);
+
+	// TODO: implement this properly
+	// TODO: close gumps, play music, set 'game over' flag, ...
+
+	return animprocid;
 }
+
 
 void MainActor::ConCmd_teleport(const Console::ArgsType &args, const Console::ArgvType &argv)
 {

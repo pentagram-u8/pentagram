@@ -98,11 +98,15 @@ public:
 	//! \return the amount of damage to be applied. Zero if attack missed.
 	int calculateAttackDamage(uint16 other, int damage, uint16 type);
 
+	//! receive a hit
 	//! \param damage base damage (or zero to use attacker's default damage)
 	//! \param type damage type (or zero to use attacker's default type)
 	virtual void receiveHit(uint16 other, int dir, int damage, uint16 type);
 
-	virtual void die(uint16 damageType);
+	//! die
+	//! \param damageType damage type that caused the death
+	//! \return the process ID of the death animation
+	virtual ProcId die(uint16 damageType);
 
 	//! check if NPCs are near which are in combat mode and hostile
 	bool areEnemiesNear();

@@ -1,3 +1,8 @@
+2004-11-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/AvatarDeathProcess.*: AvatarDeathProcess (show RIP gump)
+	* world/actors/MainActor.cpp: start AvatarDeathProcess
+	* data/u8*ini: translations of 'rest in peace' message
+
 2004-10-27  Ryan Nunn <colourles@users.sourceforge.net>
 	* audio/MusicProcess.*, kernel/GUIApp.cpp : Added a new console command
 	  MusicProcess::playMusic

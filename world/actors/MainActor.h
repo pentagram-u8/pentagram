@@ -65,7 +65,7 @@ public:
 
 	virtual void receiveHit(uint16 other, int dir, int damage, uint16 type);
 
-	virtual void die(uint16 DamageType);
+	virtual ProcId die(uint16 DamageType);
 
 	bool loadData(IDataSource* ids);
 

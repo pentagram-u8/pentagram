@@ -80,6 +80,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "SplitItemProcess.h"
 #include "ClearFeignDeathProcess.h"
 #include "LoiterProcess.h"
+#include "AvatarDeathProcess.h"
 
 #include "MovieGump.h"
 
@@ -261,6 +262,8 @@ void GUIApp::startup()
 							 ProcessLoader<ClearFeignDeathProcess>::load);
 	kernel->addProcessLoader("LoiterProcess",
 							 ProcessLoader<LoiterProcess>::load);
+	kernel->addProcessLoader("AvatarDeathProcess",
+							 ProcessLoader<AvatarDeathProcess>::load);
 
 	gamedata = new GameData();
 

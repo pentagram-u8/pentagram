@@ -524,7 +524,7 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 	}
 }
 
-void Actor::die(uint16 damageType)
+ProcId Actor::die(uint16 damageType)
 {
 	setHP(0);
 	setActorFlag(ACT_DEAD);
@@ -606,6 +606,8 @@ void Actor::die(uint16 damageType)
 
 		vanishproc->waitFor(animprocid);
 	}
+
+	return animprocid;
 }
 
 int Actor::calculateAttackDamage(uint16 other, int damage, uint16 damage_type)
@@ -1301,7 +1303,7 @@ uint32 Actor::I_setEquip(const uint8* args, unsigned int /*argsize*/)
 		return 0;
 
 	// check it was added to the right slot
-	assert(item->getZ() == type+1);
+	assert(item->getZ() == type+1 || (item->getShape() == 529 && type == 6));
 
 	return 1;
 }

@@ -496,3 +496,8 @@ uint16 pathsize
 LoiterProcess: Process (v1)
 uint16 version
 <Process>
+
+
+AvatarDeathProcess::Process (v1)
+uint16 version
+<Process>
