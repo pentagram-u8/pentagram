@@ -68,7 +68,8 @@ GRAPHICS = \
 	graphics/ShapeInfo.o \
 	graphics/MainShapeFlex.o \
 	graphics/XFormBlend.o \
-	graphics/TypeFlags.o
+	graphics/TypeFlags.o \
+	graphics/WpnOvlayDat.o
 
 FONTS = \
 	graphics/fonts/Font.o \
