@@ -229,7 +229,8 @@ RenderedText* TTFont::renderText(std::string text,
 		SDL_FreeSurface(textsurf);
 	}
 
-	return new TTFRenderedText(texture, resultwidth, resultheight, this);
+	return new TTFRenderedText(texture, resultwidth, resultheight,
+							   getBaselineSkip() - getHeight(), this);
 }
 
 

@@ -30,7 +30,8 @@ struct Texture;
 class TTFRenderedText : public RenderedText
 {
 public:
-	TTFRenderedText(Texture* texture, int width, int height, TTFont* font);
+	TTFRenderedText(Texture* texture, int width, int height, int vlead,
+					TTFont* font);
 	virtual ~TTFRenderedText();
 
 	virtual void draw(RenderSurface* surface, int x, int y);

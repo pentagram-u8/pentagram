@@ -52,7 +52,7 @@ void AskGump::InitGump()
 {
 	ItemRelativeGump::InitGump();
 
-	// OK, this is a bit of a hack, but it's how it's has to be
+	// OK, this is a bit of a hack, but it's how it has to be
 	int	fontnum;
 	if (owner == 1) fontnum = 6;
 	else if (owner > 256) fontnum = 8;
@@ -84,6 +84,7 @@ void AskGump::InitGump()
 
 		Pentagram::Rect cd;
 		child->GetDims(cd);
+		cd.h += child->getVlead();
 
 		if (px+cd.w > 160 && px != 0) 
 		{

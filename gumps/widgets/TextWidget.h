@@ -75,8 +75,14 @@ public:
 
 	//! set the colour to blend the rendered text with. (0 to disable)
 	void setBlendColour(uint32 col) { blendColour = col; }
-		
 
+	//! get the RenderedText's vlead
+	int getVlead();
+
+protected:
+	void renderText();
+
+public:
 	bool loadData(IDataSource* ids, uint32 version);
 
 protected:

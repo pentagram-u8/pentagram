@@ -85,6 +85,18 @@ void ButtonWidget::InitGump()
 	}
 }
 
+int ButtonWidget::getVlead()
+{
+	if (textwidget != 0) {
+		Gump* widget = GUIApp::get_instance()->getGump(textwidget);
+		TextWidget* textwidget = p_dynamic_cast<TextWidget*>(widget);
+		assert(textwidget);
+		return textwidget->getVlead();
+	} else {
+		return 0;
+	}
+}
+
 bool ButtonWidget::PointOnGump(int mx, int my)
 {
 	// CHECKME: this makes the ButtonWidget accept any point in its rectangle,

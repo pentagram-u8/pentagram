@@ -48,6 +48,9 @@ public:
 	virtual void OnMouseOver();
 	virtual void OnMouseLeft();
 
+	//! return the textwidget's vlead, or 0 for an image button
+	int getVlead();
+
 	//void SetShapeDown(Shape *_shape, uint32 _framenum);
 	//void SetShapeUp(Shape *_shape, uint32 _framenum);
 

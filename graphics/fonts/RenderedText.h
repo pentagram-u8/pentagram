@@ -41,10 +41,14 @@ public:
 	//! \param y Returns the height
 	virtual void getSize(int &x, int &y) { x = width; y = height; }
 
+	//! Get vlead
+	virtual int getVlead() { return vlead; }
+
 	ENABLE_RUNTIME_CLASSTYPE();
 
 protected:
 	int width, height;
+	int vlead;
 };
 
 #endif

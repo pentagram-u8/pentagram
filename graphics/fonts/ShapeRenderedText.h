@@ -28,7 +28,7 @@ class ShapeRenderedText : public RenderedText
 {
 public:
 	ShapeRenderedText(std::list<PositionedText>& lines,
-					  int width, int height, ShapeFont* font);
+					  int width, int height, int vlead, ShapeFont* font);
 	virtual ~ShapeRenderedText();
 
 	virtual void draw(RenderSurface* surface, int x, int y);

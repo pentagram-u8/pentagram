@@ -26,12 +26,13 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(ShapeRenderedText,RenderedText);
 
 
 ShapeRenderedText::ShapeRenderedText(std::list<PositionedText>& lines_,
-									 int width_, int height_,
+									 int width_, int height_, int vlead_,
 									 ShapeFont* font_)
 	: lines(lines_), font(font_)
 {
 	width = width_;
 	height = height_;
+	vlead = vlead_;
 }
 
 ShapeRenderedText::~ShapeRenderedText()

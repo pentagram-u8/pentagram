@@ -28,12 +28,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 DEFINE_RUNTIME_CLASSTYPE_CODE(TTFRenderedText,RenderedText);
 
 
-TTFRenderedText::TTFRenderedText(Texture* texture_,
-								 int width_, int height_, TTFont* font_)
+TTFRenderedText::TTFRenderedText(Texture* texture_, int width_, int height_,
+								 int vlead_, TTFont* font_)
 	: texture(texture_), font(font_)
 {
 	width = width_;
 	height = height_;
+	vlead = vlead_;
 }
 
 TTFRenderedText::~TTFRenderedText()

@@ -103,5 +103,6 @@ RenderedText* ShapeFont::renderText(std::string text, unsigned int& remaining,
 												  width, height, align,
 												  resultwidth, resultheight);
 
-	return new ShapeRenderedText(lines, resultwidth, resultheight, this);
+	return new ShapeRenderedText(lines, resultwidth, resultheight,
+								 getVlead(), this);
 }

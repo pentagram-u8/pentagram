@@ -64,6 +64,13 @@ void TextWidget::InitGump()
 	setupNextText();
 }
 
+int TextWidget::getVlead()
+{
+	renderText();
+	assert(cached_text);
+	return cached_text->getVlead();
+}
+
 bool TextWidget::setupNextText()
 {
 	current_start = current_end;
@@ -88,19 +95,26 @@ bool TextWidget::setupNextText()
 	return true;
 }
 
+void TextWidget::renderText()
+{
+	if (!cached_text) {
+		Pentagram::Font *font;
+		font = FontManager::get_instance()->getFont(fontnum, true);
+
+		unsigned int remaining;
+		cached_text = font->renderText(text.substr(current_start,
+												   current_end-current_start),
+									   remaining, targetwidth, targetheight,
+									   textalign);
+	}
+}
+
 // Overloadable method to Paint just this Gump (RenderSurface is relative to this)
 void TextWidget::PaintThis(RenderSurface*surf, sint32 lerp_factor)
 {
 	Gump::PaintThis(surf,lerp_factor);
 
-	Pentagram::Font *font;
-	font = FontManager::get_instance()->getFont(fontnum, true);
-
-	if (!cached_text) {
-		unsigned int remaining;
-		cached_text = font->renderText(text.substr(current_start, current_end-current_start),
-									   remaining, targetwidth, targetheight, textalign);
-	}
+	renderText();
 
 	if (!blendColour)
 		cached_text->draw(surf, 0, 0);
