@@ -1,5 +1,6 @@
 2004-05-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AvatarMoverProcess.cpp: handle all left mouse clicks
+	* usecode/UCMachine.cpp: ignore error when trying to wait for PID 0
 
 2004-05-19  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* filesys/Flex.*: added p_dynamic cast support (base class)

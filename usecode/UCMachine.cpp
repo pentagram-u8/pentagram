@@ -39,7 +39,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Container.h"
 
 //#define WATCH_CLASS 589
-//#define WATCH_ITEM 121
+//#define WATCH_ITEM 66
 
 #ifdef WATCH_CLASS
 #define LOGPF(X) do { if (thisclassid == WATCH_CLASS) { pout.printf X; } } while(0)
@@ -1221,8 +1221,15 @@ bool UCMachine::execProcess(UCProcess* p)
 					} else {
 						perr << ui16a;
 					}
-					perr << ") in implies" << std::endl;
-					error = true;
+					perr << ") in implies." << std::endl;
+					// This condition triggers in 057C:1090 when talking
+					// to a child (class 02C4), directly after the conversation
+					// Specifically, it occurs because there is no
+					// leaveFastArea usecode for class 02C4.
+					// So currently we only regard this as an error when the
+					// missing process wasn't PID 0.
+					if ((ui16a && !proc2) || (ui16b && !proc))
+						error = true;
 				}
 			}
 			break;
