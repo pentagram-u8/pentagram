@@ -101,7 +101,7 @@ public:
 		ACT_PATHFINDING    = 0x800000
 	} ActorFlags;
 
-private:
+protected:
 	uint16 strength;
 	uint16 dexterity;
 	uint16 intelligence;
