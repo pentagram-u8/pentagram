@@ -24,8 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GUIApp.h"
 #include "MainActor.h"
 #include "World.h"
-#include "Map.h"
-#include "CurrentMap.h"
 #include "Kernel.h"
 
 #include "IDataSource.h"
@@ -231,9 +229,6 @@ bool AvatarMoverProcess::handleNormalMode()
 {
 	GUIApp* guiapp = GUIApp::get_instance();
 	MainActor* avatar = World::get_instance()->getMainActor();
-	World* world = World::get_instance();
-	CurrentMap* map = world->getCurrentMap();
-
 	Animation::Sequence lastanim = avatar->getLastAnim();
 	Animation::Sequence nextanim = Animation::walk;
 	sint32 direction = avatar->getDir();
