@@ -2,6 +2,8 @@
 	* world/Item.*: Item::ascend intrinsic
 	* world/CurrentMap.cpp: allow slight overlap in some cases
 	* usecode/UCMachine.cpp: opcode 0x3E pushes an _un_signed 8 bit int
+	* usecode/UCMachine.cpp: release string/list IDs when freeing them
+	* usecode/UCList.h: minor tweaks to allow appending a list to itself
 
 2004-08-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: uninitialized variables

@@ -252,10 +252,10 @@ bool UCMachine::execProcess(UCProcess* p)
 				// what special behaviour do we need here?
 				// probably just that the overwritten element has to be freed?
 				if (ui32a != 2) error = true; // um?
-				listHeap[ui16b]->assign(ui16a, p->stack.access());
+				l->assign(ui16a, p->stack.access());
 				p->stack.pop2(); // advance SP
 			} else {
-				listHeap[ui16b]->assign(ui16a, p->stack.access());
+				l->assign(ui16a, p->stack.access());
 				p->stack.moveSP(ui32a);
 			}
 		} break;
@@ -434,27 +434,39 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 17
 			// pop two lists from the stack and push the 'sum' of the lists
 			// (free the originals? order?)
+		{
 			ui16a = p->stack.pop2();
 			ui16b = p->stack.pop2();
-			if (getList(ui16b) && getList(ui16a)) {
-				getList(ui16b)->appendList(*getList(ui16a));
-				freeList(ui16a);
+			UCList* listA = getList(ui16a);
+			UCList* listB = getList(ui16b);
+
+			if (listB && listA) {
+				if (listA->getElementSize() != listB->getElementSize()) {
+					perr << "Trying to append lists with different element "
+						 << "sizes (" << listB->getElementSize() << " != "
+						 << listA->getElementSize() << ")" << std::endl;
+					error = true;
+				} else {
+					listB->appendList(*listA);
+				}
+				// CHECKME: do we allow appending a list to itself?
+				if (ui16a != ui16b) freeList(ui16a);
 				p->stack.push2(ui16b);
 			} else {
 				// at least one of the lists didn't exist. Error or not?
 				// for now: if one exists, push that one.
 				// if neither exists, push 0.
 
-				if (getList(ui16a)) {
+				if (listA) {
 					p->stack.push2(ui16a);
-				} else if (getList(ui16b)) {
+				} else if (listB) {
 					p->stack.push2(ui16b);
 				} else {
 					p->stack.push2(0);
 				}
 			}
 			LOGPF(("append\n"));
-			break;
+		}	break;
 
 		case 0x19:
 			// 19 02
@@ -463,7 +475,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			if (ui32a != 2) error = true;
 			ui16a = p->stack.pop2();
 			ui16b = p->stack.pop2();
-			listHeap[ui16b]->unionStringList(*listHeap[ui16a]);
+			getList(ui16b)->unionStringList(*getList(ui16a));
 			freeStringList(ui16a); // contents are actually freed in unionSL
 			p->stack.push2(ui16b);
 			LOGPF(("union slist\t(%02X)\n", ui32a));
@@ -478,7 +490,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			ui32a = 2;
 			ui16a = p->stack.pop2();
 			ui16b = p->stack.pop2();
-			listHeap[ui16b]->substractStringList(*listHeap[ui16a]);
+			getList(ui16b)->substractStringList(*getList(ui16a));
 			freeStringList(ui16a);
 			p->stack.push2(ui16b);
 			LOGPF(("remove slist\t(%02X)\n", ui32a));
@@ -492,7 +504,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			ui32a = cs.read1(); // elementsize
 			ui16a = p->stack.pop2();
 			ui16b = p->stack.pop2();
-			listHeap[ui16b]->substractList(*listHeap[ui16a]);
+			getList(ui16b)->substractList(*getList(ui16a));
 			freeList(ui16a);
 			p->stack.push2(ui16b);
 			LOGPF(("remove list\t(%02X)\n", ui32a));
@@ -854,13 +866,13 @@ bool UCMachine::execProcess(UCProcess* p)
 			ui16b = p->stack.pop2();
 			if (ui32a) { // stringlist
 				if (ui16a != 2) error = true;
-				if (listHeap[ui16b]->stringInList(p->stack.pop2()))
+				if (getList(ui16b)->stringInList(p->stack.pop2()))
 					p->stack.push2(1);
 				else
 					p->stack.push2(0);
 				freeStringList(ui16b);
 			} else {
-				bool found = listHeap[ui16b]->inList(p->stack.access());
+				bool found = getList(ui16b)->inList(p->stack.access());
 				p->stack.addSP(ui16a);
 				if (found)
 					p->stack.push2(1);
@@ -971,7 +983,7 @@ bool UCMachine::execProcess(UCProcess* p)
 					l->copyList(*getList(ui16b));
 				} else {
 					// trying to push non-existent list. Error or not?
-					perr << "Pushing non-existent slist" << std::endl;
+					perr << "Pushing non-existent list" << std::endl;
 					// error = true;
 				}
 				p->stack.push2(assignList(l));
@@ -1026,10 +1038,10 @@ bool UCMachine::execProcess(UCProcess* p)
 //				error = true;
 			} else {
 				if (ui32b) {
-					uint16 s = listHeap[ui16b]->getStringIndex(ui16a);
+					uint16 s = getList(ui16b)->getStringIndex(ui16a);
 					p->stack.push2(duplicateString(s));
 				} else {
-					p->stack.push((*listHeap[ui16b])[ui16a], ui32a);
+					p->stack.push((*getList(ui16b))[ui16a], ui32a);
 				}
 			}
 			LOGPF(("push element\t%02X slist==%02X\n", ui32a, ui32b));
@@ -1771,7 +1783,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			if (ui16a == 0xFFFF) ui16a = 0;
 			else ui16a++;
 			
-			if (ui16a >= listHeap[ui16b]->getSize()) {
+			if (ui16a >= getList(ui16b)->getSize()) {
 				// loop done
 				
 				// free loop list
@@ -1796,7 +1808,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				p->stack.assign2(p->stack.getSP(),ui16a);		
 
 				// place next element from list in [bp+si8a]
-				p->stack.assign(p->bp+si8a, (*listHeap[ui16b])[ui16a], ui32a);
+				p->stack.assign(p->bp+si8a, (*getList(ui16b))[ui16a], ui32a);
 			}
 			break;
 
@@ -1914,6 +1926,7 @@ uint16 UCMachine::assignList(UCList* l)
 {
 	uint16 id = listIDs->getNewID();
 	if (id == 0) return 0;
+	assert(listHeap.find(id) == listHeap.end());
 
 	listHeap[id] = l;
 
@@ -1929,6 +1942,7 @@ void UCMachine::freeString(uint16 s)
 	std::map<uint16, std::string>::iterator iter = stringHeap.find(s);
 	if (iter != stringHeap.end()) {
 		stringHeap.erase(iter);
+		stringIDs->clearID(s);
 	}
 }
 
@@ -1939,6 +1953,7 @@ void UCMachine::freeList(uint16 l)
 		iter->second->free();
 		delete iter->second;
 		listHeap.erase(iter);
+		listIDs->clearID(l);
 	}
 }
 
@@ -1949,6 +1964,7 @@ void UCMachine::freeStringList(uint16 l)
 		iter->second->freeStrings();
 		delete iter->second;
 		listHeap.erase(iter);
+		listIDs->clearID(l);
 	}	
 }
 
