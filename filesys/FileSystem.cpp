@@ -95,7 +95,7 @@ bool FileSystem::rawopen
 #if defined(MACOS) || (__GNUG__ > 2)
 	std::ios_base::openmode mode = std::ios::in;
 	if (!is_text) mode |= std::ios::binary;
-#elif defined(XWIN)
+#elif defined(UNIX)
 	int mode = std::ios::in;
 #else
 	int mode = std::ios::in;
@@ -143,7 +143,7 @@ bool FileSystem::rawopen
 #if defined(MACOS) || (__GNUG__ > 2)
 	std::ios_base::openmode mode = std::ios::out | std::ios::trunc;
 	if (!is_text) mode |= std::ios::binary;
-#elif defined(XWIN)
+#elif defined(UNIX)
 	int mode = std::ios::out | std::ios::trunc;
 #else
 	int mode = std::ios::out | std::ios::trunc;

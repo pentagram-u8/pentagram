@@ -46,33 +46,41 @@ AC_SUBST(MKDIR)
 
 DATAPATH="$datadir/pentagram"
 
-# TODO: Fix this XWIN/UNIX/Linux mess.
+# determine various settings based on 'host_os'
 
-# determine windowing system based on 'host_os'
-AC_MSG_CHECKING("windowing system")
+# We define one of the following
+#   UNIX  (and maybe LINUX, OPENBSD, ...)
+#   BEOS
+#   WIN32 (and maybe CYGWIN)
+#   MACOSX
+
+# HAVE_HOME is defined if the HOME env.var points to the user's home dir.
+
+AC_MSG_CHECKING(system)
 case "$host_os" in
 	linux*)
-		WINDOWING_SYSTEM="-DXWIN"
+		AC_DEFINE(UNIX, 1, [UNIX-variant])
+		AC_DEFINE(LINUX, 1, [Linux])
 		AC_DEFINE(HAVE_HOME, 1, [HOME env.var exists])
-		AC_MSG_RESULT(X11 (GNU/Linux))
+		AC_MSG_RESULT(UNIX (GNU/Linux))
 		;;
-	beos)
-		WINDOWING_SYSTEM="-DBEOS"
+	beos*)
+		AC_DEFINE(BEOS, 1, [BeOS])
 		AC_DEFINE(HAVE_HOME, 1, [HOME env.var exists])
 		AC_MSG_RESULT(BeOS)
 		LIBS="$LIBS -lbe -lmidi"
 		enable_timidity="no"
 		;;
 	mingw32* )
-		WINDOWING_SYSTEM="-DWIN32"
+		AC_DEFINE(WIN32, 1, [Windows])
 		AC_MSG_RESULT(Win32 (mingw32))
 		LIBS="$LIBS -lwinmm -lstdc++"
 		enable_timidity="no"
 		EMPTY_FILE=nul
 		;;
 	cygwin* )
-		WINDOWING_SYSTEM="-DWIN32"
-		AC_DEFINE(CYGWIN, 1, [Compiling using Cygwin])
+		AC_DEFINE(WIN32, 1, [Windows])
+		AC_DEFINE(CYGWIN, 1, [Cygwin])
 		AC_MSG_RESULT(Win32 (cygwin))
 		CXXFLAGS="$CXXFLAGS -mno-cygwin"
 		LIBS="$LIBS -lwinmm"
@@ -80,16 +88,16 @@ case "$host_os" in
 		EMPTY_FILE=nul
 		;;
 	openbsd* )
-		WINDOWING_SYSTEM="-DXWIN"
+		AC_DEFINE(UNIX, 1, [UNIX-variant])
 		AC_DEFINE(HAVE_HOME, 1, [HOME env.var exists])
-		AC_DEFINE(OPENBSD, 1, [Compiling on OpenBSD])
-		AC_MSG_RESULT(X11 (OpenBSD))
+		AC_DEFINE(OPENBSD, 1, [OpenBSD])
+		AC_MSG_RESULT(UNIX (OpenBSD))
 		LIBS="$LIBS -L/usr/X11R6/lib -lX11 -lXext -lXxf86vm -lXxf86dga"
 		;;
 	solaris* )
-		WINDOWING_SYSTEM="-DXWIN"
+		AC_DEFINE(UNIX, 1, [UNIX-variant])
 		AC_DEFINE(HAVE_HOME, 1, [HOME env.var exists])
-		AC_MSG_RESULT(X11 (Solaris))
+		AC_MSG_RESULT(UNIX (Solaris))
 		LIBS="$LIBS -lsocket -lX11"
 		;;
 	darwin*)
@@ -98,15 +106,13 @@ case "$host_os" in
 		dnl to do more to distinguish them. Plain Darwin will propably
 		dnl use X-Windows; and it is of course lacking Cocoa.
 		dnl For now I am lazy and do not add proper detection code.
-		
-		WINDOWING_SYSTEM="-DMACOSX"
-		AC_DEFINE(MACOSX, 1, [Compiling on Mac OS X])
+		AC_DEFINE(MACOSX, 1, [Mac OS X])
 		AC_MSG_RESULT(Mac OS X)
 		DATAPATH="data"
 		;;
 	*)
-		WINDOWING_SYSTEM="-DXWIN"
-		AC_MSG_RESULT(not sure... guessing X11)
+		AC_DEFINE(UNIX, 1, [UNIX-variant])
+		AC_MSG_RESULT(not sure... guessing a unix variant)
 		;;
 esac
 
@@ -119,6 +125,21 @@ AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LEX
 AC_PROG_CXX
+
+
+dnl # objcopy (used for embedding binary data into linux binary)
+dnl # not currently used
+dnl AC_CHECK_PROG(have_objdump, "objdump", yes, no)
+dnl AC_CHECK_PROG(have_objcopy, "objcopy", yes, no)
+dnl if test x$have_objdump = xyes -a x$have_objcopy = xyes ; then
+dnl   AC_MSG_CHECKING(objcopy command line)
+dnl    AC_TRY_COMPILE(,,[
+dnl 	OBJCOPY_format=`objdump -f conftest.$ac_objext | sed -e '/file format/!d' -e 's/.*format \(.*\)/\1/'`
+dnl 	OBJCOPY_arch=`objdump -f conftest.$ac_objext | sed -e '/architecture/!d' -e 's/.*architecture: \(.*\),.*/\1/'`
+dnl    ])
+dnl    AC_MSG_RESULT(-I binary -O $OBJCOPY_format -B $OBJCOPY_arch)
+dnl fi
+
 
 # ---------------------------------------------------------------------
 # Checks for header files.
@@ -269,16 +290,8 @@ else
 fi
 
 # ------------------
-# Checking for various, necessary programs
-# ------------------
-
-# Since I'm using sed, it'd be good to check for it...
-AC_CHECK_PROG(have_sed, "sed", yes, no)
-
-# ------------------
 # Generate output
 # ------------------
-AC_SUBST(WINDOWING_SYSTEM)
 AC_SUBST(WARNINGS)
 AC_SUBST(PACKAGE)
 AC_SUBST(PROFILE)
@@ -298,13 +311,5 @@ echo
 echo SDL ....................... :  `$SDL_CONFIG --version`
 echo
 echo Warning level ............. : $WARNING_LEVEL
-
-if test x$have_sed = xyes; then
-	echo
-else
-	echo
-	AC_MSG_RESULT(WARNING: \`sed\` was not found in your PATH. The usecode compiler's lex file (tools/compile/llcLexer.l) will not successfully rebuild _if_ modified.)
-	echo
-fi
-
+echo
 echo "Now type 'make' to build Pentagram"
