@@ -274,5 +274,23 @@ bool U8Game::startInitialUsecode()
 	CameraProcess::SetCameraProcess(new CameraProcess(ix,iy,iz));
 	egg->hatch();
 
+	// Music Egg
+	// Item 2145 (class Item, shape 562, 0, (11551,2079,48) q:52, m:0, n:0, f:2000, ef:2)
+	uclist.free();
+	LOOPSCRIPT(musicscript, LS_SHAPE_EQUAL1(562));
+	currentmap->areaSearch(&uclist, musicscript, sizeof(musicscript),
+						   0, 256, false, 11551, 2079);
+
+	if (uclist.getSize() < 1) {
+		perr << "Unable to find MUSIC egg!" << std::endl;
+	}
+	else {
+		objid = uclist.getuint16(0);
+		Item *musicEgg = p_dynamic_cast<Item*>(
+			ObjectManager::get_instance()->getObject(objid));
+
+		musicEgg->callUsecodeEvent_cachein();
+	}
+
 	return true;
 }
