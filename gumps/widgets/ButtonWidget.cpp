@@ -40,7 +40,8 @@ void ButtonWidget::InitGump()
 
 Gump *ButtonWidget::OnMouseDown(int button, int mx, int my)
 {
-//	Gump *ret = SimpleTextWidget::OnMouseDown(button,mx,my);
+	Gump *ret = SimpleTextWidget::OnMouseDown(button,mx,my);
+	if (ret) return ret;
 	if (button == GUIApp::BUTTON_LEFT) return this;
 	return 0;
 }
