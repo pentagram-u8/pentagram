@@ -17,6 +17,8 @@
  */
 
 #include "pent_include.h"
+
+#include <SDL.h>
 #include "Q_strcasecmp.h"
 
 #include "FileSystem.h"

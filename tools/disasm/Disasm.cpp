@@ -20,6 +20,7 @@
 
 #include "pent_include.h"
 
+#include <SDL.h>
 #include <fstream>
 #include <cstdio>
 
