@@ -1,3 +1,6 @@
+2003-05-05  Ryan Nunn <colourles@users.sourceforge.net>
+	* kernel/Kernel.*, kernel/idMan.*, world/World.* : l33t id handling.
+
 2003-05-05	Darke <darkepaw@users.sf.net>
 	* kernel/Applications.*: Partial support for a simple font-config file.
 	* data/fixedfont.cfg: Said basic config file.

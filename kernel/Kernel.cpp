@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Kernel.h"
 #include "Process.h"
+#include "idMan.h"
 
 #include "UCMachine.h" // only for usecodeStats.
 #include "World.h" // only for worldStats
@@ -32,6 +33,7 @@ Kernel::Kernel()
 {
 	assert(kernel == 0);
 	kernel = this;
+	pIDs = new idMan(1,32767);
 }
 
 Kernel::~Kernel()
@@ -46,7 +48,8 @@ uint16 Kernel::addProcess(Process* proc)
 			return 0;
 	}
 
-	proc->pid = getNewPID();
+	// Get a pID
+	proc->pid = pIDs->getNewID();
 
 	perr << "[Kernel] Adding process " << proc
 		 << ", pid = " << proc->pid << std::endl;
@@ -69,10 +72,14 @@ void Kernel::removeProcess(Process* proc)
 	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it) {
 		if (*it == proc) {
 			proc->active = false;
-
+			
 			perr << "[Kernel] Removing process " << proc << std::endl;
 
 			processes.erase(it);
+
+			// Clear pid
+			pIDs->clearID(proc->pid);
+
 			return;
 		}
 	}
@@ -103,6 +110,9 @@ bool Kernel::runProcesses(uint32 framenum)
 			// process is killed, so remove it from the list
 			it = processes.erase(it);
 
+			// Clear pid
+			pIDs->clearID(p->pid);
+
 			//! is this the right place to delete processes?
 			delete p;
 		}
@@ -119,21 +129,6 @@ Process* Kernel::getProcess(uint16 pid)
 			return p;
 	}
 	return 0;
-}
-
-uint16 Kernel::getNewPID()
-{
-	static uint16 count = 0; // 0 is reserved, higher than 0x7FFF too
-
-	// I'm not pretty sure this isn't the most efficient way to do this :-)
-
-	// find unused PID
-	do {
-		count++;
-		if (count > 0x7FFE) count = 1;
-	} while (getProcess(count));
-
-	return count;
 }
 
 void Kernel::kernelStats()

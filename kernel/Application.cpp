@@ -300,7 +300,7 @@ void Application::paint()
 	long diff = now - prev;
 	prev = now;
 
-	con.Printf("Rendering time %i ms %i FPS - Sort %i ms  Paint %i ms       \r", diff, 1000/diff, after_sort-before_sort, after_paint-after_sort);
+	con.Printf("\rRendering time %i ms %i FPS - Sort %i ms  Paint %i ms       ", diff, 1000/diff, after_sort-before_sort, after_paint-after_sort);
 }
 
 void Application::setupVirtualPaths()

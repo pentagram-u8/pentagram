@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <map>
 
 class Process;
+class idMan;
 
 class Kernel {
 public:
@@ -40,9 +41,8 @@ public:
 
 	void kernelStats();
 private:
-	uint16 getNewPID();
-
 	std::list<Process*> processes;
+	idMan	*pIDs;
 
 	static Kernel* kernel;
 };

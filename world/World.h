@@ -60,6 +60,7 @@ class IDataSource;
 class Actor;
 class Flex;
 class Object;
+class idMan;
 
 
 class World
@@ -101,7 +102,7 @@ private:
 	IDataSource* fixedds;
 
 	std::vector<Object*> objects;
-	int lastobjid;
+	idMan* objIDs;
 };
 
 #endif
