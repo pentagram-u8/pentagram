@@ -310,14 +310,23 @@ AC_ARG_ENABLE(fmopl_midi,      [  --disable-fmopl-midi    Disable FMOPL midi],,e
 #fi
 
 AC_ARG_ENABLE(timidity_midi,      [  --disable-timidity-midi         Disable timidity midi],,enable_timidity_midi=yes)
+AC_ARG_WITH(timidity,             [  --with-timidity=path    path to timidity.cfg (optional)],,)
 AC_MSG_CHECKING(if we want to use timidity midi)
 if test x$enable_timidity_midi = xyes; then
 	AC_MSG_RESULT(yes)
 	AC_DEFINE(USE_TIMIDITY_MIDI, 1, [Enable timidity midi])
+
+	if test x$with_timidity != x; then
+		if test ! -d $with_timidity; then
+			with_timidity=`echo "$with_timidity" | sed 's/timidity.cfg//'`
+		fi
+		AC_DEFINE_UNQUOTED(DEFAULT_TIMIDITY_PATH, "$with_timidity", [Default timidity path])
+	fi
 #	USESDLMIXER=yes
 else
 	AC_MSG_RESULT(no)
 fi
+echo "TIMIDITY=$with_timidity"
 
 #if test x$HAVESDLMIXER = xyes -a x$USESDLMIXER = xyes; then
 #	SDL_LIBS="$SDL_LIBS -lSDL_mixer"

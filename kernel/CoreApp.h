@@ -40,6 +40,8 @@ public:
 	virtual ~CoreApp();
 	
 	static CoreApp* get_instance() { return application; };
+
+	Configuration* getConfig() const { return config; }
 	
 	virtual void run()=0; // FIXME: Need stub
 	virtual void paint()=0; // probably shouldn't exist

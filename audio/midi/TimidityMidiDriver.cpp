@@ -106,7 +106,7 @@ void TimidityMidiDriver::send(uint32 b)
 
 void TimidityMidiDriver::lowLevelProduceSamples(sint16 *samples, uint32 num_samples)
 {
-	NS_TIMIDITY::Timidity_GenerateSamlpes(samples,num_samples);
+	NS_TIMIDITY::Timidity_GenerateSamples(samples,num_samples);
 }
 
 #endif //USE_TIMIDITY_MIDI

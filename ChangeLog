@@ -1,3 +1,9 @@
+2003-07-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* configure.ac, audio/midi/timidity/*: added --with-timidity=path
+	  to configure to supply default timidity path
+	* audio/midi/various: typos :-)
+	* audio/midi/timidity/*: use config/audio/timiditycfg to get configfile
+
 2003-07-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* configure.ac, bootstrap, Makefile.in: timidity
 	* configure.ac: don't use SDL_mixer anymore

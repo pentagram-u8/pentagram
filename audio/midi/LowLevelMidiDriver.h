@@ -120,7 +120,7 @@ private:
 		} data;
 	};
 
-	sint32			initalizied;
+	sint32			initialized;
 
 	// Communications
 	bool			playing[LLMD_NUM_SEQ];			// Only set by thread

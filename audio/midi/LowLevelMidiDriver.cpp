@@ -54,8 +54,8 @@ using std::string;
 using std::endl;
 
 LowLevelMidiDriver::LowLevelMidiDriver() :
-	initalizied(false), mutex(0), cbmutex(0), 
-	thread(0), global_volume(255)
+	initialized(false), mutex(0), cbmutex(0), 
+	global_volume(255), thread(0)
 {
 	message.type = LLMD_COM_THREAD_INIT;
 }
@@ -63,7 +63,7 @@ LowLevelMidiDriver::LowLevelMidiDriver() :
 LowLevelMidiDriver::~LowLevelMidiDriver()
 {
 	// Just kill it
-	if (initalizied) 
+	if (initialized) 
 	{
 		perr <<	"Warning: Destructing LowLevelMidiDriver and destroyMidiDriver() wasn't called!" << std::endl;
 		if (thread) SDL_KillThread(thread);
@@ -74,7 +74,7 @@ LowLevelMidiDriver::~LowLevelMidiDriver()
 int LowLevelMidiDriver::initMidiDriver(uint32 samp_rate, bool is_stereo)
 {
 	// Destroy first before re-initing
-	if (initalizied) destroyMidiDriver();
+	if (initialized) destroyMidiDriver();
 
 	string s;
 
@@ -106,14 +106,14 @@ int LowLevelMidiDriver::initMidiDriver(uint32 samp_rate, bool is_stereo)
 		return code;
 	}
 	else
-		initalizied = true;
+		initialized = true;
 
 	return 0;
 }
 
 void LowLevelMidiDriver::destroyMidiDriver()
 {
-	if (!initalizied) return;
+	if (!initialized) return;
 
 	while (getComMessage(&message.type) != LLMD_COM_READY) yield();
 
@@ -125,7 +125,7 @@ void LowLevelMidiDriver::destroyMidiDriver()
 	cbmutex = 0;
 	mutex = 0;
 	thread = 0;
-	initalizied = false;
+	initialized = false;
 
 	giveinfo();
 }
@@ -308,7 +308,7 @@ void LowLevelMidiDriver::destroySoftwareSynth()
 void LowLevelMidiDriver::produceSamples(sint16 *samples, uint32 bytes)
 {
 	// Hey, we're not supposed to be here
-	if (!initalizied) return;
+	if (!initialized) return;
 
 	int stereo_mult = 1;
 	if (stereo) stereo_mult = 2;
@@ -699,7 +699,7 @@ void LowLevelMidiDriver::startSequence(int seq_num, XMidiEventList *eventlist, b
 {
 	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
 
-	if (!initalizied)
+	if (!initialized)
 		return;
 
 	giveinfo();
@@ -726,7 +726,7 @@ void LowLevelMidiDriver::startSequence(int seq_num, XMidiEventList *eventlist, b
 void LowLevelMidiDriver::finishSequence(int seq_num)
 {
 	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
-	if (!initalizied) return;
+	if (!initialized) return;
 
 	giveinfo();
 	while (getComMessage(&message.type) != LLMD_COM_READY) yield ();
@@ -748,7 +748,7 @@ void LowLevelMidiDriver::setSequenceVolume(int seq_num, int vol)
 {
 	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
 	if (vol < 0 || vol > 255) return;
-	if (!initalizied) return;
+	if (!initialized) return;
 
 	giveinfo();
 	while (getComMessage(&message.type) != LLMD_COM_READY) yield ();
@@ -770,7 +770,7 @@ void LowLevelMidiDriver::setSequenceVolume(int seq_num, int vol)
 void LowLevelMidiDriver::setGlobalVolume(int vol)
 {
 	if (vol < 0 || vol > 255) return;
-	if (!initalizied) return;
+	if (!initialized) return;
 
 	giveinfo();
 	while (getComMessage(&message.type) != LLMD_COM_READY) yield ();
@@ -792,7 +792,7 @@ void LowLevelMidiDriver::setSequenceSpeed(int seq_num, int speed)
 {
 	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
 	if (speed < 0) return;
-	if (!initalizied) return;
+	if (!initialized) return;
 
 	giveinfo();
 	while (getComMessage(&message.type) != LLMD_COM_READY) yield ();
@@ -828,7 +828,7 @@ bool LowLevelMidiDriver::isSequencePlaying(int seq_num)
 void LowLevelMidiDriver::pauseSequence(int seq_num)
 {
 	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
-	if (!initalizied) return;
+	if (!initialized) return;
 
 	giveinfo();
 	while (getComMessage(&message.type) != LLMD_COM_READY) yield ();
@@ -850,7 +850,7 @@ void LowLevelMidiDriver::pauseSequence(int seq_num)
 void LowLevelMidiDriver::unpauseSequence(int seq_num)
 {
 	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
-	if (!initalizied) return;
+	if (!initialized) return;
 
 	giveinfo();
 	while (getComMessage(&message.type) != LLMD_COM_READY) yield ();

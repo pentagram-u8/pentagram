@@ -55,7 +55,7 @@ int Timidity_Init_Simple(int rate, int samples, sint32 encoding);
 void Timidity_DeInit();
 extern void Timidity_FinalInit(bool patches[128], bool drums[128]);
 extern void Timidity_PlayEvent(unsigned char status, int a, int b);
-extern void Timidity_GenerateSamlpes(void *stream, int samples);
+extern void Timidity_GenerateSamples(void *stream, int samples);
 
 
 /* This is for use with the SDL library */
@@ -236,10 +236,12 @@ extern void Timidity_GenerateSamlpes(void *stream, int samples);
 /* You could specify a complete path, e.g. "/etc/timidity.cfg", and
    then specify the library directory in the configuration file. */
 #define CONFIG_FILE	"timidity.cfg"
+#ifndef DEFAULT_TIMIDITY_PATH
 #ifdef __WIN32__
-#define DEFAULT_PATH	"\\TIMIDITY"
+#define DEFAULT_TIMIDITY_PATH	"\\TIMIDITY"
 #else
-#define DEFAULT_PATH	"/usr/local/lib/timidity"
+#define DEFAULT_TIMIDITY_PATH	"/usr/share/timidity"
+#endif
 #endif
 
 /* These affect general volume */

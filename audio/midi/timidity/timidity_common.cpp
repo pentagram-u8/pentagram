@@ -51,9 +51,9 @@ namespace NS_TIMIDITY {
 
 char current_filename[1024];
 
-#ifdef DEFAULT_PATH
+#ifdef DEFAULT_TIMIDITY_PATH
     /* The paths in this list will be tried whenever we're reading a file */
-    static PathList defaultpathlist={DEFAULT_PATH,0};
+    static PathList defaultpathlist={DEFAULT_TIMIDITY_PATH,0};
     static PathList *pathlist=&defaultpathlist; /* This is a linked list */
 #else
     static PathList *pathlist=0;
@@ -120,7 +120,7 @@ static FILE *try_to_open(char *name, int decompress, int noise_mode)
 
 /* This is meant to find and open files for reading, possibly piping
    them through a decompressor. */
-FILE *open_file(char *name, int decompress, int noise_mode)
+FILE *open_file(const char *name, int decompress, int noise_mode)
 {
   FILE *fp;
   PathList *plp=pathlist;

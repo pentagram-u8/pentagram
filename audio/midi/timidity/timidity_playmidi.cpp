@@ -1066,7 +1066,7 @@ void Timidity_PlayEvent(unsigned char status, int a, int b)
 	}
 }
 
-void Timidity_GenerateSamlpes(void *stream, int samples)
+void Timidity_GenerateSamples(void *stream, int samples)
 {
 	int channels;
 
