@@ -114,15 +114,11 @@ void UCMachine::loadIntrinsics(Intrinsic *i)
 
 bool UCMachine::execProcess(UCProcess* p)
 {
-//	static uint8 tempbuf[256];
-
 	assert(p);
 
 	IBufferDataSource cs(p->usecode->get_class(p->classid),
 						 p->usecode->get_class_size(p->classid));
 	cs.seek(p->ip);
-
-	//! check if process is suspended? (or do that in UCProcess::run?)
 
 	if (SHOWSTART) {
 		pout << std::hex << "running process " << p->pid << ", item " << p->item_num << ", class " << p->classid << ", offset " << p->ip << std::dec << std::endl;
@@ -1386,11 +1382,42 @@ bool UCMachine::execProcess(UCProcess* p)
 			LOGPF(("str to ptr"));
 			break;
 
-/*
 		case 0x6C:
-		
+			// 6C xx yy
+			// yy = type (01 = string, 02 = slist, 03 = list)
+			// copy the (string/slist/list) in BP+xx to the current process,
+			// and add it to the "Free Me" list of the process
+			si8a = cs.read1(); // index
+			ui8a = cs.read1(); // type
+			LOGPF(("param pid chg\t%s, type=%u", print_bp(si8a), ui8a));
 
-*/
+			ui16a = p->stack.access2(p->bp+si8a);
+			switch (ui8a) {
+			case 1: // string
+				// copy string
+				ui16b = duplicateString(ui16a);
+				break;
+			case 2: { // slist
+				UCList* l = new UCList(2);
+				l->copyStringList(*getList(ui16a));
+				ui16b = assignList(l);
+			} break;
+			case 3: { // list
+				UCList* l = getList(ui16a);
+				int elementsize = l->getElementSize();
+				UCList* l2 = new UCList(elementsize);
+				l2->copyList(*l);
+				ui16b = assignList(l);
+			} break;
+			default:
+				ui16b = 0;
+				perr << "Error: invalid param pid change type (" << ui8a
+					 << ")" << std::endl;
+				error = true;
+			}
+			p->stack.assign2(p->bp+si8a, ui16b); // assign new index
+			p->freeOnTerminate(ui16b, ui8a); // free new var when terminating
+			break;
 
 		case 0x6D:
 			// 6D
@@ -1761,11 +1788,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		case 0x5B: case 0x5C: // debugging
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
-		case 0x6C: // parameter passing?
-			error = true;
-			perr.printf("unhandled opcode %02X\n", opcode);
-			break;
-				
+
 		default:
 			perr.printf("unhandled opcode %02X\n", opcode);
 

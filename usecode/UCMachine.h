@@ -89,7 +89,6 @@ private:
 	// functions we need
 	UCStack globals;
 
-	// this probably won't be the final way of storing these
 	std::map<uint16, UCList*> listHeap;
 	std::map<uint16, std::string> stringHeap;
 

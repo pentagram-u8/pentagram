@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef UCPROCESS_H
 #define UCPROCESS_H
 
+#include <list>
 #include "Process.h"
 #include "UCStack.h"
 #include "IDataSource.h"
@@ -42,6 +43,10 @@ public:
 			  int thissize = 0, const uint8* args = 0, int argsize = 0);
 	virtual bool run(const uint32 framenum);
 
+	virtual void terminate();
+
+	void freeOnTerminate(uint16 index, int type);
+
 protected:
 
 	void call(uint16 classid_, uint16 offset_);
@@ -59,6 +64,9 @@ protected:
 
 	// data stack
 	UCStack stack;
+
+	// "Free Me" list
+	std::list<std::pair<uint16, int> > freeonterminate;
 };
 
 #endif

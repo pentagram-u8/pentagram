@@ -103,3 +103,40 @@ bool UCProcess::ret()
 	else
 		return false;
 }
+
+void UCProcess::freeOnTerminate(uint16 index, int type)
+{
+	assert(type >= 1 && type <= 3);
+
+	std::pair<uint16, int> p;
+	p.first = index;
+	p.second = type;
+
+	freeonterminate.push_back(p);
+}
+
+void UCProcess::terminate()
+{
+	std::list<std::pair<uint16, int> >::iterator i;
+
+	for (i = freeonterminate.begin(); i != freeonterminate.end(); ++i) {
+		uint16 index = (*i).first;
+		int type = (*i).second;
+
+		switch (type) {
+		case 1: // string
+			UCMachine::get_instance()->freeString(index);
+			break;
+		case 2: // stringlist
+			UCMachine::get_instance()->freeStringList(index);
+			break;
+		case 3: // list
+			UCMachine::get_instance()->freeList(index);
+			break;
+		}
+	}
+
+	freeonterminate.clear();
+
+	Process::terminate();
+}
