@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003  The Pentagram Team
+ *  Copyright (C) 2003-2004  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -384,8 +384,14 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 
 	// add item to container
 	assert(targetcontainer);
-	
-	item->moveToContainer(targetcontainer);
+
+	if (item->getParent() == owner) {
+		// already in this container, so move item to let it be drawn
+		// on top of all other items
+		targetcontainer->moveItemToEnd(item);
+	} else {
+		item->moveToContainer(targetcontainer);
+	}
 
 	//!! TODO: this is nonsense when not adding to this container
 	dragging_x = mx - itemarea.x;

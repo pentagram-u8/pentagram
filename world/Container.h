@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -53,6 +53,12 @@ public:
 	//! \param item The item to remove
 	//! \return true if succesful, false if item wasn't in container
 	virtual bool removeItem(Item* item);
+
+	//! Move an item to the end of the contents list, adding it if it isn't
+	//! already in it.
+	//! \param item The item to move
+	//! \return true if succesful, false if item couldn't be added
+	virtual bool moveItemToEnd(Item* item);
 
 	//! Remove all contents, moving them to this container's
 	//! parent. (Or into the world if this container has no parent.)

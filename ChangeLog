@@ -1,3 +1,7 @@
+2004-06-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/ContainerGump.cpp, world/Container.*: move items to end of a
+	  container's contents list after dragging them around in a gump
+
 2004-06-03  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* gumps/ContainerGump.cpp: Direct dropping items into containers is
 	  only allowed if the container is not marked as land and not an NPC.

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -123,6 +123,24 @@ bool Container::removeItem(Item* item)
 		}
 	}
 	return false;
+}
+
+bool Container::moveItemToEnd(Item* item)
+{
+	std::list<Item*>::iterator iter;
+
+	for (iter = contents.begin(); iter != contents.end(); ++iter) {
+		if (*iter == item) {
+			// found; move to end
+			contents.erase(iter);
+			contents.push_back(item);
+			return true;
+		}
+	}
+
+	// not found; try to add normally
+
+	return addItem(item);
 }
 
 void Container::removeContents()
