@@ -21,6 +21,8 @@
 #include "RenderSurface.h"
 #include "Shape.h"
 #include "ShapeFrame.h"
+#include "ShapeFlex.h"
+#include "GameData.h"
 #include "GumpNotifyProcess.h"
 #include "Kernel.h"
 #include "World.h"
@@ -665,7 +667,16 @@ void Gump::saveData(ODataSource* ods)
 	ods->write4(flags);
 	ods->write4(static_cast<uint32>(layer));
 	ods->write4(static_cast<uint32>(index));
-	ods->write4(0); //!!TODO: shape
+
+	uint16 flex = 0;
+	uint32 shapenum = 0;
+	if (shape)
+	{
+		shape->getShapeId(flex, shapenum);
+	}
+	ods->write2(flex);
+	ods->write4(shapenum);
+	
 	ods->write4(framenum);
 	if (focus_child)
 		ods->write2(focus_child->getObjId());
@@ -700,8 +711,15 @@ bool Gump::loadData(IDataSource* ids)
 	flags = ids->read4();
 	layer = static_cast<sint32>(ids->read4());
 	index = static_cast<sint32>(ids->read4());
-	ids->read4(); //!!TODO: shape
+
 	shape = 0;
+	ShapeFlex * flex = GameData::get_instance()->getShapeFlex(ids->read2());
+	uint32 shapenum = ids->read4();
+	if (flex)
+	{
+		shape = flex->getShape(shapenum);
+	}
+
 	framenum = ids->read4();
 	uint16 focusid = ids->read2();
 	focus_child = 0;

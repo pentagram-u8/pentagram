@@ -26,7 +26,7 @@ namespace Pentagram { struct Rect; }
 class GumpShapeFlex : public ShapeFlex
 {
 public:
-	GumpShapeFlex(IDataSource* ds, Pentagram::Palette* pal = 0,
+	GumpShapeFlex(IDataSource* ds, const uint16 id, Pentagram::Palette* pal = 0,
 				  const ConvertShapeFormat *format = 0);
 	virtual ~GumpShapeFlex();
 	

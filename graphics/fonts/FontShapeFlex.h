@@ -26,9 +26,9 @@ class ShapeFont;
 class FontShapeFlex : public ShapeFlex
 {
 public:
-	FontShapeFlex(IDataSource* ds, Pentagram::Palette* pal = 0,
+	FontShapeFlex(IDataSource* ds, const uint16 id, Pentagram::Palette* pal = 0,
 				  const ConvertShapeFormat *format = 0) :
-		ShapeFlex(ds, pal, format) { }
+		ShapeFlex(ds, id, pal, format) { }
 	virtual ~FontShapeFlex() { }
 	
 	ShapeFont* getFont(uint32 fontnum);

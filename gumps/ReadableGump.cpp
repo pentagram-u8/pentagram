@@ -125,8 +125,6 @@ void ReadableGump::saveData(ODataSource* ods)
 	ods->write2(1); //version
 	ModalGump::saveData(ods);
 
-	ods->write4(static_cast<uint32>(fontnum));
-	ods->write2(shapenum);
 	ods->write2(textwidget);
 }
 
@@ -136,8 +134,6 @@ bool ReadableGump::loadData(IDataSource* ids)
 	if (version != 1) return false;
 	if (!ModalGump::loadData(ids)) return false;
 
-	fontnum = static_cast<int>(ids->read4());
-	shapenum = ids->read2();
 	textwidget = ids->read2();
 
 	return true;

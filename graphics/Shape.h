@@ -32,7 +32,8 @@ public:
 	// Parse data, create frames.
 	// NB: Shape uses data without copying it. It is deleted on destruction
 	// If format is not specified it will be autodetected
-	Shape(const uint8* data, uint32 size, const ConvertShapeFormat *format);
+	Shape(const uint8* data, uint32 size, const ConvertShapeFormat *format,
+		const uint16 flexId, const uint32 shapenum);
 	Shape(IDataSource *src, const ConvertShapeFormat *format);
 	virtual ~Shape();
 	void setPalette(const Pentagram::Palette* pal) { palette = pal; }
@@ -47,6 +48,8 @@ public:
 
 	ShapeFrame* getFrame(unsigned int frame)
 		{ if (frame < frames.size()) return frames[frame]; else return 0; }
+		
+	void getShapeId(uint16 & flexId, uint32 & shapenum);
 
 	// This will detect the format of a shape
 	static const ConvertShapeFormat *DetectShapeFormat(const uint8* data, uint32 size);
@@ -71,6 +74,8 @@ protected:
 
 	const uint8* data;
 	uint32 size;
+	const uint16 flexId;
+	const uint32 shapenum;
 };
 
 

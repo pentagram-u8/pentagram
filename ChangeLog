@@ -4,6 +4,18 @@
 	* graphics/MainShapeFlex.*: added p_dynamic cast support
 	* gumps/ShapeViewerGump.cpp: added shapeinfo to gump when viewed
 	  shape is from MainShapeFlex.
+	* graphics/**ShapeFlex.*: added flex id for use with GameData
+	* graphics/Shape.*: store flex id and shapenum so the shape can be
+	  saved and loaded properly.
+	* graphics/fonts/ShapeFont.*: complies with new constructor for Shape
+	* gumps/Gump.cpp: Properly saves and loads the shape
+	* gumps/ReadableGump.cpp: Removed some unneccesary items from save and
+	  load
+	* gumps/ShapeViewerGump.cpp: complies with new constructor for
+	  ShapeFlex
+	* gumps/widgets/ButtonWidget.cpp: Properly saves and loads the up and
+	  down shapes
+	* kernel/GameData.*: added ability to get ShapeFlexes by an id
 
 2004-05-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/PaperdollGump.*: output stat descriptions

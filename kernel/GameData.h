@@ -52,7 +52,13 @@ public:
 	Shape* getMouse() const { return mouse; }
 	MusicFlex* getMusic() const { return music; }
 	WpnOvlayDat* getWeaponOverlay() const { return weaponoverlay; }
+	ShapeFlex* getShapeFlex(uint16 flexId) const;
 
+	enum ShapeFlexId {
+		OTHER		= 0,
+		MAINSHAPES	= 1,
+		GUMPS		= 2
+	};
 private:
 	Flex* fixed;
 	MainShapeFlex* mainshapes;

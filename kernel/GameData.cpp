@@ -86,6 +86,19 @@ Glob* GameData::getGlob(uint32 glob) const
 		return 0;
 }
 
+ShapeFlex* GameData::getShapeFlex(uint16 flexId) const
+{
+	switch (flexId) {
+		case MAINSHAPES:
+			return mainshapes;
+		case GUMPS:
+			return gumps;
+		default:
+			break;
+	};
+	return 0;
+}
+
 
 void GameData::loadU8Data()
 {
@@ -119,7 +132,8 @@ void GameData::loadU8Data()
 		perr << "Unable to load static/u8shapes.flx. Exiting" << std::endl;
 		std::exit(-1);
 	}
-	mainshapes = new MainShapeFlex(sf, PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
+	mainshapes = new MainShapeFlex(sf, MAINSHAPES,
+		PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
 
 	// Load weapon, armour info
 	ConfigFileManager* config = ConfigFileManager::get_instance();
@@ -185,7 +199,8 @@ void GameData::loadU8Data()
 		perr << "Unable to load static/u8fonts.flx. Exiting" << std::endl;
 		std::exit(-1);
 	}
-	fonts = new FontShapeFlex(fds, PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
+	fonts = new FontShapeFlex(fds, OTHER,
+		PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
 
 	// Load mouse
 	IDataSource *msds = filesystem->ReadFile("@u8/static/u8mouse.shp");
@@ -202,7 +217,8 @@ void GameData::loadU8Data()
 		perr << "Unable to load static/u8gumps.flx. Exiting" << std::endl;
 		std::exit(-1);
 	}
-	gumps = new GumpShapeFlex(gumpds, PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
+	gumps = new GumpShapeFlex(gumpds, GUMPS,
+		PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
 
 	IDataSource *gumpageds = filesystem->ReadFile("@u8/static/gumpage.dat");
 	if (!gumpageds) {

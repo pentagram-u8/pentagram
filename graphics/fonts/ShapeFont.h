@@ -30,7 +30,8 @@ class ShapeFont : public Pentagram::Font, public Shape
 	int hlead;
 
 public:
-	ShapeFont(const uint8* data,uint32 size, const ConvertShapeFormat *format);
+	ShapeFont(const uint8* data,uint32 size, const ConvertShapeFormat *format,
+			  const uint16 flexId, const uint32 shapenum);
 	virtual ~ShapeFont();
 
 	virtual int getHeight();

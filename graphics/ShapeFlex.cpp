@@ -24,9 +24,9 @@
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(ShapeFlex,Flex);
 
-ShapeFlex::ShapeFlex(IDataSource* ds, Pentagram::Palette* pal,
+ShapeFlex::ShapeFlex(IDataSource* ds, const uint16 ident, Pentagram::Palette* pal,
 					 const ConvertShapeFormat *fmt)
-	: Flex(ds), format(fmt), palette(pal)
+	: Flex(ds), id(ident), format(fmt), palette(pal)
 {
 	shapes.resize(get_count()); // shape pointers are initialized to 0 by this
 }
@@ -70,7 +70,7 @@ void ShapeFlex::cache(uint32 shapenum)
 		return;
 	}
 
-	Shape* shape = new Shape(data, shpsize, format);
+	Shape* shape = new Shape(data, shpsize, format, id, shapenum);
 	if (palette) shape->setPalette(palette);
 
 	shapes[shapenum] = shape;

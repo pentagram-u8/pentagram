@@ -33,7 +33,7 @@ class ShapeFlex : protected Flex
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	ShapeFlex(IDataSource* ds, Pentagram::Palette* pal = 0,
+	ShapeFlex(IDataSource* ds, const uint16 id, Pentagram::Palette* pal = 0,
 			  const ConvertShapeFormat *format = 0);
 	virtual ~ShapeFlex();
 
@@ -47,6 +47,7 @@ public:
 	void uncache(uint32 shapenum); // uncache one shape
 
 protected:
+	const uint16 id;
 	const ConvertShapeFormat *format;
 	Pentagram::Palette* palette;
 	std::vector<Shape*> shapes;

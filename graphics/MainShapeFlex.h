@@ -32,7 +32,7 @@ class MainShapeFlex : public ShapeFlex
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	MainShapeFlex(IDataSource* ds, Pentagram::Palette* pal = 0,
+	MainShapeFlex(IDataSource* ds, const uint16 id, Pentagram::Palette* pal = 0,
 				  const ConvertShapeFormat *format = 0);
 	virtual ~MainShapeFlex();
 	

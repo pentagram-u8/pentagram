@@ -27,7 +27,8 @@
 
 DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(Shape);
 
-Shape::Shape(const uint8* data, uint32 size, const ConvertShapeFormat *format)
+Shape::Shape(const uint8* data, uint32 size, const ConvertShapeFormat *format,
+			 const uint16 id, const uint32 shape) : flexId(id), shapenum(shape)
 {
 	// NB: U8 style!
 
@@ -54,6 +55,7 @@ Shape::Shape(const uint8* data, uint32 size, const ConvertShapeFormat *format)
 }
 
 Shape::Shape(IDataSource *src, const ConvertShapeFormat *format)
+	: flexId(0), shapenum(0)
 {
 	// NB: U8 style!
 
@@ -87,6 +89,12 @@ Shape::~Shape()
 		delete frames[i];
 
 	delete[] const_cast<uint8*>(data);
+}
+
+void Shape::getShapeId(uint16 & id, uint32 & shape)
+{
+	id = flexId;
+	shape = shapenum;
 }
 
 // Some macros to make things easier

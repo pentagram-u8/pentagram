@@ -22,9 +22,9 @@
 #include "Rect.h"
 #include "IDataSource.h"
 
-GumpShapeFlex::GumpShapeFlex(IDataSource* ds, Pentagram::Palette* pal,
+GumpShapeFlex::GumpShapeFlex(IDataSource* ds, const uint16 id, Pentagram::Palette* pal,
 							 const ConvertShapeFormat *format)
-	: ShapeFlex(ds, pal, format)
+	: ShapeFlex(ds, id, pal, format)
 {
 
 }

@@ -20,7 +20,9 @@
 #include "ButtonWidget.h"
 #include "TextWidget.h"
 #include "GUIApp.h"
+#include "GameData.h"
 #include "ShapeFrame.h"
+#include "ShapeFlex.h"
 #include "Shape.h"
 #include "Mouse.h"
 
@@ -141,9 +143,22 @@ void ButtonWidget::saveData(ODataSource* ods)
 	ods->write2(1); //version
 	Gump::saveData(ods);
 
-	ods->write4(0); //TODO: shape_up
+	uint16 flex = 0;
+	uint32 shapenum = 0;
+	if (shape_up)
+	{
+		shape_up->getShapeId(flex, shapenum);
+	}
+	ods->write2(flex);
+	ods->write4(shapenum);
 	ods->write4(framenum_up);
-	ods->write4(0); //TODO: shape_down
+
+	if (shape_down)
+	{
+		shape_down->getShapeId(flex, shapenum);
+	}
+	ods->write2(flex);
+	ods->write4(shapenum);
 	ods->write4(framenum_down);
 	ods->write2(textwidget);
 }
@@ -154,9 +169,22 @@ bool ButtonWidget::loadData(IDataSource* ids)
 	if (version != 1) return false;
 	if (!Gump::loadData(ids)) return false;
 
-	shape_up = 0; ids->read4(); // TODO
+	shape_up = 0;
+	ShapeFlex * flex = GameData::get_instance()->getShapeFlex(ids->read2());
+	uint32 shapenum = ids->read4();
+	if (flex)
+	{
+		shape_up = flex->getShape(shapenum);
+	}
 	framenum_up = ids->read4();
-	shape_down = 0; ids->read4(); // TODO
+
+	shape_down = 0;
+	flex = GameData::get_instance()->getShapeFlex(ids->read2());
+	shapenum = ids->read4();
+	if (flex)
+	{
+		shape_down = flex->getShape(shapenum);
+	}
 	framenum_down = ids->read4();
 	textwidget = ids->read2();
 

@@ -45,7 +45,7 @@ void FontShapeFlex::cache(uint32 shapenum)
 		return;
 	}
 
-	Shape* shape = new ShapeFont(data, shpsize, format);
+	Shape* shape = new ShapeFont(data, shpsize, format, id, shapenum);
 	if (palette) shape->setPalette(palette);
 
 	shapes[shapenum] = shape;

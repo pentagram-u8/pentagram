@@ -245,7 +245,9 @@ void ShapeViewerGump::U8ShapeViewer()
 	FileSystem* filesys = FileSystem::get_instance();
 	IDataSource* eintro = filesys->ReadFile("@u8/static/eintro.skf");
 	if (eintro) {
-		ShapeFlex* eintroshapes = new ShapeFlex(eintro, PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game), &U8SKFShapeFormat);
+		ShapeFlex* eintroshapes = new ShapeFlex(eintro, GameData::OTHER,
+			PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game),
+			&U8SKFShapeFormat);
 		flex.first = "eintro";
 		flex.second = eintroshapes;
 		flexes.push_back(flex);
@@ -254,7 +256,9 @@ void ShapeViewerGump::U8ShapeViewer()
 
 	IDataSource* endgame = filesys->ReadFile("@u8/static/endgame.skf");
 	if (endgame) {
-		ShapeFlex* endgameshapes = new ShapeFlex(endgame, PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game), &U8SKFShapeFormat);
+		ShapeFlex* endgameshapes = new ShapeFlex(endgame, GameData::OTHER,
+			PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game),
+			&U8SKFShapeFormat);
 		flex.first = "endgame";
 		flex.second = endgameshapes;
 		flexes.push_back(flex);

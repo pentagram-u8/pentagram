@@ -207,7 +207,8 @@ sint32 dims.h
 uint32 flags
 sint32 layer
 sint32 index
-uint32 shapenum			!!! TODO
+uint16 shapeFlexId
+uint32 shapenum
 uint32 framenum
 uint16 focus_child.objid
 uint16 notifier
@@ -265,8 +266,6 @@ uint16 textwidget
 ReadableGump: (v1)
 uint16 version
 <ModalGump>
-sint32 fontnum
-uint16 shapenum
 uint16 textwidget
 
 
@@ -326,9 +325,11 @@ char text[strlen]
 ButtonWidget: (v1)
 uint16 version
 <Gump>
-uint32 shape_up			!!! TODO
+uint16 shape_upFlexId
+uint32 shape_upNum
 uint32 framenum_up
-uint32 shape_down		!!! TODO
+uint16 shape_downFlexId
+uint32 shape_downNum
 uint32 framenum_down
 uint16 textwidget
 

@@ -25,9 +25,9 @@
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(MainShapeFlex,ShapeFlex);
 
-MainShapeFlex::MainShapeFlex(IDataSource* ds, Pentagram::Palette* pal,
+MainShapeFlex::MainShapeFlex(IDataSource* ds, const uint16 id = 0, Pentagram::Palette* pal,
 							 const ConvertShapeFormat *format)
-	: ShapeFlex(ds, pal, format), typeFlags(0), animdat(0)
+	: ShapeFlex(ds, id, pal, format), typeFlags(0), animdat(0)
 {
 
 }

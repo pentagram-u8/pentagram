@@ -26,8 +26,9 @@ DEFINE_RUNTIME_CLASSTYPE_CODE_MULTI2(ShapeFont,Pentagram::Font,Shape);
 
 
 ShapeFont::ShapeFont(const uint8* data,uint32 size,
-					 const ConvertShapeFormat *format)
-	: Font(), Shape(data,size,format),
+					 const ConvertShapeFormat *format,
+					 const uint16 flexId, const uint32 shapenum)
+	: Font(), Shape(data,size,format, flexId, shapenum),
 	  height(0), baseline(0), vlead(-1), hlead(0)
 {
 
