@@ -1,4 +1,8 @@
 2002-10-26  Ryan Nunn <colourles@users.sourceforge.net>
+	* Q_strcasecmp.* : Portable case insensitive compare from Quake 2
+	* tools/disasm/Disasm.cpp : use Q_strcasecmp() instead of stricmp()
+
+2002-10-26  Ryan Nunn <colourles@users.sourceforge.net>
 	* misc/pent_include.* : File to the included at the top of every 
 	  source file (this is not an option, it must be included). It will
 	  include config.h. It will also include common_type.h and define some

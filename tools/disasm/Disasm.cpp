@@ -41,6 +41,7 @@ using	std::string;
 
 #include "IDataSource.h"
 #include "FileSystem.h"
+#include "Q_strcasecmp.h"
 
 // define to drop debugging output everywhere
 //#define DISASM_DEBUG
@@ -1170,7 +1171,7 @@ int main(int argc, char **argv)
 	}
 
 	// setup crusader
-	if (gametype=="crusader" || !std::stricmp(argv[2], "-overload"))
+	if (gametype=="crusader" || !Q_strcasecmp(argv[2], "-overload"))
 	{
 		crusader=true;
 		FORGET_OBJECT(convert);
@@ -1189,7 +1190,7 @@ int main(int argc, char **argv)
 	}
 
 	// List functions
-	if (!std::stricmp(argv[2], "-l")) {
+	if (!Q_strcasecmp(argv[2], "-l")) {
 
 		cout << "Listing functions..." << endl << endl;
 
@@ -1224,11 +1225,11 @@ int main(int argc, char **argv)
 		return 0;
 	}
 	// Overload Table
-	else if (!std::stricmp(argv[2], "-overload")) {
+	else if (!Q_strcasecmp(argv[2], "-overload")) {
 		int end;
 
 		// it's overload.dat
-		if (!std::stricmp(stripped_filename, "overload.dat"))
+		if (!Q_strcasecmp(stripped_filename, "overload.dat"))
 		{
 			end = ucfile->getSize();
 		}
