@@ -1,3 +1,7 @@
+2005-01-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* games/u8bindings.cpp: add useInventoryItem function
+	* games/u8bindings.*, kernel/HIDManager.cpp: useKeyring, useBedroll
+
 2005-01-19  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GUIApp.cpp: fixed left-over dragging shadows for invalid drops
 	* world/Item.*: fix weight calculations for quantity/reagent items

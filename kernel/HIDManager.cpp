@@ -66,6 +66,8 @@ HIDManager::HIDManager()
 	bindingMap.insert( HIDBINDING_PAIR(openInventory) );
 	bindingMap.insert( HIDBINDING_PAIR(openBackpack) );
 	bindingMap.insert( HIDBINDING_PAIR(recall) );
+	bindingMap.insert( HIDBINDING_PAIR(useKeyring) );
+	bindingMap.insert( HIDBINDING_PAIR(useBedroll) );
 	bindingMap.insert( HIDBINDING_PAIR(runFirstEgg) );
 	bindingMap.insert( HIDBINDING_PAIR(runExecutionEgg) );
 	bindingMap.insert( HIDBINDING_PAIR(toggleFrameByFrame) );

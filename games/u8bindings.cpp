@@ -79,7 +79,7 @@ bool openInventory(const HID_Event& event)
 	return handled;
 }
 
-bool recall(const HID_Event& event)
+static bool useInventoryItem(const HID_Event& event, uint32 shapenum)
 {
 	bool handled = false;
 	switch (event.type) {
@@ -91,14 +91,11 @@ bool recall(const HID_Event& event)
 			pout << "Can't: avatarInStasis" << std::endl;
 			break;
 		}
-		LOOPSCRIPT(script, LS_SHAPE_EQUAL(833)); // constant...
+		LOOPSCRIPT(script, LS_SHAPE_EQUAL(shapenum));
 		MainActor* av = World::get_instance()->getMainActor();
 		UCList uclist(2);
 		av->containerSearch(&uclist, script, sizeof(script), true);
-		if (uclist.getSize() < 1) {
-			perr << "No recall item found!" << std::endl;
-			break;
-		}
+		if (uclist.getSize() < 1) break;
 		uint16 objid = uclist.getuint16(0);
 		Item* item = World::get_instance()->getItem(objid);
 		item->callUsecodeEvent_use();
@@ -107,7 +104,23 @@ bool recall(const HID_Event& event)
 		break;
 
 	}
-	return handled;
+	return handled;	
+}
+
+
+bool recall(const HID_Event& event)
+{
+	return useInventoryItem(event, 833);
+}
+
+bool useBedroll(const HID_Event& event)
+{
+	return useInventoryItem(event, 534);
+}
+
+bool useKeyring(const HID_Event& event)
+{
+	return useInventoryItem(event, 79);
 }
 
 bool runExecutionEgg(const HID_Event& event)

@@ -35,6 +35,14 @@ bool openInventory(const HID_Event& event);
 // ! \see HIDBinding
 bool recall(const HID_Event& event);
 
+// ! Use bedroll
+// ! \see HIDBinding
+bool useBedroll(const HID_Event& event);
+
+// ! Use keyring
+// ! \see HIDBinding
+bool useKeyring(const HID_Event& event);
+
 // ! run the execution scene at the docks
 // ! \see HIDBinding
 bool runExecutionEgg(const HID_Event& event);
