@@ -1,5 +1,6 @@
 2004-04-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/PaperdollGump.*: show stats, mini-stats button
+	* world/actors/ActorAnimProcess.cpp: fix weapon overlay
 
 2004-04-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* data/u8armour.cfg: U8 armour values

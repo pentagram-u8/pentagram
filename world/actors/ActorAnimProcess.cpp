@@ -129,8 +129,6 @@ bool ActorAnimProcess::run(const uint32 framenum)
 	unsigned int frameindex = currentindex / animaction->framerepeat;
 	unsigned int framecount = currentindex % animaction->framerepeat;
 
-	a->animframe = frameindex;
-
 	// check if we're done
 	if (framecount == 0) {
 		if (frameindex == endframe) {
