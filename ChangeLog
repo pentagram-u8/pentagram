@@ -1,3 +1,11 @@
+2003-05-04  Ryan Nunn <colourles@users.sourceforge.net>
+	* world/ItemSorter.cpp : Enable 'fast' noclip painting.
+	* world/World.* : Removed 'old' SetupDisplayList methods.
+	* graphics/SoftRenderSurface.cpp : Some inline assember for fast buffer
+	  clearing with MSVC. Since I wrote it, might as well commit it.
+	* world/CurrentMap.h : Get per glob/chunk item lists.
+	* kernel/Application.cpp : New fast item sorting.
+
 2003-05-03 Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/*: add NPCs to CurrentMap's item lists
 	* world/Egg.*: stub egg class

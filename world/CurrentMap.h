@@ -38,6 +38,14 @@ public:
 
 	void addItem(Item* item);
 
+	// Not allowed to modify the list. Remember to use const_iterator
+	const std::list<Item*>* getItemList (sint32 gx, sint32 gy)
+	{
+		// CONSTANTS!
+		if (gx < 0 || gy < 0 || gx >= 128 || gy >= 128) return 0;
+		return &items[gx][gy];
+	}
+
 private:
 	void loadItems(std::list<Item*> itemlist);
 

@@ -40,9 +40,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Map.h" // temp
 #include "U8Save.h"
 
+// TODO MOVE THIS STUFF TO GameMapGump
 #include "Item.h"
-#include "ItemSorter.h" // TODO MOVE THIS TO GameMapGump
+#include "Actor.h"
+#include "ItemSorter.h" 
 #include "CurrentMap.h"
+// END TODO
 
 #include <SDL.h>
 #include <cstdlib>
@@ -207,9 +210,84 @@ void Application::paint()
 	screen->BeginPainting();
 	screen->Fill32(0x3F3F3F, 0, 0, 640, 480);
 
+	/*
+	at 640x480, with u8 sizes
+	sint32 sx_limit = 4;
+	sint32 sy_limit = 8;
+	sint32 xy_limit = 6;
+
+	at 320x240, with u8 sizes
+	sint32 sx_limit = 3;
+	sint32 sy_limit = 7;
+	sint32 xy_limit = 4;
+
+	for tgwds use half the resolution
+	*/
+
+	// CONSTANTS
+	sint32 resx = 640, resy = 480;
+
+	//if (tgwds)
+	//{
+	//	resx/=2;
+	//	resy/=2;
+	//}
+
+	// By default the fastArea is the screensize plus a border of no more
+	// than 256 pixels wide and 384 pixels high
+	sint32 sx_limit = resx/256 + 2;
+	sint32 sy_limit = resy/128 + 6;
+	sint32 xy_limit = (sy_limit+sx_limit)/2;
+	CurrentMap *map = world->getCurrentMap();
+
+	// Get the camera location
+	sint32 lx,ly,lz;
+	int map_num = map->getNum();
+	Actor* av = world->getNPC(1);
+	
+	if (!av || av->getMapNum() != map_num) 
+	{
+		lx = 8192;
+		ly = 8192;
+		lz = 64;
+	}
+	else 
+		av->getLocation(lx,ly,lz);
+
+	sint32 gx = lx/512;
+	sint32 gy = ly/512;
+
 	display_list->BeginDisplayList(screen, palettemanager->getPalette(PaletteManager::Pal_Game));
 	long before_sort = SDL_GetTicks();
-	world->SetupDisplayList(display_list);
+
+	// Get all the required items and sort
+	for (int y = -xy_limit; y <= xy_limit; y++)
+	{
+		for (int x = -xy_limit; x <= xy_limit; x++)
+		{
+			sint32 sx = x - y;
+			sint32 sy = x + y;
+
+			if (sx < -sx_limit || sx > sx_limit || sy < -sy_limit || sy > sy_limit) 
+				continue;
+
+			const std::list<Item*>* items = map->getItemList(gx+x,gy+y);
+
+			if (!items) continue;
+
+			std::list<Item*>::const_iterator it = items->begin();
+			std::list<Item*>::const_iterator end = items->end();
+			for (; it != end; ++it)
+			{
+				if (!(*it)) continue;
+
+				(*it)->setupLerp(lx,ly,lz);
+				display_list->AddItem(*it);
+			}
+
+		}
+	}
+
 	long after_sort = SDL_GetTicks();
 	display_list->PaintDisplayList();
 	long after_paint = SDL_GetTicks();

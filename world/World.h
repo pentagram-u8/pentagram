@@ -61,9 +61,6 @@ class Actor;
 class Flex;
 class Object;
 
-class ItemSorter;	// TODO: Remove this
-
-
 
 class World
 {
@@ -93,9 +90,6 @@ public:
 
 	void worldStats();
 
-	void SetupDisplayList(ItemSorter *display_list);
-	void SetupDisplayListNPCs(ItemSorter *display_list);
-	
 private:
 	static World *world;
 

@@ -26,8 +26,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ItemFactory.h"
 #include "Actor.h"
 
-#include "ItemSorter.h"	// TODO: Remove this
-
 //#define DUMP_ITEMS
 
 World* World::world = 0;
@@ -337,76 +335,4 @@ Actor* World::getNPC(uint16 npcid) const
 
 	return npcs[npcid];
 }
-
-typedef std::vector<Object*> object_vector;
-
-void World::SetupDisplayList(ItemSorter *display_list)
-{
-	// This is a big hack for now
-	sint32 x,y,z;
-	int map_num = currentmap->getNum();
-	Item* av;
-	av = p_dynamic_cast<Item*>(objects[1]);
-	
-	if (!av || av->getMapNum() != map_num) 
-	{
-		x = 8192;
-		y = 8192;
-		z = 64;
-	}
-	else 
-		av->getLocation(x,y,z);
-
-	object_vector::iterator it = objects.begin();
-	object_vector::iterator end = objects.end();
-	for (; it != end; ++it)
-	{
-		if (!(*it)) continue;
-
-		Item *item = p_dynamic_cast<Item*>(*it);
-
-		if (!item) continue;
-
-		if (item->getObjId() < 256 && item->getMapNum() != map_num) continue;
-
-		item->setupLerp(x,y,z);
-//		item->doLerp(256);
-		display_list->AddItem(item);
-	}
-}
-
-
-typedef std::vector<Actor*> actor_vector;
-
-void World::SetupDisplayListNPCs(ItemSorter *display_list)
-{
-	// This is a big hack for now
-	sint32 x,y,z;
-	int map_num = currentmap->getNum();
-	Item* av;
-	av = p_dynamic_cast<Item*>(objects[1]);
-	
-	if (!av || av->getMapNum() != map_num) 
-	{
-		x = 8192;
-		y = 8192;
-		z = 64;
-	}
-	else 
-		av->getLocation(x,y,z);
-
-	actor_vector::iterator it = npcs.begin();
-	actor_vector::iterator end = npcs.end();
-	for (; it != end; ++it)
-	{
-		if (!(*it)) continue;
-
-		if ((*it)->getMapNum() != map_num) continue;
-
-		(*it)->setupLerp(x,y,z);
-		(*it)->doLerp(256);
-		display_list->AddItem(*it);
-	}
-}
-
 

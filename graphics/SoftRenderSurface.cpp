@@ -64,11 +64,29 @@ template<class uintX> void SoftRenderSurface<uintX>::Fill8(uint8 /*index*/, sint
 template<class uintX> void SoftRenderSurface<uintX>::Fill32(uint32 rgb, sint32 sx, sint32 sy, sint32 w, sint32 h)
 {
 	uint8 *pixel = pixels + sy * pitch + sx * sizeof(uintX);
-	uint8 *line_end = pixel + w*sizeof(uintX);
 	uint8 *end = pixel + h * pitch;
-	int diff = pitch - w*sizeof(uintX);
 
 	rgb = PACK_RGB8( (rgb>>16)&0xFF , (rgb>>8)&0xFF , rgb&0xFF );
+
+#ifdef _MSC_VER
+	if (sizeof(uintX) == 32) 
+	{
+		while (pixel != end)
+		{
+			__asm {
+				mov ecx, w
+				mov edi, pixel
+				mov eax, rgb
+				repne stosd
+			};
+			pixel += pitch;
+		}
+		return;
+	}
+#endif
+
+	uint8 *line_end = pixel + w*sizeof(uintX);
+	int diff = pitch - w*sizeof(uintX);
 
 	while (pixel != end)
 	{

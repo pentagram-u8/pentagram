@@ -545,8 +545,8 @@ bool ItemSorter::PaintSortItem(SortItem	*si)
 		surf->PaintMirrored(si->shape, si->frame, si->sxbot, si->sybot, si->trans);
 	else if (si->trans)
 		surf->PaintTranslucent(si->shape, si->frame, si->sxbot, si->sybot);
-	//else if (!si->clipped)
-	//	surf->PaintNoClip(si->shape, si->frame, si->sxbot, si->sybot);
+	else if (!si->clipped)
+		surf->PaintNoClip(si->shape, si->frame, si->sxbot, si->sybot);
 	else
 		surf->Paint(si->shape, si->frame, si->sxbot, si->sybot);
 		
