@@ -36,8 +36,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 // buf should be DWORD aligned
 //
-inline void memset_32_asm(void *buf, uint32 val, uint32 dwords)
+inline void memset_32_aligned(void *buf, uint32 val, uint32 dwords)
 {
+	int u0, u1, u2;
     __asm__ __volatile__ (                                  \
 			"cld\n\t"                                       \
             "rep ; stosl\n\t"                               \

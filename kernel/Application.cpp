@@ -310,7 +310,7 @@ void Application::paint()
 	prev = now;
 
 	char buf[256];
-	snprintf(buf, 255, "Rendering time %i ms %i FPS - Sort %i ms  Paint %i ms  Fill %i ms", diff, 1000/diff, after_sort-before_sort, after_paint-after_sort, after_fill-before_fill);
+	snprintf(buf, 255, "Rendering time %li ms %li FPS - Sort %li ms  Paint %li ms  Fill %li ms", diff, 1000/diff, after_sort-before_sort, after_paint-after_sort, after_fill-before_fill);
 	screen->PrintTextFixed(con.GetConFont(), buf, 8, dims.h-16);
 
 	// End painting
