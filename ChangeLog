@@ -1,3 +1,7 @@
+2004-04-10  Max Horn <max@quendi.de>
+	* misc/Console.h, misc/istring.h: Remove template specializations, they
+	  caused link errors with Apple GCC 3.3, and seem to serve no purpose.
+
 2004-04-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/EggHatcherProcess.cpp: check Z range too
 

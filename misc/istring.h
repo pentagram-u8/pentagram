@@ -227,7 +227,7 @@ public:
 	};
 
 //! STL case insensitve string
-template pent_string<char>;
+//template pent_string<char>;
 typedef pent_string<char> istring;
 
 inline pent_string<char> operator+(

@@ -398,8 +398,6 @@ extern console_ostream<char>		*ppout;
 extern console_ostream<char>		*ppout;
 #endif
 
-template class console_ostream<char>;
-
 //
 // Error Output Streambuf
 //
@@ -469,7 +467,5 @@ extern console_err_ostream<char>	*pperr;
 #define perr (*pperr)
 extern console_err_ostream<char>	*pperr;
 #endif
-
-template class console_err_ostream<char>;
 
 #endif // CONSOLE_H
