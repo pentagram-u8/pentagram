@@ -1,3 +1,6 @@
+2004-04-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/EggHatcherProcess.cpp: check Z range too
+
 2004-04-10  Ryan Nunn <colourles@users.sourceforge.net>
 	* gumps/ConsoleGump.*, misc/Console.* : Added command history and
 	  improved command line editing. You can now use cursors and use delete

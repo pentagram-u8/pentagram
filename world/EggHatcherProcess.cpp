@@ -85,7 +85,8 @@ bool EggHatcherProcess::run(const uint32 framenum)
 		// unset it when you're out of range of any teleport eggs
 		TeleportEgg* tegg = p_dynamic_cast<TeleportEgg*>(egg);
 
-		if (x1 <= ax && ax-axs < x2 && y1 <= ay && ay-ays < y2) {
+		if (x1 <= ax && ax-axs < x2 && y1 <= ay && ay-ays < y2 &&
+			z - 48 < az && az <= z + 48) { // CONSTANTS!
 			if (tegg && tegg->isTeleporter()) nearteleporter = true;
 
 			if (tegg && av->hasJustTeleported()) continue;
