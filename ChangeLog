@@ -1,3 +1,6 @@
+2003-06-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/UCMachine.cpp: change operand order of lsh/rsh. Fixes doors
+
 2003-06-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/CurrentMap.*: collision/roof/support detection
 	* gumps/CurrentMap.*: roof popping

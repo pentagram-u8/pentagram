@@ -31,8 +31,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Container.h"
 
 //#define LOGPF(X) pout.printf X
-#define LOGPF(X)
-//#define LOGPF(X) do { if (p->classid == 1219) { pout.printf X; } } while(0)
+//#define LOGPF(X)
+#define LOGPF(X) do { if (p->classid == 68) { pout.printf X; } } while(0)
 
 enum UCSegments {
 	SEG_STACK      = 0x0000,
@@ -830,9 +830,9 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 3C
 			// 16 bit left shift
 			// operand order?
-			ui16a = static_cast<sint16>(p->stack.pop2());
-			si16b = static_cast<sint16>(p->stack.pop2());
-			p->stack.push2(static_cast<uint16>(si16b >> ui16a));
+			si16a = static_cast<sint16>(p->stack.pop2());
+			ui16b = static_cast<sint16>(p->stack.pop2());
+			p->stack.push2(static_cast<uint16>(si16a >> ui16b));
 			LOGPF(("lsh"));
 			break;
 
@@ -841,9 +841,9 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 16 bit right shift
 			// !! sign-extend or not?
 			// operand order?
-			ui16a = static_cast<sint16>(p->stack.pop2());
-			si16b = static_cast<sint16>(p->stack.pop2());
-			p->stack.push2(static_cast<uint16>(si16b >> ui16a));
+			si16a = static_cast<sint16>(p->stack.pop2());
+			ui16b = static_cast<sint16>(p->stack.pop2());
+			p->stack.push2(static_cast<uint16>(si16a >> ui16b));
 			LOGPF(("rsh"));
 			break;
 
