@@ -96,21 +96,54 @@ HIDBinding HIDManager::getBinding(const SDL_Event& event)
 
 void HIDManager::loadBindings()
 {
-#if 0
 	SettingManager* settings = SettingManager::get_instance();
 	std::map<Pentagram::istring, std::string> keys;
 	keys = settings->listDataValues("keys");
-#else
-	ConfigFileManager* config = ConfigFileManager::get_instance();
-	std::map<Pentagram::istring, std::string> keys;
-	keys = config->listKeyValues("bindings/bindings");
-#endif
 
-	std::map<Pentagram::istring, std::string>::iterator i;
-	for (i = keys.begin(); i != keys.end(); ++i)
+	std::map<Pentagram::istring, std::string>::iterator i = keys.begin();
+	std::map<Pentagram::istring, std::string>::iterator end = keys.end();
+	
+	if (i == end)
+	{
+		pout << "No HIDBindings detected!" << std::endl
+			<< "Loading default HIDBindings..." << std::endl;
+		ConfigFileManager* config = ConfigFileManager::get_instance();
+		keys = config->listKeyValues("bindings/bindings");
+		i = keys.begin();
+		end = keys.end();
+	}
+
+	while (i != keys.end())
 	{
 		Pentagram::istring bindingName = (*i).second.c_str();
 		bind((*i).first, bindingName);
+		++i;
+	}
+}
+
+void HIDManager::saveBindings()
+{
+	SettingManager* settings = SettingManager::get_instance();
+	Pentagram::istring section = "keys/";
+
+	HIDBindingMap::iterator i;
+	for (i = bindingMap.begin(); i != bindingMap.end(); ++i)
+	{
+		for (uint16 key=0; key < SDLK_LAST; ++key)
+		{
+			if (keybindings[key] == i->second)
+			{
+				settings->set(section + SDL_GetKeyName((SDLKey) key), i->first);
+			}
+		}
+
+		for (uint16 button=1; button < NUM_MOUSEBUTTONS+1; ++button)
+		{
+			if (mousebindings[button] == i->second)
+			{
+				settings->set(section + GetMouseButtonName((MouseButton) button), i->first);
+			}
+		}
 	}
 }
 
@@ -181,6 +214,15 @@ void HIDManager::ConCmd_bind(const Console::ArgsType &args, const Console::ArgvT
 	hidmanager->bind(control, bindingName);
 }
 
+void HIDManager::ConCmd_save(const Console::ArgsType &args, const Console::ArgvType &argv)
+{
+	HIDManager * hidmanager = HIDManager::get_instance();
+	hidmanager->saveBindings();
+
+	SettingManager* settings = SettingManager::get_instance();
+	settings->write();
+}
+
 void HIDManager::getBindings(const Pentagram::istring& bindingName, std::vector<const char *>& controls)
 {
 	controls.clear();
@@ -231,5 +273,5 @@ void HIDManager::clearBindings(const Pentagram::istring& bindingName)
 				mousebindings[button] = 0;
 			}
 		}
-	}	
+	}
 }

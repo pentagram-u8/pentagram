@@ -42,13 +42,19 @@ public:
 	//! loads the keybindings from the configuration
 	void loadBindings();
 
+	//! saves the keybindings to the configuration
+	void saveBindings();
+
 	//! loads a single keybinding
 	//! \param control a key or button to bind
 	//! \param bindingName name of the HIDBinding
     void bind(const Pentagram::istring& control, const Pentagram::istring& bindingName);
 
 	//! "bind" console command
-	static void HIDManager::ConCmd_bind(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void ConCmd_bind(const Console::ArgsType &args, const Console::ArgvType &argv);
+
+	//! "save" console command
+	static void ConCmd_save(const Console::ArgsType &args, const Console::ArgvType &argv);
 	
 	//! stores the names of all controls bond to bindingName in a vector
 	//! \param bindingName name of a HIDBinding

@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "SettingManager.h"
 #include "ConfigFileManager.h"
 #include "ObjectManager.h"
+#include "GameInfo.h"
 
 #include "HIDManager.h"
 #include "HIDBinding.h"
@@ -145,6 +146,7 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	con.AddConsoleCommand("GUIApp::saveGame", ConCmd_saveGame);
 	con.AddConsoleCommand("GUIApp::loadGame", ConCmd_loadGame);
 	con.AddConsoleCommand("HIDManager::bind", HIDManager::ConCmd_bind);
+	con.AddConsoleCommand("HIDManager::save", HIDManager::ConCmd_save);
 	con.AddConsoleCommand("Kernel::processTypes", Kernel::ConCmd_processTypes);
 	con.AddConsoleCommand("ObjectManager::objectTypes",
 								   ObjectManager::ConCmd_objectTypes);
@@ -162,6 +164,7 @@ GUIApp::~GUIApp()
 	con.RemoveConsoleCommand("GUIApp::saveGame");
 	con.RemoveConsoleCommand("GUIApp::loadGame");
 	con.RemoveConsoleCommand("HIDManager::bind");
+	con.RemoveConsoleCommand("HIDManager::save");
 	con.RemoveConsoleCommand("Kernel::processTypes");
 	con.RemoveConsoleCommand("ObjectManager::objectTypes");
 	con.RemoveConsoleCommand("MainActor::teleport");
@@ -227,22 +230,18 @@ void GUIApp::startup()
 	hidmanager = new HIDManager();
 	
 	pout << "Loading HIDBindings" << std::endl;
-	// FIXME: change this to something a little less game-dependent
-	if (game == "u8") {
+	GameInfo info;
+	getGameInfo(game, &info);
+
+	if (info.type == GameInfo::GAME_U8) {
 		// system-wide config
 		if (configfileman->readConfigFile("@data/u8bindings.ini",
 										  "bindings", true))
 			con.Print(MM_INFO, "@data/u8bindings.ini... Ok\n");
 		else
 			con.Print(MM_MINOR_WARN, "@data/u8bindings.ini... Failed\n");
-
-		// user config
-		if (configfileman->readConfigFile("@home/u8bindings.ini", "bindings"))
-			con.Print(MM_INFO, "@home/u8bindings.ini... Ok\n");
-		else
-			con.Print(MM_MINOR_WARN, "@home/u8bindings.ini... Failed\n");
-
 	}
+
 	hidmanager->loadBindings();
 	
 	pout << "Create UCMachine" << std::endl;
