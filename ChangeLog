@@ -1,6 +1,9 @@
 2003-08-23	Darke  <darkepaw@users.sf.net>
 	* convert/Convert.h, tools/fold/*: Fixed Maximally Annoying Bug(tm),
 	  and a few other minor things.
+	  
+	* convert/Convert.h, tools/fold/*: Added 'add' op. (Hey, if wjp can
+	  have lots of tiny commits, so can I! *grin*)
 	
 2003-08-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AvatarMoverProcess.*: non-functioning avatar movement

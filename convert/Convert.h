@@ -852,6 +852,7 @@ Node *ConvertUsecode::readOpGeneric(IDataSource *ucfile, uint32 &dbg_symbol_offs
 				n = new DCCallNode(opcode, offset, tint, read2(ucfile));
 			}
 			break;
+		case 0x14: // add
 		case 0x24: // cmp
 		case 0x28: // lt
 		case 0x2A: // le

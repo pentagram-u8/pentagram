@@ -41,10 +41,6 @@ inline bool acceptOp(const uint32 opcode, const uint32 want1, const uint32 want2
 	{ return (acceptOp(opcode, want1, want2, want3) ? true :
 				(opcode==want4) ? true : false); };
 
-inline bool acceptType(const Type &opcode, const Type::ttype want1, const Type::ttype want2)
-	{ return ((opcode==want1) ? true :
-		(opcode==want2) ? true : false); };
-
 /*inline bool acceptOp(const uint32 opcode, const uint32 want1)
 { return acceptIt(opcode, want1); }
 inline bool acceptOp(const uint32 opcode, const uint32 want1, const uint32 want2)

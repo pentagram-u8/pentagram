@@ -35,17 +35,18 @@ class Type
 		Type() : _type(T_INVALID) {};
 
 		inline Type &operator=(const ttype t) { _type = t; return *this; };
-		inline bool operator==(const ttype t) const { return _type == t; };
-		inline bool operator!=(const ttype t) const { return _type != t; };
 		inline Type &operator=(const Type &t) { _type = t._type; return *this; };
-		inline bool operator==(const Type &t) const
+		
+		inline bool operator==(const ttype t) const
 		{
-			if( (_type==T_BYTE || _type==T_WORD) && (t._type==T_BYTE || t._type==T_WORD) )
+			if( (_type==T_BYTE || _type==T_WORD) && (t==T_BYTE || t==T_WORD) )
 				return true;
 			else
-				return _type == t._type;
+				return _type == t;
 		};
-		inline bool operator!=(const Type &t) const { return _type != t._type; };
+		inline bool operator!=(const ttype t) const { return !(*this == t); };
+		inline bool operator==(const Type &t) const { return *this == t._type; };
+		inline bool operator!=(const Type &t) const { return *this != t._type; };
 
 		inline ttype type() const { return _type; };
 		inline const char *name() const { return _namearr[_type]; };
@@ -122,6 +123,10 @@ namespace suc
 		return str;
 	}
 }
+
+inline bool acceptType(const Type &opcode, const Type::ttype want1, const Type::ttype want2)
+	{ return ((opcode==want1) ? true :
+		(opcode==want2) ? true : false); };
 
 #endif
 

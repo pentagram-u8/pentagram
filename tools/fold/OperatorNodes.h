@@ -55,9 +55,10 @@ class BinOperatorNode : public BinNode
 		BinOperatorNode(const uint32 opcode, const uint32 offset)
 			: BinNode(opcode, offset, Type(Type::T_INVALID))
 			{
-				assert(acceptOp(opcode, 0x24, 0x28, 0x2A, 0x2C) || acceptOp(opcode, 0x34));
+				assert(acceptOp(opcode, 0x14) || acceptOp(opcode, 0x24, 0x28, 0x2A, 0x2C) || acceptOp(opcode, 0x34));
 				switch(opcode)
 				{
+					case 0x14: otype = M_ADD; rtype(Type::T_WORD); break;
 					case 0x24: otype = M_CMP; rtype(Type::T_WORD); break;
 					case 0x28: otype = M_LT;  rtype(Type::T_WORD); break;
 					case 0x2A: otype = M_LE;  rtype(Type::T_WORD); break;
@@ -74,7 +75,7 @@ class BinOperatorNode : public BinNode
 		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
 
 	protected:
-		enum optype { M_CMP, M_OR, M_LT, M_LE, M_GT } otype;
+		enum optype { M_ADD, M_CMP, M_OR, M_LT, M_LE, M_GT } otype;
 
 	private:
 };
