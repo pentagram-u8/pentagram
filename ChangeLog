@@ -1,20 +1,25 @@
+2003-06-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/CurrentMap.*: collision/roof/support detection
+	* gumps/CurrentMap.*: roof popping
+	* usecode/UCMachine.*: don't have spawn run processes itself
+
 2003-06-14	  Ryan Nunn <colourles@users.sourceforge.net>
-	* gump/widgets/SimpleTextWidget.* : I can't quite remember, but i think I
-	  just added something called the SimpleTextWidget.
+	* gump/widgets/SimpleTextWidget.* : I can't quite remember, but i think
+	  I just added something called the SimpleTextWidget.
 	* gumps/BarkGump.* : Removed old text hack, added new hacks that use 
-	  SimpleTextWidget. Sometime in the future it will correctly use something
-	  with a name like MultiPageTextWidget
-	* gumps/Gump.h : Added some forward looking stuff aka a way for widget to
-	  notify their parents of 'something', where 'something' is something 
-	  specific to the widget.
-	* kernel/GUIApp.cpp : Added stuff to allow me to execute my plans to TAKE 
-	  OVER THE WORLD *cough* *cough* I mean, I added the AvatarMoverProcess 
-	  which I created for the Royal Society of the Prevention of Harm To 
-	  Keyboards.
+	  SimpleTextWidget. Sometime in the future it will correctly use
+	  something with a name like MultiPageTextWidget
+	* gumps/Gump.h : Added some forward looking stuff aka a way for widget
+	  to notify their parents of 'something', where 'something' is
+	  something specific to the widget.
+	* kernel/GUIApp.cpp : Added stuff to allow me to execute my plans to
+	  TAKE OVER THE WORLD *cough* *cough* I mean, I added the
+	  AvatarMoverProcess which I created for the Royal Society of the
+	  Prevention of Harm To Keyboards.
 	* misc/Console.cpp : You want unused variables, YOU CAN'T HANDLE UNUSED
 	  VARIABLES!
-	* world/LoopScript.h : Ritulastic Macro Abuse aka using the Preprocess to
-	  compile LoopScripts using macros.
+	* world/LoopScript.h : Ritulastic Macro Abuse aka using the Preprocess
+	  to compile LoopScripts using macros.
 
 2003-06-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GUIApp.cpp: cleaned up FIRST/EXCUTION hacks

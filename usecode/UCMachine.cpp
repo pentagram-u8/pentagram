@@ -1172,9 +1172,6 @@ bool UCMachine::execProcess(UCProcess* p)
 				newproc->load(classid, offset, thisptr, this_size,
 							  p->stack.access(), arg_bytes);
 
-				// Run the new process
-				newproc->run(CoreApp::get_instance()->getFrameNum());
-
 				//!! CHECKME
 				//!! is order of execution of this process and the new one
 				//!! relevant? It might be, since 0x6C and freeing opcodes
@@ -1182,6 +1179,8 @@ bool UCMachine::execProcess(UCProcess* p)
 				//!! Currently, the spawned processes is added to the front
 				//!! of the execution list, so it's guaranteed to be run
 				//!! before the current process
+
+				cede = true;
 			}
 			break;
 
@@ -1212,15 +1211,10 @@ bool UCMachine::execProcess(UCProcess* p)
 
 				newproc->load(classid, offset + delta, thisptr, this_size);
 
-				// Run the new process
-				newproc->run(CoreApp::get_instance()->getFrameNum());
-
 				p->stack.push2(newpid); //! push pid of newproc?
 
-				// Run the new process
-				newproc->run(CoreApp::get_instance()->getFrameNum());
+				cede = true;
 			}
-	//		cede = true;
 			break;
 	
 		case 0x59:
@@ -2030,18 +2024,10 @@ void UCMachine::usecodeStats()
 }
 
 
-uint32 UCMachine::I_AvatarCanCheat(const uint8* /*args*/, unsigned int /*argsize*/)
+uint32 UCMachine::I_true(const uint8* /*args*/, unsigned int /*argsize*/)
 {
-	return 1; // of course the avatar can cheat ;-)
+	return 1;
 }
-
-uint32 UCMachine::I_isGameRunning(const uint8* /*args*/, unsigned int /*argsize*/)
-{
-	return 1; // yes, the game is running.
-
-	// I'm guessing this was used to distinguish between game/editor
-}
-
 
 uint32 UCMachine::I_dummyProcess(const uint8* /*args*/, unsigned int /*argsize*/)
 {

@@ -46,6 +46,17 @@ public:
 					uint32 scriptsize, Item* item, uint16 range, bool recurse,
 					sint32 x=0, sint32 y=0);
 
+	// Collision detection. Returns true if the box [x,y,z]-[x-xd,y-yd,z+zd]
+	// does not collide with any solid items.
+	// Additionally, if support is not NULL, *support is set to the item
+	// supporting the given box, or 0 if it isn't supported.
+	// If under_roof is not NULL, *roof is set to the roof item with the lowest
+	// z coordinate that's over the box, or 0 if there is no roof above box.
+	// NB: isValidPosition doesn't consider item 'item'.
+	bool isValidPosition(sint32 x, sint32 y, sint32 z,
+						 int xd, int yd, int zd, uint16 item,
+						 uint16* support=0, uint16* roof=0);
+
 	TeleportEgg* findDestination(uint16 id);
 
 	// Not allowed to modify the list. Remember to use const_iterator

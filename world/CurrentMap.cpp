@@ -319,3 +319,82 @@ TeleportEgg* CurrentMap::findDestination(uint16 id)
 	}
 	return 0;
 }
+
+bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
+								 int xd, int yd, int zd,
+								 uint16 item_, uint16* support_, uint16* roof_)
+{
+	bool valid = true;
+	uint16 support = 0;
+	uint16 roof = 0;
+	sint32 roofz = 1 << 24; //!! semi-constant
+
+	int minx, miny, maxx, maxy;
+
+	//! constants
+	minx = ((x-xd)/512) - 1;
+	maxx = (x/512) + 1;
+	miny = ((y-yd)/512) - 1;
+	maxy = (y/512) + 1;
+	if (minx < 0) minx = 0;
+	if (maxx > 127) maxx = 127;
+	if (miny < 0) miny = 0;
+	if (miny > 127) maxy = 127;
+
+	for (int cx = minx; cx <= maxx; cx++) {
+		for (int cy = miny; cy <= maxy; cy++) {
+			item_list::iterator iter;
+			for (iter = items[cx][cy].begin();
+				 iter != items[cx][cy].end(); ++iter)
+			{
+				Item* item = *iter;
+				if (item->getObjId() == item_) continue;
+
+				ShapeInfo* si = item->getShapeInfo();
+				//!! need to check is_sea() and is_land() maybe?
+//				if (!si->is_solid() && !si->is_roof())
+//					continue; // not an interesting item
+
+				sint32 ix, iy, iz, ixd, iyd, izd;
+				item->getLocation(ix, iy, iz);
+				item->getFootpad(ixd, iyd, izd);
+				ixd *= 32; iyd *= 32; izd *= 8;
+
+				// check overlap
+				if (si->is_solid() &&
+					!(x < ix - ixd || x - xd > ix ||
+					  y < iy - iyd || y - yd > iy ||
+					  z + zd < iz || z < iz + izd))
+				{
+					// overlapping a solid item. Invalid position
+					valid = false;
+				}
+
+				// check xy overlap
+				if (!(x < ix - ixd || x - xd > ix ||
+					  y < iy - iyd || y - yd > iy))
+				{
+					// check support
+					if (support == 0 && si->is_solid() &&
+						iz + izd == z)
+					{
+						support = item->getObjId();
+					}
+
+					// check roof
+					if (si->is_roof() && iz < roofz && iz >= z + zd) {
+						roof = item->getObjId();
+						roofz = iz;
+					}
+				}
+			}
+		}
+	}
+
+	if (support_)
+		*support_ = support;
+	if (roof_)
+		*roof_ = roof;
+
+	return valid;
+}

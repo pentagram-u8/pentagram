@@ -103,6 +103,11 @@ void Item::getLocation(sint32& X, sint32& Y, sint32& Z) const
 	Z = z;
 }
 
+sint32 Item::getZ() const
+{
+	return z;
+}
+
 void Item::getLocationAbsolute(sint32& X, sint32& Y, sint32& Z) const
 {
 	if (parent) 

@@ -125,7 +125,7 @@ Intrinsic U8Intrinsics[] = {
 	Item::I_setMapArray,
 	0, // Item::receiveHit
 	0, // Item::explode
-	0, // Item::canReach
+	UCMachine::I_true, // Item::canReach
 	0, // Item::getRange
 	0, //U
 	Item::I_getDirToCoords,
@@ -302,9 +302,9 @@ Intrinsic U8Intrinsics[] = {
 	0, //U
 	0, //U
 	0, // TonysBalls
-	UCMachine::I_AvatarCanCheat,
+	UCMachine::I_true, // AvatarCanCheat
 	0, // MakeAvatarACheater
-	UCMachine::I_isGameRunning,
+	UCMachine::I_true, // isGameRunning
 	0, //U
 	// 0x100
 	0, //U

@@ -44,6 +44,7 @@ public:
 	void move(sint32 x, sint32 y, sint32 z); // move also handles item lists
 	void getLocationAbsolute(sint32& x, sint32& y, sint32& z) const;
 	void getLocation(sint32& x, sint32& y, sint32& z) const;
+	sint32 getZ() const;
 	void getGumpLocation(sint32& x, sint32& y) const;
 	void getCentre(sint32& x, sint32& y, sint32& z) const;
 	void getFootpad(sint32& x, sint32& y, sint32& z) const;

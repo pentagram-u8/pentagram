@@ -138,6 +138,19 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 		camera->GetLerped(lx, ly, lz, lerp_factor);
 	}
 
+	// Check roof
+	//!! This is _not_ the right place for this...
+	sint32 ax, ay, az, axd, ayd, azd;
+	int zlimit = 1 << 16; // should be high enough
+	Actor* av = world->getNPC(1);
+	av->getLocation(ax, ay, az);
+	av->getFootpad(axd, ayd, azd);
+	uint16 roofid;
+	map->isValidPosition(ax, ay, az, axd*32, ayd*32, azd*8, 1, 0, &roofid);
+	Item* roof = world->getItem(roofid);
+	if (roof) {
+		zlimit = roof->getZ();
+	}
 
 	display_list->BeginDisplayList(surf, lx, ly, lz);
 
@@ -209,6 +222,8 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 				item->inFastArea(fastArea, framenum);
 				fast->push_back(item->getObjId());
 				item->doLerp(lerp_factor);
+
+				if (item->getZ() >= zlimit) continue;
 				display_list->AddItem(item);
 			}
 		}
