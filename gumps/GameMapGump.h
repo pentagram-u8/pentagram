@@ -63,6 +63,10 @@ public:
 	// Trace a click, and return ObjId
 	virtual uint16		TraceObjId(int mx, int my);
 
+	// Trace a click, return ObjId, and the coordinates of the mouse click
+	virtual uint16		TraceCoordinates(int mx, int my,
+				sint32 coords[3], Item* item = 0);
+
 	// Get the location of an item in the gump (coords reletive to this).
 	// Returns false on failure
 	virtual bool		GetLocationOfItem(uint16 itemid, int &gx, int &gy,
@@ -90,7 +94,7 @@ protected:
 	uint32 dragging_shape;
 	uint32 dragging_frame;
 	uint32 dragging_flags;
-	sint32 dragging_x, dragging_y, dragging_z;
+	sint32 dragging[3];
 
 };
 

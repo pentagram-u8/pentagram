@@ -1,3 +1,7 @@
+2004-07-22  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* gumps/GameMapGump.h: moved position calculation in dragging to
+	  a new function for other use later.
+
 2004-07-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/ItemSorter.*: determine which face was hit in Trace
 	* gumps/GameMapGump.cpp: calculate proper item position when dragging

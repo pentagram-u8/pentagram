@@ -190,7 +190,7 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 	// Dragging:
 
 	if (display_dragging) {
-		display_list->AddItem(dragging_x, dragging_y, dragging_z,
+		display_list->AddItem(dragging[0], dragging[1], dragging[2],
 							  dragging_shape, dragging_frame,
 							  dragging_flags | Item::FLG_INVISIBLE, //!! change this to transp?
 							  0);
@@ -208,6 +208,52 @@ uint16 GameMapGump::TraceObjId(int mx, int my)
 
 	ParentToGump(mx,my);
 	return display_list->Trace(mx,my);
+}
+
+uint16 GameMapGump::TraceCoordinates(int mx, int my, sint32 coords[3],
+		Item * item)
+{
+	sint32 dxd = 0,dyd = 0,dzd = 0;
+	if (item)
+		item->getFootpadWorld(dxd,dyd,dzd);
+
+	sint32 cx, cy, cz;
+	GetCameraLocation(cx, cy, cz);
+
+	ItemSorter::HitFace face;
+	ObjId trace = display_list->Trace(mx,my,&face);
+	
+	Item* hit = World::get_instance()->getItem(trace);
+	if (!hit) // strange...
+		return 0;
+
+	sint32 hx,hy,hz;
+	sint32 hxd,hyd,hzd;
+	hit->getLocation(hx,hy,hz);
+	hit->getFootpadWorld(hxd,hyd,hzd);
+
+	// mx = (dragging[0]-cx-dragging[1]+cy)/4
+	// my = (dragging[0]-cx+dragging[1]-cy)/8 - dragging[2] + cz
+
+	switch (face) {
+	case ItemSorter::Z_FACE:
+		coords[0] = 2*mx + 4*(my+hz+hzd) + cx - 4*cz;
+		coords[1] = -2*mx + 4*(my+hz+hzd) + cy - 4*cz;
+		coords[2] = hz+hzd;
+		break;
+	case ItemSorter::X_FACE:
+		coords[0] = hx+dxd;
+		coords[1] = -4*mx + hx+dxd - cx + cy;
+		coords[2] = -my + (hx+dxd)/4 - mx/2 - cx/4 + cz;
+		break;
+	case ItemSorter::Y_FACE:
+		coords[0] = 4*mx + hy+dyd + cx - cy;
+		coords[1] = hy+dyd;
+		coords[2] = -my + mx/2 + (hy+dyd)/4 - cy/4 + cz;
+		break;
+	}
+
+	return trace;
 }
 
 bool GameMapGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
@@ -395,60 +441,18 @@ bool GameMapGump::StartDraggingItem(Item* item, int mx, int my)
 
 bool GameMapGump::DraggingItem(Item* item, int mx, int my)
 {
-	display_dragging = true;
 	// determine target location and set dragging_x/y/z
-
-	sint32 dxd,dyd,dzd;
-	item->getFootpadWorld(dxd,dyd,dzd);
 
 	dragging_shape = item->getShape();
 	dragging_frame = item->getFrame();
 	dragging_flags = item->getFlags();
 	display_dragging = true;
 
-	sint32 cx, cy, cz;
-	GetCameraLocation(cx, cy, cz);
-
-	ItemSorter::HitFace face;
-	ObjId trace = display_list->Trace(mx,my,&face);
-	
-	Item* hit = World::get_instance()->getItem(trace);
-	if (!hit) // strange...
+	if (!TraceCoordinates(mx, my, dragging, item))
 		return false;
 
-	sint32 hx,hy,hz;
-	sint32 hxd,hyd,hzd;
-	hit->getLocation(hx,hy,hz);
-	hit->getFootpadWorld(hxd,hyd,hzd);
-
-	// mx = (dragging_x-cx-dragging_y+cy)/4
-	// my = (dragging_x-cx+dragging_y-cy)/8 - dragging_z + cz
-
-	// the below expressions solve these eqns for (dragging_x,dragging_y),
-	// (dragging_y, dragging_z) and (dragging_x, dragging_z), resp.
-
-	// TODO: it might be nice to move these to a separate function sometime
-	// (one or three?)
-	switch (face) {
-	case ItemSorter::Z_FACE:
-		dragging_z = hz+hzd;
-		dragging_x = 2*mx + 4*(my+dragging_z) + cx - 4*cz;
-		dragging_y = -2*mx + 4*(my+dragging_z) + cy - 4*cz;
-		break;
-	case ItemSorter::X_FACE:
-		dragging_x = hx+dxd;
-		dragging_y = -4*mx + dragging_x - cx + cy;
-		dragging_z = -my + dragging_x/4 - mx/2 - cx/4 + cz;
-		break;
-	case ItemSorter::Y_FACE:
-		dragging_y = hy+dyd;
-		dragging_x = 4*mx + dragging_y + cx - cy;
-		dragging_z = -my + mx/2 + dragging_y/4 - cy/4 + cz;
-		break;
-	}
-
 	// determine if item can be dropped here
-	if (!item->canExistAt(dragging_x, dragging_y, dragging_z))
+	if (!item->canExistAt(dragging[0], dragging[1], dragging[2]))
 		return false;
 
 
@@ -482,9 +486,9 @@ void GameMapGump::DropItem(Item* item, int mx, int my)
 
 	//!! TODO: throw item if too far, etc...
 
-	perr << "Dropping item at (" << dragging_x << "," << dragging_y 
-		 << "," << dragging_z << ")" << std::endl;
-	item->move(dragging_x,dragging_y,dragging_z); // move
+	perr << "Dropping item at (" << dragging[0] << "," << dragging[1]
+		 << "," << dragging[2] << ")" << std::endl;
+	item->move(dragging[0],dragging[1],dragging[2]); // move
 	item->fall();
 }
 
