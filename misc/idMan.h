@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class IDataSource;
 class ODataSource;
 
+#include <vector>
+
 //
 // idMan. Used to allocate and keep track of unused ids.
 // Supposed to be used by Kernel and World for pID and ObjID
@@ -37,26 +39,49 @@ class ODataSource;
 
 class idMan
 {
-	uint16 		begin;
-	uint16 		end;
+	uint16 		begin;			//!< start of the available range of IDs
+	uint16 		end;			//!< current end of the range
+	uint16 		max_end;		//!< end of the available range
+	uint16 		startcount;		//!< number of IDs to make available initially
 
-	uint16		*ids;
-	uint16		first;
-	uint16		last;
+	uint16 		usedcount;		//!< number of IDs currently in use
+
+	std::vector<uint16> ids;	//!< the 'next' field in a list of free IDs
+	uint16		first;			//!< the first ID in the free list
+	uint16		last;			//!< the last ID in the last list
 public:
-	idMan(uint16 begin, uint16 end);
+	//! \param begin start of the range of available IDs
+	//! \param max_end end of the range of available IDs
+	//! \param startcount number of IDs to make available initially (0 = all)
+	idMan(uint16 begin, uint16 max_end, uint16 startcount=0);
 	~idMan();
 
+	//! clear all IDs, reset size to the startcount
 	void		clearAll();
 
+	//! get a free ID
+	//! \return a free ID, or 0 if none are available
 	uint16		getNewID();
-	// (note: reserveID is O(n), so don't use too often.)
-	bool		reserveID(uint16 id); // false if already used
+
+	//! mark a given ID as used
+	//! Note: reserveID is O(n), so don't use too often.
+	//! Note: this expands idMan if necessary
+	//! \return false if the ID was already used or is out of range
+	bool		reserveID(uint16 id);
+
+	//! release an id
 	void		clearID(uint16 id);
+
+	//! check if an ID is in use
 	bool		isIDUsed(uint16 id) { return ids[id] == 0 && id != last; }
 
 	void save(ODataSource* ods);
 	bool load(IDataSource* ids);
+
+private:
+	//! double the amount of available IDs (up to the maximum passed 
+	//! to the constructor)
+	void expand();
 };
 
 #endif //IDMAN_H

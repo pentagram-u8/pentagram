@@ -2,7 +2,6 @@ KERNEL = \
 	kernel/Kernel.o \
 	kernel/CoreApp.o \
 	kernel/Process.o \
-	kernel/idMan.o \
 	kernel/GameDetector.o
 
 
@@ -70,6 +69,7 @@ GRAPHICS = \
 MISC = \
 	misc/Console.o \
 	misc/Q_strcasecmp.o \
+	misc/idMan.o \
 	misc/pent_include.o \
 	misc/util.o
 

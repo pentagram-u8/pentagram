@@ -63,9 +63,9 @@ ObjectManager::ObjectManager()
 	objects.resize(65536);
 
 	//!CONSTANTS
-	objIDs = new idMan(256,65534);	// Want range of 256 to 65534
+	objIDs = new idMan(256,65534,8192);	// Want range of 256 to 65534
 	objIDs->reserveID(666);		// 666 is reserved for the Guardian Bark hack
-	actorIDs = new idMan(1,255);
+	actorIDs = new idMan(1,255,255);
 }
 
 ObjectManager::~ObjectManager()

@@ -22,25 +22,35 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IDataSource.h"
 #include "ODataSource.h"
 
-idMan::idMan(uint16 Begin, uint16 End) : begin(Begin), end(End)
+idMan::idMan(uint16 Begin, uint16 MaxEnd, uint16 StartCount)
+	: begin(Begin), max_end(MaxEnd), startcount(StartCount)
 {
 	// 0 is always reserved, as is 65535
 	if (begin == 0) begin = 1;
-	if (end == 65535) end = 65534;
+	if (max_end == 65535) max_end = 65534;
+	if (startcount == 0) startcount = max_end - begin + 1;
 
-	ids = new uint16[end+1];
+	end = begin + startcount - 1;
+	if (end > max_end) end = max_end;
+
+	ids.resize(end+1);
 	clearAll();
 }
 
 idMan::~idMan()
 {
-	delete [] ids;
+
 }
 
 void idMan::clearAll()
 {
+	end = begin + startcount - 1;
+	if (end > max_end) end = max_end;
+	ids.resize(end+1);
+
 	first = begin;
 	last  = end;
+	usedcount = 0;
 
 	uint16 i;
 	for (i = 0; i < first; i++) ids[i] = 0;		// NPCs always used
@@ -51,6 +61,12 @@ void idMan::clearAll()
 
 uint16 idMan::getNewID()
 {
+	// more than 75% used and room to expand?
+	if (usedcount * 4 > (end - begin + 1) * 3 && end < max_end)
+	{
+		expand();
+	}
+
 	// Uh oh, what to do when there is none
 	if (!first) 
 	{
@@ -71,14 +87,52 @@ uint16 idMan::getNewID()
 	// So clear the last pointer
 	if (!first) last = 0;
 
+	usedcount++;
+
 	return id;
 
 }
 
+void idMan::expand()
+{
+	uint16 old_end = end;
+	end *= 2;
+	if (end > max_end) end = max_end;
+	ids.resize(end+1);
+
+#if 0
+	perr << "Expanding idMan from (" << begin << "-" << old_end << ") to ("
+		 << begin << "-" << end << ")" << std::endl;
+#endif
+	
+	// insert the new free IDs at the start
+	for (uint16 i = old_end + 1; i < end; ++i) {
+		ids[i] = i+1;
+	}
+	ids[end] = first;
+	first = old_end + 1;
+}
+
 bool idMan::reserveID(uint16 id)
 {
+	if (id < begin || id > max_end) {
+		return false;
+	}
+
+	// expand until we're big enough to reserve this ID
+	while (id > end) {
+		expand();
+	}
+
 	if (isIDUsed(id))
 		return false; // already used
+
+	usedcount++;
+	// more than 75% used and room to expand?
+	if (usedcount * 4 > (end - begin + 1) * 3 && end < max_end)
+	{
+		expand();
+	}
 
 	if (id == first) {
 		first = ids[id];
@@ -107,7 +161,7 @@ void idMan::clearID(uint16 id)
 {
 	// Only clear IF it is used. We don't want to screw up the linked list
 	// if an id gets cleared twice
-	if (!ids[id])
+	if (isIDUsed(id))
 	{
 		// If there is a last, then set the last's next to us
 		// or if there isn't a last, obviously no list exists,
@@ -120,6 +174,8 @@ void idMan::clearID(uint16 id)
 
 		// Set our next to terminate
 		ids[id] = 0;
+
+		usedcount--;
 	}
 }
 
@@ -128,6 +184,9 @@ void idMan::save(ODataSource* ods)
 	ods->write2(1); // version
 	ods->write2(begin);
 	ods->write2(end);
+	ods->write2(max_end);
+	ods->write2(startcount);
+	ods->write2(usedcount);
 	uint16 cur = first;
 	while (cur) {
 		ods->write2(cur);
@@ -143,9 +202,11 @@ bool idMan::load(IDataSource* ds)
 
 	begin = ds->read2();
 	end = ds->read2();
+	max_end = ds->read2();
+	startcount = ds->read2();
+	usedcount = ds->read2();
 
-	if (ids) delete[] ids;
-	ids = new uint16[end+1];
+	ids.resize(end+1);
 
 	for (unsigned int i = 0; i <= end; ++i) {
 		ids[i] = 0;

@@ -56,6 +56,9 @@ see below for individual process descriptions
 idMan: (v1)
 uint16 begin
 uint16 end
+uint16 max_end
+uint16 startcount
+uint16 usedcount
 uint16 unused[]
 uint16 terminator (0)
 

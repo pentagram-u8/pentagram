@@ -44,7 +44,7 @@ Kernel::Kernel()
 {
 	assert(kernel == 0);
 	kernel = this;
-	pIDs = new idMan(1,32767);
+	pIDs = new idMan(1,32767,128);
 	current_process = processes.end();
 }
 
