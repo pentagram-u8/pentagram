@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2003 The Pentagram team
+Copyright (C) 2002-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -53,7 +53,7 @@ public:
 	//! dump some info about this process to pout
 	virtual void dumpInfo();
 
-	bool loadData(IDataSource* ids);
+	bool loadData(IDataSource* ids, uint32 version);
 protected:
 	virtual void saveData(ODataSource* ods);
 

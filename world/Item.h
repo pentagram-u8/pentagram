@@ -351,7 +351,7 @@ public:
 	//! dump some info about this item to pout
 	virtual void dumpInfo();
 
-	bool loadData(IDataSource* ids);
+	bool loadData(IDataSource* ids, uint32 version);
 
 	// Intrinsics
 	INTRINSIC(I_touch);

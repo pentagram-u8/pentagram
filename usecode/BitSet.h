@@ -45,7 +45,7 @@ public:
 	void setBits(unsigned int pos, unsigned int n, uint32 bits);
 
 	void save(ODataSource* ods);
-	bool load(IDataSource* ids);
+	bool load(IDataSource* ids, uint32 version);
 
 private:
 	unsigned int size;

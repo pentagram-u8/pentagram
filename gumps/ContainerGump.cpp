@@ -530,7 +530,6 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 
 void ContainerGump::saveData(ODataSource* ods)
 {
-	ods->write2(1);
 	ItemRelativeGump::saveData(ods);
 
 	ods->write4(static_cast<uint32>(itemarea.x));
@@ -539,11 +538,9 @@ void ContainerGump::saveData(ODataSource* ods)
 	ods->write4(static_cast<uint32>(itemarea.h));
 }
 
-bool ContainerGump::loadData(IDataSource* ids)
+bool ContainerGump::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!ItemRelativeGump::loadData(ids)) return false;
+	if (!ItemRelativeGump::loadData(ids, version)) return false;
 
 	sint32 iax = static_cast<sint32>(ids->read4());
 	sint32 iay = static_cast<sint32>(ids->read4());

@@ -418,17 +418,14 @@ void PaperdollGump::ChildNotify(Gump *child, uint32 message)
 
 void PaperdollGump::saveData(ODataSource* ods)
 {
-	ods->write2(1);
 	ContainerGump::saveData(ods);
 
 	ods->write2(statbuttongid);
 }
 
-bool PaperdollGump::loadData(IDataSource* ids)
+bool PaperdollGump::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!ContainerGump::loadData(ids)) return false;
+	if (!ContainerGump::loadData(ids, version)) return false;
 
 	statbuttongid = ids->read2();
 

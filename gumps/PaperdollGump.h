@@ -54,18 +54,9 @@ public:
 
 	virtual bool StartDraggingItem(Item* item, int mx, int my);
 	virtual bool DraggingItem(Item* item, int mx, int my);
-#if 0
-	virtual void DraggingItemLeftGump(Item* item);
-	virtual void StopDraggingItem(Item* item, bool moved);
-#endif
 	virtual void DropItem(Item* item, int mx, int my);
 
-#if 0
-	virtual Gump* OnMouseDown(int button, int mx, int my);
-	virtual void OnMouseClick(int button, int mx, int my);
-	virtual void OnMouseDouble(int button, int mx, int my);
-#endif
-	bool loadData(IDataSource* ids);
+	bool loadData(IDataSource* ids, uint32 version);
 protected:
 	virtual void saveData(ODataSource* ods);
 

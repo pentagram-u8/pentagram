@@ -1645,7 +1645,6 @@ bool Item::canReach(Item* other, int range,
 
 void Item::saveData(ODataSource* ods)
 {
-	ods->write2(1); // version
 	Object::saveData(ods);
 	ods->write2(static_cast<uint16>(extendedflags));
 	ods->write2(flags);
@@ -1666,11 +1665,9 @@ void Item::saveData(ODataSource* ods)
 		ods->write2(parent);
 }
 
-bool Item::loadData(IDataSource* ids)
+bool Item::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Object::loadData(ids)) return false;
+	if (!Object::loadData(ids, version)) return false;
 
 	extendedflags = ids->read2();
 	flags = ids->read2();

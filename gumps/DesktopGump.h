@@ -36,7 +36,7 @@ public:
 	virtual void DraggingChild(Gump* gump, int mx, int my);
 	virtual void StopDraggingChild(Gump* gump);
 
-	bool loadData(IDataSource* ids);
+	bool loadData(IDataSource* ids, uint32 version);
 
 protected:
 	virtual void saveData(ODataSource* ods);

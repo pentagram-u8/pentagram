@@ -117,18 +117,15 @@ uint32 HealProcess::I_feedAvatar(const uint8* args, unsigned int /*argsize*/)
 
 void HealProcess::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	Process::saveData(ods);
 
 	ods->write2(healCounter);
 	ods->write2(hungerCounter);
 }
 
-bool HealProcess::loadData(IDataSource* ids)
+bool HealProcess::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Process::loadData(ids)) return false;
+	if (!Process::loadData(ids, version)) return false;
 
 	healCounter = ids->read2();
 	hungerCounter = ids->read2();

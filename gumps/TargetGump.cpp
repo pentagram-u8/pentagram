@@ -117,20 +117,10 @@ uint32 TargetGump::I_target(const uint8* /*args*/, unsigned int /*argsize*/)
 void TargetGump::saveData(ODataSource* ods)
 {
 	CANT_HAPPEN_MSG("Trying to save ModalGump");
-#if 0
-	ods->write2(1); //version
-	ModalGump::saveData(ods);
-#endif
 }
 
-bool TargetGump::loadData(IDataSource* ids)
+bool TargetGump::loadData(IDataSource* ids, uint32 versin)
 {
 	CANT_HAPPEN_MSG("Trying to load ModalGump");
-#if 0
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!ModalGump::loadData(ids)) return false;
-#endif
-
-	return true;
+	return false;
 }

@@ -133,15 +133,12 @@ void ItemRelativeGump::Move(int x_, int y_)
 
 void ItemRelativeGump::saveData(ODataSource* ods)
 {
-	ods->write2(1); // version
 	Gump::saveData(ods);
 }
 
-bool ItemRelativeGump::loadData(IDataSource* ids)
+bool ItemRelativeGump::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Gump::loadData(ids)) return false;
+	if (!Gump::loadData(ids, version)) return false;
 
 	return true;
 }

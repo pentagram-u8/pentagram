@@ -44,8 +44,7 @@ public:
 	INTRINSIC(I_readGrave);
 	INTRINSIC(I_readPlaque);
 
-public:
-	bool loadData(IDataSource* ids);
+	bool loadData(IDataSource* ids, uint32 version);
 protected:
 	virtual void saveData(ODataSource* ods);
 };

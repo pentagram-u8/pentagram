@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -103,15 +103,12 @@ bool EggHatcherProcess::run(const uint32 /*framenum*/)
 void EggHatcherProcess::saveData(ODataSource* ods)
 {
 	Process::saveData(ods);
-	ods->write2(1);
 }
 
 
-bool EggHatcherProcess::loadData(IDataSource* ids)
+bool EggHatcherProcess::loadData(IDataSource* ids, uint32 version)
 {
-	if (!Process::loadData(ids)) return false;
-	uint16 version = ids->read2();
-	if (version != 1) return false;
+	if (!Process::loadData(ids, version)) return false;
 
 	// the eggs will be re-added to the EggHatcherProcess when they're
 	// re-added to the CurrentMap

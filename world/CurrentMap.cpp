@@ -885,8 +885,6 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 
 void CurrentMap::save(ODataSource* ods)
 {
-	ods->write2(1); // version
-
 	for (unsigned int i = 0; i < MAP_NUM_CHUNKS; ++i) {
 		for (unsigned int j = 0; j < MAP_NUM_CHUNKS/32; ++j) {
 			ods->write4(fast[i][j]);
@@ -894,11 +892,8 @@ void CurrentMap::save(ODataSource* ods)
 	}
 }
 
-bool CurrentMap::load(IDataSource* ids)
+bool CurrentMap::load(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-
 	for (unsigned int i = 0; i < MAP_NUM_CHUNKS; ++i) {
 		for (unsigned int j = 0; j < MAP_NUM_CHUNKS/32; ++j) {
 			fast[i][j] = ids->read4();

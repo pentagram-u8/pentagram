@@ -94,17 +94,14 @@ bool SplitItemProcess::run(const uint32 /*framenum*/)
 
 void SplitItemProcess::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	Process::saveData(ods);
 
 	ods->write2(target);
 }
 
-bool SplitItemProcess::loadData(IDataSource* ids)
+bool SplitItemProcess::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Process::loadData(ids)) return false;
+	if (!Process::loadData(ids, version)) return false;
 
 	target = ids->read2();
 

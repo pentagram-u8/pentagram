@@ -37,7 +37,7 @@ public:
 
 	uint16 hatch();
 
-	bool loadData(IDataSource* ids);
+	bool loadData(IDataSource* ids, uint32 version);
 
 	INTRINSIC(I_monsterEggHatch);
 	INTRINSIC(I_getMonId);

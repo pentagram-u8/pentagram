@@ -1477,8 +1477,6 @@ void GUIApp::stopDragging(int mx, int my)
 
 void GUIApp::writeSaveInfo(ODataSource* ods)
 {
-	ods->write2(1); // version
-
 	time_t t = std::time(0);
 	struct tm *timeinfo = localtime (&t);
 	ods->write2(static_cast<uint16>(timeinfo->tm_year + 1900));
@@ -1684,7 +1682,7 @@ bool GUIApp::loadGame(std::string filename)
 	}
 
 	Savegame* sg = new Savegame(ids);
-	int version = sg->getVersion();
+	uint32 version = sg->getVersion();
 	if (version != 1) {
 		perr << "Unsupported savegame version (" << version << ")"
 			 << std::endl;
@@ -1704,19 +1702,19 @@ bool GUIApp::loadGame(std::string filename)
 	// UCSTRINGS, UCGLOBALS, UCLISTS don't depend on anything else,
 	// so load these first
 	ds = sg->get_datasource("UCSTRINGS");
-	ok = ucmachine->loadStrings(ds);
+	ok = ucmachine->loadStrings(ds, version);
 	totalok &= ok;
 	perr << "UCSTRINGS: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
 
 	ds = sg->get_datasource("UCGLOBALS");
-	ok = ucmachine->loadGlobals(ds);
+	ok = ucmachine->loadGlobals(ds, version);
 	totalok &= ok;
 	perr << "UCGLOBALS: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
 
 	ds = sg->get_datasource("UCLISTS");
-	ok = ucmachine->loadLists(ds);
+	ok = ucmachine->loadLists(ds, version);
 	totalok &= ok;
 	perr << "UCLISTS: " << (ok ? "ok" : "failed")<< std::endl;
 	delete ds;
@@ -1724,38 +1722,38 @@ bool GUIApp::loadGame(std::string filename)
 	// KERNEL must be before OBJECTS, for the egghatcher
 	// KERNEL must be before APP, for the avatarMoverProcess
 	ds = sg->get_datasource("KERNEL");
-	ok = kernel->load(ds);
+	ok = kernel->load(ds, version);
 	totalok &= ok;
 	perr << "KERNEL: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
 
 	ds = sg->get_datasource("APP");
-	ok = load(ds);
+	ok = load(ds, version);
 	totalok &= ok;
 	perr << "APP: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
 
 	// WORLD must be before OBJECTS, for the egghatcher
 	ds = sg->get_datasource("WORLD");
-	ok = world->load(ds);
+	ok = world->load(ds, version);
 	totalok &= ok;
 	perr << "WORLD: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
 
 	ds = sg->get_datasource("CURRENTMAP");
-	ok = world->getCurrentMap()->load(ds);
+	ok = world->getCurrentMap()->load(ds, version);
 	totalok &= ok;
 	perr << "CURRENTMAP: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
 
 	ds = sg->get_datasource("OBJECTS");
-	ok = objectmanager->load(ds);
+	ok = objectmanager->load(ds, version);
 	totalok &= ok;
 	perr << "OBJECTS: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
 
 	ds = sg->get_datasource("MAPS");
-	ok = world->loadMaps(ds);
+	ok = world->loadMaps(ds, version);
 	totalok &= ok;
 	perr << "MAPS: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
@@ -1796,7 +1794,6 @@ uint32 GUIApp::getGameTimeInSeconds()
 
 void GUIApp::save(ODataSource* ods)
 {
-	ods->write2(1); //version
 	uint8 s = (avatarInStasis ? 1 : 0);
 	ods->write1(s);
 
@@ -1816,11 +1813,8 @@ void GUIApp::save(ODataSource* ods)
 	ods->write1(c);
 }
 
-bool GUIApp::load(IDataSource* ids)
+bool GUIApp::load(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-
 	avatarInStasis = (ids->read1() != 0);
 
 	// no gump should be moused over after load

@@ -347,8 +347,6 @@ MainActor* World::getMainActor() const
 
 void World::save(ODataSource* ods)
 {
-	ods->write2(1); // version
-
 	ods->write4(currentmap->getNum());
 
 	ods->write2(currentmap->egghatcher);
@@ -372,11 +370,8 @@ void World::save(ODataSource* ods)
 }
 
 // load items
-bool World::load(IDataSource* ids)
+bool World::load(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-
 	uint16 curmapnum = ids->read4();
 	currentmap->setMap(maps[curmapnum]);
 
@@ -392,7 +387,6 @@ bool World::load(IDataSource* ids)
 
 void World::saveMaps(ODataSource* ods)
 {
-	ods->write2(1); //version
 	ods->write4(maps.size());
 	for (unsigned int i = 0; i < maps.size(); ++i) {
 		maps[i]->save(ods);
@@ -400,16 +394,13 @@ void World::saveMaps(ODataSource* ods)
 }
 
 
-bool World::loadMaps(IDataSource* ids)
+bool World::loadMaps(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;	
-
 	uint32 mapcount = ids->read4();
 
 	// Map objects have already been created by reset()
 	for (unsigned int i = 0; i < mapcount; ++i) {
-		bool res = maps[i]->load(ids);
+		bool res = maps[i]->load(ids, version);
 		if (!res) return false;
 	}
 

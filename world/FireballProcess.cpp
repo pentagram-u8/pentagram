@@ -208,7 +208,6 @@ uint32 FireballProcess::I_TonysBalls(const uint8* args,
 
 void FireballProcess::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	Process::saveData(ods);
 
 	ods->write4(static_cast<uint32>(xspeed));
@@ -220,11 +219,9 @@ void FireballProcess::saveData(ODataSource* ods)
 	ods->write2(age);
 }
 
-bool FireballProcess::loadData(IDataSource* ids)
+bool FireballProcess::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Process::loadData(ids)) return false;
+	if (!Process::loadData(ids, version)) return false;
 
 	xspeed = static_cast<int>(ids->read4());
 	yspeed = static_cast<int>(ids->read4());

@@ -76,7 +76,7 @@ public:
 		{ return id >= begin && id <= end && ids[id] == 0 && id != last; }
 
 	void save(ODataSource* ods);
-	bool load(IDataSource* ids);
+	bool load(IDataSource* ids, uint32 version);
 
 private:
 	//! double the amount of available IDs (up to the maximum passed 

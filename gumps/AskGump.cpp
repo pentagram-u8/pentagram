@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003  The Pentagram Team
+ *  Copyright (C) 2003-2004  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -116,20 +116,17 @@ void AskGump::ChildNotify(Gump *child, uint32 message)
 
 void AskGump::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	ItemRelativeGump::saveData(ods);
 
 	answers->save(ods);
 }
 
-bool AskGump::loadData(IDataSource* ids)
+bool AskGump::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!ItemRelativeGump::loadData(ids)) return false;
+	if (!ItemRelativeGump::loadData(ids, version)) return false;
 
 	answers = new UCList(2);
-	answers->load(ids);
+	answers->load(ids, version);
 
 	return true;
 }

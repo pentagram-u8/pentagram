@@ -52,18 +52,15 @@ bool TeleportToEggProcess::run(const uint32 /*framenum*/)
 
 void TeleportToEggProcess::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	Process::saveData(ods);
 	
 	ods->write4(static_cast<uint32>(mapnum));
 	ods->write4(static_cast<uint32>(teleport_id));
 }
 
-bool TeleportToEggProcess::loadData(IDataSource* ids)
+bool TeleportToEggProcess::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Process::loadData(ids)) return false;
+	if (!Process::loadData(ids, version)) return false;
 	
 	mapnum = static_cast<int>(ids->read4());
 	teleport_id = static_cast<int>(ids->read4());

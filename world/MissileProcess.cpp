@@ -91,7 +91,6 @@ bool MissileProcess::run(const uint32 /*framenum*/)
 
 void MissileProcess::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	Process::saveData(ods);
 
 	ods->write4(static_cast<uint32>(from_x));
@@ -108,11 +107,9 @@ void MissileProcess::saveData(ODataSource* ods)
 
 }
 
-bool MissileProcess::loadData(IDataSource* ids)
+bool MissileProcess::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Process::loadData(ids)) return false;
+	if (!Process::loadData(ids, version)) return false;
 
 	from_x = static_cast<int>(ids->read4());
 	from_y = static_cast<int>(ids->read4());

@@ -35,7 +35,7 @@ public:
 	virtual bool start(uint32 count=0);
 
 	//! write the savegame's global version
-	bool writeVersion(uint16 version);
+	bool writeVersion(uint32 version);
 
 	//! write a file to the savegame
 	//! \param name name of the file

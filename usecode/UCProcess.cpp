@@ -161,7 +161,6 @@ void UCProcess::dumpInfo()
 
 void UCProcess::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	Process::saveData(ods);
 
 	ods->write2(bp);
@@ -178,11 +177,9 @@ void UCProcess::saveData(ODataSource* ods)
 	stack.save(ods);
 }
 
-bool UCProcess::loadData(IDataSource* ids)
+bool UCProcess::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Process::loadData(ids)) return false;
+	if (!Process::loadData(ids, version)) return false;
 
 	bp = ids->read2();
 	classid = ids->read2();
@@ -195,7 +192,7 @@ bool UCProcess::loadData(IDataSource* ids)
 		p.second = static_cast<int>(ids->read4());
 		freeonterminate.push_back(p);
 	}
-	stack.load(ids);
+	stack.load(ids, version);
 
 	return true;
 }

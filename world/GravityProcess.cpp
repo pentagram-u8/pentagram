@@ -214,7 +214,6 @@ void GravityProcess::terminate()
 
 void GravityProcess::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	Process::saveData(ods);
 
 	ods->write4(static_cast<uint32>(gravity));
@@ -223,11 +222,9 @@ void GravityProcess::saveData(ODataSource* ods)
 	ods->write4(static_cast<uint32>(zspeed));
 }
 
-bool GravityProcess::loadData(IDataSource* ids)
+bool GravityProcess::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Process::loadData(ids)) return false;
+	if (!Process::loadData(ids, version)) return false;
 
 	gravity = static_cast<int>(ids->read4());
 	xspeed = static_cast<int>(ids->read4());

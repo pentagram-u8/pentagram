@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -34,7 +34,7 @@ public:
 	virtual ~Savegame();
 
 	//! get the savegame's global version
-	uint16 getVersion();
+	uint32 getVersion();
 
 protected:
 	virtual uint32 get_size(uint32 index);

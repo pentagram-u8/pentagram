@@ -140,7 +140,6 @@ void Process::writeProcessHeader(ODataSource* ods)
 
 void Process::saveData(ODataSource* ods)
 {
-	ods->write2(1); // version
 	ods->write2(pid);
 	uint8 a = active ? 1 : 0;
 	uint8 s = suspended ? 1 : 0;
@@ -158,11 +157,8 @@ void Process::saveData(ODataSource* ods)
 		ods->write2(waiting[i]);
 }
 
-bool Process::loadData(IDataSource* ids)
+bool Process::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-
 	pid = ids->read2();
 	active = (ids->read1() != 0);
 	suspended = (ids->read1() != 0);

@@ -506,7 +506,6 @@ void MainActor::getWeaponOverlay(const WeaponOverlayFrame*& frame,
 
 void MainActor::saveData(ODataSource* ods)
 {
-	ods->write2(1); // version
 	Actor::saveData(ods);
 	uint8 jt = justTeleported ? 1 : 0;
 	ods->write1(jt);
@@ -520,11 +519,9 @@ void MainActor::saveData(ODataSource* ods)
 
 }
 
-bool MainActor::loadData(IDataSource* ids)
+bool MainActor::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Actor::loadData(ids)) return false;
+	if (!Actor::loadData(ids, version)) return false;
 
 	justTeleported = (ids->read1() != 0);
 	accumStr = static_cast<sint32>(ids->read4());

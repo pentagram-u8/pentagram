@@ -44,7 +44,7 @@ public:
 
 	virtual void		Move(int x, int y);
 
-	bool				loadData(IDataSource* ids);
+	bool				loadData(IDataSource* ids, uint32 version);
 protected:
 	virtual void 		saveData(ODataSource* ods);
 

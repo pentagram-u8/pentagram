@@ -357,7 +357,6 @@ void Kernel::killProcessesNotOfType(ObjId objid, uint16 processtype, bool fail)
 
 void Kernel::save(ODataSource* ods)
 {
-	ods->write2(1); // kernel savegame version 1
 	ods->write4(framenum);
 	pIDs->save(ods);
 	ods->write4(processes.size());
@@ -367,19 +366,16 @@ void Kernel::save(ODataSource* ods)
 	}
 }
 
-bool Kernel::load(IDataSource* ids)
+bool Kernel::load(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-
 	framenum = ids->read4();
 
-	if (!pIDs->load(ids)) return false;
+	if (!pIDs->load(ids, version)) return false;
 
 	uint32 pcount = ids->read4();
 
 	for (unsigned int i = 0; i < pcount; ++i) {
-		Process* p = loadProcess(ids);
+		Process* p = loadProcess(ids, version);
 		if (!p) return false;
 		processes.push_back(p);
 	}
@@ -387,7 +383,7 @@ bool Kernel::load(IDataSource* ids)
 	return true;
 }
 
-Process* Kernel::loadProcess(IDataSource* ids)
+Process* Kernel::loadProcess(IDataSource* ids, uint32 version)
 {
 	uint16 classlen = ids->read2();
 	char* buf = new char[classlen+1];
@@ -408,7 +404,7 @@ Process* Kernel::loadProcess(IDataSource* ids)
 
 	loading = true;
 
-	Process* p = (*(iter->second))(ids);
+	Process* p = (*(iter->second))(ids, version);
 
 	loading = false;
 

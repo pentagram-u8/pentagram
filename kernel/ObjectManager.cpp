@@ -55,9 +55,9 @@ ObjectManager* ObjectManager::objectmanager = 0;
 // every object separately
 template<class T>
 struct ObjectLoader {
-	static Object* load(IDataSource* ids) {
+	static Object* load(IDataSource* ids, uint32 version) {
 		T* p = new T();
-		bool ok = p->loadData(ids);
+		bool ok = p->loadData(ids, version);
 		if (!ok) {
 			delete p;
 			p = 0;
@@ -249,8 +249,6 @@ Object* ObjectManager::getObject(ObjId objid) const
 
 void ObjectManager::save(ODataSource* ods)
 {
-	ods->write2(1); // objects savegame version 1
-
 	objIDs->save(ods);
 	actorIDs->save(ods);
 
@@ -274,13 +272,10 @@ void ObjectManager::save(ODataSource* ods)
 }
 
 
-bool ObjectManager::load(IDataSource* ids)
+bool ObjectManager::load(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-
-	if (!objIDs->load(ids)) return false;
-	if (!actorIDs->load(ids)) return false;
+	if (!objIDs->load(ids, version)) return false;
+	if (!actorIDs->load(ids, version)) return false;
 
 	do {
 		// peek ahead for terminator
@@ -293,7 +288,7 @@ bool ObjectManager::load(IDataSource* ids)
 		std::string classname = buf;
 		delete[] buf;
 
-		Object* obj = loadObject(ids, classname);
+		Object* obj = loadObject(ids, classname, version);
 		if (!obj) return false;
 
 		// top level gumps have to be added to the correct core gump
@@ -307,7 +302,7 @@ bool ObjectManager::load(IDataSource* ids)
 	return true;
 }
 
-Object* ObjectManager::loadObject(IDataSource* ids)
+Object* ObjectManager::loadObject(IDataSource* ids, uint32 version)
 {
 	uint16 classlen = ids->read2();
 	char* buf = new char[classlen+1];
@@ -317,10 +312,11 @@ Object* ObjectManager::loadObject(IDataSource* ids)
 	std::string classname = buf;
 	delete[] buf;
 
-	return loadObject(ids, classname);
+	return loadObject(ids, classname, version);
 }
 
-Object* ObjectManager::loadObject(IDataSource* ids, std::string classname)
+Object* ObjectManager::loadObject(IDataSource* ids, std::string classname,
+								  uint32 version)
 {
 	std::map<std::string, ObjectLoadFunc>::iterator iter;
 	iter = objectloaders.find(classname);
@@ -330,7 +326,7 @@ Object* ObjectManager::loadObject(IDataSource* ids, std::string classname)
 		return 0;
 	}
 
-	Object* obj = (*(iter->second))(ids);
+	Object* obj = (*(iter->second))(ids, version);
 
 	if (!obj) {
 		perr << "Error loading object of type " << classname << std::endl;

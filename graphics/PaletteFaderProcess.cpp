@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003  Pentagram Team
+ *  Copyright (C) 2003-2004  Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -108,31 +108,27 @@ bool PaletteFaderProcess::run(const uint32)
 
 void PaletteFaderProcess::saveData(ODataSource* ods)
 {
-	unsigned int i;
-
-	ods->write2(1); //version
 	Process::saveData(ods);
 	
 	ods->write4(static_cast<uint32>(priority));
 	ods->write4(static_cast<uint32>(counter));
 	ods->write4(static_cast<uint32>(max_counter));
+	unsigned int i;
 	for (i = 0; i < 12; ++i)
 		ods->write2(old_matrix[i]);
 	for (i = 0; i < 12; ++i)
 		ods->write2(new_matrix[i]);
 }
 
-bool PaletteFaderProcess::loadData(IDataSource* ids)
+bool PaletteFaderProcess::loadData(IDataSource* ids, uint32 version)
 {
-	unsigned int i;
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Process::loadData(ids)) return false;
+	if (!Process::loadData(ids, version)) return false;
 	
 	priority = static_cast<int>(ids->read4());
 	counter = static_cast<int>(ids->read4());
 	max_counter = static_cast<int>(ids->read4());
 
+	unsigned int i;
 	for (i = 0; i < 12; ++i)
 		old_matrix[i] = ids->read2();
 	for (i = 0; i < 12; ++i)

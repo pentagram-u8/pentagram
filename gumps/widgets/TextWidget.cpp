@@ -105,7 +105,6 @@ void TextWidget::PaintThis(RenderSurface*surf, sint32 lerp_factor)
 
 void TextWidget::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	Gump::saveData(ods);
 
 	ods->write4(static_cast<uint32>(fontnum));
@@ -118,11 +117,9 @@ void TextWidget::saveData(ODataSource* ods)
 	ods->write(text.c_str(), text.size());
 }
 
-bool TextWidget::loadData(IDataSource* ids)
+bool TextWidget::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Gump::loadData(ids)) return false;
+	if (!Gump::loadData(ids, version)) return false;
 
 	fontnum = static_cast<int>(ids->read4());
 	current_start = static_cast<int>(ids->read4());

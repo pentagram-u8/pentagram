@@ -227,23 +227,15 @@ void MenuGump::showMenu()
 	gump->setRelativePosition(CENTER);
 }
 
-bool MenuGump::loadData(IDataSource* ids)
+bool MenuGump::loadData(IDataSource* ids, uint32 version)
 {
 	CANT_HAPPEN_MSG("Trying to load ModalGump");
-#if 0
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!ModalGump::loadData(ids)) return false;
-#endif
-	return true;
+
+	return false;
 }
 
 void MenuGump::saveData(ODataSource* ods)
 {
 	CANT_HAPPEN_MSG("Trying to save ModalGump");
-#if 0
-	ods->write2(1); //version
-	ModalGump::saveData(ods);
-#endif
 }
 

@@ -266,32 +266,11 @@ void SliderGump::setUsecodeNotify(UCProcess* ucp)
 void SliderGump::saveData(ODataSource* ods)
 {
 	CANT_HAPPEN_MSG("Trying to save ModalGump");
-#if 0
-	ods->write2(1); //version
-	ModalGump::saveData(ods);
-
-	ods->write2(min);
-	ods->write2(max);
-	ods->write2(value);
-	ods->write2(delta);
-	ods->write2(usecodeNotifyPID);
-#endif
 }
 
-bool SliderGump::loadData(IDataSource* ids)
+bool SliderGump::loadData(IDataSource* ids, uint32 version)
 {
 	CANT_HAPPEN_MSG("Trying to load ModalGump");
-#if 0
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!ModalGump::loadData(ids)) return false;
 
-	min = ids->read2();
-	max = ids->read2();
-	value = ids->read2();
-	delta = ids->read2();
-	usecodeNotifyPID = ids->read2();
-#endif
-
-	return true;
+	return false;
 }

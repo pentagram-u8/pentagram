@@ -73,7 +73,7 @@ public:
 	std::string getName() { return name; }
 	void setName(std::string name_) { name = name_; }
 
-	bool loadData(IDataSource* ids);
+	bool loadData(IDataSource* ids, uint32 version);
 
 	//! "teleport" console command
 	static void ConCmd_teleport(const Console::ArgsType &args, const Console::ArgvType &argv);

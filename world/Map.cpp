@@ -170,12 +170,12 @@ void Map::save(ODataSource* ods)
 }
 
 
-bool Map::load(IDataSource* ids)
+bool Map::load(IDataSource* ids, uint32 version)
 {
 	uint32 itemcount = ids->read4();
 
 	for (unsigned int i = 0; i < itemcount; ++i) {
-		Object* obj = ObjectManager::get_instance()->loadObject(ids);
+		Object* obj = ObjectManager::get_instance()->loadObject(ids, version);
 		Item* item = p_dynamic_cast<Item*>(obj);
 		if (!item) return false;
 		dynamicitems.push_back(item);

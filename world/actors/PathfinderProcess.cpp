@@ -236,7 +236,6 @@ bool PathfinderProcess::run(const uint32 /*framenum*/)
 
 void PathfinderProcess::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	Process::saveData(ods);
 
 	ods->write2(targetitem);
@@ -252,11 +251,9 @@ void PathfinderProcess::saveData(ODataSource* ods)
 	}
 }
 
-bool PathfinderProcess::loadData(IDataSource* ids)
+bool PathfinderProcess::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Process::loadData(ids)) return false;
+	if (!Process::loadData(ids, version)) return false;
 
 	targetitem = ids->read2();
 	targetx = ids->read2();

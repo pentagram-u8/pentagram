@@ -42,7 +42,7 @@ public:
 
 	static void terminateMover(int _dir);
 
-	bool loadData(IDataSource* ids);
+	bool loadData(IDataSource* ids, uint32 version);
 protected:
 	virtual void saveData(ODataSource* ods);
 

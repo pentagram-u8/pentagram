@@ -93,7 +93,7 @@ void Object::saveData(ODataSource* ods)
 	ods->write2(objid);
 }
 
-bool Object::loadData(IDataSource* ids)
+bool Object::loadData(IDataSource* ids, uint32 version)
 {
 	objid = ids->read2();
 

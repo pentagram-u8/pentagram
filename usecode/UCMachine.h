@@ -71,9 +71,9 @@ public:
 	void saveStrings(ODataSource* ods);
 	void saveLists(ODataSource* ods);
 
-	bool loadGlobals(IDataSource* ids);
-	bool loadStrings(IDataSource* ids);
-	bool loadLists(IDataSource* ids);
+	bool loadGlobals(IDataSource* ids, uint32 version);
+	bool loadStrings(IDataSource* ids, uint32 version);
+	bool loadLists(IDataSource* ids, uint32 version);
 
 	INTRINSIC(I_true);
 	INTRINSIC(I_dummyProcess);

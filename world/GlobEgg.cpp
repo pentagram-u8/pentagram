@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -75,15 +75,12 @@ void GlobEgg::enterFastArea()
 
 void GlobEgg::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	Item::saveData(ods);
 }
 
-bool GlobEgg::loadData(IDataSource* ids)
+bool GlobEgg::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Item::loadData(ids)) return false;
+	if (!Item::loadData(ids, version)) return false;
 
 	return true;
 }

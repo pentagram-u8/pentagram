@@ -81,10 +81,12 @@ bool SavegameWriter::finish()
 	return true;
 }
 
-bool SavegameWriter::writeVersion(uint16 version)
+bool SavegameWriter::writeVersion(uint32 version)
 {
-	uint8 buf[2];
+	uint8 buf[4];
 	buf[0] = version & 0xFF;
 	buf[1] = (version >> 8) & 0xFF;
-	return writeFile("VERSION", buf, 2);
+	buf[2] = (version >> 16) & 0xFF;
+	buf[3] = (version >> 24) & 0xFF;
+	return writeFile("VERSION", buf, 4);
 }

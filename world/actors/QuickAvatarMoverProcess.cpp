@@ -157,18 +157,15 @@ void QuickAvatarMoverProcess::terminateMover(int _dir)
 
 void QuickAvatarMoverProcess::saveData(ODataSource* ods)
 {
-	ods->write2(1); // version
 	Process::saveData(ods);
 
 	ods->write4(dir);
 	// don't save more information. We plan to terminate upon load
 }
 
-bool QuickAvatarMoverProcess::loadData(IDataSource* ids)
+bool QuickAvatarMoverProcess::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Process::loadData(ids)) return false;
+	if (!Process::loadData(ids, version)) return false;
 
 	// small safety precaution
 	dir = ids->read4();

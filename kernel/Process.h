@@ -71,7 +71,7 @@ public:
 	void save(ODataSource* ods);
 
 	//! load Process data
-	bool loadData(IDataSource* ids);
+	bool loadData(IDataSource* ids, uint32 version);
 
 protected:
 	//! save the Process data 

@@ -275,7 +275,6 @@ void ActorAnimProcess::terminate()
 
 void ActorAnimProcess::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	Process::saveData(ods);
 
 	uint8 ff = firstframe ? 1 : 0;
@@ -295,11 +294,9 @@ void ActorAnimProcess::saveData(ODataSource* ods)
 		ods->write1(0);
 }
 
-bool ActorAnimProcess::loadData(IDataSource* ids)
+bool ActorAnimProcess::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Process::loadData(ids)) return false;
+	if (!Process::loadData(ids, version)) return false;
 
 	firstframe = (ids->read1() != 0);
 	animAborted = (ids->read1() != 0);
@@ -311,7 +308,7 @@ bool ActorAnimProcess::loadData(IDataSource* ids)
 	assert(tracker == 0);
 	if (ids->read1() != 0) {
 		tracker = new AnimationTracker();
-		if (!tracker->load(ids))
+		if (!tracker->load(ids, version))
 			return false;
 	}
 

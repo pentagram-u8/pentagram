@@ -29,7 +29,7 @@ class idMan;
 class IDataSource;
 class ODataSource;
 
-typedef Process* (*ProcessLoadFunc)(IDataSource*);
+typedef Process* (*ProcessLoadFunc)(IDataSource*, uint32 version);
 
 class Kernel {
 public:
@@ -77,7 +77,7 @@ public:
 	void processTypes();
 
 	void save(ODataSource* ods);
-	bool load(IDataSource* ids);
+	bool load(IDataSource* ids, uint32 version);
 
 	void pause() { paused++; }
 	void unpause() { if (paused > 0) paused--; }
@@ -99,7 +99,7 @@ public:
 	INTRINSIC(I_getNumProcesses);
 	INTRINSIC(I_resetRef);
 private:
-	Process* loadProcess(IDataSource* ids);
+	Process* loadProcess(IDataSource* ids, uint32 version);
 
 	std::list<Process*> processes;
 	idMan	*pIDs;
@@ -123,9 +123,9 @@ private:
 // every process
 template<class T>
 struct ProcessLoader {
-	static Process* load(IDataSource* ids) {
+	static Process* load(IDataSource* ids, uint32 version) {
 		T* p = new T();
-		bool ok = p->loadData(ids);
+		bool ok = p->loadData(ids, version);
 		if (!ok) {
 			delete p;
 			p = 0;

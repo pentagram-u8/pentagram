@@ -65,12 +65,12 @@ Savegame::~Savegame()
 
 }
 
-uint16 Savegame::getVersion()
+uint32 Savegame::getVersion()
 {
 	IDataSource* ids = get_datasource("VERSION");
-	if (!ids || ids->getSize() < 2) return 0;
+	if (!ids || ids->getSize() != 4) return 0;
 
-	uint16 version = ids->read2();
+	uint32 version = ids->read4();
 	delete ids;
 
 	return version;

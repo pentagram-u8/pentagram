@@ -123,7 +123,7 @@ void BitSet::save(ODataSource* ods)
 	ods->write(data, bytes);
 }
 
-bool BitSet::load(IDataSource* ids)
+bool BitSet::load(IDataSource* ids, uint32 version)
 {
 	uint32 s = ids->read4();
 	setSize(s);

@@ -705,7 +705,6 @@ bool Gump::mustSave(bool toplevel)
 
 void Gump::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	Object::saveData(ods);
 
 	ods->write2(owner);
@@ -752,11 +751,9 @@ void Gump::saveData(ODataSource* ods)
 	}
 }
 
-bool Gump::loadData(IDataSource* ids)
+bool Gump::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Object::loadData(ids)) return false;
+	if (!Object::loadData(ids, version)) return false;
 
 	owner = ids->read2();
 	x = static_cast<sint32>(ids->read4());
@@ -789,7 +786,7 @@ bool Gump::loadData(IDataSource* ids)
 	// read children
 	uint32 childcount = ids->read4();
 	for (unsigned int i = 0; i < childcount; ++i) {
-		Object* obj = ObjectManager::get_instance()->loadObject(ids);
+		Object* obj = ObjectManager::get_instance()->loadObject(ids, version);
 		Gump* child = p_dynamic_cast<Gump*>(obj);
 		if (!child) return false;
 

@@ -575,17 +575,12 @@ void AvatarMoverProcess::OnMouseUp(int button)
 
 void AvatarMoverProcess::saveData(ODataSource* ods)
 {
-	ods->write2(1); // version
 	Process::saveData(ods);
 }
 
-bool AvatarMoverProcess::loadData(IDataSource* ids)
+bool AvatarMoverProcess::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Process::loadData(ids)) return false;
-
-	type = 1; // HACK! (to fix old savegames which had it set to 0)
+	if (!Process::loadData(ids, version)) return false;
 
 	return true;
 }

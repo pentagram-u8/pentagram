@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,19 +24,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 void UCStack::save(ODataSource* ods)
 {
-	ods->write2(1); //version
-
 	ods->write4(size);
 	ods->write4(getSP());
 
 	ods->write(buf_ptr, stacksize());
 }
 
-bool UCStack::load(IDataSource* ids)
+bool UCStack::load(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-
 	size = ids->read4();
 	if (buf) delete[] buf;
 	buf = new uint8[size];

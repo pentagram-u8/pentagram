@@ -123,18 +123,15 @@ Gump *BarkGump::OnMouseDown(int button, int mx, int my)
 
 void BarkGump::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	ItemRelativeGump::saveData(ods);
 
 	ods->write4(static_cast<uint32>(counter));
 	ods->write2(textwidget);
 }
 
-bool BarkGump::loadData(IDataSource* ids)
+bool BarkGump::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!ItemRelativeGump::loadData(ids)) return false;
+	if (!ItemRelativeGump::loadData(ids, version)) return false;
 
 	counter = static_cast<sint32>(ids->read4());
 	textwidget = ids->read2();

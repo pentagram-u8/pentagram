@@ -164,7 +164,6 @@ void ButtonWidget::OnMouseLeft()
 
 void ButtonWidget::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	Gump::saveData(ods);
 
 	uint16 flex = 0;
@@ -190,11 +189,9 @@ void ButtonWidget::saveData(ODataSource* ods)
 	ods->write1(m);
 }
 
-bool ButtonWidget::loadData(IDataSource* ids)
+bool ButtonWidget::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Gump::loadData(ids)) return false;
+	if (!Gump::loadData(ids, version)) return false;
 
 	shape_up = 0;
 	ShapeFlex * flex = GameData::get_instance()->getShapeFlex(ids->read2());

@@ -163,7 +163,7 @@ public:
 	}
 
 	void save(ODataSource* ods);
-	bool load(IDataSource* ids);
+	bool load(IDataSource* ids, uint32 version);
 
 	INTRINSIC(I_canExistAt);
 

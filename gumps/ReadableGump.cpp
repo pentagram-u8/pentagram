@@ -123,25 +123,12 @@ uint32 ReadableGump::I_readPlaque(const uint8* args, unsigned int /*argsize*/)
 void ReadableGump::saveData(ODataSource* ods)
 {
 	CANT_HAPPEN_MSG("Trying to load ModalGump");
-#if 0
-	ods->write2(1); //version
-	ModalGump::saveData(ods);
-
-	ods->write2(textwidget);
-#endif
 }
 
-bool ReadableGump::loadData(IDataSource* ids)
+bool ReadableGump::loadData(IDataSource* ids, uint32 version)
 {
 	CANT_HAPPEN_MSG("Trying to load ModalGump");
-#if 0
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!ModalGump::loadData(ids)) return false;
 
-	textwidget = ids->read2();
-#endif
-
-	return true;
+	return false;
 }
 

@@ -171,7 +171,7 @@ private:
 	void save(ODataSource* ods);
 
 	//! load CoreApp/GUIApp data
-	bool load(IDataSource* ids);
+	bool load(IDataSource* ids, uint32 version);
 	
 	//! reset engine (including World, UCMachine, a.o.)
 	void resetEngine();

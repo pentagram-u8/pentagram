@@ -37,14 +37,12 @@ pentagram version (current and starting?), current game resolution
 
 
 VERSION: (unversioned)
-uint16 version		global savegame version
+uint32 version		global savegame version
 
 GAME: (v1)
-uint16 version
 [...]
 
 INFO: (v1)
-uint16 version
 uint16 year
 uint8 month, day [1-12, 1-31]
 uint8 hour, min, sec [0-23, 0-59, 0-60]
@@ -62,7 +60,6 @@ uint16 armour, weight
 (uint32 shape,frame)[6] avatar_equipment (shield,arm,head,body,legs,weapon)
 
 APP: (v1)
-uint16 version
 uint8 avatarInStasis (boolean)
 sint32 timeOffset (FIXME!)
 uint16 avatarMoverProcess (pid)
@@ -72,7 +69,6 @@ uint32 save_count
 uint8 has_cheated (bool)
 
 KERNEL: (v1)
-uint16 version			kernel savegame version
 uint32 framenum
 idMan pids
 uint32 processcount
@@ -90,7 +86,6 @@ uint16 unused[]
 uint16 terminator (0)
 
 OBJECTS: (v1)
-uint16 version			objects savegame version
 idMan objIDs
 idMan actorIDs
 [...objects...]
@@ -100,7 +95,6 @@ see below for individual object descriptions
 
 
 WORLD: (v1)
-uint16 version
 uint32 mapnum
 uint16 egghatcher
 uint32 etherealcount
@@ -108,7 +102,6 @@ uint32 etherealcount
 
 
 MAPS: (v1)
-uint16 version
 uint32 mapcount
 [mapcount maps, stored in order from 0-<mapcount-1>]
 
@@ -118,12 +111,10 @@ uint32 itemcount
 
 
 CURRENTMAP: (v1)
-uint16 version
 uint32[MAP_NUM_CHUNKS][MAP_NUM_CHUNKS/32] fast
 
 
 UCSTRINGS: (v1)
-uint16 version
 idMan stringIDs
 uint32 stringcount
 [stringcount strings]
@@ -135,13 +126,11 @@ char str[length]	the actual string (not NULL terminated)
 
 
 UCGLOBALS: (v1)
-uint16 version
 uint32 size		size in bits
 uint8 data[bytes]	"bytes" = size/8, rounded up
 
 
 UCLISTS: (v1)
-uint16 version
 idMan listIDs
 uint32 listcount
 [listcount lists]
@@ -163,11 +152,10 @@ char classname[classlen]	class name of this Object
 
 
 
-Object: (unversioned)
+Object: (v1)
 uint16 objid
 
 Item: (v1)
-uint16 version
 <Object>
 uint16 extendedflags
 uint16 flags
@@ -178,14 +166,12 @@ if (objid != 0xFFFF) uint16 gump, gravity_pid
 if (ETHEREAL && (CONTAINED || EQUIPPED)) uint16 parent
 
 Container: (v1)
-uint16 version
 <Item>
 uint32 contentcount
 [contentcount Objects]
 
 
 Actor: (v1)
-uint16 version
 <Container>
 sint16 str, dex, int
 uint16 hp
@@ -193,37 +179,30 @@ sint16 mana
 uint16 alignment, enemyalignment
 uint16 lastanim, animframe, direction
 uint32 actorflags
-TODO: more...?
 
 MainActor: (v1)
-uint16 version
 <Actor>
 uint8 justTeleported (boolean)
 sint32 accumStr, accumDex, accumInt
 uint8 name_length
-sint8 name[name_length]
-TODO: more...?
+char name[name_length]
 
 
 Egg: (v1)
-uint16 version
 <Item>
 uint16 hatched (boolean)
 
 MonsterEgg: (v1)
-uint16 version
 <Item>
 
 TeleportEgg: (v1)
-uint16 version
 <Egg>
 
 GlobEgg: (v1)
-uint16 version
 <Item>
 
+
 Gump: (v1)
-uint16 version
 <Object>
 uint16 owner
 sint32 x
@@ -246,22 +225,16 @@ uint32 childcount
 
 
 DesktopGump: (v1)
-uint16 version
-<Gump>
-
+(not saved)
 
 GameMapGump: (v1)
-uint16 version
-<Gump>
-
+(not saved)
 
 ConsoleGump: (v1)
-uint16 version
-<Gump>
+(not saved)
 
 
 ItemRelativeGump: (v1)
-uint16 version
 <Gump>
 
 
@@ -272,14 +245,12 @@ UCList list
 
 
 BarkGump: (v1)
-uint16 version
 <ItemRelativeGump>
 sint32 counter
 uint16 textwidget
 
 
 ContainerGump: (v1)
-uint16 version
 <ItemRelativeGump>
 sint32 itemarea.x
 sint32 itemarea.y
@@ -288,18 +259,15 @@ sint32 itemarea.h
 
 
 PaperdollGump: (v1)
-uint16 version
 <ContainerGump>
 uint16 statbuttongump
 
 
 MiniStatsGump: (v1)
-uint16 version
 <Gump>
 
 
 TextWidget: (v1)
-uint16 version
 <Gump>
 sint32 fontnum
 sint32 current_start
@@ -312,7 +280,6 @@ char text[strlen]
 
 
 ButtonWidget: (v1)
-uint16 version
 <Gump>
 uint16 shape_upFlexId
 uint32 shape_upNum
@@ -324,7 +291,6 @@ uint16 textwidget
 uint8 mouseOver (boolean)
 
 SlidingWidget: (v1)
-uint16 version
 <Gump>
 
 
@@ -338,7 +304,6 @@ char classname[classlen]	class name of this Process
 
 
 Process (v1)
-uint16 version
 uint16 pid
 uint8 active (boolean)
 uint8 suspended (boolean)
@@ -352,7 +317,6 @@ uint16 waiting[waitingcount]
 
 
 ActorAnimProcess: Process (v1)
-uint16 version
 <Process>
 uint8 firstframe (boolean)
 uint8 animAborted (boolean)
@@ -364,7 +328,6 @@ uint8 hasTracker (boolean)
 if (hasTracker) AnimationTracker tracker
 
 AnimationTracker (v1)
-uint16 version
 uint32 startframe, endframe
 uint8 firstframe (boolean)
 uint32 currentframe
@@ -385,13 +348,11 @@ uint8 supported (boolean)
 
 
 TargetedAnimProcess: Process (v1)
-uint16 version
 <ActorAnimProcess>
 uint32 x,y,z
 
 
 CameraProcess: Process (v1)
-uint16 version
 <Process>
 sint32 sx, sy, sz
 sint32 ex, ey, ez
@@ -403,13 +364,11 @@ static sint32 eq_x, eq_y
 
 
 MusicProcess: Process (v1)
-uint16 version
 <Process>
 sint32 wanted_track
 
 
 UCProcess: Process (v1)
-uint16 version
 <Process>
 uint16 bp
 uint16 classid
@@ -420,7 +379,6 @@ uint32 freecount
 UCStack stack
 
 UCStack: (v1)
-uint16 version
 uint32 size
 uint32 SP
 uint8 data[size-SP]
@@ -428,26 +386,22 @@ uint8 data[size-SP]
 
 
 GumpNotifyProcess: Process (v1)
-uint16 version
 <Process>
 uint16 gump
 
 
 DelayProcess: Process (v1)
-uint16 version
 <Process>
 sint32 count
 
 
 GravityProcess: Process (v1)
-uint16 version
 <Process>
 sint32 gravity
 sint32 xspeed, yspeed, zspeed
 
 
 MissileProcess: Process (v1)
-uint16 version
 <Process>
 sint32 from_x, from_y, from_z
 sint32 to_x, to_y, to_z
@@ -456,7 +410,6 @@ uint8 curve (boolean)
 
 
 SpriteProcess: Process (v1)
-uint16 version
 <Process>
 sint32 frame
 sint32 first_frame, last_frame
@@ -465,14 +418,12 @@ sint32 delay, delay_counter
 
 
 TeleportToEggProcess: Process (v1)
-uint16 version
 <Process>
 sint32 mapnum
 sint32 teleport_id
 
 
 PaletteFaderProcess: Process (v1)
-uint16 version
 <Process>
 sint32 priority
 sint32 counter, max_counter
@@ -481,38 +432,31 @@ sint16 new_matrix[12]
 
 
 AvatarMoverProcess: Process (v1)
-uint16 version
 <Process>
 
 QuickAvatarMoverProcess: Process (v1)		terminates after loading
-uint16 version
 <Process>
 sint32 dir
 
 
 ResurrectionProcess: Process (v1)
-uint16 version
 <Process>
 
 
 DeleteActorProcess: Process (v1)
-uint16 version
 <Process>
 
 
 ClearFeignDeathProcess: Process (v1)
-uint16 version
 <Process>
 
 
 SplitItemProcess: Process (v1)
-uint16 version
 <Process>
 uint16 target
 
 
 PathfinderProcess: Process (v1)
-uint16 version
 <Process>
 uint16 targetitem
 uint16 targetx, targety, targetz
@@ -522,30 +466,25 @@ uint16 pathsize
 
 
 LoiterProcess: Process (v1)
-uint16 version
 <Process>
 
 
 AvatarDeathProcess: Process (v1)
-uint16 version
 <Process>
 
 
 CombatProcess: Process (v1)
-uint16 version
 <Process>
 uint16 target
 uint8 combatmode (CombatMode)
 
 
 GrantPeaceProcess: Process (v1)
-uint16 version
 <Process>
 uint8 havetarget (boolean)
 
 
 FireballProcess: Process (v1)
-uint16 version
 <Process>
 sint32 xspeed, yspeed
 uint16 target
@@ -554,13 +493,15 @@ uint16 age
 
 
 HealProcess: Process (v1)
-uint16 version
 <Process>
 uint16 healCounter
 uint16 hungerCounter
 
 
 InverterProcess: Process (v1)
-uint16 version
 <Process>
 uint16 targetstate
+
+
+EggHatcherProcess: Process (v1)
+<Process>

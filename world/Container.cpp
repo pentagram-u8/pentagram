@@ -231,7 +231,6 @@ void Container::dumpInfo()
 
 void Container::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	Item::saveData(ods);
 	ods->write4(contents.size());
 	std::list<Item*>::iterator iter;
@@ -240,18 +239,16 @@ void Container::saveData(ODataSource* ods)
 	}
 }
 
-bool Container::loadData(IDataSource* ids)
+bool Container::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Item::loadData(ids)) return false;
+	if (!Item::loadData(ids, version)) return false;
 
 	uint32 contentcount = ids->read4();
 
 	// read contents
 	for (unsigned int i = 0; i < contentcount; ++i)
 	{
-		Object* obj = ObjectManager::get_instance()->loadObject(ids);
+		Object* obj = ObjectManager::get_instance()->loadObject(ids, version);
 		Item* item = p_dynamic_cast<Item*>(obj);
 		if (!item) return false;
 

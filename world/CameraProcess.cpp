@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -301,7 +301,6 @@ uint16 CameraProcess::FindRoof(sint32 factor)
 
 void CameraProcess::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	Process::saveData(ods);
 
 	ods->write4(static_cast<uint32>(sx));
@@ -319,11 +318,9 @@ void CameraProcess::saveData(ODataSource* ods)
 	ods->write4(static_cast<uint32>(eq_y));
 }
 
-bool CameraProcess::loadData(IDataSource* ids)
+bool CameraProcess::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Process::loadData(ids)) return false;
+	if (!Process::loadData(ids, version)) return false;
 
 	sx = static_cast<sint32>(ids->read4());
 	sy = static_cast<sint32>(ids->read4());

@@ -29,7 +29,7 @@ class Actor;
 class IDataSource;
 class ODataSource;
 
-typedef Object* (*ObjectLoadFunc)(IDataSource*);
+typedef Object* (*ObjectLoadFunc)(IDataSource*, uint32);
 
 class ObjectManager
 {
@@ -51,10 +51,10 @@ public:
 	void objectTypes();
 
 	void save(ODataSource* ods);
-	bool load(IDataSource* ids);
+	bool load(IDataSource* ids, uint32 version);
 
-	Object* loadObject(IDataSource* ids);
-	Object* loadObject(IDataSource* ids, std::string classname);
+	Object* loadObject(IDataSource* ids, uint32 version);
+	Object* loadObject(IDataSource* ids, std::string classname,uint32 version);
 
 	//! "ObjectManager::objectTypes" console command
 	static void ConCmd_objectTypes(const Console::ArgsType &args, const Console::ArgvType &argv);

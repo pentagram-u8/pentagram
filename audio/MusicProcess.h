@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -47,7 +47,7 @@ public:
 
 	virtual bool run(const uint32 framenum);
 
-	bool loadData(IDataSource* ids);
+	bool loadData(IDataSource* ids, uint32 version);
 
 	// MusicProcess::playMusic console command
 	static void ConCmd_playMusic(const Console::ArgsType &args, const Console::ArgvType &argv);

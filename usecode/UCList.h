@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2003 The Pentagram team
+Copyright (C) 2002-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -147,7 +147,7 @@ class UCList
 	uint16 getStringIndex(uint32 index);
 
 	void save(ODataSource* ods);
-	bool load(IDataSource* ids);
+	bool load(IDataSource* ids, uint32 version);
 
 private:
 	std::string& getString(uint32 index);

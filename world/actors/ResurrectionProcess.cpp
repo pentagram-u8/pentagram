@@ -79,15 +79,12 @@ bool ResurrectionProcess::run(const uint32 /*framenum*/)
 
 void ResurrectionProcess::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	Process::saveData(ods);
 }
 
-bool ResurrectionProcess::loadData(IDataSource* ids)
+bool ResurrectionProcess::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Process::loadData(ids)) return false;
+	if (!Process::loadData(ids, version)) return false;
 
 	return true;
 }

@@ -2212,13 +2212,11 @@ void UCMachine::usecodeStats()
 
 void UCMachine::saveGlobals(ODataSource* ods)
 {
-	ods->write2(1); //version
 	globals->save(ods);
 }
 
 void UCMachine::saveStrings(ODataSource* ods)
 {
-	ods->write2(1); //version
 	stringIDs->save(ods);
 	ods->write4(stringHeap.size());
 
@@ -2233,7 +2231,6 @@ void UCMachine::saveStrings(ODataSource* ods)
 
 void UCMachine::saveLists(ODataSource* ods)
 {
-	ods->write2(1); //version
 	listIDs->save(ods);
 	ods->write4(listHeap.size());
 
@@ -2245,20 +2242,14 @@ void UCMachine::saveLists(ODataSource* ods)
 	}
 }
 
-bool UCMachine::loadGlobals(IDataSource* ids)
+bool UCMachine::loadGlobals(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-
-	return globals->load(ids);
+	return globals->load(ids, version);
 }
 
-bool UCMachine::loadStrings(IDataSource* ids)
+bool UCMachine::loadStrings(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-
-	stringIDs->load(ids);
+	stringIDs->load(ids, version);
 
 	uint32 stringcount = ids->read4();
 	for (unsigned int i = 0; i < stringcount; ++i)
@@ -2279,19 +2270,16 @@ bool UCMachine::loadStrings(IDataSource* ids)
 	return true;
 }
 
-bool UCMachine::loadLists(IDataSource* ids)
+bool UCMachine::loadLists(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-
-	listIDs->load(ids);
+	listIDs->load(ids, version);
 
 	uint32 listcount = ids->read4();
 	for (unsigned int i = 0; i < listcount; ++i)
 	{
 		uint16 lid = ids->read2();
 		UCList* l = new UCList(2); // the "2" will be ignored by load()
-		bool ret = l->load(ids);
+		bool ret = l->load(ids, version);
 		if (!ret) return false;
 
 		listHeap[lid] = l;

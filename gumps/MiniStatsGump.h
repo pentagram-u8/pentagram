@@ -43,7 +43,7 @@ public:
 	virtual Gump* OnMouseDown(int button, int mx, int my);
 	virtual void OnMouseDouble(int button, int mx, int my);
 
-	bool loadData(IDataSource* ids);
+	bool loadData(IDataSource* ids, uint32 version);
 protected:
 	virtual void saveData(ODataSource* ods);
 };

@@ -78,7 +78,7 @@ public:
 	bool isUnsupported() const { return unsupported; }
 	ObjId hitSomething() const { return hitobject; }
 
-	bool load(IDataSource* ids);
+	bool load(IDataSource* ids, uint32 version);
 	void save(ODataSource* ods);
 
 private:

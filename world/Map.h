@@ -42,7 +42,7 @@ public:
 		{ return fixeditems.size() == 0 && dynamicitems.size() == 0; }
 
 	void save(ODataSource* ods);
-	bool load(IDataSource* ids);
+	bool load(IDataSource* ids, uint32 version);
 
 private:
 

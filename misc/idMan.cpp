@@ -184,7 +184,6 @@ void idMan::clearID(uint16 id)
 
 void idMan::save(ODataSource* ods)
 {
-	ods->write2(1); // version
 	ods->write2(begin);
 	ods->write2(end);
 	ods->write2(max_end);
@@ -198,11 +197,8 @@ void idMan::save(ODataSource* ods)
 	ods->write2(0); // terminator
 }
 
-bool idMan::load(IDataSource* ds)
+bool idMan::load(IDataSource* ds, uint32 version)
 {
-	uint16 version = ds->read2();
-	if (version != 1) return false;
-
 	begin = ds->read2();
 	end = ds->read2();
 	max_end = ds->read2();

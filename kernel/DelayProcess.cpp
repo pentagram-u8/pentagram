@@ -44,11 +44,9 @@ bool DelayProcess::run(const uint32 /*framenum*/)
 	return false;
 }
 
-bool DelayProcess::loadData(IDataSource* ids)
+bool DelayProcess::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Process::loadData(ids)) return false;
+	if (!Process::loadData(ids, version)) return false;
 	
 	count = static_cast<int>(ids->read4());
 	
@@ -57,7 +55,6 @@ bool DelayProcess::loadData(IDataSource* ids)
 
 void DelayProcess::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	Process::saveData(ods);
 	ods->write4(static_cast<uint32>(count));
 }

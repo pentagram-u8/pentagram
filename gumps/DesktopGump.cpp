@@ -69,22 +69,13 @@ void DesktopGump::StopDraggingChild(Gump* gump)
 void DesktopGump::saveData(ODataSource* ods)
 {
 	CANT_HAPPEN_MSG("Trying to save DesktopGump");
-#if 0
-	ods->write2(1); //version
-	Gump::saveData(ods);
-#endif
 }
 
-bool DesktopGump::loadData(IDataSource* ids)
+bool DesktopGump::loadData(IDataSource* ids, uint32 version)
 {
 	CANT_HAPPEN_MSG("Trying to save DesktopGump");
-#if 0
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Gump::loadData(ids)) return false;
-#endif
 
-	return true;
+	return false;
 }
 
 // Colourless Protection

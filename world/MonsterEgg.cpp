@@ -87,15 +87,12 @@ uint16 MonsterEgg::hatch()
 
 void MonsterEgg::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	Item::saveData(ods);
 }
 
-bool MonsterEgg::loadData(IDataSource* ids)
+bool MonsterEgg::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Item::loadData(ids)) return false;
+	if (!Item::loadData(ids, version)) return false;
 
 	return true;
 }

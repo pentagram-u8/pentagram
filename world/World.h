@@ -118,13 +118,13 @@ public:
 	void saveMaps(ODataSource* ods);
 
 	//! load Maps
-	bool loadMaps(IDataSource* ids);
+	bool loadMaps(IDataSource* ids, uint32 version);
 
 	//! save the rest of the World data (ethereal items, current map number).
 	void save(ODataSource* ods);
 
 	//! load World data
-	bool load(IDataSource* ids);
+	bool load(IDataSource* ids, uint32 version);
 
 private:
 	static World *world;

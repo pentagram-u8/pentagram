@@ -59,18 +59,15 @@ void Egg::leaveFastArea()
 
 void Egg::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	Item::saveData(ods);
 
 	uint8 h = hatched ? 1 :  0;
 	ods->write1(h);
 }
 
-bool Egg::loadData(IDataSource* ids)
+bool Egg::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Item::loadData(ids)) return false;
+	if (!Item::loadData(ids, version)) return false;
 
 	hatched = (ids->read1() != 0);
 

@@ -265,18 +265,15 @@ void CombatProcess::dumpInfo()
 
 void CombatProcess::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	Process::saveData(ods);
 
 	ods->write2(target);
 	ods->write1(static_cast<uint8>(combatmode));
 }
 
-bool CombatProcess::loadData(IDataSource* ids)
+bool CombatProcess::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Process::loadData(ids)) return false;
+	if (!Process::loadData(ids, version)) return false;
 
 	target = ids->read2();
 	combatmode = static_cast<CombatMode>(ids->read1());

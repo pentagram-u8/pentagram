@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003  Pentagram Team
+ *  Copyright (C) 2003-2004  Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -50,7 +50,7 @@ public:
 	INTRINSIC(I_fadeFromBlack);
 	INTRINSIC(I_lightningBolt);
 
-	bool loadData(IDataSource* ids);
+	bool loadData(IDataSource* ids, uint32 version);
 protected:
 	virtual void saveData(ODataSource* ods);
 };

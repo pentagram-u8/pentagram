@@ -805,7 +805,6 @@ void Actor::dumpInfo()
 
 void Actor::saveData(ODataSource* ods)
 {
-	ods->write2(1); //version
 	Container::saveData(ods);
 	ods->write2(strength);
 	ods->write2(dexterity);
@@ -820,11 +819,9 @@ void Actor::saveData(ODataSource* ods)
 	ods->write4(actorflags);
 }
 
-bool Actor::loadData(IDataSource* ids)
+bool Actor::loadData(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-	if (!Container::loadData(ids)) return false;
+	if (!Container::loadData(ids, version)) return false;
 
 	strength = static_cast<sint16>(ids->read2());
 	dexterity = static_cast<sint16>(ids->read2());

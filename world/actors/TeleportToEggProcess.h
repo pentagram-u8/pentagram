@@ -32,7 +32,7 @@ public:
 
 	virtual bool run(const uint32 framenum);
  
-	bool loadData(IDataSource* ids);
+	bool loadData(IDataSource* ids, uint32 version);
 
 protected:
 	virtual void saveData(ODataSource* ods);

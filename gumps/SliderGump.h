@@ -47,7 +47,7 @@ public:
 
 	virtual bool OnKeyDown(int key, int mod);
 
-	bool loadData(IDataSource* ids);
+	bool loadData(IDataSource* ids, uint32 version);
 protected:
 	virtual void saveData(ODataSource* ods);
 

@@ -394,8 +394,6 @@ void AnimationTracker::getInterpolatedPosition(sint32& x_, sint32& y_,
 
 void AnimationTracker::save(ODataSource* ods)
 {
-	ods->write2(1); //version
-
 	ods->write4(startframe);
 	ods->write4(endframe);
 	uint8 ff = firstframe ? 1 : 0;
@@ -440,11 +438,8 @@ void AnimationTracker::save(ODataSource* ods)
 	ods->write2(hitobject);
 }
 
-bool AnimationTracker::load(IDataSource* ids)
+bool AnimationTracker::load(IDataSource* ids, uint32 version)
 {
-	uint16 version = ids->read2();
-	if (version != 1) return false;
-
 	startframe = ids->read4();
 	endframe = ids->read4();
 	firstframe = (ids->read1() != 0);
