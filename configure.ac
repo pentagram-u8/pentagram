@@ -172,7 +172,7 @@ AC_CHECK_SIZEOF(long long, 8)
 # ---------------------------------------------------------------------
 
 AC_MSG_CHECKING(if we should optimise for MMX)
-AC_ARG_ENABLE(timidity, [  --enable-mmx       Use MMX optimisations [default no]],,enable_mmx=no)
+AC_ARG_ENABLE(mmx, [  --enable-mmx       Use MMX optimisations [default no]],,enable_mmx=no)
 if test x$enable_mmx = xyes; then
 	AC_MSG_RESULT(yes)
 	CXXFLAGS="$CXXFLAGS -mmmx"
@@ -181,12 +181,25 @@ else
 fi
 
 AC_MSG_CHECKING(if we should optimise for 3DNOW)
-AC_ARG_ENABLE(timidity, [  --enable-3dnow       Use 3DNOW optimisations [default no]],,enable_3dnow=no)
+AC_ARG_ENABLE(3dnow, [  --enable-3dnow       Use 3DNOW optimisations [default no]],,enable_3dnow=no)
 if test x$enable_3dnow = xyes; then
 	AC_MSG_RESULT(yes)
 	CXXFLAGS="$CXXFLAGS -m3dnow"
 else
 	AC_MSG_RESULT(no)
+fi
+
+# ---------------------------------------------------------------------
+# Random Optimisations
+# ---------------------------------------------------------------------
+
+AC_MSG_CHECKING(if we should add seemingly random optimisations)
+AC_ARG_ENABLE(random_optimisations, [  --enable-random-optimisations       Use random optimisations [default no]],,enable_random_optimisations=no)
+if test x$enable_random_optimisations = xyes; then
+    AC_MSG_RESULT(yes)
+    CXXFLAGS="$CXXFLAGS -O3"
+else
+    AC_MSG_RESULT(no)
 fi
 
 # ---------------------------------------------------------------------
@@ -208,22 +221,28 @@ AC_LANG_CPLUSPLUS
 # ------------------
 AC_ARG_ENABLE(paranoid-warnings, [  --enable-paranoid-warnings       Enable paranoid warnings [default no]],,enable_paranoid_warnings=no)
 if test x$enable_paranoid_warnings = xyes; then
-        WARNINGS="-Wall -W -Wcast-qual -Wwrite-strings -Wconversion -Wredundant-decls -Winline -Wdisabled-optimization -fcheck-new -Wctor-dtor-privacy -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual"
+        WARNINGS="-Wall -W -Wcast-qual -Wwrite-strings -Wconversion -Wredundant-decls -Winline -Wdisabled-optimization -fcheck-new -Wctor-dtor-privacy -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Wfloat-equal -Wundef -Wpointer-arith -Wcast-qual -Wcast-align -Wdisabled-optimization"
+		# -Wshadow produces a lot of pointless warnings, don't use it.
+		# -Wunreachable-code
 #       DEBUG_FLAGS="$DEBUG_FLAGS -Wall -O -Wunused -Wuninitialized -Woverloaded-virtual -Wpointer-arith -Wcast-qual -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -Winline"
         WARNING_LEVEL="Paranoid"
-	echo pwarn
+#	echo pwarn
 else
         WARNINGS="-Wall"
         WARNING_LEVEL="Normal"
-	echo nwarn
+#	echo nwarn
 fi
 
 # ------------------
 # Profiling!
 # ------------------
+AC_MSG_CHECKING(if we should include profiling information)
 AC_ARG_ENABLE(profiling, [  --enable-profiling       Enable Profiling [default no]],,enable_profiling=no)
 if test x$enable_profiling = xyes; then
+	AC_MSG_RESULT(yes)
 	PROFILE="-pg -fprofile-arcs"
+else
+	AC_MSG_RESULT(no)
 fi
 
 # ------------------

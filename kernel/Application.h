@@ -69,6 +69,7 @@ private:
 	// called depending upon command line arguments
 	void MinimalSysInit(); // console only system
 	void GraphicSysInit(); // starts the graphics subsystem
+	void LoadConsoleFont(); // loads the console font
 	void SDLInit(); // start sdl
 	void UCMachineInit(); // start usecode machine
 

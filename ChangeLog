@@ -1,3 +1,12 @@
+2003-05-05	Darke <darkepaw@users.sf.net>
+	* kernel/Applications.*: Partial support for a simple font-config file.
+	* data/fixedfont.cfg: Said basic config file.
+	* configuration.ac: Added --enable-random-optimisations which currently
+	  only adds -O3, and updated the warnings list used by
+	  --endable-paranoid-warnings.
+	
+	Obviously Colourless' fault: *grin*
+	
 	* graphics/*RenderSurface.cpp : Double Buffering and Hardware surfaces
 	* kernel/Application.cpp : Fullscreen can now be set with 
 	  config/video/fullscreen setting.

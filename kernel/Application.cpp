@@ -426,21 +426,60 @@ void Application::GraphicSysInit()
 	pout << "Resize Console" << std::endl;
 	con.CheckResize(640);
 
+	LoadConsoleFont();
+
+	runGraphicSysInit=true;
+}
+
+void Application::LoadConsoleFont()
+{
+	std::string data;
+	std::string confontfile;
+	std::string confontcfg("@data/fixedfont.cfg");
+
+	pout << "Searching for alternate console font... ";
+	config->value("config/general/console-font", data, "");
+	if (data != "")
+	{
+		confontcfg = data;
+		pout << "Found." << std::endl;
+	}
+	else
+		pout << "Not Found." << std::endl;
+
+	// try to load the file
+	pout << "Loading console font config: " << confontcfg << "... ";
+	Configuration *fontconfig = new Configuration();
+	if(fontconfig->readConfigFile(confontcfg, "font"))
+		pout << "Ok" << std::endl;
+	else
+		pout << "Failed" << std::endl;
+
+	// search for the path to the font...
+	fontconfig->value("font/path", confontfile, "");
+	if(confontfile=="")
+	{
+		pout << "Error: Console font path not found! Unable to continue. Exiting." << std::endl;
+		std::exit(-1);
+	}
+
+	// clean up
+	delete fontconfig;
+
 	// Load confont
-	pout << "Load Confont" << std::endl;
-	IDataSource *cf = filesystem->ReadFile("@data/fixedfont.tga");
+	pout << "Loading Confont: " << confontfile << std::endl;
+	IDataSource *cf = filesystem->ReadFile(confontfile.c_str());
 	Texture *confont;
-	if (cf) confont = Texture::Create(*cf, "@data/fixedfont.tga");
+	if (cf) confont = Texture::Create(*cf, confontfile.c_str());
 	else confont = 0;
 	if (!confont)
 	{
-		perr << "Unable to load fixedfont.tga. Exiting" << std::endl;
+		perr << "Unable to load " << confontfile << ". Exiting" << std::endl;
 		std::exit(-1);
 	}
 	delete cf;
-	con.SetConFont(confont);
 
-	runGraphicSysInit=true;
+	con.SetConFont(confont);
 }
 
 // Init sdl
