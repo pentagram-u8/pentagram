@@ -1,3 +1,7 @@
+2003-03-03  Max Horn <max@quendi.de>
+	* misc/Console.h: work around a bug in Apple's GCC by forcing printf methods
+	  to not be inlined.
+
 2003-02-24  Ryan Nunn <colourles@users.sourceforge.net>
 	* misc/pent_include.h, misc/p_dynamic_cast.h : Adding p_dynamic_cast 
 	  stuff. If we use it... we use it. If we don't... it doesn't matter.

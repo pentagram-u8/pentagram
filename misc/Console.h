@@ -220,7 +220,7 @@ public:
 	console_ostream() : std::basic_ostream<_E, _Tr>(&_Fb) {}
 	virtual ~console_ostream() { }
 
-	int printf (const char *fmt, ...)
+	int __attribute__ ((noinline)) printf (const char *fmt, ...)
 	{
 		va_list	argptr;
 		va_start (argptr,fmt);
@@ -276,7 +276,7 @@ public:
 	console_err_ostream() : std::basic_ostream<_E, _Tr>(&_Fb) {}
 	virtual ~console_err_ostream() { }
 
-	int printf (const char *fmt, ...)
+	int __attribute__ ((noinline)) printf (const char *fmt, ...)
 	{
 		va_list	argptr;
 		va_start (argptr,fmt);
