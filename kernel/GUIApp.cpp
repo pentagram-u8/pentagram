@@ -1194,6 +1194,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			av->containerSearch(&uclist, script, sizeof(script), true);
 			if (uclist.getSize() < 1) {
 				perr << "No recall item found!" << std::endl;
+				break;
 			}
 			uint16 objid = uclist.getuint16(0);
 			Item* item = World::get_instance()->getItem(objid);
