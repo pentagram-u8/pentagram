@@ -32,6 +32,8 @@ pentagram_OBJ = \
 	graphics/Palette.o \
 	graphics/PaletteManager.o \
 	graphics/ShapeFlex.o \
+	world/Item.o \
+	world/Container.o \
 	conf/Configuration.o \
 	conf/XMLTree.o \
 	conf/XMLNode.o

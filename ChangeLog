@@ -1,3 +1,7 @@
+2003-03-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/Object.h: small start of a base usecode object class
+	* world/Item.*, world/Container.*: item/container classes
+
 2003-03-03  Max Horn <max@quendi.de>
 	* misc/Console.h: work around a bug in Apple's GCC by forcing printf methods
 	  to not be inlined.
