@@ -82,6 +82,7 @@ install: pentagram.exe
 	mkdir -p $(U8PATH)
 	strip pentagram.exe -o $(U8PATH)/pentagram.exe
 	mkdir -p $(U8PATH)/data
+	cp data/fixedfont.cfg $(U8PATH)/data/
 	cp data/fixedfont.tga $(U8PATH)/data/
 
 toolsinstall: tools
@@ -91,9 +92,11 @@ toolsinstall: tools
 	strip fold.exe -o $(U8PATH)/tools/fold.exe
 	strip shapeconv.exe -o $(U8PATH)/tools/shapeconv.exe
 
-dist:   install
+dist:   install tools
 	cp AUTHORS $(U8PATH)/AUTHORS.txt
 	cp ChangeLog $(U8PATH)/ChangeLog.txt
+	cp FAQ $(U8PATH)/FAQ.txt
+	cp README $(U8PATH)/README.txt
 	cp COPYING $(U8PATH)/COPYING.txt
 	cp SDL/README-SDL.txt $(U8PATH)
 	cp SDL/lib/SDL.dll $(U8PATH)
