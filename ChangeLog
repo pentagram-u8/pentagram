@@ -1,5 +1,6 @@
 2003-05-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Application.cpp: arrows scroll map; esc/q quit
+	* kernel/Application.cpp: backtick/tilde hides console
 	
 2003-05-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCMachine.*: cleaned up pointer dereferencing

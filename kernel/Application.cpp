@@ -57,6 +57,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 using std::string;
 
 sint32 lx=-1, ly=-1, lz=-1; // yes, yes, globals...
+bool showconsole=true; // yes, yes, more of them :-)
 
 Application* Application::application = 0;
 
@@ -322,7 +323,8 @@ void Application::paint()
 	// Put the origin to 0,0 for drawing console
 	screen->SetOrigin(0,0);
 
- 	con.DrawConsole(screen, 0, 0, dims.w, dims.h);
+	if (showconsole)
+		con.DrawConsole(screen, 0, 0, dims.w, dims.h);
 
 	static long prev = 0;
 	long now = SDL_GetTicks();
@@ -636,10 +638,13 @@ void Application::handleEvent(const SDL_Event& event)
 		case SDLK_a: userchoice = 10; break;
 		case SDLK_b: userchoice = 11; break;
 		case SDLK_c: userchoice = 12; break;
+		case SDLK_d: userchoice = 13; break;
+		case SDLK_e: userchoice = 14; break;
 		case SDLK_UP: lx -= 512; ly -= 512; break;
 		case SDLK_DOWN: lx += 512; ly += 512; break;
 		case SDLK_LEFT: lx -= 512; ly += 512; break;
 		case SDLK_RIGHT: lx += 512; ly -= 512; break;
+		case SDLK_BACKQUOTE: showconsole = !showconsole; break;
 		case SDLK_ESCAPE: case SDLK_q: isRunning = false; break;
 		default: break;
 		}
