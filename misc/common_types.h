@@ -1,5 +1,6 @@
 /*
  *  Copyright (C) 2000-2001  The Exult Team
+ *  Copyright (C) 2003-2004  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,17 +21,8 @@
 #define	COMMON_TYPES_H
 
 //
-// {s,u}int{8,16,32} 
+// {s,u}int{8,16,32,ptr}
 //
-
-#ifdef BEOS
-// BeOS headers already define these types
-#include <be/support/SupportDefs.h>
-typedef int8 sint8;
-typedef int16 sint16;
-typedef int32 sint32;
-
-#else
 
 #ifndef EX_TYPE_INT8
 #  define EX_TYPE_INT8 char /* guaranteed by ISO */
@@ -59,6 +51,17 @@ typedef int32 sint32;
 #  endif
 #endif /* !EX_TYPE_INT32 */
 
+#ifndef EX_TYPE_INTPTR
+#  if (SIZEOF_INTP == SIZEOF_INT)
+#    define EX_TYPE_INTPTR int
+#  elif (SIZEOF_INTP == SIZEOF_LONG)
+#    define EX_TYPE_INTPTR long
+#  elif (SIZEOF_INTP == SIZEOF_LONG_LONG)
+#    define EX_TYPE_INTPTR long long
+#  else
+#    error "Size of pointer type not equal to int, long or long long"
+#  endif
+#endif
 
 typedef	unsigned EX_TYPE_INT8	uint8;
 typedef	unsigned EX_TYPE_INT16	uint16;
@@ -68,8 +71,8 @@ typedef	signed EX_TYPE_INT8		sint8;
 typedef	signed EX_TYPE_INT16	sint16;
 typedef	signed EX_TYPE_INT32	sint32;
 
-#endif //BeOS
-
+typedef unsigned EX_TYPE_INTPTR uintptr;
+typedef signed EX_TYPE_INTPTR sintptr;
 
 // ObjId and ProcId
 

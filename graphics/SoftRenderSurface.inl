@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003  The Pentagram Team
+Copyright (C) 2003-2004  The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -119,7 +119,7 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 
 #define OFFSET_PIXELS (off_pixels)
 
-	uint8				*off_pixels  = static_cast<uint8*>(pixels) + clip_window.x*sizeof(uintX) + clip_window.y*pitch;
+	uint8				*off_pixels  = static_cast<uint8*>(pixels) + static_cast<sintptr>(clip_window.x)*sizeof(uintX) + static_cast<sintptr>(clip_window.y)*pitch;
 	x -= clip_window.x;
 	y -= clip_window.y;
 
@@ -154,7 +154,7 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 
 	const uint8			*linedata;
 	sint32				xpos;
-	sint32				line;
+	sintptr				line; // sintptr for pointer arithmetic
 	sint32				dlen;
 
 	uintX				*pixptr;

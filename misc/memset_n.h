@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002 The Pentagram Team
+Copyright (C) 2002-2004 The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -144,13 +144,13 @@ inline void memset_32(void *buf, uint32 val, uint32 dwords)
 {
 	// Fisrly we should dword Align it
 	int align = 0;
-	if (reinterpret_cast<uint32>(buf) & 3) 
+	if (reinterpret_cast<uintptr>(buf) & 3) 
 	{
 		align = 4;
 		dwords--;
 
 		// Ok, shift along by 1 byte
-		if ((reinterpret_cast<uint32>(buf) & 1))
+		if ((reinterpret_cast<uintptr>(buf) & 1))
 		{
 			*reinterpret_cast<uint8*>(buf) = static_cast<uint8>(val&0xFF); 
 			buf = (reinterpret_cast<uint8*>(buf))+1;
@@ -159,7 +159,7 @@ inline void memset_32(void *buf, uint32 val, uint32 dwords)
 		}
 
 		// Ok, shift along by 2 bytes
-		if ((reinterpret_cast<uint32>(buf) & 2))
+		if ((reinterpret_cast<uintptr>(buf) & 2))
 		{
 			*reinterpret_cast<uint16*>(buf) = static_cast<uint16>(val&0xFFFF); 
 			buf = (reinterpret_cast<uint16*>(buf))+1;

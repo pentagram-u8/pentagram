@@ -193,11 +193,13 @@ fi
 # ---------------------------------------------------------------------
 # Check sizes of integer types.
 # Cross-compiling sizes set to 2,4,4,8. (May need to be changed...)
+# Cross-compiling pointer size set to 4.
 # ---------------------------------------------------------------------
 AC_CHECK_SIZEOF(short, 2)
 AC_CHECK_SIZEOF(int, 4)
 AC_CHECK_SIZEOF(long, 4)
 AC_CHECK_SIZEOF(long long, 8)
+AC_CHECK_SIZEOF(int*, 4)
 
 # ---------------------------------------------------------------------
 # Architecture dependent optimisations
