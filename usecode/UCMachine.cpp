@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "World.h"
 
 #define HACK_TO_INCLUDE_CONVERTUSECODEU8_THIS_IN_UCMACHINE_WITHOUT_BRINGING_IN_FOLD
-#include "U8/ConvertUsecodeU8.h"
+#include "u8/ConvertUsecodeU8.h"
 
 #include "Container.h"
 
