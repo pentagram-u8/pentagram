@@ -193,6 +193,22 @@ RenderedText* TTFont::renderText(std::string text,
 //					bufrow[iter->dims.x+x+1] = 0xFFFFFFFF;
 					bufrow[iter->dims.x+x+1] = rgb | 0xFF000000;
 					if (bordersize <= 0) continue;
+					if (bordersize == 1) {
+						// optimize common case
+						for (int dx = -1; dx <= 1; dx++) {
+							for (int dy = -1; dy <= 1; dy++) {
+								if (x + 1 + iter->dims.x + dx >= 0 &&
+									x + 1 + iter->dims.x + dx < resultwidth &&
+									y + 1 + dy >= 0 && y + 1 + dy < resultheight)
+								{
+									if (buf[(y+iter->dims.y+dy+1)*resultwidth + x+1+iter->dims.x+dx] == 0) {
+										buf[(y+iter->dims.y+dy+1)*resultwidth + x+1+iter->dims.x+dx] = 0xFF000000;
+									}
+								}
+							}
+						}
+						continue;
+					}
 					for (int dx = -bordersize; dx <= bordersize; dx++) {
 						for (int dy = -bordersize; dy <= bordersize; dy++) {
 							if (x + bordersize + iter->dims.x + dx >= 0 &&

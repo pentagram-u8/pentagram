@@ -3,6 +3,8 @@
 	* kernel/GUIApp.cpp: override book/scroll font with TTF as well,
 	  using Vera.ttf
 	* kernel/GUIApp.cpp: don't allow saving if avatar is dead
+	* graphics/fonts/TTFont.cpp: added special case for bordersize==1
+	  to enable loop unrolling
 
 2005-01-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* data/u8bindings.ini: set c to combat mode, insert to clipping
