@@ -167,7 +167,7 @@ const char* const ConvertUsecodeU8::_intrinsics[] = {
 	"Item::justMoved()",						// Unused
 	"Item::AvatarStoleSomething(uword)",		// Unused
 	"Item::animGetHit(uword)",					// Unused
-	"process Item::guardianBark(word)",			// Call even 0x15
+	"process Item::guardianBark(word)",			// Call event 0x15
 	"Book::read(char*)",
 	"Scroll::read(char*)",
 	// 0070
