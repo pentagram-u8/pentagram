@@ -93,6 +93,10 @@ GRAPHICS = \
 
 SCALERS = \
 	graphics/scalers/BilinearScaler.o \
+	graphics/scalers/BilinearScalerInternal_2x.o \
+	graphics/scalers/BilinearScalerInternal_Arb.o \
+	graphics/scalers/BilinearScalerInternal_X1Y12.o \
+	graphics/scalers/BilinearScalerInternal_X2Y24.o \
 	graphics/scalers/PointScaler.o \
 	graphics/scalers/Scale2xScaler.o \
 	graphics/scalers/hq2xScaler.o \

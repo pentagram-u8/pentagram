@@ -11,6 +11,8 @@
 	  usecode class.
 	* gumps/ShapeViewerGump.cpp : Output usecode class name for shapes from
 	  the main shapes flex.
+	* graphics/scalers/BilinearScaler*.* : Trying to avoid compilation
+	  issues with bilinear scaler. 
 
 2005-03-12  Ryan Nunn <colourles@users.sourceforge.net>
 	* gumps/MiniMapGump.*, kernel/GUIApp.cpp : Experimental MiniMap gump.
