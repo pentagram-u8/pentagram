@@ -121,7 +121,7 @@
 				</configdesc>
 				<para>
 					You may also override some settings under [pentagram] by writing them
-					under [u8]. The ones that can be oerriden are midi_driver, fullscreen,
+					under [u8]. The ones that can be overriden are midi_driver, fullscreen,
 					width, height, bpp, timiditycfg.<br/>
 					Right now this is not necessary as we only support U8 but if we start to
 					support other games it might come in handy.
@@ -136,8 +136,8 @@
 				<ul>					
 					<li>Double-click with the right mouse button will make the Avatar
 						find a path to the selected spot.</li>
-					<li>Left-click on NPCs orobjects to identify them.</li>
-					<li>Double-left-click on NPCs orobjects to initiate conversations or use the item.</li>
+					<li>Left-click on NPCs or objects to identify them.</li>
+					<li>Double-left-click on NPCs or objects to initiate conversations or use the item.</li>
 					<li>On pressing the right mouse button down the Avatar walks or runs 
 						(depending on distance between cursor and Avatar).</li>
 					<li>Pressing right and left mouse button, makes the Avatar jump or while running a running jump.</li>
