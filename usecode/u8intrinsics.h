@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // Ultima 8 Intrinsics
 Intrinsic U8Intrinsics[] = {
 	// 0x000
-	0,
+	UCMachine::I_dummyProcess, //!! process target()
 	0,
 	0,
 	Item::I_getX,
@@ -132,7 +132,7 @@ Intrinsic U8Intrinsics[] = {
 	0,
 	// 0x060
 	0,
-	UCMachine::I_dummyProcess, //!!
+	UCMachine::I_dummyProcess, //!! process Item::gotHit(uword, word)
 	0,
 	0,
 	0,
@@ -144,12 +144,12 @@ Intrinsic U8Intrinsics[] = {
 	0,
 	0,
 	0,
-	UCMachine::I_dummyProcess, //!!
-	0,
-	0,
+	UCMachine::I_dummyProcess, //!! process Item::guardianBark(word)
+	UCMachine::I_dummyProcess, //!! process Book::read(char*)
+	UCMachine::I_dummyProcess, //!! process Scroll::read(char*)
 	// 0x070
-	0,
-	0,
+	UCMachine::I_dummyProcess, //!! process Grave::read(word,char*)
+	UCMachine::I_dummyProcess, //!! process Plaque::read(word,char*)
 	0,
 	0,
 	0,
@@ -197,9 +197,11 @@ Intrinsic U8Intrinsics[] = {
 	0,
 	0,
 	0,
-	0,
+	UCMachine::I_dummyProcess, //!! process Npc::doAnim(AnimSet, word, word, ubyte)
 	// 0x0A0
 	0,
+	UCMachine::I_dummyProcess, //!! process Npc::pathfind(uword, uword, uword, uword)
+	UCMachine::I_dummyProcess, //!! process Npc::pathfind(uword, uword)
 	0,
 	0,
 	0,
@@ -211,9 +213,7 @@ Intrinsic U8Intrinsics[] = {
 	0,
 	0,
 	0,
-	0,
-	0,
-	0,
+	UCMachine::I_dummyProcess, //!! process Npc::cSetActivity(Activity)
 	0,
 	// 0x0B0
 	0,
@@ -221,7 +221,7 @@ Intrinsic U8Intrinsics[] = {
 	0,
 	0,
 	0,
-	0,
+	UCMachine::I_dummyProcess, //!! process Camera::scrollTo(uword, uword, ubyte, word)
 	UCMachine::I_urandom,
 	UCMachine::I_rndRange,
 	0,
@@ -245,7 +245,7 @@ Intrinsic U8Intrinsics[] = {
 	0,
 	0,
 	0,
-	0,
+	UCMachine::I_dummyProcess, //!! process teleportToEgg(word, word, ubyte)
 	0,
 	0,
 	0,
@@ -264,13 +264,13 @@ Intrinsic U8Intrinsics[] = {
 	0,
 	0,
 	0,
-	0,
-	0,
+	UCMachine::I_dummyProcess, //!! process FadeToBlack()
+	UCMachine::I_dummyProcess, //!! process FadeFromBlack()
 	// 0x0E0
-	0,
-	0,
-	0,
-	0,
+	UCMachine::I_dummyProcess, //!! process FadeToPalette(word, word)
+	UCMachine::I_dummyProcess, //!! process LightningBolt()
+	UCMachine::I_dummyProcess, //!! process FadeToWhite()
+	UCMachine::I_dummyProcess, //!! process FadeFromWhite()
 	0,
 	0,
 	0,

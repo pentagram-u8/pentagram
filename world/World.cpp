@@ -223,15 +223,15 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 		itemds->seek(0x0FC00+i*1);
 		uint32 frame = itemds->read1();
 		itemds->seek(0x12000+i*2);
-		uint32 flags = itemds->read2();
+		uint16 flags = itemds->read2();
 		itemds->seek(0x16800+i*2);
 		uint16 quality = itemds->read2();
 		itemds->seek(0x1B000+i*1);
-		uint32 npcnum = itemds->read1();
+		uint16 npcnum = static_cast<uint8>(itemds->read1());
 		itemds->seek(0x1D400+i*1);
-		uint32 mapnum = itemds->read1();
+		uint16 mapnum = static_cast<uint8>(itemds->read1());
 		itemds->seek(0x1F800+i*2);
-		uint32 next = itemds->read2();
+		uint16 next = itemds->read2();
 
 		// half the frame number is stored in npcdata.dat
 		npcds->seek(7 + i * 0x31);

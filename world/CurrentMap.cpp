@@ -154,7 +154,7 @@ void CurrentMap::loadMap(Map* map)
 
 	// load relevant NPCs to the item lists
 	// !constant
-	for (unsigned int i = 0; i < 256; ++i) {
+	for (uint16 i = 0; i < 256; ++i) {
 		Actor* actor = World::get_instance()->getNPC(i);
 		if (actor && actor->getMapNum() == getNum()) {
 			addItem(actor);

@@ -45,7 +45,7 @@ public:
 
 	void BeginDisplayList(RenderSurface*,const Palette *);// Begin's creating the display list
 	
-	void AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 frame_num, uint32 item_flags, uint32 item_num=0);
+	void AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 frame_num, uint32 item_flags, uint16 item_num=0);
 	void AddItem(Item *);					// Add an Item. SetupLerp() MUST have been called
 
 	void PaintDisplayList();				// Finishes the display list and Paints

@@ -32,10 +32,10 @@ class UCProcess : public Process
 	friend class UCMachine;
 
 public:
-	UCProcess(Usecode* usecode_, uint32 classid_,
-			  uint32 offset_, uint32 this_ptr = 0);
-	UCProcess(Usecode* usecode_, uint32 classid_,
-			  uint32 offset_, const uint8* args, uint32 argsize);
+	UCProcess(Usecode* usecode_, uint16 classid_,
+			  uint16 offset_, uint32 this_ptr = 0);
+	UCProcess(Usecode* usecode_, uint16 classid_,
+			  uint16 offset_, const uint8* args, uint32 argsize);
     ~UCProcess();
 
 	// p_dynamic_cast stuff
@@ -45,7 +45,7 @@ public:
 
 protected:
 
-	void call(uint32 classid_, uint32 offset_);
+	void call(uint16 classid_, uint16 offset_);
 	bool ret();
 
 	// item we are assigned to
@@ -58,7 +58,7 @@ protected:
 
 	Usecode* usecode;
 
-	uint32 classid;
+	uint16 classid;
 	uint16 ip;
 
 	// data stack

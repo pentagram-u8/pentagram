@@ -287,7 +287,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				uint16 new_offset = cs.read2();
 				LOGPF(("call\t\t%04X:%04X", new_classid, new_offset));
 
-				p->ip = cs.getPos();
+				p->ip = static_cast<uint16>(cs.getPos());	// Truncates!!
 				p->call(new_classid, new_offset);
 
 				// Update the code segment
@@ -1135,8 +1135,8 @@ bool UCMachine::execProcess(UCProcess* p)
 			{
 				uint32 arg_bytes = cs.read1();
 				uint32 this_size = cs.read1(); // Relevance?
-				uint32 classid = cs.read2();
-				uint32 offset = cs.read2();
+				uint16 classid = cs.read2();
+				uint16 offset = cs.read2();
 				
 				LOGPF(("spawn\t\t%02X %02X %04X:%04X",
 					   arg_bytes, this_size, classid, offset));
@@ -1175,9 +1175,9 @@ bool UCMachine::execProcess(UCProcess* p)
 			//! The inlined code does use 'var06' (this) sometimes, so
 			//! maybe it should copy the this pointer from the current proc?
 			{
-				uint32 classid = cs.read2();
-				uint32 offset = cs.read2();
-				uint32 delta = cs.read2();
+				uint16 classid = cs.read2();
+				uint16 offset = cs.read2();
+				uint16 delta = cs.read2();
 				uint32 this_size = cs.read1(); // relevance?
 				uint32 unknown = cs.read1(); // ??
 				
@@ -1355,7 +1355,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// 6F xx
 			// push 32 pointer address of SP-xx
 			si8a = static_cast<sint8>(cs.read1());
-			p->stack.push4(stackToPtr(p->pid, p->stack.getSP() - si8a));
+			p->stack.push4(stackToPtr(p->pid, static_cast<uint16>(p->stack.getSP() - si8a)));
 			LOGPF(("push addr\t%s", print_sp(-si8a)));
 			break;
 /*
@@ -1536,7 +1536,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		LOGPF(("\n"));
 
 		// write back IP
-		p->ip = cs.getPos();
+		p->ip = static_cast<uint16>(cs.getPos());	// TRUNCATES!
 
 	} // while(!cede && !error)
 
@@ -1682,8 +1682,8 @@ bool UCMachine::assignPointer(uint32 ptr, const uint8* data, uint32 size)
 
 	//! range checking...
 
-	uint16 segment = ptr >> 16;
-	uint16 offset = (uint16)ptr;
+	uint16 segment =static_cast<uint16>(ptr >> 16);
+	uint16 offset = static_cast<uint16>(ptr & 0xFFFF);
 
 	if (segment >= SEG_STACK_FIRST && segment <= SEG_STACK_LAST)
 	{
@@ -1726,8 +1726,8 @@ bool UCMachine::dereferencePointer(uint32 ptr, uint8* data, uint32 size)
 
 	//! range checking...
 
-	uint16 segment = ptr >> 16;
-	uint16 offset = ptr;
+	uint16 segment = static_cast<uint16>(ptr >> 16);
+	uint16 offset = static_cast<uint16>(ptr & 0xFFFF);
 	
 	if (segment >= SEG_STACK_FIRST && segment <= SEG_STACK_LAST)
 	{
@@ -1742,7 +1742,7 @@ bool UCMachine::dereferencePointer(uint32 ptr, uint8* data, uint32 size)
 				 << std::dec << ")" << std::endl;
 			return false;
 		} else {
-			memcpy(data, proc->stack.access(offset), size);
+			std::memcpy(data, proc->stack.access(offset), size);
 		}
 	}
 	else if (segment == SEG_OBJ)
@@ -1753,13 +1753,13 @@ bool UCMachine::dereferencePointer(uint32 ptr, uint8* data, uint32 size)
 			return false;
 		} else {
 			// push objref
-			data[0] = offset;
-			data[1] = offset>>8;
+			data[0] = static_cast<uint8>(offset);
+			data[1] = static_cast<uint8>(offset>>8);
 		}
 	}
 	else if (segment == SEG_GLOBAL)
 	{
-		memcpy(data, globals.access(offset), size);
+		std::memcpy(data, globals.access(offset), size);
 	}
 	else
 	{
@@ -1843,17 +1843,17 @@ void UCMachine::usecodeStats()
 
 }
 
-uint32 UCMachine::I_AvatarCanCheat(const uint8* args, unsigned int /*argsize*/)
+uint32 UCMachine::I_AvatarCanCheat(const uint8* /*args*/, unsigned int /*argsize*/)
 {
 	return 1; // of course the avatar can cheat ;-)
 }
 
-uint32 UCMachine::I_dummyProcess(const uint8* args, unsigned int /*argsize*/)
+uint32 UCMachine::I_dummyProcess(const uint8* /*args*/, unsigned int /*argsize*/)
 {
 	return UCMachine::get_instance()->addProcess(new DelayProcess(4));
 }
 
-uint32 UCMachine::I_getName(const uint8* args, unsigned int /*argsize*/)
+uint32 UCMachine::I_getName(const uint8* /*args*/, unsigned int /*argsize*/)
 {
 	return UCMachine::get_instance()->assignString("Avatar");
 }
@@ -1875,7 +1875,7 @@ uint32 UCMachine::I_urandom(const uint8* args, unsigned int /*argsize*/)
 
 	// return random integer between 0 (incl.) to num (excl.)
 
-	return (rand() % num);
+	return (std::rand() % num);
 }
 
 uint32 UCMachine::I_rndRange(const uint8* args, unsigned int /*argsize*/)
@@ -1887,5 +1887,5 @@ uint32 UCMachine::I_rndRange(const uint8* args, unsigned int /*argsize*/)
 
 	if (hi <= lo) return lo;
 
-	return (lo + (rand() % (hi-lo+1)));
+	return (lo + (std::rand() % (hi-lo+1)));
 }

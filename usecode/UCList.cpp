@@ -49,8 +49,8 @@ void UCList::copyStringList(UCList& l)
 	for (unsigned int i = 0; i < l.size; i++) {
 		uint16 s = ucm->duplicateString(l.getStringIndex(i));
 		uint8 tmp[2]; // ugly...
-		tmp[0] = s & 0xFF;
-		tmp[1] = s >> 8;
+		tmp[0] = static_cast<uint8>(s & 0xFF);
+		tmp[1] = static_cast<uint8>(s >> 8);
 		append(tmp);
 	}
 }
@@ -93,8 +93,8 @@ void UCList::assignString(uint32 index, uint16 str)
 	// free old contents of element index; take ownership of str(?)
 
 	UCMachine::get_instance()->freeString(getStringIndex(index));
-	elements[index*elementsize] = str & 0xFF;
-	elements[index*elementsize+1] = str >> 8;
+	elements[index*elementsize] = static_cast<uint8>(str & 0xFF);
+	elements[index*elementsize+1] = static_cast<uint8>(str >> 8);
 }
 
 void UCList::removeString(uint16 s)

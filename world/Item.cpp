@@ -186,7 +186,7 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 			stack.push2(getFamily());
 			break;
 		case '@': // item shape
-			stack.push2(getShape());
+			stack.push2(static_cast<uint16>(getShape()));
 			break;
 		case 'A': case 'B': case 'C': case 'D': case 'E':
 		case 'F': case 'G': case 'H': case 'I': case 'J':
@@ -209,7 +209,7 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 		}
 		break;
 		case '`': // item frame
-			stack.push2(getFrame());
+			stack.push2(static_cast<uint16>(getFrame()));
 			break;
 		case 'a': case 'b': case 'c': case 'd': case 'e':
 		case 'f': case 'g': case 'h': case 'i': case 'j':
@@ -247,8 +247,8 @@ uint32 Item::callUsecodeEvent(uint32 event)
 {
 	uint32	class_id = shape;
 
-	// Ok, for Permanent npcs we do it differently. they use NPC num + 1024
-	if (npcnum && !(flags & FLG_DISPOSABLE)) class_id = npcnum + 1024;
+	// Non monster NPCs use objid/npcnum + 1024
+	if (objid < 256 && !(flags & FLG_MONSTER_NPC)) class_id = objid + 1024;
 
 	// UnkEggs have quality+0x47F
 	if (getFamily() == ShapeInfo::SF_UNKEGG) class_id = quality + 0x47F;
@@ -257,7 +257,7 @@ uint32 Item::callUsecodeEvent(uint32 event)
 	uint32 offset = u->get_class_event(class_id, event);
 	if (!offset) return 0;
 
-	return callUsecode(class_id, offset, u);
+	return callUsecode(static_cast<uint16>(class_id), static_cast<uint16>(offset), u);
 }
 
 
@@ -311,9 +311,9 @@ uint32 Item::I_getCX(const uint8* args, unsigned int /*argsize*/)
 	if (!item) return 0;
 
 	if (item->flags & FLG_FLIPPED)
-		return item->x + item->getShapeInfo()->y * 16;
+		return item->x - item->getShapeInfo()->y * 16;
 	else
-		return item->x + item->getShapeInfo()->x * 16;
+		return item->x - item->getShapeInfo()->x * 16;
 }
 
 uint32 Item::I_getCY(const uint8* args, unsigned int /*argsize*/)
@@ -322,9 +322,9 @@ uint32 Item::I_getCY(const uint8* args, unsigned int /*argsize*/)
 	if (!item) return 0;
 
 	if (item->flags & FLG_FLIPPED)
-		return item->y + item->getShapeInfo()->x * 16;
+		return item->y - item->getShapeInfo()->x * 16;
 	else
-		return item->y + item->getShapeInfo()->y * 16;
+		return item->y - item->getShapeInfo()->y * 16;
 }
 
 uint32 Item::I_getCZ(const uint8* args, unsigned int /*argsize*/)
@@ -343,11 +343,11 @@ uint32 Item::I_getPoint(const uint8* args, unsigned int /*argsize*/)
 
 	uint8 buf[5];
 
-	buf[0] = item->x;
-	buf[1] = item->x >> 8;
-	buf[2] = item->y;
-	buf[3] = item->y >> 8;
-	buf[4] = item->z;
+	buf[0] = static_cast<uint8>(item->x);
+	buf[1] = static_cast<uint8>(item->x >> 8);
+	buf[2] = static_cast<uint8>(item->y);
+	buf[3] = static_cast<uint8>(item->y >> 8);
+	buf[4] = static_cast<uint8>(item->z);
 
 	UCMachine::get_instance()->assignPointer(ptr, buf, 5);
 
@@ -514,11 +514,66 @@ uint32 Item::I_getTypeFlag(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(typeflag);
 	if (!item) return 0;
 
-	uint32 flags = item->getShapeInfo()->flags;
-	if (flags & (1 << typeflag))
-		return 1;
-	else
-		return 0;
+	ShapeInfo *info = item->getShapeInfo();
+
+	// This is not nice. The Typeflags in U8 were stored in an 8 byte array
+	// and they could access them with a number from 0 to 63
+	// Problem: We don't don't store in an 8 byte array so we can't access 
+	// with a number from 0 to 63
+
+	// So what we do is split the flag up into the bits
+
+	if (typeflag <= 11)			// flags		Byte 0, 1:0-3	Bits  0-11
+	{
+		return (info->flags >> typeflag) & 1;
+	}
+	else if (typeflag <= 15)	// family		Byte 1:4-7		Bits 11-15
+	{
+		return (info->family >> (typeflag-12)) & 1;
+	}
+	else if (typeflag <= 19)	// equiptype	Byte 2:0-3		Bits 16-19
+	{
+		return (item->getShapeInfo()->equiptype >> (typeflag-16)) & 1;
+	}
+	else if (typeflag <= 23)	// x			Byte 2:4-7		Bits 20-23
+	{
+		return (info->x >> (typeflag-20)) & 1;
+	}
+	else if (typeflag <= 27)	// y			Byte 3:0-3		Bits 24-27
+	{
+		return (info->y >> (typeflag-24)) & 1;
+	}
+	else if (typeflag <= 31)	// z			Byte 3:4-7		Bits 28-31
+	{
+		return (info->z >> (typeflag-28)) & 1;
+	}
+	else if (typeflag <= 35)	// animtype		Byte 4:0-3		Bits 32-35
+	{
+		return (item->getShapeInfo()->animtype >> (typeflag-32)) & 1;
+	}
+	else if (typeflag <= 39)	// animdata		Byte 4:4-7		Bits 36-49
+	{
+		return (info->animdata >> (typeflag-36)) & 1;
+	}
+	else if (typeflag <= 43)	// unknown		Byte 5:0-3		Bits 40-43
+	{
+		return (info->unknown >> (typeflag-40)) & 1;
+	}
+	else if (typeflag == 47)	// flags		Byte 5:4-7		Bits 44-47
+	{
+		return (info->flags >> (12+typeflag-44)) & 1;
+	}
+	else if (typeflag <= 55)	// weight		Byte 6			Bits 48-55
+	{
+		return (info->weight >> (typeflag-48)) & 1;
+	}
+	else if (typeflag <= 63)	// volume		Byte 7			Bits 56-63
+	{
+		return (info->volume >> (typeflag-56)) & 1;
+	}
+
+	perr << "Invalid TypeFlag greater than 64 requested (" << typeflag << ") by Usecode" << std::endl;
+	return 0;
 }
 
 uint32 Item::I_getStatus(const uint8* args, unsigned int /*argsize*/)
@@ -608,10 +663,10 @@ class UserChoiceProcess : public Process
 {
 public:
 	virtual bool run(const uint32 /*framenum*/) {
-		if (userchoice >= 0 && userchoice < answerlist->getSize()) {
+		if (userchoice >= 0 && static_cast<uint32>(userchoice) < answerlist->getSize()) {
 			result = answerlist->getStringIndex(userchoice);
 			// we're leaking strings and memory here... (not that I care)
-			pout << "User answer = " << result << ": " << UCMachine::get_instance()->getString(result) << std::endl;
+			pout << "User answer = " << result << ": " << UCMachine::get_instance()->getString(static_cast<uint16>(result)) << std::endl;
 			terminate();
 		}
 		return false;

@@ -25,8 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // p_dynamic_cast stuff
 DEFINE_DYNAMIC_CAST_CODE(UCProcess,Process);
 
-UCProcess::UCProcess(Usecode* usecode_, uint32 classid_,
-					 uint32 offset_, uint32 this_ptr) :
+UCProcess::UCProcess(Usecode* usecode_, uint16 classid_,
+					 uint16 offset_, uint32 this_ptr) :
 	item_num(0), type(0), usecode(usecode_), classid(classid_)
 {
 	if (usecode->get_class_size(classid) == 0)
@@ -41,8 +41,8 @@ UCProcess::UCProcess(Usecode* usecode_, uint32 classid_,
 	call(classid_, offset_);
 }
 
-UCProcess::UCProcess(Usecode* usecode_, uint32 classid_,
-					 uint32 offset_, const uint8* args, uint32 argsize) :
+UCProcess::UCProcess(Usecode* usecode_, uint16 classid_,
+					 uint16 offset_, const uint8* args, uint32 argsize) :
 	item_num(0), type(0), usecode(usecode_), classid(classid_)
 {
 	if (usecode->get_class_size(classid) == 0)
@@ -72,7 +72,7 @@ bool UCProcess::run(const uint32 /*framenum*/)
 	return UCMachine::get_instance()->execProcess(this);
 }
 
-void UCProcess::call(uint32 classid_, uint32 offset_)
+void UCProcess::call(uint16 classid_, uint16 offset_)
 {
 	stack.push2(classid); // BP+04 prev class
 	stack.push2(ip);      // BP+02 prev IP
@@ -80,7 +80,7 @@ void UCProcess::call(uint32 classid_, uint32 offset_)
 
 	classid = classid_;
 	ip = offset_;
-	bp = stack.getSP();
+	bp = static_cast<uint16>(stack.getSP()); // TRUNCATES!
 }
 
 bool UCProcess::ret()

@@ -100,10 +100,10 @@ void Map::loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds,
 
 		uint32 shape = ds->read2();
 		uint32 frame = ds->read1();
-		uint32 flags = ds->read2();
+		uint16 flags = ds->read2();
 		uint16 quality = ds->read2();
-		uint32 npcnum = ds->read1();
-		uint32 mapnum = ds->read1();
+		uint16 npcnum = static_cast<uint16>(ds->read1());
+		uint16 mapnum = static_cast<uint16>(ds->read1());
 		uint16 next = ds->read2(); // do we need next for anything?
 
 		// find container this item belongs to, if any.

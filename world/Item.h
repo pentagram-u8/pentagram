@@ -169,6 +169,7 @@ public:
 		FLG_INVISIBLE	 = 0x0010,
 		FLG_FLIPPED		 = 0x0020,
 		FLG_IN_NPC_LIST	 = 0x0040,
+		FLG_MONSTER_NPC	 = 0x0080,	// Maybe... i'm not entirely sure that this is what this is
 		FLG_GUMP_OPEN	 = 0x0100,
 		FLG_EQUIPPED	 = 0x0200,
 		FLG_BOUNCING	 = 0x0400,

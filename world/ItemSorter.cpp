@@ -28,13 +28,69 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Rect.h"
 #include "GameData.h"
 
+#if 0
+template<class _T> class MyVector
+{
+public:
+	typedef _T *iterator;
+	typedef _T &reference;
+
+private:
+	iterator	_begin;
+	iterator	_end;
+	iterator	_last;
+
+public:
+	MyVector() 
+	{
+		_begin = 0;
+		_end = 0;
+		_last = 0;
+	}
+
+	iterator push_back(reference _R)
+	{
+		if (!_begin)
+		{
+			_begin = new _T[1];
+			_end = _last = _begin + 1;
+			*_begin = _R;
+			return _begin;
+		}
+		
+		if (_end == _last)	// At the end of the list, need to allocate more
+		{
+			size_t _capacity = _last - _begin;
+			iterator _new = new _T[_capacity*2];
+			std::memcpy (_new, _begin, _capacity * sizeof(_T));
+			_end = _new + (_end - _begin);
+			delete [] _begin;
+			_begin = _new;
+			_last = _begin + (_capacity*2);
+		}
+		*_end = _R;
+		_end++;
+		return _end-1;
+	}
+
+	void clear() { _end = _begin; }
+
+	iterator begin() { return _begin; }
+	iterator end() { return _end; }
+private:
+
+	
+};
+
+#endif
+
 // This does NOT need to be in the header
 
 struct SortItem
 {
 	SortItem() : item_num(0), shape(0), order(-1), depends() { }
 
-	sint32					item_num;	// Owner item number
+	uint16					item_num;	// Owner item number
 
 	Shape					*shape;
 	uint32					frame;
@@ -91,6 +147,7 @@ struct SortItem
 	sint32	order;		// Rendering order. -1 is not yet drawn
 
 	std::vector<SortItem *>	depends;	// All this Items dependencies (i.e. all objects behind)
+//	MyVector<SortItem *>	depends;	// All this Items dependencies (i.e. all objects behind)
 
 	// Functions
 
@@ -101,11 +158,12 @@ struct SortItem
 	inline bool occludes(const SortItem &si2) const;
 
 	// Operator less than
-	bool operator<(const SortItem& si2) const;
+	inline bool operator<(const SortItem& si2) const;
 
 };
 
 typedef std::vector<SortItem *> SortItemVector;
+//typedef MyVector<SortItem *> SortItemVector;
 
 // Check to see if we overlap si2
 inline bool SortItem::overlap(const SortItem &si2) const
@@ -118,25 +176,25 @@ inline bool SortItem::overlap(const SortItem &si2) const
 	// important
 
 	// 'normal' of top  left line ( 2,-1) of the bounding box
-	sint32 dot_top_left = point_top_diff[0] + point_top_diff[1] * 2;
+	const sint32 dot_top_left = point_top_diff[0] + point_top_diff[1] * 2;
 
 	// 'normal' of top right line ( 2, 1) of the bounding box
-	sint32 dot_top_right = -point_top_diff[0] + point_top_diff[1] * 2;
+	const sint32 dot_top_right = -point_top_diff[0] + point_top_diff[1] * 2;
 
 	// 'normal' of bot  left line (-2,-1) of the bounding box
-	sint32 dot_bot_left =  point_bot_diff[0] - point_bot_diff[1] * 2;
+	const sint32 dot_bot_left =  point_bot_diff[0] - point_bot_diff[1] * 2;
 
 	// 'normal' of bot right line (-2, 1) of the bounding box
-	sint32 dot_bot_right = -point_bot_diff[0] - point_bot_diff[1] * 2;
+	const sint32 dot_bot_right = -point_bot_diff[0] - point_bot_diff[1] * 2;
 
-	bool right_clear = sxright <= si2.sxleft;
-	bool left_clear = sxleft >= si2.sxright;
-	bool top_left_clear = dot_top_left >= 0;
-	bool top_right_clear = dot_top_right >= 0;
-	bool bot_left_clear = dot_bot_left >= 0;
-	bool bot_right_clear = dot_bot_right >= 0;
+	const bool right_clear = sxright <= si2.sxleft;
+	const bool left_clear = sxleft >= si2.sxright;
+	const bool top_left_clear = dot_top_left >= 0;
+	const bool top_right_clear = dot_top_right >= 0;
+	const bool bot_left_clear = dot_bot_left >= 0;
+	const bool bot_right_clear = dot_bot_right >= 0;
 
-	bool clear = right_clear | left_clear | 
+	const bool clear = right_clear | left_clear | 
 		bot_right_clear | bot_left_clear |
 		top_right_clear | top_left_clear;
 
@@ -154,33 +212,33 @@ inline bool SortItem::occludes(const SortItem &si2) const
 	// important
 
 	// 'normal' of top left line ( 2, -1) of the bounding box
-	sint32 dot_top_left = point_top_diff[0] + point_top_diff[1] * 2;
+	const sint32 dot_top_left = point_top_diff[0] + point_top_diff[1] * 2;
 
 	// 'normal' of top right line ( 2, 1) of the bounding box
-	sint32 dot_top_right = -point_top_diff[0] + point_top_diff[1] * 2;
+	const sint32 dot_top_right = -point_top_diff[0] + point_top_diff[1] * 2;
 
 	// 'normal' of bot  left line (-2,-1) of the bounding box
-	sint32 dot_bot_left =  point_bot_diff[0] - point_bot_diff[1] * 2;
+	const sint32 dot_bot_left =  point_bot_diff[0] - point_bot_diff[1] * 2;
 
 	// 'normal' of bot right line (-2, 1) of the bounding box
-	sint32 dot_bot_right = -point_bot_diff[0] - point_bot_diff[1] * 2;
+	const sint32 dot_bot_right = -point_bot_diff[0] - point_bot_diff[1] * 2;
 
 
-	bool right_res = sxright >= si2.sxright;
-	bool left_res = sxleft <= si2.sxleft;
-	bool top_left_res = dot_top_left <= 0;
-	bool top_right_res = dot_top_right <= 0;
-	bool bot_left_res = dot_bot_left <= 0;
-	bool bot_right_res = dot_bot_right <= 0;
+	const bool right_res = sxright >= si2.sxright;
+	const bool left_res = sxleft <= si2.sxleft;
+	const bool top_left_res = dot_top_left <= 0;
+	const bool top_right_res = dot_top_right <= 0;
+	const bool bot_left_res = dot_bot_left <= 0;
+	const bool bot_right_res = dot_bot_right <= 0;
 
-	bool occluded = right_res & left_res & 
+	const bool occluded = right_res & left_res & 
 		bot_right_res & bot_left_res &
 		top_right_res & top_left_res;
 
 	return occluded;
 }
 
-bool SortItem::operator<(const SortItem& si2) const
+inline bool SortItem::operator<(const SortItem& si2) const
 {
 	const SortItem& si1 = *this;
 	
@@ -344,7 +402,7 @@ void ItemSorter::BeginDisplayList(RenderSurface *rs, const Palette *palette)
 	order_counter = 0;
 }
 
-void ItemSorter::AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 frame_num, uint32 flags, uint32 item_num)
+void ItemSorter::AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 frame_num, uint32 flags, uint16 item_num)
 {
 	//if (z > skip_lift) return;
 	//if (Application::tgwds && shape == 538) return;
@@ -454,7 +512,8 @@ void ItemSorter::AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 
 	// We will clear all the vector memory
 	// Stictly speaking the vector will sort of leak memory, since they
 	// are never deleted
-	si->depends.clear();
+	//si->depends.clear();
+	si->depends.erase(si->depends.begin(), si->depends.end());	// MSVC.Netism
 
 	// Iterate the list and compare shapes
 
@@ -612,7 +671,8 @@ void ItemSorter::AddItem(Item *add)
 	// We will clear all the vector memory
 	// Stictly speaking the vector will sort of leak memory, since they
 	// are never deleted
-	si->depends.clear();
+	//si->depends.clear();
+	si->depends.erase(si->depends.begin(), si->depends.end());	// MSVC.Netism
 
 	// Iterate the list and compare shapes
 

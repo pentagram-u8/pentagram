@@ -70,15 +70,15 @@ public:
 	
 	inline void push2(uint16 val) {
 		buf_ptr-=2;
-		const_cast<uint8*>(buf_ptr)[0] =  val     & 0xFF;
-		const_cast<uint8*>(buf_ptr)[1] = (val>>8) & 0xFF;
+		const_cast<uint8*>(buf_ptr)[0] = static_cast<uint8>( val     & 0xFF);
+		const_cast<uint8*>(buf_ptr)[1] = static_cast<uint8>((val>>8) & 0xFF);
 	}
 	inline void push4(uint32 val) {
 		buf_ptr-=4;
-		const_cast<uint8*>(buf_ptr)[0] =  val      & 0xFF;
-		const_cast<uint8*>(buf_ptr)[1] = (val>>8)  & 0xFF;
-		const_cast<uint8*>(buf_ptr)[2] = (val>>16) & 0xFF;
-		const_cast<uint8*>(buf_ptr)[3] = (val>>24) & 0xFF;
+		const_cast<uint8*>(buf_ptr)[0] = static_cast<uint8>( val      & 0xFF);
+		const_cast<uint8*>(buf_ptr)[1] = static_cast<uint8>((val>>8)  & 0xFF);
+		const_cast<uint8*>(buf_ptr)[2] = static_cast<uint8>((val>>16) & 0xFF);
+		const_cast<uint8*>(buf_ptr)[3] = static_cast<uint8>((val>>24) & 0xFF);
 	}
 	// Push an arbitrary number of bytes of 0
 	inline void push0(const uint32 size) { 
@@ -131,17 +131,17 @@ public:
 	//
 
 	inline void assign1(const uint32 offset, const uint8 val) {
-		const_cast<uint8*>(buf)[offset]   =  val     & 0xFF;
+		const_cast<uint8*>(buf)[offset]   = static_cast<uint8>( val     & 0xFF);
 	}
 	inline void assign2(const uint32 offset, const uint16 val) {
-		const_cast<uint8*>(buf)[offset]   =  val     & 0xFF;
-		const_cast<uint8*>(buf)[offset+1] = (val>>8) & 0xFF;
+		const_cast<uint8*>(buf)[offset]   = static_cast<uint8>( val     & 0xFF);
+		const_cast<uint8*>(buf)[offset+1] = static_cast<uint8>((val>>8) & 0xFF);
 	}
 	inline void assign4(const uint32 offset, const uint32 val) {
-		const_cast<uint8*>(buf)[offset]   =  val      & 0xFF;
-		const_cast<uint8*>(buf)[offset+1] = (val>>8)  & 0xFF;
-		const_cast<uint8*>(buf)[offset+2] = (val>>16) & 0xFF;
-		const_cast<uint8*>(buf)[offset+3] = (val>>24) & 0xFF;
+		const_cast<uint8*>(buf)[offset]   = static_cast<uint8>( val      & 0xFF);
+		const_cast<uint8*>(buf)[offset+1] = static_cast<uint8>((val>>8)  & 0xFF);
+		const_cast<uint8*>(buf)[offset+2] = static_cast<uint8>((val>>16) & 0xFF);
+		const_cast<uint8*>(buf)[offset+3] = static_cast<uint8>((val>>24) & 0xFF);
 	}
 	inline void assign(const uint32 offset, const uint8 *in, const uint32 len)
 	{
