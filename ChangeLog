@@ -1,3 +1,6 @@
+2005-01-24  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* various: s/statis/stasis/
+
 2005-01-23  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* tools/gimp-plugin/*: Palettes now saved in the gimp after loading
 	  once. Requires gimp-2.2.
@@ -1675,7 +1678,7 @@
 	  events.
 	* kernel/GUIApp.cpp : 'a' and 'z' keys can now be used to move the
 	  avatar vertically. '[' and ']' work again. 's' can now be used to
-	  toggle avatarInStatis.
+	  toggle avatarInStasis.
 	* world/TeleportEgg.h : Use framenum to determine if it is a teleporter
 	  or a dest.
 
@@ -1980,9 +1983,9 @@
 
 2003-05-25  Ryan Nunn <colourles@users.sourceforge.net>
 	* kernel/Application.* : Timing and interpolation, Fast Area,
-	  Camera, avatarInStatis
+	  Camera, avatarInStasis
 	* kernel/Kernel.cpp : Fixing erase bug
-	* usecode/u8intrinsics.h : Camera, avatarInStatis
+	* usecode/u8intrinsics.h : Camera, avatarInStasis
 	* usecode/UCMachine.cpp : Fixing huge bug
 	* world/CameraProcess.* : Camera
 	* world/Item.* : Interpolation changes. Fast Area, Animate, Added

@@ -194,7 +194,7 @@ Gump * ControlsGump::showEngineMenu()
 	int y = 12;
 	gump->addEntry("quickSave", "Quick Save", x, y);
 	gump->addEntry("quickLoad", "Quick Save", x, y);
-	gump->addEntry("avatarInStatis", "Statis Mode", x, y);
+	gump->addEntry("avatarInStasis", "Stasis Mode", x, y);
 	gump->addEntry("engineStats", "Engine Stats", x, y);
 	gump->addEntry("paintEditorItems", "View Editor Items", x, y);
 	gump->addEntry("itemLocator", "Locate Item", x, y);

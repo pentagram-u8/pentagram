@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 namespace HIDBindings {
 
-bool avatarInStatis(const HID_Event& event)
+bool avatarInStasis(const HID_Event& event)
 {
 	bool handled = false;
 	switch (event.type) {

@@ -57,7 +57,7 @@ HIDManager::HIDManager()
 
 	bindingMap.insert( HIDBINDING_PAIR(quickSave) );
 	bindingMap.insert( HIDBINDING_PAIR(quickLoad) );
-	bindingMap.insert( HIDBINDING_PAIR(avatarInStatis) );
+	bindingMap.insert( HIDBINDING_PAIR(avatarInStasis) );
 	bindingMap.insert( HIDBINDING_PAIR(engineStats) );
 	bindingMap.insert( HIDBINDING_PAIR(paintEditorItems) );
 	bindingMap.insert( HIDBINDING_PAIR(showTouchingItems) );
