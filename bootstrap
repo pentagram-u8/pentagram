@@ -19,7 +19,7 @@ fi
 aclocal $aclocalincludes
 
 # We don't need libtool, but it creates config.sub & config.guess - <sigh>
-libtoolize --automake --copy --force
+libtoolize --config-only --copy --force
 
 # Create config.h
 autoheader
