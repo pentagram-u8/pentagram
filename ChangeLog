@@ -1,4 +1,7 @@
 2005-01-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/CombatProcess.cpp: fixed saving
+
+2005-01-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* filesys/zip/*: converted to something resembling C++
 
 2005-01-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>

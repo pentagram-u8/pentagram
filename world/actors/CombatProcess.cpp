@@ -180,7 +180,7 @@ ObjId CombatProcess::seekTarget()
 
 	if (fixedTarget) {
 		Actor* t = World::get_instance()->getNPC(fixedTarget);
-		if (isValidTarget(t))
+		if (t && isValidTarget(t))
 			return fixedTarget; // no need to search
 	}
 
@@ -268,6 +268,7 @@ void CombatProcess::saveData(ODataSource* ods)
 	Process::saveData(ods);
 
 	ods->write2(target);
+	ods->write2(fixedTarget);
 	ods->write1(static_cast<uint8>(combatmode));
 }
 
@@ -276,6 +277,7 @@ bool CombatProcess::loadData(IDataSource* ids, uint32 version)
 	if (!Process::loadData(ids, version)) return false;
 
 	target = ids->read2();
+	fixedTarget = ids->read2();
 	combatmode = static_cast<CombatMode>(ids->read1());
 
 	return true;
