@@ -225,6 +225,16 @@ void CurrentMap::addItem(Item* item)
 	}
 }
 
+void CurrentMap::removeItem(Item* item)
+{
+	sint32 ix, iy, iz;
+
+	item->getLocation(ix, iy, iz);
+
+	removeItemFromList(item, ix, iy);
+}
+
+
 void CurrentMap::removeItemFromList(Item* item, sint32 oldx, sint32 oldy)
 {
 	//! This might a bit too inefficient
@@ -243,7 +253,6 @@ void CurrentMap::removeItemFromList(Item* item, sint32 oldx, sint32 oldy)
 
 	items[cx][cy].remove(item);
 }
-
 
 void CurrentMap::areaSearch(UCList* itemlist, const uint8* loopscript,
 							uint32 scriptsize, Item* item, uint16 range,

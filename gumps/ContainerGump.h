@@ -54,12 +54,24 @@ public:
 								   sint32 lerp_factor = 256);
 
 
+	virtual bool		StartDraggingItem(Item* item, int mx, int my);
+	virtual bool		DraggingItem(Item* item, int mx, int my);
+	virtual void		DraggingItemLeftGump(Item* item);
+	virtual void		StopDraggingItem(Item* item, bool moved);
+	virtual void		DropItem(Item* item, int mx, int my);
+
 	virtual Gump* OnMouseDown(int button, int mx, int my);
 	virtual void OnMouseClick(int button, int mx, int my);
 	virtual void OnMouseDouble(int button, int mx, int my);
 
 protected:
 	Rect itemarea;
+
+	bool display_dragging;
+	uint32 dragging_shape;
+	uint32 dragging_frame;
+	uint32 dragging_flags;
+	sint32 dragging_x, dragging_y;
 };
 
 #endif

@@ -47,6 +47,9 @@ public:
 
 	virtual void		PaintThis(RenderSurface *surf, sint32 lerp_factor);
 
+	void				GetCameraLocation(sint32& x, sint32& y, sint32& z,
+										  int lerp_factor=256);
+
 	// Trace a click, and return ObjID
 	virtual uint16		TraceObjID(int mx, int my);
 
@@ -55,11 +58,24 @@ public:
 	virtual bool		GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 										  sint32 lerp_factor = 256);
 
+	virtual bool		StartDraggingItem(Item* item, int mx, int my);
+	virtual bool		DraggingItem(Item* item, int mx, int my);
+	virtual void		DraggingItemLeftGump(Item* item);
+	virtual void		StopDraggingItem(Item* item, bool moved);
+	virtual void		DropItem(Item* item, int mx, int my);
+
 	virtual Gump *		OnMouseDown(int button, int mx, int my);
 	virtual void		OnMouseClick(int button, int mx, int my);
 	virtual void		OnMouseDouble(int button, int mx, int my);
 
 	void IncSortOrder(int count);
+
+protected:
+	bool display_dragging;
+	uint32 dragging_shape;
+	uint32 dragging_frame;
+	uint32 dragging_flags;
+	sint32 dragging_x, dragging_y, dragging_z;
 };
 
 #endif //GameMapGUMP_H_INCLUDED

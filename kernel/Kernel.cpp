@@ -70,8 +70,8 @@ uint16 Kernel::addProcess(Process* proc)
 #endif
 
 //	processes.push_back(proc);
-	setNextProcess(proc);
 //	proc->active = true;
+	setNextProcess(proc);
 
 	return proc->pid;
 }

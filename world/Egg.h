@@ -51,7 +51,7 @@ public:
 	void reset() { hatched = false; }
 
 protected:
-	bool hatched; //!!TODO: figure out where the original stores 'hatched'
+	bool hatched;
 };
 
 

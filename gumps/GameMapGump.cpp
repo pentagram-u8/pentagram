@@ -43,7 +43,7 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(GameMapGump,Gump);
 
 GameMapGump::GameMapGump(int X, int Y, int Width, int Height) :
 	Gump(X,Y,Width,Height, 0, 0, LAYER_GAMEMAP),
-	display_list(0), fastArea(0)
+	display_list(0), fastArea(0), display_dragging(false)
 {
 	// Offset us the gump. We want 0,0 to be the centre
 	dims.x -= dims.w/2;
@@ -110,22 +110,14 @@ void GameMapGump::MapChanged()
 	fastAreas[1].clear();
 }
 
-void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
+void GameMapGump::GetCameraLocation(sint32& lx, sint32& ly, sint32& lz,
+									int lerp_factor)
 {
-	World *world = World::get_instance();
-	if (!world) return;	// Is it possible the world doesn't exist?
-
-	CurrentMap *map = world->getCurrentMap();
-	if (!map) return;	// Is it possible the map doesn't exist?
-
-
-	// Get the camera location
-	int lx, ly, lz;
 	CameraProcess *camera = CameraProcess::GetCameraProcess();
 	if (!camera) {
 
-		int map_num = map->getNum();
-		Actor* av = world->getNPC(1);
+		int map_num = World::get_instance()->getCurrentMap()->getNum();
+		Actor* av = World::get_instance()->getNPC(1);
 		
 		if (!av || av->getMapNum() != map_num)
 		{
@@ -140,6 +132,21 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 	{
 		camera->GetLerped(lx, ly, lz, lerp_factor);
 	}
+}
+
+
+void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
+{
+	World *world = World::get_instance();
+	if (!world) return;	// Is it possible the world doesn't exist?
+
+	CurrentMap *map = world->getCurrentMap();
+	if (!map) return;	// Is it possible the map doesn't exist?
+
+
+	// Get the camera location
+	int lx, ly, lz;
+	GetCameraLocation(lx, ly, lz, lerp_factor);
 
 	// Check roof
 	//!! This is _not_ the right place for this...
@@ -255,6 +262,15 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 		item->leavingFastArea();
 	}
 
+
+	// Dragging:
+
+	if (display_dragging) {
+		display_list->AddItem(dragging_x, dragging_y, dragging_z,
+							  dragging_shape, dragging_frame,
+							  Item::FLG_INVISIBLE, //!! change this to transp?
+							  0);
+	}
 
 
 	display_list->PaintDisplayList();
@@ -435,6 +451,79 @@ void GameMapGump::IncSortOrder(int count)
 {
 	if (count>0) display_list->IncSortLimit();
 	else display_list->DecSortLimit();
+}
+
+bool GameMapGump::StartDraggingItem(Item* item, int mx, int my)
+{
+//	ParentToGump(mx, my);
+
+	// check if item can be moved
+	ShapeInfo* si = item->getShapeInfo();
+	if (si->is_fixed()) return false;
+	//!! need more checks here
+
+	// check if item is in range
+
+	return true;
+}
+
+bool GameMapGump::DraggingItem(Item* item, int mx, int my)
+{
+	display_dragging = true;
+	// determine target location and set dragging_x/y/z
+
+	dragging_shape = item->getShape();
+	dragging_frame = item->getFrame();
+	dragging_flags = item->getFlags();
+	display_dragging = true;
+
+	sint32 cx, cy, cz;
+	GetCameraLocation(cx, cy, cz);
+
+	//!! hack...
+	dragging_z = 128;
+	dragging_x = 2*mx + 4*(my+128) + cx - 4*cz;
+	dragging_y = -2*mx + 4*(my+128) + cy - 4*cz;
+
+	//TODO: determine if item can be dropped here
+
+	return true;
+}
+
+void GameMapGump::DraggingItemLeftGump(Item* item)
+{
+	display_dragging = false;
+}
+
+
+void GameMapGump::StopDraggingItem(Item* item, bool moved)
+{
+	display_dragging = false;
+
+	if (!moved) return; // nothing to do
+
+	// remove item from world
+	CurrentMap* cm = World::get_instance()->getCurrentMap();
+	cm->removeItem(item);
+}
+
+void GameMapGump::DropItem(Item* item, int mx, int my)
+{
+	display_dragging = false;
+
+	// add item to world 
+
+	//!! TODO: throw item if too far, etc...
+
+	// hackety-hack
+	sint32 cx, cy, cz;
+	GetCameraLocation(cx, cy, cz);
+	dragging_z = 128;
+	dragging_x = 2*mx + 4*(my+128) + cx - 4*cz;
+	dragging_y = -2*mx + 4*(my+128) + cy - 4*cz;
+
+	item->move(dragging_x,dragging_y,dragging_z);
+	item->fall();
 }
 
 // Colourless Protection

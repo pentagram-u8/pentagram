@@ -26,12 +26,14 @@
 #include "RenderSurface.h"
 #include "GUIApp.h"
 #include "GameData.h"
+#include "MainShapeFlex.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(ContainerGump,ItemRelativeGump);
 
 ContainerGump::ContainerGump(Shape* shape_, uint32 framenum_, uint16 owner,
 							 uint32 Flags_, sint32 layer)
-	: ItemRelativeGump(0, 0, 5, 5, owner, Flags_, layer)
+	: ItemRelativeGump(0, 0, 5, 5, owner, Flags_, layer),
+	  display_dragging(false)
 {
 	shape = shape_;
 	framenum = framenum_;
@@ -72,6 +74,9 @@ void ContainerGump::Paint(RenderSurface* surf, sint32 lerp_factor)
 
 	std::list<Item*>& contents = c->contents;
 
+
+	//!! TODO: check these painting commands (flipped? translucent?)
+
 	std::list<Item*>::iterator iter;
 	for (iter = contents.begin(); iter != contents.end(); ++iter) {
 		Item* item = *iter;
@@ -84,6 +89,18 @@ void ContainerGump::Paint(RenderSurface* surf, sint32 lerp_factor)
 		Shape* s = item->getShapeObject();
 		assert(s);
 		surf->Paint(s, item->getFrame(), itemx, itemy);
+	}
+
+
+	if (display_dragging) {
+		sint32 itemx, itemy;
+		itemx = dragging_x + itemarea.x;
+		itemy = dragging_y + itemarea.y;
+		GumpToParent(itemx,itemy);
+		Shape* s = GameData::get_instance()->getMainShapes()->
+			getShape(dragging_shape);
+		assert(s);
+		surf->PaintInvisible(s, dragging_frame, itemx, itemy, false, (dragging_flags&Item::FLG_FLIPPED)!=0);
 	}
 	
 }
@@ -234,4 +251,70 @@ void ContainerGump::OnMouseDouble(int button, int mx, int my)
 			item->callUsecodeEvent_use();
 		}		
 	}
+}
+
+
+bool ContainerGump::StartDraggingItem(Item* item, int mx, int my)
+{
+	// probably don't need to check if item can be moved, since it shouldn't
+	// be in a container otherwise
+
+	//TODO: do need to check if the container the item is in, is in range
+	return true;
+}
+
+bool ContainerGump::DraggingItem(Item* item, int mx, int my)
+{
+	display_dragging = true;
+
+	dragging_shape = item->getShape();
+	dragging_frame = item->getFrame();
+	dragging_flags = item->getFlags();
+
+	// determine target location and set dragging_x/y
+
+	dragging_x = mx - itemarea.x;
+	dragging_y = my - itemarea.y;
+
+	if (dragging_x < 0 || dragging_x >= itemarea.w ||
+		dragging_y < 0 || dragging_y >= itemarea.h) {
+		display_dragging = false;
+		return false;
+	}
+
+	return true;
+}
+
+void ContainerGump::DraggingItemLeftGump(Item* item)
+{
+	display_dragging = false;
+}
+
+
+void ContainerGump::StopDraggingItem(Item* item, bool moved)
+{
+	perr << "ContainerGump:: StopDraggingItem, moved = " << moved << std::endl;
+
+	if (!moved) return; // nothing to do
+
+	// remove item from container
+	Container* c = p_dynamic_cast<Container*>
+		(World::get_instance()->getItem(owner));
+	assert(c);
+	c->RemoveItem(item);
+}
+
+void ContainerGump::DropItem(Item* item, int mx, int my)
+{
+	display_dragging = false;
+
+	// add item to container
+	Container* c = p_dynamic_cast<Container*>
+		(World::get_instance()->getItem(owner));
+	assert(c);
+	c->AddItem(item);	
+
+	dragging_x = mx - itemarea.x;
+	dragging_y = my - itemarea.y;
+	item->setGumpLocation(dragging_x, dragging_y);
 }

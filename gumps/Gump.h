@@ -26,6 +26,7 @@
 class RenderSurface;
 class Shape;
 class GumpNotifyProcess;
+class Item;
 
 //
 // Class Gump
@@ -88,6 +89,9 @@ public:
 	template<class T> Gump *	FindGump(bool recursive=true,
 										 bool no_inheritance=false)
 		{ return FindGump(T::ClassType, recursive, no_inheritance); }
+
+	// Find gump (this, child or NULL) at parent coordinates
+	virtual Gump *		FindGump(int mx, int my);
 
 	// Get the mouse cursor for position mx, my relative to parents
 	// position. Returns true if this gump wants to set the cursor.
@@ -235,6 +239,31 @@ public:
 	virtual void		DraggingChild(Gump* gump, int mx, int my);
 	virtual void		StopDraggingChild(Gump* gump);
 
+	// This will be called when an item in this gump starts to be dragged.
+	// Return false if the item isn't allowed to be dragged.
+	virtual bool		StartDraggingItem(Item* item, int mx, int my)
+		{ return false; }
+
+	// Called when an item is being dragged over the gump.
+	// Note that this may be called on a different gump than StartDraggingItem.
+	// Return false if the item can't be dragged to this location.
+	virtual bool		DraggingItem(Item* item, int mx, int my)
+		{ return false; }
+
+	// Called when an item that was being dragged over the gump left the gump
+	virtual void		DraggingItemLeftGump(Item* item) { }
+
+	// Called when a drag operation finished. If moved the item was
+	// actually dragged somewhere else. If !moved, the drag was cancelled.
+	// This is called on the same gump that received StartDraggingItem
+	virtual void		StopDraggingItem(Item* item, bool moved) { }
+
+	// Called when an item has been dropped on a gump.
+	// This is called after StopDraggingItem has been called, but possibly
+	// on a different gump.
+	// It's guaranteed that a gump will only receive a DropItem at a location
+	//  if a DraggingItem there returned true.
+	virtual void		DropItem(Item* item, int mx, int my) { }
 
 	// the MoveOffset is the point relative to which Move() will move the gump
 	void				SetMoveOffset(int mx, int my)

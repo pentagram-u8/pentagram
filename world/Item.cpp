@@ -132,6 +132,13 @@ void Item::getGumpLocation(sint32& X, sint32& Y) const
 	Y = (y >> 8) & 0xFF;
 }
 
+void Item::setGumpLocation(sint32 X, sint32 Y)
+{
+	if (!parent) return;
+
+	y = (X & 0xFF) + ((Y & 0xFF) << 8);
+}
+
 void Item::getCentre(sint32& X, sint32& Y, sint32& Z) const
 {
 	ShapeInfo *shapeinfo = getShapeInfoNoCache();
@@ -704,6 +711,22 @@ void Item::clearGump()
 {
 	gump = 0;
 	flags &= ~FLG_GUMP_OPEN;
+}
+
+void Item::fall()
+{
+	GravityProcess* p = 0;
+	if (gravitypid) {
+		p = p_dynamic_cast<GravityProcess*>(
+			Kernel::get_instance()->getProcess(gravitypid));
+		assert(p);
+	} else {
+		p = new GravityProcess(this, 0);
+		Kernel::get_instance()->addProcess(p);
+		p->init();
+	}
+
+	p->setGravity(4); //!! constant
 }
 
 uint32 Item::I_touch(const uint8* args, unsigned int /*argsize*/)
@@ -1588,18 +1611,7 @@ uint32 Item::I_fall(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
-	GravityProcess* p = 0;
-	if (item->gravitypid) {
-		p = p_dynamic_cast<GravityProcess*>(
-			Kernel::get_instance()->getProcess(item->gravitypid));
-		assert(p);
-	} else {
-		p = new GravityProcess(item, 0);
-		Kernel::get_instance()->addProcess(p);
-		p->init();
-	}
-
-	p->setGravity(4); //!! constant
+	item->fall();
 
 	return 0;
 }

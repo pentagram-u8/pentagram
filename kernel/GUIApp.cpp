@@ -76,7 +76,7 @@ GUIApp::GUIApp(const int argc, const char * const * const argv)
 	  runGraphicSysInit(false), runSDLInit(false),
 	  frameSkip(false), frameLimit(true), interpolate(true),
 	  animationRate(33), avatarInStasis(false), paintEditorItems(false),
-	  painting(false), dragging(false), timeOffset(0), song(0)
+	  painting(false), dragging(DRAG_NOT), timeOffset(0), song(0)
 {
 	// Set the console to auto paint, till we have finished initing
 	con.SetAutoPaint(conAutoPaint);
@@ -147,7 +147,11 @@ void GUIApp::run()
 				if (kernel->runProcesses(framenum)) repaint = true;
 				desktopGump->Run(framenum);
 				framenum++;
-	
+#if 0
+				perr << "--------------------------------------" << std::endl;
+				perr << "NEW FRAME" << std::endl;
+				perr << "--------------------------------------" << std::endl;
+#endif
 				inBetweenFrame = false;
 
 				ticks = SDL_GetTicks();
@@ -242,6 +246,8 @@ void GUIApp::U8Playground()
 //	av->teleport(39, 16240, 15240, 64); // West Tenebrae
 //	av->teleport(41, 12000, 15000, 64); // East Tenebrae
 //	av->teleport(8, 14462, 15178, 48); // before entrance to Mythran's house
+//	av->teleport(40, 13102,9474,48); // entrance to Mordea's throne room
+//	av->teleport(54, 14783,5759,8); // shrine of the Ancient Ones; Hanoi
 
 	if (av)
 		world->switchMap(av->getMapNum());
@@ -629,21 +635,40 @@ void GUIApp::handleEvent(const SDL_Event& event)
 
 		mouseState[button] &= ~MBS_DOWN;
 
-		if (button == BUTTON_LEFT && dragging) {
+		if (button == BUTTON_LEFT && dragging != DRAG_NOT) {
 			// stop dragging
 
-			// for a Gump: notify parent
+			perr << "Dropping object " << dragging_objid << std::endl;
+
 			Gump *gump = getGump(dragging_objid);
+			Item *item= World::get_instance()->getItem(dragging_objid);
+			// for a Gump: notify parent
 			if (gump) {
 				Gump *parent = gump->GetParent();
 				assert(parent); // can't drag root gump
 				parent->StopDraggingChild(gump);
+			} else 
+			// for an item: notify gumps
+			if (item) {
+				if (dragging != DRAG_INVALID) {
+					Gump *startgump = getGump(dragging_item_startgump);
+					assert(startgump); // can't have disappeared
+					bool moved = (dragging == DRAG_OK);
+					startgump->StopDraggingItem(item, moved);
+				}
+
+				if (dragging == DRAG_OK) {
+					gump = desktopGump->FindGump(mx, my);
+					int gx = mx, gy = my;
+					gump->ScreenSpaceToGump(gx, gy);
+					gump->DropItem(item,gx,gy);
+				}
+			} else {
+				CANT_HAPPEN();
 			}
 
-			// for an item: notify GameMapGump:
-			//!! TODO
-				
-			dragging = false;
+
+			dragging = DRAG_NOT;
 			break;
 		}
 
@@ -657,7 +682,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 	{
 		int mx = event.button.x;
 		int my = event.button.y;
-		if (!dragging) {
+		if (dragging == DRAG_NOT) {
 			if (mouseState[BUTTON_LEFT] & MBS_DOWN) {
 				int startx = mouseDownX[BUTTON_LEFT];
 				int starty = mouseDownY[BUTTON_LEFT];
@@ -669,29 +694,46 @@ void GUIApp::handleEvent(const SDL_Event& event)
 
 					//!! check if Object is draggable
 					//!! (also need to check if item is in range)
-					dragging = true;
+					dragging = DRAG_OK;
 
 					//!! need to notify mouseDownGump that the last
 					//!! mousedown event was used for dragging
 
 					//!! need to pause the kernel
 
+					Gump *gump = getGump(dragging_objid);
+					Item *item= World::get_instance()->getItem(dragging_objid);
+
 					// for a Gump, notify the Gump's parent that we started
 					// dragging:
-					Gump *gump = getGump(dragging_objid);
 					if (gump) {
 						Gump *parent = gump->GetParent();
 						assert(parent); // can't drag root gump
 						int px = startx, py = starty;
 						parent->ScreenSpaceToGump(px, py);
 						parent->StartDraggingChild(gump, px, py);
-					}
-
-					// for an Item, notify the GameMapGump that we started
-					// dragging
-					Item *item= World::get_instance()->getItem(dragging_objid);
+					} else
+					// for an Item, notify the gump the item is in that we 
+					// started dragging
 					if (item) {
-						// TODO
+						// find gump item was in
+						gump = desktopGump->FindGump(startx, starty);
+						int gx = startx, gy = starty;
+						gump->ScreenSpaceToGump(gx, gy);
+						bool ok = gump->StartDraggingItem(item,gx,gy);
+						if (!ok) {
+							dragging = DRAG_INVALID;
+						} else {
+							dragging = DRAG_OK;
+
+							// this is the gump that'll get StopDraggingItem
+							dragging_item_startgump = gump->getObjId();
+
+							// this is the gump the item is currently over
+							dragging_item_lastgump = gump->getObjId();
+						}
+					} else {
+						CANT_HAPPEN();
 					}
 
 					mouseState[BUTTON_LEFT] |= MBS_HANDLED;
@@ -699,21 +741,39 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			}
 		}
 
-		if (dragging) {
-			// for a gump, notify Gump's parent that it was dragged
+		if (dragging == DRAG_OK || dragging == DRAG_TEMPFAIL) {
 			Gump* gump = getGump(dragging_objid);
+			Item *item= World::get_instance()->getItem(dragging_objid);
+
+			// for a gump, notify Gump's parent that it was dragged
 			if (gump) {
 				Gump *parent = gump->GetParent();
 				assert(parent); // can't drag root gump
 				int px = mx, py = my;
 				parent->ScreenSpaceToGump(px, py);
 				parent->DraggingChild(gump, px, py);
-			}
-
-			// for an item, notify GameMapGump:
-			Item *item= World::get_instance()->getItem(dragging_objid);
+			} else
+			// for an item, notify the gump it's on
 			if (item) {
-				// TODO
+				gump = desktopGump->FindGump(mx, my);
+				assert(gump);
+
+				if (gump->getObjId() != dragging_item_lastgump) {
+					// item switched gump, so notify previous gump item left
+					Gump *last = getGump(dragging_item_lastgump);
+					if (last) last->DraggingItemLeftGump(item);
+				}
+				dragging_item_lastgump = gump->getObjId();
+				int gx = mx, gy = my;
+				gump->ScreenSpaceToGump(gx, gy);
+				bool ok = gump->DraggingItem(item,gx,gy);
+				if (!ok) {
+					dragging = DRAG_TEMPFAIL;
+				} else {
+					dragging = DRAG_OK;
+				}
+			} else {
+				CANT_HAPPEN();
 			}
 		}
 	}
@@ -849,6 +909,13 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		case SDLK_e: { // editor objects toggle
 			paintEditorItems = !paintEditorItems;
 			pout << "paintEditorItems = " << paintEditorItems << std::endl;
+		} break;
+		case SDLK_x: {
+			Item* item = World::get_instance()->getItem(19204);
+			if (!item) break;
+			sint32 x,y,z;
+			item->getLocation(x,y,z);
+			pout << "19204: (" << x << "," << y << "," << z << ")" << std::endl;			
 		} break;
 		case SDLK_f: { // trigger 'first' egg
 			if (avatarInStasis) {

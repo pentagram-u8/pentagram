@@ -46,6 +46,7 @@ public:
 	void getLocation(sint32& x, sint32& y, sint32& z) const;
 	sint32 getZ() const;
 	void getGumpLocation(sint32& x, sint32& y) const;
+	void setGumpLocation(sint32 x, sint32 y);
 	void getCentre(sint32& x, sint32& y, sint32& z) const;
 	void getFootpad(sint32& x, sint32& y, sint32& z) const;
 	uint16 getFlags() const { return flags; }
@@ -84,6 +85,8 @@ public:
 	bool overlapsxy(Item& item2) const;
 	bool isOn(Item& item2) const;
 	bool canExistAt(sint32 x, sint32 y, sint32 z) const;
+
+	void fall();
 
 	void setGravityProcess(uint16 pid) { gravitypid = pid; }
 

@@ -51,6 +51,9 @@ public:
 	void HideConsole();
 	bool ConsoleIsVisible();
 
+	// ConsoleGump doesn't have any 'effective' area
+	virtual bool PointOnGump(int mx, int my) { return false; }
+
 	virtual bool Run(const uint32 framenum);
 
 	virtual void PaintThis(RenderSurface *surf, sint32 lerp_factor);

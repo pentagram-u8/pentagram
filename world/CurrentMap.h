@@ -42,6 +42,7 @@ public:
 
 	void addItem(Item* item);
 	void removeItemFromList(Item* item, sint32 oldx, sint32 oldy);
+	void removeItem(Item* item);
 
 	void areaSearch(UCList* itemlist, const uint8* loopscript,
 					uint32 scriptsize, Item* item, uint16 range, bool recurse,

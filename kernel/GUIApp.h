@@ -126,8 +126,15 @@ private:
 		MBS_DOWN = 0x1,
 		MBS_HANDLED = 0x2
 	};
-	bool dragging;
+	enum DraggingState {
+		DRAG_NOT = 0,
+		DRAG_OK = 1,
+		DRAG_INVALID = 2,
+		DRAG_TEMPFAIL = 3
+	} dragging;
 	uint16 dragging_objid;
+	uint16 dragging_item_startgump;
+	uint16 dragging_item_lastgump;
 
 	sint32 timeOffset;
 

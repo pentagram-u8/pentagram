@@ -192,7 +192,7 @@ AC_CHECK_SIZEOF(long long, 8)
 # ---------------------------------------------------------------------
 
 AC_MSG_CHECKING(if we should optimise for MMX)
-AC_ARG_ENABLE(mmx, [  --enable-mmx       Use MMX optimisations [default no]],,enable_mmx=no)
+AC_ARG_ENABLE(mmx, [  --enable-mmx            Use MMX optimisations [default no]],,enable_mmx=no)
 if test x$enable_mmx = xyes; then
 	AC_MSG_RESULT(yes)
 	CXXFLAGS="$CXXFLAGS -mmmx"
@@ -201,7 +201,7 @@ else
 fi
 
 AC_MSG_CHECKING(if we should optimise for 3DNOW)
-AC_ARG_ENABLE(3dnow, [  --enable-3dnow       Use 3DNOW optimisations [default no]],,enable_3dnow=no)
+AC_ARG_ENABLE(3dnow, [  --enable-3dnow          Use 3DNOW optimisations [default no]],,enable_3dnow=no)
 if test x$enable_3dnow = xyes; then
 	AC_MSG_RESULT(yes)
 	CXXFLAGS="$CXXFLAGS -m3dnow"
@@ -214,7 +214,7 @@ fi
 # ---------------------------------------------------------------------
 
 AC_MSG_CHECKING(if we should add seemingly random optimisations)
-AC_ARG_ENABLE(random_optimisations, [  --enable-random-optimisations       Use random optimisations [default no]],,enable_random_optimisations=no)
+AC_ARG_ENABLE(random_optimisations, [  --enable-random-optimisations   Use random optimisations [default no]],,enable_random_optimisations=no)
 if test x$enable_random_optimisations = xyes; then
     AC_MSG_RESULT(yes)
     CXXFLAGS="$CXXFLAGS -O3 -funroll-loops"
@@ -241,7 +241,7 @@ AC_LANG_CPLUSPLUS
 # ------------------
 # Warning level
 # ------------------
-AC_ARG_ENABLE(paranoid-warnings, [  --enable-paranoid-warnings       Enable paranoid warnings [default no]],,enable_paranoid_warnings=no)
+AC_ARG_ENABLE(paranoid-warnings, [  --enable-paranoid-warnings      Enable paranoid warnings [default no]],,enable_paranoid_warnings=no)
 if test x$enable_paranoid_warnings = xyes; then
         WARNINGS="-Wall -W -Wcast-qual -Wwrite-strings -Wconversion -Wredundant-decls -Wdisabled-optimization -fcheck-new -Wctor-dtor-privacy -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Wfloat-equal -Wundef -Wpointer-arith -Wcast-qual -Wcast-align -Wdisabled-optimization"
 		# -Wshadow produces a lot of pointless warnings, don't use it.
@@ -257,7 +257,7 @@ fi
 # Profiling!
 # ------------------
 AC_MSG_CHECKING(if we should include profiling information)
-AC_ARG_ENABLE(profiling, [  --enable-profiling       Enable Profiling [default no]],,enable_profiling=no)
+AC_ARG_ENABLE(profiling, [  --enable-profiling      Enable profiling [default no]],,enable_profiling=no)
 if test x$enable_profiling = xyes; then
 	AC_MSG_RESULT(yes)
 	PROFILE="-pg"
@@ -270,7 +270,7 @@ fi
 # Semi-pointless compiler, compilation flags
 # ------------------
 AC_MSG_CHECKING(if we want quirky compiler comments)
-AC_ARG_ENABLE(compiler_quirks, [  --enable-compiler-quirks       Enable quirky compiler comments [default yes]],,enable_compiler_quirks=yes)
+AC_ARG_ENABLE(compiler_quirks, [  --enable-compiler-quirks        Enable quirky compiler comments [default yes]],,enable_compiler_quirks=yes)
 if test x$enable_compiler_quirks = xyes; then
 	AC_MSG_RESULT(yes)
 	AC_DEFINE(USE_CQUIRKS, 1, [Random quirky comments, rather then default normalness])
@@ -279,7 +279,7 @@ else
 fi
 
 AC_MSG_CHECKING(if we want usecode compiler regression tester built)
-AC_ARG_ENABLE(compiler_tester, [  --enable-compiler-tester       Usecode compiler regression tester [default no]],,enable_compiler_tester=no)
+AC_ARG_ENABLE(compiler_tester, [  --enable-compiler-tester        Usecode compiler regression tester [default no]],,enable_compiler_tester=no)
 if test x$enable_compiler_tester = xyes; then
 	AC_MSG_RESULT(yes)
 	AC_DEFINE(COMPILER_TEST, 1, [Enable the compiler regression tester])

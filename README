@@ -5,7 +5,7 @@ Ultima 8:Pagan.
 BUILDING FROM CVS
 =================
 
-Unix:
+Linux/Unix:
 
 1) Run the "bootstrap" script to create the "configure" script
   ./bootstrap
@@ -18,10 +18,6 @@ Unix:
 
 Windows:
  ...
-
-
-MacOS 9:
-  Not yet supported
 
 
 CONFIGURATION
@@ -64,31 +60,32 @@ the directory that contains fixedfont.tga).
 KEYBOARD COMMANDS
 =================
 
-These commands are likely to change in the future so keep an eye on CHANGELOG as well.
+These commands are likely to change in the future so keep an eye on CHANGELOG
+as well.
 
-~				: hides/restores console
+~		: hides/restores console
 page up/down	: scrolls console
-arrow keys		: moves Avatar around the map (no walking yet)
-a,z				: moves Avatar vertically
-s				: toggles "avatarInStasis"
-t				: outputs kernel/usecode/world/location stats to the console
-e				: toggles editor items
-h				: highlights any item you are "hitting", colliding with
-c				: enables clipping
-ESC,q			: quits pentagram
-[,]				: first ] clears the screen, multiple presses of ]
-				  show the paint order. [ "steps" backward.
-left mouse		: look at item/npc
-right mouse		: use item/talk to npc
+arrow keys	: moves Avatar around the map (no walking yet)
+a,z		: moves Avatar vertically
+s		: toggles "avatarInStasis"
+t		: outputs kernel/usecode/world/location stats to the console
+e		: toggles editor items
+h		: highlights any item you are "hitting", colliding with
+c		: enables clipping
+ESC,q		: quits pentagram
+[,]		: first ] clears the screen, multiple presses of ]
+		  show the paint order. [ "steps" backward.
+left mouse	: look at item/npc
+right mouse	: use item/talk to npc
 middle mouse	: feature test button :-) likely to change very often.
-				  At the moment it is an object "hurler"
-shift			: quarter speed mode. needs to be held down.
+		  At the moment it is an object "hurler"
+shift		: quarter speed mode. needs to be held down.
 
 HACKS TO SHOW OFF
 =================
 
-f				: plays first scene (Avatar standing up, speaking to Devon)
-g				: plays execution scene
+f		: plays first scene (Avatar standing up, speaking to Devon)
+g		: plays execution scene
 
 
 SUPPORTED GAMES AND VERSIONS

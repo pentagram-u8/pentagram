@@ -236,8 +236,8 @@ void Gump::PaintThis(RenderSurface* surf, sint32 /*lerp_factor*/)
 void Gump::PaintChildren(RenderSurface *surf, sint32 lerp_factor)
 {
 	// Iterate all children
-	std::list<Gump*>::iterator	it = children.begin();
-	std::list<Gump*>::iterator	end = children.end();
+	std::list<Gump*>::iterator it = children.begin();
+	std::list<Gump*>::iterator end = children.end();
 
 	while (it != end)
 	{
@@ -249,6 +249,33 @@ void Gump::PaintChildren(RenderSurface *surf, sint32 lerp_factor)
 		++it;
 	}	
 }
+
+Gump* Gump::FindGump(int mx, int my)
+{
+	int gx = mx, gy = my;
+	ParentToGump(gx, gy);
+	Gump* gump = 0;
+
+	// Iterate all children
+	std::list<Gump*>::reverse_iterator it = children.rbegin();
+	std::list<Gump*>::reverse_iterator end = children.rend();
+
+	while (it != end && !gump)
+	{
+		Gump *g = *it;
+		gump = g->FindGump(gx, gy);
+		++it;
+	}
+
+	// it's over a child
+	if (gump) return gump;
+
+	// it's over this gump
+	if (PointOnGump(mx, my)) return this;
+
+	return 0;		
+}
+
 
 bool Gump::PointOnGump(int mx, int my)
 {

@@ -1,27 +1,36 @@
+2003-06-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/ConsoleGump.h: PointOnGump always returns false
+	* gumps/Gump.*: added FindGump(x,y) to find the gump on that location
+	* gumps/Gump.*, kernel/GUIApp.*: item dragging
+	* gumps/GameMapGump.*, gumps/ContainerGump.*: support dragging items
+	  from/to world and containers
+	* various: cleaned up a bit
+
 2003-06-21	  Ryan Nunn <colourles@users.sourceforge.net>
-	* gumps/GameMapGump.cpp : 'Fixing' GetLocationOfItem so it actually works 
-	  correctly.
+	* gumps/GameMapGump.cpp : 'Fixing' GetLocationOfItem so it actually
+	  works correctly.
 
 2003-06-20	  Ryan Nunn <colourles@users.sourceforge.net>
 	* filesys/IDataSource.h : IBufferData sources now accepts void *
 	* graphics/Palette*.*, graphics/XFormBlend.*, graphics/Texture.*, 
-	  graphics/*SoftRenderSurface.*, kernel/GUIApp.cpp : Re-working how XForm
-	  works. Added Palette transformations.
-	* kernel/GameData.* : Loads music.flx. This is for a few tests I'm doing.
-	* graphics/PaletteFaderProcess.*, usecode/u8intrinsics.h : Added a bunch of
-	  palette effect functions.
-	* world/Item.*, usecode/u8intrinsics.h : Added I_guardianBark. I_getQuality
-	  only return q IF the family is SF_QUALITY
+	  graphics/*SoftRenderSurface.*, kernel/GUIApp.cpp : Re-working how
+	  XForm works. Added Palette transformations.
+	* kernel/GameData.* : Loads music.flx. This is for a few tests I'm
+	  doing.
+	* graphics/PaletteFaderProcess.*, usecode/u8intrinsics.h : Added a
+	  bunch of palette effect functions.
+	* world/Item.*, usecode/u8intrinsics.h : Added I_guardianBark.
+	  I_getQuality only return q IF the family is SF_QUALITY
 	* world/ItemSorter.cpp : Fixing silly problem
 	* gumps/GameMapGump.cpp : Don't roof pop items with DRAW type flag
-	* kernel/Kernel.cpp : ObjID 666 is reserved (it's used in a nasty hack for
-	  guardianBark, and I don't want it used by anything else)
+	* kernel/Kernel.cpp : ObjID 666 is reserved (it's used in a nasty hack
+	  for guardianBark, and I don't want it used by anything else)
 	* world/Egg.h, world/CurrentMap.cpp : Reset eggs on map writeback
 	* world/World.cpp : Disabled killing of all processes on map change
 		
 2003-06-19  Dominik Reichardt <dominus@users.sourceforge.net> 
-	* README: added section of games/versions supported by pentagram, and 'c', 'h' and
-	  shift key
+	* README: added section of games/versions supported by pentagram,
+	  and 'c', 'h' and shift key
 
 2003-06-19  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/SoftRenderSurface.cpp, graphics/Font.cpp: fixed crash
