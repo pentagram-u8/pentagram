@@ -1,4 +1,7 @@
 2004-02-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/GUIApp.cpp: check for existance of u8save.000
+
+2004-02-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/World.cpp: read all of npcdata.dat
 	* world/actors/Actor.h: fixed mislabelled flag
 	* docs/u8anim.txt: some flag-guessing

@@ -495,6 +495,10 @@ void GUIApp::U8Playground()
 	world = new World();
 
 	IDataSource *saveds = filesystem->ReadFile("@u8/savegame/u8save.000");
+	if (!saveds) {
+		perr << "Unable to load savegame/u8save.000. Exiting" << std::endl;
+		std::exit(-1);
+	}
 	U8Save *u8save = new U8Save(saveds);
 
 	IDataSource *nfd = u8save->get_datasource("NONFIXED.DAT");
