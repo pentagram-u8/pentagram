@@ -99,12 +99,19 @@ bool FireballProcess::run(uint32 /*framenum*/)
 
 	int targetdir = item->getDirToItemCentre(*t);
 
-	if (dx / 64 == 0 && dy / 64 == 0) {
+	if (xspeed == 0 && yspeed == 0 && dx / 64 == 0 && dy / 64 == 0) {
 		xspeed += 2 * x_fact[targetdir];
 		yspeed += 2 * y_fact[targetdir];
 	} else {
 		xspeed += (dx / 64);
 		yspeed += (dy / 64);
+	}
+
+	// limit speed
+	int speed = static_cast<int>(sqrt(xspeed*xspeed + yspeed*yspeed));
+	if (speed > 32) {
+		xspeed = (xspeed * 32) / speed;
+		yspeed = (yspeed * 32) / speed;
 	}
 
 	ObjId hititem = 0;
