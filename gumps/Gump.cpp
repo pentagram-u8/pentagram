@@ -148,6 +148,32 @@ void Gump::MapChanged()
 	}	
 }
 
+bool Gump::GetMouseCursor(int mx, int my, Shape &shape, sint32 &frame)
+{
+	ParentToGump(mx,my);
+
+	std::list<Gump*>::iterator	it = children.end();
+	std::list<Gump*>::iterator	begin = children.begin();
+
+	bool ret = false;
+
+	// This reverse iterates the children
+	while (it != begin)
+	{
+		Gump *g = *--it;
+
+		// Not if closing
+		if (g->flags & FLAG_CLOSING) continue;
+
+		// It's got the point
+		if (g->PointOnGump(mx,my)) ret = g->GetMouseCursor(mx, my, shape, frame);
+
+		if (ret) break;
+	}
+
+	return ret;
+}
+
 void Gump::Paint(RenderSurface *surf, sint32 lerp_factor)
 {
 	// Don't paint if hidden

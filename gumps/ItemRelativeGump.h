@@ -24,7 +24,6 @@
 class ItemRelativeGump : public Gump
 {
 protected:
-	uint16 item_num;
 	sint32 ix, iy;
 
 public:

@@ -1,3 +1,6 @@
+2003-06-03	  Ryan Nunn <colourles@users.sourceforge.net>
+	* gump/ItemRelativeGump.* : Fixing broken ItemRelativeGump
+
 2003-06-03	Darke <darkepaw@users.sf.net>
 	* filesys/ListFiles.h: A quick update to properly re-munge the filenames.
 

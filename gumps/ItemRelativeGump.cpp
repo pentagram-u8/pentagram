@@ -67,7 +67,7 @@ void ItemRelativeGump::GetItemLocation(sint32 lerp_factor)
 	Item *prev = 0;
 	Gump *gump = 0;
 
-	it = World::get_instance()->getItem(item_num);
+	it = World::get_instance()->getItem(owner);
 
 	if (!it) // This shouldn't ever happen, the GumpNotifyProcess should close us before we get here
 	{
@@ -94,7 +94,7 @@ void ItemRelativeGump::GetItemLocation(sint32 lerp_factor)
 			return;
 		}
 
-		gump->GetLocationOfItem(item_num, gx, gy, lerp_factor);
+		gump->GetLocationOfItem(owner, gx, gy, lerp_factor);
 	}
 	else
 	{
@@ -111,7 +111,7 @@ void ItemRelativeGump::GetItemLocation(sint32 lerp_factor)
 
 	// Set x and y, and center us over it
 	ix = gx-dims.w/2;
-	iy = gy-dims.h-it->getShapeInfo()->z*8;
+	iy = gy-dims.h-it->getShapeInfo()->z*8-16;
 }
 
 // Colourless Protection

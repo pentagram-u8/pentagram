@@ -83,7 +83,7 @@ public:
 	// Get the mouse cursor for position mx, my relative to parents position
 	// Returns true if this gump wants to set the cursor. If false, the gump list
 	// will attempt to get the cursor shape from the next lower gump.
-	//virtual bool		GetMouseCursor(int mx, int my, Shape &shape, sint32 &frame);
+	virtual bool		GetMouseCursor(int mx, int my, Shape &shape, sint32 &frame);
 
 	// Update the RenderSurface of this gump and all children (probably only needed for scaled gumps).
 	//virtual bool		DeviceChanged();
