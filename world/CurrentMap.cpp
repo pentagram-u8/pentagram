@@ -374,7 +374,7 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 
 				// check overlap
 				if (si->is_solid() &&
-					!(x <= ix - ixd + 1 || x - xd >= ix ||
+					!(x <= ix - ixd || x - xd >= ix ||
 					  y <= iy - iyd || y - yd >= iy ||
 					  z + zd <= iz || z >= iz + izd))
 				{
