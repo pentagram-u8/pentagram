@@ -168,7 +168,7 @@ bool Kernel::runProcesses(uint32 framenum)
 
 		if (p->terminate_deferred)
 			p->terminate();
-		if (!p->terminated)
+		if (!p->terminated && !p->suspended)
 			if (p->run(framenum)) dirty = true;
 		if (p->terminated) {
 			// process is killed, so remove it from the list

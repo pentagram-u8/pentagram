@@ -16,41 +16,36 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef ACTORANIMPROCESS_H
-#define ACTORANIMPROCESS_H
+#ifndef PATHFINDERPROCESS_H
+#define PATHFINDERPROCESS_H
 
 #include "Process.h"
 
+#include "Pathfinder.h"
 class Actor;
-struct AnimAction;
 
-class ActorAnimProcess : public Process
+class PathfinderProcess : public Process
 {
 public:
-	ActorAnimProcess();
-	//! note: this probably needs some more parameters
-	ActorAnimProcess(Actor* actor, uint32 action, uint32 dir);
+	PathfinderProcess();
+	PathfinderProcess(Actor* actor, sint32 x, sint32 y, sint32 z);
+	virtual ~PathfinderProcess();
 
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 
 	virtual bool run(const uint32 framenum);
 
-	virtual void terminate();
+//	virtual void terminate();
 
 	bool loadData(IDataSource* ids);
 protected:
 	virtual void saveData(ODataSource* ods);
 
-	AnimAction* animaction;
-	uint32 dir;
+	sint32 targetx, targety, targetz;
 
-	uint32 currentindex;
-	bool firstframe;
-
-	bool aborted;
-
-	unsigned int endframe;
+	std::vector<PathfindingAction> path;
+	unsigned int currentstep;
 };
 
 

@@ -37,6 +37,7 @@ class GameData;
 class World;
 class ObjectManager;
 class MidiDriver;
+class AvatarMoverProcess;
 class IDataSource;
 class ODataSource;
 
@@ -79,6 +80,8 @@ public:
 	Gump *getDesktopGump() { return desktopGump; }
 	Gump* getGump(uint16 gumpid);
 
+	AvatarMoverProcess* getAvatarMoverProcess() { return avatarMoverProcess; }
+
 	//! save a game
 	//! \param filename the file to save to
 	//! \return true if succesful
@@ -90,6 +93,22 @@ public:
 	bool loadGame(std::string filename);
 
 	MidiDriver* getMidiDriver() const { return midi_driver; }
+
+	//! get mouse cursor length. 0 = short, 1 = medium, 2 = long
+	int getMouseLength(int mx, int my);
+
+	//! get mouse cursor direction. 0 = up, 1 = up-right, 2 = right, etc...
+	int getMouseDirection(int mx, int my);
+
+	enum MouseButton {
+		BUTTON_LEFT = 1,
+		BUTTON_MIDDLE = 2,
+		BUTTON_RIGHT = 3,
+		WHEEL_UP = 4,
+		WHEEL_DOWN = 5
+	};
+
+	bool isMouseDown(MouseButton button);
 
 	enum MouseCursor {
 		MOUSE_NORMAL = 0,
@@ -132,6 +151,8 @@ private:
 	Gump* desktopGump;
 	ConsoleGump *consoleGump;
 	GameMapGump *gameMapGump;
+
+	AvatarMoverProcess* avatarMoverProcess;
 	
 	// called depending upon command line arguments
 	void GraphicSysInit(); // starts the graphics subsystem
@@ -200,13 +221,6 @@ private:
 	void		init_midi();
 	void		deinit_midi();
 	static void	sdlAudioCallback(void *userdata, Uint8 *stream, int len);
-
-public:
-	enum MouseButton { //!! change this
-		BUTTON_LEFT = 1,
-		BUTTON_MIDDLE = 2,
-		BUTTON_RIGHT = 3
-	};
 };
 
 #endif

@@ -38,11 +38,13 @@
 #include "ODataSource.h"
 
 #include "GravityProcess.h" // hack...
+#include "PathfinderProcess.h"
+#include "AvatarMoverProcess.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(GameMapGump,Gump);
 
 GameMapGump::GameMapGump() :
-	Gump(), display_dragging(false)
+	Gump(), display_dragging(false), leftDownToAvatarMover(false)
 {
 	display_list = new ItemSorter();
 }
@@ -243,10 +245,41 @@ bool GameMapGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 
 Gump* GameMapGump::OnMouseDown(int button, int mx, int my)
 {
-//	if (button == SDL_BUTTON_LEFT || button == SDL_BUTTON_RIGHT)
+	AvatarMoverProcess* amp = GUIApp::get_instance()->getAvatarMoverProcess();
+	if (button == GUIApp::BUTTON_RIGHT) {
+		amp->OnMouseDown(button);
+	}
+
+	if (button == GUIApp::BUTTON_LEFT &&
+		GUIApp::get_instance()->isMouseDown(GUIApp::BUTTON_RIGHT))
+	{
+		// if right button is down, AvatarMoverProcess wants left clicks too
+		amp->OnMouseDown(button);
+		leftDownToAvatarMover = true;
+	} else if (button == GUIApp::BUTTON_LEFT) {
+		leftDownToAvatarMover = false;
+	}
+
+	if (button == GUIApp::BUTTON_LEFT || button == GUIApp::BUTTON_RIGHT ||
+		button == GUIApp::BUTTON_MIDDLE)
+	{
+		// we take all clicks
 		return this;
+	}
 
 	return 0;
+}
+
+void GameMapGump::OnMouseUp(int button, int mx, int my)
+{
+	AvatarMoverProcess* amp = GUIApp::get_instance()->getAvatarMoverProcess();
+	if (button == GUIApp::BUTTON_RIGHT) {
+		amp->OnMouseUp(button);
+	}
+
+	if (button == GUIApp::BUTTON_LEFT && leftDownToAvatarMover) {
+		amp->OnMouseUp(button);
+	}
 }
 
 void GameMapGump::OnMouseClick(int button, int mx, int my)
@@ -256,6 +289,8 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 	switch (button) {
 	case GUIApp::BUTTON_LEFT:
 	{
+		if (leftDownToAvatarMover) break;
+
 		if (GUIApp::get_instance()->isAvatarInStasis()) {
 			pout << "Can't: avatarInStasis" << std::endl;
 			uint16 objID = TraceObjID(mx, my); //!! hack
@@ -285,6 +320,10 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 			sint32 x,y,z;
 			item->getLocation(x,y,z);
 			item->dumpInfo();
+
+			Actor* devon = World::get_instance()->getNPC(1);
+			PathfinderProcess* pfp = new PathfinderProcess(devon, x, y, z);
+			Kernel::get_instance()->addProcess(pfp);
 		}
 	}
 	default:

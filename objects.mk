@@ -115,10 +115,12 @@ WORLD = \
 ACTORS = \
 	world/actors/Actor.o \
 	world/actors/ActorAnimProcess.o \
+	world/actors/AvatarMoverProcess.o \
 	world/actors/AnimAction.o \
 	world/actors/MainActor.o \
+	world/actors/Pathfinder.o \
+	world/actors/PathfinderProcess.o \
 	world/actors/TeleportToEggProcess.o
-
 
 AUDIO = \
 	audio/MusicFlex.o \

@@ -26,11 +26,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Actor.h"
 #include "Direction.h"
 #include "World.h"
+#include "GravityProcess.h"
+#include "Kernel.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
 
-//#define WATCHACTOR 2
+//#define WATCHACTOR 1
 
 #ifdef WATCHACTOR
 static const int watchactor = WATCHACTOR;
@@ -65,6 +67,7 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 
 	currentindex = 0;
 	firstframe = true;
+	aborted = false;
 
 	if (actor_->getActorFlags() & Actor::ACT_ANIMLOCK) {
 		//! What do we do if actor was already animating?
@@ -104,8 +107,8 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 
 bool ActorAnimProcess::run(const uint32 framenum)
 {
-	if (!animaction) {
-		// non-existant animation
+	if (!animaction || aborted) {
+		// non-existant animation or aborted
 		terminate();
 		return false;
 	}
@@ -187,18 +190,68 @@ bool ActorAnimProcess::run(const uint32 framenum)
 	y -= (dy*fc)/animaction->framerepeat;
 	z -= (dz*fc)/animaction->framerepeat;
 
+	// special case:
+	// if walking, and can't reach destination, see if we can step up 8
+	if (framecount == 0 &&
+		animaction->action == 0 && // walking animation, constant!
+		!a->canExistAt(x+dx, y+dy, z+dz) &&
+		a->canExistAt(x+dx, y+dy, z+dz+8))
+	{
+		sint32 oldx, oldy, oldz;
+		a->getLocation(oldx, oldy, oldz);
+		oldz += 8;
+		a->collideMove(oldx, oldy, oldz, false, false);
+		z += 8;
+	}
+
 	x += (dx*(fc+1))/animaction->framerepeat;
 	y += (dy*(fc+1))/animaction->framerepeat;
 	z += (dz*(fc+1))/animaction->framerepeat;
 
 //	a->move(x,y,z);
-	a->collideMove(x, y, z, false, false);
+	sint32 dist = a->collideMove(x, y, z, false, false);
 	a->setFrame(f.frame);
 
 	if (f.is_flipped()) {
 		a->setFlag(Item::FLG_FLIPPED);
 	} else {
 		a->clearFlag(Item::FLG_FLIPPED);
+	}
+
+	if (dist != 0x4000) {
+		// didn't reach destination, so we need to abort
+		// one exception: if walking, we can step up 8
+		// TODO: walking up stairs
+
+		// TODO: if jumping/running: something (fall, hit, ...)
+		terminate();
+	}
+
+	if (framecount == animaction->framerepeat-1 &&
+		f.flags & AnimFrame::AFF_ONGROUND) {
+		// check if we're supported by something.
+		// If not, check how far we're going to fall.
+		// If further than some constant, abort the animation and start
+		// falling (some inertia would be nice).
+		// If just a little distance, collideMove() down a bit
+
+		// FIXME: using a bit of a hack for now:
+		if (a->canExistAt(x,y,z-8)) {
+			if (a->canExistAt(x,y,z-16)) {
+				// too far...
+				aborted = true;
+				GravityProcess* gp = new GravityProcess(a, 4);
+				uint16 gppid = Kernel::get_instance()->addProcess(gp);
+				// TODO: inertia
+
+				// CHECKME: do we need to wait for the fall to finish?
+				waitFor(gppid);
+				return true;
+			} else {
+				// just a bit
+				a->collideMove(x,y,z-8,false,false);
+			}
+		}
 	}
 
 #ifdef WATCHACTOR

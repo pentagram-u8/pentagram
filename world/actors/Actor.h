@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "intrinsics.h"
 
 class ActorAnimProcess;
+struct PathfindingState;
 
 class Actor : public Container
 {
@@ -68,9 +69,14 @@ public:
 	//! \return the PID of the ActorAnimProcess
 	uint16 doAnim(int anim, int dir);
 
-	//! check if the given animation can be done from the current location,
-	//! without walking into things
-	bool tryAnim(int anim, int dir);
+	//! check if the given animation can be done from the location in state,
+	//! without walking into things. If state is non-zero, and successful,
+	//! state will be updated to after the animation. If unsuccessful,
+	//! the contents of state are undefined.
+	//! \param anim Action to try
+	//! \param dir direction to walk in
+	//! \param state the state to start from, or 0 to use the current state
+	bool tryAnim(int anim, int dir, PathfindingState* state=0);
 
 	virtual uint16 assignObjId(); // assign an NPC objid
 

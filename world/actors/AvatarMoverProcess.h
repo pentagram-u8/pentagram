@@ -16,42 +16,32 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef ACTORANIMPROCESS_H
-#define ACTORANIMPROCESS_H
+#ifndef AVATARMOVERPROCESS_H
+#define AVATARMOVERPROCESS_H
 
 #include "Process.h"
 
-class Actor;
-struct AnimAction;
-
-class ActorAnimProcess : public Process
+class AvatarMoverProcess : public Process
 {
 public:
-	ActorAnimProcess();
-	//! note: this probably needs some more parameters
-	ActorAnimProcess(Actor* actor, uint32 action, uint32 dir);
+	AvatarMoverProcess();
+	virtual ~AvatarMoverProcess();
 
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 
 	virtual bool run(const uint32 framenum);
 
-	virtual void terminate();
+	void OnMouseDown(int button);
+	void OnMouseUp(int button);
 
 	bool loadData(IDataSource* ids);
 protected:
 	virtual void saveData(ODataSource* ods);
 
-	AnimAction* animaction;
-	uint32 dir;
-
-	uint32 currentindex;
-	bool firstframe;
-
-	bool aborted;
-
-	unsigned int endframe;
+	uint32 lastframe;
 };
+
 
 
 #endif

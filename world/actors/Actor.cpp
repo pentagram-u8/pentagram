@@ -31,11 +31,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AnimAction.h"
 #include "CurrentMap.h"
 #include "ShapeInfo.h"
+#include "Pathfinder.h"
+
 #include "ItemFactory.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
 
-#include "MissileProcess.h" // temp. replacement for pathfinding
+#include "MissileProcess.h" // hack
+#include "PathfinderProcess.h"
 
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(Actor,Container);
@@ -182,21 +185,43 @@ uint16 Actor::doAnim(int anim, int dir)
 	return Kernel::get_instance()->addProcess(p);
 }
 
-bool Actor::tryAnim(int anim, int dir)
+bool Actor::tryAnim(int anim, int dir, PathfindingState* state)
 {
+	//!NOTE: this is broken, as it does not take height differences
+	// into account. tryAnim and ActorAnimProcess::run() should be 
+	// unified somehow
+
 	CurrentMap* currentmap = World::get_instance()->getCurrentMap();
 
 	AnimAction* animaction = GameData::get_instance()->getMainShapes()->
 		getAnim(getShape(), anim);
 
+	if (!animaction) return false;
+	if (dir < 0 || dir > 7) return false;
+
 	sint32 start[3];
 	sint32 end[3];
 	sint32 dims[3];
 	std::list<CurrentMap::SweepItem> hit;
+	bool flipped, firststep;
 
-	getLocation(end[0], end[1], end[2]);
+	if (state == 0) {
+		getLocation(end[0], end[1], end[2]);
+		flipped = (getFlags() & Item::FLG_FLIPPED);
+		firststep = (getActorFlags() & Actor::ACT_FIRSTSTEP);
+	} else {
+		end[0] = state->x;
+		end[1] = state->y;
+		end[2] = state->z;
+		flipped = state->flipped;
+		firststep = state->firststep;
+	}
+
 	getFootpad(dims[0], dims[1], dims[2]);
 	dims[0] *= 32; dims[1] *= 32; dims[2] *= 8;
+
+	// getFootpad gets the footpad of the _current_ item, so curflipped
+	// is also set to the flipped-state of the current item.
 	bool curflipped = (getFlags() & Item::FLG_FLIPPED);
  
 	unsigned int startframe, endframe;
@@ -222,7 +247,9 @@ bool Actor::tryAnim(int anim, int dir)
 
 		std::list<CurrentMap::SweepItem>::iterator iter;
 		for (iter = hit.begin(); iter != hit.end(); ++iter) {
-			if (!iter->touching) return false;
+			if (!iter->touching) {
+				return false;
+			}
 		}
 
 		++f;
@@ -235,6 +262,21 @@ bool Actor::tryAnim(int anim, int dir)
 			
 	}
 
+	// animation ok. Update state
+	if (state) {
+		// toggle ACT_FIRSTSTEP flag if necessary
+		if (animaction->flags & AnimAction::AAF_TWOSTEP) {
+			state->firststep = !state->firststep;
+		} else {
+			state->firststep = true;
+		}
+
+		state->lastanim = anim;
+		state->direction = dir;
+		state->x = end[0];
+		state->y = end[1];
+		state->z = end[2];
+	}
 	return true;
 }
 
@@ -533,7 +575,9 @@ uint32 Actor::I_pathfindToItem(const uint8* args, unsigned int /*argsize*/)
 	sint32 x,y,z;
 	item->getLocation(x,y,z);
 
-	return Kernel::get_instance()->addProcess(new MissileProcess(actor,x,y,z,100));
+	return Kernel::get_instance()->addProcess(
+//		new PathfinderProcess(actor,x,y,z));
+		new MissileProcess(actor,x,y,z,100));
 }
 
 uint32 Actor::I_isBusy(const uint8* args, unsigned int /*argsize*/)

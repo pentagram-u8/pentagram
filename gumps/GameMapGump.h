@@ -75,6 +75,7 @@ public:
 	virtual void		DropItem(Item* item, int mx, int my);
 
 	virtual Gump *		OnMouseDown(int button, int mx, int my);
+	virtual void		OnMouseUp(int button, int mx, int my);
 	virtual void		OnMouseClick(int button, int mx, int my);
 	virtual void		OnMouseDouble(int button, int mx, int my);
 
@@ -90,6 +91,8 @@ protected:
 	uint32 dragging_frame;
 	uint32 dragging_flags;
 	sint32 dragging_x, dragging_y, dragging_z;
+
+	bool leftDownToAvatarMover;
 };
 
 #endif //GameMapGUMP_H_INCLUDED

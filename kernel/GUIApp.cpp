@@ -64,6 +64,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MissileProcess.h"
 #include "TeleportToEggProcess.h"
 #include "ItemFactory.h"
+#include "PathfinderProcess.h"
+#include "AvatarMoverProcess.h"
 
 #include "DisasmProcess.h"
 #include "CompileProcess.h"
@@ -101,12 +103,12 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(GUIApp,CoreApp);
 GUIApp::GUIApp(int argc, const char* const* argv)
 	: CoreApp(argc, argv), ucmachine(0), screen(0),
 	  palettemanager(0), gamedata(0), world(0), desktopGump(0),
-	  consoleGump(0), gameMapGump(0),
+	  consoleGump(0), gameMapGump(0), avatarMoverProcess(0),
 	  runGraphicSysInit(false), runSDLInit(false),
 	  frameSkip(false), frameLimit(true), interpolate(true),
 	  animationRate(100), avatarInStasis(false), paintEditorItems(false),
-	  painting(false), dragging(DRAG_NOT), timeOffset(0), midi_driver(0),
-	  midi_volume(255)
+	  painting(false), mouseSet(false), dragging(DRAG_NOT), timeOffset(0),
+	  midi_driver(0), midi_volume(255)
 {
 	application = this;
 
@@ -147,6 +149,10 @@ void GUIApp::startup()
 							 ProcessLoader<TeleportToEggProcess>::load);
 	kernel->addProcessLoader("ActorAnimProcess",
 							 ProcessLoader<ActorAnimProcess>::load);
+	kernel->addProcessLoader("AvatarMoverProcess",
+							 ProcessLoader<AvatarMoverProcess>::load);
+	kernel->addProcessLoader("PathfinderProcess",
+							 ProcessLoader<PathfinderProcess>::load);
 	kernel->addProcessLoader("SpriteProcess",
 							 ProcessLoader<SpriteProcess>::load);
 	kernel->addProcessLoader("MissileProcess",
@@ -511,6 +517,10 @@ void GUIApp::U8Playground()
 	pout << "Create Camera" << std::endl;
 	CameraProcess::SetCameraProcess(new CameraProcess(1)); // Follow Avatar
 
+	pout << "Create AvatarMoverProcess" << std::endl;
+	avatarMoverProcess = new AvatarMoverProcess();
+	kernel->addProcess(avatarMoverProcess);
+
 //	av->teleport(40, 16240, 15240, 64); // central Tenebrae
 //	av->teleport(3, 11391, 1727, 64); // docks, near gate
 //	av->teleport(39, 16240, 15240, 64); // West Tenebrae
@@ -577,6 +587,52 @@ void GUIApp::paint()
 	painting = false;
 }
 
+bool GUIApp::isMouseDown(MouseButton button)
+{
+	return (mouseState[button] & MBS_DOWN);
+}
+
+int GUIApp::getMouseLength(int mx, int my)
+{
+	Pentagram::Rect dims;
+	screen->GetSurfaceDims(dims);
+	// For now, reference point is (near) the center of the screen
+	int dx = mx - dims.w/2;
+	int dy = (dims.h/2+14) - my; //! constant
+
+	int shortsq = (dims.w / 8);
+	if (dims.h / 6 < shortsq)
+		shortsq = (dims.h / 6);
+	shortsq = shortsq*shortsq;
+	
+	int mediumsq = ((dims.w * 4) / 10);
+	if (((dims.h * 4) / 10) < mediumsq)
+		mediumsq = ((dims.h * 4) / 10);
+	mediumsq = mediumsq * mediumsq;
+	
+	int dsq = dx*dx+dy*dy;
+	
+	// determine length of arrow
+	if (dsq <= shortsq) {
+		return 0;
+	} else if (dsq <= mediumsq) {
+		return 1;
+	} else {
+		return 2;
+	}
+}
+
+int GUIApp::getMouseDirection(int mx, int my)
+{
+	Pentagram::Rect dims;
+	screen->GetSurfaceDims(dims);
+	// For now, reference point is (near) the center of the screen
+	int dx = mx - dims.w/2;
+	int dy = (dims.h/2+14) - my; //! constant
+
+	return ((Get_direction(dy*2, dx))+1)%8;
+}
+
 int GUIApp::getMouseFrame()
 {
 	// Ultima 8 mouse cursors:
@@ -600,36 +656,18 @@ int GUIApp::getMouseFrame()
 	{
 		if (!mouseSet) return -1;
 
-		Pentagram::Rect dims;
-		screen->GetSurfaceDims(dims);
-
-		// For now, reference point is the center of the screen
-		int				dx = mouseX - dims.w/2;
-		int				dy = (dims.h/2+14) - mouseY; //! constant
 		bool combat = false; //!!! fixme
 
 		// Calculate frame based on direction
-		int frame = ((Get_direction(dy*2, dx))+1)%8;
+		int frame = getMouseDirection(mouseX, mouseY);
 
 		if (combat) {
 			frame += 25;
 		} else {
-			int shortsq = (dims.w / 8);
-			if (dims.h / 6 < shortsq)
-				shortsq = (dims.h / 6);
-			shortsq = shortsq*shortsq;
-			
-			int mediumsq = ((dims.w * 4) / 10);
-			if (((dims.h * 4) / 10) < mediumsq)
-				mediumsq = ((dims.h * 4) / 10);
-			mediumsq = mediumsq * mediumsq;
-			
-			int dsq = dx*dx+dy*dy;
-			
-			// determine length of arrow
-			if (dsq <= shortsq) {
+			int arrowlength = getMouseLength(mouseX, mouseY);
+			if (arrowlength == 0) {
 				frame += 0;
-			} else if (dsq <= mediumsq) {
+			} else if (arrowlength == 1) {
 				frame += 8;
 			} else {
 				frame += 16;
@@ -785,16 +823,16 @@ void GUIApp::LoadConsoleFont()
 // Hacks are us!
 //
 
-class AvatarMoverProcess : public Process
+class QuickAvatarMoverProcess : public Process
 {
 	int dx, dy, dz, dir;
 public:
-	static  AvatarMoverProcess	*amp[6];
+	static  QuickAvatarMoverProcess	*amp[6];
 	static	bool				clipping;
 	static	bool				quarter;
 	static	bool				hitting;
 
-	AvatarMoverProcess(int x, int y, int z, int _dir) : Process(1), dx(x), dy(y), dz(z), dir(_dir)
+	QuickAvatarMoverProcess(int x, int y, int z, int _dir) : Process(1), dx(x), dy(y), dz(z), dir(_dir)
 	{
 		if (amp[dir]) amp[dir]->terminate();
 		amp[dir] = this;
@@ -941,12 +979,12 @@ public:
 	}
 };
 
-AvatarMoverProcess	*AvatarMoverProcess::amp[6] = { 0, 0, 0, 0, 0, 0 };
-bool AvatarMoverProcess::clipping = false;
-bool AvatarMoverProcess::quarter = false;
-bool AvatarMoverProcess::hitting = false;
+QuickAvatarMoverProcess	*QuickAvatarMoverProcess::amp[6] = { 0, 0, 0, 0, 0, 0 };
+bool QuickAvatarMoverProcess::clipping = false;
+bool QuickAvatarMoverProcess::quarter = false;
+bool QuickAvatarMoverProcess::hitting = false;
 
-bool hitting() { return AvatarMoverProcess::hitting; }
+bool hitting() { return QuickAvatarMoverProcess::hitting; }
 
 static int volumelevel = 255;
 
@@ -1049,20 +1087,20 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		switch (event.key.keysym.sym) {
 			case SDLK_LSHIFT: 
 			case SDLK_RSHIFT: {
-				AvatarMoverProcess::quarter = true;
-				pout << "AvatarMoverProcess::quarter = " << AvatarMoverProcess::quarter << std::endl; 
+				QuickAvatarMoverProcess::quarter = true;
+				pout << "QuickAvatarMoverProcess::quarter = " << QuickAvatarMoverProcess::quarter << std::endl; 
 			} break;
 			case SDLK_c: {
-				AvatarMoverProcess::clipping = !AvatarMoverProcess::clipping;
-				pout << "AvatarMoverProcess::clipping = " << AvatarMoverProcess::clipping << std::endl; 
+				QuickAvatarMoverProcess::clipping = !QuickAvatarMoverProcess::clipping;
+				pout << "QuickAvatarMoverProcess::clipping = " << QuickAvatarMoverProcess::clipping << std::endl; 
 			} break;
 			case SDLK_h: {
-				AvatarMoverProcess::hitting = !AvatarMoverProcess::hitting;
-				pout << "AvatarMoverProcess::hitting = " << AvatarMoverProcess::hitting << std::endl; 
+				QuickAvatarMoverProcess::hitting = !QuickAvatarMoverProcess::hitting;
+				pout << "QuickAvatarMoverProcess::hitting = " << QuickAvatarMoverProcess::hitting << std::endl; 
 			} break;
 			case SDLK_UP: {
 				if (!avatarInStasis) { 
-					Process *p = new AvatarMoverProcess(-64,-64,0,0);
+					Process *p = new QuickAvatarMoverProcess(-64,-64,0,0);
 					Kernel::get_instance()->addProcess(p);
 				} else { 
 					pout << "Can't: avatarInStasis" << std::endl; 
@@ -1070,7 +1108,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			} break;
 			case SDLK_DOWN: {
 				if (!avatarInStasis) { 
-					Process *p = new AvatarMoverProcess(+64,+64,0,1);
+					Process *p = new QuickAvatarMoverProcess(+64,+64,0,1);
 					Kernel::get_instance()->addProcess(p);
 				} else { 
 					pout << "Can't: avatarInStasis" << std::endl; 
@@ -1078,7 +1116,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			} break;
 			case SDLK_LEFT: {
 				if (!avatarInStasis) { 
-					Process *p = new AvatarMoverProcess(-64,+64,0,2);
+					Process *p = new QuickAvatarMoverProcess(-64,+64,0,2);
 					Kernel::get_instance()->addProcess(p);
 				} else { 
 					pout << "Can't: avatarInStasis" << std::endl; 
@@ -1086,7 +1124,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			} break;
 			case SDLK_RIGHT: {
 				if (!avatarInStasis) { 
-					Process *p = new AvatarMoverProcess(+64,-64,0,3);
+					Process *p = new QuickAvatarMoverProcess(+64,-64,0,3);
 					Kernel::get_instance()->addProcess(p);
 				} else { 
 					pout << "Can't: avatarInStasis" << std::endl; 
@@ -1094,7 +1132,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			} break;
 			case SDLK_HOME: {
 				if (!avatarInStasis) { 
-					Process *p = new AvatarMoverProcess(0,0,8,4);
+					Process *p = new QuickAvatarMoverProcess(0,0,8,4);
 					Kernel::get_instance()->addProcess(p);
 				} else { 
 					pout << "Can't: avatarInStasis" << std::endl; 
@@ -1106,7 +1144,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			} break;
 			case SDLK_END: {
 				if (!avatarInStasis) { 
-					Process *p = new AvatarMoverProcess(0,0,-8,5);
+					Process *p = new QuickAvatarMoverProcess(0,0,-8,5);
 					Kernel::get_instance()->addProcess(p);
 				} else { 
 					pout << "Can't: avatarInStasis" << std::endl; 
@@ -1135,26 +1173,26 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		switch (event.key.keysym.sym) {
 		case SDLK_LSHIFT: 
 		case SDLK_RSHIFT: {
-			AvatarMoverProcess::quarter = false;
-			pout << "AvatarMoverProcess::quarter = " << AvatarMoverProcess::quarter << std::endl; 
+			QuickAvatarMoverProcess::quarter = false;
+			pout << "QuickAvatarMoverProcess::quarter = " << QuickAvatarMoverProcess::quarter << std::endl; 
 		} break;
 		case SDLK_UP: {
-			if (AvatarMoverProcess::amp[0]) AvatarMoverProcess::amp[0]->terminate();
+			if (QuickAvatarMoverProcess::amp[0]) QuickAvatarMoverProcess::amp[0]->terminate();
 		} break;
 		case SDLK_DOWN: {
-			if (AvatarMoverProcess::amp[1]) AvatarMoverProcess::amp[1]->terminate();
+			if (QuickAvatarMoverProcess::amp[1]) QuickAvatarMoverProcess::amp[1]->terminate();
 		} break;
 		case SDLK_LEFT: {
-			if (AvatarMoverProcess::amp[2]) AvatarMoverProcess::amp[2]->terminate();
+			if (QuickAvatarMoverProcess::amp[2]) QuickAvatarMoverProcess::amp[2]->terminate();
 		} break;
 		case SDLK_RIGHT: {
-			if (AvatarMoverProcess::amp[3]) AvatarMoverProcess::amp[3]->terminate();
+			if (QuickAvatarMoverProcess::amp[3]) QuickAvatarMoverProcess::amp[3]->terminate();
 		} break;
 		case SDLK_HOME: {
-			if (AvatarMoverProcess::amp[4]) AvatarMoverProcess::amp[4]->terminate();
+			if (QuickAvatarMoverProcess::amp[4]) QuickAvatarMoverProcess::amp[4]->terminate();
 		} break;
 		case SDLK_END: {
-			if (AvatarMoverProcess::amp[5]) AvatarMoverProcess::amp[5]->terminate();
+			if (QuickAvatarMoverProcess::amp[5]) QuickAvatarMoverProcess::amp[5]->terminate();
 		} break;
 
 		case SDLK_BACKQUOTE: {
@@ -1183,15 +1221,47 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			avatarInStasis = !avatarInStasis;
 			pout << "avatarInStasis = " << avatarInStasis << std::endl; 
 		} break;
-		case SDLK_F2: { // quick animation test
+		case SDLK_KP1: case SDLK_KP2: case SDLK_KP3:
+		case SDLK_KP4: case SDLK_KP6: case SDLK_KP7:
+		case SDLK_KP8: case SDLK_KP9: { // quick animation test
 			if (!avatarInStasis) { 
-                Actor* devon = World::get_instance()->getNPC(2);
-				devon->doAnim(0, 2);
+				int dir;
+				int action = 0;
+				if (event.key.keysym.mod & KMOD_LSHIFT) action = 1;
+				if (event.key.keysym.mod & KMOD_LCTRL) action = 12;
+				if (event.key.keysym.mod & KMOD_LALT) action = 17;
+				switch (event.key.keysym.sym) {
+				case SDLK_KP1: dir=4; break;
+				case SDLK_KP2: dir=3; break;
+				case SDLK_KP3: dir=2; break;
+				case SDLK_KP4: dir=5; break;
+				case SDLK_KP6: dir=1; break;
+				case SDLK_KP7: dir=6; break;
+				case SDLK_KP8: dir=7; break;
+				case SDLK_KP9: dir=0; break;
+				default: dir=0; break;
+				}
+                MainActor* av = World::get_instance()->getMainActor();
+				if (!av->tryAnim(action, dir)) {
+					perr << "tryAnim: failed!" << std::endl;
+				}
+				av->doAnim(action, dir);
 			} else { 
 				pout << "Can't: avatarInStasis" << std::endl; 
 			} 
-
-		} break;		case SDLK_t: { // engine stats
+		} break;
+		case SDLK_F3: {
+			if (!avatarInStasis) { 
+                MainActor* av = World::get_instance()->getMainActor();
+				if (!av->tryAnim(0, 2)) {
+					perr << "tryAnim: failed!" << std::endl;
+				}
+				av->doAnim(0, 2);
+			} else { 
+				pout << "Can't: avatarInStasis" << std::endl; 
+			} 
+		} break;
+		case SDLK_t: { // engine stats
 			Kernel::get_instance()->kernelStats();
 			ObjectManager::get_instance()->objectStats();
 			UCMachine::get_instance()->usecodeStats();
@@ -1321,7 +1391,7 @@ void GUIApp::handleDelayedEvents()
 								   mouseDownY[button]);
 
 			mouseDownGump[button] = 0;
-			mouseState[button] &= ~MBS_HANDLED;
+			mouseState[button] |= MBS_HANDLED;
 		}
 	}
 
@@ -1559,7 +1629,7 @@ bool GUIApp::loadGame(std::string filename)
 	IDataSource* ds;
 
 
-	// UCSTRINGS, UCGLOBALS, UCLISTS, APP don't depend on anything else,
+	// UCSTRINGS, UCGLOBALS, UCLISTS don't depend on anything else,
 	// so load these first
 	ds = sg->get_datasource("UCSTRINGS");
 	ok = ucmachine->loadStrings(ds);
@@ -1579,17 +1649,18 @@ bool GUIApp::loadGame(std::string filename)
 	perr << "UCLISTS: " << (ok ? "ok" : "failed")<< std::endl;
 	delete ds;
 
-	ds = sg->get_datasource("APP");
-	ok = load(ds);
-	totalok &= ok;
-	perr << "APP: " << (ok ? "ok" : "failed") << std::endl;
-	delete ds;
-
 	// KERNEL must be before OBJECTS, for the egghatcher
+	// KERNEL must be before APP, for the avatarMoverProcess
 	ds = sg->get_datasource("KERNEL");
 	ok = kernel->load(ds);
 	totalok &= ok;
 	perr << "KERNEL: " << (ok ? "ok" : "failed") << std::endl;
+	delete ds;
+
+	ds = sg->get_datasource("APP");
+	ok = load(ds);
+	totalok &= ok;
+	perr << "APP: " << (ok ? "ok" : "failed") << std::endl;
 	delete ds;
 
 	// WORLD must be before OBJECTS, for the egghatcher
@@ -1657,8 +1728,9 @@ void GUIApp::save(ODataSource* ods)
 	ods->write2(1); //version
 	uint8 s = (avatarInStasis ? 1 : 0);
 	ods->write1(s);
-	ods->write4(static_cast<uint32>(timeOffset));
+	ods->write4(static_cast<uint32>(timeOffset)); //!! FIXME
 	ods->write4(framenum);
+	ods->write2(avatarMoverProcess->getPid());
 
 	Pentagram::Palette *pal = PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game);
 	for (int i = 0; i < 16; i++) ods->write2(pal->matrix[i]);
@@ -1673,6 +1745,9 @@ bool GUIApp::load(IDataSource* ids)
 	avatarInStasis = (ids->read1() != 0);
 	timeOffset = static_cast<sint32>(ids->read4());
 	framenum = ids->read4();
+
+	uint16 amppid = ids->read2();
+	avatarMoverProcess = p_dynamic_cast<AvatarMoverProcess*>(Kernel::get_instance()->getProcess(amppid));
 
 	sint16 matrix[16];
 	for (int i = 0; i < 16; i++)

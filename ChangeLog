@@ -1,3 +1,12 @@
+2003-08-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/AvatarMoverProcess.*: non-functioning avatar movement
+	* world/actors/Pathfinder.*: a pathfinder which doesn't quite work yet
+	* world/actors/PathfinderProcess.*: a process to make npcs pathfind
+	* kernel/GUIApp.*: new keycombos (keypad + ctrl/alt/shift)
+	* gumps/GameMapGump.*: avatar movement
+	* world/actors/Actor.*, ActorAnimProcess.*, AnimAction.h:
+	  animation tweaks
+
 2003-07-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AnimAction.*: moved anim start/end to separate function
 	* world/actors/Actor.*: doAnim(), tryAnim()

@@ -30,7 +30,12 @@ struct AnimFrame
 	int sfx;
 	uint32 flags;
 
-	inline bool is_flipped() { return (flags & 32) != 0; }
+	enum AnimFrameFlags {
+		AFF_ONGROUND = 0x02,
+		AFF_FLIPPED  = 0x20
+	};
+
+	inline bool is_flipped() { return (flags & AFF_FLIPPED) != 0; }
 };
 
 struct AnimAction {
@@ -50,11 +55,11 @@ struct AnimAction {
 	void getAnimRange(Actor* actor, int dir,
 					  unsigned int& startframe, unsigned int& endframe);
 
-	enum {
+	enum AnimActionFlags {
 		AAF_TWOSTEP = 0x01,
 		AAF_LOOPING = 0x04,
 		AAF_HANGING = 0x80
-	} AnimActionFlags;
+	};
 };
 
 
