@@ -41,6 +41,8 @@ public:
 	// Convert a gump point to parent relative point
 	virtual void		GumpToParent(int &gx, int &gy);
 
+	virtual void		Move(int x, int y);
+
 protected:
 	void				GetItemLocation(sint32 lerp_factor);
 };

@@ -140,7 +140,7 @@ bool World::switchMap(uint32 newmap)
 	Kernel::get_instance()->killProcesses(0,6); // !constant
 
 	// Notify all the gumps of the mapchange
-	GUIApp *gui = getGUIInstance();
+	GUIApp *gui = GUIApp::get_instance();
 	if (gui) 
 	{
 		Gump *desktop = gui->getDesktopGump();

@@ -129,6 +129,7 @@ public:
 
 
 	// Intrinsics
+	INTRINSIC(I_touch);
 	INTRINSIC(I_getX);
 	INTRINSIC(I_getY);
 	INTRINSIC(I_getZ);

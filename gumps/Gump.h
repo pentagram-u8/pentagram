@@ -55,21 +55,24 @@ protected:
 	std::list<Gump*>	children;		// List of all gumps
 	Gump *				focus_child;	// The child that has focus
 
-	GumpNotifyProcess	*notifier;		// Process to notify when we are closing
+	GumpNotifyProcess	*notifier;		// Process to notify when we're closing
 	uint32				process_result;	// Result for the notifier process
 
 public:
 
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	Gump(int x, int y, int width, int height, uint16 owner = 0, uint32 _Flags = 0, sint32 layer = LAYER_NORMAL);
+	Gump(int x, int y, int width, int height, uint16 owner = 0,
+		 uint32 _Flags = 0, sint32 layer = LAYER_NORMAL);
 	virtual ~Gump();
 
 	virtual void				CreateNotifier();
 	inline GumpNotifyProcess*	GetNotifyProcess() { return notifier; }
 
-	inline void					SetShape(Shape *_shape, uint32 _framenum) { shape = _shape; framenum = _framenum; }
-	inline void					SetFramenum(uint32 _framenum) { framenum = _framenum; }
+	inline void					SetShape(Shape *_shape, uint32 _framenum)
+		{ shape = _shape; framenum = _framenum; }
+	inline void					SetFramenum(uint32 _framenum)
+		{ framenum = _framenum; }
 
 	// Init the gump, call after construction
 	virtual void				InitGump();
@@ -77,14 +80,19 @@ public:
 	// Find a gump of the specified type (this or child). 2 ways of doing it:
 	// gump->FindChild(ChildGump::ClassType, recursive, no_inheritance);
 	// gump->FindChild<ChildGump>(recursive, no_inheritance);
-	virtual Gump *				FindGump(const RunTimeClassType& t, bool recursive=true, bool no_inheritance=false);
-	template<class T> Gump *	FindGump(bool recursive=true, bool no_inheritance=false) { return FindGump(T::ClassType, recursive, no_inheritance); }
+	virtual Gump *				FindGump(const RunTimeClassType& t,
+										 bool recursive=true,
+										 bool no_inheritance=false);
+	template<class T> Gump *	FindGump(bool recursive=true,
+										 bool no_inheritance=false)
+		{ return FindGump(T::ClassType, recursive, no_inheritance); }
 
 	// Get the mouse cursor for position mx, my relative to parents
 	// position. Returns true if this gump wants to set the cursor.
 	// If false, the gump list will attempt to get the cursor shape from
 	// the next lower gump.
-	virtual bool		GetMouseCursor(int mx, int my, Shape &shape, sint32 &frame);
+	virtual bool		GetMouseCursor(int mx, int my, Shape &shape,
+									   sint32 &frame);
 
 	// Update the RenderSurface of this gump and all children (probably
 	//  only needed for scaled gumps).
@@ -94,15 +102,18 @@ public:
 	// Run the gump (returns true if repaint required)
 	virtual bool		Run(const uint32 framenum);
 
-	// Called when there is a map change (so the gumps can self terminate among other things)
+	// Called when there is a map change (so the gumps can self terminate
+	// among other things)
 	virtual void		MapChanged(void);
 
-	// Paint the Gump (RenderSurface is relative to parent). Calls PaintThis and PaintChildren
+	// Paint the Gump (RenderSurface is relative to parent).
+	// Calls PaintThis and PaintChildren
 	virtual void		Paint(RenderSurface*, sint32 lerp_factor);
 
 protected:
 
-	// Overloadable method to Paint just this Gumps (RenderSurface is relative to this)
+	// Overloadable method to Paint just this Gumps
+	// (RenderSurface is relative to this)
 	virtual void		PaintThis(RenderSurface*, sint32 lerp_factor);
 
 	// Paint the Gumps Children (RenderSurface is relative to this)
@@ -114,7 +125,7 @@ public:
 	virtual void		Close(bool no_del = false);
 
 	// Move this gump
-	// virtual void		Move(int x, int y);
+	virtual void		Move(int x, int y) { }
 
 	//
 	// Points and Coords
@@ -141,7 +152,8 @@ public:
 
 	// Get the location of an item in the gump (coords relative to this).
 	// Returns false on failure
-	virtual bool		GetLocationOfItem(uint16 itemid, int &gx, int &gy, sint32 lerp_factor = 256);
+	virtual bool		GetLocationOfItem(uint16 itemid, int &gx, int &gy,
+										  sint32 lerp_factor = 256);
 
 
 	//
@@ -150,35 +162,38 @@ public:
 	//
 	// mx and my are relative to parents position
 	//
-	// OnMouseDown returns the Gump that handled the Input, if it was handled
-	// The MouseUp event will be sent the the same gump.
+	// OnMouseDown returns the Gump that handled the Input, if it was handled.
+	// The MouseUp,MouseDouble events will be sent to the same gump.
 	//
-	// Unhandle input will be passed down to the next lower gump
+	// Unhandled input will be passed down to the next lower gump.
 	//
-	// A mouse click on a gump will make it focus, IF it want's it
+	// A mouse click on a gump will make it focus, IF it wants it.
 	//
 	
-	virtual Gump *		OnMouseDown(int button, int mx, int my);	// Return Gump that handled event
+	// Return Gump that handled event
+	virtual Gump *		OnMouseDown(int button, int mx, int my);
 	virtual void		OnMouseUp(int  button, int mx, int my) { }
 	virtual void		OnMouseDouble(int button, int mx, int my) { }
 
-	// Keyboard input gets sent to the FocusGump. Or if there isn't one, it will instead get
-	// Sent to the default key handler. TextInput requires that text mode be enabled. Return
-	// true if handled, false if not. Default, returns false, unless handled by focus child
+	// Keyboard input gets sent to the FocusGump. Or if there isn't one, it
+	// will instead get sent to the default key handler. TextInput requires
+	// that text mode be enabled. Return true if handled, false if not.
+	// Default, returns false, unless handled by focus child
 	virtual bool		OnKeyDown(int key);
 	virtual bool		OnKeyUp(int key);
 	virtual bool		OnTextInput(int unicode);
 
 	// This is for detecting focus changes for keyboard input. Gets called true
-	// when the this gump is being set as the focus focus gump. It is called false 
-	// when focus is being taken away.
+	// when the this gump is being set as the focus focus gump. It is called
+	// false when focus is being taken away.
 	virtual void		OnFocus(bool /*gain*/) { }
 	
 	// Makes this gump the focus
 	virtual void		MakeFocus();
 
 	// Is this gump the focus?
-	inline bool			IsFocus() { return parent?parent->focus_child==this:false; }
+	inline bool			IsFocus()
+		{ return parent?parent->focus_child==this:false; }
 
 	// Get the child in focus
 	inline Gump *		GetFocusChild() { return focus_child; }
@@ -192,7 +207,7 @@ public:
 	//
 
 	// Add a gump to the list. 
-	virtual void		AddChild(Gump *, bool take_focus = true);					
+	virtual void		AddChild(Gump *, bool take_focus = true);
 
 	// Remove a gump from the list
 	virtual void		RemoveChild(Gump *);	

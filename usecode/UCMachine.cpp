@@ -1473,7 +1473,7 @@ bool UCMachine::execProcess(UCProcess* p)
 					Container* container = p_dynamic_cast<Container*>
 						(world->getItem(ui16b));
 
-					if (ui16b != 0xFFFF) {
+					if (ui16a != 0xFFFF) {
 						perr << "Warning: non-FFFF value passed to "
 							 << "container search" << std::endl;
 					}

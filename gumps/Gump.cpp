@@ -23,6 +23,7 @@
 #include "ShapeFrame.h"
 #include "GumpNotifyProcess.h"
 #include "Kernel.h"
+#include "World.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(Gump,Object);
 
@@ -33,7 +34,7 @@ Gump::Gump(int _X, int _Y, int Width, int Height, uint16 _Owner,
 	framenum(0), children(), focus_child(0), notifier(0),
 	process_result(0)
 {
-	
+//	assignObjId(); // gumps always get an objid
 }
 
 Gump::~Gump()
@@ -215,6 +216,7 @@ void Gump::PaintThis(RenderSurface* surf, sint32 /*lerp_factor*/)
 {
 	if (shape)
 	{
+#if 0
 		Rect sr;
 		ShapeFrame *f = shape->getFrame(framenum);
 		sr.h = f->height;
@@ -223,9 +225,12 @@ void Gump::PaintThis(RenderSurface* surf, sint32 /*lerp_factor*/)
 		sr.y = -f->yoff;
 
 		if (surf->CheckClipped(sr))
+#endif
 			surf->Paint(shape, framenum, 0, 0);
+#if 0
 		else
 			surf->PaintNoClip(shape, framenum, 0, 0);
+#endif
 	}
 }
 
@@ -250,10 +255,22 @@ bool Gump::PointOnGump(int mx, int my)
 {
 	ParentToGump(mx,my);
 
-	// First check again rectangle
-	if (!dims.InRect(mx,my)) 
-		return false;
+	perr << "PointOnGump " << GetClassType().class_name;
 
+	// First check again rectangle
+	if (!dims.InRect(mx,my)) {
+		perr << " no" << std::endl;
+		return false;
+	}
+
+	if (shape) {
+		ShapeFrame* sf = shape->getFrame(framenum);
+		assert(sf);
+		if (!sf->hasPoint(mx, my)) {
+			perr << " no" << std::endl;
+			return false;
+		}
+	}
 	// TODO - Check again shape/texture if this gump has one
 	// Then again, we might want to have stuff like that somewhere
 	// else like in a TexturedGump or ShapeGump or something
@@ -261,6 +278,7 @@ bool Gump::PointOnGump(int mx, int my)
 	// Also might want to check children, cause they may not be over
 	// our shape
 
+	perr << " yes" << std::endl;
 	return true;
 }
 
@@ -311,7 +329,7 @@ uint16 Gump::TraceObjID(int mx, int my)
 
 	uint16 objid = 0;
 
-	// Iterate children
+	// reverse-iterate children
 	std::list<Gump*>::reverse_iterator it;
 	for (it = children.rbegin(); it != children.rend(); ++it)
 	{

@@ -117,4 +117,12 @@ void ItemRelativeGump::GetItemLocation(sint32 lerp_factor)
 	iy = gy-dims.h-it->getShapeInfo()->z*8-16;
 }
 
+void ItemRelativeGump::Move(int x_, int y_)
+{
+	ParentToGump(x_, y_);
+	x += x_;
+	y += y_;
+}
+
+
 // Colourless Protection

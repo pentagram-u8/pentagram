@@ -94,6 +94,11 @@ GUIApp::GUIApp(const int argc, const char * const * const argv)
 
 	// Unset the console auto paint, since we have finished initing
 	con.SetAutoPaint(0);
+
+	for (int i = 0; i < 5; ++i) {
+		mouseDownGump[i] = 0;
+		lastMouseDown[i] = 0;
+	}
 }
 
 GUIApp::~GUIApp()
@@ -251,7 +256,7 @@ void GUIApp::U8Playground()
 // conAutoPaint hackery
 void GUIApp::conAutoPaint(void)
 {
-	GUIApp *app = getGUIInstance();
+	GUIApp *app = GUIApp::get_instance();
 	if (app && !app->isPainting()) app->paint();
 }
 
@@ -414,55 +419,31 @@ void GUIApp::handleEvent(const SDL_Event& event)
 
 	case SDL_MOUSEBUTTONDOWN:
 	{
+		int button = event.button.button;
+		int mx = event.button.x;
+		int my = event.button.y;
+		uint32 now = SDL_GetTicks();
+		assert(button >= 0 && button < 5);
 
+		mouseDownGump[button] = desktopGump->OnMouseDown(button, mx, my);
+
+		if (now - lastMouseDown[button] < 200) { //!! constant
+			mouseDownGump[button]->OnMouseDouble(button, mx, my);
+		}
+		lastMouseDown[button] = now;
 	}
 	break;
 
 	case SDL_MOUSEBUTTONUP:
 	{
-		// Ok, a bit of a hack for now
-		if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
-		{
-			if (avatarInStasis) {
-				pout << "Can't: avatarInStasis" << std::endl; 
-				break;
-			}
+		int button = event.button.button;
+		int mx = event.button.x;
+		int my = event.button.y;
 
-			pout << std::endl << "Tracing mouse click: ";
-
-			Rect dims;
-			screen->GetSurfaceDims(dims);
-
-			// We will assume the display_list has all the items in it
-			uint16 objID = desktopGump->TraceObjID(event.button.x,
-							event.button.y);
-
-			if (!objID)
-				pout << "Didn't find an item" << std::endl;
-			else
-			{
-				extern uint16 targetObject; // major hack number 2
-				targetObject = objID;
-
-				World *world = World::get_instance();
-				Item *item = p_dynamic_cast<Item*>(world->getObject(objID));
-
-				if (item)
-				{
-					pout << "Found item " << objID << " (shape " << item->getShape() << ", " << item->getFrame() << ", q:" << item->getQuality() << ", m:" << item->getMapNum() << ", n:" << item->getNpcNum() << ")" << std::endl;
-					if (event.button.button == SDL_BUTTON_LEFT) {
-						if (item) item->callUsecodeEvent(0);	// CONSTANT
-					} else {
-						if (item) item->callUsecodeEvent(1);	// CONSTANT
-					}
-				}
-				else
-				{
-					pout << "Didn't find an item" << std::endl;
-				}
-			}
+		if (mouseDownGump[button]) {
+			mouseDownGump[button]->OnMouseUp(button, mx, my);
+			mouseDownGump[button] = 0;
 		}
-
 	}
 	break;
 
@@ -619,13 +600,13 @@ uint32 GUIApp::I_getCurrentTimerTick(const uint8* /*args*/,
 uint32 GUIApp::I_setAvatarInStasis(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_SINT16(statis);
-	getGUIInstance()->setAvatarInStasis(statis!=0);
+	get_instance()->setAvatarInStasis(statis!=0);
 	return 0;
 }
 
 uint32 GUIApp::I_getAvatarInStasis(const uint8* /*args*/, unsigned int /*argsize*/)
 {
-	if (getGUIInstance()->avatarInStasis)
+	if (get_instance()->avatarInStasis)
 		return 1;
 	else
 		return 0;

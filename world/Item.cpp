@@ -39,6 +39,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "BarkGump.h"
 #include "GumpNotifyProcess.h"
 #include "ContainerGump.h"
+#include "GameMapGump.h"
 
 #include <cstdlib>
 
@@ -583,6 +584,16 @@ void Item::clearGump()
 {
 	gump = 0;
 	flags &= ~FLG_GUMP_OPEN;
+}
+
+uint32 Item::I_touch(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_NULL32(); // ARG_ITEM(item);
+
+	// Guess: this is used to make sure an item is painted in the original.
+	// Our renderer is different, making this intrinsic unnecessary.
+
+	return 0;
 }
 
 uint32 Item::I_getX(const uint8* args, unsigned int /*argsize*/)
@@ -1496,8 +1507,8 @@ uint32 Item::I_openGump(const uint8* args, unsigned int /*argsize*/)
 	item->gump = new ContainerGump(shape, 0, item->getObjId(),
 								   Gump::FLAG_ITEM_DEPENDANT);
 	item->gump->InitGump();
-	GUIApp *app = p_dynamic_cast<GUIApp*>(GUIApp::get_instance());
-	app->getDesktopGump()->AddChild(item->gump);
+	GUIApp *app = GUIApp::get_instance();
+	app->getDesktopGump()->FindGump<GameMapGump>()->AddChild(item->gump);
 	item->flags |= FLG_GUMP_OPEN;
 
 	return 0;

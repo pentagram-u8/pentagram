@@ -1,4 +1,9 @@
 2003-06-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/GUIApp.h: made GUIApp::get_instance() return a GUIApp*
+	* kernel/GUIApp.*, gumps/*: mouse events
+	* various: minor bugfixes, typos
+
+2003-06-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/ContainerGump.*, gumps/ItemRelativeGump.*: getItemLocation
 	* gumps/ContainerGump.*: close container gumps of contents when closing
 

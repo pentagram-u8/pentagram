@@ -77,7 +77,7 @@ CoreApp::~CoreApp()
 // Init sdl
 void CoreApp::SDLInit()
 {
-	con.Print(MM_INFO, "Initilising SDL...\n");
+	con.Print(MM_INFO, "Initialising SDL...\n");
 	SDL_Init(SDL_INIT_VIDEO);
 	atexit(SDL_Quit);
 }

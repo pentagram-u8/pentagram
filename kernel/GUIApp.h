@@ -44,6 +44,9 @@ class GUIApp : public CoreApp
 		GUIApp(const int argc, const char * const * const argv);
 		virtual ~GUIApp();
 
+		static GUIApp* get_instance()
+			{ return p_dynamic_cast<GUIApp*>(application); }
+
 		virtual void run();
 		virtual void handleEvent(const SDL_Event& event);
 
@@ -57,6 +60,7 @@ class GUIApp : public CoreApp
 		INTRINSIC(I_getAvatarInStasis);
 
 		void setAvatarInStasis(bool stat) { avatarInStasis = stat; }
+		bool isAvatarInStasis() const { return avatarInStasis; }
 
 		GameMapGump *getGameMapMapGump() { return gameMapGump; }
 		Gump *getDesktopGump() { return desktopGump; }
@@ -99,9 +103,10 @@ class GUIApp : public CoreApp
 		bool painting;			// Set true when painting
 
 		static void	conAutoPaint(void);
+
+		// mouse input state
+		Gump* mouseDownGump[5]; // how many mouse buttons are there?
+		uint32 lastMouseDown[5];
 };
-
-inline GUIApp *getGUIInstance() { return static_cast<GUIApp *>(CoreApp::get_instance()); };
-
 
 #endif

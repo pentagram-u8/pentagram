@@ -37,7 +37,7 @@ Intrinsic U8Intrinsics[] = {
 	// 0x000
 	UCMachine::I_target,
 	0, //U
-	0, // Item::touch
+	Item::I_touch,
 	Item::I_getX,
 	Item::I_getY,
 	Item::I_getZ,
@@ -239,37 +239,37 @@ Intrinsic U8Intrinsics[] = {
 	CameraProcess::I_setCenterOn,
 	CameraProcess::I_move_to,
 	// 0x0C0
-	0, // .........
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
+	0, //U
+	0, //U
+	0, //U
+	0, //U
+	0, //U
+	0, //U
+	0, // Camera::startQuake
+	0, // Camera::stopQuake
+	0, // Camera::invertScreen
+	0, //U
 	Kernel::I_getNumProcesses,
 	Kernel::I_resetRef,
 	UCMachine::I_dummyProcess, //!! process teleportToEgg(word, word, ubyte)
 	Kernel::I_resetRef,
-	0,
+	0, // setRef
 	GUIApp::I_getAvatarInStasis,
 	// 0x0D0
 	GUIApp::I_setAvatarInStasis,
 	Item::I_getEtherealTop,
 	GUIApp::I_getCurrentTimerTick,
-	0,
-	0,
-	0,
-	0,
+	0, // canGetThere
+	0, // canExistAt
+	0, // createSprite
+	0, // createSprite
 	Item::I_getFamilyOfType,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
+	0, // TimeInGameHours
+	0, // TimeInMinutes
+	0, // TimeInSeconds
+	0, // SetTimeInGameHours
+	0, // SetTimeInMinutes
+	0, // SetTimeInSeconds
 	UCMachine::I_dummyProcess, //!! process FadeToBlack()
 	UCMachine::I_dummyProcess, //!! process FadeFromBlack()
 	// 0x0E0
@@ -277,38 +277,38 @@ Intrinsic U8Intrinsics[] = {
 	UCMachine::I_dummyProcess, //!! process LightningBolt()
 	UCMachine::I_dummyProcess, //!! process FadeToWhite()
 	UCMachine::I_dummyProcess, //!! process FadeFromWhite()
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
+	0, // playEndgame
+	0, // FeedAvatar
+	0, // AccumulateStrength
+	0, // AccumulateIntelligence
+	0, // AccumulateDexterity
+	0, // ClrAvatarInCombat
+	0, // SetAvatarInCombat
+	0, // IsAvatarInCombat
+	0, // playSFX
+	0, // playSFX
+	0, // playSFX
+	0, //U
 	// 0x0F0
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
-	0,
+	0, //U
+	0, // playAmbientSFX
+	0, // isSFXPlaying
+	0, // setVolumeSFX
+	0, // stopSFX
+	0, // stopSFX
+	0, //U
+	0, //U
+	0, // musicStop
+	0, //U
+	0, //U
+	0, // TonysBalls
 	UCMachine::I_AvatarCanCheat,
-	0,
+	0, // MakeAvatarACheater
 	UCMachine::I_isGameRunning,
-	0,
+	0, //U
 	// 0x100
-	0,
-	0
+	0, //U
+	0  //U
 };
 
 #endif

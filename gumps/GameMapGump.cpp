@@ -18,6 +18,8 @@
 
 #include "pent_include.h"
 
+#include <SDL.h>
+
 #include "GameMapGump.h"
 #include "RenderSurface.h"
 
@@ -32,14 +34,14 @@
 #include "MainActor.h"
 #include "ItemSorter.h"
 #include "CameraProcess.h"
-
+#include "GUIApp.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(GameMapGump,Gump);
 
 GameMapGump::GameMapGump(int X, int Y, int Width, int Height) :
 	Gump(X,Y,Width,Height, 0, 0, LAYER_GAMEMAP),
-	display_list(0), fastArea(0)
-
+	display_list(0), fastArea(0),
+	last_left_state(MBS_HANDLED), last_right_state(MBS_HANDLED)
 {
 	// Offset us the gump. We want 0,0 to be the centre
 	dims.x -= dims.w/2;
@@ -78,7 +80,23 @@ GameMapGump::~GameMapGump()
 bool GameMapGump::Run(const uint32 framenum)
 {
 	Gump::Run(framenum);
-	return true; // Always repaint, even though we really could just try to detect it
+
+	uint32 now = SDL_GetTicks();
+	// check if there's a mouse click waiting to be handled
+	//! constant
+	if (last_left_state == MBS_UP && now - last_left_down > 200) {
+		handleMouseClick(SDL_BUTTON_LEFT, last_left_mx, last_left_my);
+
+		last_left_state = MBS_HANDLED;
+	}
+	if (last_right_state == MBS_UP && now - last_right_down > 200) {
+		handleMouseClick(SDL_BUTTON_RIGHT, last_right_mx, last_right_my);
+
+		last_right_state = MBS_HANDLED;
+	}
+
+	return true; // Always repaint, even though we really could just
+	             // try to detect it
 }
 
 void GameMapGump::MapChanged()
@@ -198,7 +216,8 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 			sint32 sx = x - y;
 			sint32 sy = x + y;
 
-			if (sx < -sx_limit || sx > sx_limit || sy < -sy_limit || sy > sy_limit)
+			if (sx < -sx_limit || sx > sx_limit ||
+				sy < -sy_limit || sy > sy_limit)
 				continue;
 
 			const std::list<Item*>* items = map->getItemList(gx+x,gy+y);
@@ -258,7 +277,8 @@ uint16 GameMapGump::TraceObjID(int mx, int my)
 	return display_list->Trace(mx,my);
 }
 
-bool GameMapGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy, sint32 lerp_factor)
+bool GameMapGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
+									sint32 lerp_factor)
 {
 	Item *item = World::get_instance()->getItem(itemid);
 
@@ -285,5 +305,160 @@ bool GameMapGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy, sint32 lerp
 	return true;
 }
 
+Gump* GameMapGump::OnMouseDown(int button, int mx, int my)
+{
+	uint32 now = SDL_GetTicks();
+    Gump* handled = Gump::OnMouseDown(button, mx, my);
+
+	if (!handled) {
+		handled = this;
+
+		switch(button) {
+		case SDL_BUTTON_LEFT:
+			// setup delayed left click
+			last_left_down = now;
+			last_left_state = MBS_DOWN;
+			break;
+		case SDL_BUTTON_RIGHT:
+			// setup delayed right click
+			last_right_down = now;
+			last_right_state = MBS_DOWN;
+			break;
+		default:
+			break;
+		}
+	}
+
+	return handled;
+}
+
+void GameMapGump::OnMouseUp(int  button, int mx, int my)
+{
+	uint32 now = SDL_GetTicks();
+	switch (button) {
+	case SDL_BUTTON_LEFT:
+		if (last_left_state == MBS_HANDLED) break;
+		//! constant
+		if (now - last_left_down > 200) {
+			handleMouseClick(button, mx, my);
+			last_left_state = MBS_HANDLED;
+		} else {
+			// setup delayed left click
+			last_left_state = MBS_UP;
+			last_left_mx = mx;
+			last_left_my = my;
+		}
+		break;
+	case SDL_BUTTON_RIGHT:
+		if (last_right_state == MBS_HANDLED) break;
+		//! constant
+		if (now - last_right_down > 200) {
+			handleMouseClick(button, mx, my);
+			last_right_state = MBS_HANDLED;
+		} else {
+			// setup delayed right click
+			last_right_state = MBS_UP;
+			last_right_mx = mx;
+			last_right_my = my;
+		}
+		break;
+	default:
+		// no delayed clicks for other buttons
+		handleMouseClick(button, mx, my);
+		break;
+	}
+}
+
+
+void GameMapGump::OnMouseDouble(int button, int mx, int my)
+{
+	switch(button) {
+	case SDL_BUTTON_LEFT:
+		last_left_state = MBS_HANDLED;
+		break;
+	case SDL_BUTTON_RIGHT:
+		last_right_state = MBS_HANDLED;
+		break;
+	default:
+		break;
+	}
+	handleMouseDoubleClick(button, mx, my);
+}
+
+void GameMapGump::handleMouseClick(int button, int mx, int my)
+{
+	World* world = World::get_instance();
+	perr << "Click! (" << button << ")" << std::endl;
+
+	switch (button) {
+	case SDL_BUTTON_LEFT:
+	{
+		if (GUIApp::get_instance()->isAvatarInStasis()) {
+			pout << "Can't: avatarInStasis" << std::endl; 
+			break;
+		}
+
+		uint16 objID = TraceObjID(mx, my);
+
+		Item *item = world->getItem(objID);
+		Gump *gump = p_dynamic_cast<Gump*>(world->getObject(objID));
+		if (item) {
+			extern uint16 targetObject; // major hack number 2
+			targetObject = objID;
+
+			pout << "Found item " << objID << " (shape " << item->getShape() << ", " << item->getFrame() << ", q:" << item->getQuality() << ", m:" << item->getMapNum() << ", n:" << item->getNpcNum() << ")" << std::endl;
+			
+			if (item) {
+				// call the 'look' event
+				item->callUsecodeEvent(0);	// CONSTANT
+			}
+		} else if (gump) {
+			pout << "Found gump " << objID << std::endl;
+		}
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+void GameMapGump::handleMouseDoubleClick(int button, int mx, int my)
+{
+	World* world = World::get_instance();
+	perr << "DoubleClick! (" << button << ")" << std::endl;
+
+	switch (button) {
+	case SDL_BUTTON_LEFT:
+	{
+		if (GUIApp::get_instance()->isAvatarInStasis()) {
+			pout << "Can't: avatarInStasis" << std::endl; 
+			break;
+		}
+
+		uint16 objID = TraceObjID(mx, my);
+
+		Item *item = world->getItem(objID);
+		Gump *gump = p_dynamic_cast<Gump*>(world->getObject(objID));
+		if (item) {
+			pout << "Found item " << objID << " (shape " << item->getShape() << ", " << item->getFrame() << ", q:" << item->getQuality() << ", m:" << item->getMapNum() << ", n:" << item->getNpcNum() << ")" << std::endl;
+			
+			if (item) {
+				//!! need to check range
+
+				// call the 'use' event
+				item->callUsecodeEvent(1);	// CONSTANT
+			}
+		} else if (gump) {
+			pout << "Found gump " << objID << std::endl;
+
+			//!! No, this isn't correct
+			gump->Close();
+		}
+		break;
+	}
+	default:
+		break;
+	}
+}
 
 // Colourless Protection
