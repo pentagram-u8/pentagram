@@ -28,12 +28,13 @@
 #include "MusicProcess.h"
 #include "AudioProcess.h"
 #include "IDataSource.h"
-
 #include "AudioMixer.h"
 #include "RawAudioSample.h"
 #include "Font.h"
 #include "FontManager.h"
 #include "RenderedText.h"
+
+#include "SDL.h"
 
 
 enum SKFAction {
@@ -63,7 +64,7 @@ static const int FADESTEPS = 16; // HACK: half speed
 SKFPlayer::SKFPlayer(RawArchive* movie, int width_, int height_)
 	: width(width_), height(height_), skf(movie),
 	  curframe(0), curobject(0), curaction(0), curevent(0), playing(false),
-	  timer(0), fadecolour(0), fadelevel(0), buffer(0), subs(0)
+	  timer(0), framerate(15), fadecolour(0), fadelevel(0), buffer(0), subs(0)
 {
 	IDataSource* eventlist = skf->get_datasource(0);
 	if (!eventlist)
@@ -110,6 +111,7 @@ void SKFPlayer::start()
 	MusicProcess* musicproc = MusicProcess::get_instance();
 	if (musicproc) musicproc->playMusic(0);
 	playing = true;
+	lastupdate = SDL_GetTicks();
 }
 
 void SKFPlayer::stop()
@@ -155,6 +157,12 @@ void SKFPlayer::run()
 		}
 	}
 
+	// CHECKME: this timing may not be accurate enough...
+	uint32 now = SDL_GetTicks();
+	if (lastupdate + (1000/framerate) > now) return;
+
+	lastupdate += (1000/framerate);
+
 	// if waiting, continue to wait
 	if (timer) {
 		timer--;
@@ -189,7 +197,7 @@ void SKFPlayer::run()
 			break;
 		case SKF_Wait:
 			pout << "Wait " << events[curevent]->data << std::endl;
-			timer = events[curevent]->data * 2; //HACK: half speed...
+			timer = events[curevent]->data;
 			curevent++;
 			return;
 		case SKF_PlayMusic:
@@ -205,10 +213,12 @@ void SKFPlayer::run()
 			if (audioproc) audioproc->playSFX(events[curevent]->data,0x60,0,0);
 			break;
 		case SKF_StopSFX:
-			pout << "StopSFX" << std::endl;
+			pout << "StopSFX" << events[curevent]->data << std::endl;
+			if (audioproc) audioproc->stopSFX(events[curevent]->data,0);
 			break;
 		case SKF_SetSpeed:
 			pout << "SetSpeed " << events[curevent]->data << std::endl;
+//			framerate = events[curevent]->data;
 			break;
 		case SKF_PlaySound:
 		{
@@ -287,7 +297,7 @@ void SKFPlayer::run()
 		if (objecttype != 2)
 			delete object;
 
-	} while (objecttype == 1);
+	} while (objecttype != 2);
 
 	if (objecttype == 2) {
 		object->seek(0);
@@ -302,6 +312,6 @@ void SKFPlayer::run()
 		delete object;
 	}
 
-	timer = 1; //HACK: half speed by waiting one frame after each image
+	timer = 1; // HACK! timing is rather broken currently...
 }
 

@@ -51,7 +51,9 @@ private:
 	unsigned int curaction;
 	unsigned int curevent;
 	bool playing;
+	unsigned int lastupdate;
 	unsigned int timer;
+	unsigned int framerate;
 	uint8 fadecolour, fadelevel;
 	RenderSurface* buffer;
 	RenderedText* subs;

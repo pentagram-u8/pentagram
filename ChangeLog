@@ -2,6 +2,7 @@
 	* audio/RawAudioSample.*: raw 8bit signed/unsigned audio sample
 	* graphics/SKFPlayer.*: play sounds, show subtitles
 	* gumps/CreditsGump.cpp, games/U8Game.cpp: play credits/quotes music
+	* graphics/SKFPlayer.*: tweaked timing
 
 2005-03-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* bootstrap, config.*: commit config.sub, config.guess to CVS
