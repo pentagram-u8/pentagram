@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "SDL_events.h"
 #include "HIDBinding.h"
 #include "Mouse.h"
+#include "Joystick.h"
 
 //! Responsible to loading the keybindings and storing them
 class HIDManager
@@ -72,9 +73,10 @@ public:
 	void getBindings(const Pentagram::istring& bindingName, std::vector<const char *>& controls);
 private:
 	void HIDManager::listBindings();
-	HIDBindingMap bindingMap; 
+	HIDBindingMap bindingMap;
 	HIDBinding keybindings[SDLK_LAST];
 	HIDBinding mousebindings[NUM_MOUSEBUTTONS+1];
+	HIDBinding joybindings[NUM_JOYSTICKS][NUM_JOYBUTTONS];
 	static HIDManager* hidmanager;
 };
 

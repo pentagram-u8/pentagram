@@ -109,7 +109,7 @@ void CoreApp::DeclareArgs()
 void CoreApp::SDLInit()
 {
 	con.Print(MM_INFO, "Initialising SDL...\n");
-	SDL_Init(SDL_INIT_VIDEO);
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
 	atexit(SDL_Quit);
 }
 

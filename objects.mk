@@ -7,7 +7,8 @@ KERNEL2 = \
 	kernel/HIDManager.o \
 	kernel/ObjectManager.o \
 	kernel/Object.o \
-	kernel/Mouse.o
+	kernel/Mouse.o \
+	kernel/Joystick.o
 
 USECODE = \
 	usecode/BitSet.o \

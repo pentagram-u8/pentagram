@@ -31,18 +31,29 @@ HIDManager* HIDManager::hidmanager = 0;
 
 HIDManager::HIDManager()
 {
+	uint16 key, button, js;
 	assert(hidmanager == 0);
 	hidmanager = this;
 
-	for (uint16 key=0; key < SDLK_LAST; ++key)
+	for (key=0; key < SDLK_LAST; ++key)
 	{
 		keybindings[key] = 0;
 	}
 	
-	for (uint16 button=0; button < NUM_MOUSEBUTTONS+1; ++button)
+	for (button=0; button < NUM_MOUSEBUTTONS+1; ++button)
 	{
 		mousebindings[button] = 0;
 	}
+
+	for (js=0; js < NUM_JOYSTICKS; ++js)
+	{
+		for (button=0; button < NUM_MOUSEBUTTONS; ++button)
+		{
+			joybindings[js][button] = 0;
+		}
+	}
+
+	InitJoystick();
 
 	bindingMap.insert( HIDBINDING_PAIR(quickSave) );
 	bindingMap.insert( HIDBINDING_PAIR(quickLoad) );
@@ -69,6 +80,7 @@ HIDManager::HIDManager()
 
 HIDManager::~HIDManager()
 {
+	ShutdownJoystick();
 	hidmanager = 0;
 	bindingMap.clear();
 }
@@ -80,13 +92,24 @@ HIDBinding HIDManager::getBinding(const SDL_Event& event)
 	case SDL_KEYUP: case SDL_KEYDOWN:
 	{
 		uint16 key = event.key.keysym.sym;
+		assert (key < SDLK_LAST);
 		binding = keybindings[key];
 	}
 	break;
 	case SDL_MOUSEBUTTONDOWN: case SDL_MOUSEBUTTONUP:
 	{
 		uint16 button = event.button.button;
+		assert (button < NUM_MOUSEBUTTONS);
 		binding = mousebindings[button];
+	}
+	break;
+	case SDL_JOYBUTTONDOWN: case SDL_JOYBUTTONUP:
+	{
+		uint16 js = event.jbutton.which;
+		uint16 button = event.jbutton.button;
+		assert (js < NUM_JOYSTICKS);
+		assert (button < NUM_JOYBUTTONS);
+		binding = joybindings[js][button];
 	}
 	break;
 	}
@@ -124,12 +147,13 @@ void HIDManager::loadBindings()
 
 void HIDManager::saveBindings()
 {
+	uint16 key, button, js;
 	SettingManager* settings = SettingManager::get_instance();
 	Pentagram::istring section = "keys/";
 	Pentagram::istring confkey;
 
 	// first clear old bindings which are now unused
-	for (uint16 key=0; key < SDLK_LAST; ++key)
+	for (key=0; key < SDLK_LAST; ++key)
 	{
 		if (keybindings[key] == 0)
 		{
@@ -141,7 +165,7 @@ void HIDManager::saveBindings()
 		}
 	}
 
-	for (uint16 button=1; button < NUM_MOUSEBUTTONS+1; ++button)
+	for (button=1; button < NUM_MOUSEBUTTONS+1; ++button)
 	{
 		if (mousebindings[button] == 0)
 		{
@@ -153,10 +177,22 @@ void HIDManager::saveBindings()
 		}
 	}
 
+	for (js=0; js < NUM_JOYSTICKS; ++js)
+	{
+		for (button=0; button < NUM_MOUSEBUTTONS; ++button)
+		{
+			confkey = section + GetJoystickButtonName(js, button);
+			if (settings->exists(confkey))
+			{
+				settings->unset(confkey);
+			}
+		}
+	}
+
 	HIDBindingMap::iterator i;
 	for (i = bindingMap.begin(); i != bindingMap.end(); ++i)
 	{
-		for (uint16 key=0; key < SDLK_LAST; ++key)
+		for (key=0; key < SDLK_LAST; ++key)
 		{
 			if (keybindings[key] == i->second)
 			{
@@ -165,7 +201,7 @@ void HIDManager::saveBindings()
 			}
 		}
 
-		for (uint16 button=1; button < NUM_MOUSEBUTTONS+1; ++button)
+		for (button=1; button < NUM_MOUSEBUTTONS+1; ++button)
 		{
 			if (mousebindings[button] == i->second)
 			{
@@ -173,13 +209,24 @@ void HIDManager::saveBindings()
 				settings->set(confkey, i->first);
 			}
 		}
+
+		for (js=0; js < NUM_JOYSTICKS; ++js)
+		{
+			for (button=0; button < NUM_MOUSEBUTTONS; ++button)
+			{
+				if (joybindings[js][button] == i->second)
+				{
+					confkey = section + GetJoystickButtonName(js, button);
+					settings->set(confkey, i->first);
+				}
+			}
+		}
 	}
 }
 
 void HIDManager::bind(const Pentagram::istring& control, const Pentagram::istring& bindingName)
 {
-	uint16 key;
-	uint16 button;
+	uint16 key, button, js;
 	const char * name = 0;
 	HIDBindingMap::iterator j = bindingMap.find(bindingName);
 
@@ -213,14 +260,28 @@ void HIDManager::bind(const Pentagram::istring& control, const Pentagram::istrin
 				// We found the matching Mouse Button. Stop searching;
 				return;
 			}
-		} 
+		}
+
+		for (js=0; js < NUM_JOYSTICKS; ++js)
+		{
+			for (button=0; button < NUM_MOUSEBUTTONS; ++button)
+			{
+				name = GetJoystickButtonName(js, button);
+				if (control == name)
+				{
+					joybindings[js][button] = j->second;
+
+					//We found the matching Joystick Button. Stop searching;
+					return;
+				}
+			}
+		}
 	}
 }
 
 void HIDManager::unbind(const Pentagram::istring& control)
 {
-	uint16 key;
-	uint16 button;
+	uint16 key, button, js;
 	const char * name = 0;
 	HIDBindingMap::iterator j = bindingMap.find(control);
 	if (j != bindingMap.end())
@@ -242,6 +303,17 @@ void HIDManager::unbind(const Pentagram::istring& control)
 			if (mousebindings[button] == (*j).second)
 			{
 				mousebindings[button] = 0;
+			}
+		}
+
+		for (js=0; js < NUM_JOYSTICKS; ++js)
+		{
+			for (button=0; button < NUM_MOUSEBUTTONS; ++button)
+			{
+				if (joybindings[js][button] == (*j).second)
+				{
+					joybindings[js][button] = 0;
+				}
 			}
 		}
 	}
@@ -268,7 +340,18 @@ void HIDManager::unbind(const Pentagram::istring& control)
 				mousebindings[button] = 0;
 			}
 		}
-		
+
+		for (js=0; js < NUM_JOYSTICKS; ++js)
+		{
+			for (button=0; button < NUM_MOUSEBUTTONS; ++button)
+			{
+				name = GetJoystickButtonName(js, button);
+				if (control == name)
+				{
+					joybindings[js][button] = 0;
+				}
+			}
+		}
 	}
 }
 
@@ -344,21 +427,33 @@ void HIDManager::getBindings(const Pentagram::istring& bindingName, std::vector<
 	HIDBindingMap::iterator j = bindingMap.find(bindingName);
 	if (j != bindingMap.end())
 	{
+		uint16 key, button, js;
 
-		for (uint16 key=0; key < SDLK_LAST; ++key)
+		for (key=0; key < SDLK_LAST; ++key)
 		{
-			if (keybindings[key] == (*j).second)
+			if (keybindings[key] == j->second)
 			{
 				controls.push_back(SDL_GetKeyName((SDLKey) key));
 			}
 		}
 
-		for (uint16 button=1; button < NUM_MOUSEBUTTONS+1; ++button)
+		for (button=1; button < NUM_MOUSEBUTTONS+1; ++button)
 		{
-			if (mousebindings[button] == (*j).second)
+			if (mousebindings[button] == j->second)
 			{
 				controls.push_back(GetMouseButtonName((MouseButton) button));
 			}
 		}
-	}	
+
+		for (js=0; js < NUM_JOYSTICKS; ++js)
+		{
+			for (button=0; button < NUM_MOUSEBUTTONS; ++button)
+			{
+				if (joybindings[js][button] == j->second)
+				{
+					controls.push_back(GetJoystickButtonName(js, button));
+				}
+			}
+		}
+	}
 }

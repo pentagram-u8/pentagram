@@ -1,3 +1,9 @@
+2004-08-15  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* kernel/CoreApp.cpp: pass SDL_INIT_JOYSTICK to SDL_Init
+	* kernel/Joystick.*: limited support for joystick
+	* kernel/HIDManager.*: allow bindings to joystick buttons from
+	  console only.
+
 2004-08-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Actor.*: areEnemiesNear intrinsic
 	* world/Item.*: the schedule usecode event takes a uint32 time argument
