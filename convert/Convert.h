@@ -19,12 +19,17 @@
 #ifndef CONVERT_H
 #define CONVERT_H
 
+#include "IDataSource.h"
+#include "common_types.h"
+
 class ConvertUsecode
 {
 	// just an 'empty' base class
 	public:
 		virtual const char* const *intrinsics()=0;
 		virtual const char* const *event_names()=0;
+		virtual void readheader(IFileDataSource *ucfile, UsecodeHeader &uch, uint32 &curOffset)=0;
+		virtual void readevents(IFileDataSource *ucfile)=0;
 };
 
 #endif

@@ -1,4 +1,8 @@
 2002-09-22  Darke  <darkepaw@users.sf.net>
+	* convert/*,tools/disasm/*: Moved more of the game specific usecode
+	  handling to convert; Fixed up a couple of the opcode's docs.
+
+2002-09-22  Darke  <darkepaw@users.sf.net>
 	* misc/[Aa]rgs.*: Missed changing a header name.
 	* filesys/*: All the file systems stuff. The primary FileSystem class
 	  is rather bare and not completely correct, but good enough to use

@@ -16,8 +16,8 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef _U8_INTRINSICS
-#define _U8_INTRINSICS
+#ifndef CONVERTUSECODEU8_H
+#define CONVERTUSECODEU8_H
 
 #include "Convert.h"
 
@@ -26,6 +26,19 @@ class ConvertUsecodeU8 : public ConvertUsecode
 	public:
 		const char* const *intrinsics()  { return _intrinsics;  };
 		const char* const *event_names() { return _event_names; };
+		void readheader(IFileDataSource *ucfile, UsecodeHeader &uch, uint32 &curOffset);
+		void readevents(IFileDataSource *ucfile)
+		{
+			for (uint32 i=0; i<32; ++i)
+			{
+				uint32 offset = read4(ucfile);
+				EventMap[offset] = i;
+				#ifdef DISASM_DEBUG
+				cout << "Event " << i << ": " << std::hex << std::setw(4) << offset << std::dec << endl;
+				#endif
+			}
+		}
+
 	
 	private:
 		static const char* const _intrinsics[];
@@ -344,6 +357,23 @@ const char * const ConvertUsecodeU8::_event_names[] = {
 	"unknown",
 	"unknown",
 	0
+};
+
+void ConvertUsecodeU8::readheader(IFileDataSource *ucfile, UsecodeHeader &uch, uint32 &curOffset)
+{
+	#ifdef DISASM_DEBUG
+	cerr << std::setfill('0') << std::hex;
+	cerr << "unknown1: " << std::setw(4) << read4(ucfile) << endl; // unknown
+	uch.maxOffset = read4(ucfile) - 0x0C; // file size
+	cerr << "maxoffset: " << std::setw(4) << maxOffset << endl;
+	cerr << "unknown2: " << std::setw(4) << read4(ucfile) << endl; // unknown
+	curOffset = 0;
+	#else
+	read4(ucfile); // unknown
+	uch.maxOffset = read4(ucfile) - 0x0C; // file size
+	read4(ucfile); // unknown
+	curOffset = 0;
+	#endif
 };
 
 #endif

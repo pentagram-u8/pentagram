@@ -32,7 +32,6 @@ using	std::string;
 #include <cctype>
 
 #include "Args.h"
-#include "u8/ConvertUsecode.h"
 #if 0 // FIXME: Add conf/
 #include "Configuration.h"
 #endif
@@ -48,10 +47,32 @@ using	std::string;
 #include <iomanip>
 #endif
 
+class UsecodeHeader
+{
+	public:
+		UsecodeHeader() : routines(0), maxOffset(0), offset(0), externTable(0), fixupTable(0) {};
+
+		uint32 routines;
+		uint32 maxOffset;
+		uint32 offset;
+		uint32 externTable;
+		uint32 fixupTable;
+};
+
+uint32 curOffset;
+
+inline uint32 read1(IFileDataSource *ucfile) { curOffset+=1; return ucfile->read1(); };
+inline uint32 read2(IFileDataSource *ucfile) { curOffset+=2; return ucfile->read2(); };
+inline uint32 read4(IFileDataSource *ucfile) { curOffset+=4; return ucfile->read4(); };
+
+map<uint32, uint32> EventMap;
+
+#include "u8/ConvertUsecodeU8.h"
+#include "crusader/ConvertUsecodeCrusader.h"
+
 using std::cout;
 using std::cerr;
 using std::endl;
-using std::ifstream;
 using std::pair;
 
 #ifndef HAVE_SNPRINTF
@@ -68,7 +89,6 @@ ConvertUsecode *convert = new ConvertUsecodeU8();
 
 const string c_empty_string;
 
-map<uint32, uint32> EventMap;
 /* GlobalName.find().first == the offset into the char[]
 	GlobalName.find().second.first == the number of bytes stored in the global
 	GlobalName.find().second.second == the name of the global
@@ -76,69 +96,14 @@ map<uint32, uint32> EventMap;
 */
 map<uint32, pair<uint32, std::string> > GlobalName;
 map<string, string> FuncNames;
-uint32 curOffset;
-uint32 maxOffset;
+//uint32 maxOffset;
 Args parameters;
 
-string gamelanguage;
-string gametype;
-bool   print_globals=false;
+string	gamelanguage;
+string	gametype;
+bool	print_globals=false;
 
 bool crusader=false;
-
-inline uint32 read1(IFileDataSource *ucfile) { curOffset+=1; return ucfile->read1(); };
-inline uint32 read2(IFileDataSource *ucfile) { curOffset+=2; return ucfile->read2(); };
-inline uint32 read4(IFileDataSource *ucfile) { curOffset+=4; return ucfile->read4(); };
-
-void readheader(IFileDataSource *ucfile)
-{
-	if (crusader)
-	{
-		uint32 Routines = read4(ucfile);     // routines
-		maxOffset = read4(ucfile);           // total code size,
-		uint32 offset = read4(ucfile)-20;    // code offset,
-		uint32 extern_table = read4(ucfile); // extern symbol table offset
-		uint32 fixup_table = read4(ucfile);  // fixup table offset
-		#ifdef DISASM_DEBUG
-		printf("Routines:\t%04X\n", Routines);
-		printf("MaxOffset:\t%04X\nOffset:\t\t%04X\n", maxOffset, offset);
-		printf("ExternTable:\t%04X\nFixupTable:\t%04X\n", extern_table, fixup_table);
-		#endif
-		maxOffset += offset;
-		#ifdef DISASM_DEBUG
-		printf("Adjusted MaxOffset:\t%04X\n", maxOffset);
-		#endif
-		ucfile->skip(offset);
-		curOffset = offset;
-	}
-	else
-	{
-		#ifdef DISASM_DEBUG
-		cerr << std::setfill('0') << std::hex;
-		cerr << "unknown1: " << std::setw(4) << read4(ucfile) << endl; // unknown
-		maxOffset = read4(ucfile) - 0x0C; // file size
-		cerr << "maxoffset: " << std::setw(4) << maxOffset << endl;
-		cerr << "unknown2: " << std::setw(4) << read4(ucfile) << endl; // unknown
-		curOffset = 0;
-		#else
-		read4(ucfile); // unknown
-		maxOffset = read4(ucfile) - 0x0C; // file size
-		read4(ucfile); // unknown
-		curOffset = 0;
-		#endif
-	}
-}
-
-void readevents(IFileDataSource *ucfile)
-{
-	for (uint32 i=0; i < 32; i++) {
-		uint32 offset = read4(ucfile);
-		EventMap[offset] = i;
-		#ifdef DISASM_DEBUG
-		cout << "Event " << i << ": " << std::hex << std::setw(4) << offset << std::dec << endl;
-		#endif
-	}
-}
 
 void readglobals(IFileDataSource *ucfile)
 {
@@ -227,11 +192,11 @@ uint32 read_dbg_symbols(IFileDataSource *ucfile)
 	return count;
 }
 
-bool readfunction(IFileDataSource *ucfile, const char *name)
+bool readfunction(IFileDataSource *ucfile, const char *name, const UsecodeHeader &uch)
 {
 	std::string str;
 
-	if (curOffset >= maxOffset) return false;
+	if (curOffset >= uch.maxOffset) return false;
 
 	printf("Func_%X", curOffset);
 
@@ -302,18 +267,6 @@ bool readfunction(IFileDataSource *ucfile, const char *name)
 			printf("pop huge\t%s %i", print_bp(i0), i1);
 			break;
 
-		/* A special case to handle the debugging data at the end of the
-			debugging usecode functions. A hack currently. */
-/*		case 0x05:
-			// we'll just read the bytes and save them in the string until
-			// we hit the end opcode, 0x7a
-			str0 = "";
-			while ((i0 = read1(in))!=0x7a)
-				str0 += static_cast<char>(i0);
-			in.unget();
-			printf("debugging\tnum chars %02X", str0.size());
-			break;*/
-
 		case 0x08:
 			// 08
 			// pop 32bits into result register
@@ -321,7 +274,7 @@ bool readfunction(IFileDataSource *ucfile, const char *name)
 			break;
 		case 0x09:
 			// 09 xx yy zz
-    		// pop yy bytes into an element of list bp+xx (or slist if zz is set).
+    			// pop yy bytes into an element of list bp+xx (or slist if zz is set).
 			i0 = read1(ucfile); i1 = read1(ucfile); i2 = read1(ucfile);
 			printf("pop element\t%s (%02X) slist==%02X", print_bp(i0), i1, i2);
 			break;
@@ -367,21 +320,15 @@ bool readfunction(IFileDataSource *ucfile, const char *name)
 			// intrinsic call. xx is number of arguement bytes (includes this pointer)
 			i0 = read1(ucfile);
 			i1 = read2(ucfile);
-			if(crusader) // we don't know what their intrinsics were called anyway so we won't bother naming them
-			{
-				printf("calli\t\t%02Xh %04X (unknown)", i0, i1);
-			}
-			else
-			{
-				printf("calli\t\t%02Xh %04X (%s)", i0, i1, convert->intrinsics()[i1]);
-			}
+			printf("calli\t\t%02Xh %04X (%s)", i0, i1, convert->intrinsics()[i1]);
 			break;
 		case 0x11:
 			// 11 xx xx yy yy
 			// call the function at offset yy yy of class xx xx
 			i0 = read2(ucfile);
 			i1 = read2(ucfile);
-			printf("call\t\t%04X:%04X (%s)", i0, i1, functionaddresstostring(i0, i1).c_str());
+			printf("call\t\t%04X:%04X (%s)", i0, i1,
+				functionaddresstostring(i0, i1).c_str());
 			break;
 		case 0x12:
 			// 12
@@ -462,10 +409,22 @@ bool readfunction(IFileDataSource *ucfile, const char *name)
 			// mod
 			printf("mod");
 			break;
+		case 0x23:
+			// 23
+			// mod long
+			printf("mod dword");
+			assert(false); // Guessed opcode
+			break;
 		case 0x24:
 			// 24
 			// compare two integers
 			printf("cmp");
+			break;
+		case 0x25:
+			// 24
+			// compare two dwords
+			printf("cmp dword");
+			assert(false); // Guessed opcode
 			break;
 		case 0x26:
 			// 26
@@ -610,7 +569,7 @@ bool readfunction(IFileDataSource *ucfile, const char *name)
 			break;
 		case 0x41:
 			// 41 xx
-			// push the string local var xx
+			// push the string local var at BP+xx
 			i0 = read1(ucfile);
 			printf("push string\t%s", print_bp(i0));
 			break;
@@ -622,13 +581,12 @@ bool readfunction(IFileDataSource *ucfile, const char *name)
 			break;
 		case 0x43:
 			// 43 xx
-			// push the stringlist local var xx
+			// push the stringlist local var at BP+xx
 			i0 = read1(ucfile);
 			printf("push slist\t%s", print_bp(i0));
 			break;
 		case 0x44:
 			// 44 xx yy
-			// INCORRECT: push element from list BP+XX (or slist if yy is true)
 			// push element from the second last var pushed onto the stack
 			// (a list/slist), indexed by the last element pushed onto the list
 			// (a byte/word). XX is the size of the types contained in the list
@@ -669,13 +627,15 @@ bool readfunction(IFileDataSource *ucfile, const char *name)
 			// 4E xx xx yy
 			// push global xx xx size yy
 			i0 = read2(ucfile); i1 = read1(ucfile);
-			printf("push\t\tglobal [%04X %02X] (%s)", i0, i1, GlobalName[i0].second.c_str());
+			printf("push\t\tglobal [%04X %02X] (%s)", i0, i1,
+				GlobalName[i0].second.c_str());
 			break;
 		case 0x4F:
 			// 4F xx xx yy
 			// pop value into global xx xx size yy
 			i0 = read2(ucfile); i1 = read1(ucfile);
-			printf("pop\t\tglobal [%04X %02X] (%s)", i0, i1, GlobalName[i0].second.c_str());
+			printf("pop\t\tglobal [%04X %02X] (%s)", i0, i1,
+				GlobalName[i0].second.c_str());
 			break;
 
 		case 0x50:
@@ -714,7 +674,8 @@ bool readfunction(IFileDataSource *ucfile, const char *name)
 		case 0x57:
 			// 57 aa tt xx xx yy yy
 			// spawn process function yyyy in class xxxx
-			// aa = number of arg bytes pushed (not including this pointer which is 4 bytes)
+			// aa = number of arg bytes pushed
+			//      (not including this pointer which is 4 bytes)
 			// tt = sizeof this pointer object
 			i0 = read1(ucfile); i1 = read1(ucfile);
 			i2 = read2(ucfile); i3 = read2(ucfile);
@@ -730,7 +691,8 @@ bool readfunction(IFileDataSource *ucfile, const char *name)
 			i2 = read2(ucfile);
 			i3 = read1(ucfile); i4 = read1(ucfile);
 			printf("spawn inline\t%04X:%04X+%04X=%04X %02X %02X (%s+%04X)",
-				   i0, i1, i2, i1+i2, i3, i4, functionaddresstostring(i0, i1).c_str(), i2);
+				   i0, i1, i2, i1+i2, i3, i4,
+				   functionaddresstostring(i0, i1).c_str(), i2);
 			break;
 		case 0x59:
 			// 59
@@ -755,8 +717,10 @@ bool readfunction(IFileDataSource *ucfile, const char *name)
 		case 0x5C:
 			// 5C xx xx yy yy yy yy yy yy yy yy 00
 			// debugging symbol information
-			// xx xx is the offset to the variable
-			// yy .. yy is the variable's name
+			// xxxx is the offset to one past the last 'ret' in the function, which
+			// will be pointing to an 0x7a opcode if there is no debug info, else
+			// to the first byte of the debug info.
+			// yy .. yy is the class' name
 			i0 = read2(ucfile);
 			i0 = curOffset + (static_cast<short>(i0));
 			str0 = "";
@@ -764,7 +728,8 @@ bool readfunction(IFileDataSource *ucfile, const char *name)
 			 str0 += static_cast<char>(read1(ucfile));
 			if(read1(ucfile)!=0) assert(false); // trailing 0
 			printf("symbol info\toffset %04x = \"%s\"", i0, str0.c_str());
-			dbg_symbol_offset = i0; // the offset to the raw symbol data. nothing between it and the 0x7a opcode is opcodes
+			dbg_symbol_offset = i0; // the offset to the raw symbol data.
+				// nothing between it and the 0x7a opcode is opcodes
 			break;
 
 		case 0x5D:
@@ -1054,14 +1019,16 @@ void printfunc(const uint32 func, const uint32 nameoffset, IFileDataSource *ucfi
 	ucfile->read(namebuf, 9);
 
 	ucfile->seek(offset);
-	readheader(ucfile);
+	
+	UsecodeHeader uch;
+	
+	convert->readheader(ucfile, uch, curOffset);
 
 	printf("Usecode function %d (%04X %s)\n", func, func, namebuf);
 
-	if(!crusader) // if we're crusader we don't read events
-		readevents(ucfile);
+	convert->readevents(ucfile);
 
-	while (readfunction(ucfile, namebuf));
+	while (readfunction(ucfile, namebuf, uch));
 
 	#ifdef FOLD
 	fold(func);
@@ -1100,8 +1067,6 @@ void readfunctionnames(void)
 
 int main(int argc, char **argv)
 {
-	//ifstream ucfile;
-
 	if (argc < 3) {
 		cerr << "Usage: disasm <file> [<function number>|-a] {--game [u8|crusader]} {--lang [english|german|french]}" << endl;
 		cerr << "or" << endl;
@@ -1144,7 +1109,12 @@ int main(int argc, char **argv)
 	}
 
 	// setup crusader
-	if (gametype=="crusader") crusader=true;
+	if (gametype=="crusader")
+	{
+		crusader=true;
+		FORGET_OBJECT(convert);
+		convert = new ConvertUsecodeCrusader();
+	}
 
 	FileSystem filesys;
 

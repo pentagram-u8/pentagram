@@ -28,6 +28,8 @@ cp tools/Makefile misc
 echo -n "."
 cp tools/Makefile convert
 echo -n "."
+cp tools/Makefile convert/crusader
+echo -n "."
 cp tools/Makefile convert/u8
 echo -n "."
 cp tools/Makefile filesys
