@@ -36,7 +36,8 @@ ConsoleGump::ConsoleGump()
 }
 
 ConsoleGump::ConsoleGump(int X, int Y, int Width, int Height) :
-	Gump(X,Y,Width,Height, 0, 0, LAYER_CONSOLE), scroll_state(NORMAL_DISPLAY)
+	Gump(X,Y,Width,Height, 0, FLAG_DONT_SAVE | FLAG_CORE_GUMP, LAYER_CONSOLE),
+	scroll_state(NORMAL_DISPLAY)
 {
 	con.ClearCommandBuffer();
 
@@ -274,19 +275,26 @@ bool ConsoleGump::Run(const uint32 framenum)
 
 void ConsoleGump::saveData(ODataSource* ods)
 {
+	CANT_HAPPEN_MSG("Trying to save ConsoleGump");
+#if 0
 	ods->write2(1); //version
 	Gump::saveData(ods);
 
-	// Don't save scroll state, since we'll alway raise the console upon loading
+	// Don't save scroll state, since we'll always
+	// raise the console upon loading
+#endif
 }
 
 bool ConsoleGump::loadData(IDataSource* ids)
 {
+	CANT_HAPPEN_MSG("Trying to save ConsoleGump");
+#if 0
 	uint16 version = ids->read2();
 	if (version != 1) return false;
 	if (!Gump::loadData(ids)) return false;
 
 	scroll_state = NOTIFY_OVERLAY;
+#endif
 
 	return true;
 }

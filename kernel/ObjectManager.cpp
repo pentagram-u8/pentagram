@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IDataSource.h"
 #include "ODataSource.h"
 #include "ItemFactory.h"
+#include "GUIApp.h"
 
 #include "MainActor.h"
 #include "Egg.h"
@@ -48,6 +49,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MiniStatsGump.h"
 
 ObjectManager* ObjectManager::objectmanager = 0;
+
+
+// a template class  to prevent having to write a load function for
+// every object separately
+template<class T>
+struct ObjectLoader {
+	static Object* load(IDataSource* ids) {
+		T* p = new T();
+		bool ok = p->loadData(ids);
+		if (!ok) {
+			delete p;
+			p = 0;
+		}
+		return p;
+	}
+};
 
 ObjectManager::ObjectManager()
 {
@@ -210,10 +227,10 @@ void ObjectManager::save(ODataSource* ods)
 		Item* item = p_dynamic_cast<Item*>(object);
 		if (item && item->getParent()) continue;
 		Gump* gump = p_dynamic_cast<Gump*>(object);
-		if (gump && gump->GetParent()) continue;
 
-		// some gumps shouldn't be saved (MenuGump)
-		if (gump && !gump->mustSave()) continue;
+		// don't save Gumps with DONT_SAVE and Gumps with parents, unless
+		// the parent is a core gump
+		if (gump && !gump->mustSave(true)) continue;
 
 		object->save(ods);
 	}
@@ -234,10 +251,22 @@ bool ObjectManager::load(IDataSource* ids)
 		// peek ahead for terminator
 		uint16 classlen = ids->read2();
 		if (classlen == 0) break;
-		ids->skip(-2);
+		char* buf = new char[classlen+1];
+		ids->read(buf, classlen);
+		buf[classlen] = 0;
 
-		Object* obj = loadObject(ids);
+		std::string classname = buf;
+		delete[] buf;
+
+		Object* obj = loadObject(ids, classname);
 		if (!obj) return false;
+
+		// top level gumps have to be added to the correct core gump
+		Gump* gump = p_dynamic_cast<Gump*>(obj);
+		if (gump) {
+			GUIApp::get_instance()->addGump(gump);
+		}
+
 	} while(true);
 
 	return true;
@@ -245,7 +274,6 @@ bool ObjectManager::load(IDataSource* ids)
 
 Object* ObjectManager::loadObject(IDataSource* ids)
 {
-
 	uint16 classlen = ids->read2();
 	char* buf = new char[classlen+1];
 	ids->read(buf, classlen);
@@ -254,6 +282,11 @@ Object* ObjectManager::loadObject(IDataSource* ids)
 	std::string classname = buf;
 	delete[] buf;
 
+	return loadObject(ids, classname);
+}
+
+Object* ObjectManager::loadObject(IDataSource* ids, std::string classname)
+{
 	std::map<std::string, ObjectLoadFunc>::iterator iter;
 	iter = objectloaders.find(classname);
 
@@ -287,9 +320,6 @@ void ObjectManager::setupLoaders()
 	addObjectLoader("TeleportEgg", ObjectLoader<TeleportEgg>::load);
 	addObjectLoader("GlobEgg", ObjectLoader<GlobEgg>::load);
 	addObjectLoader("Gump", ObjectLoader<Gump>::load);
-	addObjectLoader("DesktopGump", ObjectLoader<DesktopGump>::load);
-	addObjectLoader("GameMapGump", ObjectLoader<GameMapGump>::load);
-	addObjectLoader("ConsoleGump", ObjectLoader<ConsoleGump>::load);
 	addObjectLoader("ItemRelativeGump", ObjectLoader<ItemRelativeGump>::load);
 	addObjectLoader("AskGump", ObjectLoader<AskGump>::load);
 	addObjectLoader("BarkGump", ObjectLoader<BarkGump>::load);

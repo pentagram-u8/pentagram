@@ -688,6 +688,21 @@ bool Gump::OnTextInput(int unicode)
 	return handled;
 }
 
+bool Gump::mustSave(bool toplevel)
+{
+	// DONT_SAVE flag
+	if (flags & FLAG_DONT_SAVE)
+		return false;
+
+	if (toplevel) {
+		// don't save gumps with parents, unless parent is a core gump
+		if (parent && !(parent->flags & FLAG_CORE_GUMP))
+			return false;
+	}
+
+	return true;
+}
+
 void Gump::saveData(ODataSource* ods)
 {
 	ods->write2(1); //version
@@ -724,16 +739,14 @@ void Gump::saveData(ODataSource* ods)
 	unsigned int childcount = 0;
 	std::list<Gump*>::iterator it;
 	for (it = children.begin(); it != children.end(); ++it) {
-		// some gumps shouldn't be saved (MenuGump)
-		if (!(*it)->mustSave()) continue;
+		if (!(*it)->mustSave(false)) continue;
 		childcount++;
 	}
 	
 	// write children:
 	ods->write4(childcount);
 	for (it = children.begin(); it != children.end(); ++it) {
-		// some gumps shouldn't be saved (MenuGump)
-		if (!(*it)->mustSave()) continue;
+		if (!(*it)->mustSave(false)) continue;
 
 		(*it)->save(ods);
 	}

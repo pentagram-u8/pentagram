@@ -52,7 +52,7 @@ GameMapGump::GameMapGump() :
 }
 
 GameMapGump::GameMapGump(int X, int Y, int Width, int Height) :
-	Gump(X,Y,Width,Height, 0, 0, LAYER_GAMEMAP),
+	Gump(X,Y,Width,Height, 0, FLAG_DONT_SAVE | FLAG_CORE_GUMP, LAYER_GAMEMAP),
 	display_list(0), display_dragging(false)
 {
 	// Offset us the gump. We want 0,0 to be the centre
@@ -544,15 +544,21 @@ void GameMapGump::DropItem(Item* item, int mx, int my)
 
 void GameMapGump::saveData(ODataSource* ods)
 {
+	CANT_HAPPEN_MSG("Trying to save GameMapGump");
+#if 0
 	ods->write2(1); //version
 	Gump::saveData(ods);
+#endif
 }
 
 bool GameMapGump::loadData(IDataSource* ids)
 {
+	CANT_HAPPEN_MSG("Trying to load GameMapGump");
+#if 0
 	uint16 version = ids->read2();
 	if (version != 1) return false;
 	if (!Gump::loadData(ids)) return false;
+#endif
 
 	return true;
 }

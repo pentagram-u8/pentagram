@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <vector>
 #include <map>
+#include <set>
 
 class idMan;
 class Object;
@@ -52,6 +53,7 @@ public:
 	bool load(IDataSource* ids);
 
 	Object* loadObject(IDataSource* ids);
+	Object* loadObject(IDataSource* ids, std::string classname);
 
 	//! "ObjectManager::objectTypes" console command
 	static void ConCmd_objectTypes(const Console::ArgsType &args, const Console::ArgvType &argv);
@@ -69,21 +71,5 @@ private:
 
 	static ObjectManager* objectmanager;
 };
-
-// a bit of a hack to prevent having to write a load function for
-// every object
-template<class T>
-struct ObjectLoader {
-	static Object* load(IDataSource* ids) {
-		T* p = new T();
-		bool ok = p->loadData(ids);
-		if (!ok) {
-			delete p;
-			p = 0;
-		}
-		return p;
-	}
-};
-
 
 #endif

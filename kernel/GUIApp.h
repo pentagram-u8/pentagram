@@ -90,10 +90,14 @@ public:
 
 	uint32 getGameTimeInSeconds();
 	
-	GameMapGump *getGameMapMapGump() { return gameMapGump; }
-	ConsoleGump *getConsoleGump() { return consoleGump; }
-	Gump *getDesktopGump() { return desktopGump; }
+	GameMapGump* getGameMapMapGump() { return gameMapGump; }
+	ConsoleGump* getConsoleGump() { return consoleGump; }
+	Gump* getDesktopGump() { return desktopGump; }
 	Gump* getGump(uint16 gumpid);
+
+	//! add a gump to the right core gump (such as desktopgump)
+	//! \param gump the gump to be added
+	void addGump(Gump* gump);
 
 	AvatarMoverProcess* getAvatarMoverProcess() { return avatarMoverProcess; }
 
@@ -165,6 +169,9 @@ private:
 	
 	//! reset engine (including World, UCMachine, a.o.)
 	void resetEngine();
+
+	//! create core gumps (DesktopGump, GameMapGump, ConsoleGump, ...)
+	void setupCoreGumps();
 
 	// full system
 	Game* game;

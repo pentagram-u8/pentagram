@@ -328,8 +328,9 @@ public:
 		FLAG_CLOSING		= 0x04,		// When set, the gump is closing
 		FLAG_CLOSE_AND_DEL	= 0x08,		// When set, the gump is closing and will be deleted
 		FLAG_ITEM_DEPENDENT	= 0x10,		// When set, the gump will be deleted on MapChange
-		FLAG_DONT_SAVE      = 0x20		// When set, don't save this gump.
+		FLAG_DONT_SAVE      = 0x20,		// When set, don't save this gump.
 		                          		// Be very careful with this one!
+		FLAG_CORE_GUMP      = 0x40      // core gump (only children are saved)
 	};
 
 	inline bool			IsHidden()
@@ -337,7 +338,7 @@ public:
 	virtual void		HideGump() { flags |= FLAG_HIDDEN; }
 	virtual void		UnhideGump() { flags &= ~FLAG_HIDDEN; }
 
-	bool mustSave() { return !(flags & FLAG_DONT_SAVE); }
+	bool mustSave(bool toplevel);
 
 	//
 	// Gump Layers

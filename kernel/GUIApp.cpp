@@ -1559,12 +1559,8 @@ void GUIApp::resetEngine()
 	timeOffset = -(sint32)Kernel::get_instance()->getFrameNum();
 }
 
-bool GUIApp::newGame()
+void GUIApp::setupCoreGumps()
 {
-	resetEngine();
-
-	// have to recreate desktop and console gumps
-
 	Pentagram::Rect dims;
 	screen->GetSurfaceDims(dims);
 
@@ -1579,12 +1575,20 @@ bool GUIApp::newGame()
 	consoleGump->HideConsole();
 	desktopGump->AddChild(consoleGump);
 
-	game->startGame();
-
 	pout << "Create GameMapGump" << std::endl;
 	gameMapGump = new GameMapGump(0, 0, dims.w, dims.h);
 	gameMapGump->InitGump();
 	desktopGump->AddChild(gameMapGump);
+
+}
+
+bool GUIApp::newGame()
+{
+	resetEngine();
+
+	setupCoreGumps();
+
+	game->startGame();
 
 	pout << "Create Camera" << std::endl;
 	CameraProcess::SetCameraProcess(new CameraProcess(1)); // Follow Avatar
@@ -1629,6 +1633,8 @@ bool GUIApp::loadGame(std::string filename)
 	}
 
 	resetEngine();
+
+	setupCoreGumps();
 
 	bool ok, totalok = true;
 
@@ -1700,24 +1706,6 @@ bool GUIApp::loadGame(std::string filename)
 		exit(1);
 	}
 
-	//!! Hack: reset desktopgump, gamemapgump, consolegump:
-	desktopGump = 0;
-	for (unsigned int i = 256; i < 65535; ++i) {
-		DesktopGump* dg = p_dynamic_cast<DesktopGump*>(getGump(i));
-		if (dg) {
-			desktopGump = dg;
-			break;
-		}
-	}
-	assert(desktopGump);
-	gameMapGump = p_dynamic_cast<GameMapGump*>(desktopGump->
-										   FindGump(GameMapGump::ClassType));
-	assert(gameMapGump);
-
-	consoleGump = p_dynamic_cast<ConsoleGump*>(desktopGump->
-										   FindGump(ConsoleGump::ClassType));
-	assert(consoleGump);
-
 	pout << "Done" << std::endl;
 
 	delete sg;
@@ -1728,6 +1716,16 @@ Gump* GUIApp::getGump(uint16 gumpid)
 {
 	return p_dynamic_cast<Gump*>(ObjectManager::get_instance()->
 								 getObject(gumpid));
+}
+
+void GUIApp::addGump(Gump* gump)
+{
+	// TODO: At some point, this will have to choose to which 'layer' to
+	// add the gump: inverted, scaled or top-level
+
+	assert(desktopGump);
+
+	desktopGump->AddChild(gump);
 }
 
 uint32 GUIApp::getGameTimeInSeconds()
