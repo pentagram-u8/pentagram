@@ -75,7 +75,7 @@ PENTSHP_OBJCS = \
 	tools/gimp-plugin/pentshp.o
 
 pentshp.exe : $(PENTSHP_OBJCS)
-	$(CXX) -o $(@) $+ $(GTK_LIBS) $(GIMP_LIBS) -mwindows
+	$(CXX) $(LFLAGS) -o $@ $+ $(GTK_LIBS) $(GIMP_LIBS)
 
 PENTAGRAM_OBJS = \
 	$(KERNEL) $(KERNEL2) $(USECODE) $(FILESYS) $(UNZIP) $(CONVERT) $(CONF)\
@@ -94,7 +94,7 @@ clean:
 	rm -f $(PENTAGRAM_OBJS) pentagram.o
 
 toolsclean:
-	rm -f tools/amf2mod/amf2mod.o tools/disasm/Disasm.o $(FLEXPACK_OBJCS) tools/fold/Fold.o $(FOLD_OBJCS) tools/shapeconv/ShapeConv.o *.exe tools/gimp-plugin/pentshp.o tools/gimp-plugin/pentshp.exe
+	rm -f tools/amf2mod/amf2mod.o tools/disasm/Disasm.o $(FLEXPACK_OBJCS) tools/fold/Fold.o $(FOLD_OBJCS) tools/shapeconv/ShapeConv.o *.exe $(PENTSHP_OBJCS) tools/gimp-plugin/pentshp.exe
 
 install: pentagram.exe
 	mkdir -p $(U8PATH)
