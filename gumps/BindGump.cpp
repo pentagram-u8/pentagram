@@ -19,8 +19,6 @@
 #include "pent_include.h"
 #include "BindGump.h"
 
-#include "ControlsGump.h"
-
 #include "RenderSurface.h"
 #include "GUIApp.h"
 #include "TextWidget.h"

@@ -28,8 +28,8 @@
 #include "ButtonWidget.h"
 #include "TextWidget.h"
 #include "QuitGump.h"
-#include "BindGump.h"
 #include "ControlsGump.h"
+#include "PagedGump.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -129,7 +129,12 @@ bool MenuGump::OnKeyDown(int key, int mod)
 	} break;	
 	case SDLK_4:
 	{	// Options
-		ControlsGump::showMenu();
+		PagedGump * gump = new PagedGump(36, -40, 4, gumpShape);
+		gump->InitGump();
+		gump->addGump("Engine", ControlsGump::showEngineMenu());
+		gump->addGump("Game", ControlsGump::showU8Menu());
+		AddChild(gump);
+		gump->setRelativePosition(CENTER);
 	} break;
 	case SDLK_5:
 	{	// Credits
@@ -177,7 +182,12 @@ void MenuGump::ChildNotify(Gump *child, uint32 message)
 				} break;	
 				case 4:
 				{	// Options
-					ControlsGump::showMenu();
+					PagedGump * gump = new PagedGump(36, -40, 4, gumpShape);
+					gump->InitGump();
+					gump->addGump("Engine", ControlsGump::showEngineMenu());
+					gump->addGump("Game", ControlsGump::showU8Menu());
+					AddChild(gump);
+					gump->setRelativePosition(CENTER);
 				} break;
 				case 5:
 				{	// Credits

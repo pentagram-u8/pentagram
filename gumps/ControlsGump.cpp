@@ -33,6 +33,8 @@
 #include "IDataSource.h"
 #include "ODataSource.h"
 
+static const int font = 9;
+
 class ControlEntryGump : public Gump
 {
 public:
@@ -75,7 +77,7 @@ void ControlEntryGump::InitGump()
 	Gump * widget;
 
 	Pentagram::Rect rect;
-	button = new ButtonWidget(0, 0, displayedName, 0);
+	button = new ButtonWidget(0, 0, displayedName, font);
 	button->InitGump();
 	AddChild(button);
 	button->GetDims(rect);
@@ -83,10 +85,10 @@ void ControlEntryGump::InitGump()
 	dims.h = rect.h;
 
 	hidmanager->getBindings(bindingName, controls);
-	int x = 124;
+	int x = 120;
 	for (i = controls.begin(); i != controls.end(); ++i)
 	{
-		widget = new TextWidget(x, 0, *i, 0);
+		widget = new TextWidget(x, 0, *i, font);
 		widget->InitGump();
 		AddChild(widget, false);
 		widget->GetDims(rect);
@@ -114,9 +116,9 @@ void ControlEntryGump::ChildNotify(Gump *child, uint32 message)
 	}
 }
 
-DEFINE_RUNTIME_CLASSTYPE_CODE(ControlsGump,ModalGump);
+DEFINE_RUNTIME_CLASSTYPE_CODE(ControlsGump,Gump);
 
-ControlsGump::ControlsGump(): ModalGump(0, 0, 5, 5)
+ControlsGump::ControlsGump(): Gump(0, 0, 5, 5)
 {
 	GUIApp * app = GUIApp::get_instance();
 	app->pushMouseCursor();
@@ -130,35 +132,17 @@ ControlsGump::~ControlsGump()
 
 void ControlsGump::InitGump()
 {
-	ModalGump::InitGump();
+	Gump::InitGump();
 
-	dims.w = 300;
-	dims.h = 200;
+	dims.w = 220;
+	dims.h = 120;
 
-	Gump * widget = new TextWidget(4, 4, "Controls", 0);
+	Gump * widget = new TextWidget(0, 0, "Controls", font);
 	widget->InitGump();
 	AddChild(widget, false);
-	widget = new TextWidget(124, 4, "Keys", 0);
+	widget = new TextWidget(120, 0, "Keys", font);
 	widget->InitGump();
 	AddChild(widget, false);
-
-	int x = 4;
-	int y = 20;
-	addEntry("quickSave", "Quick Save", x, y);
-	addEntry("quickLoad", "Quick Save", x, y);
-	addEntry("engineStats", "Display Engine Stats", x, y);
-	addEntry("paintEditorItems", "View Editor Items", x, y);
-	addEntry("itemLocator", "Locate Item", x, y);
-	addEntry("toggleCombat", "Toggle Combat", x, y);
-	addEntry("openInventory", "Open Inventory", x, y);
-	addEntry("openBackpack", "Open Backpack", x, y);
-	addEntry("recall", "Recall", x, y);
-	addEntry("runFirstEgg", "First Scene", x, y);
-	addEntry("runExecutionEgg", "Execution Scene", x, y);
-	addEntry("u8ShapeViewer", "Shape Viewer", x, y);
-	addEntry("showMenu", "Menu", x, y);
-	addEntry("quit", "Quit", x, y);
-	addEntry("toggleConsole", "Console", x, y);
 }
 
 void ControlsGump::addEntry(char * binding, char * name, int & x, int & y)
@@ -187,10 +171,6 @@ void ControlsGump::ChildNotify(Gump *child, uint32 message)
 
 void ControlsGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 {
-	// temporary - this will be a transparent gump
-	uint32 rgb = 0xA0A0A0;
-	surf->Fill32(rgb, 0, 0, dims.w, dims.h);
-	
 	Gump::PaintThis(surf, lerp_factor);
 }
 
@@ -210,13 +190,40 @@ bool ControlsGump::OnKeyDown(int key, int mod)
 }
 
 //static
-void ControlsGump::showMenu()
+Gump * ControlsGump::showEngineMenu()
 {
-	Gump* desktopGump = GUIApp::get_instance()->getDesktopGump();
-	ModalGump* gump = new ControlsGump();
+	ControlsGump* gump = new ControlsGump();
 	gump->InitGump();
-	desktopGump->AddChild(gump);
-	gump->setRelativePosition(CENTER);
+	int x = 4;
+	int y = 12;
+	gump->addEntry("quickSave", "Quick Save", x, y);
+	gump->addEntry("quickLoad", "Quick Save", x, y);
+	gump->addEntry("avatarInStatis", "Statis Mode", x, y);
+	gump->addEntry("engineStats", "Engine Stats", x, y);
+	gump->addEntry("paintEditorItems", "View Editor Items", x, y);
+	gump->addEntry("itemLocator", "Locate Item", x, y);
+	gump->addEntry("toggleFrameByFrame", "Single Frame Mode", x, y);
+	gump->addEntry("advanceFrameByFrame", "Next Frame", x, y);
+	gump->addEntry("toggleConsole", "Console", x, y);
+	return gump;
+}
+
+Gump * ControlsGump::showU8Menu()
+{
+	ControlsGump* gump = new ControlsGump();
+	gump->InitGump();
+	int x = 4;
+	int y = 12;
+	gump->addEntry("toggleCombat", "Combat Mode", x, y);
+	gump->addEntry("openInventory", "Open Inventory", x, y);
+	gump->addEntry("openBackpack", "Open Backpack", x, y);
+	gump->addEntry("recall", "Recall", x, y);
+	gump->addEntry("runFirstEgg", "First Scene", x, y);
+	gump->addEntry("runExecutionEgg", "Execution Scene", x, y);
+	gump->addEntry("u8ShapeViewer", "Shape Viewer", x, y);
+	gump->addEntry("showMenu", "Menu", x, y);
+	gump->addEntry("quit", "Quit", x, y);
+	return gump;
 }
 
 bool ControlsGump::loadData(IDataSource* ids)

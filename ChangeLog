@@ -1,3 +1,13 @@
+2004-05-12  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* AUTHORS: Added myself to authors
+	* gumps/Gump.cpp: Hidden gumps are skipped in OnMouseDown
+	* gumps/ControlsGump.*: separate methods for a gump to the stdbindings
+	  and the u8bindings
+	* gumps/PagedGump.*: Gump for controling which gump is shown via
+	  buttons on top
+	* gumps/MenuGump.cpp: attached a PagedGump with ControlsGumps the
+	  Options button
+
 2004-05-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/BookGump.*: BookGump
 	* docs/u8sfxfmt.txt: audio compression algorithm

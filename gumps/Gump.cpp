@@ -615,7 +615,7 @@ Gump *Gump::OnMouseDown(int button, int mx, int my)
 		Gump *g = *it;
 
 		// Not if closing
-		if (g->flags & FLAG_CLOSING) continue;
+		if (g->flags & FLAG_CLOSING || g->IsHidden()) continue;
 
 		// It's got the point
 		if (g->PointOnGump(mx,my)) handled = g->OnMouseDown(button, mx, my);

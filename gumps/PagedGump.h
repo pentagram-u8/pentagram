@@ -16,18 +16,18 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef CONTROLSGUMP_H
-#define CONTROLSGUMP_H
+#ifndef PAGEDGUMP_H
+#define PAGEDGUMP_H
 
-#include "Gump.h"
+#include "ModalGump.h"
 
-class ControlsGump : public Gump
+class PagedGump : public ModalGump
 {
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	ControlsGump();
-	virtual ~ControlsGump(void);
+	PagedGump(int left, int right, int top, int shape);
+	virtual ~PagedGump(void);
 
 	// Init the gump, call after construction
 	virtual void InitGump();
@@ -37,15 +37,17 @@ public:
 
 	virtual bool OnKeyDown(int key, int mod);
 	virtual void ChildNotify(Gump *child, uint32 message);
-
-	static Gump * showEngineMenu();
-	static Gump * showU8Menu();
-	void addEntry(char * binding, char * name, int & x, int & y);
+	void addGump(std::string name, Gump * g);
 
 	bool loadData(IDataSource* ids);
 protected:
 	virtual void saveData(ODataSource* ods);
+	typedef std::pair<std::string, Gump *> GumpPair;
+	int leftOff, rightOff, topOff, gumpShape;
+	std::vector<GumpPair> gumps;
+	Gump * nextButton;
+	Gump * prevButton;
+	std::vector<GumpPair>::iterator current;
 };
-
 
 #endif

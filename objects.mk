@@ -106,6 +106,7 @@ GUMPS = \
 	gumps/MiniStatsGump.o \
 	gumps/MenuGump.o \
 	gumps/ModalGump.o \
+	gumps/PagedGump.o \
 	gumps/PaperdollGump.o \
 	gumps/ResizableGump.o \
 	gumps/ScrollGump.o \
