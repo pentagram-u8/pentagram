@@ -10,6 +10,7 @@
 	* world/Item.cpp: let explosions do blunt fire damage
 	* world/actors/CombatProcess.cpp: don't do a range check for ghost's
 	  attacks
+	* world/Item.cpp: play SFX for explosion
 
 2005-03-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/fonts/*: allow disabling interpreting of special characters

@@ -1543,7 +1543,9 @@ void Item::explode()
 								   x, y, z);
 	Kernel::get_instance()->addProcess(p);
 
-	// TODO: play SFX
+	int sfx = (std::rand()%2) ? 31 : 158;
+	AudioProcess* audioproc = AudioProcess::get_instance();
+	if (audioproc) audioproc->playSFX(sfx, 0x60, 0, 0);
 
 	sint32 x,y,z;
 	getLocation(x,y,z);
