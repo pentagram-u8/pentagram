@@ -255,6 +255,10 @@ public:
 	//! \param command The command to remove
 	void			RemoveConsoleCommand(const Pentagram::istring &command);
 
+	//! Remove all commands associated with a function from the console
+	//! \param function Function pointer for command
+	void			RemoveConsoleFunction(Console::Function function);
+
 	//! Execute a specific console command
 	//! \param command The command to execute with args
 	void			ExecuteConsoleCommand(const Console::ArgsType &args);

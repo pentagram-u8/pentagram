@@ -99,15 +99,7 @@ HIDManager::HIDManager()
 
 HIDManager::~HIDManager()
 {
-	HIDBindingMap::iterator i;
-	Pentagram::istring conCmd;
-	for (i = bindingMap.begin(); i != bindingMap.end(); ++i)
-	{
-		conCmd = "HIDBinding::";
-		conCmd.append(i->first);
-		con.RemoveConsoleCommand(conCmd);
-	}
-
+	con.RemoveConsoleFunction(HIDManager::ConCmd_execBinding);
 	ShutdownJoystick();
 	hidmanager = 0;
 	bindingMap.clear();

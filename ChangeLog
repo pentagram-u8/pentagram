@@ -1,3 +1,9 @@
+2005-01-22  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* misc/Console.*: RemoveConsoleFunction to remove all commands attached
+	  to a function.
+	* kernel/HIDManager.cpp: Use RemoveConsoleFunction instead of looping
+	  though the bindings.
+
 2005-01-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCMachine.*: enable usecode tracing with console commands
 	* configure.ac: added 'DEBUG' define by default

@@ -568,6 +568,19 @@ void Console::RemoveConsoleCommand(const Pentagram::istring &command)
 	ConsoleCommands[command] = 0;
 }
 
+void Console::RemoveConsoleFunction(Console::Function function)
+{
+	std::map<Pentagram::istring,Console::Function>::iterator it;
+	for (it = ConsoleCommands.begin(); it != ConsoleCommands.end(); ++it)
+	{
+		if (it->second == function)
+		{
+			//pout << "Removing command: " << it->first << std::endl;
+			it->second = 0;
+		}
+	}
+}
+
 void Console::ExecuteConsoleCommand(const Console::ArgsType &args)
 {
 	std::map<Pentagram::istring,Console::Function>::iterator it;
