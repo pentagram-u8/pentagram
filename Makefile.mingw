@@ -29,7 +29,7 @@ FILESYS_OBJS=filesys/FileSystem.o filesys/Flex.o filesys/U8Save.o
 
 GRAPHICS_OBJS=graphics/Texture.o graphics/TextureBitmap.o graphics/TextureTarga.o \
 	graphics/BaseSoftRenderSurface.o graphics/MainShapeFlex.o graphics/Palette.o graphics/PaletteManager.o \
-	graphics/RenderSurface.o graphics/Shape.o graphics/ShapeFlex.o graphics/ShapeFrame.o \
+	graphics/RenderSurface.o graphics/Shape.o graphics/ShapeFlex.o graphics/ShapeFrame.o graphics/ShapeInfo.o \
 	graphics/SoftRenderSurface.o graphics/TypeFlags.o graphics/XFormBlend.o
 
 GUMPS_OBJS=gumps/ConsoleGump.o gumps/GameMapGump.o gumps/Gump.o gumps/ResizableGump.o

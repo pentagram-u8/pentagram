@@ -516,64 +516,13 @@ uint32 Item::I_getTypeFlag(const uint8* args, unsigned int /*argsize*/)
 
 	ShapeInfo *info = item->getShapeInfo();
 
-	// This is not nice. The Typeflags in U8 were stored in an 8 byte array
-	// and they could access them with a number from 0 to 63
-	// Problem: We don't don't store in an 8 byte array so we can't access 
-	// with a number from 0 to 63
+	if (typeflag >= 64)
+		perr << "Invalid TypeFlag greater than 63 requested (" << typeflag << ") by Usecode" << std::endl;
 
-	// So what we do is split the flag up into the bits
-
-	if (typeflag <= 11)			// flags		Byte 0, 1:0-3	Bits  0-11
-	{
-		return (info->flags >> typeflag) & 1;
-	}
-	else if (typeflag <= 15)	// family		Byte 1:4-7		Bits 11-15
-	{
-		return (info->family >> (typeflag-12)) & 1;
-	}
-	else if (typeflag <= 19)	// equiptype	Byte 2:0-3		Bits 16-19
-	{
-		return (item->getShapeInfo()->equiptype >> (typeflag-16)) & 1;
-	}
-	else if (typeflag <= 23)	// x			Byte 2:4-7		Bits 20-23
-	{
-		return (info->x >> (typeflag-20)) & 1;
-	}
-	else if (typeflag <= 27)	// y			Byte 3:0-3		Bits 24-27
-	{
-		return (info->y >> (typeflag-24)) & 1;
-	}
-	else if (typeflag <= 31)	// z			Byte 3:4-7		Bits 28-31
-	{
-		return (info->z >> (typeflag-28)) & 1;
-	}
-	else if (typeflag <= 35)	// animtype		Byte 4:0-3		Bits 32-35
-	{
-		return (item->getShapeInfo()->animtype >> (typeflag-32)) & 1;
-	}
-	else if (typeflag <= 39)	// animdata		Byte 4:4-7		Bits 36-49
-	{
-		return (info->animdata >> (typeflag-36)) & 1;
-	}
-	else if (typeflag <= 43)	// unknown		Byte 5:0-3		Bits 40-43
-	{
-		return (info->unknown >> (typeflag-40)) & 1;
-	}
-	else if (typeflag == 47)	// flags		Byte 5:4-7		Bits 44-47
-	{
-		return (info->flags >> (12+typeflag-44)) & 1;
-	}
-	else if (typeflag <= 55)	// weight		Byte 6			Bits 48-55
-	{
-		return (info->weight >> (typeflag-48)) & 1;
-	}
-	else if (typeflag <= 63)	// volume		Byte 7			Bits 56-63
-	{
-		return (info->volume >> (typeflag-56)) & 1;
-	}
-
-	perr << "Invalid TypeFlag greater than 64 requested (" << typeflag << ") by Usecode" << std::endl;
-	return 0;
+	if (info->getTypeFlag(typeflag))
+		return 1;
+	else
+		return 0;
 }
 
 uint32 Item::I_getStatus(const uint8* args, unsigned int /*argsize*/)

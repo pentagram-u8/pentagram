@@ -1,3 +1,6 @@
+2003-05-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Item.cpp, graphics/ShapeInfo.*: moved getTypeFlag to ShapeInfo
+
 2003-05-14  Ryan Nunn <colourles@users.sourceforge.net>
 	* Lots of files: Getting rid of warning due to type conversion, unused
 	  args and other such stuff.

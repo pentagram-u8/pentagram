@@ -38,6 +38,7 @@ pentagram_OBJ = \
 	graphics/Palette.o \
 	graphics/PaletteManager.o \
 	graphics/ShapeFlex.o \
+	graphics/ShapeInfo.o \
 	graphics/MainShapeFlex.o \
 	graphics/XFormBlend.o \
 	graphics/TypeFlags.o \

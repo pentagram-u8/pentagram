@@ -85,6 +85,8 @@ public:
 	inline bool is_translucent() const { return (flags & SI_TRANSL) != 0; }
 	inline bool is_editor() const { return (flags & SI_EDITOR) != 0; }
 	inline bool is_explode() const { return (flags & SI_EXPLODE) != 0; }
+
+	bool getTypeFlag(int typeflag);
 };
 
 
