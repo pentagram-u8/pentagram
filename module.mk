@@ -27,6 +27,7 @@ pentagram_OBJ = \
 	misc/Q_strcasecmp.o \
 	misc/pent_include.o \
 	misc/util.o \
+	graphics/AnimDat.o \
 	graphics/RenderSurface.o \
 	graphics/BaseSoftRenderSurface.o \
 	graphics/SoftRenderSurface.o \
@@ -57,6 +58,7 @@ pentagram_OBJ = \
 	world/GlobEgg.o \
 	world/World.o \
 	world/actors/Actor.o \
+	world/actors/ActorAnimProcess.o \
 	world/actors/MainActor.o \
 	convert/ConvertShape.o \
 	convert/u8/ConvertShapeU8.o \
