@@ -12,7 +12,7 @@ SDL_CFLAGS=-I$(SRC)/sdl/include
 SDL_LIBS=-L$(SRC)/sdl/lib -lSDLmain -lSDL
 
 CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -I$(SRC)/conf -I$(SRC)/convert \
-	-I$(SRC)/filesys -I$(SRC)/graphics -I$(SRC)/gumps -I$(SRC)/kernel -I$(SRC)/misc \
+	-I$(SRC)/filesys -I$(SRC)/graphics -I$(SRC)/gumps -I$(SRC)/kernel -I$(SRC)/misc -I$(SRC)/tools/compile\
 	-I$(SRC)/tools/disasm -I$(SRC)/tools/fold -I$(SRC)/usecode -I$(SRC)/world -I$(SRC)/world/actors \
 	$(SDL_CFLAGS) -DHAVE_SYS_STAT_H -DHAVE_SYS_TYPES_H -DHAVE_UNISTD_H
 CXXFLAGS=-O2
@@ -47,7 +47,7 @@ WORLD_OBJS=world/Container.o world/CurrentMap.o world/Egg.o world/Glob.o world/G
 
 ACTORS_OBJS=world/actors/Actor.o world/actors/MainActor.o world/actors/ActorAnimProcess.o
 
-TOOLS_OBJS=tools/disasm/DisasmProcess.o
+TOOLS_OBJS=tools/compile/CompileProcess.o tools/disasm/DisasmProcess.o
 
 all: pentagram.exe
 
