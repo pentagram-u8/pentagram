@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "CameraProcess.h"
-#include "Application.h"
+#include "GUIApp.h"
 #include "World.h"
 #include "Item.h"
 #include "Actor.h"
@@ -33,7 +33,7 @@ DEFINE_DYNAMIC_CAST_CODE(CameraProcess,Process);
 CameraProcess::CameraProcess() : 
 	time(0), elapsed(0), itemnum(0)
 {
-	Application::get_instance()->GetCamera(sx,sy,sz);
+	static_cast<GUIApp *>(CoreApp::get_instance())->GetCamera(sx,sy,sz);
 	ex = sx; ey = sy; ez = sz;
 }
 
@@ -41,7 +41,7 @@ CameraProcess::CameraProcess() :
 CameraProcess::CameraProcess(uint16 _itemnum) : 
 	time(0), elapsed(0), itemnum(_itemnum)
 {
-	Application::get_instance()->GetCamera(sx,sy,sz);
+	static_cast<GUIApp *>(CoreApp::get_instance())->GetCamera(sx,sy,sz);
 	Object *obj = World::get_instance()->getObject(itemnum);
 
 	// Got it
@@ -62,14 +62,14 @@ CameraProcess::CameraProcess(uint16 _itemnum) :
 CameraProcess::CameraProcess(sint32 _x, sint32 _y, sint32 _z) : 
 	ex(_x), ey(_y), ez(_z), time(0), elapsed(0), itemnum(0)
 {
-	Application::get_instance()->GetCamera(sx,sy,sz);
+	static_cast<GUIApp *>(CoreApp::get_instance())->GetCamera(sx,sy,sz);
 }
 
 // Scroll
 CameraProcess::CameraProcess(sint32 _x, sint32 _y, sint32 _z, sint32 _time) : 
 	ex(_x), ey(_y), ez(_z), time(_time), elapsed(0), itemnum(0)
 {
-	Application::get_instance()->GetCamera(sx,sy,sz);
+	static_cast<GUIApp *>(CoreApp::get_instance())->GetCamera(sx,sy,sz);
 	pout << "Scrolling from (" << sx << "," << sy << "," << sz << ") to (" <<
 		ex << "," << ey << "," << ez << ") in " << time << " frames" << std::endl;
 }
@@ -89,10 +89,10 @@ bool CameraProcess::run(const uint32 /* framenum */)
 		if (ex == ax && ey == ay && ez == (az+20))
 		{
 			pout << "Hack to scroll with Avatar" << std::endl;
-			Application::get_instance()->SetCameraProcess(new CameraProcess(1));
+			static_cast<GUIApp *>(CoreApp::get_instance())->SetCameraProcess(new CameraProcess(1));
 		}
 		else 
-			Application::get_instance()->SetCameraProcess(0);	// This will terminate us
+			static_cast<GUIApp *>(CoreApp::get_instance())->SetCameraProcess(0);	// This will terminate us
 		return false;
 	}
 
@@ -181,7 +181,7 @@ uint32 CameraProcess::I_move_to(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(y);
 	ARG_UINT8(z);
 	ARG_SINT16(unk);
-	Application::get_instance()->SetCameraProcess(new CameraProcess(x,y,z));
+	static_cast<GUIApp *>(CoreApp::get_instance())->SetCameraProcess(new CameraProcess(x,y,z));
 	return 0;
 }
 
@@ -189,8 +189,8 @@ uint32 CameraProcess::I_move_to(const uint8* args, unsigned int /*argsize*/)
 uint32 CameraProcess::I_setCenterOn(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_UINT16(itemnum);
-	if (!itemnum) Application::get_instance()->SetCameraProcess(new CameraProcess(1));
-	else Application::get_instance()->SetCameraProcess(new CameraProcess(itemnum));
+	if (!itemnum) static_cast<GUIApp *>(CoreApp::get_instance())->SetCameraProcess(new CameraProcess(1));
+	else static_cast<GUIApp *>(CoreApp::get_instance())->SetCameraProcess(new CameraProcess(itemnum));
 
 	return 0;
 }
@@ -202,6 +202,6 @@ uint32 CameraProcess::I_scrollTo(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(y);
 	ARG_UINT8(z);
 	ARG_SINT16(unk);
-	return Application::get_instance()->SetCameraProcess(new CameraProcess(x,y,z, 5));
+	return static_cast<GUIApp *>(CoreApp::get_instance())->SetCameraProcess(new CameraProcess(x,y,z, 5));
 }
 

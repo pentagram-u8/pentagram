@@ -40,7 +40,7 @@ using std::ifstream;
 
 #include "llcTokens.h"
 
-#include "Application.h"
+#include "CoreApp.h"
 
 //#define CTRACE(X)
 #define CTRACE(x) perr << x << std::endl

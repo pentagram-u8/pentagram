@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Actor.h"
 #include "Kernel.h"
 #include "CameraProcess.h"
-#include "Application.h"
+#include "GUIApp.h"
 
 // Ultima 8 Intrinsics
 Intrinsic U8Intrinsics[] = {
@@ -252,11 +252,11 @@ Intrinsic U8Intrinsics[] = {
 	UCMachine::I_dummyProcess, //!! process teleportToEgg(word, word, ubyte)
 	Kernel::I_resetRef,
 	0,
-	Application::I_getAvatarInStasis,
+	GUIApp::I_getAvatarInStasis,
 	// 0x0D0
-	Application::I_setAvatarInStasis,
+	GUIApp::I_setAvatarInStasis,
 	Item::I_getEtherealTop,
-	Application::I_getCurrentTimerTick,
+	GUIApp::I_getCurrentTimerTick,
 	0,
 	0,
 	0,

@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "Item.h"
-#include "Application.h"
+#include "GUIApp.h"
 #include "Usecode.h"
 #include "GameData.h"
 #include "UCMachine.h"

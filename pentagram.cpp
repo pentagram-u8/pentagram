@@ -19,11 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include <SDL.h>
-#include "Application.h"
+#include "GUIApp.h"
 
 int main(int argc, char* argv[])
 {
-	Application* app = new Application(argc, argv);
+	GUIApp* app = new GUIApp(argc, argv);
 	app->run();
 
 	delete app;

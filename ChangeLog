@@ -1,3 +1,12 @@
+2003-05-27	Darke <darkepaw@users.sf.net>
+	* kernel/CoreApp.*, kernel/GUIApp.*: Split up Application into a 'Core'
+	  base class and a 'GUI' subsystem, and removed the original
+	  kernel/Application.* files.
+	* module.mk, pentagram.cpp, tools/compile/Compile.cpp,
+	  tools/compile/CompileProcess.cpp, tools/disasm/DisasmProcess.cpp,
+	  usecode/UCMachine.cpp, usecode/u8intrinsics.h, world/CameraProcess.cpp,
+	  world/Item.cpp: Flow on effect from above.
+
 2003-05-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/*: use animation frame repeat flag
 	* usecode/UCProcess.*, kernel/Process.*: moved itemnum/type to Process

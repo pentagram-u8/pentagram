@@ -52,7 +52,7 @@ UCMachine::UCMachine() :
 
 	// zero globals
 	globals.push0(globals.getSize());
-	pout << "Flag 5A: " << (int)(globals.access1(0x5A)) << std::endl;
+	pout << "Flag 5A: " << static_cast<int>(globals.access1(0x5A)) << std::endl;
 
 	loop_list = 0;
 	loop_index = 0;

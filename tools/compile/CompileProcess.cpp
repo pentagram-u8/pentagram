@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "CompileProcess.h"
-#include "Application.h"
+#include "CoreApp.h"
 
 #include "CompileUnit.h"
 #include "FileSystem.h"
@@ -46,16 +46,16 @@ bool CompileProcess::run(const uint32 /*framenum*/)
 		cu->parse();
 
 	if(cu->state()==CompileUnit::CSTATE_FAIL)
-		Application::get_instance()->ForceQuit();
+		CoreApp::get_instance()->ForceQuit();
 
 	if(cu->state()==CompileUnit::CSTATE_FINISHED)
 	{
 		terminate(); //FIXME: Needs to handle multiple files and such...
-		Application::get_instance()->ForceQuit();
+		CoreApp::get_instance()->ForceQuit();
 	}
 	
 	if(termCounter==0)
-		Application::get_instance()->ForceQuit();
+		CoreApp::get_instance()->ForceQuit();
 
 	pout << "Countdown to Term...: " << termCounter << std::endl;
 	termCounter--;

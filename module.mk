@@ -8,7 +8,8 @@ LINSTALL := pentagram
 
 KERNEL = \
 	kernel/Kernel.o \
-	kernel/Application.o \
+	kernel/GUIApp.o \
+	kernel/CoreApp.o \
 	kernel/Process.o \
 	kernel/Object.o \
 	kernel/GameData.o \

@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "DisasmProcess.h"
-#include "Application.h"
+#include "CoreApp.h"
 
 // p_dynamic_cast stuff
 DEFINE_DYNAMIC_CAST_CODE(DisasmProcess,Process);
@@ -39,7 +39,7 @@ bool DisasmProcess::run(const uint32 /*framenum*/)
 		return false;
 
 	if(termCounter==0)
-		Application::get_instance()->ForceQuit();
+		CoreApp::get_instance()->ForceQuit();
 
 	termCounter--;
 

@@ -18,14 +18,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 
-#include "Application.h"
+// tested
+#include "GUIApp.h"
+
 #include "Kernel.h"
 #include "FileSystem.h"
 #include "Configuration.h"
+// /tested
 
-#include "UCMachine.h"
-#include "UCProcess.h"
-#include "UsecodeFlex.h"
 #include "IDataSource.h"
 #include "RenderSurface.h"
 #include "Texture.h"
@@ -55,7 +55,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ActorAnimProcess.h"
 
 #include <SDL.h>
-#include <cstdlib>
+//#include <cstdlib>
 
 #include "DisasmProcess.h"
 #include "CompileProcess.h"
@@ -64,57 +64,47 @@ using std::string;
 
 bool showconsole=true; // yes, yes, more of them :-)
 
-Application* Application::application = 0;
-
-Application::Application(const int argc, const char * const * const argv)
-	: kernel(0), ucmachine(0), filesystem(0), config(0), desktop(0),
+GUIApp::GUIApp(const int argc, const char * const * const argv)
+	: CoreApp(argc, argv, true), desktop(0),
 	  console(0), screen(0), palettemanager(0), gamedata(0), world(0),
 	  display_list(0),
-	  runMinimalSysInit(false), runGraphicSysInit(false), runSDLInit(false),
+	  runGraphicSysInit(false), runSDLInit(false),
 	  weAreDisasming(false), weAreCompiling(false),
-	  isRunning(false), framenum(0),
 	  frameSkip(false), frameLimit(true), interpolate(true), animationRate(100),
   	  fastArea(0), avatarInStasis(false), camera(0)
 {
-	assert(application == 0);
 	application = this;
 
-	ParseArgs(argc, argv);
+	parameters.declare("--disasm",  &weAreDisasming, true);
+	parameters.declare("--compile", &weAreCompiling, true);
+
+	postInit(argc, argv);
 
 	if(weAreDisasming==true)
 	{
 		pout << "We Are Disassembling..." << std::endl;
-		MinimalSysInit();
 		kernel->addProcess(new DisasmProcess());
 	}
 	else if(weAreCompiling==true)
 	{
 		pout << "We Are Compiling..." << std::endl;
-		MinimalSysInit();
 		kernel->addProcess(new CompileProcess(filesystem));
 	}
 	else
 	{
-		MinimalSysInit();
-
 		GraphicSysInit();
 
 		U8Playground();
 	}
+
 }
 
-Application::~Application()
+GUIApp::~GUIApp()
 {
-	FORGET_OBJECT(kernel);
-	FORGET_OBJECT(ucmachine);
-	FORGET_OBJECT(filesystem);
-	FORGET_OBJECT(config);
 	FORGET_OBJECT(palettemanager);
-
-	application = 0;
 }
 
-void Application::run()
+void GUIApp::run()
 {
 	isRunning = true;
 
@@ -186,7 +176,7 @@ void Application::run()
 	}
 }
 
-void Application::U8Playground()
+void GUIApp::U8Playground()
 {
 	// Load palette
 	pout << "Load Palette" << std::endl;
@@ -263,7 +253,7 @@ void Application::U8Playground()
 	paint();
 }
 
-uint16 Application::SetCameraProcess(CameraProcess *cam)
+uint16 GUIApp::SetCameraProcess(CameraProcess *cam)
 {
 	if (!cam) cam = new CameraProcess();
 	if (camera) camera->terminate();
@@ -271,7 +261,7 @@ uint16 Application::SetCameraProcess(CameraProcess *cam)
 	return kernel->addProcess(camera);
 }
 
-void Application::GetCamera(sint32 &x, sint32 &y, sint32 &z)
+void GUIApp::GetCamera(sint32 &x, sint32 &y, sint32 &z)
 {
 	if (!camera) {
 
@@ -294,7 +284,7 @@ void Application::GetCamera(sint32 &x, sint32 &y, sint32 &z)
 	}
 }
 
-void Application::SetupDisplayList()
+void GUIApp::SetupDisplayList()
 {
 	Rect dims;
 	screen->GetSurfaceDims(dims);
@@ -423,7 +413,7 @@ void Application::SetupDisplayList()
 }
 
 // Paint the screen
-void Application::paint()
+void GUIApp::paint()
 {
 	// Begin painting
 	screen->BeginPainting();
@@ -466,150 +456,12 @@ void Application::paint()
 	screen->EndPainting();
 }
 
-void Application::setupVirtualPaths()
-{
-	// setup the 'base' virtual paths:
-	// @home - $HOME/.pentagram/ - for config files, saves,... (OS dependant)
-	// @data - /usr/share/pentagram/ - for config files, data,.. (OS dependant)
-	//       NB: @data can be overwritten by config files
-	//       this should be a default set by configure (or other build systems)
-
-	std::string home;
-#ifdef HAVE_HOME
-	home = getenv("HOME");
-	home += "/.pentagram";
-#else
-	// TODO: what to do on systems without $HOME?
-	home = ".";
-#endif
-	filesystem->AddVirtualPath("@home", home);
-
-	std::string data;
-#ifdef DATA_PATH
-	data = DATA_PATH;
-#else
-	data = "data";
-#endif
-	pout << "Trying built-in data path" << std::endl;
-	filesystem->AddVirtualPath("@data", data);
-}
-
-// load configuration files
-void Application::loadConfig()
-{
-	pout << "Loading configuration files:" << std::endl;
-
-	// system-wide config
-	pout << "@data/pentagram.cfg... ";
-	if (config->readConfigFile("@data/pentagram.cfg", "config"))
-		pout << "Ok" << std::endl;
-	else
-		pout << "Failed" << std::endl;
-
-	// user config
-	pout << "@home/pentagram.cfg... ";
-	if (config->readConfigFile("@home/pentagram.cfg", "config"))
-		pout << "Ok" << std::endl;
-	else
-		pout << "Failed" << std::endl;
-
-	pout << "Game: " << game << std::endl;
-
-	// Question: config files can specify an alternate data path
-	// Do we reload the config files if that path differs from the
-	// hardcoded data path? (since the system-wide config file is in @data)
-
-	/**********
-	  load pentagram specific data path
-	 **********/
-	std::string data;
-	pout << "Reading \"config/general/data\" config key." << std::endl;
-	config->value("config/general/data", data, "");
-	if (data != "") {
-		pout << "Data Path: " << data << std::endl;
-		filesystem->AddVirtualPath("@data", data);
-	}
-	else {
-		pout << "Key not found. Data path set to default." << std::endl;
-	}
-
-	/**********
-	  load main game data path
-	 **********/
-	std::string u8;
-	pout << "Reading \"config/" << game << "/path\" config key." << std::endl;
-	config->value(string("config/")+game+"/path", u8, ".");
-	filesystem->AddVirtualPath("@u8", u8);
-	pout << "U8 Path: " << u8 << std::endl;
-
-	/**********
-	  load work path. Default is $(HOME)/.pentagram/game-work
-	  where 'game' in the above is the specified 'game' loaded (default 'u8')
-	 **********/
-	std::string home;
-#ifdef HAVE_HOME
-	home = getenv("HOME");
-	home += "/.pentagram";
-#else
-	// TODO: what to do on systems without $HOME?
-	home = ".";
-#endif
-	std::string work(home+"/"+game+"-work");
-	pout << "Reading \"config/" << game << "/work\" config key." << std::endl;
-	config->value(string("config/")+game+"/work", work, string(home+"/"+game+"-work").c_str());
-	filesystem->AddVirtualPath("@work", work, true); // force creation if it doesn't exist
-	pout << "U8 Workdir: " << work << std::endl;
-}
-
-void Application::ParseArgs(const int argc, const char * const * const argv)
-{
-	pout << "Parsing Args" << std::endl;
-
-	Args parameters;
-
-	parameters.declare("--disasm",  &weAreDisasming, true);
-	parameters.declare("--compile", &weAreCompiling, true);
-	parameters.declare("--game",    &game,           "u8");
-	//parameters.declare("--singlefile",	&singlefile, true);
-
-	parameters.process(argc, argv);
-}
-
-void Application::MinimalSysInit()
-{
-	// if we've already done this...
-	if(runMinimalSysInit) return;
-	//else...
-
-	SDLInit();
-
-	// Create the kernel
-	pout << "Create Kernel" << std::endl;
-	kernel = new Kernel;
-
-	pout << "Create FileSystem" << std::endl;
-	filesystem = new FileSystem;
-	setupVirtualPaths(); // setup @home, @data
-
-	pout << "Create Configuration" << std::endl;
-	config = new Configuration;
-	loadConfig();
-
-	pout << "Create UCMachine" << std::endl;
-	ucmachine = new UCMachine;
-
-	runMinimalSysInit=true;
-}
-
-void Application::GraphicSysInit()
+void GUIApp::GraphicSysInit()
 {
 	// if we've already done this...
 	if(runGraphicSysInit) return;
 	//else...
 
-	// check we've run the prereqs...
-	if(!runMinimalSysInit)
-		MinimalSysInit();
 	// go!
 
 	// Set Screen Resolution
@@ -634,7 +486,7 @@ void Application::GraphicSysInit()
 	runGraphicSysInit=true;
 }
 
-void Application::LoadConsoleFont()
+void GUIApp::LoadConsoleFont()
 {
 	std::string data;
 	std::string confontfile;
@@ -685,24 +537,9 @@ void Application::LoadConsoleFont()
 	con.SetConFont(confont);
 }
 
-// Init sdl
-void Application::SDLInit()
+void GUIApp::handleEvent(const SDL_Event& event)
 {
-	// if we're already done this...
-	if(runSDLInit) return;
-	//else...
-
-	pout << "Init SDL" << std::endl;
-	SDL_Init(SDL_INIT_VIDEO);
-	atexit(SDL_Quit);
-
-	runSDLInit=true;
-}
-
-
-void Application::handleEvent(const SDL_Event& event)
-{
-	uint32 eventtime = SDL_GetTicks();
+	/*uint32 eventtime =*/ SDL_GetTicks();
 
 	extern int userchoice; // major hack... see Item::I_ask
 
@@ -901,22 +738,22 @@ void Application::handleEvent(const SDL_Event& event)
 
 
 
-uint32 Application::I_getCurrentTimerTick(const uint8* /*args*/,
+uint32 GUIApp::I_getCurrentTimerTick(const uint8* /*args*/,
 										unsigned int /*argsize*/)
 {
-	return get_instance()->getFrameNum()*8;
+	return static_cast<GUIApp *>(get_instance())->getFrameNum()*8;
 }
 
-uint32 Application::I_setAvatarInStasis(const uint8* args, unsigned int /*argsize*/)
+uint32 GUIApp::I_setAvatarInStasis(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_SINT16(statis);
-	get_instance()->setAvatarInStasis(statis!=0);
+	static_cast<GUIApp *>(get_instance())->setAvatarInStasis(statis!=0);
 	return 0;
 }
 
-uint32 Application::I_getAvatarInStasis(const uint8* /*args*/, unsigned int /*argsize*/)
+uint32 GUIApp::I_getAvatarInStasis(const uint8* /*args*/, unsigned int /*argsize*/)
 {
-	if (get_instance()->avatarInStasis)
+	if (static_cast<GUIApp *>(get_instance())->avatarInStasis)
 		return 1;
 	else
 		return 0;
