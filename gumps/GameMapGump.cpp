@@ -447,6 +447,8 @@ void GameMapGump::StopDraggingItem(Item* item, bool moved)
 
 void GameMapGump::DropItem(Item* item, int mx, int my)
 {
+	World *world = World::get_instance();
+	CurrentMap *map = world->getCurrentMap();
 	display_dragging = false;
 
 	// add item to world 
@@ -456,13 +458,46 @@ void GameMapGump::DropItem(Item* item, int mx, int my)
 	// hackety-hack
 	sint32 cx, cy, cz;
 	GetCameraLocation(cx, cy, cz);
-	dragging_z = 128;
-	dragging_x = 2*mx + 4*(my+128) + cx - 4*cz;
-	dragging_y = -2*mx + 4*(my+128) + cy - 4*cz;
+
+	sint32 top[3];
+	sint32 bottom[3];
+	sint32 dims[3];
+	
+	top[2] = 128;
+	top[0] = 2*mx + 4*(my + top[2]) + cx - 4*cz;
+	top[1] = -2*mx + 4*(my + top[2]) + cy - 4*cz;
+	
+	bottom[2] = 0;
+	bottom[0] = 2*mx + 4*(my + bottom[2]) + cx - 4*cz;
+	bottom[1] = -2*mx + 4*(my + bottom[2]) + cy - 4*cz;
+
+	item->getFootpadWorld(dims[0], dims[1], dims[2]);
+
+	dragging_z = world->getMainActor()->getZ() + 8;
+
+	std::list<CurrentMap::SweepItem> collisions;
+	std::list<CurrentMap::SweepItem>::iterator it;
+	if (map->sweepTest(top, bottom, dims, 0, false, &collisions))
+	{
+		for (it=collisions.begin(); it != collisions.end(); ++it)
+		{
+			Item * item2 = world->getItem(it->item);
+			if (!item2) continue;
+			item2->getFootpadWorld(dims[0], dims[1], dims[2]);
+			
+			sint32 iz = item->getZ() + dims[2] + 8;
+			if (iz > dragging_z)
+			{
+				dragging_z = iz;
+			}
+		}
+	}
+
+	dragging_x = 2*mx + 4*(my + dragging_z) + cx - 4*cz;
+	dragging_y = -2*mx + 4*(my + dragging_z) + cy - 4*cz;
 
 	perr << "Dropping item at (" << dragging_x << "," << dragging_y 
 		 << "," << dragging_z << ")" << std::endl;
-		
 	item->move(dragging_x,dragging_y,dragging_z); // move
 	item->fall();
 }
