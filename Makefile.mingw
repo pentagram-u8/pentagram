@@ -16,7 +16,7 @@ CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -I$(SRC)/conf -I$(SRC)/convert \
 	-I$(SRC)/misc -I$(SRC)/tools/compile -I$(SRC)/tools/disasm \
 	-I$(SRC)/tools/fold -I$(SRC)/usecode -I$(SRC)/world \
 	-I$(SRC)/world/actors -I$(SRC)/gumps/widgets \
-	-I$(SRC)/audio -I$(SRC)/audio/midi \
+	-I$(SRC)/audio -I$(SRC)/audio/midi -I$(SRC)/audio/timidity \
 	$(SDL_CFLAGS) -DHAVE_SYS_STAT_H -DHAVE_SYS_TYPES_H -DHAVE_UNISTD_H -DUSE_FMOPL_MIDI
 CXXFLAGS=-O2
 CXX=g++
@@ -51,7 +51,8 @@ shapeconv.exe : tools/shapeconv/ShapeConv.o $(CONVERT) $(FILESYS) $(MISC) $(ARGS
 PENTAGRAM_OBJS = \
 	$(KERNEL) $(KERNEL2) $(USECODE) $(FILESYS) $(CONVERT) $(CONF)\
 	$(GRAPHICS) $(MISC) $(ARGS) $(GUMPS) $(WIDGETS) $(WORLD) $(ACTORS)\
-	$(COMPILE) $(DISASM) $(AUDIO) $(MIDI) kernel/GUIApp.o pentagram.o
+	$(COMPILE) $(DISASM) $(AUDIO) $(MIDI) $(TIMIDITY) \
+	kernel/GUIApp.o pentagram.o
 
 pentagram.exe: $(PENTAGRAM_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ $(LIBS)

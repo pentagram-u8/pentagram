@@ -49,8 +49,8 @@ WARNINGS := @WARNINGS@
 # The order is important, be careful if you change it
 MODULES := convert convert/u8 convert/crusader misc filesys \
 	tools tools/disasm tools/compile tools/fold tools/shapeconv \
-	kernel graphics audio audio/midi usecode world world/actors gumps  \
-	gumps/widgets conf .
+	kernel graphics audio audio/midi audio/midi/timidity usecode \
+	world world/actors gumps gumps/widgets conf .
 
 # look for include files in
 #   each of the modules

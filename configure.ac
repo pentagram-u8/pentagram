@@ -293,26 +293,35 @@ fi
 # Features
 # ------------------
 USESDLMIXER=no
+#AC_CHECK_LIB(SDL_mixer, Mix_QuickLoad_RAW,
+#	HAVESDLMIXER=yes,
+#	HAVESDLMIXER=no)
 
 AC_ARG_ENABLE(fmopl_midi,      [  --disable-fmopl-midi    Disable FMOPL midi],,enable_fmopl_midi=yes)
-AC_CHECK_LIB(SDL_mixer, Mix_QuickLoad_RAW,
-	HAVESDLMIXER=yes,
-	HAVESDLMIXER=no)
-if test x$HAVESDLMIXER = xyes; then
+#if test x$HAVESDLMIXER = xyes; then
 	AC_MSG_CHECKING(if we want to use FMOPL midi)
 	if test x$enable_fmopl_midi = xyes; then
 		AC_MSG_RESULT(yes)
 		AC_DEFINE(USE_FMOPL_MIDI, 1, [Enable FMOPL midi])
-		USESDLMIXER=yes
+#		USESDLMIXER=yes
 	else
 		AC_MSG_RESULT(no)
 	fi
+#fi
+
+AC_ARG_ENABLE(timidity_midi,      [  --disable-timidity-midi         Disable timidity midi],,enable_timidity_midi=yes)
+AC_MSG_CHECKING(if we want to use timidity midi)
+if test x$enable_timidity_midi = xyes; then
+	AC_MSG_RESULT(yes)
+	AC_DEFINE(USE_TIMIDITY_MIDI, 1, [Enable timidity midi])
+#	USESDLMIXER=yes
+else
+	AC_MSG_RESULT(no)
 fi
 
-
-if test x$HAVESDLMIXER = xyes -a x$USESDLMIXER = xyes; then
-	SDL_LIBS="$SDL_LIBS -lSDL_mixer"
-fi
+#if test x$HAVESDLMIXER = xyes -a x$USESDLMIXER = xyes; then
+#	SDL_LIBS="$SDL_LIBS -lSDL_mixer"
+#fi
 
 
 # ------------------

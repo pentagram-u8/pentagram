@@ -24,6 +24,7 @@ pentagram_OBJ = \
 	$(ARGS) \
 	$(AUDIO) \
 	$(MIDI) \
+	$(TIMIDITY) \
 	kernel/GUIApp.o \
 	pentagram.o
 
@@ -45,6 +46,7 @@ llc_OBJ = \
 	$(ARGS) \
 	$(AUDIO) \
 	$(MIDI) \
+	$(TIMIDITY) \
 	kernel/GUIApp.o \
 	kernel/ConApp.o \
 	tools/compile/llc.o

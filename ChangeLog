@@ -1,3 +1,7 @@
+2003-07-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* configure.ac, bootstrap, Makefile.in: timidity
+	* configure.ac: don't use SDL_mixer anymore
+
 2003-07-05  Ryan Nunn <colourles@users.sourceforge.net>
 	* filesys/ODataSource.h, tools/fold/*.* : Deque'ing the
 	  OBufferDataSource. Changed it to ODequeDataSource. Added a real 
