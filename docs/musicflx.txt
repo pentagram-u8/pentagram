@@ -18,10 +18,13 @@ Entry 0 is a description file (see below)
 Entries 44 through 121 are General Midi
 Entries 172 through 249 are FM Synth (GM + 128)
 
-257 is a text file containing some midi names. Appears useless
-258 is a xmi, usage is unknown
-259 is an unknown format
-260 is a xmi, usage is unknown
+Entry 257 is a text file containing some midi names. Appears useless
+
+Entry 258 is a xmi, usage is unknown
+
+Entry 259 is an AIL format FM Synth/Adlib Instrument Bank
+
+Entry 260 is a xmi, usage is unknown
 
 
 Entry 0 Details
