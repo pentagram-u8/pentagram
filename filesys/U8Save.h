@@ -37,6 +37,7 @@ public:
 	// return object as IDataSource. Delete the IDataSource afterwards,
 	// but DON'T delete/modify the buffer it points to.
 	virtual IDataSource* get_datasource(const char* filename);
+	virtual IDataSource* get_datasource(uint32 index) { return Flex::get_datasource(index); };
 
 protected:
 	virtual uint32 get_offset(uint32 index);

@@ -44,6 +44,8 @@ public:
 	void loadConfig();
 	void setupVirtualPaths();
 
+	void U8Playground(int argc, char *argv[]);
+
 private:
 	Kernel* kernel;
 	UCMachine* ucmachine;
@@ -57,6 +59,18 @@ private:
 	World *world;
 
 	static Application* application;
+
+	// internal initilisation functions,
+	// called depending upon command line arguments
+	void MinimalSysInit(); // console only system
+	void GraphicSysInit(); // starts the graphics subsystem
+	void SDLInit(); // start sdl
+	void UCMachineInit(); // start usecode machine
+
+	// Various dependancy flags
+	bool runMinimalSysInit;
+	bool runGraphicSysInit;
+	bool runSDLInit;
 };
 
 #endif

@@ -51,129 +51,19 @@ Application* Application::application = 0;
 int classid, offset; // only temporary, don't worry :-)
 Shape* shape;
 
-Application::Application(int argc, char *argv[])
+Application::Application(int argc, char *argv[]) : runMinimalSysInit(false),
+		runGraphicSysInit(false), runSDLInit(false)
 {
 	assert(application == 0);
 	application = this;
 
-	// Init sdl
-	pout << "Init SDL" << std::endl;
-	SDL_Init(SDL_INIT_VIDEO);
-	atexit(SDL_Quit);
+	MinimalSysInit();
 
-	// Create the kernel
-	pout << "Create Kernel" << std::endl;
-	kernel = new Kernel;
-	pout << "Create UCMachine" << std::endl;
-	ucmachine = new UCMachine;
-	pout << "Create FileSystem" << std::endl;
-	filesystem = new FileSystem;
-	setupVirtualPaths(); // setup @home, @data
+	UCMachineInit();
 
-	pout << "Create Configuration" << std::endl;
-	config = new Configuration;
-	loadConfig();
+	GraphicSysInit();
 
-	// Set Screen Resolution
-	pout << "Set Video Mode" << std::endl;
-	screen = RenderSurface::SetVideoMode(640, 480, 32, false, false);
-	if (!screen)
-	{
-		perr << "Unable to set video mode. Exiting" << std::endl;
-		std::exit(-1);
-	}
-	pout << "Resize Console" << std::endl;
-	con.CheckResize(640);
-
-	// Load palette
-	pout << "Load Palette" << std::endl;
-	palettemanager = new PaletteManager(screen);
-	IDataSource *pf = filesystem->ReadFile("@u8/static/u8pal.pal");
-	if (!pf) {
-		perr << "Unable to load static/u8pal.pal. Exiting" << std::endl;
-		std::exit(-1);
-	}
-	pf->seek(4); // seek past header
-	palettemanager->load(PaletteManager::Pal_Game, *pf, U8XFormFuncs);
-
-	gamedata = new GameData();
-	gamedata->loadU8Data();
-
-	shape = gamedata->getMainShapes()->getShape(1);
-	shape->setPalette(palettemanager->getPalette(PaletteManager::Pal_Game));
-
-	// Initialize world
-	pout << "Initialize World" << std::endl;
-	world = new World();
-
-	// Load confont
-	pout << "Load Confont" << std::endl;
-	IDataSource *cf = filesystem->ReadFile("@data/fixedfont.tga");
-	Texture *confont;
-	if (cf) confont = Texture::Create(*cf, "@data/fixedfont.tga");
-	else confont = 0;
-	if (!confont)
-	{
-		perr << "Unable to load fixedfont.tga. Exiting" << std::endl;
-		std::exit(-1);
-	}
-	delete cf;
-	con.SetConFont(confont);
-
-	IDataSource *saveds = filesystem->ReadFile("@u8/savegame/u8save.000");
-	U8Save *u8save = new U8Save(saveds);
-
-	IDataSource *nfd = u8save->get_datasource("NONFIXED.DAT");
-	if (!nfd) {
-		perr << "Unable to load savegame/u8save.000/NONFIXED.DAT. Exiting" << std::endl;
-		std::exit(-1);
-	}
-	world->initMaps();
-	world->loadNonFixed(nfd);
-	delete nfd;
-	IDataSource *icd = u8save->get_datasource("ITEMCACH.DAT");
-	if (!icd) {
-		perr << "Unable to load savegame/u8save.000/ITEMCACH.DAT. Exiting" << std::endl;
-		std::exit(-1);
-	}
-	IDataSource *npcd = u8save->get_datasource("NPCDATA.DAT");
-	if (!npcd) {
-		perr << "Unable to load savegame/u8save.000/NPCDATA.DAT. Exiting" << std::endl;
-		std::exit(-1);
-	}		
-	world->initNPCs();
-	world->loadItemCachNPCData(icd, npcd);
-	delete icd;
-	delete npcd;
-	delete u8save;
-	delete saveds;
-
-	IDataSource *fd = filesystem->ReadFile("@u8/static/fixed.dat");
-	if (!fd) {
-		perr << "Unable to load static/fixed.dat. Exiting" << std::endl;
-		std::exit(-1);
-	}
-	world->loadFixed(fd);
-	// some testing...
-	world->switchMap(3);
-	world->switchMap(40);
-	world->switchMap(43);
-  	world->switchMap(3);
-
-	// Create console gump
-	//pout << "Create Graphics Console" << std::endl;
-	//desktop = console = new ConsoleGump(0,0, width, height);
-
-	// Clear Screen
-	pout << "Paint Inital display" << std::endl;
-	paint();
-
-	classid = offset = -1;
-	if (argc == 3) {
-		classid = std::strtol(argv[1], 0, 16);
-		offset = std::strtol(argv[2], 0, 16);
-	}
-
+	U8Playground(argc, argv);
 }
 
 Application::~Application()
@@ -205,7 +95,7 @@ void Application::run()
 		kernel->runProcesses(framenum++);
 
 		pout << "Pausing execution. Press a key (in graphics window) to continue" << std::endl;
-		
+
 		// Paint Screen
 		paint();
 
@@ -216,6 +106,84 @@ void Application::run()
 				if (event.type == SDL_KEYDOWN) break;
 			}
 		}
+	}
+}
+
+void Application::U8Playground(int argc, char *argv[])
+{
+	// Load palette
+	pout << "Load Palette" << std::endl;
+	palettemanager = new PaletteManager(screen);
+	IDataSource *pf = filesystem->ReadFile("@u8/static/u8pal.pal");
+	if (!pf) {
+		perr << "Unable to load static/u8pal.pal. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	pf->seek(4); // seek past header
+	palettemanager->load(PaletteManager::Pal_Game, *pf, U8XFormFuncs);
+
+	gamedata = new GameData();
+	gamedata->loadU8Data();
+
+	shape = gamedata->getMainShapes()->getShape(1);
+	shape->setPalette(palettemanager->getPalette(PaletteManager::Pal_Game));
+
+	// Initialize world
+	pout << "Initialize World" << std::endl;
+	world = new World();
+
+	IDataSource *saveds = filesystem->ReadFile("@u8/savegame/u8save.000");
+	U8Save *u8save = new U8Save(saveds);
+
+	IDataSource *nfd = u8save->get_datasource("NONFIXED.DAT");
+	if (!nfd) {
+		perr << "Unable to load savegame/u8save.000/NONFIXED.DAT. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	world->initMaps();
+	world->loadNonFixed(nfd);
+	delete nfd;
+	IDataSource *icd = u8save->get_datasource("ITEMCACH.DAT");
+	if (!icd) {
+		perr << "Unable to load savegame/u8save.000/ITEMCACH.DAT. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	IDataSource *npcd = u8save->get_datasource("NPCDATA.DAT");
+	if (!npcd) {
+		perr << "Unable to load savegame/u8save.000/NPCDATA.DAT. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	world->initNPCs();
+	world->loadItemCachNPCData(icd, npcd);
+	delete icd;
+	delete npcd;
+	delete u8save;
+	delete saveds;
+
+	IDataSource *fd = filesystem->ReadFile("@u8/static/fixed.dat");
+	if (!fd) {
+		perr << "Unable to load static/fixed.dat. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	world->loadFixed(fd);
+	// some testing...
+	world->switchMap(3);
+	world->switchMap(40);
+	world->switchMap(43);
+  	world->switchMap(3);
+
+	// Create console gump
+	//pout << "Create Graphics Console" << std::endl;
+	//desktop = console = new ConsoleGump(0,0, width, height);
+
+	// Clear Screen
+	pout << "Paint Inital display" << std::endl;
+	paint();
+
+	classid = offset = -1;
+	if (argc == 3) {
+		classid = std::strtol(argv[1], 0, 16);
+		offset = std::strtol(argv[2], 0, 16);
 	}
 }
 
@@ -301,4 +269,96 @@ void Application::loadConfig()
 	config->value("config/paths/u8", u8, ".");
 	filesystem->AddVirtualPath("@u8", u8);
 	pout << "U8 Path: " << u8 << std::endl;
+}
+
+void Application::MinimalSysInit()
+{
+	// if we've already done this...
+	if(runMinimalSysInit) return;
+	//else...
+
+	SDLInit();
+
+	// Create the kernel
+	pout << "Create Kernel" << std::endl;
+	kernel = new Kernel;
+
+	pout << "Create FileSystem" << std::endl;
+	filesystem = new FileSystem;
+	setupVirtualPaths(); // setup @home, @data
+
+	pout << "Create Configuration" << std::endl;
+	config = new Configuration;
+	loadConfig();
+
+	runMinimalSysInit=true;
+}
+
+void Application::GraphicSysInit()
+{
+	// if we've already done this...
+	if(runGraphicSysInit) return;
+	//else...
+
+	// check we've run the prereqs...
+	if(!runMinimalSysInit)
+		MinimalSysInit();
+	// go!
+
+	// Set Screen Resolution
+	pout << "Set Video Mode" << std::endl;
+	screen = RenderSurface::SetVideoMode(640, 480, 32, false, false);
+	if (!screen)
+	{
+		perr << "Unable to set video mode. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	pout << "Resize Console" << std::endl;
+	con.CheckResize(640);
+
+	// Load confont
+	pout << "Load Confont" << std::endl;
+	IDataSource *cf = filesystem->ReadFile("@data/fixedfont.tga");
+	Texture *confont;
+	if (cf) confont = Texture::Create(*cf, "@data/fixedfont.tga");
+	else confont = 0;
+	if (!confont)
+	{
+		perr << "Unable to load fixedfont.tga. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	delete cf;
+	con.SetConFont(confont);
+
+	runGraphicSysInit=true;
+}
+
+// Init sdl
+void Application::SDLInit()
+{
+	// if we're already done this...
+	if(runSDLInit) return;
+	//else...
+
+	pout << "Init SDL" << std::endl;
+	SDL_Init(SDL_INIT_VIDEO);
+	atexit(SDL_Quit);
+
+	runSDLInit=true;
+}
+
+
+void Application::UCMachineInit()
+{
+	// if we've already done this...
+	if(ucmachine!=0) return;
+	//else...
+
+	// check we've run the prereqs...
+	if(!runMinimalSysInit)
+		MinimalSysInit();
+	// go!
+
+	pout << "Create UCMachine" << std::endl;
+	ucmachine = new UCMachine;
 }

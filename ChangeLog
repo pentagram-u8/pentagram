@@ -1,3 +1,8 @@
+2003-04-29  Darke <darkepaw@users.sf.net>
+	* Various .h/.cpp files: Pointless Copyright year update when noticed.
+	* kernel/Application.*: Abstraction of core constructor into appropriately
+	  named functions.
+
 2003-04-21  Darke  <darkepaw@users.sf.net>
 	* convert/*: Altered prototype usecode function names. Changed from a
 	  mishmash of short/ushort/whatever originally defined, corrected to
@@ -7,6 +12,8 @@
 	* tools/disasm/Disasm.cpp: Minor code cleanup.
 	* tools/fold/*: Code reorgnising to make it a bit more compatable with
 	  a compiler that will hopefully be finished sometime this century. *grin*
+
+	* tools/fold/CommonBases.h: Added file forgotten.
 
 2003-04-20  Darke  <darkepaw@users.sf.net>
 	* conf/Configuration.cpp, convert/ConvertShape.cpp, convert/ConvertShape.h,
