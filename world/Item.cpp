@@ -1939,6 +1939,17 @@ uint32 Item::I_use(const uint8* args, unsigned int /*argsize*/)
 	return item->callUsecodeEvent_use();
 }
 
+uint32 Item::I_gotHit(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM_FROM_PTR(item);
+	ARG_UINT16(hitter);
+	ARG_SINT16(unk);
+	if (!item) return 0;
+
+	return item->callUsecodeEvent_gotHit(hitter, unk);
+}
+
+
 uint32 Item::I_enterFastArea(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM_FROM_PTR(item);

@@ -147,7 +147,7 @@ Intrinsic U8Intrinsics[] = {
 	0, //U
 	// 0x060
 	0, //U
-	UCMachine::I_dummyProcess, //!! process Item::gotHit(uword, word)
+	Item::I_gotHit,
 	0, //U
 	0, //U
 	0, //U

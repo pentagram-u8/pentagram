@@ -379,6 +379,7 @@ public:
 	INTRINSIC(I_getDirFromItem);
 	INTRINSIC(I_look);
 	INTRINSIC(I_use);
+	INTRINSIC(I_gotHit);
 	INTRINSIC(I_enterFastArea);
 	INTRINSIC(I_ask);
 	INTRINSIC(I_getSliderInput);
