@@ -139,22 +139,17 @@ void MenuGump::selectEntry(int entry)
 {
 	switch (entry)
 	{
-	case 1:
-	{	// Intro
+	case 1: // Intro
 		Game::get_instance()->playIntroMovie();
-	} break;
-	case 2:
-	{	// Read Diary
-		// I'm lazy - MJ
+		break;
+	case 2: // Read Diary
 		GUIApp::get_instance()->loadGame("@save/quicksave");
-	} break;
-	case 3:
-	{	// Write Diary
-		// I'm lazy - MJ
+		break;
+	case 3: // Write Diary
 		GUIApp::get_instance()->saveGame("@save/quicksave", true);
-	} break;
-	case 4:
-	{	// Options
+		break;
+	case 4: // Options
+	{
 		OptionsGump * options = new OptionsGump();
 		options->InitGump();
 		PagedGump * gump = new PagedGump(34, -38, 3, gumpShape);
@@ -163,20 +158,18 @@ void MenuGump::selectEntry(int entry)
 		AddChild(gump);
 		gump->setRelativePosition(CENTER);
 	} break;
-	case 5:
-	{	// Credits
-	} break;
-	case 6:
-	{	// Quit
+	case 5: // Credits
+		Game::get_instance()->playCredits();
+		break;
+	case 6: // Quit
 		QuitGump::verifyQuit();
-	} break;
-	case 7:
-	{	// Quotes
-	} break;
-	case 8:
-	{	// End Game
+		break;
+	case 7: // Quotes
+		Game::get_instance()->playQuotes();
+		break;
+	case 8: // End Game
 		Game::get_instance()->playEndgameMovie();
-	} break;
+		break;
 	default:
 		break;
 	}

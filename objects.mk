@@ -135,6 +135,7 @@ GUMPS = \
 	gumps/ConsoleGump.o \
 	gumps/ContainerGump.o \
 	gumps/ControlsGump.o \
+	gumps/CreditsGump.o \
 	gumps/DesktopGump.o \
 	gumps/GameMapGump.o \
 	gumps/Gump.o \

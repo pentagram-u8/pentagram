@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2004-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,17 +29,17 @@
 #include "IDataSource.h"
 #include "ODataSource.h"
 
-DEFINE_RUNTIME_CLASSTYPE_CODE(MovieGump,Gump);
+DEFINE_RUNTIME_CLASSTYPE_CODE(MovieGump,ModalGump);
 
 MovieGump::MovieGump()
-	: Gump(), player(0)
+	: ModalGump(), player(0)
 {
 
 }
 
 MovieGump::MovieGump(int width, int height, RawArchive* movie,
 					 uint32 _Flags, sint32 layer)
-	: Gump(50, 50, width, height, 0, _Flags, layer)
+	: ModalGump(50, 50, width, height, 0, _Flags, layer)
 {
 	player = new SKFPlayer(movie, width, height);
 }
@@ -51,13 +51,23 @@ MovieGump::~MovieGump()
 
 void MovieGump::InitGump()
 {
-	Gump::InitGump();
+	ModalGump::InitGump();
 	player->start();
+
+	GUIApp::get_instance()->pushMouseCursor();
+	GUIApp::get_instance()->setMouseCursor(GUIApp::MOUSE_NONE);
+}
+
+void MovieGump::Close(bool no_del)
+{
+	GUIApp::get_instance()->popMouseCursor();
+
+	ModalGump::Close(no_del);
 }
 
 bool MovieGump::Run(const uint32 framenum)
 {
-	Gump::Run(framenum);
+	ModalGump::Run(framenum);
 
 	player->run();
 	if (!player->isPlaying()) {

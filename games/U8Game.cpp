@@ -39,6 +39,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "SettingManager.h"
 #include "MovieGump.h"
 #include "RawArchive.h"
+#include "CreditsGump.h"
 
 U8Game::U8Game() : Game()
 {
@@ -358,11 +359,58 @@ void U8Game::playEndgameMovie()
 
 void U8Game::playCredits()
 {
+	GameInfo* gameinfo = CoreApp::get_instance()->getGameInfo();
 
+	std::string filename = "@u8/static/";
+
+	switch (gameinfo->language) {
+	case GameInfo::GAMELANG_ENGLISH:
+	case GameInfo::GAMELANG_SPANISH:
+		filename += "ecredits.dat";
+		break;
+	case GameInfo::GAMELANG_FRENCH:
+		filename += "fcredits.dat";
+		break;
+	case GameInfo::GAMELANG_GERMAN:
+		filename += "gcredits.dat";
+		break;
+	default:
+		perr << "U8Game::playCredits: Unknown language." << std::endl;
+		return;
+	}
+
+	IDataSource* ids = FileSystem::get_instance()->ReadFile(filename);
+	if (!ids) {
+		perr << "U8Game::playCredits: error opening credits file: "
+			 << filename << std::endl;
+		return;
+	}
+	std::string text = getCreditText(ids);
+	delete ids;
+
+	Gump* gump = new CreditsGump(text);
+	gump->InitGump();
+	GUIApp::get_instance()->addGump(gump);
+	gump->setRelativePosition(Gump::CENTER);
 }
+
 void U8Game::playQuotes()
 {
+	std::string filename = "@u8/static/quotes.dat";
 
+	IDataSource* ids = FileSystem::get_instance()->ReadFile(filename);
+	if (!ids) {
+		perr << "U8Game::playCredits: error opening credits file: "
+			 << filename << std::endl;
+		return;
+	}
+	std::string text = getCreditText(ids);
+	delete ids;
+
+	Gump* gump = new CreditsGump(text, 80);
+	gump->InitGump();
+	GUIApp::get_instance()->addGump(gump);
+	gump->setRelativePosition(Gump::CENTER);
 }
 
 
@@ -405,4 +453,31 @@ void U8Game::writeSaveInfo(ODataSource* ods)
 			ods->write4(0);
 		}
 	}
+}
+
+
+std::string U8Game::getCreditText(IDataSource* ids)
+{
+	std::string text;
+	unsigned int size = ids->getSize();
+	text.resize(size);
+	for (unsigned int i = 0; i < size; ++i) {
+		uint8 c = ids->read1();
+		int x;
+		switch(i) {
+	    case 0: case 1:
+			x = 0; break;
+		case 2:
+			x = 0xE1; break;
+		default:
+			x = 0x20 * (i+1) + (i >> 1);
+			x += (i % 0x40) * ((i & 0xC0) >> 6) * 0x40;
+			break;
+		}
+		char d = (c ^ x) & 0xFF;
+		if (d == 0) d = '\n';
+		text[i] = d;
+	}
+
+	return text;
 }

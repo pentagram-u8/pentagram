@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004-2005  The Pentagram Team
+ *  Copyright (C) 2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,24 +16,24 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef MOVIEGUMP_H
-#define MOVIEGUMP_H
+#ifndef CREDITSGUMP_H
+#define CREDITSGUMP_H
 
 #include "ModalGump.h"
 
-class RawArchive;
-class SKFPlayer;
+class RenderedText;
 
-class MovieGump : public ModalGump
+class CreditsGump : public ModalGump
 {
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	MovieGump();
-	MovieGump(int width, int height, RawArchive* skf,
-			  uint32 _Flags = 0, sint32 layer = LAYER_MODAL);
-	virtual ~MovieGump(void);
+	CreditsGump();
+	CreditsGump(const std::string& text, int parskip=24,
+				uint32 _Flags = 0, sint32 layer = LAYER_MODAL);
+	virtual ~CreditsGump(void);
 
+	// Init the gump, call after construction
 	virtual void InitGump();
 
 	virtual void Close(bool no_del = false);
@@ -45,17 +45,23 @@ public:
 
 	virtual bool OnKeyDown(int key, int mod);
 
-	static void U8MovieViewer(RawArchive* skf);
-
-	//! "play" console command
-	static void ConCmd_play(const Console::ArgsType &args,
-							const Console::ArgvType &argv);
-
-	bool loadData(IDataSource* ids);
 protected:
-	virtual void saveData(ODataSource* ods);
 
-	SKFPlayer* player;
+	void extractLine(std::string& text, char& modifier, std::string& line);
+
+	std::string text;
+	int parskip;
+
+	int timer;
+
+	RenderedText* title;
+	RenderedText* nexttitle;
+	int nexttitlesurf;
+
+	RenderSurface* scroll[4];
+	int scrollheight[4];
+	int currentsurface;
+	int currenty;
 };
 
 #endif

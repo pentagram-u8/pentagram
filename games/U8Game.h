@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Game.h"
 
+class IDataSource;
+
 class U8Game: public Game {
 public:
 	U8Game();
@@ -42,6 +44,9 @@ public:
 	virtual void playEndgameMovie();
 	virtual void playCredits();
 	virtual void playQuotes();
+
+protected:
+	std::string getCreditText(IDataSource* ids);
 };
 
 
