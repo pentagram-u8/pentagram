@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define INCLUDE_CONVERTUSECODEU8_WITHOUT_BRINGING_IN_FOLD
 #include "u8/ConvertUsecodeU8.h"
 
-#include "Container.h"
+#include "MainActor.h"
 
 //#define WATCH_CLASS 124
 //#define WATCH_ITEM 6637
@@ -90,7 +90,7 @@ enum UCSegments {
 
 UCMachine* UCMachine::ucmachine = 0;
 
-UCMachine::UCMachine(Intrinsic *iset) : avatarsName("Avatar")
+UCMachine::UCMachine(Intrinsic *iset)
 {
 	assert(ucmachine == 0);
 	ucmachine = this;
@@ -104,7 +104,6 @@ UCMachine::UCMachine(Intrinsic *iset) : avatarsName("Avatar")
 	listIDs = new idMan(1, 65534, 128);
 	stringIDs = new idMan(1, 65534, 256);
 
-	con.AddConsoleCommand("UCMachine::avatarsName", ConCmd_avatarsName);
 	con.AddConsoleCommand("UCMachine::getGlobal", ConCmd_getGlobal);
 	con.AddConsoleCommand("UCMachine::setGlobal", ConCmd_setGlobal);
 }
@@ -112,7 +111,6 @@ UCMachine::UCMachine(Intrinsic *iset) : avatarsName("Avatar")
 
 UCMachine::~UCMachine()
 {
-	con.RemoveConsoleCommand("UCMachine::avatarsName");
 	con.RemoveConsoleCommand("UCMachine::getGlobal");
 	con.RemoveConsoleCommand("UCMachine::setGlobal");
 
@@ -2316,7 +2314,8 @@ uint32 UCMachine::I_dummyProcess(const uint8* /*args*/, unsigned int /*argsize*/
 uint32 UCMachine::I_getName(const uint8* /*args*/, unsigned int /*argsize*/)
 {
 	UCMachine *uc = UCMachine::get_instance();
-	return uc->assignString(uc->avatarsName.c_str());
+	MainActor* av = World::get_instance()->getMainActor();
+	return uc->assignString(av->getName().c_str());
 }
 
 uint32 UCMachine::I_numToStr(const uint8* args, unsigned int /*argsize*/)
@@ -2351,20 +2350,6 @@ uint32 UCMachine::I_rndRange(const uint8* args, unsigned int /*argsize*/)
 	return (lo + (std::rand() % (hi-lo+1)));
 }
 
-
-
-void UCMachine::ConCmd_avatarsName(const Console::ArgsType & /*args*/, const Console::ArgvType &argv)
-{
-	UCMachine *uc = UCMachine::get_instance();
-	if (argv.size() == 1)
-	{
-		pout << "UCMachine::avatarsName = \"" << uc->avatarsName << "\"" << std::endl;
-	}
-	else
-	{
-		uc->avatarsName = argv[1].c_str();
-	}
-}
 
 void UCMachine::ConCmd_getGlobal(const Console::ArgsType & /*args*/, const Console::ArgvType &argv)
 {

@@ -70,6 +70,9 @@ public:
 
 	virtual ProcId die(uint16 DamageType);
 
+	std::string getName() { return name; }
+	void setName(std::string name_) { name = name_; }
+
 	bool loadData(IDataSource* ids);
 
 	//! "teleport" console command
@@ -82,6 +85,8 @@ public:
 	static void ConCmd_listmarks(const Console::ArgsType &args, const Console::ArgvType &argv);
 	//! "maxstats" console command
 	static void ConCmd_maxstats(const Console::ArgsType &args, const Console::ArgvType &argv);
+	//! "Name" console command
+	static void ConCmd_name(const Console::ArgsType &args, const Console::ArgvType &argv);
 
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
@@ -94,7 +99,6 @@ public:
 	INTRINSIC(I_setAvatarInCombat);
 	INTRINSIC(I_isAvatarInCombat);
 
-
 	void getWeaponOverlay(const WeaponOverlayFrame*& frame, uint32& shape);
 
 
@@ -106,6 +110,8 @@ protected:
 	int accumStr;
 	int accumDex;
 	int accumInt;
+
+	std::string name;
 };
 
 #endif

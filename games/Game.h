@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define GAME_H
 
 #include "GameInfo.h"
+class ODataSource;
 
 class Game {
 public:
@@ -36,6 +37,9 @@ public:
 
 	//! start initial usecode
 	virtual bool startInitialUsecode()=0;
+
+	//! write game-specific savegame info (avatar stats, equipment, ...)
+	virtual void writeSaveInfo(ODataSource* ods)=0;
 
 	static Game* createGame(GameInfo* info);
 

@@ -104,8 +104,6 @@ private:
 
 	static UCMachine* ucmachine;
 
-	std::string		avatarsName;	// HACK alert! Only here for the AvatarsName console command
-	static void		ConCmd_avatarsName(const Console::ArgsType &args, const Console::ArgvType &argv);
 	static void		ConCmd_getGlobal(const Console::ArgsType &args, const Console::ArgvType &argv);
 	static void		ConCmd_setGlobal(const Console::ArgsType &args, const Console::ArgvType &argv);
 };

@@ -79,6 +79,7 @@ public:
 	INTRINSIC(I_getTimeInMinutes);
 	INTRINSIC(I_getTimeInSeconds);
 	INTRINSIC(I_setTimeInGameHours);
+	INTRINSIC(I_makeAvatarACheater);
 
 	void setAvatarInStasis(bool stat) { avatarInStasis = stat; }
 	bool isAvatarInStasis() const { return avatarInStasis; }
@@ -161,6 +162,11 @@ protected:
 	virtual void DeclareArgs();
 
 private:
+	uint32 save_count;
+
+	//! write savegame info (time, ..., game-specifics)
+	void writeSaveInfo(ODataSource* ods);
+
 	//! save CoreApp/GUIApp data
 	void save(ODataSource* ods);
 
@@ -271,6 +277,13 @@ private:
 	void stopDragging(int mx, int my);
 
 	sint32 timeOffset;
+	bool has_cheated;
+
+public:
+	bool hasCheated() const { return has_cheated; }
+	void makeCheater() { has_cheated = true; }
+
+private:
 
 	// Should probably go somewhere else.... perhaps in some 'audio manager'
 	MidiDriver *midi_driver;

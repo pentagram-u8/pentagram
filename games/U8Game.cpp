@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "XFormBlend.h"
 #include "U8Save.h"
 #include "World.h"
-#include "Actor.h"
+#include "MainActor.h"
 #include "ItemFactory.h"
 #include "Egg.h"
 #include "CurrentMap.h"
@@ -112,8 +112,10 @@ bool U8Game::startGame()
 	World::get_instance()->loadItemCachNPCData(icd, npcd);
 	delete u8save;
 
-	Actor* av = World::get_instance()->getNPC(1);
+	MainActor* av = World::get_instance()->getMainActor();
 	assert(av);
+
+	av->setName("Avatar"); // FIXME
 
 	// avatar needs a backpack ... CONSTANTs and all that
 	Container* backpack = p_dynamic_cast<Container*>(
@@ -302,4 +304,46 @@ bool U8Game::startInitialUsecode()
 	}
 
 	return true;
+}
+
+
+void U8Game::writeSaveInfo(ODataSource* ods)
+{
+	MainActor* av = World::get_instance()->getMainActor();
+	sint32 x,y,z;
+
+	std::string avname = av->getName();
+	uint8 namelength = static_cast<uint8>(avname.size());
+	ods->write1(namelength);
+	for (unsigned int i = 0; i < namelength; ++i)
+		ods->write1(static_cast<uint8>(avname[i]));
+
+	av->getLocation(x,y,z);
+	ods->write2(av->getMapNum());
+	ods->write4(static_cast<uint32>(x));
+	ods->write4(static_cast<uint32>(y));
+	ods->write4(static_cast<uint32>(z));
+
+	ods->write2(av->getStr());
+	ods->write2(av->getInt());
+	ods->write2(av->getDex());
+	ods->write2(av->getHP());
+	ods->write2(av->getMaxHP());
+	ods->write2(av->getMana());
+	ods->write2(av->getMaxMana());
+	ods->write2(av->getArmourClass());
+	ods->write2(av->getTotalWeight());
+
+	for (unsigned int i = 1; i <= 6; i++)
+	{
+		uint16 objid = av->getEquip(i);
+		Item* item = World::get_instance()->getItem(objid);
+		if (item) {
+			ods->write4(item->getShape());
+			ods->write4(item->getFrame());
+		} else {
+			ods->write4(0);
+			ods->write4(0);
+		}
+	}
 }

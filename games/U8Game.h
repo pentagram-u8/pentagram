@@ -34,6 +34,9 @@ public:
 
 	//! start initial usecode
 	virtual bool startInitialUsecode();
+
+	//! write game-specific savegame info (avatar stats, equipment, ...)
+	virtual void writeSaveInfo(ODataSource* ods);
 };
 
 

@@ -513,6 +513,11 @@ void MainActor::saveData(ODataSource* ods)
 	ods->write4(accumStr);
 	ods->write4(accumDex);
 	ods->write4(accumInt);
+	uint8 namelength = static_cast<uint8>(name.size());
+	ods->write1(namelength);
+	for (unsigned int i = 0; i < namelength; ++i)
+		ods->write1(static_cast<uint8>(name[i]));
+
 }
 
 bool MainActor::loadData(IDataSource* ids)
@@ -525,6 +530,11 @@ bool MainActor::loadData(IDataSource* ids)
 	accumStr = static_cast<sint32>(ids->read4());
 	accumDex = static_cast<sint32>(ids->read4());
 	accumInt = static_cast<sint32>(ids->read4());
+
+	uint8 namelength = ids->read1();
+	name.resize(namelength);
+	for (unsigned int i = 0; i < namelength; ++i)
+		name[i] = ids->read1();
 
 	return true;
 }
@@ -569,7 +579,7 @@ uint32 MainActor::I_accumulateIntelligence(const uint8* args,
 	return 0;
 }
 
-uint32 MainActor::I_clrAvatarInCombat(const uint8* args,
+uint32 MainActor::I_clrAvatarInCombat(const uint8* /*args*/,
 									  unsigned int /*argsize*/)
 {
 	MainActor* av = World::get_instance()->getMainActor();	
@@ -578,7 +588,7 @@ uint32 MainActor::I_clrAvatarInCombat(const uint8* args,
 	return 0;
 }
 
-uint32 MainActor::I_setAvatarInCombat(const uint8* args,
+uint32 MainActor::I_setAvatarInCombat(const uint8* /*args*/,
 									  unsigned int /*argsize*/)
 {
 	MainActor* av = World::get_instance()->getMainActor();	
@@ -587,7 +597,7 @@ uint32 MainActor::I_setAvatarInCombat(const uint8* args,
 	return 0;
 }
 
-uint32 MainActor::I_isAvatarInCombat(const uint8* args,
+uint32 MainActor::I_isAvatarInCombat(const uint8* /*args*/,
 									  unsigned int /*argsize*/)
 {
 	MainActor* av = World::get_instance()->getMainActor();
@@ -595,4 +605,14 @@ uint32 MainActor::I_isAvatarInCombat(const uint8* args,
 		return 1;
 	else
 		return 0;
+}
+
+void MainActor::ConCmd_name(const Console::ArgsType & /*args*/,
+								   const Console::ArgvType &argv)
+{
+	MainActor* av = World::get_instance()->getMainActor();
+	if (argv.size() > 1)
+		av->setName(argv[1]);
+
+	pout << "MainActor::name = \"" << av->getName() << "\"" << std::endl;
 }

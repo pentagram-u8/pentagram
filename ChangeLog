@@ -1,5 +1,13 @@
 2004-12-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AnimationTracker.*: removed 'dangerous' constructor
+	* docs/savegame.txt: new INFO savegame file
+	* kernel/GUIApp.*, games/U8Game.*: write INFO data
+	* kernel/GUIApp.*: makeAvatarACheater intrinsic
+	* world/actors/MainActor.*: store avatar's name; MainActor::name concmd
+	* usecode/UCMachine.*: use MainActor's name
+
+2004-12-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/AnimationTracker.*: removed 'dangerous' constructor
 
 2004-12-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AnimationTracker.*: properly detect missing animations

@@ -142,15 +142,15 @@ using std::string;
 DEFINE_RUNTIME_CLASSTYPE_CODE(GUIApp,CoreApp);
 
 GUIApp::GUIApp(int argc, const char* const* argv)
-	: CoreApp(argc, argv), game(0), objectmanager(0), hidmanager(0),
-	  ucmachine(0), screen(0), palettemanager(0), gamedata(0), world(0),
-	  desktopGump(0), consoleGump(0), gameMapGump(0), avatarMoverProcess(0),
-	  runGraphicSysInit(false), runSDLInit(false),
+	: CoreApp(argc, argv), save_count(0), game(0), objectmanager(0),
+	  hidmanager(0), ucmachine(0), screen(0), palettemanager(0), gamedata(0),
+	  world(0), desktopGump(0), consoleGump(0), gameMapGump(0),
+	  avatarMoverProcess(0), runGraphicSysInit(false), runSDLInit(false),
 	  frameSkip(false), frameLimit(true), interpolate(false),
 	  animationRate(100), avatarInStasis(false), paintEditorItems(false),
 	  painting(false), showTouching(false), flashingcursor(-1), 
 	  mouseOverGump(0), dragging(DRAG_NOT), dragging_offsetX(0),
-	  dragging_offsetY(0), inversion(0), timeOffset(0),
+	  dragging_offsetY(0), inversion(0), timeOffset(0), has_cheated(false),
 	  midi_driver(0), midi_volume(255), drawRenderStats(false)
 {
 	application = this;
@@ -181,6 +181,7 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	con.AddConsoleCommand("MainActor::recall", MainActor::ConCmd_recall);
 	con.AddConsoleCommand("MainActor::listmarks", MainActor::ConCmd_listmarks);
 	con.AddConsoleCommand("MainActor::maxstats", MainActor::ConCmd_maxstats);
+	con.AddConsoleCommand("MainActor::name", MainActor::ConCmd_name);
 	con.AddConsoleCommand("quit", ConCmd_quit);	
 	con.AddConsoleCommand("GUIApp::quit", ConCmd_quit);	
 	con.AddConsoleCommand("GUIApp::drawRenderStats", ConCmd_drawRenderStats);
@@ -209,6 +210,7 @@ GUIApp::~GUIApp()
 	con.RemoveConsoleCommand("MainActor::recall");
 	con.RemoveConsoleCommand("MainActor::listmarks");
 	con.RemoveConsoleCommand("MainActor::maxstats");
+	con.RemoveConsoleCommand("MainActor::name");
 	con.RemoveConsoleCommand("quit");
 	con.RemoveConsoleCommand("GUIApp::quit");
 	con.RemoveConsoleCommand("GUIApp::drawRenderStats");
@@ -1473,6 +1475,28 @@ void GUIApp::stopDragging(int mx, int my)
 	popMouseCursor();
 }
 
+void GUIApp::writeSaveInfo(ODataSource* ods)
+{
+	ods->write2(1); // version
+
+	time_t t = std::time(0);
+	struct tm *timeinfo = localtime (&t);
+	ods->write2(static_cast<uint16>(timeinfo->tm_year + 1900));
+	ods->write1(static_cast<uint8>(timeinfo->tm_mon+1));
+	ods->write1(static_cast<uint8>(timeinfo->tm_mday));
+	ods->write1(static_cast<uint8>(timeinfo->tm_hour));
+	ods->write1(static_cast<uint8>(timeinfo->tm_min));
+	ods->write1(static_cast<uint8>(timeinfo->tm_sec));
+	ods->write4(save_count);
+	ods->write4(getGameTimeInSeconds());
+
+	uint8 c = (has_cheated ? 1 : 0);
+	ods->write1(c);
+
+	// write game-specific info
+	game->writeSaveInfo(ods);
+}
+
 bool GUIApp::saveGame(std::string filename, bool ignore_modals)
 {
 	pout << "Saving..." << std::endl;
@@ -1490,12 +1514,18 @@ bool GUIApp::saveGame(std::string filename, bool ignore_modals)
 	ODataSource* ods = filesystem->WriteFile(filename);
 	if (!ods) return false;
 
+	save_count++;
+
 	SavegameWriter* sgw = new SavegameWriter(ods);
-	sgw->start(10); // 9 files + version
+	sgw->start(11); // 10 files + version
 	sgw->writeVersion(1);
 
 	// We'll make it 2KB initially
 	OAutoBufferDataSource buf(2048);
+
+	writeSaveInfo(&buf);
+	sgw->writeFile("INFO", &buf);
+	buf.clear();
 
 	kernel->save(&buf);
 	sgw->writeFile("KERNEL", &buf);
@@ -1569,6 +1599,8 @@ void GUIApp::resetEngine()
 
 	timeOffset = -(sint32)Kernel::get_instance()->getFrameNum();
 	inversion = 0;
+	save_count = 0;
+	has_cheated = false;
 }
 
 void GUIApp::setupCoreGumps()
@@ -1777,6 +1809,11 @@ void GUIApp::save(ODataSource* ods)
 	ods->write2(pal->transform);
 
 	ods->write2(static_cast<uint16>(inversion));
+
+	ods->write4(save_count);
+
+	uint8 c = (has_cheated ? 1 : 0);
+	ods->write1(c);
 }
 
 bool GUIApp::load(IDataSource* ids)
@@ -1804,6 +1841,10 @@ bool GUIApp::load(IDataSource* ids)
 	pal->transform = static_cast<PaletteManager::PalTransforms>(ids->read2());
 
 	inversion = ids->read2();
+
+	save_count = ids->read4();
+
+	has_cheated = (ids->read1() != 0);
 
 	return true;
 }
@@ -1864,6 +1905,13 @@ void GUIApp::ConCmd_drawRenderStats(const Console::ArgsType &args, const Console
 //
 // Intrinsics
 //
+
+uint32 GUIApp::I_makeAvatarACheater(const uint8* /*args*/,
+									unsigned int /*argsize*/)
+{
+	GUIApp::get_instance()->makeCheater();
+	return 0;
+}
 
 uint32 GUIApp::I_getCurrentTimerTick(const uint8* /*args*/,
 										unsigned int /*argsize*/)

@@ -19,8 +19,10 @@ Savegame files:
 global version 1-in-progress:
 
 VERSION: Savegame version
-GAMEINFO: GameInfo
-DESCRIPTION: Description
+GAME: GameInfo
+DESCRIPTION: Savegame description
+INFO: savegame/avatar info (shouldn't contain anything that is actually used)
+SCREEN: screenshot
 KERNEL: Processes
 OBJECTS: Objects (includes currently loaded items, gumps)
 WORLD: World data (currently current map, ethereal items)
@@ -30,13 +32,34 @@ UCGLOBALS: Globals
 UCSTRINGS: Strings
 UCLISTS: Lists
 APP: GUIApp/CoreApp data
-maybe more metadata (screenshot, time/date, ...)
-pentagram version (current, and starting?)
+pentagram version (current and starting?)
 
 
 
 VERSION: (unversioned)
 uint16 version		global savegame version
+
+GAME: (v1)
+uint16 version
+[...]
+
+INFO: (v1)
+uint16 version
+uint16 year
+uint8 month, day [1-12, 1-31]
+uint8 hour, min, sec [0-23, 0-59, 0-60]
+uint32 save_count
+uint8 has_cheated (bool)
+uint32 gametime [in seconds]
+uint8 name_length
+char avatar_name[name_length]
+uint16 map
+sint32 avatar_x,avatar_y,avatar_z
+sint16 str, int, dex
+uint16 hits, maxhits
+sint16 mana, maxmana
+uint16 armour, weight
+(uint32 shape,frame)[6] avatar_equipment (shield,arm,head,body,legs,weapon)
 
 APP: (v1)
 uint16 version
@@ -45,6 +68,8 @@ sint32 timeOffset (FIXME!)
 uint16 avatarMoverProcess (pid)
 sint16 palette_transform_matrix[12]
 uint16 inversion
+uint32 save_count
+uint8 has_cheated (bool)
 
 KERNEL: (v1)
 uint16 version			kernel savegame version
@@ -175,6 +200,8 @@ uint16 version
 <Actor>
 uint8 justTeleported (boolean)
 sint32 accumStr, accumDex, accumInt
+uint8 name_length
+sint8 name[name_length]
 TODO: more...?
 
 
