@@ -117,9 +117,6 @@ bool World::switchMap(uint32 newmap)
 	// kill camera
 	CameraProcess::ResetCameraProcess();
 
-	// kill ALL processes:
-//	Kernel::get_instance()->killProcesses(0,6); // !constant
-
 	// Notify all the gumps of the mapchange
 	GUIApp *gui = GUIApp::get_instance();
 	if (gui) 
@@ -132,10 +129,7 @@ bool World::switchMap(uint32 newmap)
 	while (!etherealEmpty()) {
 		uint16 eth = etherealPop();
 		Object* o = Kernel::get_instance()->getObject(eth);
-		if (o) {
-			o->clearObjId();
-			delete o;
-		}
+		delete o;
 	}
 
 	uint32 oldmap = currentmap->getNum();
@@ -149,18 +143,12 @@ bool World::switchMap(uint32 newmap)
 		perr << "Unloading Fixed items from map " << oldmap << std::endl;
 
 		maps[oldmap]->unloadFixed();
-
-#if 0
-		// no longer valid now that gumps get objIDs too
-
-		//! constant
-		for (unsigned int i = 256; i < objects.size(); ++i) {
-			assert(objects[i] == 0);
-			if (objects[i] != 0)
-				objects[i]->clearObjId();
-		}
-#endif
 	}
+
+	// Kill any processes that need killing
+	// (specifically, all processes assigned to an object)
+	// this leaves processes with item_num == 0 running
+	Kernel::get_instance()->killObjectProcesses();
 
 	pout << "Loading Fixed items in map " << newmap << std::endl;
 	IDataSource *items = GameData::get_instance()->getFixed()

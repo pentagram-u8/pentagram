@@ -47,6 +47,7 @@ public:
 	// only UCProcesses; objid = 0 means any object, type = 6 means any type
 	uint32 getNumProcesses(uint16 objid, uint16 processtype);
 	void killProcesses(uint16 objid, uint16 processtype);
+	void killObjectProcesses();
 
 	void kernelStats();
 

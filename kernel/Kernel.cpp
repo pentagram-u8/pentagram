@@ -227,6 +227,17 @@ void Kernel::killProcesses(uint16 objid, uint16 processtype)
 	}
 }
 
+void Kernel::killObjectProcesses()
+{
+	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it)
+	{
+		Process* p = *it;
+
+		if (p->item_num != 0)
+			p->terminate();
+	}	
+}
+
 uint16 Kernel::assignObjId(Object* obj)
 {
 	uint16 new_objid = objIDs->getNewID();

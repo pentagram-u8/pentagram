@@ -606,6 +606,8 @@ void GUIApp::handleEvent(const SDL_Event& event)
 {
 	uint32 now = SDL_GetTicks();
 
+	//!! TODO: handle mouse handedness. (swap left/right mouse buttons here)
+
 	switch (event.type) {
 	case SDL_QUIT:
 	{
