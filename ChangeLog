@@ -1,3 +1,6 @@
+2002-11-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* */module.mk: changed .cc to .cpp
+
 2002-10-31  Max Horn <max@quendi.de>
 	* bootstrap: changed to be POSIX compliant (and work on OS X)
 	* configure.in: cleaned up OS X section

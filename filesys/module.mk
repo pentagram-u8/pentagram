@@ -2,7 +2,7 @@
 # includes us, since that has to know our path anyway.
 LPATH := filesys
 
-LSRC := $(wildcard $(LPATH)/*.cc)
+LSRC := $(wildcard $(LPATH)/*.cpp)
 LPRODUCTS := 
 
 # Common rules
