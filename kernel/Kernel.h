@@ -19,12 +19,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef KERNEL_H
 #define KERNEL_H
 
-#include <list>
+#include <set>
 
 class Process;
 
 class Kernel {
-	std::list <Process*> processes;
+	std::set <Process*> processes;
 
 public:
 	Kernel();
