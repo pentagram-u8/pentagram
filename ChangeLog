@@ -1,3 +1,6 @@
+2003-09-17  Max Horn <max@quendi.de>
+	* tools/fold/CallNodes.h: added missing #include <list>
+
 2003-08-31	Darke  <darkepaw@users.sf.net>
 	* convert/Convert.h, tools/fold/*: Folds push string(0x0D).
 

@@ -23,6 +23,8 @@
 
 #include "GenericNodes.h"
 
+#include <list>
+
 class DCCallPostfixNode : public Node
 {
 	public:
