@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -34,6 +34,38 @@ PathfinderProcess::PathfinderProcess() : Process()
 
 }
 
+PathfinderProcess::PathfinderProcess(Actor* actor_, ObjId item_)
+{
+	assert(actor_);
+	item_num = actor_->getObjId();
+
+	Item* item = World::get_instance()->getItem(item_);
+	if (!item) {
+		perr << "PathfinderProcess: non-existent target" << std::endl;
+		// can't get there...
+		result = 1;
+		terminate();
+		return;
+	}
+
+	currentstep = 0;
+	targetitem = item_;
+
+	Pathfinder pf;
+	pf.init(actor_);
+	pf.setTarget(item);
+
+	bool ok = pf.pathfind(path);
+
+	if (!ok) {
+		perr << "PathfinderProcess: failed to find path" << std::endl;
+		// can't get there...
+		result = 1;
+		terminate();
+		return;
+	}
+}
+
 PathfinderProcess::PathfinderProcess(Actor* actor_,
 									 sint32 x, sint32 y, sint32 z)
 {
@@ -43,6 +75,7 @@ PathfinderProcess::PathfinderProcess(Actor* actor_,
 	targetx = x;
 	targety = y;
 	targetz = z;
+	targetitem = 0;
 
 	currentstep = 0;
 
@@ -88,10 +121,21 @@ bool PathfinderProcess::run(const uint32 framenum)
 		perr << "PathfinderProcess: recalculating path" << std::endl;
 
 		// need to redetermine path
+		ok = true;
 		Pathfinder pf;
 		pf.init(actor);
-		pf.setTarget(targetx, targety, targetz);
-		ok = pf.pathfind(path);
+		if (targetitem) {
+			Item* item = World::get_instance()->getItem(targetitem);
+			if (!item)
+				ok = false;
+			else
+				pf.setTarget(item);
+		} else {
+			pf.setTarget(targetx, targety, targetz);
+		}
+		if (ok)
+			ok = pf.pathfind(path);
+
 		currentstep = 0;
 		if (!ok) {
 			perr << "PathfinderProcess: failed to find path" << std::endl;

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -38,11 +38,37 @@ void PathfindingState::load(Actor* actor)
 }
 
 bool PathfindingState::checkPoint(sint32 x_, sint32 y_, sint32 z_,
-								  int horRange, int verRange)
+								  int xyRange, int zRange)
 {
-	//!! arbitrary constant
-	return (abs(z - z_) <= verRange && abs(x - x_) <= horRange &&
-			abs(y - y_) < horRange);
+	return (abs(z - z_) <= zRange && abs(x - x_) <= xyRange &&
+			abs(y - y_) < xyRange);
+}
+
+bool PathfindingState::checkItem(Item* item, int xyRange, int zRange)
+{
+	sint32 itemX, itemY, itemZ;
+	sint32 itemXd, itemYd, itemZd;
+	sint32 itemXmin, itemYmin;
+
+	item->getLocationAbsolute(itemX, itemY, itemZ);
+	item->getFootpadWorld(itemXd, itemYd, itemZd);
+
+	itemXmin = itemX - itemXd;
+	itemYmin = itemY - itemYd;
+
+	int range = 0;
+	if (x - itemX > range)
+		range = x - itemX;
+	if (itemXmin - x > range)
+		range = itemXmin - x;
+	if (y - itemY > range)
+		range = y - itemY;
+	if (itemYmin - y > range)
+		range = itemYmin - y;
+
+	// FIXME: check z properly
+
+	return (range <= xyRange);
 }
 
 bool PathNodeCmp::operator()(PathNode* n1, PathNode* n2)
@@ -101,7 +127,7 @@ bool Pathfinder::alreadyVisited(sint32 x, sint32 y, sint32 z)
 
 	for (unsigned int i = 0; i < visited.size(); ++i)
 	{
-		if (visited[i].checkPoint(x,y,z,32,0))
+		if (visited[i].checkPoint(x,y,z,8,0))
 		{
 			return true;
 		}
@@ -112,7 +138,11 @@ bool Pathfinder::alreadyVisited(sint32 x, sint32 y, sint32 z)
 
 bool Pathfinder::checkTarget(PathNode* node)
 {
-	return node->state.checkPoint(targetx, targety, targetz, 128, 8);
+	// TODO: these ranges are too high, but otherwise it won't work yet -wjp
+	if (targetitem)
+		return node->state.checkItem(targetitem, 64, 8);
+	else
+		return node->state.checkPoint(targetx, targety, targetz, 64, 8);
 }
 
 unsigned int Pathfinder::costHeuristic(PathNode* node)
@@ -193,8 +223,12 @@ bool Pathfinder::pathfind(std::vector<PathfindingAction>& path)
 {
 	//!! FIXME: memory leaks
 
-	perr << "Pathfining to (" << targetx << "," << targety << "," << targetz << ")" << std::endl;
-
+	if (targetitem) {
+		perr << "Pathfinding to item: ";
+		targetitem->dumpInfo();
+	} else {
+		perr << "Pathfinding to (" << targetx << "," << targety << "," << targetz << ")" << std::endl;
+	}
 
 	path.clear();
 

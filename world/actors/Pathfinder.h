@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -35,7 +35,8 @@ struct PathfindingState
 	bool firststep;
 
 	void load(Actor* actor);
-	bool checkPoint(sint32 x_, sint32 y_, sint32 z_,int horRange,int verRange);
+	bool checkPoint(sint32 x_, sint32 y_, sint32 z_,int xyRange,int zRange);
+	bool checkItem(Item* item, int xyRange, int zRange);
 };
 
 struct PathfindingAction

@@ -1,5 +1,9 @@
+2004-06-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/Pathfinder*.*: some tweaks to the pathfinder
+	* world/actors/Actor.cpp: enabled pathfinder again
+
 2004-06-01  Matthew Jimenez <mjimenez@users.sourceforge.net>
-	* gumps/Gump.cpp: ensure the Gumps are properly closed in the destructor
+	* gumps/Gump.cpp: ensure Gumps are properly closed in the destructor
 	* gumps/MenuGump.*: saves and loads, but loads only once properly?
 	* gumps/ModalGump.cpp: Relock the keyboard and pause kernel after load
 	* kernel/ObjectManager.cpp: add MenuGump ObjectLoader
@@ -8,17 +12,17 @@
 	* filesys/Flex.*: isFlex returns true for ultima8 flexes.
 	* graphics/fonts/TTFont.*: added colour parameter
 	* kernel/GUIApp.cpp: delete ttffont when destructor is called
-	* tools/disasm/Disasm.cpp: use argv[0] as program name in usage statment
+	* tools/disasm/Disasm.cpp: use argv[0] as program name in usage
 	* tools/flexpack/*: tools for building flexes, which resembles
 	  exult's expack
 
 2004-05-23  Dominik Reichardt <dominus@users.sourceforge.net>
 	* Readme,FAQ: replaced with xml/xsl generated version
-	* docs/xml/*.*: everything needed to generate the ReadMe, FAQ and the dat 
-					files for our future website is in hhere
+	* docs/xml/*.*: everything needed to generate the ReadMe, FAQ and the
+	  dat files for our future website is in here
 	
 2004-05-23  Matthew Jimenez <mjimenez@users.sourceforge.net>
-	* gumps/GameMapGump.*: Always send mouse clicks to the AvatarMoverProcess
+	* gumps/GameMapGump.*: Always send clicks to the AvatarMoverProcess
 	* gumps/MenuGump.cpp: Correction to make other laguages look right
 	* gumps/QuitGump.cpp: Correction to make other laguages look right
 	* world/actors/AvatarMoverProcess.cpp: Handle jump from standing still

@@ -894,12 +894,9 @@ uint32 Actor::I_pathfindToItem(const uint8* args, unsigned int /*argsize*/)
 	if (!actor) return 0;
 	if (!item) return 0;
 
-	sint32 x,y,z;
-	item->getLocation(x,y,z);
-
 	return Kernel::get_instance()->addProcess(
-//		new PathfinderProcess(actor,x,y,z));
-		new MissileProcess(actor,x,y,z,100));
+		new PathfinderProcess(actor,id2));
+//		new MissileProcess(actor,x,y,z,100));
 }
 
 uint32 Actor::I_isBusy(const uint8* args, unsigned int /*argsize*/)
