@@ -1,4 +1,8 @@
-2004-07-05  Matthew Jimenez <mjimenez@users.sourceforge.net>
+2004-07-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/Actor.*: get defense type and armour class for monsters
+	* world/actors/MainActor.*: moved defending/attacking dex to MainActor
+
+2004-07-09  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* world/CurrentMap.*: second version of surfaceSearch added
 	* world/actors/Actor.cpp: use surfaceSearch for END_OFF_LAND test
 	* world/actors/AvatarMoverProcess.cpp: keepBalance before stepping off

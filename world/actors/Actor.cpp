@@ -366,46 +366,26 @@ Animation::Result Actor::tryAnim(Animation::Sequence anim, int dir, PathfindingS
 
 uint32 Actor::getArmourClass()
 {
-	// TODO: implement this
-	return 0;
+	ShapeInfo* si = getShapeInfo();
+	assert(si->monsterinfo);
+	return si->monsterinfo->armour_class;
 }
 
 uint16 Actor::getDefenseType()
 {
-	// TODO: implement this
-	return 0;
+	ShapeInfo* si = getShapeInfo();
+	assert(si->monsterinfo);
+	return si->monsterinfo->defense_type;;
 }
 
 sint16 Actor::getDefendingDex()
 {
-	sint16 dex = getDex();
-
-	Item* weapon = World::get_instance()->getItem(
-		getEquip(ShapeInfo::SE_WEAPON));
-	if (weapon) {
-		ShapeInfo* si = weapon->getShapeInfo();
-		assert(si->weaponinfo);
-		dex += si->weaponinfo->dex_defend_bonus;
-	}
-
-	if (dex <= 0) dex = 1;
-
-	return dex;
+	return getDex();
 }
 
 sint16 Actor::getAttackingDex()
 {
-	sint16 dex = getDex();
-
-	Item* weapon = World::get_instance()->getItem(
-		getEquip(ShapeInfo::SE_WEAPON));
-	if (weapon) {
-		ShapeInfo* si = weapon->getShapeInfo();
-		assert(si->weaponinfo);
-		dex += si->weaponinfo->dex_attack_bonus;
-	}
-
-	return dex;
+	return getDex();
 }
 
 uint16 Actor::getDamageType()
@@ -483,12 +463,17 @@ void Actor::die()
 	// * fill with treasure if appropriate
 	// * some U8 monsters need special actions: skeletons, eyebeasts, etc...
 
+	Item* potion = ItemFactory::createItem(766, 1, 0, 0, 0, 0, 0);
+	potion->assignObjId();
+	potion->moveToContainer(this);
+	potion->setGumpLocation(20, 20);
+
 	ShapeInfo* shapeinfo = getShapeInfo();
 	MonsterInfo* mi = 0;
 	if (shapeinfo) mi = shapeinfo->monsterinfo;
 
 	if (mi && mi->resurrection) {
-		// this monster will resurrect after a while
+		// this monster will be resurrected after a while
 
 		pout << "Actor::die: scheduling resurrection" << std::endl;
 
@@ -636,9 +621,13 @@ int Actor::calculateAttackDamage(uint16 other, int damage, uint16 damage_type)
 	if (damage && !(damage_type & WeaponInfo::DMG_PIERCE) && attacker)
 	{
 		bool hit = false;
+		sint16 attackdex = attacker->getAttackingDex();
+		sint16 defenddex = getDefendingDex();
+		if (attackdex < 0) attackdex = 0;
+		if (defenddex <= 0) defenddex = 1;
+
 		if ((getActorFlags() & ACT_STUNNED) ||
-			(rand() % (attacker->getAttackingDex() + 3) >
-			 rand() % (getDefendingDex())))
+			(rand() % (attackdex + 3) > rand() % defenddex))
 		{
 			hit = true;
 		}

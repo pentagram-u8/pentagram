@@ -136,6 +136,38 @@ uint32 MainActor::getArmourClass()
 	return armour;
 }
 
+sint16 MainActor::getDefendingDex()
+{
+	sint16 dex = getDex();
+
+	Item* weapon = World::get_instance()->getItem(
+		getEquip(ShapeInfo::SE_WEAPON));
+	if (weapon) {
+		ShapeInfo* si = weapon->getShapeInfo();
+		assert(si->weaponinfo);
+		dex += si->weaponinfo->dex_defend_bonus;
+	}
+
+	if (dex <= 0) dex = 1;
+
+	return dex;
+}
+
+sint16 MainActor::getAttackingDex()
+{
+	sint16 dex = getDex();
+
+	Item* weapon = World::get_instance()->getItem(
+		getEquip(ShapeInfo::SE_WEAPON));
+	if (weapon) {
+		ShapeInfo* si = weapon->getShapeInfo();
+		assert(si->weaponinfo);
+		dex += si->weaponinfo->dex_attack_bonus;
+	}
+
+	return dex;
+}
+
 uint16 MainActor::getDamageType()
 {
 	Item* weapon = World::get_instance()->getItem(

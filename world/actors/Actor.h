@@ -78,8 +78,8 @@ public:
 
 	virtual uint32 getArmourClass();
 	virtual uint16 getDefenseType();
-	sint16 getAttackingDex();
-	sint16 getDefendingDex();
+	virtual sint16 getAttackingDex();
+	virtual sint16 getDefendingDex();
 
 	virtual uint16 getDamageType();
 	virtual int getDamageAmount();
