@@ -23,9 +23,9 @@ byte 2: change in Z coordinate
 byte 3: SFX# to play (zero for none?)
 byte 4: movement in 'main' direction. (* 4 units)
 byte 5:	bit 0: unknown (only used when moving backwards?)
-	bit 1: interruptable?
-	bit 2: unknown
-	bit 3: unknown
+	bit 1: interruptable? on-the-ground?
+	bit 2: unknown (attack-related?)
+	bit 3: unknown (attack-related?)
 	bit 4: unknown (only in action 7 for mages. spell trigger?)
 	bit 5: flipped?
 	bits 6-7: unused
@@ -41,7 +41,7 @@ Actions:
  4: recovering from falling down
  5: readying weapon
  6: unreadying weapon
- 7: punching?
+ 7: attacking
  8: advancing in combat stance
  9: retreating in combat stance
 10: two consecutive running jumps
@@ -63,7 +63,7 @@ Actions:
 37: Mythran only: magic?
 38: Vividos only: ?
 39: unused
-40: attacking with a (slow) weapon
+40: ?
 41: unused
 42: keeping balance
 43: unused
@@ -82,8 +82,8 @@ Actions:
 56: drowning
 57: burning
 58: kicking
-59: blocking
-60: attacking with a (fast) weapon
+59: blocking?
+60: blocking?
 61: unused
 62: unused
 63: unused
