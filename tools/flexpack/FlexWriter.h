@@ -16,41 +16,37 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef TTFONT_H
-#define TTFONT_H
+#ifndef FLEXWRITER_H
+#define FLEXWRITER_H
 
-#ifdef USE_SDLTTF
-
-#include "Font.h"
-
-#include "SDL_ttf.h"
+#include <vector>
 
 class IDataSource;
+class ODataSource;
+class Flex;
 
-class TTFont : public Pentagram::Font
-{
+class FlexWriter {
 public:
-	TTFont(IDataSource* font, uint32 rgb, int pointsize);
-	virtual ~TTFont();
-
-	virtual int getHeight();
-	virtual int getBaseline();
-	virtual int getBaselineSkip();
-
-	virtual void getStringSize(std::string& text, int& width, int& height);
-
-	virtual RenderedText* renderText(std::string text,
-									 unsigned int& remaining,
-									 int width=0, int height=0,
-									 TextAlign align=TEXT_LEFT);
-
 	ENABLE_RUNTIME_CLASSTYPE();
+
+	explicit FlexWriter(Flex * f = 0);
+	virtual ~FlexWriter();
+
+	virtual void add_object(const uint8* obj, uint32 size);
+	virtual void add_datasource(IDataSource* ds);
+
+	virtual void set_object(uint32 index, const uint8* obj, uint32 size);
+	virtual void set_datasource(uint32 index, IDataSource* ds);
+
+	virtual void write(ODataSource* ds);
 protected:
-	TTF_Font* ttf_font;
-	uint32 rgb;
+	virtual void writeHead(ODataSource* ds);
+
+	struct FlexObject {
+		uint8 * obj;
+		uint32 size;
+	};
+	std::vector<FlexObject> objects;
 };
-
-
-#endif
 
 #endif

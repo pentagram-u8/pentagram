@@ -743,14 +743,14 @@ void readfunctionnames(void)
 int main(int argc, char **argv)
 {
 	if (argc < 3) {
-		perr << "Usage: disasm <file> [<function number>|-a] {--game [u8|crusader]} {--lang [english|german|french]} {--odir <directory>}" << endl;
+		perr << "Usage: " << argv[0] << " <file> [<function number>|-a] {--game [u8|crusader]} {--lang [english|german|french]} {--odir <directory>}" << endl;
 		perr << "or" << endl;
-		perr << "Usage: disasm <file> -l" << endl;
+		perr << "Usage: " << argv[0] << " <file> -l" << endl;
 		perr << "or" << endl;
-		perr << "Usage: disasm <file> --globals {--game [u8|crusader]}" << endl;
+		perr << "Usage: " << argv[0] << " <file> --globals {--game [u8|crusader]}" << endl;
 		// Overload Table
 		perr << "or" << endl;
-		perr << "Usage: disasm <file> -overload" << endl;
+		perr << "Usage: " << argv[0] << " <file> -overload" << endl;
 		return 1;
 	}
 

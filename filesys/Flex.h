@@ -50,9 +50,8 @@ public:
 
 	static bool isFlex(IDataSource* ds);
 
-protected:
 	virtual uint32 get_offset(uint32 index);
-
+protected:
 	uint8** objects;
 	uint32 count;
 	IDataSource* ds;

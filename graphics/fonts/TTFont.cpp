@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "SDL_ttf.h"
 
+#include "RenderSurface.h"
 #include "TTFont.h"
 #include "TTFRenderedText.h"
 #include "Texture.h"
@@ -32,11 +33,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 DEFINE_RUNTIME_CLASSTYPE_CODE(TTFont,Pentagram::Font);
 
 
-TTFont::TTFont(IDataSource* font, int pointsize)
+TTFont::TTFont(IDataSource* font, uint32 rgb, int pointsize)
 {
 	// open font using SDL_RWops.
 	// Note: The RWops and IDataSource will be deleted by the TTF_Font
 	ttf_font = TTF_OpenFontRW(font->getRWops(), 1, pointsize);
+	this->rgb = PACK_RGB8( (rgb>>16)&0xFF , (rgb>>8)&0xFF , rgb&0xFF );
 }
 
 TTFont::~TTFont()
@@ -140,7 +142,7 @@ RenderedText* TTFont::renderText(std::string text,
 												  width, height, align,
 												  resultwidth, resultheight);
 
-	SDL_Color white = { 0xFF, 0xFF, 0xFF, 0 };
+	SDL_Color white = { 0xFF , 0xFF , 0xFF, 0 };
 
 	// create 32bit RGBA texture buffer
 	uint32* buf = new uint32[resultwidth*resultheight];
@@ -189,7 +191,8 @@ RenderedText* TTFont::renderText(std::string text,
 			uint32* bufrow = buf + (iter->dims.y+y+1)*resultwidth;
 			for (int x = 0; x < textsurf->w; x++) {
 				if (surfrow[x] == 1) {
-					bufrow[iter->dims.x+x+1] = 0xFFFFFFFF;
+//					bufrow[iter->dims.x+x+1] = 0xFFFFFFFF;
+					bufrow[iter->dims.x+x+1] = rgb | 0xFF000000;
 					for (int dx = -1; dx < 2; dx++) {
 						for (int dy = -1; dy < 2; dy++) {
 							if (x + 1 + iter->dims.x + dx >= 0 &&

@@ -191,6 +191,11 @@ GUIApp::~GUIApp()
 	FORGET_OBJECT(gamedata);
 	FORGET_OBJECT(world);
 	FORGET_OBJECT(ucmachine);
+
+#ifdef USE_SDLTTF
+	if (ttffont)
+		FORGET_OBJECT(ttffont);
+#endif
 }
 
 void GUIApp::startup()
@@ -998,7 +1003,7 @@ void GUIApp::GraphicSysInit()
 //	IDataSource* fontids = FileSystem::get_instance()->ReadFile("@data/verdanab.ttf");
 	IDataSource* fontids = FileSystem::get_instance()->ReadFile("@data/VeraBd.ttf");
 	if (fontids)
-	  ttffont = new TTFont(fontids, 10);
+	  ttffont = new TTFont(fontids, 0xFFFFFF, 10);
 	else {
 	  ttffont = 0;
 	  perr << "Warning: unable to open @data/VeraBd.ttf" << std::endl;

@@ -49,10 +49,24 @@ Flex::~Flex()
 bool Flex::isFlex(IDataSource* ds)
 {
 	ds->seek(0);
-	for (int i = 0; i < (0x54 / 4); i++)
-		if (ds->read4() != 0x1A1A1A1A) return false;
+	int i;
+	char buf[0x52];
+	ds->read(buf, 0x52);
 
-	return true;
+	for (i=0; i < 0x52; ++i)
+	{
+		if (buf[i] == 0x1A) break;
+	}
+
+	if (i < 0x52)
+	{
+		for (++i; i < 0x52; ++i)
+		{
+			if (buf[i] != 0x1A) return false;
+		}
+		return true;
+	}
+	return false;
 }
 
 const uint8* Flex::get_object_nodel(uint32 index)

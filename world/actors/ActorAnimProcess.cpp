@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ActorAnimProcess.h"
 #include "GameData.h"
 #include "MainShapeFlex.h"
+#include "Animation.h"
 #include "AnimDat.h"
 #include "AnimAction.h"
 #include "Actor.h"
@@ -193,7 +194,7 @@ bool ActorAnimProcess::run(const uint32 framenum)
 	// special case:
 	// if walking, and can't reach destination, see if we can step up 8
 	if (framecount == 0 &&
-		animaction->action == 0 && // walking animation, constant!
+		animaction->action == Animation::walk &&
 		!a->canExistAt(x+dx, y+dy, z+dz) &&
 		a->canExistAt(x+dx, y+dy, z+dz+8))
 	{

@@ -14,7 +14,7 @@ SDL_LIBS=-L$(SRC)/sdl/lib -lSDLmain -lSDL -lSDL_ttf
 CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -I$(SRC)/conf -I$(SRC)/convert -I$(SRC)/filesys \
 	-I$(SRC)/graphics -I$(SRC)/graphics/fonts -I$(SRC)/gumps -I$(SRC)/kernel \
 	-I$(SRC)/misc -I$(SRC)/tools/compile -I$(SRC)/tools/disasm \
-	-I$(SRC)/tools/fold -I$(SRC)/usecode -I$(SRC)/world \
+	-I$(SRC)/tools/flexpack -I$(SRC)/tools/fold -I$(SRC)/usecode -I$(SRC)/world \
 	-I$(SRC)/world/actors -I$(SRC)/gumps/widgets -I$(SRC)/games \
 	-I$(SRC)/audio -I$(SRC)/audio/midi -I$(SRC)/audio/timidity \
 	$(SDL_CFLAGS) -DHAVE_SYS_STAT_H -DHAVE_SYS_TYPES_H -DHAVE_UNISTD_H -DUSE_FMOPL_MIDI \
@@ -40,7 +40,14 @@ FOLD_OBJCS = \
 	tools/fold/IfNode.o tools/fold/OperatorNodes.o tools/fold/Type.o \
 	tools/fold/VarNodes.o tools/fold/LoopScriptNodes.o
 
+FLEXPACK_OBJCS = \
+	filesys/FileSystem.o filesys/Flex.o misc/Console.o misc/istring.o misc/util.o \
+	tools/flexpack/FlexWriter.o
+
 disasm.exe : tools/disasm/Disasm.o $(FOLD_OBJCS)
+	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
+
+flexpack.exe: tools/flexpack/FlexPack.o $(FLEXPACK_OBJCS)
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
 fold.exe : tools/fold/Fold.o $(FOLD_OBJCS)
@@ -64,7 +71,7 @@ clean:
 	rm -f $(PENTAGRAM_OBJS) pentagram.o
 
 toolsclean:
-	rm -f tools/amf2mod/amf2mod.o tools/disasm/Disasm.o tools/fold/Fold.o $(FOLD_OBJCS) tools/shapeconv/ShapeConv.o *.exe
+	rm -f tools/amf2mod/amf2mod.o tools/disasm/Disasm.o tools/fold/FlexPack.o $(FLEXPACK_OBJCS) tools/fold/Fold.o $(FOLD_OBJCS) tools/shapeconv/ShapeConv.o *.exe
 
 install: pentagram.exe
 	mkdir -p $(U8PATH)
@@ -78,6 +85,7 @@ toolsinstall: tools
 	strip amf2mod.exe -o $(U8PATH)/tools/amf2mod.exe
 	strip disasm.exe -o $(U8PATH)/tools/disasm.exe
 	strip fold.exe -o $(U8PATH)/tools/fold.exe
+	strip flexpack.exe -o $(U8PATH)/tools/flexpack.exe
 	strip shapeconv.exe -o $(U8PATH)/tools/shapeconv.exe
 
 dist:   install tools
