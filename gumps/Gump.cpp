@@ -254,11 +254,8 @@ bool Gump::PointOnGump(int mx, int my)
 {
 	ParentToGump(mx,my);
 
-	perr << "PointOnGump " << GetClassType().class_name;
-
 	// First check again rectangle
 	if (!dims.InRect(mx,my)) {
-		perr << " no" << std::endl;
 		return false;
 	}
 
@@ -266,7 +263,6 @@ bool Gump::PointOnGump(int mx, int my)
 		ShapeFrame* sf = shape->getFrame(framenum);
 		assert(sf);
 		if (!sf->hasPoint(mx, my)) {
-			perr << " no" << std::endl;
 			return false;
 		}
 	}
@@ -277,7 +273,6 @@ bool Gump::PointOnGump(int mx, int my)
 	// Also might want to check children, cause they may not be over
 	// our shape
 
-	perr << " yes" << std::endl;
 	return true;
 }
 
@@ -343,8 +338,9 @@ uint16 Gump::TraceObjID(int mx, int my)
 		if (objid && objid != 65535) break;
 	}
 
-	if (!objid || objid == 65535)
-		objid = getObjId();
+
+//	if (!objid || objid == 65535)
+//		objid = getObjId();
 
 	return objid;
 }
@@ -488,6 +484,23 @@ Gump * Gump::GetRootGump()
 	return parent->GetRootGump();
 }
 
+
+void Gump::StartDraggingChild(Gump* gump, int mx, int my)
+{
+	gump->ParentToGump(mx, my);
+	gump->SetMoveOffset(mx, my);
+}
+
+void Gump::DraggingChild(Gump* gump, int mx, int my)
+{
+	gump->Move(mx, my);
+}
+
+void Gump::StopDraggingChild(Gump* gump)
+{
+	gump->SetMoveOffset(0, 0);
+}
+
 //
 // Input handling
 //
@@ -538,4 +551,3 @@ bool Gump::OnTextInput(int unicode)
 }
 
 // Colourless Protection
-

@@ -241,9 +241,7 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 uint16 GameMapGump::TraceObjID(int mx, int my)
 {
 	uint16 objid = Gump::TraceObjID(mx,my);
-
-	//!! I don't really like this...
-	if (objid && objid != 65535 && objid != getObjId()) return objid;
+	if (objid && objid != 65535) return objid;
 
 	ParentToGump(mx,my);
 	return display_list->Trace(mx,my);

@@ -122,6 +122,9 @@ void ItemRelativeGump::Move(int x_, int y_)
 	ParentToGump(x_, y_);
 	x += x_;
 	y += y_;
+
+	x -= moveOffsetX;
+	y -= moveOffsetY;
 }
 
 

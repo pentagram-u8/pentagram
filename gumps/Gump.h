@@ -220,6 +220,20 @@ public:
 	Gump *				GetRootGump();
 
 
+	// Dragging
+	virtual void		StartDraggingChild(Gump* gump, int mx, int my);
+	virtual void		DraggingChild(Gump* gump, int mx, int my);
+	virtual void		StopDraggingChild(Gump* gump);
+
+
+	// the MoveOffset is the point relative to which Move() will move the gump
+	void				SetMoveOffset(int mx, int my)
+		{ moveOffsetX = mx; moveOffsetY = my; }
+protected:
+	int moveOffsetX, moveOffsetY;
+
+public:
+
 	//
 	// Gump Flags
 	//

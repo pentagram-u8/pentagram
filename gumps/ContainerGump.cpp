@@ -102,6 +102,9 @@ void ContainerGump::Paint(RenderSurface* surf, sint32 lerp_factor)
 // (mx,my) are relative to parent
 uint16 ContainerGump::TraceObjID(int mx, int my)
 {
+	uint16 objid = Gump::TraceObjID(mx,my);
+	if (objid && objid != 65535) return objid;
+
 	ParentToGump(mx,my);
 
 	Container* c = p_dynamic_cast<Container*>

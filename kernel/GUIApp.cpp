@@ -76,7 +76,8 @@ GUIApp::GUIApp(const int argc, const char * const * const argv)
 	  consoleGump(0), gameMapGump(0),
 	  runGraphicSysInit(false), runSDLInit(false),
 	  frameSkip(false), frameLimit(true), interpolate(true),
-	  animationRate(33), avatarInStasis(false), painting(false)
+	  animationRate(33), avatarInStasis(false), painting(false),
+	  dragging(false)
 {
 	// Set the console to auto paint, till we have finished initing
 	con.SetAutoPaint(conAutoPaint);
@@ -427,8 +428,12 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		int my = event.button.y;
 		assert(button >= 0 && button <= NUM_MOUSEBUTTONS);
 
-		mouseDownGump[button] =
-			desktopGump->OnMouseDown(button, mx, my)->getObjId();
+		Gump *mousedowngump = desktopGump->OnMouseDown(button, mx, my);
+		if (mousedowngump)
+			mouseDownGump[button] = mousedowngump->getObjId();
+		else
+			mouseDownGump[button] = 0;
+
 		mouseDownX[button] = mx;
 		mouseDownY[button] = my;
 		mouseState[button] |= MBS_DOWN;
@@ -453,6 +458,24 @@ void GUIApp::handleEvent(const SDL_Event& event)
 
 		mouseState[button] &= ~MBS_DOWN;
 
+		if (button == BUTTON_LEFT && dragging) {
+			// stop dragging
+
+			// for a Gump: notify parent
+			Gump *gump = getGump(dragging_objid);
+			if (gump) {
+				Gump *parent = gump->GetParent();
+				assert(parent); // can't drag root gump
+				parent->StopDraggingChild(gump);
+			}
+
+			// for an item: notify GameMapGump:
+			//!! TODO
+				
+			dragging = false;
+			break;
+		}
+
 		Gump* gump = getGump(mouseDownGump[button]);
 		if (gump)
 			gump->OnMouseUp(button, mx, my);
@@ -461,7 +484,67 @@ void GUIApp::handleEvent(const SDL_Event& event)
 
 	case SDL_MOUSEMOTION:
 	{
+		int mx = event.button.x;
+		int my = event.button.y;
+		if (!dragging) {
+			if (mouseState[BUTTON_LEFT] & MBS_DOWN) {
+				int startx = mouseDownX[BUTTON_LEFT];
+				int starty = mouseDownY[BUTTON_LEFT];
+				if (abs(startx - mx) > 2 ||
+					abs(starty - my) > 2)
+				{
+					dragging_objid = desktopGump->TraceObjID(startx, starty);
+					perr << "Dragging object " << dragging_objid << std::endl;
 
+					//!! check if Object is draggable
+					//!! (also need to check if item is in range)
+					dragging = true;
+
+					//!! need to notify mouseDownGump that the last
+					//!! mousedown event was used for dragging
+
+					//!! need to pause the kernel
+
+					// for a Gump, notify the Gump's parent that we started
+					// dragging:
+					Gump *gump = getGump(dragging_objid);
+					if (gump) {
+						Gump *parent = gump->GetParent();
+						assert(parent); // can't drag root gump
+						int px = startx, py = starty;
+						parent->ScreenSpaceToGump(px, py);
+						parent->StartDraggingChild(gump, px, py);
+					}
+
+					// for an Item, notify the GameMapGump that we started
+					// dragging
+					Item *item= World::get_instance()->getItem(dragging_objid);
+					if (item) {
+						// TODO
+					}
+
+					mouseState[BUTTON_LEFT] |= MBS_HANDLED;
+				}
+			}
+		}
+
+		if (dragging) {
+			// for a gump, notify Gump's parent that it was dragged
+			Gump* gump = getGump(dragging_objid);
+			if (gump) {
+				Gump *parent = gump->GetParent();
+				assert(parent); // can't drag root gump
+				int px = mx, py = my;
+				parent->ScreenSpaceToGump(px, py);
+				parent->DraggingChild(gump, px, py);
+			}
+
+			// for an item, notify GameMapGump:
+			Item *item= World::get_instance()->getItem(dragging_objid);
+			if (item) {
+				// TODO
+			}
+		}
 	}
 	break;
 

@@ -1,3 +1,6 @@
+2003-06-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/GUIApp.*, gumps/*: gump dragging
+
 2003-06-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Kernel.*: moved objects from World to Kernel
 	* lots: adjusted for above change
