@@ -7,6 +7,7 @@
 	  not present. Bindings can be saved using the HIDManager::save command
 	* gumps/ReadableGump.*: Using TextWidget to display text.
 	* gumps/widgets/TextWidget.*: Added constructor parameter to align text
+	* docs/savegame: Addition of ReadableGump and change to TextWidget
 
 2004-05-15  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* gumps/ReadableGump.*: A gump to handle reading graves and plaques

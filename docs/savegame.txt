@@ -264,6 +264,16 @@ uint32 strlen
 char text[strlen]
 
 
+ReadableGump: (v1)
+uint16 version
+<ModalGump>
+sint32 fontnum
+uint16 shapenum
+uint16 textwidget
+uint32 strlen
+char text[strlen]
+
+
 BookGump: (v1)
 uint16 version
 <ModalGump>
@@ -314,6 +324,7 @@ sint32 current_start
 sint32 current_end
 sint32 targetwidth
 sint32 targetheight
+sint16 textalign
 uint32 strlen
 char text[strlen]
 

@@ -141,6 +141,7 @@ void TextWidget::saveData(ODataSource* ods)
 	ods->write4(static_cast<uint32>(current_end));
 	ods->write4(static_cast<uint32>(targetwidth));
 	ods->write4(static_cast<uint32>(targetheight));
+	ods->write2(static_cast<uint16>(textalign));
 	ods->write4(text.size());
 	ods->write(text.c_str(), text.size());
 }
@@ -156,6 +157,7 @@ bool TextWidget::loadData(IDataSource* ids)
 	current_end = static_cast<int>(ids->read4());
 	targetwidth = static_cast<int>(ids->read4());
 	targetheight = static_cast<int>(ids->read4());
+	textalign = static_cast<Font::TextAlign>(ids->read2());
 
 	uint32 slen = ids->read4();
 	if (slen > 0) {

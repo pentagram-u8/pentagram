@@ -31,6 +31,7 @@ class ReadableGump : public ModalGump
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
+	ReadableGump();
 	ReadableGump(ObjId owner, uint16 shape, int font, std::string msg);
 	virtual ~ReadableGump();
 
