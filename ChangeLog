@@ -1,4 +1,14 @@
 2003-06-18	  Ryan Nunn <colourles@users.sourceforge.net>
+	* graphics/*RenderSurface.*, graphics/XFormBlend.*, world/Item.h,
+	  world/ItemSorter.* : Added a funky highlighted shape mode. Set shapes
+	  extFlag EXT_HIGHLIGHT to set it. 
+	* world/CurrentMap.*, kernel/GUIApp.cpp : Rewrote much of the sweepTest 
+	  code. Updated the gotHit hack to reflect the changes. Now also call
+	  Release when you step off/away from an item you have hit. Any items you
+	  are hitting are now shown highlighted when hitting is enabled ('h'). This
+	  is purely a debug thing.
+
+2003-06-18	  Ryan Nunn <colourles@users.sourceforge.net>
 	* gumps/ContainerGump.cpp, gumps/GameMapGump.*, kernel/Object.*, 
 	  world/Egg.cpp, world/Item.* : Changed things so callUsecodeEvent is 
 	  private. Added separate functions to call each event. Added functions for

@@ -95,7 +95,8 @@ struct SortItem
 	Shape					*shape;
 	uint32					shape_num;
 	uint32					frame;
-	uint32					flags;		// Item flags flags
+	uint32					flags;		// Item flags
+	uint32					ext_flags;	// Item extended flags
 
 	int						sx, sx2;	// Screenspace X coords
 	int						sy, sy2;	// Screenspace Y coords
@@ -553,7 +554,7 @@ void ItemSorter::BeginDisplayList(RenderSurface *rs,
 	cam_sy = (camx + camy)/8 - camz;
 }
 
-void ItemSorter::AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 frame_num, uint32 flags, uint16 item_num)
+void ItemSorter::AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 frame_num, uint32 flags, uint32 ext_flags, uint16 item_num)
 {
 	//if (z > skip_lift) return;
 	//if (Application::tgwds && shape == 538) return;
@@ -583,6 +584,7 @@ void ItemSorter::AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 
 	// Dimensions
 	sint32 xd, yd, zd;
 	si->flags = flags;
+	si->ext_flags = ext_flags;
 
 	// X and Y are flipped
 	if (si->flags & Item::FLG_FLIPPED) 
@@ -747,6 +749,7 @@ void ItemSorter::AddItem(Item *add)
 	// Dimensions
 	sint32 xd, yd, zd;
 	si->flags = add->getFlags();
+	si->ext_flags = add->getExtFlags();
 
 	// X and Y are flipped
 	if (si->flags & Item::FLG_FLIPPED) 
@@ -916,7 +919,9 @@ bool ItemSorter::PaintSortItem(SortItem	*si)
 
 //	if (wire) si->info->draw_box_back(s, dispx, dispy, 255);
 
-	if (si->flags & Item::FLG_INVISIBLE)
+	if (si->ext_flags & Item::EXT_HIGHLIGHT)
+		surf->PaintHighlight(si->shape, si->frame, si->sxbot, si->sybot, si->trans, (si->flags&Item::FLG_FLIPPED)!=0, 0x7FFF0000);
+	else if (si->flags & Item::FLG_INVISIBLE)
 		surf->PaintInvisible(si->shape, si->frame, si->sxbot, si->sybot, si->trans, (si->flags&Item::FLG_FLIPPED)!=0);
 	else if (si->flags & Item::FLG_FLIPPED)
 		surf->PaintMirrored(si->shape, si->frame, si->sxbot, si->sybot, si->trans);

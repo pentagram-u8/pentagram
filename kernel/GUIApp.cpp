@@ -428,11 +428,15 @@ public:
 
 		CurrentMap* cm = World::get_instance()->getCurrentMap();
 
+		sint32 dx = this->dx;
+		sint32 dy = this->dy;
+		sint32 dz = this->dz;
+
 		for (int j = 0; j < 3; j++)
 		{
-			sint32 dx = this->dx;
-			sint32 dy = this->dy;
-			sint32 dz = this->dz;
+			dx = this->dx;
+			dy = this->dy;
+			dz = this->dz;
 
 			if (j == 1) dx = 0;
 			else if (j == 2) dy = 0;
@@ -444,29 +448,7 @@ public:
 				dz /= 4;
 			}
 
-			sint32 start[3] = { x, y, z };
-			uint16 skip = 0;
-
-			//pout << "Avatar at (" << start[0] << ", " << start[1] << ", " << start[2] << ")" << std::endl;
-			//pout << "Avatar to (" << start[0]+dx << ", " << start[1]+dy << ", " << start[2]+dz << ")" << std::endl;
-
-			if (hitting) for (;;)
-			{
-				sint32 end[3] = { x+dx, y+dy, z+dz };
-				sint32 dims[3] = { ixd, iyd, izd };
-				uint16 hit = cm->sweepTest(start,end,dims,1,false,skip);
-
-				if (!hit) break;
-
-				//pout << "Hit item " << hit << " at (" << end[0] << ", " << end[1] << ", " << end[2] << ")" << std::endl;
-				start[0] = end[0];
-				start[1] = end[1];
-				start[2] = end[2];
-				skip = hit;
-
-				Item *item = World::get_instance()->getItem(hit);
-				item->callUsecodeEvent_gotHit(1,0);
-			}
+			bool ok = false;
 
 			while (dx || dy || dz) {
 
@@ -476,34 +458,88 @@ public:
 					{
 						if (cm->isValidPosition(x+dx,y+dy,z-8,ixd,iyd,izd,1,0,0) &&
 								!cm->isValidPosition(x,y,z-8,ixd,iyd,izd,1,0,0))
-							avatar->move(x+dx,y+dy,z-8);
+						{
+							dz = -8;
+						}
 						else if (cm->isValidPosition(x+dx,y+dy,z-16,ixd,iyd,izd,1,0,0) &&
 								!cm->isValidPosition(x,y,z-16,ixd,iyd,izd,1,0,0))
-							avatar->move(x+dx,y+dy,z-16);
+						{
+							dz = -16;
+						}
 						else if (cm->isValidPosition(x+dx,y+dy,z-24,ixd,iyd,izd,1,0,0) &&
 								!cm->isValidPosition(x,y,z-24,ixd,iyd,izd,1,0,0))
-							avatar->move(x+dx,y+dy,z-24);
+						{
+							dz = -24;
+						}
 						else if (cm->isValidPosition(x+dx,y+dy,z-32,ixd,iyd,izd,1,0,0) &&
 								!cm->isValidPosition(x,y,z-32,ixd,iyd,izd,1,0,0))
-							avatar->move(x+dx,y+dy,z-32);
-						else
-							avatar->move(x+dx,y+dy,z+dz);
-					}
-					else
-						avatar->move(x+dx,y+dy,z+dz);
-					
-					return true;
+						{
+							dz = -32;
+						}
+					}					
+					ok = true;
+					break;
 				}
 				else if (cm->isValidPosition(x+dx,y+dy,z+dz+8,ixd,iyd,izd,1,0,0))
 				{
-					avatar->move(x+dx,y+dy,z+dz+8);
-					return true;
+					dz+=8;
+					ok = true;
+					break;
 				}
 				dx/=2;
 				dy/=2;
 				dz/=2;
 			}
+			if (ok) break;
 		}
+
+		if (hitting) 
+		{
+			std::list<CurrentMap::SweepItem> items;
+
+			sint32 start[3] = { x, y, z };
+			sint32 end[3] = { x+dx, y+dy, z+dz };
+			sint32 dims[3] = { ixd, iyd, izd };
+			uint16 skip = 0;
+
+			bool hit = cm->sweepTest(start,end,dims,1,false,&items);
+
+			if (hit)
+			{
+				std::list<CurrentMap::SweepItem>::iterator it;
+
+				for (it = items.begin(); it != items.end(); it++)
+				{
+					Item *item = World::get_instance()->getItem((*it).item);
+
+					uint16 proc_gothit = 0, proc_rel = 0;
+
+					// If hitting at start, we should have already 
+					// called gotHit
+					if ((*it).hit_time > 0) 
+					{
+						item->setExtFlag(Item::EXT_HIGHLIGHT);
+						proc_gothit = item->callUsecodeEvent_gotHit(1,0);
+					}
+
+					// If not hitting at end, we will need to call release
+					if ((*it).end_time < 0x4000)
+					{
+						item->clearExtFlag(Item::EXT_HIGHLIGHT);
+						proc_rel = item->callUsecodeEvent_release();
+					}
+
+					// We want to make sure that release is called AFTER gotHit.
+					if (proc_rel && proc_gothit)
+					{
+						Process *p = Kernel::get_instance()->getProcess(proc_rel);
+						p->waitFor(proc_gothit);
+					}
+				}
+			}
+		}
+
+		avatar->move(x+dx,y+dy,z+dz);
 		return true;
 	}
 

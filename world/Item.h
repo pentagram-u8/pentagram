@@ -53,6 +53,7 @@ public:
 	void clearFlag(uint32 mask) { flags &= ~mask; }
 	void setExtFlags(uint32 f) { extendedflags = f; }
 	uint32 getExtFlags() const { return extendedflags; }
+	void setExtFlag(uint32 mask) { extendedflags |= mask; }
 	void clearExtFlag(uint32 mask) { extendedflags &= ~mask; }
 	uint32 getShape() const { return shape; }
 	// Hack Alert!
@@ -284,7 +285,10 @@ public:
 		EXT_NOTINMAP  = 0x0004, // item isn't part of the map itself (e.g. NPCs)
 
 		EXT_FAST0	  = 0x0008,	// Special stuff for detecting an item leaving the fast area
-		EXT_FAST1	  = 0x0010	// They are mutually exclusive
+		EXT_FAST1	  = 0x0010,	// They are mutually exclusive
+
+		EXT_HIGHLIGHT = 0x0020	// Paint the item highlighted
+
 	};
 };
 

@@ -365,18 +365,32 @@ template<class uintX> void SoftRenderSurface<uintX>::PaintMirrored(Shape* s, uin
 #undef XFORM_CONDITIONAL
 }
 
+
 //
 // void SoftRenderSurface::PaintInvisible(Shape* s, uint32 frame, sint32 x, sint32 y, bool mirrored)
 //
 // Desc: Standard shape drawing functions. Invisible, Clips, and conditionally Flips and Xforms
 //
+
+// This does the invisible blending. I've set it to about 40%
+static inline uint32 P_FASTCALL BlendInvisible(uint32 src, uint32 dst)
+{
+	uint32 sr, sg, sb;
+	uint32 dr, dg, db;
+	UNPACK_RGB8(src,sr,sg,sb);
+	UNPACK_RGB8(dst,dr,dg,db);
+	return PACK_RGB16(sr*100+dr*156,
+						sg*100+dg*156,
+						sb*100+db*156);
+}
+
 template<class uintX> void SoftRenderSurface<uintX>::PaintInvisible(Shape* s, uint32 framenum, sint32 x, sint32 y, bool trans, bool mirrored)
 {
 #define FLIP_SHAPES
 #define FLIP_CONDITIONAL mirrored
 #define XFORM_SHAPES
 #define XFORM_CONDITIONAL trans
-#define INVISIBLE_SHAPES
+#define BLEND_SHAPES(src,dst) BlendInvisible(src,dst)
 
 	#include "SoftRenderSurface.inl"
 
@@ -384,7 +398,44 @@ template<class uintX> void SoftRenderSurface<uintX>::PaintInvisible(Shape* s, ui
 #undef FLIP_CONDITIONAL
 #undef XFORM_SHAPES
 #undef XFORM_CONDITIONAL
-#undef INVISIBLE_SHAPES
+#undef BLEND_SHAPES
+}
+
+
+//
+// void SoftRenderSurface::PaintHighlight(Shape* s, uint32 frame, sint32 x, sint32 y, bool mirrored)
+//
+// Desc: Standard shape drawing functions. Highlights, Clips, and conditionally Flips and Xforms
+//
+
+// This does the red highlight blending. 
+static inline uint32 P_FASTCALL BlendHighlight(uint32 src, uint32 cr, uint32 cg, uint32 cb, uint32 ca, uint32 ica)
+{
+	uint32 sr, sg, sb;
+	UNPACK_RGB8(src,sr,sg,sb);
+	return PACK_RGB16(sr*ica+cr*ca, sg*ica+cg*ca, sb*ica+cb*ca);
+}
+
+template<class uintX> void SoftRenderSurface<uintX>::PaintHighlight(Shape* s, uint32 framenum, sint32 x, sint32 y, bool trans, bool mirrored, uint32 col32)
+{
+#define FLIP_SHAPES
+#define FLIP_CONDITIONAL mirrored
+#define XFORM_SHAPES
+#define XFORM_CONDITIONAL trans
+#define BLEND_SHAPES(src,dst) BlendHighlight(src,cr,cg,cb,ca,255-ca)
+
+	uint32 ca = (col32>>24)&0xFF;
+	uint32 cr = (col32>>24)&0xFF;
+	uint32 cg = (col32>>8)&0xFF;
+	uint32 cb = (col32>>0)&0xFF;
+
+	#include "SoftRenderSurface.inl"
+
+#undef FLIP_SHAPES
+#undef FLIP_CONDITIONAL
+#undef XFORM_SHAPES
+#undef XFORM_CONDITIONAL
+#undef BLEND_SHAPES
 }
 
 //

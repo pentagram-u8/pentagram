@@ -154,17 +154,3 @@ const xformBlendFuncType	U8XFormFuncs[256] = {
 };
 
 
-// This does the invisible blending. I've set it to about 40%
-uint32 P_FASTCALL BlendInvisible(uint32 src, uint32 dst)
-{
-	static uint32 sr, sg, sb;
-	static uint32 dr, dg, db;
-	UNPACK_RGB8(src,sr,sg,sb);
-	UNPACK_RGB8(dst,dr,dg,db);
-	return PACK_RGB16(sr*100+dr*156,
-						sg*100+dg*156,
-						sb*100+db*156);
-//	return PACK_RGB16((sr<<7)+(dr<<7),
-//						(sg<<7)+(dg<<7),
-//						(sb<<7)+(db<<7));
-}

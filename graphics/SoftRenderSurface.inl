@@ -35,9 +35,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // #define XFORM_CONDITIONAL to an argument of the function so XFORM can be 
 // enabled/disabled with a bool
 //
-// #define INVISIBLE_SHAPES to enable Invisible painting. 
+// #define BLEND_SHAPES(src,dst) to an a specified blend function.
 //
-// #define INVISIBLE_CONDITIONAL to an argument of the function so INVISILBLE
+// #define BLEND_CONDITIONAL to an argument of the function so BLEND
 // painting can be enabled/disabled with a bool
 //
 
@@ -54,7 +54,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // 
 // USE_XFORM_FUNC - Checks to see if we want to use XForm Blending for this pixel
 // 
-// INVIS_BLEND - Final Blend for invisiblity
+// CUSTOM_BLEND - Final Blend for invisiblity
 //
 
 //
@@ -125,15 +125,16 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 
 #endif
 
+
 //
 // Invisilibity = TRUE
 //
-#ifdef INVISIBLE_SHAPES
+#ifdef BLEND_SHAPES
 
-#ifdef INVISIBLE_CONDITIONAL
-#define INVIS_BLEND(src) static_cast<uintX>((INVISIBLE_CONDITIONAL)?BlendInvisible(src,*pixptr):src)
+#ifdef BLEND_CONDITIONAL
+#define CUSTOM_BLEND(src) static_cast<uintX>((BLEND_CONDITIONAL)?BLEND_SHAPES(src,*pixptr):src)
 #else
-#define INVIS_BLEND(src) static_cast<uintX>(BlendInvisible(src,*pixptr))
+#define CUSTOM_BLEND(src) static_cast<uintX>(BLEND_SHAPES(src,*pixptr))
 #endif
 
 //
@@ -141,7 +142,7 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 //
 #else
 
-#define INVIS_BLEND(src) static_cast<uintX>(src)
+#define CUSTOM_BLEND(src) static_cast<uintX>(src)
 
 #endif
 
@@ -218,12 +219,12 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 							xf_func = xform_funcs[*linedata];
 							if (USE_XFORM_FUNC) 
 							{
-								*pixptr = INVIS_BLEND(xf_func(*pixptr));
+								*pixptr = CUSTOM_BLEND(xf_func(*pixptr));
 							}
 							else 
 							#endif
 							{
-								*pixptr = INVIS_BLEND(pal[*linedata]);
+								*pixptr = CUSTOM_BLEND(pal[*linedata]);
 							}
 						}
 						pixptr += XNEG(1);
@@ -238,7 +239,7 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 					{
 						while (pixptr != endrun) 
 						{
-							if (NOT_CLIPPED_X) *pixptr = INVIS_BLEND(xf_func(*pixptr));
+							if (NOT_CLIPPED_X) *pixptr = CUSTOM_BLEND(xf_func(*pixptr));
 							pixptr += XNEG(1);
 						}
 					} 
@@ -250,7 +251,7 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 						{
 							if (NOT_CLIPPED_X) 
 							{
-								*pixptr = INVIS_BLEND(pix);
+								*pixptr = CUSTOM_BLEND(pix);
 							}
 							pixptr += XNEG(1);
 						}
@@ -294,12 +295,12 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 						xf_func = xform_funcs[*linedata];
 						if (USE_XFORM_FUNC) 
 						{
-							*pixptr = INVIS_BLEND(xf_func(*pixptr));
+							*pixptr = CUSTOM_BLEND(xf_func(*pixptr));
 						}
 						else 
 						#endif
 						{
-							*pixptr = INVIS_BLEND(pal[*linedata]);
+							*pixptr = CUSTOM_BLEND(pal[*linedata]);
 						}
 					}
 					pixptr += XNEG(1);
@@ -313,7 +314,7 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 	}
 
 #undef OFFSET_PIXELS
-#undef INVIS_BLEND
+#undef CUSTOM_BLEND
 #undef LINE_END_ASSIGN
 #undef NOT_CLIPPED_X
 #undef NOT_CLIPPED_Y

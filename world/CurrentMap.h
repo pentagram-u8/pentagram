@@ -58,14 +58,40 @@ public:
 						 int xd, int yd, int zd, uint16 item,
 						 uint16* support=0, uint16* roof=0);
 
+	struct SweepItem {
+		SweepItem(uint16 it, sint32 ht, sint32 et) : 
+			item(it), hit_time(ht), end_time(et) { }
+
+		uint16	item;		// Item that was hit
+
+		//
+		// The time values here are 'normalized' fixed point values
+		// They range from 0 for the start of the move to 0x4000 for the end of
+		// The move.
+		//
+		// Linear interpolate between the start and end positions using
+		// hit_time to find where the moving item was when the hit occurs
+		//
+
+		sint32	hit_time;	// if 0, already hitting when sweep started. 
+		sint32	end_time;	// if 0x4000, still hitting when sweep finished
+
+		// Use this func to get the interpolated location of the hit
+		void GetInterpolatedCoords(uint32 out[3], uint32 start[3], uint32 end[3])
+		{
+			for (int i = 0; i < 3; i++)
+				out[i] = start[i] + ((end[i]-start[i])*0x4000)/hit_time;
+		}
+	};
+
 	// Do a sweepTest of an item from start to end point.
 	// Bounding size is dims.
 	// item is the item that will be moving
 	// skip will skip all items until item num skip is reached
 	// Returns item hit or 0 if no hit.
 	// end is to the colision point
-	uint16 sweepTest(sint32 start[3], sint32 end[3], sint32 dims[3],
-						uint16 item, bool solid_only, uint16 skip=0);
+	bool sweepTest(const sint32 start[3], const sint32 end[3], const sint32 dims[3],
+			uint16 item, bool solid_only, std::list<SweepItem> *hit);
 
 	TeleportEgg* findDestination(uint16 id);
 

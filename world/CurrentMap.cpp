@@ -433,8 +433,9 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 // skip will skip all items until item num skip is reached
 // Returns item hit or 0 if no hit.
 // end is set to the colision point
-uint16 CurrentMap::sweepTest(sint32 start[3], sint32 end[3], sint32 dims[3],
-								uint16 item, bool solid_only, uint16 skip)
+bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3], const sint32 dims[3],
+								uint16 item, bool solid_only,
+								std::list<SweepItem> *hit)
 {
 
 	int i;
@@ -479,12 +480,13 @@ uint16 CurrentMap::sweepTest(sint32 start[3], sint32 end[3], sint32 dims[3],
 	centre[1] = start[1] - ext[1];
 	centre[2] = start[2] + ext[2];
 
-	//pout << "Sweeping from (" << centre[0] << ", " << centre[1] << ", " << centre[2] << ")" << std::endl;
-	//pout << "Sweeping to   (" << centre[0]+vel[0] << ", " << centre[1]+vel[1] << ", " << centre[2]+vel[2] << ")" << std::endl;
-	//pout << "Sweeping dims (" << ext[0] << ", " << ext[1] << ", " << ext[2] << ")" << std::endl;
+//	pout << "Sweeping from (" << -ext[0] << ", " << -ext[1] << ", " << -ext[2] << ")" << std::endl;
+//	pout << "              (" << ext[0] << ", " << ext[1] << ", " << ext[2] << ")" << std::endl;
+///	pout << "Sweeping to   (" << vel[0]-ext[0] << ", " << vel[1]-ext[1] << ", " << vel[2]-ext[2] << ")" << std::endl;
+//	pout << "              (" << vel[0]+ext[0] << ", " << vel[1]+ext[1] << ", " << vel[2]+ext[2] << ")" << std::endl;
 
-	uint16 item_hit = 0;
-	sint32 hit_time = 0x4000;	// 0 -> 16384
+	std::list<SweepItem>::iterator sw_it;
+	if (hit) sw_it = hit->end();
 
 	for (int cx = minx; cx <= maxx; cx++) {
 		for (int cy = miny; cy <= maxy; cy++) {
@@ -493,11 +495,7 @@ uint16 CurrentMap::sweepTest(sint32 start[3], sint32 end[3], sint32 dims[3],
 				 iter != items[cx][cy].end(); ++iter)
 			{
 				Item* other_item = *iter;
-				if (other_item->getObjId()==item || skip)
-				{
-					if (other_item->getObjId()==skip) skip = 0;
-					continue;
-				}
+				if (other_item->getObjId()==item) continue;
 
 				// This WILL hit everything and return them unless solid_only 
 				// is set
@@ -514,18 +512,6 @@ uint16 CurrentMap::sweepTest(sint32 start[3], sint32 end[3], sint32 dims[3],
 				other[1] -= oext[1]+centre[1];
 				other[2] += oext[2]-centre[2];
 
-				// check start overlap
-				if ( abs(other[0]) <= (ext[0] + oext[0]) &&
-						abs(other[1]) <= (ext[1] + oext[1]) &&
-						abs(other[2]) <= (ext[2] + oext[2]))
-				{
-					// Already hit this so we return it
-					for (i = 0; i < 3; i++) end[i] = start[i];
-					//pout << "Hit item " << other_item->getObjId() << " at (" << 0 << ")" << std::endl;
-
-					return other_item->getObjId();
-				}
-
 				//first times of overlap along each axis
 				sint32 u_1[3] = {0,0,0};
 
@@ -541,22 +527,29 @@ uint16 CurrentMap::sweepTest(sint32 start[3], sint32 end[3], sint32 dims[3],
 					sint32 B_max = other[i]+oext[i];	
 					sint32 B_min = other[i]-oext[i];	
 
-					if( A_max<B_min && vel[i]<0 )
+					if ( vel[i] < 0 && A_max>=B_min )		// A_max>=B_min not required
 					{
-						u_0[i] = ((A_max - B_min)*0x4000) / vel[i];
+						// - want to know when rear of A passes front of B
+						u_0[i] = ((B_max - A_min)*0x4000) / vel[i];
+						// - want to know when front of A passes rear of B
+						u_1[i] = ((B_min - A_max)*0x4000) / vel[i]; 
 					}
-					else if( B_max<A_min && vel[i]>0 )
+					else if( vel[i] > 0 && A_min<=B_max)	// A_min<=B_max not required
 					{
-						u_0[i] = ((A_min - B_max)*0x4000) / vel[i];
+						// + want to know when front of A passes rear of B
+						u_0[i] = ((B_min - A_max)*0x4000) / vel[i];
+						// + want to know when rear of A passes front of B
+						u_1[i] = ((B_max - A_min)*0x4000) / vel[i]; 
 					}
-
-					if( B_max>A_min && vel[i]<0 )
-					{ 
-						u_1[i] = ((A_min - B_max)*0x4000) / vel[i]; 
-					}
-					else if( A_max>B_min && vel[i]>0 )
+					else if( vel[i] == 0 && A_max >= B_min && A_min <= B_max)
 					{
-						u_1[i] = ((A_max - B_min)*0x4000) / vel[i]; 
+						u_0[i] = 0;
+						u_1[i] = 0x4000;
+					}
+					else
+					{
+						u_0[i] = 0x4001;
+						u_1[i] = -1;
 					}
 				}
 
@@ -573,22 +566,41 @@ uint16 CurrentMap::sweepTest(sint32 start[3], sint32 end[3], sint32 dims[3],
 				//they could have only collided if
 				//the first time of overlap occurred
 				//before the last time of overlap
-				if (first <= last && first < hit_time )
+				if (first <= last)
 				{
-					hit_time = first;
-					item_hit = other_item->getObjId();
-					//pout << "Hit item " << item_hit << " at (" << hit_time << ")" << std::endl;
+					//pout << "Hit item " << other_item->getObjId() << " at first: " << first << "  last: " << last << std::endl;
+
+					if (!hit) return true;
+
+					// Clamp
+					if (first < 0) first = 0;
+					if (last > 0x4000) last = 0x4000;
+
+					// Ok, what we want to do here is add to the list.
+					// Sorted by hit_time. 
+
+					// Small speed up.
+					if (sw_it != hit->end())
+					{
+						SweepItem &si = *sw_it;
+						if (si.hit_time > first) sw_it = hit->begin();
+					}
+					else
+						sw_it = hit->begin();
+
+					for (;sw_it != hit->end(); ++sw_it) 
+						if ((*sw_it).hit_time > first) break;
+
+					// Now add it
+					sw_it = hit->insert(sw_it, SweepItem(other_item->getObjId(),first,last));
+					//pout << "Hit item " << other_item->getObjId() << " at (" << first << "," << last << ")" << std::endl;
 					//pout << "hit item      (" << other[0] << ", " << other[1] << ", " << other[2] << ")" << std::endl;
 				}
 			}
 		}
 	}
 
-	// Get the hit point
-	if (item_hit)
-		for (i = 0; i < 3; i++) end[i] = start[i] + (vel[i]*hit_time)/0x4000;
-
-	return item_hit;
+	return hit && hit->size();
 }
 
 
