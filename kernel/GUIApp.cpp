@@ -405,22 +405,19 @@ void GUIApp::LoadConsoleFont()
 
 	// try to load the file
 	pout << "Loading console font config: " << confontcfg << "... ";
-	Configuration *fontconfig = new Configuration();
-	if(fontconfig->readConfigFile(confontcfg, "font"))
+	if(config->readConfigFile(confontcfg, "font", true))
 		pout << "Ok" << std::endl;
 	else
 		pout << "Failed" << std::endl;
 
 	// search for the path to the font...
-	fontconfig->value("font/path", confontfile, "");
+	config->value("font/path", confontfile, "");
+
 	if(confontfile=="")
 	{
 		pout << "Error: Console font path not found! Unable to continue. Exiting." << std::endl;
 		std::exit(-1);
 	}
-
-	// clean up
-	delete fontconfig;
 
 	// Load confont
 	pout << "Loading Confont: " << confontfile << std::endl;
