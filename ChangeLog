@@ -1,3 +1,6 @@
+2004-05-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/ConsoleGump.*: fixed key input
+
 2004-05-05  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* gumps/GameMapGump.cpp: improved item dropping to drop above the
 	  highest item under the cursor or the Avatar's z coordinate.

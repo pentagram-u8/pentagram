@@ -303,7 +303,7 @@ bool ConsoleGump::OnTextInput(int unicode)
 }
 
 
-bool ConsoleGump::OnKeyDown(int key)
+bool ConsoleGump::OnKeyDown(int key, int mod)
 {
 	bool handled = false;
 	if (scroll_state == NORMAL_DISPLAY)

@@ -63,7 +63,7 @@ public:
 
 	virtual bool		OnTextInput(int unicode);
 	virtual void		OnFocus(bool /*gain*/);
-	virtual bool		OnKeyDown(int key);
+	virtual bool		OnKeyDown(int key, int mod);
 
 	bool	loadData(IDataSource* ids);
 
