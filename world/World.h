@@ -53,7 +53,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //  game data need this, actually.)
 
 #include <vector>
-#include <stack>
+#include <list>
 
 class Map;
 class CurrentMap;
