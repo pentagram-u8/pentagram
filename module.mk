@@ -70,6 +70,7 @@ pentagram_OBJ = \
 	gumps/GameMapGump.o \
 	gumps/Gump.o \
 	gumps/ResizableGump.o \
+	world/CameraProcess.o \
 	world/Egg.o \
 	world/Item.o \
 	world/Container.o \
