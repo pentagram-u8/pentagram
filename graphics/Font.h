@@ -30,6 +30,9 @@ public:
 		: Shape(data, size, format) { }
 	virtual ~Font() { }
 
+	int getWidth(char c);
+
+
 	ENABLE_DYNAMIC_CAST(Font);
 };
 

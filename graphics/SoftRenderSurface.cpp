@@ -231,6 +231,16 @@ template<class uintX> void SoftRenderSurface<uintX>::PrintChar(Font * f, char ch
 	Paint(f, static_cast<uint32>(character), x, y);
 }
 
+template<class uintX> void SoftRenderSurface<uintX>::PrintText(Font * f, const char* s, int x, int y)
+{
+	//!!! TODO: line breaks, hleads, ...
+	while (*s) {
+		Paint(f, static_cast<uint32>(*s), x, y);
+		x += f->getWidth(*s);
+		s++;
+	}
+}
+
 
 //
 // SoftRenderSurface::PrintCharFixed(Texture *, char character, int x, int y)

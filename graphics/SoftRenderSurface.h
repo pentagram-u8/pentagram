@@ -95,7 +95,7 @@ public:
 	//
 	
 	// Draw from a Font
-	// TODO: virtual void PrintText(Font *, const char *text, int x, int y);
+	virtual void PrintText(Font *, const char *text, int x, int y);
 
 	// Draw a character from a Font
 	virtual void PrintChar(Font *, char character, int x, int y);

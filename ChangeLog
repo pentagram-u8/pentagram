@@ -2,6 +2,7 @@
 	* graphics/FontShapeFlex.*, graphics/Font.*: fonts
 	* graphics/*ShapeFlex*: default palette for a ShapeFlex
 	* graphics/*RenderSurface*: PrintChar
+	* graphics/*RenderSurface*: a very very basic PrintText
 	
 2003-05-29	Darke <darkepaw@users.sf.net>
 	* configure.ac: Adding semi-b0rk3n support for linking into a seperate

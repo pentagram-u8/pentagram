@@ -161,7 +161,7 @@ public:
 	//
 	
 	// Draw from a Font
-	//virtual void PrintText(Font *, const char *text, int x, int y) = 0;
+	virtual void PrintText(Font *, const char *text, int x, int y) = 0;
 
 	// Draw a character from a Font
 	virtual void PrintChar(Font *, char character, int x, int y) = 0;

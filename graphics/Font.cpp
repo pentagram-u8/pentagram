@@ -18,5 +18,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 #include "Font.h"
+#include "ShapeFrame.h"
 
 DEFINE_DYNAMIC_CAST_CODE(Font,Shape);
+
+int Font::getWidth(char c)
+{
+	// just return framewidth, or do we need to use hlead too?
+	return getFrame(static_cast<uint32>(c))->width;
+}
