@@ -43,6 +43,7 @@ public:
 
 	uint16 assignObjId(Object* obj, ObjId id=0xFFFF);
 	uint16 assignActorObjId(Actor* obj, ObjId id=0xFFFF);
+	bool reserveObjId(ObjId objid);
 	void clearObjId(ObjId objid);
 	Object* getObject(ObjId objid) const;
 
@@ -57,6 +58,8 @@ public:
 
 	//! "ObjectManager::objectTypes" console command
 	static void ConCmd_objectTypes(const Console::ArgsType &args, const Console::ArgvType &argv);
+	//! "ObjectManager::objectInfo" console command
+	static void ConCmd_objectInfo(const Console::ArgsType &args, const Console::ArgvType &argv);
 
 	std::vector<Object*> objects;
 	idMan* objIDs;

@@ -174,6 +174,8 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 						  Kernel::ConCmd_listItemProcesses);
 	con.AddConsoleCommand("ObjectManager::objectTypes",
 						  ObjectManager::ConCmd_objectTypes);
+	con.AddConsoleCommand("ObjectManager::objectInfo",
+						  ObjectManager::ConCmd_objectInfo);
 	con.AddConsoleCommand("MainActor::teleport", MainActor::ConCmd_teleport);
 	con.AddConsoleCommand("MainActor::mark", MainActor::ConCmd_mark);
 	con.AddConsoleCommand("MainActor::recall", MainActor::ConCmd_recall);
@@ -201,6 +203,7 @@ GUIApp::~GUIApp()
 	con.RemoveConsoleCommand("Kernel::processTypes");
 	con.RemoveConsoleCommand("Kernel::listItemProcesses");
 	con.RemoveConsoleCommand("ObjectManager::objectTypes");
+	con.RemoveConsoleCommand("ObjectManager::objectInfo");
 	con.RemoveConsoleCommand("MainActor::teleport");
 	con.RemoveConsoleCommand("MainActor::mark");
 	con.RemoveConsoleCommand("MainActor::recall");
@@ -1593,6 +1596,17 @@ void GUIApp::setupCoreGumps()
 	gameMapGump->InitGump();
 //	desktopGump->AddChild(gameMapGump);
 	invgump->AddChild(gameMapGump);
+
+
+	// TODO: clean this up
+	assert(desktopGump->getObjId() == 256);
+	assert(invgump->getObjId() == 257);
+	assert(consoleGump->getObjId() == 258);
+	assert(gameMapGump->getObjId() == 259);
+
+
+	for (uint16 i = 260; i < 288; ++i)
+		objectmanager->reserveObjId(i);
 }
 
 bool GUIApp::newGame()

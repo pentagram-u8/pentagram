@@ -77,7 +77,6 @@ ObjectManager::ObjectManager()
 
 	//!CONSTANTS
 	objIDs = new idMan(256,65534,8192);	// Want range of 256 to 65534
-	objIDs->reserveID(666);		// 666 is reserved for the Guardian Bark hack
 	actorIDs = new idMan(1,255,255);
 }
 
@@ -165,6 +164,34 @@ void ObjectManager::ConCmd_objectTypes(const Console::ArgsType & /*args*/, const
 	ObjectManager::get_instance()->objectTypes();
 }
 
+void ObjectManager::ConCmd_objectInfo(const Console::ArgsType& args, const Console::ArgvType& argv)
+{
+	if (argv.size() != 2) {
+		pout << "usage: objectInfo <objectnum>" << std::endl;
+		return;
+	}
+
+	ObjectManager* objman = ObjectManager::get_instance();
+
+	ObjId objid = strtol(argv[1].c_str(), 0, 0);
+
+	Object* obj = objman->getObject(objid);
+	if (obj == 0) {
+		bool reserved = false;
+		if (objid >= 256) // CONSTANT!
+			reserved = objman->objIDs->isIDUsed(objid);
+		else
+			reserved = objman->actorIDs->isIDUsed(objid);
+		if (reserved)
+			pout << "Reserved objid: " << objid << std::endl;
+		else
+			pout << "No such object: " << objid << std::endl;
+	} else {
+		obj->dumpInfo();
+	}
+}
+
+
 uint16 ObjectManager::assignObjId(Object* obj, ObjId new_objid)
 {
 	if (new_objid == 0xFFFF)
@@ -193,6 +220,14 @@ uint16 ObjectManager::assignActorObjId(Actor* actor, ObjId new_objid)
 		objects[new_objid] = actor;
 	}
 	return new_objid;
+}
+
+bool ObjectManager::reserveObjId(ObjId objid)
+{
+	if (objid >= 256) // !constant
+		return objIDs->reserveID(objid);
+	else
+		return actorIDs->reserveID(objid);
 }
 
 void ObjectManager::clearObjId(ObjId objid)

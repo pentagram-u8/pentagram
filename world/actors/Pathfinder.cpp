@@ -230,6 +230,7 @@ void Pathfinder::expandNode(PathNode* node)
 
 bool Pathfinder::pathfind(std::vector<PathfindingAction>& path)
 {
+#if 0
 	pout << "Actor " << actor->getObjId();
 
 	if (targetitem) {
@@ -238,6 +239,7 @@ bool Pathfinder::pathfind(std::vector<PathfindingAction>& path)
 	} else {
 		pout << " pathfinding to (" << targetx << "," << targety << "," << targetz << ")" << std::endl;
 	}
+#endif
 
 	path.clear();
 

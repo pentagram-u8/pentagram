@@ -75,6 +75,9 @@ bool U8Game::startGame()
 
 	pout << "Starting new Ultima 8 game." << std::endl;
 
+	// reserve ObjId 666 for the Guardian Bark hack
+	ObjectManager::get_instance()->reserveObjId(666); 
+
 	IDataSource *saveds = FileSystem::get_instance()->ReadFile("@u8/savegame/u8save.000");
 	if (!saveds) {
 		perr << "Unable to load savegame/u8save.000." << std::endl;

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -41,6 +41,9 @@ public:
 
 	//! Clear objID of self and contents (if any)
 	virtual void clearObjId();
+
+	//! dump some info about this object to pout
+	virtual void dumpInfo();
 
 	//! save this object
 	void save(ODataSource* ods);
