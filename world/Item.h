@@ -144,8 +144,9 @@ public:
 	} statusflags;
 
 	enum {
-		EXT_FIXED  = 0x0001, // item came from FIXED
-		EXT_INGLOB = 0x0002  // item is part of a glob
+		EXT_FIXED    = 0x0001, // item came from FIXED
+		EXT_INGLOB   = 0x0002, // item is part of a glob
+		EXT_NOTINMAP = 0x0004  // item isn't part of the map itself (e.g. NPCs)
 	} extflags;
 };
 

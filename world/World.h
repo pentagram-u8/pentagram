@@ -89,6 +89,7 @@ public:
 	void clearObjId(uint16 objid);
 
 	Object* getObject(uint16 objid) const;
+	Actor* getNPC(uint16 npcid) const;
 
 	void worldStats();
 

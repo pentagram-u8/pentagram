@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Map.h"
 #include "Item.h"
 #include "GlobEgg.h"
+#include "Actor.h"
+#include "World.h"
 
 using std::list; // too messy otherwise
 typedef list<Item*> item_list;
@@ -102,6 +104,10 @@ void CurrentMap::writeback()
 					globegg->unexpand();
 				}
 
+				// this item isn't from the Map. (like NPCs)
+				if (item->getExtFlags() | Item::EXT_NOTINMAP)
+					continue;
+
 				if (item->getExtFlags() | Item::EXT_FIXED) {
 					// item came from fixed
 					current_map->fixeditems.push_back(item);
@@ -144,6 +150,16 @@ void CurrentMap::loadMap(Map* map)
 	// we take control of the items in map, so clear the pointers
 	map->fixeditems.clear();
 	map->dynamicitems.clear();
+
+
+	// load relevant NPCs to the item lists
+	// !constant
+	for (unsigned int i = 0; i < 256; ++i) {
+		Actor* actor = World::get_instance()->getNPC(i);
+		if (actor && actor->getMapNum() == getNum()) {
+			addItem(actor);
+		}
+	}
 }
 
 void CurrentMap::addItem(Item* item)

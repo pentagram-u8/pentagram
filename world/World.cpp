@@ -255,7 +255,8 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 #endif
 
 		Actor *actor = ItemFactory::createActor(shape,frame,quality,flags,
-												npcnum,mapnum,0);
+												npcnum,mapnum,
+												Item::EXT_NOTINMAP);
 		if (!actor) {
 #ifdef DUMP_ITEMS
 			// this 'error' message is supposed to occur rather a lot
@@ -328,6 +329,13 @@ void World::worldStats()
 Object* World::getObject(uint16 objid) const
 {
 	return objects[objid];
+}
+
+Actor* World::getNPC(uint16 npcid) const
+{
+	if (npcid >= npcs.size()) return 0;
+
+	return npcs[npcid];
 }
 
 typedef std::vector<Object*> object_vector;
