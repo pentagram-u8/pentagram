@@ -101,3 +101,9 @@ kick-bansville.)
 
 
 <wjp> and pentagram implements part of U8's partial functionality ;-)
+
+
+cute... an explosion just knocked back several staircases
+(wjp upon discovering that implementing physics is more complicated then it
+first appears.)
+
