@@ -248,6 +248,11 @@ BarkGump: (v1)
 <ItemRelativeGump>
 sint32 counter
 uint16 textwidget
+uint32 speechshapenum
+uint32 speechlength
+uint32 totaltextheight
+uint32 textsize
+char barked[textsize]
 
 
 ContainerGump: (v1)
