@@ -73,7 +73,7 @@ void OptionsGump::InitGump()
 	entryGumps[2] = widget->getObjId();
 	y+= 14;
 
-	widget = new ButtonWidget(x, y, "4. Gamplay", font);
+	widget = new ButtonWidget(x, y, "4. Gameplay", font);
 	widget->InitGump();
 	AddChild(widget);
 	entryGumps[3] = widget->getObjId();
