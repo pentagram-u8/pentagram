@@ -1,6 +1,8 @@
 2003-07-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* misc/idMan.*: moved idMan from kernel/ to misc/
 	* misc/idMan.*: doxygen; idMan now expands dynamically
+	* usecode/UCMachine.*: use idMan for strings/lists
+	* docs/savegame.txt: updated
 
 2003-07-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/ObjectManager.cpp: added loader for PaperdollGump

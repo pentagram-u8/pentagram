@@ -63,9 +63,8 @@ public:
 	//! \return a free ID, or 0 if none are available
 	uint16		getNewID();
 
-	//! mark a given ID as used
+	//! mark a given ID as used, expanding if necessary.
 	//! Note: reserveID is O(n), so don't use too often.
-	//! Note: this expands idMan if necessary
 	//! \return false if the ID was already used or is out of range
 	bool		reserveID(uint16 id);
 

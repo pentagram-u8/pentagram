@@ -31,6 +31,7 @@ class IDataSource;
 class ODataSource;
 class BitSet;
 class UCList;
+class idMan;
 
 class UCMachine
 {
@@ -98,6 +99,9 @@ private:
 
 	uint16 assignString(const char* str);
 	uint16 assignList(UCList* l);
+
+	idMan* listIDs;
+	idMan* stringIDs;
 
 	static UCMachine* ucmachine;
 };

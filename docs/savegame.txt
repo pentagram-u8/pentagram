@@ -97,6 +97,7 @@ uint32[MAP_NUM_CHUNKS][MAP_NUM_CHUNKS/32] fast
 
 UCSTRINGS: (v1)
 uint16 version
+idMan stringIDs
 uint32 stringcount
 [stringcount strings]
 
@@ -114,6 +115,7 @@ uint8 data[bytes]	"bytes" = size/8, rounded up
 
 UCLISTS: (v1)
 uint16 version
+idMan listIDs
 uint32 listcount
 [listcount lists]
 

@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "World.h"
 #include "BitSet.h"
 #include "UCList.h"
+#include "idMan.h"
 
 #define INCLUDE_CONVERTUSECODEU8_WITHOUT_BRINGING_IN_FOLD
 #include "u8/ConvertUsecodeU8.h"
@@ -98,6 +99,9 @@ UCMachine::UCMachine(Intrinsic *iset)
 
 	convuse = new ConvertUsecodeU8; //!...
 	loadIntrinsics(iset); //!...
+
+	listIDs = new idMan(1, 65534, 128);
+	stringIDs = new idMan(1, 65534, 256);
 }
 
 
@@ -106,8 +110,9 @@ UCMachine::~UCMachine()
 	ucmachine = 0;
 
 	delete globals; globals = 0;
-
 	delete convuse; convuse = 0;
+	delete listIDs; listIDs = 0;
+	delete stringIDs; stringIDs = 0;
 }
 
 void UCMachine::reset()
@@ -1881,21 +1886,12 @@ UCList* UCMachine::getList(uint16 l)
 
 uint16 UCMachine::assignString(const char* str)
 {
-	static uint16 count = 0; // 0 is reserved
+	uint16 id = stringIDs->getNewID();
+	if (id == 0) return 0;
 
-	// I'm not exactly sure if this is the most efficient way to do this
+	stringHeap[id] = str;
 
-	//! infinite loop when too many strings
-
-	// find unassigned element
-	do {
-		count++;
-		if (count > 0xFFFE) count = 1;
-	} while (stringHeap.find(count) != stringHeap.end());
-
-	stringHeap[count] = str;
-
-	return count;
+	return id;
 }
 
 uint16 UCMachine::duplicateString(uint16 str)
@@ -1906,21 +1902,12 @@ uint16 UCMachine::duplicateString(uint16 str)
 
 uint16 UCMachine::assignList(UCList* l)
 {
-	static uint16 count = 0; // 0 is reserved
+	uint16 id = listIDs->getNewID();
+	if (id == 0) return 0;
 
-	// I'm not exactly sure if this is the most efficient way to do this
+	listHeap[id] = l;
 
-	//! infinite loop when too many lists
-
-	// find unassigned element
-	do {
-		count++;
-		if (count > 0xFFFE) count = 1;
-	} while (listHeap.find(count) != listHeap.end());
-
-	listHeap[count] = l;
-
-	return count;
+	return id;
 }
 
 void UCMachine::freeString(uint16 s)
@@ -2179,6 +2166,7 @@ void UCMachine::saveGlobals(ODataSource* ods)
 void UCMachine::saveStrings(ODataSource* ods)
 {
 	ods->write2(1); //version
+	stringIDs->save(ods);
 	ods->write4(stringHeap.size());
 
 	std::map<uint16, std::string>::iterator iter;
@@ -2193,6 +2181,7 @@ void UCMachine::saveStrings(ODataSource* ods)
 void UCMachine::saveLists(ODataSource* ods)
 {
 	ods->write2(1); //version
+	listIDs->save(ods);
 	ods->write4(listHeap.size());
 
 	std::map<uint16, UCList*>::iterator iter;
@@ -2215,6 +2204,8 @@ bool UCMachine::loadStrings(IDataSource* ids)
 {
 	uint16 version = ids->read2();
 	if (version != 1) return false;
+
+	stringIDs->load(ids);
 
 	uint32 stringcount = ids->read4();
 	for (unsigned int i = 0; i < stringcount; ++i)
@@ -2239,6 +2230,8 @@ bool UCMachine::loadLists(IDataSource* ids)
 {
 	uint16 version = ids->read2();
 	if (version != 1) return false;
+
+	listIDs->load(ids);
 
 	uint32 listcount = ids->read4();
 	for (unsigned int i = 0; i < listcount; ++i)
