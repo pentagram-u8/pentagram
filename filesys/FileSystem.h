@@ -100,7 +100,7 @@ significant overhead.
 class FileSystem
 {
  public:
-	//! \param noforcedvpaths if true, all file operations must use vpaths
+	//! \param noforcedvpaths if false, all file operations must use vpaths
 	FileSystem(bool noforcedvpaths = false);
 	~FileSystem();
 
