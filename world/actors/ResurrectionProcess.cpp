@@ -41,7 +41,7 @@ ResurrectionProcess::ResurrectionProcess(Actor* actor_)
 	type = 0x229; // CONSTANT !
 }
 
-bool ResurrectionProcess::run(const uint32 framenum)
+bool ResurrectionProcess::run(const uint32 /*framenum*/)
 {
 	Actor *a = World::get_instance()->getNPC(item_num);
 

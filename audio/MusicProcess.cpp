@@ -233,7 +233,7 @@ uint32 MusicProcess::I_playMusic(const uint8* args,
 	return 0;
 }
 
-uint32 MusicProcess::I_musicStop(const uint8* args,
+uint32 MusicProcess::I_musicStop(const uint8* /*args*/,
 										unsigned int /*argsize*/)
 {
 	if (the_music_process) the_music_process->playMusic(0);
@@ -241,7 +241,7 @@ uint32 MusicProcess::I_musicStop(const uint8* args,
 }
 
 
-void MusicProcess::ConCmd_playMusic(const Console::ArgsType &args, const Console::ArgvType &argv)
+void MusicProcess::ConCmd_playMusic(const Console::ArgsType & /*args*/, const Console::ArgvType &argv)
 {
 	if (the_music_process) 
 	{

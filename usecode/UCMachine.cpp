@@ -2349,7 +2349,7 @@ uint32 UCMachine::I_rndRange(const uint8* args, unsigned int /*argsize*/)
 
 
 
-void UCMachine::ConCmd_avatarsName(const Console::ArgsType &args, const Console::ArgvType &argv)
+void UCMachine::ConCmd_avatarsName(const Console::ArgsType & /*args*/, const Console::ArgvType &argv)
 {
 	UCMachine *uc = UCMachine::get_instance();
 	if (argv.size() == 1)

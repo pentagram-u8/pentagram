@@ -71,7 +71,7 @@ bool BindGump::OnKeyDown(int key, int mod)
 			hidmanager->unbind(*binding);
 		}
 		else {
-			Pentagram::istring control = SDL_GetKeyName((SDLKey) key);
+			Pentagram::istring control = SDL_GetKeyName(static_cast<SDLKey>(key));
 			hidmanager->bind(control, *binding);
 		}
 		if (invoker)
@@ -83,7 +83,7 @@ bool BindGump::OnKeyDown(int key, int mod)
 
 Gump * BindGump::OnMouseDown(int button, int mx, int my)
 {
-	Pentagram::istring control = GetMouseButtonName((MouseButton) button);
+	Pentagram::istring control = GetMouseButtonName(static_cast<MouseButton>(button));
 	HIDManager * hidmanager = HIDManager::get_instance();
 	if (binding)
 		hidmanager->bind(control, *binding);

@@ -52,7 +52,7 @@ void EggHatcherProcess::addEgg(Egg* egg)
 	eggs.push_back(egg->getObjId());
 }
 
-bool EggHatcherProcess::run(const uint32 framenum)
+bool EggHatcherProcess::run(const uint32 /*framenum*/)
 {
 	bool nearteleporter = false;
 	MainActor* av = World::get_instance()->getMainActor();

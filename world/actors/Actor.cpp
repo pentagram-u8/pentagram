@@ -141,7 +141,7 @@ bool Actor::giveTreasure()
 
 		// check chance
 		if (ti.chance < 0.999 &&
-			((double)(std::rand()) / RAND_MAX) > ti.chance)
+			(static_cast<double>(std::rand()) / RAND_MAX) > ti.chance)
 		{
 			continue;
 		}
@@ -829,7 +829,7 @@ bool Actor::loadData(IDataSource* ids)
 	mana = static_cast<sint16>(ids->read2());
 	alignment = ids->read2();
 	enemyalignment = ids->read2();
-	lastanim = (Animation::Sequence) ids->read2();
+	lastanim = static_cast<Animation::Sequence>(ids->read2());
 	animframe = ids->read2();
 	direction = ids->read2();
 	actorflags = ids->read4();
@@ -876,7 +876,7 @@ uint32 Actor::I_doAnim(const uint8* args, unsigned int /*argsize*/)
 
 	if (!actor) return 0;
 
-	return actor->doAnim((Animation::Sequence) anim, dir);
+	return actor->doAnim(static_cast<Animation::Sequence>(anim), dir);
 }
 
 uint32 Actor::I_getDir(const uint8* args, unsigned int /*argsize*/)

@@ -1,3 +1,10 @@
+2004-11-14	Darke  <darkepaw@users.sf.net>
+	* *: Lots of changes to remove warnings.
+	* world/Item.*: Changed Item::Lerped::{shape|frame} to be uint32,
+	  rather then sint32, to be consistent with rest of code. Doesn't seem
+	  to have caused any problems, but might if trying to relative shift
+	  shapes/frames.
+	
 2004-11-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/MissileProcess.cpp: don't force-collideMove; fall when done
 

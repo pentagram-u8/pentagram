@@ -111,7 +111,7 @@ void TTFont::getStringSize(std::string& text, int& width, int& height)
 	const char* t = text.c_str();
 	uint16* unicodetext = new uint16[strlen(t)+1];
 	for (unsigned int i = 0; i < strlen(t); ++i) {
-		unicodetext[i] = encoding[(unsigned char)(t[i])];
+		unicodetext[i] = encoding[static_cast<unsigned char>(t[i])];
 	}
 	unicodetext[strlen(t)] = 0;
 #endif
@@ -165,7 +165,7 @@ RenderedText* TTFont::renderText(std::string text,
 //		perr << "Hex: " << std::hex;
 		for (unsigned int i = 0; i < strlen(t); ++i) {
 //			perr << std::setw(2) << std::setfill('0') << (unsigned int)(t[i]) << " ";
-			unicodetext[i] = encoding[(unsigned char)(t[i])];
+			unicodetext[i] = encoding[static_cast<unsigned char>(t[i])];
 		}
 //		perr << std::dec << std::endl;
 		unicodetext[strlen(t)] = 0;
@@ -185,7 +185,7 @@ RenderedText* TTFont::renderText(std::string text,
 
 		// render the text surface into our texture buffer
 		for (int y = 0; y < textsurf->h; y++) {
-			uint8* surfrow = (uint8*)(textsurf->pixels) + y * textsurf->pitch;
+			uint8* surfrow = static_cast<uint8*>(textsurf->pixels) + y * textsurf->pitch;
 			uint32* bufrow = buf + (iter->dims.y+y+1)*resultwidth;
 			for (int x = 0; x < textsurf->w; x++) {
 				if (surfrow[x] == 1) {

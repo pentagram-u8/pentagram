@@ -158,7 +158,7 @@ uint32 PaletteFaderProcess::I_fadeToPaletteTransform(const uint8* args,
 	return Kernel::get_instance()->addProcess(fader);
 }
 
-uint32 PaletteFaderProcess::I_fadeToBlack(const uint8* args,
+uint32 PaletteFaderProcess::I_fadeToBlack(const uint8* /*args*/,
 										unsigned int /*argsize*/)
 {
 	if (fader && fader->priority > 0x7FFF) return 0;
@@ -168,7 +168,7 @@ uint32 PaletteFaderProcess::I_fadeToBlack(const uint8* args,
 	return Kernel::get_instance()->addProcess(fader);
 }
 
-uint32 PaletteFaderProcess::I_fadeFromBlack(const uint8* args,
+uint32 PaletteFaderProcess::I_fadeFromBlack(const uint8* /*args*/,
 										unsigned int /*argsize*/)
 {
 	if (fader && fader->priority > 0x7FFF) return 0;
@@ -178,7 +178,7 @@ uint32 PaletteFaderProcess::I_fadeFromBlack(const uint8* args,
 	return Kernel::get_instance()->addProcess(fader);
 }
 
-uint32 PaletteFaderProcess::I_fadeToWhite(const uint8* args,
+uint32 PaletteFaderProcess::I_fadeToWhite(const uint8* /*args*/,
 										unsigned int /*argsize*/)
 {
 	if (fader && fader->priority > 0x7FFF) return 0;
@@ -188,7 +188,7 @@ uint32 PaletteFaderProcess::I_fadeToWhite(const uint8* args,
 	return Kernel::get_instance()->addProcess(fader);
 }
 
-uint32 PaletteFaderProcess::I_fadeFromWhite(const uint8* args,
+uint32 PaletteFaderProcess::I_fadeFromWhite(const uint8* /*args*/,
 										unsigned int /*argsize*/)
 {
 	if (fader && fader->priority > 0x7FFF) return 0;
@@ -198,7 +198,7 @@ uint32 PaletteFaderProcess::I_fadeFromWhite(const uint8* args,
 	return Kernel::get_instance()->addProcess(fader);
 }
 
-uint32 PaletteFaderProcess::I_lightningBolt(const uint8* args,
+uint32 PaletteFaderProcess::I_lightningBolt(const uint8* /*args*/,
 										unsigned int /*argsize*/)
 {
 	if (fader && fader->priority > 0xFFFF) return 0;

@@ -444,7 +444,7 @@ protected:
 	struct Lerped
 	{
 		sint32 x,y,z;
-		sint32 shape,frame;
+		uint32 shape,frame;
 	};
 	
 	Lerped	l_prev;			// Previous state (relative to camera)

@@ -41,7 +41,7 @@ public:
 	
 	virtual void run();
 	virtual void paint() {}; // should be removed from CoreApp
-	virtual void handleEvent(const SDL_Event&event) {}; // should this be in CoreApp?
+	virtual void handleEvent(const SDL_Event& /*event*/) {}; // should this be in CoreApp?
 	
 protected:
 	virtual void DeclareArgs();

@@ -116,7 +116,7 @@ bool ActorAnimProcess::init()
 }
 
 
-bool ActorAnimProcess::run(const uint32 framenum)
+bool ActorAnimProcess::run(const uint32 /*framenum*/)
 {
 	if (firstframe) {
 		bool ret = init();

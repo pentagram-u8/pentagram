@@ -147,8 +147,8 @@ class IDataSource
 			ids->read(ptr, count*size);
 			return count;
 		}
-		static int rw_write(SDL_RWops *context, const void *ptr,
-							int size, int num)
+		static int rw_write(SDL_RWops * /*context*/, const void * /*ptr*/,
+							int /*size*/, int /*num*/)
 		{
 			return 0;
 		}

@@ -268,7 +268,7 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 		actor->setInt(npcds->read1()); // 0x02: intelligence
 		actor->setHP(npcds->read1());  // 0x03: hitpoints
 		actor->setDir(npcds->read1()); // 0x04: direction
-		actor->setLastAnim((Animation::Sequence) npcds->read2()); // 0x05: last anim
+		actor->setLastAnim(static_cast<Animation::Sequence>(npcds->read2())); // 0x05: last anim
 		npcds->skip(1); // 0x07: unknown 
 		npcds->skip(1); // 0x08: current anim frame
 		npcds->skip(1); // 0x09: start Z of current fall

@@ -61,7 +61,7 @@ bool LoopScriptNode::fold(DCUnit * /*unit*/, std::deque<Node *> &nodes)
 	LoopNode
  ****************************************************************************/
  
-bool LoopNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
+bool LoopNode::fold(DCUnit * /*unit*/, std::deque<Node *> &nodes)
 {
 		// we need to remove ourselves from the stack before doing anything tricky
 		//assert(acceptOp(nodes.back()->opcode(), 0x70) || print_assert(this, unit));
@@ -147,7 +147,7 @@ void LoopNextNode::print_bin(ODequeDataSource &o) const
 	o.write1(0x73);
 }
 
-bool LoopNextNode::fold(DCUnit * /*unit*/, std::deque<Node *> &nodes)
+bool LoopNextNode::fold(DCUnit * /*unit*/, std::deque<Node *> & /*nodes*/)
 {
 	//fold_linenum(nodes); // should never be a linenum before this
 

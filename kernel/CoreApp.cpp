@@ -352,7 +352,7 @@ bool CoreApp::getGameInfo(std::string& game, GameInfo* gameinfo)
 	return true;
 }
 
-void CoreApp::setupGamePaths(std::string& game, GameInfo* gameinfo)
+void CoreApp::setupGamePaths(std::string& game, GameInfo* /*gameinfo*/)
 {
 	settingman->setDomainName(SettingManager::DOM_GAME, game);
 	settingman->setCurrentDomain(SettingManager::DOM_GAME);

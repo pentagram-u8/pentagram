@@ -39,7 +39,7 @@ public:
 
 	Shape* getShape(uint32 shapenum);
 
-	virtual uint32 get_count() { return Flex::get_count(); }	
+	virtual uint32 get_count() const { return Flex::get_count(); }	
 
 	void cache(); // cache all shapes
 	void cache(uint32 shapenum); // cache one shape

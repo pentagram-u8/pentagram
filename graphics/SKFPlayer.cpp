@@ -110,7 +110,7 @@ void SKFPlayer::stop()
 	playing = false;
 }
 
-void SKFPlayer::paint(RenderSurface* surf, int lerp)
+void SKFPlayer::paint(RenderSurface* surf, int /*lerp*/)
 {
 	if (!buffer) return;
 

@@ -256,12 +256,12 @@ void Kernel::processTypes()
 	}	
 }
 
-void Kernel::ConCmd_processTypes(const Console::ArgsType &args, const Console::ArgvType &argv)
+void Kernel::ConCmd_processTypes(const Console::ArgsType & /*args*/, const Console::ArgvType & /*argv*/)
 {
 	Kernel::get_instance()->processTypes();
 }
 
-void Kernel::ConCmd_listItemProcesses(const Console::ArgsType &args, const Console::ArgvType &argv)
+void Kernel::ConCmd_listItemProcesses(const Console::ArgsType & /*args*/, const Console::ArgvType &argv)
 {
 	if (argv.size() != 2) {
 		pout << "usage: listItemProcesses <itemnum>" << std::endl;

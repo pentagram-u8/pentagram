@@ -50,7 +50,7 @@ QuickAvatarMoverProcess::~QuickAvatarMoverProcess()
 {
 }
 
-bool QuickAvatarMoverProcess::run(const uint32 framenum)
+bool QuickAvatarMoverProcess::run(const uint32 /*framenum*/)
 {
 	if (GUIApp::get_instance()->isAvatarInStasis())
 	{

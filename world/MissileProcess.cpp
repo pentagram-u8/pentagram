@@ -52,7 +52,7 @@ MissileProcess::MissileProcess(Item* item_, sint32 to_x_, sint32 to_y_,
 	currentpos = 0;
 }
 
-bool MissileProcess::run(const uint32 framenum)
+bool MissileProcess::run(const uint32 /*framenum*/)
 {
 	// some values to make items use a nice arc :-)
 	// (No, this isn't permanent, but it makes the fish fly nicely ;-) )

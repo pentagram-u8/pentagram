@@ -708,7 +708,7 @@ void Console::AddCharacterToCommandBuffer(int ch)
 	// Add the character to the command buffer
 	else {
 
-		if (commandCursorPos == commandBuffer.size())
+		if (commandCursorPos == static_cast<int>(commandBuffer.size()))
 		{
 			commandBuffer += ch;
 		}
@@ -737,7 +737,7 @@ void Console::DeleteCommandBufferChars(int num)
 	}
 	else
 	{
-		if ((num+commandCursorPos) > commandBuffer.size())
+		if ((num+commandCursorPos) > static_cast<int>(commandBuffer.size()))
 			num = commandBuffer.size()-commandCursorPos;
 	}
 
@@ -749,10 +749,10 @@ void Console::MoveCommandCursor(int num)
 	commandCursorPos += num;
 
 	if (commandCursorPos < 0) commandCursorPos = 0;
-	if (commandCursorPos > commandBuffer.size()) commandCursorPos = commandBuffer.size();
+	if (commandCursorPos > static_cast<int>(commandBuffer.size())) commandCursorPos = static_cast<int>(commandBuffer.size());
 }
 
-void Console::ConCmd_CmdList(const Console::ArgsType &args, const Console::ArgvType &argv)
+void Console::ConCmd_CmdList(const Console::ArgsType & /*args*/, const Console::ArgvType &argv)
 {
 	std::map<ArgsType,Function>::iterator it;
 	int i = 0;
@@ -786,7 +786,7 @@ void Console::ConCmd_CmdList(const Console::ArgsType &args, const Console::ArgvT
 	pout << i << " commands" << std::endl;
 }
 
-void Console::ConCmd_CmdHistory(const Console::ArgsType &args, const Console::ArgvType &argv)
+void Console::ConCmd_CmdHistory(const Console::ArgsType & /*args*/, const Console::ArgvType & /*argv*/)
 {
 	std::vector<ArgsType>::iterator it;
 

@@ -173,7 +173,7 @@ public:
 
 	_Myt& operator+=(_Elem _Ch)
 		{	// append 1 * _Ch
-		append((size_type)1, _Ch);
+		append(static_cast<size_type>(1), _Ch);
 		return (*this);
 		}
 
@@ -221,7 +221,7 @@ public:
 		size_type _Ans = _N0 == 0 ? 0
 			: ichar_traits::compare(this->data() + _Off, _Ptr,
 				_N0 < _Count ? _N0 : _Count);
-		return (_Ans != 0 ? (int)_Ans : _N0 < _Count ? -1
+		return (_Ans != 0 ? static_cast<int>(_Ans) : _N0 < _Count ? -1
 			: _N0 == _Count ? 0 : +1);
 		}
 	};

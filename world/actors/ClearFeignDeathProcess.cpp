@@ -41,7 +41,7 @@ ClearFeignDeathProcess::ClearFeignDeathProcess(Actor* actor_)
 	type = 0x243; // constant !
 }
 
-bool ClearFeignDeathProcess::run(const uint32 framenum)
+bool ClearFeignDeathProcess::run(const uint32 /*framenum*/)
 {
 	Actor *a = World::get_instance()->getNPC(item_num);
 

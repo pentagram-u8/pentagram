@@ -41,7 +41,7 @@ CombatProcess::CombatProcess(Actor* actor_)
 	target = 0;
 }
 
-bool CombatProcess::run(const uint32 framenum)
+bool CombatProcess::run(const uint32 /*framenum*/)
 {
 	return false;
 }

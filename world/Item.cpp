@@ -1141,7 +1141,7 @@ void Item::animateItem()
 	int anim_data = info->animdata; 
 	bool dirty = false;
 
-	if (((int)last_setup%6) != (objid%6) && info->animtype != 1)
+	if ((static_cast<int>(last_setup)%6) != (objid%6) && info->animtype != 1)
 		return;
 
 	switch(info->animtype) {
@@ -2481,7 +2481,7 @@ uint32 Item::I_legalMoveToContainer(const uint8* args,unsigned int /*argsize*/)
 	return item->moveToContainer(container, true);
 }
 
-uint32 Item::I_getEtherealTop(const uint8* args, unsigned int /*argsize*/)
+uint32 Item::I_getEtherealTop(const uint8* /*args*/, unsigned int /*argsize*/)
 {
 	World* w = World::get_instance();
 	if (w->etherealEmpty()) return 0; // no items left on stack

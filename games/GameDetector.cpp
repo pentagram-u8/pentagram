@@ -77,7 +77,7 @@ bool GameDetector::detect(std::string path, GameInfo *info)
 			if (info->type == GameInfo::GAME_U8) {
 				// distinguish between english and spanish
 				Flex* f = new Flex(ids);
-				const char* buf = (const char*)(f->get_object_nodel(183));
+				const char* buf = reinterpret_cast<const char*>((f->get_object_nodel(183)));
 				unsigned int size = f->get_size(183);
 				if (buf) {
 					for (unsigned int i = 0; i + 9 < size; ++i) {

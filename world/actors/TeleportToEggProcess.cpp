@@ -40,7 +40,7 @@ TeleportToEggProcess::TeleportToEggProcess(int mapnum_, int teleport_id_)
 }
 
 
-bool TeleportToEggProcess::run(const uint32 framenum)
+bool TeleportToEggProcess::run(const uint32 /*framenum*/)
 {
 	MainActor *av = World::get_instance()->getMainActor();
 	

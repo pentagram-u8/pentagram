@@ -44,7 +44,7 @@ LoiterProcess::LoiterProcess(Actor* actor_)
 	type = 0x205; // CONSTANT!
 }
 
-bool LoiterProcess::run(const uint32 framenum)
+bool LoiterProcess::run(const uint32 /*framenum*/)
 {
 	Actor *a = World::get_instance()->getNPC(item_num);
 

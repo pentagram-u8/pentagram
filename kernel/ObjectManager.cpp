@@ -143,7 +143,7 @@ void ObjectManager::objectTypes()
 	}
 }
 
-void ObjectManager::ConCmd_objectTypes(const Console::ArgsType &args, const Console::ArgvType &argv)
+void ObjectManager::ConCmd_objectTypes(const Console::ArgsType & /*args*/, const Console::ArgvType & /*argv*/)
 {
 	ObjectManager::get_instance()->objectTypes();
 }

@@ -304,7 +304,7 @@ bool AvatarMoverProcess::handleNormalMode()
 				{
 					nextanim = climbanim;
 				}
-				climbanim = (Animation::Sequence) (climbanim - 1);
+				climbanim = static_cast<Animation::Sequence>(climbanim - 1);
 			}
 
 			// We must be facing the correct direction

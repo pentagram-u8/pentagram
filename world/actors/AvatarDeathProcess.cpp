@@ -37,7 +37,7 @@ AvatarDeathProcess::AvatarDeathProcess() : Process()
 	type = 1; // CONSTANT !
 }
 
-bool AvatarDeathProcess::run(const uint32 framenum)
+bool AvatarDeathProcess::run(const uint32 /*framenum*/)
 {
 	MainActor *av = World::get_instance()->getMainActor();
 

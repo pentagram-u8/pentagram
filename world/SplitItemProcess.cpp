@@ -48,7 +48,7 @@ SplitItemProcess::SplitItemProcess(Item* original, Item* target_)
 	// type = TODO
 }
 
-bool SplitItemProcess::run(const uint32 framenum)
+bool SplitItemProcess::run(const uint32 /*framenum*/)
 {
 	Item* original = World::get_instance()->getItem(item_num);
 	Item* targetitem = World::get_instance()->getItem(target);

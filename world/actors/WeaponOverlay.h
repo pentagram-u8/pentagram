@@ -40,10 +40,9 @@ struct AnimWeaponOverlay {
 	const WeaponOverlayFrame* getFrame(unsigned int type,
 									   unsigned int direction,
 									   unsigned int frame) const {
-		if (type < 0 || type >= overlay.size()) return 0;
-		if (direction < 0 || direction >= 8) return 0;
-		if (frame < 0 || frame >= overlay[type].frames[direction].size())
-			return 0;
+		if (type >= overlay.size()) return 0;
+		if (direction >= 8) return 0;
+		if (frame >= overlay[type].frames[direction].size()) return 0;
 		return &(overlay[type].frames[direction][frame]);
 	}
 

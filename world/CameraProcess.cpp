@@ -382,7 +382,7 @@ uint32 CameraProcess::I_startQuake(const uint8* args, unsigned int /*argsize*/)
 }
 
 //	Camera::stopQuake()
-uint32 CameraProcess::I_stopQuake(const uint8* args, unsigned int /*argsize*/)
+uint32 CameraProcess::I_stopQuake(const uint8* /*args*/, unsigned int /*argsize*/)
 {
 	SetEarthquake(0);
 	return 0;

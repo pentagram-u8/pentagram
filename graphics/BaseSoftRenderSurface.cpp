@@ -165,7 +165,7 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h) :
 	pixels00 = new uint8[pitch * height];
 
 	rtt_tex = new Texture;
-	rtt_tex->buffer = (uint32*) pixels00;
+	rtt_tex->buffer = reinterpret_cast<uint32*>(pixels00);
 	rtt_tex->width = width;
 	rtt_tex->height = height;
 	rtt_tex->format = TEX_FMT_NATIVE;

@@ -123,7 +123,7 @@ void PathfinderProcess::terminate()
 	Process::terminate();
 }
 
-bool PathfinderProcess::run(const uint32 framenum)
+bool PathfinderProcess::run(const uint32 /*framenum*/)
 {
 	if (currentstep >= path.size()) {
 		// done
@@ -246,7 +246,7 @@ bool PathfinderProcess::loadData(IDataSource* ids)
 	unsigned int pathsize = ids->read2();
 	path.resize(pathsize);
 	for (unsigned int i = 0; i < pathsize; ++i) {
-		path[i].action = (Animation::Sequence) ids->read2();
+		path[i].action = static_cast<Animation::Sequence>(ids->read2());
 		path[i].direction = ids->read2();
 	}
 

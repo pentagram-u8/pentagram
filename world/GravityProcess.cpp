@@ -72,7 +72,7 @@ void GravityProcess::setGravity(int gravity_)
 		gravity = gravity_;
 }
 
-bool GravityProcess::run(uint32 framenum)
+bool GravityProcess::run(uint32 /*framenum*/)
 {
 	// move item in (xs,ys,zs) direction
 	Item* item = World::get_instance()->getItem(item_num);

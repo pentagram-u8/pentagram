@@ -92,7 +92,7 @@ void SliderGump::setValueFromSlider(int sliderx)
 	int val = (sliderx-sliderminx)*(max-min)/(slidermaxx-sliderminx) + min;
 	if (val < min) val = min;
 	if (val > max) val = max;
-	value = min + delta*((sint16)(val/delta));
+	value = min + delta*(static_cast<sint16>(val/delta));
 }
 
 void SliderGump::setSliderPos()
