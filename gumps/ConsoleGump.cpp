@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003  The Pentagram Team
+ *  Copyright (C) 2003-2004  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,6 +20,8 @@
 #include "ConsoleGump.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
+
+#include "GUIApp.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(ConsoleGump,Gump);
 
