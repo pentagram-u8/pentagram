@@ -43,6 +43,8 @@ public:
 protected:
 	virtual void saveData(ODataSource* ods);
 
+	bool init();
+
 	ObjId checkWeaponHit(int dir, int range);
 
 	AnimAction* animaction;
@@ -51,7 +53,7 @@ protected:
 	uint32 currentindex;
 	bool firstframe;
 
-	bool aborted;
+	bool animAborted;
 
 	unsigned int endframe;
 

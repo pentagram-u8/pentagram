@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GUIApp.h"
 #include "MainActor.h"
 #include "World.h"
+#include "Kernel.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -305,8 +306,8 @@ bool AvatarMoverProcess::handleNormalMode()
 		}
 	}
 
-	if ((mouseButton[1].state & MBS_DOWN) &&
-		(mouseButton[1].state & MBS_HANDLED))
+	if ((mouseButton[1].state & MBS_DOWN) ||
+		!(mouseButton[1].state & MBS_HANDLED))
 	{
 		// right mouse button down, but maybe not long enough to really
 		// start walking. Check if we need to turn.
@@ -326,7 +327,9 @@ bool AvatarMoverProcess::handleNormalMode()
 			{
 				// don't need to explicitly do a turn animation
 			} else {
-				nextanim = Animation::stand;
+				turnToDirection(nextdir);
+				return false;
+//				nextanim = Animation::stand;
 			}
 			nextanim = Animation::checkWeapon(nextanim, lastanim);
 			waitFor(avatar->doAnim(nextanim, nextdir));
@@ -398,6 +401,55 @@ bool AvatarMoverProcess::handleNormalMode()
 	}
 
 	return false;
+}
+
+void AvatarMoverProcess::turnToDirection(int direction)
+{
+	MainActor* avatar = World::get_instance()->getMainActor();
+	int curdir = avatar->getDir();
+	int step;
+	bool combat = avatar->isInCombat() && !combatRun;
+	Animation::Sequence turnanim;
+	Animation::Sequence standanim = Animation::stand;
+
+	if ((curdir - direction + 8) % 8 < 4) {
+		step = -1;
+		turnanim = Animation::lookLeft;
+	} else {
+		step = 1;
+		turnanim = Animation::lookRight;
+	}
+
+	if (combat) {
+		turnanim = Animation::combat_stand;
+		standanim = Animation::combat_stand;
+	}
+
+	ProcId prevpid = 0;
+
+	for (int dir = curdir; dir != direction; ) {
+		ProcId animpid = avatar->doAnim(turnanim, dir);
+
+		if (prevpid) {
+			Process* proc = Kernel::get_instance()->getProcess(animpid);
+			assert(proc);
+			proc->waitFor(prevpid);
+		}
+
+		prevpid = animpid;
+
+		dir = (dir + step + 8) % 8;
+	}
+
+	ProcId animpid = avatar->doAnim(standanim, direction);
+
+	if (prevpid) {
+		Process* proc = Kernel::get_instance()->getProcess(animpid);
+		assert(proc);
+		proc->waitFor(prevpid);
+	}
+	
+	waitFor(animpid);
 }
 
 void AvatarMoverProcess::OnMouseDown(int button, int mx, int my)

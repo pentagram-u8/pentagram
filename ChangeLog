@@ -1,3 +1,8 @@
+2004-07-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/ActorAnimProcess.*: cleaned up error conditions
+	* world/actors/AvatarMoverProcess.*: experimenting with turning a bit
+	* world/actors/PathfinderProcess.cpp: warn on ANIMLOCK
+
 2004-06-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.*: added getDirToItemCentre
 	* world/actors/ActorAnimProcess.*: check for weapon hits

@@ -57,35 +57,44 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, Animation::Sequence action, ui
 	item_num = actor_->getObjId();
 	dir = dir_;
 
-	type = 0x00F0; // CONSTANT !
-
 	uint32 shape = actor_->getShape();
 	animaction = GameData::get_instance()->getMainShapes()->
 		getAnim(shape, action);
 
+	type = 0x00F0; // CONSTANT !
+	firstframe = true;
+}
+
+bool ActorAnimProcess::init()
+{
+	if (!animaction) {
+		// invalid animation
+		return false;
+	}
+
 	if (dir > 7) {
 		// invalid direction
-		animaction = 0;
+		return false;
 	}
 
 	currentindex = 0;
-	firstframe = true;
-	aborted = false;
+	animAborted = false;
 	hitSomething = false;
 
-	if (actor_->getActorFlags() & Actor::ACT_ANIMLOCK) {
+	Actor* actor = World::get_instance()->getNPC(item_num);
+	assert(actor);
+
+	if (actor->getActorFlags() & Actor::ACT_ANIMLOCK) {
 		//! What do we do if actor was already animating?
 		//! don't do this animation or kill the previous one?
 		//! Or maybe wait until the previous one finishes?
 
-		// for now, just don't play this one.
-		animaction = 0;
-
 		perr << "ActorAnimProcess: ANIMLOCK set on actor "
-			 << actor_->getObjId() << std::endl;
-	}
+			 << item_num << std::endl;
 
-	if (!animaction) return;
+		// for now, just don't play this one.
+		return false;
+	}
 
 	uint32 startframe = 0;
 
@@ -94,32 +103,46 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, Animation::Sequence action, ui
 		animaction->framerepeat = 2; // force Darion to 2 frames
 #endif
 
-	actor_->setActorFlag(Actor::ACT_ANIMLOCK);
+	actor->setActorFlag(Actor::ACT_ANIMLOCK);
 
-	animaction->getAnimRange(actor_, dir_, startframe, endframe);
+	animaction->getAnimRange(actor, dir, startframe, endframe);
 
-	actor_->lastanim = action;
-	actor_->direction = dir_;
+	actor->lastanim = static_cast<Animation::Sequence>(animaction->action);
+	actor->direction = dir;
 
 	currentindex = startframe * animaction->framerepeat;
-	actor_->animframe = startframe;
+	actor->animframe = startframe;
 
 #ifdef WATCHACTOR
 	if (item_num == watchactor)
 		pout << "Animation [" << Kernel::get_instance()->getFrameNum()
 			 << "] ActorAnimProcess " << getPid() << " created ("
-			 << action << "," << dir_ << ", " << startframe << "-"
+			 << animaction->action << "," << dir << ", " << startframe << "-"
 			 << endframe << ")" << std::endl;
 #endif
+
+	return true;
 }
+
 
 bool ActorAnimProcess::run(const uint32 framenum)
 {
-	if (!animaction || aborted) {
-		// non-existent animation or aborted
+	if (firstframe) {
+		bool ret = init();
+		if (!ret) {
+			// initialization failed
+			terminate();
+			return false;
+		}
+	}
+
+	if (animAborted) {
 		terminate();
 		return false;
 	}
+
+	// this assert is to check if my refactoring worked out - wjp (20040702)
+	assert(animaction);
 
 	Actor *a = World::get_instance()->getNPC(item_num);
 
@@ -136,7 +159,7 @@ bool ActorAnimProcess::run(const uint32 framenum)
 	}
 
 	unsigned int frameindex = currentindex / animaction->framerepeat;
-	unsigned int framecount = currentindex % animaction->framerepeat;
+	int framecount = currentindex % animaction->framerepeat;
 
 	// check if we're done
 	if (framecount == 0) {
@@ -193,7 +216,7 @@ bool ActorAnimProcess::run(const uint32 framenum)
 	dy = 4 * y_fact[dir] * f.deltadir;
 	dz = f.deltaz;
 
-	int fc = static_cast<int>(framecount);
+	int fc = framecount;
 
 	x -= (dx*fc)/animaction->framerepeat;
 	y -= (dy*fc)/animaction->framerepeat;
@@ -259,7 +282,7 @@ bool ActorAnimProcess::run(const uint32 framenum)
 #endif
 			if (a->canExistAt(x,y,z-16)) {
 				// too far...
-				aborted = true;
+				animAborted = true;
 				GravityProcess* gp = new GravityProcess(a, 4);
 				uint16 gppid = Kernel::get_instance()->addProcess(gp);
 				// TODO: inertia
@@ -369,7 +392,7 @@ void ActorAnimProcess::saveData(ODataSource* ods)
 
 	uint8 ff = firstframe ? 1 : 0;
 	ods->write1(ff);
-	uint8 ab = aborted ? 1 : 0;
+	uint8 ab = animAborted ? 1 : 0;
 	ods->write1(ab);
 	uint8 hit = hitSomething ? 1 : 0;
 	ods->write1(hit);
@@ -391,7 +414,7 @@ bool ActorAnimProcess::loadData(IDataSource* ids)
 	if (!Process::loadData(ids)) return false;
 
 	firstframe = (ids->read1() != 0);
-	aborted = (ids->read1() != 0);
+	animAborted = (ids->read1() != 0);
 	hitSomething = (ids->read1() != 0);
 	dir = ids->read4();
 	currentindex = ids->read4();

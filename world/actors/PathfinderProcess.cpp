@@ -123,6 +123,7 @@ bool PathfinderProcess::run(const uint32 framenum)
 	// since the running animation may move the actor, which could break
 	// the found path.
 	if (actor->getActorFlags() & Actor::ACT_ANIMLOCK) {
+		perr << "PathfinderProcess: ANIMLOCK, waiting" << std::endl;
 		return false;
 	}
 
