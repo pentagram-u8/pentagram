@@ -23,7 +23,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "stdbindings.h"
 #include "u8bindings.h"
 #include "GUIApp.h"
-#include "Configuration.h"
+#include "SettingManager.h"
+
+#include "ConfigFileManager.h" // temporary!
 
 HIDManager* HIDManager::hidmanager = 0;
 
@@ -88,12 +90,18 @@ HIDBinding HIDManager::getBinding(const SDL_Event& event)
 
 void HIDManager::loadBindings()
 {
-	Configuration * config= GUIApp::get_instance()->getConfig();
-	Configuration::KeyTypeList ktl;
-	config->getSubkeys(ktl, "bindings");
+#if 0
+	SettingManager* settings = SettingManager::get_instance();
+	std::map<Pentagram::istring, std::string> keys;
+	keys = settings->listDataValues("keys");
+#else
+	ConfigFileManager* config = ConfigFileManager::get_instance();
+	std::map<Pentagram::istring, std::string> keys;
+	keys = config->listKeyValues("bindings/bindings");
+#endif
 
-	for (Configuration::KeyTypeList::iterator i = ktl.begin();
-		i != ktl.end(); ++i)
+	std::map<Pentagram::istring, std::string>::iterator i;
+	for (i = keys.begin(); i != keys.end(); ++i)
 	{
 		Pentagram::istring bindingName = (*i).second.c_str();
 		bind((*i).first, bindingName);

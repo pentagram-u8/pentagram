@@ -2,7 +2,7 @@
  *	CoreApp.h - Base application class that contains the minimal functality to
  *	            support an instance of the pentagram engine
  *
- *  Copyright (C) 2002-2003 The Pentagram Team
+ *  Copyright (C) 2002-2004 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,7 +29,8 @@
 class Kernel;
 class UCMachine;
 class FileSystem;
-class Configuration;
+class ConfigFileManager;
+class SettingManager;
 struct GameInfo;
 
 class CoreApp
@@ -41,8 +42,6 @@ public:
 	
 	static CoreApp* get_instance() { return application; };
 
-	Configuration* getConfig() const { return config; }
-	
 	virtual void run()=0; // FIXME: Need stub
 	virtual void paint()=0; // probably shouldn't exist
 	virtual bool isPainting() { return false; }
@@ -85,7 +84,8 @@ protected:
 	// minimal system
 	Kernel* kernel;
 	FileSystem* filesystem;
-	Configuration* config;
+	ConfigFileManager* configfileman;
+	SettingManager* settingman;
 	
 	Args parameters;
 	

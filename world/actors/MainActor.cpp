@@ -28,7 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CameraProcess.h"
 #include "Animation.h"
 
-#include "Configuration.h"
+#include "SettingManager.h"
 #include "CoreApp.h"
 #include "GameData.h"
 #include "WpnOvlayDat.h"
@@ -261,18 +261,18 @@ void MainActor::ConCmd_mark(const Console::ArgsType &args, const Console::ArgvTy
 		return;
 	}
 
-	Configuration* config = CoreApp::get_instance()->getConfig();	
+	SettingManager* settings = SettingManager::get_instance();
 	MainActor* mainactor = World::get_instance()->getMainActor();
 	int curmap = mainactor->getMapNum();
 	sint32 x,y,z;
 	mainactor->getLocation(x,y,z);
 
-	Pentagram::istring confkey = "config/u8marks/" + argv[1];
+	Pentagram::istring confkey = "marks/" + argv[1];
 	char buf[100]; // large enough for 4 ints
 	sprintf(buf, "%d %d %d %d", curmap, x, y, z);
 
-	config->set(confkey, buf);
-	config->write(); //!! FIXME: clean this up
+	settings->set(confkey, buf);
+	settings->write(); //!! FIXME: clean this up
 
 	pout << "Set mark \"" << argv[1].c_str() << "\" to " << buf << std::endl;
 }
@@ -284,12 +284,11 @@ void MainActor::ConCmd_recall(const Console::ArgsType &args, const Console::Argv
 		return;
 	}
 
-	Configuration* config = CoreApp::get_instance()->getConfig();	
+	SettingManager* settings = SettingManager::get_instance();
 	MainActor* mainactor = World::get_instance()->getMainActor();
-	Pentagram::istring confkey = "config/u8marks/" + argv[1];
+	Pentagram::istring confkey = "marks/" + argv[1];
 	std::string target;
-	config->value(confkey, target, "");
-	if (target.empty()) {
+	if (!settings->get(confkey, target)) {
 		pout << "recall: no such mark" << std::endl;
 		return;
 	}
@@ -306,13 +305,13 @@ void MainActor::ConCmd_recall(const Console::ArgsType &args, const Console::Argv
 
 void MainActor::ConCmd_listmarks(const Console::ArgsType &args, const Console::ArgvType &argv)
 {
-	Configuration* config = CoreApp::get_instance()->getConfig();
-	std::set<Pentagram::istring> marks;
-	marks = config->listKeys("config/u8marks", false);
-	for (std::set<Pentagram::istring>::iterator iter = marks.begin();
+	SettingManager* settings = SettingManager::get_instance();
+	std::vector<Pentagram::istring> marks;
+	marks = settings->listDataKeys("marks");
+	for (std::vector<Pentagram::istring>::iterator iter = marks.begin();
 		 iter != marks.end(); ++iter)
 	{
-		pout << (*iter).c_str() << std::endl;
+		pout << (*iter) << std::endl;
 	}
 }
 

@@ -25,7 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //!! a lot of these includes are just for some hacks... clean up sometime
 #include "Kernel.h"
 #include "FileSystem.h"
-#include "Configuration.h"
+#include "SettingManager.h"
+#include "ConfigFileManager.h"
 #include "ObjectManager.h"
 
 #include "HIDManager.h"
@@ -227,19 +228,20 @@ void GUIApp::startup()
 	hidmanager = new HIDManager();
 	
 	pout << "Loading HIDBindings" << std::endl;
-	// FIXME: change this to something a little less game-dependant
+	// FIXME: change this to something a little less game-dependent
 	if (game == "u8") {
 		// system-wide config
-		if (config->readConfigFile("@data/u8bindings.cfg", "bindings", true))
-			con.Print(MM_INFO, "@data/u8bindings.cfg... Ok\n");
+		if (configfileman->readConfigFile("@data/u8bindings.ini",
+										  "bindings", true))
+			con.Print(MM_INFO, "@data/u8bindings.ini... Ok\n");
 		else
-			con.Print(MM_MINOR_WARN, "@data/u8bindings.cfg... Failed\n");
+			con.Print(MM_MINOR_WARN, "@data/u8bindings.ini... Failed\n");
 
 		// user config
-		if (config->readConfigFile("@home/u8bindings.cfg", "bindings"))
-			con.Print(MM_INFO, "@home/u8bindings.cfg... Ok\n");
+		if (configfileman->readConfigFile("@home/u8bindings.ini", "bindings"))
+			con.Print(MM_INFO, "@home/u8bindings.ini... Ok\n");
 		else
-			con.Print(MM_MINOR_WARN, "@home/u8bindings.cfg... Failed\n");
+			con.Print(MM_MINOR_WARN, "@home/u8bindings.ini... Failed\n");
 
 	}
 	hidmanager->loadBindings();
@@ -312,7 +314,8 @@ void GUIApp::init_midi()
 
 	// First thing attempt to find the Midi driver as specified in the config
 	std::string desired_driver;
-	config->value("config/audio/midi_driver", desired_driver, "default");
+	settingman->setDefault("midi_driver", "default");
+	settingman->get("midi_driver", desired_driver);
 	const char * drv = desired_driver.c_str();
 
 	// Has the config file specified disabled midi?
@@ -997,23 +1000,26 @@ void GUIApp::GraphicSysInit()
 	// Set Screen Resolution
 	pout << "Set Video Mode" << std::endl;
 
-	std::string fullscreen;
-	config->value("config/video/fullscreen", fullscreen, "no");
-	if (fullscreen!="yes") fullscreen="no";
-	int width, height, bpp;
+	settingman->setDefault("fullscreen", false);
+	settingman->setDefault("width", 640);
+	settingman->setDefault("height", 480);
+	settingman->setDefault("bpp", 32);
 
-	config->value("config/video/width", width, 640);
-	config->value("config/video/height", height, 480);
-	config->value("config/video/bpp", bpp, 32);
+	bool fullscreen;
+	int width, height, bpp;
+	settingman->get("fullscreen", fullscreen);
+	settingman->get("width", width);
+	settingman->get("height", height);
+	settingman->get("bpp", bpp);
 
 	// store values in user's config file
-	config->set("config/video/width", width);
-	config->set("config/video/height", height);
-	config->set("config/video/bpp", bpp);
-	config->set("config/video/fullscreen", fullscreen);
+	settingman->set("width", width);
+	settingman->set("height", height);
+	settingman->set("bpp", bpp);
+	settingman->set("fullscreen", fullscreen);
 
 	screen = RenderSurface::SetVideoMode(width, height, bpp,
-										 fullscreen=="yes", false);
+										 fullscreen, false);
 
 	if (!screen)
 	{
@@ -1053,36 +1059,33 @@ void GUIApp::LoadConsoleFont()
 	if (res) filesystem->MountFileInMemory("@data/fixedfont.tga", static_cast<uint8*>(LockResource(LoadResource(NULL, res))), SizeofResource(NULL, res));
 
 	res = FindResource(NULL, MAKEINTRESOURCE(IDR_FIXED_FONT_CFG), RT_RCDATA);
-	if (res) filesystem->MountFileInMemory("@data/fixedfont.cfg", static_cast<uint8*>(LockResource(LoadResource(NULL, res))), SizeofResource(NULL, res));
+	if (res) filesystem->MountFileInMemory("@data/fixedfont.ini", static_cast<uint8*>(LockResource(LoadResource(NULL, res))), SizeofResource(NULL, res));
 #endif
 
 	std::string data;
 	std::string confontfile;
-	std::string confontcfg("@data/fixedfont.cfg");
+	std::string confontini("@data/fixedfont.ini");
 
 	pout << "Searching for alternate console font... ";
-	config->value("config/general/console-font", data, "");
-	if (data != "")
-	{
-		confontcfg = data;
+	if (settingman->get("console-font", data)) {
+		confontini = data;
 		pout << "Found." << std::endl;
 	}
 	else
 		pout << "Not Found." << std::endl;
 
 	// try to load the file
-	pout << "Loading console font config: " << confontcfg << "... ";
-	if(config->readConfigFile(confontcfg, "font", true))
+	pout << "Loading console font config: " << confontini << "... ";
+	if(configfileman->readConfigFile(confontini, "font", true))
 		pout << "Ok" << std::endl;
 	else
 		pout << "Failed" << std::endl;
 
 	// search for the path to the font...
-	config->value("font/path", confontfile, "");
-
-	if(confontfile=="")
+	if (!configfileman->get("font/font/path", confontfile))
 	{
-		pout << "Error: Console font path not found! Unable to continue. Exiting." << std::endl;
+		pout << "Error: Console font path not found! Unable to continue. "
+			 << "Exiting." << std::endl;
 		std::exit(-1);
 	}
 

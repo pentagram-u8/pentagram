@@ -22,7 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Kernel.h"
 #include "FileSystem.h"
-#include "Configuration.h"
+#include "ConfigFileManager.h"
+#include "SettingManager.h"
 
 #include "UCMachine.h"
 #include "UCProcess.h"
@@ -49,8 +50,9 @@ DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(CoreApp);
 CoreApp* CoreApp::application = 0;
 
 CoreApp::CoreApp(int argc_, const char* const* argv_)
-	: isRunning(false), kernel(0), filesystem(0), config(0),
-	  argc(argc_), argv(argv_), oHelp(false), oQuiet(false), oVQuiet(false)
+	: isRunning(false), kernel(0), filesystem(0), configfileman(0),
+	  settingman(0), argc(argc_), argv(argv_), oHelp(false),
+	  oQuiet(false), oVQuiet(false)
 {
 	assert(application == 0);
 	application = this;
@@ -60,7 +62,8 @@ CoreApp::~CoreApp()
 {
 	FORGET_OBJECT(kernel);
 	FORGET_OBJECT(filesystem);
-	FORGET_OBJECT(config);
+	FORGET_OBJECT(settingman);
+	FORGET_OBJECT(configfileman);
 
 	application = 0;
 }
@@ -122,8 +125,10 @@ void CoreApp::sysInit()
 	filesystem = new FileSystem;
 
 	con.Print(MM_INFO, "Creating Configuration...\n");
-	config = new Configuration;
-
+	configfileman = new ConfigFileManager();
+	settingman = new SettingManager();
+	settingman->setDomainName(SettingManager::DOM_GLOBAL, "pentagram");
+	settingman->setCurrentDomain(SettingManager::DOM_GLOBAL);
 }
 
 void CoreApp::setupVirtualPaths()
@@ -167,26 +172,25 @@ void CoreApp::loadConfig()
 	con.Print(MM_INFO, "Loading configuration files:\n");
 
 	// system-wide config
-	if (config->readConfigFile("@data/pentagram.cfg", "config", true))
-		con.Print(MM_INFO, "@data/pentagram.cfg... Ok\n");
+	if (settingman->readConfigFile("@data/pentagram.ini", true))
+		con.Print(MM_INFO, "@data/pentagram.ini... Ok\n");
 	else
-		con.Print(MM_MINOR_WARN, "@data/pentagram.cfg... Failed\n");
+		con.Print(MM_MINOR_WARN, "@data/pentagram.ini... Failed\n");
 
 	// user config
-	if (config->readConfigFile("@home/pentagram.cfg", "config"))
-		con.Print(MM_INFO, "@home/pentagram.cfg... Ok\n");
+	if (settingman->readConfigFile("@home/pentagram.ini"))
+		con.Print(MM_INFO, "@home/pentagram.ini... Ok\n");
 	else
-		con.Print(MM_MINOR_WARN, "@home/pentagram.cfg... Failed\n");
+		con.Print(MM_MINOR_WARN, "@home/pentagram.ini... Failed\n");
 
 	con.Printf(MM_INFO, "Game: %s\n", game.c_str());
 
 
 	//  load pentagram specific data path
 	std::string data;
-	con.Print(MM_INFO, "Reading \"config/general/data\" config key.\n");
-	config->value("config/general/data", data, "");
-	if (data != "") {
-		con.Printf(MM_INFO, "Data Path: %s\n",data.c_str());
+	con.Print(MM_INFO, "Reading \"pentagram/data\" config key.\n");
+	if (settingman->get("data", data, SettingManager::DOM_GLOBAL)) {
+		con.Printf(MM_INFO, "Data Path: %s\n", data.c_str());
 		filesystem->AddVirtualPath("@data", data);
 	}
 	else {
@@ -195,12 +199,12 @@ void CoreApp::loadConfig()
 
 
 	//!! move this to some other init function
-	std::set<Pentagram::istring> games;
-	games = config->listKeys("config/games", false);
+	std::vector<Pentagram::istring> games;
+	games = settingman->listGames();
 	con.Print(MM_INFO, "Scanning config file for games:\n");
-	std::set<Pentagram::istring>::iterator iter;
+	std::vector<Pentagram::istring>::iterator iter;
 	for (iter = games.begin(); iter != games.end(); ++iter) {
-		std::string game = (*iter).c_str();
+		std::string game = *iter;
 		GameInfo info;
 		bool detected = getGameInfo(game, &info);
 		con.Printf(MM_INFO, "%s: ", game.c_str());
@@ -226,8 +230,9 @@ void CoreApp::loadConfig()
 
 	if (game == "") {
 		std::string defaultgame;
-		config->value("config/general/defaultgame", defaultgame, "");
-		if (defaultgame != "") {
+		bool defaultset = settingman->get("defaultgame", defaultgame,
+										  SettingManager::DOM_GLOBAL);
+		if (defaultset) {
 			// default game specified in config file
 			game = defaultgame;
 		} else if (games.size() == 1) {
@@ -242,7 +247,7 @@ void CoreApp::loadConfig()
 				 << "game is selected." << std::endl
 				 << "Either start Pentagram with the \"--game <gamename>\","
 				 << std::endl
-				 << "or set config/general/defaultgame in pentagram.cfg"
+				 << "or set pentagram/defaultgame in pentagram.ini"
 				 << std::endl;
 			exit(1); //!! FIXME
 		}
@@ -250,7 +255,15 @@ void CoreApp::loadConfig()
 
 	pout << "Selected game: " << game << std::endl;
 
-	if (games.find(Pentagram::istring(game.c_str())) == games.end()) {
+	bool foundgame = false;
+	for (unsigned int i = 0; i < games.size(); ++i) {
+		if (games[i] == game) {
+			foundgame = true;
+			break;
+		}
+	}
+
+	if (!foundgame) {
 		perr << "Game \"" << game << "\" not found." << std::endl;
 		exit(1);
 	}
@@ -270,18 +283,21 @@ bool CoreApp::getGameInfo(std::string& game, GameInfo* gameinfo)
 	gameinfo->version = 0;
 	gameinfo->language = GameInfo::GAMELANG_UNKNOWN;
 
-	Pentagram::istring gamekey = "config/games/";
-	gamekey += game.c_str();
+	Pentagram::istring gamekey = "settings/";
+	gamekey += game;
 
 	std::string gametype;
-	config->value(gamekey+"/type", gametype, "unknown");
+	if (!configfileman->get(gamekey+"/type", gametype))
+		gametype = "unknown";
 	ToLower(gametype);
 
 	std::string version;
-	config->value(gamekey+"/version", version, "unknown");
+	if (!configfileman->get(gamekey+"/version", version))
+		version = "unknown";
 
 	std::string language;
-	config->value(gamekey+"/version", language, "unknown");
+	if (!configfileman->get(gamekey+"/language", language))
+		language = "unknown";
 	ToLower(language);
 
 	if (gametype == "u8") {
@@ -305,9 +321,7 @@ bool CoreApp::getGameInfo(std::string& game, GameInfo* gameinfo)
 		gameinfo->language == GameInfo::GAMELANG_UNKNOWN)
 	{
 		std::string path;
-		config->value(gamekey+"/path", path, "");
-
-		if (path == "") return false;
+		if (!configfileman->get(gamekey+"/path", path)) return false;
 
 		return GameDetector::detect(path, gameinfo);
 	}
@@ -319,13 +333,13 @@ bool CoreApp::getGameInfo(std::string& game, GameInfo* gameinfo)
 
 void CoreApp::setupGamePaths(std::string& game, GameInfo* gameinfo)
 {
-	Pentagram::istring gamekey = "config/games/";
-	gamekey += game.c_str();
+	settingman->setDomainName(SettingManager::DOM_GAME, game);
+	settingman->setCurrentDomain(SettingManager::DOM_GAME);
 
 	// load main game data path
 	std::string gpath;
-	con.Printf(MM_INFO, "Reading \"config/games/%s/path\" config key.\n", game.c_str());
-	config->value(gamekey+"/path", gpath, ".");
+	con.Printf(MM_INFO, "Reading \"%s/path\" config key.\n", game.c_str());
+	settingman->get("path", gpath, SettingManager::DOM_GAME);
 	filesystem->AddVirtualPath("@u8", gpath); //!!FIXME (u8 specific)
 	con.Printf(MM_INFO, "Game Path: %s\n", gpath.c_str());
 
@@ -334,10 +348,9 @@ void CoreApp::setupGamePaths(std::string& game, GameInfo* gameinfo)
 	// load work path. Default is @home/game-work
 	// where 'game' in the above is the specified 'game' loaded
 	std::string work;
-	con.Printf(MM_INFO, "Reading \"config/games/%s/work\" config key.\n",
-			   game.c_str());
-	config->value(gamekey+"/work", work,
-				  string("@home/"+game+"-work").c_str());
+	con.Printf(MM_INFO, "Reading \"%s/work\" config key.\n", game.c_str());
+	if (!settingman->get("work", work, SettingManager::DOM_GAME))
+		work = "@home/"+game+"-work";
 
 	// force creation if it doesn't exist
 
@@ -356,10 +369,10 @@ void CoreApp::setupGamePaths(std::string& game, GameInfo* gameinfo)
 
 	// load savegame path. Default is @home/game-save
 	std::string save;
-	con.Printf(MM_INFO, "Reading \"config/games/%s/save\" config key.\n",
-			   save.c_str());
-	config->value(gamekey+"/save", save,
-				  string("@home/"+game+"-save").c_str());
+	con.Printf(MM_INFO, "Reading \"%s/save\" config key.\n", save.c_str());
+	if (!settingman->get("save", save, SettingManager::DOM_GAME))
+		save = "@home/"+game+"-save";
+
 	// force creation if it doesn't exist
 	filesystem->AddVirtualPath("@save", save, true);
 	con.Printf(MM_INFO, "Savegame directory: %s\n", save.c_str());

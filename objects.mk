@@ -42,9 +42,9 @@ CONVERT = \
 	convert/crusader/ConvertShapeCrusader.o
 
 CONF = \
-	conf/Configuration.o \
-	conf/XMLTree.o \
-	conf/XMLNode.o
+	conf/ConfigFileManager.o \
+	conf/INIFile.o \
+	conf/SettingManager.o
 
 GAMES = \
 	games/u8bindings.o \

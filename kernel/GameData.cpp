@@ -32,7 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MusicFlex.h"
 #include "WpnOvlayDat.h"
 #include "CoreApp.h"
-#include "Configuration.h"
+#include "ConfigFileManager.h"
 
 GameData* GameData::gamedata = 0;
 
@@ -122,10 +122,10 @@ void GameData::loadU8Data()
 	mainshapes = new MainShapeFlex(sf, PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
 
 	// Load weapon, armour info
-	Configuration* config = CoreApp::get_instance()->getConfig();
-	config->readConfigFile("@data/u8weapons.cfg", "weapons", true);
-	config->readConfigFile("@data/u8armour.cfg", "armour", true);
-	config->readConfigFile("@data/u8monsters.cfg", "monsters", true);
+	ConfigFileManager* config = ConfigFileManager::get_instance();
+	config->readConfigFile("@data/u8weapons.ini", "weapons", true);
+	config->readConfigFile("@data/u8armour.ini", "armour", true);
+	config->readConfigFile("@data/u8monsters.ini", "monsters", true);
 
 	// Load typeflags
 	IDataSource *tfs = filesystem->ReadFile("@u8/static/typeflag.dat");

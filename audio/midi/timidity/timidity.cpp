@@ -37,8 +37,7 @@
 #include "timidity_tables.h"
 
 // we want to use Pentagram's config
-#include "Configuration.h"
-#include "CoreApp.h"
+#include "SettingManager.h"
 
 
 #ifdef NS_TIMIDITY
@@ -370,9 +369,10 @@ int Timidity_Init(int rate, int format, int channels, int samples)
 int Timidity_Init_Simple(int rate, int samples, sint32 encoding)
 {
   /* see if the pentagram config file specifies an alternate timidity.cfg */
-  Configuration* config = CoreApp::get_instance()->getConfig();
+  SettingManager* settings = SettingManager::get_instance();
   std::string configfile;
-  config->value("config/audio/timiditycfg", configfile, CONFIG_FILE);
+  if (!settings->get("timiditycfg", configfile))
+	  configfile = CONFIG_FILE;
 
   if (read_config_file(configfile.c_str())<0) {
     return(-1);

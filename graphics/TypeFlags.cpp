@@ -20,7 +20,7 @@
 
 #include "TypeFlags.h"
 #include "IDataSource.h"
-#include "Configuration.h"
+#include "ConfigFileManager.h"
 #include "CoreApp.h"
 #include "GameData.h"
 #include "MainShapeFlex.h"
@@ -115,32 +115,12 @@ void TypeFlags::load(IDataSource *ds)
 // load weapon info from the 'weapons' config root
 void TypeFlags::loadWeaponInfo()
 {
-	std::vector<uint32> overlay_shapes;
-
-	Configuration* config = CoreApp::get_instance()->getConfig();
-
-	// load overlay shapes
-	std::set<Pentagram::istring> overlaykeys;
-	std::set<Pentagram::istring>::iterator iter;
-	overlaykeys = config->listKeys("weapons/overlays", true);	
-	for (iter = overlaykeys.begin();
-		 iter != overlaykeys.end(); ++iter)
-	{
-		Pentagram::istring k = *iter;
-		int overlay_type, overlay_shape;
-		config->value(k + "/type", overlay_type);
-		config->value(k + "/shape", overlay_shape);
-
-		if ((unsigned int)overlay_type >= overlay_shapes.size())
-			overlay_shapes.resize(overlay_type+1);
-		overlay_shapes[overlay_type] = static_cast<uint32>(overlay_shape);
-	}
-
+	ConfigFileManager* config = ConfigFileManager::get_instance();
 
 	// load weapons
-	std::set<Pentagram::istring> weaponkeys;
-	weaponkeys = config->listKeys("weapons/weapons", true);	
-	for (iter = weaponkeys.begin();
+	std::vector<Pentagram::istring> weaponkeys;
+	weaponkeys = config->listSections("weapons", true);	
+	for (std::vector<Pentagram::istring>::iterator iter = weaponkeys.begin();
 		 iter != weaponkeys.end(); ++iter)
 	{
 		Pentagram::istring k = *iter;
@@ -148,32 +128,31 @@ void TypeFlags::loadWeaponInfo()
 
 		int val;
 
-		config->value(k + "/shape", val);
+		config->get(k + "/shape", val);
 		wi->shape = static_cast<uint32>(val);
 
-		config->value(k + "/overlay", val);
+		config->get(k + "/overlay", val);
 		wi->overlay_type = static_cast<uint8>(val);
 
-		assert(wi->overlay_type < overlay_shapes.size());
+		config->get(k + "/overlay_shape", val);
+		wi->overlay_shape = static_cast<uint32>(val);
 
-		wi->overlay_shape = overlay_shapes[wi->overlay_type];
-
-		config->value(k + "/damage_mod", val);
+		config->get(k + "/damage_mod", val);
 		wi->damage_modifier = static_cast<uint8>(val);
 
-		config->value(k + "/base_damage", val);
+		config->get(k + "/base_damage", val);
 		wi->base_damage = static_cast<uint8>(val);
 
-		config->value(k + "/attack_dex", val);
+		config->get(k + "/attack_dex", val);
 		wi->dex_attack_bonus = static_cast<uint8>(val);
 
-		config->value(k + "/defend_dex", val);
+		config->get(k + "/defend_dex", val);
 		wi->dex_defend_bonus = static_cast<uint8>(val);
 
-		config->value(k + "/armour", val);
+		config->get(k + "/armour", val);
 		wi->armour_bonus = static_cast<uint8>(val);
 
-		config->value(k + "/damage_type", val);
+		config->get(k + "/damage_type", val);
 		wi->damage_type = static_cast<uint16>(val);
 
 		assert(wi->shape < shapeInfo.size());
@@ -184,13 +163,13 @@ void TypeFlags::loadWeaponInfo()
 
 void TypeFlags::loadArmourInfo()
 {
-	Configuration* config = CoreApp::get_instance()->getConfig();
+	ConfigFileManager* config = ConfigFileManager::get_instance();
 	MainShapeFlex* msf = GameData::get_instance()->getMainShapes();
 
 	// load armour
-	std::set<Pentagram::istring> armourkeys;
-	armourkeys = config->listKeys("armour", true);	
-	for (std::set<Pentagram::istring>::iterator iter = armourkeys.begin();
+	std::vector<Pentagram::istring> armourkeys;
+	armourkeys = config->listSections("armour", true);	
+	for (std::vector<Pentagram::istring>::iterator iter = armourkeys.begin();
 		 iter != armourkeys.end(); ++iter)
 	{
 		Pentagram::istring k = *iter;
@@ -198,7 +177,7 @@ void TypeFlags::loadArmourInfo()
 
 		int val;
 
-		config->value(k + "/shape", val);
+		config->get(k + "/shape", val);
 		ai.shape = static_cast<uint32>(val);
 
 		assert(ai.shape < shapeInfo.size());
@@ -217,18 +196,18 @@ void TypeFlags::loadArmourInfo()
 			}
 		}
 
-		config->value(k + "/frame", val);
+		config->get(k + "/frame", val);
 		ai.frame = static_cast<uint32>(val);
 
 		assert(ai.frame < framecount);
 
-		config->value(k + "/armour", val);
+		config->get(k + "/armour", val);
 		ai.armour_class = static_cast<uint16>(val);
 
-		config->value(k + "/type", val);
+		config->get(k + "/type", val);
 		ai.defense_type = static_cast<uint16>(val);
 
-		config->value(k + "/kick_bonus", val);
+		if (!config->get(k + "/kick_bonus", val)) val = 0;
 		ai.kick_attack_bonus = static_cast<uint16>(val);
 
 		aia[ai.frame] = ai;
@@ -237,12 +216,12 @@ void TypeFlags::loadArmourInfo()
 
 void TypeFlags::loadMonsterInfo()
 {
-	Configuration* config = CoreApp::get_instance()->getConfig();
+	ConfigFileManager* config = ConfigFileManager::get_instance();
 
 	// load monsters
-	std::set<Pentagram::istring> monsterkeys;
-	monsterkeys = config->listKeys("monsters/", true);	
-	for (std::set<Pentagram::istring>::iterator iter = monsterkeys.begin();
+	std::vector<Pentagram::istring> monsterkeys;
+	monsterkeys = config->listSections("monsters", true);	
+	for (std::vector<Pentagram::istring>::iterator iter = monsterkeys.begin();
 		 iter != monsterkeys.end(); ++iter)
 	{
 		Pentagram::istring k = *iter;
@@ -250,40 +229,40 @@ void TypeFlags::loadMonsterInfo()
 
 		int val;
 
-		config->value(k + "/shape", val);
+		config->get(k + "/shape", val);
 		mi->shape = static_cast<uint32>(val);
 
-		config->value(k + "/hp_min", val);
+		config->get(k + "/hp_min", val);
 		mi->min_hp = static_cast<uint16>(val);
 
-		config->value(k + "/hp_max", val);
+		config->get(k + "/hp_max", val);
 		mi->max_hp = static_cast<uint16>(val);
 
-		config->value(k + "/dex_min", val);
+		config->get(k + "/dex_min", val);
 		mi->min_dex = static_cast<uint16>(val);
 
-		config->value(k + "/dex_max", val);
+		config->get(k + "/dex_max", val);
 		mi->max_dex = static_cast<uint16>(val);
 
-		config->value(k + "/damage_min", val);
+		config->get(k + "/damage_min", val);
 		mi->min_dmg = static_cast<uint16>(val);
 
-		config->value(k + "/damage_max", val);
+		config->get(k + "/damage_max", val);
 		mi->max_dmg = static_cast<uint16>(val);
 
-		config->value(k + "/armour", val);
+		config->get(k + "/armour", val);
 		mi->armour_class = static_cast<uint16>(val);
 
-		config->value(k + "/alignment", val);
+		config->get(k + "/alignment", val);
 		mi->alignment = static_cast<uint8>(val);
 
-		config->value(k + "/unk", val);
+		config->get(k + "/unk", val);
 		mi->unk = (val != 0);
 
-		config->value(k + "/damage_type", val);
+		config->get(k + "/damage_type", val);
 		mi->damage_type = static_cast<uint16>(val);
 
-		config->value(k + "/defense_type", val);
+		config->get(k + "/defense_type", val);
 		mi->defense_type = static_cast<uint16>(val);
 
 		assert(mi->shape < shapeInfo.size());
