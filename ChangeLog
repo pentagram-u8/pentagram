@@ -1,5 +1,6 @@
 2004-09-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/BookGump.*, gumps/ScrollGump.*: close books/scrolls on dblclick
+	* world/actors/Actor.cpp: don't make things wait for LoiterProcess
 
 2004-09-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Kernel.*: added killProcessesNotOfType function

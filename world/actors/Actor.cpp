@@ -400,7 +400,8 @@ uint16 Actor::cSetActivity(int activity)
 {
 	switch (activity) {
 	case 0: // loiter
-		return Kernel::get_instance()->addProcess(new LoiterProcess(this));
+		Kernel::get_instance()->addProcess(new LoiterProcess(this));
+		return Kernel::get_instance()->addProcess(new DelayProcess(1));
 		break;
 	case 1: // combat
 		// TODO: implement (set combat and let AI handle the rest?)
