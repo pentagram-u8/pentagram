@@ -45,6 +45,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "SavegameWriter.h"
 #include "Savegame.h"
+#include <ctime>
 
 #include "Gump.h"
 #include "DesktopGump.h"
