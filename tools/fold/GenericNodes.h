@@ -101,13 +101,13 @@ class Node
 		virtual bool fold(DCUnit *unit, std::deque<Node *> &nodes)=0;
 		
 		// outputs 'unk' formatted script
-		inline virtual void print_unk(Console &o, const uint32 isize) const=0;
+		virtual void print_unk(Console &o, const uint32 isize) const=0;
 		// outputs psuedo assembler code
-		inline virtual void print_asm(Console &o) const;
+		virtual void print_asm(Console &o) const;
 		// outputs nothing interesting...
-		inline virtual void print_mac(Console &o) const;
+		virtual void print_mac(Console &o) const;
 		// outputs raw binary code
-		inline virtual void print_bin(OBufferDataSource &o) const=0;
+		virtual void print_bin(OBufferDataSource &o) const=0;
 		
 		inline void fold_linenum(std::deque<Node *> &nodes);
 		
