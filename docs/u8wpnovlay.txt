@@ -2,5 +2,46 @@ U8's wpnovlay.dat:
 -------------------
 
 wpnovlay.dat is a flex file.
+The objects in the flex correspond directly to animations.
 
-The objects in the flex seem to correspond to combat-related anims.
+
+Each object is divided into a number of blocks, where each block corresponds
+to an 'overlay type' (mace, sword, axe, dagger).
+
+Each block consists of 8 subblocks, each corresponding to a direction.
+
+These subblocks contain 4-byte structures, one for each animation frame:
+
+sint8 x-offset
+sint8 y-offset
+uint16 frame
+
+
+The shape the frame is in, is hardcoded into u8.exe and depends only
+on the overlay type:
+
+overlay type	shape
+0		0x00F1
+1		0x00F3
+2		0x00F4
+3		0x00F5
+
+
+The overlay type for each weapon is also hardcoded in u8.exe:
+
+weapon shape	overlay type
+0x01A1		0
+0x01A2		3
+0x01A3		2
+0x01A4		1
+0x021C		0
+0x021D		1
+0x021E		1
+0x032F		0
+0x0330		0
+0x0331		1
+0x0332		1
+0x0333		1
+0x0334		3
+0x0335		1
+0x0336		2
