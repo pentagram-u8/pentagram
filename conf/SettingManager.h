@@ -69,6 +69,9 @@ class SettingManager
 	//! set value
 	void set(Pentagram::istring key, bool value, Domain dom = DOM_CURRENT);
 
+	//! remove key
+	void unset(Pentagram::istring key, Domain dom = DOM_CURRENT);
+
 	//! set default value
 	void setDefault(Pentagram::istring key, std::string value);
 	//! set default value

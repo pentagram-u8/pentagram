@@ -156,6 +156,14 @@ void ConfigFileManager::set(istring key, bool val)
 	ini->set(key, val);
 }
 
+void ConfigFileManager::unset(istring key)
+{
+	INIFile* ini = findWriteINI(key);
+	if (!ini) return;
+
+	ini->unset(key);
+}
+
 
 
 std::vector<istring> ConfigFileManager::listKeys(istring section,

@@ -80,7 +80,7 @@ bool BindGump::OnKeyDown(int key, int mod)
 	{
 		HIDManager * hidmanager = HIDManager::get_instance();
 		if (key == SDLK_BACKSPACE) {
-			hidmanager->clearBindings(*binding);
+			hidmanager->unbind(*binding);
 		}
 		else {
 			Pentagram::istring control = SDL_GetKeyName((SDLKey) key);

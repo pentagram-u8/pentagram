@@ -119,12 +119,39 @@ void HIDManager::loadBindings()
 		bind((*i).first, bindingName);
 		++i;
 	}
+	listBindings();
 }
 
 void HIDManager::saveBindings()
 {
 	SettingManager* settings = SettingManager::get_instance();
 	Pentagram::istring section = "keys/";
+	Pentagram::istring confkey;
+
+	// first clear old bindings which are now unused
+	for (uint16 key=0; key < SDLK_LAST; ++key)
+	{
+		if (keybindings[key] == 0)
+		{
+			confkey = section + SDL_GetKeyName((SDLKey) key);
+			if (settings->exists(confkey))
+			{
+				settings->unset(confkey);
+			}
+		}
+	}
+
+	for (uint16 button=1; button < NUM_MOUSEBUTTONS+1; ++button)
+	{
+		if (mousebindings[button] == 0)
+		{
+			confkey = section + GetMouseButtonName((MouseButton) button);
+			if (settings->exists(confkey))
+			{
+				settings->unset(confkey);
+			}
+		}
+	}
 
 	HIDBindingMap::iterator i;
 	for (i = bindingMap.begin(); i != bindingMap.end(); ++i)
@@ -133,7 +160,8 @@ void HIDManager::saveBindings()
 		{
 			if (keybindings[key] == i->second)
 			{
-				settings->set(section + SDL_GetKeyName((SDLKey) key), i->first);
+				confkey = section + SDL_GetKeyName((SDLKey) key);
+				settings->set(confkey, i->first);
 			}
 		}
 
@@ -141,7 +169,8 @@ void HIDManager::saveBindings()
 		{
 			if (mousebindings[button] == i->second)
 			{
-				settings->set(section + GetMouseButtonName((MouseButton) button), i->first);
+				confkey = section + GetMouseButtonName((MouseButton) button);
+				settings->set(confkey, i->first);
 			}
 		}
 	}
@@ -166,11 +195,6 @@ void HIDManager::bind(const Pentagram::istring& control, const Pentagram::istrin
 			name = SDL_GetKeyName((SDLKey) key);
 			if (control == name)
 			{
-				if (j->second)
-				{
-					pout << "Binding \"" << name
-						<< "\" to " << j->first.c_str() << std::endl;
-				}
 				keybindings[key] = j->second;
 
 				// We found the matching SDLKey. Stop searching;
@@ -184,17 +208,67 @@ void HIDManager::bind(const Pentagram::istring& control, const Pentagram::istrin
 			name = GetMouseButtonName((MouseButton) button);
 			if (control == name)
 			{
-				if (j->second)
-				{
-					pout << "Binding \"" << name
-						<< "\" to " << j->first.c_str() << std::endl;
-				}
 				mousebindings[button] = j->second;
 
 				// We found the matching Mouse Button. Stop searching;
 				return;
 			}
 		} 
+	}
+}
+
+void HIDManager::unbind(const Pentagram::istring& control)
+{
+	uint16 key;
+	uint16 button;
+	const char * name = 0;
+	HIDBindingMap::iterator j = bindingMap.find(control);
+	if (j != bindingMap.end())
+	{	// we are unbinding all keys with the HIDBinding "control"
+		for (key=0; key < SDLK_LAST; ++key)
+		{
+			if (key == SDLK_ESCAPE || key == SDLK_BACKQUOTE)
+			{	// We will not allow these keys to be rebound
+				++key; 
+			}
+			if (keybindings[key] == (*j).second)
+			{
+				keybindings[key] = 0;
+			}
+		}
+
+		for (button=2; button < NUM_MOUSEBUTTONS+1; ++button)
+		{
+			if (mousebindings[button] == (*j).second)
+			{
+				mousebindings[button] = 0;
+			}
+		}
+	}
+	else
+	{	// assume we are unbinding a specific key
+		for (key=0; key < SDLK_LAST; ++key)
+		{
+			if (key == SDLK_ESCAPE || key == SDLK_BACKQUOTE)
+			{	// We will not allow these keys to be rebound
+				++key; 
+			}
+			name = SDL_GetKeyName((SDLKey) key);
+			if (control == name)
+			{
+				keybindings[key] = 0;
+			}
+		}
+
+		for (button=2; button < NUM_MOUSEBUTTONS+1; ++button)
+		{
+			name = GetMouseButtonName((MouseButton) button);
+			if (control == name)
+			{
+				mousebindings[button] = 0;
+			}
+		}
+		
 	}
 }
 
@@ -214,6 +288,27 @@ void HIDManager::ConCmd_bind(const Console::ArgsType &args, const Console::ArgvT
 	hidmanager->bind(control, bindingName);
 }
 
+void HIDManager::ConCmd_unbind(const Console::ArgsType &args, const Console::ArgvType &argv)
+{
+	if (argv.size() != 2)
+	{
+		if (! argv.empty())
+			pout << "Usage: " << argv[0] << " <key or action>: unbinds a key, button, or action" << std::endl;
+		return;
+	}
+	HIDManager * hidmanager = HIDManager::get_instance();
+	
+	Pentagram::istring control(argv[1]);
+
+	hidmanager->unbind(control);
+}
+
+void HIDManager::ConCmd_listbinds(const Console::ArgsType &args, const Console::ArgvType &argv)
+{
+	HIDManager * hidmanager = HIDManager::get_instance();
+	hidmanager->listBindings();
+}
+	
 void HIDManager::ConCmd_save(const Console::ArgsType &args, const Console::ArgvType &argv)
 {
 	HIDManager * hidmanager = HIDManager::get_instance();
@@ -222,6 +317,26 @@ void HIDManager::ConCmd_save(const Console::ArgsType &args, const Console::ArgvT
 	SettingManager* settings = SettingManager::get_instance();
 	settings->write();
 }
+
+void HIDManager::listBindings()
+{
+	HIDBindingMap::iterator it;
+	std::vector<const char *> controls;
+	std::vector<const char *>::iterator j;
+
+	con.Printf("%-25sKeys\n", "Controls");
+	for (it = bindingMap.begin(); it != bindingMap.end(); ++it)
+	{
+		hidmanager->getBindings(it->first, controls);
+		con.Printf(" %-25s", it->first.c_str());
+		for (j = controls.begin(); j != controls.end(); ++j)
+		{
+			con.Printf("%s ", *j);
+		}
+		con.Putchar('\n');
+	}
+}
+
 
 void HIDManager::getBindings(const Pentagram::istring& bindingName, std::vector<const char *>& controls)
 {
@@ -246,32 +361,4 @@ void HIDManager::getBindings(const Pentagram::istring& bindingName, std::vector<
 			}
 		}
 	}	
-}
-
-void HIDManager::clearBindings(const Pentagram::istring& bindingName)
-{
-	HIDBindingMap::iterator j = bindingMap.find(bindingName);
-	if (j != bindingMap.end())
-	{
-
-		for (uint16 key=0; key < SDLK_LAST; ++key)
-		{
-			if (key == SDLK_ESCAPE || key == SDLK_BACKQUOTE)
-			{	// We will not allow these keys to be rebound
-				++key; 
-			}
-			if (keybindings[key] == (*j).second)
-			{
-				keybindings[key] = 0;
-			}
-		}
-
-		for (uint16 button=1; button < NUM_MOUSEBUTTONS+1; ++button)
-		{
-			if (mousebindings[button] == (*j).second)
-			{
-				mousebindings[button] = 0;
-			}
-		}
-	}
 }

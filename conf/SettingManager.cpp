@@ -121,6 +121,12 @@ void SettingManager::set(istring key, bool value, Domain dom)
 	callCallbacks(key);
 }
 
+void SettingManager::unset(istring key, Domain dom)
+{
+	conffileman->unset(getConfigKey(key,dom));
+
+	callCallbacks(key);
+}
 
 
 

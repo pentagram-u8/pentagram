@@ -69,6 +69,9 @@ public:
 	//! set value
 	void set(Pentagram::istring key, bool value);
 
+	//! remove key
+	void unset(Pentagram::istring key);
+
 	//! list all keys in a section
 	//! \param section The section to return setkeys of
 	//! \param longformat If true, return the full key name, instead of

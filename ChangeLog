@@ -1,3 +1,9 @@
+2004-05-17  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* conf/*.*: Added unset method to remove keys from conf altogether.
+	* kernel/HIDManager.*: save bindings now clears keys in the settings
+	  manager that are not bound. Added unbind and listbinds console
+	  commands.
+	   
 2004-05-16  Ryan Nunn <colourles@users.sourceforge.net>
 	* audio/MusicProcess.cpp : Fixing bug with stop
 

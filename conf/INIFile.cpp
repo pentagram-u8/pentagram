@@ -73,6 +73,16 @@ void INIFile::Section::setKey(istring key, string value)
 	keys.push_back(newkey);
 }
 
+void INIFile::Section::unsetKey(istring key)
+{
+	std::list<KeyValue>::iterator i;
+	for (i = keys.begin(); i != keys.end(); ++i) {
+		if (i->key == key) {
+			i = keys.erase(i);
+		}
+	}
+}
+
 string INIFile::Section::dump()
 {
 	string s = comment;
@@ -441,6 +451,18 @@ void INIFile::set(istring key, bool value)
 		set(key, "true");
 	else
 		set(key, "false");
+}
+
+void INIFile::unset(istring key)
+{
+	if (!stripRoot(key)) return;
+	istring s, k;
+	splitKey(key, s, k);
+
+	Section* section = getSection(s);
+	if (section) {
+		section->unsetKey(k);
+	}	
 }
 
 void INIFile::listKeys(std::set<istring>& keys, istring section_,

@@ -50,8 +50,18 @@ public:
 	//! \param bindingName name of the HIDBinding
     void bind(const Pentagram::istring& control, const Pentagram::istring& bindingName);
 
+	//! removes all controls to a HIDBinding or the binding to one specified key
+	//! \param bindingName name of a HIDBinding or the name of key
+	void unbind(const Pentagram::istring& control);
+
 	//! "bind" console command
 	static void ConCmd_bind(const Console::ArgsType &args, const Console::ArgvType &argv);
+
+	//! "unbind" console command
+	static void ConCmd_unbind(const Console::ArgsType &args, const Console::ArgvType &argv);
+
+	//! "listbinds" console command
+	static void ConCmd_listbinds(const Console::ArgsType &args, const Console::ArgvType &argv);
 
 	//! "save" console command
 	static void ConCmd_save(const Console::ArgsType &args, const Console::ArgvType &argv);
@@ -60,11 +70,8 @@ public:
 	//! \param bindingName name of a HIDBinding
 	//! \param controls vector to store the controls attached to bindingName
 	void getBindings(const Pentagram::istring& bindingName, std::vector<const char *>& controls);
-
-	//! removes all controls to a HIDBinding
-	//! \param bindingName name of a HIDBinding
-	void clearBindings(const Pentagram::istring& bindingName);
 private:
+	void HIDManager::listBindings();
 	HIDBindingMap bindingMap; 
 	HIDBinding keybindings[SDLK_LAST];
 	HIDBinding mousebindings[NUM_MOUSEBUTTONS+1];

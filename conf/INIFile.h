@@ -57,6 +57,9 @@ public:
 	void set(Pentagram::istring key, int value);
 	void set(Pentagram::istring key, bool value);
 
+	// remove key
+	void unset(Pentagram::istring key);
+
 	void listKeys(std::set<Pentagram::istring>& keys,
 				  Pentagram::istring section,
 				  bool longformat=false);
@@ -88,6 +91,7 @@ private:
 		bool hasKey(Pentagram::istring key);
 		KeyValue* getKey(Pentagram::istring key);
 		void setKey(Pentagram::istring key, std::string value);
+		void unsetKey(Pentagram::istring key);
 
 		std::string dump();
 	};
