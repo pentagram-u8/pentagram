@@ -24,6 +24,7 @@
 #include "Shape.h"
 #include "ShapeFrame.h"
 #include "MainActor.h"
+#include "RenderSurface.h"
 #include "ShapeInfo.h"
 #include "Palette.h"
 
