@@ -33,7 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Container.h"
 
-//#define WATCH_CLASS 198
+//#define WATCH_CLASS 1026
 //#define WATCH_ITEM 19
 
 #ifdef WATCH_CLASS
@@ -438,7 +438,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			ui16a = p->stack.pop2();
 			ui16b = p->stack.pop2();
 			listHeap[ui16b]->substractStringList(*listHeap[ui16a]);
-			freeStringList(ui16a); // contents are actually freed in subSL
+			freeStringList(ui16a);
 			p->stack.push2(ui16b);
 			LOGPF(("remove slist\t(%02X)", ui32a));
 			break;			
@@ -1712,8 +1712,9 @@ bool UCMachine::execProcess(UCProcess* p)
 				// loop iteration
 				// place next element from list in [bp+si8a]
 				// (not duplicating any strings)
-				
-				p->stack.push((*listHeap[loop_list])[loop_index], ui32a);
+
+				p->stack.assign(p->bp+si8a, (*listHeap[loop_list])[loop_index],
+								ui32a);
 			}
 			break;
 

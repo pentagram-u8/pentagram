@@ -140,7 +140,7 @@ class UCList
 	void substractStringList(UCList& l);
 	bool stringInList(uint16 str);
 	void assignString(uint32 index, uint16 str);
-	void removeString(uint16 str);
+	void removeString(uint16 str, bool nodel=false);
 
 	uint16 getStringIndex(uint32 index);
  private:

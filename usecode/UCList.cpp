@@ -97,13 +97,18 @@ void UCList::assignString(uint32 index, uint16 str)
 	elements[index*elementsize+1] = static_cast<uint8>(str >> 8);
 }
 
-void UCList::removeString(uint16 s)
+void UCList::removeString(uint16 s, bool nodel)
 {
 	// do we need to erase all occurences of str or just the first one?
 	// (deleting all, currently)
 	std::string str = UCMachine::get_instance()->getString(s);
 	for (unsigned int i = 0; i < size; i++) {
 		if (getString(i) == str) {
+			// free string
+			if (!nodel)
+				UCMachine::get_instance()->freeString(getStringIndex(i));
+
+			// remove string from list
 			elements.erase(elements.begin()+i*elementsize,
 						   elements.begin()+(i+1)*elementsize);
 			size--;

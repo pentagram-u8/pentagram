@@ -97,8 +97,11 @@ void AskGump::ChildNotify(Gump *child, uint32 message)
 	{
 		uint16 s = answers->getStringIndex(child->GetIndex());
 		process_result = s;
-		answers->removeString(s); //!! assuming that answers doesn't
-                                  //!! contain two identical strings
+
+		// answers' strings are going to be deleted, so make sure
+		// the response string won't be deleted
+		answers->removeString(s, true); //!! assuming that answers doesn't
+                                        //!! contain two identical strings
 		Close();
 	}
 }

@@ -1,3 +1,6 @@
+2003-06-24  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/UCList.*: fixed string leaks
+
 2003-06-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/MainActor.*: accumulateStr/Dex/Int, doxygen
 	* kernel/GameDetector.*: some simple game/language detection code
