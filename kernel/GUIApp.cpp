@@ -789,7 +789,7 @@ void GUIApp::paint()
 #if defined(WIN32) && defined(I_AM_COLOURLESS_EXPERIMENTING_WITH_HW_CURSORS)
 				if (allow_set_cursor) SetCursor(hwcursors[frame].hCursor);
 #else
-				screen->Paint(mouse, frame, mouseX, mouseY);
+				screen->Paint(mouse, frame, mouseX, mouseY, true);
 #endif
 			}
 		}

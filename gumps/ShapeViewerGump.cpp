@@ -122,8 +122,8 @@ void ShapeViewerGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 				info->equiptype, info->unknown, info->weight);
 		sprintf(buf5, "volume = %d\n animtype = %d, animdata = %d",
 				info->animtype, info->animdata, info->volume);
-		sprintf(buf6, "ShapeInfo:\n %s\n %s, %s",
-				buf3, buf4, buf5);
+		sprintf(buf6, "ShapeInfo:\n %s\n %s, %s\nUsecode: %s",
+			buf3, buf4, buf5, GameData::get_instance()->getMainUsecode()->get_class_name(curshape));
 		rendtext = font->renderText(buf6, remaining);
 		rendtext->draw(surf, 300, 20);
 		delete rendtext;

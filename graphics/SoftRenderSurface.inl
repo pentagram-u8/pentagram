@@ -169,11 +169,15 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 	ShapeFrame		*frame			= s->getFrame(framenum);
 	const uint8		*rle_data		= frame->rle_data;
 	const uint32	*line_offsets	= frame->line_offsets;
-	const uint32	*pal			= &(s->getPalette()->native[0]);
+	const uint32	*pal			= untformed_pal?
+										&(s->getPalette()->native_untransformed[0]):
+										&(s->getPalette()->native[0]);
 
 	
 #ifdef XFORM_SHAPES
-	const uint32	*xform_pal		= &(s->getPalette()->xform[0]);
+	const uint32	*xform_pal		= untformed_pal?
+										&(s->getPalette()->xform_untransformed[0]):
+										&(s->getPalette()->xform[0]);
 #endif
 
 	sint32 width = frame->width;

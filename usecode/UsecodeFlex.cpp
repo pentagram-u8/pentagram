@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "UsecodeFlex.h"
+#include <cstring>
 
 const uint8* UsecodeFlex::get_class(uint32 classid)
 {
@@ -35,3 +36,9 @@ uint32 UsecodeFlex::get_class_size(uint32 classid)
 	else
 		return 0;
 }
+
+const char* UsecodeFlex::get_class_name(uint32 classid)
+{
+	return reinterpret_cast<const char*>(get_object_nodel(1)+4+(13 * classid));
+}
+

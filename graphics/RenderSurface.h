@@ -170,31 +170,31 @@ public:
 
 	// Paint a Shape
 	// TODO: virtual void Paint(CachedShape* s, uint32 frame, sint32 x, sint32 y) = 0;
-	virtual void Paint(Shape*s, uint32 frame, sint32 x, sint32 y) = 0;
+	virtual void Paint(Shape*s, uint32 frame, sint32 x, sint32 y, bool untformed_pal = false) = 0;
 
 	// Paint a Shape without clipping
 	// TODO: virtual void PaintNoClip(CachedShape*s, uint32 frame, sint32 x, sint32 y) = 0;
-	virtual void PaintNoClip(Shape*s, uint32 frame, sint32 x, sint32 y) = 0;
+	virtual void PaintNoClip(Shape*s, uint32 frame, sint32 x, sint32 y, bool untformed_pal = false) = 0;
 
 	// Paint a Translucent Shape. 
 	// TODO: virtual void PaintTranslucent(CachedShape* s, uint32 frame, sint32 x, sint32 y) = 0;
-	virtual void PaintTranslucent(Shape* s, uint32 frame, sint32 x, sint32 y) = 0;
+	virtual void PaintTranslucent(Shape* s, uint32 frame, sint32 x, sint32 y, bool untformed_pal = false) = 0;
 
 	// Paint a Mirrored Shape
 	// TODO: virtual void PaintMirrored(CachedShape* s, uint32 frame, sint32 x, sint32 y, bool trans = false) = 0;
-	virtual void PaintMirrored(Shape* s, uint32 frame, sint32 x, sint32 y, bool trans = false) = 0;
+	virtual void PaintMirrored(Shape* s, uint32 frame, sint32 x, sint32 y, bool trans = false, bool untformed_pal = false) = 0;
 
 	// Paint an Invisible Shape
 	// TODO: virtual void PaintInvisible(CachedShape* s, uint32 frame, sint32 x, sint32 y, bool trans, bool mirrored) = 0;
-	virtual void PaintInvisible(Shape* s, uint32 frame, sint32 x, sint32 y, bool trans, bool mirrored) = 0;
+	virtual void PaintInvisible(Shape* s, uint32 frame, sint32 x, sint32 y, bool trans, bool mirrored, bool untformed_pal = false) = 0;
 
 	// Paint a Highlighted Shape of using the 32 Bit Colour col32 (0xAARRGGBB Alpha is blend level)
 	// TODO: virtual void PaintHighlight(CachedShape* s, uint32 frame, sint32 x, sint32 y, bool trans, bool mirrored, uint32 col32);
-	virtual void PaintHighlight(Shape* s, uint32 frame, sint32 x, sint32 y, bool trans, bool mirrored, uint32 col32) = 0;
+	virtual void PaintHighlight(Shape* s, uint32 frame, sint32 x, sint32 y, bool trans, bool mirrored, uint32 col32, bool untformed_pal = false) = 0;
 
 	// Paint a Invisible Highlighted Shape of using the 32 Bit Colour col32 (0xAARRGGBB Alpha is blend level)
 	// TODO: virtual void PaintHighlightInvis(CachedShape* s, uint32 frame, sint32 x, sint32 y, bool trans, bool mirrored, uint32 col32);
-	virtual void PaintHighlightInvis(Shape* s, uint32 frame, sint32 x, sint32 y, bool trans, bool mirrored, uint32 col32) = 0;
+	virtual void PaintHighlightInvis(Shape* s, uint32 frame, sint32 x, sint32 y, bool trans, bool mirrored, uint32 col32, bool untformed_pal = false) = 0;
 
 	//
 	// Basic Line Drawing

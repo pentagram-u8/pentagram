@@ -1,4 +1,15 @@
 2005-03-13  Ryan Nunn <colourles@users.sourceforge.net>
+	* graphics/*RenderSurface.* : Added parameter to shape draw functions 
+	  to specify to use the untransformed palette.
+	* kernel/GUIApp.cpp : Changed it so the mouse is always drawn with the
+	  untransformed palette. This means the mouse will no longer change 
+	  colour in 'mushroom' mode.
+	* usecode/Usecode*.* : Added function to get the class name of a 
+	  usecode class.
+	* gumps/ShapeViewerGump.cpp : Output usecode class name for shapes from
+	  the main shapes flex.
+
+2005-03-12  Ryan Nunn <colourles@users.sourceforge.net>
 	* gumps/MiniMapGump.*, kernel/GUIApp.cpp : Experimental MiniMap gump.
 	  Doesn't save over map changes so it's only 'so' useful.
 	* graphics/ShapeFrame.*, world/CurrentMap.* : A few extra functions

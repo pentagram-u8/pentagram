@@ -30,6 +30,7 @@ class UsecodeFlex : public Usecode, protected RawArchive {
 
 	virtual const uint8* get_class(uint32 classid);
 	virtual uint32 get_class_size(uint32 classid);
+	virtual const char* get_class_name(uint32 classid);
 };
 
 #endif

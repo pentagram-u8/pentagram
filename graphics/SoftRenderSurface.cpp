@@ -542,7 +542,7 @@ template<class uintX> void SoftRenderSurface<uintX>::PrintTextFixed(Texture *tex
 //
 // Desc: Standard shape drawing functions. Clips but doesn't do anything else
 //
-template<class uintX> void SoftRenderSurface<uintX>::Paint(Shape*s, uint32 framenum, sint32 x, sint32 y)
+template<class uintX> void SoftRenderSurface<uintX>::Paint(Shape*s, uint32 framenum, sint32 x, sint32 y, bool untformed_pal)
 {
 	#include "SoftRenderSurface.inl"
 }
@@ -553,7 +553,7 @@ template<class uintX> void SoftRenderSurface<uintX>::Paint(Shape*s, uint32 frame
 //
 // Desc: Standard shape drawing functions. Doesn't clip
 //
-template<class uintX> void SoftRenderSurface<uintX>::PaintNoClip(Shape*s, uint32 framenum, sint32 x, sint32 y)
+template<class uintX> void SoftRenderSurface<uintX>::PaintNoClip(Shape*s, uint32 framenum, sint32 x, sint32 y, bool untformed_pal)
 {
 #define NO_CLIPPING
 	#include "SoftRenderSurface.inl"
@@ -566,7 +566,7 @@ template<class uintX> void SoftRenderSurface<uintX>::PaintNoClip(Shape*s, uint32
 //
 // Desc: Standard shape drawing functions. Clips and XForms
 //
-template<class uintX> void SoftRenderSurface<uintX>::PaintTranslucent(Shape* s, uint32 framenum, sint32 x, sint32 y)
+template<class uintX> void SoftRenderSurface<uintX>::PaintTranslucent(Shape* s, uint32 framenum, sint32 x, sint32 y, bool untformed_pal)
 {
 #define XFORM_SHAPES
 	#include "SoftRenderSurface.inl"
@@ -579,7 +579,7 @@ template<class uintX> void SoftRenderSurface<uintX>::PaintTranslucent(Shape* s, 
 //
 // Desc: Standard shape drawing functions. Clips, Flips and conditionally XForms
 //
-template<class uintX> void SoftRenderSurface<uintX>::PaintMirrored(Shape* s, uint32 framenum, sint32 x, sint32 y, bool trans)
+template<class uintX> void SoftRenderSurface<uintX>::PaintMirrored(Shape* s, uint32 framenum, sint32 x, sint32 y, bool trans, bool untformed_pal)
 {
 #define FLIP_SHAPES
 #define XFORM_SHAPES
@@ -599,7 +599,7 @@ template<class uintX> void SoftRenderSurface<uintX>::PaintMirrored(Shape* s, uin
 // Desc: Standard shape drawing functions. Invisible, Clips, and conditionally Flips and Xforms
 //
 
-template<class uintX> void SoftRenderSurface<uintX>::PaintInvisible(Shape* s, uint32 framenum, sint32 x, sint32 y, bool trans, bool mirrored)
+template<class uintX> void SoftRenderSurface<uintX>::PaintInvisible(Shape* s, uint32 framenum, sint32 x, sint32 y, bool trans, bool mirrored, bool untformed_pal)
 {
 #define FLIP_SHAPES
 #define FLIP_CONDITIONAL mirrored
@@ -623,7 +623,7 @@ template<class uintX> void SoftRenderSurface<uintX>::PaintInvisible(Shape* s, ui
 // Desc: Standard shape drawing functions. Highlights, Clips, and conditionally Flips and Xforms
 //
 
-template<class uintX> void SoftRenderSurface<uintX>::PaintHighlight(Shape* s, uint32 framenum, sint32 x, sint32 y, bool trans, bool mirrored, uint32 col32)
+template<class uintX> void SoftRenderSurface<uintX>::PaintHighlight(Shape* s, uint32 framenum, sint32 x, sint32 y, bool trans, bool mirrored, uint32 col32, bool untformed_pal)
 {
 #define FLIP_SHAPES
 #define FLIP_CONDITIONAL mirrored
@@ -651,7 +651,7 @@ template<class uintX> void SoftRenderSurface<uintX>::PaintHighlight(Shape* s, ui
 // Desc: Standard shape drawing functions. Highlights, Clips, and conditionally Flips and Xforms. 50% translucent
 //
 
-template<class uintX> void SoftRenderSurface<uintX>::PaintHighlightInvis(Shape* s, uint32 framenum, sint32 x, sint32 y, bool trans, bool mirrored, uint32 col32)
+template<class uintX> void SoftRenderSurface<uintX>::PaintHighlightInvis(Shape* s, uint32 framenum, sint32 x, sint32 y, bool trans, bool mirrored, uint32 col32, bool untformed_pal)
 {
 #define FLIP_SHAPES
 #define FLIP_CONDITIONAL mirrored

@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef USECODE_H
 #define USECODE_H
 
+#include <string>
+
 class Usecode {
 public:
 	Usecode() { }
@@ -26,6 +28,7 @@ public:
 
 	virtual const uint8* get_class(uint32 classid)=0;
 	virtual uint32 get_class_size(uint32 classid)=0;
+	virtual const char* get_class_name(uint32 classid) = 0;
 
 	virtual uint32 get_class_event(uint32 classid, uint32 eventid);
 };
