@@ -10,6 +10,8 @@
 	* kernel/Kernel.*, kernel/Process.*: added some extra access functions
 	* audio/AudioProcess.*: only check for duplicate SFX on ambients
 	* world/actors/AvatarMoverProcess.cpp: wait when doing animation
+	* world/actors/ActorAnimProcess.cpp: terminateDeferred instead of
+	  terminate when AnimLock set 
 
 2005-04-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/MainActor.cpp: play SFX when stats increase
