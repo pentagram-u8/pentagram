@@ -1,0 +1,65 @@
+Items
+--------
+
+This should describe where/how items are stored, and how they need to be
+handled.
+
+This file was created to organize my thoughts on this (-wjp)
+
+
+
+Items that are currently 'in use'
+------------------------------------
+This includes items in the current map, and 'permanent' items (NPCs and their
+inventories)
+
+All these items have an object ID assigned, and so they are retrievable by
+World::getObject().
+
+Items that are directly part of the map (this excludes items in containers
+but includes NPCs on the current map) are stored in the CurrentMap class,
+in a large array of per-chunk object lists. (CurrentMap::items[][])
+
+They are no longer in their Map object at this point. 
+
+Items that came from Map::fixeditems have the extended flag EXT_FIXED set.
+NB: while it is allowed to make changes to EXT_FIXED items, such changes can
+disappear on map-change. They will be saved in a savegame.
+
+Items that are in CurrentMap, but are not originally from a Map object have
+the EXT_NOTINMAP extended flag set.
+
+Items in containers have a pointer (Item::parent) to their parent, and are
+not directly part of CurrentMap.
+
+QUESTION: which status do 'equipped' items have? (Such as the avatar's backpack
+and weapon/armour) Is their owner also their parent, or do they have a special
+status?
+
+
+GlobEggs are expanded in CurrentMap, meaning that their contents are
+treated as normal objects. The contents have the EXT_INGLOB extended flag
+set. Contents of a glob egg are chained together by the Item::glob_next
+and GlobEgg::contents fields.
+NB: because of this, it is not allowed to delete an EXT_INGLOB item.
+Modifying an EXT_INGLOB item is allowed, but as with EXT_FIXED items, changes
+can disappear on map-change.
+
+
+
+
+
+
+
+Items that are not in use
+---------------------------
+This includes the fixed/nonfixed items on all maps but the current map. 
+The fixed items most likely will be swapped out, but the nonfixed items
+have to be kept in memory.
+
+They are stored in the various Map objects in World. (in Map::fixeditems and
+Map::dynamicitems)
+
+They do not have object IDs assigned.
+
+The contents of GlobEggs are not stored here.

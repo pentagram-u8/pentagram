@@ -1,3 +1,6 @@
+2003-05-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* docs/design/items.txt: some notes about Item
+
 2003-05-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/*, graphics/AnimDat.*: read/play animations
 	* kernel/Application.cpp: press 't' to make Devon walk a bit	
