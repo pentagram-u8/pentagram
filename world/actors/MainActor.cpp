@@ -163,6 +163,8 @@ uint32 MainActor::I_accumulateStrength(const uint8* args,
 	MainActor* av = p_dynamic_cast<MainActor*>(
 		World::get_instance()->getNPC(1));
 	av->accumulateStr(n);
+
+	return 0;
 }
 
 uint32 MainActor::I_accumulateDexterity(const uint8* args,
@@ -172,6 +174,8 @@ uint32 MainActor::I_accumulateDexterity(const uint8* args,
 	MainActor* av = p_dynamic_cast<MainActor*>(
 		World::get_instance()->getNPC(1));
 	av->accumulateDex(n);
+
+	return 0;
 }
 
 uint32 MainActor::I_accumulateIntelligence(const uint8* args,
@@ -181,4 +185,6 @@ uint32 MainActor::I_accumulateIntelligence(const uint8* args,
 	MainActor* av = p_dynamic_cast<MainActor*>(
 		World::get_instance()->getNPC(1));
 	av->accumulateInt(n);
+
+	return 0;
 }
