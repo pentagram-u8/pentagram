@@ -95,6 +95,7 @@ bool Actor::AddItem(Item* item, bool checkwghtvol)
 	if (!Container::AddItem(item, checkwghtvol)) return false;
 
 	item->setFlag(FLG_EQUIPPED);
+	item->setExtFlag(EXT_NOTINMAP);
 
 	uint32 equiptype = item->getShapeInfo()->equiptype;
 	item->setZ(equiptype);
@@ -107,6 +108,7 @@ bool Actor::RemoveItem(Item* item)
 	if (!Container::RemoveItem(item)) return false;
 
 	item->clearFlag(FLG_EQUIPPED);
+	item->clearExtFlag(EXT_NOTINMAP);
 
 	return true;
 }

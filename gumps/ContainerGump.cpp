@@ -155,25 +155,16 @@ uint16 ContainerGump::TraceObjID(int mx, int my)
 bool ContainerGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 									  sint32 lerp_factor)
 {
+	Item* item = World::get_instance()->getItem(itemid);
+	Item* parent = item->getParent();
+	if (!parent) return false;
+	if (parent->getObjId() != owner) return false;
+
 	//!!! need to use lerp_factor
 
-	Container* c = p_dynamic_cast<Container*>
-		(World::get_instance()->getItem(owner));
-
-	if (!c) return 0; // Container gone!?
-
-	std::list<Item*>& contents = c->contents;
-	std::list<Item*>::iterator iter;
-	for (iter = contents.begin(); iter != contents.end(); ++iter) {
-		Item* item = *iter;
-		if (item->getObjId() == itemid) {
-			// found it
-			item->getGumpLocation(gx,gy);
-			gx += itemarea.x;
-			gy += itemarea.y;
-			return true;
-		}
-	}
+	item->getGumpLocation(gx,gy);
+	gx += itemarea.x;
+	gy += itemarea.y;
 
 	return false;
 }
@@ -329,12 +320,29 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 {
 	display_dragging = false;
 
-	// add item to container
-	Container* c = p_dynamic_cast<Container*>
-		(World::get_instance()->getItem(owner));
-	assert(c);
-	c->AddItem(item);
+	int px = mx, py = my;
+	GumpToParent(px, py);
+	// see what the item is being dropped on
+	Item* targetitem = World::get_instance()->getItem(TraceObjID(px, py));
+	Container* targetcontainer = 0;
+	if (targetitem) {
+		targetcontainer = p_dynamic_cast<Container*>(targetitem);
+		if (targetcontainer) {
 
+		} else {
+			//!! TODO: combining
+		}
+	}
+
+	if (!targetcontainer) {
+		targetcontainer = p_dynamic_cast<Container*>
+			(World::get_instance()->getItem(owner));
+	}
+	// add item to container
+	assert(targetcontainer);
+	targetcontainer->AddItem(item);
+
+	//!! TODO: this is nonsense when not adding to this container
 	dragging_x = mx - itemarea.x;
 	dragging_y = my - itemarea.y;
 	item->setGumpLocation(dragging_x, dragging_y);

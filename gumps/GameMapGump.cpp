@@ -391,7 +391,8 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 				 << ", " << item->getFrame() << ", (" << x << "," << y << ","
 				 << z << ") q:" << item->getQuality() << ", m:"
 				 << item->getMapNum() << ", n:" << item->getNpcNum()
-				 << ")" << std::endl;
+				 << ", f:" << std::hex << item->getFlags() << ", ef:"
+				 << item->getExtFlags() << ")" << std::dec << std::endl;
 			
 			// call the 'look' event
 			item->callUsecodeEvent_look();

@@ -43,6 +43,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AskGump.h"
 #include "GumpNotifyProcess.h"
 #include "ContainerGump.h"
+#include "PaperdollGump.h"
 #include "GameMapGump.h"
 #include "WorldPoint.h"
 #include "GravityProcess.h"
@@ -762,7 +763,10 @@ uint32 Item::callUsecodeEvent_guardianBark(sint16 unk)			// event 15
 
 void Item::destroy()
 {
-	if (extendedflags & EXT_INGLOB) return; // don't touch glob contents
+	if (extendedflags & EXT_INGLOB) {
+		perr << "Trying to destroy an in-glob item" << std::endl;
+		return; // don't touch glob contents
+	}
 
 	if (parent) {		
 		// we're in a container, so remove self from parent
@@ -914,8 +918,13 @@ uint16 Item::openGump(uint32 gumpshape)
 	assert(gump == 0);
 	Shape* shape = GameData::get_instance()->getGumps()->getShape(gumpshape);
 
-	ContainerGump* cgump = new ContainerGump(shape, 0, objid,
-											 Gump::FLAG_ITEM_DEPENDANT);
+	ContainerGump* cgump;
+
+	if (getObjId() != 1) { //!! constant
+		cgump = new ContainerGump(shape, 0, objid, Gump::FLAG_ITEM_DEPENDANT);
+	} else {
+		cgump = new PaperdollGump(shape, 0, objid, Gump::FLAG_ITEM_DEPENDANT);
+	}
 	//!!TODO: clean up the way this is set
 	//!! having the itemarea associated with the shape through the 
 	//!! GumpShapeFlex maybe

@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Container.h"
 
-//#define WATCH_CLASS 1057
+//#define WATCH_CLASS 1200
 //#define WATCH_ITEM 19
 
 #ifdef WATCH_CLASS

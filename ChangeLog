@@ -1,3 +1,10 @@
+2003-07-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* README: updated with new keys (changing avatar Z is now home/end)
+	* gumps/PaperdollGump.*: avatar paperdoll gump (no status yet)
+	* gumps/ContainerGump.*: cleaned up a bit
+	* gumps/GameMapGump.cpp: dump flags/extflags when displaying item info
+	* world/Item.cpp: open PaperdollGump for Avatar
+
 2003-07-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* README: added config/audio/midi_driver option
 	* audio/midi/*: changed midi driver names

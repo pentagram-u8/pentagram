@@ -54,11 +54,11 @@ public:
 								   sint32 lerp_factor = 256);
 
 
-	virtual bool		StartDraggingItem(Item* item, int mx, int my);
-	virtual bool		DraggingItem(Item* item, int mx, int my);
-	virtual void		DraggingItemLeftGump(Item* item);
-	virtual void		StopDraggingItem(Item* item, bool moved);
-	virtual void		DropItem(Item* item, int mx, int my);
+	virtual bool StartDraggingItem(Item* item, int mx, int my);
+	virtual bool DraggingItem(Item* item, int mx, int my);
+	virtual void DraggingItemLeftGump(Item* item);
+	virtual void StopDraggingItem(Item* item, bool moved);
+	virtual void DropItem(Item* item, int mx, int my);
 
 	virtual Gump* OnMouseDown(int button, int mx, int my);
 	virtual void OnMouseClick(int button, int mx, int my);

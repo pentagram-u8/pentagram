@@ -450,11 +450,57 @@ void GUIApp::U8Playground()
 	// avatar needs a backpack ... CONSTANTs and all that
 	Container* backpack = p_dynamic_cast<Container*>(
 		ItemFactory::createItem(529, 0, 0, 0, 0, 0, Item::EXT_NOTINMAP));
+
 	// a little bonus :-)
 	Item* money = ItemFactory::createItem(143, 7, 500, 0,
 										  0, 0, Item::EXT_NOTINMAP);
 	backpack->AddItem(money);
 	money->setGumpLocation(40, 20);
+
+	// skull of quakes
+	Item *skull = ItemFactory::createItem(814, 0, 0, 0, 0, 0,
+										  Item::EXT_NOTINMAP);
+	backpack->AddItem(skull);
+	skull->setGumpLocation(60, 20);
+
+	// recall item
+	Item *recall = ItemFactory::createItem(833, 0, 0, 0, 0, 0,
+										   Item::EXT_NOTINMAP);
+	backpack->AddItem(recall);
+	recall->setGumpLocation(20, 20);
+
+	// sword
+	Item* sword = ItemFactory::createItem(420, 0, 0, 0, 0, 0,
+										  Item::EXT_NOTINMAP);
+	backpack->AddItem(sword);
+	sword->setGumpLocation(20, 30);
+
+	// armour
+	Item* armour = ItemFactory::createItem(64, 0, 0, 0, 0, 0,
+										   Item::EXT_NOTINMAP);
+	backpack->AddItem(armour);
+	armour->setGumpLocation(30, 30);
+
+	armour = ItemFactory::createItem(532, 0, 0, 0, 0, 0,
+										   Item::EXT_NOTINMAP);
+	backpack->AddItem(armour);
+	armour->setGumpLocation(40, 30);
+
+	armour = ItemFactory::createItem(539, 0, 0, 0, 0, 0,
+										   Item::EXT_NOTINMAP);
+	backpack->AddItem(armour);
+	armour->setGumpLocation(50, 30);
+
+	armour = ItemFactory::createItem(530, 0, 0, 0, 0, 0,
+										   Item::EXT_NOTINMAP);
+	backpack->AddItem(armour);
+	armour->setGumpLocation(10, 40);
+
+	armour = ItemFactory::createItem(531, 0, 0, 0, 0, 0,
+										   Item::EXT_NOTINMAP);
+	backpack->AddItem(armour);
+	armour->setGumpLocation(20, 40);
+
 	backpack->assignObjId();
 	av->AddItem(backpack);
 
@@ -1058,7 +1104,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 					pout << "Can't: avatarInStasis" << std::endl; 
 				}
 			} break;
-			case SDLK_a: {
+			case SDLK_HOME: {
 				if (!avatarInStasis) { 
 					Process *p = new AvatarMoverProcess(0,0,8,4);
 					Kernel::get_instance()->addProcess(p);
@@ -1070,7 +1116,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 				pout << "Flushing fast area" << std::endl; 
 				gameMapGump->FlushFastArea();
 			} break;
-			case SDLK_z: {
+			case SDLK_END: {
 				if (!avatarInStasis) { 
 					Process *p = new AvatarMoverProcess(0,0,-8,5);
 					Kernel::get_instance()->addProcess(p);
@@ -1116,10 +1162,10 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		case SDLK_RIGHT: {
 			if (AvatarMoverProcess::amp[3]) AvatarMoverProcess::amp[3]->terminate();
 		} break;
-		case SDLK_a: {
+		case SDLK_HOME: {
 			if (AvatarMoverProcess::amp[4]) AvatarMoverProcess::amp[4]->terminate();
 		} break;
-		case SDLK_z: {
+		case SDLK_END: {
 			if (AvatarMoverProcess::amp[5]) AvatarMoverProcess::amp[5]->terminate();
 		} break;
 
@@ -1166,7 +1212,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			item->getLocation(x,y,z);
 			pout << "19204: (" << x << "," << y << "," << z << ")" << std::endl;			
 		} break;
-		case SDLK_i: { // open inventory
+		case SDLK_z: { // open inventory
 			if (avatarInStasis) {
 				pout << "Can't: avatarInStasis" << std::endl;
 				break;
@@ -1174,7 +1220,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			MainActor* av = World::get_instance()->getMainActor();
 			av->callUsecodeEvent_use();
 		} break;
-		case SDLK_b: { // open backpack
+		case SDLK_i: { // open backpack
 			if (avatarInStasis) {
 				pout << "Can't: avatarInStasis" << std::endl;
 				break;
