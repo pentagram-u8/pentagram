@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2003 The Pentagram team
+Copyright (C) 2002-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -40,7 +40,7 @@ Configuration::~Configuration()
 }
 
 bool Configuration::readConfigFile(string fname, istring root,
-								   bool /*readonly*/)
+								   bool readonly)
 {
 	XMLTree* tree = new XMLTree();
 	tree->clear(root);
@@ -48,7 +48,8 @@ bool Configuration::readConfigFile(string fname, istring root,
 		delete tree;
 		return false;
 	}
-
+	if (readonly)
+		tree->setReadonly();
 	trees.push_back(tree);
 	return true;
 }

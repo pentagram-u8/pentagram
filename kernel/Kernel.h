@@ -78,6 +78,7 @@ public:
 
 	uint32 getFrameNum() const { return framenum; };
 
+	//! "Kernel::processTypes" console command
 	static void ConCmd_processTypes(const Pentagram::istring &args);
 	
 	INTRINSIC(I_getNumProcesses);

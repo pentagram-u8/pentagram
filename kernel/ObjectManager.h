@@ -53,6 +53,7 @@ public:
 
 	Object* loadObject(IDataSource* ids);
 
+	//! "ObjectManager::objectTypes" console command
 	static void ConCmd_objectTypes(const Pentagram::istring &args);
 
 	std::vector<Object*> objects;

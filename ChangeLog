@@ -1,4 +1,8 @@
 2004-02-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/MainActor.*: added teleport, mark, recall console cmds.
+	* conf/Configuration.cpp: actually use readonly setting of config files
+
+2004-02-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Kernel.*: added Kernel::processTypes console command
 	* kernel/ObjectManager.*: added ObjectManager::objectTypes console cmd.
 

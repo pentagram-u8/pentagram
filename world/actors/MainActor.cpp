@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,6 +26,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Kernel.h"
 #include "TeleportToEggProcess.h"
 #include "CameraProcess.h"
+
+#include "Configuration.h"
+#include "CoreApp.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -80,6 +83,87 @@ void MainActor::teleport(int mapnum, int teleport_id)
 
 	Actor::teleport(mapnum, x, y, z);
 	justTeleported = true;
+}
+
+void MainActor::ConCmd_teleport(const Pentagram::istring& args)
+{
+	MainActor* mainactor = World::get_instance()->getMainActor();
+	int curmap = mainactor->getMapNum();
+
+	int a[4];
+	int n = sscanf(args.c_str(), "%d%d%d%d", &a[0], &a[1], &a[2], &a[3]);
+
+	switch (n) {
+	case 1:
+		mainactor->teleport(curmap, a[0]);
+		break;
+	case 2:
+		mainactor->teleport(a[0], a[1]);
+		break;
+	case 3:
+		mainactor->teleport(curmap, a[0], a[1], a[2]);
+		break;
+	case 4:
+		mainactor->teleport(a[0], a[1], a[2], a[3]);
+		break;
+	default:
+		pout << "teleport usage:" << std::endl;
+		pout << "teleport <mapnum> <x> <y> <z>: teleport to (x,y,z) on map mapnum" << std::endl;
+		pout << "teleport <x> <y> <z>: teleport to (x,y,z) on current map" << std::endl;
+		pout << "teleport <mapnum> <eggnum>: teleport to target egg eggnum on map mapnum" << std::endl;
+		pout << "teleport <eggnum>: teleport to target egg eggnum on current map" << std::endl;
+		break;
+	}
+}
+
+void MainActor::ConCmd_mark(const Pentagram::istring& args)
+{
+	if (args.empty()) {
+		pout << "Usage: mark <mark>: set named mark to this location" << std::endl;
+		return;
+	}
+
+	Configuration* config = CoreApp::get_instance()->getConfig();	
+	MainActor* mainactor = World::get_instance()->getMainActor();
+	int curmap = mainactor->getMapNum();
+	sint32 x,y,z;
+	mainactor->getLocation(x,y,z);
+
+	Pentagram::istring confkey = "config/u8marks/" + args;
+	char buf[100]; // large enough for 4 ints
+	sprintf(buf, "%d %d %d %d", curmap, x, y, z);
+
+	config->set(confkey, buf);
+	config->write(); //!! FIXME: clean this up
+
+	pout << "Set mark \"" << args.c_str() << "\" to " << buf << std::endl;
+}
+
+void MainActor::ConCmd_recall(const Pentagram::istring& args)
+{
+	if (args.empty()) {
+		pout << "Usage: recall <mark>: recall to named mark" << std::endl;
+		return;
+	}
+
+	Configuration* config = CoreApp::get_instance()->getConfig();	
+	MainActor* mainactor = World::get_instance()->getMainActor();
+	Pentagram::istring confkey = "config/u8marks/" + args;
+	std::string target;
+	config->value(confkey, target, "");
+	if (target.empty()) {
+		pout << "recall: no such mark" << std::endl;
+		return;
+	}
+
+	int t[4];
+	int n = sscanf(target.c_str(), "%d%d%d%d", &t[0], &t[1], &t[2], &t[3]);
+	if (n != 4) {
+		pout << "recall: invalid mark" << std::endl;
+		return;
+	}
+
+	mainactor->teleport(t[0], t[1], t[2], t[3]);
 }
 
 void MainActor::accumulateStr(int n)

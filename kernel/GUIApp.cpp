@@ -147,6 +147,9 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 								   Kernel::ConCmd_processTypes);
 	ConsoleGump::AddConsoleCommand("ObjectManager::objectTypes",
 								   ObjectManager::ConCmd_objectTypes);
+	ConsoleGump::AddConsoleCommand("teleport", MainActor::ConCmd_teleport);
+	ConsoleGump::AddConsoleCommand("mark", MainActor::ConCmd_mark);
+	ConsoleGump::AddConsoleCommand("recall", MainActor::ConCmd_recall);
 	ConsoleGump::AddConsoleCommand("quit", ConCmd_quit);	
 }
 
@@ -154,6 +157,11 @@ GUIApp::~GUIApp()
 {
 	ConsoleGump::RemoveConsoleCommand("GUIApp::saveGame");
 	ConsoleGump::RemoveConsoleCommand("GUIApp::loadGame");
+	ConsoleGump::RemoveConsoleCommand("Kernel::processTypes");
+	ConsoleGump::RemoveConsoleCommand("ObjectManager::objectTypes");
+	ConsoleGump::RemoveConsoleCommand("teleport");
+	ConsoleGump::RemoveConsoleCommand("mark");
+	ConsoleGump::RemoveConsoleCommand("recall");
 	ConsoleGump::RemoveConsoleCommand("quit");
 
 	FORGET_OBJECT(objectmanager);
