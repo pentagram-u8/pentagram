@@ -27,10 +27,10 @@
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(Gump,Object);
 
-Gump::Gump(int _X, int _Y, int Width, int Height, uint16 _Owner,
-		   uint32 _Flags, sint32 _Layer) : 
-	Object(), owner(_Owner), parent(0), x(_X), y(_Y),
-	dims(0,0,Width,Height), flags(_Flags), layer(_Layer), index(-1),
+Gump::Gump(int inX, int inY, int Width, int Height, uint16 inOwner,
+		   uint32 inFlags, sint32 inLayer) : 
+	Object(), owner(inOwner), parent(0), x(inX), y(inY),
+	dims(0,0,Width,Height), flags(inFlags), layer(inLayer), index(-1),
 	shape(0), framenum(0), children(), focus_child(0), notifier(0),
 	process_result(0)
 {
