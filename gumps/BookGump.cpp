@@ -68,6 +68,8 @@ void BookGump::InitGump()
 	AddChild(widget);
 	widget->setupNextText();
 
+	text.clear(); // no longer need this
+
 	//!! constant
 	Shape* shape = GameData::get_instance()->getGumps()->getShape(6);
 
@@ -135,8 +137,6 @@ void BookGump::saveData(ODataSource* ods)
 
 	ods->write2(textwidgetL);
 	ods->write2(textwidgetR);
-	ods->write4(text.size());
-	ods->write(text.c_str(), text.size());
 }
 
 bool BookGump::loadData(IDataSource* ids)
@@ -147,16 +147,6 @@ bool BookGump::loadData(IDataSource* ids)
 
 	textwidgetL = ids->read2();
 	textwidgetR = ids->read2();
-	uint32 slen = ids->read4();
-	if (slen > 0) {
-		char* buf = new char[slen+1];
-		ids->read(buf, slen);
-		buf[slen] = 0;
-		text = buf;
-		delete[] buf;
-	} else {
-		text = "";
-	}
 
 	return true;
 }
