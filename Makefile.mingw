@@ -34,7 +34,7 @@ disasm.exe : Disasm.o $(FILESYS_OBJS) $(MISC_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
 clean:
-	rm -f $(DISASM_OBJS) disasm.exe
+	rm -f $(FILESYS_OBJS) $(GRAPHICS_OBJS) $(MISC_OBJS) disasm.exe
 
 install: disasm.exe
 	mkdir -p $(U8PATH)
