@@ -34,6 +34,7 @@
 #include "GumpNotifyProcess.h"
 #include "ItemFactory.h"
 #include "SplitItemProcess.h"
+#include "GameMapGump.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -189,6 +190,47 @@ bool ContainerGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 	gy += itemarea.y;
 
 	return false;
+}
+
+// we don't want our position to depend on Gump of parent container
+// so change the default ItemRelativeGump behaviour
+void ContainerGump::GetItemLocation(sint32 lerp_factor)
+{
+	Item *it = World::get_instance()->getItem(owner);
+
+	if (!it) {
+		// This shouldn't ever happen, the GumpNotifyProcess should
+		// close us before we get here
+		Close();
+		return;
+	}
+
+	int gx, gy;
+	Item* topitem = it;
+
+	Container *p = it->getParentAsContainer();
+	if (p) {
+		while (p->getParentAsContainer()) {
+			p = p->getParentAsContainer();
+		}
+
+		topitem = p;
+	}
+
+	Gump *gump = GetRootGump()->FindGump(GameMapGump::ClassType);
+	assert(gump);
+	gump->GetLocationOfItem(topitem->getObjId(), gx, gy, lerp_factor);
+
+	// Convert the GumpSpaceCoord relative to the world/item gump
+	// into screenspace coords
+	gump->GumpToScreenSpace(gx,gy);
+
+	// Convert the screenspace coords into the coords of us
+	if (parent) parent->ScreenSpaceToGump(gx,gy);
+
+	// Set x and y, and center us over it
+	ix = gx-dims.w/2;
+	iy = gy-dims.h-it->getShapeInfo()->z*8-16;
 }
 
 void ContainerGump::Close(bool no_del)

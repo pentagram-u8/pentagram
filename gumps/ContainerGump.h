@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003  The Pentagram Team
+ *  Copyright (C) 2003-2004  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -66,6 +66,8 @@ public:
 	bool loadData(IDataSource* ids);
 protected:
 	virtual void saveData(ODataSource* ods);
+
+	virtual void GetItemLocation(sint32 lerp_factor);
 
 	Pentagram::Rect itemarea;
 
