@@ -181,7 +181,7 @@ Intrinsic U8Intrinsics[] = {
 	0, //U
 	// 0x080
 	Actor::I_isBusy,
-	0, // Npc::areEnemiesNear
+	Actor::I_areEnemiesNear,
 	Actor::I_isInCombat,
 	0, // Npc::setInCombat
 	0, // Npc::clrInCombat

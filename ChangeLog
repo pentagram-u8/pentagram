@@ -1,3 +1,6 @@
+2004-08-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actor/Actor.*: areEnemiesNear intrinsic
+
 2004-08-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.*: Item::ascend intrinsic
 	* world/CurrentMap.cpp: allow slight overlap in some cases

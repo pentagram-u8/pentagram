@@ -99,6 +99,9 @@ public:
 
 	virtual void die();
 
+	//! check if NPCs are near which are in combat mode and hostile
+	bool areEnemiesNear();
+
 	//! run the given animation
 	//! \return the PID of the ActorAnimProcess
 	uint16 doAnim(Animation::Sequence anim, int dir);
@@ -155,6 +158,7 @@ public:
 	INTRINSIC(I_setWithstandDeath);
 	INTRINSIC(I_clrWithstandDeath);
 	INTRINSIC(I_isFeignDeath);
+	INTRINSIC(I_areEnemiesNear);
 	INTRINSIC(I_isBusy);
 	INTRINSIC(I_createActor);
 	INTRINSIC(I_setAirWalkEnabled);

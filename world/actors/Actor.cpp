@@ -31,7 +31,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GameData.h"
 #include "MainShapeFlex.h"
 #include "AnimAction.h"
-#include "CurrentMap.h"
 #include "ShapeInfo.h"
 #include "Pathfinder.h"
 #include "Animation.h"
@@ -290,14 +289,16 @@ uint16 Actor::getEquip(uint32 type)
 
 void Actor::teleport(int newmap, sint32 newx, sint32 newy, sint32 newz)
 {
+	uint16 newmapnum = static_cast<uint16>(newmap);
+
 	// Set the mapnum
-	setMapNum(newmap);
+	setMapNum(newmapnum);
 
 	// Put it in the void
 	moveToEtherealVoid();
 
 	// Move it to this map
-	if (newmap == World::get_instance()->getCurrentMap()->getNum())
+	if (newmapnum == World::get_instance()->getCurrentMap()->getNum())
 	{
 		perr << "Actor::teleport: " << getObjId() << " to " << newmap << ","
 			 << newx << "," << newy << "," << newz << std::endl;
@@ -680,6 +681,32 @@ int Actor::calculateAttackDamage(uint16 other, int damage, uint16 damage_type)
 	return damage;
 }
 
+bool Actor::areEnemiesNear()
+{
+	UCList uclist(2);
+	LOOPSCRIPT(script, LS_TOKEN_TRUE); // we want all items
+	CurrentMap* currentmap = World::get_instance()->getCurrentMap();
+	currentmap->areaSearch(&uclist, script,sizeof(script), this, 0x800, false);
+
+	for (unsigned int i = 0; i < uclist.getSize(); ++i) {
+		Actor *npc = World::get_instance()->getNPC(uclist.getuint16(i));
+		if (!npc) continue;
+
+		if (npc->getActorFlags() & (ACT_DEAD | ACT_FEIGNDEATH)) continue;
+		if (!(npc->getActorFlags() & ACT_INCOMBAT)) continue;
+
+		// TODO: check if hostile.
+		// Might not be strictly necessary, though. This function is only
+		// used on the avatar, and any NPCs in combat mode around the avatar
+		// are most likely hostile... (and if they're not hostile, they're
+		// probably in combat mode because something hostile _is_ nearby)
+
+		return true;
+	}
+
+	return false;
+}
+
 void Actor::dumpInfo()
 {
 	Container::dumpInfo();
@@ -1060,13 +1087,23 @@ uint32 Actor::I_pathfindToPoint(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(x);
 	ARG_UINT16(y);
 	ARG_UINT16(z);
-	ARG_NULL16(); // unknown.
+	ARG_NULL16(); // unknown. Only one instance of this in U8, value is 5.
 	if (!actor) return 0;
 
 	return Kernel::get_instance()->addProcess(
 		new PathfinderProcess(actor,x,y,z));
 }
 
+uint32 Actor::I_areEnemiesNear(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	if (!actor) return 0;
+
+	if (actor->areEnemiesNear())
+		return 1;
+	else
+		return 0;
+}
 
 uint32 Actor::I_isBusy(const uint8* args, unsigned int /*argsize*/)
 {
