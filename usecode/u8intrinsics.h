@@ -268,7 +268,7 @@ Intrinsic U8Intrinsics[] = {
 	GUIApp::I_setAvatarInStasis,
 	Item::I_getEtherealTop,
 	GUIApp::I_getCurrentTimerTick,
-	UCMachine::I_true, // canGetThere
+	0, //U (canGetThere)
 	CurrentMap::I_canExistAt,
 	SpriteProcess::I_createSprite,
 	SpriteProcess::I_createSprite,
