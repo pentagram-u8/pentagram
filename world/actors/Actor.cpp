@@ -59,18 +59,24 @@ uint32 Actor::I_doAnim(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ACTOR(actor);
 	ARG_UINT16(anim);
-	ARG_UINT16(dir); // seems to be 1-8
+	ARG_UINT16(dir); // seems to be 0-8
 	ARG_UINT16(unk1); // this is almost always 10000 in U8.Maybe speed-related?
 	ARG_UINT16(unk2); // appears to be 0 or 1. Some flag?
 
 	if (!actor) return 0;
 
-	if (dir < 1 || dir > 8) {
+	if (dir > 8) {
 		perr << "Actor::doAnim: Invalid direction (" << dir << ")" <<std::endl;
 		return 0;
 	}
 
-	Process *p = new ActorAnimProcess(actor, anim, dir-1);
+	if (dir == 8) {
+		//!!! CHECKME
+		//!! what does dir == 8 mean?
+		dir = 0;
+	}
+
+	Process *p = new ActorAnimProcess(actor, anim, dir);
 
 	return Kernel::get_instance()->addProcess(p);
 }
