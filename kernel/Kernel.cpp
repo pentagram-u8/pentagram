@@ -119,7 +119,7 @@ ProcId Kernel::addProcessExec(Process* proc)
 #endif
 
 	processes.push_back(proc);
-	proc->active = true;
+	proc->flags |= Process::PROC_ACTIVE;
 
 	Process* oldrunning = runningprocess; runningprocess = proc;
 	proc->run(framenum);
@@ -139,7 +139,7 @@ void Kernel::removeProcess(Process* proc)
 
 	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it) {
 		if (*it == proc) {
-			proc->active = false;
+			proc->flags &= ~Process::PROC_ACTIVE;
 			
 			perr << "[Kernel] Removing process " << proc << std::endl;
 
@@ -157,9 +157,8 @@ void Kernel::removeProcess(Process* proc)
 //Q: is returning a 'dirty' flag really useful?
 bool Kernel::runProcesses()
 {
-	if (paused) return false;
-
-	framenum++;
+	if (!paused)
+		framenum++;
 
 	if (processes.size() == 0) {
 		return true;
@@ -173,22 +172,29 @@ bool Kernel::runProcesses()
 	while (current_process != processes.end()) {
 		Process* p = *current_process;
 
-		if (!p->terminated && p->terminate_deferred)
+		if (!paused && ((p->flags & (Process::PROC_TERMINATED |
+									 Process::PROC_TERM_DEFERRED))
+						== Process::PROC_TERM_DEFERRED))
+		{
 			p->terminate();
-		if (!p->terminated && !p->suspended) {
+		}
+		if (!(p->flags & (Process::PROC_TERMINATED |
+						  Process::PROC_SUSPENDED)) &&
+			(!paused || (p->flags & Process::PROC_RUNPAUSED)))
+		{
 			runningprocess = p;
 			bool ret = p->run(framenum);
 			runningprocess = 0;
-
+			
 			if (ret) dirty = true;
 		}
-		if (p->terminated) {
+		if (!paused && (p->flags & Process::PROC_TERMINATED)) {
 			// process is killed, so remove it from the list
 			current_process = processes.erase(current_process);
-
+				
 			// Clear pid
 			pIDs->clearID(p->pid);
-
+				
 			//! is this the right place to delete processes?
 			delete p;
 		}
@@ -196,7 +202,7 @@ bool Kernel::runProcesses()
 			++current_process;
 	}
 
-	if (framebyframe) pause();
+	if (!paused && framebyframe) pause();
 
 	return dirty;
 }
@@ -205,7 +211,7 @@ void Kernel::setNextProcess(Process* proc)
 {
 	if (current_process != processes.end() && *current_process == proc) return;
 
-	if (proc->active) {
+	if (proc->flags & Process::PROC_ACTIVE) {
 		for (ProcessIterator it = processes.begin();
 			 it != processes.end(); ++it) {
 			if (*it == proc) {
@@ -214,7 +220,7 @@ void Kernel::setNextProcess(Process* proc)
 			}
 		}
 	} else {
-		proc->active = true;
+		proc->flags |= Process::PROC_ACTIVE;
 	}
 
 	if (current_process == processes.end()) {
@@ -312,7 +318,8 @@ uint32 Kernel::getNumProcesses(ObjId objid, uint16 processtype)
 		Process* p = *it;
 
 		// Don't count us, we are not really here
-		if (p->terminate_deferred || p->terminated) continue;
+		if (p->flags & (Process::PROC_TERM_DEFERRED |
+						Process::PROC_TERMINATED)) continue;
 
 		if ((objid == 0 || objid == p->item_num) &&
 			(processtype == 6 || processtype == p->type))
@@ -329,7 +336,8 @@ Process* Kernel::findProcess(ObjId objid, uint16 processtype)
 		Process* p = *it;
 
 		// Don't count us, we are not really here
-		if (p->terminate_deferred || p->terminated) continue;
+		if (p->flags & (Process::PROC_TERM_DEFERRED |
+						Process::PROC_TERMINATED)) continue;
 
 		if ((objid == 0 || objid == p->item_num) &&
 			(processtype == 6 || processtype == p->type))
@@ -349,7 +357,8 @@ void Kernel::killProcesses(ObjId objid, uint16 processtype, bool fail)
 		Process* p = *it;
 
 		if (p->item_num != 0 && (objid == 0 || objid == p->item_num) &&
-			(processtype == 6 || processtype == p->type) && !p->terminated)
+			(processtype == 6 || processtype == p->type) && 
+			!(p->flags & Process::PROC_TERMINATED))
 		{
 			if (fail)
 				p->fail();
@@ -366,7 +375,8 @@ void Kernel::killProcessesNotOfType(ObjId objid, uint16 processtype, bool fail)
 		Process* p = *it;
 
 		if (p->item_num != 0 && (objid == 0 || objid == p->item_num) &&
-			(p->type != processtype) && !p->terminated)
+			(p->type != processtype) &&
+			!(p->flags & Process::PROC_TERMINATED))
 		{
 			if (fail)
 				p->fail();

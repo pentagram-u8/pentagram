@@ -307,10 +307,7 @@ char classname[classlen]	class name of this Process
 
 Process (v1)
 uint16 pid
-uint8 active (boolean)
-uint8 suspended (boolean)
-uint8 terminated (boolean)
-uint8 terminate_deferred (boolean)
+uint32 flags
 uint16 item_num
 uint16 type
 uint32 result
@@ -451,7 +448,7 @@ ResurrectionProcess: Process (v1)
 <Process>
 
 
-DeleteActorProcess: Process (v1)
+DeleteItemProcess: Process (v1)
 <Process>
 
 

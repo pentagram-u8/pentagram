@@ -48,6 +48,7 @@ Typos:
 
 class 0181 (STRATOS)
 "It's location is known only to Honorable Stellos." (s/it's/its/)
+(duplicated in speech pack)
 
 class 02C3 (PESANT1)
 "It is a quick way to loose your money and your life" (s/loose/lose/)

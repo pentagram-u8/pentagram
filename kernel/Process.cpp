@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -30,15 +30,14 @@ DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(Process);
 DEFINE_CUSTOM_MEMORY_ALLOCATION(Process, MemoryManager::processAllocator);
 
 Process::Process(ObjId it, uint16 ty)
-	: pid(0xFFFF), active(false), suspended(false), terminated(false),
-	terminate_deferred(false), item_num(it), type(ty), result(0)
+	: pid(0xFFFF), flags(0), item_num(it), type(ty), result(0)
 {
 	Kernel::get_instance()->assignPID(this);
 }
 
 void Process::fail()
 {
-	assert(!terminated);
+	assert(!(flags & PROC_TERMINATED));
 
 	Kernel *kernel = Kernel::get_instance();
 
@@ -47,7 +46,7 @@ void Process::fail()
 		 i != waiting.end(); ++i)
 	{
 		Process *p = kernel->getProcess(*i);
-		if (p && !p->terminated) {
+		if (p && !(p->flags & PROC_TERMINATED)) {
 			if (p->type == 1)
 				p->wakeUp(0); // CHECKME: this probably isn't right
 			else
@@ -56,12 +55,14 @@ void Process::fail()
 	}
 	waiting.clear(); // to prevent terminate() from waking them again
 
+	flags |= PROC_FAILED;
+
 	terminate();
 }
 
 void Process::terminate()
 {
-	assert(!terminated);
+	assert(!(flags & PROC_TERMINATED));
 
 	Kernel *kernel = Kernel::get_instance();
 
@@ -75,14 +76,14 @@ void Process::terminate()
 	}
 	waiting.clear();
 
-	terminated = true;
+	flags |= PROC_TERMINATED;
 }
 
 void Process::wakeUp(uint32 result_)
 {
 	result = result_;
 
-	suspended = false;
+	flags &= ~PROC_SUSPENDED;
 
 	Kernel::get_instance()->setNextProcess(this);
 }
@@ -98,7 +99,7 @@ void Process::waitFor(ProcId pid_)
 		p->waiting.push_back(pid);
 	}
 
-	suspended = true;
+	flags |= PROC_SUSPENDED;
 }
 
 void Process::waitFor(Process* proc)
@@ -111,7 +112,7 @@ void Process::waitFor(Process* proc)
 
 void Process::suspend()
 {
-	suspended = true;
+	flags |= PROC_SUSPENDED;
 }
 
 void Process::dumpInfo()
@@ -119,10 +120,12 @@ void Process::dumpInfo()
 	pout << "Process " << getPid() << " class "
 		 << GetClassType().class_name << ", item " << item_num
 		 << ", type " << std::hex << type << std::dec << ", status ";
-	if (active) pout << "A";
-	if (suspended) pout << "S";
-	if (terminated) pout << "T";
-	if (terminate_deferred) pout << "t";
+	if (flags & PROC_ACTIVE) pout << "A";
+	if (flags & PROC_SUSPENDED) pout << "S";
+	if (flags & PROC_TERMINATED) pout << "T";
+	if (flags & PROC_TERM_DEFERRED) pout << "t";
+	if (flags & PROC_FAILED) pout << "F";
+	if (flags & PROC_RUNPAUSED) pout << "R";
 	if (!waiting.empty()) {
 		pout << ", notify: ";
 		for (std::vector<ProcId>::iterator i = waiting.begin();
@@ -153,14 +156,7 @@ void Process::writeProcessHeader(ODataSource* ods)
 void Process::saveData(ODataSource* ods)
 {
 	ods->write2(pid);
-	uint8 a = active ? 1 : 0;
-	uint8 s = suspended ? 1 : 0;
-	uint8 t = terminated ? 1 : 0;
-	uint8 td = terminate_deferred ? 1 : 0;
-	ods->write1(a);
-	ods->write1(s);
-	ods->write1(t);
-	ods->write1(td);
+	ods->write4(flags);
 	ods->write2(item_num);
 	ods->write2(type);
 	ods->write4(result);
@@ -172,10 +168,7 @@ void Process::saveData(ODataSource* ods)
 bool Process::loadData(IDataSource* ids, uint32 version)
 {
 	pid = ids->read2();
-	active = (ids->read1() != 0);
-	suspended = (ids->read1() != 0);
-	terminated = (ids->read1() != 0);
-	terminate_deferred = (ids->read1() != 0);
+	flags = ids->read4();
 	item_num = ids->read2();
 	type = ids->read2();
 	result = ids->read4();

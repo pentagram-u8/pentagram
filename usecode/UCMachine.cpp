@@ -164,7 +164,8 @@ bool UCMachine::execProcess(UCProcess* p)
 	bool cede = false;
 	bool error = false;
 
-	while(!cede && !error && !p->terminated && !p->terminate_deferred)
+	while(!cede && !error && !(p->flags & (Process::PROC_TERMINATED |
+										   Process::PROC_TERM_DEFERRED)))
 	{
 		//! guard against reading past end of class
 		//! guard against other error conditions
@@ -1910,7 +1911,8 @@ bool UCMachine::execProcess(UCProcess* p)
 		// write back IP
 		p->ip = static_cast<uint16>(cs.getPos());	// TRUNCATES!
 
-		cede |= p->suspended; // check if we suspended ourselves
+		// check if we suspended ourselves
+		cede |= (p->flags & Process::PROC_SUSPENDED);
 
 	} // while(!cede && !error && !p->terminated && !p->terminate_deferred)
 

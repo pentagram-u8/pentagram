@@ -39,7 +39,7 @@ CompileProcess::~CompileProcess()
 
 bool CompileProcess::run(const uint32 /*framenum*/)
 {
-	if (suspended)
+	if (flags & PROC_SUSPENDED)
 		return false;
 
 	if(cu->state()!=CompileUnit::CSTATE_FINISHED)

@@ -46,6 +46,7 @@ MusicProcess::MusicProcess(MidiDriver *drv) :
 	std::memset(song_branches, -1, 128*sizeof(int));
 
 	the_music_process = this;
+	flags |= PROC_RUNPAUSED;
 	type = 1; // persistent
 }
 

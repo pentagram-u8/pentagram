@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2004 The Pentagram team
+Copyright (C) 2002-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -40,7 +40,7 @@ public:
 	// memory pooling stuff
 	ENABLE_CUSTOM_MEMORY_ALLOCATION();
 
-	bool is_active() const { return active; }
+	bool is_active() const { return (flags & PROC_ACTIVE); }
 
 	//! terminate the process and recursively fail all processes waiting for it
 	void fail();
@@ -49,7 +49,7 @@ public:
 	virtual void terminate();
 
 	//! terminate next frame
-	void terminateDeferred() { terminate_deferred = true; } 
+	void terminateDeferred() { flags |= PROC_TERM_DEFERRED; }
 
 	//! suspend until process 'pid' returns. If pid is 0, suspend indefinitely
 	void waitFor(ProcId pid);
@@ -85,12 +85,7 @@ protected:
 	//! process id
 	ProcId pid;
 
-	bool active; //!< is the process in the run-list?
-	bool suspended; //!< suspended? (because it's waiting for something)
-	                //!< (this may have to be a count instead, if a process
-	                //!< is waiting for more than one others)
-	bool terminated;
-	bool terminate_deferred;	//!< automatically call terminate next frame
+	uint32 flags;
 
 	//! item we are assigned to
 	ObjId item_num;
@@ -102,6 +97,18 @@ protected:
 	//! Processes waiting for this one to finish.
 	//! When this process terminates, awaken them and pass them the result val.
 	std::vector<ProcId> waiting;
+
+public:
+
+	enum processflags {
+		PROC_ACTIVE      = 0x0001, //!< is the process in the run-list?
+		PROC_SUSPENDED   = 0x0002, //!< suspended? (because it's waiting)
+		PROC_TERMINATED  = 0x0004,
+		PROC_TERM_DEFERRED=0x0008, //!< automatically call terminate next frame
+		PROC_FAILED      = 0x0010,
+		PROC_RUNPAUSED   = 0x0020, //!< run even if game is paused
+	};
+
 };
 
 

@@ -21,25 +21,27 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(SegmentedPool,Pool);
 
-//	Memory is aligned to the next largest multiple of sizeof(x) from the base adddress plus the size.
-//	Although, this may not be very helpful if the base address is not a multiple of sizeof(X).
+//	Memory is aligned to the next largest multiple of sizeof(x) from
+//  the base address plus the size. Although, this may not be very helpful
+//  if the base address is not a multiple of sizeof(X).
 //	example: sizeof(x) = 0x8, object size = 0xFFE2:
 //			0xFFE2 + 0x8 - 1 = 0xFFE9;
 //			0xFFE9 & ~(0x8 - 0x1) -> 0xFFE9 & 0xFFF8 = 0xFFE8
 
 #define OFFSET_ALIGN(X) ( (X + sizeof(uintptr) - 1) & ~(sizeof(uintptr) - 1) )
 
-// We padd both the PoolNode and the memory to align it.
+// We pad both the PoolNode and the memory to align it.
 
-SegmentedPool::SegmentedPool(size_t nodeCapacity_, uint32 nodes_): Pool(), nodes(nodes_), freeNodeCount(nodes_)
+SegmentedPool::SegmentedPool(size_t nodeCapacity_, uint32 nodes_) 
+	: Pool(), nodes(nodes_), freeNodeCount(nodes_)
 {
 	uint32 i;
 
-	//Give it it's real capacity.
+	// Give it its real capacity.
 	nodeCapacity = OFFSET_ALIGN(nodeCapacity_);
 	nodes = nodes_;
 	
-	// Node offesets are alligned to the next uintptr offset after the real size
+	// Node offesets are aligned to the next uintptr offset after the real size
 	nodeOffset = OFFSET_ALIGN(sizeof(SegmentedPoolNode)) + nodeCapacity;
 
 	startOfPool = new uint8[nodeOffset * nodes_];
@@ -130,6 +132,6 @@ void SegmentedPool::deallocate(void * ptr)
 SegmentedPoolNode* SegmentedPool::getPoolNode(void * ptr)
 {
 	uint32 pos = (reinterpret_cast<uint8 *>(ptr) - startOfPool) / nodeOffset;
-	return reinterpret_cast<SegmentedPoolNode*>(startOfPool + pos * nodeOffset);
+	return reinterpret_cast<SegmentedPoolNode*>(startOfPool + pos*nodeOffset);
 }
 

@@ -151,7 +151,7 @@ void QuickAvatarMoverProcess::terminateMover(int _dir)
 	QuickAvatarMoverProcess * p =
 		p_dynamic_cast<QuickAvatarMoverProcess *>(kernel->getProcess(amp[_dir]));
 
-	if (p && !p->terminated)
+	if (p && !(p->flags & PROC_TERMINATED))
 		p->terminate();
 }
 

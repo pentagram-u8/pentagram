@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004  The Pentagram Team
+ *  Copyright (C) 2003-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -51,7 +51,7 @@ void GumpNotifyProcess::notifyClosing(int res)
 {
 	gump = 0;
 	result = res;
-	if (!terminated) terminate();
+	if (!(flags & PROC_TERMINATED)) terminate();
 }
 
 void GumpNotifyProcess::terminate()

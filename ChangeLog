@@ -3,6 +3,9 @@
 	* games/GameInfo.h: add function to return one-letter language code
 	* games/GameData.*: load correct usecode/speech files for language
 	* graphics/SKFPlayer.cpp: play (some) SFX
+	* kernel/Process.*: move all bool flags into a uint32 flags field
+	* audio/MusicProcess.*, kernel/Process.*: add new 'run paused' flag
+	* bootstrap: pass --config-only to libtoolize
 
 2005-03-24  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/MovieGump.*: made MovieGump modal

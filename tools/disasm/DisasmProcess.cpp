@@ -35,7 +35,7 @@ DisasmProcess::~DisasmProcess()
 
 bool DisasmProcess::run(const uint32 /*framenum*/)
 {
-	if (suspended)
+	if (flags & PROC_SUSPENDED)
 		return false;
 
 	if(termCounter==0)
