@@ -35,7 +35,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "PaletteFaderProcess.h"
 #include "SpriteProcess.h"
-#include "SpriteProcess.h"
+#include "MusicProcess.h"
 
 // Ultima 8 Intrinsics
 Intrinsic U8Intrinsics[] = {
@@ -238,7 +238,7 @@ Intrinsic U8Intrinsics[] = {
 	0, // castGrantPeaceSpell
 	UCMachine::I_numToStr,
 	0, //U
-	GUIApp::I_playMusic, // playMusic
+	MusicProcess::I_playMusic,
 	UCMachine::I_getName, //temp
 	0, // igniteChaos
 	CameraProcess::I_setCenterOn,
@@ -303,7 +303,7 @@ Intrinsic U8Intrinsics[] = {
 	0, // stopSFX
 	0, //U
 	0, //U
-	GUIApp::I_musicStop, // musicStop
+	MusicProcess::I_musicStop,
 	0, //U
 	0, //U
 	0, // TonysBalls

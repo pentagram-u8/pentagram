@@ -30,6 +30,7 @@ class ShapeFlex;
 class Usecode;
 class Glob;
 class Shape;
+class MusicFlex;
 
 class GameData
 {
@@ -48,7 +49,7 @@ public:
 	FontShapeFlex* getFonts() const { return fonts; }
 	GumpShapeFlex* getGumps() const { return gumps; }
 	Shape* getMouse() const { return mouse; }
-	Flex* getMusic() const { return music; }
+	MusicFlex* getMusic() const { return music; }
 
 private:
 	Flex* fixed;
@@ -58,7 +59,7 @@ private:
 	FontShapeFlex* fonts;
 	GumpShapeFlex* gumps;
 	Shape* mouse;
-	Flex* music;
+	MusicFlex* music;
 
 	GameInfo gameinfo;
 

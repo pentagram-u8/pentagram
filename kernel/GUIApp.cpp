@@ -60,9 +60,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "XFormBlend.h"
 
-#ifdef COLOURLESS_IS_TESTING_MUSIC
-#include "win_midiout.h"
-#include "XMIDI.h"
+#include "MusicProcess.h"
+
+#ifdef WIN32
+#include "WindowsMidiDriver.h"
 #endif
 
 using std::string;
@@ -75,8 +76,8 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	  consoleGump(0), gameMapGump(0),
 	  runGraphicSysInit(false), runSDLInit(false),
 	  frameSkip(false), frameLimit(true), interpolate(true),
-	  animationRate(33), avatarInStasis(false), paintEditorItems(false),
-	  painting(false), dragging(DRAG_NOT), timeOffset(0), song(0)
+	  animationRate(100), avatarInStasis(false), paintEditorItems(false),
+	  painting(false), dragging(DRAG_NOT), timeOffset(0)
 {
 	application = this;
 
@@ -106,9 +107,19 @@ void GUIApp::startup()
 
 	GraphicSysInit();
 
-#ifdef COLOURLESS_IS_TESTING_MUSIC
-	midi_driver = new Windows_MidiOut();
+	// Create the driver
+#ifdef WIN32
+	midi_driver = new WindowsMidiDriver();
+#else
+	midi_driver = 0;
 #endif
+
+	// Init the driver
+	if (midi_driver) midi_driver->initMidiDriver();
+
+	// Create the Music Process
+	Process *mp = new MusicProcess(midi_driver);
+	kernel->addProcess(mp);
 
 	U8Playground();
 
@@ -128,7 +139,7 @@ void GUIApp::run()
 {
 	isRunning = true;
 
-	sint32 next_ticks = SDL_GetTicks();	// Next time is right now!
+	sint32 next_ticks = SDL_GetTicks()*3;	// Next time is right now!
 	
 	// Ok, the theory is that if this is set to true then we must do a repaint
 	// At the moment only it's ignored
@@ -145,12 +156,12 @@ void GUIApp::run()
 			desktopGump->Run(framenum);
 			framenum++;
 			inBetweenFrame = false;
-			next_ticks = animationRate + SDL_GetTicks();
+			next_ticks = animationRate + SDL_GetTicks()*3;
 			lerpFactor = 256;
 		}
 		else 
 		{
-			sint32 ticks = SDL_GetTicks();
+			sint32 ticks = SDL_GetTicks()*3;
 			sint32 diff = next_ticks - ticks;
 			repaint = false;
 
@@ -166,7 +177,7 @@ void GUIApp::run()
 #endif
 				inBetweenFrame = false;
 
-				ticks = SDL_GetTicks();
+				ticks = SDL_GetTicks()*3;
 
 				// If frame skipping is off, we will only recalc next
 				// ticks IF the frames are taking up 'way' too much time. 
@@ -190,10 +201,12 @@ void GUIApp::run()
 			handleEvent(event);
 		}
 		handleDelayedEvents();
-		SDL_Delay(1);
 
 		// Paint Screen
 		paint();
+
+		// Do a delay
+		SDL_Delay(5);
 	}
 }
 
@@ -312,6 +325,7 @@ void GUIApp::paint()
 	static long prev = 0;
 	long now = SDL_GetTicks();
 	long diff = now - prev;
+	if (diff == 0) diff = 1;
 	prev = now;
 
 	char buf[256];
@@ -602,6 +616,8 @@ bool AvatarMoverProcess::hitting = false;
 
 bool hitting() { return AvatarMoverProcess::hitting; }
 
+static int volumelevel = 255;
+
 void GUIApp::handleEvent(const SDL_Event& event)
 {
 	uint32 now = SDL_GetTicks();
@@ -870,7 +886,6 @@ void GUIApp::handleEvent(const SDL_Event& event)
 					pout << "Can't: avatarInStasis" << std::endl; 
 				}
 			} break;
-
 			default:
 				break;
 		}
@@ -1082,40 +1097,6 @@ uint32 GUIApp::I_setTimeInGameHours(const uint8* args,
 	sint32	absolute = newhour*27000;
 	get_instance()->timeOffset = absolute-get_instance()->getFrameNum();
 
-	return 0;
-}
-
-uint32 GUIApp::I_playMusic(const uint8* args,
-										unsigned int /*argsize*/)
-{
-	ARG_UINT8(song);
-
-	pout << "Playing song: " << (int)song << std::endl;
-	if (song == GUIApp::get_instance()->song) return 0;
-	GUIApp::get_instance()->song = song;
-
-	Flex *music = GameData::get_instance()->getMusic();
-	IDataSource *ds = music->get_datasource(song);
-	if (!ds)
-	{
-		I_musicStop(0,0);
-		return 0;
-	}
-#ifdef COLOURLESS_IS_TESTING_MUSIC
-	XMIDI x(ds,XMIDI_CONVERT_NOCONVERSION);
-	GUIApp::get_instance()->midi_driver->start_stream(0,x.GetEventList(0),true,true,255);
-#endif
-	delete ds;
-	return 0;
-}
-
-uint32 GUIApp::I_musicStop(const uint8* args,
-										unsigned int /*argsize*/)
-{
-	GUIApp::get_instance()->song = 0;
-#ifdef COLOURLESS_IS_TESTING_MUSIC
-	GUIApp::get_instance()->midi_driver->stop_stream(0);
-#endif
 	return 0;
 }
 

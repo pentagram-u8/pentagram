@@ -34,6 +34,7 @@ class RenderSurface;
 class PaletteManager;
 class GameData;
 class World;
+class MidiDriver;
 
 const int NUM_MOUSEBUTTONS = 5;
 
@@ -66,8 +67,6 @@ public:
 	INTRINSIC(I_getTimeInMinutes);
 	INTRINSIC(I_getTimeInSeconds);
 	INTRINSIC(I_setTimeInGameHours);
-	INTRINSIC(I_playMusic);
-	INTRINSIC(I_musicStop);
 
 	void setAvatarInStasis(bool stat) { avatarInStasis = stat; }
 	bool isAvatarInStasis() const { return avatarInStasis; }
@@ -110,7 +109,7 @@ private:
 	bool frameSkip;			//!< Set to true to enable frame skipping (default false)
 	bool frameLimit;		//!< Set to true to enable frame limiting (default true)
 	bool interpolate;		//!< Set to true to enable interpolation (default true)
-	sint32 animationRate;	//!< The animation rate in ms. Affects all processes! (default 33)
+	sint32 animationRate;	//!< The animation rate. Affects all processes! (default 100)
 	
 	// Sort of Camera Related Stuff, move somewhere else
 	
@@ -143,10 +142,8 @@ private:
 
 	sint32 timeOffset;
 
-	uint16		song;
-#ifdef COLOURLESS_IS_TESTING_MUSIC
-	class Windows_MidiOut	*midi_driver;
-#endif
+	// Should probably go somewhere else.... perhaps in some 'audio manager'
+	MidiDriver *midi_driver;
 
 public:
 	enum MouseButton { //!! change this

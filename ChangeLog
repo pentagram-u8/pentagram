@@ -1,3 +1,31 @@
+2003-07-02  Ryan Nunn <colourles@users.sourceforge.net>
+	* world/SpriteProcess.cpp : Set FLG_DISPOSABLE, even though it's not
+	  yet implemented
+	  
+	* Most files committed : Added Midi music. Of course at the moment 
+	  there is only a WindowsMidiDriver, so the rest of you people will 
+	  need to get your own. At this stage, you'll need to modify the code 
+	  in GUIApp.cpp to load the driver. Just search for WindowsMidiDriver.
+	  
+	  Implementing drivers by using LowLevelMidiDriver is the recommened 
+	  method. Just inherit it, and implement the open(), close() and send()
+	  functions. This is the same as the ScummVM drivers, so you can just 
+	  steal those, and modify them to inherit the right class and also to 
+	  remove the ScummVM specific code. I've also added 2 extra functions,
+	  that I strongly recommend that you implement. First one is 
+	  increaseThreadPriority() which is supposed to increase the execution
+	  priority of the 'playing' thread (which is the current thread when
+	  called). This function is desired because the main Pentagram thread
+	  likes to have so much CPU time, that it will cause timing problems
+	  for the Midi playing thread. The other function is yield() which will
+	  yeild execution of the current thread. This is of course so the play
+	  thread with higher priority wont steal all your CPU time.
+
+	  At this stage, implementing driver just with MidiDriver is not a good
+	  idea. Some things may change here, and MusicProcess assumes that the
+	  driver can play 2 sequences simultaneous. That will be changed at 
+	  some stage.
+
 2003-06-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GameDetector.cpp: fixed crash for non-U8 games
 

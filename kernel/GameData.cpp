@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Glob.h"
 #include "PaletteManager.h"
 #include "Shape.h"
+#include "MusicFlex.h"
 
 GameData* GameData::gamedata = 0;
 
@@ -191,11 +192,10 @@ void GameData::loadU8Data()
 
 
 	IDataSource *mf = filesystem->ReadFile("@u8/sound/music.flx");
-	if (!fd) {
+	if (!mf) {
 		perr << "Unable to load sound/music.flx. Exiting" << std::endl;
 		std::exit(-1);
 	}
-	music = new Flex(mf);
+	music = new MusicFlex(mf);
 	//! we're leaking mf here
-
 }

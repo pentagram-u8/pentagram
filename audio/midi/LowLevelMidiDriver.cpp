@@ -1,0 +1,758 @@
+/*
+Copyright (C) 2003  The Pentagram Team
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+*/
+
+#include "pent_include.h"
+#include "memset_n.h"
+
+#include "LowLevelMidiDriver.h"
+#include "XMidiSequence.h"
+
+// Ok, leaving this commented out is probably best
+// It slighly changes how inactive streams are handled
+// If enabled, it will cause channels to continue to
+// play sliently in the background. However, things are
+// done well enough that there isn't a noticable difference
+//#define LLMD_ALLOW_INACTIVE_TO_SEND
+
+#define LLMD_THREAD_COM_READY			0
+#define LLMD_THREAD_COM_PLAY			1
+#define LLMD_THREAD_COM_FINISH			2
+#define LLMD_THREAD_COM_INIT			3
+#define LLMD_THREAD_COM_INIT_FAILED		4
+#define LLMD_THREAD_COM_SET_VOLUME		5
+#define LLMD_THREAD_COM_PAUSE			6
+#define LLMD_THREAD_COM_EXIT			-1
+
+//#define DO_SMP_TEST
+
+#ifdef DO_SMP_TEST
+#define giveinfo() perr << __FILE__ << ":" << __LINE__ << std::endl; perr.flush();
+#else
+#define giveinfo()
+#endif
+
+using std::string;
+using std::endl;
+
+LowLevelMidiDriver::LowLevelMidiDriver() :
+	is_available(false), mutex(0), cbmutex(0), 
+	thread(0), global_volume(255)
+{
+	message.type = LLMD_THREAD_COM_INIT;
+}
+
+LowLevelMidiDriver::~LowLevelMidiDriver()
+{
+	giveinfo();
+	if (!getComMessage(&is_available)) return;
+
+	giveinfo();
+	while (getComMessage(&message.type) != LLMD_THREAD_COM_READY) yield();
+	
+	giveinfo();
+
+	lockComMessage();
+	{
+		message.type = LLMD_THREAD_COM_EXIT;
+	}
+	unlockComMessage();
+
+	giveinfo();
+	int count = 0;
+	
+	giveinfo();
+	while (count < 100)
+	{
+		giveinfo();
+		// Wait 1 MS before trying again
+		if (getComMessage(&is_available)) yield ();
+		else break;
+		giveinfo();
+		
+		count++;
+	}
+
+	// We waited a second and it still didn't terminate
+	giveinfo();
+	if (count == 100 && getComMessage(&is_available))
+		SDL_KillThread (thread);
+
+	giveinfo();
+
+	lockComMessage();
+	{
+		is_available = false;
+	}
+	unlockComMessage();
+
+	SDL_DestroyMutex(mutex);
+	SDL_DestroyMutex(cbmutex);
+	mutex = 0;
+	cbmutex = 0;
+
+	giveinfo();
+}
+
+void LowLevelMidiDriver::initMidiDriver()
+{
+	string s;
+		
+	// Opened, lets open the thread
+	giveinfo();
+	message.type = LLMD_THREAD_COM_INIT;
+	
+	giveinfo();
+	mutex = SDL_CreateMutex();
+	cbmutex = SDL_CreateMutex();
+	thread = SDL_CreateThread (threadStart, static_cast<void*>(this));
+
+	giveinfo();
+	while (message.type == LLMD_THREAD_COM_INIT) yield ();
+
+	giveinfo();
+	if (getComMessage(&message.type) == LLMD_THREAD_COM_INIT_FAILED) 
+	{
+		perr << "Failure to initialize midi playing thread" << endl;
+		thread = 0;
+		SDL_DestroyMutex(mutex);
+		SDL_DestroyMutex(cbmutex);
+		mutex = 0;
+		cbmutex = 0;
+	}
+	giveinfo();
+}
+
+sint32 LowLevelMidiDriver::getComMessage(sint32 *val)
+{
+	lockComMessage();
+	sint32 ret = *val;
+	unlockComMessage();
+	return ret;
+}
+
+void LowLevelMidiDriver::lockComMessage()
+{
+	SDL_mutexP(mutex);
+}
+
+void LowLevelMidiDriver::unlockComMessage()
+{
+	SDL_mutexV(mutex);
+}
+
+int LowLevelMidiDriver::threadStart(void *data)
+{
+	giveinfo();
+	LowLevelMidiDriver *ptr=static_cast<LowLevelMidiDriver *>(data);
+	giveinfo();
+	return ptr->threadMain();
+}
+
+int LowLevelMidiDriver::threadMain()
+{
+	giveinfo();
+
+	lockComMessage();
+	{
+		for (int i = 0; i < LLMD_NUM_SEQ; i++)
+			playing[i] = false;
+	}
+	unlockComMessage();
+
+	giveinfo();
+
+	// Open the device
+	if (open())
+	{
+		lockComMessage();
+		{
+			message.type = LLMD_THREAD_COM_INIT_FAILED;
+		}
+		unlockComMessage();
+		return 1;
+	}
+
+	// Increase the thread priority, IF possible
+	giveinfo();
+	increaseThreadPriority();
+	giveinfo();
+
+	// Say we are ready to go
+	lockComMessage();
+	{
+		is_available = true;
+		message.type = LLMD_THREAD_COM_READY;
+	}
+	unlockComMessage();
+	
+	// Execute the play loop
+	giveinfo();
+	threadPlay();
+	giveinfo();
+
+	// Close the device
+	giveinfo();
+	close();
+	giveinfo();
+
+	// Say we are no longer available
+	lockComMessage();
+	{
+		is_available = false;
+	}
+	unlockComMessage();
+
+	giveinfo();
+	return 0;
+}
+
+void LowLevelMidiDriver::threadPlay ()
+{
+	giveinfo();
+
+	// Reset the current stream state
+	std::memset(sequences, 0, sizeof (XMidiSequence*) * LLMD_NUM_SEQ);
+	std::memset(chan_locks, -1, sizeof (sint32) * 16);
+	std::memset(chan_map, -1, sizeof (sint32) * LLMD_NUM_SEQ * 16);
+
+	int i;
+	// Play while there isn't a message waiting
+	for (;;)
+	{
+		xmidi_clock = SDL_GetTicks()*6;
+
+		// Play all notes, from all sequences
+		for (i = 0; i < LLMD_NUM_SEQ; i++)
+		{
+			int seq = i;
+
+			while (sequences[seq] && getComMessage(&message.type) == LLMD_THREAD_COM_READY)
+			{
+				sint32 time_till_next = sequences[seq]->playEvent();
+
+				if (time_till_next > 0) break;
+				else if (time_till_next == -1)
+				{
+					delete sequences[seq]; 
+					sequences[seq] = 0;
+					lockComMessage();
+						playing[seq] = false;
+					unlockComMessage();
+				}
+			}
+		}
+
+		xmidi_clock = SDL_GetTicks()*6;
+
+		// Did we get issued a music command?
+		lockComMessage();
+		{
+			switch (message.type)
+			{
+			case LLMD_THREAD_COM_FINISH:
+				{
+					delete sequences[message.sequence]; 
+					sequences[message.sequence] = 0;
+					playing[message.sequence] = false;
+					unlockAndUnprotectChannel(message.sequence);
+				}
+				break;
+
+			case LLMD_THREAD_COM_EXIT:
+				{
+					for (i = 0; i < LLMD_NUM_SEQ; i++)
+					{
+						delete sequences[i]; 
+						sequences[i] = 0;
+						playing[i] = false;
+						unlockAndUnprotectChannel(i);
+					}
+				}
+				return;
+
+			case LLMD_THREAD_COM_SET_VOLUME:
+				{
+					if (message.sequence == -1)
+					{
+						global_volume = message.data.volume.level;
+						for (i = 0; i < LLMD_NUM_SEQ; i++)
+							if (sequences[i])
+								sequences[i]->setVolume(sequences[i]->getVolume());
+					}
+					else if (sequences[message.sequence]) 
+						sequences[message.sequence]->setVolume(message.data.volume.level);
+				}
+				break;
+
+			case LLMD_THREAD_COM_PAUSE:
+				{
+					if (sequences[message.sequence]) 
+					{
+						if (!message.data.pause.paused) sequences[message.sequence]->unpause();
+						else sequences[message.sequence]->pause();
+					}
+				}
+				break;
+
+			case LLMD_THREAD_COM_PLAY:
+				{
+					// Kill the previous stream
+					delete sequences[message.sequence]; 
+					sequences[message.sequence] = 0;
+					playing[message.sequence] = false;
+					unlockAndUnprotectChannel(message.sequence);
+
+					giveinfo();
+
+					if (message.data.play.list) 
+					{
+						sequences[message.sequence] = new XMidiSequence(
+											this, 
+											message.sequence,
+											message.data.play.list, 
+											message.data.play.repeat, 
+											message.data.play.volume,
+											message.data.play.branch);
+
+						playing[message.sequence] = true;
+
+						uint16 mask = sequences[message.sequence]->getChanMask();
+
+						// Allocate some channels
+						/*
+						for (i = 0; i < 16; i++)
+							if (mask & (1<<i)) allocateChannel(message.sequence, i);
+						*/
+					}
+
+				}
+				break;
+
+				// Uh we have no idea what it is
+			default:
+				break;
+			}
+
+			message.type = LLMD_THREAD_COM_READY;
+		}
+		unlockComMessage();
+
+		yield ();
+	}
+
+	for (i = 0; i < 4; i++)
+	{
+		delete sequences[i]; 
+		sequences[i] = 0;
+		playing[i] = false;
+	}
+}
+
+void LowLevelMidiDriver::sequenceSendEvent(uint16 sequence_id, uint32 message)
+{
+	int log_chan = message & 0xF;
+	message &= 0xFFFFFFF0;	// Strip the channel number
+
+	// Controller handling
+	if ((message & 0x00F0) == (MIDI_STATUS_CONTROLLER << 4))
+	{
+		// Screw around with volume
+		if ((message & 0xFF00) == (7 << 8))
+		{
+			int vol = (message >> 16) & 0xFF;
+			message &= 0x00FFFF;
+			// Global volume
+			vol = (vol * global_volume) / 0xFF;
+			message |= vol << 16;
+		}
+		else if ((message & 0xFF00) == (XMIDI_CONTROLLER_CHAN_LOCK << 8))
+		{
+			lockChannel(sequence_id, log_chan, ((message>>16)&0xFF)>=64);
+			return;
+		}
+		else if ((message & 0xFF00) == (XMIDI_CONTROLLER_CHAN_LOCK_PROT << 8))
+		{
+			protectChannel(sequence_id, log_chan, ((message>>16)&0xFF)>=64);
+			return;
+		}
+	}
+
+	// Ok, get the physical channel number from the logical.
+    int phys_chan = chan_map[sequence_id][log_chan];
+
+	if (phys_chan == -2) return;
+	else if (phys_chan < 0) phys_chan = log_chan;
+
+	send(message|phys_chan);
+}
+
+uint32 LowLevelMidiDriver::getTickCount(uint16 sequence_id)
+{
+	return xmidi_clock;
+}
+
+void LowLevelMidiDriver::handleCallbackTrigger(uint16 sequence_id, uint8 data)
+{
+	SDL_mutexP(cbmutex);
+	callback_data[sequence_id] = data;
+	SDL_mutexV(cbmutex);
+}
+
+int LowLevelMidiDriver::protectChannel(uint16 sequence_id, int chan, bool protect)
+{
+	// Unprotect the channel
+	if (!protect) 
+	{
+		chan_locks[chan] = -1;
+		chan_map[sequence_id][chan] = -1;
+	}
+	// Protect the channel (if required)
+	else if (chan_locks[chan] != -2)
+	{
+		// First check to see if the channel has been locked by something
+		int relock_sid = -1;
+		int relock_log = -1;
+		if (chan_locks[chan] != -1)
+		{
+			relock_sid = chan_locks[chan];
+
+			// It has, so what we want to do is unlock the channel, then 
+			for (int c = 0; c < 16; c++)
+			{
+				if (chan_map[relock_sid][c] == chan) 
+				{
+					relock_log = c;
+					break;
+				}
+			}
+
+			// Release the previous lock
+			lockChannel(relock_sid, relock_log, false);
+		}
+
+		// Now protect the channel
+		chan_locks[chan] = -2;
+		chan_map[sequence_id][chan] = -3;
+
+		// And attempt to get the other a new channel to lock
+		if (relock_sid != -1) 
+			lockChannel(relock_sid, relock_log, true);
+	}
+
+	return 0;
+}
+
+int LowLevelMidiDriver::lockChannel(uint16 sequence_id, int chan, bool lock)
+{
+	// When locking, we want to get the highest chan number with the lowest 
+	// number of notes playing, that aren't already locked and don't have
+	// protection
+	if (lock)
+	{
+		int notes_on[16] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+		int s, c, phys;
+
+		for (s = 0; s < LLMD_NUM_SEQ; s++)
+		{
+			if (sequences[s]) for (c = 0; c < 16; c++)
+			{
+				phys = chan_map[s][c];
+				if (phys == -1) phys = c;
+				if (phys != -2)
+					notes_on[phys] += sequences[s]->countNotesOn(c);
+			}
+		}
+
+		phys = -1;
+		int prev_max = 128;
+		for (c = 0; c < 16; c++)
+		{
+			// Protected or locked
+			if (chan_locks[c] != -1) continue;
+			
+			if (notes_on[c] <= prev_max) 
+			{
+				prev_max = notes_on[c];
+				phys = c;
+			}
+		}
+
+		// Oh no, no channel to lock!
+		if (phys == -1) return -1;
+
+		// Now tell everyone that they lost their channel
+		for (s = 0; s < LLMD_NUM_SEQ; s++)
+		{
+			// Make sure they are mapping defualt
+			if (sequences[s] && chan_map[s][phys] == -1) 
+			{
+				sequences[s]->loseChannel(phys);
+				chan_map[s][phys] = -2;	// Can't use it
+			}
+		}
+
+		// We are losing our old logical channel too
+		if (phys != chan) sequences[sequence_id]->loseChannel(chan);
+
+		// Ok, got our channel
+		chan_map[sequence_id][chan] = phys;
+		chan_locks[phys] = sequence_id;
+		sequences[sequence_id]->gainChannel(chan);
+	}
+	// Unlock the channel
+	else
+	{
+		int phys = chan_map[sequence_id][chan];
+
+		// Not locked
+		if (phys < 0) return -1;
+
+		// First, we'll lose our logical channel
+		if (sequences[sequence_id]) 
+			sequences[sequence_id]->loseChannel(chan);
+
+		// Now unlock it
+		chan_map[sequence_id][chan] = -1;
+		chan_locks[phys] = -1;
+
+		// Gain our logical channel back
+		if (phys != chan && sequences[sequence_id]) 
+			sequences[sequence_id]->gainChannel(chan);
+
+		// Now let everyone gain their channel that we stole
+		for (int s = 0; s < LLMD_NUM_SEQ; s++)
+		{
+			// Make sure they are mapping defualt
+			if (sequences[s] && chan_map[s][phys] == -2) 
+			{
+				chan_map[s][phys] = -1;
+				sequences[s]->gainChannel(phys);
+			}
+		}
+	}
+
+	return 0;
+}
+
+int LowLevelMidiDriver::unlockAndUnprotectChannel(uint16 sequence_id)
+{
+	// For each channel
+	for (int c = 0; c < 16; c++)
+	{
+		int phys = chan_map[sequence_id][c];
+
+		// Doesn't need anything done to it
+		if (phys != -3) continue;
+
+		// We are protecting
+		if (phys == -3)
+		{
+			protectChannel(sequence_id, c, false);
+		}
+		// We are locking
+		else
+		{
+			lockChannel(sequence_id, c, false);
+		}
+	}
+	return 0;
+}
+
+//
+// MidiDriver API
+//
+
+int LowLevelMidiDriver::maxSequences()
+{
+	return LLMD_NUM_SEQ;
+}
+
+void LowLevelMidiDriver::startSequence(int seq_num, XMidiEventList *eventlist, bool repeat, int vol, int branch)
+{
+	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
+
+	if (!is_available)
+		return;
+
+	giveinfo();
+	while (getComMessage(&message.type) != LLMD_THREAD_COM_READY) yield ();
+	
+	giveinfo();
+	eventlist->incerementCounter();
+
+	lockComMessage();
+
+	giveinfo();
+	{
+		message.type = LLMD_THREAD_COM_PLAY;
+		message.sequence = seq_num;
+		message.data.play.list = eventlist;
+		message.data.play.repeat = repeat;
+		message.data.play.volume = vol;
+		message.data.play.branch = branch;
+	}
+	unlockComMessage();
+	giveinfo();
+}
+
+void LowLevelMidiDriver::finishSequence(int seq_num)
+{
+	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
+
+	giveinfo();
+	if (!is_available)
+		return;
+
+	giveinfo();
+	while (getComMessage(&message.type) != LLMD_THREAD_COM_READY) yield ();
+	giveinfo();
+
+	lockComMessage();
+	{
+		message.type = LLMD_THREAD_COM_FINISH;
+		message.sequence = seq_num;
+	}
+	unlockComMessage();
+
+	giveinfo();
+	while (getComMessage(&message.type) != LLMD_THREAD_COM_READY) yield ();
+	giveinfo();
+}
+
+void LowLevelMidiDriver::setSequenceVolume(int seq_num, int vol)
+{
+	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
+	if (vol < 0 || vol > 255) return;
+	if (!is_available) return;
+
+	giveinfo();
+	while (getComMessage(&message.type) != LLMD_THREAD_COM_READY) yield ();
+	
+	giveinfo();
+
+
+	lockComMessage();
+	{
+		giveinfo();
+		message.type = LLMD_THREAD_COM_SET_VOLUME;
+		message.sequence = seq_num;
+		message.data.volume.level = vol;
+	}
+	unlockComMessage();
+	giveinfo();
+}
+
+
+void LowLevelMidiDriver::setGlobalVolume(int vol)
+{
+	if (vol < 0 || vol > 255) return;
+	if (!is_available) return;
+
+	giveinfo();
+	while (getComMessage(&message.type) != LLMD_THREAD_COM_READY) yield ();
+	
+	giveinfo();
+
+	lockComMessage();
+	{
+		giveinfo();
+		message.type = LLMD_THREAD_COM_SET_VOLUME;
+		message.sequence = -1;
+		message.data.volume.level = vol;
+	}
+	unlockComMessage();
+	giveinfo();
+}
+
+bool LowLevelMidiDriver::isSequencePlaying(int seq_num)
+{
+	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return false;
+
+	giveinfo();
+	while (getComMessage(&message.type) != LLMD_THREAD_COM_READY) yield ();
+	
+	lockComMessage();
+	bool ret = playing[seq_num];
+	unlockComMessage();
+
+	return ret;
+}
+
+void LowLevelMidiDriver::pauseSequence(int seq_num)
+{
+	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
+
+	giveinfo();
+	if (!is_available)
+		return;
+
+	giveinfo();
+	while (getComMessage(&message.type) != LLMD_THREAD_COM_READY) yield ();
+	
+	giveinfo();
+
+	lockComMessage();
+
+	giveinfo();
+	{
+		message.type = LLMD_THREAD_COM_PAUSE;
+		message.sequence = seq_num;
+		message.data.pause.paused = true;
+	}
+	unlockComMessage();
+	giveinfo();
+}
+
+void LowLevelMidiDriver::unpauseSequence(int seq_num)
+{
+	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return;
+
+	giveinfo();
+	if (!is_available)
+		return;
+
+	giveinfo();
+	while (getComMessage(&message.type) != LLMD_THREAD_COM_READY) yield ();
+	
+	giveinfo();
+
+	lockComMessage();
+
+	giveinfo();
+	{
+		message.type = LLMD_THREAD_COM_PAUSE;
+		message.sequence = seq_num;
+		message.data.pause.paused = false;
+	}
+	unlockComMessage();
+	giveinfo();
+}
+
+uint32 LowLevelMidiDriver::getSequenceCallbackData(int seq_num)
+{
+	if (seq_num >= LLMD_NUM_SEQ || seq_num < 0) return 0;
+
+	SDL_mutexP(cbmutex);
+	uint32 ret = callback_data[seq_num];
+	SDL_mutexV(cbmutex);
+
+	return ret;
+}
+
+
+// Protection

@@ -38,6 +38,7 @@ SpriteProcess::SpriteProcess(int Shape, int Frame, int LastFrame,
 	item->setLocation(X,Y,Z);
 	World::get_instance()->getCurrentMap()->addItem(item);
 	setItemNum(item->getObjId());
+	item->setFlag(Item::FLG_DISPOSABLE);
 }
 
 SpriteProcess::~SpriteProcess(void)
