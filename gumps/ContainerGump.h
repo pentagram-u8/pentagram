@@ -32,6 +32,9 @@ public:
 				  uint32 _Flags = 0, sint32 layer = LAYER_NORMAL);
 	virtual ~ContainerGump(void);
 
+	// Close the gump
+	virtual void Close(bool no_del = false);
+
 	// Init the gump, call after construction
 	virtual void InitGump();
 
@@ -44,8 +47,8 @@ public:
 
 	// Get the location of an item in the gump (coords relative to this).
 	// Returns false on failure.
-//	virtual bool GetLocationOfItem(uint16 itemid, int &gx, int &gy,
-//								   sint32 lerp_factor = 256);
+	virtual bool GetLocationOfItem(uint16 itemid, int &gx, int &gy,
+								   sint32 lerp_factor = 256);
 
 };
 

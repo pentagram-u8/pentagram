@@ -1,3 +1,7 @@
+2003-06-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/ContainerGump.*, gumps/ItemRelativeGump.*: getItemLocation
+	* gumps/ContainerGump.*: close container gumps of contents when closing
+
 2003-06-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/ContainerGump.*: a container gump. No interaction yet.
 	* gumps/ContainerGump.*: item tracing

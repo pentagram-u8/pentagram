@@ -26,10 +26,12 @@
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(Gump,Object);
 
-Gump::Gump(int _X, int _Y, int Width, int Height, uint16 _Owner, uint32 _Flags, sint32 _Layer) : 
-	Object(), owner(_Owner), parent(0), x(_X), y(_Y), dims(0,0,Width,Height), layer(_Layer), 
-	flags(_Flags), shape(0), framenum(0), children(), focus_child(0),
-	notifier(0), process_result(0)
+Gump::Gump(int _X, int _Y, int Width, int Height, uint16 _Owner,
+		   uint32 _Flags, sint32 _Layer) : 
+	Object(), owner(_Owner), parent(0), x(_X), y(_Y),
+	dims(0,0,Width,Height), flags(_Flags), layer(_Layer), shape(0),
+	framenum(0), children(), focus_child(0), notifier(0),
+	process_result(0)
 {
 	
 }
@@ -41,8 +43,8 @@ Gump::~Gump()
 	focus_child = 0;
 
 	// Delete all children
-	std::list<Gump*>::iterator	it = children.begin();
-	std::list<Gump*>::iterator	end = children.end();
+	std::list<Gump*>::iterator it = children.begin();
+	std::list<Gump*>::iterator end = children.end();
 
 	while (it != end)
 	{
@@ -88,8 +90,8 @@ void Gump::Close(bool no_del)
 bool Gump::Run(const uint32 framenum)
 {
 	// Iterate all children
-	std::list<Gump*>::iterator	it = children.begin();
-	std::list<Gump*>::iterator	end = children.end();
+	std::list<Gump*>::iterator it = children.begin();
+	std::list<Gump*>::iterator end = children.end();
 	bool repaint = false;
 
 	while (it != end)
@@ -124,8 +126,8 @@ void Gump::MapChanged()
 	}
 
 	// Pass the MapChanged message to all the children
-	std::list<Gump*>::iterator	it = children.begin();
-	std::list<Gump*>::iterator	end = children.end();
+	std::list<Gump*>::iterator it = children.begin();
+	std::list<Gump*>::iterator end = children.end();
 
 	while (it != end)
 	{
@@ -152,13 +154,12 @@ bool Gump::GetMouseCursor(int mx, int my, Shape &shape, sint32 &frame)
 {
 	ParentToGump(mx,my);
 
-	std::list<Gump*>::iterator	it = children.end();
-	std::list<Gump*>::iterator	begin = children.begin();
 
 	bool ret = false;
 
 	// This reverse iterates the children
-	while (it != begin)
+	std::list<Gump*>::reverse_iterator it;
+	for (it = children.rbegin(); it != children.rend(); ++it)
 	{
 		Gump *g = *--it;
 
@@ -308,15 +309,13 @@ uint16 Gump::TraceObjID(int mx, int my)
 	// Convert to local coords
 	ParentToGump(mx,my);
 
-	std::list<Gump*>::iterator	it = children.end();
-	std::list<Gump*>::iterator	begin = children.begin();
-
 	uint16 objid = 0;
 
 	// Iterate children
-	while (it != begin)
+	std::list<Gump*>::reverse_iterator it;
+	for (it = children.rbegin(); it != children.rend(); ++it)
 	{
-		Gump *g = *--it;
+		Gump *g = *it;
 
 		// Not if closing
 		if (g->flags & FLAG_CLOSING) continue;
@@ -481,15 +480,12 @@ Gump *Gump::OnMouseDown(int button, int mx, int my)
 	// Convert to local coords
 	ParentToGump(mx,my);
 
-	std::list<Gump*>::iterator	it = children.end();
-	std::list<Gump*>::iterator	begin = children.begin();
-
 	Gump *handled = 0;
 
-	// Iterate children
-	while (it != begin)
-	{
-		Gump *g = *--it;
+	// Iterate children backwards
+	std::list<Gump*>::reverse_iterator it;
+	for (it = children.rbegin(); it != children.rend(); ++it) {
+		Gump *g = *it;
 
 		// Not if closing
 		if (g->flags & FLAG_CLOSING) continue;

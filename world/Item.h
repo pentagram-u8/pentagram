@@ -71,6 +71,7 @@ public:
 	uint16 getFamily();
 
 	Gump* getGump() { return gump; }
+	void clearGump(); // set gump to 0 and clear the GUMP_OPEN flag
 
 	Item* getGlobNext() const { return glob_next; }
 	void setGlobNext(Item* i) { glob_next = i; }

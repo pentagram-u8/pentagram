@@ -26,8 +26,8 @@
 #include "RenderSurface.h"
 
 //! see comments in Paint()
-const int itemx_offset = 20;
-const int itemy_offset = 18; 
+static const int itemx_offset = 20;
+static const int itemy_offset = 18; 
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(ContainerGump,ItemRelativeGump);
 
@@ -79,16 +79,19 @@ void ContainerGump::Paint(RenderSurface* surf, sint32 lerp_factor)
 		Item* item = *iter;
 		sint32 itemx,itemy;
 		item->getGumpLocation(itemx,itemy);
-		GumpToParent(itemx,itemy);
-		Shape* s = item->getShapeObject();
-		assert(s);
 		// Where do we need to paint his item?
 		// It looks like(itemx,itemy) isn't entirely correct;
 		// it seems to need an extra offset.
 		//   (20,14) seems to be correct for a basket, but a barrel
         //   needs (20,18)
-		surf->Paint(s, item->getFrame(),
-					itemx + itemx_offset, itemy + itemy_offset);
+		// Using constant 'itemx_offset', 'itemy_offset' currently.
+		// Need to change these to variables.
+		itemx += itemx_offset;
+		itemy += itemy_offset;
+		GumpToParent(itemx,itemy);
+		Shape* s = item->getShapeObject();
+		assert(s);
+		surf->Paint(s, item->getFrame(), itemx, itemy);
 	}
 	
 }
@@ -122,5 +125,58 @@ uint16 ContainerGump::TraceObjID(int mx, int my)
 			return item->getObjId();
 		}
 	}
-	
+
+	// didn't find anything
+	return 0;
+}
+
+// get item coords relative to self
+bool ContainerGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
+									  sint32 lerp_factor)
+{
+	//!!! need to use lerp_factor
+
+	Container* c = p_dynamic_cast<Container*>
+		(World::get_instance()->getItem(owner));
+
+	if (!c) return 0; // Container gone!?
+
+	std::list<Item*>& contents = c->contents;
+	std::list<Item*>::iterator iter;
+	for (iter = contents.begin(); iter != contents.end(); ++iter) {
+		Item* item = *iter;
+		if (item->getObjId() == itemid) {
+			// found it
+			item->getGumpLocation(gx,gy);
+			gx += itemx_offset;
+			gy += itemy_offset;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void ContainerGump::Close(bool no_del)
+{
+	// close any gumps belonging to contents
+	Container* c = p_dynamic_cast<Container*>
+		(World::get_instance()->getItem(owner));
+
+	if (!c) return; // Container gone!?
+
+	std::list<Item*>& contents = c->contents;
+	std::list<Item*>::iterator iter;
+	for (iter = contents.begin(); iter != contents.end(); ++iter) {
+		Item* item = *iter;
+		if (item->getGump()) {
+			item->getGump()->Close(); //!! what about no_del?
+		}
+	}
+
+	Item* o = World::get_instance()->getItem(owner);
+	if (o)
+		o->clearGump(); //!! is this the appropriate place?
+
+	ItemRelativeGump::Close(no_del);
 }

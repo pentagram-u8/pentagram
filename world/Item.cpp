@@ -579,6 +579,12 @@ void Item::leavingFastArea()
 	callUsecodeEvent(0x10);		// CONSTANT
 }
 
+void Item::clearGump()
+{
+	gump = 0;
+	flags &= ~FLG_GUMP_OPEN;
+}
+
 uint32 Item::I_getX(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM(item);
@@ -1509,8 +1515,7 @@ uint32 Item::I_closeGump(const uint8* args, unsigned int /*argsize*/)
 
 	// can we already clear gump here, or do we need to wait for the gump
 	// to really close??
-	item->gump = 0;
-	item->flags &= ~FLG_GUMP_OPEN;
+	item->clearGump();
 
 	return 0;
 }
