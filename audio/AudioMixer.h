@@ -52,7 +52,7 @@ private:
 
 	// Should probably go somewhere else.... perhaps in some 'audio manager'
 	void			init_midi();
-	static void		sdlAudioCallback(void *userdata, Uint8 *stream, int len);
+	static void		sdlAudioCallback(void *userdata, uint8 *stream, int len);
 
 	void			MixAudio(sint16 *stream, uint32 bytes);
 
