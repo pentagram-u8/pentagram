@@ -43,8 +43,8 @@ TextWidget::TextWidget()
 TextWidget::TextWidget(int X, int Y, std::string txt, int font,
 					   int w, int h, Font::TextAlign align) :
 	Gump(X, Y, w, h), text(txt), fontnum(font), current_start(0),
-	current_end(0), targetwidth(w), targetheight(h), textalign(align),
-	cached_text(0)
+	current_end(0), targetwidth(w), targetheight(h),
+	cached_text(0), textalign(align)
 {
 
 }
