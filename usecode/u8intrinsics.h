@@ -228,7 +228,7 @@ Intrinsic U8Intrinsics[] = {
 	Actor::I_setHp,
 	Actor::I_setMana,
 	Actor::I_createActor,
-	UCMachine::I_dummyProcess, //!! process Npc::cSetActivity(Activity)
+	Actor::I_cSetActivity,
 	Actor::I_setAirWalkEnabled,
 	// 0x0B0
 	Actor::I_getAirWalkEnabled,

@@ -395,6 +395,23 @@ Animation::Result Actor::tryAnim(Animation::Sequence anim, int dir, PathfindingS
 	return Animation::END_OFF_LAND;
 }
 
+uint16 Actor::cSetActivity(int activity)
+{
+	switch (activity) {
+	case 0: // loiter
+		// TODO: implement (pathfind to random points?)
+	case 1: // combat
+		// TODO: implement (set combat and let AI handle the rest?)
+	case 2: // stand
+		// NOTE: temporary fall-throughs!
+		return doAnim(Animation::stand, 8);
+
+	default:
+		perr << "Actor::cSetActivity: invalid activity (" << activity << ")"
+			 << std::endl;
+	}
+}
+
 uint32 Actor::getArmourClass()
 {
 	ShapeInfo* si = getShapeInfo();
@@ -1212,6 +1229,15 @@ uint32 Actor::I_createActor(const uint8* args, unsigned int /*argsize*/)
 #endif
 
 	return objID;
+}
+
+uint32 Actor::I_cSetActivity(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	ARG_UINT16(activity);
+	if (!actor) return 0;
+
+	return actor->cSetActivity(activity);
 }
 
 uint32 Actor::I_setAirWalkEnabled(const uint8* args, unsigned int /*argsize*/)

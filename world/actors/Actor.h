@@ -107,6 +107,10 @@ public:
 	//! check if NPCs are near which are in combat mode and hostile
 	bool areEnemiesNear();
 
+	//! starts an activity
+	//! \return processID of process handling the activity or zero
+	uint16 cSetActivity(int activity);
+
 	//! run the given animation
 	//! \return the PID of the ActorAnimProcess
 	uint16 doAnim(Animation::Sequence anim, int dir);
@@ -168,6 +172,7 @@ public:
 	INTRINSIC(I_areEnemiesNear);
 	INTRINSIC(I_isBusy);
 	INTRINSIC(I_createActor);
+	INTRINSIC(I_cSetActivity);
 	INTRINSIC(I_setAirWalkEnabled);
 	INTRINSIC(I_getAirWalkEnabled);
 	INTRINSIC(I_schedule);

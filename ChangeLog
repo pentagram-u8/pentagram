@@ -2,6 +2,7 @@
 	* gumps/ContainerGump.cpp: don't paint editor items
 	* graphics/TypeFlags.cpp: fix ArmourInfo loading
 	* data/u8.ini, data/u8monsters.ini: let Malchir drop Tongue of Flame
+	* world/actors/Actor.*: mostly unimplemented cSetActivity intrinsic
 
 2004-09-02  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* kernel/GUIApp.cpp: Separated the QuickAvatarMoverProcess from GUIApp
