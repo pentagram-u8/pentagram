@@ -195,7 +195,7 @@
 					If you copy VeraBd.ttf to the <Pent/> data directory and enable the ttf configuration option,
 					<Pent/> will be using it to display conversations and object descriptions. This font is much 
 					more readable than the original U8 font. VeraBd.ttf is part of the Bitstream Vera fonts and 
-					can be downloaded at <extref target="http://www.math.leidenuniv.nl/~wpalenst/vera.zip"/>.
+					can be downloaded at <extref target="http://pentagram.sf.net/snapshots/vera.zip"/>.
 				</para>
 			</body>
 		</sub>

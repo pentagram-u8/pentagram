@@ -135,7 +135,7 @@ Some keyboard commands that are only there to trigger some scenes.
 Hacks
 f : plays first scene (Avatar standing up, speaking to Devon)
 g : plays execution scene
-If you copy VeraBd.ttf to the Pentagram data directory and enable the ttf configuration option, Pentagram will be using it to display conversations and object descriptions. This font is much more readable than the original U8 font. VeraBd.ttf is part of the Bitstream Vera fonts and can be downloaded at http://www.math.leidenuniv.nl/~wpalenst/vera.zip.
+If you copy VeraBd.ttf to the Pentagram data directory and enable the ttf configuration option, Pentagram will be using it to display conversations and object descriptions. This font is much more readable than the original U8 font. VeraBd.ttf is part of the Bitstream Vera fonts and can be downloaded at http://pentagram.sf.net/snapshots/vera.zip.
 
 
 
