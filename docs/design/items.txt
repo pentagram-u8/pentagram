@@ -30,11 +30,13 @@ Items that are in CurrentMap, but are not originally from a Map object have
 the EXT_NOTINMAP extended flag set.
 
 Items in containers have a pointer (Item::parent) to their parent, and are
-not directly part of CurrentMap.
+not directly part of CurrentMap. They also have the FLG_CONTAINED status flag
+set.
 
-QUESTION: which status do 'equipped' items have? (Such as the avatar's backpack
+QUESTION: which status do equipped items have? (Such as the avatar's backpack
 and weapon/armour) Is their owner also their parent, or do they have a special
 status?
+Equipped items have the FLG_EQUIPPED flag set.
 
 
 GlobEggs are expanded in CurrentMap, meaning that their contents are
