@@ -50,7 +50,7 @@
 					<configsec name="u8">
 							<configtag name="path">
 							path to U8 directory
-							<comment># replace 'path to pentagram data dir' with the directory containing 'u8.exe'</comment>
+							<comment># replace 'path to U8 directory' with the directory containing 'u8.exe'</comment>
 							</configtag>
 					</configsec>
 				</configdesc>
