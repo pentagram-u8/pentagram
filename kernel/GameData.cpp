@@ -23,14 +23,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IDataSource.h"
 #include "UsecodeFlex.h"
 #include "MainShapeFlex.h"
+#include "FontShapeFlex.h"
 #include "Flex.h"
 #include "Glob.h"
+#include "PaletteManager.h"
 
 GameData* GameData::gamedata = 0;
 
 
 GameData::GameData()
-	: mainshapes(0), mainusecode(0), globs(0)
+	: mainshapes(0), mainusecode(0), globs(0), fonts(0)
 {
 	assert(gamedata == 0);
 	gamedata = this;
@@ -47,6 +49,9 @@ GameData::~GameData()
 
 	delete mainshapes;
 	mainshapes = 0;
+
+	delete fonts;
+	fonts = 0;
 }
 
 Glob* GameData::getGlob(uint32 glob) const
@@ -85,7 +90,7 @@ void GameData::loadU8Data()
 		perr << "Unable to load static/u8shapes.flx. Exiting" << std::endl;
 		std::exit(-1);
 	}
-	mainshapes = new MainShapeFlex(sf);
+	mainshapes = new MainShapeFlex(sf, PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
 
 	// Load typeflags
 	IDataSource *tfs = filesystem->ReadFile("@u8/static/typeflag.dat");
@@ -134,6 +139,6 @@ void GameData::loadU8Data()
 		perr << "Unable to load static/u8fonts.flx. Exiting" << std::endl;
 		std::exit(-1);
 	}
-	fonts = new ShapeFlex(fds);
+	fonts = new FontShapeFlex(fds, PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
 	//! we're leaking fds here
 }

@@ -50,6 +50,8 @@ GRAPHICS = \
 	graphics/AnimDat.o \
 	graphics/RenderSurface.o \
 	graphics/BaseSoftRenderSurface.o \
+	graphics/Font.o \
+	graphics/FontShapeFlex.o \
 	graphics/SoftRenderSurface.o \
 	graphics/Texture.o \
 	graphics/TextureTarga.o \
