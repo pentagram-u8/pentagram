@@ -1,3 +1,7 @@
+2004-12-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/PathfinderProcess.*: very basic moving-target support
+	* world/actors/CombatProcess.*: pathfind to target
+
 2004-12-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GUIApp.cpp: properly reset inversion state
 

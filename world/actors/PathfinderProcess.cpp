@@ -57,6 +57,8 @@ PathfinderProcess::PathfinderProcess(Actor* actor_, ObjId item_)
 	targetitem = item_;
 	assert(targetitem);
 
+	item->getLocation(targetx, targety, targetz);
+
 	Pathfinder pf;
 	pf.init(actor_);
 	pf.setTarget(item);
@@ -125,7 +127,28 @@ void PathfinderProcess::terminate()
 
 bool PathfinderProcess::run(const uint32 /*framenum*/)
 {
-	if (currentstep >= path.size()) {
+	bool ok = true;
+
+	if (targetitem) {
+		sint32 curx,cury,curz;
+		Item* item = World::get_instance()->getItem(targetitem);
+		if (!item) {
+			perr << "PathfinderProcess: target missing" << std::endl;
+			result = PATH_FAILED;
+			terminate();
+			return false;
+		}
+
+		item->getLocation(curx, cury, curz);
+		if (abs(curx - targetx) >= 32 || abs(cury - targety) >= 32 ||
+			abs(curz - targetz) >= 8)
+		{
+			// target moved
+			ok = false;
+		}
+	}
+
+	if (ok && currentstep >= path.size()) {
 		// done
 #if 0
 		pout << "PathfinderProcess: done" << std::endl;
@@ -152,8 +175,10 @@ bool PathfinderProcess::run(const uint32 /*framenum*/)
 		return false;
 	}
 
-	bool ok = actor->tryAnim(path[currentstep].action,
-							 path[currentstep].direction) != 0;
+	if (ok) {
+		ok = actor->tryAnim(path[currentstep].action,
+							path[currentstep].direction) != 0;
+	}
 
 	if (!ok) {
 #if 0

@@ -508,6 +508,7 @@ CombatProcess: Process (v1)
 uint16 version
 <Process>
 uint16 target
+uint8 combatmode (CombatMode)
 
 
 GrantPeaceProcess: Process (v1)

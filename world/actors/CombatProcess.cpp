@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AnimationTracker.h"
 #include "Kernel.h"
 #include "DelayProcess.h"
+#include "PathfinderProcess.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -48,6 +49,7 @@ CombatProcess::CombatProcess(Actor* actor_)
 	type = 0x00F2; // CONSTANT !
 	target = 0;
 	fixedTarget = 0;
+	combatmode = CM_WAITING;
 }
 
 bool CombatProcess::run(const uint32 /*framenum*/)
@@ -71,6 +73,7 @@ bool CombatProcess::run(const uint32 /*framenum*/)
 
 		pout << "[COMBAT " << item_num << "] target found: "
 			 << target << std::endl;
+		combatmode = CM_WAITING;
 	}
 
 	int targetdir = getTargetDirection();
@@ -80,6 +83,8 @@ bool CombatProcess::run(const uint32 /*framenum*/)
 	}
 
 	if (inAttackRange()) {
+		combatmode = CM_ATTACKING;
+
 		pout << "[COMBAT " << item_num << "] target in range" << std::endl;
 
 		// attack
@@ -98,10 +103,19 @@ bool CombatProcess::run(const uint32 /*framenum*/)
 		}
 
 		return false;
+	} else if (combatmode != CM_PATHFINDING) {
+		// not in range? See if we can get in range
+
+		Process* pfproc = new PathfinderProcess(a, target);
+		
+		waitFor(Kernel::get_instance()->addProcess(pfproc));
+		combatmode = CM_PATHFINDING;
+		return false;
 	}
 
 	waitFor(Kernel::get_instance()->addProcess(
-				new DelayProcess(30+(std::rand()%60))));
+				new DelayProcess(20+(std::rand()%40))));
+	combatmode = CM_WAITING;
 
 	return false;
 }
@@ -253,6 +267,7 @@ void CombatProcess::saveData(ODataSource* ods)
 	Process::saveData(ods);
 
 	ods->write2(target);
+	ods->write1(static_cast<uint8>(combatmode));
 }
 
 bool CombatProcess::loadData(IDataSource* ids)
@@ -262,6 +277,7 @@ bool CombatProcess::loadData(IDataSource* ids)
 	if (!Process::loadData(ids)) return false;
 
 	target = ids->read2();
+	combatmode = static_cast<CombatMode>(ids->read1());
 
 	return true;
 }

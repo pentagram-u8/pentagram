@@ -54,9 +54,10 @@ protected:
 	ObjId fixedTarget;
 
 	enum CombatMode {
-		CM_WAIT = 0,
-		CM_ATTACK
-	};
+		CM_WAITING = 0,
+		CM_PATHFINDING,
+		CM_ATTACKING
+	} combatmode;
 };
 
 
