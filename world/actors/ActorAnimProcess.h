@@ -32,6 +32,8 @@ public:
 
 	virtual bool run(const uint32 framenum);
 
+	virtual void terminate();
+
 private:
 	uint16 actor;
 	AnimAction* animaction;

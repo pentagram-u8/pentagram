@@ -33,16 +33,22 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 	actor = actor_->getObjId();
 	dir = dir_;
 
-	//! We probably want to mark the actor as being animated somewhere
-	//! possibly add a pointer to this process to the actor to allow
-	//! for terminating the anim
-
-
 	uint32 shape = actor_->getShape();
 	animaction = GameData::get_instance()->getMainShapes()->
 		getAnim(shape, action);
 
 	currentindex = 0;
+
+	if (actor_->animproc != 0) {
+		//! What do we do if actor was already animating?
+		//! don't do this animation or kill the previous one?
+		//! Or maybe wait until the previous one finishes?
+
+		// for now, just don't play this one.
+		animaction = 0;
+	} else {
+		actor_->animproc = pid;
+	}
 }
 
 bool ActorAnimProcess::run(const uint32 framenum)
@@ -93,4 +99,14 @@ bool ActorAnimProcess::run(const uint32 framenum)
 
 
 	return true;
+}
+
+
+void ActorAnimProcess::terminate()
+{
+	Actor *a = p_dynamic_cast<Actor*>(World::get_instance()->getObject(actor));
+	if (a)
+		a->animproc = 0;
+
+	Process::terminate();
 }

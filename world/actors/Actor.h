@@ -22,8 +22,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Container.h"
 #include "intrinsics.h"
 
+class ActorAnimProcess;
+
 class Actor : public Container
 {
+	friend class ActorAnimProcess;
 public:
 	Actor();
 	~Actor();
@@ -32,6 +35,9 @@ public:
 	ENABLE_DYNAMIC_CAST(Actor);
 
 	INTRINSIC(I_doAnim);
+
+private:
+	uint16 animproc; // pid of ActorAnimProcess
 };
 
 

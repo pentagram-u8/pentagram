@@ -40,7 +40,7 @@ public:
 
 	bool is_active() const { return active; }
 
-	void terminate();
+	virtual void terminate();
 	void waitFor(uint16 pid);
 	void wakeUp(uint32 result);
 

@@ -1,4 +1,8 @@
 2003-05-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Item.cpp: got rid of some unused vars
+	* world/actors/*: only allow one simultaneous animation per actor
+	
+2003-05-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* docs/design/items.txt: some notes about Item
 	* world/CurrentMap.*, world/Item.*: move items somewhat more correctly
 	* world/actors/ActorAnimProcess.*: keep link back to Actor as objID

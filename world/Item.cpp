@@ -645,7 +645,7 @@ public:
 
 uint32 Item::I_ask(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item);
+	ARG_NULL32(); // ARG_ITEM(item); // currently unused.
 	ARG_LIST(answers);
 
 	if (!answers) return 0;
@@ -667,7 +667,7 @@ uint32 Item::I_ask(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_legalCreateAtPoint(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item); // unused?
+	ARG_NULL32(); // ARG_ITEM(item); // unused?
 	ARG_UINT16(shape);
 	ARG_UINT16(frame);
 	ARG_UINT32(ptr);
@@ -702,7 +702,7 @@ uint32 Item::I_legalCreateAtPoint(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_legalCreateAtCoords(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item); // unused?
+	ARG_NULL32(); // ARG_ITEM(item); // unused?
 	ARG_UINT16(shape);
 	ARG_UINT16(frame);
 	ARG_UINT16(x);
@@ -728,7 +728,7 @@ uint32 Item::I_legalCreateAtCoords(const uint8* args, unsigned int /*argsize*/)
 
 uint32 Item::I_legalCreateInCont(const uint8* args, unsigned int /*argsize*/)
 {
-	ARG_ITEM(item); // unused?
+	ARG_NULL32(); // ARG_ITEM(item); // unused?
 	ARG_UINT16(shape);
 	ARG_UINT16(frame);
 	ARG_CONTAINER(container);
