@@ -1,4 +1,4 @@
-2003-06-20	  Ryan Nunn <colourles@users.sourceforge.net>
+2003-06-21	  Ryan Nunn <colourles@users.sourceforge.net>
 	* gumps/GameMapGump.cpp : 'Fixing' GetLocationOfItem so it actually works 
 	  correctly.
 
