@@ -61,6 +61,7 @@ public:
 	void killObjectProcesses();
 
 	void kernelStats();
+	void processTypes();
 
 	void save(ODataSource* ods);
 	bool load(IDataSource* ids);
@@ -76,6 +77,8 @@ public:
 		{ processloaders[classname] = func; }
 
 	uint32 getFrameNum() const { return framenum; };
+
+	static void ConCmd_processTypes(const Pentagram::istring &args);
 	
 	INTRINSIC(I_getNumProcesses);
 	INTRINSIC(I_resetRef);

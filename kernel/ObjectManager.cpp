@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "ObjectManager.h"
 
+#include <map>
 #include "idMan.h"
 #include "Object.h"
 #include "Item.h"
@@ -47,12 +48,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "SliderGump.h"
 #include "SlidingWidget.h"
 #include "ScrollGump.h"
-
-//#define DUMP_OBJECTTYPES
-
-#ifdef DUMP_OBJECTTYPES
-#include <map>
-#endif
 
 ObjectManager* ObjectManager::objectmanager = 0;
 
@@ -127,25 +122,30 @@ void ObjectManager::objectStats()
 			objcount++;
 	}
 
-#ifdef DUMP_OBJECTTYPES
+	pout << "Object memory stats:" << std::endl;
+	pout << "NPCs       : " << npccount << "/255" << std::endl;
+	pout << "Objects    : " << objcount << "/65279" << std::endl;
+}
+
+void ObjectManager::objectTypes()
+{
+	pout << "Current object types:" << std::endl;
 	std::map<std::string, unsigned int> objecttypes;
 	for (unsigned int i = 1; i < objects.size(); ++i) {
 		Object* o = objects[i];
 		if (!o) continue;
 		objecttypes[o->GetClassType().class_name]++;
 	}
-#endif
 
-	pout << "Object memory stats:" << std::endl;
-	pout << "NPCs       : " << npccount << "/255" << std::endl;
-	pout << "Objects    : " << objcount << "/65279" << std::endl;
-
-#ifdef DUMP_OBJECTTYPES
 	std::map<std::string, unsigned int>::iterator iter;
 	for (iter = objecttypes.begin(); iter != objecttypes.end(); ++iter) {
 		pout << (*iter).first << ": " << (*iter).second << std::endl;
 	}
-#endif
+}
+
+void ObjectManager::ConCmd_objectTypes(const Pentagram::istring &args)
+{
+	ObjectManager::get_instance()->objectTypes();
 }
 
 uint16 ObjectManager::assignObjId(Object* obj, ObjId new_objid)

@@ -27,12 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ODataSource.h"
 #include "ItemFactory.h"
 
-//#define DUMP_PROCESSTYPES
-
-#ifdef DUMP_PROCESSTYPES
 #include <map>
-#endif
-
 
 typedef std::list<Process *>::iterator ProcessIterator;
 
@@ -244,24 +239,28 @@ Process* Kernel::getProcess(ProcId pid)
 
 void Kernel::kernelStats()
 {
-#ifdef DUMP_PROCESSTYPES
+	pout << "Kernel memory stats:" << std::endl;
+	pout << "Processes  : " << processes.size() << "/32765" << std::endl;
+}
+
+void Kernel::processTypes()
+{
+	pout << "Current process types:" << std::endl;
 	std::map<std::string, unsigned int> processtypes;
 	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it) {
 		Process* p = *it;
 		processtypes[p->GetClassType().class_name]++;
 	}
-#endif
-
-	pout << "Kernel memory stats:" << std::endl;
-	pout << "Processes  : " << processes.size() << "/32765" << std::endl;
-#ifdef DUMP_PROCESSTYPES
 	std::map<std::string, unsigned int>::iterator iter;
 	for (iter = processtypes.begin(); iter != processtypes.end(); ++iter) {
 		pout << (*iter).first << ": " << (*iter).second << std::endl;
-	}
-#endif
+	}	
 }
 
+void Kernel::ConCmd_processTypes(const Pentagram::istring &args)
+{
+	Kernel::get_instance()->processTypes();
+}
 
 uint32 Kernel::getNumProcesses(ObjId objid, uint16 processtype)
 {

@@ -1,3 +1,7 @@
+2004-02-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/Kernel.*: added Kernel::processTypes console command
+	* kernel/ObjectManager.*: added ObjectManager::objectTypes console cmd.
+
 2004-02-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/ScrollGump.*: a scroll gump
 	* graphics/font/Font.cpp: handle special scroll characters

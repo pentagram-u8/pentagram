@@ -143,6 +143,10 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 
 	ConsoleGump::AddConsoleCommand("GUIApp::saveGame", ConCmd_saveGame);
 	ConsoleGump::AddConsoleCommand("GUIApp::loadGame", ConCmd_loadGame);
+	ConsoleGump::AddConsoleCommand("Kernel::processTypes",
+								   Kernel::ConCmd_processTypes);
+	ConsoleGump::AddConsoleCommand("ObjectManager::objectTypes",
+								   ObjectManager::ConCmd_objectTypes);
 	ConsoleGump::AddConsoleCommand("quit", ConCmd_quit);	
 }
 

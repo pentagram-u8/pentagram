@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -46,12 +46,14 @@ public:
 	Object* getObject(ObjId objid) const;
 
 	void objectStats();
+	void objectTypes();
 
 	void save(ODataSource* ods);
 	bool load(IDataSource* ids);
 
 	Object* loadObject(IDataSource* ids);
 
+	static void ConCmd_objectTypes(const Pentagram::istring &args);
 
 	std::vector<Object*> objects;
 	idMan* objIDs;
