@@ -12,3 +12,26 @@ pass the !startedConvo check.
 WORKAROUND:
 Serious hack in UCMachine which sets startedConvo to true as soon as
 setAvatarInStasis is called. This makes sure the flag is set at the right time.
+
+
+
+Typos:
+
+class 0181 (STRATOS)
+"It's location is known only to Honorable Stellos." (s/it's/its/)
+
+class 02C3 (PESANT1)
+"It is a quick way to loose your money and your life" (s/loose/lose/)
+
+class 0572 (STEVBOOK)
+"it carried in it's arms", "driven to it's knees", "it begged for it's life"
+(s/it's/its/, three times)
+
+class 0575 (SORCERER)
+"...caught within it's range. " (s/it's/its/)
+
+class 0593 (BOOK1)
+"Perhaps it's most important purpose is it's capability"
+(s/it's/its/, two times)
+"It's path is broad and its lure is sweet." (s/it's/its/)
+
