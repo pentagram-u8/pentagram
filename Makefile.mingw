@@ -35,7 +35,7 @@ amf2mod.exe : tools/amf2mod/amf2mod.o
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
 FOLD_OBJCS = \
-	filesys/FileSystem.o misc/Args.o misc/Console.o \
+	filesys/FileSystem.o misc/Args.o misc/Console.o misc/istring.o misc/util.o \
 	tools/fold/CallNodes.o tools/fold/Folder.o tools/fold/FuncNodes.o \
 	tools/fold/IfNode.o tools/fold/OperatorNodes.o tools/fold/Type.o \
 	tools/fold/VarNodes.o tools/fold/LoopScriptNodes.o
