@@ -31,8 +31,8 @@ class CoreAudioMidiDriver : public LowLevelMidiDriver
 	AudioUnit au_output;
 
 	const static MidiDriverDesc	desc;
-	static MidiDriver *CoreAudioMidiDriver() {
-		return new FMOplMidiDriver();
+	static MidiDriver *createInstance() {
+		return new CoreAudioMidiDriver();
 	}
 
 public:
@@ -41,10 +41,6 @@ public:
 	CoreAudioMidiDriver();
 
 protected:
-	static MidiDriver *createInstance() {
-		return new CoreAudioMidiDriver();
-	}
-
 	virtual int			open();
 	virtual void		close();
 	virtual void		send(uint32 message);
