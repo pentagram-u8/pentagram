@@ -962,6 +962,8 @@ uint32 Actor::I_setEquip(const uint8* args, unsigned int /*argsize*/)
 	ARG_ACTOR_FROM_PTR(actor);
 	ARG_UINT16(type);
 	ARG_ITEM_FROM_ID(item);
+	if (!actor) return 0;
+	if (!item) return 0;
 
 	if (actor->getEquip(type+1))
 		return 0; // already something equipped
