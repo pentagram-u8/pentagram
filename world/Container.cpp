@@ -212,6 +212,7 @@ bool Container::loadData(IDataSource* ids)
 		if (!item) return false;
 
 		addItem(item);
+		item->setParent(this);
 	}
 
 	return true;
