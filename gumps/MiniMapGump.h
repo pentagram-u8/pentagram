@@ -23,7 +23,7 @@
 #include "Texture.h"
 #include "CurrentMap.h"
 
-#define MINMAPGUMP_SCALE 4
+#define MINMAPGUMP_SCALE 8
 
 class MiniMapGump : public Gump
 {
@@ -43,7 +43,7 @@ public:
 	virtual uint16		TraceObjId(int mx, int my);
 
 	static void			ConCmd_toggle(const Console::ArgsType &args, const Console::ArgvType &argv);	//!< "MiniMapGump::toggle" console command
-
+	static void			ConCmd_generateWholeMap(const Console::ArgsType &args, const Console::ArgvType &argv);	//!< "MiniMapGump::generateWholeMap" console command
 };
 
 #endif // MINIMAPGUMP_H_INCLUDED

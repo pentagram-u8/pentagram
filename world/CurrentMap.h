@@ -165,6 +165,9 @@ public:
 	// A simple trace to find the top item at a specific xy point
 	Item *traceTopItem(sint32 x, sint32 y, sint32 ztop, sint32 zbot, ObjId ignore, uint32 shflags);
 
+	// Set the entire map as being 'fast' 
+	void setWholeMapFast();
+
 	void save(ODataSource* ods);
 	bool load(IDataSource* ids, uint32 version);
 

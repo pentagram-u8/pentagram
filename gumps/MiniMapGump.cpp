@@ -37,10 +37,14 @@ MiniMapGump::MiniMapGump(void) :
 	minimap.format = TEX_FMT_NATIVE;
 	minimap.width = minimap.height = MAP_NUM_CHUNKS*MINMAPGUMP_SCALE;
 	minimap.buffer = texbuffer[0];
+
+	con.AddConsoleCommand("MiniMapGump::generateWholeMap",
+						  MiniMapGump::ConCmd_generateWholeMap);
 }
 
 MiniMapGump::~MiniMapGump(void)
 {
+	con.RemoveConsoleCommand("MiniMapGump::generateWholeMap");
 }
 
 void MiniMapGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
@@ -88,37 +92,25 @@ void MiniMapGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 	ax = ax - sx;
 	ay = ay - sy;
 
-	if (sx < 0)
-	{
+	if (sx < 0) {
 		ox = -sx;
+		surf->Fill32(0,1,1,ox,MAP_NUM_CHUNKS*2);
 	}
-	else if ((sx+MAP_NUM_CHUNKS*2) > (MAP_NUM_CHUNKS*MINMAPGUMP_SCALE))
-	{
+	else if ((sx+MAP_NUM_CHUNKS*2) > (MAP_NUM_CHUNKS*MINMAPGUMP_SCALE)) {
 		lx = (sx+MAP_NUM_CHUNKS*2) - (MAP_NUM_CHUNKS*MINMAPGUMP_SCALE);
-	}
-
-	if (sy < 0)
-	{
-		oy = -sy;
-	}
-	else if ((sy+MAP_NUM_CHUNKS*2) > (MAP_NUM_CHUNKS*MINMAPGUMP_SCALE))
-	{
-		ly = (sy+MAP_NUM_CHUNKS*2) - (MAP_NUM_CHUNKS*MINMAPGUMP_SCALE);
-	}
-
-
-	if (ox) surf->Fill32(0,1,1,ox,MAP_NUM_CHUNKS*2);
-	if (oy) surf->Fill32(0,1,1,MAP_NUM_CHUNKS*2,oy);
-	if (lx) {
 		surf->Fill32(0,1+(MAP_NUM_CHUNKS*2)-lx,1,lx,MAP_NUM_CHUNKS*2);
 	}
-	if (ly) {
+
+	if (sy < 0) {
+		oy = -sy;
+		surf->Fill32(0,1,1,MAP_NUM_CHUNKS*2,oy);
+	}
+	else if ((sy+MAP_NUM_CHUNKS*2) > (MAP_NUM_CHUNKS*MINMAPGUMP_SCALE)) {
+		ly = (sy+MAP_NUM_CHUNKS*2) - (MAP_NUM_CHUNKS*MINMAPGUMP_SCALE);
 		surf->Fill32(0,1,1+(MAP_NUM_CHUNKS*2)-ly,MAP_NUM_CHUNKS*2,ly);
 	}
 
 	surf->Blit(&minimap,sx+ox,sy+oy,MAP_NUM_CHUNKS*2-(ox+lx),MAP_NUM_CHUNKS*2-(oy+ly),1+ox,1+oy);
-
-	//surf->Fill32(0xFFFFFFFF,x*2+1,y*2+1,2,2);
 
 	surf->Fill32(0xFFFFFF00,1+ax-2,1+ay+0,2,1);
 	surf->Fill32(0xFFFFFF00,1+ax+0,1+ay-2,1,2);
@@ -182,10 +174,18 @@ void MiniMapGump::ConCmd_toggle(const Console::ArgsType &args, const Console::Ar
 		mmg->InitGump();
 		desktop->AddChild(mmg);
 		mmg->setRelativePosition(TOP_LEFT, 4, 4);
+
 	}
 	else {
 		mmg->Close();
 	}
+}
+
+void MiniMapGump::ConCmd_generateWholeMap(const Console::ArgsType &args, const Console::ArgvType &argv)
+{
+	World *world = World::get_instance();
+	CurrentMap *currentmap = world->getCurrentMap();
+	currentmap->setWholeMapFast();
 }
 
 uint16 MiniMapGump::TraceObjId(int mx, int my)

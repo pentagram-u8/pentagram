@@ -3,7 +3,11 @@
 	  Doesn't save over map changes so it's only 'so' useful.
 	* graphics/ShapeFrame.*, world/CurrentMap.* : A few extra functions
 	  needed to simplify minimap generation
-
+	* gumps/MiniMapGump.*, world/CurrentMap.* : Added a small hack to 
+	  generate the entire map (just sets the entire map fast). Use new
+	  'MiniMapGump::generateWholeMap' console command. Note, command
+	  only exists when the gump is active. Also I changed the scale to 8.
+	  
 2005-03-07  Ryan Nunn <colourles@users.sourceforge.net>
 	* gumps/FastAreaVisGump.*, kernel/GUIApp.cpp : Very simple gump to 
 	  visualize the fast area. Use console command FastAreaVisGump::toggle

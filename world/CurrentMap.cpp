@@ -951,9 +951,9 @@ Item *CurrentMap::traceTopItem(sint32 x, sint32 y, sint32 ztop, sint32 zbot, Obj
 	}
 
 	int minx, miny, maxx, maxy;
-	minx = (x/MAP_CHUNK_SIZE) - 1;
+	minx = (x/MAP_CHUNK_SIZE);
 	maxx = (x/MAP_CHUNK_SIZE) + 1;
-	miny = (y/MAP_CHUNK_SIZE) - 1;
+	miny = (y/MAP_CHUNK_SIZE);
 	maxy = (y/MAP_CHUNK_SIZE) + 1;
 	if (minx < 0) minx = 0;
 	if (maxx >= MAP_NUM_CHUNKS) maxx = MAP_NUM_CHUNKS-1;
@@ -971,9 +971,7 @@ Item *CurrentMap::traceTopItem(sint32 x, sint32 y, sint32 ztop, sint32 zbot, Obj
 				if (item->getExtFlags() & Item::EXT_SPRITE) continue;
 
 				ShapeInfo* si = item->getShapeInfo();
-				if (!(si->flags & shflags)) continue;
-
-				if (si->is_editor() || si->is_translucent()) continue;
+				if (!(si->flags & shflags) || si->is_editor() || si->is_translucent()) continue;
 
 				sint32 ix, iy, iz, ixd, iyd, izd;
 				item->getLocation(ix, iy, iz);
@@ -998,6 +996,14 @@ Item *CurrentMap::traceTopItem(sint32 x, sint32 y, sint32 ztop, sint32 zbot, Obj
 	return top;
 }
 
+void CurrentMap::setWholeMapFast()
+{
+	for (unsigned int i = 0; i < MAP_NUM_CHUNKS; ++i) {
+		for (unsigned int j = 0; j < MAP_NUM_CHUNKS; ++j) {
+			if (!isChunkFast(j,i)) setChunkFast(j,i);
+		}
+	}
+}
 
 void CurrentMap::save(ODataSource* ods)
 {
