@@ -1,6 +1,7 @@
 2003-06-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/MainActor.*: accumulateStr/Dex/Int, doxygen
 	* kernel/GameDetector.*: some simple game/language detection code
+	* kernel/GameDetector.*: detect spanish
 
 2003-06-22	  Ryan Nunn <colourles@users.sourceforge.net>
 	* world/actors/Actor.h : private to protected

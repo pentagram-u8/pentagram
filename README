@@ -49,6 +49,12 @@ A sample pentagram.cfg is included below:
   <fullscreen>
    no
   </fullscreen>
+  <width>
+   640
+  </width>
+  <height>
+   480
+  </height>
  </video>
 </config>
 

@@ -11,6 +11,7 @@ fold_OBJ = \
 	$(CONF) \
 	$(KERNEL) \
 	filesys/FileSystem.o \
+	filesys/Flex.o \
 	tools/fold/Fold.o \
 	tools/fold/Folder.o \
 	tools/fold/Type.o \

@@ -13,6 +13,7 @@ disasm_OBJ = \
 	$(CONF) \
 	$(KERNEL) \
 	filesys/FileSystem.o \
+	filesys/Flex.o \
 	tools/disasm/Disasm.o \
 	tools/fold/Type.o \
 	tools/fold/IfNode.o \
