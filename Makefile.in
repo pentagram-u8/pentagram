@@ -99,6 +99,9 @@ $(DEPDIRS):
 	-$(MKDIR) $(@D)
 	touch $@
 
+# cancel any built-in .cpp->.o rules
+%.o: %.cpp
+
 # custom compile rule which calculates dependencies
 %.o: %.cpp $(PCHEADER)
 	@$(MKDIR) $(*D)/$(DEPDIR)

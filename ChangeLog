@@ -1,3 +1,6 @@
+2004-07-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* Makefile.in: fix PCH compilation if make has a built-in .cpp->.o rule
+
 2004-07-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* audio/midi/UnixSeqMidiDriver.*: ported UNIX sequencer device MIDI
 	  driver from ScummVM
