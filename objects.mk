@@ -211,7 +211,13 @@ ACTORS = \
 
 AUDIO = \
 	audio/MusicFlex.o \
-	audio/MusicProcess.o
+	audio/MusicProcess.o \
+	audio/AudioChannel.o \
+	audio/AudioMixer.o \
+	audio/AudioProcess.o \
+	audio/AudioSample.o \
+	audio/SonarcAudioSample.o \
+	audio/SoundFlex.o
 
 MIDI = \
 	audio/midi/XMidiEventList.o \

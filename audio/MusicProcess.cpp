@@ -24,7 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "XMidiFile.h"
 #include "XMidiEventList.h"
 
-#include "GUIApp.h"
+#include "AudioMixer.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
 
@@ -217,7 +217,7 @@ bool MusicProcess::loadData(IDataSource* ids, uint32 version)
 
 	the_music_process = this;
 
-	driver = GUIApp::get_instance()->getMidiDriver();
+	driver = Pentagram::AudioMixer::get_instance()->getMidiDriver();
 
 	return true;
 }

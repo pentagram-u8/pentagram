@@ -33,6 +33,7 @@ class Shape;
 class MusicFlex;
 class WpnOvlayDat;
 class ShapeFrame;
+class SoundFlex;
 
 class GameData
 {
@@ -54,6 +55,7 @@ public:
 	Shape* getMouse() const { return mouse; }
 	MusicFlex* getMusic() const { return music; }
 	WpnOvlayDat* getWeaponOverlay() const { return weaponoverlay; }
+	SoundFlex* getSoundFlex() const { return soundflex; }
 
 	ShapeArchive* getShapeFlex(uint16 flexId) const;
 	Shape* getShape(FrameID frameid) const;
@@ -79,6 +81,8 @@ private:
 	Shape* mouse;
 	MusicFlex* music;
 	WpnOvlayDat* weaponoverlay;
+
+	SoundFlex* soundflex;
 
 	static GameData* gamedata;
 };

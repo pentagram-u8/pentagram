@@ -1,3 +1,9 @@
+2005-03-20  Ryan Nunn <colourles@users.sourceforge.net>
+	* Everything: New audio system. Work in progress, but mostly functional
+	  so here it is. There is not sound attenuation at the moment so things
+	  are always played at full volume regardless of where they are. No
+	  speech support yet.
+
 2005-03-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* games/*Game.*: moved intro/endgame to U8Game. Now properly loads
 	  non-english intro.

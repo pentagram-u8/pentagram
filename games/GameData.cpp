@@ -36,13 +36,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "FontManager.h"
 #include "GameInfo.h"
 #include "SettingManager.h"
+#include "SoundFlex.h"
 
 GameData* GameData::gamedata = 0;
 
 
 GameData::GameData()
 	: fixed(0), mainshapes(0), mainusecode(0), globs(0), fonts(0), gumps(0),
-	  mouse(0), music(0), weaponoverlay(0)
+	  mouse(0), music(0), weaponoverlay(0), soundflex(0)
 {
 	assert(gamedata == 0);
 	gamedata = this;
@@ -77,6 +78,9 @@ GameData::~GameData()
 
 	delete weaponoverlay;
 	weaponoverlay = 0;
+
+	delete soundflex;
+	soundflex = 0;
 
 	gamedata = 0;
 }
@@ -342,6 +346,13 @@ void GameData::loadU8Data()
 		std::exit(-1);
 	}
 	music = new MusicFlex(mf);
+
+	IDataSource *sndflx = filesystem->ReadFile("@u8/sound/sound.flx");
+	if (!sndflx) {
+		perr << "Unable to load sound/sound.flx. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	soundflex = new SoundFlex(sndflx);
 
 	loadTranslation();
 }

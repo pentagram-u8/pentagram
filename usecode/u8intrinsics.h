@@ -44,6 +44,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "FireballProcess.h"
 #include "HealProcess.h"
 #include "InverterProcess.h"
+#include "AudioProcess.h"
 
 // Ultima 8 Intrinsics
 Intrinsic U8Intrinsics[] = {
@@ -298,17 +299,17 @@ Intrinsic U8Intrinsics[] = {
 	MainActor::I_clrAvatarInCombat,
 	MainActor::I_setAvatarInCombat,
 	MainActor::I_isAvatarInCombat,
-	0, // playSFX
-	0, // playSFX
-	0, // playSFX
-	0, //U
+	AudioProcess::I_playSFX,		// sint16
+	AudioProcess::I_playSFX,		// sint16 uint8
+	AudioProcess::I_playSFX,		// sint16 uint16 ObjID
+	AudioProcess::I_playAmbientSFX, // sint16              Unused (but implemented)
 	// 0x0F0
-	0, //U
-	0, // playAmbientSFX
-	0, // isSFXPlaying
-	0, // setVolumeSFX
-	0, // stopSFX
-	0, // stopSFX
+	AudioProcess::I_playAmbientSFX, // sint16 uint8        Unused (but implemented)
+	AudioProcess::I_playAmbientSFX,	// sint16 uint16 ObjID
+	AudioProcess::I_isSFXPlaying,
+	AudioProcess::I_setVolumeSFX,
+	AudioProcess::I_stopSFX,		// sint16
+	AudioProcess::I_stopSFX,		// sint16 ObjID
 	0, //U
 	0, //U
 	MusicProcess::I_musicStop,

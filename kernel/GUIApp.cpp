@@ -99,6 +99,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ScalerManager.h"
 #include "Scaler.h"
 
+#include "AudioMixer.h"
+
 #include "DisasmProcess.h"
 #include "CompileProcess.h"
 
@@ -125,29 +127,9 @@ struct HWMouseCursor {
 #include "XFormBlend.h"
 
 #include "MusicProcess.h"
-#include "MusicFlex.h"
+#include "AudioProcess.h"
 
 #include "util.h"
-
-#include "MidiDriver.h"
-#if defined(WIN32) && !defined(UNDER_CE)
-#include "WindowsMidiDriver.h"
-#endif
-#ifdef MACOSX
-#include "CoreAudioMidiDriver.h"
-#endif
-#ifdef USE_FMOPL_MIDI
-#include "FMOplMidiDriver.h"
-#endif
-#ifdef USE_TIMIDITY_MIDI
-#include "TimidityMidiDriver.h"
-#endif
-#ifdef USE_ALSA_MIDI
-#include "ALSAMidiDriver.h"
-#endif
-#ifdef UNIX
-#include "UnixSeqMidiDriver.h"
-#endif
 
 using std::string;
 
@@ -163,7 +145,7 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	  painting(false), showTouching(false), flashingcursor(-1), 
 	  mouseOverGump(0), dragging(DRAG_NOT), dragging_offsetX(0),
 	  dragging_offsetY(0), inversion(0), timeOffset(0), has_cheated(false),
-	  midi_driver(0), midi_volume(255), drawRenderStats(false), ttfoverrides(false)
+	  drawRenderStats(false), ttfoverrides(false), audiomixer(0)
 {
 	application = this;
 
@@ -239,7 +221,7 @@ GUIApp::~GUIApp()
 
 	FORGET_OBJECT(objectmanager);
 	FORGET_OBJECT(hidmanager);
-	deinit_midi();
+	FORGET_OBJECT(audiomixer);
 	FORGET_OBJECT(ucmachine);
 	FORGET_OBJECT(palettemanager);
 	FORGET_OBJECT(gamedata);
@@ -283,6 +265,8 @@ void GUIApp::startup()
 							 ProcessLoader<CameraProcess>::load);
 	kernel->addProcessLoader("MusicProcess",
 							 ProcessLoader<MusicProcess>::load);
+	kernel->addProcessLoader("AudioProcess",
+							 ProcessLoader<AudioProcess>::load);
 	kernel->addProcessLoader("EggHatcherProcess",
 							 ProcessLoader<EggHatcherProcess>::load);
 	kernel->addProcessLoader("UCProcess",
@@ -374,148 +358,9 @@ void GUIApp::startup()
 	paint();
 
 	// This Must be AFTER loading the data cause it might need gamedata
-	init_midi();
+	audiomixer = new Pentagram::AudioMixer(22050,true,8);
 }
 
-void GUIApp::sdlAudioCallback(void *userdata, Uint8 *stream, int len)
-{
-	GUIApp *app = app->get_instance();
-	MidiDriver *drv = app->getMidiDriver();
-	if (drv && drv->isSampleProducer())
-		drv->produceSamples(reinterpret_cast<sint16*>(stream), len);
-}
-
-void GUIApp::init_midi()
-{
-	MidiDriver * new_driver = 0;
-	SDL_AudioSpec desired, obtained;
-
-	desired.format = AUDIO_S16SYS;
-	desired.freq = 22050;
-	desired.channels = 2;
-	desired.samples = 4096;
-	desired.callback = sdlAudioCallback;
-	desired.userdata = 0;
-
-#ifdef UNDER_CE
-	desired.freq = 11025;
-	desired.channels = 1;
-#endif
-	pout << "Initializing Midi" << std::endl;
-
-	std::vector<const MidiDriver::MidiDriverDesc*>	midi_drivers;
-
-#if 1
-	// Open SDL Audio (even though we may not need it)
-	SDL_InitSubSystem(SDL_INIT_AUDIO);
-	int ret = SDL_OpenAudio(&desired, &obtained);
-	bool audio_ok = (ret == 0);
-
-	// Now, add the drivers in order of priority.
-	// Do OS Native drivers first, then Timidity, then FMOpl
-
-#ifdef MACOSX
-	midi_drivers.push_back(CoreAudioMidiDriver::getDesc());
-#endif
-#if defined(WIN32) && !defined(UNDER_CE)
-	midi_drivers.push_back(WindowsMidiDriver::getDesc());
-#endif
-#ifdef USE_TIMIDITY_MIDI
-	midi_drivers.push_back(TimidityMidiDriver::getDesc());
-#endif
-#ifdef USE_FMOPL_MIDI
-	midi_drivers.push_back(FMOplMidiDriver::getDesc());
-#endif
-#ifdef USE_ALSA_MIDI
-	midi_drivers.push_back(ALSAMidiDriver::getDesc());
-#endif
-#ifdef UNIX
-	midi_drivers.push_back(UnixSeqMidiDriver::getDesc());
-#endif
-
-	// First thing attempt to find the Midi driver as specified in the config
-	std::string desired_driver;
-	settingman->setDefault("midi_driver", "default");
-	settingman->get("midi_driver", desired_driver);
-	const char * drv = desired_driver.c_str();
-
-	// Has the config file specified disabled midi?
-	if (audio_ok && Pentagram::strcasecmp(drv, "disabled"))
-	{
-		std::vector<const MidiDriver::MidiDriverDesc*>::iterator it;
-
-		// Ok, it hasn't so search for the driver
-		for (it = midi_drivers.begin(); it < midi_drivers.end(); it++) {
-
-			// Found it (case insensitive)
-			if (!Pentagram::strcasecmp(drv, (*it)->name)) {
-
-				pout << "Trying config specified Midi driver: `" << (*it)->name << "'" << std::endl;
-
-				new_driver = (*it)->createInstance();
-				if (new_driver) {
-
-					if (new_driver->initMidiDriver(obtained.freq,obtained.channels==2)) {
-						delete new_driver;
-						new_driver = 0; 
-					} 
-				}
-			}
-		}
-
-		// Uh oh, we didn't manage to load a driver! 
-		// Search for the first working one
-		if (!new_driver) for (it = midi_drivers.begin(); it < midi_drivers.end(); it++) {
-
-			pout << "Trying: `" << (*it)->name << "'" << std::endl;
-
-			new_driver = (*it)->createInstance();
-			if (new_driver) {
-
-				// Got it
-				if (!new_driver->initMidiDriver(obtained.freq,obtained.channels==2)) 
-					break;
-
-				// Oh well, try the next one
-				delete new_driver;
-				new_driver = 0; 
-			}
-		}
-	}
-	else
-	{
-		new_driver = 0; // silence :-)
-	}
-
-#else
-	new_driver = 0; // silence :-)
-#endif
-
-	// If the driver is a 'sample' producer we need to hook it to SDL
-	if (new_driver)
-	{
-		new_driver->setGlobalVolume(midi_volume);
-
-		SDL_LockAudio();
-		midi_driver = new_driver;
-		SDL_UnlockAudio();
-	}
-
-	// GO GO GO!
-	SDL_PauseAudio(0);
-
-	// Create the Music Process
-	Process *mp = new MusicProcess(new_driver);
-	kernel->addProcess(mp);
-}
-
-void GUIApp::deinit_midi()
-{
-	SDL_CloseAudio();
-	if (midi_driver)  midi_driver->destroyMidiDriver();
-	delete midi_driver;
-	midi_driver = 0;
-}
 
 void GUIApp::DeclareArgs()
 {
@@ -1300,6 +1145,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 	{
 		if (dragging != DRAG_NOT) break;
 
+		/*
 		switch (event.key.keysym.sym) {
 			case SDLK_KP_PLUS: {
 				midi_volume+=8;
@@ -1316,6 +1162,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			default:
 				break;
 		}
+		*/
 	}
 	break;
 
@@ -1641,11 +1488,7 @@ bool GUIApp::saveGame(std::string filename, bool ignore_modals)
 void GUIApp::resetEngine()
 {
 	// kill music
-	if (midi_driver) {
-		for (int i = 0; i < midi_driver->maxSequences(); i++) {
-			midi_driver->finishSequence(i);
-		}
-	}
+	if (audiomixer) audiomixer->reset();
 
 	// now, reset everything (order matters)
 	world->reset();

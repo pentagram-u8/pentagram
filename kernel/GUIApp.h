@@ -43,10 +43,13 @@ class World;
 class ObjectManager;
 class FontManager;
 class HIDManager;
-class MidiDriver;
 class AvatarMoverProcess;
 class IDataSource;
 class ODataSource;
+
+namespace Pentagram {
+	class AudioMixer;
+};
 
 // Hack alert
 struct HWMouseCursor;
@@ -117,8 +120,6 @@ public:
 	//! start a new game
 	//! \return true if succesful.
 	bool newGame();
-
-	MidiDriver* getMidiDriver() const { return midi_driver; }
 
 	//! get mouse cursor length. 0 = short, 1 = medium, 2 = long
 	int getMouseLength(int mx, int my);
@@ -289,13 +290,6 @@ public:
 
 private:
 
-	// Should probably go somewhere else.... perhaps in some 'audio manager'
-	MidiDriver *midi_driver;
-	int			midi_volume;
-	void		init_midi();
-	void		deinit_midi();
-	static void	sdlAudioCallback(void *userdata, Uint8 *stream, int len);
-	
 	std::list<ObjId>	textmodes;		//!< Gumps that want text mode
 
 	// Load and save games from arbitrary filenames from the console
@@ -310,6 +304,9 @@ private:
 	static void			ConCmd_drawRenderStats(const Console::ArgsType &args, const Console::ArgvType &argv);		//!< "GUIApp::drawRenderStats" console command
 
 	bool				ttfoverrides;
+
+	// Audio Mixer
+	Pentagram::AudioMixer *audiomixer;
 };
 
 #endif
