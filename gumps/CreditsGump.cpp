@@ -25,6 +25,7 @@
 #include "RenderedText.h"
 #include "Font.h"
 #include "FontManager.h"
+#include "MusicProcess.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(CreditsGump,ModalGump);
 
@@ -87,6 +88,9 @@ void CreditsGump::Close(bool no_del)
 	GUIApp::get_instance()->popMouseCursor();
 
 	ModalGump::Close(no_del);
+
+	MusicProcess* musicproc = MusicProcess::get_instance();
+	if (musicproc) musicproc->playMusic(0);
 }
 
 void CreditsGump::extractLine(std::string& text,

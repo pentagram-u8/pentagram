@@ -40,6 +40,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MovieGump.h"
 #include "RawArchive.h"
 #include "CreditsGump.h"
+#include "MusicProcess.h"
 
 U8Game::U8Game() : Game()
 {
@@ -369,6 +370,9 @@ void U8Game::playCredits()
 	std::string text = getCreditText(ids);
 	delete ids;
 
+	MusicProcess* musicproc = MusicProcess::get_instance();
+	if (musicproc) musicproc->playMusic(51); // CONSTANT!
+
 	Gump* gump = new CreditsGump(text);
 	gump->InitGump();
 	GUIApp::get_instance()->addGump(gump);
@@ -387,6 +391,9 @@ void U8Game::playQuotes()
 	}
 	std::string text = getCreditText(ids);
 	delete ids;
+
+	MusicProcess* musicproc = MusicProcess::get_instance();
+	if (musicproc) musicproc->playMusic(113); // CONSTANT!
 
 	Gump* gump = new CreditsGump(text, 80);
 	gump->InitGump();
