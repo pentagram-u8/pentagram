@@ -1665,11 +1665,16 @@ void GUIApp::setupCoreGumps()
 	screen->GetSurfaceDims(dims);
 
 	// Scaler stuff... should probably be elsewhere
-	int scalex, scaley;
+	int scalex, scaley, scalerindex=0;
+	std::string scaler;
 	settingman->setDefault("scalex", 320);
 	settingman->get("scalex", scalex);
 	settingman->setDefault("scaley", 200);
 	settingman->get("scaley", scaley);
+	settingman->setDefault("scaler", "point");
+	settingman->get("scaler", scaler);
+	
+	if (scaler == Pentagram::istring("bilinear")) scalerindex = 1;
 
 	if (scalex < 0) scalex= -scalex;
 	else if (scalex < 100) scalex = dims.w/scalex;
@@ -1683,7 +1688,7 @@ void GUIApp::setupCoreGumps()
 	desktopGump->MakeFocus();
 
 	pout << "Create Scalergump" << std::endl;
-	scalerGump = new ScalerGump(0,0, dims.w, dims.h,scalex,scaley,0,-1);
+	scalerGump = new ScalerGump(0,0, dims.w, dims.h,scalex,scaley,scalerindex,-1);
 	scalerGump->InitGump();
 	desktopGump->AddChild(scalerGump);
 

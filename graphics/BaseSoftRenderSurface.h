@@ -72,7 +72,7 @@ protected:
 	BaseSoftRenderSurface(int w, int h);
 
 	// Create Generic
-	BaseSoftRenderSurface(int w, int h, int bpp, int rsft, int gsft, int bsft);
+	BaseSoftRenderSurface(int w, int h, int bpp, int rsft, int gsft, int bsft, int asft);
 	BaseSoftRenderSurface(int w, int h, uint8 *buf);
 	virtual ECode GenericLock()  { return P_NO_ERROR; }
 	virtual ECode GenericUnlock()  { return P_NO_ERROR; }

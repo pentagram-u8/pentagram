@@ -54,15 +54,19 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(SDL_Surface *s) :
 	RenderSurface::r_loss = sdl_surf->format->Rloss;
 	RenderSurface::g_loss = sdl_surf->format->Gloss;
 	RenderSurface::b_loss = sdl_surf->format->Bloss;
+	RenderSurface::a_loss = sdl_surf->format->Aloss;
 	RenderSurface::r_loss16 = r_loss+8;
 	RenderSurface::g_loss16 = g_loss+8;
 	RenderSurface::b_loss16 = b_loss+8;
+	RenderSurface::a_loss16 = a_loss+8;
 	RenderSurface::r_shift = sdl_surf->format->Rshift;
 	RenderSurface::g_shift = sdl_surf->format->Gshift;
 	RenderSurface::b_shift = sdl_surf->format->Bshift;
+	RenderSurface::a_shift = sdl_surf->format->Ashift;
 	RenderSurface::r_mask = sdl_surf->format->Rmask;
 	RenderSurface::g_mask = sdl_surf->format->Gmask;
 	RenderSurface::b_mask = sdl_surf->format->Bmask;
+	RenderSurface::a_mask = sdl_surf->format->Amask;
 
 	SetPixelsPointer();
 }
@@ -74,7 +78,7 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(SDL_Surface *s) :
 // Desc: Constructor for Generic BaseSoftRenderSurface
 //
 BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h, int bpp, 
-											int rsft, int gsft, int bsft) :
+											int rsft, int gsft, int bsft, int asft) :
 	pixels(0), pixels00(0), zbuffer(0), zbuffer00(0),
 	bytes_per_pixel(0), bits_per_pixel(0), format_type(0), 
 	ox(0), oy(0), width(0), height(0), pitch(0), zpitch(0),
@@ -87,6 +91,7 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h, int bpp,
 			r_loss = 3;
 			g_loss = 3;
 			b_loss = 3;
+			a_loss = 7;
 			bpp = 16;
 			break;
 
@@ -94,12 +99,14 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h, int bpp,
 			r_loss = 3;
 			g_loss = 2;
 			b_loss = 3;
+			a_loss = 0;
 			break;
 
 		case 32:
 			r_loss = 0;
 			g_loss = 0;
 			b_loss = 0;
+			a_loss = 0;
 			break;
 
 		default:
@@ -114,12 +121,15 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h, int bpp,
 	RenderSurface::r_loss16 = r_loss+8;
 	RenderSurface::g_loss16 = g_loss+8;
 	RenderSurface::b_loss16 = b_loss+8;
+	RenderSurface::a_loss16 = a_loss+8;
 	RenderSurface::r_shift = rsft;
 	RenderSurface::g_shift = gsft;
 	RenderSurface::b_shift = bsft;
+	RenderSurface::a_shift = asft;
 	RenderSurface::r_mask = (0xFF>>r_loss)<<rsft;
 	RenderSurface::g_mask = (0xFF>>g_loss)<<gsft;
 	RenderSurface::b_mask = (0xFF>>b_loss)<<bsft;
+	RenderSurface::a_mask = (0xFF>>a_loss)<<asft;
 
 	SetPixelsPointer();
 }

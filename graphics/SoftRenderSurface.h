@@ -32,7 +32,7 @@ template<class uintX> class SoftRenderSurface : public BaseSoftRenderSurface
 {
 protected:
 	// Create Generic surface
-	SoftRenderSurface(int w, int h, int bpp, int rsft, int gsft, int bsft);
+	SoftRenderSurface(int w, int h, int bpp, int rsft, int gsft, int bsft, int asft);
 
 public:
 

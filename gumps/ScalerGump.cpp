@@ -82,7 +82,7 @@ void ScalerGump::Paint(RenderSurface* surf, sint32 lerp_factor)
 	PaintChildren(buffer, lerp_factor);
 
 	Texture* tex = buffer->GetSurfaceAsTexture();
-	surf->StretchBlit(tex, 0, 0, swidth, sheight, 0, 0, width, height);
+	surf->StretchBlit(tex, 0, 0, swidth, sheight, 0, 0, width, height, scaler1==1);
 }
 
 // Convert a parent relative point to a gump point

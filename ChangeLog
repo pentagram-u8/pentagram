@@ -3,6 +3,14 @@
 	  little. It is now significantly faster 
 	* gumps/DesktopGump.h : Only fill if console down or a DEBUG build. 
 	  Provides a non trivial speed increase for me.
+	* graphics/BaseSoftRenderSurface.*, graphics/RenderSurface.h,
+	  graphics/SoftRenderSurface.*, gumps/ScalerGump.*, kernel/GUIApp.cpp,
+	  graphics/scalers/BilinearScaler.h :
+	  Added a bilinear filtering scaler. Use it by adding scaler=bilinear
+	  in the ini. Only works if dimensions of the 'source' surface are
+	  multiples of 4. 2x scaling, 2x2.4 scaling (320x200->640x480) and 
+	  1x1.2 (640x400->640x480) are fairly quick. Arbitrary scaling is slow,
+	  real slow.
 	  	  	  
 2005-02-19  Ryan Nunn <colourles@users.sourceforge.net>
 	* graphics/RenderSurface.* : StretchBlit function sort of implemented

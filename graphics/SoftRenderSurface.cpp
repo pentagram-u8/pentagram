@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "XFormBlend.h"
 #include "scalers/PointScaler.h"
+#include "scalers/BilinearScaler.h"
 
 ///////////////////////
 //                   //
@@ -54,8 +55,8 @@ template<class uintX> SoftRenderSurface<uintX>::SoftRenderSurface(SDL_Surface *s
 //
 // Desc: Create a Generic SoftRenderSurface
 //
-template<class uintX> SoftRenderSurface<uintX>::SoftRenderSurface(int w, int h, int bpp, int rsft, int gsft, int bsft)
-	: BaseSoftRenderSurface(w,h,bpp,rsft,gsft,bsft)
+template<class uintX> SoftRenderSurface<uintX>::SoftRenderSurface(int w, int h, int bpp, int rsft, int gsft, int bsft, int asft)
+	: BaseSoftRenderSurface(w,h,bpp,rsft,gsft,bsft,asft)
 {
 }
 
@@ -421,17 +422,66 @@ template<class uintX> void SoftRenderSurface<uintX>::FadedBlit(Texture *tex, sin
 
 
 
-template<class uintX> class Mainp_Nat2Nat
+template<class uintX> class Manip_Nat2Nat
 {
 public:
+	static bool are_same() { return true; }
 	static uintX copy (uintX src) { return src; }
+	static void split(uint32 src, uint8 &r, uint8 &g, uint8 &b, uint8 &a) {
+		UNPACK_RGBA8(src, r, g, b, a);	
+	}
+	static uintX merge(uint32 r, uint32 g, uint32 b, uint32 a) {
+		return static_cast<uintX>(PACK_RGBA8(r, g, b, a));	
+	}
 };
 
-template<class uintX> class Mainp_Sta2Nat
+template<class uintX> class Manip_32ABGR
 {
 public:
+	static bool are_same() { return true; }
+	static uintX copy (uintX src) { return src; }
+	static void split(uint32 src, uint8 &r, uint8 &g, uint8 &b, uint8 &a) {
+		r = (src)    &0xFF;
+		g = (src>>8) &0xFF;
+		b = (src>>16)&0xFF;
+		a = (src>>24)&0xFF;
+	}
+	static uintX merge(uint32 r, uint32 g, uint32 b, uint32 a) {
+		return static_cast<uintX>((r&0xFF)|((g&0xFF)<<8)|((b&0xFF)<<16)|((a&0xFF)<<24));
+	}
+};
+
+template<class uintX> class Manip_32RGBA
+{
+public:
+	static bool are_same() { return true; }
+	static uintX copy (uintX src) { return src; }
+	static void split(uint32 src, uint8 &r, uint8 &g, uint8 &b, uint8 &a) {
+		a = (src)    &0xFF;
+		b = (src>>8) &0xFF;
+		g = (src>>16)&0xFF;
+		r = (src>>24)&0xFF;
+	}
+	static uintX merge(uint32 r, uint32 g, uint32 b, uint32 a) {
+		return static_cast<uintX>((a&0xFF)|((b&0xFF)<<8)|((g&0xFF)<<16)|((r&0xFF)<<24));
+	}
+};
+
+template<class uintX> class Manip_Sta2Nat
+{
+public:
+	static bool are_same() { return false; }
 	static uintX copy (uint32 src) { 
-		return static_cast<uintX>(PACK_RGB8( TEX32_R(src), TEX32_G(src), TEX32_B(src) ));
+		return static_cast<uintX>(PACK_RGBA8( TEX32_R(src), TEX32_G(src), TEX32_B(src), TEX32_A(src) ));
+	}
+	static void split(uint32 src, uint8 &r, uint8 &g, uint8 &b, uint8 &a) {
+		r = TEX32_R(src);
+		g = TEX32_G(src);
+		b = TEX32_B(src);
+		a = TEX32_A(src);
+	}
+	static uintX merge(uint32 r, uint32 g, uint32 b, uint32 a) {
+		return static_cast<uintX>(PACK_RGBA8(r, g, b, a));	
 	}
 };
 
@@ -446,7 +496,6 @@ template<class uintX> void SoftRenderSurface<uintX>::StretchBlit(Texture *textur
 								sint32 dx, sint32 dy, sint32 dw, sint32 dh, 
 								bool bilinear, bool clampedges)
 {
-
 	// Nothing we can do
 	if ((sh <= 0) || (dh <= 0) || (sw <= 0) || (dw <= 0)) return;
 
@@ -457,26 +506,74 @@ template<class uintX> void SoftRenderSurface<uintX>::StretchBlit(Texture *textur
 		return;
 	}
 
-	// First detect integer up scalings, since they are 'easy'
-	bool x_intscale = ((dw / sw) * sw) == dw;
-	bool y_intscale = ((dh / sh) * sh) == dh;
+	uint8 *pixel = pixels + dy * pitch + dx * sizeof(uintX);
 
-	// Ok easy simple scale
-	if (!bilinear)
+	bool are_same = texture->format == TEX_FMT_NATIVE;
+
+	if ((texture->format == TEX_FMT_STANDARD) && 
+		(RenderSurface::a_mask == TEX32_A_MASK) && 
+		(RenderSurface::r_mask == TEX32_R_MASK) && 
+		(RenderSurface::g_mask == TEX32_G_MASK) && 
+		(RenderSurface::b_mask == TEX32_B_MASK))
+		are_same = true;
+
+	if (bilinear)
 	{
-		uint8 *pixel = pixels + dy * pitch + dx * sizeof(uintX);
+		bool ok = false;
 
-		if (texture->format == TEX_FMT_STANDARD)
+		if (are_same)
 		{
-			PointScaler<uintX,Mainp_Sta2Nat<uintX>,uint32>::Scale(
+			if (RenderSurface::a_mask == 0xFF000000 && sizeof(uintX) == 4)
+			{
+				ok = BilinearScaler<uintX,Manip_32ABGR<uintX>,uintX>::Scale(
+						texture, sx, sy, sw, sh, pixel, dw, dh, pitch );
+			}
+			else if (RenderSurface::a_mask == 0x000000FF && sizeof(uintX) == 4)
+			{
+				ok = BilinearScaler<uintX,Manip_32RGBA<uintX>,uintX>::Scale(
+						texture, sx, sy, sw, sh, pixel, dw, dh, pitch );
+			}
+			else 
+			{
+				 ok = BilinearScaler<uintX,Manip_Nat2Nat<uintX>,uintX>::Scale(
+						texture, sx, sy, sw, sh, pixel, dw, dh, pitch );
+			}
+		}
+		else if (texture->format == TEX_FMT_STANDARD)
+		{
+			ok = BilinearScaler<uintX,Manip_Sta2Nat<uintX>,uint32>::Scale(
 					texture, sx, sy, sw, sh, pixel, dw, dh, pitch );
 		}
-		else if (texture->format == TEX_FMT_NATIVE)
+
+		if (ok) return;
+	}
+
+	// Ok easy simple scale
+
+	if (are_same)
+	{
+		if (RenderSurface::a_mask == 0xFF000000 && sizeof(uintX) == 4)
 		{
-			PointScaler<uintX,Mainp_Nat2Nat<uintX>,uintX>::Scale(
+			PointScaler<uintX,Manip_32ABGR<uintX>,uintX>::Scale(
+					texture, sx, sy, sw, sh, pixel, dw, dh, pitch );
+		}
+		else if (RenderSurface::a_mask == 0x000000FF && sizeof(uintX) == 4)
+		{
+			PointScaler<uintX,Manip_32RGBA<uintX>,uintX>::Scale(
+					texture, sx, sy, sw, sh, pixel, dw, dh, pitch );
+		}
+		else 
+		{
+			PointScaler<uintX,Manip_Nat2Nat<uintX>,uintX>::Scale(
 					texture, sx, sy, sw, sh, pixel, dw, dh, pitch );
 		}
 	}
+	else if (texture->format == TEX_FMT_STANDARD)
+	{
+		PointScaler<uintX,Manip_Sta2Nat<uintX>,uint32>::Scale(
+				texture, sx, sy, sw, sh, pixel, dw, dh, pitch );
+	}
+
 }
 
 //

@@ -33,8 +33,12 @@ namespace Pentagram
 }
 
 #define UNPACK_RGB8(pix,r,g,b) { r = (((pix)&RenderSurface::r_mask)>>RenderSurface::r_shift)<<RenderSurface::r_loss; g = (((pix)&RenderSurface::g_mask)>>RenderSurface::g_shift)<<RenderSurface::g_loss; b = (((pix)&RenderSurface::b_mask)>>RenderSurface::b_shift)<<RenderSurface::b_loss; }
-#define PACK_RGB8(r,g,b) (((r)>>RenderSurface::r_loss)<<RenderSurface::r_shift) | (((g)>>RenderSurface::g_loss)<<RenderSurface::g_shift) | (((b)>>RenderSurface::b_loss)<<RenderSurface::b_shift)
-#define PACK_RGB16(r,g,b) (((r)>>RenderSurface::r_loss16)<<RenderSurface::r_shift) | (((g)>>RenderSurface::g_loss16)<<RenderSurface::g_shift) | (((b)>>RenderSurface::b_loss16)<<RenderSurface::b_shift)
+#define PACK_RGB8(r,g,b) ((((r)>>RenderSurface::r_loss)<<RenderSurface::r_shift) | (((g)>>RenderSurface::g_loss)<<RenderSurface::g_shift) | (((b)>>RenderSurface::b_loss)<<RenderSurface::b_shift))
+#define PACK_RGB16(r,g,b) ((((r)>>RenderSurface::r_loss16)<<RenderSurface::r_shift) | (((g)>>RenderSurface::g_loss16)<<RenderSurface::g_shift) | (((b)>>RenderSurface::b_loss16)<<RenderSurface::b_shift))
+
+#define UNPACK_RGBA8(pix,r,g,b,a) { r = (((pix)&RenderSurface::r_mask)>>RenderSurface::r_shift)<<RenderSurface::r_loss; g = (((pix)&RenderSurface::g_mask)>>RenderSurface::g_shift)<<RenderSurface::g_loss; b = (((pix)&RenderSurface::b_mask)>>RenderSurface::b_shift)<<RenderSurface::b_loss; ; a = (((pix)&RenderSurface::a_mask)>>RenderSurface::a_shift)<<RenderSurface::a_loss; }
+#define PACK_RGBA8(r,g,b,a) ((((r)>>RenderSurface::r_loss)<<RenderSurface::r_shift) | (((g)>>RenderSurface::g_loss)<<RenderSurface::g_shift) | (((b)>>RenderSurface::b_loss)<<RenderSurface::b_shift) | (((a)>>RenderSurface::a_loss)<<RenderSurface::a_shift))
+#define PACK_RGBA16(r,g,b,a) ((((r)>>RenderSurface::r_loss16)<<RenderSurface::r_shift) | (((g)>>RenderSurface::g_loss16)<<RenderSurface::g_shift) | (((b)>>RenderSurface::b_loss16)<<RenderSurface::b_shift) | (((a)>>RenderSurface::a_loss16)<<RenderSurface::a_shift))
 
 //
 // RenderSurface
