@@ -83,7 +83,6 @@ FONTS = \
 MISC = \
 	misc/istring.o \
 	misc/Console.o \
-	misc/Q_strcasecmp.o \
 	misc/idMan.o \
 	misc/pent_include.o \
 	misc/util.o

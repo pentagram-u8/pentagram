@@ -98,6 +98,8 @@ public:
 
 	bool getTypeFlag(int typeflag);
 
+	ShapeInfo() : weaponinfo(0), armourinfo(0), monsterinfo(0) { }
+
 	~ShapeInfo() {
 		delete weaponinfo;
 		delete[] armourinfo;

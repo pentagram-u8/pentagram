@@ -1,3 +1,14 @@
+2004-04-10  Ryan Nunn <colourles@users.sourceforge.net>
+	* gumps/ConsoleGump.*, misc/Console.* : Added command history and
+	  improved command line editing. You can now use cursors and use delete
+	  and insert keys.
+	* graphics/ShapeInfo.h : Adding a constructor
+	* misc/Q_strcasecmp.*, misc/istring.* : Moved the strcasecmp functions 
+	  into the istring files. Removed Q_strcasecmp.* from cvs
+	* misc/util.*, misc/memset_n.h, various files: Putting global functions
+	  into the Pentagram namespace and updating the rest of the code to 
+	  reflect the changes.
+
 2004-04-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/EggHatcherProcess.cpp: consider avatar dimensions
 

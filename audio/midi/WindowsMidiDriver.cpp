@@ -36,7 +36,7 @@ const MidiDriver::MidiDriverDesc WindowsMidiDriver::desc =
 		MidiDriver::MidiDriverDesc ("Windows", createInstance);
 
 using std::endl;
-#include "Q_strcasecmp.h"
+#include "util.h"
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -87,8 +87,8 @@ int WindowsMidiDriver::open()
 		midiOutGetDevCaps ((UINT) i, &caps, sizeof(caps));
 		pout << i << ": " << caps.szPname << endl;
 #ifdef WIN32_USE_DUAL_MIDIDRIVERS
-		if (!Pentagram::Q_strncasecmp(caps.szPname, "SB Live! Synth A", 16)) dev_num = i;
-		else if (!Pentagram::Q_strncasecmp(caps.szPname, "SB Live! Synth B", 16)) dev_num2 = i;
+		if (!Pentagram::strncasecmp(caps.szPname, "SB Live! Synth A", 16)) dev_num = i;
+		else if (!Pentagram::strncasecmp(caps.szPname, "SB Live! Synth B", 16)) dev_num2 = i;
 #endif
 	}
 

@@ -194,7 +194,8 @@ Console::Console () : current(0), x(0), display(0), linewidth(-1),
 					 totallines(0), vislines(0), wordwrap(true), cr(false),
 					 putchar_count(0), std_output_enabled(0xFFFFFFFF),
 					 stdout_redir(0), stderr_redir(0), confont(0),
-					 auto_paint(0), msgMask(MM_ALL), framenum(0)
+					 auto_paint(0), msgMask(MM_ALL), framenum(0),
+					 commandCursorPos(0), commandInsert(true), commandHistoryPos(0)
 {
 	linewidth = -1;
 
@@ -203,7 +204,8 @@ Console::Console () : current(0), x(0), display(0), linewidth(-1),
 	std::memset (times, 0, sizeof(times));
 	
 	// Lets try adding a Console command!
-	AddConsoleCommand("CmdList", ConCmd_CmdList);
+	AddConsoleCommand("Console::CmdList", ConCmd_CmdList);
+	AddConsoleCommand("Console::CmdHistory", ConCmd_CmdHistory);
 
 	PrintInternal ("Console initialized.\n");
 }
@@ -213,6 +215,9 @@ Console::Console () : current(0), x(0), display(0), linewidth(-1),
 //
 Console::~Console()
 {
+	RemoveConsoleCommand("Console::CmdList");
+	RemoveConsoleCommand("Console::CmdHistory");
+
 	// Need to do this first
 	PrintPutchar();
 }
@@ -558,7 +563,7 @@ void Console::ExecuteConsoleCommand(const Console::ArgsType &args)
 	std::map<Pentagram::istring,Console::Function>::iterator it;
 	
 	Console::ArgvType argv;
-	StringToArgv(args,argv);
+	Pentagram::StringToArgv(args,argv);
 
 	// Empty?!?
 	if (argv.empty()) return;
@@ -581,6 +586,37 @@ void Console::ExecuteCommandBuffer()
 	pout << "]" << args << std::endl;
 
 	ExecuteConsoleCommand(args);
+
+	commandHistory.push_back(args);
+	commandHistoryPos = 0;
+	commandCursorPos = 0;
+}
+
+void Console::ScrollCommandHistory(int num)
+{
+	int total = commandHistory.size();
+
+	// No history, don't do anything
+	if (!total) return;
+
+	if ((commandHistoryPos-num) <= 0)
+	{
+		if (commandHistoryPos == 1) return;
+		commandHistoryPos = 1;
+	}
+	else
+		commandHistoryPos -= num;
+
+	if (commandHistoryPos > total)
+		commandHistoryPos = total;
+
+	commandBuffer = commandHistory[total-commandHistoryPos];
+	commandCursorPos = commandBuffer.size();
+}
+
+void Console::ClearCommandBuffer()
+{
+	commandBuffer.clear();
 }
 
 void Console::AddCharacterToCommandBuffer(int ch)
@@ -593,8 +629,7 @@ void Console::AddCharacterToCommandBuffer(int ch)
 	// Backspace
 	else if (ch == Console::Backspace) {
 
-		// There should be a better way to do this
-		if (!commandBuffer.empty()) commandBuffer.erase(commandBuffer.end()-1);
+		DeleteCommandBufferChars(-1);
 	}
 	// Tab (command completion)
 	else if (ch == Console::Tab) {
@@ -647,26 +682,63 @@ void Console::AddCharacterToCommandBuffer(int ch)
 						args += '\"';
 							
 						ArgvType argv;
-						StringToArgv(args,argv);
+						Pentagram::StringToArgv(args,argv);
 
 						ConCmd_CmdList(args,argv);
 						commandBuffer = common;
 					}
 					else 
-						commandBuffer = common + " ";
+						commandBuffer = common;
+
+					commandCursorPos = commandBuffer.size();
 				}
 			}
 	}
 	// Add the character to the command buffer
 	else {
 
-		commandBuffer += ch;
+		if (commandCursorPos == commandBuffer.size())
+		{
+			commandBuffer += ch;
+		}
+		else if (commandInsert)
+		{
+			commandBuffer.insert(commandCursorPos, 1, ch);
+		}
+		else
+		{
+			commandBuffer[commandCursorPos] = ch;
+		}
+
+		commandCursorPos++;
 	}
 }
 
-void Console::ClearCommandBuffer()
+void Console::DeleteCommandBufferChars(int num)
 {
-	commandBuffer.clear();
+	if (!num || commandBuffer.empty()) return;
+
+	if (num < 0)
+	{
+		num = -num;
+		if (num > commandCursorPos) num = commandCursorPos;
+		commandCursorPos -= num;
+	}
+	else
+	{
+		if ((num+commandCursorPos) > commandBuffer.size())
+			num = commandBuffer.size()-commandCursorPos;
+	}
+
+	commandBuffer.erase(commandCursorPos, num);
+}
+
+void Console::MoveCommandCursor(int num)
+{
+	commandCursorPos += num;
+
+	if (commandCursorPos < 0) commandCursorPos = 0;
+	if (commandCursorPos > commandBuffer.size()) commandCursorPos = commandBuffer.size();
 }
 
 void Console::ConCmd_CmdList(const Console::ArgsType &args, const Console::ArgvType &argv)
@@ -701,6 +773,16 @@ void Console::ConCmd_CmdList(const Console::ArgsType &args, const Console::ArgvT
 	}
 
 	pout << i << " commands" << std::endl;
+}
+
+void Console::ConCmd_CmdHistory(const Console::ArgsType &args, const Console::ArgvType &argv)
+{
+	std::vector<ArgsType>::iterator it;
+
+	for (it = con.commandHistory.begin(); it != con.commandHistory.end(); ++it)
+		pout << " " << *it << std::endl;
+
+	pout << con.commandHistory.size() << " commands" << std::endl;
 }
 
 /*
@@ -774,25 +856,36 @@ void Console::DrawConsole (RenderSurface *surf, int height)
 		//putchar ('\n');
 	}
 
-	//if (!commandBuffer.size()) return;
-
 	const char *com = commandBuffer.c_str();
 	int com_size = commandBuffer.size();
+	int cur_pos = commandCursorPos;
+
+	if (com_size >= (linewidth-1))
+	{
+		com_size = cur_pos;
+	}
 
 	//	prestep if horizontally scrolling
 	if (com_size >= (linewidth-1))
+	{
 		com += 1 + com_size - (linewidth-1);
+		cur_pos = linewidth-2;
+	}
 
 	y = lines-16;
 
 	surf->PrintCharFixed(confont, ']', 8, y);
 
-	for (x=0 ; x<linewidth && com[x]; x++) {
+	for (x=0 ; x<(linewidth-2) && com[x]; x++) {
 		surf->PrintCharFixed(confont, com[x], (x+2)<<3, y);
 	//	putchar (txt[x]);
 	}
 
-	surf->Fill32(0xFFFFFFFF, ((x+2)<<3)+1, y, 2, 8);
+	// Now for cursor position
+	if (commandInsert)
+		surf->Fill32(0xFFFFFFFF, ((cur_pos+2)<<3)+1, y, 2, 8);
+	else
+		surf->Fill32(0xFFFFFFFF, ((cur_pos+2)<<3)+1, y+6, 8, 2);
 }
 
 

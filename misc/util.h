@@ -23,8 +23,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <vector>
 #include "istring.h"
 
-std::string to_uppercase(std::string s);
+namespace Pentagram {
+
+template<class T> T to_uppercase(const T s);
 
 template<class T> void StringToArgv(const T &args, std::vector<T> &argv);
+
+}
 
 #endif

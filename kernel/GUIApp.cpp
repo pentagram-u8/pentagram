@@ -103,7 +103,7 @@ struct HWMouseCursor {
 #include "MusicProcess.h"
 #include "MusicFlex.h"
 
-#include "Q_strcasecmp.h"
+#include "util.h"
 
 #include "MidiDriver.h"
 #if defined(WIN32) && !defined(UNDER_CE)
@@ -313,7 +313,7 @@ void GUIApp::init_midi()
 	const char * drv = desired_driver.c_str();
 
 	// Has the config file specified disabled midi?
-	if (Pentagram::Q_strcasecmp(drv, "disabled"))
+	if (Pentagram::strcasecmp(drv, "disabled"))
 	{
 		std::vector<const MidiDriver::MidiDriverDesc*>::iterator it;
 
@@ -321,7 +321,7 @@ void GUIApp::init_midi()
 		for (it = midi_drivers.begin(); it < midi_drivers.end(); it++) {
 
 			// Found it (case insensitive)
-			if (!Pentagram::Q_strcasecmp(drv, (*it)->name)) {
+			if (!Pentagram::strcasecmp(drv, (*it)->name)) {
 
 				pout << "Trying config specified Midi driver: `" << (*it)->name << "'" << std::endl;
 

@@ -262,6 +262,13 @@ public:
 	//! Execute the currently queued console command
 	void			ExecuteCommandBuffer();
 
+	//! Scroll the command history
+	//! \param num Number of commands to scroll through (neg numbers are older)
+	void			ScrollCommandHistory(int num);
+
+	//! Clear the queued console command buffer
+	void			ClearCommandBuffer();
+
 	//! Add a character to the Queued Console command input buffer
 	//! \param ch Character to add. 
 	//! \note '\n' will execute the command
@@ -269,11 +276,22 @@ public:
 	//! \note '\b' will do backspace
 	void			AddCharacterToCommandBuffer(int ch);
 
-	//! Clear the queued console command buffer
-	void			ClearCommandBuffer();
+	//! Delete the character before or after the current cursor position
+	//! \param num Number of chars to delete and direction (neg = left, pos = right)
+	void			DeleteCommandBufferChars(int num);
+
+	//! Move the command input cursor
+	//! \param num Number of chars to move by
+	void			MoveCommandCursor(int num);
+
+	//! Toggle command input insert mode
+	void			ToggleCommandInsert() { commandInsert = !commandInsert; }
 
 	//! "CmdList" console command
 	static void		ConCmd_CmdList(const Console::ArgsType &args, const Console::ArgvType &argv);
+
+	//! "CmdHistory" console command
+	static void		ConCmd_CmdHistory(const Console::ArgsType &args, const Console::ArgvType &argv);
 
 private:
 
@@ -294,6 +312,10 @@ private:
 
 	// Console Commands
 	ArgsType					commandBuffer;
+	int							commandCursorPos;
+	bool						commandInsert;
+	std::vector<ArgsType>		commandHistory;
+	int							commandHistoryPos;
 	std::map<ArgsType,Function>	ConsoleCommands;
 
 };

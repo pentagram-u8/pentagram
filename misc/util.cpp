@@ -20,10 +20,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "util.h"
 
-std::string to_uppercase(std::string s)
+namespace Pentagram {
+
+template<class T> T to_uppercase(const T s)
 {
-	std::string str = s;
-	std::string::iterator X;
+	T str = s;
+	typename T::iterator X;
 	for(X = str.begin(); X != str.end(); ++X) {
 #if (defined(BEOS) || defined(OPENBSD) || defined(CYGWIN) || defined(__MORPHOS__))
 		if ((*X >= 'a') && (*X <= 'z')) *X -= 32;
@@ -33,6 +35,9 @@ std::string to_uppercase(std::string s)
 	}
 	return str;
 }
+
+template std::string to_uppercase<std::string>(const std::string s);
+template Pentagram::istring to_uppercase<Pentagram::istring>(const Pentagram::istring s);
 
 template<class T> void StringToArgv(const T &args, std::vector<T> &argv)
 {
@@ -109,3 +114,4 @@ template<class T> void StringToArgv(const T &args, std::vector<T> &argv)
 template void StringToArgv<std::string>(const std::string &args, std::vector<std::string> &argv);
 template void StringToArgv<Pentagram::istring>(const Pentagram::istring &args, std::vector<Pentagram::istring> &argv);
 
+}

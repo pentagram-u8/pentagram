@@ -315,13 +315,17 @@ bool ConsoleGump::OnKeyDown(int key)
 			con.AddCharacterToCommandBuffer(Console::Tab);
 			break;
 
-		case SDLK_BACKSPACE:
-			con.AddCharacterToCommandBuffer(Console::Backspace);
-			break;
-
 		case SDLK_RETURN:
 		case SDLK_KP_ENTER:
 			con.AddCharacterToCommandBuffer(Console::Enter);
+			break;
+
+		case SDLK_BACKSPACE:
+			con.DeleteCommandBufferChars(-1);
+			break;
+
+		case SDLK_DELETE:
+			con.DeleteCommandBufferChars(1);
 			break;
 
 		case SDLK_PAGEUP:
@@ -330,6 +334,26 @@ bool ConsoleGump::OnKeyDown(int key)
 
 		case SDLK_PAGEDOWN:
 			con.ScrollConsole(3); 
+			break;
+
+		case SDLK_UP:
+			con.ScrollCommandHistory(-1);
+			break;
+
+		case SDLK_DOWN:
+			con.ScrollCommandHistory(1);
+			break;
+
+		case SDLK_LEFT:
+			con.MoveCommandCursor(-1);
+			break;
+
+		case SDLK_RIGHT:
+			con.MoveCommandCursor(1);
+			break;
+
+		case SDLK_INSERT:
+			con.ToggleCommandInsert();
 			break;
 
 		case SDLK_KP0:

@@ -25,9 +25,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <string>
 
-#ifndef UNDER_CE
-
 namespace Pentagram {
+
+int strcasecmp (const char *s1, const char *s2);
+int strncasecmp (const char *s1, const char *s2, uint32 length);
+
+#ifndef UNDER_CE
 
 //! STL char_traits for case insensitive comparisons
 struct ichar_traits : public std::char_traits<char>
@@ -492,16 +495,13 @@ inline bool operator>=(
 	{	// test if string >= NTCS
 	return (!(_Left < _Right));
 	}
-};
 
 #else
-
-namespace Pentagram 
-{
 	typedef std::string istring;
+#endif
+
 }
 
-#endif
 
 #endif 
 

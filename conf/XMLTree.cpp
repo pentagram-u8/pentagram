@@ -154,7 +154,7 @@ void XMLTree::value(istring key, bool &ret,	bool defaultvalue) const
 {
 	const XMLNode *sub = tree->subtree(key);
 	if (sub)
-		ret = (to_uppercase(sub->value()) == "YES");
+		ret = (Pentagram::to_uppercase(sub->value()) == "YES");
 	else
 		ret = defaultvalue;
 }

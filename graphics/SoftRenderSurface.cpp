@@ -139,7 +139,7 @@ template<> void SoftRenderSurface<uint16>::Fill32(uint32 rgb, sint32 sx, sint32 
 
 	while (pixel != end)
 	{
-		memset_16(pixel,rgb,w);
+		Pentagram::memset_16(pixel,rgb,w);
 		pixel += pitch;
 	}
 }
@@ -164,7 +164,7 @@ template<> void SoftRenderSurface<uint32>::Fill32(uint32 rgb, sint32 sx, sint32 
 
 	while (pixel != end)
 	{
-		memset_32(pixel,rgb,w);
+		Pentagram::memset_32(pixel,rgb,w);
 		pixel += pitch;
 	}
 }

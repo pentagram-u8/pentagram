@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef MEMSET_N_H_INCLUDED
 #define MEMSET_N_H_INCLUDED
 
+namespace Pentagram {
 
 #if defined(__GNUC__) && defined(i386)
 
@@ -203,5 +204,6 @@ inline void memset_16(void *buf, sint32 val, uint32 words)
 	if (words & 1) *(reinterpret_cast<uint16*>(buf)) = static_cast<uint16>(val&0xFFFF);
 }
 
+}
 
 #endif //MEMSET_N_H_INCLUDED
