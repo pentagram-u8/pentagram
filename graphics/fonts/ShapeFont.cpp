@@ -77,7 +77,7 @@ int ShapeFont::getBaseline()
 
 int ShapeFont::getBaselineSkip()
 {
-	return getHeight() - getVlead();
+	return getHeight() + getVlead();
 }
 
 void ShapeFont::getStringSize(std::string& text, int& width, int& height)

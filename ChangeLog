@@ -1,3 +1,6 @@
+2005-03-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/graphics/ShapeFont.cpp: fix vlead
+
 2005-03-21  Ryan Nunn <colourles@users.sourceforge.net>
 	* audio/SpeechFlex.*, audio/AudioProcess.*, games/GameData.*,
 	  world/Item.cpp : Added some speech support. Mostly just hacked in.
