@@ -24,12 +24,13 @@
 class ConsoleGump : public Gump
 {
 	enum ConsoleScrollState {
-		NOT_SCROLLING,
+		NORMAL_DISPLAY,
 		WAITING_TO_HIDE,
 		SCROLLING_TO_HIDE_1,
 		SCROLLING_TO_HIDE_2,
 		SCROLLING_TO_HIDE_3,
 		SCROLLING_TO_HIDE_4,
+		NOTIFY_OVERLAY,
 		WAITING_TO_SHOW,
 		SCROLLING_TO_SHOW_1,
 		SCROLLING_TO_SHOW_2,
@@ -45,8 +46,10 @@ public:
 	ConsoleGump(int x, int y, int w, int h);
 	virtual ~ConsoleGump();
 
-	virtual void UnhideGump();
-	virtual void HideGump();
+	void ToggleConsole();
+	void ShowConsole();
+	void HideConsole();
+	bool ConsoleIsVisible();
 
 	virtual bool Run(const uint32 framenum);
 

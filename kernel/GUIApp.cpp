@@ -247,6 +247,7 @@ void GUIApp::U8Playground()
 	CameraProcess::SetCameraProcess(new CameraProcess(1)); // Follow Avatar
 
 	pout << "Paint Inital display" << std::endl;
+	consoleGump->HideConsole();
 	paint();
 }
 
@@ -402,6 +403,8 @@ class AvatarMoverProcess : public Process
 	int dx, dy, dz, dir;
 public:
 	static  AvatarMoverProcess	*amp[6];
+	static	bool				clipping;
+	static	bool				quarter;
 
 	AvatarMoverProcess(int x, int y, int z, int _dir) : Process(1), dx(x), dy(y), dz(z), dir(_dir)
 	{
@@ -419,7 +422,63 @@ public:
 		Actor* avatar = World::get_instance()->getNPC(1);
 		sint32 x,y,z;
 		avatar->getLocation(x,y,z);
-		avatar->move(x+dx,y+dy,z+dz);
+		sint32 ixd,iyd,izd;
+		avatar->getFootpad(ixd, iyd, izd);
+		ixd *= 32; iyd *= 32; izd *= 8; //!! constants
+
+		CurrentMap* cm = World::get_instance()->getCurrentMap();
+
+		for (int j = 0; j < 3; j++)
+		{
+			sint32 dx = this->dx;
+			sint32 dy = this->dy;
+			sint32 dz = this->dz;
+
+			if (j == 1) dx = 0;
+			else if (j == 2) dy = 0;
+
+			if (quarter) 
+			{
+				dx /= 4;
+				dy /= 4;
+				dz /= 4;
+			}
+
+			while (dx || dy || dz) {
+				if (!clipping || cm->isValidPosition(x+dx,y+dy,z+dz,ixd,iyd,izd,1,0,0))
+				{
+					if (clipping && !dz)
+					{
+						if (cm->isValidPosition(x+dx,y+dy,z-8,ixd,iyd,izd,1,0,0) &&
+								!cm->isValidPosition(x,y,z-8,ixd,iyd,izd,1,0,0))
+							avatar->move(x+dx,y+dy,z-8);
+						else if (cm->isValidPosition(x+dx,y+dy,z-16,ixd,iyd,izd,1,0,0) &&
+								!cm->isValidPosition(x,y,z-16,ixd,iyd,izd,1,0,0))
+							avatar->move(x+dx,y+dy,z-16);
+						else if (cm->isValidPosition(x+dx,y+dy,z-24,ixd,iyd,izd,1,0,0) &&
+								!cm->isValidPosition(x,y,z-24,ixd,iyd,izd,1,0,0))
+							avatar->move(x+dx,y+dy,z-24);
+						else if (cm->isValidPosition(x+dx,y+dy,z-32,ixd,iyd,izd,1,0,0) &&
+								!cm->isValidPosition(x,y,z-32,ixd,iyd,izd,1,0,0))
+							avatar->move(x+dx,y+dy,z-32);
+						else
+							avatar->move(x+dx,y+dy,z+dz);
+					}
+					else
+						avatar->move(x+dx,y+dy,z+dz);
+					
+					return true;
+				}
+				else if (cm->isValidPosition(x+dx,y+dy,z+dz+8,ixd,iyd,izd,1,0,0))
+				{
+					avatar->move(x+dx,y+dy,z+dz+8);
+					return true;
+				}
+				dx/=2;
+				dy/=2;
+				dz/=2;
+			}
+		}
 		return true;
 	}
 
@@ -431,6 +490,8 @@ public:
 };
 
 AvatarMoverProcess	*AvatarMoverProcess::amp[6] = { 0, 0, 0, 0, 0, 0 };
+bool AvatarMoverProcess::clipping = false;
+bool AvatarMoverProcess::quarter = false;
 
 void GUIApp::handleEvent(const SDL_Event& event)
 {
@@ -583,6 +644,15 @@ void GUIApp::handleEvent(const SDL_Event& event)
 	case SDL_KEYDOWN:
 	{
 		switch (event.key.keysym.sym) {
+			case SDLK_LSHIFT: 
+			case SDLK_RSHIFT: {
+				AvatarMoverProcess::quarter = true;
+				pout << "AvatarMoverProcess::quarter = " << AvatarMoverProcess::quarter << std::endl; 
+			} break;
+			case SDLK_c: {
+				AvatarMoverProcess::clipping = !AvatarMoverProcess::clipping;
+				pout << "AvatarMoverProcess::clipping = " << AvatarMoverProcess::clipping << std::endl; 
+			} break;
 			case SDLK_UP: {
 				if (!avatarInStasis) { 
 					Process *p = new AvatarMoverProcess(-64,-64,0,0);
@@ -641,6 +711,11 @@ void GUIApp::handleEvent(const SDL_Event& event)
 	case SDL_KEYUP:
 	{
 		switch (event.key.keysym.sym) {
+		case SDLK_LSHIFT: 
+		case SDLK_RSHIFT: {
+			AvatarMoverProcess::quarter = false;
+			pout << "AvatarMoverProcess::quarter = " << AvatarMoverProcess::quarter << std::endl; 
+		} break;
 		case SDLK_UP: {
 			if (AvatarMoverProcess::amp[0]) AvatarMoverProcess::amp[0]->terminate();
 		} break;
@@ -661,21 +736,18 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		} break;
 
 		case SDLK_BACKQUOTE: {
-			if (consoleGump->IsHidden())
-				consoleGump->UnhideGump();
-			else
-				consoleGump->HideGump();
+			consoleGump->ToggleConsole();
 			break;
 		}
 		case SDLK_LEFTBRACKET: gameMapGump->IncSortOrder(-1); break;
 		case SDLK_RIGHTBRACKET: gameMapGump->IncSortOrder(+1); break;
 		case SDLK_ESCAPE: case SDLK_q: isRunning = false; break;
 		case SDLK_PAGEUP: {
-			if (!consoleGump->IsHidden()) con.ScrollConsole(-3);
+			if (!consoleGump->ConsoleIsVisible()) con.ScrollConsole(-3);
 			break;
 		}
 		case SDLK_PAGEDOWN: {
-			if (!consoleGump->IsHidden()) con.ScrollConsole(3); 
+			if (!consoleGump->ConsoleIsVisible()) con.ScrollConsole(3); 
 			break;
 		}
 		case SDLK_s: { // toggle avatarInStasis

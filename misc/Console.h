@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //
 #define		CON_TEXTSIZE		32768
 #define		CON_PUTCHAR_SIZE	256
+#define		CON_NUM_TIMES		4
 
 // For Enable/Disable flags
 #define		CON_STDOUT			0x01
@@ -106,7 +107,11 @@ class Console
 	void		(*auto_paint)(void);
 
 	MsgMask		msgMask;				// mask to determine which messages are printed or not
-	
+
+	// Overlay timing
+	uint32		framenum;
+	uint32		times[CON_NUM_TIMES];	// framenum the line was generated
+										// for transparent notify lines
 public:
 	Console();
 	~Console();
@@ -121,7 +126,10 @@ public:
 	void	CheckResize (int scrwidth);
 
 	// Draw the Console
-	void	DrawConsole (RenderSurface *surf, int sx, int sy, int width, int height);
+	void	DrawConsole (RenderSurface *surf, int height);
+
+	// Draw the Console Notify Overlay
+	void	DrawConsoleNotify (RenderSurface *surf);
 
 	// Set the console font texture
 	void	SetConFont(Texture *cf) { confont = cf; }
@@ -166,6 +174,11 @@ public:
 		msgMask = mm;
 	}
 	
+	void setFrameNum(uint32 f) 
+	{
+		framenum = f;
+	}
+
 	//
 	// STDOUT Methods
 	//

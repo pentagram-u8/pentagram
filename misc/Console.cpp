@@ -134,7 +134,7 @@ void Console::CheckResize (int scrwidth)
 
 	if (width < 1)			// video hasn't been initialized yet
 	{
-		width = 80;
+		width = 78;
 		linewidth = width;
 		totallines = CON_TEXTSIZE / linewidth;
 		std::memset (text, ' ', CON_TEXTSIZE);
@@ -180,11 +180,13 @@ Console::Console () : current(0), x(0), display(0), linewidth(-1),
 					 totallines(0), vislines(0), wordwrap(true), cr(false),
 					 putchar_count(0), std_output_enabled(0xFFFFFFFF),
 					 stdout_redir(0), stderr_redir(0), confont(0),
-					 auto_paint(0), msgMask(MM_ALL)
+					 auto_paint(0), msgMask(MM_ALL), framenum(0)
 {
 	linewidth = -1;
 
 	CheckResize (0);
+
+	std::memset (times, 0, sizeof(times));
 	
 	PrintInternal ("Console initialized.\n");
 }
@@ -233,7 +235,12 @@ void Console::PrintInternal (const char *txt)
 			cr = false;
 		}
 		
-		if (!x) Linefeed ();
+		if (!x) 
+		{
+			Linefeed ();
+			// mark time for transparent overlay
+			if (current >= 0) times[current % CON_NUM_TIMES] = framenum;
+		}
 
 		switch (c)
 		{
@@ -288,7 +295,12 @@ void Console::PrintRawInternal (const char *txt, int n)
 			cr = false;
 		}
 		
-		if (!x) Linefeed ();
+		if (!x) 
+		{
+			Linefeed ();
+			// mark time for transparent overlay
+			if (current >= 0) times[current % CON_NUM_TIMES] = framenum;
+		}
 
 		switch (c)
 		{
@@ -502,14 +514,6 @@ void Console::Putchar_err (int c)
 	PutcharInternal(c);
 }
 
-/*
-==============================================================================
-
-DRAWING
-
-==============================================================================
-*/
-
 void Console::ScrollConsole(sint32 lines)
 {
 	display += lines;
@@ -518,7 +522,15 @@ void Console::ScrollConsole(sint32 lines)
 	if (display > current) display = current;
 }
 
-void Console::DrawConsole (RenderSurface *surf, int /*sx*/, int /*sy*/, int /*width*/, int height)
+/*
+==============================================================================
+
+DRAWING
+
+==============================================================================
+*/
+
+void Console::DrawConsole (RenderSurface *surf, int height)
 {
 	int				i, x, y;
 	int				rows;
@@ -584,6 +596,104 @@ void Console::DrawConsole (RenderSurface *surf, int /*sx*/, int /*sy*/, int /*wi
 }
 
 
+void Console::DrawConsoleNotify (RenderSurface *surf)
+{
+	int		x, v;
+	char	*txt;
+	int		i;
+	int		time;
+
+	v = 0;
+	for (i = current-CON_NUM_TIMES+1 ; i<=current ; i++)
+	{
+		if (i < 0) continue;
+		time = con.times[i % CON_NUM_TIMES];
+		if (time == 0) continue;
+
+		time = framenum - time;
+		//if (time > con_notifytime->value*1000)
+		if (time > 150)	// Each message lasts 5 seconds  (30*5=150 frames)
+			continue;
+		txt = text + (i % totallines)*linewidth;
+		
+		for (x = 0 ; x < con.linewidth ; x++)
+			surf->PrintCharFixed(confont, txt[x], (x+1)<<3, v);
+
+		v += 8;
+	}
+}
+
+
+#if 0
+/*
+================
+Con_DrawNotify
+
+Draws the last few lines of output transparently over the game top
+================
+*/
+void Con_DrawNotify (void)
+{
+	int		x, v;
+	char	*text;
+	int		i;
+	int		time;
+	char	*s;
+	int		skip;
+
+	v = 0;
+	for (i= con.current-NUM_CON_TIMES+1 ; i<=con.current ; i++)
+	{
+		if (i < 0)
+			continue;
+		time = con.times[i % NUM_CON_TIMES];
+		if (time == 0)
+			continue;
+		time = cls.realtime - time;
+		if (time > con_notifytime->value*1000)
+			continue;
+		text = con.text + (i % con.totallines)*con.linewidth;
+		
+		for (x = 0 ; x < con.linewidth ; x++)
+			re.DrawChar ( (x+1)<<3, v, text[x]);
+
+		v += 8;
+	}
+
+
+	if (cls.key_dest == key_message)
+	{
+		if (chat_team)
+		{
+			DrawString (8, v, "say_team:");
+			skip = 11;
+		}
+		else
+		{
+			DrawString (8, v, "say:");
+			skip = 5;
+		}
+
+		s = chat_buffer;
+		if (chat_bufferlen > (viddef.width>>3)-(skip+1))
+			s += chat_bufferlen - ((viddef.width>>3)-(skip+1));
+		x = 0;
+		while(s[x])
+		{
+			re.DrawChar ( (x+skip)<<3, v, s[x]);
+			x++;
+		}
+		re.DrawChar ( (x+skip)<<3, v, 10+((cls.realtime>>8)&1));
+		v += 8;
+	}
+	
+	if (v)
+	{
+		SCR_AddDirtyPoint (0,0);
+		SCR_AddDirtyPoint (viddef.width-1, v);
+	}
+}
+
 /*
 ================
 Con_DrawConsole
@@ -591,7 +701,6 @@ Con_DrawConsole
 Draws the console with the solid background
 ================
 */
-#if 0
 void Con_DrawConsole (float frac)
 {
 	int				i, j, x, y, n;
