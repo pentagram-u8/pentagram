@@ -33,8 +33,17 @@ void UCStack::save(ODataSource* ods)
 bool UCStack::load(IDataSource* ids, uint32 version)
 {
 	size = ids->read4();
+#ifdef USE_DYNAMIC_UCSTACK
 	if (buf) delete[] buf;
 	buf = new uint8[size];
+#else
+	if (size > sizeof(buf_array)) 
+	{
+		perr << "Error: UCStack size mismatch (buf_array too small)" << std::endl;
+		return false;
+	}
+	buf = buf_array;
+#endif
 	uint32 sp = ids->read4();
 	buf_ptr = buf + sp;
 

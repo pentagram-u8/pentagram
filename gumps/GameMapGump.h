@@ -44,22 +44,6 @@ public:
 	void				GetCameraLocation(sint32& x, sint32& y, sint32& z,
 										  int lerp_factor=256);
 
-	//! Calculate the fastArea limits from the resolution
-	//! \param sx_limit The Screenspace X limit for the chunks
-	//! \param sy_limit The Screenspace y limit for the chunks
-	//! \param xy_limit The worldspace XY limit for the chunks
-	inline void calcFastAreaLimits( sint32 &sx_limit, 
-											sint32 &sy_limit, 
-											sint32 &xy_limit)
-	{
-		// By default the fastArea is the screensize plus a border of no more
-		// than 256 pixels wide and 384 pixels high
-		// dims.w and dims.h need to be divided by 2 for crusader
-		sx_limit = dims.w/256 + 3;
-		sy_limit = dims.h/128 + 7;
-		xy_limit = (sy_limit+sx_limit)/2;
-	}
-
 	// Trace a click, and return ObjId (parent coord space)
 	virtual uint16		TraceObjId(int mx, int my);
 

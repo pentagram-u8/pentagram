@@ -16,30 +16,27 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef UCSTACK_H
-#define UCSTACK_H
+#ifndef BaseUCStack_H
+#define BaseUCStack_H
 
 class IDataSource;
 class ODataSource;
 
 // A little-endian stack for use with usecode
-class UCStack
+class BaseUCStack
 {
 protected:
 	uint8* buf;
 	uint8* buf_ptr;
 	uint32 size;
 public:
-	UCStack(uint32 len=0x1000) : size(len)
+
+	BaseUCStack(uint32 len, uint8 *b) : buf(b), size(len)
 	{
-		buf = new uint8[size];
 		// stack grows downward, so start at the end of the buffer
 		buf_ptr = buf + size;
 	}
-
-	~UCStack() {
-		delete[] buf;
-	}
+	virtual ~BaseUCStack() { }
 
 	inline uint32 getSize() const {
 		return size;
@@ -130,10 +127,10 @@ public:
 		return buf[offset] | (buf[offset+1]<<8) |
 			(buf[offset+2]<<16) | (buf[offset+3]<<24);
 	}
-	inline uint8* access(const uint32 offset) const {		
+	inline uint8* access(const uint32 offset) {		
 		return buf+offset;
 	}
-	inline uint8* access() const {
+	inline uint8* access() {
 		return buf_ptr;
 	}
 
@@ -158,9 +155,32 @@ public:
 	{
 		std::memcpy (const_cast<uint8*>(buf)+offset, in, len);
 	}
+};
+
+class DynamicUCStack : public BaseUCStack
+{
+public:
+	DynamicUCStack(uint32 len=0x1000) : BaseUCStack(len, new uint8[len]) { }
+	virtual ~DynamicUCStack() { delete [] buf; }
+
+#ifdef USE_DYNAMIC_UCSTACK
+#define UCStack DynamicUCStack
+	void save(ODataSource* ods);
+	bool load(IDataSource* ids, uint32 version);
+#endif
+};
+
+#ifndef USE_DYNAMIC_UCSTACK
+class UCStack : public BaseUCStack
+{
+	uint8	buf_array[0x1000];
+public:
+	UCStack() : BaseUCStack(0x1000, buf_array) { }
+	virtual ~UCStack() { }
 
 	void save(ODataSource* ods);
 	bool load(IDataSource* ids, uint32 version);
 };
+#endif
 
 #endif

@@ -579,7 +579,7 @@ uint32 Item::getTotalWeight()
 bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 {
 	// if really necessary this could be made static to prevent news/deletes
-	UCStack stack(0x40); // 64bytes should be plenty of room
+	DynamicUCStack stack(0x40); // 64bytes should be plenty of room
 
 	unsigned int i = 0;
 
@@ -1009,7 +1009,7 @@ uint32 Item::callUsecodeEvent_cachein()							// event 4
 
 uint32 Item::callUsecodeEvent_hit(uint16 hitter, sint16 hitforce)// event 5
 {
-	UCStack	arg_stack(4);
+	DynamicUCStack	arg_stack(4);
 	arg_stack.push2(hitforce);
 	arg_stack.push2(hitter);
 	return callUsecodeEvent(5, arg_stack.access(), 4);	// CONSTANT 5
@@ -1017,7 +1017,7 @@ uint32 Item::callUsecodeEvent_hit(uint16 hitter, sint16 hitforce)// event 5
 
 uint32 Item::callUsecodeEvent_gotHit(uint16 hitter, sint16 hitforce)// event 6
 {
-	UCStack	arg_stack(4);
+	DynamicUCStack	arg_stack(4);
 	arg_stack.push2(hitforce);
 	arg_stack.push2(hitter);
 	return callUsecodeEvent(6, arg_stack.access(), 4);	// CONSTANT 6
@@ -1030,7 +1030,7 @@ uint32 Item::callUsecodeEvent_hatch()							// event 7
 
 uint32 Item::callUsecodeEvent_schedule(uint32 time)				// event 8
 {
-	UCStack	arg_stack(4);
+	DynamicUCStack	arg_stack(4);
 	arg_stack.push4(time);
 	return callUsecodeEvent(8, arg_stack.access(), 4);  // CONSTANT 8
 }
@@ -1057,7 +1057,7 @@ uint32 Item::callUsecodeEvent_leaveFastArea()					// event 10
 
 uint32 Item::callUsecodeEvent_cast(uint16 unk)					// event 11
 {
-	UCStack	arg_stack(2);
+	DynamicUCStack	arg_stack(2);
 	arg_stack.push2(unk);
 	return callUsecodeEvent(0x11, arg_stack.access(), 2); // CONSTANT 0x11
 }
@@ -1069,14 +1069,14 @@ uint32 Item::callUsecodeEvent_justMoved()						// event 12
 
 uint32 Item::callUsecodeEvent_AvatarStoleSomething(uint16 unk)	// event 14
 {
-	UCStack	arg_stack(2);
+	DynamicUCStack	arg_stack(2);
 	arg_stack.push2(unk);
 	return callUsecodeEvent(0x14, arg_stack.access(), 2); // CONSTANT 0x14
 }
 
 uint32 Item::callUsecodeEvent_guardianBark(sint16 unk)			// event 15
 {
-	UCStack	arg_stack(2);
+	DynamicUCStack	arg_stack(2);
 	arg_stack.push2(unk);
 	return callUsecodeEvent(0x15, arg_stack.access(), 2); // CONSTANT 0x15
 }

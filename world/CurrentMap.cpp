@@ -45,7 +45,8 @@ typedef list<Item*> item_list;
 
 CurrentMap::CurrentMap()
 	: current_map(0), egghatcher(0),
-		fast_x_min(-1), fast_y_min(-1), fast_x_max(-1), fast_y_max(-1)
+		fast_x_min(-1), fast_y_min(-1),
+		fast_x_max(-1), fast_y_max(-1)
 {
 	items = new list<Item*>*[MAP_NUM_CHUNKS];
 	fast = new uint32*[MAP_NUM_CHUNKS];
@@ -320,13 +321,47 @@ void CurrentMap::removeItemFromList(Item* item, sint32 oldx, sint32 oldy)
 	item->clearExtFlag(Item::EXT_INCURMAP);
 }
 
-void CurrentMap::updateFastArea(sint32 from_x, sint32 from_y, sint32 to_x, sint32 to_y)
+// Check to see if the chunk is on the screen 
+static inline bool ChunkOnScreen(sint32 cx, sint32 cy, sint32 sleft, sint32 stop, sint32 sright, sint32 sbot)
 {
-	from_x /= MAP_CHUNK_SIZE;
-	from_y /= MAP_CHUNK_SIZE;
-	to_x /= MAP_CHUNK_SIZE;
-	to_y /= MAP_CHUNK_SIZE;
+	sint32 scx = (cx*MAP_CHUNK_SIZE - cy*MAP_CHUNK_SIZE)/4;
+	sint32 scy = ((cx*MAP_CHUNK_SIZE + cy*MAP_CHUNK_SIZE)/8);
 
+	// Screenspace bounding box left extent    (LNT x coord)
+	sint32 cxleft = scx-MAP_CHUNK_SIZE/4;
+	// Screenspace bounding box right extent   (RFT x coord)
+	sint32 cxright= scx+MAP_CHUNK_SIZE/4;
+
+	// Screenspace bounding box top extent     (LFT y coord)
+	sint32 cytop = scy - 256;
+	// Screenspace bounding box bottom extent  (RNB y coord)
+	sint32 cybot = scy + 128;
+
+	const bool right_clear = cxright <= sleft;
+	const bool left_clear = cxleft >= sright;
+	const bool top_clear = cytop >= sbot;
+	const bool bot_clear = cybot <= stop;
+
+	const bool clear = right_clear|left_clear|top_clear|bot_clear;
+
+	return !clear;
+}
+
+static inline void CalcFastAreaLimits( sint32 &sx_limit, 
+										sint32 &sy_limit, 
+										sint32 &xy_limit,
+										const Pentagram::Rect &dims)
+{
+	// By default the fastArea is the screensize plus a border of no more
+	// than 256 pixels wide and 384 pixels high
+	// dims.w and dims.h need to be divided by 2 for crusader
+	sx_limit = dims.w/256 + 3;
+	sy_limit = dims.h/128 + 7;
+	xy_limit = (sy_limit+sx_limit)/2;
+}
+
+void CurrentMap::updateFastArea(sint32 from_x, sint32 from_y, sint32 from_z, sint32 to_x, sint32 to_y, sint32 to_z)
+{
 	int x_min = from_x;
 	int x_max = to_x;
 
@@ -343,34 +378,55 @@ void CurrentMap::updateFastArea(sint32 from_x, sint32 from_y, sint32 to_x, sint3
 		y_max = from_y;
 	}
 
+	int z_min = from_z;
+	int z_max = to_z;
+
+	if (z_max < z_min)  {
+		z_min = to_z;
+		z_max = from_z;
+	}
+
+	// Work out Fine (screenspace) Limits of chunks with half chunk border
+	Pentagram::Rect dims;
+	GUIApp::get_instance()->getGameMapMapGump()->GetDims(dims);
+
+	sint32 sleft  = ((x_min - y_min)/4)         - (dims.w/2 + MAP_CHUNK_SIZE/4);
+	sint32 stop   = ((x_min + y_min)/8 - z_max) - (dims.h/2 + MAP_CHUNK_SIZE/8);
+	sint32 sright = ((x_max - y_max)/4)         + (dims.w/2 + MAP_CHUNK_SIZE/4);
+	sint32 sbot   = ((x_max + y_max)/8 - z_min) + (dims.h/2 + MAP_CHUNK_SIZE/8);
+
 	// Don't do anything IF the regions are the same
-	if (fast_x_min == x_min && fast_y_min == y_min &&
-		fast_x_max == x_max && fast_y_max == y_max)
+	if (fast_x_min == sleft && fast_y_min == stop &&
+		fast_x_max == sright && fast_y_max == sbot )
 		return;
 
 	// Update the saved region
-	fast_x_min = x_min;
-	fast_y_min = y_min;
-	fast_x_max = x_max;
-	fast_y_max = y_max;
+	fast_x_min = sleft;
+	fast_y_min = stop;
+	fast_x_max = sright;
+	fast_y_max = sbot;
 
-	// Get Limits
+	// Get Coarse Limits
 	sint32 sx_limit;
 	sint32 sy_limit;
 	sint32 xy_limit;
 
-	GUIApp::get_instance()->getGameMapMapGump()->
-			calcFastAreaLimits(sx_limit, sy_limit, xy_limit);
+	CalcFastAreaLimits(sx_limit, sy_limit, xy_limit, dims);
 
-	x_min -= xy_limit;
-	x_max += xy_limit;
-	y_min -= xy_limit;
-	y_max += xy_limit;
+	x_min = x_min/MAP_CHUNK_SIZE - xy_limit;
+	x_max = x_max/MAP_CHUNK_SIZE + xy_limit;
+	y_min = y_min/MAP_CHUNK_SIZE - xy_limit;
+	y_max = y_max/MAP_CHUNK_SIZE + xy_limit;
 
 	for (sint32 cy = 0; cy < MAP_NUM_CHUNKS; cy++) {
 		for (sint32 cx = 0; cx < MAP_NUM_CHUNKS; cx++) {
 
+			// Coarse
 			bool want_fast = cx>=x_min && cx<=x_max && cy>=y_min && cy<=y_max;
+
+			// Fine
+			if (want_fast) want_fast = ChunkOnScreen(cx,cy,sleft,stop,sright,sbot);
+
 			bool currently_fast = isChunkFast(cx,cy);
 
 			// Don't do anything, they are the same

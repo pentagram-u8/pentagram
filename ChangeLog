@@ -1,3 +1,17 @@
+2005-03-07  Ryan Nunn <colourles@users.sourceforge.net>
+	* gumps/FastAreaVisGump.*, kernel/GUIApp.cpp : Very simple gump to 
+	  visualize the fast area. Use console command FastAreaVisGump::toggle
+	  to toggle it.
+	* world/CameraProcess.cpp, world/CurrentMap.*, gumps/GameMapGump.h :
+	  Tightened up fast area calculations. Region is now quite a bit 
+	  smaller.
+	* usecode/UCStack.*, world/Item.cpp : Made some changes to UCStack
+	  so it can work from an array rather than an allocated pointer.
+	  Existing functionality is now in a class called DynamicUCStack.
+	  Doesn't make a huge difference but it means the stack buffer is
+	  part of the memory allocated for the UCProcess (a good thing if we
+	  allocate the memory for the UCProcess from a pool).
+	  
 2005-03-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Egg.h: fixed setXRange/setYRange
 

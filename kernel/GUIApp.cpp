@@ -53,6 +53,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GameMapGump.h"
 #include "InverterGump.h"
 #include "ScalerGump.h"
+#include "FastAreaVisGump.h"
 
 // For gump positioning... perhaps shouldn't do it this way....
 #include "BarkGump.h"
@@ -200,7 +201,8 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	con.AddConsoleCommand("MusicProcess::playMusic", MusicProcess::ConCmd_playMusic);
 	con.AddConsoleCommand("InverterProcess::invertScreen",
 						  InverterProcess::ConCmd_invertScreen);
-
+	con.AddConsoleCommand("FastAreaVisGump::toggle",
+						  FastAreaVisGump::ConCmd_toggle);
 }
 
 GUIApp::~GUIApp()
@@ -229,6 +231,7 @@ GUIApp::~GUIApp()
 	con.RemoveConsoleCommand("MovieGump::play");
 	con.RemoveConsoleCommand("MusicProcess::playMusic");
 	con.RemoveConsoleCommand("InverterProcess::invertScreen");
+	con.RemoveConsoleCommand("FastAreaVisGump::toggle");
 
 	FORGET_OBJECT(objectmanager);
 	FORGET_OBJECT(hidmanager);

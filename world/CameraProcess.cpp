@@ -193,7 +193,7 @@ void CameraProcess::ItemMoved()
 			sy = ey;
 			sz = ez += 20;
 
-			World::get_instance()->getCurrentMap()->updateFastArea(sx,sy,ex,ey);
+			World::get_instance()->getCurrentMap()->updateFastArea(sx,sy,sz,ex,ey,ez);
 		}
 	}
 }
@@ -232,7 +232,7 @@ void CameraProcess::GetLerped(sint32 &x, sint32 &y, sint32 &z, sint32 factor)
 				}
 			}
 			// Update the fast area
-			World::get_instance()->getCurrentMap()->updateFastArea(sx,sy,ex,ey);
+			World::get_instance()->getCurrentMap()->updateFastArea(sx,sy,sz,ex,ey,ez);
 		}
 
 		if (factor == 256)
@@ -269,7 +269,7 @@ void CameraProcess::GetLerped(sint32 &x, sint32 &y, sint32 &z, sint32 factor)
 		sint32 lez = ((sz*(time-efactor) + ez*efactor)/time);
 
 		// Update the fast area
-		World::get_instance()->getCurrentMap()->updateFastArea(lsx,lsy,lex,ley);
+		World::get_instance()->getCurrentMap()->updateFastArea(lsx,lsy,lsz,lex,ley,lez);
 
 		// This way while possibly slower is more accurate
 		x = ((lsx*(256-factor) + lex*factor)>>8);

@@ -61,7 +61,7 @@ public:
 	void removeItem(Item* item);
 
 	//! Update the fast area for the cameras position
-	void updateFastArea(sint32 from_x, sint32 from_y, sint32 to_x, sint32 to_y);
+	void updateFastArea(sint32 from_x, sint32 from_y, sint32 from_z, sint32 to_x, sint32 to_y, sint32 to_z);
 
 	//! search an area for items matching a loopscript
 	//! \param itemlist the list to return objids in

@@ -146,7 +146,8 @@ GUMPS = \
 	gumps/ShapeViewerGump.o \
 	gumps/SliderGump.o \
 	gumps/TargetGump.o \
-	gumps/QuitGump.o
+	gumps/QuitGump.o \
+	gumps/FastAreaVisGump.o
 
 WIDGETS = \
 	gumps/widgets/ButtonWidget.o \
