@@ -342,7 +342,8 @@ protected:
 public:
 	OAutoBufferDataSource(uint32 initial_len)
 	{
-		size = allocated = initial_len;
+		allocated = initial_len;
+		size = 0;
 
 		// Make the min allocated size 16 bytes
 		if (allocated < 16) allocated = 16;

@@ -55,6 +55,7 @@ PathfinderProcess::PathfinderProcess(Actor* actor_, ObjId item_)
 
 	currentstep = 0;
 	targetitem = item_;
+	assert(targetitem);
 
 	Pathfinder pf;
 	pf.init(actor_);
@@ -213,9 +214,12 @@ void PathfinderProcess::saveData(ODataSource* ods)
 	ods->write2(1); //version
 	Process::saveData(ods);
 
-	ods->write2(static_cast<uint16>(targetx));
-	ods->write2(static_cast<uint16>(targety));
-	ods->write2(static_cast<uint16>(targetz));
+	ods->write2(targetitem);
+	if (targetitem == 0) {
+		ods->write2(static_cast<uint16>(targetx));
+		ods->write2(static_cast<uint16>(targety));
+		ods->write2(static_cast<uint16>(targetz));
+	}
 	ods->write2(static_cast<uint16>(currentstep));
 
 	ods->write2(static_cast<uint16>(path.size()));
@@ -231,9 +235,12 @@ bool PathfinderProcess::loadData(IDataSource* ids)
 	if (version != 1) return false;
 	if (!Process::loadData(ids)) return false;
 
-	targetx = ids->read2();
-	targety = ids->read2();
-	targetz = ids->read2();
+	targetitem = ids->read2();
+	if (!targetitem) {
+		targetx = ids->read2();
+		targety = ids->read2();
+		targetz = ids->read2();
+	}
 	currentstep = ids->read2();
 
 	unsigned int pathsize = ids->read2();

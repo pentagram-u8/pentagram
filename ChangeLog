@@ -1,3 +1,9 @@
+2004-08-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* various: uninitialized variables
+	* world/actors/PathfinderProcess.cpp: save/load properly
+	* world/actors/AnimationTracker.cpp: don't save/load uninitialized vars
+	* filesys/ODataSource.h: start OAutoBufferDataSource at size 0
+
 2004-08-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/GameMapGump.cpp: properly hit/release when dragging an item
 

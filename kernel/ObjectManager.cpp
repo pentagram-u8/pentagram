@@ -225,7 +225,6 @@ void ObjectManager::save(ODataSource* ods)
 
 	ods->write2(0);
 }
-#include <SDL.h>
 
 
 bool ObjectManager::load(IDataSource* ids)

@@ -29,6 +29,8 @@ struct TreasureInfo {
 	std::vector<uint32> shapes;
 	std::vector<uint32> frames;
 	unsigned int mincount, maxcount;
+
+	TreasureInfo() : chance(1), map(0), mincount(1), maxcount(1) {}
 };
 
 

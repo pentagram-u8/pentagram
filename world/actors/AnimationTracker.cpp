@@ -368,9 +368,11 @@ void AnimationTracker::save(ODataSource* ods)
 	ods->write4(static_cast<uint32>(z));
 
 	ods->write2(static_cast<uint16>(mode));
-	ods->write4(static_cast<uint32>(target_dx));
-	ods->write4(static_cast<uint32>(target_dy));
-	ods->write4(static_cast<uint32>(target_dz));
+	if (mode == TargetMode) {
+		ods->write4(static_cast<uint32>(target_dx));
+		ods->write4(static_cast<uint32>(target_dy));
+		ods->write4(static_cast<uint32>(target_dz));
+	}
 	uint8 fs = firststep ? 1 : 0;
 	ods->write1(fs);
 	uint8 fl = flipped ? 1 : 0;
@@ -415,10 +417,12 @@ bool AnimationTracker::load(IDataSource* ids)
 	y = ids->read4();
 	z = ids->read4();
 
-	mode = (Mode) ids->read2();
-	target_dx = ids->read4();
-	target_dy = ids->read4();
-	target_dz = ids->read4();
+	mode = static_cast<Mode>(ids->read2());
+	if (mode == TargetMode) {
+		target_dx = ids->read4();
+		target_dy = ids->read4();
+		target_dz = ids->read4();
+	}
 
 	firststep = (ids->read1() != 0);
 	flipped = (ids->read1() != 0);

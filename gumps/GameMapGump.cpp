@@ -495,7 +495,6 @@ void GameMapGump::DropItem(Item* item, int mx, int my)
 	GUIApp::get_instance()->getDraggingOffset(dox, doy);
 
 	World *world = World::get_instance();
-	CurrentMap *map = world->getCurrentMap();
 	display_dragging = false;
 	Actor* avatar = world->getMainActor();
 
@@ -517,6 +516,10 @@ void GameMapGump::DropItem(Item* item, int mx, int my)
 
 	pout << "Dropping item at (" << dragging_pos[0] << "," << dragging_pos[1]
 		 << "," << dragging_pos[2] << ")" << std::endl;
+
+	// CHECKME: collideMove and grab (in StopDraggingItem) both call release
+	// on supporting items.
+
 	item->collideMove(dragging_pos[0], dragging_pos[1], dragging_pos[2],
 					  true, true); // teleport item
 	item->fall();

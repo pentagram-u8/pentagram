@@ -41,6 +41,7 @@ UCProcess::UCProcess(uint16 classid_, uint16 offset_, uint32 this_ptr,
 	ip = 0xFFFF;
 	bp = 0x0000;
 	usecode = GameData::get_instance()->getMainUsecode();
+	temp32 = 0;
 
 	load(classid_, offset_, this_ptr, thissize, args, argsize);
 }

@@ -265,7 +265,8 @@ bool Item::moveToContainer(Container *container, bool checkwghtvol)
 	flags &= ~(FLG_CONTAINED|FLG_EQUIPPED|FLG_ETHEREAL);
 
 	// Set location to 0,0,0 if we aren't an ethereal item moving back
-	if (!ethereal_same) x = y = z = 0;
+	if (!ethereal_same) x = y = 0;
+	z = 0;
 
 	// Add the item, don't bother with checking weight or vol since we already
 	// know if it will fit or not

@@ -35,6 +35,8 @@ void PathfindingState::load(Actor* actor)
 	actor->getLocation(x, y, z);
 	lastanim = actor->getLastAnim();
 	direction = actor->getDir();
+	firststep = actor->getActorFlags() & Actor::ACT_FIRSTSTEP;
+	flipped = actor->getFlags() & Item::FLG_FLIPPED;
 }
 
 bool PathfindingState::checkPoint(sint32 x_, sint32 y_, sint32 z_,

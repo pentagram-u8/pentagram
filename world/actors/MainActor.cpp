@@ -40,7 +40,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(MainActor,Actor);
 
-MainActor::MainActor() : justTeleported(false)
+MainActor::MainActor() : justTeleported(false), accumStr(0), accumDex(0),
+						 accumInt(0)
 {
 
 }

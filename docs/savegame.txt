@@ -344,7 +344,7 @@ char classname[classlen]	class name of this Process
 
 
 
-Process:
+Process (v1)
 uint16 version
 uint16 pid
 uint8 active (boolean)
@@ -370,11 +370,6 @@ uint16 repeatcounter
 uint8 hasTracker (boolean)
 if (hasTracker) AnimationTracker tracker
 
-TargetedAnimProcess: Process (v1)
-uint16 version
-<ActorAnimProcess>
-uint32 x,y,z
-
 AnimationTracker (v1)
 uint16 version
 uint32 startframe, endframe
@@ -387,13 +382,19 @@ uint32 action
 uint32 prevx, prevy, prevz
 uint32 x,y,z
 uint16 mode
-uint32 target_dx, target_dy, target_dz
+if (mode == TargetMode) uint32 target_dx, target_dy, target_dz
 uint8 firststep (boolean)
 uint8 flipped (boolean)
 uint32 shapeframe
 uint8 done (boolean)
 uint8 blocked (boolean)
 uint8 supported (boolean)
+
+
+TargetedAnimProcess: Process (v1)
+uint16 version
+<ActorAnimProcess>
+uint32 x,y,z
 
 
 CameraProcess: Process (v1)
@@ -505,3 +506,13 @@ SplitItemProcess: Process (v1)
 uint16 version
 <Process>
 uint16 target
+
+
+PathfinderProcess: Process (v1)
+uint16 version
+<Process>
+uint16 targetitem
+if (!targetitem) uint16 targetx, targety, targetz
+uint16 currentstep
+uint16 pathsize
+(uint16 action,uint16 direction) path[pathsize]
