@@ -1,3 +1,6 @@
+2003-02-24  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* bootstrap: don't run automake. Committed the 3 files it generates.
+
 2003-02-23  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* filesys/FileSystem.*: some sanity checks for vpaths
 	* kernel/Application.cpp: @ instead of % for vpaths
