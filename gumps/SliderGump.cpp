@@ -172,9 +172,7 @@ void SliderGump::InitGump()
 
 void SliderGump::ChildNotify(Gump *child, uint32 message)
 {
-	pout << "Button: " << message << ", " << child->GetIndex() << std::endl;
 	if (message == ButtonWidget::BUTTON_CLICK) {
-		pout << "CLICK" << std::endl;
 		switch (child->GetIndex()) {
 		case OK_INDEX:
 			Close();

@@ -73,7 +73,6 @@ void AskGump::InitGump()
 	int px = 0, py = 0;
 
 	for (unsigned int i = 0; i < answers->getSize(); ++i) {
-		pout << i << ": " << UCMachine::get_instance()->getString(answers->getStringIndex(i)) << std::endl;
 		std::string str_answer = "@ ";
 		str_answer += UCMachine::get_instance()->getString(answers->getStringIndex(i));
 
