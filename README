@@ -23,60 +23,71 @@ Windows:
 CONFIGURATION
 =============
 
-Pentagram needs a pentagram.cfg file to point it to the game data files.
+Pentagram needs a pentagram.ini file to point it to the game data files.
 In Linux, this has to be in a ~/.pentagram directory.
 In Windows, it has to be in the current directory.
 
-Pentagram also needs a u8bindings.cfg file to load the keybindings 
-for Ultima 8. The default u8bindings.cfg is in the data directory.
+Pentagram also needs a u8bindings.ini file to load the keybindings
+for Ultima 8. The default u8bindings.ini is already in the data directory.
 
-A sample pentagram.cfg is included below:
+A sample pentagram.ini is included below (this is all that is needed at the
+moment to run Pentagram):
 
-<config>
- <games>
-  <u8>
-   <path>
-    /path/to/u8
-   </path>
-   <work>
-    /path/to/u8/work/dir
-   </work>
-  </u8>
- </games>
- <general>
-  <data>
-   /path/to/pentagram/data
-  </data>
- </general>
- <video>
-  <fullscreen>
-   no
-  </fullscreen>
-  <width>
-   640
-  </width>
-  <height>
-   480
-  </height>
- </video>
- <audio>
-  <midi_driver>
-  disabled/windows/fmopl/timidity/coreaudio
-  </midi_driver>
- </audio>
-</config>
+[pentagram]
+data=path to pentagram data dir
 
-Replace '/path/to/u8' with the directory containing 'u8.exe'.
+[u8]
+path=path to U8 directory
+
+
+Replace 'path to pentagram data dir' with the pentagram data directory (that's
+the directory that contains fixedfont.tga).
+Replace 'path to pentagram data dir' with the directory containing 'u8.exe'.
+
+
+ADVANCED CONFIGURATION
+======================
+
+Right now Pentagram assumes some default settings that don't need to be set to
+make Pentagram work. If you want to change the music driver or the resoultion
+Pentagram runs in, you see the defaults below:
+
+[pentagram]
+data=path to pentagram data dir
+defaultgame=u8
+fullscreen=no
+width=640
+height=480
+bpp=32
+midi_driver=disabled/windows/fmopl/timidity/coreaudio
+timiditycfg=path to timidity.cfg
+
+[u8]
+path=path to U8 directory
+save=path to U8 savegames directory
+work=path to U8 work directory
+
+
+Replace 'path to pentagram data dir' with the pentagram data directory (that's
+the directory that contains fixedfont.tga).
+Replace 'path to pentagram data dir' with the directory containing 'u8.exe'.
+Replace 'path to U8 savegames directory' with the directory you want Pentagram
+to save games to (no, loading of the original's savegames is not supported).
 Replace '/path/to/u8/work/dir' with the work directory (not used and
 necessary yet - don't ask).
-Replace '/path/to/pentagram/data' with the pentagram data directory (that's
-the directory that contains fixedfont.tga).
 Pick one of the midi drivers: disabled, windows, fmopl, timidity, coreaudio.
 If you don't specify one, Pentagram will automatically select one, based on
 your platform.
 (Note: Windows will only work on Windows. CoreAudio only on MacOSX.)
 (Note: for timidity you'll need a timidity patch set, and you may have
- to set the config/audio/timiditycfg entry to the full path of timidity.cfg.)
+ to set the timiditycfg= entry to the full path of timidity.cfg.)
+
+You may also override some settings under [pentagram] by writing them
+under [u8]. The ones that can be oerriden are midi_driver, fullscreen,
+width, height, bpp, timiditycfg.
+Right now this is not necessary as we only support U8 but if we start to
+support other games it might come in handy.
+
 
 KEYBOARD COMMANDS
 =================
@@ -85,6 +96,14 @@ These commands are likely to change in the future so keep an eye on CHANGELOG
 as well.
 
 Many of these can be changed in your u8bindings.cfg file.
+
+
+left mouse	: look at item/NPC,
+doubleclick left mouse: uses item/talks to NPC
+right mouse	: walk/run (depending on distance between cursor and Avatar)
+left mouse+right mouse	: jump or while running a running jump
+middle mouse	: feature test button :-) likely to change very often.
+		  At the moment it gives details on clicked objects.
 
 ~		: hides/restores console
 page up/down	: scrolls console
@@ -97,17 +116,16 @@ h		: highlights any item you are "hitting", colliding with
 c		: enables clipping
 i		: open backpack
 z		: open paperdoll/status
+r		: recall
 m		: switches combat mode on/off
-ESC,q		: quits pentagram
-[,]		: first ] clears the screen, multiple presses of ]
-		  show the paint order. [ "steps" backward.
-left mouse	: look at item/npc
-right mouse	: use item/talk to npc
-middle mouse	: feature test button :-) likely to change very often.
-		  At the moment it is an object "hurler"
-shift		: quarter speed mode. needs to be held down.
+x		: item locator
+ESC,q	: quits pentagram
 F7		: Quicksave (savegames get broken a lot, so don't rely on that)
 F8		: Quickload
+F12		: toggles frame by frame
+[,]		: first ] clears the screen, multiple presses of ]
+		  show the paint order. [ "steps" backward.
+shift		: quarter speed mode. needs to be held down.
 
 
 HACKS TO SHOW OFF
@@ -116,6 +134,8 @@ HACKS TO SHOW OFF
 f		: plays first scene (Avatar standing up, speaking to Devon)
 g		: plays execution scene
 
+If you copy VeraBd.ttf to the Pentagram data directory the font of U8
+gets replaced by it.
 
 SUPPORTED GAMES AND VERSIONS
 ============================
