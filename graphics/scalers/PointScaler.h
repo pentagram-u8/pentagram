@@ -93,7 +93,7 @@ public:
 
 		}
 
-		return TRUE;
+		return true;
 	}
 
 };
