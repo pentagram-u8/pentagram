@@ -2385,6 +2385,8 @@ void UCMachine::ConCmd_setGlobal(const Console::ArgsType & /*args*/,
 				uc->globals->getBits(offset, size));
 }
 
+#ifdef DEBUG
+
 void UCMachine::ConCmd_tracePID(const Console::ArgsType & /*args*/,
 								const Console::ArgvType &argv)
 {
@@ -2458,3 +2460,5 @@ void UCMachine::ConCmd_stopTrace(const Console::ArgsType &/*args*/,
 	uc->tracing_enabled = false;
 	uc->trace_all = false;
 }
+
+#endif
