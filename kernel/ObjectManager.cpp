@@ -48,6 +48,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "SliderGump.h"
 #include "SlidingWidget.h"
 #include "ScrollGump.h"
+#include "MiniStatsGump.h"
 
 ObjectManager* ObjectManager::objectmanager = 0;
 
@@ -299,4 +300,5 @@ void ObjectManager::setupLoaders()
 	addObjectLoader("SliderGump", ObjectLoader<SliderGump>::load);
 	addObjectLoader("SlidingWidget", ObjectLoader<SlidingWidget>::load);
 	addObjectLoader("ScrollGump", ObjectLoader<ScrollGump>::load);
+	addObjectLoader("MiniStatsGump", ObjectLoader<MiniStatsGump>::load);
 }	
