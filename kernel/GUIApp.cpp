@@ -201,7 +201,7 @@ void GUIApp::init_midi()
 
 	pout << "Initializing Midi" << std::endl;
 
-#if 0
+#if 1
 	// Only the FMOPL Midi driver 'requires' SDL_mixer, and I don't 
 	// want to force it on everyone at the moment.
 #ifdef USE_FMOPL_MIDI
