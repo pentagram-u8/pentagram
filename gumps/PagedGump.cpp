@@ -63,7 +63,7 @@ void PagedGump::InitGump()
 	prevButton->InitGump();
 	AddChild(prevButton);
 	prevButton->setRelativePosition(TOP_LEFT, leftOff, topOff);
-
+	prevButton->HideGump();
 }
 
 void PagedGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
@@ -100,6 +100,11 @@ void PagedGump::ChildNotify(Gump *child, uint32 message)
 				current->second->HideGump();
 				++current;
 				current->second->UnhideGump();
+
+				if (current + 1 == gumps.end())
+					nextButton->HideGump();
+
+				prevButton->UnhideGump();
 			}
 		}
 		else if (cid == prevButton->getObjId())
@@ -109,10 +114,14 @@ void PagedGump::ChildNotify(Gump *child, uint32 message)
 				current->second->HideGump();
 				--current;
 				current->second->UnhideGump();
+				
+				if (current == gumps.begin())
+					prevButton->HideGump();
+
+				nextButton->UnhideGump();
 			}
 		}
 	}
-
 }
 
 void PagedGump::addGump(std::string name, Gump * g)
