@@ -1,0 +1,5 @@
+.deps
+Makefile
+config.h
+config.h.in
+stamp-h1

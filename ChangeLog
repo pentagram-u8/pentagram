@@ -1,3 +1,6 @@
+2002-10-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* various: added some .cvsignore files
+
 2002-10-30  Ryan Nunn <colourles@users.sourceforge.net>
 	* convert/ConvertShape.*,  tools/shapeconv/ShapeConv.cpp : Fixing a few
 	  shape conversion problems
