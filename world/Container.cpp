@@ -145,7 +145,20 @@ bool Container::moveItemToEnd(Item* item)
 
 void Container::removeContents()
 {
-	//!! todo
+	Container* parent = getParentAsContainer();
+	if (parent) {
+		// move contents to parent
+		while (contents.begin() != contents.end()) {
+			Item *item = *(contents.begin());
+			item->moveToContainer(parent);
+		}
+	} else {
+		// move contents to our coordinates
+		while (contents.begin() != contents.end()) {
+			Item *item = *(contents.begin());
+			item->move(x,y,z);
+		}
+	}
 }
 
 
