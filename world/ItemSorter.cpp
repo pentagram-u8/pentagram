@@ -1021,7 +1021,7 @@ bool ItemSorter::NullPaintSortItem(SortItem	*si)
 	return false;
 }
 
-uint16 ItemSorter::Trace(sint32 x, sint32 y)
+uint16 ItemSorter::Trace(sint32 x, sint32 y, HitFace* face)
 {
 	SortItem *it;
 	SortItem *end;
@@ -1067,10 +1067,48 @@ uint16 ItemSorter::Trace(sint32 x, sint32 y)
 		}
 
 		// Ok now check against selected
-		if (!selected|| (it->order > selected->order)) selected = it;
+		if (!selected || (it->order > selected->order)) selected = it;
 	}
 
-	if (selected) return selected->item_num;
+	if (selected) {
+
+		if (face) {
+			// shortcut for zero-height items
+			if (selected->ztop == selected->z) {
+				*face = Z_FACE;
+			} else {
+				// determine face that was hit
+
+				// RNT coordinates
+				sint32 RNTx = selected->sxbot;
+				sint32 RNTy = selected->sybot - selected->ztop + selected->z;
+				
+	/*
+				Bounding Box layout (top part)
+
+		   1    
+		 /   \      
+	   /       \     1 = Left  Far  Top LFT --+
+	 2  Z-face   3   2 = Left  Near Top LNT -++
+	 | \       / |   3 = Right Far  Top RFT +-+
+	 |   \   /   |   4 = Right Near Top RNT +++
+	 | Y   4  X  |
+	 |face |face |
+
+	*/
+
+				if (2 * (y - RNTy) <= (x - RNTx) && // if above/on line 4-3
+					2 * (y - RNTy) < (RNTx - x)) // and above/on line 4-2
+					*face = Z_FACE;
+				else if (x > RNTx)
+					*face = X_FACE;
+				else
+					*face = Y_FACE;
+			}
+		}
+
+		return selected->item_num;
+	}
 	
 	return 0;
 }

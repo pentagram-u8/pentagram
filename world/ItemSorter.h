@@ -45,6 +45,10 @@ public:
 	ItemSorter(int Max_Items = 2048);
 	~ItemSorter();
 
+	enum HitFace {
+		X_FACE, Y_FACE, Z_FACE
+	};
+
 	// Begin creating the display list
 	void BeginDisplayList(RenderSurface*,
 						  sint32 camx, sint32 camy, sint32 camz);
@@ -53,7 +57,10 @@ public:
 	void AddItem(Item *);					// Add an Item. SetupLerp() MUST have been called
 
 	void PaintDisplayList();				// Finishes the display list and Paints
-	uint16 Trace(sint32 x, sint32 y);		// Trace and find an object. Returns objid 
+
+	// Trace and find an object. Returns objid.
+	// If face is non-NULL, also return the face of the 3d bbox (x,y) is on
+	uint16 Trace(sint32 x, sint32 y, HitFace* face = 0 );
 
 	void IncSortLimit() { sort_limit++; }
 	void DecSortLimit() { if (sort_limit > 0) sort_limit--; }
