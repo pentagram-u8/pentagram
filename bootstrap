@@ -3,7 +3,20 @@
 #set -e
 echo "Initial preparation...this can take awhile, so sit tight..."
 
-aclocal
+aclocalincludes=""
+if test -d "/usr/local/share/aclocal"; then
+  if test "/usr/local/share/aclocal" != `aclocal --print-ac-dir`; then
+    aclocalincludes="$aclocalincludes -I /usr/local/share/aclocal"
+  fi
+fi
+
+#if test -d "$HOME/share/aclocal"; then
+#  if test "$HOME/share/aclocal" != `aclocal --print-ac-dir`; then
+#    aclocalincludes="$aclocalincludes -I $HOME/share/aclocal"
+#  fi
+#fi
+
+aclocal $aclocalincludes
 
 # We don't need libtool, but it creates config.sub & config.guess - <sigh>
 libtoolize --automake --copy --force
