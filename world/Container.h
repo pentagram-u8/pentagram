@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Item.h"
 #include <list>
 
+#include "intrinsics.h"
 
 class Container : public Item
 {
@@ -36,8 +37,15 @@ public:
 
 	bool AddItem(Item* item);
 	bool RemoveItem(Item* item);
+	void removeContents();
+	void destroyContents();
 
 	virtual uint16 assignObjId(); //get and assign self (and contents) an objID
+
+	virtual void destroy();
+
+	INTRINSIC(I_removeContents);
+	INTRINSIC(I_destroyContents);
 
 protected:
 	std::list<Item*> contents;

@@ -23,7 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 #include "Item.h"
-#include "UCMachine.h" // only for AvatarCanCheat
+#include "UCMachine.h"
+#include "Container.h"
 
 
 // Ultima 8 Intrinsics
@@ -90,9 +91,9 @@ Intrinsic U8Intrinsics[] = {
 	0,
 	0,
 	0,
-	0,
-	0,
-	0,
+	Item::I_destroy,
+	Container::I_removeContents,
+	Container::I_destroyContents,
 	0,
 	0,
 	0,

@@ -73,9 +73,10 @@ void Item::move(sint32 X, sint32 Y, sint32 Z)
 {
 	//! constant
 
-	if (!parent && (x / 512 != X / 512) || (y / 512 != Y / 512)) {
-		// ! check if item was/should be in CurrentMap in the first place...
-		// just checking for !parent may not be enough
+	if ((flags & (FLG_CONTAINED | FLG_EQUIPPED))
+		&& (x / 512 != X / 512) || (y / 512 != Y / 512)) {
+
+		// if item isn't contained or equipped, it's in CurrentMap
 
 		World::get_instance()->getCurrentMap()->removeItemFromList(this,x,y);
 		setLocation(X, Y, Z);
@@ -281,6 +282,23 @@ uint32 Item::callUsecodeEvent(uint32 event)
 }
 
 
+void Item::destroy()
+{
+	if (extendedflags & EXT_INGLOB) return; // don't touch glob contents
+
+	if (parent) {		
+		// we're in a container, so remove self from parent
+		//!! need to make sure this works for equipped items too...
+		parent->RemoveItem(this);
+	} else {
+		// remove self from CurrentMap
+		World::get_instance()->getCurrentMap()->removeItemFromList(this,x,y);
+	}
+
+	clearObjId();
+	delete this; // delete self.
+}
+
 //
 // Item::setupLerp(uint32 factor)
 //
@@ -452,6 +470,7 @@ uint32 Item::I_getContainer(const uint8* args, unsigned int /*argsize*/)
 	Container *parent = item->getParent();
 
 	//! What do we do if item has no parent?
+	//! What do we do with equipped items?
 
 	if (parent)
 		return parent->getObjId();
@@ -467,6 +486,7 @@ uint32 Item::I_getRootContainer(const uint8* args, unsigned int /*argsize*/)
 	Container *parent = item->getParent();
 
 	//! What do we do if item has no parent?
+	//! What do we do with equipped items?
 
 	if (!parent) return 0;
 
@@ -756,4 +776,14 @@ uint32 Item::I_legalCreateInCont(const uint8* args, unsigned int /*argsize*/)
 
 		return 0;
 	}
+}
+
+uint32 Item::I_destroy(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	if (!item) return 0;
+
+	item->destroy();
+
+	return 0;
 }

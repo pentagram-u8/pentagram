@@ -27,6 +27,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Direction.h"
 #include "World.h"
 
+// p_dynamic_cast stuff
+DEFINE_DYNAMIC_CAST_CODE(ActorAnimProcess,Process);
+
 ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 {
 	assert(actor_);

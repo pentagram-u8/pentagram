@@ -1,4 +1,10 @@
 2003-05-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/ActorAnimProcess.*: forgot p_dynamic_cast
+	* world/*: marked some issues with equipped items
+	* world/Container.*: set FLG_CONTAINED flag properly
+	* world/Container.*, world/Item.*: more intrinsics
+
+2003-05-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.cpp: got rid of some unused vars
 	* world/actors/*: only allow one simultaneous animation per actor
 	

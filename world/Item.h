@@ -61,6 +61,8 @@ public:
 	Item* getGlobNext() const { return glob_next; }
 	void setGlobNext(Item* i) { glob_next = i; }
 
+	virtual void destroy();
+
 	bool checkLoopScript(const uint8* script, uint32 scriptsize);
 
 	uint32 callUsecodeEvent(uint32 event);
@@ -137,6 +139,7 @@ public:
 	INTRINSIC(I_legalCreateAtPoint);
 	INTRINSIC(I_legalCreateAtCoords);
 	INTRINSIC(I_legalCreateInCont);
+	INTRINSIC(I_destroy);
 
 protected:
 	uint32 shape;

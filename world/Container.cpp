@@ -20,6 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Container.h"
 
+#include "World.h"
+#include "UCMachine.h"
+
 // p_dynamic_cast stuff
 DEFINE_DYNAMIC_CAST_CODE(Container,Item);
 
@@ -67,6 +70,8 @@ bool Container::AddItem(Item* item)
 
 	contents.push_back(item);
 
+	item->setFlag(Item::FLG_CONTAINED);
+
 	return true;
 }
 
@@ -80,9 +85,53 @@ bool Container::RemoveItem(Item* item)
 	for (iter = contents.begin(); iter != contents.end(); ++iter) {
 		if (*iter == item) {
 			contents.erase(iter);
+			item->clearFlag(Item::FLG_CONTAINED);
 			return true;
 		}
 	}
 
 	return false;
+}
+
+void Container::removeContents()
+{
+	//!! todo
+}
+
+
+void Container::destroyContents()
+{
+	while (contents.begin() != contents.end()) {
+		Item *item = *(contents.begin());
+		item->destroy(); // this (should) remove(s) item from contents
+	}
+}
+
+void Container::destroy()
+{
+	//! What do we do with our contents?
+	//! (in Exult we remove the contents)
+
+	removeContents();
+
+	Item::destroy();
+}
+
+
+uint32 Container::I_removeContents(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_CONTAINER(container);
+	if (!container) return 0;
+
+	container->removeContents();
+	return 0;
+}
+
+uint32 Container::I_destroyContents(const uint8* args,unsigned int /*argsize*/)
+{
+	ARG_CONTAINER(container);
+	if (!container) return 0;
+
+	container->destroyContents();
+	return 0;
 }

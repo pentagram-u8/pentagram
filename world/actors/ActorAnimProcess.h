@@ -30,6 +30,9 @@ public:
 	//! note: this probably needs some more parameters
 	ActorAnimProcess(Actor* actor, uint32 action, uint32 dir);
 
+	// p_dynamic_cast stuff
+	ENABLE_DYNAMIC_CAST(ActorAnimProcess);
+
 	virtual bool run(const uint32 framenum);
 
 	virtual void terminate();
