@@ -44,8 +44,12 @@ void Process::fail()
 		 i != waiting.end(); ++i)
 	{
 		Process *p = kernel->getProcess(*i);
-		if (p && !p->terminated)
-			p->fail();
+		if (p && !p->terminated) {
+			if (p->type == 1)
+				p->wakeUp(0); // CHECKME: this probably isn't right
+			else
+				p->fail();
+		}
 	}
 	waiting.clear(); // to prevent terminate() from waking them again
 
