@@ -1,0 +1,31 @@
+#!/bin/sh
+
+#set -e
+echo "Initial preparation...this can take awhile, so sit tight..."
+
+aclocal
+
+# We don't need libtool, but it creates config.sub & config.guess - <sigh>
+libtoolize --automake --copy --force
+
+# Create config.h
+autoheader
+
+# Neither do we need automake, but it provides "missing", "install-sh" and "mkinstalldirs"
+automake --foreign --add-missing --copy
+
+#Create configure script
+autoconf
+
+echo "Copying Makefiles..."
+cp tools/Makefile tools/disasm
+cp tools/Makefile misc
+cp tools/Makefile convert
+cp tools/Makefile convert/u8
+#cp /Makefile audio/
+#cp /Makefile audio/midi_drivers
+#cp tools/Makefile conf/
+#cp /Makefile files/
+#cp /Makefile files/zip/
+
+echo "You are now ready to run ./configure ..."

@@ -1,0 +1,222 @@
+dnl Process this file with autoconf to produce a configure script.
+AC_INIT(README)
+AM_CONFIG_HEADER(misc/config.h)
+
+# ---------------------------------------------------------------------
+# System/version info
+# ---------------------------------------------------------------------
+
+PACKAGE=pentagram
+VER_MAJOR=0
+VER_MINOR=1
+VER_EXTRA=cvs
+VERSION=$VER_MAJOR.$VER_MINOR$VER_EXTRA
+
+# check host/target systems
+# (build = system we're building on, host = system we're building for,
+# target = system the program we're building will build for)
+AC_CANONICAL_HOST
+AC_CANONICAL_TARGET
+
+AC_DEFINE_UNQUOTED(PACKAGE, "$PACKAGE", [Package Name])
+AC_DEFINE_UNQUOTED(VERSION, "$VERSION", [Version Number])
+AC_DEFINE_UNQUOTED(VER_MAJOR, "$VER_MAJOR", [Version Number Major])
+AC_DEFINE_UNQUOTED(VER_MINOR, "$VER_MINOR", [Verion Number Minor])
+AC_DEFINE_UNQUOTED(VER_EXTRA, "$VER_EXTRA", [Version Number Extra])
+
+
+# ---------------------------------------------------------------------
+# Host system settings
+# ---------------------------------------------------------------------
+AC_EXEEXT
+
+AC_DEFINE(PENTAGRAM, 1, [Is this Pentagram?])
+AC_DEFINE(HAVE_MIDI, 1, [Do we have midi support?])
+
+# Path to an empty file (will be overridne for windows)
+EMPTY_FILE=/dev/null
+AC_SUBST(EMPTY_FILE)
+
+# Various commands used in our Makefile.in
+RM="rm -f"
+MKDIR="mkdir -p"
+AC_SUBST(RM)
+AC_SUBST(MKDIR)
+
+# determine windowing system based on 'host_os'
+AC_MSG_CHECKING("windowing system")
+case "$host_os" in
+	linux*)
+		WINDOWING_SYSTEM="-DXWIN"
+		AC_MSG_RESULT(X11 (GNU/Linux))
+		;;
+	beos)
+		WINDOWING_SYSTEM="-DBEOS"
+		AC_MSG_RESULT(BeOS)
+		LIBS="$LIBS -lbe -lmidi"
+		enable_kmid="no"
+		enable_timidity="no"
+		;;
+	mingw32* )
+		WINDOWING_SYSTEM="-DWIN32"
+		AC_MSG_RESULT(Win32 (mingw32))
+		LIBS="$LIBS -lwinmm -lstdc++"
+		enable_kmid="no"
+		enable_timidity="no"
+		EMPTY_FILE=nul
+		;;
+	cygwin* )
+		WINDOWING_SYSTEM="-DWIN32"
+		AC_DEFINE(CYGWIN, 1, [Compiling using Cygwin])
+		AC_MSG_RESULT(Win32 (cygwin))
+		LIBS="$LIBS -lwinmm"
+		enable_kmid="no"
+		enable_timidity="no"
+		EMPTY_FILE=nul
+		;;
+	openbsd* )
+		WINDOWING_SYSTEM="-DXWIN"
+		AC_DEFINE(OPENBSD, 1, [Compiling on OpenBSD])
+		AC_MSG_RESULT(X11 (OpenBSD))
+		LIBS="$LIBS -L/usr/X11R6/lib -lX11 -lXext -lXxf86vm -lXxf86dga"
+		;;
+	solaris* )
+		WINDOWING_SYSTEM="-DXWIN"
+		AC_MSG_RESULT(X11 (Solaris))
+		LIBS="$LIBS -lsocket -lX11"
+		;;
+	darwin*)
+		dnl We have a problem here: both MacOS X and Darwin report the same
+		dnl signature "powerpc-apple-darwin*" - so we have to do more to
+		dnl distinguish them. Plain Darwin will propably use X-Windows; and it
+		dnl is of course lacking Cocoa. For now I am lazy and do not add 
+		dnl proper detection code.
+		
+		WINDOWING_SYSTEM="-DCOCOA"
+		AC_DEFINE(MACOSX, 1, [Compiling on MacOSX])
+		AC_MSG_RESULT(Cocoa (MacOS X))
+		LIBS="$LIBS -framework QuickTime"
+		CXXFLAGS="$CXXFLAGS -fpascal-strings"
+		ARCH=macosx
+		;;
+	*)
+		WINDOWING_SYSTEM="-DXWIN"
+		AC_MSG_RESULT(not sure... guessing X11)
+		;;
+esac
+
+
+# ---------------------------------------------------------------------
+# Compilers and other tools
+# ---------------------------------------------------------------------
+AC_PROG_AWK
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_INSTALL
+#AM_PROG_LEX
+AC_PROG_YACC
+AC_PROG_CXX
+
+
+# ---------------------------------------------------------------------
+# Checks for header files.
+# ---------------------------------------------------------------------
+AC_LANG_CPLUSPLUS
+AC_LANG_C
+AC_HEADER_STDC
+AC_CHECK_HEADERS(unistd.h)
+
+# Need to switch to C++ to try and locate C++ headers
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+
+# Check the headers
+AC_CHECK_HEADERS(sstream)
+
+# Restore the original language
+AC_LANG_RESTORE
+
+# ---------------------------------------------------------------------
+# Checks for readline.
+# ---------------------------------------------------------------------
+AC_CHECK_HEADERS(readline.h history.h readline/readline.h readline/history.h)
+AC_CHECK_LIB(curses, clear)
+AC_CHECK_LIB(history, add_history)
+AC_CHECK_LIB(readline, readline)
+
+# ---------------------------------------------------------------------
+# Checks for specific functions.
+# ---------------------------------------------------------------------
+AC_MSG_CHECKING(for snprintf())
+AC_TRY_LINK([
+#include <stdio.h>
+],
+[
+        snprintf(0,0,0,0);
+],
+  ac_cv_func_snprintf=yes,
+  ac_cv_func_snprintf=no)
+AC_MSG_RESULT($ac_cv_func_snprintf)
+if test x$ac_cv_func_snprintf = xyes ; then
+	AC_DEFINE(HAVE_SNPRINTF, 1, [Some platforms don't have snprintf])
+fi
+
+
+# ---------------------------------------------------------------------
+# Check sizes of integer types.
+# Cross-compiling sizes set to 2,4,4,8. (May need to be changed...)
+# ---------------------------------------------------------------------
+AC_CHECK_SIZEOF(short, 2)
+AC_CHECK_SIZEOF(int, 4)
+AC_CHECK_SIZEOF(long, 4)
+AC_CHECK_SIZEOF(long long, 8)
+
+
+# ---------------------------------------------------------------------
+# SDL
+# ---------------------------------------------------------------------
+SDL_VERSION=1.2.0
+AM_PATH_SDL($SDL_VERSION,
+	:,
+	AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!])
+)
+
+
+# ------------------
+# Warning level
+# ------------------
+AC_ARG_ENABLE(paranoid-warnings, [  --enable-paranoid-warnings       Enable paranoid warnings [default no]],,enable_paranoid_warnings=no)
+if test x$enable_paranoid_warnings = xyes; then
+        WARNINGS="-Wall -W -Wcast-qual -Wwrite-strings -Wconversion -Wredundant-decls -Winline -Wdisabled-optimization -fcheck-new -Wctor-dtor-privacy -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual"
+#       DEBUG_FLAGS="$DEBUG_FLAGS -Wall -O -Wunused -Wuninitialized -Woverloaded-virtual -Wpointer-arith -Wcast-qual -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -Winline"
+        WARNING_LEVEL="paranoid"
+else
+        WARNINGS="-Wall"
+        WARNING_LEVEL="normal"
+fi
+
+AC_MSG_RESULT($WARNING_LEVEL)
+
+
+# ------------------
+# Generate output
+# ------------------
+AC_SUBST(WINDOWING_SYSTEM)
+AC_SUBST(WARNINGS)
+AC_SUBST(PACKAGE)
+
+AC_OUTPUT([
+Makefile
+])
+
+
+# ------------------
+# Configure Status
+# ------------------
+echo
+echo Pentagram v$VERSION
+echo
+echo SDL ....................... : `$SDL_CONFIG --version`
+
+echo
+echo "Now type 'make' to build Pentagram"

@@ -1,0 +1,49 @@
+Just a quick overview of all the important subdirectories. Most of them will be
+currently unimplemented, until at least someone actually writes code for them,
+or transfers it from the 'old' cvs module. *grin*
+
+audio/     -- Pretty obviously for audio related classes and code
+
+convert/  -- The conversion related classes, used for converting the
+shapes, usecode, etc from their game dependant formats, to our game
+independant formats, hopefully. *grin*
+
+filesys/  -- The pentagram FileSystem related classes (file wrappers,
+buffers, etc.
+
+graphics/ -- IIRC, it's everything to do with shapes/gumps/maps and the
+rendering of such.
+
+gumps/     -- For all the gump related classes. In my vision, gumps will
+almost be like our own windowing system.
+
+input/     -- For the input handling classes (maybe). This just depends on
+how we actually handle input. Ideally I think the should only be a single
+event handling function in the engine which then dispatches the input to
+the component that currently has focus. Another dir for this may not be
+needed.
+
+kernel/   -- Here goes the Kernel and it's associated classes, including
+the UsecodeMachine.
+
+mainmenu/  -- Darke's funky main menu system. If it's implemented with
+gumps, it should probably go under gumps instead.
+
+savegame/  -- For the files related to savegame handling. The name of this
+dir possibly should not be called 'savegame' as that was the name of the
+original Ultima8's savegame dir. A better name is required, but it's
+obvious the purpose of the dir.
+
+utils/    -- (misc/ maybe?) Just the random header and utility files.
+Like the [su]int[8|16|32] defines.
+
+world/     -- For world and object managing code. Probably would contain
+the physics code too. The code to resolve an item number into a world
+object would be here somewhere (as part of the object manager).
+
+With the addition:
+
+tools/     -- Inside this there's a subdirectory for each tool, and the 
+relevant source goes into that directory. For 
+compilers/disassemblers/decompilers/viewers/commandline converters/etc.
+

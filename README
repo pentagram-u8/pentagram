@@ -1,0 +1,24 @@
+This repository contains code snippets and documents related to Origin's 
+Ultima 8:Pagan.
+
+
+BUILDING FROM CVS
+=================
+
+Unix:
+
+1) Run the "bootstrap" script to create the "configure" script
+  ./bootstrap
+2) Now run configure
+  ./configure
+3) Finally, start the build as usual
+  make
+
+
+
+Windows:
+ ...
+
+
+MacOS 9:
+  Not yet supported

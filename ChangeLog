@@ -1,3 +1,8 @@
+2002-08-25  Darke  <darkepaw@users.sf.net>
+	* *: Added the makefile system, a few docs, and the required files to
+	  compile disasm.cc. Hopefully it works, although I expect it not to.
+	  *grin*
+
 2002-08-06  Ryan Nunn <triforce@merlin.net.au>
 	* docs/musicflx.txt : Updated info about one of the flex entries
 

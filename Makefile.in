@@ -1,0 +1,103 @@
+SHELL = @SHELL@
+
+srcdir = @srcdir@
+top_srcdir = @top_srcdir@
+VPATH = @srcdir@
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+
+bindir = @bindir@
+sbindir = @sbindir@
+libexecdir = @libexecdir@
+datadir = @datadir@
+sysconfdir = @sysconfdir@
+sharedstatedir = @sharedstatedir@
+localstatedir = @localstatedir@
+libdir = @libdir@
+infodir = @infodir@
+mandir = @mandir@
+includedir = @includedir@
+oldincludedir = /usr/include
+
+DESTDIR =
+
+pkgdatadir = $(datadir)/@PACKAGE@
+pkglibdir = $(libdir)/@PACKAGE@
+pkgincludedir = $(includedir)/@PACKAGE@
+
+top_builddir = .
+
+ACLOCAL = aclocal
+AUTOCONF = autoconf
+AUTOHEADER = autoheader
+
+CP := cp
+CXX := @CXX@
+MKDIR := @MKDIR@
+RM := @RM@
+EXEEXT := @EXEEXT@
+EMPTY_FILE := @EMPTY_FILE@
+
+DEPDIR := .deps
+SDL_CFLAGS := @SDL_CFLAGS@
+SDL_LIBS := @SDL_LIBS@
+CXXFLAGS += -g @CXXFLAGS@ @DEFS@
+LDFLAGS += @LIBS@
+WARNINGS := @WARNINGS@
+
+# List of all sub modules
+# The ordre is important, be careful if you change it
+MODULES := convert misc tools tools/disasm
+#audio audio/midi_drivers viewer conf tools tools/dcmpsound files usecode suc
+
+# look for include files in
+#   each of the modules
+CXXFLAGS += $(patsubst %,-I$(top_srcdir)/%,$(MODULES)) -I. -Iheaders
+
+# list of all .deps subdirs
+DEPDIRS = $(patsubst %,%/$(top_builddir)/$(DEPDIR),$(MODULES))
+
+# Default target. The dependencies are added by the module.mk files
+all:
+
+# Clean all object files & binaries
+clean:
+
+# Clean *all*
+distclean: clean
+	-$(RM) -r $(DEPDIRS)
+
+# Include additional rules for each module
+include $(patsubst %,$(top_srcdir)/%/module.mk,$(MODULES))
+
+# Create .deps subdirs if missing. We do not do this directly, but rather
+#via a file inside the .deps dir. The reason for this is that otherwise, the
+#mod date of the .deps dir will change whenever a new file is created in it,
+#causing all source files to be rebuilt - ouch!
+$(DEPDIRS):
+	-$(MKDIR) $(@D)
+	touch $@
+
+# custom compile rule which calculates dependencies
+%.o: %.cc
+	$(MKDIR) $(*D)/$(DEPDIR)
+	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).d2" $(WARNINGS) $(CXXFLAGS) $(SDL_CFLAGS) -c -o $@ $<
+	echo -n "$(*D)/" > $(*D)/$(DEPDIR)/$(*F).d
+	cat "$(*D)/$(DEPDIR)/$(*F).d2" >> "$(*D)/$(DEPDIR)/$(*F).d"
+	$(RM) -f "$(*D)/$(DEPDIR)/$(*F).d2"
+
+# rule to rebuild Makefile if necessary
+Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
+	cd $(top_builddir) && \
+	  CONFIG_HEADERS= CONFIG_LINKS= \
+	  CONFIG_FILES=$@ $(SHELL) ./config.status
+
+# rules to rebuild configure, config.status, aclocal.m4
+$(top_builddir)/config.status: $(srcdir)/configure
+	$(SHELL) ./config.status --recheck
+$(srcdir)/configure: $(srcdir)/configure.in $(top_srcdir)/aclocal.m4
+	cd $(srcdir) && $(AUTOCONF)
+$(top_srcdir)/aclocal.m4: $(srcdir)/configure.in
+	cd $(srcdir) && $(ACLOCAL)
+
+.PHONY: all clean distclean
