@@ -127,7 +127,7 @@ sint32 XMidiSequence::playEvent()
 	XMidiEvent *note;
 
 	// Handle note off's here
-	while (note = notes_on.PopTime(getRealTime()))
+	while ((note = notes_on.PopTime(getRealTime())) != 0)
 		handler->sequenceSendEvent(sequence_id, note->status + (note->data[0] << 8));
 
 	// Play all waiting notes;
@@ -148,7 +148,7 @@ sint32 XMidiSequence::playEvent()
 #endif
 
 	// Handle note off's here too
-	while (note = notes_on.PopTime(getRealTime()))
+	while ((note = notes_on.PopTime(getRealTime())) != 0)
 		handler->sequenceSendEvent(sequence_id, note->status + (note->data[0] << 8));
 
 		// XMidi For Loop
