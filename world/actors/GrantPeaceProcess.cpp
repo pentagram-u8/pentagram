@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GumpNotifyProcess.h"
 #include "MainActor.h"
 #include "SpriteProcess.h"
+#include "AudioProcess.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -173,7 +174,9 @@ bool GrantPeaceProcess::run(const uint32 /*framenum*/)
 		// calling intrinsic...
 		PaletteFaderProcess::I_lightningBolt(0, 0);
 
-		// TODO: sfx
+		AudioProcess* audioproc = AudioProcess::get_instance();
+		if (audioproc) audioproc->playSFX(94, 0x60, 1, 0); //constants!!
+		// CHECKME: is that the right SFX?
 	}
 
 

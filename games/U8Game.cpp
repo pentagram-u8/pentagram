@@ -44,7 +44,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 U8Game::U8Game() : Game()
 {
-
+	// Set some defaults for gameplay-related settings
+	SettingManager* settingman = SettingManager::get_instance();
+	settingman->setDefault("skipstart", false);
+	settingman->setDefault("footsteps", true);
+	settingman->setDefault("cheat", true);
 }
 
 U8Game::~U8Game()
@@ -260,7 +264,6 @@ bool U8Game::startGame()
 bool U8Game::startInitialUsecode()
 {
 	SettingManager* settingman = SettingManager::get_instance();
-	settingman->setDefault("skipstart", false);
 	bool skipstart;
 	settingman->get("skipstart", skipstart);
 

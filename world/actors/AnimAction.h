@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -68,11 +68,12 @@ struct AnimAction {
 					  unsigned int& startframe, unsigned int& endframe);
 
 	enum AnimActionFlags {
-		AAF_TWOSTEP     = 0x01,
-		AAF_ATTACK      = 0x02,
-		AAF_LOOPING     = 0x04,
-		AAF_UNSTOPPABLE = 0x08,
-		AAF_HANGING     = 0x80
+		AAF_TWOSTEP     = 0x0001,
+		AAF_ATTACK      = 0x0002,
+		AAF_LOOPING     = 0x0004,
+		AAF_UNSTOPPABLE = 0x0008,
+		AAF_HANGING     = 0x0080,
+		AAF_SPECIAL     = 0x0800
 	};
 };
 

@@ -48,6 +48,9 @@ protected:
 
 	virtual bool init();
 
+	//! perform special action for an animation
+	void doSpecial();
+
 	Animation::Sequence action;
 	uint32 dir;
 

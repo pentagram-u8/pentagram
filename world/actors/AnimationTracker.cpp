@@ -387,9 +387,9 @@ void AnimationTracker::getInterpolatedPosition(sint32& x_, sint32& y_,
 	sint32 dy = y - prevy;
 	sint32 dz = z - prevz;
 
-	x_ = prevx + (dx*fc)/animaction->framerepeat;
-	y_ = prevy + (dy*fc)/animaction->framerepeat;
-	z_ = prevz + (dz*fc)/animaction->framerepeat;
+	x_ = prevx + (dx*fc)/(animaction->framerepeat+1);
+	y_ = prevy + (dy*fc)/(animaction->framerepeat+1);
+	z_ = prevz + (dz*fc)/(animaction->framerepeat+1);
 }
 
 void AnimationTracker::save(ODataSource* ods)

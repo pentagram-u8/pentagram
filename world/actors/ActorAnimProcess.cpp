@@ -34,6 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ShapeInfo.h"
 #include "AnimationTracker.h"
 #include "AudioProcess.h"
+#include "SettingManager.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -138,7 +139,7 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 
 	if (!firstframe)
 		repeatcounter++;
-	if (repeatcounter >= tracker->getAnimAction()->framerepeat)
+	if (repeatcounter > tracker->getAnimAction()->framerepeat)
 		repeatcounter = 0;
 
 	Actor *a = World::get_instance()->getNPC(item_num);
@@ -214,6 +215,14 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 			AudioProcess::get_instance()->playSFX(curframe->sfx,0x60,
 												  item_num,0);
 		}
+
+		if (curframe && (curframe->flags & AnimAction::AAF_SPECIAL)) {
+			// Flag to trigger a special action
+			// E.g.: play draw/sheathe SFX for avatar when weapon equipped,
+			// throw skull-fireball when ghost attacks, ...
+			doSpecial();
+		}
+
 	}
 
 	sint32 x,y,z;
@@ -257,6 +266,65 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 	return true;
 }
 
+void ActorAnimProcess::doSpecial()
+{
+	Actor *a = World::get_instance()->getNPC(item_num);
+	assert(a);
+
+	// play SFX when Avatar draws/sheates weapon
+	if (item_num == 1 && (action == Animation::readyWeapon ||
+						  action == Animation::unreadyWeapon) &&
+		a->getEquip(ShapeInfo::SE_WEAPON) != 0)
+	{
+		int sfx = (std::rand() % 2) ? 0x51 : 0x52; // constants!
+		AudioProcess* audioproc = AudioProcess::get_instance();
+		if (audioproc) audioproc->playSFX(sfx, 0x60, 1, 0);
+		return;
+	}
+
+
+	// play PC/NPC footsteps
+	SettingManager* settingman = SettingManager::get_instance();
+	bool playavfootsteps;
+	settingman->get("footsteps", playavfootsteps);
+	if (item_num != 1 || playavfootsteps)
+	{
+		UCList itemlist(2);
+		LOOPSCRIPT(script, LS_TOKEN_TRUE);		
+		CurrentMap* cm = World::get_instance()->getCurrentMap();
+
+		// find items directly below
+		cm->surfaceSearch(&itemlist, script, sizeof(script), a, false, true);
+		if (itemlist.getSize() == 0) return;
+
+		Item* f = World::get_instance()->getItem(itemlist.getuint16(0));
+		assert(f);
+
+		uint32 floor = f->getShape();
+		bool running = (action == Animation::run);
+		int sfx = 0;
+		switch (floor) { // lots of constants!!
+		case 0x03: case 0x04: case 0x09: case 0x0B: case 0x5C: case 0x5E:
+			sfx = 0x2B;
+			break;
+		case 0x7E:
+			sfx = 0xCD;
+			break;
+		case 0xA1: case 0xA2: case 0xA3: case 0xA4:
+			sfx = (running ? 0x99 : 0x91);
+			break;
+		default:
+			sfx = (running ? 0x97 : 0x90);
+			break;
+		}
+
+		if (sfx) {
+			AudioProcess* audioproc = AudioProcess::get_instance();
+			if (audioproc) audioproc->playSFX(sfx, 0x60, item_num, 0);
+		}
+	}
+
+}
 
 void ActorAnimProcess::terminate()
 {

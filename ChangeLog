@@ -1,5 +1,10 @@
 2005-04-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/MainActor.cpp: play SFX when stats increase
+	* world/actors/ActorAnimProcess.cpp, AnimationTracker.cpp:
+	  increase framerepeat by one; fixes some anim speed/sync issues
+	* world/actors/ActorAnimProcess.cpp: play SFX for drawing/sheating
+	  weapon, footsteps
+	* world/actors/GrantPeaceProcess.cpp: play SFX
 
 2005-03-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/fonts/*: allow disabling interpreting of special characters
