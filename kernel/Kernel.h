@@ -33,7 +33,7 @@ public:
 	void AddProcess(Process *proc);
 	void RemoveProcess(Process *proc);
 
-	bool RunProcesses(uint32 ticks, uint32 framenum);
+	bool RunProcesses(uint32 framenum);
 };
 
 

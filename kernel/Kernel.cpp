@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 
-#include "process.h"
-#include "kernel.h"
+#include "Process.h"
+#include "Kernel.h"
 
 typedef std::list<Process *>::iterator ProcessIterator;
 
@@ -47,7 +47,7 @@ void Kernel::RemoveProcess(Process* proc)
 	ProcessIterator it = processes.find (proc);
 
 	if (it != processes.end()) {
-        // POUT("Removing process");
+		// POUT("Removing process");
 		(*it)->active = false;
 		processes.erase(it);
 	}    
@@ -55,7 +55,7 @@ void Kernel::RemoveProcess(Process* proc)
 
 bool Kernel::RunProcesses(uint32 framenum)
 {
-    bool dirty = false;
+	bool dirty = false;
 	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it) {
 		if ((*it)->Run(framenum)) dirty = true;
 	}
