@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2004 The Pentagram team
+Copyright (C) 2002-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -38,9 +38,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "MainActor.h"
 
+#ifdef DEBUG
 #define LOGPF(X) do { if (trace_show(trace_pid, trace_objid, trace_classid)) pout.printf X; } while (0)
+#else
+#define LOGPF(X)
+#endif
 
-
+#ifdef DEBUG
 static const char *print_bp(const sint16 offset)
 {
 	static char str[32];
@@ -56,6 +60,7 @@ static const char *print_sp(const sint16 offset)
 				  offset<0?-offset:offset);
 	return str;
 }
+#endif
 
 
 //#define DUMPHEAP
@@ -88,10 +93,12 @@ UCMachine::UCMachine(Intrinsic *iset)
 
 	con.AddConsoleCommand("UCMachine::getGlobal", ConCmd_getGlobal);
 	con.AddConsoleCommand("UCMachine::setGlobal", ConCmd_setGlobal);
+#ifdef DEBUG
 	con.AddConsoleCommand("UCMachine::traceObjID", ConCmd_traceObjID);
 	con.AddConsoleCommand("UCMachine::tracePID", ConCmd_tracePID);
 	con.AddConsoleCommand("UCMachine::traceClass", ConCmd_traceClass);
 	con.AddConsoleCommand("UCMachine::stopTrace", ConCmd_stopTrace);
+#endif
 }
 
 
@@ -99,10 +106,12 @@ UCMachine::~UCMachine()
 {
 	con.RemoveConsoleCommand("UCMachine::getGlobal");
 	con.RemoveConsoleCommand("UCMachine::setGlobal");
+#ifdef DEBUG
 	con.RemoveConsoleCommand("UCMachine::traceObjID");
 	con.RemoveConsoleCommand("UCMachine::tracePID");
 	con.RemoveConsoleCommand("UCMachine::traceClass");
 	con.RemoveConsoleCommand("UCMachine::stopTrace");
+#endif
 
 	ucmachine = 0;
 
@@ -138,11 +147,13 @@ bool UCMachine::execProcess(UCProcess* p)
 						 p->usecode->get_class_size(p->classid));
 	cs.seek(p->ip);
 
+#ifdef DEBUG
 	if (trace_show(p->pid, p->item_num, p->classid)) {
 		pout << std::hex << "running process " << p->pid
 			 << ", item " << p->item_num << ", class " << p->classid
 			 << ", offset " << p->ip << std::dec << std::endl;
 	}
+#endif
 
 	bool cede = false;
 	bool error = false;
@@ -154,9 +165,11 @@ bool UCMachine::execProcess(UCProcess* p)
 
 		uint8 opcode = cs.read1();
 
+#ifdef DEBUG
 		uint16 trace_classid = p->classid;
 		ObjId trace_objid = p->item_num;
 		ProcId trace_pid = p->pid;
+#endif
 
 		LOGPF(("sp = %02X; %04X:%04X: %02X\t",
 			   p->stack.stacksize(), p->classid, p->ip, opcode));
@@ -1282,11 +1295,13 @@ bool UCMachine::execProcess(UCProcess* p)
 												   arg_bytes);
 				p->temp32 = Kernel::get_instance()->addProcessExec(newproc);
 
+#ifdef DEBUG
 				if (trace_show(p->pid, p->item_num, p->classid)) {
 					pout << std::hex << "(still) running process " << p->pid
 						 << ", item " << p->item_num << ", class " <<p->classid
 						 << ", offset " << p->ip << std::dec << std::endl;
 				}
+#endif
 
 
 				// Note: order of execution of this process and the new one is
@@ -1323,11 +1338,13 @@ bool UCMachine::execProcess(UCProcess* p)
 
 				uint16 newpid= Kernel::get_instance()->addProcessExec(newproc);
 
+#ifdef DEBUG
 				if (trace_show(p->pid, p->item_num, p->classid)) {
 					pout << std::hex << "(still) running process " << p->pid
 						 << ", item " << p->item_num << ", class " <<p->classid
 						 << ", offset " << p->ip << std::dec << std::endl;
 				}
+#endif
 
 				// as with 'spawn', run execute the spawned process once
 				// immediately

@@ -1,6 +1,7 @@
 2005-01-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCMachine.*: enable usecode tracing with console commands
 	* configure.ac: added 'DEBUG' define by default
+	* usecode/UCMachine.cpp: move usecode tracing to #ifdef DEBUG
 
 2005-01-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* games/u8bindings.cpp: add useInventoryItem function
