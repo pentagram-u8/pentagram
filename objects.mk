@@ -62,6 +62,7 @@ GRAPHICS = \
 	graphics/BaseSoftRenderSurface.o \
 	graphics/FrameID.o \
 	graphics/GumpShapeFlex.o \
+	graphics/InverterProcess.o \
 	graphics/SoftRenderSurface.o \
 	graphics/Texture.o \
 	graphics/TextureTarga.o \
@@ -111,6 +112,7 @@ GUMPS = \
 	gumps/GameMapGump.o \
 	gumps/Gump.o \
 	gumps/GumpNotifyProcess.o \
+	gumps/InverterGump.o \
 	gumps/ItemRelativeGump.o \
 	gumps/MiniStatsGump.o \
 	gumps/MenuGump.o \

@@ -42,9 +42,10 @@ protected:
 
 	uint16				owner;			// Owner item
 	Gump *				parent;			// Parent gump
-	sint32				x, y;			// Gumps position. This is always the upper left corner!
+	sint32				x, y;			// Gump's position in parent.
+										// Always the upper left corner!
 
-	Pentagram::Rect		dims;			// The dimentions/coord space of the gump
+	Pentagram::Rect		dims;			// The dimensions/coord space of the gump
 	uint32				flags;			// Gump flags
 	sint32				layer;			// gump ordering layer
 

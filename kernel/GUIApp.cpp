@@ -52,6 +52,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ConsoleGump.h"
 #include "GameMapGump.h"
 #include "BarkGump.h"
+#include "InverterGump.h"
 
 #include "QuickAvatarMoverProcess.h"
 #include "Actor.h"
@@ -64,6 +65,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "UCList.h"
 #include "LoopScript.h"
+#include "InverterProcess.h"
 
 #include "EggHatcherProcess.h" // for a hack
 #include "UCProcess.h" // more hacking
@@ -148,8 +150,8 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	  animationRate(100), avatarInStasis(false), paintEditorItems(false),
 	  painting(false), showTouching(false), flashingcursor(-1), 
 	  mouseOverGump(0), dragging(DRAG_NOT), dragging_offsetX(0),
-	  dragging_offsetY(0), timeOffset(0), midi_driver(0), midi_volume(255),
-	  drawRenderStats(false)
+	  dragging_offsetY(0), inversion(0), timeOffset(0),
+	  midi_driver(0), midi_volume(255), drawRenderStats(false)
 {
 	application = this;
 
@@ -182,6 +184,9 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	con.AddConsoleCommand("GUIApp::drawRenderStats", ConCmd_drawRenderStats);
 	con.AddConsoleCommand("MovieGump::play", MovieGump::ConCmd_play);
 	con.AddConsoleCommand("MusicProcess::playMusic", MusicProcess::ConCmd_playMusic);
+	con.AddConsoleCommand("InverterProcess::invertScreen",
+						  InverterProcess::ConCmd_invertScreen);
+
 }
 
 GUIApp::~GUIApp()
@@ -206,6 +211,7 @@ GUIApp::~GUIApp()
 	con.RemoveConsoleCommand("GUIApp::drawRenderStats");
 	con.RemoveConsoleCommand("MovieGump::play");
 	con.RemoveConsoleCommand("MusicProcess::playMusic");
+	con.RemoveConsoleCommand("InverterProcess::invertScreen");
 
 	FORGET_OBJECT(objectmanager);
 	FORGET_OBJECT(hidmanager);
@@ -279,6 +285,8 @@ void GUIApp::startup()
 							 ProcessLoader<FireballProcess>::load);
 	kernel->addProcessLoader("HealProcess",
 							 ProcessLoader<HealProcess>::load);
+	kernel->addProcessLoader("InverterProcess",
+							 ProcessLoader<InverterProcess>::load);
 
 	gamedata = new GameData();
 
@@ -1569,6 +1577,10 @@ void GUIApp::setupCoreGumps()
 	desktopGump->InitGump();
 	desktopGump->MakeFocus();
 
+	InverterGump* invgump = new InverterGump(0, 0, dims.w, dims.h);
+	invgump->InitGump();
+	desktopGump->AddChild(invgump);
+
 	pout << "Create Graphics Console" << std::endl;
 	consoleGump = new ConsoleGump(0, 0, dims.w, dims.h);
 	consoleGump->InitGump();
@@ -1578,8 +1590,8 @@ void GUIApp::setupCoreGumps()
 	pout << "Create GameMapGump" << std::endl;
 	gameMapGump = new GameMapGump(0, 0, dims.w, dims.h);
 	gameMapGump->InitGump();
-	desktopGump->AddChild(gameMapGump);
-
+//	desktopGump->AddChild(gameMapGump);
+	invgump->AddChild(gameMapGump);
 }
 
 bool GUIApp::newGame()
@@ -1748,6 +1760,8 @@ void GUIApp::save(ODataSource* ods)
 	Pentagram::Palette *pal = PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game);
 	for (int i = 0; i < 12; i++) ods->write2(pal->matrix[i]);
 	ods->write2(pal->transform);
+
+	ods->write2(static_cast<uint16>(inversion));
 }
 
 bool GUIApp::load(IDataSource* ids)
@@ -1773,6 +1787,8 @@ bool GUIApp::load(IDataSource* ids)
 	PaletteManager::get_instance()->transformPalette(PaletteManager::Pal_Game, matrix);
 	Pentagram::Palette *pal = PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game);
 	pal->transform = static_cast<PaletteManager::PalTransforms>(ids->read2());
+
+	inversion = ids->read2();
 
 	return true;
 }

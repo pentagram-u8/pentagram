@@ -254,11 +254,16 @@ private:
 	uint16 dragging_item_lastgump;
 
 	int dragging_offsetX, dragging_offsetY;
+	unsigned int inversion;
 public:
 	void setDraggingOffset(int x, int y)
 		{ dragging_offsetX = x; dragging_offsetY = y; }
 	void getDraggingOffset(int& x, int& y)
 		{ x = dragging_offsetX; y = dragging_offsetY; }
+
+	unsigned int getInversion() const { return inversion; }
+	void setInversion(unsigned int i) { inversion = i & 0xFFFF; }
+	bool isInverted() { return ( inversion >= 0x4000 && inversion < 0xC000 ); }
 
 private:
 	void startDragging(int mx, int my);

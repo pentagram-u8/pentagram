@@ -204,7 +204,7 @@ uint16 GameMapGump::TraceObjId(int mx, int my)
 	uint16 objid = Gump::TraceObjId(mx,my);
 	if (objid && objid != 65535) return objid;
 
-	ParentToGump(mx,my);
+	ScreenSpaceToGump(mx,my);
 	return display_list->Trace(mx,my);
 }
 

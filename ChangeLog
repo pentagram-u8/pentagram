@@ -1,3 +1,6 @@
+2004-12-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/InverterGump.*, graphics/InverterProcess.*: screen inversion
+
 2004-12-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/Gump.*: new gump flag CORE_GUMP for gumps like DesktopGump,
 	  GameMapGump and ConsoleGump. Children of gumps with this flag will

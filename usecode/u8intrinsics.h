@@ -43,6 +43,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GrantPeaceProcess.h"
 #include "FireballProcess.h"
 #include "HealProcess.h"
+#include "InverterProcess.h"
 
 // Ultima 8 Intrinsics
 Intrinsic U8Intrinsics[] = {
@@ -259,7 +260,7 @@ Intrinsic U8Intrinsics[] = {
 	0, //U
 	CameraProcess::I_startQuake,
 	CameraProcess::I_stopQuake,
-	0, // Camera::invertScreen
+	InverterProcess::I_invertScreen,
 	0, //U
 	Kernel::I_getNumProcesses,
 	Kernel::I_resetRef,

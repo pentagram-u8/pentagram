@@ -44,6 +44,7 @@ uint8 avatarInStasis (boolean)
 sint32 timeOffset (FIXME!)
 uint16 avatarMoverProcess (pid)
 sint16 palette_transform_matrix[12]
+uint16 inversion
 
 KERNEL: (v1)
 uint16 version			kernel savegame version
@@ -529,3 +530,9 @@ uint16 version
 <Process>
 uint16 healCounter
 uint16 hungerCounter
+
+
+InverterProcess: Process (v1)
+uint16 version
+<Process>
+uint16 targetstate
