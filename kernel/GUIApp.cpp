@@ -147,12 +147,12 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	con.AddConsoleCommand("Kernel::processTypes",Kernel::ConCmd_processTypes);
 	con.AddConsoleCommand("ObjectManager::objectTypes",
 								   ObjectManager::ConCmd_objectTypes);
-	con.AddConsoleCommand("teleport", MainActor::ConCmd_teleport);
-	con.AddConsoleCommand("mark", MainActor::ConCmd_mark);
-	con.AddConsoleCommand("recall", MainActor::ConCmd_recall);
-	con.AddConsoleCommand("listmarks", MainActor::ConCmd_listmarks);
+	con.AddConsoleCommand("MainActor::teleport", MainActor::ConCmd_teleport);
+	con.AddConsoleCommand("MainActor::mark", MainActor::ConCmd_mark);
+	con.AddConsoleCommand("MainActor::recall", MainActor::ConCmd_recall);
+	con.AddConsoleCommand("MainActor::listmarks", MainActor::ConCmd_listmarks);
 	con.AddConsoleCommand("quit", ConCmd_quit);	
-
+	con.AddConsoleCommand("GUIApp::quit", ConCmd_quit);	
 	con.AddConsoleCommand("GUIApp::drawRenderStats", ConCmd_drawRenderStats);
 }
 
@@ -162,11 +162,12 @@ GUIApp::~GUIApp()
 	con.RemoveConsoleCommand("GUIApp::loadGame");
 	con.RemoveConsoleCommand("Kernel::processTypes");
 	con.RemoveConsoleCommand("ObjectManager::objectTypes");
-	con.RemoveConsoleCommand("teleport");
-	con.RemoveConsoleCommand("mark");
-	con.RemoveConsoleCommand("recall");
-	con.RemoveConsoleCommand("listmarks");
+	con.RemoveConsoleCommand("MainActor::teleport");
+	con.RemoveConsoleCommand("MainActor::mark");
+	con.RemoveConsoleCommand("MainActor::recall");
+	con.RemoveConsoleCommand("MainActor::listmarks");
 	con.RemoveConsoleCommand("quit");
+	con.RemoveConsoleCommand("GUIApp::quit");
 	con.RemoveConsoleCommand("GUIApp::drawRenderStats");
 
 	FORGET_OBJECT(objectmanager);

@@ -11,6 +11,8 @@
 	* misc/util.*, misc/memset_n.h, various files: Putting global functions
 	  into the Pentagram namespace and updating the rest of the code to 
 	  reflect the changes.
+	* kernel/GUIApp.cpp : Added MainActor prefix for the MainActor console
+	  commands
 
 2004-04-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/EggHatcherProcess.cpp: consider avatar dimensions
