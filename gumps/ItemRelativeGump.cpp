@@ -102,7 +102,7 @@ void ItemRelativeGump::GetItemLocation(sint32 lerp_factor)
 	}
 	else
 	{
-		gump->GetLocationOfItem(prev, gx, gy, lerp_factor);
+		gump->GetLocationOfItem(prev->getObjId(), gx, gy, lerp_factor);
 	}
 
 	// Convert the GumpSpaceCoord relative to the world/item gump
