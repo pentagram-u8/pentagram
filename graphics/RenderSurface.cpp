@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "RenderSurface.h"
 #include "SoftRenderSurface.h"
 #include <SDL.h>
+#include <cmath>
 
 #if defined(WIN32) && defined(I_AM_COLOURLESS_EXPERIMENTING_WITH_D3D)
 #include "D3D9SoftRenderSurface.h"
@@ -34,6 +35,9 @@ RenderSurface::Format	RenderSurface::format = {
 	0,	0,	0,	0,
 	0,	0,	0,	0
 };
+
+uint8 RenderSurface::Gamma10toGamma22[256];
+uint8 RenderSurface::Gamma22toGamma10[256];
 
 //
 // RenderSurface::SetVideoMode()
@@ -122,6 +126,14 @@ RenderSurface *RenderSurface::SetVideoMode(uint32 width,		// Width of desired mo
 	if (bpp == 32) surf = new SoftRenderSurface<uint32>(sdl_surf);
 	else surf = new SoftRenderSurface<uint16>(sdl_surf);
 #endif
+
+	// Initialize gamma correction tables
+	for (int i = 0; i < 256; i++)
+	{
+		Gamma22toGamma10[i] = static_cast<uint8>(0.5 + (std::pow (i/255.0, 2.2/1.0) * 255.0));
+		Gamma10toGamma22[i] = static_cast<uint8>(0.5 + (std::pow (i/255.0, 1.0/2.2) * 255.0));
+	}
+
 	return surf;
 }
 

@@ -739,6 +739,25 @@ public:
 		return true;
 	}
 
+	static bool ScaleBilinear( Texture *tex, sint32 sx, sint32 sy, sint32 sw, sint32 sh, 
+						uint8* pixel, sint32 dw, sint32 dh, sint32 pitch, bool clamp_src)
+	{
+		// Must be multiples of 4!!!
+		if ((sh&3) || (sw&3)) return false;
+
+		// 2x Scaling
+		if ((sw*2 == dw) && (sh*2 == dh))
+			return Scale2x(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+		// 2 X 2.4 Y
+		else if ((sw*2 == dw) && (dh*5 == sh*12))
+			return ScaleX2Y24(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+		// 1 X 1.2 Y 
+		else if ((sw == dw) && (dh*5 == sh*6))
+			return ScaleX1Y12(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+		// Arbitrary 
+		else 
+			return ScaleArb(tex,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
+	}
 };
 
 
@@ -882,5 +901,26 @@ const char *BilinearScaler::ScalerDesc() const { return "Bilinear Filtering Scal
 const char *BilinearScaler::ScalerCopyright() const { return "Copyright (C) 2005 The Pentagram Team"; }
 
 const BilinearScaler bilinear_scaler;
+
+
+GC_BilinearScaler::GC_BilinearScaler() : Scaler()
+{
+	Scale16Nat = BilinearScalerInternal<uint16, Manip_Nat2Nat_16_GC, uint16>::ScaleBilinear;
+	Scale16Sta = BilinearScalerInternal<uint16, Manip_Sta2Nat_16_GC, uint32>::ScaleBilinear;
+
+	Scale32Nat = BilinearScalerInternal<uint32, Manip_Nat2Nat_32_GC, uint32>::ScaleBilinear;
+	Scale32Sta = BilinearScalerInternal<uint32, Manip_Sta2Nat_32_GC, uint32>::ScaleBilinear;
+	Scale32_A888 = BilinearScalerInternal<uint32, Manip_32_A888_GC, uint32>::ScaleBilinear;
+	Scale32_888A = BilinearScalerInternal<uint32, Manip_32_888A_GC, uint32>::ScaleBilinear;
+}
+
+const uint32 GC_BilinearScaler::ScaleBits() const { return 0xFFFFFFFF; }
+const bool GC_BilinearScaler::ScaleArbitrary() const { return true; }
+
+const char *GC_BilinearScaler::ScalerName() const { return "gc-bilinear"; }
+const char *GC_BilinearScaler::ScalerDesc() const { return "Gamma 2.2 Correct Bilinear Filtering Scaler"; }
+const char *GC_BilinearScaler::ScalerCopyright() const { return "Copyright (C) 2005 The Pentagram Team"; }
+
+const GC_BilinearScaler GC_bilinear_scaler;
 
 };

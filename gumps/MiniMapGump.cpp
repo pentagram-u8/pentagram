@@ -153,12 +153,12 @@ uint32 MiniMapGump::sampleAtPoint(int x, int y, CurrentMap *currentmap)
 
 			uint16 r2, g2, b2;
 			UNPACK_RGB8(pal->native_untransformed[frame->getPixelAtPoint(i-sx,j-sy)], r2, g2, b2);
-			r += r2; g += g2; b += b2;
+			r += RenderSurface::Gamma22toGamma10[r2]; g += RenderSurface::Gamma22toGamma10[g2]; b += RenderSurface::Gamma22toGamma10[b2];
 			c++;
 		}
 		if (!c) return 0;
 
-		return PACK_RGB8(r/c,g/c,b/c);
+		return PACK_RGB8(RenderSurface::Gamma10toGamma22[r/c],RenderSurface::Gamma10toGamma22[g/c],RenderSurface::Gamma10toGamma22[b/c]);
 	}
 	else return 0;
 }

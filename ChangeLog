@@ -7,6 +7,12 @@
 	  generate the entire map (just sets the entire map fast). Use new
 	  'MiniMapGump::generateWholeMap' console command. Note, command
 	  only exists when the gump is active. Also I changed the scale to 8.
+	* graphics/scalers/2xSaIScalers.*, graphics/scalers/BilinearScaler.*,
+	  graphics/Manips.h, graphics/RenderSurface.*, : 
+	  Added new Gamma 2.2 Correct GC-2xSaI, GC-Super2xSaI, GC-SuperEagle,
+	  and GC-Bilinear scalers. 
+	* gumps/MiniMapGump.cpp : Using gamma correct filtering when generating
+	  minimap.
 	  
 2005-03-07  Ryan Nunn <colourles@users.sourceforge.net>
 	* gumps/FastAreaVisGump.*, kernel/GUIApp.cpp : Very simple gump to 

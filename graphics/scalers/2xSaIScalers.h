@@ -62,10 +62,52 @@ public:
 	virtual const char *	ScalerCopyright() const;	//< Scaler Copyright info
 };
 
-extern const _2xSaIScaler		_2xSaI_scaler;
-extern const Super2xSaIScaler	super_2xsai_scaler;
-extern const SuperEagleScaler	super_eagle_scaler;
+class GC_2xSaIScaler : public Scaler
+{
+public:
+	GC_2xSaIScaler();
 
+	virtual const uint32	ScaleBits() const;			//< bits for supported integer scaling
+	virtual const bool		ScaleArbitrary() const;		//< supports arbitrary scaling of any degree 
+
+	virtual const char *	ScalerName() const;			//< Name Of the Scaler (1 word)
+	virtual const char *	ScalerDesc() const;			//< Desciption of the Scaler
+	virtual const char *	ScalerCopyright() const;	//< Scaler Copyright info
+};
+
+class GC_Super2xSaIScaler : public Scaler
+{
+public:
+	GC_Super2xSaIScaler();
+
+	virtual const uint32	ScaleBits() const;			//< bits for supported integer scaling
+	virtual const bool		ScaleArbitrary() const;		//< supports arbitrary scaling of any degree 
+
+	virtual const char *	ScalerName() const;			//< Name Of the Scaler (1 word)
+	virtual const char *	ScalerDesc() const;			//< Desciption of the Scaler
+	virtual const char *	ScalerCopyright() const;	//< Scaler Copyright info
+};
+
+class GC_SuperEagleScaler : public Scaler
+{
+public:
+	GC_SuperEagleScaler();
+
+	virtual const uint32	ScaleBits() const;			//< bits for supported integer scaling
+	virtual const bool		ScaleArbitrary() const;		//< supports arbitrary scaling of any degree 
+
+	virtual const char *	ScalerName() const;			//< Name Of the Scaler (1 word)
+	virtual const char *	ScalerDesc() const;			//< Desciption of the Scaler
+	virtual const char *	ScalerCopyright() const;	//< Scaler Copyright info
+};
+
+extern const _2xSaIScaler		_2xSaI_scaler;
+extern const Super2xSaIScaler	Super2xSaI_scaler;
+extern const SuperEagleScaler	SuperEagle_scaler;
+
+extern const GC_2xSaIScaler			GC_2xSaI_scaler;
+extern const GC_Super2xSaIScaler	GC_Super2xSaI_scaler;
+extern const GC_SuperEagleScaler	GC_SuperEagle_scaler;
 };
 
 #endif

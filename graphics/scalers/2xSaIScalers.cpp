@@ -20,6 +20,7 @@
 #include "2xSaIScalers.h"
 #include "Manips.h"
 #include "Texture.h"
+#include <cmath>
 
 namespace Pentagram {
 
@@ -911,6 +912,83 @@ const char *SuperEagleScaler::ScalerDesc() const { return "SuperEagle Scaling Fi
 const char *SuperEagleScaler::ScalerCopyright() const { return "Copyright (c) 1999-2001 Derek Liauw Kie Fa"; }
 
 const SuperEagleScaler SuperEagle_scaler;
+
+
+//
+// Gamma Corrected 2xSaI 
+//
+
+GC_2xSaIScaler::GC_2xSaIScaler() : Scaler()
+{
+	Scale16Nat = _2xSaIScalerInternal<uint16, Manip_Nat2Nat_16_GC, uint16>::Scale2xSaI;
+	Scale16Sta = _2xSaIScalerInternal<uint16, Manip_Sta2Nat_16_GC, uint32>::Scale2xSaI;
+
+	Scale32Nat = _2xSaIScalerInternal<uint32, Manip_Nat2Nat_32_GC, uint32>::Scale2xSaI;
+	Scale32Sta = _2xSaIScalerInternal<uint32, Manip_Sta2Nat_32_GC, uint32>::Scale2xSaI;
+	Scale32_A888 = _2xSaIScalerInternal<uint32, Manip_32_A888_GC, uint32>::Scale2xSaI;
+	Scale32_888A = _2xSaIScalerInternal<uint32, Manip_32_888A_GC, uint32>::Scale2xSaI;
+
+}
+
+const uint32 GC_2xSaIScaler::ScaleBits() const { return 1<<2; }
+const bool GC_2xSaIScaler::ScaleArbitrary() const { return false; }
+
+const char *GC_2xSaIScaler::ScalerName() const { return "GC-2xSaI"; }
+const char *GC_2xSaIScaler::ScalerDesc() const { return "Gamma 2.2 Correct 2xSaI Scaling Filter"; }
+const char *GC_2xSaIScaler::ScalerCopyright() const { return "Copyright (c) 1999-2001 Derek Liauw Kie Fa"; }
+
+const GC_2xSaIScaler GC_2xSaI_scaler;
+
+
+//
+// Gamma Corrected Super2xSaI 
+//
+
+GC_Super2xSaIScaler::GC_Super2xSaIScaler() : Scaler()
+{
+	Scale16Nat = _2xSaIScalerInternal<uint16, Manip_Nat2Nat_16_GC, uint16>::ScaleSuper2xSaI;
+	Scale16Sta = _2xSaIScalerInternal<uint16, Manip_Sta2Nat_16_GC, uint32>::ScaleSuper2xSaI;
+
+	Scale32Nat = _2xSaIScalerInternal<uint32, Manip_Nat2Nat_32_GC, uint32>::ScaleSuper2xSaI;
+	Scale32Sta = _2xSaIScalerInternal<uint32, Manip_Sta2Nat_32_GC, uint32>::ScaleSuper2xSaI;
+	Scale32_A888 = _2xSaIScalerInternal<uint32, Manip_32_A888_GC, uint32>::ScaleSuper2xSaI;
+	Scale32_888A = _2xSaIScalerInternal<uint32, Manip_32_888A_GC, uint32>::ScaleSuper2xSaI;
+
+}
+
+const uint32 GC_Super2xSaIScaler::ScaleBits() const { return 1<<2; }
+const bool GC_Super2xSaIScaler::ScaleArbitrary() const { return false; }
+
+const char *GC_Super2xSaIScaler::ScalerName() const { return "GC-Super2xSaI"; }
+const char *GC_Super2xSaIScaler::ScalerDesc() const { return "Gamma 2.2 Correct Super2xSaI Scaling Filter"; }
+const char *GC_Super2xSaIScaler::ScalerCopyright() const { return "Copyright (c) 1999-2001 Derek Liauw Kie Fa"; }
+
+const GC_Super2xSaIScaler GC_Super2xSaI_scaler;
+
+
+//
+// Gamma Corrected SuperEagle
+//
+GC_SuperEagleScaler::GC_SuperEagleScaler() : Scaler()
+{
+	Scale16Nat = _2xSaIScalerInternal<uint16, Manip_Nat2Nat_16_GC, uint16>::ScaleSuperEagle;
+	Scale16Sta = _2xSaIScalerInternal<uint16, Manip_Sta2Nat_16_GC, uint32>::ScaleSuperEagle;
+
+	Scale32Nat = _2xSaIScalerInternal<uint32, Manip_Nat2Nat_32_GC, uint32>::ScaleSuperEagle;
+	Scale32Sta = _2xSaIScalerInternal<uint32, Manip_Sta2Nat_32_GC, uint32>::ScaleSuperEagle;
+	Scale32_A888 = _2xSaIScalerInternal<uint32, Manip_32_A888_GC, uint32>::ScaleSuperEagle;
+	Scale32_888A = _2xSaIScalerInternal<uint32, Manip_32_888A_GC, uint32>::ScaleSuperEagle;
+}
+
+const uint32 GC_SuperEagleScaler::ScaleBits() const { return 1<<2; }
+const bool GC_SuperEagleScaler::ScaleArbitrary() const { return false; }
+
+const char *GC_SuperEagleScaler::ScalerName() const { return "GC-SuperEagle"; }
+const char *GC_SuperEagleScaler::ScalerDesc() const { return "Gamma 2.2 Correct SuperEagle Scaling Filter"; }
+const char *GC_SuperEagleScaler::ScalerCopyright() const { return "Copyright (c) 1999-2001 Derek Liauw Kie Fa"; }
+
+const GC_SuperEagleScaler GC_SuperEagle_scaler;
+
 
 };	// Namespace
 
