@@ -1,6 +1,7 @@
 2004-08-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AnimationTracker.*: fixed teleporting while playing anim
 	* kernel/GUIApp.cpp: some free necromancy reagents at startup
+	* gumps/GameMapGump.cpp: put item in backpack if dropping on Avatar
 	
 2004-08-09  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* world/actors/ActorAnimProcess.cpp: pause animation when actor leaves

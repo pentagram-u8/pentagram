@@ -483,13 +483,25 @@ void GameMapGump::DropItem(Item* item, int mx, int my)
 	World *world = World::get_instance();
 	CurrentMap *map = world->getCurrentMap();
 	display_dragging = false;
-	Actor * avatar = world->getMainActor();
+	Actor* avatar = world->getMainActor();
+
+	ObjId trace = TraceCoordinates(mx, my, dragging_pos, item);
+	if (trace == 1) { // dropping on self
+		ObjId bp = avatar->getEquip(7); // !! constant
+		Container* backpack = p_dynamic_cast<Container*>(
+			World::get_instance()->getItem(bp));
+		if (backpack && item->moveToContainer(backpack)) {
+			pout << "Dropped item in backpack" << std::endl;
+			item->setGumpLocation(0, 0); // TODO: randomize
+			return;
+		}
+	}
 
 	// add item to world 
 
 	//!! TODO: throw item if too far, etc...
 
-	perr << "Dropping item at (" << dragging_pos[0] << "," << dragging_pos[1]
+	pout << "Dropping item at (" << dragging_pos[0] << "," << dragging_pos[1]
 		 << "," << dragging_pos[2] << ")" << std::endl;
 	item->move(dragging_pos[0],dragging_pos[1],dragging_pos[2]); // move
 	item->fall();
