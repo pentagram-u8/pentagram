@@ -92,8 +92,6 @@ public:
 	// Should be noted that this does indeed limit us to 'only' 24bit coords
 	// not that it matters because on disk they are unsigned 16 bit
 
-		factor = 256;
-
 		if (factor == 256)
 		{
 			ix = l_next.x;
