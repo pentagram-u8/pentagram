@@ -1,3 +1,6 @@
+2003-09-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/*App.*: @save path
+
 2003-08-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.*: explode, receiveHit intrinsics (not complete yet)
 

@@ -322,28 +322,43 @@ void CoreApp::setupGamePaths(std::string& game, GameInfo* gameinfo)
 	std::string gpath;
 	con.Printf(MM_INFO, "Reading \"config/games/%s/path\" config key.\n", game.c_str());
 	config->value(gamekey+"/path", gpath, ".");
-	filesystem->AddVirtualPath("@u8", gpath); //!!FIXME
+	filesystem->AddVirtualPath("@u8", gpath); //!!FIXME (u8 specific)
 	con.Printf(MM_INFO, "Game Path: %s\n", gpath.c_str());
 
 
 
 	// load work path. Default is @home/game-work
 	// where 'game' in the above is the specified 'game' loaded
-	std::string work("@home/"+game+"-work");
+	std::string work;
 	con.Printf(MM_INFO, "Reading \"config/games/%s/work\" config key.\n",
 			   game.c_str());
 	config->value(gamekey+"/work", work,
 				  string("@home/"+game+"-work").c_str());
 
 	// force creation if it doesn't exist
+
+	// TODO: I don't like these being created here.
+	//       I'd prefer them to be created when needed. (-wjp)
+
 	filesystem->AddVirtualPath("@work", work, true);
-	con.Printf(MM_INFO, "U8 Workdir: %s\n", work.c_str());
+	con.Printf(MM_INFO, "U8 Workdir: %s\n", work.c_str()); //!!FIXME (u8)
 
 	// make sure we've got a minimal sane filesystem under there...
 	filesystem->MkDir("@work/usecode");
 	filesystem->MkDir("@work/usecode/obj");
 	filesystem->MkDir("@work/usecode/src");
 	filesystem->MkDir("@work/usecode/asm");
+
+
+	// load savegame path. Default is @home/game-save
+	std::string save;
+	con.Printf(MM_INFO, "Reading \"config/games/%s/save\" config key.\n",
+			   save.c_str());
+	config->value(gamekey+"/save", save,
+				  string("@home/"+game+"-save").c_str());
+	// force creation if it doesn't exist
+	filesystem->AddVirtualPath("@save", save, true);
+	con.Printf(MM_INFO, "Savegame directory: %s\n", save.c_str());
 }
 
 void CoreApp::ParseArgs(const int argc, const char * const * const argv)

@@ -1221,10 +1221,10 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			break;
 		}
 		case SDLK_F7: { // quicksave
-			saveGame("@work/quicksave");
+			saveGame("@save/quicksave");
 		} break;
 		case SDLK_F8: { // quickload
-			loadGame("@work/quicksave");
+			loadGame("@save/quicksave");
 		} break;
 		case SDLK_s: { // toggle avatarInStasis
 
