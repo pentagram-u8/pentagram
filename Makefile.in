@@ -81,10 +81,7 @@ $(DEPDIRS):
 # custom compile rule which calculates dependencies
 %.o: %.cpp
 	$(MKDIR) $(*D)/$(DEPDIR)
-	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).d2" $(WARNINGS) $(CXXFLAGS) $(SDL_CFLAGS) -c -o $@ $<
-	echo -n "$(*D)/" > $(*D)/$(DEPDIR)/$(*F).d
-	cat "$(*D)/$(DEPDIR)/$(*F).d2" >> "$(*D)/$(DEPDIR)/$(*F).d"
-	$(RM) -f "$(*D)/$(DEPDIR)/$(*F).d2"
+	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).d",-MQ,"$@",-MP $(WARNINGS) $(CXXFLAGS) $(SDL_CFLAGS) -c -o $@ $<
 
 # rule to rebuild Makefile if necessary
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
