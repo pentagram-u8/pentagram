@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram Team
+Copyright (C) 2003-2004 The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -84,7 +84,7 @@ public:
 		}
 
 	pent_string(const _Mybase& _Right, size_type _Roff,
-		size_type _Count = npos)
+		size_type _Count = _Mybase::npos)
 		: _Mybase(_Right, _Roff, _Count)
 		{	// construct from _Right [_Roff, _Roff + _Count)
 		}
@@ -181,13 +181,13 @@ public:
 
 	int compare(const _Mybase& _Right) const
 		{	// compare [0, _Mysize) with _Right
-		return (compare(0, size(), _Right.data(), _Right.size()));
+		return (compare(0, this->size(), _Right.data(), _Right.size()));
 		}
 
 	int compare(size_type _Off, size_type _N0,
 		const _Mybase& _Right) const
 		{	// compare [_Off, _Off + _N0) with _Right
-		return (compare(_Off, _N0, _Right, 0, npos));
+		return (compare(_Off, _N0, _Right, 0, _Mybase::npos));
 		}
 
 	int compare(size_type _Off, size_type _N0, const _Myt& _Right,
@@ -202,7 +202,7 @@ public:
 
 	int compare(const _Elem *_Ptr) const
 		{	// compare [0, _Mysize) with [_Ptr, <null>)
-		return (compare(0, size(), _Ptr, _Traits::length(_Ptr)));
+		return (compare(0, this->size(), _Ptr, _Traits::length(_Ptr)));
 		}
 
 	int compare(size_type _Off, size_type _N0, const _Elem *_Ptr) const
@@ -213,13 +213,13 @@ public:
 	int compare(size_type _Off, size_type _N0, const _Elem *_Ptr,
 		size_type _Count) const
 		{	// compare [_Off, _Off + _N0) with [_Ptr, _Ptr + _Count)
-		if (size() < _Off)
+		if (this->size() < _Off)
 			return 0; //_String_base::_Xran();	// _Off off end
-		if (size() - _Off < _N0)
-			_N0 = size() - _Off;	// trim _N0 to size
+		if (this->size() - _Off < _N0)
+			_N0 = this->size() - _Off;	// trim _N0 to size
 
 		size_type _Ans = _N0 == 0 ? 0
-			: ichar_traits::compare(data() + _Off, _Ptr,
+			: ichar_traits::compare(this->data() + _Off, _Ptr,
 				_N0 < _Count ? _N0 : _Count);
 		return (_Ans != 0 ? (int)_Ans : _N0 < _Count ? -1
 			: _N0 == _Count ? 0 : +1);

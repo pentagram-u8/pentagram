@@ -1,3 +1,6 @@
+2004-04-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* various: gcc 3.4 fixes
+
 2004-04-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCMachine.cpp: fixed some outdated comments, typos
 	* usecode/UCMachine.cpp: fixed return messages with WATCH_CLASS

@@ -21,7 +21,6 @@
 #ifndef COMPILENODES_H
 #define COMPILENODES_H
 
-#include "pent_include.h"
 #include "llcTokens.h"
 
 #include <string>

@@ -21,7 +21,6 @@
 #ifndef IDATASOURCE_H
 #define IDATASOURCE_H
 
-#include "pent_include.h"
 #include <fstream>
 #include <cmath>
 #include "SDL_rwops.h"
