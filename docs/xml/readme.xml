@@ -71,7 +71,7 @@
 			<body>
 				<para>
 					Right now <Pent/> assumes some default settings that don't need to be set to
-					make <Pent/> work. If you want to change the music driver or the resoultion
+					make <Pent/> work. If you want to change the music driver or the resolution
 					<Pent/> runs in, you see the defaults below.
 				</para>
 				<configdesc>
@@ -114,7 +114,7 @@
 						</configtag>
 						<configtag name="save">
 							path to U8 savegames directory
-							<comment># replace with the directory you want Pentagramto save games to.</comment>
+							<comment># replace with the directory you want Pentagram to save games to.</comment>
 							<comment># (no, loading of the original's savegames is not supported)</comment>
 						</configtag>
 					</configsec>
