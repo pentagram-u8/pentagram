@@ -1,6 +1,7 @@
 2003-05-03 Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/*: add NPCs to CurrentMap's item lists
-
+	* world/Egg.*: stub egg class
+	
 2003-05-03  Ryan Nunn <colourles@users.sourceforge.net>
 	* kernel/Application.cpp : More info about rendering times
 

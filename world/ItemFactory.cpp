@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Actor.h"
 #include "MainActor.h"
 #include "GlobEgg.h"
+#include "Egg.h"
 
 Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 							  uint32 flags, uint32 npcnum, uint32 mapnum,
@@ -44,7 +45,7 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 	case ShapeInfo::SF_QUALITY:
 	case ShapeInfo::SF_QUANTITY:
 	case ShapeInfo::SF_BREAKABLE:
-	case ShapeInfo::SF_REAGENT:
+	case ShapeInfo::SF_REAGENT: // reagents need special handling too
 	{
 		// 'simple' item
 
@@ -90,21 +91,19 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 	}
 
 	case ShapeInfo::SF_UNKEGG:
-	{
-
-		return 0;
-	}
-
 	case ShapeInfo::SF_MONSTEREGG:
-	{
-
-		return 0;
-	}
-
 	case ShapeInfo::SF_TELEPORTEGG:
 	{
-
-		return 0;
+		// this obviously isn't quite correct yet :-)
+		Egg* egg = new Egg();
+		egg->shape = shape;
+		egg->frame = frame;
+		egg->quality = quality;
+		egg->flags = flags;
+		egg->npcnum = npcnum;
+		egg->mapnum = mapnum;
+		egg->extendedflags = extendedflags;
+		return egg;
 	}
 
 

@@ -44,6 +44,7 @@ pentagram_OBJ = \
 	gumps/GameMapGump.o \
 	gumps/Gump.o \
 	gumps/ResizableGump.o \
+	world/Egg.o \
 	world/Item.o \
 	world/Container.o \
 	world/ItemFactory.o \
