@@ -192,7 +192,7 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 	if (display_dragging) {
 		display_list->AddItem(dragging_x, dragging_y, dragging_z,
 							  dragging_shape, dragging_frame,
-							  Item::FLG_INVISIBLE, //!! change this to transp?
+							  dragging_flags | Item::FLG_INVISIBLE, //!! change this to transp?
 							  0);
 	}
 

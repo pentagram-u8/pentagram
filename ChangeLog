@@ -1,3 +1,6 @@
+2004-07-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/GameMapGump.cpp: don't ignore FLIPPED flag when dragging
+
 2004-07-04  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* world/actors/Animation.h: added Result enum for trying animations
 	* world/actors/Actor.*: tryAnim now returns an Animation::Result
