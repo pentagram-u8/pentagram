@@ -65,7 +65,6 @@ timiditycfg=path to timidity.cfg
 [u8]
 path=path to U8 directory
 save=path to U8 savegames directory
-work=path to U8 work directory
 
 
 Replace 'path to pentagram data dir' with the pentagram data directory (that's
@@ -73,8 +72,7 @@ the directory that contains fixedfont.tga).
 Replace 'path to pentagram data dir' with the directory containing 'u8.exe'.
 Replace 'path to U8 savegames directory' with the directory you want Pentagram
 to save games to (no, loading of the original's savegames is not supported).
-Replace '/path/to/u8/work/dir' with the work directory (not used and
-necessary yet - don't ask).
+
 Pick one of the midi drivers: disabled, windows, fmopl, timidity, coreaudio.
 If you don't specify one, Pentagram will automatically select one, based on
 your platform.
