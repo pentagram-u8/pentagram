@@ -123,6 +123,9 @@ struct HWMouseCursor {
 #ifdef USE_TIMIDITY_MIDI
 #include "TimidityMidiDriver.h"
 #endif
+#ifdef USE_ALSA_MIDI
+#include "ALSAMidiDriver.h"
+#endif
 #ifdef UNIX
 #include "UnixSeqMidiDriver.h"
 #endif
@@ -337,9 +340,11 @@ void GUIApp::init_midi()
 #ifdef USE_FMOPL_MIDI
 	midi_drivers.push_back(FMOplMidiDriver::getDesc());
 #endif
+#ifdef USE_ALSA_MIDI
+	midi_drivers.push_back(ALSAMidiDriver::getDesc());
+#endif
 #ifdef UNIX
 	midi_drivers.push_back(UnixSeqMidiDriver::getDesc());
-	pout << "UnixSeqMidiDriver" << std::endl;
 #endif
 
 	// First thing attempt to find the Midi driver as specified in the config

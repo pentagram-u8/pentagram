@@ -340,6 +340,23 @@ else
 	AC_MSG_RESULT(no)
 fi
 
+
+AC_CHECK_HEADER(alsa/asoundlib.h, HAVEALSA=yes, HAVEALSA=no)
+AC_ARG_ENABLE(alsa,[  --disable-alsa          Disable ALSA midi support],,enable_alsa=yes)
+AC_MSG_CHECKING(if we want to use ALSA midi)
+if test x$HAVEALSA = xyes; then
+	if test x$enable_alsa = xyes; then
+		AC_MSG_RESULT(yes)
+		AC_DEFINE(USE_ALSA_MIDI, 1, [Enable ALSA midi])
+		LIBS="$LIBS -lasound"
+	else
+		AC_MSG_RESULT(no)
+	fi
+else
+	AC_MSG_RESULT([no; libasound not found])
+fi
+
+
 #if test x$HAVESDLMIXER = xyes -a x$USESDLMIXER = xyes; then
 #	SDL_LIBS="$SDL_LIBS -lSDL_mixer"
 #fi

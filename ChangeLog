@@ -1,6 +1,8 @@
 2004-07-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* audio/midi/UnixSeqMidiDriver.*: ported UNIX sequencer device MIDI
 	  driver from ScummVM
+	* audio/midi/ALSAMidiDriver.*: ported ALSA MIDI driver from ScummVM
+	* configure.ac: check for ALSA
 
 2004-07-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* games/TreasureLoader.*: added 'map' treasure selector
