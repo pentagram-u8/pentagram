@@ -7,6 +7,8 @@ U8PATH=C:/Ultima8
 # Base of the pentagram source
 SRC=.
 
+VERSION=0.1cvs
+
 ### Modify these paths
 SDL_CFLAGS=-I$(SRC)/sdl/include
 SDL_LIBS=-L$(SRC)/sdl/lib -lSDLmain -lSDL -lSDL_ttf
@@ -18,7 +20,7 @@ CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -DSIZEOF_INTP=4 -I$(SRC)/conf -I$(SRC)/
 	-I$(SRC)/world/actors -I$(SRC)/gumps/widgets -I$(SRC)/games \
 	-I$(SRC)/audio -I$(SRC)/audio/midi -I$(SRC)/audio/timidity \
 	$(SDL_CFLAGS) -DHAVE_SYS_STAT_H -DHAVE_SYS_TYPES_H -DHAVE_UNISTD_H -DUSE_FMOPL_MIDI \
-	-DUSE_SDLTTF
+	-DUSE_SDLTTF -DVERSION=\"$(VERSION)\" 
 CXXFLAGS=-O2
 CXX=g++
 CFLAGS=-O2
