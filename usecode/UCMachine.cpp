@@ -33,11 +33,26 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Container.h"
 
+//#define WATCH_CLASS 1210
+//#define WATCH_ITEM 19
+
+#ifdef WATCH_CLASS
+#define LOGPF(X) do { if (p->classid == WATCH_CLASS) { pout.printf X; } } while(0)
+#define SHOWSTART (p->classid == WATCH_CLASS)
+#elif defined WATCH_ITEM
+#define LOGPF(X) do { if (p->item_num == ITEM) { pout.printf X; } } while(0)
+#define SHOWSTART (p->item_num == ITEM)
+#endif
+
 //#define LOGPF(X) pout.printf X
-//#define LOGPF(X) do { if (p->item_num == 19) { pout.printf X; } } while(0)
+//#define SHOWSTART true
 
 #ifndef LOGPF
 #define LOGPF(X)
+#endif
+
+#ifndef SHOWSTART
+#define SHOWSTART false
 #endif
 
 //#define DUMPHEAP
@@ -99,7 +114,7 @@ void UCMachine::loadIntrinsics(Intrinsic *i)
 
 bool UCMachine::execProcess(UCProcess* p)
 {
-	static uint8 tempbuf[256];
+//	static uint8 tempbuf[256];
 
 	assert(p);
 
@@ -109,9 +124,9 @@ bool UCMachine::execProcess(UCProcess* p)
 
 	//! check if process is suspended? (or do that in UCProcess::run?)
 
-#if 0
-	pout << std::hex << "running process " << p->pid << ", class " << p->classid << ", offset " << p->ip << std::dec << std::endl;
-#endif
+	if (SHOWSTART) {
+		pout << std::hex << "running process " << p->pid << ", item " << p->item_num << ", class " << p->classid << ", offset " << p->ip << std::dec << std::endl;
+	}
 
 	bool cede = false;
 	bool error = false;
@@ -1000,6 +1015,9 @@ bool UCMachine::execProcess(UCProcess* p)
 					error = true;
 
 				LOGPF(("push indirect\t%02Xh bytes", ui16a));
+				if (!error && ui16a == 2) {
+					LOGPF((" = %04X", p->stack.access2(p->stack.getSP())));
+				}
 			}
 			break;
 
@@ -1024,28 +1042,24 @@ bool UCMachine::execProcess(UCProcess* p)
 
 		case 0x4E:
 			// 4E xx xx yy
-			// push global xxxx size yy
+			// push global xxxx size yy bits
 			ui16a = cs.read2();
 			ui16b = cs.read1();
 			// get flagname for output?
-			switch (ui16b) {
-			case 1: // push a 1 byte flag as 2 bytes
-				p->stack.push2(globals.access1(ui16a));
-				break;
-			default:
-				p->stack.push(globals.access(ui16a), ui16b);
-			}
+
+			//!! we're storing everything as 1 byte currently
+			p->stack.push2(globals.access1(ui16a));
 			LOGPF(("push\t\tglobal [%04X %02X]", ui16a, ui16b));
 			break;
 
 		case 0x4F:
 			// 4F xx xx yy
-			// pop value into global xxxx size yy
+			// pop value into global xxxx size yy bits
 			ui16a = cs.read2();
-			ui16b = cs.read1();
+			ui16b = cs.read1(); // number
 			// get flagname for output?
-			p->stack.pop(tempbuf, ui16b);
-			globals.assign(ui16a, tempbuf, ui16b);
+			ui8a = static_cast<uint8>(p->stack.pop2());
+			globals.assign1(ui16a, ui8a);
 			LOGPF(("pop\t\tglobal [%04X %02X]", ui16a, ui16b));
 			break;
 
@@ -1194,6 +1208,8 @@ bool UCMachine::execProcess(UCProcess* p)
 				//!! Currently, the spawned processes is added to the front
 				//!! of the execution list, so it's guaranteed to be run
 				//!! before the current process
+
+//				newproc->run(CoreApp::get_instance()->getFrameNum());
 
 				cede = true;
 			}
@@ -1532,8 +1548,10 @@ bool UCMachine::execProcess(UCProcess* p)
 				UCList* itemlist = getList(itemlistID);
 				uint16 index = p->stack.access2(sp+2);
 				si16a = static_cast<sint16>(p->stack.access2(sp+4));
-//				uint16 scriptsize = p->stack.access2(sp+6);
-//				const uint8* loopscript = p->stack.access(sp+8);
+#if 0
+				uint16 scriptsize = p->stack.access2(sp+6);
+				const uint8* loopscript = p->stack.access(sp+8);
+#endif
 
 				if (!itemlist) {
 					perr << "Invalid item list in loopnext!" << std::endl;
@@ -1542,21 +1560,24 @@ bool UCMachine::execProcess(UCProcess* p)
 				}
 
 				// see if there are still valid items left
-				bool valid;
+				bool valid = false;
 				do {
 					if (index >= itemlist->getSize()) {
-						valid = false;
 						break;
 					}
 
 					p->stack.assign(p->bp+si16a, (*itemlist)[index], 2);
 					uint16 objid = p->stack.access2(p->bp+si16a);
-					if (World::get_instance()->getItem(objid)) {
+					Item* item = World::get_instance()->getItem(objid);
+					if (item) {
+#if 0
+						valid = item->checkLoopScript(loopscript, scriptsize);
+#else
 						valid = true;
-					} else {
-						valid = false;
-						index++;
+#endif
 					}
+
+					if (!valid) index++;
 					
 				} while (!valid);
 
