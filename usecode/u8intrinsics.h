@@ -232,7 +232,7 @@ Intrinsic U8Intrinsics[] = {
 	0, // Npc::getAirWalkEnabled
 	0, // Npc::schedule
 	Actor::I_getEquip,
-	0, // Npc::setEquip
+	Actor::I_setEquip,
 	0, // closeAllGumps
 	CameraProcess::I_scrollTo, //!! process Camera::scrollTo(uword, uword, ubyte, word)
 	UCMachine::I_urandom,

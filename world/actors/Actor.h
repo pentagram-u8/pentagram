@@ -149,6 +149,7 @@ public:
 	INTRINSIC(I_isBusy);
 	INTRINSIC(I_createActor);
 	INTRINSIC(I_getEquip);
+	INTRINSIC(I_setEquip);
 
 	enum ActorFlags {
 		ACT_INVINCIBLE     = 0x000001, // flags from npcdata byte 0x1B
