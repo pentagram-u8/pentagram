@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 #include "ODataSource.h"
 #include "RenderSurface.h"
-#include "GUIApp.h"
+#include "CoreApp.h"
 
 #include <cstdio>
 #include <cstring>
@@ -322,7 +322,7 @@ void Console::Linefeed (void)
 
 	if (auto_paint)
 	{
-		GUIApp *app = p_dynamic_cast<GUIApp*>(GUIApp::get_instance());
+		CoreApp *app = CoreApp::get_instance();
 		if (app && !app->isPainting()) app->paint();
 	}
 }

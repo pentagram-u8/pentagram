@@ -1,4 +1,9 @@
 2003-06-02  Ryan Nunn <colourles@users.sourceforge.net>
+	* gumps/Gump.* : Fixing invalid focus_chlid problems 
+	* kernel/CoreApp.h, kernel/GUIApp.h, misc/Console.cpp : Console no longer 
+	  dependant on GUIApp.
+	  
+2003-06-02  Ryan Nunn <colourles@users.sourceforge.net>
 	* Almost every single file being committed here : Changes the 
 	  p_dynamic_cast macros. Just check P_dynamic_cast.h for the new macros to 
 	  use. Also made the macros define some new functions. These are:

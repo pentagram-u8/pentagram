@@ -90,8 +90,9 @@ void Gump::SetupLerp()
 		if (g->flags & FLAG_CLOSING)
 		{
 			it = children.erase(it);
+			FindNewFocusChild();
 			// Uh, why does this cause crashes...
-			// if (g->flags & FLAG_CLOSE_AND_DEL) delete g;
+			 if (g->flags & FLAG_CLOSE_AND_DEL) delete g;
 		}
 		else
 		{
@@ -306,6 +307,21 @@ void Gump::MakeFocus()
 	OnFocus(true);
 }
 
+void Gump::FindNewFocusChild()
+{
+	if (focus_child) focus_child->OnFocus(false);
+	focus_child = 0;
+
+	// Now add the gump to use as the new focus
+	std::list<Gump*>::reverse_iterator	it = children.rbegin();
+
+	if (it != children.rend())
+	{
+		(*it)->MakeFocus();
+	}
+}
+
+
 // Adds a child to the list
 void Gump::AddChild(Gump *gump, bool take_focus)
 {
@@ -313,7 +329,7 @@ void Gump::AddChild(Gump *gump, bool take_focus)
 
 	// Remove it if requrietd
 	Gump *old_parent = gump->GetParent();
-	if (old_parent) old_parent->RemoveChild(gump, true);
+	if (old_parent) old_parent->RemoveChild(gump);
 
 	// Now add the gump in the correct spot
 	std::list<Gump*>::iterator	it = children.begin();
@@ -343,7 +359,7 @@ void Gump::AddChild(Gump *gump, bool take_focus)
 }
 
 // Remove a gump from the list
-void Gump::RemoveChild(Gump *gump, bool no_del)
+void Gump::RemoveChild(Gump *gump)
 {
 	if (!gump) return;
 
@@ -354,20 +370,8 @@ void Gump::RemoveChild(Gump *gump, bool no_del)
 	// Remove focus, the give upper most gump the focus
 	if (gump == focus_child) 
 	{
-		gump->OnFocus(false);
-		focus_child = 0;
-
-		// Now add the gump to use as the new focus
-		std::list<Gump*>::reverse_iterator	it = children.rbegin();
-
-		if (it != children.rend())
-		{
-			(*it)->MakeFocus();
-		}
+		FindNewFocusChild();
 	}
-
-	// Delete if it required
-	if (!no_del) delete gump;
 }
 
 Gump * Gump::GetRootGump()

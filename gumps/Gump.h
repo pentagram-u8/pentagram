@@ -175,6 +175,9 @@ public:
 	// Get the child in focus
 	inline Gump *		GetFocusChild() { return focus_child; }
 
+	// Find a new Child to be the focus
+	void				FindNewFocusChild();	
+
 
 	//
 	// Child gump related
@@ -184,7 +187,7 @@ public:
 	virtual void		AddChild(Gump *, bool take_focus = true);					
 
 	// Remove a gump from the list
-	virtual void		RemoveChild(Gump *, bool no_del=false);	
+	virtual void		RemoveChild(Gump *);	
 
 	// Get the parent
 	inline Gump *		GetParent() { return parent; }

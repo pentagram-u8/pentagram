@@ -51,8 +51,8 @@ class GUIApp : public CoreApp
 		//virtual void setupVirtualPaths();
 
 		void U8Playground();
-		void paint();
-		bool isPainting() { return painting; }
+		virtual void paint();
+		virtual bool isPainting() { return painting; }
 
 
 		INTRINSIC(I_getCurrentTimerTick);
