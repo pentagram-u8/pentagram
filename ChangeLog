@@ -1,3 +1,6 @@
+2005-01-30  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* tools/gimp-plugin/*: Compile fixes
+
 2005-01-30  Ryan Nunn <colourles@users.sourceforge.net>
 	* world/ItemSorter.cpp, graphics/*RenderSurface.* : 
 	  RenderSurface::PaintHighlight() is now ABGR to match FadedBlit. Also 

@@ -131,7 +131,7 @@ static void run(const gchar *name, gint nparams, const GimpParam * param,
 	*nreturn_vals = 1;
 	*return_vals = values;
 	values[0].type = GIMP_PDB_STATUS;
-	run_mode = param[0].data.d_int32;
+	run_mode = (GimpRunMode) param[0].data.d_int32;
 
 	if (! strcmp(name, LOAD_PROC))
 	{
@@ -167,7 +167,7 @@ static void run(const gchar *name, gint nparams, const GimpParam * param,
 		image_ID = orig_image_ID;
 		drawable_ID = param[2].data.d_int32;
 		filename = param[3].data.d_string;
-		if (run_mode != GIMP_RUN_NON_INTERACTIVE)
+		if (run_mode != GIMP_RUN_NONINTERACTIVE)
 		{
 			name_buf = g_strdup_printf("Saving %s:", filename);
 			gimp_progress_init(name_buf);
@@ -305,4 +305,5 @@ static void paintFrame(Shape * s, uint32 framenum, void * pixels,
 static gint32 save_image(gchar *filename, gint32 image_ID,
 						 gint32 drawable_ID, gint32 orig_image_ID)
 {
+	return -1;
 }
