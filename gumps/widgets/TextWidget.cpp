@@ -111,13 +111,14 @@ void TextWidget::PaintThis(RenderSurface*surf, sint32 lerp_factor)
 {
 	Gump::PaintThis(surf,lerp_factor);
 
+	Pentagram::Font *font;
 #ifdef USE_SDLTTF
 	// HACK
-	Pentagram::Font *font = ttffont;
-#else
-	Pentagram::Font *font = GameData::get_instance()->
-		getFonts()->getFont(fontnum);
+	if (ttffont)
+	  font = ttffont;
+	else
 #endif
+	  font = GameData::get_instance()->getFonts()->getFont(fontnum);
 
 	if (!cached_text) {
 		unsigned int remaining;
