@@ -1,4 +1,7 @@
 2003-05-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/ActorAnimProcess.cpp: smoothen repeating animations
+
+2003-05-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Actor.*: intrinsics
 	* kernel/Application.cpp: press g to trigger execution if you're lucky
 

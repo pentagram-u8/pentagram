@@ -58,6 +58,10 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 
 	if (animaction) {
 		actor_->setActorFlag(Actor::ACT_ANIMLOCK);
+
+		if (actor_->lastanim == action && actor_->direction == dir_)
+			currentindex++; // skip first frame if repeating an animation
+
 		actor_->lastanim = action;
 		actor_->direction = dir_;
 	}
