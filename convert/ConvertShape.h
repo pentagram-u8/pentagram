@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2002 The Pentagram Team
+ *  Copyright (C) 2002, 2003 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,25 +24,30 @@
 
 // Convert shape C
 struct ConvertShapeFormat
-{													//	Ultima8	U8.SKF	Crusader
-	uint32				len_header;					//	6		2		6
-	uint32				bytes_header_unk;			//	4		0		4
-	uint32				bytes_num_frames;			//	2		2		2
+{
+	const char const *	name;
+													//	U8		U8 Gump	U8.SKF	Cru		Cru2D	Pent
+	uint32				len_header;					//	6		6		2		6		6		8
+	const char const *	ident;						//  ""		""		""		""		""		"PSHP"
+	uint32				bytes_ident;				//	0		0		0		0		0		4
+	uint32				bytes_header_unk;			//	4		4		0		4		4		0
+	uint32				bytes_num_frames;			//	2		2		2		2		2		4
 
-	uint32				len_frameheader;			//	6		6		8
-	uint32				bytes_frame_offset;			//	3		3		3
-	uint32				bytes_frameheader_unk;		//	1		1		2
-	uint32				bytes_frame_length;			//	2		2		3
+	uint32				len_frameheader;			//	6		6		6		8		8		8
+	uint32				bytes_frame_offset;			//	3		3		3		3		3		4
+	uint32				bytes_frameheader_unk;		//	1		2		1		2		2		0
+	uint32				bytes_frame_length;			//	2		2		2		3		3		4
+	uint32				bytes_frame_length_kludge;	//	0		8		0		0		0		4
 
-	uint32				len_frameheader2;			//	18		18		28
-	uint32				bytes_frame_unknown;		//	8		8		8
-	uint32				bytes_frame_compression;	//	2		2		4
-	uint32				bytes_frame_width;			//	2		2		4
-	uint32				bytes_frame_height;			//	2		2		4
-	uint32				bytes_frame_xoff;			//	2		2		4
-	uint32				bytes_frame_yoff;			//	2		2		4
+	uint32				len_frameheader2;			//	18		18		18		28		20		20
+	uint32				bytes_frame_unknown;		//	8		8		8		8		0		0
+	uint32				bytes_frame_compression;	//	2		2		2		4		4		4
+	uint32				bytes_frame_width;			//	2		2		2		4		4		4
+	uint32				bytes_frame_height;			//	2		2		2		4		4		4
+	uint32				bytes_frame_xoff;			//	2		2		2		4		4		4
+	uint32				bytes_frame_yoff;			//	2		2		2		4		4		4
 
-	uint32				bytes_line_offset;			//	2		2		4
+	uint32				bytes_line_offset;			//	2		2		2		4		4		4
 };
 
 // ConvertShapeFrame structure
@@ -60,7 +65,7 @@ struct ConvertShapeFrame
 
 	uint32				*line_offsets;		// Note these are offsets into rle_data
 
-	uint32				bytes_rle;			// Number of bytes of RLE Data
+	sint32				bytes_rle;			// Number of bytes of RLE Data
 	uint8				*rle_data;
 
 	void Free()
@@ -106,7 +111,16 @@ public:
 
 	void Read(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len);
 	void Write(ODataSource *source, const ConvertShapeFormat *csf, uint32 &write_len);
+
 };
 
+// This will check to see if a Shape is of a certain type. Return true if ok, false if bad
+bool CheckShapeFormat(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len);
+
+// This will attempt to detect a Shape as being Pentagram format
+bool AutoDetectShapePentagram (IDataSource *source);
+
+// Shape format configuration for Pentagram format
+extern const ConvertShapeFormat		PentagramShapeFormat;
 
 #endif //CONVERTSHAPE_H

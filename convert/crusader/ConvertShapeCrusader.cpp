@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2002 The Pentagram Team
+ *  Copyright (C) 2002, 2003 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -41,7 +41,10 @@ bool AutoDetectShapeCrusader(IDataSource *source)
 // Shape format configuration for Crusader
 const ConvertShapeFormat		CrusaderShapeFormat =
 {
+	"Crusader",
 	6,		// header
+	"",		// ident
+	0,		// bytes_ident 
 	4,		// header_unk
 	2,		// num_frames
 
@@ -49,9 +52,37 @@ const ConvertShapeFormat		CrusaderShapeFormat =
 	3,		// frame_offset
 	1,		// frameheader_unk
 	4,		// frame_length
+	0,		// frame_length_kludge
 
 	28,		// frameheader2        20 for mouse/gumps
 	8,		// frame_unknown       0  for mouse/gumps
+	4,		// frame_compression
+	4,		// frame_width
+	4,		// frame_height
+	4,		// frame_xoff
+	4,		// frame_yoff
+
+	4		// line_offset
+};
+
+// Shape format configuration for 2D Crusader Shapes
+const ConvertShapeFormat		Crusader2DShapeFormat =
+{
+	"Crusader 2D",
+	6,		// header
+	"",		// ident
+	0,		// bytes_ident 
+	4,		// header_unk
+	2,		// num_frames
+
+	8,		// frameheader
+	3,		// frame_offset
+	1,		// frameheader_unk
+	4,		// frame_length
+	0,		// frame_length_kludge
+
+	20,		// frameheader2        20 for mouse/gumps
+	0,		// frame_unknown       0  for mouse/gumps
 	4,		// frame_compression
 	4,		// frame_width
 	4,		// frame_height

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2002 The Pentagram Team
+ *  Copyright (C) 2002, 2003 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,5 +26,11 @@ bool AutoDetectShapeU8 (IDataSource *source);
 
 // Shape format configuration for Ultima 8
 extern const ConvertShapeFormat		U8ShapeFormat;
+
+// Shape format configuration for Ultima 8 2D
+extern const ConvertShapeFormat		U82DShapeFormat;
+
+// Shape format configuration for Ultima 8 SKF file shapes
+extern const ConvertShapeFormat		U8SKFShapeFormat;
 
 #endif //CONVERTSHAPEU8_H

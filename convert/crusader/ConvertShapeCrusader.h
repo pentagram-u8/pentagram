@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2002 The Pentagram Team
+ *  Copyright (C) 2002, 2003 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,5 +26,8 @@ bool AutoDetectShapeCrusader(IDataSource *source);
 
 // Shape format configuration for Crusader
 extern const ConvertShapeFormat		CrusaderShapeFormat;
+
+// Shape format configuration for Crusader 2D Interface Elements
+extern const ConvertShapeFormat		Crusader2DShapeFormat;
 
 #endif //CONVERTSHAPECRUSADER_H

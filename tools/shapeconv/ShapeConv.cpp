@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2002 The Pentagram Team
+ *  Copyright (C) 2002, 2003 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -18,18 +18,44 @@
 
 #include "pent_include.h"
 
+#include <string>
 #include <SDL.h>
 #include "Q_strcasecmp.h"
 
 #include "FileSystem.h"
+
+#include "Args.h"
 
 #include "ConvertShape.h"
 
 #include "crusader/ConvertShapeCrusader.h"
 #include "u8/ConvertShapeU8.h"
 
+const ConvertShapeFormat		AutoShapeFormat =
+{
+	"Auto Detected",
+	0,		// header
+	0,		// header_unk
+	0,		// num_frames
+
+	0,		// frameheader
+	0,		// frame_offset
+	0,		// frameheader_unk
+	0,		// frame_length
+
+	0,		// frameheader2
+	0,		// frame_unknown
+	0,		// frame_compression
+	0,		// frame_width
+	0,		// frame_height
+	0,		// frame_xoff
+	0,		// frame_yoff
+
+	0		// line_offset
+};
+
 // Convert formats we are using
-const ConvertShapeFormat *read_format = &CrusaderShapeFormat;
+const ConvertShapeFormat *read_format = &AutoShapeFormat;
 const ConvertShapeFormat *write_format = &U8ShapeFormat;
 
 //#define EXPORT_SHAPENUM
@@ -74,9 +100,36 @@ void ConvertFlexes(IFileDataSource *readfile, OFileDataSource *writefile)
 
 		if (!read_size) continue;
 
+		// Seek to shape
+		readfile->seek(read_offset);
+
+		// Detect ShapeFormat
+		if (read_format == &AutoShapeFormat)
+		{
+			pout << "Auto detecting format..." << std::endl;
+
+			if (CheckShapeFormat(readfile, &U8ShapeFormat, read_size))
+				read_format = &U8ShapeFormat;
+			else if (CheckShapeFormat(readfile, &U82DShapeFormat, read_size))
+				read_format = &U82DShapeFormat;
+			else if (CheckShapeFormat(readfile, &U8SKFShapeFormat, read_size))
+				read_format = &U8SKFShapeFormat;
+			else if (CheckShapeFormat(readfile, &CrusaderShapeFormat, read_size))
+				read_format = &CrusaderShapeFormat;
+			else if (CheckShapeFormat(readfile, &Crusader2DShapeFormat, read_size))
+				read_format = &Crusader2DShapeFormat;
+			else if (CheckShapeFormat(readfile, &PentagramShapeFormat, read_size))
+				read_format = &PentagramShapeFormat;
+			else
+			{
+				perr << "Error: Unable to detect shape format!" << std::endl;
+				return;
+			}
+			pout << "Detected input format as: " << read_format->name << std::endl;
+		}
+		
 		// Read shape
 		con.Printf ("Reading shape %i...\n", s);
-		readfile->seek(read_offset);
 		shape.Read(readfile, read_format, read_size);
 
 		// Write shape
@@ -105,34 +158,106 @@ void ConvertShp(IFileDataSource *readfile, OFileDataSource *writefile)
 	shapenum = 1;
 #endif
 	ConvertShape shape;
-	shape.Read(readfile, read_format, readfile->getSize());
+	uint32 read_size = readfile->getSize();
+
+	// Detect ShapeFormat
+	if (read_format == &AutoShapeFormat)
+	{
+		pout << "Auto detecting format..." << std::endl;
+		if (CheckShapeFormat(readfile, &U8ShapeFormat, read_size))
+			read_format = &U8ShapeFormat;
+		else if (CheckShapeFormat(readfile, &U82DShapeFormat, read_size))
+			read_format = &U82DShapeFormat;
+		else if (CheckShapeFormat(readfile, &U8SKFShapeFormat, read_size))
+			read_format = &U8SKFShapeFormat;
+		else if (CheckShapeFormat(readfile, &CrusaderShapeFormat, read_size))
+			read_format = &CrusaderShapeFormat;
+		else if (CheckShapeFormat(readfile, &Crusader2DShapeFormat, read_size))
+			read_format = &Crusader2DShapeFormat;
+		else if (CheckShapeFormat(readfile, &PentagramShapeFormat, read_size))
+			read_format = &PentagramShapeFormat;
+		else
+		{
+			perr << "Error: Unable to detect shape format!" << std::endl;
+			return;
+		}
+		pout << "Detected input format as: " << read_format->name << std::endl;
+	}
+
+	con.Printf ("Reading shape...\n");
+	shape.Read(readfile, read_format, read_size);
 	uint32 write_size;
+	con.Printf ("Writing shape...\n");
 	shape.Write(writefile, write_format, write_size);
 	shape.Free();
+	pout << "Done!" << std::endl;
+}
+
+const ConvertShapeFormat *GetShapeFormat(const char *game)
+{
+	if (!Q_strcasecmp(game, "u8")) return &U8ShapeFormat;
+	else if (!Q_strcasecmp(game, "u82D")) return &U82DShapeFormat;
+	else if (!Q_strcasecmp(game, "u8skf")) return &U8SKFShapeFormat;
+	else if (!Q_strcasecmp(game, "cru")) return &CrusaderShapeFormat;
+	else if (!Q_strcasecmp(game, "cru2D")) return &Crusader2DShapeFormat;
+	else if (!Q_strcasecmp(game, "pent")) return &PentagramShapeFormat;
+
+	return 0;
 }
 
 int main(int argc, char **argv)
 {
 	if (argc < 3) {
-		perr << "Usage: ShapeConv <inflx> <outflx> [-u8tocru|-crutou8]" << std::endl;
+		perr << "Usage: ShapeConv <inflx> <outflx> [--ifmt u8|u82D|u8skf|cru|cru2D|pent|auto] [--ofmt u8|u82D|u8skf|cru|cru2D|pent] [--singlefile]" << std::endl;
+		perr << std::endl;
+		perr << "Default input format: Auto Detect" << std::endl;
+		perr << "Default output format: Ultima 8" << std::endl;
 		return 1;
 	}
 
-	if (argc >= 4 && ~Q_strcasecmp(argv[3], "-u8tocru"))
+	Args		parameters;
+	std::string	ifmt, ofmt;
+	bool		singlefile=false;
+	bool		auto_detect=false;
+
+	parameters.declare("--ifmt",		&ifmt,      "auto");
+	parameters.declare("--ofmt",		&ofmt,      "u8");
+	parameters.declare("--singlefile",	&singlefile, true);
+
+	parameters.process(argc, argv);
+
+	if (!Q_strcasecmp(ifmt.c_str(), "auto")) read_format = &AutoShapeFormat;
+	else read_format = GetShapeFormat(ifmt.c_str());
+
+	write_format = GetShapeFormat(ofmt.c_str());
+
+	if (!read_format) 
 	{
-		pout << "Converting Ultima8 Format shapes in '"<< argv[1] << "' to Crusader Format in '"<< argv[2] << "'" << std::endl;
-		read_format = &U8ShapeFormat;
-		write_format = &CrusaderShapeFormat;
+		perr << "Unknown input format: " << ifmt << std::endl;
+		return -1;
 	}
+
+	if (!write_format) 
+	{
+		perr << "Unknown output format: " << ifmt << std::endl;
+		return -1;
+	}
+
+	// Check to see if the file ends in .shp. If it does, assume single shape file
+	if (std::strlen(argv[1]) > 4 && !Q_strcasecmp(argv[1]+std::strlen(argv[1])-4, ".shp"))
+		singlefile = true;
+
+	if (singlefile) pout << "Single shape mode" << std::endl;
+
+	if (singlefile)
+		pout << "Converting " << read_format->name << " format shape in '"<< argv[1] << "' to " << write_format->name << " format in '"<< argv[2] << "'" << std::endl;
 	else
-	{
-		pout << "Converting Crusader Format shapes in '"<< argv[1] << "' to Ultima8 Format in '"<< argv[2] << "'" << std::endl;
-	}
+		pout << "Converting " << read_format->name << " format shapes in flex '"<< argv[1] << "' to " << write_format->name << " format in '"<< argv[2] << "'" << std::endl;
 
 	// Create filesystem object
 	FileSystem filesys;
 
-	// Load read flex file
+	// Load read flex/shape file
 	IFileDataSource *readfile = filesys.ReadFile(argv[1]);
 
 	// Uh oh, couldn't load it
@@ -142,7 +267,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	// Load write flex file
+	// Load write flex/shape file
 	OFileDataSource *writefile = filesys.WriteFile(argv[2]);
 
 	// Uh oh, couldn't load it
@@ -152,8 +277,10 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	ConvertFlexes(readfile, writefile);
-//	ConvertShp(readfile, writefile);
+	if (!singlefile)
+		ConvertFlexes(readfile, writefile);
+	else
+		ConvertShp(readfile, writefile);
 
 	// Clean up
 	delete readfile;

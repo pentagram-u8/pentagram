@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2002 The Pentagram Team
+ *  Copyright (C) 2002, 2003 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -38,10 +38,13 @@ bool AutoDetectShapeU8 (IDataSource *source)
 	return frame_offset == (6 + num_frames * 6);
 }
 
-// Shape format configuration for Crusader
+// Shape format configuration for Ultima8
 const ConvertShapeFormat		U8ShapeFormat =
 {
+	"Ultima8",
 	6,		// header
+	"",		// ident
+	0,		// bytes_ident 
 	4,		// header_unk
 	2,		// num_frames
 
@@ -49,6 +52,61 @@ const ConvertShapeFormat		U8ShapeFormat =
 	3,		// frame_offset
 	1,		// frameheader_unk
 	2,		// frame_length
+	0,		// frame_length_kludge
+
+	18,		// frameheader2
+	8,		// frame_unknown
+	2,		// frame_compression
+	2,		// frame_width
+	2,		// frame_height
+	2,		// frame_xoff
+	2,		// frame_yoff
+
+	2		// line_offset
+};
+
+// Shape format configuration for Ultima8 2D interface components
+const ConvertShapeFormat		U82DShapeFormat =
+{
+	"Ultima8 2D",
+	6,		// header
+	"",		// ident
+	0,		// bytes_ident 
+	4,		// header_unk
+	2,		// num_frames
+
+	6,		// frameheader
+	3,		// frame_offset
+	1,		// frameheader_unk
+	2,		// frame_length
+	8,		// frame_length_kludge
+
+	18,		// frameheader2
+	8,		// frame_unknown
+	2,		// frame_compression
+	2,		// frame_width
+	2,		// frame_height
+	2,		// frame_xoff
+	2,		// frame_yoff
+
+	2		// line_offset
+};
+
+// Shape format configuration for Ultima8 SKF
+const ConvertShapeFormat		U8SKFShapeFormat =
+{
+	"Ultima8 SKF",
+	2,		// header
+	"",		// ident
+	0,		// bytes_ident 
+	0,		// header_unk
+	2,		// num_frames
+
+	6,		// frameheader
+	3,		// frame_offset
+	1,		// frameheader_unk
+	2,		// frame_length
+	0,		// frame_length_kludge
 
 	18,		// frameheader2
 	8,		// frame_unknown

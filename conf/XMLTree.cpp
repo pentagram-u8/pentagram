@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002 The Pentagram team
+Copyright (C) 2002, 2003 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -173,7 +173,7 @@ void XMLTree::set(std::string key, int value)
 {
 	char buf[32];
 	snprintf(buf, 32, "%d", value);
-	set(key, value);
+	set(key, buf);
 }
 
 void XMLTree::set(std::string key, bool value)

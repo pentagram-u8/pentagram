@@ -1,3 +1,21 @@
+2003-01-02  Ryan Nunn <colourles@users.sourceforge.net>
+	* AUTHORS : Changed my email address
+
+	* conf/XMLTree.cpp : Fixed the infinte loop.
+
+	* convert/ConvertShape.*, convert/crusader/ConvertShapeCrusader.*, 
+	  convert/u8/ConvertShapeU8.* : Expanded the ConvertShapeFormat
+	  structure. Defined a Pentagram shape format. Added ConvertShapeFormat
+	  definitions for U8 Gumps/Mouse, U8 SKF Shapes and Crusader
+	  Gumps/Mouse. Added function to check if a shape is valid for a
+	  particular format.
+
+	* tools/shapeconv/ShapeConv.cpp : Added support for input and output
+	  of all formats. Note the new command line params. (ShapeConv is now
+	  dependant on Args.cc). Also added support of single shp files. Will
+	  automatically assume single shape if the file has a .shp extension.
+	  Single shape mode can also be forced by command line param.
+
 2002-12-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* convert/ConvertShape.cpp: ignore corrupt frames
 	* convert/crusader/ConvertShapeCrusader.cpp: added some comments
