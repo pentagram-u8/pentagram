@@ -4,6 +4,8 @@
 	* gumps/Gump.h: added DONT_SAVE gump flag
 	* gumps/ModalGump.cpp, gumps/*: assert when trying to save/load modals
 	* kernel/CoreApp.*: split up loadConfig and initGame
+	* kernel/GUIApp.cpp: fix saving gametime
+	* kernel/GUIApp.cpp: reset mouse cursor on load
 
 2004-09-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* */module.mk, common.mk, Makefile.in: fix building from outside srcdir

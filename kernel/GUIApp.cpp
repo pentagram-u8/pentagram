@@ -1714,9 +1714,11 @@ bool GUIApp::loadGame(std::string filename)
 	kernel->reset();
 	textmodes.clear();
 
-	bool ok, totalok = true;
+	// reset mouse cursor
+	while (!cursors.empty()) cursors.pop();
+	pushMouseCursor();
 
-	// TODO: reset mouse state in GUIApp
+	bool ok, totalok = true;
 
  	// and load everything back (order matters)
 	IDataSource* ds;
@@ -1828,7 +1830,9 @@ void GUIApp::save(ODataSource* ods)
 	ods->write2(1); //version
 	uint8 s = (avatarInStasis ? 1 : 0);
 	ods->write1(s);
-	ods->write4(static_cast<uint32>(timeOffset)); //!! FIXME
+
+	sint32 absoluteTime = Kernel::get_instance()->getFrameNum()+timeOffset;
+	ods->write4(static_cast<uint32>(absoluteTime));
 	ods->write2(avatarMoverProcess->getPid());
 
 	Pentagram::Palette *pal = PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game);
@@ -1842,7 +1846,8 @@ bool GUIApp::load(IDataSource* ids)
 	if (version != 1) return false;
 
 	avatarInStasis = (ids->read1() != 0);
-	timeOffset = static_cast<sint32>(ids->read4());
+	sint32 absoluteTime = static_cast<sint32>(ids->read4());
+	timeOffset = absoluteTime - Kernel::get_instance()->getFrameNum();
 
 	uint16 amppid = ids->read2();
 	avatarMoverProcess = p_dynamic_cast<AvatarMoverProcess*>(Kernel::get_instance()->getProcess(amppid));
