@@ -632,7 +632,7 @@ void GUIApp::CreateHWCursors()
 	for (uint32 frame = 0; frame < mouse->frameCount(); frame++)
 	{
 		ShapeFrame *f = mouse->getFrame(frame);
-		uint32 bpp = BaseSoftRenderSurface::s_bpp;
+		uint32 bpp = BaseSoftRenderSurface::format.s_bpp;
 		int buf_width = f->width;
 		int buf_height = f->height;
 

@@ -50,25 +50,67 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(SDL_Surface *s) :
 	bits_per_pixel = sdl_surf->format->BitsPerPixel;
 	bytes_per_pixel = sdl_surf->format->BytesPerPixel;
 
-	RenderSurface::s_bpp = bits_per_pixel;
-	RenderSurface::r_loss = sdl_surf->format->Rloss;
-	RenderSurface::g_loss = sdl_surf->format->Gloss;
-	RenderSurface::b_loss = sdl_surf->format->Bloss;
-	RenderSurface::a_loss = sdl_surf->format->Aloss;
-	RenderSurface::r_loss16 = r_loss+8;
-	RenderSurface::g_loss16 = g_loss+8;
-	RenderSurface::b_loss16 = b_loss+8;
-	RenderSurface::a_loss16 = a_loss+8;
-	RenderSurface::r_shift = sdl_surf->format->Rshift;
-	RenderSurface::g_shift = sdl_surf->format->Gshift;
-	RenderSurface::b_shift = sdl_surf->format->Bshift;
-	RenderSurface::a_shift = sdl_surf->format->Ashift;
-	RenderSurface::r_mask = sdl_surf->format->Rmask;
-	RenderSurface::g_mask = sdl_surf->format->Gmask;
-	RenderSurface::b_mask = sdl_surf->format->Bmask;
-	RenderSurface::a_mask = sdl_surf->format->Amask;
+	RenderSurface::format.s_bpp = bits_per_pixel;
+	RenderSurface::format.s_bytes_per_pixel = bytes_per_pixel;
+	RenderSurface::format.r_loss = sdl_surf->format->Rloss;
+	RenderSurface::format.g_loss = sdl_surf->format->Gloss;
+	RenderSurface::format.b_loss = sdl_surf->format->Bloss;
+	RenderSurface::format.a_loss = sdl_surf->format->Aloss;
+	RenderSurface::format.r_loss16 = format.r_loss+8;
+	RenderSurface::format.g_loss16 = format.g_loss+8;
+	RenderSurface::format.b_loss16 = format.b_loss+8;
+	RenderSurface::format.a_loss16 = format.a_loss+8;
+	RenderSurface::format.r_shift = sdl_surf->format->Rshift;
+	RenderSurface::format.g_shift = sdl_surf->format->Gshift;
+	RenderSurface::format.b_shift = sdl_surf->format->Bshift;
+	RenderSurface::format.a_shift = sdl_surf->format->Ashift;
+	RenderSurface::format.r_mask = sdl_surf->format->Rmask;
+	RenderSurface::format.g_mask = sdl_surf->format->Gmask;
+	RenderSurface::format.b_mask = sdl_surf->format->Bmask;
+	RenderSurface::format.a_mask = sdl_surf->format->Amask;
 
 	SetPixelsPointer();
+
+	// Trickery to get the alpha channel
+	if (format.a_mask == 0 && bytes_per_pixel==4)
+	{
+		uint32 mask = ~(format.r_mask|format.g_mask|format.b_mask);
+
+		// Using all bits????
+		if (!mask) return;
+
+		// Check the mask to make sure that it's 'sane'
+		int i;
+		int last = 0;
+		int first = 0;
+		int zero = 32;
+
+		for (i = 0; i < 32; i++)
+		{
+			if ((1<<i) & mask)
+			{
+				last = first = i;
+				break;
+			}
+		}
+
+		for (; i < 32; i++)
+		{
+			if ((1<<i) & mask)
+				last = i;
+			else if (i < zero)
+				zero = i;
+		}
+
+		// something screwy going on
+		if (zero < last) return;
+
+		// Set it
+		format.a_shift = first;
+		format.a_loss = 8-(last+1-first);
+		format.a_loss16 = format.a_loss+8;
+		format.a_mask = mask;
+	}
 }
 
 
@@ -88,25 +130,25 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h, int bpp,
 
 	switch (bpp) {
 		case 15:
-			r_loss = 3;
-			g_loss = 3;
-			b_loss = 3;
-			a_loss = 7;
+			format.r_loss = 3;
+			format.g_loss = 3;
+			format.b_loss = 3;
+			format.a_loss = 7;
 			bpp = 16;
 			break;
 
 		case 16:
-			r_loss = 3;
-			g_loss = 2;
-			b_loss = 3;
-			a_loss = 0;
+			format.r_loss = 3;
+			format.g_loss = 2;
+			format.b_loss = 3;
+			format.a_loss = 0;
 			break;
 
 		case 32:
-			r_loss = 0;
-			g_loss = 0;
-			b_loss = 0;
-			a_loss = 0;
+			format.r_loss = 0;
+			format.g_loss = 0;
+			format.b_loss = 0;
+			format.a_loss = 0;
 			break;
 
 		default:
@@ -117,19 +159,20 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h, int bpp,
 	bits_per_pixel = bpp;
 	bytes_per_pixel = bpp/8;
 
-	RenderSurface::s_bpp = bpp;
-	RenderSurface::r_loss16 = r_loss+8;
-	RenderSurface::g_loss16 = g_loss+8;
-	RenderSurface::b_loss16 = b_loss+8;
-	RenderSurface::a_loss16 = a_loss+8;
-	RenderSurface::r_shift = rsft;
-	RenderSurface::g_shift = gsft;
-	RenderSurface::b_shift = bsft;
-	RenderSurface::a_shift = asft;
-	RenderSurface::r_mask = (0xFF>>r_loss)<<rsft;
-	RenderSurface::g_mask = (0xFF>>g_loss)<<gsft;
-	RenderSurface::b_mask = (0xFF>>b_loss)<<bsft;
-	RenderSurface::a_mask = (0xFF>>a_loss)<<asft;
+	RenderSurface::format.s_bpp = bpp;
+	RenderSurface::format.s_bytes_per_pixel = bytes_per_pixel;
+	RenderSurface::format.r_loss16 = format.r_loss+8;
+	RenderSurface::format.g_loss16 = format.g_loss+8;
+	RenderSurface::format.b_loss16 = format.b_loss+8;
+	RenderSurface::format.a_loss16 = format.a_loss+8;
+	RenderSurface::format.r_shift = rsft;
+	RenderSurface::format.g_shift = gsft;
+	RenderSurface::format.b_shift = bsft;
+	RenderSurface::format.a_shift = asft;
+	RenderSurface::format.r_mask = (0xFF>>format.r_loss)<<rsft;
+	RenderSurface::format.g_mask = (0xFF>>format.g_loss)<<gsft;
+	RenderSurface::format.b_mask = (0xFF>>format.b_loss)<<bsft;
+	RenderSurface::format.a_mask = (0xFF>>format.a_loss)<<asft;
 
 	SetPixelsPointer();
 }
@@ -148,7 +191,7 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h, uint8 *buf) :
 {
 	clip_window.ResizeAbs(width = w, height = h);
 
-	int bpp = RenderSurface::s_bpp;
+	int bpp = RenderSurface::format.s_bpp;
 
 	pitch = w*bpp/8;
 	bits_per_pixel = bpp;
@@ -171,7 +214,7 @@ BaseSoftRenderSurface::BaseSoftRenderSurface(int w, int h) :
 {
 	clip_window.ResizeAbs(width = w, height = h);
 
-	int bpp = RenderSurface::s_bpp;
+	int bpp = RenderSurface::format.s_bpp;
 
 	pitch = w*bpp/8;
 	bits_per_pixel = bpp;

@@ -1,3 +1,10 @@
+2005-02-21  Ryan Nunn <colourles@users.sourceforge.net>
+	* graphics/*RenderSurface.*, graphics/Manips.h, graphics/Scaler.h, 
+	  graphics/scalers/BilinearScaler.*, graphics/scalers/PointScaler.*,
+	  gumps/ScalerGump.*, kernel/GUIApp.cpp : 
+	  Scaler System beginning to take shape and become more final in
+	  implementation. Added a few more files
+
 2005-02-20  Ryan Nunn <colourles@users.sourceforge.net>
 	* graphics/scalers/PointScaler.h : Optimized the arbitrary scaler a 
 	  little. It is now significantly faster 

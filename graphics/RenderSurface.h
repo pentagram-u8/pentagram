@@ -32,13 +32,13 @@ namespace Pentagram
 	struct Rect;
 }
 
-#define UNPACK_RGB8(pix,r,g,b) { r = (((pix)&RenderSurface::r_mask)>>RenderSurface::r_shift)<<RenderSurface::r_loss; g = (((pix)&RenderSurface::g_mask)>>RenderSurface::g_shift)<<RenderSurface::g_loss; b = (((pix)&RenderSurface::b_mask)>>RenderSurface::b_shift)<<RenderSurface::b_loss; }
-#define PACK_RGB8(r,g,b) ((((r)>>RenderSurface::r_loss)<<RenderSurface::r_shift) | (((g)>>RenderSurface::g_loss)<<RenderSurface::g_shift) | (((b)>>RenderSurface::b_loss)<<RenderSurface::b_shift))
-#define PACK_RGB16(r,g,b) ((((r)>>RenderSurface::r_loss16)<<RenderSurface::r_shift) | (((g)>>RenderSurface::g_loss16)<<RenderSurface::g_shift) | (((b)>>RenderSurface::b_loss16)<<RenderSurface::b_shift))
+#define UNPACK_RGB8(pix,r,g,b) { r = (((pix)&RenderSurface::format.r_mask)>>RenderSurface::format.r_shift)<<RenderSurface::format.r_loss; g = (((pix)&RenderSurface::format.g_mask)>>RenderSurface::format.g_shift)<<RenderSurface::format.g_loss; b = (((pix)&RenderSurface::format.b_mask)>>RenderSurface::format.b_shift)<<RenderSurface::format.b_loss; }
+#define PACK_RGB8(r,g,b) ((((r)>>RenderSurface::format.r_loss)<<RenderSurface::format.r_shift) | (((g)>>RenderSurface::format.g_loss)<<RenderSurface::format.g_shift) | (((b)>>RenderSurface::format.b_loss)<<RenderSurface::format.b_shift))
+#define PACK_RGB16(r,g,b) ((((r)>>RenderSurface::format.r_loss16)<<RenderSurface::format.r_shift) | (((g)>>RenderSurface::format.g_loss16)<<RenderSurface::format.g_shift) | (((b)>>RenderSurface::format.b_loss16)<<RenderSurface::format.b_shift))
 
-#define UNPACK_RGBA8(pix,r,g,b,a) { r = (((pix)&RenderSurface::r_mask)>>RenderSurface::r_shift)<<RenderSurface::r_loss; g = (((pix)&RenderSurface::g_mask)>>RenderSurface::g_shift)<<RenderSurface::g_loss; b = (((pix)&RenderSurface::b_mask)>>RenderSurface::b_shift)<<RenderSurface::b_loss; ; a = (((pix)&RenderSurface::a_mask)>>RenderSurface::a_shift)<<RenderSurface::a_loss; }
-#define PACK_RGBA8(r,g,b,a) ((((r)>>RenderSurface::r_loss)<<RenderSurface::r_shift) | (((g)>>RenderSurface::g_loss)<<RenderSurface::g_shift) | (((b)>>RenderSurface::b_loss)<<RenderSurface::b_shift) | (((a)>>RenderSurface::a_loss)<<RenderSurface::a_shift))
-#define PACK_RGBA16(r,g,b,a) ((((r)>>RenderSurface::r_loss16)<<RenderSurface::r_shift) | (((g)>>RenderSurface::g_loss16)<<RenderSurface::g_shift) | (((b)>>RenderSurface::b_loss16)<<RenderSurface::b_shift) | (((a)>>RenderSurface::a_loss16)<<RenderSurface::a_shift))
+#define UNPACK_RGBA8(pix,r,g,b,a) { r = (((pix)&RenderSurface::format.r_mask)>>RenderSurface::format.r_shift)<<RenderSurface::format.r_loss; g = (((pix)&RenderSurface::format.g_mask)>>RenderSurface::format.g_shift)<<RenderSurface::format.g_loss; b = (((pix)&RenderSurface::format.b_mask)>>RenderSurface::format.b_shift)<<RenderSurface::format.b_loss; ; a = (((pix)&RenderSurface::format.a_mask)>>RenderSurface::format.a_shift)<<RenderSurface::format.a_loss; }
+#define PACK_RGBA8(r,g,b,a) ((((r)>>RenderSurface::format.r_loss)<<RenderSurface::format.r_shift) | (((g)>>RenderSurface::format.g_loss)<<RenderSurface::format.g_shift) | (((b)>>RenderSurface::format.b_loss)<<RenderSurface::format.b_shift) | (((a)>>RenderSurface::format.a_loss)<<RenderSurface::format.a_shift))
+#define PACK_RGBA16(r,g,b,a) ((((r)>>RenderSurface::format.r_loss16)<<RenderSurface::format.r_shift) | (((g)>>RenderSurface::format.g_loss16)<<RenderSurface::format.g_shift) | (((b)>>RenderSurface::format.b_loss16)<<RenderSurface::format.b_shift) | (((a)>>RenderSurface::format.a_loss16)<<RenderSurface::format.a_shift))
 
 //
 // RenderSurface
@@ -50,11 +50,16 @@ class RenderSurface
 public:
 
 	// Colour shifting values (should these all be uint32???)
-	static uint32	s_bpp;
-	static uint32	r_loss,   g_loss,   b_loss,   a_loss;
-	static uint32	r_loss16, g_loss16, b_loss16, a_loss16;
-	static uint32	r_shift,  g_shift,  b_shift,  a_shift;
-	static uint32	r_mask,   g_mask,   b_mask,   a_mask;
+	struct Format
+	{
+		uint32	s_bpp,    s_bytes_per_pixel;
+		uint32	r_loss,   g_loss,   b_loss,   a_loss;
+		uint32	r_loss16, g_loss16, b_loss16, a_loss16;
+		uint32	r_shift,  g_shift,  b_shift,  a_shift;
+		uint32	r_mask,   g_mask,   b_mask,   a_mask;
+	};
+
+	static Format format;
 
 	//
 	// TODO: Improve the way SDL Surfaces are created. Should be more versatile.

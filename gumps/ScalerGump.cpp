@@ -25,33 +25,19 @@
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(ScalerGump,DesktopGump);
 
-ScalerGump::ScalerGump(sint32 _x, sint32 _y, sint32 _width, sint32 _height, sint32 _swidth, sint32 _sheight, sint32 _scaler1, sint32 _scaler2)
-	: DesktopGump(_x, _y, _width, _height), swidth(_swidth), sheight(_sheight), scaler1(_scaler1), scaler2(_scaler2)
+ScalerGump::ScalerGump(sint32 _x, sint32 _y, sint32 _width, sint32 _height, 
+						sint32 _swidth1, sint32 _sheight1, sint32 _scaler1, 
+						sint32 _swidth2, sint32 _sheight2, sint32 _scaler2)
+	: DesktopGump(_x, _y, _width, _height), 
+		swidth1(_swidth1), sheight1(_sheight1), scaler1(_scaler1), buffer1(0),
+		swidth2(_swidth2), sheight2(_sheight2), scaler2(_scaler2), buffer2(0)
 {
-	buffer = 0;
 }
 
 ScalerGump::~ScalerGump()
 {
-	delete buffer;
-}
-
-static inline int getLine(int index, int n)
-{
-        index = index % (2*n);
-
-        if (index >= n)
-                return 2*n - 1 - 2*(index - n);
-        else
-                return 2*index;
-}
-
-static inline int getIndex(int line, int n)
-{
-        if (line % 2 == 0)
-                return line / 2;
-        else
-                return 2*n - 1 - (line/2);
+	delete buffer1;
+	delete buffer2;
 }
 
 void ScalerGump::Paint(RenderSurface* surf, sint32 lerp_factor)
@@ -66,34 +52,64 @@ void ScalerGump::Paint(RenderSurface* surf, sint32 lerp_factor)
 
 	int width = dims.w, height = dims.h;
 
-
-	if (swidth == width && sheight == height)
+	// We don't care, we are not going to support filters, at least not at the moment
+	if (swidth1 == width && sheight1 == height)
 	{
 		PaintChildren(surf, lerp_factor);
 		return;
 	}
 
 	// need a backbuffer
-	if (!buffer) {
-		buffer = RenderSurface::CreateSecondaryRenderSurface(swidth, sheight);
+	if (!buffer1) {
+		buffer1 = RenderSurface::CreateSecondaryRenderSurface(swidth1, sheight1);
 	}
 
 	// Paint children
-	PaintChildren(buffer, lerp_factor);
+	PaintChildren(buffer1, lerp_factor);
 
-	Texture* tex = buffer->GetSurfaceAsTexture();
-	surf->StretchBlit(tex, 0, 0, swidth, sheight, 0, 0, width, height, scaler1==1);
+	Texture* tex = buffer1->GetSurfaceAsTexture();
+
+	/*
+	if (height==480 && sheight ==200)
+	{
+		surf->StretchBlit(tex, 0, 0, swidth, 1, 0, 0, width, 2, scaler1==1);
+
+		int i = 1;
+		int j = 0;
+		int f = 3;
+		while(i<468)
+		{
+			surf->StretchBlit(tex, 0, j, swidth, 3, 0, i, width, 6, scaler1==1);
+			i+=5;
+			j+=2;
+
+			surf->StretchBlit(tex, 0, j, swidth, 4, 0, i, width, 8, scaler1==1);
+			i+=7;
+			j+=3;
+		}
+		surf->StretchBlit(tex, 0, j, swidth, 3, 0, i, width, 6, scaler1==1);
+		i+=5;
+		j+=2;
+
+		surf->StretchBlit(tex, 0, j, swidth, 3, 0, i, width, 6, scaler1==1);
+	}
+	else
+	*/
+	{
+		surf->StretchBlit(tex, 0, 0, swidth1, sheight1, 0, 0, width, height, scaler1==1);
+	}
+
 }
 
 // Convert a parent relative point to a gump point
 void ScalerGump::ParentToGump(int &px, int &py)
 {
 	px -= x;
-	px *= swidth;
+	px *= swidth1;
 	px /= dims.w;
 
 	py -= y;
-	py *= sheight;
+	py *= sheight1;
 	py /= dims.h;
 }
 
@@ -101,10 +117,10 @@ void ScalerGump::ParentToGump(int &px, int &py)
 void ScalerGump::GumpToParent(int &gx, int &gy)
 {
 	gx *= dims.w;
-	gx /= swidth;
+	gx /= swidth1;
 	gx += x;
 
 	gy *= dims.h;
-	gy /= sheight;
+	gy /= sheight1;
 	gy += y;
 }

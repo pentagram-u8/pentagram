@@ -28,7 +28,7 @@ class ScalerGump : public DesktopGump
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	ScalerGump(sint32 x, sint32 y, sint32 width, sint32 height, sint32 swidth, sint32 sheight, sint32 scaler1, sint32 scaler2 = -1);
+	ScalerGump(sint32 x, sint32 y, sint32 width, sint32 height, sint32 swidth1, sint32 sheight1, sint32 scaler1, sint32 swidth2=0, sint32 sheight2=0, sint32 scaler2=-1);
 	virtual ~ScalerGump(void);
 
 	virtual void Paint(RenderSurface* surf, sint32 lerp_factor);
@@ -36,14 +36,18 @@ public:
 	virtual void ParentToGump(int &px, int &py);
 	virtual void GumpToParent(int &gx, int &gy);
 	
-	void GetScaledSize(sint32 &sw, sint32 &sh) const { sw = swidth; sh = sheight; }
+	void GetScaledSize(sint32 &sw, sint32 &sh) const { sw = swidth1; sh = sheight1; }
 
 protected:
-	sint32	swidth;
-	sint32	sheight;
+	sint32	swidth1;
+	sint32	sheight1;
 	sint32	scaler1;
+	RenderSurface* buffer1;
+
+	sint32	swidth2;
+	sint32	sheight2;
 	sint32	scaler2;
-	RenderSurface* buffer;
+	RenderSurface* buffer2;
 };
 
 #endif

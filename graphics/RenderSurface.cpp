@@ -27,28 +27,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "D3D9SoftRenderSurface.h"
 #endif
 
-uint32	RenderSurface::s_bpp;
-
-uint32	RenderSurface::r_loss = 0;
-uint32	RenderSurface::r_loss16 = 0;
-uint32	RenderSurface::r_shift = 0;
-uint32	RenderSurface::r_mask = 0;
-
-uint32	RenderSurface::g_loss = 0;
-uint32	RenderSurface::g_loss16 = 0;
-uint32	RenderSurface::g_shift = 0;
-uint32	RenderSurface::g_mask = 0;
-
-uint32	RenderSurface::b_loss = 0;
-uint32	RenderSurface::b_loss16 = 0;
-uint32	RenderSurface::b_shift = 0;
-uint32	RenderSurface::b_mask = 0;
-
-uint32	RenderSurface::a_loss = 0;
-uint32	RenderSurface::a_loss16 = 0;
-uint32	RenderSurface::a_shift = 0;
-uint32	RenderSurface::a_mask = 0;
-
+RenderSurface::Format	RenderSurface::format = {
+	0,	0,
+	0,	0,	0,	0,
+	0,	0,	0,	0,
+	0,	0,	0,	0,
+	0,	0,	0,	0
+};
 
 //
 // RenderSurface::SetVideoMode()
@@ -116,6 +101,7 @@ RenderSurface *RenderSurface::SetVideoMode(uint32 width,		// Width of desired mo
 	// Um, no, it's been decided that this is a very bad idea
 	// Transparency is very very slow with hardware
 	//flags |= SDL_HWSURFACE|SDL_DOUBLEBUF;
+	flags |= SDL_SWSURFACE;
 
 	SDL_Surface *sdl_surf = SDL_SetVideoMode(width, height, bpp, flags);
 	
@@ -146,7 +132,7 @@ RenderSurface *RenderSurface::CreateSecondaryRenderSurface(uint32 width, uint32 
 	RenderSurface *surf;
 
 	// TODO: Change this
-	if (s_bpp == 32) surf = new SoftRenderSurface<uint32>(width,height);
+	if (format.s_bpp == 32) surf = new SoftRenderSurface<uint32>(width,height);
 	else surf = new SoftRenderSurface<uint16>(width,height);
 	return surf;
 }
