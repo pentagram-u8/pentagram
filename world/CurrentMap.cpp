@@ -89,11 +89,14 @@ void CurrentMap::writeback()
 			{
 				Item* item = *iter;
 
-				// ignore items inside globs; they'll be deleted
-				if (item->getExtFlags() | Item::EXT_INGLOB)
+				// delete items inside globs
+				if (item->getExtFlags() | Item::EXT_INGLOB) {
+					item->clearObjId();
+					delete item;
 					continue;
+				}
 
-				// unexpand all globeggs.(This deletes the items skipped above)
+				// unexpand all globeggs (note that this doesn't do much)
 				GlobEgg* globegg = p_dynamic_cast<GlobEgg*>(item);
 				if (globegg) {
 					globegg->unexpand();

@@ -86,6 +86,12 @@ void GlobEgg::expand()
 // (since we're probably iterating over object lists in CurrentMap when called)
 void GlobEgg::unexpand()
 {
+	contents = 0;
+
+	// New idea: just leave all objects be.
+	// They'll be deleted in CurrentMap::writeBack()
+
+#if 0
 	Item* item = contents;
 
 	while (item) {
@@ -101,4 +107,6 @@ void GlobEgg::unexpand()
 
 		item = next;
 	}
+	contents = 0;
+#endif
 }

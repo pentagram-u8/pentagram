@@ -1,4 +1,7 @@
 2003-04-14 Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/*: cleaned up globegg code a bit
+
+2003-04-13 Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GameData.*: load globs
 	* world/*: globs, globeggs
 
