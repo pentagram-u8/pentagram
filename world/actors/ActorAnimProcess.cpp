@@ -87,8 +87,8 @@ bool ActorAnimProcess::run(const uint32 framenum)
 	sint32 x, y, z;
 	a->getLocation(x,y,z);
 
-	x += 4 * x_fact[dir] * f.deltadir;
-	y += 4 * y_fact[dir] * f.deltadir;
+	x += 2 * x_fact[dir] * f.deltadir;
+	y += 2 * y_fact[dir] * f.deltadir;
 	z += f.deltaz;
 
 	a->move(x,y,z);
