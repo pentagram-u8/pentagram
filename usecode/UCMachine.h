@@ -71,6 +71,9 @@ public:
 	INTRINSIC(I_AvatarCanCheat);
 	INTRINSIC(I_dummyProcess);
 	INTRINSIC(I_getName);
+	INTRINSIC(I_urandom);
+	INTRINSIC(I_rndRange);
+	INTRINSIC(I_numToStr);
 
 private:
 

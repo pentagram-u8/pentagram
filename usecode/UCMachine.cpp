@@ -1857,3 +1857,33 @@ uint32 UCMachine::I_getName(const uint8* args, unsigned int /*argsize*/)
 {
 	return UCMachine::get_instance()->assignString("Avatar");
 }
+
+uint32 UCMachine::I_numToStr(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_SINT16(num);
+
+	char buf[16]; // a 16 bit int should easily fit
+	sprintf(buf, "%d", num);
+
+	return UCMachine::get_instance()->assignString(buf);
+}
+
+uint32 UCMachine::I_urandom(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_UINT16(num);
+	if (num <= 1) return 0;
+
+	// return random integer between 0 (incl.) to num (excl.)
+
+	return (rand() % num);
+}
+
+uint32 UCMachine::I_rndRange(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_SINT16(lo);
+	ARG_SINT16(hi);
+
+	if (hi <= lo) return lo;
+
+	return (lo + (rand() % (hi-lo+1)));
+}
