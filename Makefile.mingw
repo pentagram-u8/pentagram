@@ -47,6 +47,8 @@ WORLD_OBJS=world/Container.o world/CurrentMap.o world/Egg.o world/Glob.o world/G
 
 ACTORS_OBJS=world/actors/Actor.o world/actors/MainActor.o
 
+TOOLS_OBJS=tools/disasm/DisasmProcess.o
+
 all: pentagram.exe
 
 amf2mod.exe : tools/amf2mod/amf2mod.o
@@ -65,7 +67,7 @@ shapeconv.exe : tools/shapeconv/ShapeConv.o $(CONVERT_OBJS) $(FILESYS_OBJS) $(MI
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
 PENTAGRAM_OBJS=$(CONF_OBJS) $(CONVERT_OBJS) $(FILESYS_OBJS) $(GRAPHICS_OBJS) $(GUMPS_OBJS) $(KERNEL_OBJS) $(MISC_OBJS) \
-	$(USECODE_OBJS) $(WORLD_OBJS) $(ACTORS_OBJS) pentagram.o
+	$(USECODE_OBJS) $(WORLD_OBJS) $(ACTORS_OBJS) $(TOOLS_OBJS) pentagram.o
 
 pentagram.exe: $(PENTAGRAM_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ $(LIBS)
