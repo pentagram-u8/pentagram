@@ -26,13 +26,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ItemFactory.h"
 #include "Actor.h"
 #include "idMan.h"
+#include "GameData.h"
 
 //#define DUMP_ITEMS
 
 World* World::world = 0;
 
 World::World()
-	: currentmap(0), fixed(0), fixedds(0)
+	: currentmap(0)
 {
 	assert(world == 0);
 	world = this;
@@ -69,11 +70,6 @@ void World::clear()
 
 	if (currentmap)
 		delete currentmap;
-
-	if (fixed)
-		delete fixed;
-	if (fixedds)
-		delete fixedds;
 
 	//! Need to check the object delete policy
 	// If everything works out, there shouldn't be any objects left
@@ -158,7 +154,8 @@ bool World::switchMap(uint32 newmap)
 	objIDs->clearAll();
 
 	pout << "Loading Fixed items in map " << newmap << std::endl;
-	IDataSource *items = fixed->get_datasource(newmap);
+	IDataSource *items = GameData::get_instance()->getFixed()
+		->get_datasource(newmap);
 	maps[newmap]->loadFixed(items);
 	delete items;
 
@@ -190,13 +187,6 @@ void World::loadNonFixed(IDataSource* ds)
 	}
 
 	delete f;
-}
-
-
-void World::loadFixed(IDataSource* ds)
-{
-	fixed = new Flex(ds);
-	fixedds = ds;
 }
 
 void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)

@@ -76,7 +76,6 @@ public:
 	void initMaps();
 	void initNPCs();
 	void loadNonFixed(IDataSource* ds); // delete ds afterwards
-	void loadFixed(IDataSource* ds); // World takes ownership of ds
 	void loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata);
 
 	CurrentMap* getCurrentMap() const { return currentmap; }
@@ -97,9 +96,6 @@ private:
 	std::vector<Map*> maps;
 	std::vector<Actor*> npcs;
 	CurrentMap* currentmap;
-
-	Flex* fixed;
-	IDataSource* fixedds;
 
 	std::vector<Object*> objects;
 	idMan* objIDs;

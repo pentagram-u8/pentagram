@@ -185,6 +185,7 @@ public:
 		FLG_BOUNCING	 = 0x0400,
 		FLG_ETHEREAL	 = 0x0800,
 		FLG_HANGING		 = 0x1000,
+		FLG_FASTAREA     = 0x2000,
 		FLG_LOW_FRICTION = 0x4000
 	} statusflags;
 

@@ -62,12 +62,21 @@ void GameData::loadU8Data()
 {
 	FileSystem* filesystem = FileSystem::get_instance();
 
+	IDataSource *fd = filesystem->ReadFile("@u8/static/fixed.dat");
+	if (!fd) {
+		perr << "Unable to load static/fixed.dat. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	fixed = new Flex(fd);
+	//! we're leaking fd here
+
 	IDataSource* uds = filesystem->ReadFile("@u8/usecode/eusecode.flx");
 	if (!uds) {
 		perr << "Unable to load usecode/eusecode.flx. Exiting" << std::endl;
 		std::exit(-1);
 	}
 	mainusecode = new UsecodeFlex(uds);
+	//! we're leaking uds here
 
 	// Load main shapes
 	pout << "Load Shapes" << std::endl;

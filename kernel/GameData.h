@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <vector>
 
+class Flex;
 class MainShapeFlex;
 class Usecode;
 class Glob;
@@ -37,10 +38,11 @@ public:
 
 	Usecode* getMainUsecode() const { return mainusecode; }
 	MainShapeFlex* getMainShapes() const { return mainshapes; }
+	Flex* getFixed() const { return fixed; }
 	Glob* getGlob(uint32 glob) const;
 
 private:
-
+	Flex* fixed;
 	MainShapeFlex* mainshapes;
 	Usecode* mainusecode;
 	std::vector<Glob*> globs;

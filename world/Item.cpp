@@ -797,11 +797,17 @@ uint32 Item::I_getFootpad(const uint8* args, unsigned int /*argsize*/)
 	if (!item) return 0;
 
 	uint8 buf[2];
-	uint32 x = item->getShapeInfo()->x;
-	uint32 y = item->getShapeInfo()->y;
+	uint32 x;
+	uint32 y;
 	uint32 z = item->getShapeInfo()->z;
 
-	//! Do we need to flip x/y if FLG_FLIPPED?
+	if (item->getFlags() & Item::FLG_FLIPPED) {
+		x = item->getShapeInfo()->y;
+		y = item->getShapeInfo()->x;
+	} else {
+		x = item->getShapeInfo()->x;
+		y = item->getShapeInfo()->y;
+	}
 
 	buf[0] = static_cast<uint8>(x);
 	buf[1] = static_cast<uint8>(x >> 8);

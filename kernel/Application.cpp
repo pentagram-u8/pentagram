@@ -186,13 +186,6 @@ void Application::U8Playground(int /*argc*/, char * /*argv*/ [])
 	delete u8save;
 	delete saveds;
 
-	IDataSource *fd = filesystem->ReadFile("@u8/static/fixed.dat");
-	if (!fd) {
-		perr << "Unable to load static/fixed.dat. Exiting" << std::endl;
-		std::exit(-1);
-	}
-	world->loadFixed(fd);
-
 	Actor* av = world->getNPC(1);
 	if (av)
 		world->switchMap(av->getMapNum());

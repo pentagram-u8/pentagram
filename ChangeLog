@@ -1,4 +1,9 @@
 2003-05-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/World.*, kernel/GameData.*: moved fixed from World to GameData
+	* item/Item.h: added FLG_FASTAREA
+	* item/Item.cpp: make Item::getFootpad use FLG_FLIPPED
+
+2003-05-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/*: check for invalid direction in animations
 	
 2003-05-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
