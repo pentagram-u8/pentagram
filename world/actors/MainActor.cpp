@@ -294,6 +294,16 @@ void MainActor::receiveHit(uint16 other, int dir, int damage,
 	}
 }
 
+void MainActor::setInCombat()
+{
+	setActorFlag(ACT_INCOMBAT);
+}
+
+void MainActor::clearInCombat()
+{
+	clearActorFlag(ACT_INCOMBAT);
+}
+
 ProcId MainActor::die(uint16 damageType)
 {
 	ProcId animprocid = Actor::die(damageType);
@@ -533,8 +543,7 @@ uint32 MainActor::I_accumulateStrength(const uint8* args,
 									   unsigned int /*argsize*/)
 {
 	ARG_SINT16(n);
-	MainActor* av = p_dynamic_cast<MainActor*>(
-		World::get_instance()->getNPC(1));
+	MainActor* av = World::get_instance()->getMainActor();
 	av->accumulateStr(n);
 
 	return 0;
@@ -544,8 +553,7 @@ uint32 MainActor::I_accumulateDexterity(const uint8* args,
 									   unsigned int /*argsize*/)
 {
 	ARG_SINT16(n);
-	MainActor* av = p_dynamic_cast<MainActor*>(
-		World::get_instance()->getNPC(1));
+	MainActor* av = World::get_instance()->getMainActor();
 	av->accumulateDex(n);
 
 	return 0;
@@ -555,9 +563,36 @@ uint32 MainActor::I_accumulateIntelligence(const uint8* args,
 									   unsigned int /*argsize*/)
 {
 	ARG_SINT16(n);
-	MainActor* av = p_dynamic_cast<MainActor*>(
-		World::get_instance()->getNPC(1));
+	MainActor* av = World::get_instance()->getMainActor();
 	av->accumulateInt(n);
 
 	return 0;
+}
+
+uint32 MainActor::I_clrAvatarInCombat(const uint8* args,
+									  unsigned int /*argsize*/)
+{
+	MainActor* av = World::get_instance()->getMainActor();	
+	av->clearInCombat();
+
+	return 0;
+}
+
+uint32 MainActor::I_setAvatarInCombat(const uint8* args,
+									  unsigned int /*argsize*/)
+{
+	MainActor* av = World::get_instance()->getMainActor();	
+	av->setInCombat();
+
+	return 0;
+}
+
+uint32 MainActor::I_isAvatarInCombat(const uint8* args,
+									  unsigned int /*argsize*/)
+{
+	MainActor* av = World::get_instance()->getMainActor();
+	if (av->isInCombat())
+		return 1;
+	else
+		return 0;
 }

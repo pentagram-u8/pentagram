@@ -65,6 +65,9 @@ public:
 
 	virtual void receiveHit(uint16 other, int dir, int damage, uint16 type);
 
+	virtual void setInCombat();
+	virtual void clearInCombat();
+
 	virtual ProcId die(uint16 DamageType);
 
 	bool loadData(IDataSource* ids);
@@ -87,6 +90,9 @@ public:
 	INTRINSIC(I_accumulateStrength);
 	INTRINSIC(I_accumulateDexterity);
 	INTRINSIC(I_accumulateIntelligence);
+	INTRINSIC(I_clrAvatarInCombat);
+	INTRINSIC(I_setAvatarInCombat);
+	INTRINSIC(I_isAvatarInCombat);
 
 
 	void getWeaponOverlay(const WeaponOverlayFrame*& frame, uint32& shape);

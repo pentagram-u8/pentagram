@@ -183,10 +183,10 @@ Intrinsic U8Intrinsics[] = {
 	Actor::I_isBusy,
 	Actor::I_areEnemiesNear,
 	Actor::I_isInCombat,
-	0, // Npc::setInCombat
-	0, // Npc::clrInCombat
-	0, // Npc::setTarget
-	0, // Npc::getTarget
+	Actor::I_setInCombat,
+	Actor::I_clrInCombat,
+	Actor::I_setTarget,
+	Actor::I_getTarget,
 	Actor::I_setAlignment,
 	Actor::I_getAlignment,
 	Actor::I_setEnemyAlignment,
@@ -291,9 +291,9 @@ Intrinsic U8Intrinsics[] = {
 	MainActor::I_accumulateStrength,
 	MainActor::I_accumulateIntelligence,
 	MainActor::I_accumulateDexterity,
-	0, // ClrAvatarInCombat
-	0, // SetAvatarInCombat
-	0, // IsAvatarInCombat
+	MainActor::I_clrAvatarInCombat,
+	MainActor::I_setAvatarInCombat,
+	MainActor::I_isAvatarInCombat,
 	0, // playSFX
 	0, // playSFX
 	0, // playSFX

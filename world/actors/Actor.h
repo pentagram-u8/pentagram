@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class ActorAnimProcess;
 struct PathfindingState;
+class CombatProcess;
 
 class Actor : public Container
 {
@@ -49,7 +50,13 @@ public:
 	uint16 getMaxHP() const;
 
 	bool isInCombat() const { return (actorflags & ACT_INCOMBAT) != 0; }
-	void toggleInCombat() { actorflags ^= ACT_INCOMBAT; }
+	void toggleInCombat() {
+		if (isInCombat()) clearInCombat(); else setInCombat();
+	}
+
+	CombatProcess* getCombatProcess();
+	virtual void setInCombat();
+	virtual void clearInCombat();
 
 	uint16 getAlignment() const { return alignment; }
 	void setAlignment(uint16 a) { alignment = a; }
@@ -160,6 +167,10 @@ public:
 	INTRINSIC(I_teleport);
 	INTRINSIC(I_doAnim);
 	INTRINSIC(I_isInCombat);
+	INTRINSIC(I_setInCombat);
+	INTRINSIC(I_clrInCombat);
+	INTRINSIC(I_setTarget);
+	INTRINSIC(I_getTarget);
 	INTRINSIC(I_isEnemy);
 	INTRINSIC(I_isDead);
 	INTRINSIC(I_setDead);

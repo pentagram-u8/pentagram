@@ -501,3 +501,9 @@ uint16 version
 AvatarDeathProcess::Process (v1)
 uint16 version
 <Process>
+
+
+CombatProcess::Process (v1)
+uint16 version
+<Process>
+uint16 target

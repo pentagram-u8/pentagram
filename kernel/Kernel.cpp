@@ -284,16 +284,13 @@ void Kernel::ConCmd_listItemProcesses(const Console::ArgsType &args, const Conso
 
 uint32 Kernel::getNumProcesses(ObjId objid, uint16 processtype)
 {
-	if(objid==0 && processtype==6)
-		return processes.size();
-	
 	uint32 count = 0;
 
 	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it)
 	{
 		Process* p = *it;
 
-		// Don't count us, were are not really here
+		// Don't count us, we are not really here
 		if (p->terminate_deferred) continue;
 
 		if ((objid == 0 || objid == p->item_num) &&
@@ -303,6 +300,26 @@ uint32 Kernel::getNumProcesses(ObjId objid, uint16 processtype)
 
 	return count;
 }
+
+Process* Kernel::findProcess(ObjId objid, uint16 processtype)
+{
+	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it)
+	{
+		Process* p = *it;
+
+		// Don't count us, were are not really here
+		if (p->terminate_deferred) continue;
+
+		if ((objid == 0 || objid == p->item_num) &&
+			(processtype == 6 || processtype == p->type))
+		{
+			return p;
+		}
+	}
+
+	return 0;
+}
+
 
 void Kernel::killProcesses(ObjId objid, uint16 processtype)
 {

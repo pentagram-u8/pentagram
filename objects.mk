@@ -160,13 +160,14 @@ ACTORS = \
 	world/actors/AnimationTracker.o \
 	world/actors/AvatarDeathProcess.o \
 	world/actors/AvatarMoverProcess.o \
-	world/actors/QuickAvatarMoverProcess.o \
 	world/actors/ClearFeignDeathProcess.o \
+	world/actors/CombatProcess.o \
 	world/actors/DeleteActorProcess.o \
 	world/actors/LoiterProcess.o \
 	world/actors/MainActor.o \
 	world/actors/Pathfinder.o \
 	world/actors/PathfinderProcess.o \
+	world/actors/QuickAvatarMoverProcess.o \
 	world/actors/ResurrectionProcess.o \
 	world/actors/TargetedAnimProcess.o \
 	world/actors/TeleportToEggProcess.o

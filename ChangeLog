@@ -1,3 +1,9 @@
+2004-11-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/Kernel.*: add findProcess function
+	* world/actors/CombatProcess.*: do-nothing CombatProcess
+	* world/actors/Actor.*: various combat intrinsics
+	* world/actors/MainActor.*: more combat intrinsics
+
 2004-11-07  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.*: canReach intrinsic
 	* gumps/GameMapGump.cpp, gumps/ContainerGump.cpp:

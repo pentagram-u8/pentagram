@@ -41,6 +41,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "PathfinderProcess.h"
 #include "Shape.h"
 #include "LoiterProcess.h"
+#include "CombatProcess.h"
 
 #include "ItemFactory.h"
 #include "LoopScript.h"
@@ -708,6 +709,49 @@ int Actor::calculateAttackDamage(uint16 other, int damage, uint16 damage_type)
 	return damage;
 }
 
+CombatProcess* Actor::getCombatProcess()
+{
+	Process* p = Kernel::get_instance()->findProcess(objid, 0xF2); // CONSTANT!
+	if (!p) return 0;
+	CombatProcess* cp = p_dynamic_cast<CombatProcess*>(p);
+	assert(cp);
+
+	return cp;
+}
+
+void Actor::setInCombat()
+{
+	if ((actorflags & ACT_INCOMBAT) != 0) return;
+
+	assert(getCombatProcess() == 0);
+
+	// perform special actions
+	// CHECKME: what should the argument to cast be?
+	ProcId castproc = callUsecodeEvent_cast(0);
+
+	CombatProcess* cp = new CombatProcess(this);
+	Kernel::get_instance()->addProcess(cp);
+ 
+	// wait for any special actions to finish before starting to fight
+	if (castproc)
+		cp->waitFor(castproc);
+
+	setActorFlag(ACT_INCOMBAT);
+
+	// CHECKME: should we kill any processes belonging to this actor when
+	// starting combat?
+}
+
+void Actor::clearInCombat()
+{
+	if ((actorflags & ACT_INCOMBAT) == 0) return;
+
+	CombatProcess* cp = getCombatProcess();
+	cp->terminate();
+
+	clearActorFlag(ACT_INCOMBAT);
+}
+
 bool Actor::areEnemiesNear()
 {
 	UCList uclist(2);
@@ -987,6 +1031,61 @@ uint32 Actor::I_isInCombat(const uint8* args, unsigned int /*argsize*/)
 	else
 		return 0;
 }
+
+uint32 Actor::I_setInCombat(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	if (!actor) return 0;
+
+	actor->setInCombat();
+
+	return 0;
+}
+
+uint32 Actor::I_clrInCombat(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	if (!actor) return 0;
+
+	actor->clearInCombat();
+
+	return 0;
+}
+
+uint32 Actor::I_setTarget(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	ARG_UINT16(target);
+	if (!actor) return 0;
+
+	CombatProcess* cp = actor->getCombatProcess();
+	if (!cp) {
+		actor->setInCombat();
+		cp = actor->getCombatProcess();
+	}
+	if (!cp) {
+		perr << "Actor::I_setTarget: failed to enter combat mode"
+			 << std::endl;
+		return 0;
+	}
+
+	cp->setTarget(target);
+
+	return 0;
+}
+
+uint32 Actor::I_getTarget(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	if (!actor) return 0;
+
+	CombatProcess* cp = actor->getCombatProcess();
+
+	if (!cp) return 0;
+
+	return static_cast<uint32>(cp->getTarget());
+}
+
 
 uint32 Actor::I_isEnemy(const uint8* args, unsigned int /*argsize*/)
 {

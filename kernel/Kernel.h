@@ -55,8 +55,11 @@ public:
 	void setNextProcess(Process *proc);
 	Process* getRunningProcess() const { return runningprocess; }
 
-	// only UCProcesses; objid = 0 means any object, type = 6 means any type
+	// objid = 0 means any object, type = 6 means any type
 	uint32 getNumProcesses(ObjId objid, uint16 processtype);
+
+	//! find a (any) process of the given objid, processtype
+	Process* findProcess(ObjId objid, uint16 processtype);
 
 	//! kill (fail) processes of a certain object and/or of a certain type
 	//! \param objid the object, or 0 for any object
