@@ -25,7 +25,7 @@ using std::string;
 using std::strtol;
 using std::strtoul;
 
-void Args::process(const sint32 argc, const char * const *argv)
+void Args::process(const sint32 argc, const char * const * const argv)
 {
 	for(sint32 i=1; i<argc; ++i)
 	{
@@ -46,7 +46,7 @@ void Args::process(const sint32 argc, const char * const *argv)
 						// We want the _next_ argument
 						if(++i>=argc)
 						{
-							perr << "Data not specified for argument '" << options[j].option <<"'. Using default." << endl;
+							perr << "Data not specified for argument '" << options[j].option << "'. Using default." << endl;
 							break;
 						}
 						*(options[j]._str_val)=argv[i];
@@ -60,7 +60,7 @@ void Args::process(const sint32 argc, const char * const *argv)
 						// We want the _next_ argument
 						if(++i>=argc)
 						{
-							perr << "Data not specified for argument '" << options[j].option <<"'. Using default." << endl;
+							perr << "Data not specified for argument '" << options[j].option << "'. Using default." << endl;
 							break;
 						}
 						*(options[j]._sint_val)=strtol(argv[i],0,10);
@@ -74,7 +74,7 @@ void Args::process(const sint32 argc, const char * const *argv)
 						// We want the _next_ argument
 						if(++i>=argc)
 						{
-							perr << "Data not specified for argument '" << options[j].option <<"'. Using default." << endl;
+							perr << "Data not specified for argument '" << options[j].option << "'. Using default." << endl;
 							break;
 						}
 						*(options[j]._uint_val)=strtoul(argv[i],0,10);

@@ -66,7 +66,7 @@ bool showconsole=true; // yes, yes, more of them :-)
 
 Application* Application::application = 0;
 
-Application::Application(int argc, char *argv[])
+Application::Application(const int argc, const char * const * const argv)
 	: kernel(0), ucmachine(0), filesystem(0), config(0), desktop(0),
 	  console(0), screen(0), palettemanager(0), gamedata(0), world(0),
 	  display_list(0),
@@ -97,7 +97,7 @@ Application::Application(int argc, char *argv[])
 
 		GraphicSysInit();
 
-		U8Playground(argc, argv);
+		U8Playground();
 	}
 }
 
@@ -141,7 +141,7 @@ void Application::run()
 	}
 }
 
-void Application::U8Playground(int /*argc*/, char * /*argv*/ [])
+void Application::U8Playground()
 {
 	// Load palette
 	pout << "Load Palette" << std::endl;
@@ -437,7 +437,7 @@ void Application::loadConfig()
 	pout << "U8 Workdir: " << work << std::endl;
 }
 
-void Application::ParseArgs(int argc, char *argv[])
+void Application::ParseArgs(const int argc, const char * const * const argv)
 {
 	pout << "Parsing Args" << std::endl;
 

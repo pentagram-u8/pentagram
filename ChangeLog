@@ -1,3 +1,7 @@
+2003-05-19	Darke <darkepaw@users.sf.net>
+	* misc/Args.*, kernel/Application.*: Fixed argument const correctness
+	  at wjp's insistance. *grin*
+
 2003-05-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* misc/Direction.h: world-direction function
 

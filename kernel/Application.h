@@ -36,11 +36,11 @@ class ItemSorter;	// TODO MOVE THIS TO GameMapGump
 // extremely simplified stub-ish Application class
 class Application {
 public:
-	Application(int argc, char *argv[]);
+	Application(const int argc, const char * const * const argv);
 	~Application();
 
 	static Application* get_instance() { return application; }
-	
+
 	void run();
 	void paint();
 	void handleEvent(const SDL_Event& event);
@@ -48,7 +48,7 @@ public:
 	void loadConfig();
 	void setupVirtualPaths();
 
-	void U8Playground(int argc, char *argv[]);
+	void U8Playground();
 
 	void ForceQuit() { isRunning=false; };
 
@@ -70,7 +70,7 @@ private:
 	World *world;
 	ItemSorter *display_list;	// TODO MOVE THIS TO GameMapGump
 
-	void ParseArgs(int argc, char *argv[]);
+	void ParseArgs(const int argc, const char * const * const argv);
 
 	// internal initilisation functions,
 	// called depending upon command line arguments
