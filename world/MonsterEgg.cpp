@@ -48,9 +48,12 @@ uint16 MonsterEgg::hatch()
 {
 	//!! do we need to check probability here?
 	//!! monster activity? combat? anything?
-	//!! maybe mark actor as temporary
 
 	int shape = getMonsterShape();
+
+	// CHECKME: why does this happen? (in the plane of Earth near the end)
+	if (shape == 0)
+		return 0;
 
 	Actor* newactor = ItemFactory::createActor(shape, 0, 0,
 								FLG_FAST_ONLY|FLG_DISPOSABLE|FLG_IN_NPC_LIST, 
@@ -68,9 +71,16 @@ uint16 MonsterEgg::hatch()
 			 << ")." << std::endl;
 	}
 
-	newactor->setMapNum(getMapNum());
+	if (!newactor->canExistAt(x,y,z)) {
+		newactor->destroy();
+		return 0;
+	}
+
+	newactor->setMapNum(getMapNum()); // CHECKME!
 	newactor->setNpcNum(objID);
 	newactor->move(x,y,z);
+
+	newactor->cSetActivity(getActivity());
 
 	return objID;
 }

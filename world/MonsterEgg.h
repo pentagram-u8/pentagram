@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2004 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -33,6 +33,7 @@ public:
 
 	int getProb() const { return (quality >> 11) & 0x1F; }
 	int getMonsterShape() const { return quality & 0x7FF; }
+	int getActivity() const { return mapnum & 0x07; }
 
 	uint16 hatch();
 
