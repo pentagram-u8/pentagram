@@ -1408,6 +1408,11 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		assert(button >= 0 && button <= NUM_MOUSEBUTTONS);
 
 		mouseButton[button].state &= ~MBS_DOWN;
+		
+		// Need to store the last down position of the mouse
+		// when the button is released.
+		mouseButton[button].downX = mx;
+		mouseButton[button].downY = my;
 
 		if (button == BUTTON_LEFT && dragging != DRAG_NOT) {
 			stopDragging(mx, my);

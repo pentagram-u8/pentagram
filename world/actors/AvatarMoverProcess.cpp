@@ -402,9 +402,6 @@ bool AvatarMoverProcess::handleNormalMode()
 
 void AvatarMoverProcess::OnMouseDown(int button, int mx, int my)
 {
-	//TODO: mark button as down (and also store time, since we want
-	// clicks to 'expire' if they're not handled in time)
-
 	int bid = 0;
 
 	switch (button) {

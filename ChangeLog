@@ -1,3 +1,10 @@
+2004-06-13  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* gumps/widgets/ButtonWidget.cpp: verify mouse is on button during
+	  click.
+	* kernel/GUIApp.cpp: store the mouse position to downX/Y on mouse up
+	  so clicks process correctly.
+	* world/actors/AvatarMoverProcess.cpp: TODO was already TODONE :-)
+
 2004-06-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Actor.*, world/actors/MonsterEgg.cpp: use monster stats
 
