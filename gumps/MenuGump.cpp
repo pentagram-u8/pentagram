@@ -93,6 +93,7 @@ void MenuGump::InitGump()
 	}
 	
 	// Should be Avatar's name.
+	//!! Hardcoded English String
 	widget = new TextWidget(0, 0, "Pentagram", 6);
 	widget->InitGump();
 	widget->GetDims(rect);
@@ -129,10 +130,10 @@ bool MenuGump::OnKeyDown(int key, int mod)
 	} break;	
 	case SDLK_4:
 	{	// Options
-		PagedGump * gump = new PagedGump(36, -40, 4, gumpShape);
+		PagedGump * gump = new PagedGump(34, -38, 3, gumpShape);
 		gump->InitGump();
-		gump->addGump("Engine", ControlsGump::showEngineMenu());
-		gump->addGump("Game", ControlsGump::showU8Menu());
+		gump->addPage(ControlsGump::showEngineMenu());
+		gump->addPage(ControlsGump::showU8Menu());
 		AddChild(gump);
 		gump->setRelativePosition(CENTER);
 	} break;
@@ -182,10 +183,10 @@ void MenuGump::ChildNotify(Gump *child, uint32 message)
 				} break;	
 				case 4:
 				{	// Options
-					PagedGump * gump = new PagedGump(36, -40, 4, gumpShape);
+					PagedGump * gump = new PagedGump(34, -38, 3, gumpShape);
 					gump->InitGump();
-					gump->addGump("Engine", ControlsGump::showEngineMenu());
-					gump->addGump("Game", ControlsGump::showU8Menu());
+					gump->addPage(ControlsGump::showEngineMenu());
+					gump->addPage(ControlsGump::showU8Menu());
 					AddChild(gump);
 					gump->setRelativePosition(CENTER);
 				} break;

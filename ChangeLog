@@ -2,6 +2,9 @@
 	* world/actors/AvatarMoverProcess.*: Running in combat switches to
 	  normal mode until right button released, and jumping occures only
 	  once per mouse click.
+	* gumps/PagedGump.*: next page and previous page are now represented by
+	  gump 34. Pages are no longer named.
+	* gumps/MenuGump.cpp: reflect changes to PagedGump
 
 2004-05-12  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* AUTHORS: Added myself to authors

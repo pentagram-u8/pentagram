@@ -37,17 +37,16 @@ public:
 
 	virtual bool OnKeyDown(int key, int mod);
 	virtual void ChildNotify(Gump *child, uint32 message);
-	void addGump(std::string name, Gump * g);
+	void addPage(Gump * g);
 
 	bool loadData(IDataSource* ids);
 protected:
 	virtual void saveData(ODataSource* ods);
-	typedef std::pair<std::string, Gump *> GumpPair;
 	int leftOff, rightOff, topOff, gumpShape;
-	std::vector<GumpPair> gumps;
+	std::vector<Gump *> gumps;
 	Gump * nextButton;
 	Gump * prevButton;
-	std::vector<GumpPair>::iterator current;
+	std::vector<Gump *>::iterator current;
 };
 
 #endif

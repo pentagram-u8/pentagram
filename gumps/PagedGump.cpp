@@ -40,7 +40,7 @@ PagedGump::~PagedGump(void)
 	gumps.clear();
 }
 
-static const int font = 9;
+static const int pageOverShape = 34;
 
 void PagedGump::InitGump()
 {
@@ -52,14 +52,15 @@ void PagedGump::InitGump()
 	dims.w = sf->width;
 	dims.h = sf->height;
 
-	// The displayed name of these buttons may be changed
-	// to the strings in the GumpPairs in future revisions
-	nextButton = new ButtonWidget(0, 0, "Next Page", font);
+	Shape* s = GameData::get_instance()->getGumps()->getShape(pageOverShape);
+
+	//!! Hardcoded gump
+	nextButton = new ButtonWidget(0, 0, s, 1, s, 1);
 	nextButton->InitGump();
 	AddChild(nextButton);
 	nextButton->setRelativePosition(TOP_RIGHT, rightOff, topOff);
 
-	prevButton = new ButtonWidget(0, 0, "Previous Page", font);
+	prevButton = new ButtonWidget(0, 0, s, 0, s, 0);
 	prevButton->InitGump();
 	AddChild(prevButton);
 	prevButton->setRelativePosition(TOP_LEFT, leftOff, topOff);
@@ -97,9 +98,9 @@ void PagedGump::ChildNotify(Gump *child, uint32 message)
 		{
 			if (current + 1 != gumps.end())
 			{
-				current->second->HideGump();
+				(*current)->HideGump();
 				++current;
-				current->second->UnhideGump();
+				(*current)->UnhideGump();
 
 				if (current + 1 == gumps.end())
 					nextButton->HideGump();
@@ -111,9 +112,9 @@ void PagedGump::ChildNotify(Gump *child, uint32 message)
 		{
 			if (current != gumps.begin())
 			{
-				current->second->HideGump();
+				(*current)->HideGump();
 				--current;
-				current->second->UnhideGump();
+				(*current)->UnhideGump();
 				
 				if (current == gumps.begin())
 					prevButton->HideGump();
@@ -124,18 +125,15 @@ void PagedGump::ChildNotify(Gump *child, uint32 message)
 	}
 }
 
-void PagedGump::addGump(std::string name, Gump * g)
+void PagedGump::addPage(Gump * g)
 {
-	GumpPair p;
-	p.first = name;
-	p.second = g;
 	AddChild(g);
-	g->setRelativePosition(TOP_CENTER, 0, 12 + topOff);
+	g->setRelativePosition(TOP_CENTER, 0, 14 + topOff);
 	g->HideGump();
-	gumps.push_back(p);
+	gumps.push_back(g);
 
 	current = gumps.begin();
-	current->second->UnhideGump();
+	(*current)->UnhideGump();
 }
 
 bool PagedGump::loadData(IDataSource* ids)
