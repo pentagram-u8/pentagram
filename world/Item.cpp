@@ -1538,18 +1538,7 @@ void Item::receiveHit(uint16 other, int dir, int damage, uint16 type)
 
 	// nothing special, so just hurl the item
 	// TODO: hurl item in direction, with speed depending on damage
-	GravityProcess* p = 0;
-	if (gravitypid) {
-		p = p_dynamic_cast<GravityProcess*>(
-			Kernel::get_instance()->getProcess(gravitypid));
-		assert(p);
-	} else {
-		p = new GravityProcess(this, 4); //!! constant
-		Kernel::get_instance()->addProcess(p);
-		p->init();
-	}
-
-	p->move(-16*x_fact[dir],-16*y_fact[dir],16);
+	hurl(-16*x_fact[dir],-16*y_fact[dir],16,4); //!! constants
 }
 
 bool Item::canDrag()
@@ -2151,7 +2140,6 @@ uint32 Item::I_ask(const uint8* args, unsigned int /*argsize*/)
 	if (!answers) return 0;
 
 	// Use AskGump
-	GUIApp *app = p_dynamic_cast<GUIApp*>(GUIApp::get_instance());
 	Gump *gump = new AskGump(1, answers);
 	gump->InitGump();
 	GUIApp::get_instance()->addGump(gump);
@@ -2387,8 +2375,10 @@ uint32 Item::I_create(const uint8* args, unsigned int /*argsize*/)
 	}
 	uint16 objID = newitem->assignObjId();
 
+#if 0
 	pout << "Item::create: created item " << objID << " (" << shape
 		 << "," << frame << ")" << std::endl;
+#endif
 
 	newitem->moveToEtherealVoid();
 
