@@ -728,8 +728,6 @@ void ItemSorter::AddItem(Item *add)
 
 	SortItem *si = items+num_items;
 
-	uint32 shape_num = add->getShape();
-
 	si->item_num = add->getObjId();
 	si->shape = add->getShapeObject();
 	si->shape_num = add->getShape();

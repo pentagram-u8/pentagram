@@ -86,8 +86,6 @@ void ConApp::run()
 {
 	isRunning = true;
 
-	sint32 next_ticks = SDL_GetTicks();	// Next time is right now!
-	
 	// Ok, the theory is that if this is set to true then we must do a repaint
 	// At the moment only it's ignored
 	bool repaint;

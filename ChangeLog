@@ -1,3 +1,6 @@
+2003-06-24  Max Horn <max@quendi.de>
+	* various: fixed strict GCC 3.3 warnings
+
 2003-06-24  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCList.*: fixed string leaks
 	* usecode/UCProcess.*, usecode/UCMachine.cpp: implemented opcode 6C

@@ -799,13 +799,15 @@ void Item::animateItem()
 	ShapeInfo *info = getShapeInfo();
 	Shape *shp = getShapeObject();
 
-	int anim_type = info->animtype; 
-	if (!anim_type) return;
+	if (!info->animtype) return;
 
 	int anim_data = info->animdata; 
 	bool dirty = false;
 
-	if ((last_setup%6) == (objid%6) || info->animtype == 1) switch(info->animtype) {
+	if (((int)last_setup%6) != (objid%6) && info->animtype != 1)
+		return;
+
+	switch(info->animtype) {
 	case 2:
 		// 50 % chance
 		if (std::rand() & 1) break;
@@ -854,7 +856,7 @@ void Item::animateItem()
 		break;
 
 	default:
-		pout <<"type " << anim_type << " data " << anim_data  << std::endl;
+		pout <<"type " << info->animtype << " data " << anim_data  << std::endl;
 		break;
 	}
 	//return dirty;
@@ -867,7 +869,7 @@ void Item::inFastArea(int even_odd, int framenum)
 	extendedflags &= ~(EXT_FAST0|EXT_FAST1);
 	extendedflags |= EXT_FAST0<<even_odd;
 
-	if (!last_setup || framenum != last_setup || !(flags & FLG_FASTAREA))
+	if (!last_setup || framenum != (int)last_setup || !(flags & FLG_FASTAREA))
 	{
 		setupLerp(!last_setup || (framenum-last_setup)>1 || !(flags & FLG_FASTAREA));
 		last_setup = framenum;
@@ -932,7 +934,7 @@ void Item::grab()
 	world->getCurrentMap()->surfaceSearch(&uclist, script, sizeof(script),
 										  this, true, false, true);
 
-	for (int i = 0; i < uclist.getSize(); i++)
+	for (uint32 i = 0; i < uclist.getSize(); i++)
 	{
 		Item *item = world->getItem(uclist.getuint16(i));
 		if (!item) continue;

@@ -47,7 +47,23 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //#define LOGPF(X) pout.printf X
 //#define SHOWSTART true
 
-#ifndef LOGPF
+#ifdef LOGPF
+static const char *print_bp(const sint16 offset)
+{
+	static char str[32];
+	snprintf(str, 32, "[BP%c%02Xh]", offset<0?'-':'+', 
+				  offset<0?-offset:offset);
+	return str;
+}
+
+static const char *print_sp(const sint16 offset)
+{
+	static char str[32];
+	snprintf(str, 32, "[SP%c%02Xh]", offset<0?'-':'+', 
+				  offset<0?-offset:offset);
+	return str;
+}
+#else
 #define LOGPF(X)
 #endif
 
@@ -89,22 +105,6 @@ UCMachine::UCMachine(Intrinsic *iset) :
 UCMachine::~UCMachine()
 {
 	ucmachine = 0;
-}
-
-static const char *print_bp(const sint16 offset)
-{
-	static char str[32];
-	snprintf(str, 32, "[BP%c%02Xh]", offset<0?'-':'+', 
-				  offset<0?-offset:offset);
-	return str;
-}
-
-static const char *print_sp(const sint16 offset)
-{
-	static char str[32];
-	snprintf(str, 32, "[SP%c%02Xh]", offset<0?'-':'+', 
-				  offset<0?-offset:offset);
-	return str;
 }
 
 void UCMachine::loadIntrinsics(Intrinsic *i)
@@ -1231,7 +1231,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				uint16 offset = cs.read2();
 				uint16 delta = cs.read2();
 				int this_size = cs.read1(); // relevance?
-				uint32 unknown = cs.read1(); // ??
+				/*uint32 unknown =*/ cs.read1(); // ??
 				
 				LOGPF(("spawn inline\t%04X:%04X+%04X=%04X %02X %02X",
 					   classid,offset,delta,offset+delta,this_size, unknown));

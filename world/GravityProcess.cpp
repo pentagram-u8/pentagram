@@ -72,8 +72,6 @@ bool GravityProcess::run(uint32 framenum)
 		return false;
 	}
 
-	CurrentMap* cm = World::get_instance()->getCurrentMap();
-
 	// What to do:
 	//   - check if item can move to the given position
 	//     (in intervals in the z direction, since the z movement
@@ -100,6 +98,8 @@ bool GravityProcess::run(uint32 framenum)
 	else zspeed -= gravity;
 
 #if 0
+
+	CurrentMap* cm = World::get_instance()->getCurrentMap();
 
 	// collision detection. Move in steps half the item's height
 	// (and corresponding amounts in x/y directions)
