@@ -173,10 +173,15 @@ bool GrantPeaceProcess::run(const uint32 /*framenum*/)
 
 		// calling intrinsic...
 		PaletteFaderProcess::I_lightningBolt(0, 0);
+		int sfx;
+		switch (std::rand() % 3) {
+		case 0: sfx = 91; break;
+		case 1: sfx = 94; break;
+		default: sfx = 96; break;
+		}
 
 		AudioProcess* audioproc = AudioProcess::get_instance();
-		if (audioproc) audioproc->playSFX(94, 0x60, 1, 0); //constants!!
-		// CHECKME: is that the right SFX?
+		if (audioproc) audioproc->playSFX(sfx, 0x60, 1, 0); //constants!!
 	}
 
 
