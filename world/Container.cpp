@@ -36,6 +36,18 @@ Container::~Container()
 }
 
 
+uint16 Container::assignObjId()
+{
+	uint16 id = Item::assignObjId();
+
+	std::list<Item*>::iterator iter;
+	for (iter = contents.begin(); iter != contents.end(); ++iter) {
+		(*iter)->assignObjId();
+	}
+
+	return id;
+}
+
 bool Container::AddItem(Item* item)
 {
 	if (item == 0) return false;

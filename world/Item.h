@@ -38,6 +38,8 @@ public:
 	void getLocation(sint32& x, sint32& y, sint32& z) const;
 	uint32 getFlags() const { return flags; }
 	uint32 getExtFlags() const { return extendedflags; }
+	uint32 getShape() const { return shape; }
+	uint32 getFrame() const { return frame; }
 
 protected:
 	uint32 shape;

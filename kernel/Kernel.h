@@ -38,6 +38,7 @@ public:
 
 	Process* getProcess(uint16 pid);
 
+	void kernelStats();
 private:
 	uint16 getNewPID();
 

@@ -1,3 +1,7 @@
+2003-03-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/Objects.*, world/*: objID stuff
+	* world/World.*, kernel/Kernel.*: more memory stats
+
 2003-03-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* filesys/U8Save.*: simple U8Save class to load u8save.000
 	* filesys/Flex.*: made Flex more Flexible

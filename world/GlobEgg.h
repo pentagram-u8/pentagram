@@ -25,7 +25,7 @@ class GlobEgg : public Item
 {
 public:
 	GlobEgg();
-	~GlobEgg();
+	virtual ~GlobEgg();
 };
 
 

@@ -59,6 +59,7 @@ class CurrentMap;
 class IDataSource;
 class Actor;
 class Flex;
+class Object;
 
 class World
 {
@@ -78,16 +79,25 @@ public:
 
 	bool switchMap(uint32 newmap);
 
+	uint16 assignObjId(Object* obj);
+	void clearObjId(uint16 objid);
+
+	Object* getObject(uint16 objid) const;
+
+	void worldStats();
+	
 private:
 	static World *world;
 
 	std::vector<Map*> maps;
 	std::vector<Actor*> npcs;
-
 	CurrentMap* current_map;
 
 	Flex* fixed;
 	IDataSource* fixedds;
+
+	std::vector<Object*> objects;
+	int lastobjid;
 };
 
 #endif

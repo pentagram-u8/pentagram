@@ -95,6 +95,7 @@ void CurrentMap::writeback()
 					current_map->dynamicitems.push_back(item);
 				}
 			}
+			items[i][j].clear();
 		}
 	}
 }
@@ -121,7 +122,7 @@ void CurrentMap::loadItems(list<Item*> itemlist)
 		cy = y / 512;
 
 		items[cx][cy].push_back(item);
-		
+		item->assignObjId();
 	}
 }
 

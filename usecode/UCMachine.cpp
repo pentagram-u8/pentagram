@@ -1694,7 +1694,7 @@ void UCMachine::killProcess(uint16 pid)
 		p->terminate();
 }
 
-void UCMachine::memStats()
+void UCMachine::usecodeStats()
 {
 	pout << "Usecode Machine memory stats:" << std::endl;
 //	pout << "Processes: " << processes.size() << "/32766" << std::endl;

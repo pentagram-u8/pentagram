@@ -23,12 +23,14 @@ class Object
 {
 public:
 	Object() : objid(0xFFFF) {}
-	virtual ~Object() {}
+	virtual ~Object();
 
 	// p_dynamic_cast stuff
 	ENABLE_DYNAMIC_CAST(Object);
 
 	uint16 getObjId() const { return objid; }
+	virtual uint16 assignObjId(); //get and assign self (and contents) an objID
+	void clearObjId();
 
 protected:
 	uint16 objid;

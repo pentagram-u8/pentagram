@@ -37,6 +37,8 @@ public:
 	bool AddItem(Item* item);
 	bool RemoveItem(Item* item);
 
+	virtual uint16 assignObjId(); //get and assign self (and contents) an objID
+
 protected:
 	std::list<Item*> contents;
 };

@@ -153,6 +153,8 @@ Application::Application(int argc, char *argv[])
 	world->loadItemCachNPCData(icd, npcd);
 	delete icd;
 	delete npcd;
+	delete u8save;
+	delete saveds;
 
 	IDataSource *fd = filesystem->ReadFile("@u8/static/fixed.dat");
 	if (!fd) {
@@ -162,6 +164,8 @@ Application::Application(int argc, char *argv[])
 	world->loadFixed(fd);
 	world->switchMap(3);
 	world->switchMap(40);
+	world->switchMap(43);
+	world->switchMap(3);
 
 	// Create console gump
 	//pout << "Create Graphics Console" << std::endl;

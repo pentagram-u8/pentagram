@@ -21,7 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Process.h"
 #include "Kernel.h"
 
-#include "UCMachine.h" // only for memStats.
+#include "UCMachine.h" // only for usecodeStats.
+#include "World.h" // only for worldStats
 
 typedef std::list<Process *>::iterator ProcessIterator;
 
@@ -82,7 +83,9 @@ bool Kernel::runProcesses(uint32 framenum)
 	if (processes.size() == 0) {
 		perr << "Process queue is empty?! Aborting.\n";
 
-		UCMachine::get_instance()->memStats();
+		kernelStats();
+		UCMachine::get_instance()->usecodeStats();
+		World::get_instance()->worldStats();
 
 		//! do this in a cleaner way
 		exit(0);
@@ -128,4 +131,10 @@ uint16 Kernel::getNewPID()
 	}
 
 	return count++;
+}
+
+void Kernel::kernelStats()
+{
+	pout << "Kernel memory stats:" << std::endl;
+	pout << "Processes : " << processes.size() << "/32765" << std::endl;
 }

@@ -51,7 +51,7 @@ public:
 
 	uint16 duplicateString(uint16 str);
 
-	void memStats();
+	void usecodeStats();
 
 private:
 

@@ -35,6 +35,9 @@ World::World()
 {
 	assert(world == 0);
 	world = this;
+
+	objects.resize(65536);
+	lastobjid = 256;
 }
 
 
@@ -65,6 +68,14 @@ void World::clear()
 		delete fixed;
 	if (fixedds)
 		delete fixedds;
+
+	//! Need to check the object delete policy
+	// If everything works out, there shouldn't be any objects left
+	// (maybe NPCs?)
+	for (unsigned int i = 0; i < objects.size(); ++i) {
+		objects[i] = 0;
+	}
+	lastobjid = 256;
 }
 
 void World::initMaps()
@@ -103,9 +114,9 @@ bool World::switchMap(uint32 newmap)
 	// clear all objIDs
 	// swap out fixed items in old map?
 	// make sure fixed items in the new map are loaded
-	// assign objIDs to fixed items
-	// assign objIDs to nonfixed items
-	// load new map into CurrentMap
+	// load new map into CurrentMap, which also
+	//  assigns objIDs to fixed items
+	//  assigns objIDs to nonfixed items
 
 	// NB: not only World has to perform actions on a map switch
 	// other things that should/could also happen:
@@ -116,21 +127,32 @@ bool World::switchMap(uint32 newmap)
 	uint32 oldmap = current_map->getNum();
 
 	if (oldmap != 0) {
+		perr << "Unloading map " << oldmap << std::endl;
+
 		assert(oldmap < maps.size() && maps[oldmap] != 0);
 
 		current_map->writeback();
+
+		perr << "Unloading Fixed items from map " << oldmap << std::endl;
+
 		maps[oldmap]->unloadFixed();
 
-		// TODO: clear objIDs
+		//! constant
+		for (unsigned int i = 256; i < objects.size(); ++i) {
+			if (objects[i] != 0)
+				objects[i]->clearObjId();
+		}
 	}
+
+	//! constant
+	lastobjid = 256; // reset objid counter
 
 	pout << "Loading Fixed items in map " << newmap << std::endl;
 	pout << "-----------------------------------------" << std::endl;
 	IDataSource *items = fixed->get_datasource(newmap);
 	maps[newmap]->loadFixed(items);
 	delete items;
-
-	// TODO: assign objIDs
+	pout << "-----------------------------------------" << std::endl;
 
 	current_map->loadMap(maps[newmap]);
 
@@ -238,10 +260,66 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 		actor->setLocation(x,y,z);
 
 		npcs[i] = actor;
+		objects[i] = actor;
 	}
 
 	delete itemcachflex;
 	delete npcdataflex;
 	delete itemds;
 	delete npcds;
+}
+
+
+uint16 World::assignObjId(Object* obj)
+{
+	// !constant
+
+	// I'm not exactly sure if this is the most efficient way to do this
+
+	//! infinite loop when too many objects
+
+	// find unassigned element
+	while (objects[lastobjid] != 0) {
+		lastobjid++;
+		if (lastobjid > 0xFFFE) lastobjid = 256;
+	}
+
+	objects[lastobjid] = obj;
+
+	return lastobjid++;
+}
+
+void World::clearObjId(uint16 objid)
+{
+	objects[objid] = 0;
+}
+
+void World::worldStats()
+{
+	unsigned int npccount = 0, objcount = 0, mapcount = 0;
+
+	//!constants
+	for (unsigned int i = 1; i < 256; i++) {
+		if (objects[i] != 0)
+			npccount++;
+	}
+	for (unsigned int i = 256; i < objects.size(); i++) {
+		if (objects[i] != 0)
+			objcount++;
+	}
+
+	for (unsigned int i = 0; i < maps.size(); i++) {
+		if (maps[i] != 0)
+			mapcount++;
+	}
+
+	pout << "World memory stats:" << std::endl;
+	pout << "NPCs    : " << npccount << "/255" << std::endl;
+	pout << "Objects : " << objcount << "/65279" << std::endl;
+	pout << "Maps    : " << mapcount << "/256" << std::endl;
+}
+
+Object* World::getObject(uint16 objid) const
+{
+	return objects[objid];
 }

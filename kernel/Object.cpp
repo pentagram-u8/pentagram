@@ -17,7 +17,27 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "pent_include.h"
+
 #include "Object.h"
+#include "World.h"
 
 // p_dynamic_cast stuff
 DEFINE_DYNAMIC_CAST_CODE_BASE_CLASS(Object);
+
+Object::~Object()
+{
+	if (objid != 0xFFFF)
+		World::get_instance()->clearObjId(objid);
+}
+
+uint16 Object::assignObjId()
+{
+	if (objid == 0xFFFF)
+		objid = World::get_instance()->assignObjId(this);
+	return objid;
+}
+
+void Object::clearObjId()
+{
+	objid = 0xFFFF;
+}
