@@ -28,9 +28,11 @@ Container : Item:
 		std::list<Item*> contents
 
 Actor : Container:
-	uint16 strength, dexterity, intelligence
-	uint16 hitpoints, mana
-	uint16 lastanim, lastdirection
+	sint16 strength, dexterity, intelligence
+	uint16 hitpoints
+	sint16 mana
+	uint16 alignment, enemyalignment
+	uint16 lastanim, direction
 	uint32 actorflags
 
 MainActor : Actor:
@@ -66,18 +68,16 @@ Gump: Object:
 ConsoleGump: Gump:
 	ConsoleScrollState scroll_state
 
-DesktopGump: Gump:
-	int fastArea
+DesktopGump: Gump
+	nothing
 
-	reconstruct:
-		std::vector<uint16> fastAreas[2]
+GameMapGump: Gump:
+	int fastArea
+	std::vector<uint16> fastAreas[2]
 
 	reset:
 		ItemSorter* display_list
 		bool display_dragging
-		uint32 dragging_shape, dragging_frame
-		uint32 dragging_flags
-		sint32 dragging_x, dragging_y, dragging_z
 
 ItemRelativeGump: Gump:
 	reconstruct:
@@ -120,6 +120,11 @@ GUIApp:
 	bool paintEditorItems
 	sint32 timeOffset
 	uint16 song
+
+	reconstruct:
+		desktopGump
+		consoleGump
+		gameMapGump
 
 	reset:
 		everything else
@@ -209,15 +214,15 @@ UCMachine:
 	std::map<uint16, UCList*> listHeap
 	std::map<uint16, std::string> stringHeap
 	UCStack globals
-	uint16 loop_list, uint32 loop_index (should be moved to UCProcess)
 
 	reconstruct:
 		ConvertUsecode* convuse
 		Intrinsic* intrinsics
 
 UCStack:
-	the data
-	SP
+	uint8* buf
+	uint8* buf_ptr
+	uint32 size
 
 UCList:
 	std::vector<uint8> elements
@@ -225,15 +230,16 @@ UCList:
 	unsigned int size
 
 Kernel:
-	std::list<Process*> processes
-	std::list<Process*>::iterator current_process
+	the order of std::list<Process*> processes
 
 	reconstruct:
 		idMan *pIDs
 		std::vector<Object*> objects
+		std::list<Process*> processes
 		idMan* objIDs
 		idMan* actorIDs
-
+	reset:
+		std::list<Process*>::iterator current_process
 
 World:
 	std::stack<uint16> ethereal
