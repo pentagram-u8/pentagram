@@ -1,4 +1,7 @@
 2003-05-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Item.cpp: use quality+0x47F as usecode class for unkeggs
+
+2003-05-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Application.cpp: arrows scroll map; esc/q quit
 	* kernel/Application.cpp: backtick/tilde hides console
 	

@@ -250,6 +250,9 @@ uint32 Item::callUsecodeEvent(uint32 event)
 	// Ok, for Permanent npcs we do it differently. they use NPC num + 1024
 	if (npcnum && !(flags & FLG_DISPOSABLE)) class_id = npcnum + 1024;
 
+	// UnkEggs have quality+0x47F
+	if (getFamily() == ShapeInfo::SF_UNKEGG) class_id = quality + 0x47F;
+
 	Usecode* u = GameData::get_instance()->getMainUsecode();
 	uint32 offset = u->get_class_event(class_id, event);
 	if (!offset) return 0;
