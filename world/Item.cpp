@@ -787,3 +787,41 @@ uint32 Item::I_destroy(const uint8* args, unsigned int /*argsize*/)
 
 	return 0;
 }
+
+uint32 Item::I_getFootpad(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM(item);
+	ARG_UINT32(xptr);
+	ARG_UINT32(yptr);
+	ARG_UINT32(zptr);
+	if (!item) return 0;
+
+	uint8 buf[2];
+	uint32 x = item->getShapeInfo()->x;
+	uint32 y = item->getShapeInfo()->y;
+	uint32 z = item->getShapeInfo()->z;
+
+	//! Do we need to flip x/y if FLG_FLIPPED?
+
+	buf[0] = static_cast<uint8>(x);
+	buf[1] = static_cast<uint8>(x >> 8);
+	UCMachine::get_instance()->assignPointer(xptr, buf, 2);
+
+	buf[0] = static_cast<uint8>(y);
+	buf[1] = static_cast<uint8>(y >> 8);
+	UCMachine::get_instance()->assignPointer(yptr, buf, 2);
+
+	buf[0] = static_cast<uint8>(z);
+	buf[1] = static_cast<uint8>(z >> 8);
+	UCMachine::get_instance()->assignPointer(zptr, buf, 2);
+
+	return 0;
+}
+
+uint32 Item::I_getFamilyOfType(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_UINT16(shape);
+
+	return GameData::get_instance()->getMainShapes()->
+		getShapeInfo(shape)->family;
+}

@@ -129,6 +129,7 @@ public:
 	INTRINSIC(I_getStatus);
 	INTRINSIC(I_orStatus);
 	INTRINSIC(I_andStatus);
+	INTRINSIC(I_getFootpad);
 	INTRINSIC(I_getWeight);
 	INTRINSIC(I_getVolume);
 	INTRINSIC(I_bark);
@@ -140,6 +141,7 @@ public:
 	INTRINSIC(I_legalCreateAtCoords);
 	INTRINSIC(I_legalCreateInCont);
 	INTRINSIC(I_destroy);
+	INTRINSIC(I_getFamilyOfType);
 
 protected:
 	uint32 shape;
