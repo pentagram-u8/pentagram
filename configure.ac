@@ -297,7 +297,7 @@ USESDLMIXER=no
 #	HAVESDLMIXER=yes,
 #	HAVESDLMIXER=no)
 
-AC_ARG_ENABLE(fmopl_midi,      [  --disable-fmopl-midi    Disable FMOPL midi],,enable_fmopl_midi=yes)
+AC_ARG_ENABLE(fmopl_midi,      [  --disable-fmopl-midi    Disable built-in FMOPL midi],,enable_fmopl_midi=yes)
 #if test x$HAVESDLMIXER = xyes; then
 	AC_MSG_CHECKING(if we want to use FMOPL midi)
 	if test x$enable_fmopl_midi = xyes; then
@@ -309,7 +309,7 @@ AC_ARG_ENABLE(fmopl_midi,      [  --disable-fmopl-midi    Disable FMOPL midi],,e
 	fi
 #fi
 
-AC_ARG_ENABLE(timidity_midi,      [  --disable-timidity-midi         Disable timidity midi],,enable_timidity_midi=yes)
+AC_ARG_ENABLE(timidity_midi,      [  --disable-timidity-midi Disable built-in timidity midi],,enable_timidity_midi=yes)
 AC_ARG_WITH(timidity,             [  --with-timidity=path    path to timidity.cfg (optional)],,)
 AC_MSG_CHECKING(if we want to use timidity midi)
 if test x$enable_timidity_midi = xyes; then
@@ -337,7 +337,7 @@ CPPFLAGS="$CPPFLAGS $SDL_CFLAGS"
 AC_CHECK_HEADER(SDL_ttf.h, HAVESDLTTF=yes, HAVESDLTTF=no)
 CPPFLAGS="$BACKUPCPPFLAGS"
 
-AC_ARG_ENABLE(ttf, [  --disable-ttf           Disable TTF font support],,enable_ttf=yes)
+AC_ARG_ENABLE(ttf, [  --enable-ttf            Enable TTF font support],,enable_ttf=no)
 
 AC_MSG_CHECKING(if we want to use optional SDL_ttf fonts)
 if test x$HAVESDLTTF = xyes; then
