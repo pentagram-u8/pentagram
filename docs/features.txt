@@ -1,0 +1,28 @@
+New Features and Enchancements Ideas for Pentagram
+==================================================
+Items found in this file can be either feature requests or just ideas that
+might be cool to add to Pentagram. Any idea you have, no matter how strange,
+should be added to this list. Who knows, maybe it would end up being really
+cool.
+
+Suggested style is to mark unimplemented features with a '-', vetoed features
+with a '!', features currently being implemented with a 'o', and completed
+features with a '+'
+
+Matthew Jimenez
+===============
+- Keyboard movement - both relational and absolute as options
+- Decay time on dead actors, like in Deus Ex
+- Pathfinding Movement option for movement like diablo (would probably really
+  help in testing the pathfinder too)
+- A "Belt" - quick shortcut gump to items found in your backpack
+- Food being more of a requirement in the game (hunger counter that damages if
+  too high?)
+- Custom menus - The book menu probably won't work well for all the options we
+  might have
+- Gimp Plugin
+- Intro Screen? Maybe even a trailer intro if we get creative
+- Graphic Scalers
+- Layered Graphic Scalers (be able to scale gumps differently than the map)
+- Joystick movement for Avatar or Cursor - gameplay option
+
