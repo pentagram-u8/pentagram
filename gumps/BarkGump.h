@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003  The Pentagram Team
+ *  Copyright (C) 2003-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,11 +27,15 @@ protected:
 	std::string	barked;
 	sint32 counter;
 	ObjId textwidget;
+	uint32 speechshapenum;
+	uint32 speechlength;
+	uint32 totaltextheight;
+
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
 	BarkGump();
-	BarkGump(uint16 owner, std::string msg);
+	BarkGump(uint16 owner, std::string msg, uint32 speechshapenum=0);
 	virtual ~BarkGump(void);
 
 	// Run the gump (decrement the counter)
@@ -44,7 +48,9 @@ public:
 	virtual void		InitGump();
 
 protected:
-	void NextText(); 
+	//! show next text.
+	//! returns false if no more text available
+	bool NextText(); 
 
 public:
 	bool loadData(IDataSource* ids, uint32 version);

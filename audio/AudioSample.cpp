@@ -23,7 +23,7 @@ namespace Pentagram {
 
 AudioSample::AudioSample(uint8 *buffer_, uint32 size_) : 
 		sample_rate(0), bits(0), stereo(false), 
-		frame_size(0), decompressor_size(0), 
+		frame_size(0), decompressor_size(0), length(0), 
 		buffer_size(size_), buffer(buffer_)
 {
 }

@@ -95,6 +95,13 @@ bool TextWidget::setupNextText()
 	return true;
 }
 
+void TextWidget::rewind()
+{
+	current_start = 0;
+	current_end = 0;
+	setupNextText();
+}
+
 void TextWidget::renderText()
 {
 	if (!cached_text) {

@@ -1,3 +1,8 @@
+2005-03-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* audio/*AudioSample.*: add interface for getting sample length
+	* audio/SpeechFlex.*: get length in milliseconds of speech
+	* gumps/BarkGump.*: properly sync text and speech
+
 2005-03-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/*: only allow specific gumps to be dragged
 	* various: fixed some warnings

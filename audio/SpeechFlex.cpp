@@ -17,8 +17,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #include "pent_include.h"
 #include "SpeechFlex.h"
-#include <cstdlib>
-#include <string>
+#include "AudioSample.h"
 
 // p_dynamic_class stuff 
 DEFINE_RUNTIME_CLASSTYPE_CODE(SpeechFlex, SoundFlex);
@@ -56,7 +55,7 @@ SpeechFlex::~SpeechFlex(void)
 {
 }
 
-int	SpeechFlex::getIndexForPhrase(std::string &phrase,
+int	SpeechFlex::getIndexForPhrase(const std::string &phrase,
 								  uint32 start, uint32& end) const
 {
 	std::vector<Pentagram::istring>::const_iterator it;
@@ -89,3 +88,27 @@ int	SpeechFlex::getIndexForPhrase(std::string &phrase,
 	return 0;
 }
 
+uint32 SpeechFlex::getSpeechLength(const std::string &phrase)
+{
+	uint32 start = 0, end = 0;
+	uint32 length = 0;
+
+	while (end < phrase.size()) {
+		start = end;
+		int index = getIndexForPhrase(phrase, start, end);
+		if (!index) break;
+
+		Pentagram::AudioSample* sample = getSample(index);
+		if (!sample) break;
+
+		uint32 samples = sample->getLength();
+		uint32 rate = sample->getRate();
+		bool stereo = sample->isStereo();
+		if (stereo) rate *= 2;
+
+		length += (samples * 1000) / rate;
+		length += 33; // one engine frame of overhead between speech samples
+	}
+
+	return length;
+}

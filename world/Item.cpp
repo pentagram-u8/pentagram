@@ -2090,7 +2090,9 @@ uint32 Item::I_bark(const uint8* args, unsigned int /*argsize*/)
 	}
 	else
 	{
-		Gump *gump = new BarkGump(item->getObjId(), str);
+		uint32 shapenum = item->getShape();
+		if (id_item == 666) shapenum = 666;	// Hack for guardian barks
+		Gump *gump = new BarkGump(item->getObjId(), str, shapenum);
 
 		if (item->getObjId() < 256) // CONSTANT!
 		{
@@ -2103,21 +2105,8 @@ uint32 Item::I_bark(const uint8* args, unsigned int /*argsize*/)
 		gump->InitGump();
 		GUIApp::get_instance()->addGump(gump);
 
-		// TODO Do this properly
-		// A little hack for speech
-		AudioProcess *ap = AudioProcess::get_instance();
-		if (ap) {
-			uint32 shapenum = item->getShape();
-			if (id_item == 666) shapenum = 666;	// Hack for guardian barks
-		
-			ap->playSpeech(str,shapenum,item->getObjId());
-		}
-
 		return gump->GetNotifyProcess()->getPid();
 	}
-	// TODO:
-	// * If multiple things are barked for a single item, they
-	//   shouldn't be placed on top of eachother.
 }
 
 uint32 Item::I_look(const uint8* args, unsigned int /*argsize*/)
@@ -2713,7 +2702,7 @@ uint32 Item::I_getSliderInput(const uint8* args, unsigned int /*argsize*/)
 	UCProcess* current = p_dynamic_cast<UCProcess*>(Kernel::get_instance()->getRunningProcess());
 	assert(current);
 
-	pout << "SliderGump: min=" << minval << ", max=" << maxval << ", step=" << step << std::endl;
+//	pout << "SliderGump: min=" << minval << ", max=" << maxval << ", step=" << step << std::endl;
 
 	SliderGump* gump = new SliderGump(100, 100, minval, maxval, minval, step);
 	gump->InitGump(); // modal gump

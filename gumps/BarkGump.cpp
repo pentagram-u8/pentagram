@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004  The Pentagram Team
+ *  Copyright (C) 2003-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #include "TextWidget.h"
 #include "Kernel.h"
 #include "GUIApp.h"
+#include "AudioProcess.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -35,8 +36,10 @@ BarkGump::BarkGump()
 
 }
 
-BarkGump::BarkGump(uint16 owner, std::string msg) :
-	ItemRelativeGump(0, 0, 100, 100, owner, 0, LAYER_ABOVE_NORMAL), barked(msg), counter(100)
+BarkGump::BarkGump(uint16 owner, std::string msg, uint32 speechshapenum_) :
+	ItemRelativeGump(0, 0, 100, 100, owner, 0, LAYER_ABOVE_NORMAL),
+	barked(msg), counter(100), speechshapenum(speechshapenum_),
+	speechlength(0), totaltextheight(0)
 {
 }
 
@@ -75,15 +78,41 @@ void BarkGump::InitGump()
 	// Add it to us
 	AddChild(widget);
 
+
+	// see if we need to play speech
+	AudioProcess *ap = AudioProcess::get_instance();
+	speechlength = 0;
+	if (speechshapenum && ap) {
+		if (ap->playSpeech(barked, speechshapenum, owner)) {
+			speechlength = ap->getSpeechLength(barked, speechshapenum) / 33;
+			if (speechlength == 0) speechlength = 1;
+
+			// We're playing speech, so need to sync the text with the speech.
+			// First we count the total height of all text blocks.
+			Pentagram::Rect d;
+			widget->GetDims(d);
+			totaltextheight = d.h;
+			while (widget->setupNextText()) {
+				widget->GetDims(d);
+				totaltextheight += d.h;
+			}
+			widget->rewind();
+		}
+	}
+
 	// This is just a hack
 	Pentagram::Rect d;
 	widget->GetDims(d);
-	counter = d.h*5; //! constant
+	if (speechlength && totaltextheight) {
+		counter = 1; //(d.h * speechlength) / totaltextheight;
+	} else {
+		counter = d.h*5; //! constant
+	}
 	dims.h = d.h;
 	dims.w = d.w;
 }
 
-void BarkGump::NextText()
+bool BarkGump::NextText()
 {
 	TextWidget *widget = p_dynamic_cast<TextWidget*>
 		(GUIApp::get_instance()->getGump(textwidget));
@@ -92,12 +121,17 @@ void BarkGump::NextText()
 		// This is just a hack
 		Pentagram::Rect d;
 		widget->GetDims(d);
-		counter = d.h*5; //! constant
+		if (speechlength && totaltextheight) {
+			counter = 1; //(d.h * speechlength) / totaltextheight;
+		} else {
+			counter = d.h*5; //! constant
+		}
 		dims.h = d.h;
 		dims.w = d.w;
-	} else {
-		Close();
+		return true;
 	}
+
+	return false;
 }
 
 bool BarkGump::Run(const uint32 framenum)
@@ -106,9 +140,28 @@ bool BarkGump::Run(const uint32 framenum)
 
 	// Auto close
 	if (!Kernel::get_instance()->isPaused()) {
-		if (!--counter) NextText();
+		if (!--counter) {
+			// try next text
+			bool done = !NextText();
+			if (done) {
+				bool speechplaying = false;
+				if (speechlength) {
+					// waiting for speech to finish?
+					AudioProcess *ap = AudioProcess::get_instance();
+					if (ap)
+						speechplaying = ap->isSpeechPlaying(barked,
+															speechshapenum);
+				}
+
+				// if speech done too, close
+				if (!speechplaying)
+					Close();
+				else
+					counter = 5;
+			}
+		}
 	}
-	return true;	// Always repaint, even though we really could just try to detect it
+	return true;	// Always repaint, even though we could try to detect it
 }
 
 Gump *BarkGump::OnMouseDown(int button, int mx, int my)
@@ -117,7 +170,13 @@ Gump *BarkGump::OnMouseDown(int button, int mx, int my)
 	if (g) return g;
 
 	// Scroll to next text, if possible
-	NextText();
+	if (!NextText()) {
+		if (speechlength) {
+			AudioProcess *ap = AudioProcess::get_instance();
+			if (ap) ap->stopSpeech(barked, speechshapenum, owner);
+		}
+		Close();
+	}
 	return this;
 }
 
@@ -127,6 +186,11 @@ void BarkGump::saveData(ODataSource* ods)
 
 	ods->write4(static_cast<uint32>(counter));
 	ods->write2(textwidget);
+	ods->write4(speechshapenum);
+	ods->write4(speechlength);
+	ods->write4(totaltextheight);
+	ods->write4(barked.size());
+	ods->write(barked.c_str(), barked.size());
 }
 
 bool BarkGump::loadData(IDataSource* ids, uint32 version)
@@ -135,6 +199,21 @@ bool BarkGump::loadData(IDataSource* ids, uint32 version)
 
 	counter = static_cast<sint32>(ids->read4());
 	textwidget = ids->read2();
+	speechshapenum = ids->read4();
+	speechlength = ids->read4();
+	totaltextheight = ids->read4();
+
+	uint32 slen = ids->read4();
+	if (slen > 0) {
+		char* buf = new char[slen+1];
+		ids->read(buf, slen);
+		buf[slen] = 0;
+		barked = buf;
+		delete[] buf;
+	} else {
+		barked = "";
+	}
+
 
 	TextWidget *widget = p_dynamic_cast<TextWidget*>
 		(GUIApp::get_instance()->getGump(textwidget));

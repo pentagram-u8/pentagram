@@ -296,6 +296,15 @@ bool AudioProcess::playSpeech(std::string &barked, int shapenum, ObjId objid)
 	return true;
 }
 
+uint32 AudioProcess::getSpeechLength(std::string &barked, int shapenum) const
+{
+	SpeechFlex *speechflex = GameData::get_instance()->getSpeechFlex(shapenum);
+	if (!speechflex) return 0;
+
+	return speechflex->getSpeechLength(barked);
+}
+
+
 void AudioProcess::stopSpeech(std::string &barked, int shapenum, ObjId objid)
 {
 	AudioMixer *mixer = AudioMixer::get_instance();

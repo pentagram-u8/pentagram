@@ -26,15 +26,15 @@ int SonarcAudioSample::OneTable[256];
 
 SonarcAudioSample::SonarcAudioSample(uint8 *buffer_, uint32 size_) : 
 	AudioSample(buffer_, size_),
-	dst_size(0), src_offset(0x20)
+	src_offset(0x20)
 
 {
 	if (!GeneratedOneTable) GenerateOneTable();
 
-	dst_size = *buffer;
-	dst_size |= *(buffer+1) << 8;
-	dst_size |= *(buffer+2) << 16;
-	dst_size |= *(buffer+3) << 24;
+	length = *buffer;
+	length |= *(buffer+1) << 8;
+	length |= *(buffer+2) << 16;
+	length |= *(buffer+3) << 24;
 
 	sample_rate  = *(buffer+4);
 	sample_rate |= *(buffer+5) << 8;
@@ -45,7 +45,7 @@ SonarcAudioSample::SonarcAudioSample(uint8 *buffer_, uint32 size_) :
 	uint32 frame_bytes = *(buffer+src_offset);
 	frame_bytes |= (*(buffer+src_offset+1)) << 8;
 
-	if (frame_bytes == 0x20 && dst_size > 32767) {
+	if (frame_bytes == 0x20 && length > 32767) {
 		src_offset += 0x100;
 	}
 
@@ -217,7 +217,7 @@ uint32 SonarcAudioSample::decompressFrame(void *DecompData, void *samples) const
 	SonarcDecompData *decomp = reinterpret_cast<SonarcDecompData *>(DecompData);
 
 	if (decomp->pos == buffer_size) return 0;
-	if (decomp->sample_pos == dst_size) return 0;
+	if (decomp->sample_pos == length) return 0;
 
 	// Get Frame size
 	uint32 frame_bytes  = *(buffer+decomp->pos);

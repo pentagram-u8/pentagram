@@ -66,6 +66,9 @@ public:
 	//! \return false if there is no more text to display
 	bool setupNextText();
 
+	//! reset the widget to the start of the text
+	void rewind();
+
 	//! get the text that's currently being displayed
 	//! \param start Returns the start of the text
 	//! \param end Returns the start of the remaining text

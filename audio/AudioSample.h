@@ -30,6 +30,7 @@ protected:
 	bool	stereo;
 	int		frame_size;
 	uint32	decompressor_size;
+	uint32	length;
 
 	uint32	buffer_size;
 	uint8	*buffer;
@@ -43,6 +44,9 @@ public:
 	inline bool isStereo() const { return stereo; }
 	inline uint32 getFrameSize() const { return frame_size; }
 	inline uint32 getDecompressorDataSize() const { return decompressor_size; }
+
+	//! get AudioSample length (in samples)
+	inline uint32 getLength() const { return length; }
 
 	virtual void initDecompressor(void *DecompData) const = 0;
 	virtual uint32 decompressFrame(void *DecompData, void *samples) const = 0;

@@ -77,6 +77,9 @@ public:
 	void stopSpeech(std::string &barked, int shapenum, ObjId objid);
 	bool isSpeechPlaying(std::string &barked, int shapenum);
 
+	//! get length (in milliseconds) of speech
+	uint32 getSpeechLength(std::string &barked, int shapenum) const;
+
 	//! play a sample (without storing a SampleInfo)
 	//! returns channel sample is played on, or -1
 	int playSample(Pentagram::AudioSample* sample, int priority, int loops);

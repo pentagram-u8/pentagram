@@ -31,6 +31,7 @@ RawAudioSample::RawAudioSample(uint8* buffer_, uint32 size_, uint32 rate_,
 	stereo = stereo_;
 	frame_size = 512;
 	decompressor_size = sizeof(RawDecompData);
+	length = size_;
 }
 
 RawAudioSample::~RawAudioSample()

@@ -33,7 +33,11 @@ public:
 	SpeechFlex(IDataSource* ds);
 	virtual ~SpeechFlex(void);
 
-	int	getIndexForPhrase(std::string &phrase, uint32 start,uint32& end) const;
+	int	getIndexForPhrase(const std::string &phrase,
+						  uint32 start, uint32& end) const;
+
+	//! get total length (in milliseconds) of speech for a phrase
+	uint32 getSpeechLength(const std::string &phrase);
 };
 
 #endif

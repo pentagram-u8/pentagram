@@ -41,7 +41,6 @@ class SonarcAudioSample : public AudioSample
 						uint8* dest, const uint8* factors);
 	static int audio_decode(const uint8* source, uint8* dest);
 
-	uint32		dst_size;
 	uint32		src_offset;
 
 public:
