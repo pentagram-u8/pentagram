@@ -204,7 +204,7 @@ bool idMan::load(IDataSource* ds)
 	end = ds->read2();
 	max_end = ds->read2();
 	startcount = ds->read2();
-	usedcount = ds->read2();
+	uint16 realusedcount = ds->read2();
 
 	ids.resize(end+1);
 
@@ -218,6 +218,8 @@ bool idMan::load(IDataSource* ds)
 		clearID(cur);
 		cur = ds->read2();
 	}
+
+	usedcount = realusedcount;
 
 	return true;
 }
