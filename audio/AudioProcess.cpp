@@ -95,6 +95,9 @@ bool AudioProcess::continueSpeech(SampleInfo& si)
 	// hack to prevent playSample from deleting 'si'
 	si.channel = -1;
 	int channel = playSample(sample,200,0);
+	if (channel == -1)
+		return false;
+
 	si.channel = channel;
 	return true;
 }
