@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -45,6 +45,13 @@ Game* Game::createGame(GameInfo* info)
 	default:
 		CANT_HAPPEN_MSG("createGame: invalid game");
 	}
+
+	return 0;
+}
+
+uint32 Game::I_playEndgame(const uint8* args, unsigned int /*argsize*/)
+{
+	Game::get_instance()->playEndgameMovie();
 
 	return 0;
 }

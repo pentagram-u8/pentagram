@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -45,6 +45,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "HealProcess.h"
 #include "InverterProcess.h"
 #include "AudioProcess.h"
+#include "Game.h"
 
 // Ultima 8 Intrinsics
 Intrinsic U8Intrinsics[] = {
@@ -291,7 +292,7 @@ Intrinsic U8Intrinsics[] = {
 	PaletteFaderProcess::I_lightningBolt,
 	PaletteFaderProcess::I_fadeToWhite,
 	PaletteFaderProcess::I_fadeFromWhite,
-	0, // playEndgame
+	Game::I_playEndgame,
 	HealProcess::I_feedAvatar,
 	MainActor::I_accumulateStrength,
 	MainActor::I_accumulateIntelligence,

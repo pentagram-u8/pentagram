@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define GAME_H
 
 #include "GameInfo.h"
+#include "intrinsics.h"
 class ODataSource;
 
 class Game {
@@ -47,6 +48,8 @@ public:
 	virtual void playQuotes()=0;
 
 	static Game* createGame(GameInfo* info);
+
+	INTRINSIC(I_playEndgame);
 
 protected:
 	static Game* game;
