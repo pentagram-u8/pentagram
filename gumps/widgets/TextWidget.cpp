@@ -119,6 +119,7 @@ void TextWidget::saveData(ODataSource* ods)
 	Gump::saveData(ods);
 
 	ods->write4(static_cast<uint32>(fontnum));
+	ods->write4(blendColour);
 	ods->write4(static_cast<uint32>(current_start));
 	ods->write4(static_cast<uint32>(current_end));
 	ods->write4(static_cast<uint32>(targetwidth));
@@ -133,6 +134,7 @@ bool TextWidget::loadData(IDataSource* ids, uint32 version)
 	if (!Gump::loadData(ids, version)) return false;
 
 	fontnum = static_cast<int>(ids->read4());
+	blendColour = ids->read4();
 	current_start = static_cast<int>(ids->read4());
 	current_end = static_cast<int>(ids->read4());
 	targetwidth = static_cast<int>(ids->read4());

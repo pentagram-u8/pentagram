@@ -270,6 +270,7 @@ MiniStatsGump: (v1)
 TextWidget: (v1)
 <Gump>
 sint32 fontnum
+uint32 blendColour
 sint32 current_start
 sint32 current_end
 sint32 targetwidth
@@ -288,6 +289,7 @@ uint16 shape_downFlexId
 uint32 shape_downNum
 uint32 framenum_down
 uint16 textwidget
+uint32 mouseOverBlendCol
 uint8 mouseOver (boolean)
 
 SlidingWidget: (v1)

@@ -192,6 +192,8 @@ void ButtonWidget::saveData(ODataSource* ods)
 	ods->write4(shapenum);
 	ods->write4(framenum_up);
 
+	flex = 0;
+	shapenum = 0;
 	if (shape_down)
 	{
 		shape_down->getShapeId(flex, shapenum);
@@ -200,6 +202,7 @@ void ButtonWidget::saveData(ODataSource* ods)
 	ods->write4(shapenum);
 	ods->write4(framenum_down);
 	ods->write2(textwidget);
+	ods->write4(mouseOverBlendCol);
 
 	uint8 m = (mouseOver ? 1 : 0);
 	ods->write1(m);
@@ -227,6 +230,7 @@ bool ButtonWidget::loadData(IDataSource* ids, uint32 version)
 	}
 	framenum_down = ids->read4();
 	textwidget = ids->read2();
+	mouseOverBlendCol = ids->read4();
 	mouseOver = (ids->read1() != 0);
 
 	return true;
