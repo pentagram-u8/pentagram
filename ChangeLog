@@ -1,3 +1,7 @@
+2003-06-19  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/SoftRenderSurface.cpp, graphics/Font.cpp: fixed crash
+	  with French version of U8
+
 2003-06-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCMachine.cpp: cleaned up item loop a bit
 	* usecode/UCMachine.cpp: semi-fixed push/pop global

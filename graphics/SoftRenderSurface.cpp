@@ -228,7 +228,7 @@ template<class uintX> void SoftRenderSurface<uintX>::Blit(Texture *tex, sint32 s
 
 template<class uintX> void SoftRenderSurface<uintX>::PrintChar(Font * f, char character, int x, int y)
 {
-	Paint(f, static_cast<uint32>(character), x, y);
+	Paint(f, static_cast<unsigned char>(character), x, y);
 }
 
 template<class uintX> void SoftRenderSurface<uintX>::PrintText(Font * f, const char* s, int x, int y)
@@ -243,7 +243,7 @@ template<class uintX> void SoftRenderSurface<uintX>::PrintText(Font * f, const c
 		}
 		else if (*s != '\r')
 		{
-			Paint(f, static_cast<uint32>(*s), x, y);
+			Paint(f, static_cast<unsigned char>(*s), x, y);
 			x += f->getWidth(*s)-f->getHlead();
 		}
 		s++;

@@ -25,7 +25,7 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(Font,Shape);
 sint32 Font::getWidth(char c)
 {
 	// just return framewidth, or do we need to use hlead too?
-	return getFrame(static_cast<uint32>(c))->width;
+	return getFrame(static_cast<unsigned char>(c))->width;
 }
 
 sint32 Font::getHeight()
