@@ -122,7 +122,7 @@ void TextWidget::PaintThis(RenderSurface*surf, sint32 lerp_factor)
 
 	if (!cached_text) {
 		unsigned int remaining;
-		cached_text = font->renderText(text.substr(current_start, current_end-current_start), remaining, 180, 0);
+		cached_text = font->renderText(text.substr(current_start, current_end-current_start), remaining, targetwidth, targetheight);
 	}
 	cached_text->draw(surf, 0, 0);
 //	surf->PrintText(font, text.c_str(), 0, 0);

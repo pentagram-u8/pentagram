@@ -1,5 +1,6 @@
 2004-01-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* docs/u8encoding.txt: U8's character encoding
+	* gumps/widgets/TextWidget.cpp: use correct width/height when rendering
 
 2004-01-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* GUIApp.cpp, TextWidet.cpp: don't crash if @data/VeraBd.ttf not found
