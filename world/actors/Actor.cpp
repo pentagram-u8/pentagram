@@ -37,14 +37,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "DelayProcess.h"
 #include "ResurrectionProcess.h"
 #include "DeleteActorProcess.h"
+#include "ClearFeignDeathProcess.h"
+#include "PathfinderProcess.h"
 #include "Shape.h"
 
 #include "ItemFactory.h"
 #include "LoopScript.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
-
-#include "PathfinderProcess.h"
 
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(Actor,Container);
@@ -1068,7 +1068,6 @@ uint32 Actor::I_clrWithstandDeath(const uint8* args, unsigned int /*argsize*/)
 	return 0;
 }
 
-
 uint32 Actor::I_isFeignDeath(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ACTOR_FROM_PTR(actor);
@@ -1078,6 +1077,49 @@ uint32 Actor::I_isFeignDeath(const uint8* args, unsigned int /*argsize*/)
 		return 1;
 	else
 		return 0;
+}
+
+uint32 Actor::I_setFeignDeath(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	if (!actor) return 0;
+
+	if (actor->getActorFlags() & ACT_FEIGNDEATH)
+		return 0;
+
+	actor->setActorFlag(ACT_FEIGNDEATH);
+
+	ProcId animfallpid = actor->doAnim(Animation::die, 8);
+	Process* animfallproc = Kernel::get_instance()->getProcess(animfallpid);
+	assert(animfallproc);
+
+	ProcId animstandpid = actor->doAnim(Animation::standUp, 8);
+	Process* animstandproc = Kernel::get_instance()->getProcess(animstandpid);
+	assert(animstandproc);
+
+	Process* delayproc = new DelayProcess(900); // 30 seconds
+	Kernel::get_instance()->addProcess(delayproc);
+	
+	Process* clearproc = new ClearFeignDeathProcess(actor);
+	Kernel::get_instance()->addProcess(clearproc);
+	
+	// do them in order (fall, stand, wait, clear)
+
+	clearproc->waitFor(delayproc);
+	delayproc->waitFor(animstandproc);
+	animstandproc->waitFor(animfallproc);
+
+	return 0;
+}
+
+uint32 Actor::I_clrFeignDeath(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	if (!actor) return 0;
+
+	actor->clearActorFlag(ACT_FEIGNDEATH);
+
+	return 0;
 }
 
 uint32 Actor::I_pathfindToItem(const uint8* args, unsigned int /*argsize*/)

@@ -161,6 +161,8 @@ public:
 	INTRINSIC(I_setWithstandDeath);
 	INTRINSIC(I_clrWithstandDeath);
 	INTRINSIC(I_isFeignDeath);
+	INTRINSIC(I_setFeignDeath);
+	INTRINSIC(I_clrFeignDeath);
 	INTRINSIC(I_areEnemiesNear);
 	INTRINSIC(I_isBusy);
 	INTRINSIC(I_createActor);

@@ -75,6 +75,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ResurrectionProcess.h"
 #include "DeleteActorProcess.h"
 #include "SplitItemProcess.h"
+#include "ClearFeignDeathProcess.h"
 
 #include "MovieGump.h"
 
@@ -255,6 +256,8 @@ void GUIApp::startup()
 							 ProcessLoader<DeleteActorProcess>::load);
 	kernel->addProcessLoader("SplitItemProcess",
 							 ProcessLoader<SplitItemProcess>::load);
+	kernel->addProcessLoader("ClearFeignDeathProcess",
+							 ProcessLoader<ClearFeignDeathProcess>::load);
 
 	gamedata = new GameData();
 

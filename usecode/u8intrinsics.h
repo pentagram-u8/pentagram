@@ -203,8 +203,8 @@ Intrinsic U8Intrinsics[] = {
 	Actor::I_setWithstandDeath,
 	Actor::I_clrWithstandDeath,
 	Actor::I_isFeignDeath,
-	0, // Npc::setFeignDeath
-	0, // Npc::clrFeignDeath
+	Actor::I_setFeignDeath,
+	Actor::I_clrFeignDeath,
 	0, //U
 	0, //U
 	0, //U
@@ -277,8 +277,8 @@ Intrinsic U8Intrinsics[] = {
 	GUIApp::I_getTimeInMinutes,
 	GUIApp::I_getTimeInSeconds,
 	GUIApp::I_setTimeInGameHours,
-	0, // SetTimeInMinutes
-	0, // SetTimeInSeconds
+	0, // U (SetTimeInMinutes)
+	0, // U (SetTimeInSeconds)
 	PaletteFaderProcess::I_fadeToBlack,
 	PaletteFaderProcess::I_fadeFromBlack,
 	// 0x0E0

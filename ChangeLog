@@ -3,6 +3,8 @@
 	* world/Item.*: the schedule usecode event takes a uint32 time argument
 	* world/actors/Actor.*: schedule intrinsic
 	* kernel/GUIApp.*: export getGameTimeInSeconds function
+	* world/actors/ClearFeignDeathProcess.*: ClearFeignDeathProcess
+	* world/actors/Actor.*: {set,clr}FeignDeath intrinsics
 
 2004-08-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.*: Item::ascend intrinsic
