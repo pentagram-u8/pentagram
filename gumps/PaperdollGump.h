@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003  The Pentagram Team
+ *  Copyright (C) 2003-2004  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,8 @@
 
 #include "ContainerGump.h"
 
+class RenderedText;
+
 class PaperdollGump : public ContainerGump
 {
 public:
@@ -36,9 +38,6 @@ public:
 
 	// Paint this Gump
 	virtual void PaintThis(RenderSurface*, sint32 lerp_factor);
-
-	//! Paint the stats
-	void PaintStats(RenderSurface*, sint32 lerp_factor);
 
 	virtual void ChildNotify(Gump *child, uint32 message);
 
@@ -66,6 +65,16 @@ public:
 	bool loadData(IDataSource* ids);
 protected:
 	virtual void saveData(ODataSource* ods);
+
+	//! Paint the stats
+	void PaintStats(RenderSurface*, sint32 lerp_factor);
+
+	//! Paint a single stat
+	void PaintStat(RenderSurface* surf, unsigned int n,
+				   std::string text, int val);
+
+	RenderedText* cached_text[14]; // constant!!
+	int cached_val[7]; // constant!!
 
 	uint16 statbuttongid;
 };

@@ -83,7 +83,8 @@ static const int statbuttony = 84;
 PaperdollGump::PaperdollGump()
 	: ContainerGump()
 {
-
+	for (int i = 0; i < 14; ++i) // ! constant
+		cached_text[i] = 0;
 }
 
 PaperdollGump::PaperdollGump(Shape* shape_, uint32 framenum_, uint16 owner,
@@ -91,11 +92,16 @@ PaperdollGump::PaperdollGump(Shape* shape_, uint32 framenum_, uint16 owner,
 	: ContainerGump(shape_, framenum_, owner, Flags_, layer)
 {
 	statbuttongid = 0;
+	for (int i = 0; i < 14; ++i) // ! constant
+		cached_text[i] = 0;
 }
 
 PaperdollGump::~PaperdollGump()
 {
-
+	for (int i = 0; i < 14; ++i) { // ! constant
+		delete cached_text[i];
+		cached_text[i] = 0;
+	}
 }
 
 void PaperdollGump::InitGump()
@@ -112,6 +118,32 @@ void PaperdollGump::InitGump()
 	AddChild(widget);
 }
 
+void PaperdollGump::PaintStat(RenderSurface* surf, unsigned int n,
+							  std::string text, int val)
+{
+	assert(n < 7); // constant!
+
+	ShapeFont* font = GameData::get_instance()->getFonts()->getFont(statfont);
+	ShapeFont* descfont = GameData::get_instance()->
+		getFonts()->getFont(statdescfont);
+	char buf[16]; // enough for uint32
+	unsigned int remaining;
+
+	if (!cached_text[2*n])
+		cached_text[2*n] = descfont->renderText(text, remaining,
+												statdescwidth, statheight,
+												Pentagram::Font::TEXT_RIGHT);
+	cached_text[2*n]->draw(surf, statcoords[n].xd, statcoords[n].y);
+
+	if (!cached_text[2*n+1] || cached_val[n] != val) {
+		delete cached_text[2*n+1];
+		sprintf(buf, "%d", val);
+		cached_text[2*n+1] = font->renderText(buf, remaining,
+											  statwidth, statheight,
+											  Pentagram::Font::TEXT_RIGHT);
+	}
+	cached_text[2*n+1]->draw(surf, statcoords[n].x, statcoords[n].y);
+}
 
 void PaperdollGump::PaintStats(RenderSurface* surf, sint32 lerp_factor)
 {
@@ -123,62 +155,13 @@ void PaperdollGump::PaintStats(RenderSurface* surf, sint32 lerp_factor)
     //       German : KRAFT,INTELL.,GESCH.,R\"UST.,TREFF.,MANA,LAST
 	//       Spanish: FUE,INT,DES,ARMR,PNTS,MANA,PESO
 
-	ShapeFont* font = GameData::get_instance()->getFonts()->getFont(statfont);
-	ShapeFont* descfont = GameData::get_instance()->
-		getFonts()->getFont(statdescfont);
-	char buf[16]; // enough for uint32
-	RenderedText* rendtext;
-	unsigned int remaining;
-
-	sprintf(buf, "%d", a->getStr());
-	rendtext = font->renderText(buf, remaining, statwidth, statheight,
-							   Pentagram::Font::TEXT_RIGHT);
-	rendtext->draw(surf, statcoords[0].x, statcoords[0].y);
-	delete rendtext;
-
-#if 0
-	// TODO: hardcoded text!! (needs different languages)
-	rendtext = descfont->renderText("STR", remaining, statdescwidth,statheight,
-									Pentagram::Font::TEXT_RIGHT);
-	rendtext->draw(surf, statcoords[0].xd, statcoords[0].y);
-	delete rendtext;
-#endif
-
-	sprintf(buf, "%d", a->getInt());
-	rendtext = font->renderText(buf, remaining, statwidth, statheight,
-							   Pentagram::Font::TEXT_RIGHT);
-	rendtext->draw(surf, statcoords[1].x, statcoords[1].y);
-	delete rendtext;
-
-	sprintf(buf, "%d", a->getDex());
-	rendtext = font->renderText(buf, remaining, statwidth, statheight,
-							   Pentagram::Font::TEXT_RIGHT);
-	rendtext->draw(surf, statcoords[2].x, statcoords[2].y);
-	delete rendtext;
-
-	sprintf(buf, "%d", a->getArmourClass());
-	rendtext = font->renderText(buf, remaining, statwidth, statheight,
-							   Pentagram::Font::TEXT_RIGHT);
-	rendtext->draw(surf, statcoords[3].x, statcoords[3].y);
-	delete rendtext;
-
-	sprintf(buf, "%d", a->getHP());
-	rendtext = font->renderText(buf, remaining, statwidth, statheight,
-							   Pentagram::Font::TEXT_RIGHT);
-	rendtext->draw(surf, statcoords[4].x, statcoords[4].y);
-	delete rendtext;
-
-	sprintf(buf, "%d", a->getMana());
-	rendtext = font->renderText(buf, remaining, statwidth, statheight,
-							   Pentagram::Font::TEXT_RIGHT);
-	rendtext->draw(surf, statcoords[5].x, statcoords[5].y);
-	delete rendtext;
-
-	sprintf(buf, "%d", a->getTotalWeight());
-	rendtext = font->renderText(buf, remaining, statwidth, statheight,
-							   Pentagram::Font::TEXT_RIGHT);
-	rendtext->draw(surf, statcoords[6].x, statcoords[6].y);
-	delete rendtext;
+	PaintStat(surf, 0, "STR", a->getStr());
+	PaintStat(surf, 1, "INT", a->getInt());
+	PaintStat(surf, 2, "DEX", a->getDex());
+	PaintStat(surf, 3, "ARMR", a->getArmourClass());
+	PaintStat(surf, 4, "HITS", a->getHP());
+	PaintStat(surf, 5, "MANA", a->getMana());
+	PaintStat(surf, 6, "WGHT", a->getTotalWeight());
 }
 
 void PaperdollGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)

@@ -1,4 +1,7 @@
 2004-05-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/PaperdollGump.*: output stat descriptions
+
+2004-05-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* configure.ac: use AC_CONFIG_HEADERS instead of AM_CONFIG_HEADER
 	* acinclude.m4: include AM_PATH_SDL macro
 	* graphics/Texture.h: initialize format
