@@ -41,18 +41,18 @@ public:
 	//! \param item The item to check
 	//! \param checkwghtvol Need to check weight and volume?
 	//! \return true if item can be added, false if not
-	bool CanAddItem(Item* item, bool checkwghtvol=false);
+	virtual bool CanAddItem(Item* item, bool checkwghtvol=false);
 
 	//! Add an item to the container
 	//! \param item The item to add
 	//! \param checkwghtvol Need to check weight and volume?
 	//! \return true if item was added, false if failed
-	bool AddItem(Item* item, bool checkwghtvol=false);
+	virtual bool AddItem(Item* item, bool checkwghtvol=false);
 
 	//! Remove an item from the container
 	//! \param item The item to remove
 	//! \return true if succesful, false if item wasn't in container
-	bool RemoveItem(Item* item);
+	virtual bool RemoveItem(Item* item);
 
 	//! Remove all contents, moving them to this container's
 	//! parent. (Or into the world if this container has no parent.)

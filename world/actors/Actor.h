@@ -58,6 +58,12 @@ public:
 
 	virtual void teleport(int mapnum, sint32 x, sint32 y, sint32 z);
 
+	virtual bool CanAddItem(Item* item, bool checkwghtvol=false);
+	virtual bool AddItem(Item* item, bool checkwghtvol=false);
+	virtual bool RemoveItem(Item* item);
+
+	uint16 getEquip(uint32 type);
+
 	virtual uint16 assignObjId(); // assign an NPC objid
 
 	bool loadData(IDataSource* ids);
@@ -93,6 +99,7 @@ public:
 	INTRINSIC(I_isFeignDeath);
 	INTRINSIC(I_isBusy);
 	INTRINSIC(I_createActor);
+	INTRINSIC(I_getEquip);
 
 	enum {
 		ACT_INVINCIBLE     = 0x000001, // flags from npcdata byte 0x1B

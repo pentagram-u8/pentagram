@@ -229,7 +229,7 @@ Intrinsic U8Intrinsics[] = {
 	// 0x0B0
 	0, // Npc::getAirWalkEnabled
 	0, // Npc::schedule
-	0, // Npc::getEquip
+	Actor::I_getEquip,
 	0, // Npc::setEquip
 	0, // closeAllGumps
 	CameraProcess::I_scrollTo, //!! process Camera::scrollTo(uword, uword, ubyte, word)

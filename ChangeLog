@@ -6,6 +6,10 @@
 	* world/Object.cpp, world/Item.cpp: changed Object/Item savegame format
 	* world/GlobEgg.*, world/Item.cpp: don't save unchanged in-glob items
 	* usecode/UCMachine.cpp, usecode/BitSet.cpp: some bugfixes
+	* world/actors/Actor.*: equipment
+	* kernel/GUIApp.cpp: give Avatar backpack and some money at the start
+	* kernel/GUIApp.cpp: i, b, r shortcuts
+	* world/Item.cpp: some legalCreateInCont changes
 
 2003-07-06  Max Horn <max@quendi.de>
 	* audio/midi/CoreAudioMidiDriver.*: Fixed some GCC 3.3 warnings;

@@ -1513,13 +1513,16 @@ uint32 Item::I_legalCreateInCont(const uint8* args, unsigned int /*argsize*/)
 	ARG_UC_PTR(itemptr); // need to store the item id at *itemptr
 	ARG_UINT16(shape);
 	ARG_UINT16(frame);
-	ARG_UINT16(container_id);
 	ARG_CONTAINER_FROM_ID(container);
 	ARG_UINT16(unknown); // ?
 
-	//! haven't checked if this does what it should do.
-	// It just creates an item, tries to add it to the given container.
-	// If it first, return id; otherwise return 0.
+	uint8 buf[2];
+	buf[0] = 0;
+	buf[1] = 0;
+	UCMachine::get_instance()->assignPointer(itemptr, buf, 2);
+
+	// Create an item and try to add it to the given container.
+	// If it fits, return id; otherwise return 0.
 
 	Item* newitem = ItemFactory::createItem(shape, frame, 0, 0, 0, 0, 0);
 	if (!newitem) {
@@ -1539,6 +1542,8 @@ uint32 Item::I_legalCreateInCont(const uint8* args, unsigned int /*argsize*/)
 
 		return objID;
 	} else {
+		perr << "I_legalCreateInCont failed to add item to container (" 
+			 << container->getObjId() << ")" << std::endl;
 		// failed to add; clean up
 		delete newitem;
 

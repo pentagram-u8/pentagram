@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "World.h"
 #include "ActorAnimProcess.h"
 #include "CurrentMap.h"
+#include "ShapeInfo.h"
 #include "ItemFactory.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -60,6 +61,72 @@ uint16 Actor::assignObjId()
 	return objid;
 }
 
+bool Actor::CanAddItem(Item* item, bool checkwghtvol)
+{
+	const unsigned int backpack_shape = 529; //!! *cough* constant
+
+	if (!Container::CanAddItem(item, checkwghtvol)) return false;
+	if (item->getParent() == this) return true; // already in here
+
+	// now check 'equipment slots'
+	// we can have one item of each equipment type, plus one backpack
+
+	uint32 equiptype = item->getShapeInfo()->equiptype;
+	bool backpack = (item->getShape() == backpack_shape);
+
+	// valid item type?
+	if (equiptype == ShapeInfo::SE_NONE && !backpack) return false;
+
+	std::list<Item*>::iterator iter;
+	for (iter = contents.begin(); iter != contents.end(); ++iter)
+	{
+		uint32 cet = (*iter)->getShapeInfo()->equiptype;
+		bool cbackpack = ((*iter)->getShape() == backpack_shape);
+
+		// already have an item with the same equiptype
+		if (cet == equiptype || (cbackpack && backpack)) return false;
+	}
+
+	return true;
+}
+
+bool Actor::AddItem(Item* item, bool checkwghtvol)
+{
+	if (!Container::AddItem(item, checkwghtvol)) return false;
+
+	item->setFlag(FLG_EQUIPPED);
+
+	uint32 equiptype = item->getShapeInfo()->equiptype;
+	item->setZ(equiptype);
+
+	return true;
+}
+
+bool Actor::RemoveItem(Item* item)
+{
+	if (!Container::RemoveItem(item)) return false;
+
+	item->clearFlag(FLG_EQUIPPED);
+
+	return true;
+}
+
+uint16 Actor::getEquip(uint32 type)
+{
+	const unsigned int backpack_shape = 529; //!! *cough* constant
+
+	std::list<Item*>::iterator iter;
+	for (iter = contents.begin(); iter != contents.end(); ++iter)
+	{
+		uint32 cet = (*iter)->getShapeInfo()->equiptype;
+		bool cbackpack = ((*iter)->getShape() == backpack_shape);
+
+		if (cet == type || (cbackpack && type == 7)) // !! constant
+			return (*iter)->getObjId();
+	}
+
+	return 0;
+}
 
 void Actor::teleport(int newmap, sint32 newx, sint32 newy, sint32 newz)
 {
@@ -423,4 +490,13 @@ uint32 Actor::I_createActor(const uint8* args, unsigned int /*argsize*/)
 	perr << "I_createActor: created actor #" << objID << " with shape " << shape << std::endl;
 
 	return objID;
+}
+
+uint32 Actor::I_getEquip(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	ARG_UINT16(type);
+	if (!actor) return 0;
+
+	return actor->getEquip(type+1);
 }

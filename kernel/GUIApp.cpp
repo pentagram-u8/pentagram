@@ -61,6 +61,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GravityProcess.h"
 #include "MissileProcess.h"
 #include "TeleportToEggProcess.h"
+#include "ItemFactory.h"
 
 #include "DisasmProcess.h"
 #include "CompileProcess.h"
@@ -279,7 +280,7 @@ void GUIApp::init_midi()
 	new_driver = 0; // silence :-)
 #endif
 
-	// If the driver is a 'sample' producer we need to hook it to SDL_mixer
+	// If the driver is a 'sample' producer we need to hook it to SDL
 	if (new_driver)
 	{
 		new_driver->setGlobalVolume(midi_volume);
@@ -445,6 +446,18 @@ void GUIApp::U8Playground()
 	delete u8save;
 
 	Actor* av = world->getNPC(1);
+
+	// avatar needs a backpack ... CONSTANTs and all that
+	Container* backpack = p_dynamic_cast<Container*>(
+		ItemFactory::createItem(529, 0, 0, 0, 0, 0, Item::EXT_NOTINMAP));
+	// a little bonus :-)
+	Item* money = ItemFactory::createItem(143, 7, 500, 0,
+										  0, 0, Item::EXT_NOTINMAP);
+	backpack->AddItem(money);
+	money->setGumpLocation(40, 20);
+	backpack->assignObjId();
+	av->AddItem(backpack);
+
 //	av->teleport(40, 16240, 15240, 64); // central Tenebrae
 //	av->teleport(3, 11391, 1727, 64); // docks, near gate
 //	av->teleport(39, 16240, 15240, 64); // West Tenebrae
@@ -1153,6 +1166,39 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			item->getLocation(x,y,z);
 			pout << "19204: (" << x << "," << y << "," << z << ")" << std::endl;			
 		} break;
+		case SDLK_i: { // open inventory
+			if (avatarInStasis) {
+				pout << "Can't: avatarInStasis" << std::endl;
+				break;
+			}
+			MainActor* av = World::get_instance()->getMainActor();
+			av->callUsecodeEvent_use();
+		} break;
+		case SDLK_b: { // open backpack
+			if (avatarInStasis) {
+				pout << "Can't: avatarInStasis" << std::endl;
+				break;
+			}			MainActor* av = World::get_instance()->getMainActor();
+			Item* backpack = World::get_instance()->getItem(av->getEquip(7));
+			if (backpack)
+				backpack->callUsecodeEvent_use();
+		} break;
+		case SDLK_r: { // use recall item
+			if (avatarInStasis) {
+				pout << "Can't: avatarInStasis" << std::endl;
+				break;
+			}
+			LOOPSCRIPT(script, LS_SHAPE_EQUAL(833)); // constant...
+			MainActor* av = World::get_instance()->getMainActor();
+			UCList uclist(2);
+			av->containerSearch(&uclist, script, sizeof(script), true);
+			if (uclist.getSize() < 1) {
+				perr << "No recall item found!" << std::endl;
+			}
+			uint16 objid = uclist.getuint16(0);
+			Item* item = World::get_instance()->getItem(objid);
+			item->callUsecodeEvent_use();
+		} break;
 		case SDLK_f: { // trigger 'first' egg
 			if (avatarInStasis) {
 				pout << "Can't: avatarInStasis" << std::endl;
@@ -1325,46 +1371,54 @@ bool GUIApp::loadGame(std::string filename)
 	objectmanager->reset();
 	kernel->reset();
 
+	bool ok = true;
+
 	// TODO: reset mouse state in GUIApp
 
  	// and load everything back (order matters)
 	IDataSource* ds;
 
+
 	// UCSTRINGS, UCGLOBALS, UCLISTS, APP don't depend on anything else,
 	// so load these first
 	ds = sg->get_datasource("UCSTRINGS");
-	ucmachine->loadStrings(ds);
+	ok &= ucmachine->loadStrings(ds);
 	delete ds;
 
 	ds = sg->get_datasource("UCGLOBALS");
-	ucmachine->loadGlobals(ds);
+	ok &= ucmachine->loadGlobals(ds);
 	delete ds;
 
 	ds = sg->get_datasource("UCLISTS");
-	ucmachine->loadLists(ds);
+	ok &= ucmachine->loadLists(ds);
 	delete ds;
 
 	ds = sg->get_datasource("APP");
-	load(ds);
+	ok &= load(ds);
 	delete ds;
 
 	// KERNEL must be before OBJECTS, for the egghatcher
 	ds = sg->get_datasource("KERNEL");
-	kernel->load(ds);
+	ok &= kernel->load(ds);
 	delete ds;
 
 	// WORLD must be before OBJECTS, for the egghatcher
 	ds = sg->get_datasource("WORLD");
-	world->load(ds);
+	ok &= world->load(ds);
 	delete ds;
 
 	ds = sg->get_datasource("OBJECTS");
-	objectmanager->load(ds);
+	ok &= objectmanager->load(ds);
 	delete ds;
 
 	ds = sg->get_datasource("MAPS");
-	world->loadMaps(ds);
+	ok &= world->loadMaps(ds);
 	delete ds;
+
+	if (!ok) {
+		perr << "Loading failed!" << std::endl;
+		exit(1);
+	}
 
 	//!! temporary hack: reset desktopgump, gamemapgump, consolegump:
 	desktopGump = 0;
@@ -1385,7 +1439,6 @@ bool GUIApp::loadGame(std::string filename)
 	assert(consoleGump);
 
 	pout << "Done" << std::endl;
-
 
 	delete sg;
 	return false;

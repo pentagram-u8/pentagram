@@ -66,6 +66,9 @@ public:
 	//! Get this Item's Z coordinate.
 	sint32 getZ() const;
 
+	//! Set this Item's Z coordinate
+	void setZ(sint32 z_) { z = z_; }
+
 	//! Get this Item's location in a ContainerGump. Undefined if the Item 
 	//! is not in a Container.
 	void getGumpLocation(sint32& x, sint32& y) const;
