@@ -1,3 +1,16 @@
+2003-06-18	  Ryan Nunn <colourles@users.sourceforge.net>
+	* gumps/ContainerGump.cpp, gumps/GameMapGump.*, kernel/Object.*, 
+	  world/Egg.cpp, world/Item.* : Changed things so callUsecodeEvent is 
+	  private. Added separate functions to call each event. Added functions for
+	  all usecode events, including hit, gotHit, cast, AvatarStoleSomething and
+	  guardianBark that push args to the stack. Arg pushing is now supported
+	* world/CurrentMap.*,  : Added CurrentMap::sweepTest() to do more accurate
+	  collision detection. It will detect things that are being touched, even 
+	  if aren't trying to pass through it.
+	* kernel/GUIApp.cpp : Hacked in the calling gotHit when the avatar moves.
+	  By default this is OFF cause falling into water is annoying. 
+	  Toggle with 'h'.
+
 2003-06-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/ItemSorter.cpp: check for valid frame
 	* world/ItemMoveProcess.*: renamed ItemMoveProcess to MissileProcess

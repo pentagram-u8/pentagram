@@ -441,7 +441,7 @@ bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)
 
 
 
-uint32 Item::callUsecodeEvent(uint32 event)
+uint32 Item::callUsecodeEvent(uint32 event, const uint8* args, int argsize)
 {
 	uint32	class_id = shape;
 
@@ -455,9 +455,104 @@ uint32 Item::callUsecodeEvent(uint32 event)
 	uint32 offset = u->get_class_event(class_id, event);
 	if (!offset) return 0;
 
-	return callUsecode(static_cast<uint16>(class_id), static_cast<uint16>(offset), u);
+	//pout << "Item: " << objid << " calling usecode event " << event << " @ " << class_id << ":" << offset << std::endl;
+
+	return callUsecode(static_cast<uint16>(class_id), 
+						static_cast<uint16>(offset),
+						u, args, argsize);
 }
 
+uint32 Item::callUsecodeEvent_look()							// event 0
+{
+	return callUsecodeEvent(0);	// CONSTANT
+}
+
+uint32 Item::callUsecodeEvent_use()								// event 1
+{
+	return callUsecodeEvent(1);	// CONSTANT
+}
+
+uint32 Item::callUsecodeEvent_anim()							// event 2
+{
+	return callUsecodeEvent(2);	// CONSTANT
+}
+
+uint32 Item::callUsecodeEvent_cachein()							// event 4
+{
+	return callUsecodeEvent(4);	// CONSTANT
+}
+
+uint32 Item::callUsecodeEvent_hit(uint16 hitter, sint16 unk)	// event 5
+{
+	UCStack	arg_stack(4);
+	arg_stack.push2(unk);
+	arg_stack.push2(hitter);
+	return callUsecodeEvent(5, arg_stack.access(), 4);	// CONSTANT 5
+}
+
+uint32 Item::callUsecodeEvent_gotHit(uint16 hitter, sint16 unk)	// event 6
+{
+	UCStack	arg_stack(4);
+	arg_stack.push2(unk);
+	arg_stack.push2(hitter);
+	return callUsecodeEvent(6, arg_stack.access(), 4);	// CONSTANT 6
+}
+
+uint32 Item::callUsecodeEvent_hatch()							// event 7
+{
+	return callUsecodeEvent(7);		// CONSTANT
+}
+
+uint32 Item::callUsecodeEvent_schedule()						// event 8
+{
+	return callUsecodeEvent(8);		// CONSTANT
+}
+
+uint32 Item::callUsecodeEvent_release()							// event 9
+{
+	return callUsecodeEvent(9);		// CONSTANT
+}
+
+uint32 Item::callUsecodeEvent_combine()							// event C
+{
+	return callUsecodeEvent(0xC);	// CONSTANT
+}
+
+uint32 Item::callUsecodeEvent_enterFastArea()					// event F
+{
+	return callUsecodeEvent(0xF);	// CONSTANT
+}
+
+uint32 Item::callUsecodeEvent_leaveFastArea()					// event 10
+{
+	return callUsecodeEvent(0x10);	// CONSTANT
+}
+
+uint32 Item::callUsecodeEvent_cast(uint16 unk)					// event 11
+{
+	UCStack	arg_stack(2);
+	arg_stack.push2(unk);
+	return callUsecodeEvent(0x11, arg_stack.access(), 2); // CONSTANT 0x11
+}
+
+uint32 Item::callUsecodeEvent_justMoved()						// event 12
+{
+	return callUsecodeEvent(0x12);	// CONSTANT
+}
+
+uint32 Item::callUsecodeEvent_AvatarStoleSomething(uint16 unk)	// event 14
+{
+	UCStack	arg_stack(2);
+	arg_stack.push2(unk);
+	return callUsecodeEvent(0x14, arg_stack.access(), 2); // CONSTANT 0x14
+}
+
+uint32 Item::callUsecodeEvent_guardianBark(sint16 unk)			// event 15
+{
+	UCStack	arg_stack(2);
+	arg_stack.push2(unk);
+	return callUsecodeEvent(0x15, arg_stack.access(), 2); // CONSTANT 0x15
+}
 
 void Item::destroy()
 {
@@ -537,7 +632,7 @@ void Item::animateItem()
 
 
 	case 5:
-		callUsecodeEvent(0x02);	// CONSTANT
+		callUsecodeEvent_anim();
 		dirty = true;
 		break;
 
@@ -587,7 +682,7 @@ void Item::inFastArea(int even_odd, int framenum)
 	if (shape == 0x2c8) return;
 
 	// Call usecode here
-	callUsecodeEvent(0x0F);		// CONSTANT
+	callUsecodeEvent_enterFastArea();
 }
 
 // Called when an item is leaving the fast area
@@ -602,7 +697,7 @@ void Item::leavingFastArea()
 	flags &= ~FLG_FASTAREA;
 
 	// Call usecode here
-	callUsecodeEvent(0x10);		// CONSTANT
+	callUsecodeEvent_leaveFastArea();
 }
 
 void Item::clearGump()
@@ -963,8 +1058,7 @@ uint32 Item::I_look(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
-	// constant
-	return item->callUsecodeEvent(0);
+	return item->callUsecodeEvent_look();
 }
 
 uint32 Item::I_use(const uint8* args, unsigned int /*argsize*/)
@@ -972,8 +1066,7 @@ uint32 Item::I_use(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
-	// constant
-	return item->callUsecodeEvent(1);
+	return item->callUsecodeEvent_use();
 }
 
 uint32 Item::I_enterFastArea(const uint8* args, unsigned int /*argsize*/)
@@ -981,8 +1074,7 @@ uint32 Item::I_enterFastArea(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
-	// constant
-	return item->callUsecodeEvent(15);
+	return item->callUsecodeEvent_enterFastArea();
 }
 
 uint32 Item::I_ask(const uint8* args, unsigned int /*argsize*/)

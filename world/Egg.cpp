@@ -39,7 +39,7 @@ uint16 Egg::hatch()
 {
 	if (hatched) return 0;
 	hatched = true;
-	return callUsecodeEvent(7); //! constant
+	return callUsecodeEvent_hatch();
 }
 
 uint32 Egg::I_getEggXRange(const uint8* args, unsigned int /*argsize*/)

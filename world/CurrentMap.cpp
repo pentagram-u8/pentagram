@@ -151,7 +151,7 @@ void CurrentMap::loadItems(list<Item*> itemlist)
 		addItem(item);
 		
 		// Cachein (do for expanded objects too?)
-		item->callUsecodeEvent(4);	// CONSTANT 
+		item->callUsecodeEvent_cachein();
 
 		GlobEgg* globegg = p_dynamic_cast<GlobEgg*>(item);
 		if (globegg) {
@@ -182,13 +182,13 @@ void CurrentMap::loadMap(Map* map)
 		Actor* actor = World::get_instance()->getNPC(i);
 
 		// Schedule
-		if (actor) actor->callUsecodeEvent(8);	// CONSTANT 
+		if (actor) actor->callUsecodeEvent_schedule();
 
 		if (actor && actor->getMapNum() == getNum()) {
 			addItem(actor);
 
 			// Cachein
-			actor->callUsecodeEvent(4);	// CONSTANT 
+			actor->callUsecodeEvent_cachein();
 		}
 	}
 }
@@ -352,7 +352,7 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 	if (minx < 0) minx = 0;
 	if (maxx > 127) maxx = 127;
 	if (miny < 0) miny = 0;
-	if (miny > 127) maxy = 127;
+	if (maxy > 127) maxy = 127;
 
 	for (int cx = minx; cx <= maxx; cx++) {
 		for (int cy = miny; cy <= maxy; cy++) {
@@ -425,6 +425,172 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 
 	return valid;
 }
+
+// Do a sweepTest of an item from start to end point.
+// dims is the bounding box size.
+// item is the item that we are checking to move
+// solid_only forces us to check against solid items only.
+// skip will skip all items until item num skip is reached
+// Returns item hit or 0 if no hit.
+// end is set to the colision point
+uint16 CurrentMap::sweepTest(sint32 start[3], sint32 end[3], sint32 dims[3],
+								uint16 item, bool solid_only, uint16 skip)
+{
+
+	int i;
+
+	//! constants
+	int minx, miny, maxx, maxy;
+	minx = ((start[0]-dims[0])/512) - 1;
+	maxx = (start[0]/512) + 1;
+	miny = ((start[1]-dims[1])/512) - 1;
+	maxy = (start[1]/512) + 1;
+
+	{
+		//! constants
+		int dminx, dminy, dmaxx, dmaxy;
+		dminx = ((end[0]-dims[0])/512) - 1;
+		dmaxx = (end[0]/512) + 1;
+		dminy = ((end[1]-dims[1])/512) - 1;
+		dmaxy = (end[1]/512) + 1;
+		if (dminx < minx) minx = dminx;
+		if (dmaxx > maxx) maxx = dmaxx;
+		if (dminy < miny) miny = dminy;
+		if (dmaxy > maxy) maxy = dmaxy;
+	}
+
+	if (minx < 0) minx = 0;
+	if (maxx > 127) maxx = 127;
+	if (miny < 0) miny = 0;
+	if (maxy > 127) maxy = 127;
+
+	// Get velocity of item
+	sint32 vel[3];
+	sint32 ext[3];
+	for (i = 0; i < 3; i++) 
+	{
+		vel[i] = end[i] - start[i];
+		ext[i] = dims[i]/2;
+	}
+
+	// Centre of object
+	sint32 centre[3];
+	centre[0] = start[0] - ext[0];
+	centre[1] = start[1] - ext[1];
+	centre[2] = start[2] + ext[2];
+
+	//pout << "Sweeping from (" << centre[0] << ", " << centre[1] << ", " << centre[2] << ")" << std::endl;
+	//pout << "Sweeping to   (" << centre[0]+vel[0] << ", " << centre[1]+vel[1] << ", " << centre[2]+vel[2] << ")" << std::endl;
+	//pout << "Sweeping dims (" << ext[0] << ", " << ext[1] << ", " << ext[2] << ")" << std::endl;
+
+	uint16 item_hit = 0;
+	sint32 hit_time = 0x4000;	// 0 -> 16384
+
+	for (int cx = minx; cx <= maxx; cx++) {
+		for (int cy = miny; cy <= maxy; cy++) {
+			item_list::iterator iter;
+			for (iter = items[cx][cy].begin();
+				 iter != items[cx][cy].end(); ++iter)
+			{
+				Item* other_item = *iter;
+				if (other_item->getObjId()==item || skip)
+				{
+					if (other_item->getObjId()==skip) skip = 0;
+					continue;
+				}
+
+				// This WILL hit everything and return them unless solid_only 
+				// is set
+				if (solid_only && !other_item->getShapeInfo()->is_solid()) 
+					continue; 
+
+				sint32 other[3], oext[3];
+				other_item->getLocation(other[0], other[1], other[2]);
+				other_item->getFootpad(oext[0], oext[1], oext[2]);
+				oext[0] *= 16; oext[1] *= 16; oext[2] *= 4; //!! constants
+
+				// Put other into our coord frame
+				other[0] -= oext[0]+centre[0];
+				other[1] -= oext[1]+centre[1];
+				other[2] += oext[2]-centre[2];
+
+				// check start overlap
+				if ( abs(other[0]) <= (ext[0] + oext[0]) &&
+						abs(other[1]) <= (ext[1] + oext[1]) &&
+						abs(other[2]) <= (ext[2] + oext[2]))
+				{
+					// Already hit this so we return it
+					for (i = 0; i < 3; i++) end[i] = start[i];
+					//pout << "Hit item " << other_item->getObjId() << " at (" << 0 << ")" << std::endl;
+
+					return other_item->getObjId();
+				}
+
+				//first times of overlap along each axis
+				sint32 u_1[3] = {0,0,0};
+
+				//last times of overlap along each axis 
+				sint32 u_0[3] = {0x4000,0x4000,0x4000}; // CONSTANTS
+
+				//find the possible first and last times
+				//of overlap along each axis
+				for( long i=0 ; i<3 ; i++ )
+				{
+					sint32 A_max = ext[i];	
+					sint32 A_min = -ext[i];	
+					sint32 B_max = other[i]+oext[i];	
+					sint32 B_min = other[i]-oext[i];	
+
+					if( A_max<B_min && vel[i]<0 )
+					{
+						u_0[i] = ((A_max - B_min)*0x4000) / vel[i];
+					}
+					else if( B_max<A_min && vel[i]>0 )
+					{
+						u_0[i] = ((A_min - B_max)*0x4000) / vel[i];
+					}
+
+					if( B_max>A_min && vel[i]<0 )
+					{ 
+						u_1[i] = ((A_min - B_max)*0x4000) / vel[i]; 
+					}
+					else if( A_max>B_min && vel[i]>0 )
+					{
+						u_1[i] = ((A_max - B_min)*0x4000) / vel[i]; 
+					}
+				}
+
+				//possible first time of overlap
+				sint32 first = u_0[0];
+				if (u_0[1] > first) first = u_0[1];
+				if (u_0[2] > first) first = u_0[2];
+
+				//possible last time of overlap
+				sint32 last = u_1[0];
+				if (u_1[1] < last) last = u_1[1];
+				if (u_1[2] < last) last = u_1[2];
+
+				//they could have only collided if
+				//the first time of overlap occurred
+				//before the last time of overlap
+				if (first <= last && first < hit_time )
+				{
+					hit_time = first;
+					item_hit = other_item->getObjId();
+					//pout << "Hit item " << item_hit << " at (" << hit_time << ")" << std::endl;
+					//pout << "hit item      (" << other[0] << ", " << other[1] << ", " << other[2] << ")" << std::endl;
+				}
+			}
+		}
+	}
+
+	// Get the hit point
+	if (item_hit)
+		for (i = 0; i < 3; i++) end[i] = start[i] + (vel[i]*hit_time)/0x4000;
+
+	return item_hit;
+}
+
 
 uint32 CurrentMap::I_canExistAt(const uint8* args, unsigned int /*argsize*/)
 {

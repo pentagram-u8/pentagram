@@ -58,6 +58,15 @@ public:
 						 int xd, int yd, int zd, uint16 item,
 						 uint16* support=0, uint16* roof=0);
 
+	// Do a sweepTest of an item from start to end point.
+	// Bounding size is dims.
+	// item is the item that will be moving
+	// skip will skip all items until item num skip is reached
+	// Returns item hit or 0 if no hit.
+	// end is to the colision point
+	uint16 sweepTest(sint32 start[3], sint32 end[3], sint32 dims[3],
+						uint16 item, bool solid_only, uint16 skip=0);
+
 	TeleportEgg* findDestination(uint16 id);
 
 	// Not allowed to modify the list. Remember to use const_iterator

@@ -205,7 +205,7 @@ void ContainerGump::OnMouseClick(int button, int mx, int my)
 			pout << "Found item " << objID << " (shape " << item->getShape() << ", " << item->getFrame() << ", q:" << item->getQuality() << ", m:" << item->getMapNum() << ", n:" << item->getNpcNum() << ")" << std::endl;
 			
 			// call the 'look' event
-			item->callUsecodeEvent(0);	// CONSTANT
+			item->callUsecodeEvent_look();
 		}
 	}
 }
@@ -231,7 +231,7 @@ void ContainerGump::OnMouseDouble(int button, int mx, int my)
 			pout << "Found item " << objID << " (shape " << item->getShape() << ", " << item->getFrame() << ", q:" << item->getQuality() << ", m:" << item->getMapNum() << ", n:" << item->getNpcNum() << ")" << std::endl;
 			
 			// call the 'use' event
-			item->callUsecodeEvent(1);	// CONSTANT
+			item->callUsecodeEvent_use();
 		}		
 	}
 }

@@ -48,7 +48,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "UCList.h"
 #include "LoopScript.h"
-
 #include <SDL.h>
 
 #include "DisasmProcess.h"
@@ -405,6 +404,7 @@ public:
 	static  AvatarMoverProcess	*amp[6];
 	static	bool				clipping;
 	static	bool				quarter;
+	static	bool				hitting;
 
 	AvatarMoverProcess(int x, int y, int z, int _dir) : Process(1), dx(x), dy(y), dz(z), dir(_dir)
 	{
@@ -444,7 +444,32 @@ public:
 				dz /= 4;
 			}
 
+			sint32 start[3] = { x, y, z };
+			uint16 skip = 0;
+
+			//pout << "Avatar at (" << start[0] << ", " << start[1] << ", " << start[2] << ")" << std::endl;
+			//pout << "Avatar to (" << start[0]+dx << ", " << start[1]+dy << ", " << start[2]+dz << ")" << std::endl;
+
+			if (hitting) for (;;)
+			{
+				sint32 end[3] = { x+dx, y+dy, z+dz };
+				sint32 dims[3] = { ixd, iyd, izd };
+				uint16 hit = cm->sweepTest(start,end,dims,1,false,skip);
+
+				if (!hit) break;
+
+				//pout << "Hit item " << hit << " at (" << end[0] << ", " << end[1] << ", " << end[2] << ")" << std::endl;
+				start[0] = end[0];
+				start[1] = end[1];
+				start[2] = end[2];
+				skip = hit;
+
+				Item *item = World::get_instance()->getItem(hit);
+				item->callUsecodeEvent_gotHit(1,0);
+			}
+
 			while (dx || dy || dz) {
+
 				if (!clipping || cm->isValidPosition(x+dx,y+dy,z+dz,ixd,iyd,izd,1,0,0))
 				{
 					if (clipping && !dz)
@@ -492,6 +517,7 @@ public:
 AvatarMoverProcess	*AvatarMoverProcess::amp[6] = { 0, 0, 0, 0, 0, 0 };
 bool AvatarMoverProcess::clipping = false;
 bool AvatarMoverProcess::quarter = false;
+bool AvatarMoverProcess::hitting = false;
 
 void GUIApp::handleEvent(const SDL_Event& event)
 {
@@ -653,6 +679,10 @@ void GUIApp::handleEvent(const SDL_Event& event)
 				AvatarMoverProcess::clipping = !AvatarMoverProcess::clipping;
 				pout << "AvatarMoverProcess::clipping = " << AvatarMoverProcess::clipping << std::endl; 
 			} break;
+			case SDLK_h: {
+				AvatarMoverProcess::hitting = !AvatarMoverProcess::hitting;
+				pout << "AvatarMoverProcess::hitting = " << AvatarMoverProcess::hitting << std::endl; 
+			} break;
 			case SDLK_UP: {
 				if (!avatarInStasis) { 
 					Process *p = new AvatarMoverProcess(-64,-64,0,0);
@@ -692,6 +722,10 @@ void GUIApp::handleEvent(const SDL_Event& event)
 				} else { 
 					pout << "Can't: avatarInStasis" << std::endl; 
 				}
+			} break;
+			case SDLK_l: {
+				pout << "Flushing fast area" << std::endl; 
+				gameMapGump->FlushFastArea();
 			} break;
 			case SDLK_z: {
 				if (!avatarInStasis) { 

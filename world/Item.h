@@ -88,7 +88,23 @@ public:
 
 	virtual uint32 getTotalWeight(); // weight including contents (if any)
 	bool checkLoopScript(const uint8* script, uint32 scriptsize);
-	uint32 callUsecodeEvent(uint32 event);
+	
+	uint32 callUsecodeEvent_look();								// event 0
+	uint32 callUsecodeEvent_use();								// event 1
+	uint32 callUsecodeEvent_anim();								// event 2
+	uint32 callUsecodeEvent_cachein();							// event 4
+	uint32 callUsecodeEvent_hit(uint16 hitted, sint16 unk);		// event 5
+	uint32 callUsecodeEvent_gotHit(uint16 hitter, sint16 unk);	// event 6
+	uint32 callUsecodeEvent_hatch();							// event 7
+	uint32 callUsecodeEvent_schedule();							// event 8
+	uint32 callUsecodeEvent_release();							// event 9
+	uint32 callUsecodeEvent_combine();							// event C
+	uint32 callUsecodeEvent_enterFastArea();					// event F
+	uint32 callUsecodeEvent_leaveFastArea();					// event 10
+	uint32 callUsecodeEvent_cast(uint16 unk);					// event 11
+	uint32 callUsecodeEvent_justMoved();						// event 12
+	uint32 callUsecodeEvent_AvatarStoleSomething(uint16 unk);	// event 14
+	uint32 callUsecodeEvent_guardianBark(sint16 unk);			// event 15
 
 	inline void getLerped(sint32& x, sint32& y, sint32& z) const // Get lerped location
 		{ x = ix; y = iy; z = iz; }
@@ -229,6 +245,10 @@ protected:
 	uint16 gravitypid;		// Item's GravityTracker (or 0)
 
 private:
+
+	// Call a Usecode Event. Use the separate functions instead!
+	uint32 callUsecodeEvent(uint32 event, const uint8* args=0, int argsize=0);
+
 	Item* glob_next; // next item in glob
 
 	// The frame setupLerp was last called on

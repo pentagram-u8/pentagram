@@ -39,6 +39,8 @@ public:
 	GameMapGump(int x, int y, int w, int h);
 	virtual ~GameMapGump();
 
+	void				FlushFastArea();
+
 	virtual bool		Run(const uint32 framenum);
 
 	virtual void		MapChanged();

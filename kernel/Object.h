@@ -34,7 +34,7 @@ public:
 	virtual uint16 assignObjId(); //get and assign self (and contents) an objID
 	virtual void clearObjId(); // clear objID of self (and contents)
 
-	uint32 callUsecode(uint16 classid, uint16 offset, Usecode *u);
+	uint32 callUsecode(uint16 classid, uint16 offset, Usecode *u, const uint8* args=0, int argsize=0);
 
 protected:
 	uint16 objid;

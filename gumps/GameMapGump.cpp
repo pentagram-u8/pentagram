@@ -259,6 +259,28 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 	display_list->PaintDisplayList();
 }
 
+void GameMapGump::FlushFastArea()
+{
+	World *world = World::get_instance();
+	std::vector<uint16> *prev_fast = &fastAreas[fastArea];
+
+	// Now handle leaving the fast area
+	std::vector<uint16>::iterator it  = prev_fast->begin();
+	std::vector<uint16>::iterator end  = prev_fast->end();
+
+	for (;it != end; ++it)
+	{
+		Item *item = world->getItem(*it);
+
+		// Not an item, continue
+		if (!item) continue;
+
+		// Ok, we must leave te Fast area
+		item->leavingFastArea();
+	}
+	prev_fast->clear();
+}
+
 // Trace a click, and return ObjID
 uint16 GameMapGump::TraceObjID(int mx, int my)
 {
@@ -333,7 +355,7 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 				 << ")" << std::endl;
 			
 			// call the 'look' event
-			item->callUsecodeEvent(0);	// CONSTANT
+			item->callUsecodeEvent_look();
 		}
 		break;
 	}
@@ -388,7 +410,7 @@ void GameMapGump::OnMouseDouble(int button, int mx, int my)
 			//!! need to check range
 			
 			// call the 'use' event
-			item->callUsecodeEvent(1);	// CONSTANT
+			item->callUsecodeEvent_use();
 		}
 		break;
 	}
