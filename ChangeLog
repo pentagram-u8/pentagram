@@ -1,3 +1,7 @@
+2003-07-17  Dominik Reichardt <dominus@users.sourceforge.net>
+	* kernel/GUIApp.cpp: changed Quicksave/load to F7/F8 (like the original)
+	* readme: mentioned savegame keys
+
 2003-07-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* misc/idMan.*: moved idMan from kernel/ to misc/
 	* misc/idMan.*: doxygen; idMan now expands dynamically

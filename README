@@ -100,6 +100,9 @@ right mouse	: use item/talk to npc
 middle mouse	: feature test button :-) likely to change very often.
 		  At the moment it is an object "hurler"
 shift		: quarter speed mode. needs to be held down.
+F7		: Quicksave (savegames get broken a lot, so don't rely on that)
+F8		: Quickload
+
 
 HACKS TO SHOW OFF
 =================

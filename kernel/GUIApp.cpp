@@ -1172,10 +1172,10 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			if (!consoleGump->ConsoleIsVisible()) con.ScrollConsole(3); 
 			break;
 		}
-		case SDLK_F9: { // quicksave
+		case SDLK_F7: { // quicksave
 			saveGame("@work/quicksave");
 		} break;
-		case SDLK_F10: { // quickload
+		case SDLK_F8: { // quickload
 			loadGame("@work/quicksave");
 		} break;
 		case SDLK_s: { // toggle avatarInStasis
