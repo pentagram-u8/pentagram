@@ -1,3 +1,29 @@
+2003-05-14  Ryan Nunn <colourles@users.sourceforge.net>
+	* Lots of files: Getting rid of warning due to type conversion, unused
+	  args and other such stuff.
+	
+	* convert/u8/ConvertUsecodeU8.h : Marking processes, and fixing a few 
+	  miskates.
+	  
+	* graphics/ShapeInfo.h, graphics/TypeFlags.cpp : Added some new unknown
+	  typeflags.
+	  
+	* kernel/Application.cpp, misc/Console.* : Clicking an item will return its
+	  quality. Added ability to scroll console with Pageup and Pagedown.
+
+	* world/Item.cpp : Changed the NPC classid detecion in callUsecodeEvent 
+	  since npcs aren't the only items to have somehing in npcnum. Fixed up
+	  I_getTypeFlag which was seriously broken. The new code is horrible
+	  to look at.
+	  
+	* world/Item.h : Added FLG_MONSTER_NPC. But, I'm not sure if that is 
+	  correct.
+	  
+	* world/ItemSorter.cpp : Added a few consts. A few other minor changes.
+	
+	* usecode/u8intrinsics.h : All unimplemented processes should now be dummy 
+	  processes.
+
 2003-05-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.cpp: use quality+0x47F as usecode class for unkeggs
 	* usecode/UCMachine.*: some utility intrinsics

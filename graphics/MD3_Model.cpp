@@ -261,7 +261,7 @@ void MD3_Surface::FreeData()
 	delete [] texcoords;
 
 	// Just quickly fill with 0
-	memset(this, 0, sizeof(*this));
+	std::memset(this, 0, sizeof(*this));
 }
 
 //
@@ -368,7 +368,7 @@ bool MD3_Surface::Read(IDataSource *ds)
 MD3_Model::MD3_Model()
 {
 	// Just quickly fill with 0
-	memset(this, 0, sizeof(*this));
+	std::memset(this, 0, sizeof(*this));
 }
 
 // MD3Model Destructor
@@ -399,7 +399,7 @@ void MD3_Model::FreeData()
 	delete [] frameinfo;	
 
 	// Just quickly fill with 0
-	memset(this, 0, sizeof(*this));
+	std::memset(this, 0, sizeof(*this));
 }
 
 //
@@ -461,7 +461,7 @@ bool MD3_Model::Read(IDataSource *ds)
 	surfaces = new MD3_Surface[num_surfs];
 
 	// Clear buffer
-	memset (surfaces, 0, num_surfs*sizeof(MD3_Surface));
+	std::memset (surfaces, 0, num_surfs*sizeof(MD3_Surface));
 
 	// Read each surface
 	for (i = 0; i < num_surfs; i++) surfaces[i].Read(ds);

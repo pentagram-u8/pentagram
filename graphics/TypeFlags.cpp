@@ -85,8 +85,11 @@ void TypeFlags::load(IDataSource *ds)
 		si.animtype = data[4] & 0x0F;
 		si.animdata = data[4] >> 4;
 
+		si.unknown = data[5] & 0x0F;
 		if (data[5] & 0x10) si.flags |= ShapeInfo::SI_EDITOR;
 		if (data[5] & 0x20) si.flags |= ShapeInfo::SI_EXPLODE;
+		if (data[5] & 0x40) si.flags |= ShapeInfo::SI_UNKNOWN46;
+		if (data[5] & 0x80) si.flags |= ShapeInfo::SI_UNKNOWN47;
 
 		si.weight = data[6];
 

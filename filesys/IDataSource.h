@@ -31,7 +31,7 @@ class IDataSource
 		IDataSource() {}
 		virtual ~IDataSource() {}
 
-		virtual uint32 read1()=0;
+		virtual uint8 read1()=0;
 		virtual uint16 read2()=0;
 		virtual uint16 read2high()=0;
 		virtual uint32 read3()=0;
@@ -116,7 +116,7 @@ class IFileDataSource: public IDataSource
 	bool good() const { return in->good(); }
 
 	//	Read a byte value
-	virtual uint32 read1()
+	virtual uint8 read1()
 	{
 		return static_cast<uint8>(in->get());
 	}
@@ -214,7 +214,7 @@ public:
 
 	virtual ~IBufferDataSource() { }
 
-	virtual uint32 read1() {
+	virtual uint8 read1() {
 		uint8 b0;
 		b0 = *buf_ptr++;
 		return (b0);

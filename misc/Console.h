@@ -87,6 +87,9 @@ public:
 	// Get the console font texture
 	Texture *GetConFont() { return confont; }
 
+	// Scroll through the console. - is up + is down
+	void	ScrollConsole(sint32 lines);
+
 	// Redirection
 	void	RedirectOutputStream(uint32 mask, ODataSource *ds)
 	{

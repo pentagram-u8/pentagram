@@ -211,7 +211,7 @@ void Console::PrintInternal (const char *txt)
 	// Need to do this first
 	PrintPutchar();
 
-	while ( (c = *txt) )
+	while ( 0 != (c = *txt) )
 	{
 		if (wordwrap) {
 			// count word length
@@ -247,7 +247,7 @@ void Console::PrintInternal (const char *txt)
 
 		default:	// display character and advance
 			y = current % totallines;
-			text[y*linewidth+x] = c;
+			text[y*linewidth+x] = static_cast<char>(c);
 			x++;
 			if (x >= linewidth) x = 0;
 			break;
@@ -302,7 +302,7 @@ void Console::PrintRawInternal (const char *txt, int n)
 
 		default:	// display character and advance
 			y = current % totallines;
-			text[y*linewidth+x] = c;
+			text[y*linewidth+x] = static_cast<char>(c);
 			x++;
 			if (x >= linewidth) x = 0;
 			break;
@@ -324,7 +324,7 @@ void Console::Linefeed (void)
 void Console::PutcharInternal (int c)
 {
 	// Add the character
-	putchar_buf[putchar_count] = c;
+	putchar_buf[putchar_count] = static_cast<char>(c);
 
 	// Increment the counter
 	putchar_count++;
@@ -475,6 +475,14 @@ DRAWING
 
 ==============================================================================
 */
+
+void Console::ScrollConsole(sint32 lines)
+{
+	display += lines;
+
+	if (display < 0) display = 0;
+	if (display > current) display = current;
+}
 
 void Console::DrawConsole (RenderSurface *surf, int /*sx*/, int /*sy*/, int /*width*/, int height)
 {

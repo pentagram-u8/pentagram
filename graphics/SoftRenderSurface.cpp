@@ -153,20 +153,32 @@ template<> void SoftRenderSurface<uint32>::Fill32(uint32 rgb, sint32 sx, sint32 
 //
 template<class uintX> void SoftRenderSurface<uintX>::Blit(Texture *tex, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy)
 {
+	// Clamp or wrap or return?
+#ifndef BLIT_WRAP
+	if (w > static_cast<sint32>(tex->width)) 
+#ifndef BLIT_CLIP
+		return;
+#else
+		w = tex->width;
+#endif
+	
+	// Clamp or wrap or return?
+	if (h > static_cast<sint32>(tex->height)) 
+#ifndef BLIT_CLIP
+		return;
+#else
+		h = tex->height;
+#endif
+#endif
+	
 	// Clip to window
+	int px = dx, py = dy;
 	clip_window.IntersectOther(dx,dy,w,h);
 	if (!w || !h) return;
 
-	// Clip to texture width (wanted?)
-	if (w > static_cast<sint32>(tex->width)) 
-		return;
-		//w = tex->width;
-	
-	// Clip to texture height (wanted?)
-	if (h > static_cast<sint32>(tex->height)) 
-		return;
-		//h = tex->height;
-	
+	// Adjust source x and y
+	if (px != dx) sx += dx - px;
+	if (py != dy) sy += dy - py;
 
 	uint8 *pixel = pixels + dy * pitch + dx * sizeof(uintX);
 	uint8 *line_end = pixel + w*sizeof(uintX);
@@ -174,6 +186,12 @@ template<class uintX> void SoftRenderSurface<uintX>::Blit(Texture *tex, sint32 s
 	int diff = pitch - w*sizeof(uintX);
 
 	uint32 *texel = tex->buffer + (sy * tex->width + sx);
+#ifdef BLIT_WRAP
+	uint32 *texel_line_start = tex->buffer + sy * tex->width;
+	uint32 *texel_line_end = tex->buffer + (sy+1) * tex->width;
+	uint32 *texel_col_start = tex->buffer + sx;
+	uint32 *texel_col_end = tex->buffer + (tex->height * tex->width + sx);
+#endif
 	int tex_diff = tex->width - w;
 
 	//b = PACK_RGB8( (rgb>>16)&0xFF , (rgb>>8)&0xFF , rgb&0xFF );
@@ -184,15 +202,21 @@ template<class uintX> void SoftRenderSurface<uintX>::Blit(Texture *tex, sint32 s
 		{
 			if (*texel & TEX32_A_MASK)
 			{
-				*(reinterpret_cast<uintX*>(pixel)) = PACK_RGB8( TEX32_R(*texel), TEX32_G(*texel), TEX32_B(*texel) );
+				*(reinterpret_cast<uintX*>(pixel)) = static_cast<uintX>(PACK_RGB8( TEX32_R(*texel), TEX32_G(*texel), TEX32_B(*texel) ));
 			}
 			pixel+=sizeof(uintX);
 			texel++;
+#ifdef BLIT_WRAP
+			if (texel == texel_line_end) texel = texel_line_start;
+#endif
 		}
 
 		line_end += pitch;
 		pixel += diff;
 		texel+= tex_diff;
+#ifdef BLIT_WRAP
+		if (texel == texel_col_end) texel = texel_col_start;
+#endif
 	}
 
 
@@ -237,19 +261,19 @@ template<class uintX> void SoftRenderSurface<uintX>::PrintTextFixed(Texture *tex
 	int char_height = texture->height/16;
 
 	int character;
-	if (char_width == 16 && char_height == 16) while (character = *text)
+	if (char_width == 16 && char_height == 16) while ( 0 != (character = *text))
 	{
 		SoftRenderSurface::Blit(texture, (character&0x0F) << 4, character&0xF0, 16, 16, x, y);
 		++text;
 		x+=16;
 	}
-	else if (char_width == 8 && char_height == 8) while (character = *text)
+	else if (char_width == 8 && char_height == 8) while (0 != (character = *text))
 	{
 		SoftRenderSurface::Blit(texture, (character&0x0F) << 3, (character>>1)&0x78, 8, 8, x, y);
 		++text;
 		x+=8;
 	}
-	else while (character = *text)
+	else while (0 != (character = *text))
 	{
 		SoftRenderSurface::Blit(texture,  (character&0x0F) * char_width, (character&0xF0>>4) * char_height, char_width, char_height, x, y);
 		++text;

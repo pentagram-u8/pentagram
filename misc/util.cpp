@@ -28,7 +28,7 @@ std::string to_uppercase(std::string s)
 #if (defined(BEOS) || defined(OPENBSD) || defined(CYGWIN) || defined(__MORPHOS__))
 		if ((*X >= 'a') && (*X <= 'z')) *X -= 32;
 #else
-		*X = std::toupper(*X);
+		*X = static_cast<char>(std::toupper(*X));
 #endif
 	}
 	return str;

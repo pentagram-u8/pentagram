@@ -151,7 +151,7 @@ inline void memset_32(void *buf, uint32 val, uint32 dwords)
 		// Ok, shift along by 1 byte
 		if (((uint32)(buf) & 1))
 		{
-			*reinterpret_cast<uint8*>(buf) = val; 
+			*reinterpret_cast<uint8*>(buf) = static_cast<uint8>(val&0xFF); 
 			buf = (reinterpret_cast<uint8*>(buf))+1;
 			val = ((val& 0xFF) << 24) || ((val& 0xFFFFFF00) >> 8);
 			align --;
@@ -160,7 +160,7 @@ inline void memset_32(void *buf, uint32 val, uint32 dwords)
 		// Ok, shift along by 2 bytes
 		if (((uint32)(buf) & 2))
 		{
-			*reinterpret_cast<uint16*>(buf) = val; 
+			*reinterpret_cast<uint16*>(buf) = static_cast<uint16>(val&0xFFFF); 
 			buf = (reinterpret_cast<uint16*>(buf))+1;
 			val = ((val& 0xFFFF) << 16) || ((val& 0xFFFF0000) >> 16);
 			align-=2;
@@ -176,15 +176,15 @@ inline void memset_32(void *buf, uint32 val, uint32 dwords)
 		// Ok, shift along by 1 byte
 		if (align == 1)
 		{
-			*reinterpret_cast<uint8*>(buf) = val; 
+			*reinterpret_cast<uint8*>(buf) = static_cast<uint8>(val&0xFF); 
 		}
 		// Ok, shift along by 2 bytes
 		else
 		{
-			*reinterpret_cast<uint16*>(buf) = val; 
+			*reinterpret_cast<uint16*>(buf) = static_cast<uint16>(val&0xFFFF); 
 
 			// Ok, shift along by another byte
-			if (align & 1) *(reinterpret_cast<uint8*>(buf)+2) = val>>16; 
+			if (align & 1) *(reinterpret_cast<uint8*>(buf)+2) = static_cast<uint8>((val>>16)&0xFF); 
 		}
 	}
 }
@@ -200,7 +200,7 @@ inline void memset_16(void *buf, sint32 val, uint32 words)
 	if (words > 1) memset_32(buf,val|val<<16,words>>1);
 
 	// Final word
-	if (words & 1) *(reinterpret_cast<uint16*>(buf)) = val;
+	if (words & 1) *(reinterpret_cast<uint16*>(buf)) = static_cast<uint16>(val&0xFFFF);
 }
 
 

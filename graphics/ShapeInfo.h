@@ -35,7 +35,9 @@ public:
 		   SI_ROOF    = 0x0400,
 		   SI_TRANSL  = 0x0800,
 		   SI_EDITOR  = 0x1000,
-		   SI_EXPLODE = 0x2000
+		   SI_EXPLODE = 0x2000,
+		   SI_UNKNOWN46 = 0x4000,
+		   SI_UNKNOWN47 = 0x8000
 	} SFlags;
 
 	enum { SF_GENERIC     = 0,
@@ -66,6 +68,7 @@ public:
 	uint32 family;
 	uint32 equiptype;
 	uint32 animtype, animdata;
+	uint32 unknown;
 	uint32 weight, volume;
 
 	inline bool is_fixed() const { return (flags & SI_FIXED) != 0; }

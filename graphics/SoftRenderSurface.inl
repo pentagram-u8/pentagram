@@ -131,9 +131,9 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 #ifdef INVISIBLE_SHAPES
 
 #ifdef INVISIBLE_CONDITIONAL
-#define INVIS_BLEND(src) ((INVISIBLE_CONDITIONAL)?BlendInvisible(src,*pixptr):src)
+#define INVIS_BLEND(src) static_cast<uintX>((INVISIBLE_CONDITIONAL)?BlendInvisible(src,*pixptr):src)
 #else
-#define INVIS_BLEND(src) BlendInvisible(src,*pixptr)
+#define INVIS_BLEND(src) static_cast<uintX>(BlendInvisible(src,*pixptr))
 #endif
 
 //
@@ -141,7 +141,7 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 //
 #else
 
-#define INVIS_BLEND(src) (src)
+#define INVIS_BLEND(src) static_cast<uintX>(src)
 
 #endif
 
@@ -159,7 +159,7 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 	uintX				*pixptr;
 	uintX				*endrun;
 	uintX				*line_start;
-	uintX				pix;
+	uint32				pix;
 
 	// Sanity check
 	if (framenum >= s->frameCount()) return;

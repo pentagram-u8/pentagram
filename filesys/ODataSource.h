@@ -43,8 +43,8 @@ class ODataSource
 		void writeX(uint32 val, uint32 num_bytes)
 		{
 			assert(num_bytes > 0 && num_bytes <= 4);
-			if (num_bytes == 1) write1(val);
-			else if (num_bytes == 2) write2(val);
+			if (num_bytes == 1) write1(static_cast<uint8>(val));
+			else if (num_bytes == 2) write2(static_cast<uint16>(val));
 			else if (num_bytes == 3) write3(val);
 			else write4(val);
 		}

@@ -39,7 +39,7 @@ void idMan::clearAll()
 	first = begin;
 	last  = end;
 
-	int i;
+	uint16 i;
 	for (i = 0; i < first; i++) ids[i] = 0;		// NPCs always used
 	for (     ; i < last;  i++) ids[i] = i+1;	// Free IDs
 	ids[last] = 0;								// Terminates the list
@@ -56,7 +56,7 @@ uint16 idMan::getNewID()
 	}
 
 	// Get the next id
-	int id = first;
+	uint16 id = first;
 
 	// Set the first in the list to next
 	first = ids[id];

@@ -130,7 +130,7 @@ void Application::run()
 	}
 }
 
-void Application::U8Playground(int argc, char *argv[])
+void Application::U8Playground(int /*argc*/, char * /*argv*/ [])
 {
 	// Load palette
 	pout << "Load Palette" << std::endl;
@@ -243,7 +243,6 @@ void Application::SetupDisplayList()
 	sint32 sy_limit = resy/128 + 6;
 	sint32 xy_limit = (sy_limit+sx_limit)/2;
 	CurrentMap *map = world->getCurrentMap();
-
 
 	// Get the initial camera location
 	if (lx == -1 && ly == -1 && lz == -1) {
@@ -598,7 +597,7 @@ void Application::handleEvent(const SDL_Event& event)
 				World *world = World::get_instance();
 				Item *item = p_dynamic_cast<Item*>(world->getObject(objID));
 
-				pout << "Found item " << objID << " (shape " << item->getShape() << ", " << item->getFrame() << ")" << std::endl;
+				pout << "Found item " << objID << " (shape " << item->getShape() << ", " << item->getFrame() << ", q:" << item->getQuality() << ")" << std::endl;
 				if (event.button.button == SDL_BUTTON_LEFT) {
 					if (item) item->callUsecodeEvent(0);	// CONSTANT
 				} else {
@@ -646,6 +645,8 @@ void Application::handleEvent(const SDL_Event& event)
 		case SDLK_RIGHT: lx += 512; ly -= 512; break;
 		case SDLK_BACKQUOTE: showconsole = !showconsole; break;
 		case SDLK_ESCAPE: case SDLK_q: isRunning = false; break;
+		case SDLK_PAGEUP: if (showconsole) con.ScrollConsole(-3); break;
+		case SDLK_PAGEDOWN: if (showconsole) con.ScrollConsole(3); break;
 		default: break;
 		}
 	}

@@ -68,12 +68,12 @@ class IDataSource;
 struct Texture
 {
 	uint32			*buffer;
-	uint32			width;
-	uint32			height;
+	sint32			width;
+	sint32			height;
 
-	// Use CalcLOG2s to calculate these
-	uint32			wlog2;
-	uint32			hlog2;
+	// Use CalcLOG2s to calculate these (can be -1 which indicates not log2)
+	sint32			wlog2;
+	sint32			hlog2;
 
 	// For OpenGL
 	uint32			gl_tex;
@@ -90,11 +90,13 @@ struct Texture
 
 	// Calc texture log2's 
 	void CalcLOG2s() {
+		wlog2 = -1;
+		hlog2 = -1;
 		for (int i = 0; i < 32; i++) {
-			if (width & (1 << i))
+			if (width == (1 << i))
 				wlog2 = i;
 
-			if (height & (1 << i))
+			if (height == (1 << i))
 				hlog2 = i;
 		}
 	}

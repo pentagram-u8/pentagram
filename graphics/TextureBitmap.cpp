@@ -123,11 +123,11 @@ bool TextureBitmap::Read(IDataSource &ds)
 	ds.seek(ds.getSize()-bitmapinfoheader.biSizeImage);
 	
 	// allocate temporary buffer
-	if (!(temp_buffer = new uint8 [bitmapinfoheader.biSizeImage]))
+	if (0 == (temp_buffer = new uint8 [bitmapinfoheader.biSizeImage]))
 		return false;
 
 	// allocate final 32 bit storage buffer
-	if (!(buffer=new uint32[bitmapinfoheader.biWidth * bitmapinfoheader.biHeight]))
+	if (0 == (buffer=new uint32[bitmapinfoheader.biWidth * bitmapinfoheader.biHeight]))
 	{
 		// release working buffer
 		delete [] temp_buffer;
@@ -160,7 +160,7 @@ bool TextureBitmap::Read(IDataSource &ds)
 	// 16 Bit High Colour
 	else if (bitmapinfoheader.biBitCount == 16) {
 		// Colour shifting values
-		#define UNPACK_BMP16(pix,r,g,b) { r = (((pix)&31)>>10)<<5; g = (((pix)&31)>>5)<<5; b = ((pix)&31)<<5; }
+		#define UNPACK_BMP16(pix,r,g,b) { r = static_cast<uint8>((((pix)&31)>>10)<<5); g = static_cast<uint8>((((pix)&31)>>5)<<5); b = static_cast<uint8>(((pix)&31)<<5); }
 
 		for (index=0; index<bitmapinfoheader.biWidth*bitmapinfoheader.biHeight; index++)
 		{
