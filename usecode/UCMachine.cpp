@@ -1656,21 +1656,26 @@ bool UCMachine::execProcess(UCProcess* p)
 			LOGPF(("set info"));
 			break;
 
-/*
 		case 0x78:
 			// 78
 			// process exclude
-			// process gets 'exclusive access' to this object
+			// process gets 'exclusive access' to this (object,type)
 
-			// This probably means that an object has to have an
-			// 'exclusive_pid' variable. When starting to execute
-			// a UCProcess, we have to check if the current item
-			// is locked by another process?
-
+			// Educated guess:
+			// Check if any other processes have the same (object,type) info
+			// set. If so, return from process.
 			LOGPF(("process exclude"));
+
+			if (Kernel::get_instance()->
+				getNumProcesses(p->item_num, p->type) > 1) {
+				// another process with this (object,type) is already running
+				killProcess(p);
+				LOGPF(("\t(terminating)"));
+			}
+			
+
 			break;
 
-*/
 
 		case 0x79: case 0x7A:
 			// 7A
@@ -1689,9 +1694,6 @@ bool UCMachine::execProcess(UCProcess* p)
 			error = true;
 			perr.printf("unhandled opcode %02X\n", opcode);
 			break;
-		case 0x78: // process exclude
-			perr.printf("unhandled opcode %02X\n", opcode);
-			break;
 				
 		default:
 			perr.printf("unhandled opcode %02X\n", opcode);
@@ -1703,7 +1705,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		// write back IP
 		p->ip = static_cast<uint16>(cs.getPos());	// TRUNCATES!
 
-	} // while(!cede && !error)
+	} // while(!cede && !error && !p->terminated)
 
 	if (error) {
 		perr << "Process " << p->pid << " caused an error. Killing process."
