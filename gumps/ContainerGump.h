@@ -32,11 +32,21 @@ public:
 				  uint32 _Flags = 0, sint32 layer = LAYER_NORMAL);
 	virtual ~ContainerGump(void);
 
+	// Init the gump, call after construction
 	virtual void InitGump();
 
 	// Paint the Gump (RenderSurface is relative to parent).
 	// Calls PaintThis and PaintChildren
 	virtual void Paint(RenderSurface*, sint32 lerp_factor);
+
+	// Trace a click, and return ObjID
+	virtual uint16 TraceObjID(int mx, int my);
+
+	// Get the location of an item in the gump (coords relative to this).
+	// Returns false on failure.
+//	virtual bool GetLocationOfItem(uint16 itemid, int &gx, int &gy,
+//								   sint32 lerp_factor = 256);
+
 };
 
 #endif

@@ -1,5 +1,6 @@
 2003-06-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/ContainerGump.*: a container gump. No interaction yet.
+	* gumps/ContainerGump.*: item tracing
 
 2003-06-06	Darke <darkepaw@users.sf.net>
 	* misc/Console.*: Added support for a basic message filtering

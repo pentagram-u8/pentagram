@@ -114,15 +114,6 @@ void GUIApp::run()
 
 	SDL_Event event;
 	while (isRunning) {
-		// this needs some major changes, including possibly:
-		// - handling events in-between processes?
-		//   (so have a kernel->runProcess() that runs a single process)
-		// - smarter painting
-		//    - dirty rectangles?
-		//    - more/less often depending on speed
-		//    ...
-		// ...
-
 		inBetweenFrame = true;	// Will get set false if it's not an inBetweenFrame
 
 		if (!frameLimit) {
@@ -402,8 +393,6 @@ void GUIApp::LoadConsoleFont()
 
 void GUIApp::handleEvent(const SDL_Event& event)
 {
-	/*uint32 eventtime =*/ SDL_GetTicks();
-
 	extern int userchoice; // major hack... see Item::I_ask
 
 	switch (event.type) {
@@ -435,7 +424,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		if (event.button.button == SDL_BUTTON_LEFT || event.button.button == SDL_BUTTON_RIGHT)
 		{
 			if (avatarInStasis) {
-				pout << "Can't: avatarInStatus" << std::endl; 
+				pout << "Can't: avatarInStasis" << std::endl; 
 				break;
 			}
 

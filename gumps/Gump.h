@@ -50,12 +50,12 @@ protected:
 	Shape				*shape;			// The gumps shape (always painted at 0,0)
 	uint32				framenum;
 
-	// The Gump list for this gump. This will contain all child gumps, as well as
-	// all gump widgets. 
+	// The Gump list for this gump. This will contain all child gumps,
+	// as well as all gump widgets. 
 	std::list<Gump*>	children;		// List of all gumps
 	Gump *				focus_child;	// The child that has focus
 
-	GumpNotifyProcess	*notifier;		// Process to notift when we are closing
+	GumpNotifyProcess	*notifier;		// Process to notify when we are closing
 	uint32				process_result;	// Result for the notifier process
 
 public:
@@ -80,12 +80,14 @@ public:
 	virtual Gump *				FindGump(const RunTimeClassType& t, bool recursive=true, bool no_inheritance=false);
 	template<class T> Gump *	FindGump(bool recursive=true, bool no_inheritance=false) { return FindGump(T::ClassType, recursive, no_inheritance); }
 
-	// Get the mouse cursor for position mx, my relative to parents position
-	// Returns true if this gump wants to set the cursor. If false, the gump list
-	// will attempt to get the cursor shape from the next lower gump.
+	// Get the mouse cursor for position mx, my relative to parents
+	// position. Returns true if this gump wants to set the cursor.
+	// If false, the gump list will attempt to get the cursor shape from
+	// the next lower gump.
 	virtual bool		GetMouseCursor(int mx, int my, Shape &shape, sint32 &frame);
 
-	// Update the RenderSurface of this gump and all children (probably only needed for scaled gumps).
+	// Update the RenderSurface of this gump and all children (probably
+	//  only needed for scaled gumps).
 	//virtual bool		DeviceChanged();
 
 
@@ -137,7 +139,8 @@ public:
 	// Trace a click, and return ObjID
 	virtual uint16		TraceObjID(int mx, int my);
 
-	// Get the location of an item in the gump (coords reletive to this). Returns false on failure
+	// Get the location of an item in the gump (coords relative to this).
+	// Returns false on failure
 	virtual bool		GetLocationOfItem(uint16 itemid, int &gx, int &gy, sint32 lerp_factor = 256);
 
 

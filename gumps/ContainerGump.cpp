@@ -25,6 +25,10 @@
 #include "World.h"
 #include "RenderSurface.h"
 
+//! see comments in Paint()
+const int itemx_offset = 20;
+const int itemy_offset = 18; 
+
 DEFINE_RUNTIME_CLASSTYPE_CODE(ContainerGump,ItemRelativeGump);
 
 ContainerGump::ContainerGump(Shape* shape_, uint32 framenum_, uint16 owner,
@@ -56,6 +60,7 @@ void ContainerGump::InitGump()
 
 void ContainerGump::Paint(RenderSurface* surf, sint32 lerp_factor)
 {
+	// paint self
 	ItemRelativeGump::Paint(surf, lerp_factor);
 
 	Container* c = p_dynamic_cast<Container*>
@@ -76,12 +81,46 @@ void ContainerGump::Paint(RenderSurface* surf, sint32 lerp_factor)
 		item->getGumpLocation(itemx,itemy);
 		GumpToParent(itemx,itemy);
 		Shape* s = item->getShapeObject();
+		assert(s);
 		// Where do we need to paint his item?
 		// It looks like(itemx,itemy) isn't entirely correct;
 		// it seems to need an extra offset.
 		//   (20,14) seems to be correct for a basket, but a barrel
         //   needs (20,18)
-		surf->Paint(s, item->getFrame(), itemx + 20, itemy + 18);
+		surf->Paint(s, item->getFrame(),
+					itemx + itemx_offset, itemy + itemy_offset);
+	}
+	
+}
+
+// Find object (if any) at (mx,my)
+// (mx,my) are relative to parent
+uint16 ContainerGump::TraceObjID(int mx, int my)
+{
+	ParentToGump(mx,my);
+
+	Container* c = p_dynamic_cast<Container*>
+		(World::get_instance()->getItem(owner));
+
+	if (!c) return 0; // Container gone!?
+
+	std::list<Item*>& contents = c->contents;
+	std::list<Item*>::reverse_iterator iter;
+	// iterate backwards, since we're painting from begin() to end()
+	for (iter = contents.rbegin(); iter != contents.rend(); ++iter) {
+		Item* item = *iter;
+		sint32 itemx,itemy;
+		item->getGumpLocation(itemx,itemy);
+		Shape* s = item->getShapeObject();
+		assert(s);
+		ShapeFrame* frame = s->getFrame(item->getFrame());
+
+		if (frame->hasPoint(mx - (itemx + itemx_offset),
+							my - (itemy + itemy_offset)))
+		{
+			// found it
+			return item->getObjId();
+		}
 	}
 	
 }
