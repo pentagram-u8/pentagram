@@ -127,4 +127,13 @@ void GameData::loadU8Data()
 		globs[i] = glob;
 	}
 	delete globflex;
+
+	// Load fonts
+	IDataSource *fds = filesystem->ReadFile("@u8/static/u8fonts.flx");
+	if (!fds) {
+		perr << "Unable to load static/u8fonts.flx. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	fonts = new ShapeFlex(fds);
+	//! we're leaking fds here
 }

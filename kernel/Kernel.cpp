@@ -150,11 +150,9 @@ uint32 Kernel::getNumProcesses(uint16 objid, uint16 processtype)
 	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it)
 	{
 		Process* p = *it;
-		UCProcess* up = p_dynamic_cast<UCProcess*>(p);
-		if (!up) continue; //! only relevant for UCProcesses (??)
 
-		if ((objid == 0 || objid == up->item_num) &&
-			(processtype == 6 || processtype == up->type))
+		if ((objid == 0 || objid == p->item_num) &&
+			(processtype == 6 || processtype == p->type))
 			count++;
 	}
 
@@ -166,12 +164,10 @@ void Kernel::killProcesses(uint16 objid, uint16 processtype)
 	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it)
 	{
 		Process* p = *it;
-		UCProcess* up = p_dynamic_cast<UCProcess*>(p);
-		if (!up) continue; //! only relevant for UCProcesses (??)
 
-		if ((objid == 0 || objid == up->item_num) &&
-			(processtype == 6 || processtype == up->type))
-			up->terminate();
+		if ((objid == 0 || objid == p->item_num) &&
+			(processtype == 6 || processtype == p->type))
+			p->terminate();
 	}
 }
 

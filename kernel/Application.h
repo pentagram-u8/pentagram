@@ -60,6 +60,7 @@ public:
 
 	INTRINSIC(I_getCurrentTimerTick);
 	INTRINSIC(I_setAvatarInStasis);
+	INTRINSIC(I_getAvatarInStasis);
 
 	// To be moved 'somewhere' else
 	void GetCamera(sint32 &x, sint32 &y, sint32 &z);

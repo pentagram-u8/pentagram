@@ -268,7 +268,7 @@ bool UCMachine::execProcess(UCProcess* p)
 				if (func >= 0x100 || intrinsics[func] == 0) {
 //					p->temp32 = addProcess(new DelayProcess(4));
 					p->temp32 = 0;
-					perr << "Unhandled intrinsic called" << std::endl;
+					perr << "Unhandled intrinsic (" << std::hex << func << std::dec << ") called" << std::endl;
 				} else {
 					uint8 *argbuf = new uint8[arg_bytes];
 					p->stack.pop(argbuf, arg_bytes);

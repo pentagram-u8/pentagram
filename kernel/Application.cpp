@@ -167,7 +167,7 @@ void Application::run()
 				if (!frameSkip) break;
 			}
 
-			// Calcualte the lerp_factor
+			// Calculate the lerp_factor
 			lerpFactor = ((animationRate-diff)*256)/animationRate;
 			//pout << "lerpFactor: " << lerpFactor << " framenum: " << framenum << std::endl;
 			if (lerpFactor > 256) lerpFactor = 256;
@@ -912,5 +912,13 @@ uint32 Application::I_setAvatarInStasis(const uint8* args, unsigned int /*argsiz
 	ARG_SINT16(statis);
 	get_instance()->setAvatarInStasis(statis!=0);
 	return 0;
+}
+
+uint32 Application::I_getAvatarInStasis(const uint8* /*args*/, unsigned int /*argsize*/)
+{
+	if (get_instance()->avatarInStasis)
+		return 1;
+	else
+		return 0;
 }
 

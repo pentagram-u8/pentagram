@@ -38,7 +38,6 @@ public:
 	virtual void terminate();
 
 private:
-	uint16 actor;
 	AnimAction* animaction;
 	uint32 dir;
 

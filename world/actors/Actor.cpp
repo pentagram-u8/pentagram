@@ -288,3 +288,15 @@ uint32 Actor::I_pathfindToItem(const uint8* args, unsigned int /*argsize*/)
 
 	return Kernel::get_instance()->addProcess(new ItemMoveProcess(actor,x,y,z,100));
 }
+
+uint32 Actor::I_isBusy(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_UINT32(ptr);
+	uint16 id = UCMachine::ptrToObject(ptr);
+
+	uint32 count = Kernel::get_instance()->getNumProcesses(id, 0x00F0);
+	if (count > 0)
+		return 1;
+	else
+		return 0;
+}

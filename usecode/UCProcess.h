@@ -47,10 +47,6 @@ protected:
 	void call(uint16 classid_, uint16 offset_);
 	bool ret();
 
-	// item we are assigned to
-	uint16 item_num;  //!! these two may have to be moved to Process
-	uint16 type;
-
 	// stack base pointer
 	uint16 bp;
 

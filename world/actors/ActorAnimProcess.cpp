@@ -33,8 +33,10 @@ DEFINE_DYNAMIC_CAST_CODE(ActorAnimProcess,Process);
 ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 {
 	assert(actor_);
-	actor = actor_->getObjId();
+	item_num = actor_->getObjId();
 	dir = dir_;
+
+	type = 0x00F0; // constant!
 
 	uint32 shape = actor_->getShape();
 	animaction = GameData::get_instance()->getMainShapes()->
@@ -60,9 +62,10 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 		actor_->setActorFlag(Actor::ACT_ANIMLOCK);
 
 		if (actor_->lastanim == action && actor_->direction == dir_ &&
-			animaction->size > 1)
-			currentindex++; // skip first frame if repeating an animation
-
+			animaction->size > 1) {
+			currentindex+=animaction->framerepeat; // skip first frame if 
+			                                       // repeating an animation
+		}
 		actor_->lastanim = action;
 		actor_->direction = dir_;
 	}
@@ -80,8 +83,11 @@ bool ActorAnimProcess::run(const uint32 framenum)
 	// without main timing I can't really determine how many 'ticks' 
 	// each frame should last.
 
-	AnimFrame& f = animaction->frames[dir][currentindex];
-	Actor *a = p_dynamic_cast<Actor*>(World::get_instance()->getObject(actor));
+	int frameindex = currentindex / animaction->framerepeat;
+	int framecount = currentindex % animaction->framerepeat;
+
+	AnimFrame& f = animaction->frames[dir][frameindex];
+	Actor *a = p_dynamic_cast<Actor*>(World::get_instance()->getObject(item_num));
 
 	if (!a) {
 		// actor gone
@@ -89,25 +95,27 @@ bool ActorAnimProcess::run(const uint32 framenum)
 		return false;
 	}
 
-	sint32 x, y, z;
-	a->getLocation(x,y,z);
+	if (framecount == 0) {
+		sint32 x, y, z;
+		a->getLocation(x,y,z);
 
-	x += 2 * x_fact[dir] * f.deltadir;
-	y += 2 * y_fact[dir] * f.deltadir;
-	z += f.deltaz;
+		x += 2 * x_fact[dir] * f.deltadir;
+		y += 2 * y_fact[dir] * f.deltadir;
+		z += f.deltaz;
 
-	a->move(x,y,z);
-	a->setFrame(f.frame);
+		a->move(x,y,z);
+		a->setFrame(f.frame);
 
-	if (f.is_flipped()) {
-		a->setFlag(Item::FLG_FLIPPED);
-	} else {
-		a->clearFlag(Item::FLG_FLIPPED);
+		if (f.is_flipped()) {
+			a->setFlag(Item::FLG_FLIPPED);
+		} else {
+			a->clearFlag(Item::FLG_FLIPPED);
+		}
 	}
 
 	currentindex++;
 
-	if (currentindex >= animaction->size) {
+	if (currentindex >= animaction->size * animaction->framerepeat) {
 		//? do we need to terminate now or when we're about to show the next
 		// frame?
 		terminate();
@@ -121,7 +129,7 @@ bool ActorAnimProcess::run(const uint32 framenum)
 
 void ActorAnimProcess::terminate()
 {
-	Actor *a = p_dynamic_cast<Actor*>(World::get_instance()->getObject(actor));
+	Actor *a = p_dynamic_cast<Actor*>(World::get_instance()->getObject(item_num));
 	if (a) {
 		if (animaction) { // if we were really animating...
 			a->clearActorFlag(Actor::ACT_ANIMLOCK);

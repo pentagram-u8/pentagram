@@ -26,7 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 DEFINE_DYNAMIC_CAST_CODE(UCProcess,Process);
 
 UCProcess::	UCProcess(Usecode* usecode_)
-	: item_num(0), type(0), usecode(usecode_), classid(0)
+	: usecode(usecode_), classid(0)
 {
 	classid = 0xFFFF;
 	ip = 0xFFFF;

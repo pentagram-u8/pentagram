@@ -169,7 +169,7 @@ Intrinsic U8Intrinsics[] = {
 	0, //U
 	0, //U
 	// 0x080
-	0, // Npc::isBusy
+	Actor::I_isBusy,
 	0, // Npc::areEnemiesNear
 	Actor::I_isInCombat,
 	0, // Npc::setInCombat
@@ -252,7 +252,7 @@ Intrinsic U8Intrinsics[] = {
 	UCMachine::I_dummyProcess, //!! process teleportToEgg(word, word, ubyte)
 	Kernel::I_resetRef,
 	0,
-	0,
+	Application::I_getAvatarInStasis,
 	// 0x0D0
 	Application::I_setAvatarInStasis,
 	Item::I_getEtherealTop,

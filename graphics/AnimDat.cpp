@@ -90,8 +90,9 @@ void AnimDat::load(IDataSource *ds)
 			ds->seek(actionoffset);
 			uint32 actionsize = ds->read1();
 			a->actions[action]->size = actionsize;
-
-			ds->skip(3); // 3 unknown bytes
+			ds->skip(1); // unknown
+			a->actions[action]->framerepeat = ds->read1();
+			ds->skip(1); // unknown
 
 			for (unsigned int dir = 0; dir < 8; dir++)
 			{

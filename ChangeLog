@@ -1,3 +1,8 @@
+2003-05-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/*: use animation frame repeat flag
+	* usecode/UCProcess.*, kernel/Process.*: moved itemnum/type to Process
+	* kernel/GameData.*: load u8fonts.flx
+
 2003-05-26  Ryan Nunn <colourles@users.sourceforge.net>
 	* kernel/Application.cpp, world/CameraProcess.* : A tweek to the lerping when
 	  following an item.

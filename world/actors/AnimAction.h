@@ -34,6 +34,7 @@ struct AnimFrame
 struct AnimAction {
 	std::vector<AnimFrame> frames[8]; // 8 directions
 	unsigned int size;
+	int framerepeat;
 };
 
 

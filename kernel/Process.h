@@ -31,7 +31,7 @@ public:
 
 	Process() : 
 		pid(0xFFFF), active(false), suspended(false), terminated(false),
-		result(0)
+		item_num(0), type(0), result(0)
 	{ }
 	virtual ~Process() { }
 
@@ -53,6 +53,10 @@ protected:
 	                //! (this may have to be a count instead, if a process
 	                //! is waiting for more than one others)
 	bool terminated;
+
+	// item we are assigned to
+	uint16 item_num;
+	uint16 type;
 
 	// process result
 	uint32 result;

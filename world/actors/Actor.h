@@ -78,6 +78,7 @@ public:
 	INTRINSIC(I_isImmortal);
 	INTRINSIC(I_isWithstandDeath);
 	INTRINSIC(I_isFeignDeath);
+	INTRINSIC(I_isBusy);
 
 	enum {
 		ACT_INVINCIBLE     = 0x000001, // flags from npcdata byte 0x1B
