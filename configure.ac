@@ -312,6 +312,18 @@ fi
 # ------------------
 # Features
 # ------------------
+
+# debugging
+AC_ARG_ENABLE(debug,           [  --disable-debug         Disable debugging mode],,enable_debug=yes)
+AC_MSG_CHECKING(for debug mode)
+if test x$enable_debug = xyes; then
+	AC_MSG_RESULT(yes)
+	AC_DEFINE(DEBUG, 1, [Debugging mode])
+else
+	AC_MSG_RESULT(no)
+fi
+
+
 USESDLMIXER=no
 #AC_CHECK_LIB(SDL_mixer, Mix_QuickLoad_RAW,
 #	HAVESDLMIXER=yes,
