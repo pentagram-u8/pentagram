@@ -1,4 +1,7 @@
 2003-05-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* misc/Direction.h: world-direction function
+
+2003-05-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.*: intrinsics
 	* usecode/*: rearranged spawn opcode (again)
 

@@ -994,7 +994,7 @@ uint32 Item::I_getDirToCoords(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(y);
 	if (!item) return 0;
 
-	return Get_direction(item->x - x, item->y - y);
+	return Get_WorldDirection(y - item->y, x - item->x);
 }
 
 uint32 Item::I_getDirFromCoords(const uint8* args, unsigned int /*argsize*/)
@@ -1004,7 +1004,7 @@ uint32 Item::I_getDirFromCoords(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(y);
 	if (!item) return 0;
 
-	return Get_direction(x - item->x, y - item->y);
+	return Get_WorldDirection(y - item->y, item->x - x);
 }
 
 uint32 Item::I_getDirToItem(const uint8* args, unsigned int /*argsize*/)
@@ -1015,7 +1015,7 @@ uint32 Item::I_getDirToItem(const uint8* args, unsigned int /*argsize*/)
 	if (!item) return 0;
 	if (!item2) return 0;
 
-	return Get_direction(item->x - item2->x, item->y - item2->y);
+	return Get_WorldDirection(item2->y - item->y, item2->x - item->x);
 }
 
 uint32 Item::I_getDirFromItem(const uint8* args, unsigned int /*argsize*/)
@@ -1026,6 +1026,6 @@ uint32 Item::I_getDirFromItem(const uint8* args, unsigned int /*argsize*/)
 	if (!item) return 0;
 	if (!item2) return 0;
 
-	return Get_direction(item2->x - item->x, item2->y - item->y);
+	return Get_WorldDirection(item->y - item2->y, item->x - item2->x);
 }
 

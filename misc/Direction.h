@@ -49,8 +49,8 @@ const int y_fact[] = { -1, -1,  0, +1, +1, +1,  0, -1 };
  *	NOTE:  Assumes cartesian coords, NOT screen coords. (which have y
  *		growing downwards).
  *
- *  NOTE: The returned direction is rotated 45 degress clockwise! This is
- *  how U8 things things should be.
+ *  NOTE: The returned direction is rotated 45 degrees clockwise! This is
+ *  how U8 things should be.
  */
 
 inline Direction Get_direction (int deltay, int deltax)
@@ -73,5 +73,25 @@ inline Direction Get_direction (int deltay, int deltax)
 			return dydx >= -424 ? southwest : dydx >= -2472 ? west
 								: northwest;
 }
+
+
+inline Direction Get_WorldDirection (int deltay, int deltax)
+{
+	if (deltax == 0)
+		return deltay > 0 ? south : north;
+	int dydx = (1024*deltay)/deltax;
+
+	if (dydx >= 0)
+		if (deltax > 0) // south-east
+			return dydx <= 424 ? east : dydx <= 2472 ? southeast : south;
+		else            // north-west
+			return dydx <= 424 ? west : dydx <= 2472 ? northwest : north;
+	else
+		if (deltax > 0) // north-east
+			return dydx >= -424 ? east : dydx >= -2472 ? northeast : north;
+		else            // south-west
+			return dydx >= -424 ? west : dydx >= -2472 ? southwest : south;
+}
+
 
 #endif
