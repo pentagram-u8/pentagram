@@ -30,6 +30,6 @@
 #endif
 
 typedef uint32 (P_FASTCALL * xformBlendFuncType)(uint32 col); 
-const extern xformBlendFuncType		U8XFormFuncs[256];
+extern const xformBlendFuncType		U8XFormFuncs[256];
 
 #endif

@@ -137,7 +137,7 @@ bool TextureBitmap::Read(IDataSource &ds)
 	} // end if
 	
 	// now read it in
-	ds.read((char*) temp_buffer,bitmapinfoheader.biSizeImage);
+	ds.read(static_cast<uint8 *>(temp_buffer),bitmapinfoheader.biSizeImage);
 
 	// 8 Bit Palette
 	if (bitmapinfoheader.biBitCount == 8) {

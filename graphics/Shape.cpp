@@ -62,7 +62,7 @@ Shape::~Shape()
 #define READ4(data,offset) (data[offset] + (data[offset+1] << 8) + (data[offset+2] << 16) + (data[offset+3] << 24))
 
 // This will load a u8 style shape 'optimzed'.
-void Shape::LoadU8Format(const uint8* data, uint32 size, const ConvertShapeFormat* format)
+void Shape::LoadU8Format(const uint8* data, uint32 /*size*/, const ConvertShapeFormat* format)
 {
 	unsigned int framecount = READ2(data,4);
 
@@ -77,7 +77,7 @@ void Shape::LoadU8Format(const uint8* data, uint32 size, const ConvertShapeForma
 }
 
 // This will load a pentagram style shape 'optimzed'.
-void Shape::LoadPentagramFormat(const uint8* data, uint32 size, const ConvertShapeFormat* format)
+void Shape::LoadPentagramFormat(const uint8* data, uint32 /*size*/, const ConvertShapeFormat* format)
 {
 	unsigned int framecount = READ4(data,4);
 

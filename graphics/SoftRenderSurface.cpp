@@ -51,7 +51,7 @@ template<class uintX> SoftRenderSurface<uintX>::SoftRenderSurface(SDL_Surface *s
 //
 // Desc: Fill buffer (using a palette index) - Remove????
 //
-template<class uintX> void SoftRenderSurface<uintX>::Fill8(uint8 index, sint32 sx, sint32 sy, sint32 w, sint32 h)
+template<class uintX> void SoftRenderSurface<uintX>::Fill8(uint8 /*index*/, sint32 /*sx*/, sint32 /*sy*/, sint32 /*w*/, sint32 /*h*/)
 {
 }
 
@@ -74,7 +74,7 @@ template<class uintX> void SoftRenderSurface<uintX>::Fill32(uint32 rgb, sint32 s
 	{
 		while (pixel != line_end)
 		{
-			*((uintX*) pixel) = rgb;
+			*(reinterpret_cast<uintX*>(pixel)) = rgb;
 			pixel+=sizeof(uintX);
 		}
 
@@ -99,8 +99,8 @@ template<class uintX> void SoftRenderSurface<uintX>::Blit(Texture *tex, sint32 s
 	}
 
 	// Clip w
-	if (w > tex->width) w = tex->width;
-	if ((dx + w) > width) w = width - dx;
+	if (w > static_cast<sint32>(tex->width)) w = tex->width;
+	if ((dx + w) > static_cast<sint32>(width)) w = width - dx;
 	
 	// Clip dy
 	if (dy < 0) {
@@ -110,8 +110,8 @@ template<class uintX> void SoftRenderSurface<uintX>::Blit(Texture *tex, sint32 s
 	}
 
 	// Clip h
-	if (h > tex->height) w = tex->height;
-	if ((dy + h) > height) h = height - dy;
+	if (h > static_cast<sint32>(tex->height)) w = tex->height;
+	if ((dy + h) > static_cast<sint32>(height)) h = height - dy;
 	
 
 	uint8 *pixel = pixels + dy * pitch + dx * sizeof(uintX);
@@ -130,7 +130,7 @@ template<class uintX> void SoftRenderSurface<uintX>::Blit(Texture *tex, sint32 s
 		{
 			if (*texel & TEX32_A_MASK)
 			{
-				*((uintX*) pixel) = PACK_RGB8( TEX32_R(*texel), TEX32_G(*texel), TEX32_B(*texel) );
+				*(reinterpret_cast<uintX*>(pixel)) = PACK_RGB8( TEX32_R(*texel), TEX32_G(*texel), TEX32_B(*texel) );
 			}
 			pixel+=sizeof(uintX);
 			texel++;

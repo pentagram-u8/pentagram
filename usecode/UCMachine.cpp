@@ -1700,8 +1700,8 @@ uint16 UCMachine::ptrToObject(uint32 ptr)
 {
 	//! This function is a bit of a misnomer, since it's more general than this
 
-	uint16 segment = (uint16)(ptr >> 16);
-	uint16 offset = (uint16)(ptr);
+	uint16 segment = static_cast<uint16>(ptr >> 16);
+	uint16 offset = static_cast<uint16>(ptr);
 	if (segment >= SEG_STACK_FIRST && segment <= SEG_STACK_LAST)
 	{
 		UCProcess *proc = p_dynamic_cast<UCProcess*>

@@ -143,13 +143,13 @@ const xformBlendFuncType	U8XFormFuncs[256] = {
 	0,									// 5	
 	0,									// 6	
 	0,									// 7	
-	(xformBlendFuncType) &U8xformCol8,	// 8 (green->dark grey)	
-	(xformBlendFuncType) &U8xformCol9,	// 9 (black->vdark grey)
-	(xformBlendFuncType) &U8xformCol10,	// 10 (yellow)
-	(xformBlendFuncType) &U8xformCol11,	// 11 (white->grey)
-	(xformBlendFuncType) &U8xformCol12,	// 12 (red->orange)
-	(xformBlendFuncType) &U8xformCol13,	// 13 (blue)
-	(xformBlendFuncType) &U8xformCol14,	// 14 (blue)
+	static_cast<xformBlendFuncType>(&U8xformCol8),	// 8 (green->dark grey)	
+	static_cast<xformBlendFuncType>(&U8xformCol9),	// 9 (black->vdark grey)
+	static_cast<xformBlendFuncType>(&U8xformCol10),	// 10 (yellow)
+	static_cast<xformBlendFuncType>(&U8xformCol11),	// 11 (white->grey)
+	static_cast<xformBlendFuncType>(&U8xformCol12),	// 12 (red->orange)
+	static_cast<xformBlendFuncType>(&U8xformCol13),	// 13 (blue)
+	static_cast<xformBlendFuncType>(&U8xformCol14),	// 14 (blue)
 	0									// 15
 };
 

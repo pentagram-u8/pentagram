@@ -105,7 +105,7 @@ struct Texture
 protected:
 
 	// Read from a File. No filetype supported by this class
-	virtual bool Read(IDataSource &ds) { return false; }
+	virtual bool Read(IDataSource &/*ds*/) { return false; }
 };
 
 #endif //TEXTURE_H

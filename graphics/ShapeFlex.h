@@ -37,6 +37,7 @@ public:
 
 	void cache(); // cache all shapes
 	void cache(uint32 shapenum); // cache one shape
+	inline void uncache() { Flex::uncache(); }; // uncache all shapes
 	void uncache(uint32 shapenum); // uncache one shape
 
 protected:

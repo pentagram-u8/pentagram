@@ -23,6 +23,8 @@
 #include "ODataSource.h"
 
 // Convert shape C
+
+/********** Update AutoShapeFormat in shapeconv/ShapeConv.cpp when changed! **********/
 struct ConvertShapeFormat
 {
 	const char *		name;

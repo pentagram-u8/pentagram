@@ -102,7 +102,7 @@ ECode BaseSoftRenderSurface::BeginPainting()
 			}
 		}
 
-		pixels = pixels00 = (uint8*)sdl_surf->pixels;
+		pixels = pixels00 = static_cast<uint8*>(sdl_surf->pixels);
 		pitch = sdl_surf->pitch;
 	}
 	lock_count++;

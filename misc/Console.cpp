@@ -340,7 +340,7 @@ void Console::PrintPutchar()
 	if (!putchar_count) return;
 
 	// Get the count
-	int count = putchar_count;
+	//int count = putchar_count; //Darke: UNUSED?
 	
 	// Terminate the string
 	putchar_buf[putchar_count] = 0;
@@ -476,7 +476,7 @@ DRAWING
 ==============================================================================
 */
 
-void Console::DrawConsole (RenderSurface *surf, int sx, int sy, int width, int height)
+void Console::DrawConsole (RenderSurface *surf, int /*sx*/, int /*sy*/, int /*width*/, int height)
 {
 	int				i, x, y;
 	int				rows;

@@ -150,7 +150,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 		if (NOT_CLIPPED_Y)
 		{
 
-			line_start = (uintX *)((uint8*)pixels + pitch*line);
+			line_start = reinterpret_cast<uintX *>(static_cast<uint8*>(pixels) + pitch*line);
 			LINE_END_ASSIGN();
 
 			do 
@@ -230,7 +230,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 		if (NOT_CLIPPED_Y)
 		{
-			line_start = (uintX *)((uint8*)pixels + pitch*line);
+			line_start = reinterpret_cast<uintX *>(static_cast<uint8*>(pixels) + pitch*line);
 			LINE_END_ASSIGN();
 
 			do 

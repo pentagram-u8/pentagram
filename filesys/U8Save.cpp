@@ -36,7 +36,7 @@ U8Save::U8Save(IDataSource* ds_)
 	{
 		uint32 namelen = ds->read4();
 		char* buf = new char[namelen];
-		ds->read(buf, (sint32)namelen);
+		ds->read(buf, static_cast<sint32>(namelen));
 		names[i] = buf;
 		indices[names[i]] = i;
 		delete[] buf;

@@ -108,21 +108,21 @@ public:
 	// Unhandle input will be passed down to the next lower gump
 	//
 	
-	virtual bool		OnMouseDown(int button, int mx, int my) { return false; }
-	virtual bool		OnMouseUp(int button, int mx, int my) { return false; }
-	virtual bool		OnMouseDouble(int button, int mx, int my) { return false; }
-	virtual bool		OnMouseDrag(int button, int mx, int my) { return false; }
-	virtual bool		OnKeyDown(int key) { return false; }
-	virtual bool		OnKeyUp(int key) { return false; }
+	virtual bool		OnMouseDown(int /*button*/, int /*mx*/, int /*my*/) { return false; }
+	virtual bool		OnMouseUp(int /*button*/, int /*mx*/, int /*my*/) { return false; }
+	virtual bool		OnMouseDouble(int /*button*/, int /*mx*/, int /*my*/) { return false; }
+	virtual bool		OnMouseDrag(int /*button*/, int /*mx*/, int /*my*/) { return false; }
+	virtual bool		OnKeyDown(int /*key*/) { return false; }
+	virtual bool		OnKeyUp(int /*key*/) { return false; }
 
-	virtual bool		OnTextInput(int unicode) { return false; }
+	virtual bool		OnTextInput(int /*unicode*/) { return false; }
 
 	// This is for detecting focus changes for keyboard input. Gets called true
 	// when the GumpList wants to make this the focus gump. It is called false 
 	// when focus is being taken away. If returning false on focus gain, the 
 	// gump states it doesn't want to gain input focus. For OnFocus(false) 
 	// calls return value is ignored
-	virtual bool		OnFocus(bool gain) { return false; }
+	virtual bool		OnFocus(bool /*gain*/) { return false; }
 };
 
 #endif //GUMP_H_INCLUDED

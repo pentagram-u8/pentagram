@@ -1,3 +1,19 @@
+2003-04-20  Darke  <darkepaw@users.sf.net>
+	* conf/Configuration.cpp, convert/ConvertShape.cpp, convert/ConvertShape.h,
+	  filesys/IDataSource.h, filesys/ODataSource.h, filesys/U8Save.cpp,
+	  graphics/BaseSoftRenderSurface.cpp, graphics/Shape.cpp,
+	  graphics/ShapeFlex.h, graphics/ShapeFrame.cpp,
+	  graphics/SoftRenderSurface.cpp, graphics/SoftRenderSurface.inl,
+	  graphics/Texture.h, graphics/TextureBitmap.cpp,
+	  graphics/TextureTarga.cpp, graphics/XFormBlend.cpp,
+	  graphics/XFormBlend.h, gumps/ConsoleGump.cpp, gumps/GameMapGump.cpp,
+	  gumps/Gump.h, kernel/DelayProcess.h, misc/Console.cpp,
+	  misc/p_dynamic_cast.h, tools/fold/Fold.cpp,
+	  tools/shapeconv/ShapeConv.cpp, usecode/UCMachine.cpp,
+	  usecode/UCProcess.cpp, world/Item.cpp:
+	  Most warnings elminiated and a potential data initilisation bug or two
+	  fixed along the way. F33r my static_casts d00dz! *cough* Ahem.
+
 2003-04-14 Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/*: cleaned up globegg code a bit
 

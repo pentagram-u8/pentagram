@@ -28,7 +28,7 @@ GameMapGump::~GameMapGump()
 {
 }
 
-void GameMapGump::Paint(RenderSurface *surf)
+void GameMapGump::Paint(RenderSurface */*surf*/)
 {
 }
 

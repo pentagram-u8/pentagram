@@ -37,7 +37,7 @@ Configuration::~Configuration()
 }
 
 bool Configuration::readConfigFile(std::string fname, std::string root,
-								   bool readonly)
+								   bool /*readonly*/)
 {
 	XMLTree* tree = new XMLTree();
 	tree->clear(root);

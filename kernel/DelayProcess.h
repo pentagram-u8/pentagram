@@ -28,7 +28,7 @@ public:
 	explicit DelayProcess(int count_) : Process(), count(count_) { }
 	virtual ~DelayProcess() { }
 
-	virtual bool run(const uint32 framenum) { if (--count == 0) terminate(); return false; }
+	virtual bool run(const uint32 /*framenum*/) { if (--count == 0) terminate(); return false; }
 
 protected:
 	int count;

@@ -33,24 +33,30 @@
 const ConvertShapeFormat		AutoShapeFormat =
 {
 	"Auto Detected",
-	0,		// header
-	0,		// header_unk
-	0,		// num_frames
+	
+	0,		// len_header
+	0,		// ident
 
-	0,		// frameheader
-	0,		// frame_offset
-	0,		// frameheader_unk
-	0,		// frame_length
+	0,		// bytes_ident
+	0,		// bytes_header_unk
+	0,		// bytes_num_frames
 
-	0,		// frameheader2
-	0,		// frame_unknown
-	0,		// frame_compression
-	0,		// frame_width
-	0,		// frame_height
-	0,		// frame_xoff
-	0,		// frame_yoff
+	0,		// len_frameheader
+	0,		// bytes_frame_offset
+	0,		// bytes_frameheader_unk
+	0,		// bytes_frame_length
+	0,		// bytes_frame_length_kludge
 
-	0		// line_offset
+	0,		// len_frameheader2
+	0,		// bytes_frame_unknown
+	0,		// bytes_frame_compression
+	0,		// bytes_frame_width
+	0,		// bytes_frame_height
+	0,		// bytes_frame_xoff
+	0,		// bytes_frame_yoff
+
+	0,		// bytes_line_offset
+	0		// line_offset_absolute
 };
 
 // Convert formats we are using
@@ -217,7 +223,7 @@ int main(int argc, char **argv)
 	Args		parameters;
 	std::string	ifmt, ofmt;
 	bool		singlefile=false;
-	bool		auto_detect=false;
+	//bool		auto_detect=false; // Darke: UNUSED?
 
 	parameters.declare("--ifmt",		&ifmt,      "auto");
 	parameters.declare("--ofmt",		&ofmt,      "u8");

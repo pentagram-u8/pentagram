@@ -1,5 +1,5 @@
 /*
- *	fold.cc - parts of a disassembler for u8usecode
+ *	fold.cpp - parts of a disassembler for u8usecode
  *
  *  Copyright (C) 2002 The Pentagram Team
  *

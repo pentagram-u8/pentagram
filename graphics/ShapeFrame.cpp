@@ -47,13 +47,13 @@ ShapeFrame::~ShapeFrame()
 #define READ4(data,offset) (data[offset] + (data[offset+1] << 8) + (data[offset+2] << 16) + (data[offset+3] << 24))
 
 // This will load a u8 style shape 'optimzed'.
-void ShapeFrame::LoadU8Format(const uint8* data, uint32 size)
+void ShapeFrame::LoadU8Format(const uint8* data, uint32 /*size*/)
 {
 	compressed = READ1(data,8);
-	width = (sint16) READ2(data,10);;
-	height = (sint16) READ2(data,12);
-	xoff = (sint16) READ2(data,14);
-	yoff = (sint16) READ2(data,16);
+	width = static_cast<sint16>(READ2(data,10));
+	height = static_cast<sint16>(READ2(data,12));
+	xoff = static_cast<sint16>(READ2(data,14));
+	yoff = static_cast<sint16>(READ2(data,16));
 
 	if (height == 0) return;
 
@@ -70,13 +70,13 @@ void ShapeFrame::LoadU8Format(const uint8* data, uint32 size)
 }
 
 // This will load a pentagram style shape 'optimzed'.
-void ShapeFrame::LoadPentagramFormat(const uint8* data, uint32 size)
+void ShapeFrame::LoadPentagramFormat(const uint8* data, uint32 /*size*/)
 {
 	compressed = READ1(data,0);
-	width = (sint32) READ4(data,4);
-	height = (sint32) READ4(data,8);
-	xoff = (sint32) READ4(data,12);
-	yoff = (sint32) READ4(data,16);
+	width = static_cast<sint32>(READ4(data,4));
+	height = static_cast<sint32>(READ4(data,8));
+	xoff = static_cast<sint32>(READ4(data,12));
+	yoff = static_cast<sint32>(READ4(data,16));
 
 	if (height == 0) return;
 

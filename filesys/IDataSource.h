@@ -50,10 +50,10 @@ class IDataSource
 		sint32 readXS(uint32 num_bytes)
 		{
 			assert(num_bytes > 0 && num_bytes <= 4);
-			if (num_bytes == 1) return (sint8) read1();
-			else if (num_bytes == 2) return (sint16) read2();
-			else if (num_bytes == 3) return ((((sint32) read3()) << 8)>>8);
-			else return (sint32) read4();
+			if (num_bytes == 1) return static_cast<sint8>(read1());
+			else if (num_bytes == 2) return static_cast<sint16>(read2());
+			else if (num_bytes == 3) return (((static_cast<sint32>(read3())) << 8)>>8);
+			else return static_cast<sint32>(read4());
 		}
 		
 		float readf()

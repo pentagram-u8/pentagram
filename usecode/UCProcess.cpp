@@ -47,7 +47,7 @@ UCProcess::~UCProcess()
 
 }
 
-bool UCProcess::run(const uint32 framenum)
+bool UCProcess::run(const uint32 /*framenum*/)
 {
 	if (suspended)
 		return false;

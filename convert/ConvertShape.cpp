@@ -282,7 +282,7 @@ bool CheckShapeFormat(IDataSource *source, const ConvertShapeFormat *csf, uint32
 		if (frame->height)
 		{
 			// Line offsets
-			uint32 highest_offset_byte = 0;
+			sint32 highest_offset_byte = 0;
 
 			// Calculate the number of bytes of RLE data
 			frame->bytes_rle = frame_length - (csf->len_frameheader2+(frame->height*csf->bytes_line_offset));
@@ -300,7 +300,7 @@ bool CheckShapeFormat(IDataSource *source, const ConvertShapeFormat *csf, uint32
 			// Loop through each of the frames and find the last rle run
 			for (int i = 0; i < frame->height; i++) 
 			{
-				uint32 line_offset = source->readX(csf->bytes_line_offset);
+				sint32 line_offset = source->readX(csf->bytes_line_offset);
 
 				// Now fudge with the value and turn it into an offset into the rle data
 				// if required
@@ -353,7 +353,7 @@ bool CheckShapeFormat(IDataSource *source, const ConvertShapeFormat *csf, uint32
 			} while (xpos < frame->width);
 
 			// Calc 'real' bytes rle
-			uint32 highest_rle_byte = source->getPos();
+			sint32 highest_rle_byte = source->getPos();
 			highest_rle_byte -= start_pos + frame_offset + csf->len_frameheader2 + frame->height*csf->bytes_line_offset;
 
 			// Too many bytes

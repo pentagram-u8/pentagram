@@ -24,13 +24,13 @@
 // The Pentagram dynamic cast
 template<class A, class B> inline A p_dynamic_cast (B *object)
 {
-	return (A) object->DoDynamicCast(& (((A)0)->ClassTypeConstant) );
+	return static_cast<A>( object->DoDynamicCast(& ((static_cast<A>(0))->ClassTypeConstant) ) );
 }
 
 // This is just a 'type' used to differentiate each class.
 struct RunTimeClassType
 {
-	char	*class_name;
+	const char *	class_name;
 };
 
 //
@@ -38,7 +38,7 @@ struct RunTimeClassType
 // p_dynamic_cast. Make sure this is public!
 //
 #define ENABLE_DYNAMIC_CAST(Classname)							\
-	const static RunTimeClassType	ClassTypeConstant;			\
+	static const RunTimeClassType	ClassTypeConstant;			\
 	virtual void * DoDynamicCast(const RunTimeClassType *type);
 
 
@@ -50,7 +50,7 @@ const RunTimeClassType Classname::ClassTypeConstant = {			\
 	#Classname													\
 };																\
 																\
-void * Classname::DoDynamicCast(const RunTimeClassType *type)	\
+void * Classname::DoDynamicCast(const RunTimeClassType * type)	\
 {																\
 	if (type == &ClassTypeConstant) return this;				\
 	return 0;													\
@@ -65,7 +65,7 @@ const RunTimeClassType Classname::ClassTypeConstant = {			\
 	#Classname													\
 };																\
 																\
-void * Classname::DoDynamicCast(const RunTimeClassType *type)	\
+void * Classname::DoDynamicCast(const RunTimeClassType * type)	\
 {																\
 	if (type == &ClassTypeConstant) return this;				\
 	return ParentClassname::DoDynamicCast(type);				\

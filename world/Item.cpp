@@ -97,7 +97,7 @@ void Item::setupLerp(/* Camera &camera */)
 
 
 
-uint32 Item::I_getX(const uint8* args, unsigned int argsize)
+uint32 Item::I_getX(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM(item);
 	if (!item) return 0;
@@ -105,7 +105,7 @@ uint32 Item::I_getX(const uint8* args, unsigned int argsize)
 	return item->x;
 }
 
-uint32 Item::I_getY(const uint8* args, unsigned int argsize)
+uint32 Item::I_getY(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM(item);
 	if (!item) return 0;
@@ -113,7 +113,7 @@ uint32 Item::I_getY(const uint8* args, unsigned int argsize)
 	return item->y;
 }
 
-uint32 Item::I_getZ(const uint8* args, unsigned int argsize)
+uint32 Item::I_getZ(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM(item);
 	if (!item) return 0;
@@ -121,7 +121,7 @@ uint32 Item::I_getZ(const uint8* args, unsigned int argsize)
 	return item->z;
 }
 
-uint32 Item::I_getShape(const uint8* args, unsigned int argsize)
+uint32 Item::I_getShape(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM(item);
 	if (!item) return 0;
@@ -129,7 +129,7 @@ uint32 Item::I_getShape(const uint8* args, unsigned int argsize)
 	return item->shape;
 }
 
-uint32 Item::I_getFrame(const uint8* args, unsigned int argsize)
+uint32 Item::I_getFrame(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM(item);
 	if (!item) return 0;
@@ -137,7 +137,7 @@ uint32 Item::I_getFrame(const uint8* args, unsigned int argsize)
 	return item->frame;
 }
 
-uint32 Item::I_getQ(const uint8* args, unsigned int argsize)
+uint32 Item::I_getQ(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM(item);
 	if (!item) return 0;
@@ -145,7 +145,7 @@ uint32 Item::I_getQ(const uint8* args, unsigned int argsize)
 	return item->quality;
 }
 
-uint32 Item::I_bark(const uint8* args, unsigned int argsize)
+uint32 Item::I_bark(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM(item);
 	ARG_STRING(str);
@@ -163,7 +163,7 @@ uint32 Item::I_bark(const uint8* args, unsigned int argsize)
 	// Some kind of 'callback-delay-process' maybe?
 }
 
-uint32 Item::I_look(const uint8* args, unsigned int argsize)
+uint32 Item::I_look(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM(item);
 	if (!item) return 0;
@@ -172,7 +172,7 @@ uint32 Item::I_look(const uint8* args, unsigned int argsize)
 	return item->callUsecodeEvent(0);
 }
 
-uint32 Item::I_use(const uint8* args, unsigned int argsize)
+uint32 Item::I_use(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM(item);
 	if (!item) return 0;
@@ -181,7 +181,7 @@ uint32 Item::I_use(const uint8* args, unsigned int argsize)
 	return item->callUsecodeEvent(1);
 }
 
-uint32 Item::I_enterFastArea(const uint8* args, unsigned int argsize)
+uint32 Item::I_enterFastArea(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM(item);
 	if (!item) return 0;

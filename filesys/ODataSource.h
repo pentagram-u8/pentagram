@@ -124,8 +124,8 @@ class OBufferDataSource : public ODataSource
 
 	virtual void clear()          { out.clear(); }
 
-	virtual void seek(uint32 pos) { /*out->seekp(pos); FIXME: Do something here. */ }
-	virtual void skip(sint32 pos) { /*out->seekp(pos, std::ios::cur); FIXME: Do something here. */ }
+	virtual void seek(uint32 /*pos*/) { /*out->seekp(pos); FIXME: Do something here. */ }
+	virtual void skip(sint32 /*pos*/) { /*out->seekp(pos, std::ios::cur); FIXME: Do something here. */ }
 
 	virtual uint32 getSize()      { return out.size(); }
 	
