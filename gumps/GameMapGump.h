@@ -94,7 +94,7 @@ protected:
 	uint32 dragging_shape;
 	uint32 dragging_frame;
 	uint32 dragging_flags;
-	sint32 dragging[3];
+	sint32 dragging_pos[3];
 
 };
 

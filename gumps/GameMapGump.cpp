@@ -190,7 +190,7 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 	// Dragging:
 
 	if (display_dragging) {
-		display_list->AddItem(dragging[0], dragging[1], dragging[2],
+		display_list->AddItem(dragging_pos[0],dragging_pos[1],dragging_pos[2],
 							  dragging_shape, dragging_frame,
 							  dragging_flags | Item::FLG_INVISIBLE, //!! change this to transp?
 							  0);
@@ -232,8 +232,11 @@ uint16 GameMapGump::TraceCoordinates(int mx, int my, sint32 coords[3],
 	hit->getLocation(hx,hy,hz);
 	hit->getFootpadWorld(hxd,hyd,hzd);
 
-	// mx = (dragging[0]-cx-dragging[1]+cy)/4
-	// my = (dragging[0]-cx+dragging[1]-cy)/8 - dragging[2] + cz
+	// mx = (coords[0]-cx-coords[1]+cy)/4
+	// my = (coords[0]-cx+coords[1]-cy)/8 - coords[2] + cz
+
+	// the below expressions solve these two equations to two of the coords,
+	// while fixing the other coord
 
 	switch (face) {
 	case ItemSorter::Z_FACE:
@@ -448,11 +451,11 @@ bool GameMapGump::DraggingItem(Item* item, int mx, int my)
 	dragging_flags = item->getFlags();
 	display_dragging = true;
 
-	if (!TraceCoordinates(mx, my, dragging, item))
+	if (!TraceCoordinates(mx, my, dragging_pos, item))
 		return false;
 
 	// determine if item can be dropped here
-	if (!item->canExistAt(dragging[0], dragging[1], dragging[2]))
+	if (!item->canExistAt(dragging_pos[0], dragging_pos[1], dragging_pos[2]))
 		return false;
 
 
@@ -486,9 +489,9 @@ void GameMapGump::DropItem(Item* item, int mx, int my)
 
 	//!! TODO: throw item if too far, etc...
 
-	perr << "Dropping item at (" << dragging[0] << "," << dragging[1]
-		 << "," << dragging[2] << ")" << std::endl;
-	item->move(dragging[0],dragging[1],dragging[2]); // move
+	perr << "Dropping item at (" << dragging_pos[0] << "," << dragging_pos[1]
+		 << "," << dragging_pos[2] << ")" << std::endl;
+	item->move(dragging_pos[0],dragging_pos[1],dragging_pos[2]); // move
 	item->fall();
 }
 
