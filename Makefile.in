@@ -123,16 +123,27 @@ $(DEPDIRS):
 # rule to rebuild Makefile if necessary
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	cd $(top_builddir) && \
-	  CONFIG_HEADERS= CONFIG_LINKS= \
-	  CONFIG_FILES=$@ $(SHELL) ./config.status
+	  CONFIG_HEADERS= CONFIG_LINKS= CONFIG_FILES=$@ \
+	  $(SHELL) ./config.status
 
-# rules to rebuild configure, config.status, aclocal.m4
+# rules to rebuild config.h if necessary
+misc/config.h: misc/config.h.stamp
+
+misc/config.h.stamp: $(srcdir)/misc/config.h.in $(top_builddir)/config.status
+	@$(RM) misc/config.h.stamp
+	cd $(top_builddir) && \
+	  CONFIG_HEADERS=misc/config.h CONFIG_LINKS= CONFIG_FILES= \
+	  $(SHELL) ./config.status
+
+# rules to rebuild configure, config.status, aclocal.m4, config.h.in
 $(top_builddir)/config.status: $(srcdir)/configure
 	$(SHELL) ./config.status --recheck
 $(srcdir)/configure: $(srcdir)/configure.ac $(top_srcdir)/aclocal.m4
 	cd $(srcdir) && $(AUTOCONF)
-$(top_srcdir)/aclocal.m4: $(srcdir)/configure.ac
+$(top_srcdir)/aclocal.m4: $(srcdir)/configure.ac $(srcdir)/acinclude.m4
 	cd $(srcdir) && $(ACLOCAL)
-# fixme: rebuilding misc/config.h.in and misc/config.h
+$(srcdir)/misc/config.h.in: $(top_srcdir)/configure.ac $(top_srcdir)/aclocal.m4
+	cd $(top_srcdir) && $(AUTOHEADER)
+	touch $(srcdir)/misc/config.h.in
 
 .PHONY: all clean distclean clean-pch

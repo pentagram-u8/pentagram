@@ -1,3 +1,16 @@
+# When config.status generates a header, we must update config.h.stamp.
+# This file resides in the same directory as the config header
+# that is generated.
+
+# Autoconf calls _AC_AM_CONFIG_HEADER_HOOK (when defined) in the
+# loop where config.status creates the headers, so we can generate
+# our stamp files there.
+AC_DEFUN([_AC_AM_CONFIG_HEADER_HOOK],
+[echo "timestamp for $1" >$1.stamp])
+
+
+
+
 # Configure paths for SDL
 # Sam Lantinga 9/21/99
 # stolen from Manish Singh

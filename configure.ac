@@ -390,7 +390,9 @@ else
 	AC_MSG_RESULT([no; SDL_ttf not found])
 fi
 
+# -------------------
 # GIMP plugin
+# -------------------
 AM_CONDITIONAL(GIMP_PLUGIN, false)
 AC_ARG_ENABLE(gimp-plugin,   [  --enable-gimp-plugin    Build the GIMP plugin [default no]],,enable_gimp_plugin=no)
 AC_MSG_CHECKING(whether to build the GIMP plugin)

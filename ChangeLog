@@ -1,4 +1,7 @@
 2005-01-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* Makefile.in, acinclude.m4: rebuild config.h when necessary
+
+2005-01-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* tools/shapeconv/ShapeConv.cpp: output 0x1A bytes to ID flex
 	* bootstrap, tools/gimp-plugin/module.mk: add Makefile, create .deps
 
