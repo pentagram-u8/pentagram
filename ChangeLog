@@ -4,7 +4,7 @@
 	* world/actors/TargetedAnimProcess.cpp: save and load properly
 	* world/actors/AnimationTracker.cpp: keep stats unchanged if step is
 	  called when tracker finishes
-	  Only added height automatically if frame is on ground
+	  Only add height automatically if frame is on ground
 	* world/actors/Actor.cpp: use AnimationTracker in tryAnim()
 
 2004-08-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
