@@ -95,7 +95,7 @@ void ConvertFlexes(IFileDataSource *readfile, OFileDataSource *writefile)
 int main(int argc, char **argv)
 {
 	if (argc < 3) {
-		perr << "Usage: ShapeConv <inflx> <outflx> [-u8tocru|-crutou8]" << endl;
+		perr << "Usage: ShapeConv <inflx> <outflx> [-u8tocru|-crutou8]" << std::endl;
 		return 1;
 	}
 
@@ -119,7 +119,7 @@ int main(int argc, char **argv)
 	// Uh oh, couldn't load it
 	if(readfile==0)
 	{
-		perr << "Error reading file '" << argv[1] << "'" << endl;
+		perr << "Error reading file '" << argv[1] << "'" << std::endl;
 		return 1;
 	}
 
@@ -129,7 +129,7 @@ int main(int argc, char **argv)
 	// Uh oh, couldn't load it
 	if(writefile==0)
 	{
-		perr << "Error writing file '" << argv[2] << "'" << endl;
+		perr << "Error writing file '" << argv[2] << "'" << std::endl;
 		return 1;
 	}
 

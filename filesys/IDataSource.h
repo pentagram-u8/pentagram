@@ -22,6 +22,7 @@
 #define IDATASOURCE_H
 
 #include "common_types.h"
+#include <fstream>
 
 class IDataSource
 {
