@@ -85,30 +85,53 @@ class FuncMutatorNode : public Node
 class DCFuncNode : public ColNode
 {
 	public:
-		DCFuncNode()//const uint32 opcode, const uint32 offset)
+		DCFuncNode()
 			: ColNode(0xFFFF, 0x0000, Type(Type::T_INVALID)),
-			initnode(0), setinfonode(0), procexcludenode(0), retnode(0), endnode(0)
+			setinfonode(0), //procexcludenode(0),
+			locals_datasize(0), func_start_offset(0),
+			debug_ret_offset(0), debug_end_offset(0),
+			process_type(0), debug_processtype_offset(0), debug_thisp(false),
+			debug_procexclude_offset(0), has_procexclude(false)
 			{
 			};
 		~DCFuncNode() {};
 
+		void print_unk_funcheader(Console &o, const uint32 isize) const;
 		void print_unk(Console &o, const uint32 isize) const;
 		void print_asm(Console &o) const;
 		void print_bin(ODequeDataSource &o) const;
 		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
-		void addEnd(FuncMutatorNode *n) { assert(n!=0 && endnode==0); endnode=n; };
+		void addEnd(FuncMutatorNode *n)
+		{
+			assert(n!=0);
+			assert(n->opcode()==0x7A);
+			debug_end_offset = n->offset();
+			FORGET_OBJECT(n);
+		};
 		
 	protected:
 		std::deque<Node *> funcnodes;
-		FuncMutatorNode *initnode;
 		DCCallMutatorNode *setinfonode;
-		DCCallMutatorNode *procexcludenode;
-		FuncMutatorNode *retnode;
-		FuncMutatorNode *endnode;
+		//DCCallMutatorNode *procexcludenode;
 
-		uint32	parameters_datasize; // from 'init' opcode
+		uint32	locals_datasize; // from 'init' opcode
 		uint32	func_start_offset; // from 'init' opcode
+		uint32	debug_ret_offset; // from 'ret' opcode, FIXME: debugging only
+		uint32	debug_end_offset; // from 'end' opcode, FIXME: debugging only
+		
+		uint32	process_type; // from 'set info' opcode
+		uint32	debug_processtype_offset; // from 'set info' opcode, FIXME: debugging only
+		bool	debug_thisp; // from 'set info' opcode.
+
+		uint32	debug_procexclude_offset; // from 'process exclude' opcode, FIXME: debugging only
+		bool	has_procexclude; // from 'process exclude' opcode
+
 	private:
+		void fold_init(DCUnit *unit, std::deque<Node *> &nodes);
+		void fold_ret(DCUnit *unit, std::deque<Node *> &nodes);
+		void fold_setinfo(DCUnit *unit, std::deque<Node *> &nodes);
+		void fold_procexclude(DCUnit *unit, std::deque<Node *> &nodes);
 };
 
 #endif
+

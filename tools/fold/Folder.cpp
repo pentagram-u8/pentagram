@@ -57,6 +57,7 @@ void Unit::print_unk(Console &o, const uint32 isize) const
 	FOR_CONST_DEQUE(DCFuncNode, functions, i)
 	{
 		// function header
+		(*i)->print_unk_funcheader(o, isize);
 
 		// main function body
 		indent(o, isize);

@@ -1,3 +1,7 @@
+2003-10-05	Darke  <darkepaw@users.sf.net>
+	* tools/fold/*: Fixed minor 'call' asm output bug. Attempted
+	  cleaning up and 'prettyfying' the llc output format.
+	  
 2003-09-24	Darke  <darkepaw@users.sf.net>
 	* tools/disasm/Disasm.cpp, tools/fold/*: General prettification of
 	  output, minor fiddling with asm output format.

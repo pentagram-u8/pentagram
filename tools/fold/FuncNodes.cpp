@@ -20,6 +20,7 @@
 
 #include "FuncNodes.h"
 #include "Folder.h"
+#include "VarNodes.h"
 
 #include <deque>
 using	std::deque;
@@ -38,14 +39,8 @@ void FuncMutatorNode::print_unk(Console &o, const uint32 isize, const bool comme
 	assert(rtype().type()==Type::T_INVALID);
 	switch(mtype)
 	{
-		case RET:
-			Node::print_linenum_unk(o, isize);
-			o.Printf("ret_NOPRINT()");
-			break;
-		case INIT:
-			Node::print_linenum_unk(o, isize);
-			o.Printf("init_NOPRINT(0x%02X)", _initsize);
-			break;
+		case RET:	CANT_HAPPEN(); break;
+		case INIT:	CANT_HAPPEN(); break;
 		case LINE_NUMBER:
 			Node::print_linenum_unk(o, isize);
 			#if 0
@@ -61,10 +56,7 @@ void FuncMutatorNode::print_unk(Console &o, const uint32 isize, const bool comme
 		case SUSPEND:
 			o.Printf("suspend");
 			break;
-		case END:
-			Node::print_linenum_unk(o, isize);
-			o.Printf("end_NOPRINT()");
-			break;
+		case END:	CANT_HAPPEN(); break;
 		default: assert(print_assert(this)); // can't happen
 	}
 }
@@ -78,12 +70,12 @@ void FuncMutatorNode::print_asm(Console &o) const
 	
 	switch(mtype)
 	{
-		case RET:         o.Printf("ret"); break;
-		case INIT:        o.Printf("init\t\t%02X", _initsize); break;
+		case RET:         CANT_HAPPEN(); break;
+		case INIT:        CANT_HAPPEN(); break;
 		case LINE_NUMBER: o.Printf("line number\t%i (%04Xh)", _linenum, _linenum); break;
 		case SYMBOL_INFO: o.Printf("symbol info\toffset %04Xh = \"%s\"", _symboloffset, _classname.c_str()); break;
 		case SUSPEND:     o.Printf("suspend"); break;
-		case END:         o.Printf("end"); break;
+		case END:         CANT_HAPPEN(); break;
 		default: assert(print_assert(this)); // can't happen
 	}
 }
@@ -94,12 +86,12 @@ void FuncMutatorNode::print_bin(ODequeDataSource &o) const
 	Node::print_linenum_bin(o);
 	switch(mtype)
 	{
-		case RET:         o.write1(0x50); break;
-		case INIT:        o.write1(0x5A); o.write1(_initsize); break;
+		case RET:			CANT_HAPPEN(); break;
+		case INIT:			CANT_HAPPEN(); break;
 		case LINE_NUMBER: o.write1(0x5B); o.write2(_linenum); break;
 		case SYMBOL_INFO: o.write1(0x5C); o.write2(_symboloffset - _offset - 3); o.write(_classname.c_str(), _classname.size(), 9); break;
 		case SUSPEND:     o.write1(0x53); break;
-		case END:         o.write1(0x7A); break;
+		case END:			CANT_HAPPEN(); break;
 		default: assert(print_assert(this)); // can't happen
 	}
 }
@@ -138,26 +130,44 @@ bool FuncMutatorNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 /****************************************************************************
 	DCFuncNode
  ****************************************************************************/
-//#define DEBUG_COMMENTS
+#define DEBUG_COMMENTS
+
+void DCFuncNode::print_unk_funcheader(Console &o, const uint32 isize) const
+{
+	// do the obvious and spit out 'process'
+	// for obvious reason's we're just assuming if a function has a 'process exclude'
+	// op at the beginning, it's... a process!
+	indent(o, isize);
+	if(has_procexclude)
+		o.Printf("process ");
+
+	o.Putchar('\n');
+}
 
 void DCFuncNode::print_unk(Console &o, const uint32 isize) const
 {
 	#ifdef DEBUG_COMMENTS
 	indent(o, isize); o.Print("/*"); // prelude
 
+	// 'init'
 	indent(o, 1);
-	initnode->print_unk(o, isize+1, true);
-	o.Putchar('\n');
-	
+	o.Printf("Function Start Offset:\t0x%04X\n", func_start_offset);
 	indent(o, isize+1);
-	setinfonode->print_unk(o, isize+1, true);
+	o.Printf("Locals Datasize:\t0x%02X\n", locals_datasize);
+	// 'set info'
+	indent(o, isize+1);
+	o.Printf("Process Type:\t\t0x%04X", process_type);
+
+	assert(debug_thisp==true);	
+	//indent(o, isize+1);
+	//setinfonode->print_unk(o, isize+1, true);
 	
 	indent(o, 1); o.Print("*/\n"); // postfix
 	#endif
 	
-	indent(o, isize);
-	procexcludenode->print_unk(o, isize);
-	o.Putchar('\n');
+	//indent(o, isize);
+	//procexcludenode->print_unk(o, isize);
+	//o.Putchar('\n');
 
 	for(std::deque<Node *>::const_iterator i=funcnodes.begin(); i!=funcnodes.end(); ++i)
 	{
@@ -166,15 +176,19 @@ void DCFuncNode::print_unk(Console &o, const uint32 isize) const
 		o.Putchar('\n');
 	}
 
-	#ifdef DEBUG_COMMENTS
+	assert(debug_ret_offset!=0); // 'ret'
+	assert(debug_end_offset!=0); // 'end'
+
+	#if 0 // not much use until we've got something to stuff at the end of the function
+	//#ifdef DEBUG_COMMENTS
 	indent(o, isize); o.Print("/*"); // prelude
+
+	//indent(o, 1);
+	//retnode->print_unk(o, isize+1, true);
+	//o.Putchar('\n');
 	
-	indent(o, 1);
-	retnode->print_unk(o, isize+1, true);
-	o.Putchar('\n');
-	
-	indent(o, isize+1);
-	endnode->print_unk(o, isize+1, true);
+	//indent(o, isize+1);
+	//endnode->print_unk(o, isize+1, true);
 	
 	indent(o, 1); o.Print("*/\n"); // postfix
 	#endif
@@ -182,37 +196,51 @@ void DCFuncNode::print_unk(Console &o, const uint32 isize) const
 
 void DCFuncNode::print_asm(Console &o) const
 {
-	initnode->print_asm(o);
-	o.Putchar('\n');
+	// 'init'
+	print_asm_header(o, func_start_offset, 0x5A);
+	o.Printf("init\t\t%02X\n", locals_datasize);
+	
 	setinfonode->print_asm(o);
 	o.Putchar('\n');
-	procexcludenode->print_asm(o);
-	o.Putchar('\n');
+	
+	// 'process exclude'
+	print_asm_header(o, debug_procexclude_offset, 0x78);
+	o.Printf("process exclude\n");
+	//procexcludenode->print_asm(o);
+	//o.Putchar('\n');
 	
 	for(std::deque<Node *>::const_iterator i=funcnodes.begin(); i!=funcnodes.end(); ++i)
 	{
 		(*i)->print_asm(o);
 		o.Putchar('\n');
 	}
-	retnode->print_asm(o);
-	o.Putchar('\n');
-	endnode->print_asm(o);
-	o.Putchar('\n');
+	
+	// 'ret'
+	print_asm_header(o, debug_ret_offset, 0x50);
+	o.Printf("ret\n");
+	
+	// 'end'
+	print_asm_header(o, debug_end_offset, 0x7A);
+	o.Printf("end\n");
 }
 
 void DCFuncNode::print_bin(ODequeDataSource &o) const
 {
-	assert(initnode!=0);
-	initnode->print_mac(con);
-	initnode->print_bin(o);
+	// 'init'
+	print_mac_header(con, func_start_offset, 0x5A);
+	o.write1(0x5A);
+	o.write1(locals_datasize);
 	
 	assert(setinfonode!=0);
 	setinfonode->print_mac(con);
 	setinfonode->print_bin(o);
 	
-	assert(procexcludenode!=0);
-	procexcludenode->print_mac(con);
-	procexcludenode->print_bin(o);
+	// 'process exclude'
+	print_mac_header(con, debug_procexclude_offset, 0x78);
+	o.write1(0x78);
+	//assert(procexcludenode!=0);
+	//procexcludenode->print_mac(con);
+	//procexcludenode->print_bin(o);
 	
 	for(std::deque<Node *>::const_iterator i=funcnodes.begin(); i!=funcnodes.end(); ++i)
 	{
@@ -225,13 +253,13 @@ void DCFuncNode::print_bin(ODequeDataSource &o) const
 		con.Putchar('\n');
 	}
 	
-	assert(retnode!=0);
-	retnode->print_mac(con);
-	retnode->print_bin(o);
+	// 'ret'
+	print_mac_header(con, debug_ret_offset, 0x50);
+	o.write1(0x50);
 
-	assert(endnode!=0);
-	endnode->print_mac(con);
-	endnode->print_bin(o);
+	// 'end'
+	print_mac_header(con, debug_ret_offset, 0x7A);
+	o.write1(0x7A);
 }
 
 bool DCFuncNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
@@ -241,13 +269,10 @@ bool DCFuncNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 	// we get our 'end' later...
 	
 	// ... get our 'ret'
-	assert(nodes.size() && nodes.back()->opcode()==0x50);
-	retnode = static_cast<FuncMutatorNode *>(nodes.back());
-	nodes.pop_back();
-	
+	fold_ret(unit, nodes);
+
 	// while we haven't gotten init
-	bool read_last=false;
-	while(nodes.size() && !acceptOp(nodes.back()->opcode(), 0x5A, 0x78))
+	while(nodes.size() && !acceptOp(nodes.back()->opcode(), 0x78))
 	{
 		/*switch(nodes.back()->opcode())
 		{
@@ -263,26 +288,78 @@ bool DCFuncNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 	}
 
 	// ... and our 'process exclude'
-	assert(nodes.size() && nodes.back()->opcode()==0x78);
-	procexcludenode = static_cast<DCCallMutatorNode *>(nodes.back());
-	nodes.pop_back();
+	fold_procexclude(unit, nodes);
 
 	// ... and our 'set info'
-	assert(nodes.size() && nodes.back()->opcode()==0x77);
-	setinfonode = static_cast<DCCallMutatorNode *>(nodes.back());
-	nodes.pop_back();
+	fold_setinfo(unit, nodes);
 
 	// ... and our 'init'
-	assert(nodes.size() && nodes.back()->opcode()==0x5A);
-	initnode = static_cast<FuncMutatorNode *>(nodes.back());
-	nodes.pop_back();
-	parameters_datasize = initnode->a_initsize();
-	func_start_offset = initnode->offset();
-
+	fold_init(unit, nodes);
+	
 	// FIXME: This will obviously be false when we're finally implementing
 	// inline functions.
 	assert((nodes.size()==0) || print_assert(0, unit));
 	
 	return true;
 }
+
+void DCFuncNode::fold_init(DCUnit * /*unit*/, std::deque<Node *> &nodes)
+{
+	assert(nodes.size() && nodes.back()->opcode()==0x5A);
+	FuncMutatorNode *initnode = static_cast<FuncMutatorNode *>(nodes.back());
+	nodes.pop_back();
+	
+	locals_datasize = initnode->a_initsize();
+	func_start_offset = initnode->offset();
+	
+	FORGET_OBJECT(initnode);
+}
+
+void DCFuncNode::fold_ret(DCUnit * /*unit*/, std::deque<Node *> &nodes)
+{
+	assert(nodes.size() && nodes.back()->opcode()==0x50);
+	FuncMutatorNode *retnode = static_cast<FuncMutatorNode *>(nodes.back());
+	nodes.pop_back();
+
+	debug_ret_offset = retnode->offset();
+
+	FORGET_OBJECT(retnode);
+}
+
+void DCFuncNode::fold_setinfo(DCUnit * /*unit*/, std::deque<Node *> &nodes)
+{
+	assert(nodes.size() && nodes.back()->opcode()==0x77);
+	/*DCCallMutatorNode **/setinfonode = static_cast<DCCallMutatorNode *>(nodes.back());
+	nodes.pop_back();
+	
+	// chain of assertions...
+	assert(setinfonode->a_lnode()->opcode()==0x0B); // 'push word'
+	process_type = static_cast<const PushVarNode *>(setinfonode->a_lnode())->dtype().value();
+	debug_processtype_offset= static_cast<const PushVarNode *>(setinfonode->a_lnode())->dtype().value();
+	
+	assert(setinfonode->a_rnode()->opcode()==0x4C);
+	const DCCallMutatorNode *temp_push_indirect = static_cast<const DCCallMutatorNode *>(setinfonode->a_rnode());
+	// make sure we're a '*this'
+	assert(temp_push_indirect->a_lnode()->rtype()==Type::T_DWORD);
+	assert(static_cast<const PushVarNode *>(temp_push_indirect->a_lnode())->dtype().value()==0x06);
+	debug_thisp=true;
+
+	//FORGET_OBJECT(setinfonode); 
+}
+
+void DCFuncNode::fold_procexclude(DCUnit * /*unit*/, std::deque<Node *> &nodes)
+{
+	assert(nodes.size() && nodes.back()->opcode()==0x78);
+	DCCallMutatorNode *procexcludenode = static_cast<DCCallMutatorNode *>(nodes.back());
+	nodes.pop_back();
+
+	// nice and simple!
+	has_procexclude=true;
+	debug_procexclude_offset = procexcludenode->offset();
+
+	FORGET_OBJECT(procexcludenode);
+}
+
+
+
 

@@ -20,6 +20,8 @@
 
 #include "CallNodes.h"
 #include "Folder.h"
+#include "VarNodes.h"
+
 // FIXME: Fix this
 /* 'cause we don't have dynamic binding. c++ sucks. */
 void AddSpToDCCallNode(DCCallPostfixNode *cpn, Node *node)
@@ -468,8 +470,11 @@ void DCCallNode::print_asm(Console &o) const
 				{
 					(*i)->print_asm(o); o.Putchar('\n');
 				}
+				if(pnode.size()==0)
+					o.Putchar('\n');
+
 				Node::print_asm(o);
-				o.Printf("call\t\t%04X:%04X", uclass, targetOffset);
+				o.Printf("call\t\t%04X:%04X\n", uclass, targetOffset);
 				o.Putchar('\n');
 				if(addSP!=0)
 					addSP->print_asm(o);
@@ -479,7 +484,7 @@ void DCCallNode::print_asm(Console &o) const
 					o.Putchar('\n');
 					retVal->print_asm(o);
 				}
-				//FIXME: o.Printf(" (%s)", functionaddresstostring(uclass, targetOffset, ucfile).c_str());
+				//FIXME: o.Printf(" (%s)", convert->UsecodeFunctionAddressToString(uclass, targetOffset, ucfile).c_str());
 				break;
 			}
 		case SPAWN:

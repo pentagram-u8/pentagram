@@ -85,7 +85,7 @@ class DCCallMutatorNode : public BinNode
 				}
 			};
 		DCCallMutatorNode(const uint32 opcode, const uint32 offset)
-			: BinNode(opcode, offset, Type(Type::T_INVALID))
+			: BinNode(opcode, offset, Type(Type::T_INVALID)), numBytes(0)
 			{
 				assert(acceptOp(opcode, 0x77, 0x78));
 				switch(opcode)
@@ -109,6 +109,10 @@ class DCCallMutatorNode : public BinNode
 
 	private:
 		uint32 numBytes;
+	
+	public: // accessors
+		const Node *a_lnode() const { return lnode; };
+		const Node *a_rnode() const { return rnode; };
 };
 
 class DCCallNode : public ColNode

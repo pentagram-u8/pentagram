@@ -35,11 +35,11 @@ class PopVarNode : public UniNode
 			switch(opcode)
 			{
 				case 0x01: // popping a word var (2 bytes)
-					dtype = DataType(Type::T_WORD, DataType::DT_BP, newValue);
+					_dtype = DataType(Type::T_WORD, DataType::DT_BP, newValue);
 					break;
 				default: assert(false);
 			}
-			rtype(dtype.type());
+			rtype(_dtype.type());
 		};
 		PopVarNode(const uint32 opcode, const uint32 offset)
 			: UniNode(opcode, offset)
@@ -48,11 +48,11 @@ class PopVarNode : public UniNode
 			switch(opcode)
 			{
 				case 0x12: // popping a word into temp
-					dtype = DataType(Type::T_WORD, DataType::DT_TEMP);
+					_dtype = DataType(Type::T_WORD, DataType::DT_TEMP);
 					break;
 				default: assert(false);
 			}
-			rtype(dtype.type());
+			rtype(_dtype.type());
 		};
 		~PopVarNode() { /*FORGET_OBJECT(lnode);*/ /* don't delete rnode */ };
 
@@ -65,7 +65,7 @@ class PopVarNode : public UniNode
 	protected:
 
 	private:
-		DataType	dtype;
+		DataType	_dtype;
 };
 
 class PushVarNode : public Node
@@ -78,26 +78,26 @@ class PushVarNode : public Node
 			switch(opcode)
 			{
 				case 0x0A: // pushing a byte (1 byte)
-					dtype = DataType(Type::T_BYTE, DataType::DT_BYTES, newValue);
+					_dtype = DataType(Type::T_BYTE, DataType::DT_BYTES, newValue);
 					break;
 				case 0x0B: // pushing a word (2 bytes)
-					dtype = DataType(Type::T_WORD, DataType::DT_BYTES, newValue);
+					_dtype = DataType(Type::T_WORD, DataType::DT_BYTES, newValue);
 					break;
 				case 0x0C: // pushing a dword (4 bytes)
-					dtype = DataType(Type::T_DWORD, DataType::DT_BYTES, newValue);
+					_dtype = DataType(Type::T_DWORD, DataType::DT_BYTES, newValue);
 					break;
 				case 0x3F: // pushing a word var (2 bytes)
-					dtype = DataType(Type::T_WORD, DataType::DT_BP, newValue);
+					_dtype = DataType(Type::T_WORD, DataType::DT_BP, newValue);
 					break;
 				case 0x40: // pushing a dword var (4 bytes)
-					dtype = DataType(Type::T_DWORD, DataType::DT_BP, newValue);
+					_dtype = DataType(Type::T_DWORD, DataType::DT_BP, newValue);
 					break;
 				case 0x4B: // pushing an address (4 bytes)
-					dtype = DataType(Type::T_DWORD, DataType::DT_BPADDR, newValue);
+					_dtype = DataType(Type::T_DWORD, DataType::DT_BPADDR, newValue);
 					break;
 				default: assert(false);
 			}
-			rtype(dtype.type());
+			rtype(_dtype.type());
 		};
 		PushVarNode(const uint32 opcode, const uint32 offset, const uint32 strSize, const std::string &str)
 			: Node(opcode, offset)
@@ -107,11 +107,11 @@ class PushVarNode : public Node
 			{
 				case 0x0D: // pushing a string (2 bytes)
 					assert(strSize==str.size());
-					dtype = DataType(Type::T_STRING, DataType::DT_STRING, str);
+					_dtype = DataType(Type::T_STRING, DataType::DT_STRING, str);
 					break;
 				default: assert(false);
 			}
-			rtype(dtype.type());
+			rtype(_dtype.type());
 		};
 		PushVarNode(const uint32 opcode, const uint32 offset)
 			: Node(opcode, offset)
@@ -120,11 +120,11 @@ class PushVarNode : public Node
 			switch(opcode)
 			{
 				case 0x59:
-					dtype = DataType(Type::T_WORD, DataType::DT_PID);
+					_dtype = DataType(Type::T_WORD, DataType::DT_PID);
 					break;
 				default: assert(false);
 			}
-			rtype(dtype.type());
+			rtype(_dtype.type());
 		};
 
 		~PushVarNode() {};
@@ -140,11 +140,12 @@ class PushVarNode : public Node
 		/* NOTE: 'VT_VAR' is not really a vartype either, it's just to handle a variable
 			number of parameters pushed as a global, if it's not a 'nice' number */
 
+		const DataType &dtype() const { return _dtype; };
 
 	protected:
 
 	private:
-		DataType	dtype;
+		DataType	_dtype;
 
 /*		sint32		value;
 		// for list use only

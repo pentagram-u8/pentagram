@@ -102,6 +102,7 @@ class DataType
 		sint32 _value;
 		std::string _strvalue;
 		//uint32 _size; // for globals
+	
 };
 
 

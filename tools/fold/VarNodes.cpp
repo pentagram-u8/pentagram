@@ -74,10 +74,10 @@ void PopVarNode::print_unk(Console &o, const uint32 isize) const
 	assert(node!=0);
 	Node::print_linenum_unk(o, isize);
 	#if 0
-	dtype.print_type_unk(o);
+	_dtype.print_type_unk(o);
 	o.Putchar(' ');
 	#endif
-	dtype.print_value_unk(o);
+	_dtype.print_value_unk(o);
 	o.Print(" = ");
 	node->print_unk(o, isize);
 }
@@ -89,18 +89,18 @@ void PopVarNode::print_asm(Console &o) const
 	node->print_asm(o);
 	o.Putchar('\n');
 	Node::print_asm(o);
-	switch(dtype.dtype())
+	switch(_dtype.dtype())
 	{
 		case DataType::DT_BP:
-			switch(dtype.type().type())
+			switch(_dtype.type().type())
 			{
-				case Type::T_WORD:  o.Printf("pop\t\t");     dtype.print_value_asm(o); break;
-				//case Type::T_DWORD: o.Printf("pop dword\t"); dtype.print_value_asm(o); break;
+				case Type::T_WORD:  o.Printf("pop\t\t");     _dtype.print_value_asm(o); break;
+				//case Type::T_DWORD: o.Printf("pop dword\t"); _dtype.print_value_asm(o); break;
 				default: assert(false);
 			}
 			break;
 		case DataType::DT_TEMP:
-			switch(dtype.type().type())
+			switch(_dtype.type().type())
 			{
 				case Type::T_WORD:  o.Printf("pop\t\ttemp"); break;
 				default: assert(false);
@@ -115,17 +115,17 @@ void PopVarNode::print_bin(ODequeDataSource  &o) const
 	assert(node!=0);
 	Node::print_linenum_bin(o);
 	node->print_bin(o);
-	switch(dtype.dtype())
+	switch(_dtype.dtype())
 	{
 		case DataType::DT_BP:
-			switch(dtype.type().type())
+			switch(_dtype.type().type())
 			{
-				case Type::T_WORD:  o.write1(0x01); dtype.print_value_bin(o); break;
+				case Type::T_WORD:  o.write1(0x01); _dtype.print_value_bin(o); break;
 				default: assert(false);
 			}
 			break;
 		case DataType::DT_TEMP:
-			switch(dtype.type().type())
+			switch(_dtype.type().type())
 			{
 				case Type::T_WORD:  o.write1(0x12); break;
 				default: assert(false);
@@ -161,31 +161,31 @@ bool PopVarNode::fold(DCUnit */*unit*/, std::deque<Node *> &nodes)
 	{
 		case 0x0D: // pushing a string (2 bytes)
 			_vtype = VT_STRING;
-			dtype  = DT_CHARS;
+			_dtype  = DT_CHARS;
 			strval = foldops[end].str;
 			rtype=Type::T_STRING;
 			break;
 		case 0x3E: // pushing a byte var (2 bytes)
 			_vtype  = VT_BYTE;
-			dtype  = DT_BP;
+			_dtype  = DT_BP;
 			value  = foldops[end].i0;
 			rtype=Type::T_BYTE;
 			break;
 		case 0x3F: // pushing a word var (2 bytes)
 			_vtype  = VT_WORD;
-			dtype  = DT_BP;
+			_dtype  = DT_BP;
 			value  = foldops[end].i0;
 			rtype=Type::T_WORD;
 			break;
 		case 0x41: // pushing a string var (2 bytes)
 			_vtype = VT_STRING;
-			dtype  = DT_BP;
+			_dtype  = DT_BP;
 			value  = foldops[end].i0;
 			rtype=Type::T_STRING;
 			break;
 		case 0x42: // pushing a list (2 bytes?)
 			_vtype = VT_LIST;
-			dtype  = DT_BPLIST;
+			_dtype  = DT_BPLIST;
 			value  = foldops[end].i0;
 			value2 = foldops[end].i1;
 			assert(value2==2); // FIXME: incorrect, but a quick hack for my purposes
@@ -193,12 +193,12 @@ bool PopVarNode::fold(DCUnit */*unit*/, std::deque<Node *> &nodes)
 			break;
 		case 0x43: // pushing a slist (2 bytes?)
 			_vtype  = VT_SLIST;
-			dtype  = DT_BP;
+			_dtype  = DT_BP;
 			value  = foldops[end].i0;
 			rtype=Type::T_SLIST;
 			break;
 		case 0x4E: // pushing a global (x bytes - round up to an even pair of bytes
-			dtype  = DT_GLOBAL;
+			_dtype  = DT_GLOBAL;
 			global_offset = foldops[end].i0;
 			global_size   = foldops[end].i1;
 			switch(global_size)
@@ -213,25 +213,25 @@ bool PopVarNode::fold(DCUnit */*unit*/, std::deque<Node *> &nodes)
 			break;
 		case 0x59: // pushing a pid (2 bytes - maybe)
 			_vtype  = VT_VPID;
-			dtype  = DT_DPID;
+			_dtype  = DT_DPID;
 			value  = 0; // unused
 			rtype=Type::T_PID;
 			break;
 		case 0x69: // pushing a string ptr (4 bytes)
 			_vtype = VT_DWORD;
-			dtype  = DT_BPSTRPTR;
+			_dtype  = DT_BPSTRPTR;
 			value  = 0x100-foldops[end].i0;
 			rtype=Type::T_DWORD;
 			break;
 		case 0x6D: // pushing an address of a SP (4 bytes)
 			_vtype = VT_DWORD;
-			dtype  = DT_PRESULT;
+			_dtype  = DT_PRESULT;
 			value  = 0; // unused
 			rtype=Type::T_DWORD;
 			break;
 		case 0x6F: // pushing an address of a SP (4 bytes)
 			_vtype = VT_DWORD;
-			dtype  = DT_SPADDR;
+			_dtype  = DT_SPADDR;
 			value  = 0x100-foldops[end].i0;
 			rtype=Type::T_DWORD;
 			break;
@@ -239,7 +239,7 @@ bool PopVarNode::fold(DCUnit */*unit*/, std::deque<Node *> &nodes)
 			if(crusader) // we're only a global for crusader
 			{
 				_vtype = VT_DWORD;
-				dtype  = DT_SPADDR;
+				_dtype  = DT_SPADDR;
 				value  = 0x100-foldops[end].i0;
 				rtype=Type::T_DWORD;
 			}
@@ -258,50 +258,50 @@ bool PopVarNode::fold(DCUnit */*unit*/, std::deque<Node *> &nodes)
 void PushVarNode::print_unk(Console &o, const uint32 /*isize*/) const
 {
 	#if 0
-	dtype.print_type_unk(o);
+	_dtype.print_type_unk(o);
 	o.Putchar(' ');
 	#endif
-	dtype.print_value_unk(o);
+	_dtype.print_value_unk(o);
 }
 
 void PushVarNode::print_asm(Console &o) const
 {
 	Node::print_asm(o);
-	switch(dtype.dtype())
+	switch(_dtype.dtype())
 	{
 		case DataType::DT_BYTES:
-			switch(dtype.type().type())
+			switch(_dtype.type().type())
 			{
-				case Type::T_BYTE:  o.Printf("push byte\t");  dtype.print_value_asm(o); break;
-				case Type::T_WORD:  o.Printf("push\t\t");     dtype.print_value_asm(o); break;
-				case Type::T_DWORD: o.Printf("push dword\t"); dtype.print_value_asm(o); break;
+				case Type::T_BYTE:  o.Printf("push byte\t");  _dtype.print_value_asm(o); break;
+				case Type::T_WORD:  o.Printf("push\t\t");     _dtype.print_value_asm(o); break;
+				case Type::T_DWORD: o.Printf("push dword\t"); _dtype.print_value_asm(o); break;
 				default: assert(false); // can't happen
 			}
 			break;
 		case DataType::DT_BP:
-			switch(dtype.type().type())
+			switch(_dtype.type().type())
 			{
-				case Type::T_WORD:  o.Printf("push\t\t");     dtype.print_value_asm(o); break;
-				case Type::T_DWORD: o.Printf("push dword\t"); dtype.print_value_asm(o); break;
+				case Type::T_WORD:  o.Printf("push\t\t");     _dtype.print_value_asm(o); break;
+				case Type::T_DWORD: o.Printf("push dword\t"); _dtype.print_value_asm(o); break;
 				default: assert(false);
 			}
 			break;
 		case DataType::DT_BPADDR:
-			switch(dtype.type().type())
+			switch(_dtype.type().type())
 			{
-				case Type::T_DWORD: o.Printf("push addr\t"); dtype.print_value_asm(o); break;
+				case Type::T_DWORD: o.Printf("push addr\t"); _dtype.print_value_asm(o); break;
 				default: assert(false); // can't happen
 			}
 			break;
 		case DataType::DT_STRING:
-			switch(dtype.type().type())
+			switch(_dtype.type().type())
 			{
-				case Type::T_STRING: o.Printf("push string\t"); dtype.print_value_asm(o); break;
+				case Type::T_STRING: o.Printf("push string\t"); _dtype.print_value_asm(o); break;
 				default: assert(false); // can't happen
 			}
 			break;
 		case DataType::DT_PID:
-			//assert(dtype.type().type()==Type::T_PID);
+			//assert(_dtype.type().type()==Type::T_PID);
 			o.Printf("push\t\tpid");
 			break;
 		default: assert(false);
@@ -310,36 +310,36 @@ void PushVarNode::print_asm(Console &o) const
 
 void PushVarNode::print_bin(ODequeDataSource  &o) const
 {
-	switch(dtype.dtype())
+	switch(_dtype.dtype())
 	{
 		case DataType::DT_BYTES:
-			switch(dtype.type().type())
+			switch(_dtype.type().type())
 			{
-				case Type::T_BYTE:  o.write1(0x0A); dtype.print_value_bin(o); break;
-				case Type::T_WORD:  o.write1(0x0B); dtype.print_value_bin(o); break;
-				case Type::T_DWORD: o.write1(0x0C); dtype.print_value_bin(o); break;
+				case Type::T_BYTE:  o.write1(0x0A); _dtype.print_value_bin(o); break;
+				case Type::T_WORD:  o.write1(0x0B); _dtype.print_value_bin(o); break;
+				case Type::T_DWORD: o.write1(0x0C); _dtype.print_value_bin(o); break;
 				default: assert(false); // can't happen
 			}
 			break;
 		case DataType::DT_BP:
-			switch(dtype.type().type())
+			switch(_dtype.type().type())
 			{
-				case Type::T_WORD:  o.write1(0x3F); dtype.print_value_bin(o); break;
-				case Type::T_DWORD: o.write1(0x40); dtype.print_value_bin(o); break;
+				case Type::T_WORD:  o.write1(0x3F); _dtype.print_value_bin(o); break;
+				case Type::T_DWORD: o.write1(0x40); _dtype.print_value_bin(o); break;
 				default: assert(false);
 			}
 			break;
 		case DataType::DT_BPADDR:
-			switch(dtype.type().type())
+			switch(_dtype.type().type())
 			{
-				case Type::T_DWORD: o.write1(0x4B); dtype.print_value_bin(o); break;
+				case Type::T_DWORD: o.write1(0x4B); _dtype.print_value_bin(o); break;
 				default: assert(false); // can't happen
 			}
 			break;
 		case DataType::DT_STRING:
-			switch(dtype.type().type())
+			switch(_dtype.type().type())
 			{
-				case Type::T_STRING: o.write1(0x0D); dtype.print_value_bin(o); break;
+				case Type::T_STRING: o.write1(0x0D); _dtype.print_value_bin(o); break;
 				default: assert(false); // can't happen
 			}
 			break;

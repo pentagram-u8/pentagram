@@ -72,13 +72,27 @@ inline void indent(Console &o, uint32 size)
 	}
 }
 
+class PrintHelperNode
+{
+	public:
+		inline void print_asm_header(Console &o, const uint32 h_off, const uint32 h_op) const
+		{
+			o.Printf("    %04X: %02X\t", h_off, h_op);
+		}
+		inline void print_mac_header(Console &o, const uint32 h_off, const uint32 h_op) const
+		{
+			o.Printf("    (%04X: %02X)\t", h_off, h_op);
+		}
+
+};
+
 class Node;
 
 /****************************************************************************
 	Node
 	The basic node type.
  ****************************************************************************/
-class Node
+class Node : public PrintHelperNode
 {
 	public:
 		Node(const sint32 newOpcode=-1, const uint32 newOffset=0, const Type newRType=Type())
@@ -137,12 +151,12 @@ class Node
 
 inline void Node::print_asm(Console &o) const
 {
-	o.Printf("    %04X: %02X\t", _offset, _opcode);
+	print_asm_header(o, _offset, _opcode);
 }
 
 inline void Node::print_mac(Console &o) const
 {
-	o.Printf("    (%04X: %02X)\t", _offset, _opcode);
+	print_mac_header(o, _offset, _opcode);
 }
 
 inline void Node::print_linenum_unk(Console &o, const uint32 isize) const
