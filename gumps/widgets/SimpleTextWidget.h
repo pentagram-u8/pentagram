@@ -41,6 +41,7 @@ protected:
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
+	SimpleTextWidget();
 	SimpleTextWidget(int X, int Y, std::string txt, int fontnum, int width = 0, int height = 0);
 	virtual ~SimpleTextWidget(void);
 
@@ -49,6 +50,10 @@ public:
 
 	// Overloadable method to Paint just this Gump (RenderSurface is relative to this)
 	virtual void			PaintThis(RenderSurface*, sint32 lerp_factor);
+
+	bool loadData(IDataSource* ids);
+protected:
+	virtual void saveData(ODataSource* ods);
 };
 
 #endif SIMPLETEXTWIDGET_H_INCLUDED

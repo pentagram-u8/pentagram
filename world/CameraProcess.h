@@ -34,7 +34,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class CameraProcess : public Process
 {
 public:
-	CameraProcess(uint16 itemnum=0);							// Follow item/Do nothing
+	CameraProcess();
+	CameraProcess(uint16 itemnum);							// Follow item/Do nothing
 	CameraProcess(sint32 x, sint32 y, sint32 z);				// Goto location
 	CameraProcess(sint32 x, sint32 y, sint32 z, sint32 time);	// Scroll to location
 
@@ -47,8 +48,8 @@ public:
 	void GetLerped(sint32 &x, sint32 &y, sint32 &z, sint32 factor);
 
 	//! Find the roof above the camera. 
-	//! /param factor Interpolation factor for this frame
-	//! /return 0 if no roof found, objid of roof if found
+	//! \param factor Interpolation factor for this frame
+	//! \return 0 if no roof found, objid of roof if found
 	uint16 FindRoof(sint32 factor);
 
 	INTRINSIC(I_setCenterOn);
@@ -62,8 +63,10 @@ public:
 	static uint16			SetCameraProcess(CameraProcess *);	// Set the current camera process. Adds process. Return PID
 	static void				ResetCameraProcess();
 
-
+	bool loadData(IDataSource* ids);
 private:
+	virtual void saveData(ODataSource* ods);
+
 	sint32 sx, sy, sz;
 	sint32 ex, ey, ez;
 	sint32 time;

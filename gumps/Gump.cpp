@@ -24,8 +24,17 @@
 #include "GumpNotifyProcess.h"
 #include "Kernel.h"
 #include "World.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
+#include "ObjectManager.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(Gump,Object);
+
+Gump::Gump()
+	: Object(), parent(0), children()
+{
+
+}
 
 Gump::Gump(int inX, int inY, int Width, int Height, uint16 inOwner,
 		   uint32 inFlags, sint32 inLayer) : 
@@ -591,6 +600,81 @@ bool Gump::OnTextInput(int unicode)
 {
 	bool handled = false;
 	return handled;
+}
+
+void Gump::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	Object::saveData(ods);
+
+	ods->write2(owner);
+	ods->write4(static_cast<uint32>(x));
+	ods->write4(static_cast<uint32>(y));
+	ods->write4(static_cast<uint32>(dims.x));
+	ods->write4(static_cast<uint32>(dims.y));
+	ods->write4(static_cast<uint32>(dims.w));
+	ods->write4(static_cast<uint32>(dims.h));
+	ods->write4(flags);
+	ods->write4(static_cast<uint32>(layer));
+	ods->write4(static_cast<uint32>(index));
+	ods->write4(0); //!!TODO: shape
+	ods->write4(framenum);
+	if (focus_child)
+		ods->write2(focus_child->getObjId());
+	else
+		ods->write2(0);
+	ods->write2(notifier);
+	ods->write4(process_result);
+	// write children:
+	ods->write4(children.size());
+	std::list<Gump*>::iterator it;
+	for (it = children.begin(); it != children.end(); ++it) {
+		(*it)->save(ods);
+	}
+}
+
+bool Gump::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Object::loadData(ids)) return false;
+
+	owner = ids->read2();
+	x = static_cast<sint32>(ids->read4());
+	y = static_cast<sint32>(ids->read4());
+
+	int dx = static_cast<sint32>(ids->read4());
+	int dy = static_cast<sint32>(ids->read4());
+	int dw = static_cast<sint32>(ids->read4());
+	int dh = static_cast<sint32>(ids->read4());
+	dims.Set(dx, dy, dw, dh);
+
+	flags = ids->read4();
+	layer = static_cast<sint32>(ids->read4());
+	index = static_cast<sint32>(ids->read4());
+	ids->read4(); //!!TODO: shape
+	shape = 0;
+	framenum = ids->read4();
+	uint16 focusid = ids->read2();
+	focus_child = 0;
+	notifier = ids->read2();
+	process_result = ids->read4();
+
+	// read children
+	uint32 childcount = ids->read4();
+	for (unsigned int i = 0; i < childcount; ++i) {
+		Object* obj = ObjectManager::get_instance()->loadObject(ids);
+		Gump* child = p_dynamic_cast<Gump*>(obj);
+		if (!child) return false;
+
+		AddChild(child, false);
+
+		if (child->getObjId() == focusid)
+			focus_child = child;
+
+	}
+
+	return true;
 }
 
 // Colourless Protection

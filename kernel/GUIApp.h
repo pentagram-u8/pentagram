@@ -34,11 +34,13 @@ class RenderSurface;
 class PaletteManager;
 class GameData;
 class World;
+class ObjectManager;
 class MidiDriver;
+class IDataSource;
+class ODataSource;
 
 const int NUM_MOUSEBUTTONS = 5;
 
-// extremely simplified stub-ish Application class
 class GUIApp : public CoreApp
 {
 public:
@@ -76,12 +78,30 @@ public:
 	Gump *getDesktopGump() { return desktopGump; }
 	Gump* getGump(uint16 gumpid);
 
+	//! save a game
+	//! \param filename the file to save to
+	//! \return true if succesful
+	bool saveGame(std::string filename);
+
+	//! load a game
+	//! \param filename the savegame to load
+	//! \return true if succesful.
+	bool loadGame(std::string filename);
+
+	MidiDriver* getMidiDriver() const { return midi_driver; }
+
 protected:
 	virtual void DeclareArgs();
 
 private:
+	//! save CoreApp/GUIApp data
+	void save(ODataSource* ods);
+
+	//! load CoreApp/GUIApp data
+	bool load(IDataSource* ids);
 	
 	// full system
+	ObjectManager* objectmanager;
 	UCMachine* ucmachine;
 	RenderSurface *screen;
 	PaletteManager *palettemanager;

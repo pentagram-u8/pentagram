@@ -24,12 +24,22 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "XMidiFile.h"
 #include "XMidiEventList.h"
 
+#include "GUIApp.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
+
 using std::memset;
 
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(MusicProcess,Process);
 
 MusicProcess * MusicProcess::the_music_process = 0;
+
+MusicProcess::MusicProcess()
+	: current_track(0)
+{
+	memset(song_branches, -1, 128*sizeof(int));
+}
 
 MusicProcess::MusicProcess(MidiDriver *drv) :
 	driver(drv), state(MUSIC_NORMAL), current_track(0),
@@ -174,6 +184,30 @@ bool MusicProcess::run(const uint32)
 	}
 
 	return false;
+}
+
+void MusicProcess::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	Process::saveData(ods);
+
+	ods->write4(static_cast<uint32>(wanted_track));
+}
+
+bool MusicProcess::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Process::loadData(ids)) return false;
+
+	wanted_track = static_cast<sint32>(ids->read4());
+	state = MUSIC_PLAY_WANTED;
+
+	the_music_process = this;
+
+	driver = GUIApp::get_instance()->getMidiDriver();
+
+	return true;
 }
 
 uint32 MusicProcess::I_playMusic(const uint8* args,

@@ -19,12 +19,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 #include "Actor.h"
 
+#include "ObjectManager.h"
 #include "Kernel.h"
 #include "UCMachine.h"
 #include "World.h"
 #include "ActorAnimProcess.h"
 #include "CurrentMap.h"
 #include "ItemFactory.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
 
 #include "MissileProcess.h" // temp. replacement for pathfinding
 
@@ -33,7 +36,8 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(Actor,Container);
 
 Actor::Actor()
 	: strength(0), dexterity(0), intelligence(0),
-	  hitpoints(0), mana(0), lastanim(0), direction(0), actorflags(0)
+	  hitpoints(0), mana(0), alignment(0), enemyalignment(0),
+	  lastanim(0), direction(0), actorflags(0)
 {
 
 }
@@ -46,7 +50,7 @@ Actor::~Actor()
 uint16 Actor::assignObjId()
 {
 	if (objid == 0xFFFF)
-		objid = Kernel::get_instance()->assignActorObjId(this);
+		objid = ObjectManager::get_instance()->assignActorObjId(this);
 
 	std::list<Item*>::iterator iter;
 	for (iter = contents.begin(); iter != contents.end(); ++iter) {
@@ -74,6 +78,43 @@ void Actor::teleport(int newmap, sint32 newx, sint32 newy, sint32 newz)
 		currentmap->addItem(this);
 	}
 } 
+
+void Actor::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	Container::saveData(ods);
+	ods->write2(strength);
+	ods->write2(dexterity);
+	ods->write2(intelligence);
+	ods->write2(hitpoints);
+	ods->write2(mana);
+	ods->write2(alignment);
+	ods->write2(enemyalignment);
+	ods->write2(lastanim);
+	ods->write2(direction);
+	ods->write4(actorflags);
+}
+
+bool Actor::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Container::loadData(ids)) return false;
+
+	strength = static_cast<sint16>(ids->read2());
+	dexterity = static_cast<sint16>(ids->read2());
+	intelligence = static_cast<sint16>(ids->read2());
+	hitpoints = ids->read2();
+	mana = static_cast<sint16>(ids->read2());
+	alignment = ids->read2();
+	enemyalignment = ids->read2();
+	lastanim = ids->read2();
+	direction = ids->read2();
+	actorflags = ids->read4();
+
+	return true;
+}
+
 
 uint32 Actor::I_isNPC(const uint8* args, unsigned int /*argsize*/)
 {
@@ -185,10 +226,26 @@ uint32 Actor::I_getMana(const uint8* args, unsigned int /*argsize*/)
 	return actor->getMana();
 }
 
+uint32 Actor::I_getAlignment(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	if (!actor) return 0;
+
+	return actor->getAlignment();
+}
+
+uint32 Actor::I_getEnemyAlignment(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	if (!actor) return 0;
+
+	return actor->getEnemyAlignment();
+}
+
 uint32 Actor::I_setStr(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ACTOR_FROM_PTR(actor);
-	ARG_UINT16(str);
+	ARG_SINT16(str);
 	if (!actor) return 0;
 
 	actor->setStr(str);
@@ -198,7 +255,7 @@ uint32 Actor::I_setStr(const uint8* args, unsigned int /*argsize*/)
 uint32 Actor::I_setDex(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ACTOR_FROM_PTR(actor);
-	ARG_UINT16(dex);
+	ARG_SINT16(dex);
 	if (!actor) return 0;
 
 	actor->setDex(dex);
@@ -208,7 +265,7 @@ uint32 Actor::I_setDex(const uint8* args, unsigned int /*argsize*/)
 uint32 Actor::I_setInt(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ACTOR_FROM_PTR(actor);
-	ARG_UINT16(int_);
+	ARG_SINT16(int_);
 	if (!actor) return 0;
 
 	actor->setStr(int_);
@@ -228,10 +285,30 @@ uint32 Actor::I_setHp(const uint8* args, unsigned int /*argsize*/)
 uint32 Actor::I_setMana(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ACTOR_FROM_PTR(actor);
-	ARG_UINT16(mp);
+	ARG_SINT16(mp);
 	if (!actor) return 0;
 
 	actor->setMana(mp);
+	return 0;
+}
+
+uint32 Actor::I_setAlignment(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	ARG_UINT16(a);
+	if (!actor) return 0;
+
+	actor->setAlignment(a);
+	return 0;
+}
+
+uint32 Actor::I_setEnemyAlignment(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ACTOR_FROM_PTR(actor);
+	ARG_UINT16(a);
+	if (!actor) return 0;
+
+	actor->setEnemyAlignment(a);
 	return 0;
 }
 

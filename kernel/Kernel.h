@@ -21,14 +21,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <list>
 #include <map>
-#include <vector>
 
 #include "intrinsics.h"
 
 class Process;
 class idMan;
-class Object;
-class Actor;
+class IDataSource;
+class ODataSource;
+
+typedef Process* (*ProcessLoadFunc)(IDataSource*);
 
 class Kernel {
 public:
@@ -36,6 +37,8 @@ public:
 	~Kernel();
 
 	static Kernel* get_instance() { return kernel; }
+
+	void reset();
 
 	uint16 addProcess(Process *proc); // returns pid of new process
 	void removeProcess(Process *proc);
@@ -51,24 +54,40 @@ public:
 
 	void kernelStats();
 
-	uint16 assignObjId(Object* obj);
-	uint16 assignActorObjId(Actor* obj, uint16 id=0xFFFF);
-	void clearObjId(uint16 objid);
-	Object* getObject(uint16 objid) const;
+	void save(ODataSource* ods);
+	bool load(IDataSource* ids);
+
+	void addProcessLoader(std::string classname, ProcessLoadFunc func)
+		{ processloaders[classname] = func; }
 
 	INTRINSIC(I_getNumProcesses);
 	INTRINSIC(I_resetRef);
 private:
+	Process* loadProcess(IDataSource* ids);
+
 	std::list<Process*> processes;
 	idMan	*pIDs;
 
 	std::list<Process*>::iterator current_process;
 
-	std::vector<Object*> objects;
-	idMan* objIDs;
-	idMan* actorIDs;
+	std::map<std::string, ProcessLoadFunc> processloaders;
 
 	static Kernel* kernel;
+};
+
+// a bit of a hack to prevent having to write a load function for
+// every process
+template<class T>
+struct ProcessLoader {
+	static Process* load(IDataSource* ids) {
+		T* p = new T();
+		bool ok = p->loadData(ids);
+		if (!ok) {
+			delete p;
+			p = 0;
+		}
+		return p;
+	}
 };
 
 

@@ -36,8 +36,13 @@ public:
 
 	virtual uint16 hatch();
 
+	bool loadData(IDataSource* ids);
+
 	INTRINSIC(I_monsterEggHatch);
 	INTRINSIC(I_getMonId);
+
+protected:
+	virtual void saveData(ODataSource* ods);
 };
 
 

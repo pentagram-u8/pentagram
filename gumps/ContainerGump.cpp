@@ -28,7 +28,16 @@
 #include "GameData.h"
 #include "MainShapeFlex.h"
 
+#include "IDataSource.h"
+#include "ODataSource.h"
+
 DEFINE_RUNTIME_CLASSTYPE_CODE(ContainerGump,ItemRelativeGump);
+
+ContainerGump::ContainerGump()
+	: ItemRelativeGump(), display_dragging(false)
+{
+
+}
 
 ContainerGump::ContainerGump(Shape* shape_, uint32 framenum_, uint16 owner,
 							 uint32 Flags_, sint32 layer)
@@ -329,4 +338,30 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 	dragging_x = mx - itemarea.x;
 	dragging_y = my - itemarea.y;
 	item->setGumpLocation(dragging_x, dragging_y);
+}
+
+void ContainerGump::saveData(ODataSource* ods)
+{
+	ods->write2(1);
+	ItemRelativeGump::saveData(ods);
+
+	ods->write4(static_cast<uint32>(itemarea.x));
+	ods->write4(static_cast<uint32>(itemarea.y));
+	ods->write4(static_cast<uint32>(itemarea.w));
+	ods->write4(static_cast<uint32>(itemarea.h));
+}
+
+bool ContainerGump::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!ItemRelativeGump::loadData(ids)) return false;
+
+	sint32 iax = static_cast<sint32>(ids->read4());
+	sint32 iay = static_cast<sint32>(ids->read4());
+	sint32 iaw = static_cast<sint32>(ids->read4());
+	sint32 iah = static_cast<sint32>(ids->read4());
+	itemarea.Set(iax, iay, iaw, iah);
+
+	return true;
 }

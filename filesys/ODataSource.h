@@ -48,6 +48,17 @@ class ODataSource
 			else if (num_bytes == 3) write3(val);
 			else write4(val);
 		}
+
+		void writef(float f)
+		{
+			// FIXME: dubious...
+			union {
+				uint32	i;
+				float	f;
+			} int_float;
+			int_float.f = f;
+			write4(int_float.i);
+		}
 		
 		virtual void seek(uint32 pos)=0;
 		virtual void skip(sint32 delta)=0;

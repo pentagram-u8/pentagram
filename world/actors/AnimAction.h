@@ -33,9 +33,13 @@ struct AnimFrame
 };
 
 struct AnimAction {
+	uint32 shapenum;
+	uint32 action;
+
 	std::vector<AnimFrame> frames[8]; // 8 directions
 	unsigned int size;
 	int framerepeat;
+	uint32 unk1;
 };
 
 

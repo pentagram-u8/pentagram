@@ -66,6 +66,9 @@ GameData::~GameData()
 	delete mouse;
 	mouse = 0;
 
+	delete music;
+	music = 0;
+
 	gamedata = 0;
 }
 
@@ -88,7 +91,6 @@ void GameData::loadU8Data()
 		std::exit(-1);
 	}
 	fixed = new Flex(fd);
-	//! we're leaking fd here
 
 	IDataSource* uds = filesystem->ReadFile("@u8/usecode/eusecode.flx");
 
@@ -103,7 +105,6 @@ void GameData::loadU8Data()
 		std::exit(-1);
 	}
 	mainusecode = new UsecodeFlex(uds);
-	//! we're leaking uds here
 
 	// Load main shapes
 	pout << "Load Shapes" << std::endl;
@@ -147,7 +148,7 @@ void GameData::loadU8Data()
 
 		if (globds && globds->getSize()) {
 			glob = new Glob;
-			glob->read(globflex->get_datasource(i));
+			glob->read(globds);
 		}
 		delete globds;
 
@@ -162,7 +163,6 @@ void GameData::loadU8Data()
 		std::exit(-1);
 	}
 	fonts = new FontShapeFlex(fds, PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
-	//! we're leaking fds here
 
 	// Load mouse
 	IDataSource *msds = filesystem->ReadFile("@u8/static/u8mouse.shp");
@@ -180,7 +180,6 @@ void GameData::loadU8Data()
 		std::exit(-1);
 	}
 	gumps = new GumpShapeFlex(gumpds, PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
-	//! we're leaking gumpds here
 
 	IDataSource *gumpageds = filesystem->ReadFile("@u8/static/gumpage.dat");
 	if (!gumpageds) {
@@ -197,5 +196,4 @@ void GameData::loadU8Data()
 		std::exit(-1);
 	}
 	music = new MusicFlex(mf);
-	//! we're leaking mf here
 }

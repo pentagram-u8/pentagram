@@ -20,9 +20,16 @@
 #include "ButtonWidget.h"
 #include "SimpleTextWidget.h"
 #include "GUIApp.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
 
 // p_dynamic_class stuff 
 DEFINE_RUNTIME_CLASSTYPE_CODE(ButtonWidget,SimpleTextWidget);
+
+ButtonWidget::ButtonWidget()
+	: SimpleTextWidget()
+{
+}
 
 ButtonWidget::ButtonWidget(int X, int Y, std::string txt, int font, int w, int h) :
 	SimpleTextWidget(X,Y,txt,font,w,h)
@@ -59,4 +66,19 @@ void ButtonWidget::OnMouseClick(int button, int mx, int my)
 void ButtonWidget::OnMouseDouble(int button, int mx, int my)
 {
 	parent->ChildNotify(this,BUTTON_DOUBLE);
+}
+
+void ButtonWidget::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	SimpleTextWidget::saveData(ods);
+}
+
+bool ButtonWidget::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!SimpleTextWidget::loadData(ids)) return false;
+
+	return true;
 }

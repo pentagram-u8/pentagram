@@ -29,6 +29,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CoreApp.h"
 #include <cstdlib>
 
+#include "IDataSource.h"
+#include "ODataSource.h"
+
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(CameraProcess,Process);
 
@@ -40,9 +43,14 @@ sint32 CameraProcess::earthquake = 0;
 sint32 CameraProcess::eq_x = 0;
 sint32 CameraProcess::eq_y = 0;
 
+CameraProcess::CameraProcess() : Process()
+{
+
+}
+
 uint16 CameraProcess::SetCameraProcess(CameraProcess *cam)
 {
-	if (!cam) cam = new CameraProcess();
+	if (!cam) cam = new CameraProcess(0);
 	if (camera) camera->terminate();
 	camera = cam;
 	return Kernel::get_instance()->addProcess(camera);
@@ -247,6 +255,50 @@ uint16 CameraProcess::FindRoof(sint32 factor)
 	return roofid;
 }
 
+void CameraProcess::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	Process::saveData(ods);
+
+	ods->write4(static_cast<uint32>(sx));
+	ods->write4(static_cast<uint32>(sy));
+	ods->write4(static_cast<uint32>(sz));
+	ods->write4(static_cast<uint32>(ex));
+	ods->write4(static_cast<uint32>(ey));
+	ods->write4(static_cast<uint32>(ez));
+	ods->write4(static_cast<uint32>(time));
+	ods->write4(static_cast<uint32>(elapsed));
+	ods->write2(itemnum);
+	ods->write4(last_framenum);
+	ods->write4(static_cast<uint32>(earthquake));
+	ods->write4(static_cast<uint32>(eq_x));
+	ods->write4(static_cast<uint32>(eq_y));
+}
+
+bool CameraProcess::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Process::loadData(ids)) return false;
+
+	sx = static_cast<sint32>(ids->read4());
+	sy = static_cast<sint32>(ids->read4());
+	sz = static_cast<sint32>(ids->read4());
+	ex = static_cast<sint32>(ids->read4());
+	ey = static_cast<sint32>(ids->read4());
+	ez = static_cast<sint32>(ids->read4());
+	time = static_cast<sint32>(ids->read4());
+	elapsed = static_cast<sint32>(ids->read4());
+	itemnum = ids->read2();
+	last_framenum = ids->read4();
+	earthquake = static_cast<sint32>(ids->read4()); //static
+	eq_x = static_cast<sint32>(ids->read4()); //static
+	eq_y = static_cast<sint32>(ids->read4()); //static
+
+	camera = this; //static
+
+	return true;
+}
 
 //	"Camera::move_to(uword, uword, ubyte, word)",
 uint32 CameraProcess::I_move_to(const uint8* args, unsigned int /*argsize*/)

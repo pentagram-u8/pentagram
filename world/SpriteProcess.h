@@ -35,6 +35,8 @@ public:
 	// p_dynamic_class stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 
+	SpriteProcess();
+
 	//! SpriteProcess Constructor
 	//! \param shape The shape to use
 	//! \param frame The initial/first frame of the sprite animation
@@ -57,6 +59,10 @@ public:
 
 	INTRINSIC(I_createSprite);
 //	INTRINSIC(I_createSpriteEx);
+
+	bool loadData(IDataSource* ids);
+protected:
+	virtual void saveData(ODataSource* ods);
 };
 
 #endif //SPRITEPROCESS_H_INCLUDED

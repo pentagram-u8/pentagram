@@ -58,11 +58,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class Map;
 class CurrentMap;
 class IDataSource;
+class ODataSource;
 class Actor;
+class MainActor;
 class Flex;
 class Item;
-class Actor;
-
 
 class World
 {
@@ -72,26 +72,60 @@ public:
 
 	static World* get_instance() { return world; }
 
+	//! clear the world (maps, currentmap, ethereal items)
 	void clear();
 
+	//! reset the world (clear everything and re-initialize maps)
+	void reset();
+
+	//! create (empty) maps, currentmap
 	void initMaps();
+
+	//! load U8's nonfixed.dat into the Maps
 	void loadNonFixed(IDataSource* ds); // delete ds afterwards
+
+	//! load U8's itemcach.dat, npcdata.dat into the world
 	void loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata);
 
+	//! get the CurrentMap
 	CurrentMap* getCurrentMap() const { return currentmap; }
 
+	//! switch map. This unloads the CurrentMap back into a Map, kills
+	//! processes, and loads a new Map into the CurrentMap.
+	//! \return true if successful
 	bool switchMap(uint32 newmap);
 
 	Item* getItem(uint16 itemid) const;
 	Actor* getNPC(uint16 npcid) const;
+	MainActor* getMainActor() const;
 
+	//! push an item onto the ethereal stack
 	void etherealPush(uint16 objid) { ethereal.push(objid); }
+
+	//! check if the the ethereal stack is empty
 	bool etherealEmpty() { return ethereal.empty(); }
+
+	//! pop an item from the ethereal stack
 	uint16 etherealPop()
 		{ uint16 id = ethereal.top(); ethereal.pop(); return id; }
+
+	//! return (but don't remove) the top item from the ethereal stack
 	uint16 etherealPeek() { return ethereal.top(); }
 
+	//! output some statistics about the world
 	void worldStats();
+
+	//! save the Maps in World.
+	void saveMaps(ODataSource* ods);
+
+	//! load Maps
+	bool loadMaps(IDataSource* ids);
+
+	//! save the rest of the World data (ethereal items, current map number).
+	void save(ODataSource* ods);
+
+	//! load World data
+	bool load(IDataSource* ids);
 
 private:
 	static World *world;

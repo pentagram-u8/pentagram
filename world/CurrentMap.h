@@ -30,6 +30,7 @@ class EggHatcherProcess;
 
 class CurrentMap
 {
+	friend class World;
 public:
 	CurrentMap();
 	~CurrentMap();
@@ -38,12 +39,26 @@ public:
 	void writeback();
 	void loadMap(Map* map);
 
+	//! sets the currently loaded map, without any processing.
+	//! (Should only be used for loading.)
+	void setMap(Map* map) { current_map = map; }
+
 	uint32 getNum() const;
 
 	void addItem(Item* item);
 	void removeItemFromList(Item* item, sint32 oldx, sint32 oldy);
 	void removeItem(Item* item);
 
+	//! search an area for items matching a loopscript
+	//! \param itemlist the list to return objids in
+	//! \param loopscript the script to check items against
+	//! \param scriptsize the size (in bytes) of the loopscript
+	//! \param item the item around which you want to search, or 0.
+	//!             if item is 0, search around (x,y)
+	//! \param range the (square) range to search
+	//! \param recurse if true, search in containers too
+	//! \param x x coordinate of search center if item is 0.
+	//! \param y y coordinate of search center if item is 0.
 	void areaSearch(UCList* itemlist, const uint8* loopscript,
 					uint32 scriptsize, Item* item, uint16 range, bool recurse,
 					sint32 x=0, sint32 y=0);
@@ -120,6 +135,7 @@ public:
 
 private:
 	void loadItems(std::list<Item*> itemlist);
+	void createEggHatcher();
 
 	Map* current_map;
 
@@ -127,7 +143,7 @@ private:
 	// items[x][y]
 	std::list<Item*>** items;
 
-	EggHatcherProcess* egghatcher;
+	uint16 egghatcher;
 };
 
 #endif

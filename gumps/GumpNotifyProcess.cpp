@@ -21,7 +21,16 @@
 #include "Gump.h"
 #include "GUIApp.h"
 
+#include "IDataSource.h"
+#include "ODataSource.h"
+
 DEFINE_RUNTIME_CLASSTYPE_CODE(GumpNotifyProcess,Process);
+
+GumpNotifyProcess::GumpNotifyProcess()
+	: Process()
+{
+
+}
 
 GumpNotifyProcess::GumpNotifyProcess(uint16 it) : Process(it), gump(0)
 {
@@ -57,6 +66,25 @@ void GumpNotifyProcess::terminate()
 bool GumpNotifyProcess::run(const uint32)
 {
 	return false;
+}
+
+void GumpNotifyProcess::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	Process::saveData(ods);
+
+	ods->write2(gump);
+}
+
+bool GumpNotifyProcess::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Process::loadData(ids)) return false;
+
+	gump = ids->read2();
+
+	return true;
 }
 
 // Colourless Protection

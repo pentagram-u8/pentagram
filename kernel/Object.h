@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define OBJECT_H
 
 class Usecode;
+class ODataSource;
+class IDataSource;
 
 class Object
 {
@@ -40,6 +42,9 @@ public:
 	//! Clear objID of self and contents (if any)
 	virtual void clearObjId();
 
+	//! save this object
+	void save(ODataSource* ods);
+
 	//! Spawn a usecode function on this object
 	//! \param classid The usecode class to run
 	//! \param offset The offset in that class to run
@@ -47,9 +52,17 @@ public:
 	//! \param args Optional arguments to the spawned process
 	//! \param argsize The size (in bytes) of the optional arguments
 	//! \return the PID of the spawned process
-	uint16 callUsecode(uint16 classid, uint16 offset, Usecode *u, const uint8* args=0, int argsize=0);
+	uint16 callUsecode(uint16 classid, uint16 offset, Usecode *u,
+					   const uint8* args=0, int argsize=0);
 
+	bool loadData(IDataSource* ids);
 protected:
+	//! write the Object savegame header (mainly consisting of the classname)
+	void writeObjectHeader(ODataSource* ods);
+
+	//! save the actual Object data 
+	virtual void saveData(ODataSource* ods);
+
 	uint16 objid;
 };
 

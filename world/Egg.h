@@ -30,7 +30,6 @@ public:
 	Egg();
 	virtual ~Egg();
 
-
 	ENABLE_RUNTIME_CLASSTYPE();
 
 	int getXRange() const { return (npcnum >> 4) & 0xF; }
@@ -39,6 +38,14 @@ public:
 	void setXRange(int r) { npcnum &= 0x0F; npcnum |= (r & 0xF); }
 	void setYRange(int r) { npcnum &= 0xF0; npcnum |= (r & 0xF) << 4; }
 
+	//! hatch the egg
+	virtual uint16 hatch();
+
+	//! clear the 'hatched' flag
+	void reset() { hatched = false; }
+
+	bool loadData(IDataSource* ids);
+
 	INTRINSIC(I_getEggXRange);
 	INTRINSIC(I_getEggYRange);
 	INTRINSIC(I_setEggXRange);
@@ -46,11 +53,9 @@ public:
 	INTRINSIC(I_getEggId);
 	INTRINSIC(I_setEggId);
 
-	virtual uint16 hatch();
-
-	void reset() { hatched = false; }
-
 protected:
+	virtual void saveData(ODataSource* ods);
+
 	bool hatched;
 };
 

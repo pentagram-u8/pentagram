@@ -22,6 +22,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <vector>
 #include <string>
 
+class IDataSource;
+class ODataSource;
+
 // stringlists: elementsize = 2, each element is actually a stringref
 // see for example the 0x0E opcode: there is no way to see if the
 // created list is a stringlist or not
@@ -143,7 +146,11 @@ class UCList
 	void removeString(uint16 str, bool nodel=false);
 
 	uint16 getStringIndex(uint32 index);
- private:
+
+	void save(ODataSource* ods);
+	bool load(IDataSource* ids);
+
+private:
 	std::string& getString(uint32 index);
 };
 

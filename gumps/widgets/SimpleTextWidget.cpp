@@ -21,8 +21,15 @@
 #include "FontShapeFlex.h"
 #include "GameData.h"
 #include "RenderSurface.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(SimpleTextWidget,Gump);
+
+SimpleTextWidget::SimpleTextWidget()
+	: Gump()
+{
+}
 
 SimpleTextWidget::SimpleTextWidget(int X, int Y, std::string txt, int font, int w, int h) :
 	Gump(X, Y, w, h), text(txt), fontnum(font)
@@ -65,5 +72,37 @@ void SimpleTextWidget::PaintThis(RenderSurface*surf, sint32 lerp_factor)
 	Font *font = GameData::get_instance()->getFonts()->getFont(fontnum);
 	surf->PrintText(font, text.c_str(), 0, 0);
 }
+
+void SimpleTextWidget::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	Gump::saveData(ods);
+
+	ods->write4(static_cast<uint32>(fontnum));
+	ods->write4(text.size());
+	ods->write(text.c_str(), text.size());
+}
+
+bool SimpleTextWidget::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Gump::loadData(ids)) return false;
+
+	fontnum = static_cast<int>(ids->read4());
+	uint32 slen = ids->read4();
+	if (slen > 0) {
+		char* buf = new char[slen+1];
+		ids->read(buf, slen);
+		buf[slen] = 0;
+		text = buf;
+		delete[] buf;
+	} else {
+		text = "";
+	}
+
+	return true;
+}
+
 
 // COLOURLESS PROTECTION

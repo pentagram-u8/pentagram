@@ -22,14 +22,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <map>
 #include <string>
 
-#include "UCStack.h"
-#include "UCList.h"
-
 #include "intrinsics.h"
 
 class Process;
 class UCProcess;
 class ConvertUsecode;
+class IDataSource;
+class ODataSource;
+class BitSet;
+class UCList;
 
 class UCMachine
 {
@@ -39,10 +40,12 @@ public:
 
 	static UCMachine* get_instance() { return ucmachine; }
 
+	void reset();
+
 	bool execProcess(UCProcess* proc);
 
-	std::string& getString(uint16 str) { return stringHeap[str]; }
-	UCList* getList(uint16 l) { return listHeap[l]; }
+	std::string& getString(uint16 str);
+	UCList* getList(uint16 l);
 
 	void freeString(uint16 s);
 	void freeStringList(uint16 l);
@@ -63,6 +66,13 @@ public:
 	bool assignPointer(uint32 ptr, const uint8* data, uint32 size);
 	bool dereferencePointer(uint32 ptr, uint8* data, uint32 size);
 
+	void saveGlobals(ODataSource* ods);
+	void saveStrings(ODataSource* ods);
+	void saveLists(ODataSource* ods);
+
+	bool loadGlobals(IDataSource* ids);
+	bool loadStrings(IDataSource* ids);
+	bool loadLists(IDataSource* ids);
 
 	INTRINSIC(I_target);
 	INTRINSIC(I_true);
@@ -81,9 +91,7 @@ private:
 	ConvertUsecode*	convuse;
 	Intrinsic* intrinsics;
 
-	// this technically isn't a stack, but UCStack supports the access 
-	// functions we need
-	UCStack globals;
+	BitSet* globals;
 
 	std::map<uint16, UCList*> listHeap;
 	std::map<uint16, std::string> stringHeap;

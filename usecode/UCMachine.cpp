@@ -24,9 +24,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Kernel.h"
 #include "DelayProcess.h"
 #include "CoreApp.h"
-
+#include "IDataSource.h"
+#include "ODataSource.h"
 #include "CurrentMap.h"
 #include "World.h"
+#include "BitSet.h"
+#include "UCList.h"
 
 #define INCLUDE_CONVERTUSECODEU8_WITHOUT_BRINGING_IN_FOLD
 #include "u8/ConvertUsecodeU8.h"
@@ -85,14 +88,13 @@ enum UCSegments {
 
 UCMachine* UCMachine::ucmachine = 0;
 
-UCMachine::UCMachine(Intrinsic *iset) :
-	globals(0x1000)
+UCMachine::UCMachine(Intrinsic *iset)
 {
 	assert(ucmachine == 0);
 	ucmachine = this;
 
 	// zero globals
-	globals.push0(globals.getSize());
+	globals = new BitSet(0x1000);
 
 	convuse = new ConvertUsecodeU8; //!...
 	loadIntrinsics(iset); //!...
@@ -102,6 +104,23 @@ UCMachine::UCMachine(Intrinsic *iset) :
 UCMachine::~UCMachine()
 {
 	ucmachine = 0;
+
+	delete globals; globals = 0;
+
+	delete convuse; convuse = 0;
+}
+
+void UCMachine::reset()
+{
+	// clear globals
+	globals->setSize(0x1000);
+
+	// clear strings, lists
+	std::map<uint16, UCList*>::iterator iter;
+	for (iter = listHeap.begin(); iter != listHeap.end(); ++iter)
+		delete (iter->second);
+	listHeap.clear();
+	stringHeap.clear();
 }
 
 void UCMachine::loadIntrinsics(Intrinsic *i)
@@ -376,7 +395,12 @@ bool UCMachine::execProcess(UCProcess* p)
 			// (free the originals? order?)
 			ui16a = p->stack.pop2();
 			ui16b = p->stack.pop2();
-			stringHeap[ui16b] += stringHeap[ui16a];
+			if (ui16b == 0) {
+				perr << "Trying to append to string 0." << std::endl;
+				error = true;
+				break;
+			}
+			stringHeap[ui16b] += getString(ui16a);
 			freeString(ui16a);
 			p->stack.push2(ui16b);
 			LOGPF(("concat\t\t= %s", stringHeap[ui16b].c_str()));
@@ -578,7 +602,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// (delete strings)
 			ui16a = p->stack.pop2();
 			ui16b = p->stack.pop2();
-			if (stringHeap[ui16b] == stringHeap[ui16a])
+			if (getString(ui16b) == getString(ui16a))
 				p->stack.push2(1);
 			else
 				p->stack.push2(0);
@@ -1041,12 +1065,11 @@ bool UCMachine::execProcess(UCProcess* p)
 			// push global xxxx size yy bits
 			ui16a = cs.read2();
 			ui16b = cs.read1();
-			// get flagname for output?
+			// TODO: get flagname for output?
 
-			//!! we're storing everything as 1 byte currently
-			ui8a = globals.access1(ui16a);
-			p->stack.push2(ui8a);
-			LOGPF(("push\t\tglobal [%04X %02X] = %02X", ui16a, ui16b, ui8a));
+			ui32a = globals->getBits(ui16a, ui16b);
+			p->stack.push2(static_cast<uint16>(ui32a));
+			LOGPF(("push\t\tglobal [%04X %02X] = %02X", ui16a, ui16b, ui32a));
 			break;
 
 		case 0x4F:
@@ -1054,10 +1077,10 @@ bool UCMachine::execProcess(UCProcess* p)
 			// pop value into global xxxx size yy bits
 			ui16a = cs.read2();
 			ui16b = cs.read1();
-			// get flagname for output?
-			ui8a = static_cast<uint8>(p->stack.pop2());
-			ui8a &= ((1 << ui16b) - 1);
-			globals.assign1(ui16a, ui8a);
+			// TODO: get flagname for output?
+			ui32a = p->stack.pop2();
+			globals->setBits(ui16a, ui16b, ui32a);
+			assert(globals->getBits(ui16a, ui16b) == ui32a); // paranoid :-)
 			LOGPF(("pop\t\tglobal [%04X %02X] = %02X", ui16a, ui16b, ui8a));
 			break;
 
@@ -1808,6 +1831,30 @@ bool UCMachine::execProcess(UCProcess* p)
 }
 
 
+std::string& UCMachine::getString(uint16 str)
+{
+	static std::string emptystring("");
+
+	std::map<uint16, std::string>::iterator iter = stringHeap.find(str);
+
+	if (iter != stringHeap.end())
+		return iter->second;
+
+	return emptystring;
+}
+
+UCList* UCMachine::getList(uint16 l)
+{
+	std::map<uint16, UCList*>::iterator iter = listHeap.find(l);
+
+	if (iter != listHeap.end())
+		return iter->second;
+
+	return 0;
+}
+
+
+
 uint16 UCMachine::assignString(const char* str)
 {
 	static uint16 count = 0; // 0 is reserved
@@ -1959,7 +2006,7 @@ bool UCMachine::assignPointer(uint32 ptr, const uint8* data, uint32 size)
 	}
 	else if (segment == SEG_GLOBAL)
 	{
-		globals.assign(offset, data, size);
+		CANT_HAPPEN_MSG("pointers to globals not implemented yet");
 	}
 	else
 	{
@@ -2015,7 +2062,7 @@ bool UCMachine::dereferencePointer(uint32 ptr, uint8* data, uint32 size)
 	}
 	else if (segment == SEG_GLOBAL)
 	{
-		std::memcpy(data, globals.access(offset), size);
+		CANT_HAPPEN_MSG("pointers to globals not implemented yet");
 	}
 	else
 	{
@@ -2055,7 +2102,7 @@ uint16 UCMachine::ptrToObject(uint32 ptr)
 	}
 	else if (segment == SEG_GLOBAL)
 	{
-		return ucmachine->globals.access2(offset);
+		CANT_HAPPEN_MSG("pointers to globals not implemented yet");
 	}
 	else
 	{
@@ -2096,6 +2143,90 @@ void UCMachine::usecodeStats()
 		}
 	}
 #endif
+}
+
+void UCMachine::saveGlobals(ODataSource* ods)
+{
+	ods->write2(1); //version
+	globals->save(ods);
+}
+
+void UCMachine::saveStrings(ODataSource* ods)
+{
+	ods->write2(1); //version
+	ods->write4(stringHeap.size());
+
+	std::map<uint16, std::string>::iterator iter;
+	for (iter = stringHeap.begin(); iter != stringHeap.end(); ++iter)
+	{
+		ods->write2((*iter).first);
+		ods->write4((*iter).second.size());
+		ods->write((*iter).second.c_str(), (*iter).second.size());
+	}
+}
+
+void UCMachine::saveLists(ODataSource* ods)
+{
+	ods->write2(1); //version
+	ods->write4(listHeap.size());
+
+	std::map<uint16, UCList*>::iterator iter;
+	for (iter = listHeap.begin(); iter != listHeap.end(); ++iter)
+	{
+		ods->write2((*iter).first);
+		(*iter).second->save(ods);
+	}
+}
+
+bool UCMachine::loadGlobals(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+
+	return globals->load(ids);
+}
+
+bool UCMachine::loadStrings(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+
+	uint32 stringcount = ids->read4();
+	for (unsigned int i = 0; i < stringcount; ++i)
+	{
+		uint16 sid = ids->read2();
+		uint32 len = ids->read4();
+		if (len) {
+			char* buf = new char[len+1];
+			ids->read(buf, len);
+			buf[len] = 0;
+			stringHeap[sid] = buf;
+			delete[] buf;
+		} else {
+			stringHeap[sid] = "";
+		}
+   	}
+
+	return true;
+}
+
+bool UCMachine::loadLists(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+
+	uint32 listcount = ids->read4();
+	for (unsigned int i = 0; i < listcount; ++i)
+	{
+		uint16 lid = ids->read2();
+		UCList* l = new UCList(2); // the "2" will be ignored by load()
+		bool ret = l->load(ids);
+		if (!ret) return false;
+
+		listHeap[lid] = l;
+   	}
+
+	return true;
 }
 
 

@@ -22,9 +22,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <list>
 #include "Process.h"
 #include "UCStack.h"
-#include "IDataSource.h"
 
 class Usecode;
+class IDataSource;
+class ODataSource;
 
 
 // probably won't inherit from Process directly in the future
@@ -33,7 +34,7 @@ class UCProcess : public Process
 	friend class UCMachine;
 	friend class Kernel;
 public:
-	UCProcess(Usecode* usecode_);
+	UCProcess(Usecode* usecode=0);
     ~UCProcess();
 
 	// p_dynamic_cast stuff
@@ -47,7 +48,9 @@ public:
 
 	void freeOnTerminate(uint16 index, int type);
 
+	bool loadData(IDataSource* ids);
 protected:
+	virtual void saveData(ODataSource* ods);
 
 	void call(uint16 classid_, uint16 offset_);
 	bool ret();

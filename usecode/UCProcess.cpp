@@ -21,16 +21,27 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UCProcess.h"
 #include "UCMachine.h"
 #include "Usecode.h"
+#include "GameData.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
 
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(UCProcess,Process);
 
 UCProcess::	UCProcess(Usecode* usecode_)
-	: usecode(usecode_), classid(0)
+	: classid(0)
 {
 	classid = 0xFFFF;
 	ip = 0xFFFF;
 	bp = 0x0000;
+	usecode = usecode_;
+	if (usecode == 0)
+		usecode = GameData::get_instance()->getMainUsecode();
+	else {
+		// just to be careful
+		// saving/loading doesn't support alternate Usecode's yet
+		assert(usecode == GameData::get_instance()->getMainUsecode());
+	}
 }
 
 UCProcess::~UCProcess()
@@ -138,4 +149,46 @@ void UCProcess::terminate()
 	freeonterminate.clear();
 
 	Process::terminate();
+}
+
+
+void UCProcess::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	Process::saveData(ods);
+
+	ods->write2(bp);
+	ods->write2(classid);
+	ods->write2(ip);
+	ods->write4(temp32);
+	ods->write4(freeonterminate.size());
+	std::list<std::pair<uint16, int> >::iterator iter;
+	for (iter = freeonterminate.begin(); iter != freeonterminate.end(); ++iter)
+	{
+		ods->write2(iter->first);
+		ods->write4(static_cast<uint32>(iter->second));
+	}
+	stack.save(ods);
+}
+
+bool UCProcess::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Process::loadData(ids)) return false;
+
+	bp = ids->read2();
+	classid = ids->read2();
+	ip = ids->read2();
+	temp32 = ids->read4();
+	uint32 freecount = ids->read4();
+	for (unsigned int i = 0; i < freecount; ++i) {
+		std::pair<uint16, int> p;
+		p.first = ids->read2();
+		p.second = static_cast<int>(ids->read4());
+		freeonterminate.push_back(p);
+	}
+	stack.load(ids);
+
+	return true;
 }

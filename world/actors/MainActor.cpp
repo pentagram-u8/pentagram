@@ -24,6 +24,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "Process.h"
 #include "Kernel.h"
+#include "TeleportToEggProcess.h"
+
+#include "IDataSource.h"
+#include "ODataSource.h"
 
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(MainActor,Actor);
@@ -115,36 +119,30 @@ void MainActor::accumulateInt(int n)
 	}
 }
 
-
-
-class TeleportToEggProcess : public Process
+void MainActor::saveData(ODataSource* ods)
 {
-public:
-	TeleportToEggProcess(int mapnum_, int teleport_id_)
-		: mapnum(mapnum_), teleport_id(teleport_id_)
-	{ }
+	ods->write2(1); // version
+	Actor::saveData(ods);
+	uint8 jt = justTeleported ? 1 : 0;
+	ods->write1(jt);
+	ods->write4(accumStr);
+	ods->write4(accumDex);
+	ods->write4(accumInt);
+}
 
-	// p_dynamic_cast stuff
-	ENABLE_RUNTIME_CLASSTYPE();
+bool MainActor::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Actor::loadData(ids)) return false;
 
-	virtual bool run(const uint32 framenum)
-	{
-		MainActor *av = p_dynamic_cast<MainActor*>(
-			World::get_instance()->getNPC(1));
+	justTeleported = (ids->read1() != 0);
+	accumStr = static_cast<sint32>(ids->read4());
+	accumDex = static_cast<sint32>(ids->read4());
+	accumInt = static_cast<sint32>(ids->read4());
 
-		// NB: the following call might terminate us
-		av->teleport(mapnum, teleport_id);
-
-		terminate();
-		return true;
-	}
-
-private:
-	int mapnum;
-	int teleport_id;
-};
-DEFINE_RUNTIME_CLASSTYPE_CODE(TeleportToEggProcess,Process);
-
+	return true;
+}
 
 uint32 MainActor::I_teleportToEgg(const uint8* args, unsigned int /*argsize*/)
 {

@@ -36,6 +36,7 @@ protected:
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
+	GameMapGump();
 	GameMapGump(int x, int y, int w, int h);
 	virtual ~GameMapGump();
 
@@ -70,7 +71,11 @@ public:
 
 	void IncSortOrder(int count);
 
+	bool loadData(IDataSource* ids);
+
 protected:
+	virtual void saveData(ODataSource* ods);
+
 	bool display_dragging;
 	uint32 dragging_shape;
 	uint32 dragging_frame;

@@ -23,10 +23,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Usecode.h"
 #include "GameData.h"
 #include "UCMachine.h"
+#include "UCList.h"
 #include "World.h"
 #include "DelayProcess.h"
 #include "Container.h"
 #include "Kernel.h"
+#include "ObjectManager.h"
 
 #include "MainShapeFlex.h"
 #include "GumpShapeFlex.h"
@@ -45,6 +47,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "WorldPoint.h"
 #include "GravityProcess.h"
 #include "LoopScript.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
 
 #include <cstdlib>
 
@@ -946,6 +950,54 @@ void Item::grab()
 		item->fall();
 	}
 }
+
+void Item::saveData(ODataSource* ods)
+{
+	ods->write2(1); // version
+	Object::saveData(ods);
+	ods->write4(shape);
+	ods->write4(frame);
+	ods->write2(x);
+	ods->write2(y);
+	ods->write2(z);
+	ods->write2(flags);
+	ods->write2(quality);
+	ods->write2(npcnum);
+	ods->write2(mapnum);
+	ods->write4(extendedflags);
+	ods->write2(gump);
+	ods->write2(gravitypid);
+	ods->write2(glob_next);
+}
+
+bool Item::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Object::loadData(ids)) return false;
+
+	shape = ids->read4();
+	frame = ids->read4();
+	x = ids->read2();
+	y = ids->read2();
+	z = ids->read2();
+	flags = ids->read2();
+	quality = ids->read2();
+	npcnum = ids->read2();
+	mapnum = ids->read2();
+	extendedflags = ids->read4();
+	gump = ids->read2();
+	gravitypid = ids->read2();
+	glob_next = ids->read2();
+
+	//!! hackish...
+	if (extendedflags & EXT_INCURMAP) {
+		World::get_instance()->getCurrentMap()->addItem(this);
+	}
+
+	return true;
+}
+
 
 uint32 Item::I_touch(const uint8* args, unsigned int /*argsize*/)
 {

@@ -28,13 +28,17 @@ public:
 	TeleportEgg();
 	virtual ~TeleportEgg();
 
+	ENABLE_RUNTIME_CLASSTYPE();
+
 	bool isTeleporter() const { return frame != 1; }
 	int getTeleportId() const { return (quality & 0xFF); }
 
-	ENABLE_RUNTIME_CLASSTYPE();
-
+	bool loadData(IDataSource* ids);
 
 	virtual uint16 hatch();
+protected:
+	virtual void saveData(ODataSource* ods);
+
 };
 
 

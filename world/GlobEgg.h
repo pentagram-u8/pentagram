@@ -33,10 +33,17 @@ public:
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	void expand();   // expand the contents of the glob into the main objlist
-	void unexpand(); // delete the expanded contents
+	//! expand the contents of the glob into the main objlist
+	void expand();
+
+	//! delete the expanded contents
+	void unexpand();
+
+	bool loadData(IDataSource* ids);
 
 protected:
+	virtual void saveData(ODataSource* ods);
+
 	uint16 contents;
 };
 

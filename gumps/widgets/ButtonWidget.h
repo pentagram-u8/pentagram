@@ -25,11 +25,12 @@ class ButtonWidget : public SimpleTextWidget
 {
 	//Shape *shape_up, uint32 framenum_up;
 	//Shape *shape_down, uint32 framenum_down;
-	bool down;
+	//bool down;
 public:
 	// p_dynamic_class stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 
+	ButtonWidget();
 	ButtonWidget(int X, int Y, std::string txt, int font, int width = 0, int height = 0);
 	virtual ~ButtonWidget(void);
 
@@ -50,6 +51,10 @@ public:
 		BUTTON_UP			= 1,
 		BUTTON_DOUBLE		= 2
 	};
+
+	bool loadData(IDataSource* ids);
+protected:
+	virtual void saveData(ODataSource* ods);
 };
 
 #endif // BUTTONWIDGET_H_INCLUDED

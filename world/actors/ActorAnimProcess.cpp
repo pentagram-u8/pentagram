@@ -27,16 +27,24 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Direction.h"
 #include "World.h"
 
-#include "GUIApp.h" // debugging
+#include "IDataSource.h"
+#include "ODataSource.h"
 
 //#define WATCHACTOR 5
 
 #ifdef WATCHACTOR
 static const int watchactor = WATCHACTOR;
+
+#include "GUIApp.h"
 #endif
 
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(ActorAnimProcess,Process);
+
+ActorAnimProcess::ActorAnimProcess() : Process()
+{
+
+}
 
 ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 {
@@ -66,18 +74,34 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, uint32 action, uint32 dir_)
 		animaction = 0;
 	}
 
+#ifndef ANIMATIONINTERRUPT
 	if (item_num == 5)
 		animaction->framerepeat = 2; // force Darion to 2 frames
-
+#endif
 
 	if (animaction) {
 		actor_->setActorFlag(Actor::ACT_ANIMLOCK);
 
-		if (actor_->lastanim == action && actor_->direction == dir_ &&
-			animaction->size > 1) {
-			currentindex+=animaction->framerepeat; // skip first frame if 
-			                                       // repeating an animation
+#ifdef ANIMATIONINTTERUPT
+		if (animaction->unk1 == 5) {
+			if (actor_->lastanim == action && actor_->direction == dir_) {
+				currentindex = (actor_->lastframe+1) * animaction->framerepeat;
+				// resume previous animation
+
+				if (currentindex >= animaction->size * animaction->framerepeat)
+					currentindex = 0;
+			}
+		} else {
+#endif
+			if (actor_->lastanim == action && actor_->direction == dir_ &&
+				animaction->size > 1)
+			{
+				currentindex+=animaction->framerepeat; // skip first frame if 
+				                                      // repeating an animation
+			}
+#ifdef ANIMATIONINTERRUPT
 		}
+#endif
 		actor_->lastanim = action;
 		actor_->direction = dir_;
 	}
@@ -121,9 +145,15 @@ bool ActorAnimProcess::run(const uint32 framenum)
 	sint32 dx, dy, dz;
 	a->getLocation(x,y,z);
 
+#ifdef ANIMATIONINTERRUPT
+	dx = 4 * x_fact[dir] * f.deltadir;
+	dy = 4 * y_fact[dir] * f.deltadir;
+	dz = f.deltaz;
+#else
 	dx = 2 * x_fact[dir] * f.deltadir;
 	dy = 2 * y_fact[dir] * f.deltadir;
 	dz = f.deltaz;
+#endif
 
 	x -= (dx*framecount)/animaction->framerepeat;
 	y -= (dy*framecount)/animaction->framerepeat;
@@ -151,17 +181,35 @@ bool ActorAnimProcess::run(const uint32 framenum)
 #endif
 	}
 
+#ifdef ANIMATIONINTTERUPT
+	if (framecount == animaction->framerepeat - 1) {
+		if (animaction->unk1 == 5) {
+			a->lastframe = frameindex;
+//			perr << std::hex << f.flags << std::dec << std::endl;
+			if (f.flags & 0x800) {
+				terminate();
+			}
+		}
+	}
+#endif
+
 	currentindex++;
 
 	if (currentindex >= animaction->size * animaction->framerepeat) {
+#ifdef ANIMATIONINTTERUPT
+		if (animaction->unk1 == 5) {
+			currentindex = 0;
+		} else {
+#endif
 #ifdef WATCHACTOR
-		if (item_num == watchactor)
-			perr << "Animation [" << GUIApp::get_instance()->getFrameNum()
-				 << "] ActorAnimProcess terminating" << std::endl;
+			if (item_num == watchactor)
+				perr << "Animation [" << GUIApp::get_instance()->getFrameNum()
+					 << "] ActorAnimProcess terminating" << std::endl;
 #endif		 
-		//? do we need to terminate now or when we're about to show the next
-		// frame?
-		terminate();
+			terminate();
+#ifdef ANIMATIONINTTERUPT
+		}
+#endif
 	}
 
 
@@ -180,4 +228,43 @@ void ActorAnimProcess::terminate()
 	}
 
 	Process::terminate();
+}
+
+
+void ActorAnimProcess::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	Process::saveData(ods);
+	
+	ods->write4(dir);
+	ods->write4(currentindex);
+	if (animaction) {
+		ods->write4(animaction->shapenum);
+		ods->write4(animaction->action);
+	} else {
+		ods->write4(0);
+		ods->write4(0);
+	}
+}
+
+bool ActorAnimProcess::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Process::loadData(ids)) return false;
+
+	dir = ids->read4();
+	currentindex = ids->read4();
+
+	uint32 shapenum = ids->read4();
+	uint32 action = ids->read4();
+
+	if (shapenum == 0) {
+		animaction = 0;
+	} else {
+		animaction = GameData::get_instance()->getMainShapes()->
+			getAnim(shapenum, action);
+	}
+
+	return true;
 }

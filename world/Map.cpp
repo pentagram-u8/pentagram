@@ -22,9 +22,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Map.h"
 #include "IDataSource.h"
+#include "ODataSource.h"
 #include "ItemFactory.h"
 #include "Item.h"
 #include "Container.h"
+#include "ObjectManager.h"
 
 #include "ShapeInfo.h" // debugging only
 #include "GameData.h" // ""
@@ -154,4 +156,30 @@ void Map::loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds,
 #endif
 		}
 	}
+}
+
+
+void Map::save(ODataSource* ods)
+{
+	ods->write4(dynamicitems.size());
+
+	std::list<Item*>::iterator iter;
+	for (iter = dynamicitems.begin(); iter != dynamicitems.end(); ++iter) {
+		(*iter)->save(ods);
+	}
+}
+
+
+bool Map::load(IDataSource* ids)
+{
+	uint32 itemcount = ids->read4();
+
+	for (unsigned int i = 0; i < itemcount; ++i) {
+		Object* obj = ObjectManager::get_instance()->loadObject(ids);
+		Item* item = p_dynamic_cast<Item*>(obj);
+		if (!item) return false;
+		dynamicitems.push_back(item);
+	}
+
+	return true;
 }

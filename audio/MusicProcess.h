@@ -28,6 +28,7 @@ class MidiDriver;
 class MusicProcess : public Process
 {
 public:
+	MusicProcess();
 	MusicProcess(MidiDriver *);	// Note that this does NOT delete the driver
 	virtual ~MusicProcess();
 
@@ -46,7 +47,11 @@ public:
 
 	virtual bool run(const uint32 framenum);
 
+	bool loadData(IDataSource* ids);
+
 private:
+	virtual void saveData(ODataSource* ods);
+
 	static MusicProcess	*	the_music_process;
 
 	MidiDriver * driver;

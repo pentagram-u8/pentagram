@@ -20,7 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Egg.h"
 #include "UCMachine.h"
-#include "Kernel.h"
+#include "ObjectManager.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(Egg,Item);
 
@@ -40,6 +42,26 @@ uint16 Egg::hatch()
 	if (hatched) return 0;
 	hatched = true;
 	return callUsecodeEvent_hatch();
+}
+
+void Egg::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	Item::saveData(ods);
+
+	uint8 h = hatched ? 1 :  0;
+	ods->write1(h);
+}
+
+bool Egg::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Item::loadData(ids)) return false;
+
+	hatched = (ids->read1() != 0);
+
+	return true;
 }
 
 uint32 Egg::I_getEggXRange(const uint8* args, unsigned int /*argsize*/)

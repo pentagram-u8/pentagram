@@ -183,10 +183,10 @@ Intrinsic U8Intrinsics[] = {
 	0, // Npc::clrInCombat
 	0, // Npc::setTarget
 	0, // Npc::getTarget
-	0, // Npc::setAlignment
-	0, // Npc::getAlignment
-	0, // Npc::setEnemyAlignment
-	0, // Npc::getEnemyAlignment
+	Actor::I_setAlignment,
+	Actor::I_getAlignment,
+	Actor::I_setEnemyAlignment,
+	Actor::I_getEnemyAlignment,
 	0, // Npc::isEnemy
 	Actor::I_isDead,
 	0, // Npc::setDead

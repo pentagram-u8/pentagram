@@ -91,21 +91,19 @@ BarkGump: ItemRelativeGump:
 	sint32 counter
 
 ContainerGump: ItemRelativeGump:
-	Rect itemarea (or reconstruct?)
+	Rect itemarea
 
 	reset:
 		bool display_dragging
-		uint32 dragging_shape, dragging_frame
-		uint32 dragging_flags
-		sint32 dragging_x, dragging_y
 
 ResizableGump: Gump:
+	<unused>
 
 SimpleTextWidget: Gump:
 	std::string text
 	int fontnum
 
-ButtonWidget: Gump:
+ButtonWidget: SimpleTextWidget:
 	bool down (?)
 
 
@@ -117,9 +115,7 @@ CoreApp:
 
 GUIApp:
 	bool avatarInStasis
-	bool paintEditorItems
 	sint32 timeOffset
-	uint16 song
 
 	reconstruct:
 		desktopGump
@@ -156,17 +152,18 @@ CameraProcess: Process:
 	sint32 time
 	sint32 elapsed
 	uint16 itemnum
+	uint32 last_framenum
 	static sint32 earthquake;
 	static sint32 eq_x, eq_y;
-	reset:
-		uint32 last_framenum (I think?)
+	reconstruct:
+		CameraProcess* camera_process
 
 DelayProcess: Process:
 	int count
 
 EggHatcherProcess: Process:
 	reconstruct:
-		std::vector<uint16> eggs (we could maybe save this instead)
+		std::vector<uint16> eggs
 
 GravityProcess: Process:
 	int gravity
@@ -191,6 +188,9 @@ SpriteProcess: Process:
 	int repeats
 	int delay, delay_counter
 
+MusicProcess: Process:
+	<checkme>
+
 TargetProcess: Process:
 	too broken right now
 	(and shouldn't be running while saving?)
@@ -213,7 +213,7 @@ UCProcess: Process:
 UCMachine:
 	std::map<uint16, UCList*> listHeap
 	std::map<uint16, std::string> stringHeap
-	UCStack globals
+	BitSet globals
 
 	reconstruct:
 		ConvertUsecode* convuse
@@ -230,12 +230,11 @@ UCList:
 	unsigned int size
 
 Kernel:
-	the order of std::list<Process*> processes
+	std::list<Process*> processes (in order)
 
 	reconstruct:
 		idMan *pIDs
 		std::vector<Object*> objects
-		std::list<Process*> processes
 		idMan* objIDs
 		idMan* actorIDs
 	reset:

@@ -28,6 +28,7 @@ class BarkGump : public ItemRelativeGump
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
+	BarkGump();
 	BarkGump(uint16 owner, std::string msg);
 	virtual ~BarkGump(void);
 
@@ -39,6 +40,10 @@ public:
 
 	// Init the gump, call after construction
 	virtual void		InitGump();
+
+	bool loadData(IDataSource* ids);
+protected:
+	virtual void saveData(ODataSource* ods);
 };
 
 #endif //BARKGUMP_H_INCLUDED

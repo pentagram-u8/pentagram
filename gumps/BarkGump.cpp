@@ -20,9 +20,18 @@
 #include "BarkGump.h"
 #include "SimpleTextWidget.h"
 
+#include "IDataSource.h"
+#include "ODataSource.h"
+
 DEFINE_RUNTIME_CLASSTYPE_CODE(BarkGump,ItemRelativeGump);
 
 // TODO: Remove all the hacks
+
+BarkGump::BarkGump()
+	: ItemRelativeGump()
+{
+
+}
 
 BarkGump::BarkGump(uint16 owner, std::string msg) :
 	ItemRelativeGump(0, 0, 100, 100, owner, 0, LAYER_ABOVE_NORMAL), barked(msg), counter(100)
@@ -88,6 +97,37 @@ Gump *BarkGump::OnMouseDown(int button, int mx, int my)
 	// Close us.
 	Close();
 	return this;
+}
+
+void BarkGump::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	ItemRelativeGump::saveData(ods);
+
+	ods->write4(static_cast<uint32>(counter));
+	ods->write4(barked.size());
+	ods->write(barked.c_str(), barked.size());
+}
+
+bool BarkGump::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!ItemRelativeGump::loadData(ids)) return false;
+
+	counter = static_cast<sint32>(ids->read4());
+	uint32 slen = ids->read4();
+	if (slen > 0) {
+		char* buf = new char[slen+1];
+		ids->read(buf, slen);
+		buf[slen] = 0;
+		barked = buf;
+		delete[] buf;
+	} else {
+		barked = "";
+	}
+
+	return true;
 }
 
 // Colourless Protection

@@ -22,12 +22,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Map.h"
 #include "CurrentMap.h"
 #include "IDataSource.h"
+#include "ODataSource.h"
 #include "Flex.h"
 #include "ItemFactory.h"
 #include "Actor.h"
+#include "MainActor.h"
 #include "idMan.h"
 #include "GameData.h"
 #include "Kernel.h"
+#include "ObjectManager.h"
 #include "GUIApp.h"
 #include "CameraProcess.h" // for resetting the camera
 #include "Gump.h" // For MapChanged notification
@@ -66,6 +69,14 @@ void World::clear()
 
 	if (currentmap)
 		delete currentmap;
+	currentmap = 0;
+}
+
+void World::reset()
+{
+	clear();
+
+	initMaps();
 }
 
 void World::initMaps()
@@ -110,10 +121,6 @@ bool World::switchMap(uint32 newmap)
 	// - kill gumps?
 	// - ...?
 
-	// TODO:
-	// - check ethereal items
-	// - temporary items/actors?
-
 	// kill camera
 	CameraProcess::ResetCameraProcess();
 
@@ -128,7 +135,7 @@ bool World::switchMap(uint32 newmap)
 	// get rid of any remaining ethereal items
 	while (!etherealEmpty()) {
 		uint16 eth = etherealPop();
-		Object* o = Kernel::get_instance()->getObject(eth);
+		Object* o = ObjectManager::get_instance()->getObject(eth);
 		delete o;
 	}
 
@@ -262,7 +269,7 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 		actor->setLastAnim(npcds->read1());
 		// TODO: (decode and) read rest of npcdata.dat...
 
-		Kernel::get_instance()->assignActorObjId(actor, i);
+		ObjectManager::get_instance()->assignActorObjId(actor, i);
 	}
 
 	delete itemcachflex;
@@ -297,11 +304,91 @@ void World::worldStats()
 
 Item* World::getItem(uint16 itemid) const
 {
-	return p_dynamic_cast<Item*>(Kernel::get_instance()->getObject(itemid));
+	return p_dynamic_cast<Item*>(ObjectManager::get_instance()->
+								 getObject(itemid));
 }
 
 Actor* World::getNPC(uint16 npcid) const
 {
-	return p_dynamic_cast<Actor*>(Kernel::get_instance()->getObject(npcid));
+	return p_dynamic_cast<Actor*>(ObjectManager::get_instance()->
+								  getObject(npcid));
 }
 
+MainActor* World::getMainActor() const
+{
+	return p_dynamic_cast<MainActor*>(ObjectManager::get_instance()->
+									  getObject(1));
+}
+
+
+
+
+void World::save(ODataSource* ods)
+{
+	ods->write2(1); // version
+
+	ods->write4(currentmap->getNum());
+
+	ods->write2(currentmap->egghatcher);
+
+	uint16 es = ethereal.size();
+	ods->write4(es);
+
+	// empty stack and refill it again
+	uint16* e = new uint16[es];
+	for (unsigned int i = 0; i < es; ++i) {
+		e[es-i] = ethereal.top();
+		ethereal.pop();
+	}
+
+	for (unsigned int i = 0; i < es; ++i) {
+		ods->write2(e[i]);
+		ethereal.push(e[i]);
+	}
+	delete[] e;
+}
+
+// load items
+bool World::load(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+
+	uint16 curmapnum = ids->read4();
+	currentmap->setMap(maps[curmapnum]);
+
+	currentmap->egghatcher = ids->read2();
+
+	uint32 etherealcount = ids->read4();
+	for (unsigned int i = 0; i < etherealcount; ++i) {
+		ethereal.push(ids->read2());
+	}
+
+	return true;
+}
+
+void World::saveMaps(ODataSource* ods)
+{
+	ods->write2(1); //version
+	ods->write4(maps.size());
+	for (unsigned int i = 0; i < maps.size(); ++i) {
+		maps[i]->save(ods);
+	}
+}
+
+
+bool World::loadMaps(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;	
+
+	uint32 mapcount = ids->read4();
+
+	// Map objects have already been created by reset()
+	for (unsigned int i = 0; i < mapcount; ++i) {
+		bool res = maps[i]->load(ids);
+		if (!res) return false;
+	}
+
+	return true;
+}

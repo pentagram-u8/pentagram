@@ -39,7 +39,10 @@ public:
 	void addEgg(Egg* egg);
 	void addEgg(uint16 egg);
 
+	bool loadData(IDataSource* ids);
 private:
+	virtual void saveData(ODataSource* ods);
+
 	std::vector<uint16> eggs;
 };
 

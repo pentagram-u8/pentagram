@@ -18,8 +18,16 @@
 
 #include "pent_include.h"
 #include "ConsoleGump.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(ConsoleGump,Gump);
+
+ConsoleGump::ConsoleGump()
+	: Gump()
+{
+
+}
 
 ConsoleGump::ConsoleGump(int X, int Y, int Width, int Height) :
 	Gump(X,Y,Width,Height, 0, 0, LAYER_CONSOLE), scroll_state(NORMAL_DISPLAY)
@@ -249,5 +257,25 @@ bool ConsoleGump::Run(const uint32 framenum)
 
 	return true;	// Always repaint, even though we really could just try to detect it
 }
+
+void ConsoleGump::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	Gump::saveData(ods);
+
+	ods->write4(static_cast<uint32>(scroll_state));
+}
+
+bool ConsoleGump::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Gump::loadData(ids)) return false;
+
+	scroll_state = static_cast<ConsoleScrollState>(ids->read4());
+
+	return true;
+}
+
 
 // Colourless Protection

@@ -26,6 +26,7 @@ class Item;
 class GravityProcess : public Process
 {
 public:
+	GravityProcess();
 	GravityProcess(Item* item, int gravity);
 
 	// add (xs,ys,zs) to current speed vector
@@ -40,7 +41,11 @@ public:
 	virtual bool run(const uint32 framenum);
 	virtual void terminate();
 
-private:
+	bool loadData(IDataSource* ids);
+protected:
+	virtual void saveData(ODataSource* ods);
+
+
 	int gravity;
 	int xspeed, yspeed, zspeed;
 };

@@ -66,8 +66,10 @@ IDataSource* FileSystem::ReadFile(const string &vfn, bool is_text)
 									 mf->second->len, is_text);
 
 	std::ifstream *f = new std::ifstream();
-	if(!rawopen(*f, filename, is_text)) 
+	if(!rawopen(*f, filename, is_text)) {
+		delete f;
 		return 0;
+	}
 
 	return new IFileDataSource(f);
 }
@@ -77,8 +79,7 @@ ODataSource* FileSystem::WriteFile(const string &vfn, bool is_text)
 {
 	string filename = vfn;
 	std::ofstream *f = new std::ofstream();
-	if(!rawopen(*f, filename, is_text))
-	{
+	if(!rawopen(*f, filename, is_text)) {
 		delete f;
 		return 0;
 	}

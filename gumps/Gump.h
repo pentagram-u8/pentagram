@@ -62,12 +62,13 @@ protected:
 	uint32				process_result;	// Result for the notifier process
 
 public:
-
 	ENABLE_RUNTIME_CLASSTYPE();
-
+	Gump();
 	Gump(int x, int y, int width, int height, uint16 owner = 0,
 		 uint32 _Flags = 0, sint32 layer = LAYER_NORMAL);
 	virtual ~Gump();
+
+public:
 
 	virtual void				CreateNotifier();
 	GumpNotifyProcess*			GetNotifyProcess();
@@ -322,6 +323,10 @@ public:
 		LAYER_ABOVE_NORMAL	= 8,		// Layer for Always on top Gumps
 		LAYER_CONSOLE		= 16		// Layer for the console
 	};
+
+	bool loadData(IDataSource* ids);
+protected:
+	virtual void saveData(ODataSource* ods);
 };
 
 #endif //GUMP_H_INCLUDED

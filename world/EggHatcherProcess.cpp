@@ -23,7 +23,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MainActor.h"
 #include "World.h"
 #include "TeleportEgg.h"
-#include "Kernel.h"
+#include "ObjectManager.h"
+
+#include "IDataSource.h"
+#include "ODataSource.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(EggHatcherProcess,Process);
 
@@ -52,12 +55,12 @@ void EggHatcherProcess::addEgg(Egg* egg)
 bool EggHatcherProcess::run(const uint32 framenum)
 {
 	bool nearteleporter = false;
-	MainActor*av =p_dynamic_cast<MainActor*>(World::get_instance()->getNPC(1));
+	MainActor* av = World::get_instance()->getMainActor();
 	assert(av);
 
 	for (unsigned int i = 0; i < eggs.size(); i++) {
 		uint16 eggid = eggs[i];
-		Egg* egg = p_dynamic_cast<Egg*>(Kernel::get_instance()->
+		Egg* egg = p_dynamic_cast<Egg*>(ObjectManager::get_instance()->
 										getObject(eggid));
 		if (!egg) continue; // egg gone
 
@@ -94,4 +97,23 @@ bool EggHatcherProcess::run(const uint32 framenum)
 	if (!nearteleporter) av->setJustTeleported(false); // clear flag
 
 	return false;
+}
+
+void EggHatcherProcess::saveData(ODataSource* ods)
+{
+	Process::saveData(ods);
+	ods->write2(1);
+}
+
+
+bool EggHatcherProcess::loadData(IDataSource* ids)
+{
+	if (!Process::loadData(ids)) return false;
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+
+	// the eggs will be re-added to the EggHatcherProcess when they're
+	// re-added to the CurrentMap
+
+	return true;
 }

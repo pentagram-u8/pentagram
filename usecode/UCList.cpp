@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "UCList.h"
 #include "UCMachine.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
 
 uint16 UCList::getStringIndex(uint32 index)
 {
@@ -115,4 +117,22 @@ void UCList::removeString(uint16 s, bool nodel)
 			i--; // back up a bit
 		}
 	}
+}
+
+void UCList::save(ODataSource* ods)
+{
+	ods->write4(elementsize);
+	ods->write4(size);
+	ods->write(&(elements[0]), size*elementsize);
+}
+
+
+bool UCList::load(IDataSource* ids)
+{
+	elementsize = ids->read4();
+	size = ids->read4();
+	elements.resize(size * elementsize);
+	ids->read(&(elements[0]), size*elementsize);
+
+	return true;
 }

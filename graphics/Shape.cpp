@@ -83,6 +83,9 @@ Shape::Shape(IDataSource *src, const ConvertShapeFormat *format)
 
 Shape::~Shape()
 {
+	for (unsigned int i = 0; i < frames.size(); ++i)
+		delete frames[i];
+
 	delete[] const_cast<uint8*>(data);
 }
 

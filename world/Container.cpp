@@ -20,8 +20,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Container.h"
 
-#include "Kernel.h"
+#include "ObjectManager.h"
 #include "UCMachine.h"
+#include "UCList.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
+#include "ItemFactory.h"
 
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(Container,Item);
@@ -36,6 +40,16 @@ Container::~Container()
 {
 	// TODO: handle container's contents.
 	// Either destroy the contents, or move them up to this container's parent?
+
+
+
+	// if we don't have an objid, we _must_ delete children
+	if (objid == 0xFFFF) {
+		std::list<Item*>::iterator iter;
+		for (iter = contents.begin(); iter != contents.end(); ++iter) {
+			delete (*iter);
+		}
+	}
 }
 
 
@@ -173,6 +187,38 @@ void Container::containerSearch(UCList* itemlist, const uint8* loopscript,
 			itemlist->append(buf);
 		}
 	}	
+}
+
+void Container::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	Item::saveData(ods);
+	ods->write4(contents.size());
+	std::list<Item*>::iterator iter;
+	for (iter = contents.begin(); iter != contents.end(); ++iter) {
+		(*iter)->save(ods);
+	}
+}
+
+bool Container::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Item::loadData(ids)) return false;
+
+	uint32 contentcount = ids->read4();
+
+	// read contents
+	for (unsigned int i = 0; i < contentcount; ++i)
+	{
+		Object* obj = ObjectManager::get_instance()->loadObject(ids);
+		Item* item = p_dynamic_cast<Item*>(obj);
+		if (!item) return false;
+
+		AddItem(item);
+	}
+
+	return true;
 }
 
 

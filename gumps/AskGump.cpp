@@ -22,10 +22,18 @@
 #include "ButtonWidget.h"
 #include "UCList.h"
 #include "UCMachine.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
 
 
 // p_dynamic_class stuff 
 DEFINE_RUNTIME_CLASSTYPE_CODE(AskGump,ItemRelativeGump);
+
+AskGump::AskGump()
+	: ItemRelativeGump(), answers(0)
+{
+
+}
 
 AskGump::AskGump(uint16 owner, UCList *answers_) : 
 	ItemRelativeGump(0, 0, 0, 0, owner, 0, LAYER_ABOVE_NORMAL), answers(new UCList(2))
@@ -104,6 +112,26 @@ void AskGump::ChildNotify(Gump *child, uint32 message)
                                         //!! contain two identical strings
 		Close();
 	}
+}
+
+void AskGump::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	ItemRelativeGump::saveData(ods);
+
+	answers->save(ods);
+}
+
+bool AskGump::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!ItemRelativeGump::loadData(ids)) return false;
+
+	answers = new UCList(2);
+	answers->load(ids);
+
+	return true;
 }
 
 // You should always use Protection

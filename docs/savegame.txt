@@ -1,0 +1,369 @@
+
+Savegame format:
+
+char id[17]    "PentagramSavegame"
+uint32 count   number of files
+[count files]
+
+each file:
+uint16 namelen         size of name of this file
+char name[namelen]     name of this file
+uint32 datalen         size of this file
+uint8 data[datalen]    data
+
+
+
+
+Savegame files:
+
+global version 1-in-progress:
+
+VERSION: Savegame version
+GAMEINFO: GameInfo
+DESCRIPTION: Description
+KERNEL: Processes
+OBJECTS: Objects (includes currently loaded items, gumps)
+WORLD: World data (currently current map, ethereal items)
+MAPS: Maps ('nonfixed' data)
+UCGLOBALS: Globals
+UCSTRINGS: Strings
+UCLISTS: Lists
+APP: GUIApp/CoreApp data
+maybe more metadata (screenshot, time/date, ...)
+pentagram version (current, and starting?)
+
+
+
+VERSION: (unversioned)
+uint16 version		global savegame version
+
+APP: (v1)
+uint16 version
+uint8 avatarInStasis (boolean)
+sint32 timeOffset
+uint32 framenum
+
+
+PROCESSES: (v1)
+uint16 version			processes savegame version
+uint32 processcount
+[processcount processes, from front to back of list]
+
+see below for individual process descriptions
+
+OBJECTS: (v1)
+uint16 version			objects savegame version
+[...objects...]
+uint16 terminator (0)
+
+see below for individual object descriptions
+
+
+WORLD: (v1)
+uint16 version
+uint32 mapnum
+uint16 egghatcher
+uint32 etherealcount
+[etherealcount uint16s, bottom of the stack first]
+
+
+MAPS: (v1)
+uint16 version
+uint32 mapcount
+[mapcount maps, stored in order from 0-<mapcount-1>]
+
+each map:
+uint32 itemcount
+[itemcount items]
+
+
+UCSTRINGS: (v1)
+uint16 version
+uint32 stringcount
+[stringcount strings]
+
+each string:
+uint16 id
+uint32 length
+char str[length]	the actual string (not NULL terminated)
+
+
+UCGLOBALS: (v1)
+uint16 version
+uint32 size		size in bits
+uint8 data[bytes]	"bytes" = size/8, rounded up
+
+
+UCLISTS: (v1)
+uint16 version
+uint32 listcount
+[listcount lists]
+
+each list:
+uint16 id
+uint32 elementsize
+uint32 size
+uint8 data[size*elementsize]
+
+
+Individual Objects:
+--------------------
+
+each object: (v1)
+uint16 classlen			size of classname
+char classname[classlen]	class name of this Object
+[data for this object (see below)]
+
+
+
+Object: (v1)
+uint16 version
+uint16 objid
+
+Item: (v1)
+uint16 version
+<Object>
+uint32 shape, frame
+uint16 x,y,z
+uint16 flags, quality, npcnum, mapnum
+uint32 extendedflags
+uint16 gump, gravity_pid, glob_next
+
+Container: (v1)
+uint16 version
+<Item>
+uint32 contentcount
+[contentcount Objects]
+
+
+Actor: (v1)
+uint16 version
+<Container>
+sint16 str, dex, int
+uint16 hp
+sint16 mana
+uint16 alignment, enemyalignment
+uint16 lastanim, direction
+uint32 actorflags
+TODO: more...?
+
+MainActor: (v1)
+uint16 version
+<Actor>
+uint8 justTeleported (boolean)
+sint32 accumStr, accumDex, accumInt
+TODO: more...?
+
+
+Egg: (v1)
+uint16 version
+<Item>
+uint16 hatched (boolean)
+
+MonsterEgg: (v1)
+uint16 version
+<Egg>
+
+TeleportEgg: (v1)
+uint16 version
+<Egg>
+
+GlobEgg: (v1)
+uint16 version
+<Item>
+uint16 contents
+
+Gump: (v1)
+uint16 version
+<Object>
+uint16 owner
+sint32 x
+sint32 y
+sint32 dims.x
+sint32 dims.y
+sint32 dims.w
+sint32 dims.h
+uint32 flags
+sint32 layer
+sint32 index
+uint32 shapenum			!!! TODO
+uint32 framenum
+uint16 focus_child.objid
+uint16 notifier
+uint32 process_result
+uint32 childcount
+[childcount gumps, in order]
+
+DesktopGump: (v1)
+uint16 version
+<Gump>
+
+
+GameMapGump: (v1)
+uint16 version
+<Gump>
+sint32 fastArea
+uint32 fast0count
+uint16 fast0[fast0count]
+uint32 fast1count
+uint16 fast1[fast1count]
+
+
+ConsoleGump: (v1)
+uint16 version
+<Gump>
+uint32 scroll_state (ConsoleScrollState)
+
+
+ItemRelativeGump: (v1)
+uint16 version
+<Gump>
+
+
+AskGump: (v1)
+uint16 version
+<ItemRelativeGump>
+UCList list
+
+
+BarkGump: (v1)
+uint16 version
+<ItemRelativeGump>
+sint32 counter
+uint32 strlen
+char barked[strlen]
+
+
+ContainerGump: (v1)
+uint16 version
+<ItemRelativeGump>
+sint32 itemarea.x
+sint32 itemarea.y
+sint32 itemarea.w
+sint32 itemarea.h
+
+
+SimpleTextWidget: (v1)
+uint16 version
+<Gump>
+sint32 fontnum
+uint32 strlen
+char text[strlen]
+
+ButtonWidget: (v1)
+uint16 version
+<SimpleTextWidget>
+
+
+
+Individual Processes:
+-----------------------
+each process: (v1)
+uint16 classlen			size of classname
+char classname[classlen]	class name of this Process
+[saved data from this process]
+
+
+
+Process:
+uint16 version
+uint16 pid
+uint8 active (boolean)
+uint8 suspended (boolean)
+uint8 terminated (boolean)
+uint8 terminate_deferred (boolean)
+uint16 item_num
+uint16 type
+uint32 result
+uint32 waitingcount
+uint16 waiting[waitingcount]
+
+
+CameraProcess: Process (v1)
+uint16 version
+<Process>
+sint32 sx, sy, sz
+sint32 ex, ey, ez
+sint32 time, elapsed
+uint16 itemnum
+uint32 last_framenum
+static sint32 earthquake
+static sint32 eq_x, eq_y
+
+
+MusicProcess: Process (v1)
+uint16 version
+<Process>
+sint32 wanted_track
+
+
+UCProcess: Process (v1)
+uint16 version
+<Process>
+uint16 bp
+uint16 classid
+uint16 ip
+uint32 temp32
+uint32 freecount
+(uint16,sint32) freeonterminate[freecount]
+UCStack stack
+
+UCStack: (v1)
+uint16 version
+uint32 size
+uint32 SP
+uint8 data[size-SP]
+
+
+
+GumpNotifyProcess: Process (v1)
+uint16 version
+<Process>
+uint16 gump
+
+
+DelayProcess: Process (v1)
+uint16 version
+<Process>
+sint32 count
+
+
+GravityProcess: Process (v1)
+uint16 version
+<Process>
+sint32 gravity
+sint32 xspeed, yspeed, zspeed
+
+
+MissileProcess: Process (v1)
+uint16 version
+<Process>
+sint32 from_x, from_y, from_z
+sint32 to_x, to_y, to_z
+sint32 speed, currentpos
+uint8 curve (boolean)
+
+
+SpriteProcess: Process (v1)
+uint16 version
+<Process>
+sint32 frame
+sint32 first_frame, last_frame
+sint32 repeats
+sint32 delay, delay_counter
+
+
+TeleportToEggProcess: Process (v1)
+uint16 version
+<Process>
+sint32 mapnum
+sint32 teleport_id
+
+
+PaletteFaderProcess: Process (v1)
+uint16 version
+<Process>
+sint32 priority
+sint32 counter, max_counter
+float old_matrix[12]
+float new_matrix[12]

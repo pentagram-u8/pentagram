@@ -28,6 +28,7 @@ class ContainerGump : public ItemRelativeGump
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
+	ContainerGump();
 	ContainerGump(Shape* shape, uint32 framenum, uint16 owner,
 				  uint32 _Flags = 0, sint32 layer = LAYER_NORMAL);
 	virtual ~ContainerGump(void);
@@ -63,7 +64,10 @@ public:
 	virtual void OnMouseClick(int button, int mx, int my);
 	virtual void OnMouseDouble(int button, int mx, int my);
 
+	bool loadData(IDataSource* ids);
 protected:
+	virtual void saveData(ODataSource* ods);
+
 	Pentagram::Rect itemarea;
 
 	bool display_dragging;

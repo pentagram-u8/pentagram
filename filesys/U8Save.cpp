@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IDataSource.h"
 
 U8Save::U8Save(IDataSource* ds_)
-	: Flex()
+	: NamedFlex()
 {
 	ds = ds_;
 	ds->seek(0x18);
@@ -48,7 +48,7 @@ U8Save::U8Save(IDataSource* ds_)
 
 U8Save::~U8Save()
 {
-	// Q: Do we need to delete the datasource?
+
 }
 
 uint32 U8Save::get_size(uint32 index)
@@ -61,13 +61,4 @@ uint32 U8Save::get_offset(uint32 index)
 {
 	if (index >= count) return 0;
 	return offsets[index];
-}
-
-IDataSource* U8Save::get_datasource(const char* filename)
-{
-	std::string fname = filename;
-	std::map<std::string,uint32>::iterator iter = indices.find(fname);
-	if (iter == indices.end()) return 0;
-
-	return Flex::get_datasource(iter->second);
 }

@@ -1,3 +1,10 @@
+2003-07-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* everything: saving/loading
+	* usecode/BitSet.*: a bitset for the globals
+	* docs/savegame.txt: savegame format
+	* kernel/ObjectManager.*: moved objects from Kernel to ObjectManager
+	* filesys/NamedFlex.h: abstract class for files with named contents
+
 2003-07-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* configure.ac: detect SDL_mixer, FMOPL option
 

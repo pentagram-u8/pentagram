@@ -20,15 +20,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define ACTORANIM_H
 
 #include <vector>
-
-struct AnimAction;
+#include "AnimAction.h"
 
 class ActorAnim
 {
 	friend class AnimDat;
 public:
 	ActorAnim() {}
-	~ActorAnim() {}
+	~ActorAnim()
+	{
+		for (unsigned int i = 0; i < actions.size(); ++i)
+			delete actions[i];
+	}
 
 	AnimAction* getAction(unsigned int n) {
 		if (n >= actions.size()) return 0;

@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class Item;
 class IDataSource;
+class ODataSource;
 
 class Map
 {
@@ -39,6 +40,9 @@ public:
 
 	bool isEmpty()
 		{ return fixeditems.size() == 0 && dynamicitems.size() == 0; }
+
+	void save(ODataSource* ods);
+	bool load(IDataSource* ids);
 
 private:
 

@@ -31,16 +31,21 @@ public:
 	Actor();
 	~Actor();
 
-	uint16 getStr() const { return strength; }
-	void setStr(uint16 str) { strength = str; }
-	uint16 getDex() const { return dexterity; }
-	void setDex(uint16 dex) { dexterity = dex; }
-	uint16 getInt() const { return intelligence; }
-	void setInt(uint16 int_) { intelligence = int_; }
+	sint16 getStr() const { return strength; }
+	void setStr(sint16 str) { strength = str; }
+	sint16 getDex() const { return dexterity; }
+	void setDex(sint16 dex) { dexterity = dex; }
+	sint16 getInt() const { return intelligence; }
+	void setInt(sint16 int_) { intelligence = int_; }
 	uint16 getHP() const { return hitpoints; }
 	void setHP(uint16 hp) { hitpoints = hp; }
-	uint16 getMana() const { return mana; }
-	void setMana(uint16 mp) { mana = mp; }
+	sint16 getMana() const { return mana; }
+	void setMana(sint16 mp) { mana = mp; }
+
+	uint16 getAlignment() const { return alignment; }
+	void setAlignment(uint16 a) { alignment = a; }
+	uint16 getEnemyAlignment() const { return enemyalignment; }
+	void setEnemyAlignment(uint16 a) { enemyalignment = a; }
 
 	uint16 getLastAnim() const { return lastanim; }
 	void setLastAnim(uint16 anim) { lastanim = anim; }
@@ -55,6 +60,8 @@ public:
 
 	virtual uint16 assignObjId(); // assign an NPC objid
 
+	bool loadData(IDataSource* ids);
+
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 
@@ -67,11 +74,15 @@ public:
 	INTRINSIC(I_getInt);
 	INTRINSIC(I_getHp);
 	INTRINSIC(I_getMana);
+	INTRINSIC(I_getAlignment);
+	INTRINSIC(I_getEnemyAlignment);
 	INTRINSIC(I_setStr);
 	INTRINSIC(I_setDex);
 	INTRINSIC(I_setInt);
 	INTRINSIC(I_setHp);
 	INTRINSIC(I_setMana);
+	INTRINSIC(I_setAlignment);
+	INTRINSIC(I_setEnemyAlignment);
 	INTRINSIC(I_getMap);
 	INTRINSIC(I_teleport);
 	INTRINSIC(I_doAnim);
@@ -102,14 +113,21 @@ public:
 	} ActorFlags;
 
 protected:
-	uint16 strength;
-	uint16 dexterity;
-	uint16 intelligence;
+	virtual void saveData(ODataSource* ods);
+
+	sint16 strength;
+	sint16 dexterity;
+	sint16 intelligence;
 	uint16 hitpoints;
-	uint16 mana;
+	sint16 mana;
+
+	uint16 alignment, enemyalignment;
 
 	uint16 lastanim;
 	uint16 direction;
+#ifdef ANIMATIONINTERRUPT
+	int lastframe;
+#endif
 
 	uint32 actorflags;
 };

@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Process.h"
 #include "Kernel.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
 
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(Process);
@@ -60,4 +62,60 @@ void Process::waitFor(uint16 pid_)
 	p->waiting.push_back(pid);
 
 	suspended = true;
+}
+
+void Process::save(ODataSource* ods)
+{
+	writeProcessHeader(ods);
+	saveData(ods); // virtual
+}
+
+void Process::writeProcessHeader(ODataSource* ods)
+{
+	const char* cname = GetClassType().class_name; // virtual
+	uint16 clen = strlen(cname);
+
+	ods->write2(clen);
+	ods->write(cname, clen);
+}
+
+void Process::saveData(ODataSource* ods)
+{
+	ods->write2(1); // version
+	ods->write2(pid);
+	uint8 a = active ? 1 : 0;
+	uint8 s = suspended ? 1 : 0;
+	uint8 t = terminated ? 1 : 0;
+	uint8 td = terminate_deferred ? 1 : 0;
+	ods->write1(a);
+	ods->write1(s);
+	ods->write1(t);
+	ods->write1(td);
+	ods->write2(item_num);
+	ods->write2(type);
+	ods->write4(result);
+	ods->write4(waiting.size());
+	for (unsigned int i = 0; i < waiting.size(); ++i)
+		ods->write2(waiting[i]);
+}
+
+bool Process::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+
+	pid = ids->read2();
+	active = (ids->read1() != 0);
+	suspended = (ids->read1() != 0);
+	terminated = (ids->read1() != 0);
+	terminate_deferred = (ids->read1() != 0);
+	item_num = ids->read2();
+	type = ids->read2();
+	result = ids->read4();
+	uint32 waitcount = ids->read4();
+	waiting.resize(waitcount);
+	for (unsigned int i = 0; i < waitcount; ++i)
+		waiting[i] = ids->read2();
+
+	return true;
 }

@@ -269,6 +269,6 @@ void MusicFlex::loadSongInfo()
 
 	// Skip all remaining sections
 
-	delete buf;
+	delete[] buf;
 }
 

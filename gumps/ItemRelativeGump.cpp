@@ -24,8 +24,15 @@
 #include "Container.h"
 #include "ShapeInfo.h"
 #include "GUIApp.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(ItemRelativeGump,Gump);
+
+ItemRelativeGump::ItemRelativeGump()
+	: Gump(), ix(0), iy(0)
+{
+}
 
 ItemRelativeGump::ItemRelativeGump(int x, int y, int width, int height,
 								   uint16 owner, uint32 _Flags, sint32 _Layer)
@@ -127,5 +134,19 @@ void ItemRelativeGump::Move(int x_, int y_)
 	y -= moveOffsetY;
 }
 
+void ItemRelativeGump::saveData(ODataSource* ods)
+{
+	ods->write2(1); // version
+	Gump::saveData(ods);
+}
+
+bool ItemRelativeGump::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Gump::loadData(ids)) return false;
+
+	return true;
+}
 
 // Colourless Protection

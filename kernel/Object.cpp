@@ -20,10 +20,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Object.h"
 #include "Kernel.h"
+#include "ObjectManager.h"
 #include "World.h"
 
 #include "UCProcess.h"
 #include "UCMachine.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
 
 
 // p_dynamic_cast stuff
@@ -32,13 +35,13 @@ DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(Object);
 Object::~Object()
 {
 	if (objid != 0xFFFF)
-		Kernel::get_instance()->clearObjId(objid);
+		ObjectManager::get_instance()->clearObjId(objid);
 }
 
 uint16 Object::assignObjId()
 {
 	if (objid == 0xFFFF)
-		objid = Kernel::get_instance()->assignObjId(this);
+		objid = ObjectManager::get_instance()->assignObjId(this);
 	return objid;
 }
 
@@ -48,7 +51,7 @@ void Object::clearObjId()
 	Kernel::get_instance()->killProcesses(objid, 6);
 
 	if (objid != 0xFFFF)
-		Kernel::get_instance()->clearObjId(objid);
+		ObjectManager::get_instance()->clearObjId(objid);
 	objid = 0xFFFF;
 }
 
@@ -61,4 +64,36 @@ uint16 Object::callUsecode(uint16 classid, uint16 offset, Usecode* u, const uint
 	p->load(classid, offset, objptr, 2, args, argsize);
 
 	return pid;
+}
+
+
+void Object::save(ODataSource* ods)
+{
+	writeObjectHeader(ods);
+	saveData(ods); // virtual
+}
+
+void Object::writeObjectHeader(ODataSource* ods)
+{
+	const char* cname = GetClassType().class_name; // note: virtual
+	uint16 clen = strlen(cname);
+
+	ods->write2(clen);
+	ods->write(cname, clen);
+}
+
+void Object::saveData(ODataSource* ods)
+{
+	ods->write2(1); // version
+	ods->write2(objid);
+}
+
+bool Object::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+
+	objid = ids->read2();
+
+	return true;
 }

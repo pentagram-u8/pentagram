@@ -35,6 +35,7 @@ public:
 
 	// p_dynamic_class stuff
 	ENABLE_RUNTIME_CLASSTYPE();
+	PaletteFaderProcess();
 	PaletteFaderProcess(PaletteManager::PalTransforms trans, int priority, int frames);
 	PaletteFaderProcess(uint32 rgba, bool from, int priority, int frames);
 	PaletteFaderProcess(float from[12], float to[12], int priority, int frames);
@@ -48,6 +49,10 @@ public:
 	INTRINSIC(I_fadeToWhite);
 	INTRINSIC(I_fadeFromBlack);
 	INTRINSIC(I_lightningBolt);
+
+	bool loadData(IDataSource* ids);
+protected:
+	virtual void saveData(ODataSource* ods);
 };
 
 

@@ -26,6 +26,7 @@ class Container;
 class ShapeInfo;
 class Shape;
 class Gump;
+class ODataSource;
 
 class Item : public Object
 {
@@ -279,6 +280,8 @@ public:
 	//! This is called when an item is leaving the fast area
 	void leavingFastArea();
 
+	bool loadData(IDataSource* ids);
+
 	// Intrinsics
 	INTRINSIC(I_touch);
 	INTRINSIC(I_getX);
@@ -381,6 +384,9 @@ protected:
 	uint16 gump;			// Item's gump
 	uint16 gravitypid;		// Item's GravityTracker (or 0)
 
+	//! save the actual Item data 
+	virtual void saveData(ODataSource* ods);
+
 private:
 
 	//! Call a Usecode Event. Use the separate functions instead!
@@ -419,12 +425,13 @@ public:
 	enum extflags {
 		EXT_FIXED     = 0x0001, // item came from FIXED
 		EXT_INGLOB    = 0x0002, // item is part of a glob
-		EXT_NOTINMAP  = 0x0004, // item isn't part of the map itself (e.g. NPCs)
+		EXT_NOTINMAP  = 0x0004, // item isn't part of the map itself (e.g., NPCs)
 
 		EXT_FAST0	  = 0x0008,	// Special stuff for detecting an item leaving the fast area
 		EXT_FAST1	  = 0x0010,	// They are mutually exclusive
 
-		EXT_HIGHLIGHT = 0x0020	// Paint the item highlighted
+		EXT_HIGHLIGHT = 0x0020,	// Paint the item highlighted
+		EXT_INCURMAP  = 0x0040  // item is in a CurrentMap display list
 
 	};
 };

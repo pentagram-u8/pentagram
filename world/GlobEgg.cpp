@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ItemFactory.h"
 #include "World.h"
 #include "CurrentMap.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
 
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(GlobEgg,Item);
@@ -109,4 +111,24 @@ void GlobEgg::unexpand()
 	}
 	contents = 0;
 #endif
+}
+
+
+void GlobEgg::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	Item::saveData(ods);
+
+	ods->write2(contents);
+}
+
+bool GlobEgg::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Item::loadData(ids)) return false;
+
+	contents = ids->read2();
+
+	return true;
 }

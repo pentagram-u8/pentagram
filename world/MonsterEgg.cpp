@@ -19,12 +19,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "MonsterEgg.h"
-#include "Kernel.h"
+#include "ObjectManager.h"
 #include "World.h"
 #include "UCMachine.h"
 #include "Actor.h"
 #include "ItemFactory.h"
 #include "CurrentMap.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(MonsterEgg,Egg);
 
@@ -63,6 +65,21 @@ uint16 MonsterEgg::hatch()
 	World::get_instance()->getCurrentMap()->addItem(newactor);
 
 	return objID;
+}
+
+void MonsterEgg::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	Egg::saveData(ods);
+}
+
+bool MonsterEgg::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Egg::loadData(ids)) return false;
+
+	return true;
 }
 
 uint32 MonsterEgg::I_monsterEggHatch(const uint8*args,unsigned int /*argsize*/)

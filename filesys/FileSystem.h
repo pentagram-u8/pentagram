@@ -109,13 +109,13 @@ class FileSystem
 	//! Open a file as readable. Streamed.
 	//! \param vfn the (virtual) filename
 	//! \param is_text open in text mode?
-	//! \return (0 on failure)
+	//! \return 0 on failure
 	IDataSource *ReadFile(const std::string &vfn, bool is_text=false);
 
 	//! Open a file as writable. Streamed.
 	//! \param vfn the (virtual) filename
 	//! \param is_text open in text mode?
-	//! \return (0 on failure)
+	//! \return 0 on failure
 	ODataSource *WriteFile(const std::string &vfn, bool is_text=false);
 
 	//! Mount a virtual path

@@ -8,14 +8,17 @@ KERNEL = \
 
 KERNEL2 = \
 	kernel/GameData.o \
+	kernel/ObjectManager.o \
 	kernel/Object.o
 
 USECODE = \
+	usecode/BitSet.o \
 	usecode/UCMachine.o \
 	usecode/UCProcess.o \
 	usecode/Usecode.o \
 	usecode/UsecodeFlex.o \
-	usecode/UCList.o
+	usecode/UCList.o \
+	usecode/UCStack.o
 
 COMPILE = \
 	tools/compile/CompileProcess.o \
@@ -28,7 +31,9 @@ DISASM = \
 FILESYS = \
 	filesys/FileSystem.o \
 	filesys/Flex.o \
-	filesys/U8Save.o
+	filesys/U8Save.o \
+	filesys/Savegame.o \
+	filesys/SavegameWriter.o
 
 CONVERT = \
 	convert/ConvertShape.o \
@@ -69,7 +74,7 @@ MISC = \
 	misc/util.o
 
 ARGS = \
-	misc/Args.o \
+	misc/Args.o
 
 GUMPS = \
 	gumps/AskGump.o \
@@ -109,7 +114,8 @@ WORLD = \
 ACTORS = \
 	world/actors/Actor.o \
 	world/actors/ActorAnimProcess.o \
-	world/actors/MainActor.o
+	world/actors/MainActor.o \
+	world/actors/TeleportToEggProcess.o
 
 
 AUDIO = \

@@ -36,10 +36,18 @@
 #include "CameraProcess.h"
 #include "GUIApp.h"
 #include "ShapeInfo.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
 
 #include "GravityProcess.h" // hack...
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(GameMapGump,Gump);
+
+GameMapGump::GameMapGump() :
+	Gump(), display_dragging(false)
+{
+	display_list = new ItemSorter();
+}
 
 GameMapGump::GameMapGump(int X, int Y, int Width, int Height) :
 	Gump(X,Y,Width,Height, 0, 0, LAYER_GAMEMAP),
@@ -55,6 +63,7 @@ GameMapGump::GameMapGump(int X, int Y, int Width, int Height) :
 
 GameMapGump::~GameMapGump()
 {
+#if 0
 	World *world = World::get_instance();
 	if (!world) return;	// Is it possible the world doesn't exist?
 
@@ -72,6 +81,9 @@ GameMapGump::~GameMapGump()
 		// leave the Fast area
 		item->leavingFastArea();
 	}
+#endif
+
+	delete display_list;
 }
 
 bool GameMapGump::Run(const uint32 framenum)
@@ -531,5 +543,43 @@ void GameMapGump::DropItem(Item* item, int mx, int my)
 	                                                    // map update
 	item->fall();
 }
+
+void GameMapGump::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	Gump::saveData(ods);
+
+	ods->write4(static_cast<uint32>(fastArea));
+	ods->write4(fastAreas[0].size());
+	for (unsigned int i = 0; i < fastAreas[0].size(); ++i) {
+		ods->write2(fastAreas[0][i]);
+	}
+	ods->write4(fastAreas[1].size());
+	for (unsigned int i = 0; i < fastAreas[1].size(); ++i) {
+		ods->write2(fastAreas[1][i]);
+	}
+}
+
+bool GameMapGump::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Gump::loadData(ids)) return false;
+
+	fastArea = static_cast<int>(ids->read4());
+	unsigned int fastcount = ids->read4();
+	fastAreas[0].resize(fastcount);
+	for (unsigned int i = 0; i < fastcount; ++i) {
+		fastAreas[0][i] = ids->read2();
+	}
+	fastcount = ids->read4();
+	fastAreas[1].resize(fastcount);
+	for (unsigned int i = 0; i < fastcount; ++i) {
+		fastAreas[1][i] = ids->read2();
+	}
+
+	return true;
+}
+
 
 // Colourless Protection

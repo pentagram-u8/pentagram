@@ -26,6 +26,7 @@ class Item;
 class MissileProcess : public Process
 {
 public:
+	MissileProcess();
 	//! note: this probably needs some more parameters
 	MissileProcess(Item* item, sint32 to_x, sint32 to_y, sint32 to_z,
 					int speed, bool curve=false);
@@ -35,8 +36,9 @@ public:
 
 	virtual bool run(const uint32 framenum);
 
-private:
-	uint16 item;
+	bool loadData(IDataSource* ids);
+protected:
+	virtual void saveData(ODataSource* ods);
 
 	sint32 from_x, from_y, from_z;
 	sint32 to_x, to_y, to_z;

@@ -23,8 +23,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "idMan.h"
 
 #include "UCProcess.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
+#include "ItemFactory.h"
 
 #include "Actor.h"
+
+//#define DUMP_PROCESSTYPES
+
+#ifdef DUMP_PROCESSTYPES
+#include <map>
+#endif
+
 
 typedef std::list<Process *>::iterator ProcessIterator;
 
@@ -36,13 +46,6 @@ Kernel::Kernel()
 	kernel = this;
 	pIDs = new idMan(1,32767);
 	current_process = processes.end();
-
-	objects.resize(65536);
-
-	//!CONSTANTS
-	objIDs = new idMan(256,65534);	// Want range of 256 to 65534
-	objIDs->reserveID(666);			// 666 is reserved for the Guardian Bark hack
-	actorIDs = new idMan(1,255);
 }
 
 Kernel::~Kernel()
@@ -50,8 +53,17 @@ Kernel::~Kernel()
 	kernel = 0;
 
 	delete pIDs;
-	delete objIDs;
-	delete actorIDs;
+}
+
+void Kernel::reset()
+{
+	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it) {
+		delete (*it);
+	}
+	processes.clear();
+	current_process = processes.begin();
+
+	pIDs->clearAll();
 }
 
 uint16 Kernel::addProcess(Process* proc)
@@ -177,22 +189,22 @@ Process* Kernel::getProcess(uint16 pid)
 
 void Kernel::kernelStats()
 {
-	unsigned int npccount = 0, objcount = 0;
-
-	//!constants
-	for (unsigned int i = 1; i < 256; i++) {
-		if (objects[i] != 0)
-			npccount++;
+#ifdef DUMP_PROCESSTYPES
+	std::map<std::string, unsigned int> processtypes;
+	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it) {
+		Process* p = *it;
+		processtypes[p->GetClassType().class_name]++;
 	}
-	for (unsigned int i = 256; i < objects.size(); i++) {
-		if (objects[i] != 0)
-			objcount++;
-	}
+#endif
 
 	pout << "Kernel memory stats:" << std::endl;
 	pout << "Processes  : " << processes.size() << "/32765" << std::endl;
-	pout << "NPCs       : " << npccount << "/255" << std::endl;
-	pout << "Objects    : " << objcount << "/65279" << std::endl;
+#ifdef DUMP_PROCESSTYPES
+	std::map<std::string, unsigned int>::iterator iter;
+	for (iter = processtypes.begin(); iter != processtypes.end(); ++iter) {
+		pout << (*iter).first << ": " << (*iter).second << std::endl;
+	}
+#endif
 }
 
 
@@ -235,50 +247,57 @@ void Kernel::killObjectProcesses()
 
 		if (p->item_num != 0)
 			p->terminate();
-	}	
-}
-
-uint16 Kernel::assignObjId(Object* obj)
-{
-	uint16 new_objid = objIDs->getNewID();
-	// failure???
-	if (new_objid != 0) {
-		assert(objects[new_objid] == 0);
-		objects[new_objid] = obj;
 	}
-	return new_objid;
 }
 
-uint16 Kernel::assignActorObjId(Actor* actor, uint16 new_objid)
+void Kernel::save(ODataSource* ods)
 {
-	if (new_objid == 0xFFFF)
-		new_objid = actorIDs->getNewID();
-	else
-		actorIDs->reserveID(new_objid);
-
-	// failure???
-	if (new_objid != 0) {
-		assert(objects[new_objid] == 0);
-		objects[new_objid] = actor;
+	ods->write2(1); // kernel savegame version 1
+	ods->write4(processes.size());
+	for (ProcessIterator it = processes.begin(); it != processes.end(); ++it)
+	{
+		(*it)->save(ods);
 	}
-	return new_objid;
 }
 
-void Kernel::clearObjId(uint16 objid)
+bool Kernel::load(IDataSource* ids)
 {
-	// need to make this assert check only permanent NPCs
-//	assert(objid >= 256); // !constant
-	if (objid >= 256) // !constant
-		objIDs->clearID(objid);
-	else
-		actorIDs->clearID(objid);
+	uint16 version = ids->read2();
+	if (version != 1) return false;
 
-	objects[objid] = 0;
+	uint32 pcount = ids->read4();
+
+	for (unsigned int i = 0; i < pcount; ++i) {
+		Process* p = loadProcess(ids);
+		if (!p) return false;
+		processes.push_back(p);
+		pIDs->reserveID(p->getPid());
+	}
+
+	return true;
 }
 
-Object* Kernel::getObject(uint16 objid) const
+Process* Kernel::loadProcess(IDataSource* ids)
 {
-	return objects[objid];
+	uint16 classlen = ids->read2();
+	char* buf = new char[classlen+1];
+	ids->read(buf, classlen);
+	buf[classlen] = 0;
+
+	std::string classname = buf;
+	delete[] buf;
+
+	std::map<std::string, ProcessLoadFunc>::iterator iter;
+	iter = processloaders.find(classname);
+
+	if (iter == processloaders.end()) {
+		perr << "Unknown Process class: " << classname << std::endl;
+		return 0;
+	}
+
+	Process* p = (*(iter->second))(ids);
+
+	return p;
 }
 
 uint32 Kernel::I_getNumProcesses(const uint8* args, unsigned int /*argsize*/)

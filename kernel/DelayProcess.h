@@ -20,17 +20,38 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define DELAYPROCESS_H
 
 #include "Process.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
 
 // a process that waits a number of ticks before terminating
 
 class DelayProcess : public Process {
 public:
-	explicit DelayProcess(int count_) : Process(), count(count_) { }
+	explicit DelayProcess(int count_=0) : Process(), count(count_) { }
 	virtual ~DelayProcess() { }
 
 	virtual bool run(const uint32 /*framenum*/) { if (--count == 0) terminate(); return false; }
 
+	bool loadData(IDataSource* ids)
+	{
+		uint16 version = ids->read2();
+		if (version != 1) return false;
+		if (!Process::loadData(ids)) return false;
+
+		count = static_cast<int>(ids->read4());
+
+		return true;
+	}
+
 protected:
+
+	virtual void saveData(ODataSource* ods)
+	{
+		ods->write2(1); //version
+		Process::saveData(ods);
+		ods->write4(static_cast<uint32>(count));
+	}
+
 	int count;
 };
 

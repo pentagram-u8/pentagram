@@ -396,30 +396,32 @@ int FileSystem::ListFiles(const std::string mask, FileList& files)
 	// munge the path to a 'real' one.
 	rewrite_virtual_path(name);
 	
-	#if 0
+#if 0
 	pout << "Root: " << rootpath << std::endl;
 	pout << name << "\t" << name.size() << std::endl;
 	pout << mask << '\t' << mask.size() << std::endl;
-	#endif
+#endif
 	
-	// calculate the difference in length between the real path, the original path, and the root @whatever
+	// calculate the difference in length between the real path, the 
+	// original path, and the root @whatever
 	uint32 newplen = name.size() - mask.size() + rootpath.size();
 	
 	int err = glob(name.c_str(), GLOB_NOSORT, 0, &globres);
 
 	switch (err) {
 		case 0:  //OK
-			for(int i=0; i<globres.gl_pathc; i++)
+			for(unsigned int i=0; i<globres.gl_pathc; i++)
 			{
 				std::string newfname(globres.gl_pathv[i]);
-				#if 0
+#if 0
 				pout << newfname << std::endl;
-				#endif
+#endif
 				newfname = rootpath + newfname.substr(newplen);
-				// If the OS uses anything other then / as a path seperator, they probably need to swap it back here...
-				#if 0
+				// If the OS uses anything other then / as a path seperator, 
+				// they probably need to swap it back here...
+#if 0
 				pout << newfname << std::endl;
-				#endif
+#endif
 				files.push_back(newfname);
 			}
 			globfree(&globres);

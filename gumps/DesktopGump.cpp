@@ -19,8 +19,16 @@
 #include "pent_include.h"
 #include "DesktopGump.h"
 #include "RenderSurface.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(DesktopGump,Gump);
+
+DesktopGump::DesktopGump()
+	: Gump()
+{
+
+}
 
 DesktopGump::DesktopGump(sint32 _x, sint32 _y, sint32 _width, sint32 _height) :
 	Gump(_x, _y, _width, _height, 0, 0, LAYER_DESKTOP)
@@ -35,6 +43,21 @@ void DesktopGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 {
 	// Just fill it
 	surf->Fill32(0x3f3f3f, 0, 0, dims.w, dims.h);
+}
+
+void DesktopGump::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	Gump::saveData(ods);
+}
+
+bool DesktopGump::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Gump::loadData(ids)) return false;
+
+	return true;
 }
 
 // Colourless Protection

@@ -24,8 +24,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "Kernel.h"
 
+#include "IDataSource.h"
+#include "ODataSource.h"
+
 // p_dynamic_class stuff 
 DEFINE_RUNTIME_CLASSTYPE_CODE(SpriteProcess,Process);
+
+SpriteProcess::SpriteProcess()
+	: Process()
+{
+
+}
 
 SpriteProcess::SpriteProcess(int Shape, int Frame, int LastFrame, 
 							 int Repeats, int Delay, int X, int Y, int Z) :
@@ -97,4 +106,34 @@ uint32 SpriteProcess::I_createSprite(const uint8* args, unsigned int argsize)
 	ARG_UINT8(z);
 	Process *p = new SpriteProcess(shape, frame, last_frame, repeats, delay, x, y, z);
 	return Kernel::get_instance()->addProcess(p);
+}
+
+void SpriteProcess::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	Process::saveData(ods);
+
+	ods->write4(static_cast<uint32>(frame));
+	ods->write4(static_cast<uint32>(first_frame));
+	ods->write4(static_cast<uint32>(last_frame));
+	ods->write4(static_cast<uint32>(repeats));
+	ods->write4(static_cast<uint32>(delay));
+	ods->write4(static_cast<uint32>(delay_counter));
+
+}
+
+bool SpriteProcess::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Process::loadData(ids)) return false;
+
+	frame = static_cast<int>(ids->read4());
+	first_frame = static_cast<int>(ids->read4());
+	last_frame = static_cast<int>(ids->read4());
+	repeats = static_cast<int>(ids->read4());
+	delay = static_cast<int>(ids->read4());
+	delay_counter = static_cast<int>(ids->read4());
+
+	return true;
 }

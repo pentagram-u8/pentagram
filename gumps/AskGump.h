@@ -30,6 +30,7 @@ public:
 	// p_dynamic_class stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 
+	AskGump();
 	AskGump(uint16 owner, UCList *answers);
 	virtual	~AskGump();
 
@@ -38,6 +39,9 @@ public:
 
 	virtual void		ChildNotify(Gump *child, uint32 message);
 
+	bool loadData(IDataSource* ids);
+protected:
+	virtual void saveData(ODataSource* ods);
 };
 
 #endif // ASKGUMP_H_INCLUDED

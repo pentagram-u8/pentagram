@@ -40,7 +40,7 @@ Flex::~Flex()
 		delete [] objects;
 	}
 
-	// Q: Shouldn't we delete the datasource here too?
+	delete ds;
 }
 
 //static

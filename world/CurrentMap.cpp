@@ -51,7 +51,7 @@ CurrentMap::CurrentMap()
 
 CurrentMap::~CurrentMap()
 {
-	clear();
+//	clear();
 
 	//! get rid of constants
 	for (unsigned int i = 0; i < 128; i++) {
@@ -62,11 +62,6 @@ CurrentMap::~CurrentMap()
 
 void CurrentMap::clear()
 {
-	// We need to be careful about who exactly deletes the items in a map
-	// (CurrentMap or Map)
-	// It should probably be CurrentMap, which means a Map has to be
-	// emptied when it's loaded into CurrentMap
-
 	//! get rid of constants
 	for (unsigned int i = 0; i < 128; i++) {
 		for (unsigned int j = 0; j < 128; j++) {
@@ -79,8 +74,9 @@ void CurrentMap::clear()
 
 	current_map = 0;
 
-	if (egghatcher)
-		egghatcher->terminate(); // kernel will delete egghatcher
+	Process* ehp = Kernel::get_instance()->getProcess(egghatcher);
+	if (ehp)
+		ehp->terminate();
 	egghatcher = 0;
 }
 
@@ -90,6 +86,17 @@ uint32 CurrentMap::getNum() const
 		return 0;
 
 	return current_map->mapnum;
+}
+
+void CurrentMap::createEggHatcher()
+{
+	// get rid of old one, if any
+	Process* ehp = Kernel::get_instance()->getProcess(egghatcher);
+	if (ehp)
+		ehp->terminate();
+
+    ehp = new EggHatcherProcess();
+	egghatcher = Kernel::get_instance()->addProcess(ehp);
 }
 
 void CurrentMap::writeback()
@@ -106,14 +113,19 @@ void CurrentMap::writeback()
 			{
 				Item* item = *iter;
 
+				// item is being removed from the CurrentMap item lists
+				item->clearExtFlag(Item::EXT_INCURMAP);
+
 				// delete items inside globs
 				if (item->getExtFlags() & Item::EXT_INGLOB) {
 					delete item;
 					continue;
 				}
 
-				// delete all monsters
-				if (item->getFlags() & Item::FLG_MONSTER_NPC) {
+				// delete all monsters and disposable items
+				if ((item->getFlags() & Item::FLG_MONSTER_NPC) ||
+					(item->getFlags() & Item::FLG_DISPOSABLE))
+				{
 					delete item;
 					continue;
 				}
@@ -146,8 +158,10 @@ void CurrentMap::writeback()
 		}
 	}
 
-	if (egghatcher)
-		egghatcher->terminate(); // kernel will delete egghatcher
+	// delete egghatcher
+	Process* ehp = Kernel::get_instance()->getProcess(egghatcher);
+	if (ehp)
+		ehp->terminate();
 	egghatcher = 0;
 }
 
@@ -177,10 +191,7 @@ void CurrentMap::loadMap(Map* map)
 {
 	current_map = map;
 
-	if (egghatcher)
-		egghatcher->terminate();
-	egghatcher = new EggHatcherProcess();
-	Kernel::get_instance()->addProcess(egghatcher);
+	createEggHatcher();
 
 	loadItems(map->fixeditems);
 	loadItems(map->dynamicitems);
@@ -223,11 +234,13 @@ void CurrentMap::addItem(Item* item)
 	sint32 cy = iy / 512;
 
 	items[cx][cy].push_back(item);
+	item->setExtFlag(Item::EXT_INCURMAP);
 
 	Egg* egg = p_dynamic_cast<Egg*>(item);
 	if (egg) {
-		assert(egghatcher);
-		egghatcher->addEgg(egg);
+		EggHatcherProcess* ehp = p_dynamic_cast<EggHatcherProcess*>(Kernel::get_instance()->getProcess(egghatcher));
+		assert(ehp);
+		ehp->addEgg(egg);
 	}
 }
 
@@ -258,6 +271,7 @@ void CurrentMap::removeItemFromList(Item* item, sint32 oldx, sint32 oldy)
 	sint32 cy = oldy / 512;
 
 	items[cx][cy].remove(item);
+	item->clearExtFlag(Item::EXT_INCURMAP);
 }
 
 void CurrentMap::areaSearch(UCList* itemlist, const uint8* loopscript,

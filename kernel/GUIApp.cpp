@@ -20,10 +20,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "GUIApp.h"
 
+#include <SDL.h>
+
 //!! a lot of these includes are just for some hacks... clean up sometime
 #include "Kernel.h"
 #include "FileSystem.h"
 #include "Configuration.h"
+#include "ObjectManager.h"
 
 #include "RenderSurface.h"
 #include "Texture.h"
@@ -32,6 +35,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "World.h"
 
 #include "U8Save.h"
+#include "SavegameWriter.h"
+#include "Savegame.h"
 
 #include "Gump.h"
 #include "DesktopGump.h"
@@ -48,7 +53,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "UCList.h"
 #include "LoopScript.h"
-#include <SDL.h>
+
+#include "EggHatcherProcess.h" // for a hack
+#include "UCProcess.h" // more hacking
+#include "GumpNotifyProcess.h" // guess
+#include "DelayProcess.h"
+#include "GravityProcess.h"
+#include "MissileProcess.h"
+#include "TeleportToEggProcess.h"
 
 #include "DisasmProcess.h"
 #include "CompileProcess.h"
@@ -100,9 +112,13 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 
 GUIApp::~GUIApp()
 {
+	FORGET_OBJECT(objectmanager);
 	deinit_midi();
 	FORGET_OBJECT(ucmachine);
 	FORGET_OBJECT(palettemanager);
+	FORGET_OBJECT(gamedata);
+	FORGET_OBJECT(world);
+	FORGET_OBJECT(ucmachine);
 }
 
 void GUIApp::startup()
@@ -112,6 +128,35 @@ void GUIApp::startup()
 
 	// parent's startup first
 	CoreApp::startup();
+
+	//!! move this elsewhere
+	kernel->addProcessLoader("DelayProcess",
+							 ProcessLoader<DelayProcess>::load);
+	kernel->addProcessLoader("GravityProcess",
+							 ProcessLoader<GravityProcess>::load);
+	kernel->addProcessLoader("PaletteFaderProcess",
+							 ProcessLoader<PaletteFaderProcess>::load);
+	kernel->addProcessLoader("TeleportToEggProcess",
+							 ProcessLoader<TeleportToEggProcess>::load);
+	kernel->addProcessLoader("ActorAnimProcess",
+							 ProcessLoader<ActorAnimProcess>::load);
+	kernel->addProcessLoader("SpriteProcess",
+							 ProcessLoader<SpriteProcess>::load);
+	kernel->addProcessLoader("MissileProcess",
+							 ProcessLoader<MissileProcess>::load);
+	kernel->addProcessLoader("CameraProcess",
+							 ProcessLoader<CameraProcess>::load);
+	kernel->addProcessLoader("MusicProcess",
+							 ProcessLoader<MusicProcess>::load);
+	kernel->addProcessLoader("EggHatcherProcess",
+							 ProcessLoader<EggHatcherProcess>::load);
+	kernel->addProcessLoader("UCProcess",
+							 ProcessLoader<UCProcess>::load);
+	kernel->addProcessLoader("GumpNotifyProcess",
+							 ProcessLoader<GumpNotifyProcess>::load);
+
+	pout << "Create ObjectManager" << std::endl;
+	objectmanager = new ObjectManager();
 
 	pout << "Create UCMachine" << std::endl;
 	ucmachine = new UCMachine(U8Intrinsics);
@@ -156,14 +201,14 @@ void GUIApp::init_midi()
 
 	pout << "Initializing Midi" << std::endl;
 
+#if 0
 	// Only the FMOPL Midi driver 'requires' SDL_mixer, and I don't 
 	// want to force it on everyone at the moment.
 #ifdef USE_FMOPL_MIDI
-	SDL_Init(SDL_INIT_AUDIO);
+	SDL_InitSubSystem(SDL_INIT_AUDIO);
 	Mix_OpenAudio(sample_rate, format, channels, 4096);
 	Mix_QuerySpec(&sample_rate, &format, &channels);
 #endif
-
 	// Create the driver
 #ifdef WIN32
 	TRY_MIDI_DRIVER(WindowsMidiDriver,sample_rate,channels==2);
@@ -173,6 +218,10 @@ void GUIApp::init_midi()
 #endif
 #ifdef USE_FMOPL_MIDI
 	TRY_MIDI_DRIVER(FMOplMidiDriver,sample_rate,channels==2);
+#endif
+
+#else
+	midi_driver = 0; // silence :-)
 #endif
 
 	// If the driver is a 'sample' producer we need to hook it to SDL_mixer
@@ -325,7 +374,7 @@ void GUIApp::U8Playground()
 	}
 	world->initMaps();
 	world->loadNonFixed(nfd);
-	delete nfd;
+
 	IDataSource *icd = u8save->get_datasource("ITEMCACH.DAT");
 	if (!icd) {
 		perr << "Unable to load savegame/u8save.000/ITEMCACH.DAT. Exiting" << std::endl;
@@ -338,10 +387,7 @@ void GUIApp::U8Playground()
 	}
 
 	world->loadItemCachNPCData(icd, npcd);
-	delete icd;
-	delete npcd;
 	delete u8save;
-	delete saveds;
 
 	Actor* av = world->getNPC(1);
 //	av->teleport(40, 16240, 15240, 64); // central Tenebrae
@@ -1024,6 +1070,12 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			if (!consoleGump->ConsoleIsVisible()) con.ScrollConsole(3); 
 			break;
 		}
+		case SDLK_F9: { // quicksave
+			saveGame("@work/quicksave");
+		} break;
+		case SDLK_F10: { // quickload
+			loadGame("@work/quicksave");
+		} break;
 		case SDLK_s: { // toggle avatarInStasis
 
 			avatarInStasis = !avatarInStasis;
@@ -1031,6 +1083,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		} break;
 		case SDLK_t: { // engine stats
 			Kernel::get_instance()->kernelStats();
+			ObjectManager::get_instance()->objectStats();
 			UCMachine::get_instance()->usecodeStats();
 			World::get_instance()->worldStats();
 		} break;
@@ -1065,7 +1118,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			uint16 objid = uclist.getuint16(0);
 
 			Egg* egg = p_dynamic_cast<Egg*>(
-				Kernel::get_instance()->getObject(objid));
+				ObjectManager::get_instance()->getObject(objid));
 			sint32 ix, iy, iz;
 			egg->getLocation(ix,iy,iz);
 			// Center on egg
@@ -1092,7 +1145,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			uint16 objid = uclist.getuint16(0);
 
 			Egg* egg = p_dynamic_cast<Egg*>(
-				Kernel::get_instance()->getObject(objid));
+				ObjectManager::get_instance()->getObject(objid));
 			Actor* avatar = World::get_instance()->getNPC(1);
 			sint32 x,y,z;
 			egg->getLocation(x,y,z);
@@ -1130,9 +1183,183 @@ void GUIApp::handleDelayedEvents()
 
 }
 
+bool GUIApp::saveGame(std::string filename)
+{
+	pout << "Saving..." << std::endl;
+
+	ODataSource* ods = filesystem->WriteFile(filename);
+	if (!ods) return false;
+
+	SavegameWriter* sgw = new SavegameWriter(ods);
+	sgw->start(9); // 8 files + version
+	sgw->writeVersion(1);
+
+	OBufferDataSource buf;
+
+	kernel->save(&buf);
+	sgw->writeFile("KERNEL", &buf);
+	buf.clear();
+
+	objectmanager->save(&buf);
+	sgw->writeFile("OBJECTS", &buf);
+	buf.clear();
+
+	world->save(&buf);
+	sgw->writeFile("WORLD", &buf);
+	buf.clear();
+
+	world->saveMaps(&buf);
+	sgw->writeFile("MAPS", &buf);
+	buf.clear();
+
+	ucmachine->saveStrings(&buf);
+	sgw->writeFile("UCSTRINGS", &buf);
+	buf.clear();
+
+	ucmachine->saveGlobals(&buf);
+	sgw->writeFile("UCGLOBALS", &buf);
+	buf.clear();
+
+	ucmachine->saveLists(&buf);
+	sgw->writeFile("UCLISTS", &buf);
+	buf.clear();
+
+	save(&buf);
+	sgw->writeFile("APP", &buf);
+	buf.clear();
+
+	sgw->fixupCount();
+	delete sgw;
+
+	pout << "Done" << std::endl;
+
+	return true;
+}
+
+bool GUIApp::loadGame(std::string filename)
+{
+	pout << "Loading..." << std::endl;
+
+	IDataSource* ids = filesystem->ReadFile(filename);
+	if (!ids) {
+		perr << "Can't find file: " << filename << std::endl;
+		return false;
+	}
+
+	Savegame* sg = new Savegame(ids);
+	int version = sg->getVersion();
+	if (version != 1) {
+		perr << "Unsupported savegame version (" << version << ")"
+			 << std::endl;
+		return false;
+	}
+
+	// kill music
+	if (midi_driver) {
+		for (int i = 0; i < midi_driver->maxSequences(); i++) {
+			midi_driver->finishSequence(i);
+		}
+	}
+
+	// now, reset everything (order matters)
+	world->reset();
+	ucmachine->reset();
+	// ObjectManager, Kernel have to be last, because they kill
+	// all processes/objects
+	objectmanager->reset();
+	kernel->reset();
+
+	// TODO: reset mouse state in GUIApp
+
+ 	// and load everything back (order matters)
+	IDataSource* ds;
+
+	// UCSTRINGS, UCGLOBALS, UCLISTS, APP don't depend on anything else,
+	// so load these first
+	ds = sg->get_datasource("UCSTRINGS");
+	ucmachine->loadStrings(ds);
+	delete ds;
+
+	ds = sg->get_datasource("UCGLOBALS");
+	ucmachine->loadGlobals(ds);
+	delete ds;
+
+	ds = sg->get_datasource("UCLISTS");
+	ucmachine->loadLists(ds);
+	delete ds;
+
+	ds = sg->get_datasource("APP");
+	load(ds);
+	delete ds;
+
+	// KERNEL must be before OBJECTS, for the egghatcher
+	ds = sg->get_datasource("KERNEL");
+	kernel->load(ds);
+	delete ds;
+
+	// WORLD must be before OBJECTS, for the egghatcher
+	ds = sg->get_datasource("WORLD");
+	world->load(ds);
+	delete ds;
+
+	ds = sg->get_datasource("OBJECTS");
+	objectmanager->load(ds);
+	delete ds;
+
+	ds = sg->get_datasource("MAPS");
+	world->loadMaps(ds);
+	delete ds;
+
+	//!! temporary hack: reset desktopgump, gamemapgump, consolegump:
+	desktopGump = 0;
+	for (unsigned int i = 256; i < 65535; ++i) {
+		DesktopGump* dg = p_dynamic_cast<DesktopGump*>(getGump(i));
+		if (dg) {
+			desktopGump = dg;
+			break;
+		}
+	}
+	assert(desktopGump);
+	gameMapGump = p_dynamic_cast<GameMapGump*>(desktopGump->
+											   FindGump<GameMapGump>());
+	assert(gameMapGump);
+
+	consoleGump = p_dynamic_cast<ConsoleGump*>(desktopGump->
+											   FindGump<ConsoleGump>());
+	assert(consoleGump);
+
+	pout << "Done" << std::endl;
+
+
+	delete sg;
+	return false;
+}
+
 Gump* GUIApp::getGump(uint16 gumpid)
 {
-	return p_dynamic_cast<Gump*>(Kernel::get_instance()->getObject(gumpid));
+	return p_dynamic_cast<Gump*>(ObjectManager::get_instance()->
+								 getObject(gumpid));
+}
+
+void GUIApp::save(ODataSource* ods)
+{
+	ods->write2(1); //version
+	uint8 s = (avatarInStasis ? 1 : 0);
+	ods->write1(s);
+	ods->write4(static_cast<uint32>(timeOffset));
+	ods->write4(framenum);
+}
+
+bool GUIApp::load(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+
+	avatarInStasis = (ids->read1() != 0);
+	timeOffset = static_cast<sint32>(ids->read4());
+	framenum = ids->read4();
+
+	return true;
 }
 
 uint32 GUIApp::I_getCurrentTimerTick(const uint8* /*args*/,

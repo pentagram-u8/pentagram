@@ -30,6 +30,7 @@ class GumpNotifyProcess : public Process
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
+	GumpNotifyProcess();
 	GumpNotifyProcess(uint16 it);
 	virtual ~GumpNotifyProcess(void);
 
@@ -41,6 +42,10 @@ public:
 	virtual void terminate();
 
 	virtual bool run(const uint32 framenum);
+
+	bool loadData(IDataSource* ids);
+protected:
+	void saveData(ODataSource* ods);
 };
 
 #endif //GUMPNOTIFYPROCESS_H_INCLUDED

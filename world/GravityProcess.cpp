@@ -23,8 +23,17 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "World.h"
 #include "CurrentMap.h"
 
+#include "IDataSource.h"
+#include "ODataSource.h"
+
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(GravityProcess,Process);
+
+GravityProcess::GravityProcess()
+	: Process()
+{
+
+}
 
 GravityProcess::GravityProcess(Item* item, int gravity_)
 	: xspeed(0), yspeed(0), zspeed(0)
@@ -169,4 +178,30 @@ void GravityProcess::terminate()
 	}
 
 	Process::terminate();
+}
+
+
+void GravityProcess::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	Process::saveData(ods);
+
+	ods->write4(static_cast<uint32>(gravity));
+	ods->write4(static_cast<uint32>(xspeed));
+	ods->write4(static_cast<uint32>(yspeed));
+	ods->write4(static_cast<uint32>(zspeed));
+}
+
+bool GravityProcess::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Process::loadData(ids)) return false;
+
+	gravity = static_cast<int>(ids->read4());
+	xspeed = static_cast<int>(ids->read4());
+	yspeed = static_cast<int>(ids->read4());
+	zspeed = static_cast<int>(ids->read4());
+
+	return true;
 }

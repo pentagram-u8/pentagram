@@ -84,10 +84,15 @@ public:
 	//! Destroy self
 	virtual void destroy();
 
+	bool loadData(IDataSource* ids);
+
 	INTRINSIC(I_removeContents);
 	INTRINSIC(I_destroyContents);
 
 protected:
+	//! save Container data
+	virtual void saveData(ODataSource* ods);
+
 	std::list<Item*> contents;
 };
 

@@ -73,7 +73,7 @@ bool GameDetector::detect(std::string path, GameInfo *info)
 						}
 					}
 				}
-				delete f;
+				delete f; ids = 0; // ids is deleted when f is deleted
 			}
 
 			// if still unsure, English

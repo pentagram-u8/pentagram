@@ -29,6 +29,7 @@ protected:
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
+	ItemRelativeGump();
 	ItemRelativeGump(sint32 x, sint32 y, sint32 width, sint32 height, uint16 owner, uint32 _Flags = 0, sint32 layer = LAYER_NORMAL);
 	virtual ~ItemRelativeGump(void);
 
@@ -43,7 +44,10 @@ public:
 
 	virtual void		Move(int x, int y);
 
+	bool				loadData(IDataSource* ids);
 protected:
+	virtual void 		saveData(ODataSource* ods);
+
 	void				GetItemLocation(sint32 lerp_factor);
 };
 

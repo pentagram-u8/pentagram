@@ -21,12 +21,21 @@
 #include "Kernel.h"
 #include "Palette.h"
 
+#include "IDataSource.h"
+#include "ODataSource.h"
+
 #define PALETTEFADER_COUNTER	30
 
 PaletteFaderProcess *PaletteFaderProcess::fader = 0;
 
 // p_dynamic_class stuff 
 DEFINE_RUNTIME_CLASSTYPE_CODE(PaletteFaderProcess,Process)
+
+PaletteFaderProcess::PaletteFaderProcess()
+	: Process()
+{
+
+}
 
 PaletteFaderProcess::PaletteFaderProcess(PaletteManager::PalTransforms trans,
 		int priority_, int frames) : priority(priority_), 
@@ -84,6 +93,38 @@ bool PaletteFaderProcess::run(const uint32)
 			matrix);
 	
 	if (!counter--) terminate();
+	return true;
+}
+
+void PaletteFaderProcess::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	Process::saveData(ods);
+	
+	ods->write4(static_cast<uint32>(priority));
+	ods->write4(static_cast<uint32>(counter));
+	ods->write4(static_cast<uint32>(max_counter));
+	for (unsigned int i = 0; i < 12; ++i)
+		ods->writef(old_matrix[i]);
+	for (unsigned int i = 0; i < 12; ++i)
+		ods->writef(new_matrix[i]);
+}
+
+bool PaletteFaderProcess::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Process::loadData(ids)) return false;
+	
+	priority = static_cast<int>(ids->read4());
+	counter = static_cast<int>(ids->read4());
+	max_counter = static_cast<int>(ids->read4());
+	for (unsigned int i = 0; i < 12; ++i)
+		old_matrix[i] = ids->readf();
+	for (unsigned int i = 0; i < 12; ++i)
+		new_matrix[i] = ids->readf();
+
+	fader = this; //static
 	return true;
 }
 

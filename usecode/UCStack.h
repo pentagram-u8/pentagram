@@ -19,6 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef UCSTACK_H
 #define UCSTACK_H
 
+class IDataSource;
+class ODataSource;
+
 // A little-endian stack for use with usecode
 class UCStack
 {
@@ -155,6 +158,9 @@ public:
 	{
 		std::memcpy (const_cast<uint8*>(buf)+offset, in, len);
 	}
+
+	void save(ODataSource* ods);
+	bool load(IDataSource* ids);
 };
 
 #endif

@@ -20,6 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define PROCESS_H
 
 #include <vector>
+class IDataSource;
+class ODataSource;
 
 class Process {
 public:
@@ -49,7 +51,19 @@ public:
 	void setType(uint16 ty) { type = ty; }
 
 	uint16 getPid() { return pid; }
+
+	//! save this process
+	void save(ODataSource* ods);
+
+	//! load Process data
+	bool loadData(IDataSource* ids);
+
 protected:
+	//! save the Process data 
+	virtual void saveData(ODataSource* ods);
+
+	void writeProcessHeader(ODataSource* ods);
+
 	//! process id
 	uint16 pid;
 

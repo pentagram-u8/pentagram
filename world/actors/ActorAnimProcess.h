@@ -27,6 +27,7 @@ struct AnimAction;
 class ActorAnimProcess : public Process
 {
 public:
+	ActorAnimProcess();
 	//! note: this probably needs some more parameters
 	ActorAnimProcess(Actor* actor, uint32 action, uint32 dir);
 
@@ -37,7 +38,10 @@ public:
 
 	virtual void terminate();
 
-private:
+	bool loadData(IDataSource* ids);
+protected:
+	virtual void saveData(ODataSource* ods);
+
 	AnimAction* animaction;
 	uint32 dir;
 

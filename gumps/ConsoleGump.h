@@ -43,6 +43,7 @@ class ConsoleGump : public Gump
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
+	ConsoleGump();
 	ConsoleGump(int x, int y, int w, int h);
 	virtual ~ConsoleGump();
 
@@ -57,6 +58,11 @@ public:
 	virtual bool Run(const uint32 framenum);
 
 	virtual void PaintThis(RenderSurface *surf, sint32 lerp_factor);
+
+	bool loadData(IDataSource* ids);
+
+protected:
+	virtual void saveData(ODataSource* ods);
 };
 
 #endif //CONSOLEGUMP_H_INCLUDED

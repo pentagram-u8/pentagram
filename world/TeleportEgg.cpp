@@ -21,6 +21,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "TeleportEgg.h"
 #include "World.h"
 #include "MainActor.h"
+#include "IDataSource.h"
+#include "ODataSource.h"
+
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(TeleportEgg,Egg);
 
@@ -47,4 +50,19 @@ uint16 TeleportEgg::hatch()
 	av->teleport(mapnum, getTeleportId());
 
 	return 0;
+}
+
+void TeleportEgg::saveData(ODataSource* ods)
+{
+	ods->write2(1); //version
+	Egg::saveData(ods);
+}
+
+bool TeleportEgg::loadData(IDataSource* ids)
+{
+	uint16 version = ids->read2();
+	if (version != 1) return false;
+	if (!Egg::loadData(ids)) return false;
+
+	return true;
 }

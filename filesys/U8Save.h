@@ -19,33 +19,26 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef U8SAVE_H
 #define U8SAVE_H
 
-#include "Flex.h"
+#include "NamedFlex.h"
 #include <string>
 #include <vector>
 #include <map>
 
 class IDataSource;
 
-class U8Save : public Flex
+class U8Save : public NamedFlex
 {
 public:
 	explicit U8Save(IDataSource* ds);
 	virtual ~U8Save();
 
-	virtual uint32 get_size(uint32 index);
-
-	// return object as IDataSource. Delete the IDataSource afterwards,
-	// but DON'T delete/modify the buffer it points to.
-	virtual IDataSource* get_datasource(const char* filename);
-	virtual IDataSource* get_datasource(uint32 index) { return Flex::get_datasource(index); };
-
 protected:
+	virtual uint32 get_size(uint32 index);
 	virtual uint32 get_offset(uint32 index);
 
 	std::vector<uint32> offsets;
 	std::vector<uint32> sizes;
 	std::vector<std::string> names;
-	std::map<std::string, uint32> indices;
 };
 
 #endif

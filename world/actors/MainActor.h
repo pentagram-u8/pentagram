@@ -50,6 +50,8 @@ public:
 	//! one int. point. (There's a chance you gain int. sooner)
 	void accumulateInt(int n);
 
+	bool loadData(IDataSource* ids);
+
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 
@@ -58,7 +60,9 @@ public:
 	INTRINSIC(I_accumulateDexterity);
 	INTRINSIC(I_accumulateIntelligence);
 
-private:
+protected:
+	virtual void saveData(ODataSource* ods);
+
 	bool justTeleported;
 
 	int accumStr;

@@ -26,10 +26,16 @@ class DesktopGump : public Gump
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
+	DesktopGump();
 	DesktopGump(sint32 x, sint32 y, sint32 width, sint32 height);
 	virtual ~DesktopGump(void);
 
 	virtual void PaintThis(RenderSurface *surf, sint32 lerp_factor);
+
+	bool loadData(IDataSource* ids);
+
+protected:
+	virtual void saveData(ODataSource* ods);
 };
 
 #endif
