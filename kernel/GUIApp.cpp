@@ -1565,10 +1565,7 @@ bool GUIApp::newGame()
 //	av->teleport(54, 14783,5959,8); // shrine of the Ancient Ones; Hanoi
 //	av->teleport(5, 5104,22464,48); // East road (tenebrae end)
 
-#if 0
-	// disable this for now since it takes too long
 	game->startInitialUsecode();
-#endif
 
 	return true;
 }
