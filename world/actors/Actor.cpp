@@ -523,10 +523,10 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 	if (getActorFlags() & (ACT_IMMORTAL | ACT_INVINCIBLE))
 		return; // invincible
  
-	if (damage >= 4 && objid == 1 && hitter) {
+	if (damage >= 4 && objid == 1 && attacker) {
 		// play blood sprite
 		int start = 0, end = 12;
-		if (getDirToItemCentre(*hitter) > 2) {
+		if (getDirToItemCentre(*attacker) > 2) {
 			start = 13; end = 25;
 		}
 
@@ -556,12 +556,18 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 	// not dead yet
 	setHP(static_cast<uint16>(hitpoints - damage));
 
-	if (objid == 1 && (damage_type & WeaponInfo::DMG_FALLING) && damage >= 6) {
-		// high falling damage knocks you down
-		doAnim(Animation::fallBackwards, 8);
+	ProcId fallingprocid = 0;
+	if (objid == 1 && damage > 0) {
+		if ((damage_type & WeaponInfo::DMG_FALLING) && damage >= 6) {
+			// high falling damage knocks you down
+			doAnim(Animation::fallBackwards, 8);
 
-		// TODO: shake head after getting back up when not in combat
-		return;
+			// TODO: shake head after getting back up when not in combat
+			return;
+		}
+
+		// got hit, so abort current animation
+		fallingprocid = killAllButFallAnims(false);
 	}
 
 	// if avatar was blocking; do a quick stopblock/startblock and play SFX
@@ -603,7 +609,7 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 		}
 	}
 
-	if (damage) {
+	if (damage && !fallingprocid) {
 		ProcId anim1pid = doAnim(Animation::stumbleBackwards, 8);
 		ProcId anim2pid;
 		if (isInCombat())
