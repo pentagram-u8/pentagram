@@ -1,3 +1,6 @@
+2005-04-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/Pathfinder*.cpp: properly check tryAnim return value
+
 2005-04-03  Ryan Nunn <colourles@users.sourceforge.net>
 	* audio/AudioChannel.*, audio/AudioMixer.*, audio/AudioProcess.*,
 	  gumps/ModalGump.cpp : Pauses all currently playing sounds when 

@@ -187,7 +187,8 @@ void Pathfinder::expandNode(PathNode* node)
 	for (uint32 dir = 0; dir < 8; ++dir) {
 		state = node->state;
 
-		bool ok = actor->tryAnim(c_walk_anim, dir, &state) != 0;
+		bool ok;
+		ok = actor->tryAnim(c_walk_anim, dir, &state) == Animation::SUCCESS;
 
 		if (ok)
 			ok = !alreadyVisited(state.x, state.y, state.z);

@@ -181,7 +181,7 @@ bool PathfinderProcess::run(const uint32 /*framenum*/)
 
 	if (ok) {
 		ok = actor->tryAnim(path[currentstep].action,
-							path[currentstep].direction) != 0;
+							path[currentstep].direction) == Animation::SUCCESS;
 	}
 
 	if (!ok) {
