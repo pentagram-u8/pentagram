@@ -526,7 +526,7 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 	if (damage >= 4 && objid == 1 && attacker) {
 		// play blood sprite
 		int start = 0, end = 12;
-		if (getDirToItemCentre(*attacker) > 2) {
+		if (dir > 2) {
 			start = 13; end = 25;
 		}
 
@@ -610,13 +610,13 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 	}
 
 	if (damage && !fallingprocid) {
-		ProcId anim1pid = doAnim(Animation::stumbleBackwards, 8);
+		ProcId anim1pid = doAnim(Animation::stumbleBackwards, dir);
 		ProcId anim2pid;
 		if (isInCombat())
 			// not doing this would cause you to re-draw your weapon when hit
-			anim2pid = doAnim(Animation::combat_stand, 8);
+			anim2pid = doAnim(Animation::combat_stand, dir);
 		else
-			anim2pid = doAnim(Animation::stand, 8);
+			anim2pid = doAnim(Animation::stand, dir);
 		Process* anim1proc = Kernel::get_instance()->getProcess(anim1pid);
 		Process* anim2proc = Kernel::get_instance()->getProcess(anim2pid);
 		assert(anim1proc);

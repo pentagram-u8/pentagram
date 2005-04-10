@@ -192,8 +192,8 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 						 << "] ActorAnimProcess done; terminating"
 						 << std::endl;
 #endif
-			terminate();
-			return true;
+				terminate();
+				return true;
 			}
 
 
@@ -214,8 +214,8 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 
 		AnimFrame* curframe = tracker->getAnimFrame();
 		if (curframe && curframe->sfx) {
-			AudioProcess::get_instance()->playSFX(curframe->sfx,0x60,
-												  item_num,0);
+			AudioProcess* audioproc = AudioProcess::get_instance();
+			if (audioproc) audioproc->playSFX(curframe->sfx,0x60,item_num,0);
 		}
 
 		if (curframe && (curframe->flags & AnimAction::AAF_SPECIAL)) {
@@ -234,7 +234,8 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 	if (repeatcounter == 0 && item_num == watchactor)
 		pout << "Animation [" << Kernel::get_instance()->getFrameNum()
 			 << "] showing next frame (" << x << "," << y << "," << z << ")"
-			 << std::endl;
+			 << " shape (" << a->getShape() << "," << tracker->getFrame()
+			 << ") sfx " << tracker->getAnimFrame()->sfx << std::endl;
 #endif
 
 
@@ -260,7 +261,7 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 				attackedSomething = true;
 				Item* hit_item = World::get_instance()->getItem(hit);
 				assert(hit_item);
-				hit_item->receiveHit(item_num, dir, 0, 0); // CHECKME: dir?
+				hit_item->receiveHit(item_num, (dir+4)%8, 0, 0); // CHECKME: dir?
 			}
 		}
 	}

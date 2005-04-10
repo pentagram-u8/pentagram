@@ -1,6 +1,8 @@
 2005-04-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Pathfinder*.cpp: properly check tryAnim return value
 	* world/actors/Actor.cpp: abort current animation when hit
+	* world/actors/Actor.cpp, world/actors/ActorAnimProcess.cpp: stumble
+	  away from attacker when getting hit
 
 2005-04-03  Ryan Nunn <colourles@users.sourceforge.net>
 	* audio/AudioChannel.*, audio/AudioMixer.*, audio/AudioProcess.*,
