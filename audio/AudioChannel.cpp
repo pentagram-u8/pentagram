@@ -48,12 +48,13 @@ AudioChannel::~AudioChannel(void)
 {
 }
 
-void AudioChannel::playSample(AudioSample *sample_, int loop_, int priority_, int volume_, bool paused_, int pitch_shift_)
+void AudioChannel::playSample(AudioSample *sample_, int loop_, int priority_, bool paused_, uint32 pitch_shift_, int lvol_, int rvol_)
 {
 	sample = sample_; 
 	loop = loop_;
 	priority = priority_;
-	volume = volume_;
+	lvol = lvol_;
+	rvol = rvol_;
 	paused = paused_;
 	pitch_shift = pitch_shift_;
 
@@ -219,10 +220,10 @@ void AudioChannel::resampleFrameM8toS(sint16 *&stream, uint32 &bytes)
 
 		if (fp_pos < 0x10000) do {
 			// Do the interpolation
-			result = (interp_l.interpolate(fp_pos)*volume)/100;
+			result = interp_l.interpolate(fp_pos);
 
-			int lresult = *(stream+0) + result;
-			int rresult = *(stream+1) + result;
+			int lresult = *(stream+0) + (result*lvol)/256;
+			int rresult = *(stream+1) + (result*rvol)/256;
 
 			// Enforce range in case of an "overshot". Shouldn't happen since we
 			// scale down already, but safe is safe.
@@ -256,6 +257,7 @@ void AudioChannel::resampleFrameM8toM(sint16 *&stream, uint32 &bytes)
 	src += position;
 
 	int result;
+	int volume = (rvol + lvol)/2;
 	
 	do {
 		// Add a new src sample (if required)
@@ -279,7 +281,7 @@ void AudioChannel::resampleFrameM8toM(sint16 *&stream, uint32 &bytes)
 
 		if (fp_pos < 0x10000) do {
 			// Do the interpolation
-			result = (interp_l.interpolate(fp_pos)*volume)/100;
+			result = (interp_l.interpolate(fp_pos)*volume)/256;
 
 			result += *stream;
 

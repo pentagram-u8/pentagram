@@ -44,7 +44,7 @@ class AudioChannel
 	uint32			frame0_size;	// Size of the frame0 buffer in samples
 	uint32			frame1_size;	// Size of the frame1 buffer in samples
 	uint32			position;		// Position in frame0 buffer
-	int				volume;			// 0-100
+	int				lvol, rvol;		// 0-256
 	uint32			pitch_shift;	// 0x10000 = no shift
 	int				priority;		// anything. 
 	bool			paused;			// true/false
@@ -55,7 +55,7 @@ public:
 
 	void stop() { sample = 0; }
 
-	void playSample(AudioSample *sample, int loop, int priority=100, int volume=100, bool paused=false, int pitch_shift=0x10000);
+	void playSample(AudioSample *sample, int loop, int priority, bool paused, uint32 pitch_shift, int lvol, int rvol);
 	void resampleAndMix(sint16 *stream, uint32 bytes);
 
 	bool isPlaying() { return sample != 0; }
@@ -66,13 +66,13 @@ public:
 	void setLoop(int loop_) { loop = loop_; }
 	sint32 getLoop() const { return loop;}
 
-	void setVolume(int volume_) { volume = volume_; }
-	int getVolume() const { return volume; }
+	void setVolume(int lvol_, int rvol_) { lvol = lvol_;  rvol = rvol_; }
+	void getVolume(int &lvol_, int &rvol_) const { lvol_ = lvol; rvol_ = rvol; }
 
 	void setPriority(int priority_) { priority = priority_; }
 	int getPriority() const { return priority; }
 
-	void setPaused(int paused_) { paused = paused_; }
+	void setPaused(bool paused_) { paused = paused_; }
 	bool isPaused() const { return paused; }
 private:
 

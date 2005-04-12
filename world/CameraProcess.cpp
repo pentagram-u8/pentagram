@@ -94,7 +94,7 @@ void CameraProcess::GetCameraLocation(sint32 &x, sint32 &y, sint32 &z)
 	}
 	else
 	{
-		camera->GetLerped(x, y, z, 256);
+		camera->GetLerped(x, y, z, 256, true);
 	}
 }
 
@@ -198,41 +198,44 @@ void CameraProcess::ItemMoved()
 	}
 }
 
-void CameraProcess::GetLerped(sint32 &x, sint32 &y, sint32 &z, sint32 factor)
+void CameraProcess::GetLerped(sint32 &x, sint32 &y, sint32 &z, sint32 factor, bool noupdate)
 {
 	if (time == 0)
 	{
-		bool inBetween = true;
+		if (!noupdate) { 
 
-		if (last_framenum != elapsed)
-		{
-			// No lerping if we missed a frame
-			if ((elapsed-last_framenum)>1) factor = 256;
-			last_framenum = elapsed;
-			inBetween = false;
-		}
-		
-		if (!inBetween)
-		{
-			sx = ex;
-			sy = ey;
-			sz = ez;
+			bool inBetween = true;
 
-			if (itemnum)
+			if (last_framenum != elapsed)
 			{
-				Item *item = World::get_instance()->getItem(itemnum);
-				// Got it
-				if (item)
-				{
-					sx = ex;
-					sy = ey;
-					sz = ez;
-					item->getLocation(ex,ey,ez);
-					ez += 20; //!!constant
-				}
+				// No lerping if we missed a frame
+				if ((elapsed-last_framenum)>1) factor = 256;
+				last_framenum = elapsed;
+				inBetween = false;
 			}
-			// Update the fast area
-			World::get_instance()->getCurrentMap()->updateFastArea(sx,sy,sz,ex,ey,ez);
+			
+			if (!inBetween)
+			{
+				sx = ex;
+				sy = ey;
+				sz = ez;
+
+				if (itemnum)
+				{
+					Item *item = World::get_instance()->getItem(itemnum);
+					// Got it
+					if (item)
+					{
+						sx = ex;
+						sy = ey;
+						sz = ez;
+						item->getLocation(ex,ey,ez);
+						ez += 20; //!!constant
+					}
+				}
+				// Update the fast area
+				World::get_instance()->getCurrentMap()->updateFastArea(sx,sy,sz,ex,ey,ez);
+			}
 		}
 
 		if (factor == 256)
@@ -269,7 +272,7 @@ void CameraProcess::GetLerped(sint32 &x, sint32 &y, sint32 &z, sint32 factor)
 		sint32 lez = ((sz*(time-efactor) + ez*efactor)/time);
 
 		// Update the fast area
-		World::get_instance()->getCurrentMap()->updateFastArea(lsx,lsy,lsz,lex,ley,lez);
+		if (!noupdate) World::get_instance()->getCurrentMap()->updateFastArea(lsx,lsy,lsz,lex,ley,lez);
 
 		// This way while possibly slower is more accurate
 		x = ((lsx*(256-factor) + lex*factor)>>8);

@@ -39,14 +39,17 @@ class AudioProcess :
 		sint32		channel;
 		std::string barked;
 		uint32		curspeech_start, curspeech_end;
+		uint32		pitch_shift;	// 0x10000 is normal
+		uint16		volume;			// 0-256
 		
 		SampleInfo() : sfxnum(-1) { }
-		SampleInfo(sint32 s,sint32 p,ObjId o,sint32 l,sint32 c) : 
-			sfxnum(s),priority(p),objid(o),loops(l),channel(c) { }
+		SampleInfo(sint32 s,sint32 p,ObjId o,sint32 l,sint32 c,uint32 ps,uint16 v) : 
+			sfxnum(s),priority(p),objid(o),loops(l),channel(c),
+			pitch_shift(ps), volume(v) { }
 		SampleInfo(std::string &b,sint32 shpnum,ObjId o,sint32 c,
-				   uint32 s,uint32 e) : 
+				   uint32 s,uint32 e,uint32 ps,uint16 v) : 
 			sfxnum(-1),priority(shpnum),objid(o),loops(0),channel(c),barked(b),
-			curspeech_start(s), curspeech_end(e) { }
+			curspeech_start(s), curspeech_end(e), pitch_shift(ps), volume(v) { }
 	};
 
 	std::list<SampleInfo>	sample_info;
@@ -70,11 +73,14 @@ public:
 	virtual bool run(const uint32 framenum);
 
 	void playSFX(int sfxnum, int priority, ObjId objid, int loops,
-				 bool no_duplicates=false);
+				 bool no_duplicates=false, uint32 pitch_shift=0x10000,
+				 uint16 volume=0x80);
 	void stopSFX(int sfxnum, ObjId objid);
 	bool isSFXPlaying(int sfxnum);
+	void setVolumeSFX(int sfxnum, uint8 volume);
 
-	bool playSpeech(std::string &barked, int shapenum, ObjId objid);
+	bool playSpeech(std::string &barked, int shapenum, ObjId objid, 
+					uint32 pitch_shift=0x10000,uint16 volume=256);
 	void stopSpeech(std::string &barked, int shapenum, ObjId objid);
 	bool isSpeechPlaying(std::string &barked, int shapenum);
 
@@ -83,7 +89,8 @@ public:
 
 	//! play a sample (without storing a SampleInfo)
 	//! returns channel sample is played on, or -1
-	int playSample(Pentagram::AudioSample* sample, int priority, int loops);
+	int playSample(Pentagram::AudioSample* sample, int priority, int loops, 
+				   uint32 pitch_shift=0x10000, int lvol=256, int rvol=256);
 
 	//! pause all currently playing samples
 	void pauseAllSamples();
@@ -103,6 +110,8 @@ private:
 	//! note: si is reused if successful
 	//! returns true if there was speech left to play, or false if finished
 	bool continueSpeech(SampleInfo& si);
+
+	bool calculateSoundVolume(ObjId objid, int &lvol, int &rvol) const;
 
 	static AudioProcess	*	the_audio_process;
 };

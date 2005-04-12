@@ -385,6 +385,8 @@ followed by, per sample:
 	 uint16 priority
 	 uint16 objid
 	 uint16 loops
+	 uint32 pitch_shift
+	 uint16 volume
 	 if (sfxnum == -1) uint32 strlen; char text[strlen]
 
 

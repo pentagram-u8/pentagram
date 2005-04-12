@@ -27,6 +27,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AudioSample.h"
 #include "AudioMixer.h"
 
+#include "World.h"
+#include "Item.h"
+#include "CameraProcess.h"
+
 #include "IDataSource.h"
 #include "ODataSource.h"
 
@@ -49,6 +53,53 @@ AudioProcess::~AudioProcess(void)
 	the_audio_process = 0;
 }
 
+bool AudioProcess::calculateSoundVolume(ObjId objid, int &lvol, int &rvol) const
+{
+	World *world = World::get_instance();
+
+	Item *item = world->getItem(objid);
+	if (!item) return false;
+
+	// Need to get items relative coords from avatar
+
+	sint32 ax, ay, az, ix, iy, iz;
+	CameraProcess::GetCameraLocation(ax,ay,az);
+	item->getLocationAbsolute(ix, iy, iz);
+	ix -= ax; iy -= ay; iz -= az; 
+
+	//
+	// Convert to screenspace
+	//
+	// Note that this should also correct for Crusader too. 
+	//
+
+	int x = (ix - iy)/4;
+	int y = (ix + iy)/8 - iz;
+
+	// Fall off over 350 pixels
+	int limit = 350*350;
+	int dist = limit-(x*x + y*y);
+	if (dist < 0) dist = 0;
+	dist = (dist*256)/limit;
+
+	int lbal = 160;
+	int rbal = 160;
+
+	if (x < 0) {
+		if (x < -160) rbal = 0;
+		else rbal = x + 160;
+	}
+	else if (x > 0) {
+		if (x > 160) lbal = 0;
+		else lbal = 160 -x;
+	}
+
+	lvol = (dist*lbal)/160;
+	rvol = (dist*rbal)/160;
+
+	return true;
+}
+
 bool AudioProcess::run(const uint32)
 {
 	AudioMixer *mixer = AudioMixer::get_instance();
@@ -66,8 +117,14 @@ bool AudioProcess::run(const uint32)
 
 		if (finished)
 			it = sample_info.erase(it);
-		else
+		else {
+
+			int lvol = 256, rvol = 256;
+			if (it->sfxnum != -1 && it->objid) calculateSoundVolume(it->objid, lvol,rvol);
+			mixer->setVolume(it->channel, (lvol*it->volume)/256,(rvol*it->volume)/256);
+
 			++it;
+		}
 	}
 
 	return false;
@@ -115,6 +172,8 @@ void AudioProcess::saveData(ODataSource* ods)
 		ods->write2(it->priority);
 		ods->write2(it->objid);
 		ods->write2(it->loops);
+		ods->write4(it->pitch_shift);
+		ods->write2(it->volume);
 
 		if (it->sfxnum == -1)	// Speech
 		{
@@ -135,10 +194,11 @@ bool AudioProcess::loadData(IDataSource* ids, uint32 version)
 		sint16 priority = ids->read2();
 		sint16 objid = ids->read2();
 		sint16 loops = ids->read2();
-
+		uint32 pitch_shift = ids->read4();
+		uint16 volume = ids->read2();
 
 		if (sfxnum != -1)	// SFX
-			playSFX(sfxnum,priority,objid,loops);
+			playSFX(sfxnum,priority,objid,loops,false,pitch_shift,volume);
 
 		else {					// Speech
 			uint32 slen = ids->read4();
@@ -149,17 +209,17 @@ bool AudioProcess::loadData(IDataSource* ids, uint32 version)
 			std::string text = buf;
 			delete[] buf;
 
-			playSpeech(text,priority,objid);
+			playSpeech(text,priority,objid,pitch_shift,volume);
 		}
 	}
 
 	return true;
 }
 
-int AudioProcess::playSample(AudioSample* sample, int priority, int loops)
+int AudioProcess::playSample(AudioSample* sample, int priority, int loops, uint32 pitch_shift, int lvol, int rvol)
 {
 	AudioMixer *mixer = AudioMixer::get_instance();
-	int channel = mixer->playSample(sample,loops,priority);
+	int channel = mixer->playSample(sample,loops,priority,false,pitch_shift,lvol,rvol);
 
 	if (channel == -1) return channel;
 
@@ -178,7 +238,7 @@ int AudioProcess::playSample(AudioSample* sample, int priority, int loops)
 }
 
 void AudioProcess::playSFX(int sfxnum, int priority, ObjId objid, int loops,
-						   bool no_duplicates)
+						   bool no_duplicates, uint32 pitch_shift, uint16 volume)
 {
 	//con.Printf("playSFX(%i, %i, 0x%X, %i)\n", sfxnum, priority, objid, loops);
 
@@ -213,11 +273,14 @@ void AudioProcess::playSFX(int sfxnum, int priority, ObjId objid, int loops,
 	AudioSample *sample = soundflx->getSample(sfxnum);
 	if (!sample) return;
 
-	int channel = playSample(sample,priority,loops);
+	int lvol=256, rvol=256;
+	if (objid) calculateSoundVolume(objid, lvol, rvol);
+
+	int channel = playSample(sample,priority,loops,pitch_shift,(lvol*volume)/256,(rvol*volume)/256);
 	if (channel == -1) return;
 
 	// Update list
-	sample_info.push_back(SampleInfo(sfxnum,priority,objid,loops,channel));
+	sample_info.push_back(SampleInfo(sfxnum,priority,objid,loops,channel,pitch_shift,volume));
 }
 
 void AudioProcess::stopSFX(int sfxnum, ObjId objid)
@@ -240,7 +303,7 @@ void AudioProcess::stopSFX(int sfxnum, ObjId objid)
 
 bool AudioProcess::isSFXPlaying(int sfxnum)
 {
-	con.Printf("isSFXPlaying(%i)\n", sfxnum);
+	//con.Printf("isSFXPlaying(%i)\n", sfxnum);
 
 	std::list<SampleInfo>::iterator it;
 	for (it = sample_info.begin(); it != sample_info.end(); ++it) {
@@ -251,11 +314,28 @@ bool AudioProcess::isSFXPlaying(int sfxnum)
 	return false;
 }
 
+void AudioProcess::setVolumeSFX(int sfxnum, uint8 volume)
+{
+	//con.Printf("setVolumeSFX(%i, %i)\n", sfxnum, volume);
+	AudioMixer *mixer = AudioMixer::get_instance();
+
+	std::list<SampleInfo>::iterator it;
+	for (it = sample_info.begin(); it != sample_info.end(); ++it) {
+		if (it->sfxnum == sfxnum && it->sfxnum != -1) {
+			it->volume = volume; 
+
+			int lvol = 256, rvol = 256;
+			if (it->objid) calculateSoundVolume(it->objid, lvol,rvol);
+			mixer->setVolume(it->channel, (lvol*it->volume)/256,(rvol*it->volume)/256);
+		}
+	}
+}
+
 //
 // Speech
 //
 
-bool AudioProcess::playSpeech(std::string &barked, int shapenum, ObjId objid)
+bool AudioProcess::playSpeech(std::string &barked, int shapenum, ObjId objid, uint32 pitch_shift, uint16 volume)
 {
 	SpeechFlex *speechflex = GameData::get_instance()->getSpeechFlex(shapenum);
 
@@ -290,13 +370,13 @@ bool AudioProcess::playSpeech(std::string &barked, int shapenum, ObjId objid)
 	AudioSample *sample = speechflex->getSample(index);
 	if (!sample) return false;
 
-	int channel = playSample(sample,200,0);
+	int channel = playSample(sample,200,0,pitch_shift,volume,volume);
 
 	if (channel == -1) return false;
 
 	// Update list
 	sample_info.push_back(SampleInfo(barked,shapenum,objid,channel,
-									 speech_start,speech_end));
+									 speech_start,speech_end,pitch_shift,volume));
 
 	return true;
 }
@@ -432,7 +512,7 @@ uint32 AudioProcess::I_playAmbientSFX(const uint8* args, unsigned int argsize)
 	if(ap) ap->playSFX(sfxnum,priority,objid,-1,true);
 	else perr << "Error: No AudioProcess" << std::endl;
 
-	return 4;
+	return 0;
 }
 
 uint32 AudioProcess::I_isSFXPlaying(const uint8* args, unsigned int argsize)
@@ -449,10 +529,13 @@ uint32 AudioProcess::I_setVolumeSFX(const uint8* args, unsigned int /*argsize*/)
 {
 	// Sets volume for last played instances of sfxnum (???)
 	ARG_SINT16(sfxnum);
-	ARG_SINT16(volume);
+	ARG_UINT8(volume);
 
-	con.Printf("setVolumeSFX(%i, %i)\n", sfxnum, volume);
-	return 5;
+	AudioProcess *ap = AudioProcess::get_instance();
+	if(ap) ap->setVolumeSFX(sfxnum, volume);
+	else perr << "Error: No AudioProcess" << std::endl;
+
+	return 0;
 }
 
 uint32 AudioProcess::I_stopSFX(const uint8* args, unsigned int argsize)
@@ -469,5 +552,6 @@ uint32 AudioProcess::I_stopSFX(const uint8* args, unsigned int argsize)
 	if(ap) ap->stopSFX(sfxnum,objid);
 	else perr << "Error: No AudioProcess" << std::endl;
 
-	return 7;
+	return 0;
 }
+

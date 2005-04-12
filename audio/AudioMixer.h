@@ -36,12 +36,15 @@ public:
 
 	void			reset();
 
-	int				playSample(AudioSample *sample, int loop=0, int priority=100,bool paused=false);
+	int				playSample(AudioSample *sample, int loop, int priority, bool paused, uint32 pitch_shift, int lvol, int rvol);
 	bool			isPlaying(int chan);
 	void			stopSample(int chan);
 	
 	void			setPaused(int chan, bool paused);
 	bool			isPaused(int chan);
+
+	void			setVolume(int chan, int lvol, int rvol);
+	void			getVolume(int chan, int &lvol, int &rvol);
 
 private:
 	bool			audio_ok;

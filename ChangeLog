@@ -1,3 +1,13 @@
+2005-04-12  Ryan Nunn <colourles@users.sourceforge.net>
+	* audio/AudioChannel.*, audio/AudioMixer.*, audio/AudioProcess.*,
+	  world/actors/ActorAnimProcess.cpp : Added distance attenuation,
+	  left-right panning, implemented setVolumeSFX intrinsic, set default
+	  sfx volume to 0x80 (50%) to be consistent with the original, and 
+	  added small random pitch shifts to footstep sounds (they are quite 
+	  subtle and may need to be larger). Oh, broke savegames too.
+	* world/CameraProcess.* : Fixing up a problem where getting the camera 
+	  location could cause the screen to become jumpy
+
 2005-04-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Pathfinder*.cpp: properly check tryAnim return value
 	* world/actors/Actor.cpp: abort current animation when hit

@@ -41,6 +41,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IDataSource.h"
 #include "ODataSource.h"
 
+#include <cstdlib>
+
 //#define WATCHACTOR 1
 
 #ifdef WATCHACTOR
@@ -385,7 +387,7 @@ void ActorAnimProcess::doSpecial()
 
 		if (sfx) {
 			AudioProcess* audioproc = AudioProcess::get_instance();
-			if (audioproc) audioproc->playSFX(sfx, 0x60, item_num, 0);
+			if (audioproc) audioproc->playSFX(sfx, 0x60, item_num, 0, false, 0x10000 + (std::rand()&0x1FFF) - 0x1000);
 		}
 
 		if (splash) {
