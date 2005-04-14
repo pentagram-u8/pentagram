@@ -32,21 +32,36 @@
 #include "OptionsGump.h"
 #include "PagedGump.h"
 #include "Game.h"
+#include "MainActor.h"
+#include "World.h"
+#include "Font.h"
+#include "RenderedText.h"
+#include "FontManager.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(MenuGump,ModalGump);
 
-MenuGump::MenuGump(): ModalGump(0, 0, 5, 5, 0, FLAG_DONT_SAVE)
+MenuGump::MenuGump(bool nameEntryMode_)
+	: ModalGump(0, 0, 5, 5, 0, FLAG_DONT_SAVE)
 {
+	nameEntryMode = nameEntryMode_;
+
 	GUIApp * app = GUIApp::get_instance();
 	app->pushMouseCursor();
-	app->setMouseCursor(GUIApp::MOUSE_HAND);
+	if (!nameEntryMode)
+		app->setMouseCursor(GUIApp::MOUSE_HAND);
+	else
+		app->setMouseCursor(GUIApp::MOUSE_NONE);
+
+	nametext = 0;
+	namechanged = true;
 }
 
 MenuGump::~MenuGump()
 {
+	delete nametext;
 }
 
 void MenuGump::Close(bool no_del)
@@ -58,7 +73,7 @@ void MenuGump::Close(bool no_del)
 }
 
 static const int gumpShape = 35;
-static const int pagenShape = 32;
+static const int paganShape = 32;
 static const int menuEntryShape = 37;
 
 void MenuGump::InitGump()
@@ -72,7 +87,8 @@ void MenuGump::InitGump()
 	dims.w = sf->width;
 	dims.h = sf->height;
 
-	Shape* logoShape = GameData::get_instance()->getGumps()->getShape(pagenShape);
+	Shape* logoShape;
+	logoShape = GameData::get_instance()->getGumps()->getShape(paganShape);
 	sf = logoShape->getFrame(0);
 	assert(sf);
 
@@ -81,49 +97,91 @@ void MenuGump::InitGump()
 	logo->InitGump();
 	AddChild(logo);
 
-	int x = dims.w / 2 + 14;
-	int y = 18;
-	Gump * widget;
-	for (int i = 0; i < 8; ++i)
-	{
-		FrameID frame_up(GameData::GUMPS, menuEntryShape, i * 2);
-		FrameID frame_down(GameData::GUMPS, menuEntryShape, i * 2 + 1);
-		frame_up = _TL_SHP_(frame_up);
-		frame_down = _TL_SHP_(frame_down);
-		widget = new ButtonWidget(x, y, frame_up, frame_down, true);
+	if (!nameEntryMode) {
+		int x = dims.w / 2 + 14;
+		int y = 18;
+		Gump * widget;
+		for (int i = 0; i < 8; ++i)
+		{
+			FrameID frame_up(GameData::GUMPS, menuEntryShape, i * 2);
+			FrameID frame_down(GameData::GUMPS, menuEntryShape, i * 2 + 1);
+			frame_up = _TL_SHP_(frame_up);
+			frame_down = _TL_SHP_(frame_down);
+			widget = new ButtonWidget(x, y, frame_up, frame_down, true);
+			widget->InitGump();
+			widget->SetIndex(i + 1);
+			AddChild(widget);
+			y+= 14;
+		}
+		
+		MainActor* av = World::get_instance()->getMainActor();
+		std::string name;
+		if (av)
+			name = av->getName();
+
+		if (!name.empty()) {
+			Pentagram::Rect rect;
+			widget = new TextWidget(0, 0, name, 6);
+			widget->InitGump();
+			widget->GetDims(rect);
+			widget->Move(90 - rect.w / 2, dims.h - 40);
+			AddChild(widget);
+		}
+	} else {
+		Gump * widget;
+		widget = new TextWidget(0, 0, _TL_("Give thy name:"), 6); // CONSTANT!
 		widget->InitGump();
-		widget->SetIndex(i + 1);
+		widget->Move(dims.w / 2 + 6, 10);
 		AddChild(widget);
-		y+= 14;
 	}
-	
-	// Should be Avatar's name.
-	//!! Hardcoded English String
-	Pentagram::Rect rect;
-	widget = new TextWidget(0, 0, "Pentagram", 6);
-	widget->InitGump();
-	widget->GetDims(rect);
-	widget->Move(90 - rect.w / 2, dims.h - 40);
-	AddChild(widget);
 }
 
 
 void MenuGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 {
 	Gump::PaintThis(surf, lerp_factor);
+
+	if (nameEntryMode) {
+		if (namechanged) {
+			Font* font = FontManager::get_instance()->getFont(6); // CONSTANT!
+			unsigned int remaining;
+			delete nametext;
+			nametext = font->renderText(name + "-", remaining, 0, 0);
+			namechanged = false;
+		}
+
+		nametext->draw(surf, dims.w / 2 + 6, 30);
+	}
 }
 
 bool MenuGump::OnKeyDown(int key, int mod)
 {
-	if (key == SDLK_ESCAPE)
-	{
-		Close();
+	if (!nameEntryMode) {
+
+		if (key == SDLK_ESCAPE)
+			Close();
+		else if (key >= SDLK_1 && key <=SDLK_9) {
+			selectEntry(key - SDLK_1 + 1);
+		}
+
+	} else {
+
+		// hack (should have a 'TextInputWidget')
+		if (key == SDLK_RETURN || key == SDLK_KP_ENTER) {
+			if (!name.empty()) {
+				MainActor* av = World::get_instance()->getMainActor();
+				av->setName(name);
+				Close();
+			}
+		} else if (key == SDLK_BACKSPACE) {
+			if (!name.empty()) {
+				namechanged = true;
+				name.erase(name.size()-1,1);
+			}
+		}
+
 	}
-	else if (key >= SDLK_1 && key <=SDLK_9)
-	{
-		// Minor hack
-		selectEntry(key - SDLK_1 + 1);
-	}
+
 	return true;
 }
 
@@ -177,11 +235,13 @@ void MenuGump::selectEntry(int entry)
 
 bool MenuGump::OnTextInput(int unicode)
 {
-	//switch (unicode)
-	//{
-	//default:
-	//	break;
-	//}
+	// hack (should have a 'TextInputWidget')
+	if (nameEntryMode) {
+		if (unicode >= 32 && unicode < 128 && name.size() < 15) {
+			namechanged = true;
+			name += static_cast<char>(unicode);
+		}
+	}
 
 	return true;
 }
@@ -195,15 +255,11 @@ void MenuGump::showMenu()
 	gump->setRelativePosition(CENTER);
 }
 
-bool MenuGump::loadData(IDataSource* ids, uint32 version)
+//static
+void MenuGump::inputName()
 {
-	CANT_HAPPEN_MSG("Trying to load ModalGump");
-
-	return false;
+	ModalGump* gump = new MenuGump(true);
+	gump->InitGump();
+	GUIApp::get_instance()->addGump(gump);
+	gump->setRelativePosition(CENTER);
 }
-
-void MenuGump::saveData(ODataSource* ods)
-{
-	CANT_HAPPEN_MSG("Trying to save ModalGump");
-}
-

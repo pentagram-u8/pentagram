@@ -1,3 +1,9 @@
+2005-04-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* games/StartU8Process.*: process to show the intro and ask for your
+	  name when starting a new game
+	* gumps/MenuGump.*: add special 'nameEntryMode' (will need to be
+	  replaced by a proper TextInputWidget)
+
 2005-04-12  Ryan Nunn <colourles@users.sourceforge.net>
 	* audio/AudioChannel.*, audio/AudioMixer.*, audio/AudioProcess.*,
 	  world/actors/ActorAnimProcess.cpp : Added distance attenuation,

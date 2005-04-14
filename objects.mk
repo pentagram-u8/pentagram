@@ -66,6 +66,7 @@ GAMES = \
 GAMES2 = \
 	games/Game.o \
 	games/GameData.o \
+	games/StartU8Process.o \
 	games/TreasureLoader.o \
 	games/U8Game.o \
 	games/u8bindings.o \

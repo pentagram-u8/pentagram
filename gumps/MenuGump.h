@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2004-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,12 +21,14 @@
 
 #include "ModalGump.h"
 
+class RenderedText;
+
 class MenuGump : public ModalGump
 {
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	MenuGump();
+	MenuGump(bool nameEntryMode=false);
 	virtual ~MenuGump(void);
 
 	// Init the gump, call after construction
@@ -41,10 +43,14 @@ public:
 	virtual void ChildNotify(Gump *child, uint32 message);
 
 	static void showMenu();
+	static void inputName();
 
-	bool loadData(IDataSource* ids, uint32 version);
 protected:
-	virtual void saveData(ODataSource* ods);
+	bool nameEntryMode;
+	std::string name;
+
+	bool namechanged;
+	RenderedText* nametext;
 
 	virtual void selectEntry(int entry);
 };

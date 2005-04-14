@@ -23,6 +23,7 @@
 #include "SKFPlayer.h"
 #include "GUIApp.h"
 #include "DesktopGump.h"
+#include "GumpNotifyProcess.h"
 
 #include "FileSystem.h"
 
@@ -98,12 +99,14 @@ bool MovieGump::OnKeyDown(int key, int mod)
 }
 
 //static
-void MovieGump::U8MovieViewer(RawArchive* movie)
+ProcId MovieGump::U8MovieViewer(RawArchive* movie)
 {
 	Gump* gump = new MovieGump(320, 200, movie);
 	gump->InitGump();
 	GUIApp::get_instance()->addGump(gump);
 	gump->setRelativePosition(CENTER);
+	gump->CreateNotifier();
+	return gump->GetNotifyProcess()->getPid();
 }
 
 //static

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2005 The Pentagram team
+Copyright (C) 2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,37 +16,28 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef U8GAME_H
-#define U8GAME_H
+#ifndef STARTU8PROCESS_H
+#define STARTU8PROCESS_H
 
-#include "Game.h"
+#include "Process.h"
 
-class IDataSource;
+class Item;
 
-class U8Game: public Game {
+class StartU8Process : public Process
+{
 public:
-	U8Game();
-	virtual ~U8Game();
+	StartU8Process();
 
-	//! load/init game's data files
-	virtual bool loadFiles();
+	// p_dynamic_cast stuff
+	ENABLE_RUNTIME_CLASSTYPE();
 
-	//! initialize new game
-	virtual bool startGame();
+	virtual bool run(const uint32 framenum);
 
-	//! start initial usecode
-	virtual bool startInitialUsecode();
-
-	//! write game-specific savegame info (avatar stats, equipment, ...)
-	virtual void writeSaveInfo(ODataSource* ods);
-
-	virtual ProcId playIntroMovie();
-	virtual ProcId playEndgameMovie();
-	virtual void playCredits();
-	virtual void playQuotes();
-
+	bool loadData(IDataSource* ids, uint32 version);
 protected:
-	std::string getCreditText(IDataSource* ids);
+	virtual void saveData(ODataSource* ods);
+
+	bool init;
 };
 
 

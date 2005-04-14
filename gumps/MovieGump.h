@@ -45,7 +45,7 @@ public:
 
 	virtual bool OnKeyDown(int key, int mod);
 
-	static void U8MovieViewer(RawArchive* skf);
+	static ProcId U8MovieViewer(RawArchive* skf);
 
 	//! "play" console command
 	static void ConCmd_play(const Console::ArgsType &args,

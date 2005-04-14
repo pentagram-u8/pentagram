@@ -29,18 +29,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "World.h"
 #include "MainActor.h"
 #include "ItemFactory.h"
-#include "Egg.h"
-#include "CurrentMap.h"
-#include "UCList.h"
-#include "LoopScript.h"
 #include "ObjectManager.h"
-#include "CameraProcess.h"
 #include "GUIApp.h"
 #include "SettingManager.h"
 #include "MovieGump.h"
 #include "RawArchive.h"
 #include "CreditsGump.h"
+#include "Kernel.h"
 #include "MusicProcess.h"
+#include "StartU8Process.h"
 
 U8Game::U8Game() : Game()
 {
@@ -271,56 +268,20 @@ bool U8Game::startInitialUsecode()
 
 	GUIApp::get_instance()->setAvatarInStasis(true);
 
-	CurrentMap* currentmap = World::get_instance()->getCurrentMap();
-	UCList uclist(2);
-	// (shape == 73 && quality == 36)
-	//const uint8 script[] = "@%\x49\x00=*%\x24\x00=&$";
-	LOOPSCRIPT(script, LS_AND(LS_SHAPE_EQUAL1(73), LS_Q_EQUAL(36)));
-	currentmap->areaSearch(&uclist, script, sizeof(script),
-						   0, 256, false, 16188, 7500);
-	if (uclist.getSize() < 1) {
-		perr << "Unable to find FIRST egg!" << std::endl;
-		return false;
-	}
-	
-	uint16 objid = uclist.getuint16(0);
-	Egg* egg = p_dynamic_cast<Egg*>(
-		ObjectManager::get_instance()->getObject(objid));
-	sint32 ix, iy, iz;
-	egg->getLocation(ix,iy,iz);
-	// Center on egg
-	CameraProcess::SetCameraProcess(new CameraProcess(ix,iy,iz));
-	egg->hatch();
-
-	// Music Egg
-	// Item 2145 (class Item, shape 562, 0, (11551,2079,48) q:52, m:0, n:0, f:2000, ef:2)
-	uclist.free();
-	LOOPSCRIPT(musicscript, LS_SHAPE_EQUAL1(562));
-	currentmap->areaSearch(&uclist, musicscript, sizeof(musicscript),
-						   0, 256, false, 11551, 2079);
-
-	if (uclist.getSize() < 1) {
-		perr << "Unable to find MUSIC egg!" << std::endl;
-	}
-	else {
-		objid = uclist.getuint16(0);
-		Item *musicEgg = p_dynamic_cast<Item*>(
-			ObjectManager::get_instance()->getObject(objid));
-
-		musicEgg->callUsecodeEvent_cachein();
-	}
+	Process* proc = new StartU8Process();
+	Kernel::get_instance()->addProcess(proc);
 
 	return true;
 }
 
 
-void U8Game::playIntroMovie()
+ProcId U8Game::playIntroMovie()
 {
 	GameInfo* gameinfo = CoreApp::get_instance()->getGameInfo();
 	char langletter = gameinfo->getLanguageFileLetter();
 	if (!langletter) {
 		perr << "U8Game::playIntro: Unknown language." << std::endl;
-		return;
+		return 0;
 	}
 
 	std::string filename = "@u8/static/";
@@ -331,25 +292,25 @@ void U8Game::playIntroMovie()
 	IDataSource* skf = filesys->ReadFile(filename);
 	if (!skf) {
 		pout << "U8Game::playIntro: movie not found." << std::endl;
-		return;
+		return 0;
 	}
 	
 	RawArchive* flex = new RawArchive(skf);
-	MovieGump::U8MovieViewer(flex);
+	return MovieGump::U8MovieViewer(flex);
 }
 
-void U8Game::playEndgameMovie()
+ProcId U8Game::playEndgameMovie()
 {
 	std::string filename = "@u8/static/endgame.skf";
 	FileSystem* filesys = FileSystem::get_instance();
 	IDataSource* skf = filesys->ReadFile(filename);
 	if (!skf) {
 		pout << "U8Game::playEndgame: movie not found." << std::endl;
-		return;
+		return 0;
 	}
 	
 	RawArchive* flex = new RawArchive(skf);
-	MovieGump::U8MovieViewer(flex);
+	return MovieGump::U8MovieViewer(flex);
 }
 
 void U8Game::playCredits()
