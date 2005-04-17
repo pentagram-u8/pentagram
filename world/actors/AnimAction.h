@@ -72,6 +72,7 @@ struct AnimAction {
 		AAF_ATTACK      = 0x0002,
 		AAF_LOOPING     = 0x0004,
 		AAF_UNSTOPPABLE = 0x0008,
+		AAF_LOOPING2    = 0x0010, // CHECKME: guessing at this flag
 		AAF_HANGING     = 0x0080,
 		AAF_SPECIAL     = 0x0800
 	};

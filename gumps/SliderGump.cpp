@@ -39,7 +39,7 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(SliderGump,ModalGump);
 
 SliderGump::SliderGump() : ModalGump()
 {
-
+	renderedtext = 0;
 }
 
 
@@ -48,6 +48,7 @@ SliderGump::SliderGump(int x, int y, sint16 min_, sint16 max_,
 	: ModalGump(x, y, 5, 5), min(min_), max(max_), delta(delta_), value(value_)
 {
 	usecodeNotifyPID = 0;
+	renderedtext = 0;
 }
 
 SliderGump::~SliderGump()
@@ -104,16 +105,19 @@ void SliderGump::setSliderPos()
 
 void SliderGump::drawText(RenderSurface* surf)
 {
-	Pentagram::Font *font;
-	font = FontManager::get_instance()->getGameFont(labelfont);
-	char buf[10]; // more than enough for a sint16
-	sprintf(buf, "%d", value);
+	if (!renderedtext || value != renderedvalue) {
+		Pentagram::Font *font;
+		font = FontManager::get_instance()->getGameFont(labelfont);
+		char buf[10]; // more than enough for a sint16
+		sprintf(buf, "%d", value);
 
-	unsigned int remaining;
-	RenderedText* renderedText = font->renderText(buf, remaining);
-	renderedText->draw(surf, labelx, labely);
-	delete renderedText;
-//	surf->PrintText(font, buf, labelx, labely);
+		unsigned int remaining;
+		delete renderedtext;
+		renderedtext = font->renderText(buf, remaining);
+		renderedvalue = value;
+	}
+
+	renderedtext->draw(surf, labelx, labely);
 }
 
 void SliderGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)

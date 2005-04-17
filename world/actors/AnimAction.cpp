@@ -30,7 +30,7 @@ void AnimAction::getAnimRange(unsigned int lastanim, int lastdir,
 	if (flags & AAF_TWOSTEP) {
 		// two-step animation?
 		if (firststep) {
-			if (flags & AAF_LOOPING) {
+			if (flags & (AAF_LOOPING | AAF_LOOPING2)) {// CHECKME: unknown flag
 				// for a looping animation, start at the end to
 				// make things more fluid
 				startframe = size - 1;
@@ -41,7 +41,7 @@ void AnimAction::getAnimRange(unsigned int lastanim, int lastdir,
 		} else {
 			// second step starts halfway
 			startframe = size / 2;
-			if (flags & AAF_LOOPING) {
+			if (flags & (AAF_LOOPING | AAF_LOOPING2)) {// CHECKME: unknown flag
 				endframe = size - 1;
 			}
 		}

@@ -33,6 +33,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IDataSource.h"
 #include "ODataSource.h"
 
+#define WATCHACTOR 1
+
+#ifdef WATCHACTOR
+static const int watchactor = WATCHACTOR;
+#endif
+
 AnimationTracker::AnimationTracker()
 {
 
@@ -70,6 +76,15 @@ bool AnimationTracker::init(Actor* actor_, Animation::Sequence action_,
 		z = state_->z;
 	}
 
+#ifdef WATCHACTOR
+	if (actor_ && actor_->getObjId() == watchactor) {
+		pout << "AnimationTracker: playing " << startframe << "-" << endframe
+			 << " (animaction flags: " << std::hex << animaction->flags
+			 << std::dec << ")" << std::endl;
+		
+	}
+#endif
+
 	firstframe = true;
 
 	done = false;
@@ -90,7 +105,9 @@ unsigned int AnimationTracker::getNextFrame(unsigned int frame)
 
 	// loop if necessary
 	if (frame >= animaction->size) {
-		if (animaction->flags & AnimAction::AAF_LOOPING) {
+		if (animaction->flags & (AnimAction::AAF_LOOPING |
+								 Animation::AAF_LOOPING2)) {
+			// CHECKME: unknown flag
 			frame = 1;
 		} else {
 			frame = 0;

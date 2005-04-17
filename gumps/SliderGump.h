@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004  The Pentagram Team
+ *  Copyright (C) 2003-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #include "ModalGump.h"
 
 class UCProcess;
+class RenderedText;
 
 class SliderGump : public ModalGump
 {
@@ -57,6 +58,9 @@ protected:
 	sint16 value;
 
 	uint16 usecodeNotifyPID;
+
+	sint16 renderedvalue;
+	RenderedText* renderedtext;
 	
 	int getSliderPos();
 	void setSliderPos();

@@ -1,3 +1,8 @@
+2005-04-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/AnimAction.*: guessing flag 0x10 means same as LOOPING,
+	  which is unlikely but seems to work well enough.
+	* gumps/SliderGump.*: cache RenderedText
+
 2005-04-17  Ryan Nunn <colourles@users.sourceforge.net>
 	* audio/MusicProcess.h : Added method to get the currently playing 
 	  music track
