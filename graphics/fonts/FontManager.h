@@ -25,10 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 namespace Pentagram { class Font; }
 class IDataSource;
 
-#ifdef USE_SDLTTF
 class TTFont;
 #include <SDL_ttf.h>
-#endif
 
 class FontManager
 {
@@ -38,31 +36,46 @@ public:
 
 	static FontManager* get_instance() { return fontmanager; }
 
-	//! get a Font by fontnum
+	//! get a Font by fontnum (for game fonts)
 	//! \param fontnum the number of the font
 	//! \param allowOverride if true, allow an override font to be used
-	Pentagram::Font* getFont(unsigned int fontnum, bool allowOverride=false);
+	Pentagram::Font* getGameFont(unsigned int fontnum,
+								 bool allowOverride=false);
 
-	//! open a TTF and assign it an alias.
-	//! \param name the name to assign to the TTF
-	//! \param ds the datasource to load the TTF from. Will be deleted.
-	//! \param pointsize pointsize of the font to use
-	bool openTTF(Pentagram::istring name, IDataSource* ds, int pointsize);
+	//! get a TTF font (for non-game fonts)
+	Pentagram::Font* getTTFont(unsigned int ttfnum);
 
-	//! override a font with a TTF
+	//! override a game font with a TTF.
 	//! \param fontnum the font to override
 	//! \param ttf the alias of the TTF to override it with
 	//! \param rgb the color to use for the font
-	bool addTTFOverride(unsigned int fontnum, Pentagram::istring ttf,
-						uint32 rgb, int bordersize);
+	bool addTTFOverride(unsigned int fontnum, std::string filename,
+						int pointsize, uint32 rgb, int bordersize);
+
+	//! load a TTF font (for non-game fonts)
+	bool loadTTFont(unsigned int ttfnum, std::string filename,
+				int pointsize, uint32 rgb, int bordersize);
 
 private:
 
+	struct TTFId {
+		std::string filename;
+		int pointsize;
+		bool operator<(const TTFId& other) const {
+			return (pointsize < other.pointsize ||
+					(pointsize == other.pointsize &&
+					 filename < other.filename));
+		}
+	};
+	std::map<TTFId, TTF_Font*> ttf_fonts;
+
+	//! Get a (possibly cached) TTF_Font structure for filename/pointsize,
+	//! loading it if necessary.
+	TTF_Font* getTTF_Font(std::string filename, int pointsize);
+
 	std::vector<Pentagram::Font*> overrides;
 
-#ifdef USE_SDLTTF
-	std::map<Pentagram::istring, TTF_Font*> ttfs;
-#endif
+	std::vector<Pentagram::Font*> ttfonts;
 
 	static FontManager* fontmanager;
 };

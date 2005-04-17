@@ -18,8 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 
-#ifdef USE_SDLTTF
-
 #include "TTFRenderedText.h"
 #include "TTFont.h"
 #include "RenderSurface.h"
@@ -54,5 +52,3 @@ void TTFRenderedText::drawBlended(RenderSurface* surface, int x, int y,
 					   x, y-font->getBaseline(), col);
 }
 
-
-#endif

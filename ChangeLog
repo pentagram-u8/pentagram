@@ -1,4 +1,10 @@
 2005-04-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/fonts/FontManager.*: changed getFont to getGameFont
+	* data/u8.ini, games/GameData.cpp: changed ttf override syntax
+	* graphics/fonts/FontManager.*: add interface for non-game ttfonts
+	* configure.ac: SDL_ttf is now required instead of optional
+
+2005-04-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/fonts/ShapeFontArchive.*: load hleads/vleads from u8.ini
 	* gumps/MainMenuProcess.*: process that opens the main menu gump
 	* world/actors/AvatarDeathProcess.cpp: show main menu after gravestone

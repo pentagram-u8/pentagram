@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,10 +25,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ShapeFont.h"
 #include "FontShapeArchive.h"
 #include "IDataSource.h"
+#include "FileSystem.h"
 
-#ifdef USE_SDLTTF
 #include "TTFont.h"
-#endif
 
 FontManager* FontManager::fontmanager = 0;
 
@@ -37,9 +36,7 @@ FontManager::FontManager()
 	assert(fontmanager == 0);
 	fontmanager = this;
 
-#ifdef USE_SDLTTF
 	TTF_Init();
-#endif
 }
 
 FontManager::~FontManager()
@@ -48,21 +45,23 @@ FontManager::~FontManager()
 		delete overrides[i];
 	overrides.clear();
 
-#ifdef USE_SDLTTF
-	std::map<Pentagram::istring, TTF_Font*>::iterator iter;
-	for (iter = ttfs.begin(); iter != ttfs.end(); ++iter)
+	for (unsigned int i = 0; i < ttfonts.size(); ++i)
+		delete ttfonts[i];
+	ttfonts.clear();
+
+	std::map<TTFId, TTF_Font*>::iterator iter;
+	for (iter = ttf_fonts.begin(); iter != ttf_fonts.end(); ++iter)
 		TTF_CloseFont(iter->second);
-	ttfs.clear();
+	ttf_fonts.clear();
 
 	TTF_Quit();
-#endif
 
 	assert(fontmanager == this);
 	fontmanager = 0;
 }
 
-Pentagram::Font* FontManager::getFont(unsigned int fontnum,
-									  bool allowOverride)
+Pentagram::Font* FontManager::getGameFont(unsigned int fontnum,
+										  bool allowOverride)
 {
 	if (allowOverride && fontnum < overrides.size() && overrides[fontnum])
 		return overrides[fontnum];
@@ -70,47 +69,60 @@ Pentagram::Font* FontManager::getFont(unsigned int fontnum,
 	return GameData::get_instance()->getFonts()->getFont(fontnum);
 }
 
-bool FontManager::openTTF(Pentagram::istring name, IDataSource* ds, int size)
+Pentagram::Font* FontManager::getTTFont(unsigned int fontnum)
 {
-#ifdef USE_SDLTTF
-	assert(ds);
+	if (fontnum >= ttfonts.size())
+		return 0;
+	return ttfonts[fontnum];
+}
+
+
+TTF_Font* FontManager::getTTF_Font(std::string filename, int pointsize)
+{
+	TTFId id;
+	id.filename = filename;
+	id.pointsize = pointsize;
+
+	std::map<TTFId, TTF_Font*>::iterator iter;
+	iter = ttf_fonts.find(id);
+
+	if (iter != ttf_fonts.end())
+		return iter->second;
+
+	IDataSource* fontids;
+	fontids = FileSystem::get_instance()->ReadFile("@data/" + filename);
+	if (!fontids) {
+		perr << "Failed to open TTF: @data/" << filename << std::endl;
+		return 0;
+	}
 
 	// open font using SDL_RWops.
 	// Note: The RWops and IDataSource will be deleted by the TTF_Font
-	TTF_Font* font = TTF_OpenFontRW(ds->getRWops(), 1, size);
+	TTF_Font* font = TTF_OpenFontRW(fontids->getRWops(), 1, pointsize);
 
 	if (!font) {
-		perr << "Failed to open TTF " << name << ": " << TTF_GetError()
-			 << std::endl;
-		return false;
+		perr << "Failed to open TTF: @data/" << filename
+			 << ": " << TTF_GetError() << std::endl;
+		return 0;
 	}
 
-	if (ttfs[name])
-		TTF_CloseFont(ttfs[name]);
+	ttf_fonts[id] = font;
 
-	ttfs[name] = font;
-
-	pout << "Opened TTF " << name << "." << std::endl;
-
-	return true;
-
-#else
-	delete ds;
-	return false;
+#ifdef DEBUG
+	pout << "Opened TTF: @data/" << filename << "." << std::endl;
 #endif
+
+	return font;
 }
 
-bool FontManager::addTTFOverride(unsigned int fontnum, Pentagram::istring ttf,
-								 uint32 rgb, int bordersize)
+bool FontManager::addTTFOverride(unsigned int fontnum, std::string filename,
+								 int pointsize, uint32 rgb, int bordersize)
 {
-#ifdef USE_SDLTTF
-
-	std::map<Pentagram::istring, TTF_Font*>::iterator iter;
-	iter = ttfs.find(ttf);
-	if (iter == ttfs.end())
+	TTF_Font* f = getTTF_Font(filename, pointsize);
+	if (!f)
 		return false;
 
-	TTFont* font = new TTFont(iter->second, rgb, bordersize);
+	TTFont* font = new TTFont(f, rgb, bordersize);
 
 	if (fontnum >= overrides.size())
 		overrides.resize(fontnum+1);
@@ -120,11 +132,31 @@ bool FontManager::addTTFOverride(unsigned int fontnum, Pentagram::istring ttf,
 
 	overrides[fontnum] = font;
 
-//	pout << "Added TTF override for font " << fontnum << std::endl;
+#ifdef DEBUG
+	pout << "Added TTF override for font " << fontnum << std::endl;
+#endif
 
 	return true;
-
-#else
-	return false;
-#endif
 }
+
+
+bool FontManager::loadTTFont(unsigned int fontnum, std::string filename,
+							 int pointsize, uint32 rgb, int bordersize)
+{
+	TTF_Font* f = getTTF_Font(filename, pointsize);
+	if (!f)
+		return false;
+
+	TTFont* font = new TTFont(f, rgb, bordersize);
+
+	if (fontnum >= ttfonts.size())
+		ttfonts.resize(fontnum+1);
+
+	if (ttfonts[fontnum])
+		delete ttfonts[fontnum];
+
+	ttfonts[fontnum] = font;
+
+	return true;
+}
+

@@ -91,7 +91,7 @@ void ShapeViewerGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 		surf->Paint(shape, curframe, posx, posy);
 
 	RenderedText* rendtext;
-	Pentagram::Font* font = FontManager::get_instance()->getFont(0, true);
+	Pentagram::Font* font = FontManager::get_instance()->getGameFont(0, true);
 	unsigned int remaining;
 
 	char buf1[50];

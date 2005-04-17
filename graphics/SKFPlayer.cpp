@@ -169,9 +169,11 @@ void SKFPlayer::run()
 		return;
 	}
 
+	Pentagram::Font* redfont;
+	redfont = FontManager::get_instance()->getGameFont(6, true);
+
 	MusicProcess* musicproc = MusicProcess::get_instance();
 	AudioProcess* audioproc = AudioProcess::get_instance();
-	Pentagram::Font* redfont = FontManager::get_instance()->getFont(6, true);
 
 	// handle events for the current frame
 	while (curevent < events.size() && events[curevent]->frame <= curframe) {

@@ -19,8 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef TTFONT_H
 #define TTFONT_H
 
-#ifdef USE_SDLTTF
-
 #include "Font.h"
 
 #include "SDL_ttf.h"
@@ -52,7 +50,5 @@ protected:
 	int bordersize;
 };
 
-
-#endif
 
 #endif

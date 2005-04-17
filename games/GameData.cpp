@@ -376,31 +376,11 @@ void GameData::setupTTFOverrides()
 	SettingManager* settingman = SettingManager::get_instance();
 	FontManager* fontmanager = FontManager::get_instance();
 	std::map<Pentagram::istring, std::string> ttfkeyvals;
+	std::map<Pentagram::istring, std::string>::iterator iter;
 
 	bool ttfoverrides = false;
 	settingman->get("ttf", ttfoverrides);
 	if (!ttfoverrides) return;
-
-	ttfkeyvals = config->listKeyValues("game/ttf");
-	std::map<Pentagram::istring, std::string>::iterator iter;
-
-	for (iter = ttfkeyvals.begin(); iter != ttfkeyvals.end(); ++iter)
-	{
-		Pentagram::istring fontname = iter->first;
-		std::string fontdesc = iter->second;
-		std::string::size_type pos = fontdesc.find(',');
-		if (pos == std::string::npos) {
-			perr << "Invalid ttf description: " << fontdesc << std::endl;
-			continue;
-		}
-		std::string filename = fontdesc.substr(0,pos);
-		int pointsize = std::atoi(fontdesc.substr(pos+1).c_str());
-		IDataSource* fontids;
-		fontids = FileSystem::get_instance()->ReadFile("@data/" + filename);
-		if (fontids) {
-			fontmanager->openTTF(fontname, fontids, pointsize);
-		}
-	}
 
 	ttfkeyvals = config->listKeyValues("game/fontoverride");
 	for (iter = ttfkeyvals.begin(); iter != ttfkeyvals.end(); ++iter)
@@ -409,19 +389,28 @@ void GameData::setupTTFOverrides()
 		std::string fontdesc = iter->second;
 		std::string::size_type pos = fontdesc.find(',');
 		std::string::size_type pos2 = std::string::npos;
+		std::string::size_type pos3 = std::string::npos;
 		if (pos != std::string::npos) pos2 = fontdesc.find(',', pos+1);
-		if (pos == std::string::npos || pos2 == std::string::npos)
+		if (pos2 != std::string::npos) pos3 = fontdesc.find(',', pos2+1);
+		if (pos == std::string::npos || pos2 == std::string::npos ||
+			pos3 == std::string::npos)
 		{
 			perr << "Invalid ttf override: " << fontdesc << std::endl;
 			continue;
 		}
-		std::string fontname = fontdesc.substr(0,pos);
+		std::string filename = fontdesc.substr(0,pos);
+		int pointsize = std::atoi(fontdesc.substr(pos+1,pos2-pos-1).c_str());
 
-		uint32 col32 = std::strtol(fontdesc.substr(pos+1,pos2-pos-1).c_str(),
+		uint32 col32 = std::strtol(fontdesc.substr(pos2+1,pos3-pos2-1).c_str(),
 								   0, 0);
-		int border = std::atoi(fontdesc.substr(pos2+1).c_str());
+		int border = std::atoi(fontdesc.substr(pos3+1).c_str());
 
-		fontmanager->addTTFOverride(fontnum, fontname, col32, border);
+		if (!fontmanager->addTTFOverride(fontnum, filename, pointsize,
+										 col32, border))
+		{
+			perr << "failed to setup ttf override for font " << fontnum
+				 << std::endl;
+		}
 	}
 }
 

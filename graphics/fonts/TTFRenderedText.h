@@ -19,8 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef SHAPERENDEREDTEXT_H
 #define SHAPERENDEREDTEXT_H
 
-#ifdef USE_SDLTTF
-
 #include "RenderedText.h"
 #include "Font.h"
 
@@ -43,7 +41,5 @@ protected:
 	Texture* texture;
 	TTFont* font;
 };
-
-#endif
 
 #endif

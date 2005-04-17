@@ -259,6 +259,13 @@ AC_LANG_CPLUSPLUS
 AC_CHECK_HEADER(zlib.h,,AC_MSG_ERROR([*** zlib not found!]))
 LIBS="$LIBS -lz"
 
+#AC_CHECK_LIB(SDL_ttf, TTF_Init, HAVESDLTTF=yes, HAVESDLTTF=no)
+BACKUPCPPFLAGS="$CPPFLAGS"
+CPPFLAGS="$CPPFLAGS $SDL_CFLAGS"
+AC_CHECK_HEADER(SDL_ttf.h,, AC_MSG_ERROR([*** SDL_ttf not found!]))
+CPPFLAGS="$BACKUPCPPFLAGS"
+LIBS="$LIBS -lSDL_ttf"
+
 # ------------------
 # Warning level
 # ------------------
@@ -379,28 +386,6 @@ fi
 #if test x$HAVESDLMIXER = xyes -a x$USESDLMIXER = xyes; then
 #	SDL_LIBS="$SDL_LIBS -lSDL_mixer"
 #fi
-
-#AC_CHECK_LIB(SDL_ttf, TTF_Init, HAVESDLTTF=yes, HAVESDLTTF=no)
-BACKUPCPPFLAGS="$CPPFLAGS"
-CPPFLAGS="$CPPFLAGS $SDL_CFLAGS"
-AC_CHECK_HEADER(SDL_ttf.h, HAVESDLTTF=yes, HAVESDLTTF=no)
-CPPFLAGS="$BACKUPCPPFLAGS"
-
-AC_ARG_ENABLE(ttf, [  --disable-ttf           Disable TTF font support],,enable_ttf=yes)
-
-AC_MSG_CHECKING(if we want to use optional SDL_ttf fonts)
-if test x$HAVESDLTTF = xyes; then
-	if test x$enable_ttf = xyes; then
-		AC_MSG_RESULT(yes)
-		AC_DEFINE(USE_SDLTTF, 1, [Use SDL_ttf])
-		
-		LIBS="$LIBS -lSDL_ttf"
-	else
-		AC_MSG_RESULT(no)
-	fi
-else
-	AC_MSG_RESULT([no; SDL_ttf not found])
-fi
 
 
 # HQ2X scaler

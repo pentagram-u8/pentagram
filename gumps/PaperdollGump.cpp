@@ -153,8 +153,8 @@ void PaperdollGump::PaintStat(RenderSurface* surf, unsigned int n,
 
 	Pentagram::Font *font, *descfont;
 
-	font = FontManager::get_instance()->getFont(statfont);
-	descfont = FontManager::get_instance()->getFont(statdescfont);
+	font = FontManager::get_instance()->getGameFont(statfont);
+	descfont = FontManager::get_instance()->getGameFont(statdescfont);
 	char buf[16]; // enough for uint32
 	unsigned int remaining;
 

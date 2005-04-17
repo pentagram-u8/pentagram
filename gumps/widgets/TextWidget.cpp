@@ -53,7 +53,7 @@ void TextWidget::InitGump()
 	Gump::InitGump();
 
 	Pentagram::Font *font;
-	font = FontManager::get_instance()->getFont(fontnum, true);
+	font = FontManager::get_instance()->getGameFont(fontnum, true);
 
 	// Y offset is always baseline
 	dims.y = -font->getBaseline();
@@ -78,7 +78,7 @@ bool TextWidget::setupNextText()
 	if (current_start >= text.size()) return false;
 
 	Pentagram::Font *font;
-	font = FontManager::get_instance()->getFont(fontnum, true);
+	font = FontManager::get_instance()->getGameFont(fontnum, true);
 
 	int tx, ty;
 	unsigned int remaining;
@@ -106,7 +106,7 @@ void TextWidget::renderText()
 {
 	if (!cached_text) {
 		Pentagram::Font *font;
-		font = FontManager::get_instance()->getFont(fontnum, true);
+		font = FontManager::get_instance()->getGameFont(fontnum, true);
 
 		unsigned int remaining;
 		cached_text = font->renderText(text.substr(current_start,
@@ -176,7 +176,7 @@ bool TextWidget::loadData(IDataSource* ids, uint32 version)
 
 	// HACK ALERT
 	Pentagram::Font *font;
-	font = FontManager::get_instance()->getFont(fontnum, true);
+	font = FontManager::get_instance()->getGameFont(fontnum, true);
 
 	int tx, ty;
 	unsigned int remaining;

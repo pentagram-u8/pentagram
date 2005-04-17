@@ -149,8 +149,9 @@ void MenuGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 	Gump::PaintThis(surf, lerp_factor);
 
 	if (nameEntryMode) {
-		if (namechanged) {
-			Font* font = FontManager::get_instance()->getFont(6); // CONSTANT!
+		if (!nametext || namechanged) {
+			// CONSTANT!
+			Font* font = FontManager::get_instance()->getGameFont(6);
 			unsigned int remaining;
 			delete nametext;
 			nametext = font->renderText(name + "-", remaining, 0, 0);

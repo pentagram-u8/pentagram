@@ -169,8 +169,8 @@ bool CreditsGump::Run(const uint32 framenum)
 		
 		Pentagram::Font *redfont, *yellowfont;
 		
-		redfont = FontManager::get_instance()->getFont(6, true);
-		yellowfont = FontManager::get_instance()->getFont(8, true);
+		redfont = FontManager::get_instance()->getGameFont(6, true);
+		yellowfont = FontManager::get_instance()->getGameFont(8, true);
 		
 		bool done = false;
 		bool firstline = true;

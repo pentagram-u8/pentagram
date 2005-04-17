@@ -104,7 +104,8 @@ void SliderGump::setSliderPos()
 
 void SliderGump::drawText(RenderSurface* surf)
 {
-	Pentagram::Font *font = FontManager::get_instance()->getFont(labelfont);
+	Pentagram::Font *font;
+	font = FontManager::get_instance()->getGameFont(labelfont);
 	char buf[10]; // more than enough for a sint16
 	sprintf(buf, "%d", value);
 

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -34,9 +34,6 @@ const char *features = ""
 #endif
 #ifdef USE_ALSA_MIDI
   "ALSA "
-#endif
-#ifdef USE_SDLTTF
-  "TTF "
 #endif
 #ifdef USE_HQ2X_SCALER
   "hq2x "
