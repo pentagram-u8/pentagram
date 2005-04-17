@@ -106,7 +106,7 @@ unsigned int AnimationTracker::getNextFrame(unsigned int frame)
 	// loop if necessary
 	if (frame >= animaction->size) {
 		if (animaction->flags & (AnimAction::AAF_LOOPING |
-								 Animation::AAF_LOOPING2)) {
+								 AnimAction::AAF_LOOPING2)) {
 			// CHECKME: unknown flag
 			frame = 1;
 		} else {
