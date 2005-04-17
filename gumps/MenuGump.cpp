@@ -37,6 +37,7 @@
 #include "Font.h"
 #include "RenderedText.h"
 #include "FontManager.h"
+#include "SettingManager.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -98,11 +99,17 @@ void MenuGump::InitGump()
 	AddChild(logo);
 
 	if (!nameEntryMode) {
+		SettingManager* settingman = SettingManager::get_instance();
+		bool endgame;
+		settingman->get("endgame", endgame);
+
 		int x = dims.w / 2 + 14;
 		int y = 18;
 		Gump * widget;
 		for (int i = 0; i < 8; ++i)
 		{
+			if (!endgame && i == 6) break;
+
 			FrameID frame_up(GameData::GUMPS, menuEntryShape, i * 2);
 			FrameID frame_down(GameData::GUMPS, menuEntryShape, i * 2 + 1);
 			frame_up = _TL_SHP_(frame_up);
@@ -158,9 +165,11 @@ bool MenuGump::OnKeyDown(int key, int mod)
 {
 	if (!nameEntryMode) {
 
-		if (key == SDLK_ESCAPE)
-			Close();
-		else if (key >= SDLK_1 && key <=SDLK_9) {
+		if (key == SDLK_ESCAPE) {
+			MainActor* av = World::get_instance()->getMainActor();
+			if (av && !(av->getActorFlags() & Actor::ACT_DEAD))
+				Close(); // don't allow closing if dead/game over
+		} else if (key >= SDLK_1 && key <=SDLK_9) {
 			selectEntry(key - SDLK_1 + 1);
 		}
 

@@ -95,6 +95,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "DestroyItemProcess.h"
 
 #include "MovieGump.h"
+#include "ShapeViewerGump.h"
 
 #include "ScalerManager.h"
 #include "Scaler.h"
@@ -891,13 +892,10 @@ void GUIApp::LoadConsoleFont()
 	std::string confontfile;
 	std::string confontini("@data/fixedfont.ini");
 
-	pout << "Searching for alternate console font... ";
 	if (settingman->get("console_font", data)) {
 		confontini = data;
-		pout << "Found." << std::endl;
+		pout << "Alternate console font found." << std::endl;
 	}
-	else
-		pout << "Not Found." << std::endl;
 
 	// try to load the file
 	pout << "Loading console font config: " << confontini << "... ";
@@ -1409,7 +1407,7 @@ bool GUIApp::saveGame(std::string filename, bool ignore_modals)
 	// (Avatar is flagged dead by usecode when you finish the game as well.)
 	MainActor* av = world->getMainActor();
 	if (!av || (av->getActorFlags() & Actor::ACT_DEAD)) {
-		pout << "Can't save: Avatar is dead or game is over." << std::endl;
+		pout << "Can't save: game over." << std::endl;
 		return false;
 	}
 
@@ -1725,7 +1723,7 @@ void GUIApp::addGump(Gump* gump)
 
 	assert(desktopGump);
 
-	if (gump->IsOfType<ModalGump>() || gump->IsOfType<MiniMapGump>() || 
+	if (gump->IsOfType<ShapeViewerGump>() || gump->IsOfType<MiniMapGump>() || 
 		(ttfoverrides && (gump->IsOfType<BarkGump>() || gump->IsOfType<AskGump>())))
 	{
 		desktopGump->AddChild(gump);

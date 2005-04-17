@@ -44,6 +44,7 @@ U8Game::U8Game() : Game()
 	// Set some defaults for gameplay-related settings
 	SettingManager* settingman = SettingManager::get_instance();
 	settingman->setDefault("skipstart", false);
+	settingman->setDefault("endgame", false);
 	settingman->setDefault("footsteps", true);
 	settingman->setDefault("cheat", true);
 }

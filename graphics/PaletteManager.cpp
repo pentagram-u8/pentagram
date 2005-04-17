@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -87,6 +87,18 @@ void PaletteManager::transformPalette(PalIndex index, sint16 matrix[12])
 
 	for (int i = 0; i < 12; i++) pal->matrix[i] = matrix[i];
 	rendersurface->CreateNativePalette(pal); // convert to native format
+}
+
+void PaletteManager::untransformPalette(PalIndex index)
+{
+	Pentagram::Palette *pal = getPalette(index);
+
+	if (!pal) return;
+
+	pal->transform = Pentagram::Transform_None;
+	sint16 matrix[12];
+	getTransformMatrix(matrix, Pentagram::Transform_None);
+	transformPalette(index, matrix);
 }
 
 void PaletteManager::getTransformMatrix(sint16 matrix[12], Pentagram::PalTransforms trans)

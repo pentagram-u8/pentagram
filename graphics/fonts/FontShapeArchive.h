@@ -43,6 +43,9 @@ public:
 		: ShapeArchive(path, id_, pal_, format_) { }
 
 	virtual ~FontShapeArchive() { }
+
+	//! load HVLeads from u8.ini
+	void setHVLeads();
 	
 	ShapeFont* getFont(uint32 fontnum);
 

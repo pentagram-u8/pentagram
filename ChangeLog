@@ -1,3 +1,13 @@
+2005-04-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/fonts/ShapeFontArchive.*: load hleads/vleads from u8.ini
+	* gumps/MainMenuProcess.*: process that opens the main menu gump
+	* world/actors/AvatarDeathProcess.cpp: show main menu after gravestone
+	* games/Game.cpp: reset palette, show main menu after endgame movie
+	* graphics/PaletteManager.h: add function to reset a transform matrix
+	* kernel/GUIApp.cpp: scale most modal gumps
+	* gumps/MenuGump.cpp: don't show endgame/quotes options by default
+	* games/Game.cpp: enable endgame/quotes menu entries on endgame
+
 2005-04-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* games/StartU8Process.*: process to show the intro and ask for your
 	  name when starting a new game

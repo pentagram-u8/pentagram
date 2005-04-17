@@ -324,6 +324,7 @@ void GameData::loadU8Data()
 	}
 	fonts = new FontShapeArchive(fds, OTHER,
 		PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
+	fonts->setHVLeads();
 
 	// Load mouse
 	IDataSource *msds = filesystem->ReadFile("@u8/static/u8mouse.shp");

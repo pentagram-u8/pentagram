@@ -143,6 +143,7 @@ GUMPS = \
 	gumps/GumpNotifyProcess.o \
 	gumps/InverterGump.o \
 	gumps/ItemRelativeGump.o \
+	gumps/MainMenuProcess.o \
 	gumps/MiniStatsGump.o \
 	gumps/MenuGump.o \
 	gumps/ModalGump.o \

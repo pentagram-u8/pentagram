@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,6 +24,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GUIApp.h"
 #include "ReadableGump.h"
 #include "GameData.h"
+#include "Kernel.h"
+#include "MainMenuProcess.h"
+#include "GumpNotifyProcess.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -55,11 +58,16 @@ bool AvatarDeathProcess::run(const uint32 /*framenum*/)
 		return false;
 	}
 
-	Gump *gump = new ReadableGump(1, 27, 11,
+	ReadableGump *gump = new ReadableGump(1, 27, 11,
 								  _TL_("HERE LIES*THE AVATAR*REST IN PEACE"));
 	gump->InitGump();
 	GUIApp::get_instance()->addGump(gump);
 	gump->setRelativePosition(Gump::CENTER);
+	Process* gumpproc = gump->GetNotifyProcess();
+
+	Process* menuproc = new MainMenuProcess();
+	Kernel::get_instance()->addProcess(menuproc);
+	menuproc->waitFor(gumpproc);
 
 	// done
 	terminate();

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -38,7 +38,7 @@ DestroyItemProcess::DestroyItemProcess(Item* item_)
 	assert(item_);
 	item_num = item_->getObjId();
 
-	type = 0; // FIXME!!
+	type = 0x232;
 }
 
 bool DestroyItemProcess::run(const uint32 /*framenum*/)

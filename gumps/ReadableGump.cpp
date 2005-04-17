@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2004-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -77,7 +77,7 @@ void ReadableGump::InitGump()
 
 Gump *ReadableGump::OnMouseDown(int button, int mx, int my)
 {
-	// Scroll to next text, if possible
+	// maybe TODO: Scroll to next text, if possible
 	Close();
 	return this;
 }

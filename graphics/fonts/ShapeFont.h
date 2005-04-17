@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -41,6 +41,9 @@ public:
 	int getWidth(char c);
 	int getVlead() const { return vlead; }
 	int getHlead() const { return hlead; }
+
+	void setVLead(int vl) { vlead = vl; }
+	void setHLead(int hl) { hlead = hl; }
 
 	virtual void getStringSize(std::string& text, int& width, int& height);
 

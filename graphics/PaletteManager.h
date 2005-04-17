@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram Team
+Copyright (C) 2003-2005 The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -42,8 +42,11 @@ public:
 	void load(PalIndex index, IDataSource& ds);
 	Pentagram::Palette* getPalette(PalIndex index);
 
-	// Apply a transform matrix to a palette (-4.11 fixed)
+	//! Apply a transform matrix to a palette (-4.11 fixed)
 	void transformPalette(PalIndex index, sint16 matrix[12]);
+
+	//! reset the transformation matrix of a palette
+	void untransformPalette(PalIndex index);
 
 	// Get a TransformMatrix from a PalTransforms value (-4.11 fixed)
 	static void getTransformMatrix(sint16 matrix[12], Pentagram::PalTransforms trans);

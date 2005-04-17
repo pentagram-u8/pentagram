@@ -20,6 +20,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Game.h"
 #include "U8Game.h"
+#include "SettingManager.h"
+#include "PaletteManager.h"
+#include "Kernel.h"
+#include "MainMenuProcess.h"
 
 Game* Game::game = 0;
 
@@ -51,7 +55,21 @@ Game* Game::createGame(GameInfo* info)
 
 uint32 Game::I_playEndgame(const uint8* args, unsigned int /*argsize*/)
 {
-	Game::get_instance()->playEndgameMovie();
+	SettingManager* settingman = SettingManager::get_instance();
+	settingman->set("endgame", true);
+	settingman->write();
+
+	PaletteManager* palman = PaletteManager::get_instance();
+	palman->untransformPalette(PaletteManager::Pal_Game);
+
+	Process* menuproc = new MainMenuProcess();
+	Kernel::get_instance()->addProcess(menuproc);
+
+	ProcId moviepid = Game::get_instance()->playEndgameMovie();
+	Process* movieproc = Kernel::get_instance()->getProcess(moviepid);
+	if (movieproc) {
+		menuproc->waitFor(movieproc);
+	}
 
 	return 0;
 }
