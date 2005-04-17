@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2004 The Pentagram team
+Copyright (C) 2002-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,6 +28,18 @@ namespace Pentagram {
 template<class T> T to_uppercase(const T s);
 
 template<class T> void StringToArgv(const T &args, std::vector<T> &argv);
+
+
+
+template<class T> void TrimSpaces(T& str);
+
+template<class T> void SplitString(const T &args, char sep,
+								   std::vector<T> &argv);
+
+template<class T> void SplitStringKV(const T &args, char sep,
+									 std::vector<std::pair<T,T> > &argv);
+
+
 
 }
 

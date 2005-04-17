@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004 The Pentagram Team
+ *  Copyright (C) 2004-2005 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #include "TreasureLoader.h"
 
 #include "ConfigFileManager.h"
+#include "util.h"
 
 TreasureLoader::TreasureLoader()
 {
@@ -59,20 +60,17 @@ bool TreasureLoader::parse(std::string desc,
 {
 	treasure.clear();
 
+	std::vector<std::string> tr;
+	Pentagram::SplitString(desc, ';', tr);
+
 	TreasureInfo ti;
-	std::string::size_type pos;
-	while (!desc.empty()) {
-		pos = desc.find(';');
-		std::string item = desc.substr(0, pos);
-//		pout << "parse: item=" << item << std::endl;
-		if (internalParse(desc.substr(0, pos), ti, false)) {
+	for (unsigned int i = 0; i < tr.size(); ++i) {
+//		pout << "parse: item=" << tr[i] << std::endl;
+		if (internalParse(tr[i], ti, false)) {
 			treasure.push_back(ti);
 		} else {
 			return false;
-		}
-
-		if (pos != std::string::npos) pos++;
-		desc.erase(0, pos);
+		}		
 	}
 
 	return true;
@@ -92,20 +90,13 @@ bool TreasureLoader::internalParse(std::string desc, TreasureInfo& ti,
 
 	bool loadedDefault = false;
 
-	std::string::size_type pos;
-	while (!desc.empty()) {
-		pos = desc.find(' ');
-		std::string item = desc.substr(0, pos);
-//		pout << "internalParse: item=" << item << std::endl;
+	std::vector<std::pair<std::string, std::string> > kv;
+	Pentagram::SplitStringKV(desc, ' ', kv);
 
-		std::string::size_type itempos = item.find('=');
-		if (itempos == std::string::npos ||
-			itempos == 0 || itempos+1 >= item.size())
-		{
-			return false;
-		}
-		std::string key = item.substr(0, itempos);
-		std::string val = item.substr(itempos+1);
+	for (unsigned int i = 0; i < kv.size(); ++i) {
+		std::string key = kv[i].first;
+		std::string val = kv[i].second;
+//		pout << "internalParse: key=" << key << " val=" << val << std::endl;
 
 		if (key == "shape") {
 			if (!parseUInt32Vector(val, ti.shapes))
@@ -154,9 +145,6 @@ bool TreasureLoader::internalParse(std::string desc, TreasureInfo& ti,
 		} else {
 			return false;
 		}
-
-		if (pos != std::string::npos) pos++;
-		desc.erase(0, pos);
 	}
 
 	return true;

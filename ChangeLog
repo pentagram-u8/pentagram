@@ -1,4 +1,10 @@
 2005-04-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* misc/util.*: added TrimSpaces, SplitString, SplitStringKV string
+	  handling/parsing utility functions
+	* various: used new utility functions
+	* various: silenced some output
+
+2005-04-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AnimAction.*: guessing flag 0x10 means same as LOOPING,
 	  which is unlikely but seems to work well enough.
 	* gumps/SliderGump.*: cache RenderedText

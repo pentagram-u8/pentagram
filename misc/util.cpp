@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002 The Pentagram team
+Copyright (C) 2002-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -113,5 +113,86 @@ template<class T> void StringToArgv(const T &args, std::vector<T> &argv)
 
 template void StringToArgv<std::string>(const std::string &args, std::vector<std::string> &argv);
 template void StringToArgv<Pentagram::istring>(const Pentagram::istring &args, std::vector<Pentagram::istring> &argv);
+
+
+template<class T> void TrimSpaces(T& str)
+{
+	if (str.empty()) return;
+
+	typename T::size_type pos1 = str.find_first_not_of(' ');
+	if (pos1 == T::npos) {
+		str = "";
+		return;
+	}
+
+	typename T::size_type pos2 = str.find_last_not_of(' ');
+	str = str.substr(pos1, pos2-pos1+1);
+}
+
+template void TrimSpaces<std::string>(std::string& str);
+template void TrimSpaces<Pentagram::istring>(Pentagram::istring& str);
+
+template<class T> void SplitString(const T &args, char sep,
+								   std::vector<T> &argv)
+{
+	// Clear the vector
+	argv.clear();
+
+	if (args.empty()) return;
+
+	typename T::size_type pos, start;
+	start = 0;
+	while (start != T::npos) {
+		pos = args.find(sep, start);
+		if (pos == T::npos) {
+			argv.push_back(args.substr(start));
+			start = pos;
+		} else {
+			argv.push_back(args.substr(start, pos-start));
+			start = pos+1;
+		}
+	}
+}
+
+
+template void SplitString<std::string>(const std::string& args, char sep, std::vector<std::string> &argv);
+template void SplitString<Pentagram::istring>(const Pentagram::istring& args, char sep, std::vector<Pentagram::istring> &argv);
+
+
+
+
+template<class T> void SplitStringKV(const T &args, char sep,
+									 std::vector<std::pair<T,T> > &argv)
+{
+	// Clear the vector
+	argv.clear();
+
+	if (args.empty()) return;
+
+	std::vector<T> keyvals;
+	SplitString(args, sep, keyvals);
+
+	for (unsigned int i = 0; i < keyvals.size(); ++i)
+	{
+		std::pair<T,T> keyval;
+		typename T::size_type pos;
+		pos = keyvals[i].find('=');
+		keyval.first = keyvals[i].substr(0, pos);
+		TrimSpaces(keyval.first);
+		if (pos == T::npos) {
+			keyval.second = "";
+		} else {
+			keyval.second = keyvals[i].substr(pos+1);
+			TrimSpaces(keyval.second);
+		}
+		if (!(keyval.first.empty() && keyval.second.empty()))
+				argv.push_back(keyval);
+	}
+}
+
+template void SplitStringKV<std::string>(const std::string& args, char sep, std::vector<std::pair<std::string, std::string> > &argv);
+template void SplitStringKV<Pentagram::istring>(const Pentagram::istring& args, char sep, std::vector<std::pair<Pentagram::istring,Pentagram::istring> > &argv);
+
+
 
 }

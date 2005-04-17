@@ -47,7 +47,9 @@ MemoryManager::~MemoryManager()
 void * MemoryManager::allocate(size_t size)
 {
 	void * ptr = malloc(size);
+#ifdef DEBUG
 	con.Printf("MemoryManager::allocate - Allocated %d bytes to 0x%X\n", size, ptr);
+#endif
 
 	return ptr;
 }
@@ -57,7 +59,10 @@ void MemoryManager::deallocate(void * ptr)
 	Pool * p;
 	p = allocators[objectAllocator]->findPool(ptr);
 
+#ifdef DEBUG
 	con.Printf("MemoryManager::deallocate - deallocating memory at 0x%X\n", ptr);
+#endif
+
 	// try other allocators
 	if (!p)
 		p = allocators[processAllocator]->findPool(ptr);

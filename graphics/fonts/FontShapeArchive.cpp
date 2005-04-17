@@ -17,7 +17,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "pent_include.h"
+
 #include "FontShapeArchive.h"
+#include "util.h"
 #include "ShapeFont.h"
 #include "ConfigFileManager.h"
 
@@ -68,14 +70,17 @@ void FontShapeArchive::setHVLeads()
 	{
 		int fontnum = std::atoi(iter->first.c_str());
 		std::string leaddesc = iter->second;
-		std::string::size_type pos = leaddesc.find(',');
-		if (pos == std::string::npos) {
+
+		std::vector<std::string> vals;
+		Pentagram::SplitString(leaddesc, ',', vals);
+		if (vals.size() != 2) {
 			perr << "Invalid hlead/vlead description: " << leaddesc
 				 << std::endl;
 			continue;
 		}
-		int hlead = std::atoi(leaddesc.substr(0,pos).c_str());
-		int vlead = std::atoi(leaddesc.substr(pos+1).c_str());
+
+		int hlead = std::atoi(vals[0].c_str());
+		int vlead = std::atoi(vals[1].c_str());
 
 		ShapeFont* font = getFont(fontnum);
 		if (font) {

@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 
+#include "util.h"
 #include "GameData.h"
 #include "FileSystem.h"
 #include "IDataSource.h"
@@ -387,23 +388,18 @@ void GameData::setupTTFOverrides()
 	{
 		int fontnum = std::atoi(iter->first.c_str());
 		std::string fontdesc = iter->second;
-		std::string::size_type pos = fontdesc.find(',');
-		std::string::size_type pos2 = std::string::npos;
-		std::string::size_type pos3 = std::string::npos;
-		if (pos != std::string::npos) pos2 = fontdesc.find(',', pos+1);
-		if (pos2 != std::string::npos) pos3 = fontdesc.find(',', pos2+1);
-		if (pos == std::string::npos || pos2 == std::string::npos ||
-			pos3 == std::string::npos)
-		{
+
+		std::vector<std::string> vals;
+		Pentagram::SplitString(fontdesc, ',', vals);
+		if (vals.size() != 4) {
 			perr << "Invalid ttf override: " << fontdesc << std::endl;
 			continue;
 		}
-		std::string filename = fontdesc.substr(0,pos);
-		int pointsize = std::atoi(fontdesc.substr(pos+1,pos2-pos-1).c_str());
 
-		uint32 col32 = std::strtol(fontdesc.substr(pos2+1,pos3-pos2-1).c_str(),
-								   0, 0);
-		int border = std::atoi(fontdesc.substr(pos3+1).c_str());
+		std::string filename = vals[0];
+		int pointsize = std::atoi(vals[1].c_str());
+		uint32 col32 = std::strtol(vals[2].c_str(), 0, 0);
+		int border = std::atoi(vals[3].c_str());
 
 		if (!fontmanager->addTTFOverride(fontnum, filename, pointsize,
 										 col32, border))

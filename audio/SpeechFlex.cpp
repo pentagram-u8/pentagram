@@ -18,6 +18,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 #include "SpeechFlex.h"
 #include "AudioSample.h"
+#include "util.h"
 
 // p_dynamic_class stuff 
 DEFINE_RUNTIME_CLASSTYPE_CODE(SpeechFlex, SoundFlex);
@@ -36,9 +37,7 @@ SpeechFlex::SpeechFlex(IDataSource* ds) : SoundFlex(ds)
 		if (!end) end = strend;
 
 		Pentagram::istring text = Pentagram::istring(strings,end-strings);
-		std::string::size_type pos1 = text.find_first_not_of(' ');
-		std::string::size_type pos2 = text.find_last_not_of(' ');
-		text = text.substr(pos1, pos2-pos1+1);
+		Pentagram::TrimSpaces(text);
 
 		// pout << "Found string: \"" << text << "\"" << std::endl;
 
