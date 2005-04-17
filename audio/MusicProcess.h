@@ -45,6 +45,9 @@ public:
 	//! \param track The track number to play. Pass 0 to stop music
 	void playMusic(int track);
 
+	//! Get the number of the current or wanted track
+	int getTrack() const { return wanted_track; }
+
 	virtual bool run(const uint32 framenum);
 
 	bool loadData(IDataSource* ids, uint32 version);

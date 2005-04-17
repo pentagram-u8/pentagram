@@ -38,6 +38,7 @@
 #include "RenderedText.h"
 #include "FontManager.h"
 #include "SettingManager.h"
+#include "MusicProcess.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -58,6 +59,11 @@ MenuGump::MenuGump(bool nameEntryMode_)
 
 	nametext = 0;
 	namechanged = true;
+
+	// Save old music state
+	MusicProcess *musicprocess = MusicProcess::get_instance();
+	if (musicprocess) oldMusicTrack = musicprocess->getTrack();
+	else oldMusicTrack = 0;
 }
 
 MenuGump::~MenuGump()
@@ -67,6 +73,10 @@ MenuGump::~MenuGump()
 
 void MenuGump::Close(bool no_del)
 {
+	// Restore old music state
+	MusicProcess *musicprocess = MusicProcess::get_instance();
+	if (musicprocess) musicprocess->playMusic(oldMusicTrack);
+
 	GUIApp* guiapp = GUIApp::get_instance();
 	guiapp->popMouseCursor();
 

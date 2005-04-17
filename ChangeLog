@@ -1,3 +1,14 @@
+2005-04-17  Ryan Nunn <colourles@users.sourceforge.net>
+	* audio/MusicProcess.h : Added method to get the currently playing 
+	  music track
+	* gumps/MenuGump.* : Grab what music track was playing when the gump 
+	  was created, and play it again when the gump is closed
+	* games/U8Game.cpp, graphics/SKFPlayer.*,  gumps/MovieGump.* : Added 
+	  small hack to stop the SKFPlayer from stopping the Ultima8 theme
+	  music from the intro. 
+	* world/CameraProcess.cpp : Removed the 'Scroll To' debug output. I'm
+	  reasonably confident that it works.
+	  
 2005-04-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/fonts/FontManager.*: changed getFont to getGameFont
 	* data/u8.ini, games/GameData.cpp: changed ttf override syntax

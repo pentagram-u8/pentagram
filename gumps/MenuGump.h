@@ -52,6 +52,8 @@ protected:
 	bool namechanged;
 	RenderedText* nametext;
 
+	int oldMusicTrack;
+
 	virtual void selectEntry(int entry);
 };
 

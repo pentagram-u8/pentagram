@@ -39,10 +39,10 @@ MovieGump::MovieGump()
 }
 
 MovieGump::MovieGump(int width, int height, RawArchive* movie,
-					 uint32 _Flags, sint32 layer)
+					 bool introMusicHack, uint32 _Flags, sint32 layer)
 	: ModalGump(50, 50, width, height, 0, _Flags, layer)
 {
-	player = new SKFPlayer(movie, width, height);
+	player = new SKFPlayer(movie, width, height, introMusicHack);
 }
 
 MovieGump::~MovieGump()
@@ -99,9 +99,9 @@ bool MovieGump::OnKeyDown(int key, int mod)
 }
 
 //static
-ProcId MovieGump::U8MovieViewer(RawArchive* movie)
+ProcId MovieGump::U8MovieViewer(RawArchive* movie, bool introMusicHack)
 {
-	Gump* gump = new MovieGump(320, 200, movie);
+	Gump* gump = new MovieGump(320, 200, movie, introMusicHack);
 	gump->InitGump();
 	GUIApp::get_instance()->addGump(gump);
 	gump->setRelativePosition(CENTER);

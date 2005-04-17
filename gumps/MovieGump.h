@@ -30,7 +30,7 @@ public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
 	MovieGump();
-	MovieGump(int width, int height, RawArchive* skf,
+	MovieGump(int width, int height, RawArchive* skf, bool introMusicHack = false, 
 			  uint32 _Flags = 0, sint32 layer = LAYER_MODAL);
 	virtual ~MovieGump(void);
 
@@ -45,7 +45,7 @@ public:
 
 	virtual bool OnKeyDown(int key, int mod);
 
-	static ProcId U8MovieViewer(RawArchive* skf);
+	static ProcId U8MovieViewer(RawArchive* skf, bool introMusicHack = false);
 
 	//! "play" console command
 	static void ConCmd_play(const Console::ArgsType &args,

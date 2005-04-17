@@ -297,7 +297,7 @@ ProcId U8Game::playIntroMovie()
 	}
 	
 	RawArchive* flex = new RawArchive(skf);
-	return MovieGump::U8MovieViewer(flex);
+	return MovieGump::U8MovieViewer(flex, true);
 }
 
 ProcId U8Game::playEndgameMovie()

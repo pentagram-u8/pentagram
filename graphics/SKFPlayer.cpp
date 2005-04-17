@@ -61,10 +61,11 @@ struct SKFEvent {
 static const int FADESTEPS = 16; // HACK: half speed
 
 
-SKFPlayer::SKFPlayer(RawArchive* movie, int width_, int height_)
+SKFPlayer::SKFPlayer(RawArchive* movie, int width_, int height_, bool introMusicHack_)
 	: width(width_), height(height_), skf(movie),
 	  curframe(0), curobject(0), curaction(0), curevent(0), playing(false),
-	  timer(0), framerate(15), fadecolour(0), fadelevel(0), buffer(0), subs(0)
+	  timer(0), framerate(15), fadecolour(0), fadelevel(0), buffer(0), subs(0),
+	  introMusicHack(introMusicHack_)
 {
 	IDataSource* eventlist = skf->get_datasource(0);
 	if (!eventlist)
@@ -117,7 +118,7 @@ void SKFPlayer::start()
 void SKFPlayer::stop()
 {
 	MusicProcess* musicproc = MusicProcess::get_instance();
-	if (musicproc) musicproc->playMusic(0);
+	if (musicproc && !introMusicHack) musicproc->playMusic(0);
 	playing = false;
 }
 
@@ -208,7 +209,7 @@ void SKFPlayer::run()
 			break;
 		case SKF_SlowStopMusic:
 			pout << "SlowStopMusic" << std::endl;
-			if (musicproc) musicproc->playMusic(0);
+			if (musicproc && !introMusicHack) musicproc->playMusic(0);
 			break;
 		case SKF_PlaySFX:
 //			pout << "PlaySFX " << events[curevent]->data << std::endl;

@@ -30,7 +30,7 @@ namespace Pentagram { struct Palette; }
 
 class SKFPlayer {
 public:
-	SKFPlayer(RawArchive* movie, int width, int height);
+	SKFPlayer(RawArchive* movie, int width, int height, bool introMusicHack = false);
 	~SKFPlayer();
 
 	void run();
@@ -58,6 +58,7 @@ private:
 	RenderSurface* buffer;
 	RenderedText* subs;
 	int subtitley;
+	bool introMusicHack;
 };
 
 #endif

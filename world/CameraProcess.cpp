@@ -139,8 +139,8 @@ CameraProcess::CameraProcess(sint32 _x, sint32 _y, sint32 _z, sint32 _time) :
 	ex(_x), ey(_y), ez(_z), time(_time), elapsed(0), itemnum(0), last_framenum(0)
 {
 	GetCameraLocation(sx,sy,sz);
-	pout << "Scrolling from (" << sx << "," << sy << "," << sz << ") to (" <<
-		ex << "," << ey << "," << ez << ") in " << time << " frames" << std::endl;
+	//pout << "Scrolling from (" << sx << "," << sy << "," << sz << ") to (" <<
+	//	ex << "," << ey << "," << ez << ") in " << time << " frames" << std::endl;
 }
 
 void CameraProcess::terminate()
