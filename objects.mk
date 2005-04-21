@@ -119,6 +119,7 @@ FONTS = \
 	graphics/fonts/TTFRenderedText.o
 
 MISC = \
+	misc/encoding.o \
 	misc/istring.o \
 	misc/Console.o \
 	misc/idMan.o \
@@ -164,6 +165,7 @@ GUMPS = \
 
 WIDGETS = \
 	gumps/widgets/ButtonWidget.o \
+	gumps/widgets/EditWidget.o \
 	gumps/widgets/SlidingWidget.o \
 	gumps/widgets/TextWidget.o
 

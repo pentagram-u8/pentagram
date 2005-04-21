@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004-2005  The Pentagram Team
+ *  Copyright (C) 2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,41 +16,65 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef MENUGUMP_H
-#define MEUNGUMP_H
+#ifndef EDITWIDGET_H
+#define EDITWIDGET_H
 
-#include "ModalGump.h"
+//
+// EditWidget. Widget for text input (single or multi-line)
+//
+
+#include "Gump.h"
+
+#include "Font.h"
+
+using Pentagram::Font;
 
 class RenderedText;
 
-class MenuGump : public ModalGump
+class EditWidget : public Gump
 {
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	MenuGump(bool nameEntryMode=false);
-	virtual ~MenuGump(void);
+	EditWidget();
+	EditWidget(int X, int Y, std::string txt, int fontnum,
+			   int width, int height, int maxlength=0, bool multiline=false);
+	virtual ~EditWidget(void);
 
-	// Init the gump, call after construction
 	virtual void InitGump();
-	virtual void Close(bool no_del = false);
 
-	// Paint the Gump
 	virtual void PaintThis(RenderSurface*, sint32 lerp_factor);
 
+	virtual Gump* OnMouseMotion(int mx, int my);
 	virtual bool OnKeyDown(int key, int mod);
+	virtual bool OnKeyUp(int key);
 	virtual bool OnTextInput(int unicode);
-	virtual void ChildNotify(Gump *child, uint32 message);
 
-	static void showMenu();
-	static void inputName();
+	//! get the current text
+	std::string getText() const { return text; }
+
+	enum Message
+	{
+		EDIT_ENTER = 16,
+		EDIT_ESCAPE = 17
+	};
+
+	bool loadData(IDataSource* ids, uint32 version);
 
 protected:
-	bool nameEntryMode;
-	int oldMusicTrack;
+	virtual void saveData(ODataSource* ods);
 
-	virtual void selectEntry(int entry);
+	std::string text;
+	std::string::size_type cursor;
+	int fontnum;
+	int maxlength;
+
+	bool cursor_visible;
+
+	RenderedText* cached_text;
+
+	void renderText();
+
 };
-
 
 #endif

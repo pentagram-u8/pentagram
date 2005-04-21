@@ -106,7 +106,8 @@ std::list<PositionedText> Font::typesetText(std::string& text,
 											int width, int height,
 											TextAlign align, bool u8specials,
 											int& resultwidth,
-											int& resultheight)
+											int& resultheight,
+											std::string::size_type cursor)
 {
 #if 0
 	pout << "typeset (" << width << "," << height << ") : "
@@ -139,6 +140,15 @@ std::list<PositionedText> Font::typesetText(std::string& text,
 			line.dims.w = stringwidth;
 			line.dims.h = stringheight;
 			line.text = curline;
+			line.cursor = std::string::npos;
+			if (cursor != std::string::npos && cursor >= curlinestart &&
+				(cursor < i || (!breakhere && cursor == i)))
+			{
+				line.cursor = cursor - curlinestart;
+				if (line.dims.w == 0) {
+					stringwidth = line.dims.w = 2;
+				}
+			}
 			lines.push_back(line);
 
 			if (stringwidth > totalwidth) totalwidth = stringwidth;

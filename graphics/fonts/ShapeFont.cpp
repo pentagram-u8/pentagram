@@ -97,13 +97,14 @@ void ShapeFont::getStringSize(std::string& text, int& width, int& height)
 
 RenderedText* ShapeFont::renderText(std::string text, unsigned int& remaining,
 									int width, int height, TextAlign align,
-									bool u8specials)
+									bool u8specials, std::string::size_type cursor)
 {
 	int resultwidth, resultheight;
 	std::list<PositionedText> lines = typesetText(text, remaining,
 												  width, height,
 												  align, u8specials,
-												  resultwidth, resultheight);
+												  resultwidth, resultheight,
+												  cursor);
 
 	return new ShapeRenderedText(lines, resultwidth, resultheight,
 								 getVlead(), this);

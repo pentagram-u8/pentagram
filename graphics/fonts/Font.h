@@ -27,6 +27,7 @@ class RenderedText;
 struct PositionedText {
 	std::string text;
 	Pentagram::Rect dims;
+	std::string::size_type cursor;
 };
 
 namespace Pentagram
@@ -73,7 +74,8 @@ public:
 									 unsigned int& remaining,
 									 int width=0, int height=0,
 									 TextAlign align=TEXT_LEFT,
-									 bool u8specials=false)=0;
+									 bool u8specials=false,
+									 std::string::size_type cursor=std::string::npos)=0;
 
 	//! get the dimensions of a rendered string
 	//! \param text The text
@@ -96,8 +98,9 @@ protected:
 										  unsigned int& remaining,
 										  int width, int height,
 										  TextAlign align, bool u8specials,
-										  int& resultwidth, int& resultheight);
-
+										  int& resultwidth, int& resultheight,
+										  std::string::size_type cursor
+												=std::string::npos);
 };
 
 }

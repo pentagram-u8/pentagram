@@ -41,7 +41,8 @@ public:
 									 unsigned int& remaining,
 									 int width=0, int height=0,
 									 TextAlign align=TEXT_LEFT,
-									 bool u8specials=false);
+									 bool u8specials=false,
+									 std::string::size_type cursor=std::string::npos);
 
 	ENABLE_RUNTIME_CLASSTYPE();
 protected:

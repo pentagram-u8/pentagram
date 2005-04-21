@@ -1,3 +1,10 @@
+2005-04-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/fonts/TTFont.cpp: fix border bug
+	* graphics/fonts/TTFont.*: cursor support
+	* gumps/widget/EditWidget.*: unfinished text-edit widget
+	* gumps/MainMenu.*: use EditWidget for the Avatar's name
+	* misc/encoding.*: move map from u8's encoding to unicode to new file
+
 2005-04-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* misc/util.*: added TrimSpaces, SplitString, SplitStringKV string
 	  handling/parsing utility functions

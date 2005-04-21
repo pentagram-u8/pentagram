@@ -39,6 +39,7 @@
 #include "FontManager.h"
 #include "SettingManager.h"
 #include "MusicProcess.h"
+#include "EditWidget.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -57,9 +58,6 @@ MenuGump::MenuGump(bool nameEntryMode_)
 	else
 		app->setMouseCursor(GUIApp::MOUSE_NONE);
 
-	nametext = 0;
-	namechanged = true;
-
 	// Save old music state
 	MusicProcess *musicprocess = MusicProcess::get_instance();
 	if (musicprocess) oldMusicTrack = musicprocess->getTrack();
@@ -68,7 +66,6 @@ MenuGump::MenuGump(bool nameEntryMode_)
 
 MenuGump::~MenuGump()
 {
-	delete nametext;
 }
 
 void MenuGump::Close(bool no_del)
@@ -150,6 +147,12 @@ void MenuGump::InitGump()
 		widget->InitGump();
 		widget->Move(dims.w / 2 + 6, 10);
 		AddChild(widget);
+
+		widget = new EditWidget(0, 0, "", 6, 120, 40, 15); // FIXME (size)
+		widget->InitGump();
+		widget->Move(dims.w / 2 + 6, 25);
+		AddChild(widget);
+		widget->MakeFocus();
 	}
 }
 
@@ -157,23 +160,12 @@ void MenuGump::InitGump()
 void MenuGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 {
 	Gump::PaintThis(surf, lerp_factor);
-
-	if (nameEntryMode) {
-		if (!nametext || namechanged) {
-			// CONSTANT!
-			Font* font = FontManager::get_instance()->getGameFont(6);
-			unsigned int remaining;
-			delete nametext;
-			nametext = font->renderText(name + "-", remaining, 0, 0);
-			namechanged = false;
-		}
-
-		nametext->draw(surf, dims.w / 2 + 6, 30);
-	}
 }
 
 bool MenuGump::OnKeyDown(int key, int mod)
 {
+	if (Gump::OnKeyDown(key, mod)) return true;
+
 	if (!nameEntryMode) {
 
 		if (key == SDLK_ESCAPE) {
@@ -184,30 +176,26 @@ bool MenuGump::OnKeyDown(int key, int mod)
 			selectEntry(key - SDLK_1 + 1);
 		}
 
-	} else {
-
-		// hack (should have a 'TextInputWidget')
-		if (key == SDLK_RETURN || key == SDLK_KP_ENTER) {
-			if (!name.empty()) {
-				MainActor* av = World::get_instance()->getMainActor();
-				av->setName(name);
-				Close();
-			}
-		} else if (key == SDLK_BACKSPACE) {
-			if (!name.empty()) {
-				namechanged = true;
-				name.erase(name.size()-1,1);
-			}
-		}
-
-	}
+	} 
 
 	return true;
 }
 
 void MenuGump::ChildNotify(Gump *child, uint32 message)
 {
-	if (message == ButtonWidget::BUTTON_CLICK)
+	if (child->IsOfType<EditWidget>() && message == EditWidget::EDIT_ENTER)
+	{
+		EditWidget* editwidget = p_dynamic_cast<EditWidget*>(child);
+		assert(editwidget);
+		std::string name = editwidget->getText();
+		if (!name.empty()) {
+			MainActor* av = World::get_instance()->getMainActor();
+			av->setName(name);
+			Close();
+		}
+	}
+
+	if (child->IsOfType<ButtonWidget>() && message==ButtonWidget::BUTTON_CLICK)
 	{
 		selectEntry(child->GetIndex());
 	}
@@ -215,6 +203,10 @@ void MenuGump::ChildNotify(Gump *child, uint32 message)
 
 void MenuGump::selectEntry(int entry)
 {
+	SettingManager* settingman = SettingManager::get_instance();
+	bool endgame;
+	settingman->get("endgame", endgame);
+
 	switch (entry)
 	{
 	case 1: // Intro
@@ -243,10 +235,10 @@ void MenuGump::selectEntry(int entry)
 		QuitGump::verifyQuit();
 		break;
 	case 7: // Quotes
-		Game::get_instance()->playQuotes();
+		if (endgame) Game::get_instance()->playQuotes();
 		break;
 	case 8: // End Game
-		Game::get_instance()->playEndgameMovie();
+		if (endgame) Game::get_instance()->playEndgameMovie();
 		break;
 	default:
 		break;
@@ -255,13 +247,7 @@ void MenuGump::selectEntry(int entry)
 
 bool MenuGump::OnTextInput(int unicode)
 {
-	// hack (should have a 'TextInputWidget')
-	if (nameEntryMode) {
-		if (unicode >= 32 && unicode < 128 && name.size() < 15) {
-			namechanged = true;
-			name += static_cast<char>(unicode);
-		}
-	}
+	if (Gump::OnTextInput(unicode)) return true;
 
 	return true;
 }
