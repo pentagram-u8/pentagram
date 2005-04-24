@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004  The Pentagram Team
+ *  Copyright (C) 2003-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -139,7 +139,7 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 		Actor* av = world->getNPC(1);
 		av->getLocation(ax, ay, az);
 		av->getFootpadWorld(axd, ayd, azd);
-		map->isValidPosition(ax, ay, az, 32, 32, 8, 1, 0, &roofid);
+		map->isValidPosition(ax, ay, az, 32, 32, 8, 0, 1, 0, &roofid);
 	}
 	else
 		roofid = camera->FindRoof(lerp_factor);

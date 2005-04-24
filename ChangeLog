@@ -1,3 +1,8 @@
+2005-04-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/CurrentMap.*: made collision detection check if items can
+	  overlap properly, by matching solid/roof/damaging flags.
+	* various: switch to new sweepTest/isValidPosition semantics
+
 2005-04-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/fonts/TTFont.cpp: fix border bug
 	* graphics/fonts/TTFont.*: cursor support

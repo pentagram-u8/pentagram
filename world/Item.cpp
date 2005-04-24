@@ -506,17 +506,9 @@ bool Item::isOn(Item& item2) const
 
 bool Item::canExistAt(sint32 x, sint32 y, sint32 z, bool needsupport) const
 {
-	sint32 xd, yd, zd;
-	getFootpadWorld(xd, yd, zd);
 	CurrentMap* cm = World::get_instance()->getCurrentMap();
-#if 0
-	if (getShape() == 264) { // spiky sphere
-		perr << "Spiky Sphere: Trying (" << x-xd << "," << y-yd << "," << z 
-			 << ")-(" << x << "," << y << "," << z+zd << ")" << std::endl;
-	}
-#endif
 	ObjId support;
-	bool valid = cm->isValidPosition(x, y, z, xd, yd, zd, getObjId(),
+	bool valid = cm->isValidPosition(x, y, z, getShape(), getObjId(),
 									 &support, 0);
 	return valid && (!needsupport || support);
 }
@@ -829,7 +821,8 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 	// Do the sweep test
 	std::list<CurrentMap::SweepItem> collisions;
 	std::list<CurrentMap::SweepItem>::iterator it;
-	map->sweepTest(start, end, dims, objid, false, &collisions);
+	map->sweepTest(start, end, dims, getShapeInfo()->flags, objid,
+				   false, &collisions);
 
 	// Ok, now to work out what to do
 
@@ -851,16 +844,8 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 		{
 			for (it = collisions.begin(); it != collisions.end(); it++)
 			{
-				// Wasn't hitting us at the end or were touching
-				if (it->end_time != 0x4000 || it->touching)  
-					continue;
-
-				Item *item = world->getItem(it->item);
-				if (!item) continue;
-				ShapeInfo *info = item->getShapeInfo();
-
 				// Uh oh, we hit something, can't move
-				if (info->is_solid()) {
+				if (it->end_time == 0x4000 && !it->touching && it->blocking) {
 					if (hititem) *hititem = it->item;
 					return 0;
 				}
@@ -917,16 +902,7 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 		{
 			for (it = collisions.begin(); it != collisions.end(); it++)
 			{
-				// Was only touching
-				if (it->touching) continue;
-
-				Item *item = world->getItem(it->item);
-				if (!item) continue;
-				ShapeInfo *info = item->getShapeInfo();
-
-				// Uh oh, we hit something
-				if (info->is_solid())
-				{
+				if (it->blocking && !it->touching) {
 					if (hititem) *hititem = it->item;
 					hit = it->hit_time;
 					break;
@@ -1682,7 +1658,8 @@ bool Item::canReach(Item* other, int range,
 	std::list<CurrentMap::SweepItem>::iterator it;
 	World *world = World::get_instance();
 	CurrentMap *map = world->getCurrentMap();
-	map->sweepTest(start, end, dims, objid, false, &collisions);
+	map->sweepTest(start, end, dims, ShapeInfo::SI_SOLID,
+				   objid, false, &collisions);
 	bool ok = true;
 	for (it = collisions.begin(); it != collisions.end(); it++)
 	{
@@ -1691,13 +1668,9 @@ bool Item::canReach(Item* other, int range,
 
 		// only touching?
 		if (it->touching) continue;
-		
-		Item *item = world->getItem(it->item);
-		if (!item) continue;
-		ShapeInfo *info = item->getShapeInfo();
-		
-		// hit something
-		if (info->is_solid()) {
+
+		// hit something 
+		if (it->blocking) {
 			ok = false;
 			break;
 		}
@@ -1717,7 +1690,8 @@ bool Item::canReach(Item* other, int range,
 	end[2] = otherZ - otherZd/2;
 
 	collisions.clear();
-	map->sweepTest(start, end, dims, objid, false, &collisions);
+	map->sweepTest(start, end, dims, ShapeInfo::SI_SOLID,
+				   objid, false, &collisions);
 	ok = true;
 	for (it = collisions.begin(); it != collisions.end(); it++)
 	{
@@ -1726,13 +1700,9 @@ bool Item::canReach(Item* other, int range,
 
 		// only touching?
 		if (it->touching) continue;
-		
-		Item *item = world->getItem(it->item);
-		if (!item) continue;
-		ShapeInfo *info = item->getShapeInfo();
-		
-		// hit something
-		if (info->is_solid()) {
+
+		// hit something 
+		if (it->blocking) {
 			ok = false;
 			break;
 		}
@@ -2222,16 +2192,9 @@ uint32 Item::I_legalCreateAtPoint(const uint8* args, unsigned int /*argsize*/)
 	ARG_WORLDPOINT(point);
 
 	// check if item can exist
-	int xd, yd, zd;
-	ShapeInfo* si = GameData::get_instance()->
-		getMainShapes()->getShapeInfo(shape);
-	//!! constants
-	xd = si->x * 32;
-	yd = si->y * 32;
-	zd = si->z * 8;
 	CurrentMap* cm = World::get_instance()->getCurrentMap();
 	bool valid = cm->isValidPosition(point.getX(), point.getY(), point.getZ(),
-									 xd, yd, zd, 0, 0, 0);
+									 shape, 0, 0, 0);
 	if (!valid)
 		return 0;
 
@@ -2262,15 +2225,8 @@ uint32 Item::I_legalCreateAtCoords(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(z);
 
 	// check if item can exist
-	int xd, yd, zd;
-	ShapeInfo* si = GameData::get_instance()->
-		getMainShapes()->getShapeInfo(shape);
-	//!! constants
-	xd = si->x * 32;
-	yd = si->y * 32;
-	zd = si->z * 8;
 	CurrentMap* cm = World::get_instance()->getCurrentMap();
-	bool valid = cm->isValidPosition(x, y, z, xd, yd, zd, 0, 0, 0);
+	bool valid = cm->isValidPosition(x, y, z, shape, 0, 0, 0);
 	if (!valid)
 		return 0;
 

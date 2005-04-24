@@ -298,7 +298,7 @@ uint16 CameraProcess::FindRoof(sint32 factor)
 	sint32 dx,dy,dz;
 	avatar->getFootpadWorld(dx,dy,dz);
 	uint16 roofid;
-	World::get_instance()->getCurrentMap()->isValidPosition(x, y, z-10, dx/2, dy/2, dz/2, 1, 0, &roofid);
+	World::get_instance()->getCurrentMap()->isValidPosition(x, y, z-10, dx/2, dy/2, dz/2, 0, 1, 0, &roofid);
 	return roofid;
 }
 

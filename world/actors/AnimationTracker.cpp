@@ -214,6 +214,7 @@ bool AnimationTracker::step()
 
 	ObjId support;
 	bool targetok = cm->isValidPosition(x+dx,y+dy,z+dz, xd,yd,zd,
+										a->getShapeInfo()->flags,
 										actor, &support, 0);
 
 	if (!targetok) {
@@ -221,6 +222,7 @@ bool AnimationTracker::step()
 		// for now just a hack to try to step up 8
 
 		targetok = cm->isValidPosition(x+dx,y+dy,z+dz+8, xd,yd,zd,
+									   a->getShapeInfo()->flags,
 									   actor, 0, 0);
 
 		// Should only try to increase height if ONGROUND
@@ -254,6 +256,7 @@ bool AnimationTracker::step()
 			// for now just a hack to try to step down 8
 
 			targetok = cm->isValidPosition(x,y,z-8, xd,yd,zd,
+										   a->getShapeInfo()->flags,
 										   actor, &support, 0);
 
 			if (targetok && support) {

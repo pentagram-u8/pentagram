@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "Kernel.h"
 #include "GUIApp.h"
+#include "ShapeInfo.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -89,28 +90,29 @@ bool QuickAvatarMoverProcess::run(const uint32 /*framenum*/)
 		bool ok = false;
 
 		while (dx || dy || dz) {
+			uint32 flags = avatar->getShapeInfo()->flags;
 
-			if (!clipping || cm->isValidPosition(x+dx,y+dy,z+dz,ixd,iyd,izd,1,0,0))
+			if (!clipping || cm->isValidPosition(x+dx,y+dy,z+dz,ixd,iyd,izd,flags,1,0,0))
 			{
 				if (clipping && !dz)
 				{
-					if (cm->isValidPosition(x+dx,y+dy,z-8,ixd,iyd,izd,1,0,0) &&
-							!cm->isValidPosition(x,y,z-8,ixd,iyd,izd,1,0,0))
+					if (cm->isValidPosition(x+dx,y+dy,z-8,ixd,iyd,izd,flags,1,0,0) &&
+							!cm->isValidPosition(x,y,z-8,ixd,iyd,izd,flags,1,0,0))
 					{
 						dz = -8;
 					}
-					else if (cm->isValidPosition(x+dx,y+dy,z-16,ixd,iyd,izd,1,0,0) &&
-							!cm->isValidPosition(x,y,z-16,ixd,iyd,izd,1,0,0))
+					else if (cm->isValidPosition(x+dx,y+dy,z-16,ixd,iyd,izd,flags,1,0,0) &&
+							!cm->isValidPosition(x,y,z-16,ixd,iyd,izd,flags,1,0,0))
 					{
 						dz = -16;
 					}
-					else if (cm->isValidPosition(x+dx,y+dy,z-24,ixd,iyd,izd,1,0,0) &&
-							!cm->isValidPosition(x,y,z-24,ixd,iyd,izd,1,0,0))
+					else if (cm->isValidPosition(x+dx,y+dy,z-24,ixd,iyd,izd,flags,1,0,0) &&
+							!cm->isValidPosition(x,y,z-24,ixd,iyd,izd,flags,1,0,0))
 					{
 						dz = -24;
 					}
-					else if (cm->isValidPosition(x+dx,y+dy,z-32,ixd,iyd,izd,1,0,0) &&
-							!cm->isValidPosition(x,y,z-32,ixd,iyd,izd,1,0,0))
+					else if (cm->isValidPosition(x+dx,y+dy,z-32,ixd,iyd,izd,flags,1,0,0) &&
+							!cm->isValidPosition(x,y,z-32,ixd,iyd,izd,flags,1,0,0))
 					{
 						dz = -32;
 					}
@@ -118,7 +120,7 @@ bool QuickAvatarMoverProcess::run(const uint32 /*framenum*/)
 				ok = true;
 				break;
 			}
-			else if (cm->isValidPosition(x+dx,y+dy,z+dz+8,ixd,iyd,izd,1,0,0))
+			else if (cm->isValidPosition(x+dx,y+dy,z+dz+8,ixd,iyd,izd,flags,1,0,0))
 			{
 				dz+=8;
 				ok = true;

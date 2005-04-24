@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -130,7 +130,7 @@ bool GravityProcess::run(uint32 /*framenum*/)
 	}
 #endif
 
-	sint32 dist = item->collideMove(tx,ty,tz,  false, false);
+	sint32 dist = item->collideMove(tx,ty,tz, false, false);
 	
 	if (dist == 0 || clipped)
 		terminateDeferred();
@@ -146,12 +146,15 @@ bool GravityProcess::run(uint32 /*framenum*/)
 	if (izd == 0) izd = 8; //!! cheating a little to prevent 0-height
 	                       //!! objects from falling through 0-height tiles
 
+	uint32 shapeflags = item->getShapeInfo()->flags;
+
 	bool valid = true;
 	int curz = iz;
 	int zstepsize = izd / 2;
 	if (tz < iz) zstepsize = -zstepsize;
 	if (tz == iz) {
-		valid = cm->isValidPosition(tx,ty,tz,ixd,iyd,izd,item_num,0,0);
+		valid = cm->isValidPosition(tx,ty,tz,ixd,iyd,izd,shapeflags,
+									item_num,0,0);
 	} else {
 		do {
 			curz += zstepsize;
@@ -161,8 +164,8 @@ bool GravityProcess::run(uint32 /*framenum*/)
 			if ((zstepsize > 0 && curz > tz) || (zstepsize < 0 && curz < tz))
 				curz = tz;
 
-			valid &= cm->isValidPosition(curx, cury, curz,
-										 ixd, iyd, izd, item_num, 0, 0);
+			valid &= cm->isValidPosition(curx, cury, curz, ixd, iyd, izd,
+										 shapeflags,item_num, 0, 0);
 		} while (valid && curz != tz);
 	}
 
@@ -181,8 +184,8 @@ bool GravityProcess::run(uint32 /*framenum*/)
 			int curx = ix + ((tx - ix) * (curz-iz))/(tz-iz);
 			int cury = iy + ((ty - iy) * (curz-iz))/(tz-iz);
 
-			if (cm->isValidPosition(curx, cury, curz,
-									ixd, iyd, izd, item_num, 0, 0))
+			if (cm->isValidPosition(curx, cury, curz, ixd, iyd, izd,
+									shapeflags, item_num, 0, 0))
 			{
 				item->move(curx, cury, curz);
 			}

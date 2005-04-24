@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -96,13 +96,18 @@ public:
 	// z coordinate that's over the box, or 0 if there is no roof above box.
 	// NB: isValidPosition doesn't consider item 'item'.
 	bool isValidPosition(sint32 x, sint32 y, sint32 z,
-						 int xd, int yd, int zd, ObjId item,
+						 int xd, int yd, int zd, uint32 shapeflags,
+						 ObjId item,
 						 ObjId* support=0, ObjId* roof=0);
 
+	bool isValidPosition(sint32 x, sint32 y, sint32 z, uint32 shape,
+						 ObjId item, ObjId* support=0, ObjId* roof=0);
+
 	struct SweepItem {
-		SweepItem(ObjId it, sint32 ht, sint32 et, bool touch, bool touchfloor)
+		SweepItem(ObjId it, sint32 ht, sint32 et, bool touch,
+				  bool touchfloor, bool block)
 			: item(it), hit_time(ht), end_time(et), touching(touch),
-			  touching_floor(touchfloor) { }
+			  touching_floor(touchfloor), blocking(block) { }
 
 		ObjId	item;		// Item that was hit
 
@@ -121,6 +126,8 @@ public:
 		bool	touching;	// We are only touching (don't actually overlap)
 		bool	touching_floor; // touching and directly below the moving item
 
+		bool	blocking;	// This item blocks the moving item
+
 		// Use this func to get the interpolated location of the hit
 		void GetInterpolatedCoords(sint32 out[3], sint32 start[3], sint32 end[3])
 		{
@@ -133,6 +140,7 @@ public:
 	//! \param start Start point to sweep from.
 	//! \param end End point to sweep to.
 	//! \param dims Bounding size of item to check.
+	//! \param shapeflags shapeflags of item to check.
 	//! \param item ObjId of the item being checked. This will allow item to
 	//!             be skipped from being tested against. Use 0 for no item.
 	//! \param solid_only If true, only test solid items.
@@ -140,8 +148,9 @@ public:
 	//!            by SweepItem::hit_time
 	//! \return false if no items were hit.
 	//!         true if any items were hit.
-	bool sweepTest(const sint32 start[3], const sint32 end[3], const sint32 dims[3],
-			ObjId item, bool solid_only, std::list<SweepItem> *hit);
+	bool sweepTest(const sint32 start[3], const sint32 end[3],
+				   const sint32 dims[3], uint32 shapeflags,
+				   ObjId item, bool solid_only, std::list<SweepItem> *hit);
 
 	TeleportEgg* findDestination(uint16 id);
 

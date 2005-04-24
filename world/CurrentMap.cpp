@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -650,9 +650,28 @@ TeleportEgg* CurrentMap::findDestination(uint16 id)
 }
 
 bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
+								 uint32 shape,
+								 ObjId item, uint16* support, uint16* roof)
+{
+	int xd, yd, zd;
+	ShapeInfo* si = GameData::get_instance()->
+		getMainShapes()->getShapeInfo(shape);
+	//!! constants
+	xd = si->x * 32;
+	yd = si->y * 32;
+	zd = si->z * 8;
+
+	return isValidPosition(x,y,z, xd,yd,zd, si->flags, item, support, roof);
+}
+
+bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 								 int xd, int yd, int zd,
+								 uint32 shapeflags,
 								 ObjId item_, uint16* support_, uint16* roof_)
 {
+	const uint32 flagmask = (ShapeInfo::SI_SOLID | ShapeInfo::SI_DAMAGING |
+							 ShapeInfo::SI_ROOF);
+
 	bool valid = true;
 	ObjId support = 0;
 	ObjId roof = 0;
@@ -682,7 +701,7 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 
 				ShapeInfo* si = item->getShapeInfo();
 				//!! need to check is_sea() and is_land() maybe?
-				if (!si->is_solid() && !si->is_roof())
+				if (!(si->flags & flagmask))
 					continue; // not an interesting item
 
 				sint32 ix, iy, iz, ixd, iyd, izd;
@@ -699,12 +718,12 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 #endif
 
 				// check overlap
-				if (si->is_solid() &&
+				if ((si->flags & shapeflags & flagmask) &&
 					!(x <= ix - ixd || x - xd >= ix ||
 					  y <= iy - iyd || y - yd >= iy ||
 					  z + zd <= iz || z >= iz + izd))
 				{
-					// overlapping a solid item. Invalid position
+					// overlapping an item. Invalid position
 #if 0
 					item->dumpInfo();
 #endif					
@@ -743,15 +762,17 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 // Do a sweepTest of an item from start to end point.
 // dims is the bounding box size.
 // item is the item that we are checking to move
-// solid_only forces us to check against solid items only.
+// blocking_only forces us to check against blocking items only.
 // skip will skip all items until item num skip is reached
 // Returns item hit or 0 if no hit.
 // end is set to the colision point
 bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
-						   const sint32 dims[3],
-						   ObjId item, bool solid_only,
+						   const sint32 dims[3], uint32 shapeflags,
+						   ObjId item, bool blocking_only,
 						   std::list<SweepItem> *hit)
 {
+	const uint32 flagmask = (ShapeInfo::SI_SOLID | ShapeInfo::SI_DAMAGING |
+							 ShapeInfo::SI_ROOF);
 
 	int i;
 
@@ -813,10 +834,13 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 				if (other_item->getObjId()==item) continue;
 				if (other_item->getExtFlags() & Item::EXT_SPRITE) continue;
 
-				// This WILL hit everything and return them unless solid_only 
-				// is set
-				if (solid_only && !other_item->getShapeInfo()->is_solid()) 
-					continue; 
+				uint32 othershapeflags = other_item->getShapeInfo()->flags;
+				bool blocking = (othershapeflags & shapeflags & flagmask) != 0;
+
+				// This WILL hit everything and return them unless
+				// blocking_only is set
+				if (blocking_only && !blocking)
+					continue;
 
 				sint32 other[3], oext[3];
 				other_item->getLocation(other[0], other[1], other[2]);
@@ -926,7 +950,7 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 						if ((*sw_it).hit_time > first) break;
 
 					// Now add it
-					sw_it = hit->insert(sw_it, SweepItem(other_item->getObjId(),first,last,touch,touch_floor));
+					sw_it = hit->insert(sw_it, SweepItem(other_item->getObjId(),first,last,touch,touch_floor,blocking));
 //					pout << "Hit item " << other_item->getObjId() << " at (" << first << "," << last << ")" << std::endl;
 //					pout << "hit item      (" << other[0] << ", " << other[1] << ", " << other[2] << ")" << std::endl;
 //					pout << "hit item time (" << u_0[0] << "-" << u_1[0] << ") (" << u_0[1] << "-" << u_1[1] << ") ("
@@ -1041,16 +1065,9 @@ uint32 CurrentMap::I_canExistAt(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(unk2); // looks like it could be an objid
 	ARG_UINT16(unk3); // always zero
 
-	int xd, yd, zd;
-	ShapeInfo* si = GameData::get_instance()->
-		getMainShapes()->getShapeInfo(shape);
-	//!! constants
-	xd = si->x * 32;
-	yd = si->y * 32;
-	zd = si->z * 8;
-
 	CurrentMap* cm = World::get_instance()->getCurrentMap();
-	bool valid = cm->isValidPosition(x, y, z, xd, yd, zd, 0, 0, 0);
+	bool valid = cm->isValidPosition(x, y, z, shape, 0, 0, 0);
+
 	if (valid)
 		return 1;
 	else
