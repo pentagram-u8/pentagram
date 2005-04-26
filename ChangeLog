@@ -1,3 +1,6 @@
+2005-04-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* Makefile.in: pass CPPFLAGS to compile commands
+
 2005-04-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/CurrentMap.*: made collision detection check if items can
 	  overlap properly, by matching solid/roof/damaging flags.

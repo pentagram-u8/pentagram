@@ -41,8 +41,9 @@ EMPTY_FILE := @EMPTY_FILE@
 DEPDIR := .deps
 SDL_CFLAGS := @SDL_CFLAGS@
 SDL_LIBS := @SDL_LIBS@
-CXXFLAGS += -g @CXXFLAGS@ @DEFS@ @PROFILE@ -DDATA_PATH=\"@DATAPATH@\"
-LDFLAGS += @LIBS@ @PROFILE@
+CPPFLAGS := @CPPFLAGS@
+CXXFLAGS := -g @CXXFLAGS@ @DEFS@ @PROFILE@ -DDATA_PATH=\"@DATAPATH@\"
+LDFLAGS := @LIBS@ @PROFILE@
 WARNINGS := @WARNINGS@
 
 GIMPTOOL = @GIMPTOOL@
@@ -113,12 +114,12 @@ $(DEPDIRS):
 # custom compile rule which calculates dependencies
 %.o: %.cpp $(PCHEADER)
 	@$(MKDIR) $(*D)/$(DEPDIR)
-	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).d",-MQ,"$@",-MP $(WARNINGS) $(CXXFLAGS) $(SDL_CFLAGS) -c -o $@ $<
+	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).d",-MQ,"$@",-MP $(WARNINGS) $(CPPFLAGS) $(CXXFLAGS) $(SDL_CFLAGS) -c -o $@ $<
 
 # custom compile rule for the precompiled header
 %.h.gch: %.h
 	@$(MKDIR) $(*D)/$(DEPDIR)
-	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).h.gch.d",-MQ,"$@",-MP $(WARNINGS) $(CXXFLAGS) $(SDL_CFLAGS) -x c++-header -c -o $@ $<
+	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).h.gch.d",-MQ,"$@",-MP $(WARNINGS) $(CPPFLAGS) $(CXXFLAGS) $(SDL_CFLAGS) -x c++-header -c -o $@ $<
 
 
 # rule to rebuild Makefile if necessary
