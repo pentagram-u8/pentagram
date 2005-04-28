@@ -62,7 +62,7 @@ int TTFont::getBaselineSkip()
 	return TTF_FontLineSkip(ttf_font);
 }
 
-void TTFont::getStringSize(std::string& text, int& width, int& height)
+void TTFont::getStringSize(const std::string& text, int& width, int& height)
 {
 	// convert to unicode
 #if 0
@@ -94,7 +94,7 @@ void TTFont::getStringSize(std::string& text, int& width, int& height)
 	height += 2*bordersize;
 }
 
-RenderedText* TTFont::renderText(std::string text,
+RenderedText* TTFont::renderText(const std::string& text,
 								 unsigned int& remaining,
 								 int width, int height,
 								 TextAlign align, bool u8specials,

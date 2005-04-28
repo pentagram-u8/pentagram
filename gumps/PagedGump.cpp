@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2004-2005  The Pentagram Team
  *
  *  This program is free software{} you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,9 +33,11 @@ PagedGump::PagedGump(int left, int right, int top, int shape):
 	gumpShape(shape), nextButton(0), prevButton(0)
 {
 	current = gumps.end();
+#if 0
 	GUIApp * guiapp = GUIApp::get_instance();
 	guiapp->pushMouseCursor();
 	guiapp->setMouseCursor(GUIApp::MOUSE_HAND);
+#endif
 }
 
 PagedGump::~PagedGump(void)
@@ -45,8 +47,14 @@ PagedGump::~PagedGump(void)
 
 void PagedGump::Close(bool no_del)
 {
+#if 0
 	GUIApp* guiapp = GUIApp::get_instance();
 	guiapp->popMouseCursor();
+#endif
+	std::vector<Gump*>::iterator iter;
+	for (iter=gumps.begin(); iter != gumps.end(); ++iter) {
+		(*iter)->Close(no_del); // CHECKME: no_del?
+	}
 
 	ModalGump::Close(no_del);
 }
@@ -86,12 +94,14 @@ void PagedGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 
 bool PagedGump::OnKeyDown(int key, int mod)
 {
+	if (current != gumps.end())
+		if ((*current)->OnKeyDown(key, mod)) return true;
+
 	switch (key)
 	{
 	case SDLK_ESCAPE:
-	{
 		Close();
-	} break;
+		return true;
 	default:
 		break;
 	}
@@ -140,7 +150,7 @@ void PagedGump::ChildNotify(Gump *child, uint32 message)
 void PagedGump::addPage(Gump * g)
 {
 	AddChild(g);
-	g->setRelativePosition(TOP_CENTER, 0, 14 + topOff);
+	g->setRelativePosition(TOP_CENTER, 0, 3 + topOff);
 	g->HideGump();
 	gumps.push_back(g);
 

@@ -21,6 +21,7 @@
 
 #include "Object.h"
 #include "Rect.h"
+#include "FrameID.h"
 #include <list>
 
 class RenderSurface;
@@ -79,6 +80,8 @@ public:
 	//! Set the Gump's shape/frame
 	inline void					SetShape(Shape *_shape, uint32 _framenum)
 		{ shape = _shape; framenum = _framenum; }
+
+	void						SetShape(FrameID frame, bool adjustsize=false);
 
 	//! Set the Gump's frame
 	inline void					SetFramenum(uint32 _framenum)

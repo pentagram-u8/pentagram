@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004  The Pentagram Team
+ *  Copyright (C) 2003-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -77,6 +77,19 @@ void Gump::InitGump()
 {
 	if (owner && !notifier) CreateNotifier();
 }
+
+void Gump::SetShape(FrameID frame, bool adjustsize)
+{
+	shape = GameData::get_instance()->getShape(frame);
+	framenum = frame.framenum;
+
+	if (adjustsize && shape) {
+		ShapeFrame* sf = shape->getFrame(framenum);
+		dims.w = sf->width;
+		dims.h = sf->height;
+	}
+}
+
 
 void Gump::CreateNotifier()
 {

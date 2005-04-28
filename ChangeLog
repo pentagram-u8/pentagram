@@ -1,3 +1,18 @@
+2005-04-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/fonts/*Font.*: consts
+	* graphics/fonts/Font.cpp: break words longer than a single line
+	* gumps/widgets/EditWidget.*: multi-line mode
+	* gumps/widgets/EditWidget.*: keep cursor visible when moving it
+	* kernel/GUIApp.cpp: enable keyrepeat mode when in textmode
+	* data/u8*.ini: translate 'The Beginning...'
+	* data/u8.ini: adjust vleads
+	* gumps/U8SaveGump.*: partially-functioning save/load gump
+	* gumps/MenuGump.*: use save/load gump
+	* filesys/Savegame.*, filesys/ZipFile.h: get global zip comment field
+	* gumps/PagedGump.*: fixed keyhandling (pages get to handle keys first)
+	* Makefile.in: removed (hopefully) unused rule
+	* graphics/font/ShapeRenderedText.cpp: cursor support
+
 2005-04-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* Makefile.in: pass CPPFLAGS to compile commands
 

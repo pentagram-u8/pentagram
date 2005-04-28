@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -52,7 +52,7 @@ static inline bool isBreak(char c, bool u8specials)
 }
 
 
-static unsigned int findWordEnd(std::string& text, unsigned int start,
+static unsigned int findWordEnd(const std::string& text, unsigned int start,
 								bool u8specials)
 {
 	unsigned int index = start;
@@ -65,7 +65,7 @@ static unsigned int findWordEnd(std::string& text, unsigned int start,
 	return index;
 }
 
-static unsigned int passSpace(std::string& text, unsigned int start,
+static unsigned int passSpace(const std::string& text, unsigned int start,
 							  bool u8specials)
 {
 	unsigned int index = start;
@@ -78,7 +78,7 @@ static unsigned int passSpace(std::string& text, unsigned int start,
 	return index;
 }
 
-void Font::getTextSize(std::string text,
+void Font::getTextSize(const std::string& text,
 					   int& resultwidth, int& resultheight,
 					   unsigned int& remaining,
 					   int width, int height,
@@ -101,7 +101,7 @@ CHECKME: any others? (page breaks for books?)
 
 */
 
-std::list<PositionedText> Font::typesetText(std::string& text,
+std::list<PositionedText> Font::typesetText(const std::string& text,
 											unsigned int& remaining,
 											int width, int height,
 											TextAlign align, bool u8specials,
@@ -200,9 +200,23 @@ std::list<PositionedText> Font::typesetText(std::string& text,
 			getStringSize(newline, stringwidth, stringheight);
 
 			// if not, break line before this word
-			if (width != 0 && stringwidth > width && !curline.empty()) {
+			if (width != 0 && stringwidth > width) {
+				if (!curline.empty()) {
+					i = nextword;
+				} else {
+					// word is longer than the line; have to break in mid-word
+					i = nextword;
+					newline.clear();
+					do {
+						newline += text[i];
+						getStringSize(newline, stringwidth, stringheight);
+						if (stringwidth <= width) {
+							curline += text[i];
+							i++;
+						}
+					} while (stringwidth <= width);
+				}
 				breakhere = true;
-				i = nextword;
 				continue;
 			} else {
 				// copy next word into curline

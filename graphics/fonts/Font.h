@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -60,7 +60,8 @@ public:
 	//! \param text The string
 	//! \param width Returns the width
 	//! \param height Returns the height
-	virtual void getStringSize(std::string& text, int& width, int& height)=0;
+	virtual void getStringSize(const std::string& text,
+							   int& width, int& height)=0;
 
 	//! render a string
 	//! \param text The text
@@ -70,12 +71,13 @@ public:
 	//! \param align Alignment of the text (left, right, center)
 	//! \param u8specials If true, interpret the special characters U8 uses
 	//! \return the rendered text in a RenderedText object
-	virtual RenderedText* renderText(std::string text,
+	virtual RenderedText* renderText(const std::string& text,
 									 unsigned int& remaining,
 									 int width=0, int height=0,
 									 TextAlign align=TEXT_LEFT,
 									 bool u8specials=false,
-									 std::string::size_type cursor=std::string::npos)=0;
+									 std::string::size_type cursor
+											=std::string::npos)=0;
 
 	//! get the dimensions of a rendered string
 	//! \param text The text
@@ -86,7 +88,7 @@ public:
 	//! \param height The height of the target rectangle, or 0 for unlimited
 	//! \param u8specials If true, interpret the special characters U8 uses
 	//! \param align Alignment of the text (left, right, center)
-	void getTextSize(std::string text,
+	void getTextSize(const std::string& text,
 					 int& resultwidth, int& resultheight,
 					 unsigned int& remaining,
 					 int width=0, int height=0,
@@ -94,7 +96,7 @@ public:
 	
 
 protected:
-	std::list<PositionedText> typesetText(std::string& text,
+	std::list<PositionedText> typesetText(const std::string& text,
 										  unsigned int& remaining,
 										  int width, int height,
 										  TextAlign align, bool u8specials,

@@ -23,7 +23,6 @@
 #include "DesktopGump.h"
 #include "ButtonWidget.h"
 #include "TextWidget.h"
-#include "QuitGump.h"
 #include "BindGump.h"
 
 #include "GUIApp.h"
@@ -171,17 +170,7 @@ void ControlsGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 
 bool ControlsGump::OnKeyDown(int key, int mod)
 {
-	switch (key)
-	{
-	case SDLK_ESCAPE:
-	{
-		Close();
-	} break;
-	default:
-		break;
-	}
-
-	return true;
+	return false;
 }
 
 //static

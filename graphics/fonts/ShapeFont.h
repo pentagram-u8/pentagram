@@ -45,14 +45,16 @@ public:
 	void setVLead(int vl) { vlead = vl; }
 	void setHLead(int hl) { hlead = hl; }
 
-	virtual void getStringSize(std::string& text, int& width, int& height);
+	virtual void getStringSize(const std::string& text,
+							   int& width, int& height);
 
-	virtual RenderedText* renderText(std::string text,
+	virtual RenderedText* renderText(const std::string& text,
 									 unsigned int& remaining,
 									 int width=0, int height=0,
 									 TextAlign align=TEXT_LEFT,
 									 bool u8specials=false,
-									 std::string::size_type cursor=std::string::npos);
+									 std::string::size_type cursor
+											=std::string::npos);
 
 	ENABLE_RUNTIME_CLASSTYPE();
 };

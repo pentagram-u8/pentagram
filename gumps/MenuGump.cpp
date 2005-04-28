@@ -40,6 +40,7 @@
 #include "SettingManager.h"
 #include "MusicProcess.h"
 #include "EditWidget.h"
+#include "U8SaveGump.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -148,7 +149,7 @@ void MenuGump::InitGump()
 		widget->Move(dims.w / 2 + 6, 10);
 		AddChild(widget);
 
-		widget = new EditWidget(0, 0, "", 6, 120, 40, 15); // FIXME (size)
+		widget = new EditWidget(0, 0, "", 6, 110, 40, 15); // CONSTANTS!
 		widget->InitGump();
 		widget->Move(dims.w / 2 + 6, 25);
 		AddChild(widget);
@@ -213,11 +214,25 @@ void MenuGump::selectEntry(int entry)
 		Game::get_instance()->playIntroMovie();
 		break;
 	case 2: // Read Diary
-		GUIApp::get_instance()->loadGame("@save/quicksave");
-		break;
+//		GUIApp::get_instance()->loadGame("@save/quicksave");
+	{	U8SaveGump* save = new U8SaveGump(false, 0);
+		save->InitGump();
+		PagedGump * gump = new PagedGump(34, -38, 3, gumpShape);
+		gump->InitGump();
+		gump->addPage(save);
+		AddChild(gump);
+		gump->setRelativePosition(CENTER);
+	} break;
 	case 3: // Write Diary
-		GUIApp::get_instance()->saveGame("@save/quicksave", true);
-		break;
+//		GUIApp::get_instance()->saveGame("@save/quicksave", true);
+	{	U8SaveGump* save = new U8SaveGump(true, 0);
+		save->InitGump();
+		PagedGump * gump = new PagedGump(34, -38, 3, gumpShape);
+		gump->InitGump();
+		gump->addPage(save);
+		AddChild(gump);
+		gump->setRelativePosition(CENTER);
+	} break;
 	case 4: // Options
 	{
 		OptionsGump * options = new OptionsGump();

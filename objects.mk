@@ -159,6 +159,7 @@ GUMPS = \
 	gumps/ShapeViewerGump.o \
 	gumps/SliderGump.o \
 	gumps/TargetGump.o \
+	gumps/U8SaveGump.o \
 	gumps/QuitGump.o \
 	gumps/FastAreaVisGump.o \
 	gumps/MiniMapGump.o

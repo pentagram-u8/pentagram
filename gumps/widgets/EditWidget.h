@@ -38,7 +38,8 @@ public:
 
 	EditWidget();
 	EditWidget(int X, int Y, std::string txt, int fontnum,
-			   int width, int height, int maxlength=0, bool multiline=false);
+			   int width, int height, unsigned int maxlength=0,
+			   bool multiline=false);
 	virtual ~EditWidget(void);
 
 	virtual void InitGump();
@@ -52,6 +53,7 @@ public:
 
 	//! get the current text
 	std::string getText() const { return text; }
+	void setText(const std::string& t) { text = t; cursor = 0; }
 
 	enum Message
 	{
@@ -67,13 +69,17 @@ protected:
 	std::string text;
 	std::string::size_type cursor;
 	int fontnum;
-	int maxlength;
+	unsigned int maxlength;
+	bool multiline;
 
+	uint32 cursor_changed;
 	bool cursor_visible;
 
-	RenderedText* cached_text;
-
+	void ensureCursorVisible();
+	bool textFits(std::string& t);
 	void renderText();
+
+	RenderedText* cached_text;
 
 };
 

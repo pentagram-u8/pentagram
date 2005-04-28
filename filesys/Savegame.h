@@ -31,6 +31,9 @@ public:
 	//! get the savegame's global version
 	uint32 getVersion();
 
+	//! get the savegame's description
+	std::string getDescription();
+
 	IDataSource* getDataSource(const std::string& name);
 protected:
 	ZipFile* zipfile;

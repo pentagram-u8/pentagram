@@ -28,15 +28,16 @@
 DEFINE_RUNTIME_CLASSTYPE_CODE(EditWidget,Gump);
 
 EditWidget::EditWidget()
-	: Gump(), cursor_visible(true), cached_text(0)
+	: Gump(), cursor_changed(0), cursor_visible(true), cached_text(0)
 {
 
 }
 
 EditWidget::EditWidget(int X, int Y, std::string txt, int font,
-					   int w, int h, int maxlength_, bool multiline)
+					   int w, int h, unsigned int maxlength_, bool multiline_)
 	: Gump(X, Y, w, h), text(txt), cursor(0), fontnum(font),
-	  maxlength(maxlength_), cursor_visible(true), cached_text(0)
+	  maxlength(maxlength_), multiline(multiline_),
+	  cursor_changed(0), cursor_visible(true), cached_text(0)
 {
 
 }
@@ -62,9 +63,42 @@ void EditWidget::InitGump()
 	dims.x = 0;
 }
 
+void EditWidget::ensureCursorVisible()
+{
+	cursor_visible = true;
+	cursor_changed = SDL_GetTicks();
+}
+
+bool EditWidget::textFits(std::string& t)
+{
+	Pentagram::Font *font;
+	font = FontManager::get_instance()->getGameFont(fontnum, true);
+	
+	unsigned int remaining;
+	int width, height;
+	font->getTextSize(t, width, height, remaining,
+					  multiline ? dims.w : 0, dims.h,
+					  Pentagram::Font::TEXT_LEFT, false);
+
+	if (multiline)
+		return (remaining >= t.size());
+	else
+		return (width <= dims.w);
+}
+
 void EditWidget::renderText()
 {
-	bool cv = ((SDL_GetTicks() / 750) % 2 == 1);
+	bool cv = cursor_visible;
+	if (!IsFocus()) {
+		cv = false;
+	} else {
+		uint32 now = SDL_GetTicks();
+		if (now > cursor_changed + 750) {
+			cv = !cursor_visible;
+			cursor_changed = now;
+		}
+	}
+
 	if (cv != cursor_visible) {
 		FORGET_OBJECT(cached_text);
 		cursor_visible = cv;
@@ -75,7 +109,8 @@ void EditWidget::renderText()
 		font = FontManager::get_instance()->getGameFont(fontnum, true);
 
 		unsigned int remaining;
-		cached_text = font->renderText(text, remaining, dims.w, dims.h,
+		cached_text = font->renderText(text, remaining,
+									   multiline ? dims.w : 0, dims.h,
 									   Pentagram::Font::TEXT_LEFT,
 									   false, cv ? cursor : std::string::npos);
 	}
@@ -110,6 +145,7 @@ bool EditWidget::OnKeyDown(int key, int mod)
 		if (cursor > 0) {
 			text.erase(--cursor, 1);
 			FORGET_OBJECT(cached_text);
+			ensureCursorVisible();
 		}
 		break;
 	case SDLK_DELETE:
@@ -122,12 +158,14 @@ bool EditWidget::OnKeyDown(int key, int mod)
 		if (cursor > 0) {
 			cursor--;
 			FORGET_OBJECT(cached_text);
+			ensureCursorVisible();
 		}
 		break;
 	case SDLK_RIGHT:
 		if (cursor < text.size()) {
 			cursor++;
 			FORGET_OBJECT(cached_text);
+			ensureCursorVisible();
 		}
 		break;
 	default:
@@ -145,17 +183,23 @@ bool EditWidget::OnKeyUp(int key)
 
 bool EditWidget::OnTextInput(int unicode)
 {
-	if (maxlength >0 && text.size() >= maxlength)
+	if (maxlength > 0 && text.size() >= maxlength)
 		return true;
 
 	char c = 0;
-	if (unicode >=0 && unicode < 256)
+	if (unicode >= 0 && unicode < 256)
 		c = reverse_encoding[unicode];
 	if (!c) return true;
 
-	text.insert(cursor, 1, c);
-	cursor++;
-	FORGET_OBJECT(cached_text);
+	std::string newtext = text;
+	newtext.insert(cursor, 1, c);
+
+	if (textFits(newtext)) {
+		text = newtext;
+		cursor++;
+		FORGET_OBJECT(cached_text);
+	}
+
 	return true;
 }
 

@@ -930,8 +930,13 @@ void GUIApp::LoadConsoleFont()
 
 void GUIApp::enterTextMode(Gump *gump)
 {
-	if (!textmodes.empty()) textmodes.remove(gump->getObjId());
-	else SDL_EnableUNICODE(1);
+	if (!textmodes.empty()) {
+		textmodes.remove(gump->getObjId());
+	} else {
+		SDL_EnableUNICODE(1);
+		SDL_EnableKeyRepeat(SDL_DEFAULT_REPEAT_DELAY,
+							SDL_DEFAULT_REPEAT_INTERVAL);
+	}
 	textmodes.push_front(gump->getObjId());
 }
 
@@ -939,7 +944,10 @@ void GUIApp::leaveTextMode(Gump *gump)
 {
 	if (textmodes.empty()) return;
 	textmodes.remove(gump->getObjId());
-	if (textmodes.empty()) SDL_EnableUNICODE(0);
+	if (textmodes.empty()) {
+		SDL_EnableUNICODE(0);
+		SDL_EnableKeyRepeat(0, 0);
+	}
 }
 
 void GUIApp::handleEvent(const SDL_Event& event)
@@ -1395,7 +1403,8 @@ void GUIApp::writeSaveInfo(ODataSource* ods)
 	game->writeSaveInfo(ods);
 }
 
-bool GUIApp::saveGame(std::string filename, bool ignore_modals)
+bool GUIApp::saveGame(std::string filename, std::string desc,
+					  bool ignore_modals)
 {
 	// Don't allow saving with Modals open
 	if (!ignore_modals && desktopGump->FindGump<ModalGump>()) {
@@ -1413,6 +1422,9 @@ bool GUIApp::saveGame(std::string filename, bool ignore_modals)
 
 	pout << "Saving..." << std::endl;
 
+	pout << "Savegame file: " << filename << std::endl;
+	pout << "Description: " << desc << std::endl;
+
 	// Hack - don't save mouse over status for gumps
 	Gump * gump = getGump(mouseOverGump);
 	if (gump) gump->OnMouseLeft();
@@ -1424,7 +1436,7 @@ bool GUIApp::saveGame(std::string filename, bool ignore_modals)
 
 	SavegameWriter* sgw = new SavegameWriter(ods);
 	sgw->writeVersion(1);
-	sgw->writeDescription("No Description");
+	sgw->writeDescription(desc);
 
 	// We'll make it 2KB initially
 	OAutoBufferDataSource buf(2048);
@@ -1806,7 +1818,7 @@ void GUIApp::ConCmd_saveGame(const Console::ArgsType &args, const Console::ArgvT
 
 	std::string filename = "@save/";
 	filename += argv[1].c_str();
-	GUIApp::get_instance()->saveGame(filename);
+	GUIApp::get_instance()->saveGame(filename, argv[1]);
 }
 
 void GUIApp::ConCmd_loadGame(const Console::ArgsType &args, const Console::ArgvType &argv)

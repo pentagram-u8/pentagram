@@ -100,14 +100,6 @@ endif
 # Include additional rules for each module
 include $(patsubst %,$(top_srcdir)/%/module.mk,$(MODULES))
 
-# Create .deps subdirs if missing. We do not do this directly, but rather
-#via a file inside the .deps dir. The reason for this is that otherwise, the
-#mod date of the .deps dir will change whenever a new file is created in it,
-#causing all source files to be rebuilt - ouch!
-$(DEPDIRS):
-	-$(MKDIR) $(@D)
-	touch $@
-
 # cancel any built-in .cpp->.o rules
 %.o: %.cpp
 

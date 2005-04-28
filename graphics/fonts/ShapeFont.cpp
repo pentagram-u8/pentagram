@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -80,7 +80,7 @@ int ShapeFont::getBaselineSkip()
 	return getHeight() + getVlead();
 }
 
-void ShapeFont::getStringSize(std::string& text, int& width, int& height)
+void ShapeFont::getStringSize(const std::string& text, int& width, int& height)
 {
 	width = hlead;
 	height = getHeight();
@@ -95,9 +95,11 @@ void ShapeFont::getStringSize(std::string& text, int& width, int& height)
 	}
 }
 
-RenderedText* ShapeFont::renderText(std::string text, unsigned int& remaining,
+RenderedText* ShapeFont::renderText(const std::string& text,
+									unsigned int& remaining,
 									int width, int height, TextAlign align,
-									bool u8specials, std::string::size_type cursor)
+									bool u8specials,
+									std::string::size_type cursor)
 {
 	int resultwidth, resultheight;
 	std::list<PositionedText> lines = typesetText(text, remaining,

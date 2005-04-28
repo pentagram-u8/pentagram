@@ -99,12 +99,13 @@ bool OptionsGump::OnKeyDown(int key, int mod)
 {
 	if (key == SDLK_ESCAPE)
 	{
-		Close();
+		parent->Close();
 	}
 	else if (key >= SDLK_1 && key <=SDLK_9)
 	{
 		// Minor hack.
 		selectEntry(key - SDLK_1 + 1);
+		return true;
 	}
 	return true;
 }

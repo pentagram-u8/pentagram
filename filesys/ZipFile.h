@@ -43,6 +43,8 @@ public:
 
 	static bool isZipFile(IDataSource* ds);
 
+	std::string getComment() { return globalComment; }
+
 protected:
 	bool readMetadata();
 

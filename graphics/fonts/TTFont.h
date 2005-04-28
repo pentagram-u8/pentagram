@@ -35,9 +35,10 @@ public:
 	virtual int getBaseline();
 	virtual int getBaselineSkip();
 
-	virtual void getStringSize(std::string& text, int& width, int& height);
+	virtual void getStringSize(const std::string& text,
+							   int& width, int& height);
 
-	virtual RenderedText* renderText(std::string text,
+	virtual RenderedText* renderText(const std::string& text,
 									 unsigned int& remaining,
 									 int width=0, int height=0,
 									 TextAlign align=TEXT_LEFT,

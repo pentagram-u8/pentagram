@@ -43,6 +43,11 @@ uint32 Savegame::getVersion()
 	return version;
 }
 
+std::string Savegame::getDescription()
+{
+	return zipfile->getComment();
+}
+
 IDataSource* Savegame::getDataSource(const std::string& name)
 {
 	uint32 size;

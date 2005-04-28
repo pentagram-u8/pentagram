@@ -156,7 +156,7 @@ bool quickSave(const HID_Event& event)
 	case HID_DOWN:
 	{
 		handled = true;
-		GUIApp::get_instance()->saveGame("@save/quicksave");
+		GUIApp::get_instance()->saveGame("@save/quicksave", "quicksave");
 	} break;
 
 	default:

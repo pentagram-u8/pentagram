@@ -259,6 +259,10 @@ AC_LANG_CPLUSPLUS
 AC_CHECK_HEADER(zlib.h,,AC_MSG_ERROR([*** zlib not found!]))
 LIBS="$LIBS -lz"
 
+# --------
+# SDL_ttf
+# --------
+
 #AC_CHECK_LIB(SDL_ttf, TTF_Init, HAVESDLTTF=yes, HAVESDLTTF=no)
 BACKUPCPPFLAGS="$CPPFLAGS"
 CPPFLAGS="$CPPFLAGS $SDL_CFLAGS"
