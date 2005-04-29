@@ -1,3 +1,6 @@
+2005-04-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/CoreApp.cpp: exit when gamepath is incorrect
+
 2005-04-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/fonts/*Font.*: consts
 	* graphics/fonts/Font.cpp: break words longer than a single line

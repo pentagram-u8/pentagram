@@ -297,7 +297,13 @@ void CoreApp::initGame()
 	}
 
 	// fill our GameInfo struct
-	getGameInfo(gamename, gameinfo);
+	bool ok = getGameInfo(gamename, gameinfo);
+
+	if (!ok) {
+		perr << "No installed game found." << std::endl;
+		exit(-1);
+	}
+
 	setupGamePaths(gamename, gameinfo);
 }
 
@@ -352,8 +358,10 @@ bool CoreApp::getGameInfo(std::string& game, GameInfo* gameinfo)
 
 		return GameDetector::detect(path, gameinfo);
 	}
-		
-	//!! TODO: game detection
+
+	if (gameinfo->type == GameInfo::GAME_UNKNOWN) {
+		return false;
+	}
 		
 	return true;
 }
@@ -371,7 +379,6 @@ void CoreApp::setupGamePaths(std::string& game, GameInfo* /*gameinfo*/)
 	con.Printf(MM_INFO, "Game Path: %s\n", gpath.c_str());
 
 
-
 	// load work path. Default is @home/game-work
 	// where 'game' in the above is the specified 'game' loaded
 	std::string work;
@@ -379,6 +386,7 @@ void CoreApp::setupGamePaths(std::string& game, GameInfo* /*gameinfo*/)
 	if (!settingman->get("work", work, SettingManager::DOM_GAME))
 		work = "@home/"+game+"-work";
 
+#if 0
 	// force creation if it doesn't exist
 
 	// TODO: I don't like these being created here.
@@ -392,7 +400,7 @@ void CoreApp::setupGamePaths(std::string& game, GameInfo* /*gameinfo*/)
 	filesystem->MkDir("@work/usecode/obj");
 	filesystem->MkDir("@work/usecode/src");
 	filesystem->MkDir("@work/usecode/asm");
-
+#endif
 
 	// load savegame path. Default is @home/game-save
 	std::string save;
