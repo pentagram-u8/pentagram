@@ -25,12 +25,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 struct PathNode
 {
 	PathfindingState state;
+	unsigned int depth;
 	unsigned int cost;
 	unsigned int heuristicTotalCost;
 	PathNode* parent;
 	uint32 stepsfromparent;
 };
 
+// NOTE: this is just to keep some statistics
+static unsigned int expandednodes = 0;
 
 void PathfindingState::load(Actor* actor)
 {
@@ -82,13 +85,15 @@ bool PathNodeCmp::operator()(PathNode* n1, PathNode* n2)
 
 Pathfinder::Pathfinder()
 {
-
+	expandednodes = 0;
 }
 
 Pathfinder::~Pathfinder()
 {
+#if 1
 	pout << "~Pathfinder: " << nodelist.size() << " nodes, "
-		 << visited.size() << " visited states. " << std::endl;
+		 << expandednodes << " expanded nodes." << std::endl;
+#endif
 
 	// clean up nodes
 	std::list<PathNode*>::iterator iter;
@@ -179,12 +184,61 @@ unsigned int Pathfinder::costHeuristic(PathNode* node)
 	return node->heuristicTotalCost;
 }
 
+void Pathfinder::newNode(PathNode* oldnode, PathfindingState& state,
+						 unsigned int steps)
+{
+	PathNode* newnode = new PathNode();
+	nodelist.push_back(newnode); // for garbage collection
+	newnode->state = state;
+	newnode->parent = oldnode;
+	newnode->depth = oldnode->depth + 1;
+	newnode->stepsfromparent = 0;
+	
+	double sqrddist;
+	
+	sqrddist = ((newnode->state.x - oldnode->state.x)*
+				(newnode->state.x - oldnode->state.x));
+	sqrddist += ((newnode->state.y - oldnode->state.y)*
+				 (newnode->state.y - oldnode->state.y));
+	sqrddist += ((newnode->state.z - oldnode->state.z)*
+				 (newnode->state.z - oldnode->state.z));
+	
+	unsigned int dist;
+	dist = static_cast<unsigned int>(std::sqrt(sqrddist));
+	
+	int turn = 0;
+	
+	if (oldnode->depth > 0) {
+		turn = state.direction - oldnode->state.direction;
+		if (turn < 0) turn = -turn;
+		if (turn > 4) turn = 8 - turn;
+	}
+	
+	newnode->cost = oldnode->cost + dist + 32*turn; //!! constant
+	
+	costHeuristic(newnode);
+#if 0
+	perr << "trying dir " << state.direction;
+
+	if (steps > 0) {
+		perr << ", " << steps << " steps";
+	}
+	perr << " from ("
+		 << oldnode->state.x << "," << oldnode->state.y << ") to ("
+		 << newnode->state.x << "," << newnode->state.y
+		 << "), cost = " << newnode->cost << ", heurtotcost = "
+		 << newnode->heuristicTotalCost << std::endl;
+#endif
+	
+	nodes.push(newnode);	
+}
+
 void Pathfinder::expandNode(PathNode* node)
 {
 	Animation::Sequence c_walk_anim = Animation::walk;
 	PathfindingState state, closeststate;
 	AnimationTracker tracker;
-
+	expandednodes++;
 
 	// try walking in all 8 directions
 	for (uint32 dir = 0; dir < 8; ++dir) {
@@ -216,78 +270,13 @@ void Pathfinder::expandNode(PathNode* node)
 		if (tracker.isDone()) {
 			tracker.updateState(state);
 			if (!alreadyVisited(state.x, state.y, state.z)) {
-
-				PathNode* newnode = new PathNode();
-				nodelist.push_back(newnode);
-				newnode->state = state;
-				newnode->parent = node;
-				newnode->stepsfromparent = 0;
-				
-				double sqrddist;
-				
-				sqrddist = ((newnode->state.x - node->state.x)*
-							(newnode->state.x - node->state.x));
-				sqrddist += ((newnode->state.y - node->state.y)*
-							 (newnode->state.y - node->state.y));
-				sqrddist += ((newnode->state.z - node->state.z)*
-							 (newnode->state.z - node->state.z));
-			
-				unsigned int dist;
-				dist = static_cast<unsigned int>(std::sqrt(sqrddist));
-
-				int turn = state.direction - node->state.direction;
-				if (turn < 0) turn = -turn;
-				if (turn > 4) turn = 8 - turn;
-
-				newnode->cost = node->cost + dist + 64*turn; //!! constant
-				
-				costHeuristic(newnode);
-#if 0
-				perr << "trying dir " << dir << " from ("
-					 << node->state.x << "," << node->state.y << "), cost = "
-					 << newnode->cost << ", heurtotcost = "
-					 << newnode->heuristicTotalCost << std::endl;
-#endif
-
-				nodes.push(newnode);
+				newNode(node, state, 0);
 				visited.push_back(state);
 			}
 		}
 
 		if (beststeps != 0 && beststeps != steps) {
-			PathNode* newnode = new PathNode();
-			nodelist.push_back(newnode);
-			newnode->state = closeststate;
-			newnode->parent = node;
-			newnode->stepsfromparent = beststeps;
-			
-			double sqrddist;
-			
-			sqrddist = ((newnode->state.x - node->state.x)*
-						(newnode->state.x - node->state.x));
-			sqrddist += ((newnode->state.y - node->state.y)*
-						 (newnode->state.y - node->state.y));
-			sqrddist += ((newnode->state.z - node->state.z)*
-						 (newnode->state.z - node->state.z));
-			
-			unsigned int dist;
-			dist = static_cast<unsigned int>(std::sqrt(sqrddist));
-			
-			int turn = newnode->state.direction - node->state.direction;
-			if (turn < 0) turn = -turn;
-			if (turn > 4) turn = 8 - turn;
-			
-			newnode->cost = node->cost + dist + 64*turn; //!! constant
-			
-			costHeuristic(newnode);
-#if 0
-			perr << "trying dir " << dir << " from ("
-				 << node->state.x << "," << node->state.y << "), cost = "
-				 << newnode->cost << ", heurtotcost = "
-				 << newnode->heuristicTotalCost << std::endl;
-#endif
-			
-			nodes.push(newnode);
+			newNode(node, closeststate, beststeps);
 			visited.push_back(closeststate);
 		}
 	}
@@ -312,6 +301,8 @@ bool Pathfinder::pathfind(std::vector<PathfindingAction>& path)
 	startnode->state = start;
 	startnode->cost = 0;
 	startnode->parent = 0;
+	startnode->depth = 0;
+	startnode->stepsfromparent = 0;
 	nodelist.push_back(startnode);
 	nodes.push(startnode);
 

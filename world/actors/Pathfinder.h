@@ -81,6 +81,7 @@ protected:
 	std::list<PathNode*> nodelist;
 
 	bool alreadyVisited(sint32 x, sint32 y, sint32 z);
+	void newNode(PathNode* oldnode,PathfindingState& state,unsigned int steps);
 	void expandNode(PathNode* node);
 	unsigned int costHeuristic(PathNode* node);
 	bool checkTarget(PathNode* node);
