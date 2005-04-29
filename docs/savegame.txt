@@ -332,7 +332,9 @@ uint8 animAborted (boolean)
 uint8 attackedSomething (boolean)
 uint8 dir
 uint16 action
+uint16 steps
 uint16 repeatcounter
+uint16 currentstep
 uint8 hasTracker (boolean)
 if (hasTracker) AnimationTracker tracker
 

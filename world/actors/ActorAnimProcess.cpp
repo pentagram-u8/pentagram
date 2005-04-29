@@ -58,16 +58,18 @@ ActorAnimProcess::ActorAnimProcess() : Process(), tracker(0)
 }
 
 ActorAnimProcess::ActorAnimProcess(Actor* actor_, Animation::Sequence action_,
-								   uint32 dir_)
+								   uint32 dir_, uint32 steps_)
 {
 	assert(actor_);
 	item_num = actor_->getObjId();
 	dir = dir_;
 	action = action_;
+	steps = steps_;
 
 	type = 0x00F0; // CONSTANT !
 	firstframe = true;
 	tracker = 0;
+	currentstep = 0;
 }
 
 bool ActorAnimProcess::init()
@@ -181,11 +183,12 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 		a->getLocation(x,y,z);
 		result = tracker->stepFrom(x,y,z);
 		tracker->updateActorFlags();
+		currentstep++;
 
 		if (!result) {
 			// check possible error conditions
 
-			if (tracker->isDone()) {
+			if (tracker->isDone() || (steps && currentstep >= steps) ) {
 				// all done
 #ifdef WATCHACTOR
 				if (item_num == watchactor)
@@ -438,7 +441,9 @@ void ActorAnimProcess::saveData(ODataSource* ods)
 	ods->write1(attacked);
 	ods->write1(static_cast<uint8>(dir));
 	ods->write2(static_cast<uint16>(action));
+	ods->write2(static_cast<uint16>(steps));
 	ods->write2(static_cast<uint16>(repeatcounter));
+	ods->write2(static_cast<uint16>(currentstep));
 
 	if (tracker) {
 		ods->write1(1);
@@ -456,7 +461,9 @@ bool ActorAnimProcess::loadData(IDataSource* ids, uint32 version)
 	attackedSomething = (ids->read1() != 0);
 	dir = ids->read1();
 	action = static_cast<Animation::Sequence>(ids->read2());
+	steps = ids->read2();
 	repeatcounter = ids->read2();
+	currentstep = ids->read2();
 
 	assert(tracker == 0);
 	if (ids->read1() != 0) {

@@ -1,4 +1,8 @@
 2005-04-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/ActorAnimProcess.*: support partial actions
+	* world/actors/various: fixes and tweaks to the pathfinder
+
+2005-04-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/CoreApp.cpp: exit when gamepath is incorrect
 
 2005-04-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>

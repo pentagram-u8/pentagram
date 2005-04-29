@@ -131,7 +131,7 @@ public:
 
 	//! run the given animation
 	//! \return the PID of the ActorAnimProcess
-	uint16 doAnim(Animation::Sequence anim, int dir);
+	uint16 doAnim(Animation::Sequence anim, int dir, unsigned int steps=0);
 
 	//! check if this actor has a specific animation
 	bool hasAnim(Animation::Sequence anim);
@@ -143,7 +143,7 @@ public:
 	//! \param anim Action to try
 	//! \param dir direction to walk in
 	//! \param state the state to start from, or 0 to use the current state
-	Animation::Result tryAnim(Animation::Sequence anim, int dir, PathfindingState* state=0);
+	Animation::Result tryAnim(Animation::Sequence anim, int dir, unsigned int steps=0, PathfindingState* state=0);
 
 	//! create an actor, assign objid, make it ethereal and load monster stats.
 	static Actor* createActor(uint32 shape);

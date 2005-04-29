@@ -181,7 +181,8 @@ bool PathfinderProcess::run(const uint32 /*framenum*/)
 
 	if (ok) {
 		ok = actor->tryAnim(path[currentstep].action,
-							path[currentstep].direction) == Animation::SUCCESS;
+							path[currentstep].direction,
+							path[currentstep].steps) == Animation::SUCCESS;
 	}
 
 	if (!ok) {
@@ -197,8 +198,10 @@ bool PathfinderProcess::run(const uint32 /*framenum*/)
 			Item* item = World::get_instance()->getItem(targetitem);
 			if (!item)
 				ok = false;
-			else
+			else {
 				pf.setTarget(item);
+				item->getLocation(targetx, targety, targetz);
+			}
 		} else {
 			pf.setTarget(targetx, targety, targetz);
 		}
@@ -226,7 +229,8 @@ bool PathfinderProcess::run(const uint32 /*framenum*/)
 	}
 
 	uint16 animpid = actor->doAnim(path[currentstep].action,
-								   path[currentstep].direction);
+								   path[currentstep].direction,
+								   path[currentstep].steps);
 #if 0
 	pout << "PathfinderProcess(" << getPid() << "): taking step "
 		 << path[currentstep].action << "," << path[currentstep].direction

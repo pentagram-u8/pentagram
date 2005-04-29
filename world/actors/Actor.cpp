@@ -319,7 +319,7 @@ void Actor::teleport(int newmap, sint32 newx, sint32 newy, sint32 newz)
 	}
 } 
 
-uint16 Actor::doAnim(Animation::Sequence anim, int dir)
+uint16 Actor::doAnim(Animation::Sequence anim, int dir, unsigned int steps)
 {
 	if (dir < 0 || dir > 8) {
 		perr << "Actor::doAnim: Invalid direction (" << dir << ")" <<std::endl;
@@ -341,7 +341,7 @@ uint16 Actor::doAnim(Animation::Sequence anim, int dir)
 		dir = direction;
 	}
 
-	Process *p = new ActorAnimProcess(this, anim, dir);
+	Process *p = new ActorAnimProcess(this, anim, dir, steps);
 
 	return Kernel::get_instance()->addProcess(p);
 }
@@ -353,7 +353,8 @@ bool Actor::hasAnim(Animation::Sequence anim)
 	return tracker.init(this, anim, 0);
 }
 
-Animation::Result Actor::tryAnim(Animation::Sequence anim, int dir, PathfindingState* state)
+Animation::Result Actor::tryAnim(Animation::Sequence anim, int dir,
+								 unsigned int steps, PathfindingState* state)
 {
 	if (dir < 0 || dir > 7) return Animation::FAILURE;
 
@@ -365,8 +366,11 @@ Animation::Result Actor::tryAnim(Animation::Sequence anim, int dir, PathfindingS
 
 	if (!animaction) return Animation::FAILURE;
 
-	while (tracker.step())
+	unsigned int curstep = 0;
+
+	while (tracker.step() && (!steps || curstep >= steps))
 	{
+		curstep++;
 	}
 
 	if (tracker.isBlocked() &&

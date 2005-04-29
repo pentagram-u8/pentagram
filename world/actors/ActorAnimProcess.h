@@ -31,7 +31,8 @@ class ActorAnimProcess : public Process
 public:
 	ActorAnimProcess();
 	//! note: this probably needs some more parameters
-	ActorAnimProcess(Actor* actor, Animation::Sequence action, uint32 dir);
+	ActorAnimProcess(Actor* actor, Animation::Sequence action, uint32 dir,
+					 uint32 steps=0);
 
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
@@ -55,9 +56,11 @@ protected:
 
 	Animation::Sequence action;
 	uint32 dir;
+	uint32 steps;
 
 	AnimationTracker* tracker;
 	int repeatcounter;
+	uint32 currentstep;
 
 	bool firstframe;
 
