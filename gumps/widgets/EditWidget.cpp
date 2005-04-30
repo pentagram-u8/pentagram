@@ -35,11 +35,11 @@ EditWidget::EditWidget()
 
 EditWidget::EditWidget(int X, int Y, std::string txt, int font,
 					   int w, int h, unsigned int maxlength_, bool multiline_)
-	: Gump(X, Y, w, h), text(txt), cursor(0), fontnum(font),
+	: Gump(X, Y, w, h), text(txt), fontnum(font),
 	  maxlength(maxlength_), multiline(multiline_),
 	  cursor_changed(0), cursor_visible(true), cached_text(0)
 {
-
+	cursor = text.size();
 }
 
 EditWidget::~EditWidget(void)
@@ -66,7 +66,7 @@ void EditWidget::InitGump()
 void EditWidget::setText(const std::string& t)
 {
 	text = t;
-	cursor = 0;
+	cursor = text.size();
 	FORGET_OBJECT(cached_text);
 }
 

@@ -6,6 +6,8 @@
 	* games/stdbindings.*: removed itemLocator (use console cmd instead)
 	* gumps/widget/ButtonWidget.*: accept gump layer argument
 	* gumps/PagedGump.cpp: put page buttons in ABOVE_NORMAL layer
+	* kernel/HIDManager.cpp: make escape show the menu
+	* gumps/widgets/EditWidget.cpp: put cursor at end of text by default
 
 2005-04-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/ActorAnimProcess.*: support partial actions
