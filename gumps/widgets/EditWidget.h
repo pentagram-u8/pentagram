@@ -53,7 +53,7 @@ public:
 
 	//! get the current text
 	std::string getText() const { return text; }
-	void setText(const std::string& t) { text = t; cursor = 0; }
+	void setText(const std::string& t);
 
 	enum Message
 	{

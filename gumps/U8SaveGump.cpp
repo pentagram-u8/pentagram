@@ -29,6 +29,7 @@
 #include "ShapeFrame.h"
 #include "FileSystem.h"
 #include "Savegame.h"
+#include "PagedGump.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -89,12 +90,12 @@ void U8SaveGump::InitGump()
 		Gump* gump = new Gump(xbase, 3+40*yi, 1, 1);
 		gump->SetShape(entry_id, true);
 		gump->InitGump();
-		AddChild(gump);
+		AddChild(gump, false);
 			
 		gump = new Gump(xbase+2+entrywidth, 3+40*yi, 3, 1, 1);
 		gump->SetShape(entrynum_id, true);
 		gump->InitGump();
-		AddChild(gump);
+		AddChild(gump, false);
 
 		if (index == 0) {
 			// special case for 'The Beginning...' save
@@ -102,7 +103,7 @@ void U8SaveGump::InitGump()
 										  _TL_("The Beginning..."),
 										  entryfont);
 			widget->InitGump();
-			AddChild(widget);
+			AddChild(widget, false);
 
 		} else {
 
@@ -112,35 +113,38 @@ void U8SaveGump::InitGump()
 												95, 38-entryheight, 0, true);
 				ew->SetIndex(i);
 				ew->InitGump();
-				AddChild(ew);
+				AddChild(ew, false);
 				editwidgets[i] = ew;
 			} else {
 				// load
 				Gump* widget = new TextWidget(xbase, entryheight+4+40*yi,
 											  descriptions[i], entryfont);
 				widget->InitGump();
-				AddChild(widget);
+				AddChild(widget, false);
 			}
 		}
 
 	}
 
-	GUIApp::get_instance()->pushMouseCursor();
-	if (save) {
-		GUIApp::get_instance()->setMouseCursor(GUIApp::MOUSE_QUILL);
-	} else {
-		GUIApp::get_instance()->setMouseCursor(GUIApp::MOUSE_MAGGLASS);
-	}
-
-	// remove focus
+	// remove focus from children (just in case)
 	if (focus_child) focus_child->OnFocus(false);
 	focus_child = 0;
 }
 
 void U8SaveGump::Close(bool no_del)
 {
-	GUIApp::get_instance()->popMouseCursor();
 	Gump::Close(no_del);
+}
+
+void U8SaveGump::OnFocus(bool gain)
+{
+	if (gain)
+	{
+		if (save)
+			GUIApp::get_instance()->setMouseCursor(GUIApp::MOUSE_QUILL);
+		else
+			GUIApp::get_instance()->setMouseCursor(GUIApp::MOUSE_MAGGLASS);
+	}
 }
 
 Gump* U8SaveGump::OnMouseDown(int button, int mx, int my)
@@ -175,13 +179,16 @@ void U8SaveGump::OnMouseClick(int button, int mx, int my)
 		return;
 
 	int i = 3*x + y;
+	int index = 6*page + i;
 
 	if (save && !focus_child && editwidgets[i]) {
 		editwidgets[i]->MakeFocus();
+		PagedGump* p = p_dynamic_cast<PagedGump*>(parent);
+		if (p) p->enableButtons(false);
 	}
 
 	if (!save) {
-		loadgame(i); // 'this' will be deleted here!
+		loadgame(index); // 'this' will be deleted here!
 	}
 }
 
@@ -198,7 +205,7 @@ void U8SaveGump::ChildNotify(Gump *child, uint32 message)
 		std::string name = widget->getText();
 		if (name.empty()) return;
 
-		if (savegame(widget->GetIndex(), name))
+		if (savegame(widget->GetIndex() + 6*page, name))
 			parent->Close(); // close PagedGump (and us)
 
 		return;
@@ -212,6 +219,9 @@ void U8SaveGump::ChildNotify(Gump *child, uint32 message)
 		// remove focus
 		if (focus_child) focus_child->OnFocus(false);
 		focus_child = 0;
+
+		PagedGump* p = p_dynamic_cast<PagedGump*>(parent);
+		if (p) p->enableButtons(true);
 
 		EditWidget* widget = p_dynamic_cast<EditWidget*>(child);
 		assert(widget);

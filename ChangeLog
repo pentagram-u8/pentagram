@@ -1,5 +1,11 @@
 2005-04-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/PagedGump.cpp: give focus to current page
+	* gumps/PagedGump.*: allow disabling the page buttons
+	* gumps/MenuGump.cpp: 12 savegame entries
+	* gumps/widgets/EditWidget.*: make setText clear cached_text
+	* games/stdbindings.*: removed itemLocator (use console cmd instead)
+	* gumps/widget/ButtonWidget.*: accept gump layer argument
+	* gumps/PagedGump.cpp: put page buttons in ABOVE_NORMAL layer
 
 2005-04-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/ActorAnimProcess.*: support partial actions

@@ -31,10 +31,6 @@ bool avatarInStasis(const HID_Event& event);
 //! \see HIDBinding
 bool engineStats(const HID_Event& event);
 
-//! attempts to locate an item
-//! \see HIDBinding
-bool itemLocator(const HID_Event& event);
-
 //! toggles the painting of editor items
 //! \see HIDBinding
 bool paintEditorItems(const HID_Event& event);

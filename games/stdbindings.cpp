@@ -72,31 +72,6 @@ bool engineStats(const HID_Event& event)
 	return handled;
 }
 
-bool itemLocator(const HID_Event& event)
-{
-	bool handled = false;
-	int itemNumber = 19204;
-	switch (event.type) {
-	case HID_DOWN:
-	{
-		handled = true;
-		Item* item = World::get_instance()->getItem(itemNumber);
-		if (! item)
-		{
-			pout << "Item not found: " << itemNumber << std::endl;
-			break;
-		}
-		sint32 x,y,z;
-		item->getLocation(x,y,z);
-		pout << itemNumber << ": (" << x << "," << y << "," << z << ")" << std::endl;
-	} break;
-
-	default:
-		break;
-	}
-	return handled;
-}
-
 bool paintEditorItems(const HID_Event& event)
 {
 	bool handled = false;

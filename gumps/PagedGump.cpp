@@ -30,14 +30,9 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(PagedGump,ModalGump);
 
 PagedGump::PagedGump(int left, int right, int top, int shape):
 	ModalGump(0, 0, 5, 5), leftOff(left), rightOff(right), topOff(top),
-	gumpShape(shape), nextButton(0), prevButton(0)
+	gumpShape(shape), nextButton(0), prevButton(0), buttonsEnabled(true)
 {
 	current = gumps.end();
-#if 0
-	GUIApp * guiapp = GUIApp::get_instance();
-	guiapp->pushMouseCursor();
-	guiapp->setMouseCursor(GUIApp::MOUSE_HAND);
-#endif
 }
 
 PagedGump::~PagedGump(void)
@@ -47,10 +42,7 @@ PagedGump::~PagedGump(void)
 
 void PagedGump::Close(bool no_del)
 {
-#if 0
-	GUIApp* guiapp = GUIApp::get_instance();
-	guiapp->popMouseCursor();
-#endif
+	GUIApp::get_instance()->popMouseCursor();
 	std::vector<Gump*>::iterator iter;
 	for (iter=gumps.begin(); iter != gumps.end(); ++iter) {
 		(*iter)->Close(no_del); // CHECKME: no_del?
@@ -75,22 +67,30 @@ void PagedGump::InitGump()
 	FrameID buttonright(GameData::GUMPS, pageOverShape, 1);
 
 	//!! Hardcoded gump
-	nextButton = new ButtonWidget(0, 0, buttonright, buttonright);
+	nextButton = new ButtonWidget(0, 0, buttonright, buttonright, false,
+								  LAYER_ABOVE_NORMAL);
 	nextButton->InitGump();
 	AddChild(nextButton);
 	nextButton->setRelativePosition(TOP_RIGHT, rightOff, topOff);
 
-	prevButton = new ButtonWidget(0, 0, buttonleft, buttonleft);
+	prevButton = new ButtonWidget(0, 0, buttonleft, buttonleft, false,
+								  LAYER_ABOVE_NORMAL);
 	prevButton->InitGump();
 	AddChild(prevButton);
 	prevButton->setRelativePosition(TOP_LEFT, leftOff, topOff);
 	prevButton->HideGump();
+
+	GUIApp * guiapp = GUIApp::get_instance();
+	guiapp->pushMouseCursor();
+	guiapp->setMouseCursor(GUIApp::MOUSE_HAND); // default cursor
 }
 
 void PagedGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 {
 	Gump::PaintThis(surf, lerp_factor);
 }
+
+
 
 bool PagedGump::OnKeyDown(int key, int mod)
 {
@@ -111,8 +111,10 @@ bool PagedGump::OnKeyDown(int key, int mod)
 
 void PagedGump::ChildNotify(Gump *child, uint32 message)
 {
-	ObjId cid = child->getObjId();
+	if (!buttonsEnabled) return;
 	if (gumps.empty()) return;
+
+	ObjId cid = child->getObjId();
 
 	if (message == ButtonWidget::BUTTON_CLICK)
 	{
@@ -151,14 +153,15 @@ void PagedGump::ChildNotify(Gump *child, uint32 message)
 
 void PagedGump::addPage(Gump * g)
 {
-	AddChild(g);
+	AddChild(g, false); // add child, but don't let it take focus
 	g->setRelativePosition(TOP_CENTER, 0, 3 + topOff);
 	g->HideGump();
 	gumps.push_back(g);
 
 	current = gumps.begin();
 	(*current)->UnhideGump();
-	(*current)->MakeFocus();
+	if (focus_child != *current)
+		(*current)->MakeFocus();
 	
 	if (current + 1 == gumps.end())
 		nextButton->HideGump();

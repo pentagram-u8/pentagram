@@ -30,9 +30,10 @@ public:
 
 	ButtonWidget();
 	ButtonWidget(int X, int Y, std::string txt, int font,
-				 uint32 mouseOverBlendCol = 0, int width = 0, int height = 0);
+				 uint32 mouseOverBlendCol = 0, int width = 0, int height = 0,
+				 sint32 layer = LAYER_NORMAL);
 	ButtonWidget(int X, int Y, FrameID frame_up, FrameID frame_down,
-				 bool mouseOver = false);
+				 bool mouseOver = false, sint32 layer = LAYER_NORMAL);
 	virtual ~ButtonWidget(void);
 
 	// Init the gump, call after construction

@@ -40,6 +40,7 @@ public:
 	virtual void OnMouseClick(int button, int mx, int my);
 	virtual bool OnKeyDown(int key, int mod);
 	virtual void ChildNotify(Gump *child, uint32 message);
+	virtual void OnFocus(bool gain);
 
 protected:
 	bool save;

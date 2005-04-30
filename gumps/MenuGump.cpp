@@ -213,23 +213,19 @@ void MenuGump::selectEntry(int entry)
 	case 1: // Intro
 		Game::get_instance()->playIntroMovie();
 		break;
-	case 2: // Read Diary
-//		GUIApp::get_instance()->loadGame("@save/quicksave");
-	{	U8SaveGump* save = new U8SaveGump(false, 0);
-		save->InitGump();
+	case 2: case 3: // Read/Write Diary
+	{
 		PagedGump * gump = new PagedGump(34, -38, 3, gumpShape);
 		gump->InitGump();
-		gump->addPage(save);
-		AddChild(gump);
-		gump->setRelativePosition(CENTER);
-	} break;
-	case 3: // Write Diary
-//		GUIApp::get_instance()->saveGame("@save/quicksave", true);
-	{	U8SaveGump* save = new U8SaveGump(true, 0);
+
+		U8SaveGump* save = new U8SaveGump(entry == 3, 0);
 		save->InitGump();
-		PagedGump * gump = new PagedGump(34, -38, 3, gumpShape);
-		gump->InitGump();
 		gump->addPage(save);
+
+		save = new U8SaveGump(entry == 3, 1);
+		save->InitGump();
+		gump->addPage(save);
+
 		AddChild(gump);
 		gump->setRelativePosition(CENTER);
 	} break;

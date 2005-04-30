@@ -63,6 +63,13 @@ void EditWidget::InitGump()
 	dims.x = 0;
 }
 
+void EditWidget::setText(const std::string& t)
+{
+	text = t;
+	cursor = 0;
+	FORGET_OBJECT(cached_text);
+}
+
 void EditWidget::ensureCursorVisible()
 {
 	cursor_visible = true;

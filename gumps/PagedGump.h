@@ -40,6 +40,8 @@ public:
 	virtual void ChildNotify(Gump *child, uint32 message);
 	void addPage(Gump * g);
 
+	void enableButtons(bool enabled) { buttonsEnabled = enabled; }
+
 	bool loadData(IDataSource* ids);
 protected:
 	virtual void saveData(ODataSource* ods);
@@ -48,6 +50,7 @@ protected:
 	Gump * nextButton;
 	Gump * prevButton;
 	std::vector<Gump *>::iterator current;
+	bool buttonsEnabled;
 };
 
 #endif

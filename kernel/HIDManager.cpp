@@ -61,7 +61,6 @@ HIDManager::HIDManager()
 	bindingMap.insert( HIDBINDING_PAIR(engineStats) );
 	bindingMap.insert( HIDBINDING_PAIR(paintEditorItems) );
 	bindingMap.insert( HIDBINDING_PAIR(showTouchingItems) );
-	bindingMap.insert( HIDBINDING_PAIR(itemLocator) );
 	bindingMap.insert( HIDBINDING_PAIR(toggleCombat) );
 	bindingMap.insert( HIDBINDING_PAIR(openInventory) );
 	bindingMap.insert( HIDBINDING_PAIR(openBackpack) );
