@@ -123,6 +123,7 @@ void PagedGump::ChildNotify(Gump *child, uint32 message)
 				(*current)->HideGump();
 				++current;
 				(*current)->UnhideGump();
+				(*current)->MakeFocus();
 
 				if (current + 1 == gumps.end())
 					nextButton->HideGump();
@@ -137,6 +138,7 @@ void PagedGump::ChildNotify(Gump *child, uint32 message)
 				(*current)->HideGump();
 				--current;
 				(*current)->UnhideGump();
+				(*current)->MakeFocus();
 				
 				if (current == gumps.begin())
 					prevButton->HideGump();
@@ -156,6 +158,7 @@ void PagedGump::addPage(Gump * g)
 
 	current = gumps.begin();
 	(*current)->UnhideGump();
+	(*current)->MakeFocus();
 	
 	if (current + 1 == gumps.end())
 		nextButton->HideGump();
