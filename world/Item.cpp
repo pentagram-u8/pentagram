@@ -394,6 +394,15 @@ void Item::setGumpLocation(sint32 X, sint32 Y)
 	y = (X & 0xFF) + ((Y & 0xFF) << 8);
 }
 
+void Item::randomGumpLocation()
+{
+	if (!parent) return;
+
+	// This sets the coordinates to (255,255) and lets the ContainerGump
+	// randomize the position when it is next opened.
+	y = 0xFFFF;
+}
+
 void Item::getCentre(sint32& X, sint32& Y, sint32& Z) const
 {
 	// constants!

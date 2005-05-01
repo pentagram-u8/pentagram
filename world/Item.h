@@ -90,6 +90,11 @@ public:
 	//! is not in a Container.
 	void setGumpLocation(sint32 x, sint32 y);
 
+	//! Randomize the Item's location in a ContainerGump. Effectively
+	//! This sets the coordinates to (255,255) and lets the ContainerGump
+	//! randomize the position when it is next opened.
+	void randomGumpLocation();
+
 	//! Get the world coordinates of the Item's centre. Undefined if the Item
 	//! is contained or equipped.
 	void getCentre(sint32& x, sint32& y, sint32& z) const;

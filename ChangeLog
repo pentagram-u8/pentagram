@@ -1,4 +1,9 @@
 2005-05-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/Actor.cpp: fix missing CombatProcess after resurrection
+	* world/Item.*, gumps/ContainerGump.cpp: support random gump positions
+	* world/actors/Actor.cpp: randomize monster treasure location in gump
+
+2005-05-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GUIApp.cpp, audio/AudioMixer.*: move Audio/MusicProcess
 	  creation to GUIApp::newGame
 	* kernel/GUIApp.cpp: alt-x = quit

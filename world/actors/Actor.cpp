@@ -185,6 +185,7 @@ bool Actor::giveTreasure()
 											   0); // ext. flags
 				item->assignObjId();
 				item->moveToContainer(this);
+				item->randomGumpLocation();
 				item->callUsecodeEvent_combine(); // this sets the right frame
 				continue;
 			}
@@ -226,6 +227,7 @@ bool Actor::giveTreasure()
 										   0); // ext. flags
 			item->assignObjId();
 			item->moveToContainer(this);
+			item->randomGumpLocation();
 		}
 	}
 
@@ -633,6 +635,7 @@ ProcId Actor::die(uint16 damageType)
 {
 	setHP(0);
 	setActorFlag(ACT_DEAD);
+	clearActorFlag(ACT_INCOMBAT);
 
 	ProcId animprocid = 0;
 #if 1

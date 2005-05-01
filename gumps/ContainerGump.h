@@ -69,6 +69,8 @@ protected:
 
 	virtual void GetItemLocation(sint32 lerp_factor);
 
+	void getItemCoords(Item* item, sint32& itemx, sint32& itemy);
+
 	Pentagram::Rect itemarea;
 
 	bool display_dragging;

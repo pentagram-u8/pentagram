@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004  The Pentagram Team
+ *  Copyright (C) 2003-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -82,6 +82,25 @@ void ContainerGump::InitGump()
 	// U8 puts a container gump slightly to the left of an object
 }
 
+void ContainerGump::getItemCoords(Item* item, sint32& itemx, sint32& itemy)
+{
+	item->getGumpLocation(itemx,itemy);
+
+	if (itemx == 0xFF && itemy == 0xFF) {
+		// randomize position
+		// TODO: maybe try to put it somewhere where it doesn't overlap others?
+
+		itemx = std::rand() % itemarea.w;
+		itemy = std::rand() % itemarea.h;
+
+		item->setGumpLocation(itemx, itemy);
+	}
+
+	itemx += itemarea.x;
+	itemy += itemarea.y;
+}
+
+
 void ContainerGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 {
 	// paint self
@@ -111,10 +130,7 @@ void ContainerGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 			continue;
 
 		sint32 itemx,itemy;
-		item->getGumpLocation(itemx,itemy);
-
-		itemx += itemarea.x;
-		itemy += itemarea.y;
+		getItemCoords(item, itemx, itemy);
 		Shape* s = item->getShapeObject();
 		assert(s);
 		surf->Paint(s, item->getFrame(), itemx, itemy);
@@ -158,13 +174,12 @@ uint16 ContainerGump::TraceObjId(int mx, int my)
 			continue;
 
 		sint32 itemx,itemy;
-		item->getGumpLocation(itemx,itemy);
+		getItemCoords(item, itemx, itemy);
 		Shape* s = item->getShapeObject();
 		assert(s);
 		ShapeFrame* frame = s->getFrame(item->getFrame());
 
-		if (frame->hasPoint(mx - (itemx + itemarea.x),
-							my - (itemy + itemarea.y)))
+		if (frame->hasPoint(mx - itemx, my - itemy))
 		{
 			// found it
 				return item->getObjId();
@@ -186,9 +201,11 @@ bool ContainerGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 
 	//!!! need to use lerp_factor
 
-	item->getGumpLocation(gx,gy);
-	gx += itemarea.x;
-	gy += itemarea.y;
+	sint32 itemx, itemy;
+	getItemCoords(item, itemx, itemy);
+
+	gx = itemx;
+	gy = itemy;
 
 	return false;
 }
@@ -339,10 +356,7 @@ bool ContainerGump::StartDraggingItem(Item* item, int mx, int my)
 	if (!avatar->canReach(item, 128)) return false;
 
 	sint32 itemx,itemy;
-	item->getGumpLocation(itemx,itemy);
-
-	itemx += itemarea.x;
-	itemy += itemarea.y;
+	getItemCoords(item, itemx, itemy);
 
 	GUIApp::get_instance()->setDraggingOffset(mx - itemx, my - itemy);
 
@@ -501,7 +515,7 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 			! (targetcontainer->getFlags() & Item::FLG_IN_NPC_LIST))
 		{
 			item->moveToContainer(targetcontainer);
-			item->setGumpLocation(0, 0); //TODO: randomize!
+			item->randomGumpLocation();
 			return;
 		}
 	}
@@ -519,8 +533,6 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 	} else {
 		item->moveToContainer(targetcontainer);
 	}
-
-	//!! TODO: this is nonsense when not adding to this container
 
 	int dox, doy;
 	GUIApp::get_instance()->getDraggingOffset(dox, doy);
