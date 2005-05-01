@@ -35,6 +35,7 @@ public:
 	static AudioMixer*	get_instance() { return the_audio_mixer; }
 
 	void			reset();
+	void			createProcesses();
 
 	int				playSample(AudioSample *sample, int loop, int priority, bool paused, uint32 pitch_shift, int lvol, int rvol);
 	bool			isPlaying(int chan);

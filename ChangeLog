@@ -1,3 +1,8 @@
+2005-05-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/GUIApp.cpp, audio/AudioMixer.*: move Audio/MusicProcess
+	  creation to GUIApp::newGame
+	* kernel/GUIApp.cpp: alt-x = quit
+
 2005-04-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/PagedGump.cpp: give focus to current page
 	* gumps/PagedGump.*: allow disabling the page buttons

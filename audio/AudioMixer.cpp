@@ -97,16 +97,17 @@ AudioMixer::AudioMixer(int sample_rate_, bool stereo_, int num_channels_) :
 		// GO GO GO!
 		SDL_PauseAudio(0);
 	}
+}
 
+void AudioMixer::createProcesses()
+{
 	Kernel *kernel = Kernel::get_instance();
 
 	// Create the Audio Process
-	Process *ap = new AudioProcess();
-	kernel->addProcess(ap);
+	kernel->addProcess(new AudioProcess());
 
 	// Create the Music Process
-	Process *mp = new MusicProcess(midi_driver);
-	kernel->addProcess(mp);
+	kernel->addProcess(new MusicProcess(midi_driver));
 }
 
 AudioMixer::~AudioMixer(void)

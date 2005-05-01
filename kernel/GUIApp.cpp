@@ -55,6 +55,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ScalerGump.h"
 #include "FastAreaVisGump.h"
 #include "MiniMapGump.h"
+#include "QuitGump.h"
 
 // For gump positioning... perhaps shouldn't do it this way....
 #include "BarkGump.h"
@@ -345,6 +346,9 @@ void GUIApp::startup()
 	game->loadFiles();
 	gamedata->setupTTFOverrides();
 
+	// This Must be AFTER loading the data cause it might need gamedata
+	audiomixer = new Pentagram::AudioMixer(22050,true,8);
+
 	// Unset the console auto paint, since we have finished initing
 	con.SetAutoPaint(0);
 
@@ -357,9 +361,6 @@ void GUIApp::startup()
 	pout << "Paint Initial display" << std::endl;
 	consoleGump->HideConsole();
 	paint();
-
-	// This Must be AFTER loading the data cause it might need gamedata
-	audiomixer = new Pentagram::AudioMixer(22050,true,8);
 }
 
 
@@ -1176,10 +1177,12 @@ void GUIApp::handleEvent(const SDL_Event& event)
 
 		switch (event.key.keysym.sym) {
 		case SDLK_q: // Quick quit
-		{
 			if (event.key.keysym.mod & KMOD_CTRL)
 				ForceQuit();
-		} break;
+			break;
+		case SDLK_x: // confirm quit
+			QuitGump::verifyQuit();
+			break;
 		case SDLK_LEFTBRACKET: gameMapGump->IncSortOrder(-1); break;
 		case SDLK_RIGHTBRACKET: gameMapGump->IncSortOrder(+1); break;
 
@@ -1609,6 +1612,9 @@ bool GUIApp::newGame()
 	kernel->addProcess(new HealProcess());
 
 	kernel->addProcess(new SchedulerProcess());
+
+	if (audiomixer) audiomixer->createProcesses();
+
 
 //	av->teleport(40, 16240, 15240, 64); // central Tenebrae
 //	av->teleport(3, 11391, 1727, 64); // docks, near gate
