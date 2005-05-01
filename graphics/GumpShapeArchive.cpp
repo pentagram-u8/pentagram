@@ -38,10 +38,10 @@ void GumpShapeArchive::loadGumpage(IDataSource* ds)
 	for (unsigned int i = 1; i <= count; ++i)
 	{
 		int x, y, w, h;
-		x = ds->read2();
-		y = ds->read2();
-		w = ds->read2();
-		h = ds->read2();
+		x = static_cast<sint16>(ds->read2());
+		y = static_cast<sint16>(ds->read2());
+		w = static_cast<sint16>(ds->read2()) - x;
+		h = static_cast<sint16>(ds->read2()) - y;
 		gumpItemArea[i] = new Pentagram::Rect(x, y, w, h);
 	}
 }
