@@ -531,7 +531,7 @@ void GameMapGump::DropItem(Item* item, int mx, int my)
 			World::get_instance()->getItem(bp));
 		if (backpack && item->moveToContainer(backpack)) {
 			pout << "Dropped item in backpack" << std::endl;
-			item->setGumpLocation(0, 0); // TODO: randomize
+			item->randomGumpLocation();
 			return;
 		}
 	}

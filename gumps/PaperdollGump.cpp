@@ -394,9 +394,7 @@ void PaperdollGump::DropItem(Item* item, int mx, int my)
 		item->moveToContainer(a);
 	} else {
 		item->moveToContainer(backpack);
-
-		// TODO: find a better place
-		item->setGumpLocation(0, 0);
+		item->randomGumpLocation();
 	}
 }
 

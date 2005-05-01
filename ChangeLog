@@ -2,6 +2,7 @@
 	* world/actors/Actor.cpp: fix missing CombatProcess after resurrection
 	* world/Item.*, gumps/ContainerGump.cpp: support random gump positions
 	* world/actors/Actor.cpp: randomize monster treasure location in gump
+	* gumps/GameMapGump.cpp, gumps/PaperdollGump.cpp: random item placement
 
 2005-05-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GUIApp.cpp, audio/AudioMixer.*: move Audio/MusicProcess
