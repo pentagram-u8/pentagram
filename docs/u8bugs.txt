@@ -60,6 +60,9 @@ class 0572 (STEVBOOK)
 "it carried in it's arms", "driven to it's knees", "it begged for it's life"
 (s/it's/its/, three times)
 
+class 0574 (GUARDMAN)
+"Nice taling with you. " (talking)
+
 class 0575 (SORCERER)
 "...caught within it's range. " (s/it's/its/)
 
