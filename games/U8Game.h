@@ -45,6 +45,9 @@ public:
 	virtual void playCredits();
 	virtual void playQuotes();
 
+	static void ConCmd_cheatItems(const Console::ArgsType &args, const Console::ArgvType &argv);
+
+
 protected:
 	std::string getCreditText(IDataSource* ids);
 };
