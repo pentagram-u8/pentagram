@@ -16,7 +16,7 @@ fi
 #  fi
 #fi
 
-aclocal $aclocalincludes
+aclocal $aclocalincludes || exit
 
 
 # We have versions of config.sub, config.guess in the source tree.
@@ -24,19 +24,19 @@ aclocal $aclocalincludes
 #libtoolize --config-only --copy --force
 
 # Create config.h
-autoheader
+autoheader || exit
 
 # We have versions of missing, install-sh, mkinstalldirs in the source tree.
 # Should those not work, the following command copies them from elsewhere.
 #automake --foreign --add-missing --copy
 
 #Create configure script
-autoconf
+autoconf || exit
 
 echo "Writing Makefiles:"
 
 # Note: do _NOT_ include '.' here
-MODULES="tools tools/disasm tools/compile tools/shapeconv tools/fold tools/flexpack tools/gimp-plugin misc convert convert/u8 convert/crusader filesys filesys/zip kernel games graphics graphics/fonts graphics/scalers audio audio/midi audio/midi/timidity world world/actors usecode gumps gumps/widgets conf"
+MODULES="tools tools/disasm tools/compile tools/shapeconv tools/fold tools/flexpack tools/gimp-plugin tools/data2c misc convert convert/u8 convert/crusader filesys filesys/zip kernel games graphics graphics/fonts graphics/scalers audio audio/midi audio/midi/timidity world world/actors usecode gumps gumps/widgets conf"
 
 for subdir in $MODULES; do
   rm -f $subdir/Makefile

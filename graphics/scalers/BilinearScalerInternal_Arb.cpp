@@ -47,7 +47,7 @@ bool BilinearScalerInternal_Arb(Texture *tex, sint32 sx, sint32 sy, sint32 sw, s
 	uint8* blockline_start = 0;
 	uint8* next_block = 0;
 
-	uint8* pixel_start = pixel;
+//	uint8* pixel_start = pixel;
 
 	bool clip_x = true;
 	if (sw+sx < tex->width && clamp_src == false)

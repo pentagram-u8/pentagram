@@ -1,7 +1,7 @@
 /*
  *	FileSystem.h - The Pentagram File System
  *
- *  Copyright (C) 2002, 2003  The Pentagram Team
+ *  Copyright (C) 2002-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,74 +21,6 @@
 #ifndef FILESYSTEM_H
 #define FILESYSTEM_H
 
-/*
-
-Currently this is just a very cut-down and stub (and also wrong, but that's
-a problem for another time), class to handle the FileSys. How the 'real'
-one should look like is below. *grin*
-
-*****************************************************************************
-
-using std::string;      // Looks too ugly otherwise
-
-class PentagramFileSystem {
-public:
-// Add (or replace) a virtual path (false on failure)
-bool AddVirtualPath (const string &vpath, const string &real_path);
-
-// Remove a virtual path (false on failure)
-bool RemoveVirtualPath (const string &vpath)
-
-// Clear all virtual paths (false on failure)
-bool ClearVirtualPathTable();
-
-// Get the disk filename from a virtual filename ("" on failure)
-string GetRealName (const string &vfn);
-
-// List all files in a directory (0 sized vector on failure)
-std::vector<string> ListFiles (const string &vpath, const string &wildcard)
-
-// Open a streaming file as readable. Streamed (0 on failure)
-DataSource *ReadFile(const string &vfn, bool text=false);
-
-// Open a buffered file as readable (0 on failure)
-DataSource *ReadBuffered(const string &vfn, bool text=false);
-
-// Open a file for writing (0 on failure)
-DataSource *WriteFile(const string &vfn, bool text=false);
-};
-
-The DataSource's used for reading and writing would be a tad different to
-the normal ones that are currently used. The Reading and Writing ones will
-need to close the file once they are deleted. The Buffered should probably
-use a shared buffer so multiple ReadBuffered calls for the same file will
-use the same buffer rather than create a new one. It would use reference
-counting and each time a buffered data source is deleted the ref is
-decreased and once the ref becomes 0, the buffer itself is deleted. It
-would probably also be possible to cache the buffers for a certain length
-of time with the FileSystem object automatically flushing the cache of
-unused buffers after a certain amount of time.
-
-I know, make the FileSystem a process... just had to say it, but it would
-be one way to automatically flush the cache, should it be done. :-)
-
-A further possible idea would be mounting zip files and accessing their
-contents by a virtual filename. It's not really anything that we'd use
-right away but it's something to think about for the future. Regardless, it
-would still be possible to add in such stuff at a later date if things are
-kept clean enough and I really can't see how they wouldn't be.
-
-You might want to have an alternative here too, something like:
-
-// List all files in a directory, into filelist (returns false on failure)
-bool ListFiles (std::vector<string> &filelist, const string &vpath, const
-string &wildcard)
-
-For those who are either 1) excessivly paranoid, or 2) are expecting to grab a
-lot of files from that directory where the vector/string copying may be a
-significant overhead.
-*/
-
 #include <fstream>
 #include <string>
 #include <map>
@@ -103,6 +35,9 @@ class FileSystem
 	//! \param noforcedvpaths if false, all file operations must use vpaths
 	FileSystem(bool noforcedvpaths = false);
 	~FileSystem();
+
+	//! Initialize builtin data files.
+	void initBuiltinData(bool allowoverride);
 
 	static FileSystem* get_instance() { return filesystem; }
 
@@ -129,15 +64,6 @@ class FileSystem
 
 	//! Unmount a virtual path
 	bool RemoveVirtualPath(const std::string &vpath);
-
-	//! Mount a buffer as a file in memory
-	//! \param vpath the vpath under which to mount the file.
-	//!              (Preferably starting with '@memory', but not required.)
-	//! \param data the data
-	//! \param len size (in bytes) of data
-	//! \return true if succesful
-	bool MountFileInMemory(const std::string &vpath, const uint8 *data,
-						   const uint32 len);
 
 	//! Create a directory
 	//! \param path the directory to create. (Can be virtual)
@@ -178,11 +104,18 @@ class FileSystem
 	// It's useful for 'tools'
 	bool	noforcedvpaths;
 
+	// This enables/disables overriding builtin data files with external ones
+	bool	allowdataoverride;
+
 	// rewrite virtual path in-place (i.e., fvn is replaced)
 	// returns false if no rewriting was done
 	bool rewrite_virtual_path(std::string& vfn);
 
 	std::map<std::string, std::string> virtualpaths;
+
+	//! Check if the given file is a builtin data file.
+	//! If so, return an IDataSource for it. If not, return 0.
+	IDataSource* checkBuiltinData(const std::string& vfn, bool is_text=false);
 
 	struct MemoryFile
 	{

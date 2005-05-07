@@ -240,6 +240,15 @@ void GUIApp::startup()
 	// parent's startup first
 	CoreApp::startup();
 
+	// FIXME: the 'false' (=allowdataoverride) should be a config option
+	bool dataoverride;
+	if (!settingman->get("dataoverride", dataoverride,
+						 SettingManager::DOM_GLOBAL))
+		dataoverride = false;
+	filesystem->initBuiltinData(dataoverride);
+
+	initGame();
+
 	//!! move this elsewhere
 	kernel->addProcessLoader("DelayProcess",
 							 ProcessLoader<DelayProcess>::load);

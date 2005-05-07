@@ -1,7 +1,7 @@
 /*
  *	FileSystem.cpp - The Pentagram File System
  *
- *  Copyright (C) 2002, 2003  The Pentagram Team
+ *  Copyright (C) 2002-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,9 +37,11 @@ using	std::string;
 
 #include "ListFiles.h"
 
+
 FileSystem* FileSystem::filesystem = 0;
 
-FileSystem::FileSystem(bool noforced) : noforcedvpaths(noforced)
+FileSystem::FileSystem(bool noforced)
+	: noforcedvpaths(noforced), allowdataoverride(true)
 {
 	assert(filesystem == 0);
 	filesystem = this;
@@ -76,7 +78,6 @@ FileSystem::FileSystem(bool noforced) : noforcedvpaths(noforced)
 
 #endif
 
-
 }
 
 FileSystem::~FileSystem()
@@ -90,17 +91,15 @@ IDataSource* FileSystem::ReadFile(const string &vfn, bool is_text)
 {
 	string filename = vfn;
 
-	// Is it a Memory file?
-	std::map<string, MemoryFile*>::iterator mf = memoryfiles.find(vfn);
+	IDataSource* data = checkBuiltinData(vfn, is_text);
 
-	if (mf != memoryfiles.end())
-		return new IBufferDataSource(mf->second->data,
-									 mf->second->len, is_text);
+	// allow data-override?
+	if (!allowdataoverride && data) return data;
 
 	std::ifstream *f = new std::ifstream();
 	if(!rawopen(*f, filename, is_text)) {
 		delete f;
-		return 0;
+		return data;
 	}
 
 	return new IFileDataSource(f);
@@ -321,15 +320,19 @@ bool FileSystem::AddVirtualPath(const string &vpath, const string &realpath, con
 
 	string fullpath = rp;
 	rewrite_virtual_path(fullpath);
-	// When mouting a memory file, it wont exist, so don't attempt to create the dir
+	// When mounting a memory file, it wont exist, so don't attempt to create the dir
+#ifdef DEBUG
 	con.Printf(MM_INFO, "virtual path \"%s\": %s\n", vp.c_str(), fullpath.c_str());
+#endif
 	if (!(fullpath.substr(0, 8) == "@memory/"))
 	{
 		if (!IsDir(fullpath)) {
 			if(!create) {
+#ifdef DEBUG
 				con.Printf_err(MM_MINOR_WARN,
 					"Problem mounting virtual path \"%s\": directory not found: %s\n",
 					vp.c_str(), fullpath.c_str());
+#endif
 				return false;
 			}
 			else {
@@ -360,23 +363,16 @@ bool FileSystem::RemoveVirtualPath(const string &vpath)
 	}
 }
 
-bool FileSystem::MountFileInMemory(const std::string &vpath, const uint8 *data, const uint32 len)
+IDataSource* FileSystem::checkBuiltinData(const std::string& vfn, bool is_text)
 {
-	string vp = vpath;
+	// Is it a Memory file?
+	std::map<string, MemoryFile*>::iterator mf = memoryfiles.find(vfn);
 
-	std::map<string, MemoryFile*>::iterator p = memoryfiles.find(vp);
+	if (mf != memoryfiles.end())
+		return new IBufferDataSource(mf->second->data,
+									 mf->second->len, is_text);
 
-	if (p != memoryfiles.end())
-	{
-		con.Printf_err(MM_MINOR_ERR,
-			"Error mounting file in memory \"%s\": File already mounted.\n",
-			vp.c_str());
-		return false;
-	}
-
-	memoryfiles[vp] = new MemoryFile(data,len);
-
-	return true;
+	return 0;
 }
 
 bool FileSystem::rewrite_virtual_path(string &vfn)

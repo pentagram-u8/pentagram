@@ -26,6 +26,8 @@ class ArchiveFile {
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
+	virtual ~ArchiveFile() { }
+
 	//! Check if constructed object is indeed a valid archive
 	virtual bool isValid() const { return valid; }
 

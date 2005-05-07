@@ -1,5 +1,6 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT(README)
+AC_INIT
+AC_CONFIG_SRCDIR([README])
 AC_CONFIG_HEADERS(misc/config.h)
 
 # ---------------------------------------------------------------------
@@ -16,6 +17,7 @@ VERSION=$VER_MAJOR.$VER_MINOR$VER_EXTRA
 # (build  = system we're building on,
 #  host   = system we're building for,
 #  target = system the program we're building will build for)
+AC_CANONICAL_BUILD
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 
@@ -121,28 +123,19 @@ esac
 # ---------------------------------------------------------------------
 # Compilers and other tools
 # ---------------------------------------------------------------------
+SAVED_CC=$CC
+
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_LEX
 AC_PROG_CXX
 
-
-dnl # objcopy (used for embedding binary data into linux binary)
-dnl # not currently used
-dnl AC_CHECK_PROG(have_objdump, "objdump", yes, no)
-dnl AC_CHECK_PROG(have_objcopy, "objcopy", yes, no)
-dnl if test x$have_objdump = xyes -a x$have_objcopy = xyes ; then
-dnl   AC_MSG_CHECKING(objcopy command line)
-dnl    AC_TRY_COMPILE(,,[
-dnl 	OBJCOPY_format=`objdump -f conftest.$ac_objext | sed -e '/file format/!d' -e 's/.*format \(.*\)/\1/'`
-dnl 	OBJCOPY_arch=`objdump -f conftest.$ac_objext | sed -e '/architecture/!d' -e 's/.*architecture: \(.*\),.*/\1/'`
-dnl    ])
-dnl    AC_MSG_RESULT(-I binary -O $OBJCOPY_format -B $OBJCOPY_arch)
-dnl fi
+# set CC_FOR_BUILD and BUILDEXEEXT
+PENT_BUILDCC
 
 AC_MSG_CHECKING(if we should use GCC PCH)
-AC_ARG_ENABLE(gcc-pch, [  --enable-gcc-pch        Use GCC 3.4 precompiled headers [default no]],,enable_gcc_pch=no)
+AC_ARG_ENABLE(gcc-pch, [[  --enable-gcc-pch        Use GCC 3.4 precompiled headers [default no]]],,enable_gcc_pch=no)
 if test x$GCC = xyes -a x$enable_gcc_pch = xyes; then
 	AC_DEFINE(USE_PRECOMPILED_HEADER, 1, [use precompiled header])
 	AC_MSG_RESULT(yes)
@@ -157,56 +150,42 @@ fi
 # Checks for header files.
 # ---------------------------------------------------------------------
 # Switch to C++
-AC_LANG_CPLUSPLUS
+AC_LANG([C++])
 
 AC_HEADER_STDC
 
-AC_CHECK_HEADERS(sstream)
 AC_CHECK_HEADERS(unistd.h sys/types.h sys/stat.h)
-
-# ---------------------------------------------------------------------
-# Checks for readline.
-# ---------------------------------------------------------------------
-#AC_CHECK_HEADERS(readline.h history.h readline/readline.h readline/history.h)
-#AC_CHECK_LIB(curses, clear)
-#AC_CHECK_LIB(history, add_history)
-#AC_CHECK_LIB(readline, readline)
 
 # ---------------------------------------------------------------------
 # Checks for specific functions.
 # ---------------------------------------------------------------------
 AC_MSG_CHECKING(for snprintf())
-AC_TRY_LINK([
+AC_LINK_IFELSE([AC_LANG_PROGRAM([[
 #include <stdio.h>
-],
-[
+]], [[
         snprintf(0,0,0,0);
-],
-  ac_cv_func_snprintf=yes,
-  ac_cv_func_snprintf=no)
-AC_MSG_RESULT($ac_cv_func_snprintf)
-if test x$ac_cv_func_snprintf = xyes ; then
+]])],[have_snprintf=yes],[have_snprintf=no])
+AC_MSG_RESULT($have_snprintf)
+if test x$have_snprintf = xyes ; then
 	AC_DEFINE(HAVE_SNPRINTF, 1, [Some platforms don't have snprintf])
 fi
 
 
 # ---------------------------------------------------------------------
 # Check sizes of integer types.
-# Cross-compiling sizes set to 2,4,4,8. (May need to be changed...)
-# Cross-compiling pointer size set to 4.
 # ---------------------------------------------------------------------
-AC_CHECK_SIZEOF(short, 2)
-AC_CHECK_SIZEOF(int, 4)
-AC_CHECK_SIZEOF(long, 4)
-AC_CHECK_SIZEOF(long long, 8)
-AC_CHECK_SIZEOF(int*, 4)
+AC_CHECK_SIZEOF(short)
+AC_CHECK_SIZEOF(int)
+AC_CHECK_SIZEOF(long)
+AC_CHECK_SIZEOF(long long)
+AC_CHECK_SIZEOF(int*)
 
 # ---------------------------------------------------------------------
 # Architecture dependent optimisations
 # ---------------------------------------------------------------------
 
 AC_MSG_CHECKING(if we should optimise for MMX)
-AC_ARG_ENABLE(mmx, [  --enable-mmx            Use MMX optimisations [default no]],,enable_mmx=no)
+AC_ARG_ENABLE(mmx, [[  --enable-mmx            Use MMX optimisations [default no]]],,enable_mmx=no)
 if test x$enable_mmx = xyes; then
 	AC_MSG_RESULT(yes)
 	CXXFLAGS="$CXXFLAGS -mmmx"
@@ -215,7 +194,7 @@ else
 fi
 
 AC_MSG_CHECKING(if we should optimise for 3DNOW)
-AC_ARG_ENABLE(3dnow, [  --enable-3dnow          Use 3DNOW optimisations [default no]],,enable_3dnow=no)
+AC_ARG_ENABLE(3dnow, [[  --enable-3dnow          Use 3DNOW optimisations [default no]]],,enable_3dnow=no)
 if test x$enable_3dnow = xyes; then
 	AC_MSG_RESULT(yes)
 	CXXFLAGS="$CXXFLAGS -m3dnow"
@@ -227,8 +206,8 @@ fi
 # Random Optimisations
 # ---------------------------------------------------------------------
 
-AC_MSG_CHECKING(if we should add seemingly random optimisations)
-AC_ARG_ENABLE(random_optimisations, [  --enable-random-optimisations   Use random optimisations [default no]],,enable_random_optimisations=no)
+AC_MSG_CHECKING(if we should add some extra optimisation options)
+AC_ARG_ENABLE(random_optimisations, [[  --enable-extra-optimisations    Enable some extra optimisations [default no]]],,enable_random_optimisations=no)
 if test x$enable_random_optimisations = xyes; then
     AC_MSG_RESULT(yes)
     CXXFLAGS="$CXXFLAGS -O3 -funroll-loops"
@@ -241,39 +220,63 @@ fi
 # ---------------------------------------------------------------------
 # SDL
 # ---------------------------------------------------------------------
-# FIXME: For some reason this dies when trying to test a compile with
-#	the language set to CPLUSPLUS. Find out why and hopefully fix
-#	it. *grin*
-AC_LANG_C
 SDL_VERSION=1.2.0
 AM_PATH_SDL($SDL_VERSION,
 	:,
-	AC_MSG_ERROR([*** SDL version $SDL_VERSION not found!])
+	AC_MSG_ERROR([[*** SDL version $SDL_VERSION not found!]])
 )
-AC_LANG_CPLUSPLUS
 
 # -----
 # zlib
 # -----
 
 AC_CHECK_HEADER(zlib.h,,AC_MSG_ERROR([*** zlib not found!]))
+AC_CHECK_LIB(z,deflate,,AC_MSG_ERROR([*** zlib not found!]))
 LIBS="$LIBS -lz"
 
 # --------
 # SDL_ttf
 # --------
 
-#AC_CHECK_LIB(SDL_ttf, TTF_Init, HAVESDLTTF=yes, HAVESDLTTF=no)
+# backup CPPFLAGS/LDFLAGS and add SDL_CFLAGS/SDL_LIBS
 BACKUPCPPFLAGS="$CPPFLAGS"
+BACKUPLDFLAGS="$LDFLAGS"
+
 CPPFLAGS="$CPPFLAGS $SDL_CFLAGS"
-AC_CHECK_HEADER(SDL_ttf.h,, AC_MSG_ERROR([*** SDL_ttf not found!]))
-CPPFLAGS="$BACKUPCPPFLAGS"
+LDFLAGS="$LDFLAGS $SDL_LIBS"
+
+AC_MSG_CHECKING(for SDL_ttf.h)
+
+dnl we do this check manually because we want to check for "SDL_ttf.h" and not
+dnl for <SDL_ttf.h>
+AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+#include "SDL_ttf.h"
+]],)],sdlttfh_found=yes,sdlttfh_found=no)
+AC_MSG_RESULT($sdlttfh_found)
+if test x$sdlttfh_found = xno; then
+	AC_CHECK_HEADER(SDL/SDL_ttf.h,sdlsdlttfh_found=yes,sdlsdlttfh_found=no)
+	if test x$sdlsdlttfh_found = xno; then
+		AC_MSG_ERROR([*** SDL_ttf not found!])
+	else
+		AC_DEFINE(HAVE_SDL_SDL_TTF_H, 1, [Define to 1 if you have the <SDL/SDL_ttf.h> header file but not "SDL_ttf.h"])
+	fi
+else
+	AC_DEFINE(HAVE_SDL_TTF_H, 1, [Define to 1 if you have the "SDL_ttf.h" header file])
+fi
+
+dnl AC_CHECK_LIB(SDL_ttf, TTF_Init,,AC_MSG_ERROR([*** SDL_ttf not found!]))
+
 LIBS="$LIBS -lSDL_ttf"
+
+# reset CPPFLAGS/LDFLAGS
+CPPFLAGS="$BACKUPCPPFLAGS"
+LDFLAGS="$BACKUPLDFLAGS"
+
 
 # ------------------
 # Warning level
 # ------------------
-AC_ARG_ENABLE(paranoid-warnings, [  --enable-paranoid-warnings      Enable paranoid warnings [default no]],,enable_paranoid_warnings=no)
+AC_ARG_ENABLE(paranoid-warnings, [[  --enable-paranoid-warnings      Enable paranoid warnings [default no]]],,enable_paranoid_warnings=no)
 if test x$enable_paranoid_warnings = xyes; then
         WARNINGS="-Wall -W -Wcast-qual -Wwrite-strings -Wconversion -Wredundant-decls -Wdisabled-optimization -fcheck-new -Wctor-dtor-privacy -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Wfloat-equal -Wundef -Wpointer-arith -Wcast-qual -Wcast-align"
 		# -Wshadow produces a lot of pointless warnings, don't use it.
@@ -289,7 +292,7 @@ fi
 # Profiling!
 # ------------------
 AC_MSG_CHECKING(if we should include profiling information)
-AC_ARG_ENABLE(profiling, [  --enable-profiling      Enable profiling [default no]],,enable_profiling=no)
+AC_ARG_ENABLE(profiling, [[  --enable-profiling      Enable profiling [default no]]],,enable_profiling=no)
 if test x$enable_profiling = xyes; then
 	AC_MSG_RESULT(yes)
 	PROFILE="-pg"
@@ -325,7 +328,7 @@ fi
 # ------------------
 
 # debugging
-AC_ARG_ENABLE(debug,           [  --disable-debug         Disable debugging mode],,enable_debug=yes)
+AC_ARG_ENABLE(debug,           [[  --disable-debug         Disable debugging mode]],,enable_debug=yes)
 AC_MSG_CHECKING(for debug mode)
 if test x$enable_debug = xyes; then
 	AC_MSG_RESULT(yes)
@@ -340,7 +343,7 @@ USESDLMIXER=no
 #	HAVESDLMIXER=yes,
 #	HAVESDLMIXER=no)
 
-AC_ARG_ENABLE(fmopl_midi,      [  --disable-fmopl-midi    Disable built-in FMOPL midi],,enable_fmopl_midi=yes)
+AC_ARG_ENABLE(fmopl_midi,      [[  --disable-fmopl-midi    Disable built-in FMOPL midi]],,enable_fmopl_midi=yes)
 #if test x$HAVESDLMIXER = xyes; then
 	AC_MSG_CHECKING(if we want to use FMOPL midi)
 	if test x$enable_fmopl_midi = xyes; then
@@ -352,8 +355,8 @@ AC_ARG_ENABLE(fmopl_midi,      [  --disable-fmopl-midi    Disable built-in FMOPL
 	fi
 #fi
 
-AC_ARG_ENABLE(timidity_midi,      [  --disable-timidity-midi Disable built-in timidity midi],,enable_timidity_midi=yes)
-AC_ARG_WITH(timidity,             [  --with-timidity=path    path to timidity.cfg (optional)],,)
+AC_ARG_ENABLE(timidity_midi,      [[  --disable-timidity-midi Disable built-in timidity midi]],,enable_timidity_midi=yes)
+AC_ARG_WITH(timidity,             [[  --with-timidity=path    path to timidity.cfg (optional)]],,)
 AC_MSG_CHECKING(if we want to use timidity midi)
 if test x$enable_timidity_midi = xyes; then
 	AC_MSG_RESULT(yes)
@@ -372,7 +375,7 @@ fi
 
 
 AC_CHECK_HEADER(alsa/asoundlib.h, HAVEALSA=yes, HAVEALSA=no)
-AC_ARG_ENABLE(alsa,[  --disable-alsa          Disable ALSA midi support],,enable_alsa=yes)
+AC_ARG_ENABLE(alsa,[[  --disable-alsa          Disable ALSA midi support]],,enable_alsa=yes)
 AC_MSG_CHECKING(if we want to use ALSA midi)
 if test x$HAVEALSA = xyes; then
 	if test x$enable_alsa = xyes; then
@@ -393,7 +396,7 @@ fi
 
 
 # HQ2X scaler
-AC_ARG_ENABLE(hq2x, [  --enable-hq2x           Enable hq2x scaler support],,enable_hq2x=no)
+AC_ARG_ENABLE(hq2x, [[  --enable-hq2x           Enable hq2x scaler support [default no]]],,enable_hq2x=no)
 AC_MSG_CHECKING(if we should build the hq2x scaler)
 if test x$enable_hq2x = xyes; then
 	AC_MSG_RESULT(yes)
@@ -402,11 +405,24 @@ else
 	AC_MSG_RESULT(no)
 fi
 
+
+# Built-in data files
+AC_ARG_ENABLE(builtin_data, [[  --enable-builtin-data   Enable built-in data files [default no]]],,enable_builtin_data=no)
+AC_MSG_CHECKING(if we should use built-in data files)
+if test x$enable_builtin_data = xyes; then
+	AC_DEFINE(BUILTIN_DATA, 1, [Use built-in data files])
+	USE_BUILTIN_DATA=yes
+else
+	USE_BUILTIN_DATA=no
+fi
+AC_MSG_RESULT($USE_BUILTIN_DATA)
+
+
 # -------------------
 # GIMP plugin
 # -------------------
 AM_CONDITIONAL(GIMP_PLUGIN, false)
-AC_ARG_ENABLE(gimp-plugin,   [  --enable-gimp-plugin    Build the GIMP plugin [default no]],,enable_gimp_plugin=no)
+AC_ARG_ENABLE(gimp-plugin,   [[  --enable-gimp-plugin    Build the GIMP plugin [default no]]],,enable_gimp_plugin=no)
 AC_MSG_CHECKING(whether to build the GIMP plugin)
 if test x$enable_gimp_plugin = xyes; then
 	AC_MSG_RESULT(yes)
@@ -440,15 +456,19 @@ fi
 # ------------------
 # Generate output
 # ------------------
+AC_SUBST(CC_FOR_BUILD)
+AC_SUBST(BUILDEXEEXT)
 AC_SUBST(WARNINGS)
 AC_SUBST(PACKAGE)
 AC_SUBST(PROFILE)
 AC_SUBST(DATAPATH)
 AC_SUBST(USE_PCH)
+AC_SUBST(USE_BUILTIN_DATA)
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 ])
+AC_OUTPUT
 
 
 # ------------------

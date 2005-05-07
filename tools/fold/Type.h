@@ -21,7 +21,6 @@
 #ifndef TYPE_H
 #define TYPE_H
 
-#include "pent_include.h"
 #include "Console.h"
 #include "ODataSource.h"
  

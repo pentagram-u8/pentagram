@@ -11,12 +11,56 @@ AC_DEFUN([_AC_AM_CONFIG_HEADER_HOOK],
 
 
 
+# Set CC_FOR_BUILD to a native compiler. This is used to compile
+# tools needed for the Pentagram build process on the build machine.
+# (adapted from config.guess, (C) 1992-2005 Free Software Foundation, Inc.)
+AC_DEFUN([PENT_BUILDCC],[
+if test x$cross_compiling = xyes; then
+  AC_MSG_CHECKING(for a native C compiler)
+  case $CC_FOR_BUILD,$HOST_CC,$SAVED_CC in
+   ,,)    echo "int x;" > conftest.$ac_ext ;
+          for c in cc gcc c89 c99 ; do
+            if ($c -c -o conftest.o conftest.$ac_ext) >/dev/null 2>&1 ; then
+               CC_FOR_BUILD="$c"; break ;
+            fi ;
+          done ;
+          if test x"$CC_FOR_BUILD" = x ; then
+            CC_FOR_BUILD=no_compiler_found ;
+          fi
+          ;;
+   ,,*)   CC_FOR_BUILD=$SAVED_CC ;;
+   ,*,*)  CC_FOR_BUILD=$HOST_CC ;;
+  esac ;
+  if test x$CC_FOR_BUILD = xno_compiler_found ; then
+    AC_MSG_RESULT(none found)
+  else
+    AC_MSG_RESULT($CC_FOR_BUILD)
+  fi
+
+  # basis check for EXEEXT_FOR_BUILD
+  BUILDEXEEXT=
+  case "$build_os" in
+  mingw32* ) BUILDEXEEXT=.exe ;;
+  cygwin* ) BUILDEXEEXT=.exe ;;
+  esac
+else
+  CC_FOR_BUILD=$CC
+  BUILDEXEEXT=$EXEEXT
+fi
+]);
+
+
+
 # Configure paths for SDL
 # Sam Lantinga 9/21/99
 # stolen from Manish Singh
 # stolen back from Frank Belew
 # stolen from Manish Singh
 # Shamelessly stolen from Owen Taylor
+
+# Modified by Willem Jan Palenstijn (2005-05-07)
+# use CPPFLAGS instead of CFLAGS. (Fixes check with AC_LANG_CPLUSPLUS)
+
 
 dnl AM_PATH_SDL([MINIMUM-VERSION, [ACTION-IF-FOUND [, ACTION-IF-NOT-FOUND]]])
 dnl Test for SDL, and define SDL_CFLAGS and SDL_LIBS
@@ -64,9 +108,9 @@ AC_ARG_ENABLE(sdltest, [  --disable-sdltest       Do not try to compile and run 
     sdl_micro_version=`$SDL_CONFIG $sdl_config_args --version | \
            sed 's/\([[0-9]]*\).\([[0-9]]*\).\([[0-9]]*\)/\3/'`
     if test "x$enable_sdltest" = "xyes" ; then
-      ac_save_CFLAGS="$CFLAGS"
+      ac_save_CPPFLAGS="$CPPFLAGS"
       ac_save_LIBS="$LIBS"
-      CFLAGS="$CFLAGS $SDL_CFLAGS"
+      CPPFLAGS="$CPPFLAGS $SDL_CFLAGS"
       LIBS="$LIBS $SDL_LIBS"
 dnl
 dnl Now check if the installed SDL is sufficiently new. (Also sanity
@@ -130,13 +174,17 @@ int main (int argc, char *argv[])
     }
 }
 
-],, no_sdl=yes,[echo $ac_n "cross compiling; assumed OK... $ac_c"])
-       CFLAGS="$ac_save_CFLAGS"
+],, no_sdl=yes,no_sdl=)
+       CPPFLAGS="$ac_save_CPPFLAGS"
        LIBS="$ac_save_LIBS"
      fi
   fi
   if test "x$no_sdl" = x ; then
-     AC_MSG_RESULT(yes)
+     if test x$cross_compiling = xno; then
+       AC_MSG_RESULT(yes)
+     else
+       AC_MSG_RESULT(cross compiling; assumed OK)
+     fi
      ifelse([$2], , :, [$2])     
   else
      AC_MSG_RESULT(no)
@@ -150,7 +198,7 @@ int main (int argc, char *argv[])
         :
        else
           echo "*** Could not run SDL test program, checking why..."
-          CFLAGS="$CFLAGS $SDL_CFLAGS"
+          CPPFLAGS="$CPPFLAGS $SDL_CFLAGS"
           LIBS="$LIBS $SDL_LIBS"
           AC_TRY_LINK([
 #include <stdio.h>
@@ -174,7 +222,7 @@ int main(int argc, char *argv[])
           echo "*** exact error that occurred. This usually means SDL was incorrectly installed"
           echo "*** or that you have moved SDL since it was installed. In the latter case, you"
           echo "*** may want to edit the sdl-config script: $SDL_CONFIG" ])
-          CFLAGS="$ac_save_CFLAGS"
+          CPPFLAGS="$ac_save_CPPFLAGS"
           LIBS="$ac_save_LIBS"
        fi
      fi

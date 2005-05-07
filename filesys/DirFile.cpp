@@ -48,7 +48,7 @@ bool DirFile::readMetadata()
 	FileSystem* filesys = FileSystem::get_instance();
 	FileSystem::FileList files;
 
-	int ret = filesys->ListFiles(path + "*", files);
+	/*int ret =*/ filesys->ListFiles(path + "*", files);
 
 	// TODO: check if directory actually exists
 

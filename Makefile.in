@@ -37,6 +37,8 @@ MKDIR := @MKDIR@
 RM := @RM@
 EXEEXT := @EXEEXT@
 EMPTY_FILE := @EMPTY_FILE@
+CC_FOR_BUILD := @CC_FOR_BUILD@
+BUILDEXEEXT := @BUILDEXEEXT@
 
 DEPDIR := .deps
 SDL_CFLAGS := @SDL_CFLAGS@
@@ -56,46 +58,52 @@ GIMP_PLUGIN_PREFIX = @GIMP_PLUGIN_PREFIX@
 
 # List of all submodules
 # The order is important, be careful if you change it
-MODULES := convert convert/u8 convert/crusader misc filesys filesys/zip \
+MODULES := tools/data2c convert convert/u8 convert/crusader misc \
+	data filesys filesys/zip \
 	tools tools/disasm tools/compile tools/flexpack tools/fold \
 	tools/shapeconv $(GIMP_PLUGIN_MODULES)\
 	kernel games graphics graphics/fonts graphics/scalers audio \
 	audio/midi audio/midi/timidity usecode world world/actors gumps \
 	gumps/widgets conf .
 
+# Default target. The other dependencies are added by the module.mk files
+all: misc/config.h
+
 # GCC 3.4+ precompiled header
 ifeq (@USE_PCH@,yes)
 PCHEADER := misc/pent_include.h.gch
+clean-pch:
+	-$(RM) $(PCHEADER)
 else
 PCHEADER :=
+clean-pch:
+endif
+
+# create built-in data file if required
+ifeq (@USE_BUILTIN_DATA@,yes)
+filesys/data.o: data/data.h
+clean-datah:
+	-$(RM) data/data.h
+else
+clean-datah:
 endif
 
 # config.h will be in $(top_builddir)/misc (and so will the precompiled header)
-CXXFLAGS += -I$(top_builddir)/misc
+CPPFLAGS += -I$(top_builddir)/misc
 
 # look for include files in each of the modules
-CXXFLAGS += $(patsubst %,-I$(top_srcdir)/%,$(MODULES)) -I.
+CPPFLAGS += $(patsubst %,-I$(top_srcdir)/%,$(MODULES)) -I.
 
 # list of all .deps subdirs
 DEPDIRS = $(patsubst %,%/$(top_builddir)/$(DEPDIR),$(MODULES))
 
-# Default target. The other dependencies are added by the module.mk files
-all: misc/config.h
-
 # Clean all object files & binaries
-clean: clean-pch
+clean: clean-pch clean-datah
 
 # Clean *all*
 distclean: clean
 	-$(RM) -r $(DEPDIRS)
 	-$(RM) $(top_builddir)/misc/config.h $(top_builddir)/misc/config.h.stamp
-
-ifeq (@USE_PCH@,yes)
-clean-pch:
-	-$(RM) $(PCHEADER)
-else
-clean-pch:
-endif
 
 # Include additional rules for each module
 include $(patsubst %,$(top_srcdir)/%/module.mk,$(MODULES))
@@ -140,4 +148,4 @@ $(srcdir)/misc/config.h.in: $(top_srcdir)/configure.ac $(top_srcdir)/aclocal.m4
 	cd $(top_srcdir) && $(AUTOHEADER)
 	touch $(srcdir)/misc/config.h.in
 
-.PHONY: all clean distclean clean-pch
+.PHONY: all clean distclean clean-pch clean-datah

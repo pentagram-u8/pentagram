@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -85,7 +85,8 @@ void MusicProcess::playMusic(int track)
 		uint32 measure = driver->getSequenceCallbackData(0);
 
 		// No transition info, or invalid measure, so fast change
-		if (!info || (measure < 0) || (measure >= info->num_measures) || !info->transitions[track] || !info->transitions[track][measure])
+		if (!info || (measure < 0) || (measure >= info->num_measures) ||
+			!info->transitions[track] || !info->transitions[track][measure])
 		{
 			current_track = 0;
 			if (track == 0)

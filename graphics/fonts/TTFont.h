@@ -21,9 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Font.h"
 
-#include "SDL_ttf.h"
-
 class IDataSource;
+typedef struct _TTF_Font TTF_Font;
 
 class TTFont : public Pentagram::Font
 {
@@ -43,7 +42,8 @@ public:
 									 int width=0, int height=0,
 									 TextAlign align=TEXT_LEFT,
 									 bool u8specials=false,
-									 std::string::size_type cursor=std::string::npos);
+									 std::string::size_type cursor
+											=std::string::npos);
 
 	ENABLE_RUNTIME_CLASSTYPE();
 protected:

@@ -18,7 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/FMOplMidiDriver.cpp,v 1.4 2003/07/16 17:35:35 colourles Exp $
+ * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/FMOplMidiDriver.cpp,v 1.5 2005/05/07 17:35:43 wjpalenstijn Exp $
  */
 
 #include "pent_include.h"
@@ -798,8 +798,6 @@ void FMOplMidiDriver::midi_fm_endnote(int voice)
 
 void FMOplMidiDriver::loadAdlibTimbres(IDataSource *ds)
 {
-	POUT ("FMOplMidiDriver: Loading Adlib Timbres");
-
 	bool read[128];
 	std::memset(read, false, sizeof(read));
 
@@ -881,7 +879,7 @@ void FMOplMidiDriver::loadAdlibTimbres(IDataSource *ds)
 
 	for (i = 0; i < 16; i++) ch[i].xmidi = true;
 
-	POUT ("FMOplMidiDriver: " << i << " timbres read");
+//	POUT ("FMOplMidiDriver: " << i << " timbres read");
 }
 
 

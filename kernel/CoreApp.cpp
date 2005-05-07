@@ -97,7 +97,6 @@ void CoreApp::startup()
 
 	setupVirtualPaths(); // setup @home, @data
 	loadConfig(); // load config files
-	initGame();
 }
 
 void CoreApp::DeclareArgs()
@@ -172,39 +171,49 @@ void CoreApp::setupVirtualPaths()
 #else
 	data = "data";
 #endif
-	con.Print(MM_INFO, "Trying built-in data path\n");
-	filesystem->AddVirtualPath("@data", data);
+	bool ok = filesystem->AddVirtualPath("@data", data);
+	if (!ok) {
+#ifndef BUILTIN_DATA
+		pout << "Error opening default data directory: " << data << std::endl;
+		pout << "Trying custom data path specified in configuration file."
+			 << std::endl;
+#endif
+	} else {
+		pout << "Default data path: " << data << std::endl;
+	}
 }
 
 // load configuration files
 void CoreApp::loadConfig()
 {
-	con.Print(MM_INFO, "Loading configuration files:\n");
+	pout << "Loading configuration files:" << std::endl;
 
-	// system-wide config
-	if (settingman->readConfigFile("@data/pentagram.ini", true))
-		con.Print(MM_INFO, "@data/pentagram.ini... Ok\n");
-	else
-		con.Print(MM_MINOR_WARN, "@data/pentagram.ini... Failed\n");
+	bool dataconf, homeconf;
+
+	// system-wide config, read-only
+	dataconf = settingman->readConfigFile("@data/pentagram.ini", true);
 
 	// user config
-	if (settingman->readConfigFile("@home/pentagram.ini"))
-		con.Print(MM_INFO, "@home/pentagram.ini... Ok\n");
-	else
-		con.Print(MM_MINOR_WARN, "@home/pentagram.ini... Failed\n");
+	homeconf = settingman->readConfigFile("@home/pentagram.ini");
 
-	con.Printf(MM_INFO, "Game: %s\n", gamename.c_str());
+	if (!homeconf && !dataconf) {
+		pout << "No configuration files found." << std::endl;
+	} else {
 
+		if (dataconf)
+			pout << "@data/pentagram.ini" << std::endl;
+		if (homeconf)
+			pout << "@home/pentagram.ini" << std::endl;
+	}
 
 	//  load pentagram specific data path
 	std::string data;
-	con.Print(MM_INFO, "Reading \"pentagram/data\" config key.\n");
 	if (settingman->get("data", data, SettingManager::DOM_GLOBAL)) {
-		con.Printf(MM_INFO, "Data Path: %s\n", data.c_str());
-		filesystem->AddVirtualPath("@data", data);
-	}
-	else {
-		con.Print(MM_MINOR_WARN, "Key not found. Data path set to default.\n");
+		pout << "Setting custom data path: " << data << std::endl;
+		bool ok = filesystem->AddVirtualPath("@data", data);
+		if (!ok) {
+			perr << "Error opening data directory." << std::endl;
+		}
 	}
 }
 
@@ -373,7 +382,6 @@ void CoreApp::setupGamePaths(std::string& game, GameInfo* /*gameinfo*/)
 
 	// load main game data path
 	std::string gpath;
-	con.Printf(MM_INFO, "Reading \"%s/path\" config key.\n", game.c_str());
 	settingman->get("path", gpath, SettingManager::DOM_GAME);
 	filesystem->AddVirtualPath("@u8", gpath); //!!FIXME (u8 specific)
 	con.Printf(MM_INFO, "Game Path: %s\n", gpath.c_str());
@@ -382,7 +390,6 @@ void CoreApp::setupGamePaths(std::string& game, GameInfo* /*gameinfo*/)
 	// load work path. Default is @home/game-work
 	// where 'game' in the above is the specified 'game' loaded
 	std::string work;
-	con.Printf(MM_INFO, "Reading \"%s/work\" config key.\n", game.c_str());
 	if (!settingman->get("work", work, SettingManager::DOM_GAME))
 		work = "@home/"+game+"-work";
 
@@ -404,7 +411,6 @@ void CoreApp::setupGamePaths(std::string& game, GameInfo* /*gameinfo*/)
 
 	// load savegame path. Default is @home/game-save
 	std::string save;
-	con.Printf(MM_INFO, "Reading \"%s/save\" config key.\n", save.c_str());
 	if (!settingman->get("save", save, SettingManager::DOM_GAME))
 		save = "@home/"+game+"-save";
 

@@ -18,7 +18,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 
-#include "pent_include.h"
 #include "AudioChannel.h"
 #include "AudioSample.h"
 

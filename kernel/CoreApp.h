@@ -116,6 +116,7 @@ private:
 	//! load configuration files
 	void loadConfig();
 
+protected:
 	//! select and init game
 	void initGame();
 	

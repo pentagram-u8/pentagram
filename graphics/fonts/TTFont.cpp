@@ -18,7 +18,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 
+#ifdef HAVE_SDL_TTF_H
 #include "SDL_ttf.h"
+#elif defined(HAVE_SDL_SDL_TTF_H)
+#include <SDL/SDL_ttf.h>
+#endif
 
 #include "RenderSurface.h"
 #include "TTFont.h"

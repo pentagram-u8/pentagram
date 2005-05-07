@@ -25,6 +25,8 @@
 #include "TTFont.h"
 #include "encoding.h"
 
+#include "SDL.h"
+
 DEFINE_RUNTIME_CLASSTYPE_CODE(EditWidget,Gump);
 
 EditWidget::EditWidget()

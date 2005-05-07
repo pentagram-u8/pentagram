@@ -43,7 +43,8 @@ FILESYS = \
 	filesys/U8SaveFile.o \
 	filesys/Savegame.o \
 	filesys/SavegameWriter.o \
-	filesys/ZipFile.o
+	filesys/ZipFile.o \
+	filesys/data.o
 
 UNZIP = \
 	filesys/zip/unzip.o \

@@ -23,6 +23,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class XMidiSequenceHandler
 {
 public:
+	virtual ~XMidiSequenceHandler() { }
+
 	//! An event sent from a sequence to play
 	//! \param sequence_id The id of the sequence that is attempting to send the event
 	//! \param message The Event being sent

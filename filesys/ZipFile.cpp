@@ -61,7 +61,6 @@ ZipFile::ZipFile(IDataSource* ds_)
 	unzipfile = static_cast<void*>(unzfile);
 
 	if (valid) {
-		pout << "ZipFile: reading metadata" << std::endl;
 		valid = readMetadata();
 		if (!valid) PentZip::unzClose(unzfile);
 	}
