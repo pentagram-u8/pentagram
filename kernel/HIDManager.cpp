@@ -206,8 +206,7 @@ void HIDManager::loadBindings()
 	
 	if (i == end)
 	{
-		pout << "No custom HIDBinding found:" << std::endl
-			<< "\tLoading default HIDBindings..." << std::endl;
+		pout << "Loading default HIDBindings..." << std::endl;
 		ConfigFileManager* config = ConfigFileManager::get_instance();
 		keys = config->listKeyValues("bindings/bindings");
 		i = keys.begin();
@@ -220,7 +219,7 @@ void HIDManager::loadBindings()
 		bind((*i).first, bindingName);
 		++i;
 	}
-	listBindings();
+//	listBindings();
 }
 
 void HIDManager::saveBindings()

@@ -127,7 +127,7 @@ static bool Scale( Texture *tex, sint32 sx, sint32 sy, sint32 sw, sint32 sh,
 	// Source buffer pointers
 	uintS *texel = reinterpret_cast<uintS*>(tex->buffer) + (sy * tex->width + sx);
 	int tpitch = tex->width;
-	uintS *tline_end = texel + sw;
+//	uintS *tline_end = texel + sw;
 	uintS *tex_end = texel + (sh-1)*tex->width;
 
 	bool clip_y = true;
@@ -1033,7 +1033,7 @@ static bool Scale2x_16MMX( Texture *tex	, sint32 sx, sint32 sy, sint32 sw, sint3
 	// Source buffer pointers
 	uint16 *texel = reinterpret_cast<uint16*>(tex->buffer) + (sy * tex->width + sx);
 	int tpitch = tex->width;
-	uint16 *tline_end = texel + sw;
+//	uint16 *tline_end = texel + sw;
 	uint16 *tex_end = texel + (sh-1)*tex->width;
 
 	bool clip_y = true;
@@ -1081,7 +1081,7 @@ static bool Scale2x_32MMX( Texture *tex	, sint32 sx, sint32 sy, sint32 sw, sint3
 	// Source buffer pointers
 	uint32 *texel = reinterpret_cast<uint32*>(tex->buffer) + (sy * tex->width + sx);
 	int tpitch = tex->width;
-	uint32 *tline_end = texel + sw;
+//	uint32 *tline_end = texel + sw;
 	uint32 *tex_end = texel + (sh-1)*tex->width;
 
 	bool clip_y = true;

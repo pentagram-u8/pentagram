@@ -38,6 +38,9 @@ const char *features = ""
 #ifdef USE_HQ2X_SCALER
   "hq2x "
 #endif
+#ifdef BUILTIN_DATA
+  "nodata "
+#endif
 ;
 
 const char *buildtime = __DATE__ " " __TIME__;

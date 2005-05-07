@@ -1,3 +1,14 @@
+2005-05-07  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* various: warnings
+	* various: cleaned up output on startup a bit
+	* acinclude.m4: use CPPFLAGS instead of CFLAGS in AM_PATH_SDL
+	* tools/data2c/*: simple tool to create C header file from data files
+	* filesys/FileSystem.*: in-memory files override @data files
+	* filesys/data.cpp: load built-in data files ifdef BUILTIN_DATA
+	* configure.ac: added --enable-builtin-data option
+	* configure.ac: check for both "SDL_ttf.h" and <SDL/SDL_ttf.h>
+	* graphics/fonts/TT*: include the SDL_ttf.h as found in configure
+
 2005-05-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* games/U8Game.*: no longer start with items; use concmd Cheat::items
 
