@@ -56,14 +56,16 @@ void ShapeRenderedText::draw(RenderSurface* surface, int x, int y)
 						   line_x, line_y);
 
 			if (i == iter->cursor) {
-				surface->Fill32(0xFF000000, line_x, line_y, 1, iter->dims.h);
+				surface->Fill32(0xFF000000, line_x, line_y-font->getBaseline(),
+								1, iter->dims.h);
 			}
 
 			line_x += font->getWidth(iter->text[i])-font->getHlead();
 		}
 
 		if (iter->cursor == textsize) {
-			surface->Fill32(0xFF000000, line_x, line_y, 1, iter->dims.h);
+			surface->Fill32(0xFF000000, line_x, line_y-font->getBaseline(),
+							1, iter->dims.h);
 		}
 	}
 }

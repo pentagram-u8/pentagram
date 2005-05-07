@@ -1,4 +1,7 @@
 2005-05-07  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/fonts/ShapeRenderedText.cpp: adjust cursor position
+
+2005-05-07  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: warnings
 	* various: cleaned up output on startup a bit
 	* acinclude.m4: use CPPFLAGS instead of CFLAGS in AM_PATH_SDL
