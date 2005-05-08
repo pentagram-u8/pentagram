@@ -1749,17 +1749,17 @@ void GUIApp::addGump(Gump* gump)
 		(ttfoverrides && (gump->IsOfType<BarkGump>() ||
 						  gump->IsOfType<AskGump>())))
 	{
-		pout << "adding to desktopgump: "; gump->dumpInfo();
+//		pout << "adding to desktopgump: "; gump->dumpInfo();
 		desktopGump->AddChild(gump);
 	}
 	else if (gump->IsOfType<GameMapGump>())
 	{
-		pout << "adding to invertergump: "; gump->dumpInfo();
+//		pout << "adding to invertergump: "; gump->dumpInfo();
 		inverterGump->AddChild(gump);
 	}
 	else if (gump->IsOfType<InverterGump>())
 	{
-		pout << "adding to scalergump: "; gump->dumpInfo();
+//		pout << "adding to scalergump: "; gump->dumpInfo();
 		scalerGump->AddChild(gump);
 	}
 	else if (gump->IsOfType<DesktopGump>())
@@ -1767,7 +1767,7 @@ void GUIApp::addGump(Gump* gump)
 	}
 	else
 	{
-		pout << "adding to scalergump: "; gump->dumpInfo();
+//		pout << "adding to scalergump: "; gump->dumpInfo();
 		scalerGump->AddChild(gump);
 	}
 }
