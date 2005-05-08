@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef MISC_ENCODING_H
 #define MISC_ENCODING_H
 
-extern char reverse_encoding[256];
+extern uint8 reverse_encoding[256];
 extern uint16 encoding[256];
 
 #endif

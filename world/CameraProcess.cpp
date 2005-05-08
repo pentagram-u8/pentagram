@@ -370,7 +370,7 @@ uint32 CameraProcess::I_scrollTo(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(y);
 	ARG_UINT8(z);
 	ARG_SINT16(unk);
-	return CameraProcess::SetCameraProcess(new CameraProcess(x,y,z, 15));
+	return CameraProcess::SetCameraProcess(new CameraProcess(x,y,z, 25));
 }
 
 //	Camera::startQuake(word)

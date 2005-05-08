@@ -296,13 +296,13 @@ protected:
 		// Do for all but last byte
 		while (size > 1)
 		{
-			*new_buf_ptr = *buf_ptr;
-
 			if (*(uint16*)buf_ptr == 0x0A0D)
 			{
 				buf_ptr++;
 				size--;
 			}
+
+			*new_buf_ptr = *buf_ptr;
 
 			new_buf_ptr++;
 			new_size++;

@@ -1,3 +1,9 @@
+2005-05-08  Ryan Nunn <colourles@users.sourceforge.net>
+	* filesys/IDataSource.h : Fixing line end bug on Windows
+	* misc/encoding.* : Made reverse_encoding use uint8s because MSVC was
+	  complaining about truncated constants
+	* world/CameraProcess.cpp : Changing camera scroll speed (slower)
+
 2005-05-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* objects.mk, data/module.mk: moved list of DATA_FILES to objects.mk
 
