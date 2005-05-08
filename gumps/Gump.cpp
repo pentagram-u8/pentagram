@@ -337,42 +337,32 @@ void Gump::setRelativePosition(Gump::Position pos, int xoffset, int yoffset)
 		Pentagram::Rect rect;
 		parent->GetDims(rect);
 
-		// A small hack
-		if (parent->IsOfType<ScalerGump>()) parent->ParentToGump(rect.w, rect.h);
-
 		switch (pos)
 		{
 		case CENTER:
-		{
 			Move(rect.w / 2 - dims.w / 2 + xoffset, rect.h / 2 - dims.h / 2 + yoffset);
-		} break;
+			break;
 		case TOP_LEFT:
-		{
 			Move(xoffset, yoffset);
-		} break;
+			break;
 		case TOP_RIGHT:
-		{
 			Move(rect.w - dims.w + xoffset, yoffset);
-		} break;
+			break;
 		case BOTTOM_LEFT:
-		{
 			Move(xoffset, rect.h - dims.h + yoffset);
-		} break;
+			break;
 		case BOTTOM_RIGHT:
-		{
 			Move(rect.w - dims.w + xoffset, rect.h - dims.h + yoffset);
-		} break;
+			break;
 		case TOP_CENTER:
-		{
 			Move(rect.w / 2 - dims.w / 2 + xoffset, yoffset);
-		} break;
+			break;
 		case BOTTOM_CENTER:
-		{
 			Move(rect.w / 2 - dims.w / 2 + xoffset, rect.h - dims.h + yoffset);
-		} break;
+			break;
 		default:
-			break;			
-		};
+			break;
+		}
 	}
 }
 
