@@ -255,3 +255,17 @@ TIMIDITY = \
 	audio/midi/timidity/timidity_sdl_a.o \
 	audio/midi/timidity/timidity_sdl_c.o \
 	audio/midi/timidity/timidity_tables.o
+
+DATA_FILES = \
+	data/fixedfont.ini \
+	data/fixedfont.tga \
+	data/u8armour.ini \
+	data/u8bindings.ini \
+	data/u8french.ini \
+	data/u8german.ini \
+	data/u8.ini \
+	data/u8monsters.ini \
+	data/u8spanish.ini \
+	data/u8weapons.ini \
+	data/VeraBd.ttf \
+	data/Vera.ttf
