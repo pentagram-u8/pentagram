@@ -23,14 +23,14 @@ GIMP_LIBS = `pkg-config --libs gimpui-2.0`
 SDL_CFLAGS=-I$(SRC)/sdl/include
 SDL_LIBS=-L$(SRC)/sdl/lib -lSDLmain -lSDL -lSDL_ttf
 
-CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -DSIZEOF_INTP=4 -I$(SRC)/conf -I$(SRC)/convert -I$(SRC)/filesys \
+CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -DSIZEOF_INTP=4 -I$(SRC) -I$(SRC)/conf -I$(SRC)/convert -I$(SRC)/filesys \
 	-I$(SRC)/filesys/zip -I$(SRC)/graphics -I$(SRC)/graphics/fonts -I$(SRC)/graphics/scalers -I$(SRC)/gumps -I$(SRC)/kernel \
 	-I$(SRC)/misc -I$(SRC)/tools/compile -I$(SRC)/tools/disasm \
 	-I$(SRC)/tools/flexpack -I$(SRC)/tools/fold -I$(SRC)/usecode -I$(SRC)/world \
 	-I$(SRC)/world/actors -I$(SRC)/gumps/widgets -I$(SRC)/games \
 	-I$(SRC)/audio -I$(SRC)/audio/midi -I$(SRC)/audio/timidity \
 	$(SDL_CFLAGS) -DHAVE_SYS_STAT_H -DHAVE_SYS_TYPES_H -DHAVE_UNISTD_H -DUSE_FMOPL_MIDI \
-	-DHAVE_SDL_TTF_H -DVERSION=\"$(VERSION)\" $(GTK_INCLUDES) $(GIMP_INCLUDES) 
+	-DHAVE_SDL_TTF_H -DBUILTIN_DATA -DVERSION=\"$(VERSION)\" $(GTK_INCLUDES) $(GIMP_INCLUDES) 
 CXXFLAGS=-O2
 CXX=g++
 CFLAGS=-O2
@@ -58,6 +58,9 @@ FLEXPACK_OBJCS = \
 	misc/Console.o misc/istring.o misc/pent_include.o misc/util.o tools/flexpack/FlexPack.o \
 	tools/flexpack/FlexWriter.o
 
+data2c.exe : tools/data2c/data2c.o
+	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
+
 disasm.exe : tools/disasm/Disasm.o $(FOLD_OBJCS)
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
@@ -78,6 +81,11 @@ PENTSHP_OBJCS = \
 pentshp.exe : $(PENTSHP_OBJCS)
 	$(CXX) $(LFLAGS) -o $@ $+ $(GTK_LIBS) $(GIMP_LIBS)
 
+data/data.h: data2c.exe $(DATA_FILES)
+	data2c.exe data/data.h $(DATA_FILES)
+
+filesys/data.o: data/data.h
+
 PENTAGRAM_OBJS = \
 	$(KERNEL) $(KERNEL2) $(USECODE) $(FILESYS) $(UNZIP) $(CONVERT) $(CONF)\
 	$(GRAPHICS) $(SCALERS) $(MISC) $(ARGS) $(GUMPS) $(WIDGETS) $(WORLD) $(ACTORS)\
@@ -87,7 +95,7 @@ PENTAGRAM_OBJS = \
 pentagram.exe: $(PENTAGRAM_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ $(LIBS)
 
-tools: amf2mod.exe disasm.exe flexpack.exe fold.exe shapeconv.exe
+tools: amf2mod.exe data2c.exe disasm.exe flexpack.exe fold.exe shapeconv.exe
 
 gimp-plugin: pentshp.exe
 
@@ -95,7 +103,7 @@ clean:
 	rm -f $(PENTAGRAM_OBJS) pentagram.o
 
 toolsclean:
-	rm -f tools/amf2mod/amf2mod.o tools/disasm/Disasm.o $(FLEXPACK_OBJCS) tools/fold/Fold.o $(FOLD_OBJCS) tools/shapeconv/ShapeConv.o *.exe $(PENTSHP_OBJCS) tools/gimp-plugin/pentshp.exe
+	rm -f tools/amf2mod/amf2mod.o tools/data2c/data2c.o tools/disasm/Disasm.o $(FLEXPACK_OBJCS) tools/fold/Fold.o $(FOLD_OBJCS) tools/shapeconv/ShapeConv.o *.exe $(PENTSHP_OBJCS) tools/gimp-plugin/pentshp.exe
 
 install: pentagram.exe
 	mkdir -p $(U8PATH)
@@ -107,6 +115,7 @@ install: pentagram.exe
 toolsinstall: tools
 	mkdir -p $(U8PATH)/tools
 	strip amf2mod.exe -o $(U8PATH)/tools/amf2mod.exe
+	strip data2c.exe -o $(U8PATH)/tools/data2c.exe
 	strip disasm.exe -o $(U8PATH)/tools/disasm.exe
 	strip fold.exe -o $(U8PATH)/tools/fold.exe
 	strip flexpack.exe -o $(U8PATH)/tools/flexpack.exe
