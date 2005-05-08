@@ -24,11 +24,11 @@ $(LPATH)/pentshp$(EXEEXT): $(pentshp_OBJ) $(pentshp_CUST_OBJ)
 
 $(LPATH)/pentshp.o: $(LPATH)/pentshp.cpp
 	@$(MKDIR) $(*D)/$(DEPDIR)
-	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).d",-MQ,"$@",-MP $(WARNINGS) $(CXXFLAGS) $(SDL_CFLAGS) $(GIMP_INCLUDES) -c -o $@ $<
+	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).d",-MQ,"$@",-MP $(WARNINGS) $(CPPFLAGS) $(CXXFLAGS) $(SDL_CFLAGS) $(GIMP_INCLUDES) -c -o $@ $<
 
 $(LPATH)/pentpal.o: $(LPATH)/pentpal.cpp
 	@$(MKDIR) $(*D)/$(DEPDIR)
-	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).d",-MQ,"$@",-MP $(WARNINGS) $(CXXFLAGS) $(SDL_CFLAGS) $(GIMP_INCLUDES) -c -o $@ $<
+	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).d",-MQ,"$@",-MP $(WARNINGS) $(CPPFLAGS) $(CXXFLAGS) $(SDL_CFLAGS) $(GIMP_INCLUDES) -c -o $@ $<
 
 # Common rules
 include $(srcdir)/common.mk
