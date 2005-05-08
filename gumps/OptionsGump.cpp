@@ -44,9 +44,9 @@ OptionsGump::~OptionsGump()
 {
 }
 
-void OptionsGump::InitGump()
+void OptionsGump::InitGump(Gump* newparent, bool take_focus)
 {
-	Gump::InitGump();
+	Gump::InitGump(newparent, take_focus);
 
 	dims.w = 220;
 	dims.h = 120;
@@ -55,28 +55,30 @@ void OptionsGump::InitGump()
 	int y = 4;
 	Gump * widget;
 
+#if 0
 	widget = new ButtonWidget(x, y, "1. Video", font, 0x804000B0);
-	widget->InitGump();
+	widget->InitGump(this);
 	widget->SetIndex(1);
-	AddChild(widget);
+#endif
 	y+= 14;
 
+#if 0
 	widget = new ButtonWidget(x, y, "2. Audio", font, 0x804000B0);
-	widget->InitGump();
+	widget->InitGump(this);
 	widget->SetIndex(2);
-	AddChild(widget);
+#endif
 	y+= 14;
 
 	widget = new ButtonWidget(x, y, "3. Controls", font, 0x804000B0);
-	widget->InitGump();
+	widget->InitGump(this);
 	widget->SetIndex(3);
-	AddChild(widget);
 	y+= 14;
 
+#if 0
 	widget = new ButtonWidget(x, y, "4. Gameplay", font, 0x804000B0);
-	widget->InitGump();
+	widget->InitGump(this);
 	widget->SetIndex(4);
-	AddChild(widget);
+#endif
 	y+= 14;
 }
 
@@ -123,12 +125,13 @@ void OptionsGump::selectEntry(int entry)
 	case 3:
 	{	// Controls
 		PagedGump * gump = new PagedGump(34, -38, 3, gumpShape);
-		gump->InitGump();
-		gump->addPage(ControlsGump::showEngineMenu());
-		gump->addPage(ControlsGump::showU8Menu());
+		gump->InitGump(this);
+
+		ControlsGump::showEngineMenu(gump);
+		ControlsGump::showU8Menu(gump);
+
 		// The parent to this gump is actually  a PagedGump,
 		// and this gump does not cover the entire parent.
-		parent->AddChild(gump);
 		gump->setRelativePosition(CENTER);
 	} break;	
 	case 4:

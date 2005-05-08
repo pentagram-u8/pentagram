@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004  The Pentagram Team
+ *  Copyright (C) 2003-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -105,9 +105,9 @@ PaperdollGump::~PaperdollGump()
 	}
 }
 
-void PaperdollGump::InitGump()
+void PaperdollGump::InitGump(Gump* newparent, bool take_focus)
 {
-	ContainerGump::InitGump();
+	ContainerGump::InitGump(newparent, take_focus);
 
 	FrameID button_up(GameData::GUMPS, statbuttonshape, 0);
 	FrameID button_down(GameData::GUMPS, statbuttonshape, 1);
@@ -115,17 +115,15 @@ void PaperdollGump::InitGump()
 	Gump *widget = new ButtonWidget(statbuttonx, statbuttony,
 									button_up, button_down);
 	statbuttongid = widget->getObjId();
-	widget->InitGump();
-	AddChild(widget);
+	widget->InitGump(this);
 }
 
 void PaperdollGump::Close(bool no_del)
 {
 	// NOTE: this does _not_ call its direct parent's Close function
-	// because we do not want to close the Gumps of our contents
+	// because we do not want to close the Gumps of our contents.
 
-	// close any gumps belonging to contents
-	// and make every item leave the fast area
+	// Make every item leave the fast area
 	Container* c = p_dynamic_cast<Container*>
 		(World::get_instance()->getItem(owner));
 
@@ -407,8 +405,7 @@ void PaperdollGump::ChildNotify(Gump *child, uint32 message)
 		Gump* desktop = GUIApp::get_instance()->getDesktopGump();
 		if (!desktop->FindGump(MiniStatsGump::ClassType)) {
 			Gump* gump = new MiniStatsGump(0, 0);
-			gump->InitGump();
-			GUIApp::get_instance()->addGump(gump);
+			gump->InitGump(0);
 			gump->setRelativePosition(BOTTOM_RIGHT, -5, -5);
 		}
 	}

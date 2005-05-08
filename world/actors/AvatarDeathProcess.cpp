@@ -60,8 +60,7 @@ bool AvatarDeathProcess::run(const uint32 /*framenum*/)
 
 	ReadableGump *gump = new ReadableGump(1, 27, 11,
 								  _TL_("HERE LIES*THE AVATAR*REST IN PEACE"));
-	gump->InitGump();
-	GUIApp::get_instance()->addGump(gump);
+	gump->InitGump(0);
 	gump->setRelativePosition(Gump::CENTER);
 	Process* gumpproc = gump->GetNotifyProcess();
 

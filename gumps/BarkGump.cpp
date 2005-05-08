@@ -47,10 +47,8 @@ BarkGump::~BarkGump(void)
 {
 }
 
-void BarkGump::InitGump()
+void BarkGump::InitGump(Gump* newparent, bool take_focus)
 {
-	ItemRelativeGump::InitGump();
-
 	// OK, this is a bit of a hack, but it's how it has to be
 	int	fontnum;
 	if (owner == 1) fontnum = 6;
@@ -71,13 +69,9 @@ void BarkGump::InitGump()
 
 	// Create the TextWidget
 	TextWidget *widget = new TextWidget(0,0,barked,fontnum,194,55);
-	widget->InitGump();
+	widget->InitGump(this);
 
 	textwidget = widget->getObjId();
-
-	// Add it to us
-	AddChild(widget);
-
 
 	// see if we need to play speech
 	AudioProcess *ap = AudioProcess::get_instance();
@@ -110,6 +104,9 @@ void BarkGump::InitGump()
 	}
 	dims.h = d.h;
 	dims.w = d.w;
+
+	// Wait with ItemRelativeGump initialization until we calculated our size.
+	ItemRelativeGump::InitGump(newparent, take_focus);
 }
 
 bool BarkGump::NextText()

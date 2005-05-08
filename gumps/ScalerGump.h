@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2004-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,6 +32,14 @@ class ScalerGump : public DesktopGump
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
+	//! ScalerGump constructor
+	//! \param x x coordinate of our top-left corner in parent
+	//! \param y y coordinate
+	//! \param width width after scaling (usually screenwidth)
+	//! \param height height after scaling (usually screenheight)
+	//! \param swidth1 width before scaling (usually game-width)
+	//! \param sheight1 height before scaling (usually game-height)
+	//! \param scaler1 scaler to use
 	ScalerGump(sint32 x, sint32 y, sint32 width, sint32 height, sint32 swidth1, sint32 sheight1, const Pentagram::Scaler *scaler1, sint32 swidth2=0, sint32 sheight2=0, const Pentagram::Scaler *scaler2=0);
 	virtual ~ScalerGump(void);
 
@@ -52,6 +60,9 @@ protected:
 	sint32					sheight2;
 	const Pentagram::Scaler	*scaler2;
 	RenderSurface			*buffer2;
+
+	sint32					width;
+	sint32					height;
 };
 
 #endif

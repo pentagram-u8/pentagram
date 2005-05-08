@@ -34,7 +34,7 @@ public:
 			   sint16 value, sint16 delta=1);
 	virtual ~SliderGump(void);
 
-	virtual void InitGump();
+	virtual void InitGump(Gump* newparent, bool take_focus=true);
 	virtual void PaintThis(RenderSurface* surf, sint32 lerp_factor);
 	virtual void Close(bool no_del = false);	
 	virtual void ChildNotify(Gump *child, uint32 message);

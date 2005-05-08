@@ -48,10 +48,8 @@ AskGump::~AskGump()
 }
 
 // Init the gump, call after construction
-void AskGump::InitGump()
+void AskGump::InitGump(Gump* newparent, bool take_focus)
 {
-	ItemRelativeGump::InitGump();
-
 	// OK, this is a bit of a hack, but it's how it has to be
 	int	fontnum;
 	if (owner == 1) fontnum = 6;
@@ -77,9 +75,8 @@ void AskGump::InitGump()
 		str_answer += UCMachine::get_instance()->getString(answers->getStringIndex(i));
 
 		ButtonWidget *child = new ButtonWidget(px, py, str_answer, fontnum);
-		child->InitGump();
+		child->InitGump(this);
 		child->SetIndex(i);
-		AddChild(child);
 
 		Pentagram::Rect cd;
 		child->GetDims(cd);
@@ -98,6 +95,9 @@ void AskGump::InitGump()
 
 		px += cd.w+4;
 	}
+
+	// Wait with ItemRelativeGump initialization until we calculated our size.
+	ItemRelativeGump::InitGump(newparent, take_focus);
 }
 
 void AskGump::ChildNotify(Gump *child, uint32 message)

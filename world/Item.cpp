@@ -1369,8 +1369,7 @@ uint16 Item::openGump(uint32 gumpshape)
 	//!! GumpShapeFlex maybe
 	cgump->setItemArea(GameData::get_instance()->
 					   getGumps()->getGumpItemArea(gumpshape));
-	cgump->InitGump();
-	GUIApp::get_instance()->addGump(cgump);
+	cgump->InitGump(0);
 	flags |= FLG_GUMP_OPEN;
 	gump = cgump->getObjId();
 
@@ -2137,8 +2136,7 @@ uint32 Item::I_bark(const uint8* args, unsigned int /*argsize*/)
 			gump->SetNotifyProcess(notifyproc);
 		}
 
-		gump->InitGump();
-		GUIApp::get_instance()->addGump(gump);
+		gump->InitGump(0);
 
 		return gump->GetNotifyProcess()->getPid();
 	}
@@ -2188,8 +2186,7 @@ uint32 Item::I_ask(const uint8* args, unsigned int /*argsize*/)
 
 	// Use AskGump
 	Gump *gump = new AskGump(1, answers);
-	gump->InitGump();
-	GUIApp::get_instance()->addGump(gump);
+	gump->InitGump(0);
 	return gump->GetNotifyProcess()->getPid();
 }
 
@@ -2726,10 +2723,8 @@ uint32 Item::I_getSliderInput(const uint8* args, unsigned int /*argsize*/)
 //	pout << "SliderGump: min=" << minval << ", max=" << maxval << ", step=" << step << std::endl;
 
 	SliderGump* gump = new SliderGump(100, 100, minval, maxval, minval, step);
-	gump->InitGump(); // modal gump
+	gump->InitGump(0); // modal gump
 	gump->setUsecodeNotify(current);
-
-	GUIApp::get_instance()->addGump(gump);
 
 	current->suspend();
 

@@ -371,8 +371,7 @@ void U8Game::playCredits()
 	if (musicproc) musicproc->playMusic(51); // CONSTANT!
 
 	Gump* gump = new CreditsGump(text);
-	gump->InitGump();
-	GUIApp::get_instance()->addGump(gump);
+	gump->InitGump(0);
 	gump->setRelativePosition(Gump::CENTER);
 }
 
@@ -393,8 +392,7 @@ void U8Game::playQuotes()
 	if (musicproc) musicproc->playMusic(113); // CONSTANT!
 
 	Gump* gump = new CreditsGump(text, 80);
-	gump->InitGump();
-	GUIApp::get_instance()->addGump(gump);
+	gump->InitGump(0);
 	gump->setRelativePosition(Gump::CENTER);
 }
 

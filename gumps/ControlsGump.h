@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2004-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,8 @@
 
 #include "Gump.h"
 
+class PagedGump;
+
 class ControlsGump : public Gump
 {
 public:
@@ -30,7 +32,7 @@ public:
 	virtual ~ControlsGump(void);
 
 	// Init the gump, call after construction
-	virtual void InitGump();
+	virtual void InitGump(Gump* newparent, bool take_focus=true);
 
 	// Paint the Gump
 	virtual void PaintThis(RenderSurface*, sint32 lerp_factor);
@@ -38,8 +40,8 @@ public:
 	virtual bool OnKeyDown(int key, int mod);
 	virtual void ChildNotify(Gump *child, uint32 message);
 
-	static Gump * showEngineMenu();
-	static Gump * showU8Menu();
+	static void showEngineMenu(PagedGump* pagedgump);
+	static void showU8Menu(PagedGump* pagedgump);
 	void addEntry(char * binding, char * name, int & x, int & y);
 
 	bool loadData(IDataSource* ids);

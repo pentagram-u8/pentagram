@@ -33,7 +33,7 @@ public:
 	U8SaveGump(bool save, int page);
 	virtual ~U8SaveGump();
 
-	virtual void InitGump();
+	virtual void InitGump(Gump* newparent, bool take_focus=true);
 	virtual void Close(bool no_del=false);
 
 	virtual Gump* OnMouseDown(int button, int mx, int my);

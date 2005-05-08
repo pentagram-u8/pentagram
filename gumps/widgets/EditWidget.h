@@ -42,7 +42,7 @@ public:
 			   bool multiline=false);
 	virtual ~EditWidget(void);
 
-	virtual void InitGump();
+	virtual void InitGump(Gump* newparent, bool take_focus=true);
 
 	virtual void PaintThis(RenderSurface*, sint32 lerp_factor);
 

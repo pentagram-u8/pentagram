@@ -30,6 +30,7 @@
 #include "ODataSource.h"
 #include "ObjectManager.h"
 #include "ScalerGump.h"
+#include "GUIApp.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(Gump,Object);
 
@@ -73,8 +74,13 @@ Gump::~Gump()
 	}
 }
 
-void Gump::InitGump()
+void Gump::InitGump(Gump *newparent, bool take_focus)
 {
+	if (newparent)
+		newparent->AddChild(this, take_focus);
+	else
+		GUIApp::get_instance()->addGump(this);
+
 	if (owner && !notifier) CreateNotifier();
 }
 

@@ -34,7 +34,7 @@ public:
 			  uint32 _Flags = 0, sint32 layer = LAYER_MODAL);
 	virtual ~MovieGump(void);
 
-	virtual void InitGump();
+	virtual void InitGump(Gump* newparent, bool take_focus=true);
 
 	virtual void Close(bool no_del = false);
 

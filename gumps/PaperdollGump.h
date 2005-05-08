@@ -34,7 +34,7 @@ public:
 	virtual ~PaperdollGump(void);
 
 	// Init the gump, call after construction
-	virtual void InitGump();
+	virtual void InitGump(Gump* newparent, bool take_focus=true);
 
 	// Close the gump
 	virtual void Close(bool no_del = false);

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2004-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ public:
 	virtual void OnMouseDouble(int button, int mx, int my);
 
 	// Init the gump, call after construction
-	virtual void InitGump();
+	virtual void InitGump(Gump* newparent, bool take_focus=true);
 
 	INTRINSIC(I_readScroll);
 

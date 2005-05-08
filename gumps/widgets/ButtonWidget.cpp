@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004  The Pentagram Team
+ *  Copyright (C) 2003-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -64,15 +64,15 @@ ButtonWidget::~ButtonWidget(void)
 {
 }
 
-void ButtonWidget::InitGump()
+void ButtonWidget::InitGump(Gump* newparent, bool take_focus)
 {
+	Gump::InitGump(newparent, take_focus);
+
 	if (textwidget != 0) {
 		Gump* widget = GUIApp::get_instance()->getGump(textwidget);
 		assert(widget);
-		widget->InitGump();
-
+		widget->InitGump(this);
 		widget->GetDims(dims); // transfer child dimension to self
-		AddChild(widget);
 		widget->Move(0,dims.y); // move it to the correct height
 	} else {
 		assert(shape_up != 0);

@@ -48,9 +48,9 @@ TextWidget::~TextWidget(void)
 }
 
 // Init the gump, call after construction
-void TextWidget::InitGump()
+void TextWidget::InitGump(Gump* newparent, bool take_focus)
 {
-	Gump::InitGump();
+	Gump::InitGump(newparent, take_focus);
 
 	Pentagram::Font *font;
 	font = FontManager::get_instance()->getGameFont(fontnum, true);

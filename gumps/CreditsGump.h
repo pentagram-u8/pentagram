@@ -34,7 +34,7 @@ public:
 	virtual ~CreditsGump(void);
 
 	// Init the gump, call after construction
-	virtual void InitGump();
+	virtual void InitGump(Gump* newparent, bool take_focus=true);
 
 	virtual void Close(bool no_del = false);
 

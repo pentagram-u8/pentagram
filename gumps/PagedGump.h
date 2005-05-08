@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2004-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ public:
 	virtual ~PagedGump(void);
 
 	// Init the gump, call after construction
-	virtual void InitGump();
+	virtual void InitGump(Gump* newparent, bool take_focus=true);
 	virtual void Close(bool no_del = false);
 
 	// Paint the Gump
@@ -38,7 +38,9 @@ public:
 
 	virtual bool OnKeyDown(int key, int mod);
 	virtual void ChildNotify(Gump *child, uint32 message);
-	void addPage(Gump * g);
+
+	//! add a page. Note: g already has to be a child gump.
+	void addPage(Gump* g);
 
 	void enableButtons(bool enabled) { buttonsEnabled = enabled; }
 

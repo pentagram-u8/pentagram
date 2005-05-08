@@ -85,9 +85,9 @@ static const int gumpShape = 35;
 static const int paganShape = 32;
 static const int menuEntryShape = 37;
 
-void MenuGump::InitGump()
+void MenuGump::InitGump(Gump* newparent, bool take_focus)
 {
-	ModalGump::InitGump();
+	ModalGump::InitGump(newparent, take_focus);
 
 	shape = GameData::get_instance()->getGumps()->getShape(gumpShape);
 	ShapeFrame* sf = shape->getFrame(0);
@@ -103,8 +103,7 @@ void MenuGump::InitGump()
 
 	Gump * logo = new Gump(42, 10, sf->width, sf->height);
 	logo->SetShape(logoShape, 0);
-	logo->InitGump();
-	AddChild(logo);
+	logo->InitGump(this, false);
 
 	if (!nameEntryMode) {
 		SettingManager* settingman = SettingManager::get_instance();
@@ -123,9 +122,8 @@ void MenuGump::InitGump()
 			frame_up = _TL_SHP_(frame_up);
 			frame_down = _TL_SHP_(frame_down);
 			widget = new ButtonWidget(x, y, frame_up, frame_down, true);
-			widget->InitGump();
+			widget->InitGump(this, false);
 			widget->SetIndex(i + 1);
-			AddChild(widget);
 			y+= 14;
 		}
 		
@@ -137,22 +135,19 @@ void MenuGump::InitGump()
 		if (!name.empty()) {
 			Pentagram::Rect rect;
 			widget = new TextWidget(0, 0, name, 6);
-			widget->InitGump();
+			widget->InitGump(this, false);
 			widget->GetDims(rect);
 			widget->Move(90 - rect.w / 2, dims.h - 40);
-			AddChild(widget);
 		}
 	} else {
 		Gump * widget;
 		widget = new TextWidget(0, 0, _TL_("Give thy name:"), 6); // CONSTANT!
-		widget->InitGump();
+		widget->InitGump(this, false);
 		widget->Move(dims.w / 2 + 6, 10);
-		AddChild(widget);
 
 		widget = new EditWidget(0, 0, "", 6, 110, 40, 15); // CONSTANTS!
-		widget->InitGump();
+		widget->InitGump(this, true);
 		widget->Move(dims.w / 2 + 6, 25);
-		AddChild(widget);
 		widget->MakeFocus();
 	}
 }
@@ -216,27 +211,26 @@ void MenuGump::selectEntry(int entry)
 	case 2: case 3: // Read/Write Diary
 	{
 		PagedGump * gump = new PagedGump(34, -38, 3, gumpShape);
-		gump->InitGump();
+		gump->InitGump(this);
 
 		U8SaveGump* save = new U8SaveGump(entry == 3, 0);
-		save->InitGump();
+		save->InitGump(gump, false);
 		gump->addPage(save);
 
 		save = new U8SaveGump(entry == 3, 1);
-		save->InitGump();
+		save->InitGump(gump, false);
 		gump->addPage(save);
 
-		AddChild(gump);
 		gump->setRelativePosition(CENTER);
 	} break;
 	case 4: // Options
 	{
-		OptionsGump * options = new OptionsGump();
-		options->InitGump();
 		PagedGump * gump = new PagedGump(34, -38, 3, gumpShape);
-		gump->InitGump();
+		gump->InitGump(this);
+
+		OptionsGump * options = new OptionsGump();
+		options->InitGump(gump, false);
 		gump->addPage(options);
-		AddChild(gump);
 		gump->setRelativePosition(CENTER);
 	} break;
 	case 5: // Credits
@@ -267,8 +261,7 @@ bool MenuGump::OnTextInput(int unicode)
 void MenuGump::showMenu()
 {
 	ModalGump* gump = new MenuGump();
-	gump->InitGump();
-	GUIApp::get_instance()->addGump(gump);
+	gump->InitGump(0);
 	gump->setRelativePosition(CENTER);
 }
 
@@ -276,7 +269,6 @@ void MenuGump::showMenu()
 void MenuGump::inputName()
 {
 	ModalGump* gump = new MenuGump(true);
-	gump->InitGump();
-	GUIApp::get_instance()->addGump(gump);
+	gump->InitGump(0);
 	gump->setRelativePosition(CENTER);
 }

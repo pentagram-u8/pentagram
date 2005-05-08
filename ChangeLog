@@ -1,3 +1,8 @@
+2005-05-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/*: InitGump now adds a gump to its parent
+	* gumps/ItemRelativeGump.*: don't let gumps open off-screen
+	* gumps/ScalerGump.*: change dims.w/h from parent to gump coords
+
 2005-05-07  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/fonts/ShapeRenderedText.cpp: adjust cursor position
 

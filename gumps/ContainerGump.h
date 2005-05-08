@@ -39,7 +39,7 @@ public:
 	virtual void Close(bool no_del = false);
 
 	// Init the gump, call after construction
-	virtual void InitGump();
+	virtual void InitGump(Gump* newparent, bool take_focus=true);
 
 	// Paint the Gump
 	virtual void PaintThis(RenderSurface*, sint32 lerp_factor);

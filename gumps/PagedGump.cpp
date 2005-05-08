@@ -53,9 +53,10 @@ void PagedGump::Close(bool no_del)
 
 static const int pageOverShape = 34;
 
-void PagedGump::InitGump()
+void PagedGump::InitGump(Gump* newparent, bool take_focus)
 {
-	ModalGump::InitGump();
+	ModalGump::InitGump(newparent, take_focus);
+
 	shape = GameData::get_instance()->getGumps()->getShape(gumpShape);
 	ShapeFrame* sf = shape->getFrame(0);
 	assert(sf);
@@ -69,14 +70,12 @@ void PagedGump::InitGump()
 	//!! Hardcoded gump
 	nextButton = new ButtonWidget(0, 0, buttonright, buttonright, false,
 								  LAYER_ABOVE_NORMAL);
-	nextButton->InitGump();
-	AddChild(nextButton);
+	nextButton->InitGump(this);
 	nextButton->setRelativePosition(TOP_RIGHT, rightOff, topOff);
 
 	prevButton = new ButtonWidget(0, 0, buttonleft, buttonleft, false,
 								  LAYER_ABOVE_NORMAL);
-	prevButton->InitGump();
-	AddChild(prevButton);
+	prevButton->InitGump(this);
 	prevButton->setRelativePosition(TOP_LEFT, leftOff, topOff);
 	prevButton->HideGump();
 
@@ -153,7 +152,7 @@ void PagedGump::ChildNotify(Gump *child, uint32 message)
 
 void PagedGump::addPage(Gump * g)
 {
-	AddChild(g, false); // add child, but don't let it take focus
+	assert(g->GetParent() == this);
 	g->setRelativePosition(TOP_CENTER, 0, 3 + topOff);
 	g->HideGump();
 	gumps.push_back(g);

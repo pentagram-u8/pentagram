@@ -32,7 +32,7 @@ public:
 	virtual ~MiniStatsGump(void);
 
 	// Init the gump, call after construction
-	virtual void InitGump();
+	virtual void InitGump(Gump* newparent, bool take_focus=true);
 
 	// Paint this Gump
 	virtual void PaintThis(RenderSurface*, sint32 lerp_factor);

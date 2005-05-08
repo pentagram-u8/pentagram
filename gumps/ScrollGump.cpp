@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2004-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -52,18 +52,14 @@ ScrollGump::~ScrollGump(void)
 {
 }
 
-void ScrollGump::InitGump()
+void ScrollGump::InitGump(Gump* newparent, bool take_focus)
 {
-	ModalGump::InitGump();
+	ModalGump::InitGump(newparent, take_focus);
 
 	// Create the TextWidget
 	Gump *widget = new TextWidget(25,25,text,9,196,125); //!! constants
-	widget->InitGump();
-
+	widget->InitGump(this);
 	textwidget = widget->getObjId();
-
-	// Add it to us
-	AddChild(widget);
 
 	text.clear(); // no longer need this
 
@@ -112,12 +108,8 @@ uint32 ScrollGump::I_readScroll(const uint8* args, unsigned int /*argsize*/)
 	ARG_STRING(str);
 	assert(item);
 
-	GUIApp *app = p_dynamic_cast<GUIApp*>(GUIApp::get_instance());
-	assert(app);
-
 	Gump *gump = new ScrollGump(item->getObjId(), str);
-	gump->InitGump();
-	GUIApp::get_instance()->addGump(gump);
+	gump->InitGump(0);
 	gump->setRelativePosition(CENTER);
 	
 	return gump->GetNotifyProcess()->getPid();

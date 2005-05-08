@@ -52,20 +52,18 @@ BookGump::~BookGump(void)
 {
 }
 
-void BookGump::InitGump()
+void BookGump::InitGump(Gump* newparent, bool take_focus)
 {
-	ModalGump::InitGump();
+	ModalGump::InitGump(newparent, take_focus);
 
 	// Create the TextWidgets (NOTE: they _must_ have exactly the same dims)
 	TextWidget *widget = new TextWidget(15,10,text,9,120,125); //!! constants
-	widget->InitGump();
+	widget->InitGump(this);
 	textwidgetL = widget->getObjId();
-	AddChild(widget);
 	
 	widget = new TextWidget(150,10,text,9,120,125); //!! constants
-	widget->InitGump();
+	widget->InitGump(this);
 	textwidgetR = widget->getObjId();
-	AddChild(widget);
 	widget->setupNextText();
 
 	text.clear(); // no longer need this
@@ -122,12 +120,8 @@ uint32 BookGump::I_readBook(const uint8* args, unsigned int /*argsize*/)
 	ARG_STRING(str);
 	assert(item);
 
-	GUIApp *app = p_dynamic_cast<GUIApp*>(GUIApp::get_instance());
-	assert(app);
-
 	Gump *gump = new BookGump(item->getObjId(), str);
-	gump->InitGump();
-	app->addGump(gump);
+	gump->InitGump(0);
 	gump->setRelativePosition(CENTER);
 	
 	return gump->GetNotifyProcess()->getPid();

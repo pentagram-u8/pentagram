@@ -62,15 +62,16 @@ ContainerGump::~ContainerGump()
 
 }
 
-void ContainerGump::InitGump()
+void ContainerGump::InitGump(Gump* newparent, bool take_focus)
 {
-	ItemRelativeGump::InitGump();
-
 	ShapeFrame* sf = shape->getFrame(framenum);
 	assert(sf);
 
 	dims.w = sf->width;
 	dims.h = sf->height;
+
+	// Wait with ItemRelativeGump initialization until we calculated our size.
+	ItemRelativeGump::InitGump(newparent, take_focus);
 
 	// make every item enter the fast area
 	Container* c = p_dynamic_cast<Container*>
@@ -473,8 +474,7 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 		SliderGump* slidergump = new SliderGump(100, 100,
 												0, item->getQuality(),
 												item->getQuality());
-		slidergump->InitGump();
-		GUIApp::get_instance()->addGump(slidergump);
+		slidergump->InitGump(0);
 		slidergump->CreateNotifier(); // manually create notifier
 		Process* notifier = slidergump->GetNotifyProcess();
 		SplitItemProcess* splitproc = new SplitItemProcess(item, splittarget);

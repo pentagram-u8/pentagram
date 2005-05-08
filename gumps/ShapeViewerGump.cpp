@@ -68,12 +68,6 @@ ShapeViewerGump::~ShapeViewerGump()
 
 }
 
-void ShapeViewerGump::InitGump()
-{
-	ModalGump::InitGump();
-}
-
-
 void ShapeViewerGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 {
 	if (flexes.empty()) {
@@ -280,8 +274,7 @@ void ShapeViewerGump::U8ShapeViewer()
 	desktopGump->GetDims(res);
 
 	ModalGump* gump = new ShapeViewerGump((res.w*3)/4, (res.h*3)/4, flexes);
-	gump->InitGump();
-	GUIApp::get_instance()->addGump(gump);
+	gump->InitGump(0);
 }
 
 bool ShapeViewerGump::loadData(IDataSource* ids)

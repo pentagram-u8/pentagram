@@ -44,6 +44,47 @@ ItemRelativeGump::~ItemRelativeGump(void)
 {
 }
 
+void ItemRelativeGump::InitGump(Gump* newparent, bool take_focus)
+{
+	Gump::InitGump(newparent, take_focus);
+
+	GetItemLocation(0);
+
+	Pentagram::Rect sd, gd;
+
+	if (!newparent && parent) {
+		parent->GetDims(sd);
+
+		// get rectangle that gump occupies in scalerGump's coordinate space
+		sint32 left,right,top,bottom;
+		left = -dims.x;
+		right = left + dims.w;
+		top = -dims.y;
+		bottom = top + dims.h;
+		GumpToParent(left,top);
+		GumpToParent(right,bottom);
+	
+		sint32 movex = 0, movey = 0;
+	
+		if (left < -sd.x)
+			movex = -sd.x - left;
+		else if (right > -sd.x + sd.w)
+			movex = -sd.x + sd.w - right;
+		
+		if (top < -sd.y)
+			movey = -sd.y - top;
+		else if (bottom > -sd.y + sd.h)
+			movey = -sd.y + sd.h - bottom;
+
+		pout.printf("(%d,%d,%d,%d) vs (%d,%d,%d,%d)\n", left,top,right,bottom,
+					-sd.x, -sd.y, -sd.x + sd.w, -sd.y + sd.h);
+
+		pout << "moving: (" << movex << "," << movey << std::endl;
+	
+		Move(left+movex, top+movey);
+	}
+}
+
 // Paint the Gump (RenderSurface is relative to parent).
 // Calls PaintThis and PaintChildren
 void ItemRelativeGump::Paint(RenderSurface*surf, sint32 lerp_factor)

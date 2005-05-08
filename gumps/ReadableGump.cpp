@@ -20,7 +20,6 @@
 #include "ReadableGump.h"
 
 #include "TextWidget.h"
-#include "GUIApp.h"
 #include "GameData.h"
 #include "Shape.h"
 #include "GumpShapeArchive.h"
@@ -51,9 +50,9 @@ ReadableGump::~ReadableGump(void)
 {
 }
 
-void ReadableGump::InitGump()
+void ReadableGump::InitGump(Gump* newparent, bool take_focus)
 {
-	ModalGump::InitGump();
+	ModalGump::InitGump(newparent, take_focus);
 
 	Shape* shape = GameData::get_instance()->getGumps()->getShape(shapenum);
 
@@ -66,13 +65,10 @@ void ReadableGump::InitGump()
 	dims.h = sf->height;
 
 	Gump *widget = new TextWidget(0, 0, text, fontnum, dims.w - 16, 0, Pentagram::Font::TEXT_CENTER);
-	widget->InitGump();
+	widget->InitGump(this);
+	widget->setRelativePosition(CENTER);
 
 	textwidget = widget->getObjId();
-
-	// Add it to us
-	AddChild(widget);
-	widget->setRelativePosition(CENTER);
 }
 
 Gump *ReadableGump::OnMouseDown(int button, int mx, int my)
@@ -89,12 +85,8 @@ uint32 ReadableGump::I_readGrave(const uint8* args, unsigned int /*argsize*/)
 	ARG_STRING(str);
 	assert(item);
 
-	GUIApp *app = p_dynamic_cast<GUIApp*>(GUIApp::get_instance());
-	assert(app);
-
 	Gump *gump = new ReadableGump(item->getObjId(), shape, 11, str);
-	gump->InitGump();
-	GUIApp::get_instance()->addGump(gump);
+	gump->InitGump(0);
 	gump->setRelativePosition(CENTER);
 	
 	return gump->GetNotifyProcess()->getPid();
@@ -107,12 +99,8 @@ uint32 ReadableGump::I_readPlaque(const uint8* args, unsigned int /*argsize*/)
 	ARG_STRING(str);
 	assert(item);
 
-	GUIApp *app = p_dynamic_cast<GUIApp*>(GUIApp::get_instance());
-	assert(app);
-
 	Gump *gump = new ReadableGump(item->getObjId(), shape, 10, str);
-	gump->InitGump();
-	GUIApp::get_instance()->addGump(gump);
+	gump->InitGump(0);
 	gump->setRelativePosition(CENTER);
 	
 	return gump->GetNotifyProcess()->getPid();

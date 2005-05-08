@@ -50,9 +50,9 @@ MovieGump::~MovieGump()
 	delete player;
 }
 
-void MovieGump::InitGump()
+void MovieGump::InitGump(Gump* newparent, bool take_focus)
 {
-	ModalGump::InitGump();
+	ModalGump::InitGump(newparent, take_focus);
 	player->start();
 
 	GUIApp::get_instance()->pushMouseCursor();
@@ -102,8 +102,7 @@ bool MovieGump::OnKeyDown(int key, int mod)
 ProcId MovieGump::U8MovieViewer(RawArchive* movie, bool introMusicHack)
 {
 	Gump* gump = new MovieGump(320, 200, movie, introMusicHack);
-	gump->InitGump();
-	GUIApp::get_instance()->addGump(gump);
+	gump->InitGump(0);
 	gump->setRelativePosition(CENTER);
 	gump->CreateNotifier();
 	return gump->GetNotifyProcess()->getPid();

@@ -41,9 +41,9 @@ SlidingWidget::~SlidingWidget()
 {
 }
 
-void SlidingWidget::InitGump()
+void SlidingWidget::InitGump(Gump* newparent, bool take_focus)
 {
-	Gump::InitGump();
+	Gump::InitGump(newparent, take_focus);
 
 	ShapeFrame* sf = shape->getFrame(framenum);
 	assert(sf);

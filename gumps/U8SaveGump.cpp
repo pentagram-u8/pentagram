@@ -53,9 +53,9 @@ U8SaveGump::~U8SaveGump()
 // gumps: 36/0-11: number 1-12
 //        46/0: "Entry"
 
-void U8SaveGump::InitGump()
+void U8SaveGump::InitGump(Gump* newparent, bool take_focus)
 {
-	Gump::InitGump();
+	Gump::InitGump(newparent, take_focus);
 
 	dims.w = 220;
 	dims.h = 170;
@@ -89,21 +89,18 @@ void U8SaveGump::InitGump()
 
 		Gump* gump = new Gump(xbase, 3+40*yi, 1, 1);
 		gump->SetShape(entry_id, true);
-		gump->InitGump();
-		AddChild(gump, false);
+		gump->InitGump(this, false);
 			
 		gump = new Gump(xbase+2+entrywidth, 3+40*yi, 3, 1, 1);
 		gump->SetShape(entrynum_id, true);
-		gump->InitGump();
-		AddChild(gump, false);
+		gump->InitGump(this, false);
 
 		if (index == 0) {
 			// special case for 'The Beginning...' save
 			Gump* widget = new TextWidget(xbase, 12+entryheight,
 										  _TL_("The Beginning..."),
 										  entryfont);
-			widget->InitGump();
-			AddChild(widget, false);
+			widget->InitGump(this, false);
 
 		} else {
 
@@ -112,15 +109,13 @@ void U8SaveGump::InitGump()
 												descriptions[i], entryfont,
 												95, 38-entryheight, 0, true);
 				ew->SetIndex(i);
-				ew->InitGump();
-				AddChild(ew, false);
+				ew->InitGump(this, false);
 				editwidgets[i] = ew;
 			} else {
 				// load
 				Gump* widget = new TextWidget(xbase, entryheight+4+40*yi,
 											  descriptions[i], entryfont);
-				widget->InitGump();
-				AddChild(widget, false);
+				widget->InitGump(this, false);
 			}
 		}
 

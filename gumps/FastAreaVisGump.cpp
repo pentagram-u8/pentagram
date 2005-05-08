@@ -55,8 +55,7 @@ void FastAreaVisGump::ConCmd_toggle(const Console::ArgsType &args, const Console
 
 	if (!favg) {
 		favg = new FastAreaVisGump;
-		favg->InitGump();
-		desktop->AddChild(favg);
+		favg->InitGump(0);
 		favg->setRelativePosition(TOP_RIGHT, -4, 4);
 	}
 	else {

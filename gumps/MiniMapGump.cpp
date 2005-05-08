@@ -176,8 +176,7 @@ void MiniMapGump::ConCmd_toggle(const Console::ArgsType &args, const Console::Ar
 
 	if (!mmg) {
 		mmg = new MiniMapGump(4,4);
-		mmg->InitGump();
-		app->addGump(mmg);
+		mmg->InitGump(0);
 		mmg->setRelativePosition(TOP_LEFT, 4, 4);
 
 	}

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004  The Pentagram Team
+ *  Copyright (C) 2003-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -30,7 +30,7 @@ public:
 	SlidingWidget(int x, int y, Shape* shape, uint32 framenum);
 	virtual ~SlidingWidget();
 
-	virtual void InitGump();
+	virtual void InitGump(Gump* newparent, bool take_focus=true);
 	virtual uint16 TraceObjId(int mx, int my);
 
 	bool loadData(IDataSource* ids, uint32 version);

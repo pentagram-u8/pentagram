@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2004-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -51,9 +51,9 @@ void TargetGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 	// we're invisible
 }
 
-void TargetGump::InitGump()
+void TargetGump::InitGump(Gump* newparent, bool take_focus)
 {
-	ModalGump::InitGump();
+	ModalGump::InitGump(newparent, take_focus);
 
 	// we need a notifier process
 	CreateNotifier();
@@ -105,8 +105,7 @@ void TargetGump::OnMouseUp(int button, int mx, int my)
 uint32 TargetGump::I_target(const uint8* /*args*/, unsigned int /*argsize*/)
 {
 	TargetGump* targetgump = new TargetGump(0, 0);
-	targetgump->InitGump();
-	GUIApp::get_instance()->addGump(targetgump);
+	targetgump->InitGump(0);
 
 	return targetgump->GetNotifyProcess()->getPid();
 }

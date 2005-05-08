@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004  The Pentagram Team
+ *  Copyright (C) 2003-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ public:
 
 	~ModalGump();
 
-	virtual void InitGump();
+	virtual void InitGump(Gump* newparent, bool take_focus=true);
 
 	virtual void Close(bool no_del = false);
 

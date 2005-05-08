@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2004-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -37,10 +37,6 @@ public:
 					uint32 _Flags = 0, sint32 layer = LAYER_MODAL);
 	virtual ~ShapeViewerGump(void);
 
-	// Init the gump, call after construction
-	virtual void InitGump();
-
-	// Paint the Gump
 	virtual void PaintThis(RenderSurface*, sint32 lerp_factor);
 
 	virtual bool OnKeyDown(int key, int mod);

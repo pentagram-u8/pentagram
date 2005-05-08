@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2004-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,9 +29,10 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(ScalerGump,DesktopGump);
 ScalerGump::ScalerGump(sint32 _x, sint32 _y, sint32 _width, sint32 _height, 
 						sint32 _swidth1, sint32 _sheight1, const Pentagram::Scaler *_scaler1, 
 						sint32 _swidth2, sint32 _sheight2, const Pentagram::Scaler *_scaler2)
-	: DesktopGump(_x, _y, _width, _height), 
-		swidth1(_swidth1), sheight1(_sheight1), scaler1(_scaler1), buffer1(0),
-		swidth2(_swidth2), sheight2(_sheight2), scaler2(_scaler2), buffer2(0)
+	: DesktopGump(_x, _y, _swidth1, _sheight1), 
+	  swidth1(_swidth1), sheight1(_sheight1), scaler1(_scaler1), buffer1(0),
+	  swidth2(_swidth2), sheight2(_sheight2), scaler2(_scaler2), buffer2(0),
+	  width(_width), height(_height)
 {
 }
 
@@ -50,8 +51,6 @@ void ScalerGump::Paint(RenderSurface* surf, sint32 lerp_factor)
 
 	// Don't paint if hidden
 	if (IsHidden()) return;
-
-	int width = dims.w, height = dims.h;
 
 	// We don't care, we are not going to support filters, at least not at the moment
 	if (swidth1 == width && sheight1 == height)
@@ -109,22 +108,22 @@ void ScalerGump::Paint(RenderSurface* surf, sint32 lerp_factor)
 void ScalerGump::ParentToGump(int &px, int &py)
 {
 	px -= x;
-	px *= swidth1;
-	px /= dims.w;
+	px *= dims.w;
+	px /= width;
 
 	py -= y;
-	py *= sheight1;
-	py /= dims.h;
+	py *= dims.h;
+	py /= height;
 }
 
 // Convert a gump point to parent relative point
 void ScalerGump::GumpToParent(int &gx, int &gy)
 {
-	gx *= dims.w;
-	gx /= swidth1;
+	gx *= width;
+	gx /= dims.w;
 	gx += x;
 
-	gy *= dims.h;
-	gy /= sheight1;
+	gy *= height;
+	gy /= dims.h;
 	gy += y;
 }

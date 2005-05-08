@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2004-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -50,9 +50,10 @@ static const int askShapeId = 18;
 static const int yesShapeId = 47;
 static const int noShapeId = 50;
 
-void QuitGump::InitGump()
+void QuitGump::InitGump(Gump* newparent, bool take_focus)
 {
-	ModalGump::InitGump();
+	ModalGump::InitGump(newparent, take_focus);
+
 	shape = GameData::get_instance()->getGumps()->getShape(gumpShape);
 	ShapeFrame* sf = shape->getFrame(0);
 	assert(sf);
@@ -69,8 +70,7 @@ void QuitGump::InitGump()
 
 	Gump * ask = new Gump(0, 0, sf->width, sf->height);
 	ask->SetShape(askShape, askshape.framenum);
-	ask->InitGump();
-	AddChild(ask);
+	ask->InitGump(this);
 	ask->setRelativePosition(TOP_CENTER, 0, 5);
 
 	FrameID yesbutton_up(GameData::GUMPS, yesShapeId, 0);
@@ -80,8 +80,7 @@ void QuitGump::InitGump()
 
 	Gump * widget;
 	widget = new ButtonWidget(0, 0, yesbutton_up, yesbutton_down);
-	widget->InitGump();
-	AddChild(widget);
+	widget->InitGump(this);
 	widget->setRelativePosition(TOP_LEFT, 16, 38);
 	yesWidget = widget->getObjId();
 
@@ -91,8 +90,7 @@ void QuitGump::InitGump()
 	nobutton_down = _TL_SHP_(nobutton_down);
 
 	widget = new ButtonWidget(0, 0, nobutton_up, nobutton_down);
-	widget->InitGump();
-	AddChild(widget);
+	widget->InitGump(this);
 	widget->setRelativePosition(TOP_RIGHT, -16, 38);
 	noWidget = widget->getObjId();
 }
@@ -151,8 +149,7 @@ bool QuitGump::OnTextInput(int unicode)
 void QuitGump::verifyQuit()
 {
 	ModalGump* gump = new QuitGump();
-	gump->InitGump();
-	GUIApp::get_instance()->addGump(gump);
+	gump->InitGump(0);
 	gump->setRelativePosition(CENTER);
 }
 

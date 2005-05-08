@@ -59,9 +59,9 @@ CreditsGump::~CreditsGump()
 	delete nexttitle;
 }
 
-void CreditsGump::InitGump()
+void CreditsGump::InitGump(Gump* newparent, bool take_focus)
 {
-	ModalGump::InitGump();
+	ModalGump::InitGump(newparent, take_focus);
 
 	scroll[0] = RenderSurface::CreateSecondaryRenderSurface(256, 200);
 	scroll[1] = RenderSurface::CreateSecondaryRenderSurface(256, 200);

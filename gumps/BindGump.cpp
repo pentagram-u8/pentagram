@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2004-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -40,16 +40,15 @@ BindGump::~BindGump()
 {
 }
 
-void BindGump::InitGump()
+void BindGump::InitGump(Gump* newparent, bool take_focus)
 {
-	ModalGump::InitGump();
+	ModalGump::InitGump(newparent, take_focus);
 
 	//! English ! - TODO: Externalize string.
 	std::string bindtext = "Press any key or button.\n\nPress ESCAPE to cancel\nor BACKSPACE to clear";
 	Gump * widget = new TextWidget(0, 0, bindtext, 6, 0, 0,
 								   Pentagram::Font::TEXT_CENTER);
-	widget->InitGump();
-	AddChild(widget);
+	widget->InitGump(this);
 	widget->setRelativePosition(TOP_CENTER, 0, 8);
 }
 

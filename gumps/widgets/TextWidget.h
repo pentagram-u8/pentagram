@@ -55,7 +55,7 @@ public:
 	virtual ~TextWidget(void);
 
 	// Init the gump, call after construction
-	virtual void			InitGump();
+	virtual void			InitGump(Gump* newparent, bool take_focus=true);
 
 	// Overloadable method to Paint just this Gump (RenderSurface is relative to this)
 	virtual void			PaintThis(RenderSurface*, sint32 lerp_factor);

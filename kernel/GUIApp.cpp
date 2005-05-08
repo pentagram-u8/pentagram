@@ -240,7 +240,6 @@ void GUIApp::startup()
 	// parent's startup first
 	CoreApp::startup();
 
-	// FIXME: the 'false' (=allowdataoverride) should be a config option
 	bool dataoverride;
 	if (!settingman->get("dataoverride", dataoverride,
 						 SettingManager::DOM_GLOBAL))
@@ -863,13 +862,12 @@ void GUIApp::GraphicSysInit()
 
 	pout << "Create Desktop" << std::endl;
 	desktopGump = new DesktopGump(0,0, width, height);
-	desktopGump->InitGump();
+	desktopGump->InitGump(0);
 	desktopGump->MakeFocus();
 
 	pout << "Create Graphics Console" << std::endl;
 	consoleGump = new ConsoleGump(0, 0, width, height);
-	consoleGump->InitGump();
-	desktopGump->AddChild(consoleGump);
+	consoleGump->InitGump(0);
 
 	LoadConsoleFont();
 
@@ -1567,28 +1565,24 @@ void GUIApp::setupCoreGumps()
 
 	pout << "Create Desktop" << std::endl;
 	desktopGump = new DesktopGump(0,0, dims.w, dims.h);
-	desktopGump->InitGump();
+	desktopGump->InitGump(0);
 	desktopGump->MakeFocus();
 
 	pout << "Create Scalergump" << std::endl;
 	scalerGump = new ScalerGump(0,0, dims.w, dims.h,scalex,scaley,scaler);
-	scalerGump->InitGump();
-	desktopGump->AddChild(scalerGump);
+	scalerGump->InitGump(0);
 
 	pout << "Create Graphics Console" << std::endl;
 	consoleGump = new ConsoleGump(0, 0, dims.w, dims.h);
-	consoleGump->InitGump();
+	consoleGump->InitGump(0);
 	consoleGump->HideConsole();
-	desktopGump->AddChild(consoleGump);
 	
 	inverterGump = new InverterGump(0, 0, scalex,scaley);
-	inverterGump->InitGump();
-	scalerGump->AddChild(inverterGump);
+	inverterGump->InitGump(0);
 
 	pout << "Create GameMapGump" << std::endl;
 	gameMapGump = new GameMapGump(0, 0, scalex,scaley);
-	gameMapGump->InitGump();
-	inverterGump->AddChild(gameMapGump);
+	gameMapGump->InitGump(0);
 
 
 	// TODO: clean this up
@@ -1745,18 +1739,35 @@ Gump* GUIApp::getGump(uint16 gumpid)
 
 void GUIApp::addGump(Gump* gump)
 {
-	// TODO: At some point, this will have to choose to which 'layer' to
-	// add the gump: inverted, scaled or top-level
+	// TODO: At some point, this will have to _properly_ choose to
+	// which 'layer' to add the gump: inverted, scaled or neither.
 
 	assert(desktopGump);
 
-	if (gump->IsOfType<ShapeViewerGump>() || gump->IsOfType<MiniMapGump>() || 
-		(ttfoverrides && (gump->IsOfType<BarkGump>() || gump->IsOfType<AskGump>())))
+	if (gump->IsOfType<ShapeViewerGump>() || gump->IsOfType<MiniMapGump>() ||
+		gump->IsOfType<ConsoleGump>() || gump->IsOfType<ScalerGump>() ||
+		(ttfoverrides && (gump->IsOfType<BarkGump>() ||
+						  gump->IsOfType<AskGump>())))
 	{
+		pout << "adding to desktopgump: "; gump->dumpInfo();
 		desktopGump->AddChild(gump);
+	}
+	else if (gump->IsOfType<GameMapGump>())
+	{
+		pout << "adding to invertergump: "; gump->dumpInfo();
+		inverterGump->AddChild(gump);
+	}
+	else if (gump->IsOfType<InverterGump>())
+	{
+		pout << "adding to scalergump: "; gump->dumpInfo();
+		scalerGump->AddChild(gump);
+	}
+	else if (gump->IsOfType<DesktopGump>())
+	{
 	}
 	else
 	{
+		pout << "adding to scalergump: "; gump->dumpInfo();
 		scalerGump->AddChild(gump);
 	}
 }

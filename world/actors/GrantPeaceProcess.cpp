@@ -25,7 +25,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "TargetGump.h"
 #include "WeaponInfo.h"
 #include "PaletteFaderProcess.h"
-#include "GUIApp.h"
 #include "UCList.h"
 #include "LoopScript.h"
 #include "Direction.h"
@@ -66,8 +65,7 @@ bool GrantPeaceProcess::run(const uint32 /*framenum*/)
 
 	if (!havetarget) {
 		TargetGump* targetgump = new TargetGump(0, 0);
-		targetgump->InitGump();
-		GUIApp::get_instance()->addGump(targetgump);
+		targetgump->InitGump(0);
 
 		waitFor(targetgump->GetNotifyProcess()->getPid());
 

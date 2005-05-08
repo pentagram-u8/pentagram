@@ -87,8 +87,11 @@ public:
 	inline void					SetFramenum(uint32 _framenum)
 		{ framenum = _framenum; }
 
-	//! Init the gump, call after construction
-	virtual void				InitGump();
+	//! Init the gump and add it to parent; call after construction
+	//! When newparent is 0, this will call GUIApp::addGump().
+	//! \param newparent The Gump's new parent or 0.
+	//! \param takefocus If true, set parent's focus_child to this
+	virtual void				InitGump(Gump* newparent,bool take_focus=true);
 
 	//! Find a gump of the specified type (this or child)
 	//! \param t Type of gump to look for

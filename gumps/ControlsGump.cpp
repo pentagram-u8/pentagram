@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2004-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include "ButtonWidget.h"
 #include "TextWidget.h"
 #include "BindGump.h"
+#include "PagedGump.h"
 
 #include "GUIApp.h"
 #include "HIDManager.h"
@@ -40,8 +41,9 @@ public:
 	ENABLE_RUNTIME_CLASSTYPE();
 	ControlEntryGump(int x, int y, int width, char * binding, char * name);
 	virtual ~ControlEntryGump(void);
-	virtual void InitGump();
+	virtual void InitGump(Gump* newparent, bool take_focus=true);
 	virtual void ChildNotify(Gump *child, uint32 message);
+	void init();
 protected:
 	Pentagram::istring bindingName;
 	std::string displayedName;
@@ -59,7 +61,14 @@ ControlEntryGump::~ControlEntryGump()
 {
 }
 
-void ControlEntryGump::InitGump()
+void ControlEntryGump::InitGump(Gump* newparent, bool take_focus)
+{
+	Gump::InitGump(newparent, take_focus);
+
+	init();
+}
+
+void ControlEntryGump::init()
 {
 	// close all children so we can simply use this method to re init
 	std::list<Gump*>::iterator it;
@@ -77,8 +86,7 @@ void ControlEntryGump::InitGump()
 
 	Pentagram::Rect rect;
 	button = new ButtonWidget(0, 0, displayedName, font, 0x80D000D0);
-	button->InitGump();
-	AddChild(button);
+	button->InitGump(this);
 	button->GetDims(rect);
 
 	dims.h = rect.h;
@@ -88,8 +96,7 @@ void ControlEntryGump::InitGump()
 	for (i = controls.begin(); i != controls.end(); ++i)
 	{
 		widget = new TextWidget(x, 0, *i, font);
-		widget->InitGump();
-		AddChild(widget, false);
+		widget->InitGump(this, false);
 		widget->GetDims(rect);
 		x += rect.w + 5;
 	}
@@ -103,8 +110,7 @@ void ControlEntryGump::ChildNotify(Gump *child, uint32 message)
 		if (cid == button->getObjId())
 		{
 			ModalGump* gump = new BindGump(&bindingName, parent);
-			gump->InitGump();
-			GUIApp::get_instance()->addGump(gump);
+			gump->InitGump(0);
 			gump->setRelativePosition(CENTER);
 		}
 	}
@@ -124,27 +130,24 @@ ControlsGump::~ControlsGump()
 {
 }
 
-void ControlsGump::InitGump()
+void ControlsGump::InitGump(Gump* newparent, bool take_focus)
 {
-	Gump::InitGump();
+	Gump::InitGump(newparent, take_focus);
 
 	dims.w = 220;
 	dims.h = 120;
 
 	Gump * widget = new TextWidget(0, 0, "Controls", font);
-	widget->InitGump();
-	AddChild(widget, false);
+	widget->InitGump(this, false);
 	widget = new TextWidget(120, 0, "Keys", font);
-	widget->InitGump();
-	AddChild(widget, false);
+	widget->InitGump(this, false);
 }
 
 void ControlsGump::addEntry(char * binding, char * name, int & x, int & y)
 {
 	Pentagram::Rect rect;
 	Gump * widget = new ControlEntryGump(x, y, dims.w - x, binding, name);
-	widget->InitGump();
-	AddChild(widget);
+	widget->InitGump(this);
 	widget->GetDims(rect);
 	y += rect.h;
 }
@@ -158,7 +161,7 @@ void ControlsGump::ChildNotify(Gump *child, uint32 message)
 		{
 			ControlEntryGump *g =  p_dynamic_cast<ControlEntryGump*>(*it);
 			if (g)
-				g->InitGump();
+				g->init();
 		}
 	}
 }
@@ -174,10 +177,10 @@ bool ControlsGump::OnKeyDown(int key, int mod)
 }
 
 //static
-Gump * ControlsGump::showEngineMenu()
+void ControlsGump::showEngineMenu(PagedGump* pagedgump)
 {
 	ControlsGump* gump = new ControlsGump();
-	gump->InitGump();
+	gump->InitGump(pagedgump, false);
 	int x = 4;
 	int y = 12;
 	gump->addEntry("quickSave", "Quick Save", x, y);
@@ -189,13 +192,15 @@ Gump * ControlsGump::showEngineMenu()
 	gump->addEntry("toggleFrameByFrame", "Single Frame Mode", x, y);
 	gump->addEntry("advanceFrameByFrame", "Next Frame", x, y);
 	gump->addEntry("toggleConsole", "Console", x, y);
-	return gump;
+
+	pagedgump->addPage(gump);
 }
 
-Gump * ControlsGump::showU8Menu()
+// static
+void ControlsGump::showU8Menu(PagedGump* pagedgump)
 {
 	ControlsGump* gump = new ControlsGump();
-	gump->InitGump();
+	gump->InitGump(pagedgump, false);
 	int x = 4;
 	int y = 12;
 	gump->addEntry("toggleCombat", "Combat Mode", x, y);
@@ -207,7 +212,8 @@ Gump * ControlsGump::showU8Menu()
 	gump->addEntry("u8ShapeViewer", "Shape Viewer", x, y);
 	gump->addEntry("showMenu", "Menu", x, y);
 	gump->addEntry("quit", "Quit", x, y);
-	return gump;
+
+	pagedgump->addPage(gump);
 }
 
 bool ControlsGump::loadData(IDataSource* ids)

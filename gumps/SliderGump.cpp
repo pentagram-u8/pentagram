@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004  The Pentagram Team
+ *  Copyright (C) 2003-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -128,9 +128,9 @@ void SliderGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 }
 
 
-void SliderGump::InitGump()
+void SliderGump::InitGump(Gump* newparent, bool take_focus)
 {
-	ModalGump::InitGump();
+	ModalGump::InitGump(newparent, take_focus);
 
 	shape = GameData::get_instance()->getGumps()->getShape(gumpshape);
 	ShapeFrame* sf = shape->getFrame(0);
@@ -146,24 +146,21 @@ void SliderGump::InitGump()
 	Gump *widget = new SlidingWidget(getSliderPos(),slidery,
 									 childshape,sliderframe);
 	widget->SetIndex(SLIDER_INDEX);
-	widget->InitGump();
-	AddChild(widget);
+	widget->InitGump(this);
 
 	FrameID button_up(GameData::GUMPS, okshape, 0);
 	FrameID button_down(GameData::GUMPS, okshape, 1);
 
 	widget = new ButtonWidget(14, 17, button_up, button_down);
 	widget->SetIndex(OK_INDEX);
-	widget->InitGump();
-	AddChild(widget);
+	widget->InitGump(this);
 
 	FrameID buttonleft_up(GameData::GUMPS, leftshape, 0);
 	FrameID buttonleft_down(GameData::GUMPS, leftshape, 1);
 
 	widget = new ButtonWidget(36, 17, buttonleft_up, buttonleft_down);
 	widget->SetIndex(LEFT_INDEX);
-	widget->InitGump();
-	AddChild(widget);
+	widget->InitGump(this);
 
 
 	FrameID buttonright_up(GameData::GUMPS, rightshape, 0);
@@ -171,8 +168,7 @@ void SliderGump::InitGump()
 
 	widget = new ButtonWidget(141, 17, buttonright_up, buttonright_down);
 	widget->SetIndex(RIGHT_INDEX);
-	widget->InitGump();
-	AddChild(widget);
+	widget->InitGump(this);
 }
 
 void SliderGump::ChildNotify(Gump *child, uint32 message)
