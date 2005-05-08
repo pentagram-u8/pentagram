@@ -92,7 +92,7 @@ int main(int argc, char* argv[])
 			return 1;
 		}
 
-		fprintf(outfile, "static uint8 data%d[] = {\n", index);
+		fprintf(outfile, "static const uint8 data%d[] = {\n", index);
 		first = 1;
 		filesizes[index] = 0;
 
