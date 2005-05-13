@@ -91,7 +91,7 @@ void U8SaveGump::InitGump(Gump* newparent, bool take_focus)
 		gump->SetShape(entry_id, true);
 		gump->InitGump(this, false);
 			
-		gump = new Gump(xbase+2+entrywidth, 3+40*yi, 3, 1, 1);
+		gump = new Gump(xbase+2+entrywidth, 3+40*yi, 1, 1);
 		gump->SetShape(entrynum_id, true);
 		gump->InitGump(this, false);
 

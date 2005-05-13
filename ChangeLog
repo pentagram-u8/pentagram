@@ -1,3 +1,6 @@
+2005-05-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/U8SaveGump.cpp: fixed typo that created notifiers in savegump
+
 2005-05-08  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* tools/gimp-plugin/module.mk: Fix building of gimp-plugin
 
