@@ -76,11 +76,6 @@ void ItemRelativeGump::InitGump(Gump* newparent, bool take_focus)
 		else if (bottom > -sd.y + sd.h)
 			movey = -sd.y + sd.h - bottom;
 
-		pout.printf("(%d,%d,%d,%d) vs (%d,%d,%d,%d)\n", left,top,right,bottom,
-					-sd.x, -sd.y, -sd.x + sd.w, -sd.y + sd.h);
-
-		pout << "moving: (" << movex << "," << movey << std::endl;
-	
 		Move(left+movex, top+movey);
 	}
 }
