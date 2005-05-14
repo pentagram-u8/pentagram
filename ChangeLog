@@ -1,4 +1,9 @@
 2005-05-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Container.cpp, world/CurrentMap.cpp: when doing recursive
+	  searches, return children after parent. Fixes recursive gump closing
+	  by usecode.
+
+2005-05-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* Makefile.in: include config.h.stamp into Makefile. This lets make
 	  rescan all dependencies when config.h might have been changed by
 	  config.status.

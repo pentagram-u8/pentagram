@@ -521,14 +521,6 @@ void CurrentMap::areaSearch(UCList* itemlist, const uint8* loopscript,
 				Rect itemrect(ix - ixd, iy - iyd, ixd, iyd);
 
 				if (!itemrect.Overlaps(searchrange)) continue;
-
-				if (recurse) {
-					// recurse into child-containers
-					Container *container = p_dynamic_cast<Container*>(*iter);
-					if (container)
-						container->containerSearch(itemlist, loopscript,
-												   scriptsize, recurse);
-				}
 				
 				// check item against loopscript
 				if ((*iter)->checkLoopScript(loopscript, scriptsize)) {
@@ -537,6 +529,14 @@ void CurrentMap::areaSearch(UCList* itemlist, const uint8* loopscript,
 					buf[0] = static_cast<uint8>(objid);
 					buf[1] = static_cast<uint8>(objid >> 8);
 					itemlist->append(buf);				
+				}
+
+				if (recurse) {
+					// recurse into child-containers
+					Container *container = p_dynamic_cast<Container*>(*iter);
+					if (container)
+						container->containerSearch(itemlist, loopscript,
+												   scriptsize, recurse);
 				}
 			}
 		}
