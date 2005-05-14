@@ -137,6 +137,12 @@ misc/config.h.stamp: $(srcdir)/misc/config.h.in $(top_builddir)/config.status
 	  CONFIG_HEADERS=misc/config.h CONFIG_LINKS= CONFIG_FILES= \
 	  $(SHELL) ./config.status
 
+# including config.h.stamp lets make rescan all dependencies if
+# config.h may have been changed.
+-include misc/config.h.stamp $(EMPTY_FILE)
+
+
+
 # rules to rebuild configure, config.status, aclocal.m4, config.h.in
 $(top_builddir)/config.status: $(srcdir)/configure
 	$(SHELL) ./config.status --recheck

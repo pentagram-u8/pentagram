@@ -6,7 +6,7 @@
 # loop where config.status creates the headers, so we can generate
 # our stamp files there.
 AC_DEFUN([_AC_AM_CONFIG_HEADER_HOOK],
-[echo "timestamp for $1" >$1.stamp])
+[[echo "# timestamp for $1" >$1.stamp]])
 
 
 
