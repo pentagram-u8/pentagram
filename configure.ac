@@ -407,7 +407,7 @@ fi
 
 
 # Built-in data files
-AC_ARG_ENABLE(builtin_data, [[  --enable-builtin-data   Enable built-in data files [default no]]],,enable_builtin_data=no)
+AC_ARG_ENABLE(builtin_data, [[  --disable-builtin-data  Disable built-in data files]],,enable_builtin_data=yes)
 AC_MSG_CHECKING(if we should use built-in data files)
 if test x$enable_builtin_data = xyes; then
 	AC_DEFINE(BUILTIN_DATA, 1, [Use built-in data files])
@@ -440,7 +440,6 @@ if test x$enable_gimp_plugin = xyes; then
 			GIMP_PLUGIN_PREFIX=`$GIMPTOOL --gimpplugindir`
 			GIMP_PLUGIN_PREFIX="$GIMP_PLUGIN_PREFIX/plug-ins"
 			AC_SUBST(GIMP_PLUGIN_PREFIX)
-			AC_DEFINE(HAVE_GIMP, 1, [Have GIMP])
 			GIMP_INCLUDES=`$GIMPTOOL --cflags`
 			GIMP_LIBS=`$GIMPTOOL --libs`
 			AC_SUBST(GIMP_INCLUDES)

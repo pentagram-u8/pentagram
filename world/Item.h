@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Object.h"
 
 #include "intrinsics.h"
+#include "Box.h"
 class Container;
 class ShapeInfo;
 class Shape;
@@ -105,6 +106,9 @@ public:
 	//! Get the size of this item's 3D bounding box, scaled as in the datafiles
 	//! (i.e., the dimensions are not in the same unit as world coordinates!)
 	void getFootpadData(sint32& x, sint32& y, sint32& z) const;
+
+	//! Get the Box this item occupies in the world. Undef if item is contained
+	Pentagram::Box getWorldBox() const;
 
 	//! Get flags
 	uint16 getFlags() const { return flags; }
@@ -262,6 +266,9 @@ public:
 
 	//! Get the weight of this Item and its contents, if any
 	virtual uint32 getTotalWeight();
+
+	//! Get the volume this item takes up in a container
+	virtual uint32 getVolume();
 
 	//! explode
 	void explode();

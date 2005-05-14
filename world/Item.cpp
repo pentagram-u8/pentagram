@@ -445,6 +445,13 @@ void Item::getFootpadData(sint32& X, sint32& Y, sint32& Z) const
 	}
 }
 
+Pentagram::Box Item::getWorldBox() const
+{
+	sint32 xd,yd,zd;
+	getFootpadWorld(xd,yd,zd);
+	return Pentagram::Box(x,y,z,xd,yd,zd);
+}
+
 bool Item::overlaps(Item& item2) const
 {
 	sint32 x1a,y1a,z1a,x1b,y1b,z1b;
@@ -620,6 +627,26 @@ uint32 Item::getWeight()
 uint32 Item::getTotalWeight()
 {
 	return getWeight();
+}
+
+uint32 Item::getVolume()
+{
+	// invisible items (trap markers and such) don't take up volume
+	if (getFlags() & FLG_INVISIBLE) return 0;
+
+
+	uint32 volume = getShapeInfo()->volume;
+
+	switch (getShapeInfo()->family) {
+	case ShapeInfo::SF_QUANTITY:
+		return ((getQuality()*volume)+99)/100;
+	case ShapeInfo::SF_REAGENT:
+		return ((getQuality()*volume)+9)/10;
+	case ShapeInfo::SF_CONTAINER:
+		return (volume == 0 ? 1 : volume);
+	default:
+		return volume;
+	}
 }
 
 bool Item::checkLoopScript(const uint8* script, uint32 scriptsize)

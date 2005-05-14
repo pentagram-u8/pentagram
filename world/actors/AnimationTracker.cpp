@@ -313,11 +313,6 @@ void AnimationTracker::setTargetedMode(sint32 x_, sint32 y_, sint32 z_)
 
 void AnimationTracker::checkWeaponHit()
 {
-	// FIXME: this is rather broken, since it uses the Actor's position
-	// instead of the current internal (x,y) tracker position.
-	// However, attack animations generally don't move the actor, so
-	// the effect shouldn't be noticable for now.
-
 	int range = animaction->frames[dir][currentframe].attack_range();
 
 #if 0
@@ -327,32 +322,30 @@ void AnimationTracker::checkWeaponHit()
 	Actor *a = World::get_instance()->getNPC(actor);
 	assert(a);
 
+	Pentagram::Box abox = a->getWorldBox();
+	abox.MoveAbs(x,y,z);
+	abox.MoveRel(x_fact[dir]*32*range,y_fact[dir]*32*range,0);
+
 	CurrentMap* cm = World::get_instance()->getCurrentMap();
 
 	UCList itemlist(2);
 	LOOPSCRIPT(script, LS_TOKEN_END);
 
-	// CHECKME: check range
-	cm->areaSearch(&itemlist, script, sizeof(script), a, 16*range, false/*,
-				   x, y*/);
+	cm->areaSearch(&itemlist, script, sizeof(script), a, 320, false, x, y);
 
 	ObjId hit = 0;
 	for (unsigned int i = 0; i < itemlist.getSize(); ++i) {
 		ObjId itemid = itemlist.getuint16(i);
 		if (itemid == actor) continue; // don't want to hit self
 
-		Item* item = World::get_instance()->getItem(itemid);
-		assert(item);
-		sint32 ix,iy,iz;
-		item->getLocationAbsolute(ix,iy,iz);
-		sint32 ax,ay,az;
-		a->getLocationAbsolute(ax,ay,az);
-		int dirdelta = abs(a->getDirToItemCentre(*item) - dir);
-		if ((dirdelta <= 1 || dirdelta >= 7) &&
-			!a->getShapeInfo()->is_fixed() && itemid < 256) {
-			// FIXME: should allow item to be only slightly outside of
-			//        the right direction
-			// FIXME: shouldn't only allow hitting NPCs
+		Actor* item = World::get_instance()->getNPC(itemid);
+		if (!item) continue;
+
+		Pentagram::Box ibox = item->getWorldBox();
+
+		if (abox.Overlaps(ibox) && !a->getShapeInfo()->is_fixed())
+		{
+			// FIXME: is it right to only allow hitting NPCs??
 			hit = itemid;
 #if 0
 			pout << "hit ";

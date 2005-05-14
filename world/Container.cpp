@@ -95,8 +95,14 @@ bool Container::CanAddItem(Item* item, bool checkwghtvol)
 	}
 
 	if (checkwghtvol) {
-		//TODO: check weight and volume
 
+		uint32 volume = getContentVolume();
+		uint32 capacity = getCapacity();
+
+		if (volume + item->getVolume() > capacity)
+			return false;
+
+		// TODO: check weight
 	}
 
 	return true;
@@ -197,6 +203,26 @@ uint32 Container::getTotalWeight()
 	return weight;
 }
 
+uint32 Container::getCapacity()
+{
+	uint32 volume = getShapeInfo()->volume;
+
+	return (volume == 0 ? 32 : volume);
+}
+
+uint32 Container::getContentVolume()
+{
+	uint32 volume = 0;
+
+	std::list<Item*>::iterator iter;
+	
+	for (iter = contents.begin(); iter != contents.end(); ++iter) {	
+		volume += (*iter)->getVolume();
+	}
+
+	return volume;	
+}
+
 void Container::containerSearch(UCList* itemlist, const uint8* loopscript,
 								uint32 scriptsize, bool recurse)
 {
@@ -225,8 +251,8 @@ void Container::dumpInfo()
 {
 	Item::dumpInfo();
 
-	pout << "Volume: " << getShapeInfo()->volume << ", total weight: "
-		 << getTotalWeight() << std::endl;
+	pout << "Volume: " << getContentVolume() << "/" << getCapacity()
+		 << ", total weight: " << getTotalWeight() << std::endl;
 }
 
 void Container::saveData(ODataSource* ods)

@@ -1,3 +1,10 @@
+2005-05-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* misc/Box.h: a simple 3D box
+	* world/Item.*: allow getting 3D bounding box (as a Box)
+	* world/action/AnimationTracker.cpp: tweaked hit-checks
+	* world/Container.*: volume/capacity checking
+	* configure.ac: enable builtin-data by default
+
 2005-05-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/U8SaveGump.cpp: fixed typo that created notifiers in savegump
 

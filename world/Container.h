@@ -81,6 +81,12 @@ public:
 	//! \return weight
 	virtual uint32 getTotalWeight();
 
+	//! Get the container's capacity
+	virtual uint32 getCapacity();
+
+	//! Get the total volume used up by the container's current contents
+	virtual uint32 getContentVolume();
+
 	//! Assign self and contents an objID
 	//! \return the assiged ID
 	virtual ObjId assignObjId();
