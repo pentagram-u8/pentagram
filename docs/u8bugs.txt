@@ -44,6 +44,19 @@ usecode when EXT_PERMANENT_NPC and FLG_FAST_ONLY are both unset.
 
 
 
+Mythran conversation global size:
+
+The global 0x0129 ('paganLore') has a size of 1 bit. At MYTHRAN::5B3B it is
+set to 0x2, which doesn't fit.
+
+FIX:
+unknown
+
+WORKAROUND:
+unknown
+
+
+
 Typos:
 
 class 0181 (STRATOS)
