@@ -53,6 +53,7 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
+	fprintf(outfile, "/* This file was generated automatically. DO NOT EDIT! */\n\n");
 
 	fprintf(outfile, "namespace PentagramData {\n");
 
