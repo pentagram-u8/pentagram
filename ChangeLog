@@ -1,3 +1,6 @@
+2005-05-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Container.cpp: avatar inventory weight checking
+
 2005-05-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Container.cpp, world/CurrentMap.cpp: when doing recursive
 	  searches, return children after parent. Fixes recursive gump closing

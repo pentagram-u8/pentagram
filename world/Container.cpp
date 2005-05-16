@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,6 +26,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IDataSource.h"
 #include "ODataSource.h"
 #include "ItemFactory.h"
+#include "World.h"
+#include "MainActor.h"
 
 #include "ShapeInfo.h"
 
@@ -99,10 +101,21 @@ bool Container::CanAddItem(Item* item, bool checkwghtvol)
 		uint32 volume = getContentVolume();
 		uint32 capacity = getCapacity();
 
+		// FIXME: this check isn't entirely correct. (combining items,...?)
 		if (volume + item->getVolume() > capacity)
 			return false;
 
-		// TODO: check weight
+		Item *p = this;
+		while (p->getParentAsContainer())
+			p = p->getParentAsContainer();
+		// In Avatar's inventory?
+		if (p->getObjId() == 1) {
+			MainActor* av = World::get_instance()->getMainActor();
+			unsigned int str = av->getStr();
+			// FIXME: this check isn't entirely correct. (combining items,...?)
+			if (p->getTotalWeight() + item->getWeight() > 40 * str) //CONSTANT!
+				return false;
+		}
 	}
 
 	return true;
@@ -207,7 +220,7 @@ uint32 Container::getCapacity()
 {
 	uint32 volume = getShapeInfo()->volume;
 
-	return (volume == 0 ? 32 : volume);
+	return (volume == 0) ? 32 : volume;
 }
 
 uint32 Container::getContentVolume()
