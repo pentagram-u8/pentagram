@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Animation.h"
 #include "AnimDat.h"
 #include "AnimAction.h"
-#include "Actor.h"
+#include "MainActor.h"
 #include "Direction.h"
 #include "World.h"
 #include "GravityProcess.h"
@@ -37,6 +37,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "SettingManager.h"
 #include "CombatProcess.h"
 #include "SpriteProcess.h"
+#include "PaletteFaderProcess.h"
+#include "CreateItemProcess.h"
+#include "DestroyItemProcess.h"
+#include "DelayProcess.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -266,7 +270,8 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 				attackedSomething = true;
 				Item* hit_item = World::get_instance()->getItem(hit);
 				assert(hit_item);
-				hit_item->receiveHit(item_num, (dir+4)%8, 0, 0); // CHECKME: dir?
+				hit_item->receiveHit(item_num, (dir+4)%8, 0, 0);
+				doHitSpecial(hit_item);
 			}
 		}
 	}
@@ -402,6 +407,110 @@ void ActorAnimProcess::doSpecial()
 	}
 
 }
+
+
+void ActorAnimProcess::doHitSpecial(Item* hit)
+{
+	Actor *a = World::get_instance()->getNPC(item_num);
+	assert(a);
+
+	Actor* attacked = p_dynamic_cast<Actor*>(hit);
+
+	if (item_num == 1 && action == Animation::attack) {
+		// some magic weapons have some special effects
+
+		AudioProcess* audioproc = AudioProcess::get_instance();
+
+		MainActor* av = World::get_instance()->getMainActor();
+		ObjId weaponid = av->getEquip(ShapeInfo::SE_WEAPON);
+		Item* weapon = World::get_instance()->getItem(weaponid);
+
+		if (!weapon) return;
+
+		uint32 weaponshape = weapon->getShape();
+
+		switch (weaponshape) {
+		case 0x32F: // magic hammer
+			if (audioproc) audioproc->playSFX(23, 0x60, 1, 0, false,
+								  0x10000 + (std::rand()&0x1FFF) - 0x1000);
+			break;
+		case 0x330: // Slayer
+		{
+			// if we killed somebody, thunder&lightning
+			if (attacked && (attacked->getActorFlags() & Actor::ACT_DEAD)) {
+				// calling intrinsic...
+				PaletteFaderProcess::I_lightningBolt(0, 0);
+				int sfx;
+				switch (std::rand() % 3) {
+				case 0: sfx = 91; break;
+				case 1: sfx = 94; break;
+				default: sfx = 96; break;
+				}
+				if (audioproc) audioproc->playSFX(sfx, 0x60, 1, 0);
+			}
+			break;
+		}
+		case 0x331: // Flame Sting
+		{
+			int sfx = 33;
+			if (std::rand()%2 == 0) sfx = 101;
+			if (audioproc) audioproc->playSFX(sfx, 0x60, 1, 0, false,
+								  0x10000 + (std::rand()&0x1FFF) - 0x1000);
+
+			sint32 x,y,z;
+			a->getLocation(x,y,z);
+			// 1: create flame sprite
+			// 2: create flame object
+			// 3: wait
+			// 4a: destroy flame object
+			// 4b: create douse-flame sprite
+			Kernel* kernel = Kernel::get_instance();
+
+			sint32 fx,fy,fz;
+			fx = x + 96 * x_fact[dir];
+			fy = y + 96 * y_fact[dir];
+			fz = z;
+
+			// CONSTANTS!! (lots of them)
+
+			SpriteProcess* sp1 = new SpriteProcess(480, 0, 9, 1, 2, fx,fy,fz);
+			kernel->addProcess(sp1);
+
+			DelayProcess* dp1 = new DelayProcess(3);
+			ProcId dp1id = kernel->addProcess(dp1);
+
+			CreateItemProcess* cip = new CreateItemProcess(400, 0, 0,
+														   Item::FLG_FAST_ONLY,
+														   0, 0, 0, fx,fy,fz);
+			ProcId cipid = kernel->addProcess(cip);
+
+			DelayProcess* dp2 = new DelayProcess(60 + (std::rand()%60)); //2-4s
+			ProcId dp2id = kernel->addProcess(dp2);
+
+			DestroyItemProcess* dip = new DestroyItemProcess(0);
+			kernel->addProcess(dip);
+
+			SpriteProcess* sp2 = new SpriteProcess(381, 0, 9, 1, 1,
+												   fx,fy,fz, true);
+			kernel->addProcess(sp2);
+
+			cip->waitFor(dp1id);
+			dp2->waitFor(cipid);
+			dip->waitFor(dp2id);
+			sp2->waitFor(dp2id);
+
+			break;
+		}
+		default:
+			break;
+		}
+
+		return ;
+	}
+
+}
+
+
 
 void ActorAnimProcess::terminate()
 {

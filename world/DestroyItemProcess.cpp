@@ -35,14 +35,22 @@ DestroyItemProcess::DestroyItemProcess() : Process()
 
 DestroyItemProcess::DestroyItemProcess(Item* item_)
 {
-	assert(item_);
-	item_num = item_->getObjId();
+	if (item_)
+		item_num = item_->getObjId();
+	else
+		item_num = 0;
 
 	type = 0x232;
 }
 
 bool DestroyItemProcess::run(const uint32 /*framenum*/)
 {
+	if (item_num == 0) {
+		// need to get ObjId to use from process result. (We were apparently
+		// waiting for a process which returned the ObjId to delete.)
+		item_num = static_cast<ObjId>(result);
+	}
+
 	Item *it = World::get_instance()->getItem(item_num);
 
 	if (!it) {

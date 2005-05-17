@@ -643,7 +643,7 @@ uint32 Item::getVolume()
 	case ShapeInfo::SF_REAGENT:
 		return ((getQuality()*volume)+9)/10;
 	case ShapeInfo::SF_CONTAINER:
-		return (volume == 0 ? 1 : volume);
+		return (volume == 0) ? 1 : volume;
 	default:
 		return volume;
 	}
@@ -1358,10 +1358,14 @@ void Item::leaveFastArea()
 	flags &= ~FLG_FASTAREA;
 
 	// CHECKME: what do we need to do exactly?
-	// currently, if an actor, schedule deletion; otherwise, destroy object
+	// currently,  destroy object
 
 	// Kill us if we are fast only
 	if (flags & FLG_FAST_ONLY) {
+		// destroy contents if container
+		Container* c = p_dynamic_cast<Container*>(this);
+		if (c) c->destroyContents();
+
 		destroy();
 	}
 	// If we have a gravity process, move us to the ground

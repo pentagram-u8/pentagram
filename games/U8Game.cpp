@@ -179,6 +179,16 @@ void U8Game::ConCmd_cheatItems(const Console::ArgsType &args, const Console::Arg
 	flamesting->moveToContainer(backpack);
 	flamesting->setGumpLocation(20, 30);
 
+	Item* hammer = ItemFactory::createItem(815, 0, 0, 0, 0, 0, 0);
+	hammer->assignObjId();
+	hammer->moveToContainer(backpack);
+	hammer->setGumpLocation(20, 30);
+
+	Item* slayer = ItemFactory::createItem(816, 0, 0, 0, 0, 0, 0);
+	slayer->assignObjId();
+	slayer->moveToContainer(backpack);
+	slayer->setGumpLocation(20, 30);
+
 	// armour
 	Item* armour = ItemFactory::createItem(64, 0, 0, 0, 0, 0, 0);
 	armour->assignObjId();

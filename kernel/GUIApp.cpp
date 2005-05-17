@@ -351,6 +351,11 @@ void GUIApp::startup()
 
 	game = Game::createGame(getGameInfo());
 
+	// set window title to current game
+	std::string title = "Pentagram - ";
+	title += getGameInfo()->getGameTitle();
+	SDL_WM_SetCaption(title.c_str(), "");
+
 	game->loadFiles();
 	gamedata->setupTTFOverrides();
 
@@ -859,6 +864,11 @@ void GUIApp::GraphicSysInit()
 		perr << "Unable to set video mode. Exiting" << std::endl;
 		std::exit(-1);
 	}
+
+	// set window title
+	SDL_WM_SetCaption("Pentagram", "");
+
+
 
 	pout << "Create Desktop" << std::endl;
 	desktopGump = new DesktopGump(0,0, width, height);

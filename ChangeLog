@@ -1,3 +1,11 @@
+2005-05-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* games/GameInfo.*: function to get title of current game
+	* kernel/GUIApp.cpp: set window title
+	* world/DestroyItemProcess.*: can use process result as item to destroy
+	* world/CreateItemProcess.*: process that creates an item
+	* world/actors/ActorAnimProcess.*: special effects for magic weapons
+	* world/Item.cpp: delete FAST_ONLY containers' contents
+
 2005-05-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Container.cpp: avatar inventory weight checking
 

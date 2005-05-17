@@ -229,19 +229,9 @@ void CoreApp::initGame()
 		bool detected = getGameInfo(game, &info);
 		con.Printf(MM_INFO, "%s: ", game.c_str());
 		if (detected) {
-			switch(info.type) {
-			case GameInfo::GAME_U8:
-				con.Print(MM_INFO, "Ultima 8, ");
-				break;
-			case GameInfo::GAME_REMORSE:
-				con.Print(MM_INFO, "Crusader: No Remorse, ");
-				break;
-			case GameInfo::GAME_REGRET:
-				con.Print(MM_INFO, "Crusader: No Regret, ");
-				break;
-			default:
-				con.Print(MM_INFO, "Unknown, ");
-			} 
+			std::string gametitle = info.getGameTitle();
+			if (gametitle == "") gametitle = "Unknown";
+			con.Printf(MM_INFO, "%s, ", gametitle.c_str());
 
 			switch(info.language) {
 			case GameInfo::GAMELANG_ENGLISH:

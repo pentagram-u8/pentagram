@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,31 +16,37 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef DESTROYITEMPROCESS_H
-#define DESTROYITEMPROCESS_H
+#ifndef CREATEITEMPROCESS_H
+#define CREATEITEMPROCESS_H
 
 #include "Process.h"
 
-class Item;
-
-class DestroyItemProcess : public Process
+class CreateItemProcess : public Process
 {
 public:
-	DestroyItemProcess();
-
-	//! DestroyItemProcess
-	//! \param item The item to destroy. If 0, use process result as ObjId.
-	DestroyItemProcess(Item* item);
-
-	// p_dynamic_cast stuff
+	// p_dynamic_class stuff
 	ENABLE_RUNTIME_CLASSTYPE();
+
+	CreateItemProcess();
+	CreateItemProcess(uint32 shape, uint32 frame, uint16 quality,
+					  uint16 flags, uint16 npcnum, uint16 mapnum,
+					  uint32 extendedflags, sint32 x, sint32 y, sint32 z);
+	virtual ~CreateItemProcess(void);
 
 	virtual bool run(const uint32 framenum);
 
 	bool loadData(IDataSource* ids, uint32 version);
 protected:
 	virtual void saveData(ODataSource* ods);
-};
 
+	uint32 shape;
+	uint32 frame;
+	uint16 quality;
+	uint16 flags;
+	uint16 npcnum;
+	uint16 mapnum;
+	uint32 extendedflags;
+	sint32 x,y,z;
+};
 
 #endif

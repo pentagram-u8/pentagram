@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -37,16 +37,24 @@ SpriteProcess::SpriteProcess()
 }
 
 SpriteProcess::SpriteProcess(int Shape, int Frame, int LastFrame, 
-							 int Repeats, int Delay, int X, int Y, int Z) :
-	frame(Frame), first_frame(Frame), last_frame(LastFrame), 
-	repeats(Repeats), delay(Delay*2), delay_counter(0)
+							 int Repeats, int Delay, int X, int Y, int Z,
+							 bool delayed_init) :
+	shape(Shape), frame(Frame), first_frame(Frame), last_frame(LastFrame), 
+	repeats(Repeats), delay(Delay*2), x(X), y(Y), z(Z), delay_counter(0),
+	initialized(false)
 {
+	if (!delayed_init)
+		init();
+}
 
-	Item *item = ItemFactory::createItem(Shape, Frame, 
+void SpriteProcess::init()
+{
+	Item *item = ItemFactory::createItem(shape, frame, 
 						0, Item::FLG_DISPOSABLE, 0, 0, Item::EXT_SPRITE);
 	item->assignObjId();
-	item->move(X,Y,Z);
+	item->move(x,y,z);
 	setItemNum(item->getObjId());
+	initialized = true;
 }
 
 SpriteProcess::~SpriteProcess(void)
@@ -57,6 +65,8 @@ SpriteProcess::~SpriteProcess(void)
 
 bool SpriteProcess::run(const uint32)
 {
+	if (!initialized) init();
+
 	Item *item = World::get_instance()->getItem(item_num);
 	
 	if (!item || (frame > last_frame && repeats==1 && !delay_counter)) 
@@ -111,25 +121,34 @@ void SpriteProcess::saveData(ODataSource* ods)
 {
 	Process::saveData(ods);
 
+	ods->write4(static_cast<uint32>(shape));
 	ods->write4(static_cast<uint32>(frame));
 	ods->write4(static_cast<uint32>(first_frame));
 	ods->write4(static_cast<uint32>(last_frame));
 	ods->write4(static_cast<uint32>(repeats));
 	ods->write4(static_cast<uint32>(delay));
+	ods->write4(static_cast<uint32>(x));
+	ods->write4(static_cast<uint32>(y));
+	ods->write4(static_cast<uint32>(z));
 	ods->write4(static_cast<uint32>(delay_counter));
-
+	ods->write1(initialized ? 1 : 0);
 }
 
 bool SpriteProcess::loadData(IDataSource* ids, uint32 version)
 {
 	if (!Process::loadData(ids, version)) return false;
 
+	shape = static_cast<int>(ids->read4());
 	frame = static_cast<int>(ids->read4());
 	first_frame = static_cast<int>(ids->read4());
 	last_frame = static_cast<int>(ids->read4());
 	repeats = static_cast<int>(ids->read4());
 	delay = static_cast<int>(ids->read4());
+	x = static_cast<int>(ids->read4());
+	y = static_cast<int>(ids->read4());
+	z = static_cast<int>(ids->read4());
 	delay_counter = static_cast<int>(ids->read4());
+	initialized = (ids->read1() != 0);
 
 	return true;
 }

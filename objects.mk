@@ -62,7 +62,8 @@ CONF = \
 	conf/SettingManager.o
 
 GAMES = \
-	games/GameDetector.o
+	games/GameDetector.o \
+	games/GameInfo.o
 
 GAMES2 = \
 	games/Game.o \
@@ -173,25 +174,26 @@ WIDGETS = \
 
 WORLD = \
 	world/CameraProcess.o \
+	world/Container.o \
+	world/CreateItemProcess.o \
+	world/CurrentMap.o \
+	world/DestroyItemProcess.o \
 	world/Egg.o \
 	world/EggHatcherProcess.o \
 	world/FireballProcess.o \
+	world/Glob.o \
+	world/GlobEgg.o \
+	world/GravityProcess.o \
 	world/Item.o \
-	world/Container.o \
 	world/ItemFactory.o \
 	world/ItemSorter.o \
 	world/Map.o \
-	world/MonsterEgg.o \
-	world/CurrentMap.o \
-	world/Glob.o \
-	world/GlobEgg.o \
-	world/TeleportEgg.o \
-	world/World.o \
 	world/MissileProcess.o \
-	world/GravityProcess.o \
+	world/MonsterEgg.o \
 	world/SplitItemProcess.o \
 	world/SpriteProcess.o \
-	world/DestroyItemProcess.o
+	world/TeleportEgg.o \
+	world/World.o
 
 ACTORS = \
 	world/actors/Actor.o \

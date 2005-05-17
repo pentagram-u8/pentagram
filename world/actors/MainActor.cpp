@@ -327,9 +327,7 @@ ProcId MainActor::die(uint16 damageType)
 
 	deathproc->waitFor(delayproc);
 
-	// TODO: implement this properly
-	// TODO: close gumps, play music, set 'game over' flag, ...
-	// TODO: gravestone gump opened should not be modal and not be closable
+	// TODO: implement this properly: close gumps, play music, ...?
 
 	return animprocid;
 }

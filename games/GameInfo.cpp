@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,31 +16,38 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef DESTROYITEMPROCESS_H
-#define DESTROYITEMPROCESS_H
+#include "pent_include.h"
 
-#include "Process.h"
+#include "GameInfo.h"
 
-class Item;
-
-class DestroyItemProcess : public Process
+char GameInfo::getLanguageFileLetter() const
 {
-public:
-	DestroyItemProcess();
+	switch (language) {
+	case GAMELANG_ENGLISH:
+		return 'e';
+	case GAMELANG_FRENCH:
+		return 'f';
+	case GAMELANG_GERMAN:
+		return 'g';
+	case GAMELANG_SPANISH:
+		return 'e';
+	default:
+		return 0;
+	}
+}
 
-	//! DestroyItemProcess
-	//! \param item The item to destroy. If 0, use process result as ObjId.
-	DestroyItemProcess(Item* item);
-
-	// p_dynamic_cast stuff
-	ENABLE_RUNTIME_CLASSTYPE();
-
-	virtual bool run(const uint32 framenum);
-
-	bool loadData(IDataSource* ids, uint32 version);
-protected:
-	virtual void saveData(ODataSource* ods);
-};
-
-
-#endif
+std::string GameInfo::getGameTitle() const
+{
+	switch (type) {
+	case GAME_U8:
+		return "Ultima 8: Pagan";
+		break;
+	case GAME_REMORSE:
+		return "Crusader: No Remorse";
+		break;
+	case GAME_REGRET:
+		return "Crusader: No Regret";
+	default:
+		return "";
+	} 
+}

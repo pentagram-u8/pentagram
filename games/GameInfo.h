@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -41,20 +41,8 @@ struct GameInfo {
 		GAMELANG_SPANISH
 	} language;
 
-	char getLanguageFileLetter() {
-		switch (language) {
-		case GAMELANG_ENGLISH:
-			return 'e';
-		case GAMELANG_FRENCH:
-			return 'f';
-		case GAMELANG_GERMAN:
-			return 'g';
-		case GAMELANG_SPANISH:
-			return 'e';
-		default:
-			return 0;
-		}
-	}
+	char getLanguageFileLetter() const;
+	std::string getGameTitle() const;
 
 	GameInfo() : type(GAME_UNKNOWN), version(0), language(GAMELANG_UNKNOWN) { }
 };

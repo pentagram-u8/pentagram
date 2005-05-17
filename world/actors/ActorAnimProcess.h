@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 class Actor;
 struct AnimAction;
 class AnimationTracker;
+class Item;
 
 class ActorAnimProcess : public Process
 {
@@ -53,6 +54,9 @@ protected:
 
 	//! perform special action for an animation
 	void doSpecial();
+
+	//! perform special action when hitting an opponent
+	void doHitSpecial(Item* hit);
 
 	Animation::Sequence action;
 	uint32 dir;

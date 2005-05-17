@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,12 +25,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 //! Creates a Sprite. Animates it. Destroys it.
 class SpriteProcess : public Process
 {
+	int		shape;
 	int		frame;
 	int		first_frame;
 	int		last_frame;
 	int		repeats;
 	int		delay;
+	int		x,y,z;
 	int		delay_counter;
+	bool	initialized;
 public:
 	// p_dynamic_class stuff
 	ENABLE_RUNTIME_CLASSTYPE();
@@ -46,8 +49,10 @@ public:
 	//! \param x X coord of the sprite in the world
 	//! \param y Y coord of the sprite in the world
 	//! \param z Z coord of the sprite in the world
+	//! \param delayed_init if true, wait with initialization until first run
 	SpriteProcess(int shape, int frame, int last_frame, 
-					int repeats, int delay, int x, int y, int z);
+				  int repeats, int delay, int x, int y, int z,
+				  bool delayed_init = false);
 
 	//! The SpriteProcess destructor
 	virtual ~SpriteProcess(void);
@@ -60,6 +65,10 @@ public:
 	INTRINSIC(I_createSprite);
 //	INTRINSIC(I_createSpriteEx);
 
+protected:
+	void init();
+
+public:
 	bool loadData(IDataSource* ids, uint32 version);
 protected:
 	virtual void saveData(ODataSource* ods);
