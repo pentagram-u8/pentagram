@@ -9,6 +9,8 @@ However, for the second speech, this flag is only set _after_ waiting for a
 Camera::scrollTo to finish, which gives a second process enough time to
 pass the !startedConvo check.
 
+Note: this is fixed in the German and French CD versions of U8.
+
 FIX:
 Set startedConvo flag to 1 at offset 0949 instead of at 09A5.
 
