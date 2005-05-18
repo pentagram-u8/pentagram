@@ -67,14 +67,13 @@ bool ActorBarkNotifyProcess::run(const uint32)
 		// if busy, don't do talk animation
 		doAnim = false;
 
-	// wait a short while (0.5-2 seconds) before doing the next animation
+	// wait a short while (1-2.5 seconds) before doing the next animation
 	// (or even if not doing the animation)
-	Process* delayproc = new DelayProcess(15+(std::rand()%45));
+	Process* delayproc = new DelayProcess(30+(std::rand()%45));
 	ProcId delaypid = Kernel::get_instance()->addProcess(delayproc);
 
 	if (doAnim) {
 		ProcId animpid = a->doAnim(Animation::talk, 8);
-		delayproc->waitFor(animpid);
 	}
 
 	waitFor(delaypid);
