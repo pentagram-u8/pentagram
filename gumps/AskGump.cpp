@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004  The Pentagram Team
+ *  Copyright (C) 2003-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -36,7 +36,8 @@ AskGump::AskGump()
 }
 
 AskGump::AskGump(uint16 owner, UCList *answers_) : 
-	ItemRelativeGump(0, 0, 0, 0, owner, 0, LAYER_ABOVE_NORMAL), answers(new UCList(2))
+	ItemRelativeGump(0, 0, 0, 0, owner, FLAG_KEEP_VISIBLE, LAYER_ABOVE_NORMAL),
+	answers(new UCList(2))
 {
 	answers->copyStringList(*answers_);
 }
@@ -142,7 +143,7 @@ bool AskGump::loadData(IDataSource* ids, uint32 version)
 
 		std::list<Gump*>::iterator it;
 		for (it = children.begin(); it != children.end(); ++it) {
-			if ((*it)->GetIndex() != i) continue;
+			if ((*it)->GetIndex() != (int)i) continue;
 			child = p_dynamic_cast<ButtonWidget*>(*it);
 			if (!child) continue;
 		}

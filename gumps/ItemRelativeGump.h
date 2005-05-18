@@ -35,13 +35,11 @@ public:
 
 	virtual void		InitGump(Gump* newparent, bool take_focus=true);
 
-	// Paint the Gump (RenderSurface is relative to parent). Calls PaintThis and PaintChildren
+	// Paint the Gump (RenderSurface is relative to parent).
+	// Calls PaintThis and PaintChildren.
 	virtual void		Paint(RenderSurface*, sint32 lerp_factor);
 
-	// Convert a parent relative point to a gump point
 	virtual void		ParentToGump(int &px, int &py);
-
-	// Convert a gump point to parent relative point
 	virtual void		GumpToParent(int &gx, int &gy);
 
 	virtual void		Move(int x, int y);
@@ -51,6 +49,9 @@ protected:
 	virtual void 		saveData(ODataSource* ods);
 
 	virtual void		GetItemLocation(sint32 lerp_factor);
+
+	//! Move Gump so that it totally overlaps parent.
+	void				MoveOnScreen();
 };
 
 #endif

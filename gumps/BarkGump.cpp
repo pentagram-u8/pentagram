@@ -37,7 +37,8 @@ BarkGump::BarkGump()
 }
 
 BarkGump::BarkGump(uint16 owner, std::string msg, uint32 speechshapenum_) :
-	ItemRelativeGump(0, 0, 100, 100, owner, 0, LAYER_ABOVE_NORMAL),
+	ItemRelativeGump(0, 0, 100, 100, owner,
+					 FLAG_KEEP_VISIBLE, LAYER_ABOVE_NORMAL),
 	barked(msg), counter(100), speechshapenum(speechshapenum_),
 	speechlength(0), totaltextheight(0)
 {
@@ -133,7 +134,7 @@ bool BarkGump::NextText()
 
 bool BarkGump::Run(const uint32 framenum)
 {
-	Gump::Run(framenum);
+	ItemRelativeGump::Run(framenum);
 
 	// Auto close
 	if (!Kernel::get_instance()->isPaused()) {

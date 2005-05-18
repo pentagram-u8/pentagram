@@ -1,4 +1,9 @@
 2005-05-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/Gump.h: new FLAG_KEEP_VISIBLE flag for ItemRelativeGumps
+	* gumps/ItemRelativeGump.*: keep on screen if FLAG_KEEP_VISIBLE set
+	* gumps/BarkGump.cpp, gumps/AskGump.cpp: set FLAG_KEEP_VISIBLE
+
+2005-05-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/ActorBarkNotifyProcess.cpp: don't waitFor animation.
 	  This prevents us from getting fail()ed if animation is terminated.
 

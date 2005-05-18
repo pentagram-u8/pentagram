@@ -338,7 +338,9 @@ public:
 		FLAG_ITEM_DEPENDENT	= 0x10,		// When set, the gump will be deleted on MapChange
 		FLAG_DONT_SAVE      = 0x20,		// When set, don't save this gump.
 		                          		// Be very careful with this one!
-		FLAG_CORE_GUMP      = 0x40      // core gump (only children are saved)
+		FLAG_CORE_GUMP      = 0x40,		// core gump (only children are saved)
+		FLAG_KEEP_VISIBLE   = 0x80		// Keep this gump on-screen.
+										// (only for ItemRelativeGumps)
 	};
 
 	inline bool			IsHidden()

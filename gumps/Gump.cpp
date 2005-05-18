@@ -340,7 +340,8 @@ void Gump::setRelativePosition(Gump::Position pos, int xoffset, int yoffset)
 		switch (pos)
 		{
 		case CENTER:
-			Move(rect.w / 2 - dims.w / 2 + xoffset, rect.h / 2 - dims.h / 2 + yoffset);
+			Move(rect.w / 2 - dims.w / 2 + xoffset,
+				 rect.h / 2 - dims.h / 2 + yoffset);
 			break;
 		case TOP_LEFT:
 			Move(xoffset, yoffset);

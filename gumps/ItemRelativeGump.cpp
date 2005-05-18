@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003  The Pentagram Team
+ *  Copyright (C) 2003-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -50,34 +50,42 @@ void ItemRelativeGump::InitGump(Gump* newparent, bool take_focus)
 
 	GetItemLocation(0);
 
+	if (!newparent && parent)
+		MoveOnScreen();
+}
+
+void ItemRelativeGump::MoveOnScreen()
+{
+	assert(parent);
 	Pentagram::Rect sd, gd;
+	parent->GetDims(sd);
 
-	if (!newparent && parent) {
-		parent->GetDims(sd);
+	// first move back to our desired location
+	x = 0;
+	y = 0;
 
-		// get rectangle that gump occupies in scalerGump's coordinate space
-		sint32 left,right,top,bottom;
-		left = -dims.x;
-		right = left + dims.w;
-		top = -dims.y;
-		bottom = top + dims.h;
-		GumpToParent(left,top);
-		GumpToParent(right,bottom);
-	
-		sint32 movex = 0, movey = 0;
-	
-		if (left < -sd.x)
-			movex = -sd.x - left;
-		else if (right > -sd.x + sd.w)
-			movex = -sd.x + sd.w - right;
-		
-		if (top < -sd.y)
-			movey = -sd.y - top;
-		else if (bottom > -sd.y + sd.h)
-			movey = -sd.y + sd.h - bottom;
+	// get rectangle that gump occupies in scalerGump's coordinate space
+	sint32 left,right,top,bottom;
+	left = -dims.x;
+	right = left + dims.w;
+	top = -dims.y;
+	bottom = top + dims.h;
+	GumpToParent(left,top);
+	GumpToParent(right,bottom);
 
-		Move(left+movex, top+movey);
-	}
+	sint32 movex = 0, movey = 0;
+
+	if (left < -sd.x)
+		movex = -sd.x - left;
+	else if (right > -sd.x + sd.w)
+		movex = -sd.x + sd.w - right;
+
+	if (top < -sd.y)
+		movey = -sd.y - top;
+	else if (bottom > -sd.y + sd.h)
+		movey = -sd.y + sd.h - bottom;
+
+	Move(left+movex, top+movey);
 }
 
 // Paint the Gump (RenderSurface is relative to parent).
@@ -160,6 +168,10 @@ void ItemRelativeGump::GetItemLocation(sint32 lerp_factor)
 	ix = gx-dims.w/2;
 //	iy = gy-dims.h-it->getShapeInfo()->z*8-16;
 	iy = gy-dims.h;
+
+
+	if (flags & FLAG_KEEP_VISIBLE)
+		MoveOnScreen();
 }
 
 void ItemRelativeGump::Move(int x_, int y_)
