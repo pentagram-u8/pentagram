@@ -167,7 +167,6 @@
 					<keydesc name="t">outputs kernel/usecode/world/location stats to the console</keydesc>
 					<keydesc name="e">toggles editor items</keydesc>
 					<keydesc name="h">highlights any item you are "hitting", colliding with</keydesc>
-					<keydesc name="c">enables clipping</keydesc>
 					<keydesc name="i">open backpack</keydesc>
 					<keydesc name="z">open paperdoll/status</keydesc>
 					<keydesc name="r">recall</keydesc>
