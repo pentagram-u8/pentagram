@@ -1,16 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE readme SYSTEM "docs.dtd">
-<readme title="Pentagram" changed="14 October 2004 (GMT)">	
+<readme title="Pentagram" changed="21 May 2005 (GMT)">	
 	<section title="Building CVS">
+		<sub name="dependencies">
+			<header>Build dependencies</header>
+			<body>
+			<para>
+				Before you build <Pent/>, make sure you have the following tools/libraries.
+			</para>
+			<ul>
+				<li>SDL;</li>
+				<li>SDL_ttf;</li>
+				<li>zlib;</li>
+				<li>for Linux/Unix, you need autoconf and automake.</li>
+			</ul>
+			</body>
+		</sub>
 		<sub name="building_linux">
 			<header>Linux/Unix</header>
 			<body>
 				<ol>
-					<li> Run the "bootstrap" script to create the "configure" script<br/>				
+					<li> Run the "bootstrap" script to create the "configure" script:<br/>				
 						<kbd>./bootstrap</kbd></li>
-					<li>Now run configure<br/>
+					<li>Now run configure:<br/>
 						<kbd>./configure</kbd></li>
-					<li>Finally, start the build as usual<br/>
+					<li>Finally, start the build as usual:<br/>
 						<kbd>make</kbd></li>
 				</ol>
 			</body>
@@ -30,23 +44,14 @@
 			<body>
 				<para>
 					<Pent/> needs a pentagram.ini file to point it to the game data files.
-					In Linux, this has to be in a <kbd>~/.pentagram</kbd> directory.
+					In Linux, pentagram.ini has to be in the <kbd>~/.pentagram</kbd> directory.
 					In Windows, it has to be in the current directory.<br/>
-					<Pent/> also needs a u8bindings.ini file to load the keybindings
-					for Ultima 8. The default u8bindings.ini is already in the data directory.<br/>
 					A sample pentagram.ini is included below (this is all that is needed at the
 					moment to run <Pent/>). Comments are marked with <kbd>#</kbd> and are above the ini-entries.<br/>
 					You can copy/paste these settings with the comments to your ini file as <Pent/> will ignore
 					lines beginning with <kbd>#</kbd>.
 				</para>
 				<configdesc>
-					<configsec name="pentagram">
-							<configtag name="data">
-							path to pentagram data dir
-							<comment># replace 'path to pentagram data dir' with the pentagram data directory</comment>
-							<comment># (that's the directory that contains fixedfont.tga)</comment>
-							</configtag>
-					</configsec>
 					<configsec name="u8">
 							<configtag name="path">
 							path to U8 directory
@@ -66,11 +71,11 @@
 				</para>
 				<configdesc>
 					<configsec name="pentagram">
-						<configtag name="data">
+<!--						<configtag name="data">
 							path to pentagram data dir
 							<comment># replace 'path to pentagram data dir' with the pentagram data directory</comment>
 							<comment># (that's the directory that contains fixedfont.tga)</comment>
-						</configtag>
+						</configtag> -->
 						<configtag name="defaultgame">
 							u8
 						</configtag>
@@ -166,11 +171,10 @@
 					<keydesc name="i">open backpack</keydesc>
 					<keydesc name="z">open paperdoll/status</keydesc>
 					<keydesc name="r">recall</keydesc>
-					<keydesc name="m">switches combat mode on/off</keydesc>
-					<keydesc name="x">item locator</keydesc>
-					<keydesc name="ESC">quits Pentagram</keydesc>
+					<keydesc name="c">switches combat mode on/off</keydesc>
+					<keydesc name="ESC">main menu</keydesc>
+					<keydesc name="alt+x">quit</keydesc>
 					<keydesc name="ctrl+q">quits without confirmation </keydesc>
-					<keydesc name="F1">Options Menu</keydesc>
 					<keydesc name="F7">Quicksave (savegames are not yet stable!)</keydesc>
 					<keydesc name="F8">Quickload</keydesc>
 					<keydesc name="F11">Shapeviewer</keydesc>
@@ -181,24 +185,6 @@
 				</keytable>
 			</body>
 		</sub>
-		<sub name="pent_hacks">
-			<header>Hacks to show off</header>
-			<body>
-				<para>
-					Some keyboard commands that are only there to trigger some scenes.
-				</para>
-				<keytable title="Hacks">
-					<keydesc name="f">plays first scene (Avatar standing up, speaking to Devon)</keydesc>
-					<keydesc name="g">plays execution scene</keydesc>
-				</keytable>
-				<para>
-					If you copy VeraBd.ttf to the <Pent/> data directory and enable the ttf configuration option,
-					<Pent/> will be using it to display conversations and object descriptions. This font is much 
-					more readable than the original U8 font. VeraBd.ttf is part of the Bitstream Vera fonts and 
-					can be downloaded at <extref target="http://pentagram.sf.net/snapshots/vera.zip"/>.
-				</para>
-			</body>
-		</sub>
   	</section>
   	<section title="Other stuff">
 		<sub name="games_versions">
@@ -206,13 +192,20 @@
 			<body>
 				<para>
 					At the moment we only support the English version of Ultima 8 regardless of the
-					game version. Other languages might work but we can't be sure.
+					game version. The German and French versions will probably also work.
+					The Spanish version will not work at this point.
 					The games we don't support are defined in the <extref doc="faq" target="tgwds_tgyds"/>.
 				</para>
 			</body>
 		</sub>
 	</section>
 	<section title="Changes to the Documentation">
+		<sub name="21052005">
+			<header>- 21 May 2005</header>
+			<body>
+				<para>cleaned up outdated sections</para>
+			</body>
+		</sub>
 		<sub name="14102004">
 			<header>- 14 October 2004</header>
 			<body>

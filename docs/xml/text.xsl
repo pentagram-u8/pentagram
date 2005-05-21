@@ -274,9 +274,11 @@
 <!-- Config Table Templates -->
 <!--========================-->
 <xsl:template match="configdesc">
+	<xsl:text>&#xA;</xsl:text>
 	<table border="0" cellpadding="0" cellspacing="0">
 		<xsl:apply-templates select="configsec"/>
 	</table>
+	<xsl:text>&#xA;</xsl:text>
 </xsl:template>
 
 <xsl:strip-space elements="configtag"/>
