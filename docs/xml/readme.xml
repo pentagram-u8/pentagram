@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE readme SYSTEM "docs.dtd">
-<readme title="Pentagram" changed="21 May 2005 (GMT)">	
+<readme title="Pentagram" changed="22 May 2005 (GMT)">	
 	<section title="Building CVS">
 		<sub name="dependencies">
 			<header>Build dependencies</header>
@@ -66,8 +66,7 @@
 			<body>
 				<para>
 					Right now <Pent/> assumes some default settings that don't need to be set to
-					make <Pent/> work. If you want to change the music driver or the resolution
-					<Pent/> runs in, you see the defaults below.
+					make <Pent/> work. The settings below are these default settings.
 				</para>
 				<configdesc>
 					<configsec name="pentagram">
@@ -81,12 +80,27 @@
 						</configtag>
 						<configtag name="fullscreen">
 							no
+						</configtag>						
+						<configtag name="scalex">
+							320
+							<comment># Width of the game resolution.</comment>
+						</configtag>
+						<configtag name="scaley">
+							240
+							<comment># height of the game resolution.</comment>
+						</configtag>
+						<configtag name="scaler">
+							point
+							<comment># Select the scaler you want to use. Currently you can choose between</comment>
+							<comment># point, bilinear, scale2x, 2xSaI, hq2x.</comment>
 						</configtag>
 						<configtag name="width">
 							640
+							<comment># The game resolution is scaled to this width.</comment>
 						</configtag>
 						<configtag name="height">
 							480
+							<comment># The game resolution is scaled to this height.</comment>
 						</configtag>
 						<configtag name="bpp">
 							32
@@ -96,14 +110,15 @@
 							<comment># Enable this to use the BitStream Vera font for conversations and object descriptions.</comment>
 						</configtag>
 						<configtag name="midi_driver">
-							disabled/windows/fmopl/timidity/coreaudio
+							disabled/windows/fmopl/timidity/alsa/unixseq/coreaudio
 							<comment># If you don't specify midi_driver, Pentagram will automatically select one,</comment>
 							<comment># based on your platform.</comment>
-							<comment>#(Note: Windows will only work on Windows. CoreAudio only on MacOSX.)</comment> 
-						</configtag>
-						<configtag name="timiditycfg">
-							path to timidity.cfg
-							<comment># You may need to set timiditycfg if you choose midi_driver=timidity.</comment>
+							<comment>#(Note: Windows will only work on Windows. CoreAudio only on MacOSX.)</comment>
+							<comment># See further down for more options on Linux.</comment>
+						</configtag>						
+						<configtag name="skipstart">
+							no
+							<comment># Enable this to skip the intro of U8 and initial conversation with Devon.</comment>
 						</configtag>
 					</configsec>
 					<configsec name="u8">
@@ -119,12 +134,42 @@
 					</configsec>
 				</configdesc>
 				<para>
-					You may also override some settings under [pentagram] by writing them
-					under [u8]. The ones that can be overriden are midi_driver, fullscreen,
-					width, height, bpp, ttf, timiditycfg.<br/>
+					You may also override most settings under [pentagram] by writing them
+					under [u8]. Except for defaultgame all can be overriden.<br/>
 					Right now this is not necessary as we only support U8 but if we start to
 					support other games it might come in handy.
 				</para>
+			</body>
+		</sub>
+		<sub name="linux_midi">
+			<header>Optional MIDI settings for Linux</header>
+			<body>
+				<para>
+					MIDI used on Linux might need some fine tuning in pentagram.ini to work correctly.
+					Below are the settings you can configure.
+				</para>
+				<configdesc>
+					<configsec name="pentagram">
+							<configtag name="midi_driver">
+							disabled/windows/fmopl/timidity/alsa/unixseq/coreaudio
+							<comment># If you don't specify midi_driver, Pentagram will automatically select one,</comment>
+							<comment># based on your platform.</comment>
+							<comment>#(Note: Windows will only work on Windows. CoreAudio only on MacOSX.)</comment> 
+						</configtag>
+						<configtag name="timiditycfg">
+							path to timidity.cfg
+							<comment># You may need to set timiditycfg if you choose midi_driver=timidity.</comment>
+						</configtag>
+						<configtag name="alsa_port">
+							alsa:port
+							<comment># You may need to set alsa_port if you choose midi_driver=alsa.</comment>
+						</configtag>
+						<configtag name="unixseqdevice">
+							dev/sequencer
+							<comment># You may need to set unixseqdevice if you choose midi_driver=unixseq.</comment>
+						</configtag>
+					</configsec>
+				</configdesc>
 			</body>
 		</sub>
 	</section>
@@ -199,6 +244,15 @@
 		</sub>
 	</section>
 	<section title="Changes to the Documentation">
+		<sub name="22052005">
+			<header>- 22 May 2005</header>
+			<body>
+				<para>
+					<ref1 target="advanced_ini"/> some more configurations added.<br/>
+					<ref1 target="linux_midi"/> added.<br/>
+				</para>
+			</body>
+		</sub>
 		<sub name="21052005">
 			<header>- 21 May 2005</header>
 			<body>

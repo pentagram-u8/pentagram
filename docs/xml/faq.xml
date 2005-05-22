@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE faqs SYSTEM "docs.dtd">
-<faqs title="Pentagram" changed="30 November 2004 (GMT)">
+<faqs title="Pentagram" changed="22 May 2005 (GMT)">
 	<section title="Introduction">
 		<sub name="pent_is">
 			<header>What is <Pent/>?</header>
@@ -282,11 +282,11 @@
 				suggests you buy a copy. We suggest
 				searching for Ultima 8 on sites such as
 				Ebay or used software sites. Stores
-				which sale used games are often are
+				which sell used games are often
 				good places to try as well.
 			</para><para>
 				You also might want to look for the
-				Ultima Collection, which contain all
+				Ultima Collection, which contains all
 				the previous Ultima games as well.
 			</para></body>
 		</sub>
@@ -307,11 +307,11 @@
 		<sub name="poor_justification">
 			<header>But isn't Ultima 8 abandonware?</header>
 			<body><para>
-				No, if a entity still exists to claim
+				No, if an entity still exists to claim
 				the rights over a piece of software (EA
 				in the case of Ultima 8), and the
 				company has not openly given away those
-				right to make the software free, then
+				rights to make the software free, then
 				the software does not fall under the
 				term abandonware or freeware.
 			</para><para>
@@ -331,7 +331,7 @@
 				same position as the original
 				programmers and artists, we would be
 				against the piracy of our work and feel
-				that something has be stolen from us
+				that something has been stolen from us
 				directly when piracy occurs.
 			</para><para>
 				Second, the <Pent/> team does not want
@@ -346,6 +346,12 @@
 		</sub>
 	</section>
 	<section title="Changes to the FAQ">
+		<sub name="22052005">
+			<header>- 22 May 2005</header>
+			<body><para>
+				cleaned up some mistakes
+			</para></body>
+		</sub>
 		<sub name="30112004">
 			<header>- 30 November 2004</header>
 			<body><ul>
