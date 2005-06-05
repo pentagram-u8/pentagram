@@ -99,7 +99,7 @@ void BarkGump::InitGump(Gump* newparent, bool take_focus)
 	Pentagram::Rect d;
 	widget->GetDims(d);
 	if (speechlength && totaltextheight) {
-		counter = 1; //(d.h * speechlength) / totaltextheight;
+		counter = (d.h * speechlength) / totaltextheight;
 	} else {
 		counter = d.h*5; //! constant
 	}
@@ -120,7 +120,7 @@ bool BarkGump::NextText()
 		Pentagram::Rect d;
 		widget->GetDims(d);
 		if (speechlength && totaltextheight) {
-			counter = 1; //(d.h * speechlength) / totaltextheight;
+			counter = (d.h * speechlength) / totaltextheight;
 		} else {
 			counter = d.h*5; //! constant
 		}
