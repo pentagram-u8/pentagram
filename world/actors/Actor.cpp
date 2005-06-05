@@ -122,6 +122,7 @@ bool Actor::loadMonsterStats()
 
 bool Actor::giveTreasure()
 {
+	MainShapeArchive* mainshapes = GameData::get_instance()->getMainShapes();
 	ShapeInfo* shapeinfo = getShapeInfo();
 	MonsterInfo* mi = 0;
 	if (shapeinfo) mi = shapeinfo->monsterinfo;
@@ -156,9 +157,42 @@ bool Actor::giveTreasure()
 		else
 			count = ti.mincount + (std::rand() % (ti.maxcount - ti.mincount));
 
-		// TODO: 'special'
+		// TODO: more 'special's
 		if (!ti.special.empty()) {
-			pout << "Unhandled special treasure: " << ti.special << std::endl;
+			if (ti.special == "weapon") {
+
+				// NB: this is rather biased towards weapons with low shapes...
+				for (unsigned int s = 0; s < mainshapes->getCount(); ++s) {
+					ShapeInfo* si = mainshapes->getShapeInfo(s);
+					if (!si->weaponinfo) continue;
+
+					int chance = si->weaponinfo->treasure_chance;
+					if (!chance) continue;
+
+					int r = std::rand() % 100;
+#if 0
+					pout << "weapon (" << s << ") chance: " << r << "/"
+						 << chance << std::endl;
+#endif
+					if (r >= chance) continue;
+
+					// create the weapon
+					item = ItemFactory::createItem(s,
+												   0, // frame
+												   count, // quality
+												   Item::FLG_DISPOSABLE,//flags
+												   0, // npcnum,
+												   0, // mapnum
+												   0); // ext. flags
+					item->assignObjId();
+					item->moveToContainer(this);
+					item->randomGumpLocation();
+					break;
+				}
+			} else {
+				pout << "Unhandled special treasure: " << ti.special
+					 << std::endl;
+			}
 			continue;
 		}
 
@@ -167,8 +201,7 @@ bool Actor::giveTreasure()
 
 		if (ti.shapes.size() == 1) {
 			uint32 shape = ti.shapes[0];
-			ShapeInfo* si = GameData::get_instance()->getMainShapes()->
-				getShapeInfo(shape);
+			ShapeInfo* si = mainshapes->getShapeInfo(shape);
 			if (!si) {
 				perr << "Trying to create treasure with an invalid shape ("
 					 << shape << ")" << std::endl;
@@ -307,8 +340,10 @@ void Actor::teleport(int newmap, sint32 newx, sint32 newy, sint32 newz)
 	// Move it to this map
 	if (newmapnum == World::get_instance()->getCurrentMap()->getNum())
 	{
+#ifdef DEBUG
 		perr << "Actor::teleport: " << getObjId() << " to " << newmap << ","
 			 << newx << "," << newy << "," << newz << std::endl;
+#endif
 		move(newx, newy, newz);
 	}
 	// Move it to another map

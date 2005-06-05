@@ -156,6 +156,11 @@ void TypeFlags::loadWeaponInfo()
 		config->get(k + "/damage_type", val);
 		wi->damage_type = static_cast<uint16>(val);
 
+		if (config->get(k + "/treasure_chance", val))
+			wi->treasure_chance = static_cast<uint16>(val);
+		else
+			wi->treasure_chance = 0;
+
 		assert(wi->shape < shapeInfo.size());
 		shapeInfo[wi->shape].weaponinfo = wi;
 	}

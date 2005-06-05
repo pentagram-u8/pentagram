@@ -1,5 +1,6 @@
 2005-06-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AnimationTracker.cpp: set/clear actor's HANGING flag
+	* data/u8weapons.ini, world/actors/Actor.cpp: give weapons as treasure
 
 2005-05-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/Gump.h: new FLAG_KEEP_VISIBLE flag for ItemRelativeGumps
