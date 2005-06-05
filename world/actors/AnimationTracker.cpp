@@ -389,6 +389,14 @@ void AnimationTracker::updateActorFlags()
 	else
 		a->clearActorFlag(Actor::ACT_FIRSTSTEP);
 
+	if (animaction) {
+		bool hanging = (animaction->flags & AnimAction::AAF_HANGING) != 0;
+		if (hanging)
+			a->setFlag(Item::FLG_HANGING);
+		else
+			a->clearFlag(Item::FLG_HANGING);
+	}
+
 	if (currentframe != endframe)
 		a->animframe = currentframe;
 }

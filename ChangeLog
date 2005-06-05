@@ -1,3 +1,6 @@
+2005-06-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/AnimationTracker.cpp: set/clear actor's HANGING flag
+
 2005-05-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/Gump.h: new FLAG_KEEP_VISIBLE flag for ItemRelativeGumps
 	* gumps/ItemRelativeGump.*: keep on screen if FLAG_KEEP_VISIBLE set
