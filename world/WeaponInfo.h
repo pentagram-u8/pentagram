@@ -30,6 +30,7 @@ struct WeaponInfo {
 	uint8 dex_defend_bonus;
 	uint8 armour_bonus;
 	uint16 damage_type;
+	int treasure_chance;
 
 	enum DmgType {
 		DMG_NORMAL = 0x0001,
