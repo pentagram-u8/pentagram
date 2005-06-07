@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003  The Pentagram Team
+Copyright (C) 2003-2005  The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,6 +25,10 @@ class IDataSource;
 //! The Basic High Level Pentagram Midi Driver interface.
 class	MidiDriver
 {
+protected:
+	bool					initialized;
+	MidiDriver() : initialized(false) { }
+
 public:
 	//! Midi driver desription
 	struct MidiDriverDesc {
@@ -32,6 +36,16 @@ public:
 			name(n), createInstance(c) { }
 		const char * const name;			//!< Name of the driver (for config, dialogs)
 		MidiDriver * (*createInstance)();	//!< Pointer to a function to create an instance
+	};
+
+	enum TimbreLibraryType {
+		TIMBRE_LIBRARY_U7VOICE_AD	= 0,	// U7Voice for Adlib
+		TIMBRE_LIBRARY_U7VOICE_MT	= 1,	// U7Voice for MT32
+		TIMBRE_LIBRARY_XMIDI_AD		= 2,	// XMIDI.AD
+		TIMBRE_LIBRARY_XMIDI_MT		= 3,	// XMIDI.MT
+		TIMBRE_LIBRARY_SYX_FILE		= 4,	// .SYX
+		TIMBRE_LIBRARY_XMIDI_FILE	= 5,	// Timbre is Sysex Data in MID/RMI/XMI file
+		TIMBRE_LIBRARY_FMOPL_SETGM	= 6		// Special to set FMOPL into GM mode
 	};
 
 	//! Initialize the driver
@@ -42,6 +56,8 @@ public:
 
 	//! Destroy the driver
 	virtual void		destroyMidiDriver() = 0;
+
+	bool				isInitialized() { return initialized; }
 
 	//! Get the maximum number of playing sequences supported by this this driver
 	//! \return The maximum number of playing sequences
@@ -101,8 +117,33 @@ public:
 	//! Is this a FM Synth and should use the Adlib Tracks?
 	virtual bool		isFMSynth() { return false; }
 
+	//! Is this a MT32 and supports MT32 SysEx?
+	virtual bool		isMT32() { return false; }
+
+	//! Is this a devices that does not Timbres?
+	virtual bool		noTimbreSupport() { return false; }
+
+	//! Load the Timbre Library
+	virtual void		loadTimbreLibrary(IDataSource*, TimbreLibraryType type) { };
+
 	//! Destructor
 	virtual ~MidiDriver() { };
+
+	//
+	// Statics to Initialize Midi Drivers and to get info
+	//
+	
+	//! Get the number of devices
+	static int			getDriverCount();
+
+	//! Get the name of a driver
+	//! \param index Driver number
+	static std::string	getDriverName(uint32 index);
+
+	//! Create an Instance of a MidiDriver
+	//! \param driverName Name of the prefered driver to create
+	//! \return The created MidiDriver instance
+	static MidiDriver	*createInstance(std::string driverName,uint32 sample_rate,bool stereo);
 };
 
 #endif //MIDIDRIVER_H_INCLUDED

@@ -18,18 +18,23 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/FMOplMidiDriver.cpp,v 1.5 2005/05/07 17:35:43 wjpalenstijn Exp $
+ * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/FMOplMidiDriver.cpp,v 1.6 2005/06/07 09:00:23 colourles Exp $
  */
 
 #include "pent_include.h"
+#include "FMOplMidiDriver.h"
 
 #ifdef USE_FMOPL_MIDI
 
-#include "FMOplMidiDriver.h"
 #include "XMidiEvent.h"
+
+#ifdef PENTAGRAM_IN_EXULT
+#include "databuf.h"
+#else
 #include "IDataSource.h"
 #include "GameData.h"
 #include "MusicFlex.h"
+#endif
 
 #include <cmath>
 
@@ -245,10 +250,11 @@ int FMOplMidiDriver::open()
 		chp[i][CHP_VEL] = 0;
 	}
 
+#ifndef PENTAGRAM_IN_EXULT
 	IDataSource *timbres = GameData::get_instance()->getMusic()->getAdlibTimbres();
 	if (timbres) 
 	{
-		loadAdlibTimbres(timbres);
+		loadXMIDITimbres(timbres);
 	}
 	else
 	{
@@ -256,8 +262,9 @@ int FMOplMidiDriver::open()
 		return 1;
 	}
 	delete timbres;
+#endif
 
-	opl = Pentagram::OPLCreate(OPL_TYPE_YM3812, 3579545, sample_rate);
+	opl = FMOpl_Pentagram::OPLCreate(OPL_TYPE_YM3812, 3579545, sample_rate);
 
 	return 0;
 }
@@ -268,7 +275,7 @@ int FMOplMidiDriver::open()
 void FMOplMidiDriver::close()
 {
 	// Destroy the Opl device
-	if (opl) Pentagram::OPLDestroy(opl);
+	if (opl) FMOpl_Pentagram::OPLDestroy(opl);
 
 	// Reset the relevant members
 	opl = 0;
@@ -289,9 +296,9 @@ void FMOplMidiDriver::lowLevelProduceSamples(sint16 *samples, uint32 num_samples
 	if (!opl)
 		memset(samples, 0, num_samples * sizeof(sint16) * stereo?2:1);
 	else if (stereo)
-		Pentagram::YM3812UpdateOne_Stereo(opl, samples, num_samples);
+		FMOpl_Pentagram::YM3812UpdateOne_Stereo(opl, samples, num_samples);
 	else
-		Pentagram::YM3812UpdateOne_Mono(opl, samples, num_samples);
+		FMOpl_Pentagram::YM3812UpdateOne_Mono(opl, samples, num_samples);
 }
 
 int FMOplMidiDriver::midi_calc_volume(int channel, int vel)
@@ -379,7 +386,7 @@ void FMOplMidiDriver::send(uint32 b)
 				// Send note on
 				midi_fm_playnote(on, note + ch[channel].nshift, nv * 2, ch[channel].pitchbend);
 
-				Pentagram::OPLSetPan(opl,on,ch[channel].pan);
+				FMOpl_Pentagram::OPLSetPan(opl,on,ch[channel].pan);
 
 				// Update the shadows
 				chp[on][CHP_CHAN] = channel;
@@ -426,7 +433,7 @@ void FMOplMidiDriver::send(uint32 b)
 				ch[channel].pan = vel;
 				for (i = 0; i < 9; i++)
 					if (chp[i][CHP_CHAN] == channel)
-						Pentagram::OPLSetPan(opl,i,ch[channel].pan);
+						FMOpl_Pentagram::OPLSetPan(opl,i,ch[channel].pan);
 				break;
 			case 0x0B:								/* Expression */
 				ch[channel].expression = vel;
@@ -549,8 +556,8 @@ void FMOplMidiDriver::send(uint32 b)
 
 void FMOplMidiDriver::midi_write_adlib(unsigned int reg, unsigned char val)
 {
-	Pentagram::OPLWrite(opl, 0, reg);
-	Pentagram::OPLWrite(opl, 1, val);
+	FMOpl_Pentagram::OPLWrite(opl, 0, reg);
+	FMOpl_Pentagram::OPLWrite(opl, 1, val);
 	adlib_data[reg] = val;
 }
 
@@ -796,7 +803,25 @@ void FMOplMidiDriver::midi_fm_endnote(int voice)
 	midi_write_adlib(0xb0 + voice, (unsigned char)(adlib_data[0xb0 + voice] & (255 - 32)));
 }
 
-void FMOplMidiDriver::loadAdlibTimbres(IDataSource *ds)
+void FMOplMidiDriver::loadTimbreLibrary(IDataSource *ds, TimbreLibraryType type)
+{
+	int i;
+
+	// Clear the xmidibanks
+	for (i = 0; i < 128; i++) {
+		delete xmidibanks[i];
+		xmidibanks[i] = 0;
+	}
+
+	for (i = 0; i < 16; i++) ch[i].xmidi = false;
+
+	if (type == TIMBRE_LIBRARY_XMIDI_AD) 
+		loadXMIDITimbres(ds);
+	else if (type == TIMBRE_LIBRARY_U7VOICE_AD) 
+		loadU7VoiceTimbres(ds);
+}
+
+void FMOplMidiDriver::loadXMIDITimbres(IDataSource *ds)
 {
 	bool read[128];
 	std::memset(read, false, sizeof(read));
@@ -877,9 +902,152 @@ void FMOplMidiDriver::loadAdlibTimbres(IDataSource *ds)
 		ins[INDEX_PERC] = 0x80;	// Note that XMIDI uses a different method to U7:TBG
 	}
 
-	for (i = 0; i < 16; i++) ch[i].xmidi = true;
-
 //	POUT ("FMOplMidiDriver: " << i << " timbres read");
+
+	for (i = 0; i < 16; i++) ch[i].xmidi = true;
+}
+
+void FMOplMidiDriver::loadU7VoiceTimbres(IDataSource *ds)
+{
+	struct u7voice_adlib_ins {
+		unsigned char mod_avekm;			// 0: 	(20)
+		unsigned char mod_ksl_tl;			// 1: 	(40)
+		unsigned char mod_ad;				// 2: 	(60)
+		unsigned char mod_sr;				// 3: 	(80)
+		unsigned char mod_ws;				// 4: 	(E0)
+		
+		unsigned char car_avekm;			// 5: 	amp, sussnd				(22)
+		unsigned char car_ksl_tl;			// 6: 	outlev, keyscale		(43)
+		unsigned char car_ad;				// 7: 	Attack Delay		AR	(63)
+		unsigned char car_sr;				// 8: 	SustainLev Release	DR	(83)
+		unsigned char car_ws;				// 9: 	Waveform				(E3)
+		
+		unsigned char fb_c;					// 10:	Feedback/Connection
+		
+		// NOT IMPLEMENTED from here on!
+		
+		unsigned char perc_voice;			// 11	Percussion voice number !! 
+											// (0=melodic, 6=bass drum, etc.)
+		
+		unsigned char car_vel_sense;		// 12:  carrier velocity sensitivity					
+		unsigned char mod_vel_sense;		// 13:  modulator velocity sensitivity					
+		unsigned char bend_sense;			// 14:  pitch bend sensitivity							
+		unsigned char wheel_sense;			// 15:  modulation wheel sensitivity                
+		unsigned char lfo_speed;			// 16:  lfo speed                                   
+		unsigned char lfo_depth;			// 17:  lfo depth                                   
+		
+		unsigned short pe_start_level;		// 18-19:  pitch envelope start level
+		unsigned short pe_attack_rate1;		// 20-21:  pitch envelope attack rate 1
+		unsigned short pe_attack_level1;	// 22-23:  pitch envelope attack level 1
+		unsigned short pe_attack_rate2;		// 24-25:  pitch envelope attack rate 2
+		unsigned short pe_attack_level2;	// 26-27:  pitch envelope attack level 2
+		unsigned short pe_decay_rate;		// 28-29:  pitch envelope decay rate
+		unsigned short pe_sustain_level;	// 30-31:  pitch envelope sustain level
+		unsigned short pe_release_rate;		// 32-33:  pitch envelope release rate
+		unsigned short pe_end_level;		// 34-35:  pitch envelope end level
+		
+		unsigned char deturn;				// 36:  detune
+		unsigned char transpose;			// 37:  transpose
+		unsigned char next_partial;			// 38:  next partial number (+1; 0=no more partials)
+		unsigned char key_follow;			// 39:  key follow
+		unsigned char reserved[7];			// 40-46:  reserved
+		
+		unsigned char prog_num;				// 47:  program change number
+		
+		void read(IDataSource *ds) {
+			mod_avekm = ds->read1();
+			mod_ksl_tl = ds->read1();
+			mod_ad = ds->read1();
+			mod_sr = ds->read1();
+			mod_ws = ds->read1();
+			car_avekm = ds->read1();
+			car_ksl_tl = ds->read1();
+			car_ad = ds->read1();
+			car_sr = ds->read1();
+			car_ws = ds->read1();
+			fb_c = ds->read1();
+		
+			// NOT IMPLEMENTED from here on!
+		
+			perc_voice = ds->read1();
+		
+			car_vel_sense = ds->read1();
+			mod_vel_sense = ds->read1();
+			bend_sense = ds->read1();
+			wheel_sense = ds->read1();
+			lfo_speed = ds->read1();
+			lfo_depth = ds->read1();
+		
+			pe_start_level = ds->read2();
+			pe_attack_rate1 = ds->read2();
+			pe_attack_level1 = ds->read2();
+			pe_attack_rate2 = ds->read2();
+			pe_attack_level2 = ds->read2();
+			pe_decay_rate = ds->read2();
+			pe_sustain_level = ds->read2();
+			pe_release_rate = ds->read2();
+			pe_end_level = ds->read2();
+		
+			deturn = ds->read1();
+			transpose = ds->read1();
+			next_partial = ds->read1();
+			key_follow = ds->read1();
+			ds->read((char *) reserved, 7);
+		
+			prog_num = ds->read1();
+		}
+	} u7voice_ins;
+
+	//POUT("Size of u7voice_adlib_ins " << sizeof(u7voice_adlib_ins));
+
+	int count = ds->read1() & 0xFF;
+
+	// Read all the timbres
+	int i;
+	for (i = 0; i < count; i++) {
+
+		// Read the timbre
+		u7voice_ins.read(ds);
+
+		uint32 patch = u7voice_ins.prog_num;
+		uint32 bank = 0;
+
+		//POUT ("Patch " << i << " = " << bank << ":" << patch);
+
+		// Check to see if the bank exists
+		if (!xmidibanks[bank]) {
+			xmidibanks[bank] = new xmidibank;
+			std::memset (xmidibanks[bank], 0, sizeof (xmidibank));
+		}
+
+		if (patch > 127) {
+			//PERR ("Don't know how to handle this");
+			continue;
+		}
+
+		unsigned char* ins = xmidibanks[bank]->insbank[patch];
+
+		ins[INDEX_AVEKM_M] = u7voice_ins.mod_avekm;
+		ins[INDEX_KSLTL_M] = u7voice_ins.mod_ksl_tl;
+		ins[INDEX_AD_M] = u7voice_ins.mod_ad;
+		ins[INDEX_SR_M] = u7voice_ins.mod_sr;
+		ins[INDEX_WAVE_M] = u7voice_ins.mod_ws;
+		ins[INDEX_AVEKM_C] = u7voice_ins.car_avekm;
+		ins[INDEX_KSLTL_C] = u7voice_ins.car_ksl_tl;
+		ins[INDEX_AD_C] = u7voice_ins.car_ad;
+		ins[INDEX_SR_C] = u7voice_ins.car_sr;
+		ins[INDEX_WAVE_C] = u7voice_ins.car_ws;
+		ins[INDEX_FB_C] = u7voice_ins.fb_c;
+		ins[INDEX_PERC] = u7voice_ins.perc_voice | 0x80;	// Note that XMIDI uses a different method to U7:TBG
+
+		if (u7voice_ins.next_partial || u7voice_ins.key_follow) {
+		//	POUT("next_partial " << (int) u7voice_ins.next_partial << "  key_follow " << (int) u7voice_ins.key_follow);
+		}
+	}
+
+	//POUT (i << " timbres read");
+
+	for (i = 0; i < 16; i++) ch[i].xmidi = true;
 }
 
 

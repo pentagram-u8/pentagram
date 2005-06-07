@@ -17,7 +17,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/fmopl.h,v 1.3 2003/07/16 17:35:36 colourles Exp $
+ * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/fmopl.h,v 1.4 2005/06/07 09:00:25 colourles Exp $
  *
  * LGPL licensed version of MAMEs fmopl (V0.37a modified) by
  * Tatsuyuki Satoh. Included from LGPL'ed AdPlug.
@@ -28,7 +28,7 @@
 
 #ifdef USE_FMOPL_MIDI
 
-namespace Pentagram {
+namespace FMOpl_Pentagram {
 
 typedef void (*OPL_TIMERHANDLER)(int channel,double interval_Sec);
 typedef void (*OPL_IRQHANDLER)(int param,int irq);

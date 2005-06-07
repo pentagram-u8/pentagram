@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define COREAUDIOMIDIDRIVER_H_INCLUDED
 
 #ifdef MACOSX
+#define USE_CORE_AUDIO_MIDI
 
 #include "LowLevelMidiDriver.h"
 

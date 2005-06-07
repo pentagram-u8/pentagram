@@ -21,9 +21,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "XMidiEvent.h"
 #include "XMidiEventList.h"
 #include "XMidiNoteStack.h"
+
+#ifdef PENTAGRAM_IN_EXULT
+#include "Game.h"
+#include "databuf.h"
+#else
 #include "IDataSource.h"
 #include "ODataSource.h"
-#include "FileSystem.h"
+#endif
 
 #ifndef UNDER_CE
 using std::atof;
@@ -331,6 +336,186 @@ const char XMidiFile::mt32asgs[256] = {
 	94, 0,	// 125	Big Notes Pad no equiv, set to halo pad (94)
 	98, 0,	// 126	Water Bell set to Crystal Pad(98)
 	121, 0	// 127	Jungle Tune set to Breath Noise
+};
+
+// Reverse mapping. GM Notes converted to MT-32 patches
+const char XMidiFile::gmasmt32[128] =
+{
+	0x00, 0x01, 0x03, 0x07, 0x05, 0x06, 0x11, 0x15,
+	0x16, 0x65, 0x65, 0x62, 0x68, 0x67, 0x66, 0x69,
+
+	0x0C, 0x09, 0x0A, 0x0D, 0x0E, 0x0F, 0x57, 0x0F,
+	0x3B, 0x3C, 0x3B, 0x3E, 0x3D, 0x3B, 0x3E, 0x3E,
+
+	0x40, 0x43, 0x42, 0x47, 0x44, 0x45, 0x42 , 0x46,
+	0x35, 0x34, 0x36, 0x38, 0x35, 0x33, 0x39 , 0x70,
+
+	0X30, 0x32, 0x30, 0x32, 0x22, 0x2A, 0x21, 0x7A,
+	0X58, 0x5A, 0x5E, 0x59, 0x5C, 0x5F, 0x59, 0x5B,
+
+	0x4E, 0x4F, 0x50, 0x51, 0x54, 0x55, 0x56, 0x53,
+	0x4B, 0x49, 0x4C, 0x4D, 0x6E, 0x6B, 0x6C, 0x48,
+
+	0x2F, 0x43, 0x4B, 0x33, 0x3D, 0x48, 0x34, 0x43,
+	0x20, 0x21, 0x43, 0x22, 0x20, 0x20, 0x21, 0x21,
+
+	0x29, 0x24, 0x23, 0x25, 0x2D, 0x21, 0x2B, 0x20,
+	0x3F, 0x69, 0x69, 0x69, 0x33, 0x51, 0x34, 0x51,
+
+	0x17, 0x67, 0x67, 0x71, 0x75, 0x71, 0x74, 0x77,
+	0x7C, 0x78, 0x77, 0x7C, 0x7B, 0x78, 0x77, 0x72
+};
+
+//
+// MT32 SysEx
+//
+static const uint32 sysex_data_start = 7;		// Data starts at byte 7
+static const uint32 sysex_max_data_size = 256;
+
+
+//
+// Percussion
+//
+
+static const uint32 rhythm_base = 0x030110;	// Note, these are 7 bit!
+static const uint32 rhythm_mem_size = 4;
+
+static const uint32 rhythm_first_note = 24;
+static const uint32 rhythm_num_notes = 64;
+
+// Memory offset based on index in the table
+static inline uint32 rhythm_mem_offset(uint32 index_num) { 
+	return index_num * 4; 
+}
+
+// Memory offset based on note key num
+static inline uint32 rhythm_mem_offset_note(uint32 rhythm_note_num) { 
+	return (rhythm_note_num-rhythm_first_note) * 4; 
+}
+
+struct RhythmSetupData {
+	uint8		timbre;					// 0-94 (M1-M64,R1-30,OFF)
+	uint8		output_level;			// 0-100
+	uint8		panpot;					// 0-14 (L-R)
+	uint8		reverb_switch;			// 0-1 (off,on)
+};
+
+
+//
+// Timbre Memory Consts
+//
+static const uint32 timbre_base = 0x080000;	// Note, these are 7 bit!
+static const uint32 timbre_mem_size = 246;
+static inline uint32 timbre_mem_offset(uint32 timbre_num) { return timbre_num * 256; }
+
+
+//
+// Patch Memory Consts
+//
+static const uint32 patch_base = 0x050000;		// Note, these are 7 bit!
+static const uint32 patch_mem_size = 8;
+static inline uint32 patch_mem_offset(uint32 patch_num) { return patch_num * 8; }
+
+struct PatchMemData {
+	uint8		timbre_group;			// 0-3	(group A, group B, Memory, Rhythm)
+	uint8		timbre_num;				// 0-63
+	uint8		key_shift;				// 0-48
+	uint8		fine_tune;				// 0-100 (-50 - +50)
+	uint8		bender_range;			// 0-24
+	uint8		assign_mode;			// 0-3 (POLY1, POLY2, POLY3, POLY4)
+	uint8		reverb_switch;			// 0-1 (off,on)
+	uint8		dummy;
+};
+
+static const PatchMemData patch_template = {
+	2,		// timbre_group
+	0,		// timbre_num
+	24,		// key_shift
+	50,		// fine_tune
+	24,		// bender_range
+	0,		// assign_mode
+	1,		// reverb_switch
+	0		// dummy
+};
+	
+
+//
+// System Area Consts
+//
+static const uint32 system_base = 0x100000;	// Note, these are 7 bit!
+static const uint32 system_mem_size = 0x17;	// Display is 20 ASCII characters (32-127)
+#define system_mem_offset(setting) ((uint32)(&((systemArea*)0)->setting))
+
+struct systemArea {
+	char masterTune;					// MASTER TUNE 0-127 432.1-457.6Hz
+	char reverbMode;					// REVERB MODE 0-3 (room, hall, plate, tap delay)
+	char reverbTime;					// REVERB TIME 0-7 (1-8)
+	char reverbLevel;					// REVERB LEVEL 0-7 (1-8)
+	char reserveSettings[9];			// PARTIAL RESERVE (PART 1) 0-32
+	char chanAssign[9];					// MIDI CHANNEL (PART1) 0-16 (1-16,OFF)
+	char masterVol;						// MASTER VOLUME 0-100
+};
+
+static const char system_init_reverb[3] = { 0,3,2 };				// reverb mode = 0, time = 3, level = 2
+static const char system_part_chans[9] =  { 1,2,3,4,5,6,7,8,9 };	// default (0-based) chans for each part
+static const char system_part_rsv[9] = { 3,4,3,4,3,4,3,4,4 };		// # of reserved AIL partials/channel
+
+//
+// Display  Consts
+//
+static const uint32 display_base = 0x200000;	// Note, these are 7 bit!
+static const uint32 display_mem_size = 0x14;	// Display is 20 ASCII characters (32-127)
+
+// Display messages                         0123456789ABCDEF0123
+#ifdef PENTAGRAM_IN_EXULT
+static const char display[]              = "        Exult       ";
+static const char display_black_gate[]   = " U7: The Black Gate ";
+static const char display_serpent_isle[] = "U7: The Serpent Isle";
+
+static const char display_beginning[] =    "  Updating Timbres  ";
+static const char display_beginning_bg[] = "BG: Updating Timbres";
+static const char display_beginning_si[] = "SI: Updating Timbres";
+#else
+
+static const char display[]              = "      Pentagram     ";
+static const char display_beginning[] =    "  Updating Timbres  ";
+#endif
+
+//
+// All Dev Reset
+//
+static const uint32 all_dev_reset_base = 0x7f0000;
+
+
+//
+// U7 Percussion Table
+//
+// Why this crap wasn't in the flexes i will never know
+//
+
+// The key num that the data below belongs to (subtract 24 to get memory num)
+static uint8 U7PercussionNotes[] = {
+	28, 33, 74, 76, 77, 78, 79, 80,
+	81, 82, 83, 84, 85, 86, 87, 0
+};
+
+// The RhythmSetup data 
+static RhythmSetupData U7PercussionData[] = {
+	{	0,	0x5A,	0x07,	0	},	// 28
+   	{	6,	0x64,	0x07,	1	},	// 33
+   	{	1,	0x5A,	0x05,	0	},	// 74
+   	{	1,	0x5A,	0x06,	0	},	// 76
+	{	1,	0x5A,	0x07,	0	},	// 77
+	{	2,	0x64,	0x07,	1	},	// 78
+	{	1,	0x5A,	0x08,	0	},	// 79
+	{	5,	0x5A,	0x07,	1	},	// 80
+	{	1,	0x5A,	0x09,	0	},	// 81
+	{	3,	0x5F,	0x07,	1	},	// 82
+	{	4,	0x64,	0x04,	1	},	// 83
+	{	4,	0x64,	0x05,	1	},	// 84
+	{	4,	0x64,	0x06,	1	},	// 85
+	{	4,	0x64,	0x07,	1	},	// 86
+	{	4,	0x64,	0x08,	1	}	// 87
 };
 
 //GammaTable<unsigned char> XMidiFile::VolumeCurve(128);
@@ -922,6 +1107,10 @@ int XMidiFile::ConvertEvent (const int time, const unsigned char status, IDataSo
 		{
 			data = mt32asgm[data];
 		}
+		else if (convert_type == XMIDIFILE_CONVERT_GM_TO_MT32)
+		{
+			data = gmasmt32[data];
+		}
 		else if ((convert_type == XMIDIFILE_CONVERT_GS127_TO_GS && bank127[status&0xF]) ||
 				convert_type == XMIDIFILE_CONVERT_MT32_TO_GS)
 		{
@@ -1064,6 +1253,55 @@ int XMidiFile::ConvertSystemMessage (const int time, const unsigned char status,
 	source->read (reinterpret_cast<char *>(current->ex.sysex_data.buffer), current->ex.sysex_data.len);
 
 	return i+current->ex.sysex_data.len;
+}
+
+// If data is NULL, then it is assumed that sysex_buffer already contains the data
+// address_base is 7-bit, while address_offset is 8 bit!
+int XMidiFile::CreateMT32SystemMessage(const int time, uint32 address_base, uint16 address_offset, uint32 len, const void *data, IDataSource *source)
+{
+	CreateNewEvent (time);
+	// SysEx status
+	current->status = 0xF0;
+
+	// Allocate the buffer
+	current->ex.sysex_data.len = sysex_data_start+len+2;
+	unsigned char *sysex_buffer = current->ex.sysex_data.buffer = 
+			XMidiEvent__Malloc<unsigned char>(current->ex.sysex_data.len);
+
+	// MT32 Sysex Header
+	sysex_buffer[0] = 0x41;		// Roland SysEx ID
+	sysex_buffer[1] = 0x10;		// Device ID (assume 0x10, Device 17)
+	sysex_buffer[2] = 0x16;		// MT-32 Model ID
+	sysex_buffer[3] = 0x12;		// DTI Command ID (set data)
+
+	// 7-bit address
+	uint32 actual_address = address_offset;
+	actual_address += (address_base>>2) & (0x7f<<14);
+	actual_address += (address_base>>1) & (0x7f<<7);
+	actual_address += (address_base>>0) & (0x7f<<0);
+	sysex_buffer[4] = (actual_address>>14)&0x7F;
+	sysex_buffer[5] = (actual_address>>7)&0x7F;
+	sysex_buffer[6] = actual_address&0x7F;
+
+	// Only copy if required
+	if (data) std::memcpy (sysex_buffer+sysex_data_start, data, len);
+	else if (source) source->read(sysex_buffer+sysex_data_start,len);
+
+	// Calc checksum
+	char checksum = 0;
+	for (uint32 j = 4; j < sysex_data_start+len; j++)
+		checksum += sysex_buffer[j];
+
+	checksum = checksum & 0x7f;
+	if (checksum) checksum = 0x80 - checksum;
+
+	// Set checksum
+	sysex_buffer[sysex_data_start+len] = checksum;
+
+	// Terminator
+	sysex_buffer[sysex_data_start+len+1] = 0xF7;
+
+	return sysex_data_start+len+2;
 }
 
 // XMidiFile and Midi to List. Returns bit mask of channels used
@@ -1288,6 +1526,11 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 	int 		count;
 	char		buf[32];
 
+	int			format_hint = convert_type;
+
+	if (convert_type >= XMIDIFILE_HINT_U7VOICE_MT_FILE)
+		convert_type = XMIDIFILE_CONVERT_NOCONVERSION;
+
 	/*
 	string s;
 	
@@ -1320,6 +1563,10 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 	snprintf (buf, 32, "%d.%04d", igam/10000, igam%10000); 
 	config->set("config/audio/midi/volume_curve",buf,true);
 	*/
+	do_reverb = false;
+	do_chorus = false;
+	reverb_value = 0;
+	chorus_value = 0;
 
 	// Read first 4 bytes of header
 	source->read (buf, 4);
@@ -1529,7 +1776,260 @@ int XMidiFile::ExtractTracks (IDataSource *source)
 		perr << "Failed to find midi data in RIFF Midi" << endl;
 		return 0;
 	}
+	else if (format_hint == XMIDIFILE_HINT_U7VOICE_MT_FILE) 
+	{
+		return ExtractTracksFromU7V(source);
+	}
+	else if (format_hint == XMIDIFILE_HINT_XMIDI_MT_FILE) 
+	{
+		return ExtractTracksFromXMIDIMT(source);
+	}
 	
 	return 0;	
+}
+
+int XMidiFile::ExtractTracksFromU7V (IDataSource *source)
+{
+	uint32			i, j;
+	int				num = 0;
+	uint32			len = 0;
+	int				time = 0;
+	int				time_inc = 32;
+
+
+	first_state	fs;
+
+	list = NULL;
+	branches = NULL;
+	memset(&fs, 0, sizeof(fs));
+
+	// Convert it
+	int chan_mask = 0;
+
+	source->seek(0);
+	uint32 num_timbres = source->read1();
+	pout << num_timbres << " custom timbres..." << std::endl;
+
+	if (source->getSize() != 247*num_timbres+1) {
+		perr << "File size didn't match timbre count. Wont convert." << std::endl;
+		return 0;	
+	}
+
+	//
+	// All Dev Reset
+	//
+
+	char one = 1;
+	CreateMT32SystemMessage(time, all_dev_reset_base, 0, 1, &one);
+	time += time_inc;
+
+	//
+	// Display
+	//
+
+	// Change the display 
+
+	const char *display = ::display;
+	const char *display_beginning = ::display_beginning;
+#ifdef PENTAGRAM_IN_EXULT
+	if (Game::get_game_type() == SERPENT_ISLE)
+	{
+		display = display_serpent_isle;
+		display_beginning = display_beginning_si;
+	}
+	else if (Game::get_game_type() == BLACK_GATE)
+	{
+		display = display_black_gate;
+		display_beginning = display_beginning_bg;
+	}
+#endif
+
+	CreateMT32SystemMessage(time, display_base, 0, display_mem_size, display_beginning );
+	time += time_inc;
+
+
+	// Now do each timbre and patch
+	for (i = 0; i < num_timbres; i++)
+	{
+		//
+		// Timbre
+		//
+		CreateMT32SystemMessage(time, timbre_base, timbre_mem_offset(i), timbre_mem_size, 0, source);
+
+		//
+		// Patch
+		//
+
+		// Default patch
+		PatchMemData patch_data = patch_template;
+	
+		// Set the timbre num
+		patch_data.timbre_num = i;
+
+		CreateMT32SystemMessage(time, 
+				patch_base, 
+				patch_mem_offset(source->read1()-1),
+				patch_mem_size,
+				&patch_data );
+
+		time += time_inc;
+	}
+
+	//
+	// Rhythm Setup
+	//
+
+	i = 0;
+	while (U7PercussionNotes[i])
+	{
+		// Work out how many we can send at a time
+		for (j = i+1; U7PercussionNotes[j]; j++)
+		{
+			// If the next isn't actually the next, then we can't upload it
+			if (U7PercussionNotes[j-1]+1 != U7PercussionNotes[j]) break;
+		}
+
+		int count = j-i;
+
+		CreateMT32SystemMessage(time,
+				rhythm_base, 
+				rhythm_mem_offset_note(U7PercussionNotes[i]),
+				rhythm_mem_size*count,
+				&U7PercussionData[i] );
+
+		time += time_inc;
+		i+=count;
+	}
+
+	//
+	// Set system volume
+	//
+
+	char seventy = 70;
+
+	CreateMT32SystemMessage(time, system_base, system_mem_offset(masterVol), 1,&seventy);
+	time += time_inc; 
+
+	//
+	// Display
+	//
+
+	// Change the display to something more appropriate
+	// Write the 'real' Display
+	CreateMT32SystemMessage(time, display_base, 0, display_mem_size, display );
+	time += time_inc;
+
+	// Apply the first state
+	//ApplyFirstState(fs, chan_mask);
+
+	// Add tempo
+	static const unsigned char tempo_buf[5] = { 0x51, 0x03, 0x07, 0xA1, 0x20 };
+	IBufferDataSource ds(tempo_buf, 5);
+	current = list;
+	ConvertSystemMessage (0, 0xFF,&ds);
+
+	num_tracks=1;
+	events = XMidiEvent__Calloc<XMidiEventList*>(1); //new XMidiEvent *[info.tracks];
+	events[0] = XMidiEvent__Calloc<XMidiEventList>();
+	events[0]->events = list;
+	events[0]->branches = branches;
+	events[0]->chan_mask = chan_mask;
+
+	// Increment Counter
+	num++;
+
+	// Return how many were converted
+	return num;
+
+}
+
+int XMidiFile::ExtractTracksFromXMIDIMT (IDataSource *source)
+{
+	uint32			i, j;
+	int				num = 0;
+	uint32			len = 0;
+	int				time = 0;
+	int				time_inc = 32;
+
+
+	first_state	fs;
+
+	list = NULL;
+	branches = NULL;
+	memset(&fs, 0, sizeof(fs));
+
+	// Convert it
+	int chan_mask = 0;
+
+	source->seek(0);
+
+	//
+	// All Dev Reset
+	//
+
+	char one = 1;
+	CreateMT32SystemMessage(time, all_dev_reset_base, 0, 1, &one);
+	time += time_inc;
+
+	//
+	// Display
+	//
+
+	// Change the display 
+
+	const char *display = ::display;
+	const char *display_beginning = ::display_beginning;
+#ifdef PENTAGRAM_IN_EXULT
+	if (Game::get_game_type() == SERPENT_ISLE)
+	{
+		display = display_serpent_isle;
+		display_beginning = display_beginning_si;
+	}
+	else if (Game::get_game_type() == BLACK_GATE)
+	{
+		display = display_black_gate;
+		display_beginning = display_beginning_bg;
+	}
+#endif
+
+	// Channel assignment
+	CreateMT32SystemMessage(time, system_base, system_mem_offset(chanAssign), 9, system_part_chans);
+	time += time_inc;
+
+	// Partial Rerserve
+	CreateMT32SystemMessage(time, system_base, system_mem_offset(reserveSettings), 9, system_part_rsv);
+	time += time_inc;
+
+	// Reverb settings
+	CreateMT32SystemMessage(time, system_base, 1, 3, system_init_reverb);
+	time += time_inc;
+
+	//
+	// Display
+	//
+
+	// Change the display to something more appropriate
+	// Write the 'real' Display
+	CreateMT32SystemMessage(time, display_base, 0, display_mem_size, display );
+	time += time_inc;
+
+	// Add tempo
+	static const unsigned char tempo_buf[5] = { 0x51, 0x03, 0x07, 0xA1, 0x20 };
+	IBufferDataSource ds(tempo_buf, 5);
+	current = list;
+	ConvertSystemMessage (0, 0xFF,&ds);
+
+	num_tracks=1;
+	events = XMidiEvent__Calloc<XMidiEventList*>(1); //new XMidiEvent *[info.tracks];
+	events[0] = XMidiEvent__Calloc<XMidiEventList>();
+	events[0]->events = list;
+	events[0]->branches = branches;
+	events[0]->chan_mask = chan_mask;
+
+	// Increment Counter
+	num++;
+
+	// Return how many were converted
+	return num;
 }
 

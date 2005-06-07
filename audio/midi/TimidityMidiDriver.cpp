@@ -17,17 +17,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "pent_include.h"
+#include "TimidityMidiDriver.h"
 
 #ifdef USE_TIMIDITY_MIDI
 
-#include "TimidityMidiDriver.h"
-#include "timidity.h"
+#include "timidity/timidity.h"
 
+#ifndef PENTAGRAM_IN_EXULT
 #include "GameData.h"
 #include "MusicFlex.h"
 #include "XMidiFile.h"
 #include "XMidiEvent.h"
 #include "XMidiEventList.h"
+#endif
 
 const MidiDriver::MidiDriverDesc TimidityMidiDriver::desc = 
 		MidiDriver::MidiDriverDesc ("Timidity", createInstance);
@@ -45,7 +47,7 @@ int TimidityMidiDriver::open()
 		return 1;
 
 
-#ifdef DEBUG
+#if defined(DEBUG) || defined(PENTAGRAM_IN_EXULT)
 	// Going through all the XMidi files just takes far too long 
 	// in DEBUG Builds
 	memset (used_inst, true, sizeof(bool)*128);

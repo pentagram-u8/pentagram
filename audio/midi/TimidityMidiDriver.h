@@ -47,6 +47,7 @@ protected:
 
 	// MidiDriver overloads
 	virtual bool		isSampleProducer() { return true; }
+	virtual bool		noTimbreSupport() { return true; }
 };
 
 #endif //USE_TIMIDITY_MIDI

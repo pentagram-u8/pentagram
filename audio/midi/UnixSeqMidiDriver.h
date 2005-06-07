@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define UNIXSEQMIDIDRIVER_H_INCLUDED
 
 #ifdef UNIX
+#define USE_UNIX_SEQ_MIDI
 
 #include "LowLevelMidiDriver.h"
 #include <string>

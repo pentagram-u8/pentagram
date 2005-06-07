@@ -24,10 +24,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "pent_include.h"
+#include "ALSAMidiDriver.h"
 
 #ifdef USE_ALSA_MIDI
-
-#include "ALSAMidiDriver.h"
 
 #include "SettingManager.h"
 
@@ -176,7 +175,7 @@ void ALSAMidiDriver::send(uint32 b) {
 void ALSAMidiDriver::send_sysex(uint8 status,const uint8 *msg,uint16 length) {
 	unsigned char buf[1024];
 
-	if (length > 255) {
+	if (length > 511) {
 		perr << "ALSAMidiDriver: "
 			 << "Cannot send SysEx block - data too large" << std::endl;
 		return;

@@ -63,6 +63,8 @@ public:
 
 	virtual void		produceSamples(sint16 *samples, uint32 bytes);
 
+	virtual void		loadTimbreLibrary(IDataSource*, TimbreLibraryType type);
+
 protected:
 
 	// Will be wanted by software drivers
@@ -149,7 +151,7 @@ private:
 		} data;
 	};
 
-	sint32			initialized;
+	bool					uploading_timbres;	// Set in 'uploading' timbres mode
 
 	// Communications
 	std::queue<ComMessage>	messages;
@@ -180,6 +182,46 @@ private:
 	// Thread Based Only Data
 	SDL_Thread				*thread;
 
+	// Timbre Banks
+	struct MT32Timbre {
+		uint32		time_uploaded;
+		int			index;
+		bool		protect;
+		uint8		timbre[246];
+	};
+	struct MT32Patch {
+		sint8		timbre_bank;			// 0-3	(group A, group B, Memory, Rhythm)
+		sint8		timbre_num;				// 0-63
+		uint8		key_shift;				// 0-48
+		uint8		fine_tune;				// 0-100 (-50 - +50)
+		uint8		bender_range;			// 0-24
+		uint8		assign_mode;			// 0-3 (POLY1, POLY2, POLY3, POLY4)
+		uint8		reverb_switch;			// 0-1 (off,on)
+		uint8		dummy;
+	};
+	static const MT32Patch	mt32_patch_template;
+	struct MT32Rhythm {
+		uint8		timbre;					// 0-94 (M1-M64,R1-30,OFF)
+		uint8		output_level;			// 0-100
+		uint8		panpot;					// 0-14 (L-R)
+		uint8		reverb_switch;			// 0-1 (off,on)
+	};
+
+
+	MT32Patch				**mt32_patch_banks[128];			// 128 banks, of 128 Patches
+	MT32Timbre				**mt32_timbre_banks[128];			// 128 banks, of 128 Timbres
+	MT32Rhythm				*mt32_rhythm_bank[128];				// 1 bank of rhythm
+	int						mt32_timbre_used[64][2];
+	int						mt32_bank_sel[LLMD_NUM_SEQ][16];
+	int						mt32_patch_bank_sel[128];
+
+	void					loadXMidiTimbreLibrary(IDataSource *ds);
+	void					extractTimbreLibrary(XMidiEventList *eventlist);
+    void					uploadTimbre(int bank, int patch);
+	void					setPatchBank(int bank, int patch);
+	void					loadRhythmTemp(int temp);
+	void					sendMT32SystemMessage(uint32 address_base, uint16 address_offset, uint32 len, const void *data);
+
 	// Shared Methods
 
 	//! Play all sequences, handle communications requests
@@ -198,6 +240,7 @@ private:
 
 	// XMidiSequenceHandler implementation
 	virtual void			sequenceSendEvent(uint16 sequence_id, uint32 message);
+	virtual void			sequenceSendSysEx(uint16 sequence_id, uint8 status, const uint8 *msg, uint16 length);
 	virtual uint32			getTickCount(uint16 sequence_id);
 	virtual void			handleCallbackTrigger(uint16 sequence_id, uint8 data);
 

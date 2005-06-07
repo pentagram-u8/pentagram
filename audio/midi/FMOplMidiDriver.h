@@ -47,6 +47,7 @@ protected:
 	// MidiDriver overloads
 	virtual bool		isSampleProducer() { return true; }
 	virtual bool		isFMSynth() { return true; }
+	virtual void		loadTimbreLibrary(IDataSource*, TimbreLibraryType type);
 
 private:
 
@@ -92,9 +93,10 @@ private:
 	int chp[9][4];
 	unsigned char	myinsbank[128][12];
 	xmidibank		*xmidibanks[128];
-	void			loadAdlibTimbres(IDataSource *ds);
+	void			loadXMIDITimbres(IDataSource *ds);
+	void			loadU7VoiceTimbres(IDataSource *ds);
 
-	Pentagram::FM_OPL *opl;
+	FMOpl_Pentagram::FM_OPL *opl;
 	midi_channel ch[16];
 };
 

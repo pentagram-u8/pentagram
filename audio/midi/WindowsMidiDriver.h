@@ -19,7 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef WINDOWSMIDIDRIVER_H_INCLUDED
 #define WINDOWSMIDIDRIVER_H_INCLUDED
 
-#ifdef WIN32
+#if defined(WIN32) && !defined(UNDER_CE)
+#define USE_WINDOWS_MIDI
 
 #include "LowLevelMidiDriver.h"
 
@@ -45,7 +46,8 @@ class WindowsMidiDriver : public LowLevelMidiDriver
 
 	// SysEx stuff. Borrowed from ScummVM
 	MIDIHDR _streamHeader;
-	uint8 _streamBuffer [258];	// SysEx blocks should be no larger than 256 bytes
+	uint8 *_streamBuffer;
+	int		_streamBufferSize;
 	HANDLE _streamEvent;
 
 	const static MidiDriverDesc	desc;

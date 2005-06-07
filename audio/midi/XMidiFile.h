@@ -29,7 +29,12 @@ class XMidiEventList;
 #define XMIDIFILE_CONVERT_MT32_TO_GM		1
 #define XMIDIFILE_CONVERT_MT32_TO_GS		2
 #define XMIDIFILE_CONVERT_MT32_TO_GS127		3
-#define XMIDIFILE_CONVERT_GS127_TO_GS		4
+#define XMIDIFILE_CONVERT_GM_TO_MT32		4
+
+#define XMIDIFILE_CONVERT_GS127_TO_GS		5
+#define XMIDIFILE_HINT_U7VOICE_MT_FILE		6
+#define XMIDIFILE_HINT_XMIDI_MT_FILE		7
+#define XMIDIFILE_HINT_SYX_FILE				8
 
 class   XMidiFile
 {
@@ -46,6 +51,7 @@ private:
 	
 	const static char	mt32asgm[128];
 	const static char	mt32asgs[256];
+	const static char	gmasmt32[128];
 	bool 				bank127[16];
 	int					convert_type;
 	
@@ -92,6 +98,7 @@ private:
 	int ConvertNote (const int time, const unsigned char status, IDataSource *source, const int size);
 	int ConvertEvent (const int time, const unsigned char status, IDataSource *source, const int size, first_state& fs);
 	int ConvertSystemMessage (const int time, const unsigned char status, IDataSource *source);
+	int CreateMT32SystemMessage(const int time, uint32 address_base, uint16 address_offset, uint32 len, const void *data = 0, IDataSource *source=0);
 
 	int ConvertFiletoList (IDataSource *source, const bool is_xmi, first_state& fs);
 
@@ -99,6 +106,9 @@ private:
 	int ExtractTracksFromMid (IDataSource *source, const uint32 ppqn, const int num_tracks, const bool type1);
 	
 	int ExtractTracks (IDataSource *source);
+
+	int ExtractTracksFromU7V (IDataSource *source);
+	int ExtractTracksFromXMIDIMT (IDataSource *source);
 };
 
 #endif //XMIDIFILE_H_INCLUDED

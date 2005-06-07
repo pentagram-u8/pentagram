@@ -22,10 +22,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "pent_include.h"
-
-#ifdef UNIX
-
 #include "UnixSeqMidiDriver.h"
+
+#ifdef USE_UNIX_SEQ_MIDI
+
 #include <fcntl.h>
 #include <unistd.h>
 #include <cerrno>
@@ -115,13 +115,13 @@ void UnixSeqMidiDriver::send(uint32 b) {
 
 void UnixSeqMidiDriver::send_sysex(uint8 status,const uint8 *msg,uint16 length)
 {
-	if (length > 255) {
+	if (length > 511) {
 		perr << "UnixSeqMidiDriver: "
 			 << "Cannot send SysEx block - data too large" << std::endl;
 		return;
 	}
 
-	unsigned char buf [1024];
+	unsigned char buf [2048];
 	int position = 0;
 	const uint8 *chr = msg;
 

@@ -17,10 +17,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "pent_include.h"
-
-#ifdef MACOSX
-
 #include "CoreAudioMidiDriver.h"
+
+#ifdef USE_CORE_AUDIO_MIDI
+
 #include <pthread.h>
 #include <sched.h>
 

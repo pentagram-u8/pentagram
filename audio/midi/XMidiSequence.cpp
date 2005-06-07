@@ -75,6 +75,12 @@ XMidiSequence::~XMidiSequence()
 	while (XMidiEvent *note = notes_on.Pop())
 		handler->sequenceSendEvent(sequence_id, note->status + (note->data[0] << 8));
 
+	for (int i = 0; i < 16; i++) 
+	{
+		shadows[i].reset();
+		applyShadow(i);
+	}
+
 	// 'Release' it
 	evntlist->decerementCounter();
 }
@@ -195,6 +201,12 @@ sint32 XMidiSequence::playEvent()
 	{
 		sendEvent();
 	}
+		// SysEx gets sent immediately
+	else if (event->status != 0xFF)
+	{
+		handler->sequenceSendSysEx(sequence_id, event->status, 
+				event->ex.sysex_data.buffer, event->ex.sysex_data.len);
+	}
 
 	// If we've got another note, play that next
 	if (event) event = event->next;
@@ -216,8 +228,9 @@ sint32 XMidiSequence::playEvent()
 		// repeat from the start
 		else if (repeat)
 		{
-			last_tick = 0;
 			event = evntlist->events;
+			if (last_tick == 0) return 1;
+			last_tick = 0;
 		}
 		// If we are not repeating, then return saying we are end
 		else
@@ -358,7 +371,7 @@ void XMidiSequence::applyShadow(int i)
 	// Modulation Wheel
 	SendController(1,modWheel);
 	
-	// Modulation Wheel
+	// Footpedal
 	SendController(4,footpedal);
 	
 	// Volume

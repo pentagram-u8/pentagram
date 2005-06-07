@@ -19,6 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef SEQUENCEHANDLER_H_INCLUDED
 #define SEQUENCEHANDLER_H_INCLUDED
 
+struct XMidiEvent;
+
 //! Abstract class for handling the playing of XMidiSequence objects
 class XMidiSequenceHandler
 {
@@ -29,6 +31,13 @@ public:
 	//! \param sequence_id The id of the sequence that is attempting to send the event
 	//! \param message The Event being sent
 	virtual void	sequenceSendEvent(uint16 sequence_id, uint32 message) = 0;
+
+	//! Send a SysEx event from a Sequence
+	//! \param sequence_id The id of the sequence that is attempting to send the event
+	//! \param status The Status Byte of the SysEx event
+	//! \param msg The SysEx data (including terminator byte)
+	//! \param length The number of bytes of SysEx data to send
+	virtual void	sequenceSendSysEx(uint16 sequence_id, uint8 status, const uint8 *msg, uint16 length) = 0;
 
 	//! An event sent from a sequence to play
 	//! \param sequence_id The id of the sequence requesting the tick count

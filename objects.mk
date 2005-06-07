@@ -234,6 +234,7 @@ MIDI = \
 	audio/midi/XMidiEventList.o \
 	audio/midi/XMidiFile.o \
 	audio/midi/XMidiSequence.o \
+	audio/midi/MidiDriver.o \
 	audio/midi/LowLevelMidiDriver.o \
 	audio/midi/fmopl.o \
 	audio/midi/FMOplMidiDriver.o \

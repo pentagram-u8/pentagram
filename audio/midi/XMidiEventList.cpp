@@ -19,9 +19,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 #include "XMidiEvent.h"
 #include "XMidiEventList.h"
-#include "IDataSource.h"
+
+#ifdef PENTAGRAM_IN_EXULT
+#include "databuf.h"
+#else
 #include "ODataSource.h"
-#include "FileSystem.h"
+#endif
 
 #ifndef UNDER_CE
 using std::atof;
@@ -50,7 +53,7 @@ int XMidiEventList::write (ODataSource *dest)
 		return 0;
 	}
 
-	// This is so if using buffer IDataSource, the caller can know how big to make the buffer
+	// This is so if using buffer ODataSource, the caller can know how big to make the buffer
 	if (!dest)
 	{
 		// Header is 14 bytes long and add the rest as well

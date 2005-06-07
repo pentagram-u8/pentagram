@@ -18,7 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
- * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/fmopl.cpp,v 1.6 2005/02/14 08:51:05 darkepaw Exp $
+ * $Header: /data/pentagram/cvs2svn/pentagram/pentagram/audio/midi/fmopl.cpp,v 1.7 2005/06/07 09:00:25 colourles Exp $
  *
  * LGPL licensed version of MAMEs fmopl (V0.37a modified) by
  * Tatsuyuki Satoh. Included from LGPL'ed AdPlug.
@@ -36,7 +36,7 @@
 #include <iostream>
 #include "fmopl.h"
 
-namespace Pentagram {
+namespace FMOpl_Pentagram {
 
 #ifndef UNDER_CE
 using std::malloc;

@@ -1,3 +1,10 @@
+2005-06-07  Ryan Nunn <colourles@users.sourceforge.net>
+	* objects.mk, audio/AudioMixer.cpp, audio/midi/*.*, 
+	  audio/midi/timidity/timidity.cpp : Update to the Midi System to be
+	  the same as what Exult will be
+	* graphics/SKFPlayer.cpp : Making 'debug' output only be output in
+	  DEBUG builds
+
 2005-06-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AnimationTracker.cpp: set/clear actor's HANGING flag
 	* data/u8weapons.ini, world/actors/Actor.cpp: give weapons as treasure

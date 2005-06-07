@@ -17,26 +17,25 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "pent_include.h"
-
-// Windows Stuff
-#ifdef WIN32
-
-// These will prevent inclusion of mmsystem sections
-#define MMNODRV         // No Installable driver support
-#define MMNOWAVE        // No Waveform support
-#define MMNOAUX         // No Auxiliary audio support
-#define MMNOMIXER       // No Mixer support
-#define MMNOTIMER       // No Timer support
-#define MMNOJOY         // No Joystick support
-#define MMNOMMIO        // No Multimedia file I/O support
-
 #include "WindowsMidiDriver.h"
+
+#ifdef USE_WINDOWS_MIDI
 
 const MidiDriver::MidiDriverDesc WindowsMidiDriver::desc = 
 		MidiDriver::MidiDriverDesc ("Windows", createInstance);
 
 using std::endl;
+
+#ifdef WIN32_USE_DUAL_MIDIDRIVERS
 #include "util.h"
+#endif
+
+// we want to use Pentagram's config
+#ifndef PENTAGRAM_IN_EXULT
+#include "SettingManager.h"
+#else
+#include "Configuration.h"
+#endif
 
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
@@ -45,9 +44,11 @@ using std::endl;
 #include <windows.h>
 #include <mmsystem.h>
 #include <winbase.h>
+#include <cstdlib>
 
 WindowsMidiDriver::WindowsMidiDriver() : 
-	LowLevelMidiDriver(), dev_num(-1), midi_port(0), _streamEvent(0)
+	LowLevelMidiDriver(), dev_num(-1), midi_port(0), 
+	_streamBuffer(0), _streamBufferSize(0), _streamEvent(0)
 {
 #ifdef WIN32_USE_DUAL_MIDIDRIVERS
 	midi_port2 = 0;
@@ -70,9 +71,24 @@ int WindowsMidiDriver::open()
 {
 	int i;
 	// Get Win32 Midi Device num
-	//config->value("config/audio/midi/win32_device", dev_num, -1);
-	dev_num = -1;
+	std::string device;
+#ifdef PENTAGRAM_IN_EXULT
+	config->value("config/audio/midi/win32_device", device, "-1");
+#else
+	if (!SettingManager::get_instance()->get("windows_midi_device",device))
+		device = "-1";
+#endif
+
+	const char *begin = device.c_str();
+	char *end;
+
+	dev_num = std::strtol(begin, &end, 10);
+
+	// If not the terminator, we assume that the string was the device name, not num
+	if (end[0]) dev_num = -1;
+
 #ifdef WIN32_USE_DUAL_MIDIDRIVERS
+	dev_num = -1;
 	int dev_num2 = -2;
 #endif
 
@@ -86,6 +102,7 @@ int WindowsMidiDriver::open()
 	{
 		midiOutGetDevCaps ((UINT) i, &caps, sizeof(caps));
 		pout << i << ": " << caps.szPname << endl;
+		if (!Pentagram::strcasecmp(caps.szPname, device.c_str())) dev_num = i;
 #ifdef WIN32_USE_DUAL_MIDIDRIVERS
 		if (!Pentagram::strncasecmp(caps.szPname, "SB Live! Synth A", 16)) dev_num = i;
 		else if (!Pentagram::strncasecmp(caps.szPname, "SB Live! Synth B", 16)) dev_num2 = i;
@@ -137,6 +154,9 @@ void WindowsMidiDriver::close()
 	midi_port = 0;
 	CloseHandle(_streamEvent);
 	_streamEvent = 0;
+	delete [] _streamBuffer;
+	_streamBuffer = 0;
+	_streamBufferSize = 0;
 }
 
 void WindowsMidiDriver::send(uint32 message)
@@ -178,15 +198,23 @@ void WindowsMidiDriver::send_sysex (uint8 status, const uint8 *msg, uint16 lengt
 		return;
 	}
 
-	MMRESULT result = midiOutUnprepareHeader (midi_port, &_streamHeader, sizeof (_streamHeader));
-	if (doMCIError(result)) {
-		//check_error (result);
-		perr << "Error: Could not send SysEx - midiOutUnprepareHeader failed." << std::endl;
-		return;
+	if (_streamBuffer) {
+		MMRESULT result = midiOutUnprepareHeader (midi_port, &_streamHeader, sizeof (_streamHeader));
+		if (doMCIError(result)) {
+			//check_error (result);
+			perr << "Error: Could not send SysEx - midiOutUnprepareHeader failed." << std::endl;
+			return;
+		}
 	}
 
-	_streamBuffer [0] = status;
-	memcpy(&_streamBuffer[1], msg, length);
+	if (_streamBufferSize < length) {
+		delete [] _streamBuffer;
+		_streamBufferSize = length*2;
+		_streamBuffer = new uint8[_streamBufferSize];
+	}
+
+	_streamBuffer[0] = status;
+	memcpy(_streamBuffer+1, msg, length);
 
 	_streamHeader.lpData = (char *) _streamBuffer;
 	_streamHeader.dwBufferLength = length + 1;
@@ -194,7 +222,7 @@ void WindowsMidiDriver::send_sysex (uint8 status, const uint8 *msg, uint16 lengt
 	_streamHeader.dwUser = 0;
 	_streamHeader.dwFlags = 0;
 
-	result = midiOutPrepareHeader (midi_port, &_streamHeader, sizeof (_streamHeader));
+	MMRESULT result = midiOutPrepareHeader (midi_port, &_streamHeader, sizeof (_streamHeader));
 	if (doMCIError(result)) {
 		//check_error (result);
 		perr << "Error: Could not send SysEx - midiOutPrepareHeader failed." << std::endl;

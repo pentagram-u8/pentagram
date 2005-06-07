@@ -25,25 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AudioChannel.h"
 
 #include "MidiDriver.h"
-#if defined(WIN32) && !defined(UNDER_CE)
-#include "WindowsMidiDriver.h"
-#endif
-#ifdef MACOSX
-#include "CoreAudioMidiDriver.h"
-#endif
-#ifdef USE_FMOPL_MIDI
-#include "FMOplMidiDriver.h"
-#endif
-#ifdef USE_TIMIDITY_MIDI
-#include "TimidityMidiDriver.h"
-#endif
-#ifdef USE_ALSA_MIDI
-#include "ALSAMidiDriver.h"
-#endif
-#ifdef UNIX
-#include "UnixSeqMidiDriver.h"
-#endif
 
+#include <SDL.h>
 
 namespace Pentagram {
 
@@ -280,83 +263,13 @@ void AudioMixer::init_midi()
 
 	SettingManager *settingman = SettingManager::get_instance();
 
-	std::vector<const MidiDriver::MidiDriverDesc*>	midi_drivers;
-
-	// Now, add the drivers in order of priority.
-	// Do OS Native drivers first, then Timidity, then FMOpl
-
-#ifdef MACOSX
-	midi_drivers.push_back(CoreAudioMidiDriver::getDesc());
-#endif
-#if defined(WIN32) && !defined(UNDER_CE)
-	midi_drivers.push_back(WindowsMidiDriver::getDesc());
-#endif
-#ifdef USE_TIMIDITY_MIDI
-	midi_drivers.push_back(TimidityMidiDriver::getDesc());
-#endif
-#ifdef USE_FMOPL_MIDI
-	midi_drivers.push_back(FMOplMidiDriver::getDesc());
-#endif
-#ifdef USE_ALSA_MIDI
-	midi_drivers.push_back(ALSAMidiDriver::getDesc());
-#endif
-#ifdef UNIX
-	midi_drivers.push_back(UnixSeqMidiDriver::getDesc());
-#endif
-
 	// First thing attempt to find the Midi driver as specified in the config
 	std::string desired_driver;
 	settingman->setDefault("midi_driver", "default");
 	settingman->get("midi_driver", desired_driver);
-	const char * drv = desired_driver.c_str();
 
 	// Has the config file specified disabled midi?
-	if (audio_ok && Pentagram::strcasecmp(drv, "disabled"))
-	{
-		std::vector<const MidiDriver::MidiDriverDesc*>::iterator it;
-
-		// Ok, it hasn't so search for the driver
-		for (it = midi_drivers.begin(); it < midi_drivers.end(); it++) {
-
-			// Found it (case insensitive)
-			if (!Pentagram::strcasecmp(drv, (*it)->name)) {
-
-				pout << "Trying config specified Midi driver: `" << (*it)->name << "'" << std::endl;
-
-				new_driver = (*it)->createInstance();
-				if (new_driver) {
-
-					if (new_driver->initMidiDriver(sample_rate,stereo)) {
-						delete new_driver;
-						new_driver = 0; 
-					} 
-				}
-			}
-		}
-
-		// Uh oh, we didn't manage to load a driver! 
-		// Search for the first working one
-		if (!new_driver) for (it = midi_drivers.begin(); it < midi_drivers.end(); it++) {
-
-			pout << "Trying: `" << (*it)->name << "'" << std::endl;
-
-			new_driver = (*it)->createInstance();
-			if (new_driver) {
-
-				// Got it
-				if (!new_driver->initMidiDriver(sample_rate,stereo)) 
-					break;
-
-				// Oh well, try the next one
-				delete new_driver;
-				new_driver = 0; 
-			}
-		}
-	}
-	else
-	{
-		new_driver = 0; // silence :-)
-	}
+	if (audio_ok) new_driver = MidiDriver::createInstance(desired_driver,sample_rate,stereo);
 
 	// If the driver is a 'sample' producer we need to hook it to SDL
 	if (new_driver)
