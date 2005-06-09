@@ -189,6 +189,98 @@ bool Actor::giveTreasure()
 					item->randomGumpLocation();
 					break;
 				}
+			} else if (ti.special == "sorcfocus") {
+				// CONSTANTS! (and lots of them...)
+				int shape = 397;
+				int frame;
+				uint16 quality;
+
+				if (std::rand() % 10 < 8)
+				{
+					// wand
+					if (std::rand() % 10 < 4) {
+						// charged
+						frame = 0;
+						quality = 3 + (std::rand() % 4) + // charges
+							((1 + (std::rand()%4))<<8);   // spell
+					} else {
+						frame = 15;
+						quality = 0;
+					}
+
+					item = ItemFactory::createItem(shape, frame, quality,
+												   Item::FLG_DISPOSABLE,
+												   0, 0, 0);
+					item->assignObjId();
+					item->moveToContainer(this);
+					item->randomGumpLocation();
+				}
+
+				if (std::rand() % 10 < 6)
+				{
+					// rod
+					if (std::rand() % 10 < 2) {
+						// charged
+						frame = 3;
+						quality = 3 + (std::rand() % 4) + // charges
+							((1 + (std::rand()%7))<<8);   // spell
+					} else {
+						frame = 16;
+						quality = 0;
+					}
+
+					item = ItemFactory::createItem(shape, frame, quality,
+												   Item::FLG_DISPOSABLE,
+												   0, 0, 0);
+					item->assignObjId();
+					item->moveToContainer(this);
+					item->randomGumpLocation();
+				}
+
+				if (std::rand() % 10 < 5)
+				{
+					// symbol
+					if (std::rand() % 10 < 5) {
+						// charged
+						frame = 12;
+						uint8 spell = 10 + (std::rand() % 2);
+						
+						quality = 1 +                      // charges
+							((10 + (std::rand()%2))<<8);   // spell
+					} else {
+						frame = 19;
+						quality = 0;
+					}
+
+					item = ItemFactory::createItem(shape, frame, quality,
+												   Item::FLG_DISPOSABLE,
+												   0, 0, 0);
+					item->assignObjId();
+					item->moveToContainer(this);
+					item->randomGumpLocation();
+				}
+
+				if (std::rand() % 10 < 2)
+				{
+					// demon talisman
+					if (std::rand() % 10 < 2) {
+						// charged
+						frame = 9;
+						quality = 1 + (std::rand() % 2) +  // charges
+							((10 + (std::rand()%2))<<8);   // spell
+					} else {
+						frame = 18;
+						quality = 0;
+					}
+
+					item = ItemFactory::createItem(shape, frame, quality,
+												   Item::FLG_DISPOSABLE,
+												   0, 0, 0);
+					item->assignObjId();
+					item->moveToContainer(this);
+					item->randomGumpLocation();
+				}
+
 			} else {
 				pout << "Unhandled special treasure: " << ti.special
 					 << std::endl;
