@@ -1,5 +1,6 @@
 2005-06-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Actor.cpp: sorcery foci treasure
+	* data/u8.ini, data/u8monsters.ini: demon treasure
 
 2005-06-07  Ryan Nunn <colourles@users.sourceforge.net>
 	* objects.mk, audio/AudioMixer.cpp, audio/midi/*.*, 

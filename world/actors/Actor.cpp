@@ -157,7 +157,6 @@ bool Actor::giveTreasure()
 		else
 			count = ti.mincount + (std::rand() % (ti.maxcount - ti.mincount));
 
-		// TODO: more 'special's
 		if (!ti.special.empty()) {
 			if (ti.special == "weapon") {
 
