@@ -95,12 +95,16 @@ void AudioMixer::createProcesses()
 
 AudioMixer::~AudioMixer(void)
 {
-	the_audio_mixer = 0;
+	if (midi_driver) midi_driver->destroyMidiDriver();
 
-	SDL_CloseAudio();
-	if (midi_driver)  midi_driver->destroyMidiDriver();
+	Lock();
 	delete midi_driver;
 	midi_driver = 0;
+	Unlock();
+
+	SDL_CloseAudio();
+
+	the_audio_mixer = 0;
 
 	if (channels) for (int i=0;i<num_channels;i++) delete channels[i];
 	delete [] channels;

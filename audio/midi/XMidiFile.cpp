@@ -23,7 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "XMidiNoteStack.h"
 
 #ifdef PENTAGRAM_IN_EXULT
-#include "Game.h"
+#include "game.h"
 #include "databuf.h"
 #else
 #include "IDataSource.h"
