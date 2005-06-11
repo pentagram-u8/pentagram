@@ -22,6 +22,7 @@
 #include "ItemRelativeGump.h"
 
 class Shape;
+class Container;
 
 class ContainerGump : public ItemRelativeGump
 {
@@ -68,6 +69,8 @@ protected:
 	virtual void saveData(ODataSource* ods);
 
 	virtual void GetItemLocation(sint32 lerp_factor);
+
+	virtual Container* getTargetContainer(int mx, int my);
 
 	void getItemCoords(Item* item, sint32& itemx, sint32& itemy);
 

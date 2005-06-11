@@ -49,11 +49,13 @@ U8Game::U8Game() : Game()
 	settingman->setDefault("cheat", true);
 
 	con.AddConsoleCommand("Cheat::items", U8Game::ConCmd_cheatItems);
+	con.AddConsoleCommand("Cheat::equip", U8Game::ConCmd_cheatEquip);
 }
 
 U8Game::~U8Game()
 {
 	con.RemoveConsoleCommand("Cheat::items");
+	con.RemoveConsoleCommand("Cheat::equip");
 }
 
 bool U8Game::loadFiles()
@@ -144,7 +146,7 @@ void U8Game::ConCmd_cheatItems(const Console::ArgsType &args, const Console::Arg
 	Container* backpack = p_dynamic_cast<Container*>(World::get_instance()->getItem(av->getEquip(7))); // CONSTANT!
 	if (!backpack) return;
 
-	// a little bonus :-)
+	// obsidian
 	Item* money = ItemFactory::createItem(143, 7, 500, 0, 0, 0, 0);
 	money->assignObjId();
 	money->moveToContainer(backpack);
@@ -168,12 +170,6 @@ void U8Game::ConCmd_cheatItems(const Console::ArgsType &args, const Console::Arg
 	sword->moveToContainer(backpack);
 	sword->setGumpLocation(20, 30);
 
-	// Deceiver
-	Item* deceiver = ItemFactory::createItem(822, 0, 0, 0, 0, 0, 0);
-	deceiver->assignObjId();
-	deceiver->moveToContainer(backpack);
-	deceiver->setGumpLocation(20, 30);
-
 	Item* flamesting = ItemFactory::createItem(817, 0, 0, 0, 0, 0, 0);
 	flamesting->assignObjId();
 	flamesting->moveToContainer(backpack);
@@ -188,32 +184,6 @@ void U8Game::ConCmd_cheatItems(const Console::ArgsType &args, const Console::Arg
 	slayer->assignObjId();
 	slayer->moveToContainer(backpack);
 	slayer->setGumpLocation(20, 30);
-
-	// armour
-	Item* armour = ItemFactory::createItem(64, 0, 0, 0, 0, 0, 0);
-	armour->assignObjId();
-	armour->moveToContainer(backpack);
-	armour->setGumpLocation(30, 30);
-
-	armour = ItemFactory::createItem(532, 0, 0, 0, 0, 0, 0);
-	armour->assignObjId();
-	armour->moveToContainer(backpack);
-	armour->setGumpLocation(40, 30);
-
-	armour = ItemFactory::createItem(539, 0, 0, 0, 0, 0, 0);
-	armour->assignObjId();
-	armour->moveToContainer(backpack);
-	armour->setGumpLocation(50, 30);
-
-	armour = ItemFactory::createItem(530, 0, 0, 0, 0, 0, 0);
-	armour->assignObjId();
-	armour->moveToContainer(backpack);
-	armour->setGumpLocation(10, 40);
-
-	armour = ItemFactory::createItem(531, 0, 0, 0, 0, 0, 0);
-	armour->assignObjId();
-	armour->moveToContainer(backpack);
-	armour->setGumpLocation(20, 40);
 
 	// necromancy reagents
 	Item* bagitem = ItemFactory::createItem(637, 0, 0, 0, 0, 0, 0);
@@ -298,7 +268,72 @@ void U8Game::ConCmd_cheatItems(const Console::ArgsType &args, const Console::Arg
 	flask->moveToContainer(backpack);
 	flask->setGumpLocation(30, 40);
 
-	return;
+	// zealan shield
+	Item* shield = ItemFactory::createItem(828, 0, 0, 0, 0, 0, 0);
+	shield->assignObjId();
+	shield->moveToContainer(backpack);
+	shield->randomGumpLocation();
+
+	shield = ItemFactory::createItem(539, 0, 0, 0, 0, 0, 0);
+	shield->assignObjId();
+	shield->moveToContainer(backpack);
+	shield->randomGumpLocation();
+
+	Item* armour = ItemFactory::createItem(64, 0, 0, 0, 0, 0, 0);
+	armour->assignObjId();
+	armour->moveToContainer(backpack);
+	armour->randomGumpLocation();
+}
+
+void U8Game::ConCmd_cheatEquip(const Console::ArgsType &args, const Console::ArgvType &argv)
+{
+	MainActor* av = World::get_instance()->getMainActor();
+	if (!av) return;
+	Container* backpack = p_dynamic_cast<Container*>(World::get_instance()->getItem(av->getEquip(7))); // CONSTANT!
+	if (!backpack) return;
+
+	Item* item;
+
+	// move all current equipment to backpack
+	for (unsigned int i = 0; i < 7; ++i) {
+		item = World::get_instance()->getItem(av->getEquip(i));
+		if (item) {
+			item->moveToContainer(backpack, false); // no weight/volume check
+			item->randomGumpLocation();
+		}
+	}
+
+	// give new equipment:
+
+	// deceiver
+	item = ItemFactory::createItem(822, 0, 0, 0, 0, 0, 0);
+	item->assignObjId();
+	av->setEquip(item, false); // don't check weight/volume
+
+	// armour
+	item = ItemFactory::createItem(841, 0, 0, 0, 0, 0, 0);
+	item->assignObjId();
+	av->setEquip(item, false); // don't check weight/volume
+
+	// shield
+	item = ItemFactory::createItem(842, 0, 0, 0, 0, 0, 0);
+	item->assignObjId();
+	av->setEquip(item, false); // don't check weight/volume
+
+	// helmet
+	item = ItemFactory::createItem(843, 0, 0, 0, 0, 0, 0);
+	item->assignObjId();
+	av->setEquip(item, false); // don't check weight/volume
+
+	// arm guards
+	item = ItemFactory::createItem(844, 0, 0, 0, 0, 0, 0);
+	item->assignObjId();
+	av->setEquip(item, false); // don't check weight/volume
+
+	// leggings
+	item = ItemFactory::createItem(845, 0, 0, 0, 0, 0, 0);
+	item->assignObjId();
+	av->setEquip(item, false); // don't check weight/volume
 }
 
 bool U8Game::startInitialUsecode()

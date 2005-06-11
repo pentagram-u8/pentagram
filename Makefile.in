@@ -31,6 +31,12 @@ ACLOCAL = aclocal
 AUTOCONF = autoconf
 AUTOHEADER = autoheader
 
+INSTALL := @INSTALL@
+INSTALL_PROGRAM := @INSTALL_PROGRAM@ -s
+INSTALL_DATA := @INSTALL_DATA@
+bindir := @bindir@
+datapath := @DATAPATH@
+
 CP := cp
 CXX := @CXX@
 MKDIR := @MKDIR@
@@ -55,6 +61,9 @@ GIMP_PLUGIN_PREFIX = @GIMP_PLUGIN_PREFIX@
 
 @GIMP_PLUGIN_TRUE@GIMP_PLUGIN_MODULES = tools/gimp-plugin
 @GIMP_PLUGIN_FALSE@GIMP_PLUGIN_MODULES = 
+
+USE_BUILTIN_DATA := @USE_BUILTIN_DATA@
+
 
 # List of all submodules
 # The order is important, be careful if you change it
@@ -139,7 +148,7 @@ misc/config.h.stamp: $(srcdir)/misc/config.h.in $(top_builddir)/config.status
 
 # including config.h.stamp lets make rescan all dependencies if
 # config.h may have been changed.
--include misc/config.h.stamp $(EMPTY_FILE)
+-include misc/config.h.stamp
 
 
 

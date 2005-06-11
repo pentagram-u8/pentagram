@@ -47,12 +47,12 @@ struct equipcoords_struct {
 	int x, y;
 } equipcoords[] = {
 	{ 0, 0 },
-	{ 23, 64 },
-	{ 37, 50 },
-	{ 40, 25 },
-	{ 41, 63 },
-	{ 40, 92 },
-	{ 16, 18 }
+	{ 24, 60 }, // shield
+	{ 36, 50 }, // arm
+	{ 40, 26 }, // head
+	{ 40, 63 }, // body
+	{ 40, 92 }, // legs
+	{ 16, 18 }  // weapon
 };
 
 struct statcords_struct {

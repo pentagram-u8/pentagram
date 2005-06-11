@@ -67,5 +67,25 @@ llc_OBJ = \
 # make version.o depend on everything to force a rebuild (for build time/date)
 misc/version.o: $(filter-out misc/version.o,$(pentagram_OBJ))
 
+
+# install rules
+
+install-bin: pentagram$(EXEEXT)
+	$(INSTALL) -d "$(DESTDIR)$(bindir)"
+	$(INSTALL_PROGRAM) "$(top_builddir)/pentagram$(EXEEXT)" "$(DESTDIR)$(bindir)/pentagram$(EXEEXT)"
+
+ifeq ($(USE_BUILTIN_DATA),yes)
+install-data:
+else
+install-data: $(DATA_FILES)
+	$(INSTALL) -d "$(DESTDIR)$(datapath)"
+	$(INSTALL_DATA) $(patsubst %,$(top_srcdir)/%,$(DATA_FILES)) "$(DESTDIR)$(datapath)"
+endif
+
+install: install-bin install-data
+
+
 # Common rules
 include $(srcdir)/common.mk
+
+.PHONY: install install-bin install-data

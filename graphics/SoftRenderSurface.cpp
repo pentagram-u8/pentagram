@@ -139,7 +139,7 @@ template<> void SoftRenderSurface<uint16>::Fill32(uint32 rgb, sint32 sx, sint32 
 	if (!w || !h) return;
 
 	// An optimization.
-	if ((w*sizeof(uint16)) == pitch)
+	if (2*w == pitch)
 	{
 		w *= h;
 		h = 1;
@@ -164,7 +164,7 @@ template<> void SoftRenderSurface<uint32>::Fill32(uint32 rgb, sint32 sx, sint32 
 	if (!w || !h) return;
 
 	// An optimization.
-	if ((w*sizeof(uint32)) == pitch)
+	if (4*w == pitch)
 	{
 		w *= h;
 		h = 1;

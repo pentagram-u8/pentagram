@@ -290,6 +290,7 @@ static void load_frame(Shape * s, uint32 framenum, GimpDrawable * drawable)
 static void paintFrame(Shape * s, uint32 framenum, void * pixels,
 				uint32 pitch, sint32 x, sint32 y, GimpPixelRgn * clip_window)
 {
+	#define untformed_pal true
 	#define NO_CLIPPING
 	#define uintX uint16
 	// EVIL!!!!!!

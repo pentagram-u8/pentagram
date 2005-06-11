@@ -46,6 +46,7 @@ public:
 	virtual void playQuotes();
 
 	static void ConCmd_cheatItems(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void ConCmd_cheatEquip(const Console::ArgsType &args, const Console::ArgvType &argv);
 
 
 protected:

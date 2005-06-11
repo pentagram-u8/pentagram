@@ -242,10 +242,15 @@ bool Actor::giveTreasure()
 					if (std::rand() % 10 < 5) {
 						// charged
 						frame = 12;
-						uint8 spell = 10 + (std::rand() % 2);
-						
-						quality = 1 +                      // charges
-							((10 + (std::rand()%2))<<8);   // spell
+						uint8 spell = 1 + (std::rand()%11);
+						quality = spell<<8;
+						if (spell < 4) {
+							quality += 3 + (std::rand()%4);
+						} else {
+							// symbol can only have one charge of anything
+							// other than ignite/extinguish
+							quality += 1;
+						}
 					} else {
 						frame = 19;
 						quality = 0;
@@ -390,8 +395,8 @@ bool Actor::setEquip(Item* item, bool checkwghtvol)
 		if (cet == equiptype || (cbackpack && backpack)) return false;
 	}
 
-	if (!Container::addItem(item, checkwghtvol)) return false;
-
+	if (!item->moveToContainer(this, checkwghtvol)) return false;
+	item->clearFlag(FLG_CONTAINED);
 	item->setFlag(FLG_EQUIPPED);
 	item->setZ(equiptype);
 

@@ -1387,7 +1387,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// push 8 bit value returned from function call
 			// (push temp8 as 16 bit value)
 			p->stack.push2(static_cast<uint8>(p->temp32 & 0xFF));
-			LOGPF(("push byte\tretval = %02X\n", (p->temp32 & 0xFF)));
+			LOGPF(("push byte\tretval = %02Xh\n", (p->temp32 & 0xFF)));
 			break;
 
 		case 0x5E:
@@ -1395,7 +1395,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// push 16 bit value returned from function call
 			// (push temp16)
 			p->stack.push2(static_cast<uint16>(p->temp32 & 0xFFFF));
-			LOGPF(("push\t\tretval = %04X\n", (p->temp32 & 0xFFFF)));
+			LOGPF(("push\t\tretval = %04Xh\n", (p->temp32 & 0xFFFF)));
 			break;
 
 		case 0x5F:
@@ -1403,7 +1403,7 @@ bool UCMachine::execProcess(UCProcess* p)
 			// push 32 bit value returned from function call
 			// (push temp32)
 			p->stack.push4(p->temp32);
-			LOGPF(("push long\t\tretval = %08X\n", p->temp32));
+			LOGPF(("push long\t\tretval = %08Xh\n", p->temp32));
 			break;
 
 		case 0x60:

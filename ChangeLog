@@ -1,3 +1,12 @@
+2005-06-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/Actor.cpp: make setEquip properly call moveToContainer
+	* games/U8Game.cpp: Cheat::equip console cmd for magic armour/weapon
+	* gumps/PaperdollGump.cpp: tweak equipment display coordinates
+	* gumps/ContainerGump.*: some incomplete weight/volume checks
+	* kernel/GUIApp.cpp: renamed MainActor::maxstats to Cheat:maxstats
+	* module.mk: basic install rules
+	* various: warnings
+
 2005-06-09  Ryan Nunn <colourles@users.sourceforge.net>
 	* audio/AudioMixer.cpp : Fixing hard lock
 	* audio/midi/XMidiFile.cpp : Continuity from Exult

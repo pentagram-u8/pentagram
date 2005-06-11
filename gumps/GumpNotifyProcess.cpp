@@ -35,6 +35,7 @@ GumpNotifyProcess::GumpNotifyProcess()
 GumpNotifyProcess::GumpNotifyProcess(uint16 it) : Process(it), gump(0)
 {
 	result = 0;
+	type = 0x200; // CONSTANT!
 }
 
 GumpNotifyProcess::~GumpNotifyProcess(void)

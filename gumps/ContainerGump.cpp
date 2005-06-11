@@ -281,6 +281,22 @@ void ContainerGump::Close(bool no_del)
 	ItemRelativeGump::Close(no_del);
 }
 
+Container* ContainerGump::getTargetContainer(int mx, int my)
+{
+	int px = mx, py = my;
+	GumpToParent(px, py);
+	Item* targetitem = World::get_instance()->getItem(TraceObjId(px, py));
+	Container* targetcontainer = p_dynamic_cast<Container*>(targetitem);
+
+	if (!targetcontainer) {
+		targetitem = World::get_instance()->getItem(owner);
+		targetcontainer = p_dynamic_cast<Container*>(targetitem);
+	}
+
+	return targetcontainer;
+}
+
+
 Gump* ContainerGump::OnMouseDown(int button, int mx, int my)
 {
 	Gump* handled = Gump::OnMouseDown(button, mx, my);
@@ -398,7 +414,8 @@ bool ContainerGump::DraggingItem(Item* item, int mx, int my)
 	}
 
 	// check if item will fit (weight/volume/adding container to itself)
-	if (!c->CanAddItem(item, true)) {
+	Container* target = getTargetContainer(mx,my);
+	if (!target || !target->CanAddItem(item, true)) {
 		display_dragging = false;
 		return false;
 	}

@@ -72,9 +72,8 @@ bool ActorBarkNotifyProcess::run(const uint32)
 	Process* delayproc = new DelayProcess(30+(std::rand()%45));
 	ProcId delaypid = Kernel::get_instance()->addProcess(delayproc);
 
-	if (doAnim) {
-		ProcId animpid = a->doAnim(Animation::talk, 8);
-	}
+	if (doAnim)
+		a->doAnim(Animation::talk, 8);
 
 	waitFor(delaypid);
 	return false;

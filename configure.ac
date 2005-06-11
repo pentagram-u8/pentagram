@@ -152,8 +152,6 @@ fi
 # Switch to C++
 AC_LANG([C++])
 
-AC_HEADER_STDC
-
 AC_CHECK_HEADERS(unistd.h sys/types.h sys/stat.h)
 
 # ---------------------------------------------------------------------
