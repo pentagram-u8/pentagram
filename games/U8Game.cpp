@@ -125,7 +125,7 @@ bool U8Game::startGame()
 	MainActor* av = World::get_instance()->getMainActor();
 	assert(av);
 
-	av->setName("Avatar"); // FIXME
+	av->setName("Avatar"); // default name
 
 	// avatar needs a backpack ... CONSTANTs and all that
 	Container* backpack = p_dynamic_cast<Container*>(
@@ -135,6 +135,8 @@ bool U8Game::startGame()
 	backpack->moveToContainer(av);
 
 	World::get_instance()->switchMap(av->getMapNum());
+
+	GUIApp::get_instance()->setAvatarInStasis(true);
 
 	return true;
 }
@@ -338,14 +340,6 @@ void U8Game::ConCmd_cheatEquip(const Console::ArgsType &args, const Console::Arg
 
 bool U8Game::startInitialUsecode()
 {
-	SettingManager* settingman = SettingManager::get_instance();
-	bool skipstart;
-	settingman->get("skipstart", skipstart);
-
-	if (skipstart) return true;
-
-	GUIApp::get_instance()->setAvatarInStasis(true);
-
 	Process* proc = new StartU8Process();
 	Kernel::get_instance()->addProcess(proc);
 

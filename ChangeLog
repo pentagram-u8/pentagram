@@ -1,4 +1,9 @@
 2005-06-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/CombatProcess.*: clear INCOMBAT flag when terminated
+	* games/U8Game.cpp, games/StartU8Process.*: fixed skipstart
+	  (music, stasis when restarting)
+
+2005-06-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* audio/midi/various: some changes for exult compatibility
 
 2005-06-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>

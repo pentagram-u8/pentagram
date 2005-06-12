@@ -38,6 +38,7 @@ protected:
 	virtual void saveData(ODataSource* ods);
 
 	bool init;
+	bool skipstart;
 };
 
 

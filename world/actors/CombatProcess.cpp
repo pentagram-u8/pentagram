@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -50,6 +50,15 @@ CombatProcess::CombatProcess(Actor* actor_)
 	target = 0;
 	fixedTarget = 0;
 	combatmode = CM_WAITING;
+}
+
+void CombatProcess::terminate()
+{
+	Actor* a = World::get_instance()->getNPC(item_num);
+	if (a)
+		a->clearActorFlag(Actor::ACT_INCOMBAT);
+
+	Process::terminate();
 }
 
 bool CombatProcess::run(const uint32 /*framenum*/)

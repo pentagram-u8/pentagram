@@ -27,8 +27,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ObjectManager.h"
 #include "CameraProcess.h"
 #include "World.h"
+#include "GUIApp.h"
 #include "Kernel.h"
 #include "MenuGump.h"
+#include "SettingManager.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -39,12 +41,14 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(StartU8Process,Process);
 StartU8Process::StartU8Process() : Process()
 {
 	init = false;
+
+	SettingManager::get_instance()->get("skipstart", skipstart);
 }
 
 
 bool StartU8Process::run(const uint32 /*framenum*/)
 {
-	if (!init) {
+	if (!skipstart && !init) {
 		init = true;
 		ProcId moviepid = Game::get_instance()->playIntroMovie();
 		Process* movieproc = Kernel::get_instance()->getProcess(moviepid);
@@ -56,22 +60,25 @@ bool StartU8Process::run(const uint32 /*framenum*/)
 
 	CurrentMap* currentmap = World::get_instance()->getCurrentMap();
 	UCList uclist(2);
-	LOOPSCRIPT(script, LS_AND(LS_SHAPE_EQUAL1(73), LS_Q_EQUAL(36)));
-	currentmap->areaSearch(&uclist, script, sizeof(script),
-						   0, 256, false, 16188, 7500);
-	if (uclist.getSize() < 1) {
-		perr << "Unable to find FIRST egg!" << std::endl;
-		return false;
-	}
+
+	if (!skipstart) {
+		LOOPSCRIPT(script, LS_AND(LS_SHAPE_EQUAL1(73), LS_Q_EQUAL(36)));
+		currentmap->areaSearch(&uclist, script, sizeof(script),
+							   0, 256, false, 16188, 7500);
+		if (uclist.getSize() < 1) {
+			perr << "Unable to find FIRST egg!" << std::endl;
+			return false;
+		}
 	
-	uint16 objid = uclist.getuint16(0);
-	Egg* egg = p_dynamic_cast<Egg*>(
-		ObjectManager::get_instance()->getObject(objid));
-	sint32 ix, iy, iz;
-	egg->getLocation(ix,iy,iz);
-	// Center on egg
-	CameraProcess::SetCameraProcess(new CameraProcess(ix,iy,iz));
-	egg->hatch();
+		uint16 objid = uclist.getuint16(0);
+		Egg* egg = p_dynamic_cast<Egg*>(
+			ObjectManager::get_instance()->getObject(objid));
+		sint32 ix, iy, iz;
+		egg->getLocation(ix,iy,iz);
+		// Center on egg
+		CameraProcess::SetCameraProcess(new CameraProcess(ix,iy,iz));
+		egg->hatch();
+	}
 
 	// Music Egg
 	// Item 2145 (class Item, shape 562, 0, (11551,2079,48) q:52, m:0, n:0, f:2000, ef:2)
@@ -84,14 +91,18 @@ bool StartU8Process::run(const uint32 /*framenum*/)
 		perr << "Unable to find MUSIC egg!" << std::endl;
 	}
 	else {
-		objid = uclist.getuint16(0);
+		ObjId objid = uclist.getuint16(0);
 		Item *musicEgg = p_dynamic_cast<Item*>(
 			ObjectManager::get_instance()->getObject(objid));
 
 		musicEgg->callUsecodeEvent_cachein();
 	}
 
-	MenuGump::inputName();
+	if (!skipstart)
+		MenuGump::inputName();
+	else
+		GUIApp::get_instance()->setAvatarInStasis(false);
+
 
 	terminate();
 
