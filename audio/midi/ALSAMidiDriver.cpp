@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004  The Pentagram Team
+Copyright (C) 2004-2005  The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,8 +27,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ALSAMidiDriver.h"
 
 #ifdef USE_ALSA_MIDI
-
-#include "SettingManager.h"
 
 const MidiDriver::MidiDriverDesc ALSAMidiDriver::desc =
 		MidiDriver::MidiDriverDesc ("alsa", createInstance);
@@ -63,9 +61,7 @@ int ALSAMidiDriver::open() {
 	if (isOpen)
 		return -1;
 
-	SettingManager* settings = SettingManager::get_instance();
-	if (!settings->get("alsa_port", arg))
-		arg = ALSA_PORT;
+	arg = getConfigSetting("alsa_port", ALSA_PORT);
 
 	if (parse_addr(arg, &seq_client, &seq_port) < 0) {
 		perr << "ALSAMidiDriver: Invalid port: " << arg << std::endl;
@@ -165,7 +161,8 @@ void ALSAMidiDriver::send(uint32 b) {
 		break;
 
 	default:
-		perr.printf("ALSAMidiDriver: Unknown Command: %08x\n", (int)b);
+		perr << "ALSAMidiDriver: Unknown Command: "
+			 << std::hex << (int)b << std::dec << std::endl;
 		/* I don't know if this works but, well... */
 		send_event(1);
 		break;

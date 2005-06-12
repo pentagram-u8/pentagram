@@ -38,6 +38,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "KMIDI.h"
 #endif
 
+
+#ifdef PENTAGRAM_IN_EXULT
+#include "Configuration.h"
+#else
+#include "SettingManager.h"
+#endif
+
 static MidiDriver *Disabled_CreateInstance() { return 0; }
 
 static const MidiDriver::MidiDriverDesc Disabled_desc = 
@@ -182,3 +189,30 @@ MidiDriver *MidiDriver::createInstance(std::string desired_driver,uint32 sample_
 	return new_driver;
 }
 
+
+#ifdef PENTAGRAM_IN_EXULT
+
+std::string MidiDriver::getConfigSetting(std::string name,
+										 std::string defaultval)
+{
+	std::string key = "config/audio/midi/";
+	key += name;
+	std::string val;
+	config->value(key, val, defaultval.c_str());
+
+	return val;
+}
+
+#else
+
+std::string MidiDriver::getConfigSetting(std::string name,
+										 std::string defaultval)
+{
+	std::string val;
+	if (!SettingManager::get_instance()->get(name,val))
+		val = defaultval;
+
+	return val;
+}
+
+#endif

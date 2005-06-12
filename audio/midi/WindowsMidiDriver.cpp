@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003  The Pentagram Team
+Copyright (C) 2003-2005  The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,13 +28,6 @@ using std::endl;
 
 #ifdef WIN32_USE_DUAL_MIDIDRIVERS
 #include "util.h"
-#endif
-
-// we want to use Pentagram's config
-#ifndef PENTAGRAM_IN_EXULT
-#include "SettingManager.h"
-#else
-#include "Configuration.h"
 #endif
 
 #ifndef WIN32_LEAN_AND_MEAN
@@ -73,10 +66,9 @@ int WindowsMidiDriver::open()
 	// Get Win32 Midi Device num
 	std::string device;
 #ifdef PENTAGRAM_IN_EXULT
-	config->value("config/audio/midi/win32_device", device, "-1");
+	device = getConfigSetting("win32_device", "-1");
 #else
-	if (!SettingManager::get_instance()->get("windows_midi_device",device))
-		device = "-1";
+	device = getConfigSetting("windows_midi_device", "-1");
 #endif
 
 	const char *begin = device.c_str();

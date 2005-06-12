@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004  The Pentagram Team
+Copyright (C) 2004-2005  The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef UNIXSEQMIDIDRIVER_H_INCLUDED
 #define UNIXSEQMIDIDRIVER_H_INCLUDED
 
-#ifdef UNIX
+#if (defined(UNIX) || defined(__unix__))
 #define USE_UNIX_SEQ_MIDI
 
 #include "LowLevelMidiDriver.h"

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004  The Pentagram Team
+Copyright (C) 2004-2005  The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -30,8 +30,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <unistd.h>
 #include <cerrno>
 
-#include "SettingManager.h"
-
 const MidiDriver::MidiDriverDesc UnixSeqMidiDriver::desc =
 		MidiDriver::MidiDriverDesc ("UnixSeqDevice", createInstance);
 
@@ -41,10 +39,8 @@ const MidiDriver::MidiDriverDesc UnixSeqMidiDriver::desc =
 UnixSeqMidiDriver::UnixSeqMidiDriver()
 	: isOpen(false), device(0), deviceNum(0)
 {
-	/* see if the pentagram config file specifies an alternate midi device */
-	SettingManager* settings = SettingManager::get_instance();
-	if (!settings->get("unixseqdevice", devname))
-		devname = SEQ_DEVICE;
+	// see if the config file specifies an alternate midi device
+	devname = getConfigSetting("unixseqdevice", SEQ_DEVICE);
 }
 
 int UnixSeqMidiDriver::open()
@@ -106,7 +102,8 @@ void UnixSeqMidiDriver::send(uint32 b) {
 		buf[position++] = 0;
 		break;
 	default:
-		perr.printf("Unknown : %08x\n", (int)b);
+		perr << "UnixSeqMidiDriver: Unknown Command: "
+			 << std::hex << (int)b << std::dec << std::endl;
 		break;
 	}
 
