@@ -336,23 +336,18 @@ else
 fi
 
 
-USESDLMIXER=no
-#AC_CHECK_LIB(SDL_mixer, Mix_QuickLoad_RAW,
-#	HAVESDLMIXER=yes,
-#	HAVESDLMIXER=no)
-
+# fmopl midi
 AC_ARG_ENABLE(fmopl_midi,      [[  --disable-fmopl-midi    Disable built-in FMOPL midi]],,enable_fmopl_midi=yes)
-#if test x$HAVESDLMIXER = xyes; then
-	AC_MSG_CHECKING(if we want to use FMOPL midi)
-	if test x$enable_fmopl_midi = xyes; then
-		AC_MSG_RESULT(yes)
-		AC_DEFINE(USE_FMOPL_MIDI, 1, [Enable FMOPL midi])
-#		USESDLMIXER=yes
-	else
-		AC_MSG_RESULT(no)
-	fi
-#fi
+AC_MSG_CHECKING(if we want to use FMOPL midi)
+if test x$enable_fmopl_midi = xyes; then
+	AC_MSG_RESULT(yes)
+	AC_DEFINE(USE_FMOPL_MIDI, 1, [Enable FMOPL midi])
+else
+	AC_MSG_RESULT(no)
+fi
 
+
+# timidity midi
 AC_ARG_ENABLE(timidity_midi,      [[  --disable-timidity-midi Disable built-in timidity midi]],,enable_timidity_midi=yes)
 AC_ARG_WITH(timidity,             [[  --with-timidity=path    path to timidity.cfg (optional)]],,)
 AC_MSG_CHECKING(if we want to use timidity midi)
@@ -366,12 +361,11 @@ if test x$enable_timidity_midi = xyes; then
 		fi
 		AC_DEFINE_UNQUOTED(DEFAULT_TIMIDITY_PATH, "$with_timidity", [Default timidity path])
 	fi
-#	USESDLMIXER=yes
 else
 	AC_MSG_RESULT(no)
 fi
 
-
+# alsa midi
 AC_CHECK_HEADER(alsa/asoundlib.h, HAVEALSA=yes, HAVEALSA=no)
 AC_ARG_ENABLE(alsa,[[  --disable-alsa          Disable ALSA midi support]],,enable_alsa=yes)
 AC_MSG_CHECKING(if we want to use ALSA midi)
@@ -387,11 +381,7 @@ else
 	AC_MSG_RESULT([no; libasound not found])
 fi
 
-
-#if test x$HAVESDLMIXER = xyes -a x$USESDLMIXER = xyes; then
-#	SDL_LIBS="$SDL_LIBS -lSDL_mixer"
-#fi
-
+# fluidsynth midi
 AC_CHECK_HEADER(fluidsynth.h, HAVEFLUIDSYNTH=yes, HAVEFLUIDSYNTH=no)
 AC_ARG_ENABLE(fluidsynth,[[  --disable-fluidsynth    Disable fluidsynth midi support]],,enable_fluidsynth=yes)
 AC_MSG_CHECKING(if we want to use fluidsynth midi)
