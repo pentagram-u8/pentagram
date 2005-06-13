@@ -392,6 +392,21 @@ fi
 #	SDL_LIBS="$SDL_LIBS -lSDL_mixer"
 #fi
 
+AC_CHECK_HEADER(fluidsynth.h, HAVEFLUIDSYNTH=yes, HAVEFLUIDSYNTH=no)
+AC_ARG_ENABLE(fluidsynth,[[  --disable-fluidsynth    Disable fluidsynth midi support]],,enable_fluidsynth=yes)
+AC_MSG_CHECKING(if we want to use fluidsynth midi)
+if test x$HAVEFLUIDSYNTH = xyes; then
+        if test x$enable_fluidsynth = xyes; then
+                AC_MSG_RESULT(yes)
+                AC_DEFINE(USE_FLUIDSYNTH_MIDI, 1, [Enable fluidsynth midi])
+                LIBS="$LIBS -lfluidsynth"
+        else
+                AC_MSG_RESULT(no)
+        fi
+else
+        AC_MSG_RESULT([no; fluidsynth.h not found])
+fi
+
 
 # HQ2X scaler
 AC_ARG_ENABLE(hq2x, [[  --enable-hq2x           Enable hq2x scaler support [default no]]],,enable_hq2x=no)
