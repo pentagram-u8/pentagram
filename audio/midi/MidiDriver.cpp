@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "TimidityMidiDriver.h"
 #include "ALSAMidiDriver.h"
 #include "UnixSeqMidiDriver.h"
+#include "FluidSynthMidiDriver.h"
 
 // Legacy Exult Midi Drivers
 #ifdef PENTAGRAM_IN_EXULT
@@ -73,6 +74,9 @@ static void InitMidiDriverVector()
 #endif
 #ifdef USE_UNIX_SEQ_MIDI
 	midi_drivers.push_back(UnixSeqMidiDriver::getDesc());
+#endif
+#ifdef USE_FLUIDSYNTH_MIDI
+	midi_drivers.push_back(FluidSynthMidiDriver::getDesc());
 #endif
 #ifdef USE_LIBK_MIDI
 	midi_drivers.push_back(Mixer_MidiOut::getDesc());

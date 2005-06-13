@@ -44,7 +44,10 @@ int TimidityMidiDriver::open()
 	sint32 encoding = PE_16BIT|PE_SIGNED;
 	if (!stereo) encoding |= PE_MONO;
 	if (NS_TIMIDITY::Timidity_Init_Simple(sample_rate,65536,encoding)) 
+	{
+		perr << NS_TIMIDITY::Timidity_Error() << std::endl;
 		return 1;
+	}
 
 
 #if defined(DEBUG) || defined(PENTAGRAM_IN_EXULT)

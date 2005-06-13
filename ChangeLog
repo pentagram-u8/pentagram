@@ -1,3 +1,11 @@
+2005-06-13  Ryan Nunn <colourles@users.sourceforge.net>
+	* audio/midi/TimidityMidiDriver.cpp : Report Timidity Error messages
+	  if initiliaztion fails
+	* audio/midi/FluidSynthMidiDriver.*, audio/midi/MidiDriver.cpp,
+	  objects.mk : New FluidSynthMidiDriver borrowed from ScummVM.
+	  Needs FluidSynth to work (obviously). Define USE_FLUIDSYNTH_MIDI
+	  to compile it in.
+	  
 2005-06-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/CombatProcess.*: clear INCOMBAT flag when terminated
 	* games/U8Game.cpp, games/StartU8Process.*: fixed skipstart

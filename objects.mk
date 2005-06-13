@@ -242,7 +242,8 @@ MIDI = \
 	audio/midi/CoreAudioMidiDriver.o \
 	audio/midi/WindowsMidiDriver.o \
 	audio/midi/TimidityMidiDriver.o \
-	audio/midi/UnixSeqMidiDriver.o
+	audio/midi/UnixSeqMidiDriver.o \
+	audio/midi/FluidSynthMidiDriver.o
 
 TIMIDITY = \
 	audio/midi/timidity/timidity.o \
