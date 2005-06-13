@@ -444,7 +444,7 @@ static const PatchMemData patch_template = {
 //
 static const uint32 system_base = 0x100000;	// Note, these are 7 bit!
 static const uint32 system_mem_size = 0x17;	// Display is 20 ASCII characters (32-127)
-#define system_mem_offset(setting) ((uint32)(&((systemArea*)0)->setting))
+#define system_mem_offset(setting) ((uintptr)(&((systemArea*)0)->setting))
 
 struct systemArea {
 	char masterTune;					// MASTER TUNE 0-127 432.1-457.6Hz
