@@ -560,3 +560,9 @@ void HIDManager::getBindings(const Pentagram::istring& bindingName, std::vector<
 		}
 	}
 }
+
+//! checks to see if that key is being used to toggle the console.
+bool HIDManager::isToggleConsole(const SDL_Event& event)
+{
+	return getBinding(event) == HIDBindings::toggleConsole;
+}

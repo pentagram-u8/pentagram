@@ -79,6 +79,10 @@ public:
 	//! \param bindingName name of a HIDBinding
 	//! \param controls vector to store the controls attached to bindingName
 	void getBindings(const Pentagram::istring& bindingName, std::vector<const char *>& controls);
+
+	//! checks to see if that key is being used to toggle the console.
+	bool isToggleConsole(const SDL_Event& event);
+
 private:
 	void HIDManager::listBindings();
 

@@ -5,6 +5,8 @@
 	  objects.mk : New FluidSynthMidiDriver borrowed from ScummVM.
 	  Needs FluidSynth to work (obviously). Define USE_FLUIDSYNTH_MIDI
 	  to compile it in.
+	* kernel/GUIApp.cpp, kernel/HIDManager.* : Making it so key bindings 
+	  for toggleConsole will always work. (useful for Non-US keyboards)
 	  
 2005-06-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/CombatProcess.*: clear INCOMBAT flag when terminated

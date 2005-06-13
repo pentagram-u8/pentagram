@@ -988,7 +988,9 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		if (gump) {
 			switch (event.type) {
 				case SDL_KEYDOWN:
-					if (event.key.keysym.sym == SDLK_BACKQUOTE) break;
+					// Break if console Key
+					if (event.key.keysym.sym == SDLK_BACKQUOTE || 
+						hidmanager->isToggleConsole(event)) break;
 
 #ifdef WIN32 
 					// Paste from Clip-Board on Ctrl-V - Note this should be a flag of some sort
@@ -1026,7 +1028,9 @@ void GUIApp::handleEvent(const SDL_Event& event)
 					return;
 
 				case SDL_KEYUP:
-					if (event.key.keysym.sym == SDLK_BACKQUOTE) break;
+					// Break if console Key
+					if (event.key.keysym.sym == SDLK_BACKQUOTE || 
+						hidmanager->isToggleConsole(event)) break;
 					gump->OnKeyUp(event.key.keysym.sym);
 					return;
 
