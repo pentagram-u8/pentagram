@@ -13,7 +13,7 @@ VER_MINOR=1
 VER_EXTRA=cvs
 VERSION=$VER_MAJOR.$VER_MINOR$VER_EXTRA
 
-# check host/target systems
+# check build/host/target systems
 # (build  = system we're building on,
 #  host   = system we're building for,
 #  target = system the program we're building will build for)
@@ -131,7 +131,7 @@ AC_PROG_INSTALL
 AC_PROG_LEX
 AC_PROG_CXX
 
-# set CC_FOR_BUILD and BUILDEXEEXT
+# set CC_FOR_BUILD and BUILDEXEEXT (for compiling tools on the build system)
 PENT_BUILDCC
 
 AC_MSG_CHECKING(if we should use GCC PCH)
@@ -329,22 +329,24 @@ fi
 AC_ARG_ENABLE(debug,           [[  --disable-debug         Disable debugging mode]],,enable_debug=yes)
 AC_MSG_CHECKING(for debug mode)
 if test x$enable_debug = xyes; then
-	AC_MSG_RESULT(yes)
 	AC_DEFINE(DEBUG, 1, [Debugging mode])
+	pent_debug=yes
 else
-	AC_MSG_RESULT(no)
+	pent_debug=no
 fi
+AC_MSG_RESULT($pent_debug)
 
 
 # fmopl midi
 AC_ARG_ENABLE(fmopl_midi,      [[  --disable-fmopl-midi    Disable built-in FMOPL midi]],,enable_fmopl_midi=yes)
 AC_MSG_CHECKING(if we want to use FMOPL midi)
 if test x$enable_fmopl_midi = xyes; then
-	AC_MSG_RESULT(yes)
 	AC_DEFINE(USE_FMOPL_MIDI, 1, [Enable FMOPL midi])
+	pent_fmopl=yes
 else
-	AC_MSG_RESULT(no)
+	pent_fmopl=no
 fi
+AC_MSG_RESULT($pent_fmopl)
 
 
 # timidity midi
@@ -352,8 +354,8 @@ AC_ARG_ENABLE(timidity_midi,      [[  --disable-timidity-midi Disable built-in t
 AC_ARG_WITH(timidity,             [[  --with-timidity=path    path to timidity.cfg (optional)]],,)
 AC_MSG_CHECKING(if we want to use timidity midi)
 if test x$enable_timidity_midi = xyes; then
-	AC_MSG_RESULT(yes)
 	AC_DEFINE(USE_TIMIDITY_MIDI, 1, [Enable timidity midi])
+	pent_timidity=yes
 
 	if test x$with_timidity != x; then
 		if test ! -d $with_timidity; then
@@ -362,16 +364,19 @@ if test x$enable_timidity_midi = xyes; then
 		AC_DEFINE_UNQUOTED(DEFAULT_TIMIDITY_PATH, "$with_timidity", [Default timidity path])
 	fi
 else
-	AC_MSG_RESULT(no)
+	pent_timidity=no
 fi
+AC_MSG_RESULT($pent_timidity)
 
 # alsa midi
 AC_CHECK_HEADER(alsa/asoundlib.h, HAVEALSA=yes, HAVEALSA=no)
 AC_ARG_ENABLE(alsa,[[  --disable-alsa          Disable ALSA midi support]],,enable_alsa=yes)
 AC_MSG_CHECKING(if we want to use ALSA midi)
+pent_alsa=no
 if test x$HAVEALSA = xyes; then
 	if test x$enable_alsa = xyes; then
 		AC_MSG_RESULT(yes)
+		pent_alsa=yes
 		AC_DEFINE(USE_ALSA_MIDI, 1, [Enable ALSA midi])
 		LIBS="$LIBS -lasound"
 	else
@@ -385,8 +390,10 @@ fi
 AC_CHECK_HEADER(fluidsynth.h, HAVEFLUIDSYNTH=yes, HAVEFLUIDSYNTH=no)
 AC_ARG_ENABLE(fluidsynth,[[  --disable-fluidsynth    Disable fluidsynth midi support]],,enable_fluidsynth=yes)
 AC_MSG_CHECKING(if we want to use fluidsynth midi)
+pent_fluidsynth=no
 if test x$HAVEFLUIDSYNTH = xyes; then
         if test x$enable_fluidsynth = xyes; then
+		pent_fluidsynth=yes
                 AC_MSG_RESULT(yes)
                 AC_DEFINE(USE_FLUIDSYNTH_MIDI, 1, [Enable fluidsynth midi])
                 LIBS="$LIBS -lfluidsynth"
@@ -402,11 +409,12 @@ fi
 AC_ARG_ENABLE(hq2x, [[  --enable-hq2x           Enable hq2x scaler support [default no]]],,enable_hq2x=no)
 AC_MSG_CHECKING(if we should build the hq2x scaler)
 if test x$enable_hq2x = xyes; then
-	AC_MSG_RESULT(yes)
+	pent_hq2x=yes
 	AC_DEFINE(USE_HQ2X_SCALER, 1, [Build hq2x scaler])
 else
-	AC_MSG_RESULT(no)
+	pent_hq2x=no
 fi
+AC_MSG_RESULT($pent_hq2x)
 
 
 # Built-in data files
@@ -418,7 +426,8 @@ if test x$enable_builtin_data = xyes; then
 else
 	USE_BUILTIN_DATA=no
 fi
-AC_MSG_RESULT($USE_BUILTIN_DATA)
+pent_nodata=$USE_BUILTIN_DATA
+AC_MSG_RESULT($pent_nodata)
 
 
 # -------------------
@@ -427,6 +436,7 @@ AC_MSG_RESULT($USE_BUILTIN_DATA)
 AM_CONDITIONAL(GIMP_PLUGIN, false)
 AC_ARG_ENABLE(gimp-plugin,   [[  --enable-gimp-plugin    Build the GIMP plugin [default no]]],,enable_gimp_plugin=no)
 AC_MSG_CHECKING(whether to build the GIMP plugin)
+pent_gimp=no
 if test x$enable_gimp_plugin = xyes; then
 	AC_MSG_RESULT(yes)
 	AC_MSG_CHECKING(for gimptool)
@@ -447,6 +457,7 @@ if test x$enable_gimp_plugin = xyes; then
 			GIMP_LIBS=`$GIMPTOOL --libs`
 			AC_SUBST(GIMP_INCLUDES)
 			AC_SUBST(GIMP_LIBS)
+			pent_gimp=yes
 		else
 			AC_MSG_RESULT(found < 2.2.0 - disabling plugin)
 		fi
@@ -476,11 +487,24 @@ AC_OUTPUT
 # ------------------
 # Configure Status
 # ------------------
-echo
-echo Pentagram v$VERSION
-echo
-echo SDL ....................... :  `$SDL_CONFIG --version`
-echo
-echo Warning level ............. : $WARNING_LEVEL
-echo
+echo ""
+echo "Pentagram v$VERSION"
+echo ""
+echo "Configure results:"
+echo ""
+echo "Built-in features:"
+echo "Debugging:			$pent_debug"
+echo "FMOPL midi:			$pent_fmopl"
+echo "Timidity midi:			$pent_timidity"
+echo "HQ2x scaler:			$pent_hq2x"
+echo "Built-in data files:		$pent_nodata"
+echo ""
+echo "Optional libraries:"
+echo "ALSA midi:			$pent_alsa"
+echo "FluidSynth midi:		$pent_fluidsynth"
+echo ""
+echo "External tools:"
+echo "Experimental GIMP plugin:	$pent_gimp"
+echo "Miscellaneous tools:		yes"
+echo ""
 echo "Now type 'make' to build Pentagram"
