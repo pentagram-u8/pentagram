@@ -1,6 +1,7 @@
 2005-06-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* configure.ac: give summary at the end of configure
 	* bootstrap: cleanup
+	* graphics/ScalerManager.*: warnings
 
 2005-06-13  Ryan Nunn <colourles@users.sourceforge.net>
 	* audio/midi/TimidityMidiDriver.cpp : Report Timidity Error messages

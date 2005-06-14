@@ -58,10 +58,10 @@ public:
 	int	GetIndexForName(const Pentagram::istring name);
 
 	//! Get Name of a Scaler from its Index
-	const char *GetNameForIndex(int index);
+	const char *GetNameForIndex(unsigned int index);
 
 	//! Get a Scaler from its Index
-	const Pentagram::Scaler	*GetScaler(int index);
+	const Pentagram::Scaler	*GetScaler(unsigned int index);
 
 	//! Get a Scaler from its name
 	const Pentagram::Scaler	*GetScaler(const Pentagram::istring name);

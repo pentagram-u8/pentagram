@@ -56,9 +56,9 @@ int	ScalerManager::GetIndexForName(const Pentagram::istring name)
 //
 // Get Name of a Scaler from its Index
 //
-const char *ScalerManager::GetNameForIndex(int index)
+const char *ScalerManager::GetNameForIndex(unsigned int index)
 {
-	if (index < 0 || index >= scalers.size()) return 0;
+	if (index >= scalers.size()) return 0;
 
 	return scalers[index]->ScalerName();
 }
@@ -67,7 +67,7 @@ const char *ScalerManager::GetNameForIndex(int index)
 //
 // Get a Scaler from its Index
 //
-const Pentagram::Scaler *ScalerManager::GetScaler(int index)
+const Pentagram::Scaler *ScalerManager::GetScaler(unsigned int index)
 {
 	if (index < 0 || index >= scalers.size()) return 0;
 	
