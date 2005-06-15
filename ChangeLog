@@ -1,3 +1,7 @@
+2005-06-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* system/auto/*: move various aux files from root to system/auto
+	* configure.ac, common.mk: look in system/auto
+
 2005-06-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* configure.ac: give summary at the end of configure
 	* bootstrap: cleanup

@@ -1,7 +1,8 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT
+AC_INIT()
 AC_CONFIG_SRCDIR([README])
 AC_CONFIG_HEADERS(misc/config.h)
+AC_CONFIG_AUX_DIR(system/auto)
 
 # ---------------------------------------------------------------------
 # System/version info
@@ -473,6 +474,7 @@ AC_SUBST(CC_FOR_BUILD)
 AC_SUBST(BUILDEXEEXT)
 AC_SUBST(WARNINGS)
 AC_SUBST(PACKAGE)
+AC_SUBST(VERSION)
 AC_SUBST(PROFILE)
 AC_SUBST(DATAPATH)
 AC_SUBST(USE_PCH)

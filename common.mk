@@ -3,9 +3,9 @@
 
 # Generate .rules files for each application target
 LRULES := $(patsubst %,$(LPATH)/$(DEPDIR)/%.rules,$(LPRODUCTS))
-$(LRULES): genrules.pl
+$(LRULES): system/auto/genrules.pl
 	-$(MKDIR) $(dir $@)
-	$(top_srcdir)/genrules.pl $(notdir $(basename $@)) > $@
+	$(top_srcdir)/system/auto/genrules.pl $(notdir $(basename $@)) > $@
 -include $(LRULES) $(EMPTY_FILE)
 
 

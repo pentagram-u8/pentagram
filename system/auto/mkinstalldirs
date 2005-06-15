@@ -4,7 +4,7 @@
 # Created: 1993-05-16
 # Public domain
 
-# $Id: mkinstalldirs,v 1.1 2003/02/24 09:53:16 wjpalenstijn Exp $
+# $Id: mkinstalldirs,v 1.1 2005/06/15 18:02:18 wjpalenstijn Exp $
 
 errstatus=0
 
