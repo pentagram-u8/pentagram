@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003  The Pentagram Team
+Copyright (C) 2003-2005  The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,11 +25,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "LowLevelMidiDriver.h"
 
 #include <AudioUnit/AudioUnit.h>
+#include <CoreMIDI/CoreMIDI.h>7
 
 class CoreAudioMidiDriver : public LowLevelMidiDriver
 {
 	AudioUnit au_MusicDevice;
 	AudioUnit au_output;
+
+	MIDIClientRef	mClient;
+	MIDIPortRef		mOutPort;
+	MIDIEndpointRef	mDest;
 
 	static const MidiDriverDesc	desc;
 	static MidiDriver *createInstance() {
@@ -40,11 +45,13 @@ public:
 	static const MidiDriverDesc* getDesc() { return &desc; }
 
 	CoreAudioMidiDriver();
+	~CoreAudioMidiDriver();
 
 protected:
 	virtual int			open();
 	virtual void		close();
 	virtual void		send(uint32 message);
+	virtual void		send_sysex(uint8 status, const uint8 *msg, uint16 length);
 	virtual void		increaseThreadPriority();
 	virtual void		yield();
 };

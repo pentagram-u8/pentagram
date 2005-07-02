@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003  The Pentagram Team
+Copyright (C) 2003-2005  The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -85,8 +85,8 @@ protected:
 	//
 	// Note that this is slightly different to the API used in ScummVM. 
 	// The 0xF0 status isn't assumed, and the final 0xF7 also isn't assumed, and is the
-	// final byte of the msg buffer. lenght includes the final byte. The reason for the
-	// differences is becuase the midi specifications can have SysEx messages that does 
+	// final byte of the msg buffer. length includes the final byte. The reason for the
+	// differences is because the midi specifications can have SysEx messages that does 
 	// start with 0xF0 and don't end with 0xF7. Chances are though they will never be
 	// encountered.
 	virtual void		send_sysex(uint8 status, const uint8 *msg, uint16 length) { };

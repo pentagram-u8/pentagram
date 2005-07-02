@@ -111,7 +111,7 @@ case "$host_os" in
 		dnl For now I am lazy and do not add proper detection code.
 		AC_DEFINE(MACOSX, 1, [Mac OS X])
 		AC_MSG_RESULT(Mac OS X)
-		LIBS="$LIBS -framework AudioUnit"
+		LIBS="$LIBS -framework AudioUnit -framework CoreMIDI"
 		DATAPATH="data"
 		;;
 	*)
