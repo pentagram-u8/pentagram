@@ -159,8 +159,11 @@ bool CreditsGump::Run(const uint32 framenum)
 		timer = 120;
 		state = CS_CLOSING;
 
-		if (!configkey.empty())
-			SettingManager::get_instance()->set(configkey, true);
+		if (!configkey.empty()) {
+			SettingManager* settingman = SettingManager::get_instance();
+			settingman->set(configkey, true);
+			settingman->write();
+		}
 
 		return true;
 	}
