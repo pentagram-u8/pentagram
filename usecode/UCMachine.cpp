@@ -32,6 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UCList.h"
 #include "idMan.h"
 #include "ConsoleGump.h"
+#include "getObject.h"
 
 #define INCLUDE_CONVERTUSECODEU8_WITHOUT_BRINGING_IN_FOLD
 #include "u8/ConvertUsecodeU8.h"
@@ -1620,7 +1621,7 @@ bool UCMachine::execProcess(UCProcess* p)
 					if (searchtype == 3) recurse = true;
 
 					// ui16a = item, ui16b = range
-					Item* item = world->getItem(ui16a);
+					Item* item = getItem(ui16a);
 
 					if (item) {
 					    world->getCurrentMap()->areaSearch(itemlist, script,
@@ -1640,8 +1641,7 @@ bool UCMachine::execProcess(UCProcess* p)
 					if (searchtype == 5) { stacksize += 2; recurse = true; }
 
 					// ui16a = 0xFFFF (?), ui16b = container
-					Container* container = p_dynamic_cast<Container*>
-						(world->getItem(ui16b));
+					Container* container = getContainer(ui16b);
 
 					if (ui16a != 0xFFFF) {
 						perr << "Warning: non-FFFF value passed to "
@@ -1665,7 +1665,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 					bool above = ui16a != 0xFFFF;
 					bool below = ui16b != 0xFFFF;
-					Item* item = world->getItem( below?ui16b:ui16a );
+					Item* item = getItem( below?ui16b:ui16a );
 
 					if (item) {
 						world->getCurrentMap()->surfaceSearch(itemlist, script,
@@ -1728,7 +1728,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 					p->stack.assign(p->bp+si16a, (*itemlist)[index], 2);
 					uint16 objid = p->stack.access2(p->bp+si16a);
-					Item* item = World::get_instance()->getItem(objid);
+					Item* item = getItem(objid);
 					if (item) {
 #if 0
 						valid = item->checkLoopScript(loopscript, scriptsize);
@@ -2317,7 +2317,7 @@ uint32 UCMachine::I_dummyProcess(const uint8* /*args*/, unsigned int /*argsize*/
 uint32 UCMachine::I_getName(const uint8* /*args*/, unsigned int /*argsize*/)
 {
 	UCMachine *uc = UCMachine::get_instance();
-	MainActor* av = World::get_instance()->getMainActor();
+	MainActor* av = getMainActor();
 	return uc->assignString(av->getName().c_str());
 }
 

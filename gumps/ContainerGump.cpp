@@ -23,7 +23,6 @@
 #include "ShapeFrame.h"
 #include "ShapeInfo.h"
 #include "Container.h"
-#include "World.h"
 #include "RenderSurface.h"
 #include "GUIApp.h"
 #include "Kernel.h"
@@ -36,6 +35,7 @@
 #include "SplitItemProcess.h"
 #include "GameMapGump.h"
 #include "MainActor.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -74,8 +74,7 @@ void ContainerGump::InitGump(Gump* newparent, bool take_focus)
 	ItemRelativeGump::InitGump(newparent, take_focus);
 
 	// make every item enter the fast area
-	Container* c = p_dynamic_cast<Container*>
-		(World::get_instance()->getItem(owner));
+	Container* c = getContainer(owner);
 
 	if (!c) return; // Container gone!?
 
@@ -107,8 +106,7 @@ void ContainerGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 	// paint self
 	ItemRelativeGump::PaintThis(surf, lerp_factor);
 
-	Container* c = p_dynamic_cast<Container*>
-		(World::get_instance()->getItem(owner));
+	Container* c = getContainer(owner);
 
 	if (!c) {
 		// Container gone!?
@@ -159,8 +157,7 @@ uint16 ContainerGump::TraceObjId(int mx, int my)
 
 	ParentToGump(mx,my);
 
-	Container* c = p_dynamic_cast<Container*>
-		(World::get_instance()->getItem(owner));
+	Container* c = getContainer(owner);
 
 	if (!c) return 0; // Container gone!?
 
@@ -195,7 +192,7 @@ uint16 ContainerGump::TraceObjId(int mx, int my)
 bool ContainerGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 									  sint32 lerp_factor)
 {
-	Item* item = World::get_instance()->getItem(itemid);
+	Item* item = getItem(itemid);
 	Item* parent = item->getParentAsContainer();
 	if (!parent) return false;
 	if (parent->getObjId() != owner) return false;
@@ -215,7 +212,7 @@ bool ContainerGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 // so change the default ItemRelativeGump behaviour
 void ContainerGump::GetItemLocation(sint32 lerp_factor)
 {
-	Item *it = World::get_instance()->getItem(owner);
+	Item *it = getItem(owner);
 
 	if (!it) {
 		// This shouldn't ever happen, the GumpNotifyProcess should
@@ -257,9 +254,7 @@ void ContainerGump::Close(bool no_del)
 {
 	// close any gumps belonging to contents
 	// and make every item leave the fast area
-	Container* c = p_dynamic_cast<Container*>
-		(World::get_instance()->getItem(owner));
-
+	Container* c = getContainer(owner);
 	if (!c) return; // Container gone!?
 
 	std::list<Item*>& contents = c->contents;
@@ -267,14 +262,14 @@ void ContainerGump::Close(bool no_del)
 	while(iter != contents.end()) {
 		Item* item = *iter;
 		++iter;
-		Gump* g = GUIApp::get_instance()->getGump(item->getGump());
+		Gump* g = getGump(item->getGump());
 		if (g) {
 			g->Close(); //!! what about no_del?
 		}
 		item->leaveFastArea();	// Can destroy the item
 	}
 
-	Item* o = World::get_instance()->getItem(owner);
+	Item* o = getItem(owner);
 	if (o)
 		o->clearGump(); //!! is this the appropriate place?
 
@@ -285,13 +280,10 @@ Container* ContainerGump::getTargetContainer(int mx, int my)
 {
 	int px = mx, py = my;
 	GumpToParent(px, py);
-	Item* targetitem = World::get_instance()->getItem(TraceObjId(px, py));
-	Container* targetcontainer = p_dynamic_cast<Container*>(targetitem);
+	Container* targetcontainer = getContainer(TraceObjId(px, py));
 
-	if (!targetcontainer) {
-		targetitem = World::get_instance()->getItem(owner);
-		targetcontainer = p_dynamic_cast<Container*>(targetitem);
-	}
+	if (!targetcontainer)
+		targetcontainer = getContainer(owner);
 
 	return targetcontainer;
 }
@@ -320,8 +312,7 @@ void ContainerGump::OnMouseClick(int button, int mx, int my)
 		
 		uint16 objID = TraceObjId(mx, my);
 
-		World *world = World::get_instance();
-		Item *item = world->getItem(objID);
+		Item *item = getItem(objID);
 		if (item) {
 			item->dumpInfo();
 			
@@ -346,12 +337,11 @@ void ContainerGump::OnMouseDouble(int button, int mx, int my)
 			objID = owner; // use container when double click on self
 		}
 
-		World *world = World::get_instance();
-		Item *item = world->getItem(objID);
+		Item *item = getItem(objID);
 		if (item) {
 			item->dumpInfo();
 
-			MainActor* avatar = World::get_instance()->getMainActor();
+			MainActor* avatar = getMainActor();
 			if (objID == owner || avatar->canReach(item, 128)) { // CONSTANT!
 				// call the 'use' event
 				item->use();
@@ -369,7 +359,7 @@ bool ContainerGump::StartDraggingItem(Item* item, int mx, int my)
 	// be in a container otherwise
 
 	// check if the container the item is in is in range
-	MainActor* avatar = World::get_instance()->getMainActor();
+	MainActor* avatar = getMainActor();
 	if (!avatar->canReach(item, 128)) return false;
 
 	sint32 itemx,itemy;
@@ -382,12 +372,11 @@ bool ContainerGump::StartDraggingItem(Item* item, int mx, int my)
 
 bool ContainerGump::DraggingItem(Item* item, int mx, int my)
 {
-	Container* c = p_dynamic_cast<Container*>
-		(World::get_instance()->getItem(owner));
+	Container* c = getContainer(owner);
 	assert(c);
 
 	// check if the container the item is in is in range
-	MainActor* avatar = World::get_instance()->getMainActor();
+	MainActor* avatar = getMainActor();
 	if (!avatar->canReach(c, 128)) {
 		display_dragging = false;
 		return false;
@@ -441,7 +430,7 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 	int px = mx, py = my;
 	GumpToParent(px, py);
 	// see what the item is being dropped on
-	Item* targetitem = World::get_instance()->getItem(TraceObjId(px, py));
+	Item* targetitem = getItem(TraceObjId(px, py));
 	Container* targetcontainer = p_dynamic_cast<Container*>(targetitem);
 
 
@@ -482,8 +471,7 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 				splittarget->moveToContainer(targetcontainer);
 				splittarget->setGumpLocation(0, 0); //TODO: randomize!
 			} else {
-				splittarget->moveToContainer(p_dynamic_cast<Container*>(
-									World::get_instance()->getItem(owner)));
+				splittarget->moveToContainer(getContainer(owner));
 				splittarget->setGumpLocation(dragging_x, dragging_y);
 			}
 		}			
@@ -537,8 +525,7 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 		}
 	}
 
-	targetcontainer = p_dynamic_cast<Container*>
-		(World::get_instance()->getItem(owner));
+	targetcontainer = getContainer(owner);
 
 	// add item to container
 	assert(targetcontainer);

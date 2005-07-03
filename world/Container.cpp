@@ -26,8 +26,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IDataSource.h"
 #include "ODataSource.h"
 #include "ItemFactory.h"
-#include "World.h"
 #include "MainActor.h"
+#include "getObject.h"
 
 #include "ShapeInfo.h"
 
@@ -110,7 +110,7 @@ bool Container::CanAddItem(Item* item, bool checkwghtvol)
 			p = p->getParentAsContainer();
 		// In Avatar's inventory?
 		if (p->getObjId() == 1) {
-			MainActor* av = World::get_instance()->getMainActor();
+			MainActor* av = getMainActor();
 			unsigned int str = av->getStr();
 			// FIXME: this check isn't entirely correct. (combining items,...?)
 			if (p->getTotalWeight() + item->getWeight() > 40 * str) //CONSTANT!

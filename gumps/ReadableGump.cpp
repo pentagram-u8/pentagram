@@ -27,8 +27,7 @@
 #include "UCMachine.h"
 #include "GumpNotifyProcess.h"
 #include "Item.h"
-#include "ObjectManager.h"
-
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"

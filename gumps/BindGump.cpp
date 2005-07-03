@@ -21,7 +21,6 @@
 
 #include "Font.h"
 #include "RenderSurface.h"
-#include "GUIApp.h"
 #include "TextWidget.h"
 #include "Mouse.h"
 

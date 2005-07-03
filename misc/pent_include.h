@@ -142,6 +142,7 @@ class Allocator;
 #include <vector>
 
 // Useful Pentagram headers
+#include "getObject.h"
 #include "Kernel.h"
 #include "intrinsics.h"
 #include "Process.h"

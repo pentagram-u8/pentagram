@@ -33,7 +33,6 @@
 #include "PagedGump.h"
 #include "Game.h"
 #include "MainActor.h"
-#include "World.h"
 #include "Font.h"
 #include "RenderedText.h"
 #include "FontManager.h"
@@ -41,6 +40,7 @@
 #include "MusicProcess.h"
 #include "EditWidget.h"
 #include "U8SaveGump.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -107,27 +107,29 @@ void MenuGump::InitGump(Gump* newparent, bool take_focus)
 
 	if (!nameEntryMode) {
 		SettingManager* settingman = SettingManager::get_instance();
-		bool endgame;
+		bool endgame, quotes;
 		settingman->get("endgame", endgame);
+		settingman->get("quotes", quotes);
 
 		int x = dims.w / 2 + 14;
 		int y = 18;
 		Gump * widget;
 		for (int i = 0; i < 8; ++i)
 		{
-			if (!endgame && i == 6) break;
+			if ((quotes || i != 6) && (endgame || i != 7)) {
+				FrameID frame_up(GameData::GUMPS, menuEntryShape, i * 2);
+				FrameID frame_down(GameData::GUMPS, menuEntryShape, i * 2 + 1);
+				frame_up = _TL_SHP_(frame_up);
+				frame_down = _TL_SHP_(frame_down);
+				widget = new ButtonWidget(x, y, frame_up, frame_down, true);
+				widget->InitGump(this, false);
+				widget->SetIndex(i + 1);
+			}
 
-			FrameID frame_up(GameData::GUMPS, menuEntryShape, i * 2);
-			FrameID frame_down(GameData::GUMPS, menuEntryShape, i * 2 + 1);
-			frame_up = _TL_SHP_(frame_up);
-			frame_down = _TL_SHP_(frame_down);
-			widget = new ButtonWidget(x, y, frame_up, frame_down, true);
-			widget->InitGump(this, false);
-			widget->SetIndex(i + 1);
-			y+= 14;
+			y += 14;
 		}
 		
-		MainActor* av = World::get_instance()->getMainActor();
+		MainActor* av = getMainActor();
 		std::string name;
 		if (av)
 			name = av->getName();
@@ -165,7 +167,7 @@ bool MenuGump::OnKeyDown(int key, int mod)
 	if (!nameEntryMode) {
 
 		if (key == SDLK_ESCAPE) {
-			MainActor* av = World::get_instance()->getMainActor();
+			MainActor* av = getMainActor();
 			if (av && !(av->getActorFlags() & Actor::ACT_DEAD))
 				Close(); // don't allow closing if dead/game over
 		} else if (key >= SDLK_1 && key <=SDLK_9) {
@@ -185,7 +187,7 @@ void MenuGump::ChildNotify(Gump *child, uint32 message)
 		assert(editwidget);
 		std::string name = editwidget->getText();
 		if (!name.empty()) {
-			MainActor* av = World::get_instance()->getMainActor();
+			MainActor* av = getMainActor();
 			av->setName(name);
 			Close();
 		}
@@ -200,8 +202,9 @@ void MenuGump::ChildNotify(Gump *child, uint32 message)
 void MenuGump::selectEntry(int entry)
 {
 	SettingManager* settingman = SettingManager::get_instance();
-	bool endgame;
+	bool endgame, quotes;
 	settingman->get("endgame", endgame);
+	settingman->get("quotes", quotes);
 
 	switch (entry)
 	{
@@ -240,7 +243,7 @@ void MenuGump::selectEntry(int entry)
 		QuitGump::verifyQuit();
 		break;
 	case 7: // Quotes
-		if (endgame) Game::get_instance()->playQuotes();
+		if (quotes) Game::get_instance()->playQuotes();
 		break;
 	case 8: // End Game
 		if (endgame) Game::get_instance()->playEndgameMovie();

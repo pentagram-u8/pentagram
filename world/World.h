@@ -95,10 +95,6 @@ public:
 	//! \return true if successful
 	bool switchMap(uint32 newmap);
 
-	Item* getItem(ObjId itemid) const;
-	Actor* getNPC(ObjId npcid) const;
-	MainActor* getMainActor() const;
-
 	//! push an item onto the ethereal void
 	void etherealPush(ObjId objid) { ethereal.push_front(objid); }
 

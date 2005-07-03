@@ -21,7 +21,6 @@
 
 #include "RenderSurface.h"
 #include "Texture.h"
-#include "GUIApp.h"
 #include "Scaler.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(ScalerGump,DesktopGump);

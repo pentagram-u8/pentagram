@@ -43,10 +43,6 @@ bool useBedroll(const HID_Event& event);
 // ! \see HIDBinding
 bool useKeyring(const HID_Event& event);
 
-// ! run the execution scene at the docks
-// ! \see HIDBinding
-bool runExecutionEgg(const HID_Event& event);
-
 // ! run the begining scene 
 // ! \see HIDBinding
 bool runFirstEgg(const HID_Event& event);

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Glob.h"
 #include "GameData.h"
 #include "ItemFactory.h"
-#include "World.h"
 #include "CurrentMap.h"
 #include "IDataSource.h"
 #include "ODataSource.h"

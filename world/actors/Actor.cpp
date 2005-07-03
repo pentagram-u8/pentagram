@@ -45,6 +45,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AudioProcess.h"
 #include "SpriteProcess.h"
 #include "MainActor.h"
+#include "getObject.h"
 
 #include "ItemFactory.h"
 #include "LoopScript.h"
@@ -538,7 +539,7 @@ Animation::Result Actor::tryAnim(Animation::Sequence anim, int dir,
 					  false, true, false);
 	for (uint32 i = 0; i < uclist.getSize(); i++)
 	{
-		Item *item = World::get_instance()->getItem(uclist.getuint16(i));
+		Item *item = getItem(uclist.getuint16(i));
 		if (item->getShapeInfo()->is_land())
 			return Animation::SUCCESS;
 	}
@@ -628,8 +629,8 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 	if (getActorFlags() & ACT_DEAD)
 		return; // already dead, so don't bother
 
-	Item* hitter = World::get_instance()->getItem(other);
-	Actor* attacker = World::get_instance()->getNPC(other);
+	Item* hitter = getItem(other);
+	Actor* attacker = getActor(other);
 
 	if (damage == 0 && attacker) {
 		damage = attacker->getDamageAmount();
@@ -641,7 +642,7 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 
 	if (other == 1 && attacker->getLastAnim() != Animation::kick) {
 		// strength for kicks is accumulated in AvatarMoverProcess
-		MainActor* av = World::get_instance()->getMainActor();
+		MainActor* av = getMainActor();
 		av->accumulateStr(damage/4);
 	}
 
@@ -914,7 +915,7 @@ ProcId Actor::killAllButFallAnims(bool death)
 
 int Actor::calculateAttackDamage(uint16 other, int damage, uint16 damage_type)
 {
-	Actor* attacker = World::get_instance()->getNPC(other);
+	Actor* attacker = getActor(other);
 
 	uint16 defense_type = getDefenseType();
 
@@ -1004,7 +1005,7 @@ int Actor::calculateAttackDamage(uint16 other, int damage, uint16 damage_type)
 		//       with defense_type DMG_PIERCE
 
 		if (hit && other == 1) {
-			MainActor* av = World::get_instance()->getMainActor();
+			MainActor* av = getMainActor();
 			if (attackdex > defenddex)
 				av->accumulateDex(2*(attackdex-defenddex));
 			else
@@ -1069,7 +1070,7 @@ bool Actor::areEnemiesNear()
 	currentmap->areaSearch(&uclist, script,sizeof(script), this, 0x800, false);
 
 	for (unsigned int i = 0; i < uclist.getSize(); ++i) {
-		Actor *npc = World::get_instance()->getNPC(uclist.getuint16(i));
+		Actor *npc = getActor(uclist.getuint16(i));
 		if (!npc) continue;
 		if (npc == this) continue;
 
@@ -1112,7 +1113,7 @@ Actor* Actor::createActor(uint32 shape)
 			 << ")." << std::endl;
 	}
 
-	Actor* av = World::get_instance()->getNPC(1);
+	Actor* av = getMainActor();
 	newactor->setMapNum(av->getMapNum());
 	newactor->setNpcNum(objID);
 	newactor->setFlag(FLG_ETHEREAL);
@@ -1586,7 +1587,7 @@ uint32 Actor::I_pathfindToItem(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ACTOR_FROM_PTR(actor);
 	ARG_OBJID(id2);
-	Item* item = World::get_instance()->getItem(id2);
+	Item* item = getItem(id2);
 	if (!actor) return 0;
 	if (!item) return 0;
 

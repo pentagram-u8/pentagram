@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ShapeInfo.h"
 #include "UCList.h"
 #include "LoopScript.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -130,7 +131,7 @@ bool AnimationTracker::step()
 {
 	if (done) return false;
 
-	Actor* a = World::get_instance()->getNPC(actor);
+	Actor* a = getActor(actor);
 	assert(a);
 
 	if (firstframe)
@@ -266,7 +267,7 @@ bool AnimationTracker::step()
 				return false;
 			}
 		} else {
-			Item* supportitem = World::get_instance()->getItem(support);
+			Item* supportitem = getItem(support);
 			assert(supportitem);
 			if (!supportitem->getShapeInfo()->is_land()) {
 				// invalid support
@@ -319,7 +320,7 @@ void AnimationTracker::checkWeaponHit()
 	pout << "Checking hit (" << range << "): ";
 #endif
 
-	Actor *a = World::get_instance()->getNPC(actor);
+	Actor *a = getActor(actor);
 	assert(a);
 
 	Pentagram::Box abox = a->getWorldBox();
@@ -338,7 +339,7 @@ void AnimationTracker::checkWeaponHit()
 		ObjId itemid = itemlist.getuint16(i);
 		if (itemid == actor) continue; // don't want to hit self
 
-		Actor* item = World::get_instance()->getNPC(itemid);
+		Actor* item = getActor(itemid);
 		if (!item) continue;
 
 		Pentagram::Box ibox = item->getWorldBox();
@@ -376,7 +377,7 @@ void AnimationTracker::updateState(PathfindingState& state)
 
 void AnimationTracker::updateActorFlags()
 {
-	Actor* a = World::get_instance()->getNPC(actor);
+	Actor* a = getActor(actor);
 	assert(a);
 
 	if (flipped)

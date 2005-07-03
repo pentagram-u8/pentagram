@@ -19,12 +19,12 @@
 #include "pent_include.h"
 #include "ButtonWidget.h"
 #include "TextWidget.h"
-#include "GUIApp.h"
 #include "GameData.h"
 #include "ShapeFrame.h"
 #include "ShapeArchive.h"
 #include "Shape.h"
 #include "Mouse.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -69,7 +69,7 @@ void ButtonWidget::InitGump(Gump* newparent, bool take_focus)
 	Gump::InitGump(newparent, take_focus);
 
 	if (textwidget != 0) {
-		Gump* widget = GUIApp::get_instance()->getGump(textwidget);
+		Gump* widget = getGump(textwidget);
 		assert(widget);
 		widget->InitGump(this);
 		widget->GetDims(dims); // transfer child dimension to self
@@ -91,7 +91,7 @@ void ButtonWidget::InitGump(Gump* newparent, bool take_focus)
 int ButtonWidget::getVlead()
 {
 	if (textwidget != 0) {
-		Gump* widget = GUIApp::get_instance()->getGump(textwidget);
+		Gump* widget = getGump(textwidget);
 		TextWidget* textwidget = p_dynamic_cast<TextWidget*>(widget);
 		assert(textwidget);
 		return textwidget->getVlead();
@@ -166,7 +166,7 @@ void ButtonWidget::OnMouseOver()
 {
 	if (mouseOver) {
 		if (textwidget) {
-			Gump* widget = GUIApp::get_instance()->getGump(textwidget);
+			Gump* widget = getGump(textwidget);
 			TextWidget* textwidget = p_dynamic_cast<TextWidget*>(widget);
 			assert(textwidget);
 			textwidget->setBlendColour(mouseOverBlendCol);
@@ -181,7 +181,7 @@ void ButtonWidget::OnMouseLeft()
 {
 	if (mouseOver) {
 		if (textwidget) {
-			Gump* widget = GUIApp::get_instance()->getGump(textwidget);
+			Gump* widget = getGump(textwidget);
 			TextWidget* textwidget = p_dynamic_cast<TextWidget*>(widget);
 			assert(textwidget);
 			textwidget->setBlendColour(0);
@@ -264,7 +264,7 @@ bool ButtonWidget::loadData(IDataSource* ids, uint32 version)
 
 	// HACK ALERT
 	if (textwidget != 0) {
-		Gump* widget = GUIApp::get_instance()->getGump(textwidget);
+		Gump* widget = getGump(textwidget);
 		widget->GetDims(dims); // transfer child dimension to self
 		widget->Move(0,dims.y); // move it to the correct height
 	}

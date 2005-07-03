@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,13 +20,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "FireballProcess.h"
 #include "Item.h"
-#include "World.h"
 #include "CurrentMap.h"
 #include "MainActor.h"
 #include "Kernel.h"
 #include "ItemFactory.h"
 #include "Direction.h"
 #include "WeaponInfo.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -61,13 +61,13 @@ bool FireballProcess::run(uint32 /*framenum*/)
 {
 	age++;
 
-	Item* item = World::get_instance()->getItem(item_num);
+	Item* item = getItem(item_num);
 	if (!item) {
 		terminate();
 		return false;
 	}
 
-	Item* t = World::get_instance()->getItem(target);
+	Item* t = getItem(target);
 	if (!t) {
 		terminate();
 		return false;
@@ -128,7 +128,7 @@ bool FireballProcess::run(uint32 /*framenum*/)
 		tail[2] = newtail->getObjId();
 	}
 
-	Item* tailitem = World::get_instance()->getItem(tail[2]);
+	Item* tailitem = getItem(tail[2]);
 	tailitem->setFrame(Get_WorldDirection(yspeed,xspeed));
 	tailitem->move(x,y,z);
 
@@ -137,7 +137,7 @@ bool FireballProcess::run(uint32 /*framenum*/)
 	tail[0] = tailitem->getObjId();
 
 	if (hititem) {
-		Actor* hit = World::get_instance()->getNPC(hititem);
+		Actor* hit = getActor(hititem);
 		if (hit) {
 			// hit an actor: deal damage and explode
 			hit->receiveHit(0, 8 - targetdir, 5 + (std::rand()%5),
@@ -166,11 +166,11 @@ void FireballProcess::terminate()
 
 void FireballProcess::explode()
 {
-	Item* item = World::get_instance()->getItem(item_num);
+	Item* item = getItem(item_num);
 	if (item) item->destroy();
 
 	for (unsigned int i = 0; i < 3; ++i) {
-		item = World::get_instance()->getItem(tail[i]);
+		item = getItem(tail[i]);
 		if (item) item->destroy();
 	}
 }
@@ -198,7 +198,7 @@ uint32 FireballProcess::I_TonysBalls(const uint8* args,
 	}
 	ball->move(x, y, z);
 
-	MainActor* avatar = World::get_instance()->getMainActor();
+	MainActor* avatar = getMainActor();
 
 	FireballProcess* fbp = new FireballProcess(ball, avatar);
 	Kernel::get_instance()->addProcess(fbp);

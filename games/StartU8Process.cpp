@@ -24,13 +24,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UCList.h"
 #include "CurrentMap.h"
 #include "Egg.h"
-#include "ObjectManager.h"
 #include "CameraProcess.h"
 #include "World.h"
 #include "GUIApp.h"
 #include "Kernel.h"
 #include "MenuGump.h"
 #include "SettingManager.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -71,8 +71,7 @@ bool StartU8Process::run(const uint32 /*framenum*/)
 		}
 	
 		uint16 objid = uclist.getuint16(0);
-		Egg* egg = p_dynamic_cast<Egg*>(
-			ObjectManager::get_instance()->getObject(objid));
+		Egg* egg = p_dynamic_cast<Egg*>(getObject(objid));
 		sint32 ix, iy, iz;
 		egg->getLocation(ix,iy,iz);
 		// Center on egg
@@ -92,9 +91,7 @@ bool StartU8Process::run(const uint32 /*framenum*/)
 	}
 	else {
 		ObjId objid = uclist.getuint16(0);
-		Item *musicEgg = p_dynamic_cast<Item*>(
-			ObjectManager::get_instance()->getObject(objid));
-
+		Item *musicEgg = getItem(objid);
 		musicEgg->callUsecodeEvent_cachein();
 	}
 

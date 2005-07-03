@@ -19,8 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "Egg.h"
+#include "getObject.h"
 #include "UCMachine.h"
-#include "ObjectManager.h"
+
 #include "IDataSource.h"
 #include "ODataSource.h"
 

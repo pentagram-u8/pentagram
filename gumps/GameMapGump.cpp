@@ -36,6 +36,7 @@
 #include "IDataSource.h"
 #include "ODataSource.h"
 #include "Mouse.h"
+#include "getObject.h"
 
 #include "GravityProcess.h" // hack...
 #include "PathfinderProcess.h"
@@ -67,26 +68,6 @@ GameMapGump::GameMapGump(int X, int Y, int Width, int Height) :
 
 GameMapGump::~GameMapGump()
 {
-#if 0
-	World *world = World::get_instance();
-	if (!world) return;	// Is it possible the world doesn't exist?
-
-	// All items leave the fast area on close
-	std::vector<uint16>::iterator it  = fastAreas[fastArea].begin();
-	std::vector<uint16>::iterator end  = fastAreas[fastArea].end();
-
-	for (;it != end; ++it)
-	{
-		Item *item = world->getItem(*it);
-
-		// Not an item, continue
-		if (!item) continue;
-
-		// leave the Fast area
-		item->leavingFastArea();
-	}
-#endif
-
 	delete display_list;
 }
 
@@ -136,7 +117,7 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 		// Check roof
 		//!! This is _not_ the right place for this...
 		sint32 ax, ay, az, axd, ayd, azd;
-		Actor* av = world->getNPC(1);
+		Actor* av = getMainActor();
 		av->getLocation(ax, ay, az);
 		av->getFootpadWorld(axd, ayd, azd);
 		map->isValidPosition(ax, ay, az, 32, 32, 8, 0, 1, 0, &roofid);
@@ -144,7 +125,7 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 	else
 		roofid = camera->FindRoof(lerp_factor);
 
-	Item* roof = world->getItem(roofid);
+	Item* roof = getItem(roofid);
 	if (roof) {
 		zlimit = roof->getZ();
 	}
@@ -223,7 +204,7 @@ uint16 GameMapGump::TraceCoordinates(int mx, int my, sint32 coords[3],
 	ItemSorter::HitFace face;
 	ObjId trace = display_list->Trace(mx,my,&face);
 	
-	Item* hit = World::get_instance()->getItem(trace);
+	Item* hit = getItem(trace);
 	if (!hit) // strange...
 		return 0;
 
@@ -266,7 +247,7 @@ uint16 GameMapGump::TraceCoordinates(int mx, int my, sint32 coords[3],
 bool GameMapGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 									sint32 lerp_factor)
 {
-	Item *item = World::get_instance()->getItem(itemid);
+	Item *item = getItem(itemid);
 
 	if (!item) return false;
 
@@ -329,7 +310,7 @@ void GameMapGump::OnMouseUp(int button, int mx, int my)
 
 void GameMapGump::OnMouseClick(int button, int mx, int my)
 {
-	MainActor* avatar = World::get_instance()->getMainActor();
+	MainActor* avatar = getMainActor();
 	switch (button) {
 	case BUTTON_LEFT:
 	{
@@ -343,7 +324,7 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 		}
 
 		uint16 objID = TraceObjId(mx, my);
-		Item *item = World::get_instance()->getItem(objID);
+		Item *item = getItem(objID);
 		if (item) {
 			sint32 x,y,z;
 			item->getLocation(x,y,z);
@@ -357,14 +338,14 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 	case BUTTON_MIDDLE:
 	{
 		uint16 objID = TraceObjId(mx, my);
-		Item *item = World::get_instance()->getItem(objID);
+		Item *item = getItem(objID);
 		if (item) {
 			sint32 x,y,z;
 			item->getLocation(x,y,z);
 			item->dumpInfo();
 
 #if 0
-			Actor* devon = World::get_instance()->getNPC(1);
+			Actor* devon = getActor(2);
 			PathfinderProcess* pfp = new PathfinderProcess(devon, x, y, z);
 			Kernel::get_instance()->addProcess(pfp);
 #elif 0
@@ -382,7 +363,7 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 												  item, true, false, true);
 			for (uint32 i = 0; i < uclist.getSize(); i++)
 			{
-				Item *item2 = world->getItem(uclist.getuint16(i));
+				Item *item2 = getItem(uclist.getuint16(i));
 				if (!item2) continue;
 				item2->setExtFlag(Item::EXT_HIGHLIGHT);
 			}
@@ -400,7 +381,7 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 
 void GameMapGump::OnMouseDouble(int button, int mx, int my)
 {
-	MainActor* avatar = World::get_instance()->getMainActor();
+	MainActor* avatar = getMainActor();
 	switch (button) {
 	case BUTTON_LEFT:
 	{
@@ -414,7 +395,7 @@ void GameMapGump::OnMouseDouble(int button, int mx, int my)
 		}
 
 		uint16 objID = TraceObjId(mx, my);
-		Item *item = World::get_instance()->getItem(objID);
+		Item *item = getItem(objID);
 		if (item) {
 			sint32 x,y,z;
 			item->getLocation(x,y,z);
@@ -446,7 +427,7 @@ bool GameMapGump::StartDraggingItem(Item* item, int mx, int my)
 
 	if (!item->canDrag()) return false;
 
-	MainActor* avatar = World::get_instance()->getMainActor();
+	MainActor* avatar = getMainActor();
 	if (!avatar->canReach(item, 128)) return false;  // CONSTANT!
 	
 	// get item offset
@@ -475,7 +456,7 @@ bool GameMapGump::DraggingItem(Item* item, int mx, int my)
 
 	bool throwing = false;
 
-	MainActor* avatar = World::get_instance()->getMainActor();
+	MainActor* avatar = getMainActor();
 	if (!avatar->canReach(item, 128, // CONSTANT!
 						  dragging_pos[0], dragging_pos[1], dragging_pos[2]))
 	{
@@ -520,15 +501,13 @@ void GameMapGump::DropItem(Item* item, int mx, int my)
 	int dox, doy;
 	GUIApp::get_instance()->getDraggingOffset(dox, doy);
 
-	World *world = World::get_instance();
 	display_dragging = false;
-	Actor* avatar = world->getMainActor();
+	Actor* avatar = getMainActor();
 
 	ObjId trace = TraceCoordinates(mx, my, dragging_pos, dox, doy, item);
 	if (trace == 1) { // dropping on self
 		ObjId bp = avatar->getEquip(7); // !! constant
-		Container* backpack = p_dynamic_cast<Container*>(
-			World::get_instance()->getItem(bp));
+		Container* backpack = getContainer(bp);
 		if (backpack && item->moveToContainer(backpack)) {
 			pout << "Dropped item in backpack" << std::endl;
 			item->randomGumpLocation();

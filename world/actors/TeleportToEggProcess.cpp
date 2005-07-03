@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "TeleportToEggProcess.h"
 #include "MainActor.h"
-#include "World.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -42,7 +42,7 @@ TeleportToEggProcess::TeleportToEggProcess(int mapnum_, int teleport_id_)
 
 bool TeleportToEggProcess::run(const uint32 /*framenum*/)
 {
-	MainActor *av = World::get_instance()->getMainActor();
+	MainActor *av = getMainActor();
 	
 	av->teleport(mapnum, teleport_id);
 	

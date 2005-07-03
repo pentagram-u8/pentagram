@@ -29,7 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Container.h"
 #include "Actor.h"
 #include "Kernel.h"
-#include "ObjectManager.h"
+#include "getObject.h"
 
 #include "MainShapeArchive.h"
 #include "GumpShapeArchive.h"
@@ -105,7 +105,7 @@ Container *Item::getParentAsContainer() const
 	// No parent, no container
 	if (!parent) return 0;
 
-	Container *p = p_dynamic_cast<Container*>(ObjectManager::get_instance()->getObject(parent));
+	Container *p = getContainer(parent);
 
 	if (!p) {
 		perr << "Item " << getObjId() << " parent (" << parent << ") is an invalid Container ObjID" << std::endl;
@@ -892,7 +892,7 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 		bool we_were_released = false;
 		for (it = collisions.begin(); it != collisions.end(); it++)
 		{
-			Item *item = world->getItem(it->item);
+			Item *item = getItem(it->item);
 
 			// Hitting us at the start and end, don't do anything
 			if (!parent && it->hit_time == 0x0000 && 
@@ -964,7 +964,7 @@ sint32 Item::collideMove(sint32 dx, sint32 dy, sint32 dz, bool teleport, bool fo
 		bool we_were_released = false;
 		for (it = collisions.begin(); it != collisions.end(); it++)
 		{
-			Item *item = world->getItem(it->item);
+			Item *item = getItem(it->item);
 			if (!item) continue;
 
 			// Did we go past the endpoint of the move?
@@ -1446,7 +1446,7 @@ sint32 Item::ascend(int delta)
 										  this, true, false, false);
 	for (uint32 i = 0; i < uclist.getSize(); i++)
 	{
-		Item *item = world->getItem(uclist.getuint16(i));
+		Item *item = getItem(uclist.getuint16(i));
 		if (!item) continue;
 		if (item->getShapeInfo()->is_fixed()) continue;
 
@@ -1464,7 +1464,7 @@ sint32 Item::ascend(int delta)
 	// move other items
 	for (uint32 i = 0; i < uclist.getSize(); i++)
 	{
-		Item *item = world->getItem(uclist.getuint16(i));
+		Item *item = getItem(uclist.getuint16(i));
 		if (!item) continue;
 		if (item->getShapeInfo()->is_fixed()) continue;
 
@@ -1516,7 +1516,7 @@ void Item::grab()
 
 	for (uint32 i = 0; i < uclist.getSize(); i++)
 	{
-		Item *item = world->getItem(uclist.getuint16(i));
+		Item *item = getItem(uclist.getuint16(i));
 		if (!item) continue;
 		item->fall();
 	}
@@ -1528,7 +1528,7 @@ void Item::grab()
 
 	for (uint32 i = 0; i < uclist.getSize(); i++)
 	{
-		Item *item = world->getItem(uclist.getuint16(i));
+		Item *item = getItem(uclist.getuint16(i));
 		if (!item) continue;
 		item->callUsecodeEvent_release();
 	}
@@ -1575,7 +1575,7 @@ void Item::explode()
 						   160, false, x, y); //! CHECKME: 128?
 
 	for (unsigned int i = 0; i < itemlist.getSize(); ++i) {
-		Item *item = World::get_instance()->getItem(itemlist.getuint16(i));
+		Item *item = getItem(itemlist.getuint16(i));
 		if (!item) continue;
 		if (getRange(*item, true) > 160) continue; // check vertical distance
 		sint32 ix,iy,iz;
@@ -2141,36 +2141,24 @@ uint32 Item::I_bark(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM_FROM_PTR(item);
 	ARG_STRING(str);
-	if (id_item == 666) item = World::get_instance()->getItem(1);
+	if (id_item == 666) item = getItem(1);
 	if (!item) return 0;	// Hack!
 
-	GUIApp *app = GUIApp::get_instance();
-
-	if (!app)
+	uint32 shapenum = item->getShape();
+	if (id_item == 666) shapenum = 666;	// Hack for guardian barks
+	Gump *gump = new BarkGump(item->getObjId(), str, shapenum);
+	
+	if (item->getObjId() < 256) // CONSTANT!
 	{
-		pout << std::endl << std::endl << str  << std::endl << std::endl;
-		
-		// wait a while
-		return Kernel::get_instance()->addProcess(new DelayProcess(50));
+		GumpNotifyProcess* notifyproc;
+		notifyproc = new ActorBarkNotifyProcess(item->getObjId());
+		Kernel::get_instance()->addProcess(notifyproc);
+		gump->SetNotifyProcess(notifyproc);
 	}
-	else
-	{
-		uint32 shapenum = item->getShape();
-		if (id_item == 666) shapenum = 666;	// Hack for guardian barks
-		Gump *gump = new BarkGump(item->getObjId(), str, shapenum);
-
-		if (item->getObjId() < 256) // CONSTANT!
-		{
-			GumpNotifyProcess* notifyproc;
-			notifyproc = new ActorBarkNotifyProcess(item->getObjId());
-			Kernel::get_instance()->addProcess(notifyproc);
-			gump->SetNotifyProcess(notifyproc);
-		}
-
-		gump->InitGump(0);
-
-		return gump->GetNotifyProcess()->getPid();
-	}
+	
+	gump->InitGump(0);
+	
+	return gump->GetNotifyProcess()->getPid();
 }
 
 uint32 Item::I_look(const uint8* args, unsigned int /*argsize*/)
@@ -2460,7 +2448,7 @@ uint32 Item::I_pop(const uint8* args, unsigned int /*argsize*/)
 	if (w->etherealEmpty()) return 0; // no items left on stack
 
 	uint16 objid = w->etherealPeek();
-	Item* item = w->getItem(objid);
+	Item* item = getItem(objid);
 	if (!item) {
 		w->etherealRemove(objid);
 		return 0; // top item was invalid
@@ -2489,7 +2477,7 @@ uint32 Item::I_popToCoords(const uint8* args, unsigned int /*argsize*/)
 	if (w->etherealEmpty()) return 0; // no items left on stack
 
 	uint16 objid = w->etherealPeek();
-	Item* item = w->getItem(objid);
+	Item* item = getItem(objid);
 	if (!item) {
 		w->etherealRemove(objid);
 		return 0; // top item was invalid
@@ -2521,7 +2509,7 @@ uint32 Item::I_popToContainer(const uint8* args, unsigned int /*argsize*/)
 	if (w->etherealEmpty()) return 0; // no items left on stack
 
 	uint16 objid = w->etherealPeek();
-	Item* item = w->getItem(objid);
+	Item* item = getItem(objid);
 	if (!item) {
 		w->etherealRemove(objid);
 		return 0; // top item was invalid
@@ -2549,7 +2537,7 @@ uint32 Item::I_popToEnd(const uint8* args, unsigned int /*argsize*/)
 	if (w->etherealEmpty()) return 0; // no items left on stack
 
 	uint16 objid = w->etherealPeek();
-	Item* item = w->getItem(objid);
+	Item* item = getItem(objid);
 	if (!item) {
 		w->etherealRemove(objid);
 		return 0; // top item was invalid
@@ -2797,14 +2785,14 @@ uint32 Item::I_getSurfaceWeight(const uint8* args, unsigned int /*argsize*/)
 
 	UCList uclist(2);
 	LOOPSCRIPT(script, LS_TOKEN_TRUE);
-	World* world= World::get_instance();
+	World* world = World::get_instance();
 	world->getCurrentMap()->surfaceSearch(&uclist, script, sizeof(script),
 										  item, true, false, true);
 
 	uint32 weight = 0; 
 	for (uint32 i = 0; i < uclist.getSize(); i++)
 	{
-		Item *other = world->getItem(uclist.getuint16(i));
+		Item *other = getItem(uclist.getuint16(i));
 		if (!other) continue;
 		weight += other->getTotalWeight();
 	}
@@ -2855,7 +2843,7 @@ uint32 Item::I_igniteChaos(const uint8* args, unsigned int /*argsize*/)
 						   160, false, x, y); //! CHECKME: 160?
 
 	for (unsigned int i = 0; i < itemlist.getSize(); ++i) {
-		Item *item = World::get_instance()->getItem(itemlist.getuint16(i));
+		Item *item = getItem(itemlist.getuint16(i));
 		if (!item) continue;
 		item->use();
 	}

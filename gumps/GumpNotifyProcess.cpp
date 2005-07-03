@@ -19,7 +19,7 @@
 #include "pent_include.h"
 #include "GumpNotifyProcess.h"
 #include "Gump.h"
-#include "GUIApp.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -60,7 +60,8 @@ void GumpNotifyProcess::terminate()
 	Process::terminate();
 
 	if (gump) {
-		Gump* g = GUIApp::get_instance()->getGump(gump);
+		Gump* g = ::getGump(gump);
+		assert(g);
 		g->Close();
 	}
 }

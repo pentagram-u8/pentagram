@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <string>
 #include "stdbindings.h"
 #include "u8bindings.h"
-#include "GUIApp.h"
 #include "SettingManager.h"
 
 #include "ConfigFileManager.h" // temporary!
@@ -68,7 +67,6 @@ HIDManager::HIDManager()
 	bindingMap.insert( HIDBINDING_PAIR(useKeyring) );
 	bindingMap.insert( HIDBINDING_PAIR(useBedroll) );
 	bindingMap.insert( HIDBINDING_PAIR(runFirstEgg) );
-	bindingMap.insert( HIDBINDING_PAIR(runExecutionEgg) );
 	bindingMap.insert( HIDBINDING_PAIR(toggleFrameByFrame) );
 	bindingMap.insert( HIDBINDING_PAIR(advanceFrameByFrame) );
 	bindingMap.insert( HIDBINDING_PAIR(u8ShapeViewer) );

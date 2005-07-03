@@ -20,10 +20,9 @@
 #include "ItemRelativeGump.h"
 #include "GameMapGump.h"
 #include "Item.h"
-#include "World.h"
 #include "Container.h"
 #include "ShapeInfo.h"
-#include "GUIApp.h"
+#include "getObject.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
 
@@ -120,7 +119,7 @@ void ItemRelativeGump::GetItemLocation(sint32 lerp_factor)
 	Item *prev = 0;
 	Gump *gump = 0;
 
-	it = World::get_instance()->getItem(owner);
+	it = getItem(owner);
 
 	if (!it) {
 		// This shouldn't ever happen, the GumpNotifyProcess should
@@ -133,7 +132,7 @@ void ItemRelativeGump::GetItemLocation(sint32 lerp_factor)
 	{
 		prev = it;
 		it = next;
-		gump = GUIApp::get_instance()->getGump(it->getGump());
+		gump = getGump(it->getGump());
 		if (gump) break;
 	}
 

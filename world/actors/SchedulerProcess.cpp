@@ -19,9 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "SchedulerProcess.h"
-#include "World.h"
 #include "Actor.h"
 #include "GUIApp.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -41,7 +41,7 @@ bool SchedulerProcess::run(const uint32 framenum)
 	if (nextActor != 0) {
 		// doing a scheduling run at the moment
 
-		Actor* a = World::get_instance()->getNPC(nextActor);
+		Actor* a = getActor(nextActor);
 		if (a) {
 			// CHECKME: is this the right time to pass? CONSTANT
 			uint32 stime = GUIApp::get_instance()->getGameTimeInSeconds()/60;

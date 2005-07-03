@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Kernel.h"
 #include "DelayProcess.h"
 #include "PathfinderProcess.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -54,7 +55,7 @@ CombatProcess::CombatProcess(Actor* actor_)
 
 void CombatProcess::terminate()
 {
-	Actor* a = World::get_instance()->getNPC(item_num);
+	Actor* a = getActor(item_num);
 	if (a)
 		a->clearActorFlag(Actor::ACT_INCOMBAT);
 
@@ -63,10 +64,10 @@ void CombatProcess::terminate()
 
 bool CombatProcess::run(const uint32 /*framenum*/)
 {
-	Actor* a = World::get_instance()->getNPC(item_num);
+	Actor* a = getActor(item_num);
 	if (!(a->getFlags() & Item::FLG_FASTAREA)) return false;
 
-	Actor* t = World::get_instance()->getNPC(target);
+	Actor* t = getActor(target);
 
 	if (!t || !isValidTarget(t)) {
 		// no target? try to find one
@@ -132,7 +133,7 @@ bool CombatProcess::run(const uint32 /*framenum*/)
 
 ObjId CombatProcess::getTarget()
 {
-	Actor* t = World::get_instance()->getNPC(target);
+	Actor* t = getActor(target);
 
 	if (!t || !isValidTarget(t))
 		target = 0;
@@ -152,7 +153,7 @@ void CombatProcess::setTarget(ObjId newtarget)
 bool CombatProcess::isValidTarget(Actor* target)
 {
 	assert(target);
-	Actor* a = World::get_instance()->getNPC(item_num);
+	Actor* a = getActor(item_num);
 	if (!a) return false; // uh oh
 
 	// don't target self
@@ -179,7 +180,7 @@ bool CombatProcess::isEnemy(Actor* target)
 {
 	assert(target);
 
-	Actor* a = World::get_instance()->getNPC(item_num);
+	Actor* a = getActor(item_num);
 	if (!a) return false; // uh oh
 
 	return ((a->getEnemyAlignment() & target->getAlignment()) != 0);
@@ -187,11 +188,11 @@ bool CombatProcess::isEnemy(Actor* target)
 
 ObjId CombatProcess::seekTarget()
 {
-	Actor* a = World::get_instance()->getNPC(item_num);
+	Actor* a = getActor(item_num);
 	if (!a) return 0; // uh oh
 
 	if (fixedTarget) {
-		Actor* t = World::get_instance()->getNPC(fixedTarget);
+		Actor* t = getActor(fixedTarget);
 		if (t && isValidTarget(t))
 			return fixedTarget; // no need to search
 	}
@@ -202,7 +203,7 @@ ObjId CombatProcess::seekTarget()
 	cm->areaSearch(&itemlist, script, sizeof(script), a, 768, false);
 
 	for (unsigned int i = 0; i < itemlist.getSize(); ++i) {
-		Actor* t = World::get_instance()->getNPC(itemlist.getuint16(i));
+		Actor* t = getActor(itemlist.getuint16(i));
 
 		if (t && isValidTarget(t) && isEnemy(t)) {
 			// found target
@@ -216,15 +217,15 @@ ObjId CombatProcess::seekTarget()
 
 int CombatProcess::getTargetDirection()
 {
-	Actor* a = World::get_instance()->getNPC(item_num);
-	Actor* t = World::get_instance()->getNPC(target);
+	Actor* a = getActor(item_num);
+	Actor* t = getActor(target);
 
 	return a->getDirToItemCentre(*t);
 }
 
 void CombatProcess::turnToDirection(int direction)
 {
-	Actor* a = World::get_instance()->getNPC(item_num);
+	Actor* a = getActor(item_num);
 	int curdir = a->getDir();
 	int step = 1;
 	if ((curdir - direction + 8) % 8 < 4) step = -1;
@@ -254,7 +255,7 @@ void CombatProcess::turnToDirection(int direction)
 
 bool CombatProcess::inAttackRange()
 {
-	Actor* a = World::get_instance()->getNPC(item_num);
+	Actor* a = getActor(item_num);
 
 	if (a->getShape() == 0x19b) // constant! (ghost)
 		return true; // ghosts throw fireballs; always in range

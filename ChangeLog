@@ -1,3 +1,10 @@
+2005-07-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/getObject.h: some (non-class) functions to get an Object,
+	  Item, Container, Actor, MainActor or Gump
+	* everything: use them
+	* games/u8bindings.*, data/u8bindings.ini: remove runExecutionEgg
+	* games/U8Game.cpp, gumps/CreditsGump.*: show quotes if watched credits
+
 2005-06-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* system/auto/*: move various aux files from root to system/auto
 	* configure.ac, common.mk: look in system/auto

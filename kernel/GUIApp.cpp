@@ -42,6 +42,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "World.h"
 #include "Direction.h"
 #include "Game.h"
+#include "getObject.h"
 
 #include "SavegameWriter.h"
 #include "Savegame.h"
@@ -766,7 +767,7 @@ int GUIApp::getMouseFrame()
 	case MOUSE_NORMAL:
 	{
 		bool combat = false;
-		MainActor* av = World::get_instance()->getMainActor();
+		MainActor* av = getMainActor();
 		if (av) { combat = av->isInCombat(); }
 
 		// Calculate frame based on direction
@@ -1264,7 +1265,7 @@ void GUIApp::startDragging(int startx, int starty)
 	dragging_objid = desktopGump->TraceObjId(startx, starty);
 	
 	Gump *gump = getGump(dragging_objid);
-	Item *item= World::get_instance()->getItem(dragging_objid);
+	Item *item = getItem(dragging_objid);
 	
 	// for a Gump, notify the Gump's parent that we started
 	// dragging:
@@ -1321,7 +1322,7 @@ void GUIApp::startDragging(int startx, int starty)
 void GUIApp::moveDragging(int mx, int my)
 {
 	Gump* gump = getGump(dragging_objid);
-	Item *item= World::get_instance()->getItem(dragging_objid);
+	Item *item = getItem(dragging_objid);
 
 	setMouseCursor(MOUSE_NORMAL);
 	
@@ -1367,7 +1368,7 @@ void GUIApp::stopDragging(int mx, int my)
 	perr << "Dropping object " << dragging_objid << std::endl;
 	
 	Gump *gump = getGump(dragging_objid);
-	Item *item= World::get_instance()->getItem(dragging_objid);
+	Item *item = getItem(dragging_objid);
 	// for a Gump: notify parent
 	if (gump) {
 		Gump *parent = gump->GetParent();
@@ -1438,7 +1439,7 @@ bool GUIApp::saveGame(std::string filename, std::string desc,
 
 	// Don't allow saving when avatar is dead.
 	// (Avatar is flagged dead by usecode when you finish the game as well.)
-	MainActor* av = world->getMainActor();
+	MainActor* av = getMainActor();
 	if (!av || (av->getActorFlags() & Actor::ACT_DEAD)) {
 		pout << "Can't save: game over." << std::endl;
 		return false;

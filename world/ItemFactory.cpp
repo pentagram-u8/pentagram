@@ -30,7 +30,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Egg.h"
 #include "MonsterEgg.h"
 #include "TeleportEgg.h"
-#include "ObjectManager.h"
 #include "IDataSource.h"
 
 Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,

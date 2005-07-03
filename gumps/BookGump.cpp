@@ -19,7 +19,6 @@
 #include "pent_include.h"
 #include "BookGump.h"
 #include "TextWidget.h"
-#include "GUIApp.h"
 #include "GameData.h"
 #include "Shape.h"
 #include "GumpShapeArchive.h"
@@ -27,7 +26,7 @@
 #include "UCMachine.h"
 #include "GumpNotifyProcess.h"
 #include "Item.h"
-#include "ObjectManager.h"
+#include "getObject.h"
 
 
 #include "IDataSource.h"
@@ -82,10 +81,8 @@ void BookGump::InitGump(Gump* newparent, bool take_focus)
 
 void BookGump::NextText()
 {
-	TextWidget *widgetL = p_dynamic_cast<TextWidget*>
-		(GUIApp::get_instance()->getGump(textwidgetL));
-	TextWidget *widgetR = p_dynamic_cast<TextWidget*>
-		(GUIApp::get_instance()->getGump(textwidgetR));
+	TextWidget *widgetL = p_dynamic_cast<TextWidget*>(getGump(textwidgetL));
+	TextWidget *widgetR = p_dynamic_cast<TextWidget*>(getGump(textwidgetR));
 	assert(widgetL);
 	assert(widgetR);
 	if (!widgetR->setupNextText()) {

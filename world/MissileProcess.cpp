@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,7 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "MissileProcess.h"
 #include "Item.h"
-#include "World.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -60,7 +60,7 @@ bool MissileProcess::run(const uint32 /*framenum*/)
 		{0, 156, 309, 454, 588, 705, 809, 891, 952, 987, 1000,
 		 987, 952, 891, 809, 705, 588, 454, 309, 156, 0};
 
-	Item *it = World::get_instance()->getItem(item_num);
+	Item *it = getItem(item_num);
 
 	if (!it) {
 		// item gone

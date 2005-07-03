@@ -21,8 +21,8 @@
 
 #include "GUIApp.h"
 #include "GumpNotifyProcess.h"
-#include "World.h"
 #include "Item.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -88,7 +88,7 @@ void TargetGump::OnMouseUp(int button, int mx, int my)
 
 	Gump* desktopgump = parent;
 	ObjId objid = desktopgump->TraceObjId(mx, my);
-	Item *item = World::get_instance()->getItem(objid);
+	Item *item = getItem(objid);
 
 	if (item) {
 		// done

@@ -19,8 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "DestroyItemProcess.h"
-#include "World.h"
-#include "Actor.h"
+#include "Item.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -51,7 +51,7 @@ bool DestroyItemProcess::run(const uint32 /*framenum*/)
 		item_num = static_cast<ObjId>(result);
 	}
 
-	Item *it = World::get_instance()->getItem(item_num);
+	Item *it = getItem(item_num);
 
 	if (!it) {
 		// somebody did our work for us...

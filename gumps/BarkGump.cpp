@@ -20,8 +20,8 @@
 #include "BarkGump.h"
 #include "TextWidget.h"
 #include "Kernel.h"
-#include "GUIApp.h"
 #include "AudioProcess.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -112,8 +112,7 @@ void BarkGump::InitGump(Gump* newparent, bool take_focus)
 
 bool BarkGump::NextText()
 {
-	TextWidget *widget = p_dynamic_cast<TextWidget*>
-		(GUIApp::get_instance()->getGump(textwidget));
+	TextWidget *widget = p_dynamic_cast<TextWidget*>(getGump(textwidget));
 	assert(widget);
 	if (widget->setupNextText()) {
 		// This is just a hack
@@ -213,8 +212,7 @@ bool BarkGump::loadData(IDataSource* ids, uint32 version)
 	}
 
 
-	TextWidget *widget = p_dynamic_cast<TextWidget*>
-		(GUIApp::get_instance()->getGump(textwidget));
+	TextWidget *widget = p_dynamic_cast<TextWidget*>(getGump(textwidget));
 
 	// This is just a hack
 	Pentagram::Rect d;

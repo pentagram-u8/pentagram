@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MainActor.h"
 #include "SpriteProcess.h"
 #include "AudioProcess.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -57,7 +58,7 @@ GrantPeaceProcess::GrantPeaceProcess(Actor* caster)
 
 bool GrantPeaceProcess::run(const uint32 /*framenum*/)
 {
-	Actor* caster = World::get_instance()->getNPC(item_num);
+	Actor* caster = getActor(item_num);
 	if (!caster) {
 		terminate();
 		return false;
@@ -76,7 +77,7 @@ bool GrantPeaceProcess::run(const uint32 /*framenum*/)
 
 	// get target result
 	ObjId targetid = static_cast<ObjId>(result);
-	Actor* target = World::get_instance()->getNPC(targetid);
+	Actor* target = getActor(targetid);
 
 	if (targetid == 1 || !target ) {
 		// targeting the avatar, no target or not an Actor
@@ -104,7 +105,7 @@ bool GrantPeaceProcess::run(const uint32 /*framenum*/)
 							   caster, 768, false);
 
 		for (unsigned int i = 0; i < itemlist.getSize(); ++i) {
-			Actor *t = World::get_instance()->getNPC(itemlist.getuint16(i));
+			Actor *t = getActor(itemlist.getuint16(i));
 			if (!t) continue;
 			if (t == caster) continue;
 
@@ -126,8 +127,7 @@ bool GrantPeaceProcess::run(const uint32 /*framenum*/)
 					Process *sp = new SpriteProcess(480,0,9,1,1, tx, ty, tz);
 					Kernel::get_instance()->addProcess(sp);
 
-					Item* throne = World::get_instance()->getItem(
-						KGlist.getuint16(0));
+					Item* throne = getItem(KGlist.getuint16(0));
 					if (throne) {
 						throne->setFrame(1); // CONSTANT!
 					}
@@ -192,7 +192,7 @@ bool GrantPeaceProcess::run(const uint32 /*framenum*/)
 uint32 GrantPeaceProcess::I_castGrantPeace(const uint8* args,
 										   unsigned int /*argsize*/)
 {
-	MainActor* avatar = World::get_instance()->getMainActor();
+	MainActor* avatar = getMainActor();
 
 	GrantPeaceProcess* gpp = new GrantPeaceProcess(avatar);
 	Kernel::get_instance()->addProcess(gpp);

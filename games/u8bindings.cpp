@@ -25,12 +25,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "World.h"
 #include "UCList.h"
 #include "Egg.h"
-#include "ObjectManager.h"
 #include "LoopScript.h"
 #include "CameraProcess.h"
 #include "CurrentMap.h"
 #include "ShapeViewerGump.h"
 #include "MenuGump.h"
+#include "getObject.h"
 
 namespace HIDBindings {
 
@@ -46,8 +46,8 @@ bool openBackpack(const HID_Event& event)
 			pout << "Can't: avatarInStasis" << std::endl;
 			break;
 		}
-		MainActor* av = World::get_instance()->getMainActor();
-		Item* backpack = World::get_instance()->getItem(av->getEquip(7));
+		MainActor* av = getMainActor();
+		Item* backpack = getItem(av->getEquip(7));
 		if (backpack)
 			backpack->callUsecodeEvent_use();
 	} break;
@@ -69,7 +69,7 @@ bool openInventory(const HID_Event& event)
 			pout << "Can't: avatarInStasis" << std::endl;
 			break;
 		}
-		MainActor* av = World::get_instance()->getMainActor();
+		MainActor* av = getMainActor();
 		av->callUsecodeEvent_use();
 	} break;
 	default:
@@ -92,12 +92,12 @@ static bool useInventoryItem(const HID_Event& event, uint32 shapenum)
 			break;
 		}
 		LOOPSCRIPT(script, LS_SHAPE_EQUAL(shapenum));
-		MainActor* av = World::get_instance()->getMainActor();
+		MainActor* av = getMainActor();
 		UCList uclist(2);
 		av->containerSearch(&uclist, script, sizeof(script), true);
 		if (uclist.getSize() < 1) break;
 		uint16 objid = uclist.getuint16(0);
-		Item* item = World::get_instance()->getItem(objid);
+		Item* item = getItem(objid);
 		item->callUsecodeEvent_use();
 	} break;
 	default:
@@ -121,46 +121,6 @@ bool useBedroll(const HID_Event& event)
 bool useKeyring(const HID_Event& event)
 {
 	return useInventoryItem(event, 79);
-}
-
-bool runExecutionEgg(const HID_Event& event)
-{
-	bool handled = false;
-	switch (event.type) {
-	case HID_DOWN:
-	{
-		handled = true;
-		if (GUIApp::get_instance()->isAvatarInStasis())
-		{
-			pout << "Can't: avatarInStasis" << std::endl;
-			break;
-		}
-		CurrentMap* currentmap = World::get_instance()->getCurrentMap();
-		UCList uclist(2);
-		// (shape == 73 && quality == 4)
-		//const uint8* script = "@%\x49\x00=*%\x04\x00=&$";
-		LOOPSCRIPT(script, LS_AND(LS_SHAPE_EQUAL1(73), LS_Q_EQUAL(4)));
-		currentmap->areaSearch(&uclist, script, sizeof(script),
-							   0, 256, false, 11732, 5844);
-		if (uclist.getSize() < 1) {
-			perr << "Unable to find EXCUTION egg!" << std::endl;
-			break;
-		}
-
-		uint16 objid = uclist.getuint16(0);
-		Egg* egg = p_dynamic_cast<Egg*>(
-		ObjectManager::get_instance()->getObject(objid));
-		Actor* avatar = World::get_instance()->getNPC(1);
-		sint32 x,y,z;
-		egg->getLocation(x,y,z);
-		avatar->collideMove(x,y,z,true,true);
-		egg->hatch();
-	} break;
-	default:
-		break;
-
-	}
-	return handled;
 }
 
 bool runFirstEgg(const HID_Event& event)
@@ -188,8 +148,7 @@ bool runFirstEgg(const HID_Event& event)
 		}
 
 		uint16 objid = uclist.getuint16(0);
-		Egg* egg = p_dynamic_cast<Egg*>(
-			ObjectManager::get_instance()->getObject(objid));
+		Egg* egg = p_dynamic_cast<Egg*>(getObject(objid));
 		sint32 ix, iy, iz;
 		egg->getLocation(ix,iy,iz);
 		// Center on egg
@@ -215,7 +174,7 @@ bool toggleCombat(const HID_Event& event)
 			pout << "Can't: avatarInStasis" << std::endl;
 			break;
 		}
-		MainActor* av = World::get_instance()->getMainActor();
+		MainActor* av = getMainActor();
 		av->toggleInCombat();
 	} break;
 	default:

@@ -24,10 +24,10 @@
 #include "Shape.h"
 #include "ShapeFrame.h"
 #include "MainActor.h"
-#include "World.h"
 #include "RenderSurface.h"
 #include "Mouse.h"
 #include "PaperdollGump.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -76,7 +76,7 @@ void MiniStatsGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 {
 	Gump::PaintThis(surf, lerp_factor);
 
-	Actor *a = World::get_instance()->getMainActor();
+	Actor *a = getMainActor();
 	assert(a);
 
 	sint16 maxmana = a->getMaxMana();
@@ -125,7 +125,7 @@ Gump* MiniStatsGump::OnMouseDown(int button, int mx, int my)
 void MiniStatsGump::OnMouseDouble(int button, int mx, int my)
 {
 	// check if there already is an open PaperdollGump
-	MainActor* av = World::get_instance()->getMainActor();
+	MainActor* av = getMainActor();
 	if (!av->getGump()) {
 		av->callUsecodeEvent_use();
 	}

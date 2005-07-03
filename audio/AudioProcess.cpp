@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AudioSample.h"
 #include "AudioMixer.h"
 
-#include "World.h"
+#include "getObject.h"
 #include "Item.h"
 #include "CameraProcess.h"
 
@@ -55,9 +55,7 @@ AudioProcess::~AudioProcess(void)
 
 bool AudioProcess::calculateSoundVolume(ObjId objid, int &lvol, int &rvol) const
 {
-	World *world = World::get_instance();
-
-	Item *item = world->getItem(objid);
+	Item *item = getItem(objid);
 	if (!item) return false;
 
 	// Need to get items relative coords from avatar

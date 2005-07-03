@@ -36,6 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CameraProcess.h" // for resetting the camera
 #include "Gump.h" // For MapChanged notification
 #include "Animation.h"
+#include "getObject.h"
 
 //#define DUMP_ITEMS
 
@@ -315,7 +316,7 @@ void World::worldStats()
 
 	pout << "World memory stats:" << std::endl;
 	pout << "Maps       : " << mapcount << "/256" << std::endl;
-	Actor* av = getNPC(1);
+	Actor* av = getMainActor();
 	pout << "Avatar pos.: ";
 	if (av) {
 		pout << "map " << av->getMapNum() << ", (";
@@ -326,27 +327,6 @@ void World::worldStats()
 		pout << "missing (null)" << std::endl;
 	}
 }
-
-Item* World::getItem(uint16 itemid) const
-{
-	return p_dynamic_cast<Item*>(ObjectManager::get_instance()->
-								 getObject(itemid));
-}
-
-Actor* World::getNPC(uint16 npcid) const
-{
-	return p_dynamic_cast<Actor*>(ObjectManager::get_instance()->
-								  getObject(npcid));
-}
-
-MainActor* World::getMainActor() const
-{
-	return p_dynamic_cast<MainActor*>(ObjectManager::get_instance()->
-									  getObject(1));
-}
-
-
-
 
 void World::save(ODataSource* ods)
 {

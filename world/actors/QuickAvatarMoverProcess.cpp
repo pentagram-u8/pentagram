@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Kernel.h"
 #include "GUIApp.h"
 #include "ShapeInfo.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -59,7 +60,7 @@ bool QuickAvatarMoverProcess::run(const uint32 /*framenum*/)
 		return false;
 	}
 
-	MainActor * avatar = World::get_instance()->getMainActor();
+	MainActor * avatar = getMainActor();
 	sint32 x,y,z;
 	avatar->getLocation(x,y,z);
 	sint32 ixd,iyd,izd;

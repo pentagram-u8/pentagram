@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,9 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "HealProcess.h"
-#include "World.h"
 #include "MainActor.h"
 #include "Kernel.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -39,7 +39,7 @@ HealProcess::HealProcess() : Process()
 
 bool HealProcess::run(const uint32 /*framenum*/)
 {
-	MainActor *avatar = World::get_instance()->getMainActor();
+	MainActor *avatar = getMainActor();
 
 	if (!avatar || avatar->getActorFlags() & Actor::ACT_DEAD) {
 		// dead?
@@ -76,7 +76,7 @@ bool HealProcess::run(const uint32 /*framenum*/)
 
 void HealProcess::feedAvatar(uint16 food)
 {
-	MainActor *avatar = World::get_instance()->getMainActor();
+	MainActor *avatar = getMainActor();
 
 	if (!avatar || avatar->getActorFlags() & Actor::ACT_DEAD) {
 		// dead?

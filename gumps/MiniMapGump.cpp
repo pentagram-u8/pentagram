@@ -27,6 +27,7 @@
 #include "RenderSurface.h"
 #include "ShapeInfo.h"
 #include "Palette.h"
+#include "getObject.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(MiniMapGump,Gump);
 
@@ -85,7 +86,7 @@ void MiniMapGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 	// Center on avatar
 	int sx = 0, sy = 0, ox = 0, oy = 0, lx = 0, ly = 0;
 
-	MainActor *av = world->getMainActor();
+	MainActor *av = getMainActor();
 	sint32 ax,ay,az;
 	av->getLocation(ax,ay,az);
 

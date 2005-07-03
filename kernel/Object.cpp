@@ -22,7 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Kernel.h"
 #include "ObjectManager.h"
 #include "MemoryManager.h"
-#include "World.h"
 
 #include "UCProcess.h"
 #include "UCMachine.h"

@@ -25,7 +25,6 @@
 #include "GameData.h"
 #include "GumpNotifyProcess.h"
 #include "Kernel.h"
-#include "World.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
 #include "ObjectManager.h"

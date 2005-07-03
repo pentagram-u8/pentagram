@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,8 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "TeleportEgg.h"
-#include "World.h"
 #include "MainActor.h"
+#include "getObject.h"
+
 #include "IDataSource.h"
 #include "ODataSource.h"
 
@@ -45,8 +46,7 @@ uint16 TeleportEgg::hatch()
 	// teleport to destination egg
 	perr << "Teleport!!!!!!!!" << std::endl;
 
-	MainActor* av = p_dynamic_cast<MainActor*>(
-		World::get_instance()->getNPC(1));
+	MainActor* av = getMainActor();
 	av->teleport(mapnum, getTeleportId());
 
 	return 0;

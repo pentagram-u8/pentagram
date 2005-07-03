@@ -20,9 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "SpriteProcess.h"
 #include "ItemFactory.h"
 #include "Item.h"
-#include "World.h"
 #include "CurrentMap.h"
 #include "Kernel.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -59,7 +59,7 @@ void SpriteProcess::init()
 
 SpriteProcess::~SpriteProcess(void)
 {
-	Item *item = World::get_instance()->getItem(item_num);
+	Item *item = getItem(item_num);
 	if (item) item->destroy();
 }
 
@@ -67,7 +67,7 @@ bool SpriteProcess::run(const uint32)
 {
 	if (!initialized) init();
 
-	Item *item = World::get_instance()->getItem(item_num);
+	Item *item = getItem(item_num);
 	
 	if (!item || (frame > last_frame && repeats==1 && !delay_counter)) 
 	{

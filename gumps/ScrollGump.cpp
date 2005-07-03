@@ -19,7 +19,6 @@
 #include "pent_include.h"
 #include "ScrollGump.h"
 #include "TextWidget.h"
-#include "GUIApp.h"
 #include "GameData.h"
 #include "Shape.h"
 #include "GumpShapeArchive.h"
@@ -27,7 +26,7 @@
 #include "UCMachine.h"
 #include "GumpNotifyProcess.h"
 #include "Item.h"
-#include "ObjectManager.h"
+#include "getObject.h"
 
 
 #include "IDataSource.h"
@@ -76,8 +75,7 @@ void ScrollGump::InitGump(Gump* newparent, bool take_focus)
 
 void ScrollGump::NextText()
 {
-	TextWidget *widget = p_dynamic_cast<TextWidget*>
-		(GUIApp::get_instance()->getGump(textwidget));
+	TextWidget *widget = p_dynamic_cast<TextWidget*>(getGump(textwidget));
 	assert(widget);
 	if (!widget->setupNextText()) {
 		Close();

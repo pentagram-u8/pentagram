@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,9 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "SplitItemProcess.h"
-#include "World.h"
 #include "Item.h"
 #include "ShapeInfo.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -50,8 +50,8 @@ SplitItemProcess::SplitItemProcess(Item* original, Item* target_)
 
 bool SplitItemProcess::run(const uint32 /*framenum*/)
 {
-	Item* original = World::get_instance()->getItem(item_num);
-	Item* targetitem = World::get_instance()->getItem(target);
+	Item* original = getItem(item_num);
+	Item* targetitem = getItem(target);
 
 	assert(original);
 	assert(targetitem);

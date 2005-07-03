@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,8 +19,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "ResurrectionProcess.h"
-#include "World.h"
 #include "Actor.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -43,7 +43,7 @@ ResurrectionProcess::ResurrectionProcess(Actor* actor_)
 
 bool ResurrectionProcess::run(const uint32 /*framenum*/)
 {
-	Actor *a = World::get_instance()->getNPC(item_num);
+	Actor *a = getActor(item_num);
 
 	if (!a) {
 		// actor gone... too late for resurrection now :-)

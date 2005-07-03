@@ -32,8 +32,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GameData.h" // ""
 #include "MainShapeArchive.h" // ""
 
-#include "World.h"
-
 //#define DUMP_ITEMS
 
 Map::Map(uint32 mapnum_)

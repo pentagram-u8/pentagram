@@ -26,11 +26,10 @@
 #include "ControlsGump.h"
 #include "PagedGump.h"
 
-#include "GUIApp.h"
-#include "ObjectManager.h"
-
 #include "IDataSource.h"
 #include "ODataSource.h"
+
+#include <SDL.h>
 
 static const int font = 0;
 

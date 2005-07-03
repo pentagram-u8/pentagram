@@ -19,14 +19,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "AvatarDeathProcess.h"
-#include "World.h"
 #include "MainActor.h"
-#include "GUIApp.h"
 #include "ReadableGump.h"
 #include "GameData.h"
 #include "Kernel.h"
 #include "MainMenuProcess.h"
 #include "GumpNotifyProcess.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -42,7 +41,7 @@ AvatarDeathProcess::AvatarDeathProcess() : Process()
 
 bool AvatarDeathProcess::run(const uint32 /*framenum*/)
 {
-	MainActor *av = World::get_instance()->getMainActor();
+	MainActor *av = getMainActor();
 
 	if (!av) {
 		perr << "AvatarDeathProcess: MainActor object missing" << std::endl;

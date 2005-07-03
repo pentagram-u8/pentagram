@@ -36,6 +36,9 @@ public:
 	// Init the gump, call after construction
 	virtual void InitGump(Gump* newparent, bool take_focus=true);
 
+	// Set a configuration option to true when user watches entire sequence
+	void SetFlagWhenFinished(std::string configkey_) { configkey=configkey_; }
+
 	virtual void Close(bool no_del = false);
 
 	virtual bool Run(const uint32 framenum);
@@ -68,6 +71,8 @@ protected:
 	int scrollheight[4];
 	int currentsurface;
 	int currenty;
+
+	std::string configkey;
 };
 
 #endif

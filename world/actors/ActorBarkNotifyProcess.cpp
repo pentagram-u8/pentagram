@@ -19,12 +19,11 @@
 #include "pent_include.h"
 #include "ActorBarkNotifyProcess.h"
 #include "Gump.h"
-#include "GUIApp.h"
 #include "DelayProcess.h"
 #include "Actor.h"
 #include "Animation.h"
 #include "Kernel.h"
-#include "World.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -51,7 +50,7 @@ ActorBarkNotifyProcess::~ActorBarkNotifyProcess(void)
 
 bool ActorBarkNotifyProcess::run(const uint32)
 {
-	Actor* a = World::get_instance()->getNPC(item_num);
+	Actor* a = getActor(item_num);
 	if (!a) return false;
 
 	if ((a->getActorFlags() & Actor::ACT_DEAD) || !a->hasAnim(Animation::talk))

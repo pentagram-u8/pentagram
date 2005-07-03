@@ -20,8 +20,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "PathfinderProcess.h"
 
 #include "Actor.h"
-#include "World.h"
 #include "Pathfinder.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -44,7 +44,7 @@ PathfinderProcess::PathfinderProcess(Actor* actor_, ObjId item_)
 	type = 0x0204; // CONSTANT !
 
 
-	Item* item = World::get_instance()->getItem(item_);
+	Item* item = getItem(item_);
 	if (!item) {
 		perr << "PathfinderProcess: non-existent target" << std::endl;
 		// can't get there...
@@ -115,7 +115,7 @@ PathfinderProcess::~PathfinderProcess()
 
 void PathfinderProcess::terminate()
 {
-	Actor* actor = World::get_instance()->getNPC(item_num);
+	Actor* actor = getActor(item_num);
 	if (actor) {
 		// TODO: only clear if it was set by us?
 		// (slightly more complicated if we kill other pathfinders on startup)
@@ -127,7 +127,7 @@ void PathfinderProcess::terminate()
 
 bool PathfinderProcess::run(const uint32 /*framenum*/)
 {
-	Actor* actor = World::get_instance()->getNPC(item_num);
+	Actor* actor = getActor(item_num);
 	assert(actor);
 	// if not in the fastarea, do nothing
 	if (!(actor->getFlags() & Item::FLG_FASTAREA)) return false;
@@ -137,7 +137,7 @@ bool PathfinderProcess::run(const uint32 /*framenum*/)
 
 	if (targetitem) {
 		sint32 curx,cury,curz;
-		Item* item = World::get_instance()->getItem(targetitem);
+		Item* item = getItem(targetitem);
 		if (!item) {
 			perr << "PathfinderProcess: target missing" << std::endl;
 			result = PATH_FAILED;
@@ -195,7 +195,7 @@ bool PathfinderProcess::run(const uint32 /*framenum*/)
 		Pathfinder pf;
 		pf.init(actor);
 		if (targetitem) {
-			Item* item = World::get_instance()->getItem(targetitem);
+			Item* item = getItem(targetitem);
 			if (!item)
 				ok = false;
 			else {

@@ -38,6 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Kernel.h"
 #include "MusicProcess.h"
 #include "StartU8Process.h"
+#include "getObject.h"
 
 U8Game::U8Game() : Game()
 {
@@ -45,6 +46,7 @@ U8Game::U8Game() : Game()
 	SettingManager* settingman = SettingManager::get_instance();
 	settingman->setDefault("skipstart", false);
 	settingman->setDefault("endgame", false);
+	settingman->setDefault("quotes", false);
 	settingman->setDefault("footsteps", true);
 	settingman->setDefault("cheat", true);
 
@@ -122,7 +124,7 @@ bool U8Game::startGame()
 	World::get_instance()->loadItemCachNPCData(icd, npcd); // deletes icd, npcd
 	delete u8save;
 
-	MainActor* av = World::get_instance()->getMainActor();
+	MainActor* av = getMainActor();
 	assert(av);
 
 	av->setName("Avatar"); // default name
@@ -143,9 +145,9 @@ bool U8Game::startGame()
 
 void U8Game::ConCmd_cheatItems(const Console::ArgsType &args, const Console::ArgvType &argv)
 {
-	MainActor* av = World::get_instance()->getMainActor();
+	MainActor* av = getMainActor();
 	if (!av) return;
-	Container* backpack = p_dynamic_cast<Container*>(World::get_instance()->getItem(av->getEquip(7))); // CONSTANT!
+	Container* backpack = getContainer(av->getEquip(7)); // CONSTANT!
 	if (!backpack) return;
 
 	// obsidian
@@ -289,16 +291,16 @@ void U8Game::ConCmd_cheatItems(const Console::ArgsType &args, const Console::Arg
 
 void U8Game::ConCmd_cheatEquip(const Console::ArgsType &args, const Console::ArgvType &argv)
 {
-	MainActor* av = World::get_instance()->getMainActor();
+	MainActor* av = getMainActor();
 	if (!av) return;
-	Container* backpack = p_dynamic_cast<Container*>(World::get_instance()->getItem(av->getEquip(7))); // CONSTANT!
+	Container* backpack = getContainer(av->getEquip(7)); // CONSTANT!
 	if (!backpack) return;
 
 	Item* item;
 
 	// move all current equipment to backpack
 	for (unsigned int i = 0; i < 7; ++i) {
-		item = World::get_instance()->getItem(av->getEquip(i));
+		item = getItem(av->getEquip(i));
 		if (item) {
 			item->moveToContainer(backpack, false); // no weight/volume check
 			item->randomGumpLocation();
@@ -409,8 +411,9 @@ void U8Game::playCredits()
 	MusicProcess* musicproc = MusicProcess::get_instance();
 	if (musicproc) musicproc->playMusic(51); // CONSTANT!
 
-	Gump* gump = new CreditsGump(text);
+	CreditsGump* gump = new CreditsGump(text);
 	gump->InitGump(0);
+	gump->SetFlagWhenFinished("quotes");
 	gump->setRelativePosition(Gump::CENTER);
 }
 
@@ -438,7 +441,7 @@ void U8Game::playQuotes()
 
 void U8Game::writeSaveInfo(ODataSource* ods)
 {
-	MainActor* av = World::get_instance()->getMainActor();
+	MainActor* av = getMainActor();
 	sint32 x,y,z;
 
 	std::string avname = av->getName();
@@ -466,7 +469,7 @@ void U8Game::writeSaveInfo(ODataSource* ods)
 	for (unsigned int i = 1; i <= 6; i++)
 	{
 		uint16 objid = av->getEquip(i);
-		Item* item = World::get_instance()->getItem(objid);
+		Item* item = getItem(objid);
 		if (item) {
 			ods->write4(item->getShape());
 			ods->write4(item->getFrame());

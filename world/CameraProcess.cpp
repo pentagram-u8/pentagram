@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ShapeInfo.h"
 #include "Kernel.h"
 #include "CoreApp.h"
+#include "getObject.h"
 #include <cstdlib>
 
 #include "IDataSource.h"
@@ -75,7 +76,7 @@ void CameraProcess::GetCameraLocation(sint32 &x, sint32 &y, sint32 &z)
 		World *world = World::get_instance();
 		CurrentMap *map = world->getCurrentMap();
 		int map_num = map->getNum();
-		Actor* av = world->getNPC(1);
+		Actor* av = getActor(1);
 		
 		if (!av || av->getMapNum() != map_num)
 		{
@@ -110,7 +111,7 @@ CameraProcess::CameraProcess(uint16 _itemnum) :
 
 	if (itemnum)
 	{
-		Item *item = World::get_instance()->getItem(itemnum);
+		Item *item = getItem(itemnum);
 	
 		// Got it
 		if (item)
@@ -147,7 +148,7 @@ void CameraProcess::terminate()
 {
 	if (itemnum)
 	{
-		Item *item = World::get_instance()->getItem(itemnum);
+		Item *item = getItem(itemnum);
 		if (item) item->clearExtFlag(Item::EXT_CAMERA);
 	}
 
@@ -183,7 +184,7 @@ void CameraProcess::ItemMoved()
 {
 	if (itemnum)
 	{
-		Item *item = World::get_instance()->getItem(itemnum);
+		Item *item = getItem(itemnum);
 
 		// We only update for now if lerping has been disabled
 		if (item && (item->getExtFlags() & Item::EXT_LERP_NOPREV))
@@ -222,7 +223,7 @@ void CameraProcess::GetLerped(sint32 &x, sint32 &y, sint32 &z, sint32 factor, bo
 
 				if (itemnum)
 				{
-					Item *item = World::get_instance()->getItem(itemnum);
+					Item *item = getItem(itemnum);
 					// Got it
 					if (item)
 					{
@@ -294,7 +295,7 @@ uint16 CameraProcess::FindRoof(sint32 factor)
 	earthquake = 0;
 	GetLerped(x,y,z,factor);
 	earthquake = earthquake_old;
-	Item *avatar = World::get_instance()->getItem(1);
+	Item *avatar = getItem(1);
 	sint32 dx,dy,dz;
 	avatar->getFootpadWorld(dx,dy,dz);
 	uint16 roofid;

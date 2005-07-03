@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Item.h"
 #include "World.h"
 #include "CurrentMap.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -48,7 +49,7 @@ GravityProcess::GravityProcess(Item* item, int gravity_)
 
 void GravityProcess::init()
 {
-	Item* item = World::get_instance()->getItem(item_num);
+	Item* item = getItem(item_num);
 	assert(item);
 
 	// FIXME: wrong use of bouncing flag, probably
@@ -75,7 +76,7 @@ void GravityProcess::setGravity(int gravity_)
 bool GravityProcess::run(uint32 /*framenum*/)
 {
 	// move item in (xs,ys,zs) direction
-	Item* item = World::get_instance()->getItem(item_num);
+	Item* item = getItem(item_num);
 	if (!item) {
 		terminate();
 		return false;
@@ -203,7 +204,7 @@ bool GravityProcess::run(uint32 /*framenum*/)
 void GravityProcess::terminate()
 {
 	//signal item GravityProcess is gone
-	Item* item = World::get_instance()->getItem(item_num);
+	Item* item = getItem(item_num);
 	if (item) {
 		item->setGravityProcess(0);
 		

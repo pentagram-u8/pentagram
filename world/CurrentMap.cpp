@@ -36,6 +36,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MainShapeArchive.h"
 #include "GUIApp.h"
 #include "GameMapGump.h"
+#include "getObject.h"
+
 #include "IDataSource.h"	
 #include "ODataSource.h"
 
@@ -214,7 +216,7 @@ void CurrentMap::loadMap(Map* map)
 	// load relevant NPCs to the item lists
 	// !constant
 	for (uint16 i = 0; i < 256; ++i) {
-		Actor* actor = World::get_instance()->getNPC(i);
+		Actor* actor = getActor(i);
 		if (!actor) continue;
 
 		// Schedule

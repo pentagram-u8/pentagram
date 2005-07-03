@@ -23,12 +23,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "GUIApp.h"
 #include "MainActor.h"
-#include "World.h"
 #include "GameMapGump.h"
 #include "Kernel.h"
 #include "ActorAnimProcess.h"
 #include "TargetedAnimProcess.h"
 #include "ShapeInfo.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -79,7 +79,7 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 		return false;
 	}
 
-	MainActor* avatar = World::get_instance()->getMainActor();
+	MainActor* avatar = getMainActor();
 
 	if (avatar->isInCombat() && !combatRun)
 		return handleCombatMode();
@@ -90,7 +90,7 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 bool AvatarMoverProcess::handleCombatMode()
 {
 	GUIApp* guiapp = GUIApp::get_instance();
-	MainActor* avatar = World::get_instance()->getMainActor();
+	MainActor* avatar = getMainActor();
 	Animation::Sequence lastanim = avatar->getLastAnim();
 	Animation::Sequence nextanim = Animation::walk;
 	sint32 direction = avatar->getDir();
@@ -267,7 +267,7 @@ bool AvatarMoverProcess::handleCombatMode()
 bool AvatarMoverProcess::handleNormalMode()
 {
 	GUIApp* guiapp = GUIApp::get_instance();
-	MainActor* avatar = World::get_instance()->getMainActor();
+	MainActor* avatar = getMainActor();
 	Animation::Sequence lastanim = avatar->getLastAnim();
 	Animation::Sequence nextanim = Animation::walk;
 	sint32 direction = avatar->getDir();
@@ -331,7 +331,7 @@ bool AvatarMoverProcess::handleNormalMode()
 		// if we were running in combat mode, slow to a walk, draw weapon
 		if (combatRun)
 		{
-			MainActor* avatar = World::get_instance()->getMainActor();
+			MainActor* avatar = getMainActor();
 			avatar->toggleInCombat();
 			combatRun = false;
 			ProcId walkpid = avatar->doAnim(Animation::walk, direction);
@@ -537,7 +537,7 @@ bool AvatarMoverProcess::handleNormalMode()
 void AvatarMoverProcess::jump(Animation::Sequence action, int direction)
 {
 	GUIApp* guiapp = GUIApp::get_instance();
-	MainActor* avatar = World::get_instance()->getMainActor();
+	MainActor* avatar = getMainActor();
 	int mx, my;
 	guiapp->getMouseCoords(mx, my);
 
@@ -564,7 +564,7 @@ void AvatarMoverProcess::jump(Animation::Sequence action, int direction)
 	// We need the Gump's x/y for TraceCoordinates
 	gameMap->ScreenSpaceToGump(mx,my);
 	ObjId targetId = gameMap->TraceCoordinates(mx,my,coords);
-	Item * target = World::get_instance()->getItem(targetId);
+	Item * target = getItem(targetId);
 	
 	if (target && target->getShapeInfo()->is_land())
 	{	// Original also only lets you jump at the Z_FACE
@@ -582,7 +582,7 @@ void AvatarMoverProcess::jump(Animation::Sequence action, int direction)
 
 void AvatarMoverProcess::turnToDirection(int direction)
 {
-	MainActor* avatar = World::get_instance()->getMainActor();
+	MainActor* avatar = getMainActor();
 	int curdir = avatar->getDir();
 	int step;
 	bool combat = avatar->isInCombat() && !combatRun;
@@ -631,7 +631,7 @@ void AvatarMoverProcess::turnToDirection(int direction)
 
 bool AvatarMoverProcess::checkTurn(int direction, bool moving)
 {
-	MainActor* avatar = World::get_instance()->getMainActor();
+	MainActor* avatar = getMainActor();
 	int curdir = avatar->getDir();
 	bool combat = avatar->isInCombat() && !combatRun;
 	Animation::Sequence lastanim = avatar->getLastAnim();
@@ -665,7 +665,7 @@ bool AvatarMoverProcess::checkTurn(int direction, bool moving)
 
 bool AvatarMoverProcess::canAttack()
 {
-	MainActor* avatar = World::get_instance()->getMainActor();
+	MainActor* avatar = getMainActor();
 	return (lastframe > lastAttack + (25 - avatar->getDex()));
 }
 

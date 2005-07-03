@@ -193,7 +193,8 @@ WORLD = \
 	world/SplitItemProcess.o \
 	world/SpriteProcess.o \
 	world/TeleportEgg.o \
-	world/World.o
+	world/World.o \
+	world/getObject.o
 
 ACTORS = \
 	world/actors/Actor.o \

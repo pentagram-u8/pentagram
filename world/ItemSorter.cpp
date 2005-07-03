@@ -29,9 +29,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GameData.h"
 
 // temp
-#include "World.h"
 #include "WeaponOverlay.h"
 #include "MainActor.h"
+#include "getObject.h"
 // --
 
 using Pentagram::Rect;
@@ -988,7 +988,7 @@ bool ItemSorter::PaintSortItem(SortItem	*si)
 	// weapon overlay
 	// FIXME: use highlight/invisibility, also add to Trace() ?
 	if (si->shape_num == 1 && si->item_num == 1) {
-		MainActor* av = p_dynamic_cast<MainActor*>(World::get_instance()->getNPC(1));
+		MainActor* av = getMainActor();
 		const WeaponOverlayFrame* wo_frame = 0;
 		uint32 wo_shapenum;
 		av->getWeaponOverlay(wo_frame, wo_shapenum);

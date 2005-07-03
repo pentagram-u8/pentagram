@@ -26,6 +26,7 @@
 #include "Font.h"
 #include "FontManager.h"
 #include "MusicProcess.h"
+#include "SettingManager.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(CreditsGump,ModalGump);
 
@@ -157,6 +158,10 @@ bool CreditsGump::Run(const uint32 framenum)
 		// pout << "CreditsGump: waiting before closing" << std::endl;
 		timer = 120;
 		state = CS_CLOSING;
+
+		if (!configkey.empty())
+			SettingManager::get_instance()->set(configkey, true);
+
 		return true;
 	}
 

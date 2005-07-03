@@ -41,6 +41,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CreateItemProcess.h"
 #include "DestroyItemProcess.h"
 #include "DelayProcess.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -87,7 +88,7 @@ bool ActorAnimProcess::init()
 	animAborted = false;
 	attackedSomething = false;
 
-	Actor* actor = World::get_instance()->getNPC(item_num);
+	Actor* actor = getActor(item_num);
 	assert(actor);
 
 	if (!(actor->getFlags() & Item::FLG_FASTAREA)) {
@@ -152,7 +153,7 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 	if (repeatcounter > tracker->getAnimAction()->framerepeat)
 		repeatcounter = 0;
 
-	Actor *a = World::get_instance()->getNPC(item_num);
+	Actor *a = getActor(item_num);
 	if (!a) {
 		// actor gone
 		terminate();
@@ -268,7 +269,7 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 			ObjId hit = tracker->hitSomething();
 			if (hit) {
 				attackedSomething = true;
-				Item* hit_item = World::get_instance()->getItem(hit);
+				Item* hit_item = getItem(hit);
 				assert(hit_item);
 				hit_item->receiveHit(item_num, (dir+4)%8, 0, 0);
 				doHitSpecial(hit_item);
@@ -281,7 +282,7 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 
 void ActorAnimProcess::doSpecial()
 {
-	Actor *a = World::get_instance()->getNPC(item_num);
+	Actor *a = getActor(item_num);
 	assert(a);
 
 	// play SFX when Avatar draws/sheathes weapon
@@ -348,7 +349,7 @@ void ActorAnimProcess::doSpecial()
 	// ghost's fireball
 	if (a->getShape() == 0x19d)
 	{
-		Actor* av = World::get_instance()->getNPC(1);
+		Actor* av = getMainActor();
 		if (a->getRange(*av) < 96) {
 			a->setActorFlag(Actor::ACT_DEAD);
 			a->explode(); // explode if close to the avatar
@@ -370,7 +371,7 @@ void ActorAnimProcess::doSpecial()
 		cm->surfaceSearch(&itemlist, script, sizeof(script), a, false, true);
 		if (itemlist.getSize() == 0) return;
 
-		Item* f = World::get_instance()->getItem(itemlist.getuint16(0));
+		Item* f = getItem(itemlist.getuint16(0));
 		assert(f);
 
 		uint32 floor = f->getShape();
@@ -411,7 +412,7 @@ void ActorAnimProcess::doSpecial()
 
 void ActorAnimProcess::doHitSpecial(Item* hit)
 {
-	Actor *a = World::get_instance()->getNPC(item_num);
+	Actor *a = getActor(item_num);
 	assert(a);
 
 	Actor* attacked = p_dynamic_cast<Actor*>(hit);
@@ -421,9 +422,9 @@ void ActorAnimProcess::doHitSpecial(Item* hit)
 
 		AudioProcess* audioproc = AudioProcess::get_instance();
 
-		MainActor* av = World::get_instance()->getMainActor();
+		MainActor* av = getMainActor();
 		ObjId weaponid = av->getEquip(ShapeInfo::SE_WEAPON);
-		Item* weapon = World::get_instance()->getItem(weaponid);
+		Item* weapon = getItem(weaponid);
 
 		if (!weapon) return;
 
@@ -521,7 +522,7 @@ void ActorAnimProcess::terminate()
 						 << "] ActorAnimProcess terminating"
 						 << std::endl;
 #endif
-	Actor *a = World::get_instance()->getNPC(item_num);
+	Actor *a = getActor(item_num);
 	if (a) {
 		if (tracker) // if we were really animating...
 			a->clearActorFlag(Actor::ACT_ANIMLOCK);

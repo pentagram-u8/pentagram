@@ -19,9 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "ClearFeignDeathProcess.h"
-#include "World.h"
 #include "Actor.h"
 #include "AudioProcess.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -44,7 +44,7 @@ ClearFeignDeathProcess::ClearFeignDeathProcess(Actor* actor_)
 
 bool ClearFeignDeathProcess::run(const uint32 /*framenum*/)
 {
-	Actor *a = World::get_instance()->getNPC(item_num);
+	Actor *a = getActor(item_num);
 
 	if (!a) {
 		// actor gone?

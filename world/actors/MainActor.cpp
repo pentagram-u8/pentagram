@@ -19,7 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "MainActor.h"
-#include "World.h"
 #include "TeleportEgg.h"
 #include "CurrentMap.h"
 #include "Process.h"
@@ -30,13 +29,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GUIApp.h"
 #include "AvatarDeathProcess.h"
 #include "DelayProcess.h"
-
 #include "SettingManager.h"
 #include "CoreApp.h"
 #include "GameData.h"
 #include "WpnOvlayDat.h"
 #include "ShapeInfo.h"
 #include "AudioProcess.h"
+#include "World.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -192,8 +192,7 @@ sint16 MainActor::getDefendingDex()
 {
 	sint16 dex = getDex();
 
-	Item* weapon = World::get_instance()->getItem(
-		getEquip(ShapeInfo::SE_WEAPON));
+	Item* weapon = getItem(getEquip(ShapeInfo::SE_WEAPON));
 	if (weapon) {
 		ShapeInfo* si = weapon->getShapeInfo();
 		assert(si->weaponinfo);
@@ -209,8 +208,7 @@ sint16 MainActor::getAttackingDex()
 {
 	sint16 dex = getDex();
 
-	Item* weapon = World::get_instance()->getItem(
-		getEquip(ShapeInfo::SE_WEAPON));
+	Item* weapon = getItem(getEquip(ShapeInfo::SE_WEAPON));
 	if (weapon) {
 		ShapeInfo* si = weapon->getShapeInfo();
 		assert(si->weaponinfo);
@@ -222,8 +220,7 @@ sint16 MainActor::getAttackingDex()
 
 uint16 MainActor::getDamageType()
 {
-	Item* weapon = World::get_instance()->getItem(
-		getEquip(ShapeInfo::SE_WEAPON));
+	Item* weapon = getItem(getEquip(ShapeInfo::SE_WEAPON));
 
 	if (weapon) {
 		// weapon equipped?
@@ -245,8 +242,7 @@ int MainActor::getDamageAmount()
 		// kick
 
 		int kick_bonus = 0;
-		Item* legs = World::get_instance()->getItem(
-			getEquip(ShapeInfo::SE_LEGS));
+		Item* legs = getItem(getEquip(ShapeInfo::SE_LEGS));
 		if (legs) {
 			ShapeInfo* si = legs->getShapeInfo();
 			assert(si->armourinfo);
@@ -259,8 +255,7 @@ int MainActor::getDamageAmount()
 
 	}
 
-	Item* weapon = World::get_instance()->getItem(
-		getEquip(ShapeInfo::SE_WEAPON));
+	Item* weapon = getItem(getEquip(ShapeInfo::SE_WEAPON));
 	
 	
 	if (weapon) {
@@ -335,7 +330,7 @@ ProcId MainActor::die(uint16 damageType)
 
 void MainActor::ConCmd_teleport(const Console::ArgsType &args, const Console::ArgvType &argv)
 {
-	MainActor* mainactor = World::get_instance()->getMainActor();
+	MainActor* mainactor = getMainActor();
 	int curmap = mainactor->getMapNum();
 
 	switch (argv.size() - 1) {
@@ -377,7 +372,7 @@ void MainActor::ConCmd_mark(const Console::ArgsType &args, const Console::ArgvTy
 	}
 
 	SettingManager* settings = SettingManager::get_instance();
-	MainActor* mainactor = World::get_instance()->getMainActor();
+	MainActor* mainactor = getMainActor();
 	int curmap = mainactor->getMapNum();
 	sint32 x,y,z;
 	mainactor->getLocation(x,y,z);
@@ -400,7 +395,7 @@ void MainActor::ConCmd_recall(const Console::ArgsType &args, const Console::Argv
 	}
 
 	SettingManager* settings = SettingManager::get_instance();
-	MainActor* mainactor = World::get_instance()->getMainActor();
+	MainActor* mainactor = getMainActor();
 	Pentagram::istring confkey = "marks/" + argv[1];
 	std::string target;
 	if (!settings->get(confkey, target)) {
@@ -432,7 +427,7 @@ void MainActor::ConCmd_listmarks(const Console::ArgsType &args, const Console::A
 
 void MainActor::ConCmd_maxstats(const Console::ArgsType &args, const Console::ArgvType &argv)
 {
-	MainActor* mainactor = World::get_instance()->getMainActor();
+	MainActor* mainactor = getMainActor();
 
 	// constants!!
 	mainactor->setStr(25);
@@ -497,7 +492,7 @@ void MainActor::getWeaponOverlay(const WeaponOverlayFrame*& frame,
 	frame = 0;
 
 	ObjId weaponid = getEquip(ShapeInfo::SE_WEAPON);
-	Item* weapon = World::get_instance()->getItem(weaponid);
+	Item* weapon = getItem(weaponid);
 	if (!weapon) return;
 
 	ShapeInfo* shapeinfo = weapon->getShapeInfo();
@@ -561,7 +556,7 @@ uint32 MainActor::I_accumulateStrength(const uint8* args,
 									   unsigned int /*argsize*/)
 {
 	ARG_SINT16(n);
-	MainActor* av = World::get_instance()->getMainActor();
+	MainActor* av = getMainActor();
 	av->accumulateStr(n);
 
 	return 0;
@@ -571,7 +566,7 @@ uint32 MainActor::I_accumulateDexterity(const uint8* args,
 									   unsigned int /*argsize*/)
 {
 	ARG_SINT16(n);
-	MainActor* av = World::get_instance()->getMainActor();
+	MainActor* av = getMainActor();
 	av->accumulateDex(n);
 
 	return 0;
@@ -581,7 +576,7 @@ uint32 MainActor::I_accumulateIntelligence(const uint8* args,
 									   unsigned int /*argsize*/)
 {
 	ARG_SINT16(n);
-	MainActor* av = World::get_instance()->getMainActor();
+	MainActor* av = getMainActor();
 	av->accumulateInt(n);
 
 	return 0;
@@ -590,7 +585,7 @@ uint32 MainActor::I_accumulateIntelligence(const uint8* args,
 uint32 MainActor::I_clrAvatarInCombat(const uint8* /*args*/,
 									  unsigned int /*argsize*/)
 {
-	MainActor* av = World::get_instance()->getMainActor();	
+	MainActor* av = getMainActor();	
 	av->clearInCombat();
 
 	return 0;
@@ -599,7 +594,7 @@ uint32 MainActor::I_clrAvatarInCombat(const uint8* /*args*/,
 uint32 MainActor::I_setAvatarInCombat(const uint8* /*args*/,
 									  unsigned int /*argsize*/)
 {
-	MainActor* av = World::get_instance()->getMainActor();	
+	MainActor* av = getMainActor();	
 	av->setInCombat();
 
 	return 0;
@@ -608,7 +603,7 @@ uint32 MainActor::I_setAvatarInCombat(const uint8* /*args*/,
 uint32 MainActor::I_isAvatarInCombat(const uint8* /*args*/,
 									  unsigned int /*argsize*/)
 {
-	MainActor* av = World::get_instance()->getMainActor();
+	MainActor* av = getMainActor();
 	if (av->isInCombat())
 		return 1;
 	else
@@ -618,7 +613,7 @@ uint32 MainActor::I_isAvatarInCombat(const uint8* /*args*/,
 void MainActor::ConCmd_name(const Console::ArgsType & /*args*/,
 								   const Console::ArgvType &argv)
 {
-	MainActor* av = World::get_instance()->getMainActor();
+	MainActor* av = getMainActor();
 	if (argv.size() > 1)
 		av->setName(argv[1]);
 

@@ -23,7 +23,6 @@
 #include "ShapeFrame.h"
 #include "ShapeInfo.h"
 #include "Actor.h"
-#include "World.h"
 #include "RenderSurface.h"
 #include "GameData.h"
 #include "MainShapeArchive.h"
@@ -34,6 +33,7 @@
 #include "ButtonWidget.h"
 #include "MiniStatsGump.h"
 #include "GUIApp.h"
+#include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -124,9 +124,7 @@ void PaperdollGump::Close(bool no_del)
 	// because we do not want to close the Gumps of our contents.
 
 	// Make every item leave the fast area
-	Container* c = p_dynamic_cast<Container*>
-		(World::get_instance()->getItem(owner));
-
+	Container* c = getContainer(owner);
 	if (!c) return; // Container gone!?
 
 	std::list<Item*>& contents = c->contents;
@@ -137,7 +135,7 @@ void PaperdollGump::Close(bool no_del)
 		item->leaveFastArea();	// Can destroy the item
 	}
 
-	Item* o = World::get_instance()->getItem(owner);
+	Item* o = getItem(owner);
 	if (o)
 		o->clearGump(); //!! is this the appropriate place?
 
@@ -175,7 +173,7 @@ void PaperdollGump::PaintStat(RenderSurface* surf, unsigned int n,
 
 void PaperdollGump::PaintStats(RenderSurface* surf, sint32 lerp_factor)
 {
-	Actor* a = World::get_instance()->getNPC(owner);
+	Actor* a = getActor(owner);
 	assert(a);
 
 	PaintStat(surf, 0, _TL_("STR"), a->getStr());
@@ -192,7 +190,7 @@ void PaperdollGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 	// paint self
 	ItemRelativeGump::PaintThis(surf, lerp_factor);
 
-	Actor* a = World::get_instance()->getNPC(owner);
+	Actor* a = getActor(owner);
 
 	if (!a) {
 		// Actor gone!?
@@ -203,7 +201,7 @@ void PaperdollGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 	PaintStats(surf, lerp_factor);
 
 	for (int i = 6; i >= 1; --i) { // constants
-		Item* item = World::get_instance()->getItem(a->getEquip(i));
+		Item* item = getItem(a->getEquip(i));
 		if (!item) continue;
 		sint32 itemx,itemy;
 		uint32 frame = item->getFrame() + 1;
@@ -237,12 +235,12 @@ uint16 PaperdollGump::TraceObjId(int mx, int my)
 
 	ParentToGump(mx,my);
 
-	Actor* a = World::get_instance()->getNPC(owner);
+	Actor* a = getActor(owner);
 
 	if (!a) return 0; // Container gone!?
 
 	for (int i = 1; i <= 6; ++i) {
-		Item* item = World::get_instance()->getItem(a->getEquip(i));
+		Item* item = getItem(a->getEquip(i));
 		if (!item) continue;
 		sint32 itemx,itemy;
 
@@ -276,7 +274,7 @@ bool PaperdollGump::GetLocationOfItem(uint16 itemid, int &gx, int &gy,
 									  sint32 lerp_factor)
 {
 
-	Item* item = World::get_instance()->getItem(itemid);
+	Item* item = getItem(itemid);
 	Item* parent = item->getParentAsContainer();
 	if (!parent) return false;
 	if (parent->getObjId() != owner) return false;
@@ -328,12 +326,11 @@ bool PaperdollGump::DraggingItem(Item* item, int mx, int my)
 		return false;
 	}
 
-	Actor* a = World::get_instance()->getNPC(owner);
+	Actor* a = getActor(owner);
 	assert(a);
 
 	bool over_backpack = false;
-	Container* backpack = p_dynamic_cast<Container*>(
-		World::get_instance()->getItem(a->getEquip(7))); // constant!
+	Container* backpack = getContainer(a->getEquip(7)); // constant!
 			
 	if (backpack && backpack_rect.InRect(mx - itemarea.x, my - itemarea.y)) {
 		over_backpack = true;
@@ -376,12 +373,11 @@ void PaperdollGump::DropItem(Item* item, int mx, int my)
 {
 	display_dragging = false;
 
-	Actor* a = World::get_instance()->getNPC(owner);
+	Actor* a = getActor(owner);
 	assert(a);
 
 	bool over_backpack = false;
-	Container* backpack = p_dynamic_cast<Container*>(
-		World::get_instance()->getItem(a->getEquip(7))); // constant!
+	Container* backpack = getContainer(a->getEquip(7)); // constant!
 			
 	if (backpack && backpack_rect.InRect(mx - itemarea.x, my - itemarea.y)) {
 		over_backpack = true;

@@ -25,10 +25,7 @@
 #include "TextWidget.h"
 #include "BindGump.h"
 #include "PagedGump.h"
-
-#include "GUIApp.h"
 #include "HIDManager.h"
-#include "ObjectManager.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
