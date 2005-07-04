@@ -468,17 +468,17 @@ static const uint32 display_mem_size = 0x14;	// Display is 20 ASCII characters (
 
 // Display messages                         0123456789ABCDEF0123
 #ifdef PENTAGRAM_IN_EXULT
-static const char display[]              = "        Exult       ";
-static const char display_black_gate[]   = " U7: The Black Gate ";
-static const char display_serpent_isle[] = "U7: The Serpent Isle";
+static const char display[]              = " Uploading Timbres! ";
+static const char display_black_gate[]   = "BG Uploading Timbres";
+static const char display_serpent_isle[] = "SI Uploading Timbres";
 
-static const char display_beginning[] =    "  Updating Timbres  ";
-static const char display_beginning_bg[] = "BG: Updating Timbres";
-static const char display_beginning_si[] = "SI: Updating Timbres";
+static const char display_beginning[] =    "--==|  Exult!  |==--";
+static const char display_beginning_bg[] = " U7: The Black Gate ";
+static const char display_beginning_si[] = "U7: The Serpent Isle";
 #else
 
-static const char display[]              = "      Pentagram     ";
-static const char display_beginning[] =    "  Updating Timbres  ";
+static const char display[]              = " Uploading Timbres! ";
+static const char display_beginning[] =    "--=| Pentagram! |=--";
 #endif
 
 //
@@ -528,6 +528,9 @@ XMidiFile::XMidiFile(IDataSource *source, int pconvert) : num_tracks(0),
 	std::memset(bank127,0,sizeof(bank127));
 	
 	ExtractTracks (source);
+
+	// SysEx data
+	if (pconvert >= XMIDIFILE_HINT_U7VOICE_MT_FILE) InsertDisplayEvents();
 }
 
 XMidiFile::~XMidiFile()
@@ -1823,30 +1826,6 @@ int XMidiFile::ExtractTracksFromU7V (IDataSource *source)
 	CreateMT32SystemMessage(time, all_dev_reset_base, 0, 1, &one);
 	time += time_inc;
 
-	//
-	// Display
-	//
-
-	// Change the display 
-
-	const char *display = ::display;
-	const char *display_beginning = ::display_beginning;
-#ifdef PENTAGRAM_IN_EXULT
-	if (Game::get_game_type() == SERPENT_ISLE)
-	{
-		display = display_serpent_isle;
-		display_beginning = display_beginning_si;
-	}
-	else if (Game::get_game_type() == BLACK_GATE)
-	{
-		display = display_black_gate;
-		display_beginning = display_beginning_bg;
-	}
-#endif
-
-	CreateMT32SystemMessage(time, display_base, 0, display_mem_size, display_beginning );
-	time += time_inc;
-
 
 	// Now do each timbre and patch
 	for (i = 0; i < num_timbres; i++)
@@ -1872,7 +1851,7 @@ int XMidiFile::ExtractTracksFromU7V (IDataSource *source)
 				patch_mem_size,
 				&patch_data );
 
-		time += time_inc;
+		//time += time_inc;
 	}
 
 	//
@@ -1910,15 +1889,6 @@ int XMidiFile::ExtractTracksFromU7V (IDataSource *source)
 	CreateMT32SystemMessage(time, system_base, system_mem_offset(masterVol), 1,&seventy);
 	time += time_inc; 
 
-	//
-	// Display
-	//
-
-	// Change the display to something more appropriate
-	// Write the 'real' Display
-	CreateMT32SystemMessage(time, display_base, 0, display_mem_size, display );
-	time += time_inc;
-
 	// Apply the first state
 	//ApplyFirstState(fs, chan_mask);
 
@@ -1945,7 +1915,6 @@ int XMidiFile::ExtractTracksFromU7V (IDataSource *source)
 
 int XMidiFile::ExtractTracksFromXMIDIMT (IDataSource *source)
 {
-	uint32			i, j;
 	int				num = 0;
 	uint32			len = 0;
 	int				time = 0;
@@ -1971,27 +1940,6 @@ int XMidiFile::ExtractTracksFromXMIDIMT (IDataSource *source)
 	CreateMT32SystemMessage(time, all_dev_reset_base, 0, 1, &one);
 	time += time_inc;
 
-	//
-	// Display
-	//
-
-	// Change the display 
-
-	const char *display = ::display;
-	const char *display_beginning = ::display_beginning;
-#ifdef PENTAGRAM_IN_EXULT
-	if (Game::get_game_type() == SERPENT_ISLE)
-	{
-		display = display_serpent_isle;
-		display_beginning = display_beginning_si;
-	}
-	else if (Game::get_game_type() == BLACK_GATE)
-	{
-		display = display_black_gate;
-		display_beginning = display_beginning_bg;
-	}
-#endif
-
 	// Channel assignment
 	CreateMT32SystemMessage(time, system_base, system_mem_offset(chanAssign), 9, system_part_chans);
 	time += time_inc;
@@ -2002,15 +1950,6 @@ int XMidiFile::ExtractTracksFromXMIDIMT (IDataSource *source)
 
 	// Reverb settings
 	CreateMT32SystemMessage(time, system_base, 1, 3, system_init_reverb);
-	time += time_inc;
-
-	//
-	// Display
-	//
-
-	// Change the display to something more appropriate
-	// Write the 'real' Display
-	CreateMT32SystemMessage(time, display_base, 0, display_mem_size, display );
 	time += time_inc;
 
 	// Add tempo
@@ -2033,3 +1972,35 @@ int XMidiFile::ExtractTracksFromXMIDIMT (IDataSource *source)
 	return num;
 }
 
+void XMidiFile::InsertDisplayEvents()
+{
+	// Change the display 
+	current = list = events[0]->events;
+	while (current->next) current = current->next;
+
+
+	//
+	// Display
+	//
+
+	const char *display = ::display;
+	const char *display_beginning = ::display_beginning;
+#ifdef PENTAGRAM_IN_EXULT
+	if (Game::get_game_type() == SERPENT_ISLE)
+	{
+		display = display_serpent_isle;
+		display_beginning = display_beginning_si;
+	}
+	else if (Game::get_game_type() == BLACK_GATE)
+	{
+		display = display_black_gate;
+		display_beginning = display_beginning_bg;
+	}
+#endif
+
+	CreateMT32SystemMessage(current->time, display_base, 0, display_mem_size, display );
+	CreateMT32SystemMessage(-1, display_base, 0, display_mem_size, display_beginning );
+
+	events[0]->events = list;
+
+}

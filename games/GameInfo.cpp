@@ -47,7 +47,53 @@ std::string GameInfo::getGameTitle() const
 		break;
 	case GAME_REGRET:
 		return "Crusader: No Regret";
+		break;
+	case GAME_PENTAGRAM_MENU:
+		return "Pentagram Menu";
+		break;
 	default:
 		return "";
 	} 
+}
+
+std::string GameInfo::getPrintDetails() const
+{
+	std::string ret;
+	switch (type) {
+	case GAME_U8:
+		ret = "Ultima 8: Pagan, ";
+		break;
+	case GAME_REMORSE:
+		ret = "Crusader: No Remorse, ";
+		break;
+	case GAME_REGRET:
+		ret = "Crusader: No Regret, ";
+		break;
+	case GAME_PENTAGRAM_MENU:
+		ret = "Pentagram Menu, ";
+		break;
+	default:
+		ret = "Unknown, ";
+		break;
+	}
+
+	switch(language) {
+	case GAMELANG_ENGLISH:
+		ret += "English";
+		break;
+	case GAMELANG_FRENCH:
+		ret += "French";
+		break;
+	case GAMELANG_GERMAN:
+		ret += "German";
+		break;
+	case GAMELANG_SPANISH:
+		ret += "Spanish";
+		break;
+	default:
+		ret += "Unknown";
+		break;
+	}
+
+	return ret;
 }

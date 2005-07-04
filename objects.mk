@@ -273,4 +273,5 @@ DATA_FILES = \
 	data/u8spanish.ini \
 	data/u8weapons.ini \
 	data/VeraBd.ttf \
-	data/Vera.ttf
+	data/Vera.ttf \
+	data/mouse.tga

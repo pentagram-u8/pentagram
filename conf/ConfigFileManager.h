@@ -50,6 +50,9 @@ public:
 	//! clear everything
 	void clear();
 
+	//! clear everything in a root
+	void clearRoot(Pentagram::istring root);
+
 	//! does the key exist?
 	bool exists(Pentagram::istring key);
 

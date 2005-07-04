@@ -217,38 +217,20 @@ void CoreApp::loadConfig()
 	}
 }
 
-void CoreApp::initGame()
+bool CoreApp::getDefaultGame()
 {
 	std::vector<Pentagram::istring> games;
 	games = settingman->listGames();
 	con.Print(MM_INFO, "Scanning config file for games:\n");
 	std::vector<Pentagram::istring>::iterator iter;
 	for (iter = games.begin(); iter != games.end(); ++iter) {
-		std::string game = *iter;
+		Pentagram::istring game = *iter;
 		GameInfo info;
 		bool detected = getGameInfo(game, &info);
 		con.Printf(MM_INFO, "%s: ", game.c_str());
 		if (detected) {
-			std::string gametitle = info.getGameTitle();
-			if (gametitle == "") gametitle = "Unknown";
-			con.Printf(MM_INFO, "%s, ", gametitle.c_str());
-
-			switch(info.language) {
-			case GameInfo::GAMELANG_ENGLISH:
-				con.Print(MM_INFO, "English");
-				break;
-			case GameInfo::GAMELANG_FRENCH:
-				con.Print(MM_INFO, "French");
-				break;
-			case GameInfo::GAMELANG_GERMAN:
-				con.Print(MM_INFO, "German");
-				break;
-			case GameInfo::GAMELANG_SPANISH:
-				con.Print(MM_INFO, "Spanish");
-				break;
-			default:
-				con.Print(MM_INFO, "Unknown");
-			}
+			std::string details = info.getPrintDetails();
+			con.Print(MM_INFO, details.c_str());
 		} else {
 			con.Print(MM_INFO, "(unknown)");
 		}
@@ -262,25 +244,28 @@ void CoreApp::initGame()
 		if (defaultset) {
 			// default game specified in config file
 			gamename = defaultgame;
-		} else if (games.size() == 1) {
+		} else if (games.size() == 2) {		// TODO - Do this in a better method
 			// only one game in config file, so pick that
-			gamename = (*(games.begin())).c_str();
-		} else if (games.size() == 0) {
-			perr << "No games set up in configuration. "
-				 << "Please read the README for instructions." << std::endl;
-			exit(1); //!! FIXME
+			gamename = games.back().c_str();
+		} else if (games.size() == 1) {
+			perr << "----------------------------------------" << std::endl
+				 << "No games set up in configuration. " << std::endl
+				 << "Please read the README for instructions." << std::endl
+				 << "----------------------------------------" << std::endl;
+				// FIXME - report more useful error message
+			return false;
 		} else {		
 			perr << "Multiple games found in configuration, but no default "
 				 << "game is selected." << std::endl
 				 << "Either start Pentagram with the \"--game <gamename>\","
 				 << std::endl
 				 << "or set pentagram/defaultgame in pentagram.ini"
-				 << std::endl;
-			exit(1); //!! FIXME
+				 << std::endl;	// FIXME - report more useful error message
+			return false;
 		}
 	}
 
-	pout << "Selected game: " << gamename << std::endl;
+	pout << "Default game: " << gamename << std::endl;
 
 	bool foundgame = false;
 	for (unsigned int i = 0; i < games.size(); ++i) {
@@ -292,21 +277,52 @@ void CoreApp::initGame()
 
 	if (!foundgame) {
 		perr << "Game \"" << gamename << "\" not found." << std::endl;
-		exit(1);
+		return false;
 	}
+
+
+	// We've got a default game name, doesn't mean it will work though
+	return true;
+}
+
+bool CoreApp::setupGameInfo()
+{
+	pout << "Selected game: " << gamename << std::endl;
+
+	if (gamename == "pentagram") return false;
 
 	// fill our GameInfo struct
 	bool ok = getGameInfo(gamename, gameinfo);
 
 	if (!ok) {
 		perr << "No installed game found." << std::endl;
-		exit(-1);
+		return false;
 	}
 
 	setupGamePaths(gamename, gameinfo);
+
+	return true;
 }
 
-bool CoreApp::getGameInfo(std::string& game, GameInfo* gameinfo)
+void CoreApp::killGame()
+{
+	filesystem->RemoveVirtualPath("@u8"); //!!FIXME (u8 specific)
+	filesystem->RemoveVirtualPath("@work");
+	filesystem->RemoveVirtualPath("@save");
+
+	configfileman->clearRoot("bindings");
+	configfileman->clearRoot("language");
+	configfileman->clearRoot("weapons");
+	configfileman->clearRoot("armour");
+	configfileman->clearRoot("monsters");
+	configfileman->clearRoot("game");
+	settingman->setCurrentDomain(SettingManager::DOM_GLOBAL);
+
+	gamename = "";
+}
+
+
+bool CoreApp::getGameInfo(Pentagram::istring& game, GameInfo* gameinfo)
 {
 	// first try getting the information from the config file
 	// if that fails, try to autodetect it
@@ -318,10 +334,20 @@ bool CoreApp::getGameInfo(std::string& game, GameInfo* gameinfo)
 	Pentagram::istring gamekey = "settings/";
 	gamekey += game;
 
-	std::string gametype;
-	if (!configfileman->get(gamekey+"/type", gametype))
-		gametype = "unknown";
-	ToLower(gametype);
+	if (game == "pentagram") {
+		gameinfo->type = GameInfo::GAME_PENTAGRAM_MENU;
+		gameinfo->language = GameInfo::GAMELANG_ENGLISH;
+	}
+	else {
+		std::string gametype;
+		if (!configfileman->get(gamekey+"/type", gametype))
+			gametype = "unknown";
+		ToLower(gametype);
+
+		if (gametype == "u8") {
+			gameinfo->type = GameInfo::GAME_U8;
+		}
+	}
 
 	std::string version;
 	if (!configfileman->get(gamekey+"/version", version))
@@ -332,9 +358,6 @@ bool CoreApp::getGameInfo(std::string& game, GameInfo* gameinfo)
 		language = "unknown";
 	ToLower(language);
 
-	if (gametype == "u8") {
-		gameinfo->type = GameInfo::GAME_U8;
-	}
 
 	//!! TODO: version parsing
 
@@ -365,7 +388,7 @@ bool CoreApp::getGameInfo(std::string& game, GameInfo* gameinfo)
 	return true;
 }
 
-void CoreApp::setupGamePaths(std::string& game, GameInfo* /*gameinfo*/)
+void CoreApp::setupGamePaths(Pentagram::istring& game, GameInfo* /*gameinfo*/)
 {
 	settingman->setDomainName(SettingManager::DOM_GAME, game);
 	settingman->setCurrentDomain(SettingManager::DOM_GAME);

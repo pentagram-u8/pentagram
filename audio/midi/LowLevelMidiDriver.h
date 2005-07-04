@@ -173,6 +173,7 @@ private:
 	int						chan_locks[16];					// Which seq a chan has been locked by
 	int						chan_map[LLMD_NUM_SEQ][16];		// Maps from locked logical chan to phyiscal
 	XMidiSequence			*sequences[LLMD_NUM_SEQ];
+	int						next_sysex;						// Time we can next send sysex at (is SDL_GetTick() value)
 
 	// Software Synth only Data
 	uint32					total_seconds;					// xmidi_clock = total_seconds*6000 
@@ -217,7 +218,7 @@ private:
 
 	void					loadXMidiTimbreLibrary(IDataSource *ds);
 	void					extractTimbreLibrary(XMidiEventList *eventlist);
-    void					uploadTimbre(int bank, int patch);
+    void					uploadTimbre(int bank, int timbre);
 	void					setPatchBank(int bank, int patch);
 	void					loadRhythmTemp(int temp);
 	void					sendMT32SystemMessage(uint32 address_base, uint16 address_offset, uint32 len, const void *data);

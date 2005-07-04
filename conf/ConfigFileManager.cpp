@@ -92,6 +92,21 @@ void ConfigFileManager::clear()
 	inifiles.clear();
 }
 
+void ConfigFileManager::clearRoot(Pentagram::istring root)
+{
+	std::vector<INIFile*>::iterator i = inifiles.begin();
+
+	while (i != inifiles.end()) {
+		if ((*i)->checkRoot(root)) {
+			delete (*i);
+			i = inifiles.erase(i);
+		}
+		else {
+			++i;
+		}
+	}
+}
+
 bool ConfigFileManager::exists(istring key)
 {
 	return (findKeyINI(key) != 0);

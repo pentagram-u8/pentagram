@@ -36,6 +36,10 @@ public:
 	virtual const char *	ScalerCopyright() const;	//< Scaler Copyright info
 };
 
+extern const BilinearScaler bilinear_scaler;
+
+#ifdef COMPILE_GAMMA_CORRECT_SCALERS
+
 class GC_BilinearScaler : public Scaler
 {
 public:
@@ -49,8 +53,8 @@ public:
 	virtual const char *	ScalerCopyright() const;	//< Scaler Copyright info
 };
 
-extern const BilinearScaler bilinear_scaler;
 extern const GC_BilinearScaler GC_bilinear_scaler;
+#endif
 
 };
 

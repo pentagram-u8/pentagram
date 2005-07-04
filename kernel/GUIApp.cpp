@@ -145,7 +145,8 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	  avatarMoverProcess(0), runGraphicSysInit(false), runSDLInit(false),
 	  frameSkip(false), frameLimit(true), interpolate(false),
 	  animationRate(100), avatarInStasis(false), paintEditorItems(false),
-	  painting(false), showTouching(false), flashingcursor(0), 
+	  painting(false), showTouching(false), mouseX(0), mouseY(0),
+	  defMouse(0), flashingcursor(0), 
 	  mouseOverGump(0), dragging(DRAG_NOT), dragging_offsetX(0),
 	  dragging_offsetY(0), inversion(0), timeOffset(0), has_cheated(false),
 	  drawRenderStats(false), ttfoverrides(false), audiomixer(0)
@@ -158,9 +159,13 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 		mouseButton[i].state = MBS_HANDLED;
 	}
 
-	con.AddConsoleCommand("GUIApp::saveGame", ConCmd_saveGame);
-	con.AddConsoleCommand("GUIApp::loadGame", ConCmd_loadGame);
-	con.AddConsoleCommand("GUIApp::newGame", ConCmd_newGame);
+	con.AddConsoleCommand("quit", ConCmd_quit);	
+	con.AddConsoleCommand("GUIApp::quit", ConCmd_quit);	
+	con.AddConsoleCommand("GUIApp::drawRenderStats", ConCmd_drawRenderStats);
+
+	con.AddConsoleCommand("GUIApp::changeGame",ConCmd_changeGame);
+	con.AddConsoleCommand("GUIApp::listGames",ConCmd_listGames);
+
 	con.AddConsoleCommand("HIDManager::bind", HIDManager::ConCmd_bind);
 	con.AddConsoleCommand("HIDManager::unbind", HIDManager::ConCmd_unbind);
 	con.AddConsoleCommand("HIDManager::listbinds",
@@ -174,30 +179,21 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 						  ObjectManager::ConCmd_objectTypes);
 	con.AddConsoleCommand("ObjectManager::objectInfo",
 						  ObjectManager::ConCmd_objectInfo);
-	con.AddConsoleCommand("MainActor::teleport", MainActor::ConCmd_teleport);
-	con.AddConsoleCommand("MainActor::mark", MainActor::ConCmd_mark);
-	con.AddConsoleCommand("MainActor::recall", MainActor::ConCmd_recall);
-	con.AddConsoleCommand("MainActor::listmarks", MainActor::ConCmd_listmarks);
-	con.AddConsoleCommand("Cheat::maxstats", MainActor::ConCmd_maxstats);
-	con.AddConsoleCommand("MainActor::name", MainActor::ConCmd_name);
-	con.AddConsoleCommand("quit", ConCmd_quit);	
-	con.AddConsoleCommand("GUIApp::quit", ConCmd_quit);	
-	con.AddConsoleCommand("GUIApp::drawRenderStats", ConCmd_drawRenderStats);
-	con.AddConsoleCommand("MovieGump::play", MovieGump::ConCmd_play);
-	con.AddConsoleCommand("MusicProcess::playMusic", MusicProcess::ConCmd_playMusic);
-	con.AddConsoleCommand("InverterProcess::invertScreen",
-						  InverterProcess::ConCmd_invertScreen);
-	con.AddConsoleCommand("FastAreaVisGump::toggle",
-						  FastAreaVisGump::ConCmd_toggle);
-	con.AddConsoleCommand("MiniMapGump::toggle",
-						  MiniMapGump::ConCmd_toggle);
+
+	// Game related console commands are now added in startupGame
 }
 
 GUIApp::~GUIApp()
 {
-	con.RemoveConsoleCommand("GUIApp::saveGame");
-	con.RemoveConsoleCommand("GUIApp::loadGame");
-	con.RemoveConsoleCommand("GUIApp::newGame");
+	shutdown();
+
+	con.RemoveConsoleCommand("quit");
+	con.RemoveConsoleCommand("GUIApp::quit");
+	con.RemoveConsoleCommand("GUIApp::drawRenderStats");
+
+	con.RemoveConsoleCommand("GUIApp::changeGame");
+	con.RemoveConsoleCommand("GUIApp::listGames");
+
 	con.RemoveConsoleCommand("HIDManager::bind");
 	con.RemoveConsoleCommand("HIDManager::unbind");
 	con.RemoveConsoleCommand("HIDManager::listbinds");
@@ -207,21 +203,10 @@ GUIApp::~GUIApp()
 	con.RemoveConsoleCommand("Kernel::listItemProcesses");
 	con.RemoveConsoleCommand("ObjectManager::objectTypes");
 	con.RemoveConsoleCommand("ObjectManager::objectInfo");
-	con.RemoveConsoleCommand("MainActor::teleport");
-	con.RemoveConsoleCommand("MainActor::mark");
-	con.RemoveConsoleCommand("MainActor::recall");
-	con.RemoveConsoleCommand("MainActor::listmarks");
-	con.RemoveConsoleCommand("Cheat::maxstats");
-	con.RemoveConsoleCommand("MainActor::name");
-	con.RemoveConsoleCommand("quit");
-	con.RemoveConsoleCommand("GUIApp::quit");
-	con.RemoveConsoleCommand("GUIApp::drawRenderStats");
-	con.RemoveConsoleCommand("MovieGump::play");
-	con.RemoveConsoleCommand("MusicProcess::playMusic");
-	con.RemoveConsoleCommand("InverterProcess::invertScreen");
-	con.RemoveConsoleCommand("FastAreaVisGump::toggle");
-	con.RemoveConsoleCommand("MiniMapGump::toggle");
 
+	// Game related console commands are now removed in shutdownGame
+
+	FORGET_OBJECT(defMouse);
 	FORGET_OBJECT(objectmanager);
 	FORGET_OBJECT(hidmanager);
 	FORGET_OBJECT(audiomixer);
@@ -235,6 +220,8 @@ GUIApp::~GUIApp()
 
 void GUIApp::startup()
 {
+	pout << "-- Initializing Pentagram -- " << std::endl;
+
 	// Set the console to auto paint, till we have finished initing
 	con.SetAutoPaint(conAutoPaint);
 
@@ -246,8 +233,6 @@ void GUIApp::startup()
 						 SettingManager::DOM_GLOBAL))
 		dataoverride = false;
 	filesystem->initBuiltinData(dataoverride);
-
-	initGame();
 
 	//!! move this elsewhere
 	kernel->addProcessLoader("DelayProcess",
@@ -313,14 +298,61 @@ void GUIApp::startup()
 	kernel->addProcessLoader("ActorBarkNotifyProcess",
 							 ProcessLoader<ActorBarkNotifyProcess>::load);
 
-	gamedata = new GameData();
-
 	pout << "Create ObjectManager" << std::endl;
 	objectmanager = new ObjectManager();
 
+	GraphicSysInit();
+
+	SDL_ShowCursor(SDL_DISABLE);
+	SDL_GetMouseState(&mouseX, &mouseY);
+
 	pout << "Create HIDManager" << std::endl;
 	hidmanager = new HIDManager();
-	
+
+	// Audio Mixer
+	audiomixer = new Pentagram::AudioMixer(22050,true,8);
+
+	pout << "-- Pentagram Initialized -- " << std::endl;
+
+	// We Attempt to startup game
+	getDefaultGame();
+	if (setupGameInfo()) startupGame();
+	else startupPentagramMenu();
+
+	// Unset the console auto paint, since we have finished initing
+	con.SetAutoPaint(0);
+
+//	pout << "Paint Initial display" << std::endl;
+	paint();
+}
+
+void GUIApp::startupGame()
+{
+	pout << "-- Initializing Game --" << std::endl;
+
+	// Generic Commands
+	con.AddConsoleCommand("GUIApp::saveGame", ConCmd_saveGame);
+	con.AddConsoleCommand("GUIApp::loadGame", ConCmd_loadGame);
+	con.AddConsoleCommand("GUIApp::newGame", ConCmd_newGame);
+
+	// U8 Game commands
+	con.AddConsoleCommand("MainActor::teleport", MainActor::ConCmd_teleport);
+	con.AddConsoleCommand("MainActor::mark", MainActor::ConCmd_mark);
+	con.AddConsoleCommand("MainActor::recall", MainActor::ConCmd_recall);
+	con.AddConsoleCommand("MainActor::listmarks", MainActor::ConCmd_listmarks);
+	con.AddConsoleCommand("Cheat::maxstats", MainActor::ConCmd_maxstats);
+	con.AddConsoleCommand("MainActor::name", MainActor::ConCmd_name);
+	con.AddConsoleCommand("MovieGump::play", MovieGump::ConCmd_play);
+	con.AddConsoleCommand("MusicProcess::playMusic", MusicProcess::ConCmd_playMusic);
+	con.AddConsoleCommand("InverterProcess::invertScreen",
+						  InverterProcess::ConCmd_invertScreen);
+	con.AddConsoleCommand("FastAreaVisGump::toggle",
+						  FastAreaVisGump::ConCmd_toggle);
+	con.AddConsoleCommand("MiniMapGump::toggle",
+						  MiniMapGump::ConCmd_toggle);
+
+	gamedata = new GameData();
+
 	pout << "Loading HIDBindings" << std::endl;
 
 	if (getGameInfo()->type == GameInfo::GAME_U8) {
@@ -332,15 +364,11 @@ void GUIApp::startup()
 			con.Print(MM_MINOR_WARN, "@data/u8bindings.ini... Failed\n");
 	}
 
+	hidmanager->resetBindings();
 	hidmanager->loadBindings();
 	
 	pout << "Create UCMachine" << std::endl;
 	ucmachine = new UCMachine(U8Intrinsics);
-
-	GraphicSysInit();
-
-	SDL_ShowCursor(SDL_DISABLE);
-	SDL_GetMouseState(&mouseX, &mouseY);
 
 	inBetweenFrame = 0;
 	lerpFactor = 256;
@@ -357,11 +385,15 @@ void GUIApp::startup()
 	title += getGameInfo()->getGameTitle();
 	SDL_WM_SetCaption(title.c_str(), "");
 
+	settingman->setDefault("ttf", false);
+	settingman->get("ttf", ttfoverrides);
+
 	game->loadFiles();
 	gamedata->setupTTFOverrides();
 
-	// This Must be AFTER loading the data cause it might need gamedata
-	audiomixer = new Pentagram::AudioMixer(22050,true,8);
+	// Create Midi Driver for Ultima 8
+	if (getGameInfo()->type == GameInfo::GAME_U8) 
+		audiomixer->openMidiOutput();
 
 	// Unset the console auto paint, since we have finished initing
 	con.SetAutoPaint(0);
@@ -372,11 +404,123 @@ void GUIApp::startup()
 	loadGame("@save/quicksave");
 #endif
 
-	pout << "Paint Initial display" << std::endl;
 	consoleGump->HideConsole();
-	paint();
+
+	pout << "-- Game Initialized --" << std::endl;
 }
 
+void GUIApp::startupPentagramMenu()
+{
+	pout << "-- Initializing Pentagram Menu -- " << std::endl;
+
+	gamename = "pentagram";	// Just to be sure
+
+	// Unset the console auto paint, since we have finished initing
+	con.SetAutoPaint(0);
+	enterTextMode(consoleGump);
+
+	pout << "-- Pentagram Menu Initialized -- " << std::endl;
+
+	pout << "Type \"GUIApp::listGames\" to list available games" << std::endl;
+	pout << "Type \"GUIApp::changeGame <gamename>\" to choose a game" << std::endl;
+}
+
+void GUIApp::shutdown()
+{
+	shutdownGame();
+}
+
+void GUIApp::shutdownGame()
+{
+	pout << "-- Shutting down Game -- " << std::endl;
+
+	// Save config here....
+
+	runGraphicSysInit = false;
+
+	SDL_WM_SetCaption("Pentagram", "");
+
+	if (audiomixer) {
+		audiomixer->closeMidiOutput();
+		audiomixer->reset();
+	}
+	if (world) world->reset();
+	if (ucmachine) ucmachine->reset();
+	if (objectmanager) objectmanager->reset();
+	if (kernel) kernel->reset();
+
+	desktopGump = 0;
+	consoleGump = 0;
+	gameMapGump = 0;
+	scalerGump = 0;
+	inverterGump = 0;
+
+	textmodes.clear();
+
+	// reset mouse cursor
+	while (!cursors.empty()) cursors.pop();
+	pushMouseCursor();
+
+	timeOffset = -(sint32)Kernel::get_instance()->getFrameNum();
+	inversion = 0;
+	save_count = 0;
+	has_cheated = false;
+
+	// Generic Game 
+	con.RemoveConsoleCommand("GUIApp::saveGame");
+	con.RemoveConsoleCommand("GUIApp::loadGame");
+	con.RemoveConsoleCommand("GUIApp::newGame");
+
+	// U8 Only kind of
+	con.RemoveConsoleCommand("MainActor::teleport");
+	con.RemoveConsoleCommand("MainActor::mark");
+	con.RemoveConsoleCommand("MainActor::recall");
+	con.RemoveConsoleCommand("MainActor::listmarks");
+	con.RemoveConsoleCommand("Cheat::maxstats");
+	con.RemoveConsoleCommand("MainActor::name");
+	con.RemoveConsoleCommand("MovieGump::play");
+	con.RemoveConsoleCommand("MusicProcess::playMusic");
+	con.RemoveConsoleCommand("InverterProcess::invertScreen");
+	con.RemoveConsoleCommand("FastAreaVisGump::toggle");
+	con.RemoveConsoleCommand("MiniMapGump::toggle");
+
+
+	FORGET_OBJECT(game);
+	FORGET_OBJECT(fontmanager);
+	FORGET_OBJECT(gamedata);
+	FORGET_OBJECT(world);
+	FORGET_OBJECT(ucmachine);
+	FORGET_OBJECT(palettemanager);
+
+	// Kill Game
+	CoreApp::killGame();
+
+	fontmanager = new FontManager();
+
+	Pentagram::Rect dims;
+	screen->GetSurfaceDims(dims);
+
+	//pout << "Create Desktop" << std::endl;
+	desktopGump = new DesktopGump(0,0, dims.w, dims.h);
+	desktopGump->InitGump(0);
+	desktopGump->MakeFocus();
+
+	//pout << "Create Graphics Console" << std::endl;
+	consoleGump = new ConsoleGump(0, 0, dims.w, dims.h);
+	consoleGump->InitGump(0);
+
+	palettemanager = new PaletteManager(screen);
+
+	runGraphicSysInit = true;
+
+	pout << "-- Game Shutdown-- " << std::endl;
+	enterTextMode(consoleGump);
+}
+
+void GUIApp::changeGame(Pentagram::istring newgame)
+{
+	change_gamename = newgame;
+}
 
 void GUIApp::DeclareArgs()
 {
@@ -454,6 +598,24 @@ void GUIApp::run()
 
 		// Paint Screen
 		paint();
+
+		if (!change_gamename.empty()) {
+			pout << "Changing Game to: " << change_gamename << std::endl;
+			GameInfo info;
+
+			if (getGameInfo(change_gamename, &info)) {
+				shutdownGame();
+	
+				gamename = change_gamename;
+				change_gamename.clear();
+				if (setupGameInfo()) startupGame();
+				else startupPentagramMenu();
+			}
+			else {
+				perr << "Game '" << change_gamename << "' not found" << std::endl;
+				change_gamename.clear();
+			}
+		}
 
 		// Do a delay
 		SDL_Delay(5);
@@ -657,6 +819,10 @@ void GUIApp::paint()
 			}
 		}
 	}
+	else {
+		if (getMouseFrame() != -1) 
+			screen->Blit(defMouse, 0, 0, defMouse->width, defMouse->height, mouseX, mouseY);
+	}
 
 	static long prev = 0;
 	long now = SDL_GetTicks();
@@ -826,9 +992,6 @@ void GUIApp::GraphicSysInit()
 
 	fontmanager = new FontManager();
 
-	settingman->setDefault("ttf", false);
-	settingman->get("ttf", ttfoverrides);
-
 	// Set Screen Resolution
 	pout << "Set Video Mode" << std::endl;
 
@@ -870,6 +1033,19 @@ void GUIApp::GraphicSysInit()
 	SDL_WM_SetCaption("Pentagram", "");
 
 
+	// setup normal mouse cursor
+	pout << "Load Default Mouse Cursor" << std::endl;
+	IDataSource *dm = filesystem->ReadFile("@data/mouse.tga");
+	if (dm) defMouse = Texture::Create(*dm, "@data/mouse.tga");
+	else defMouse = 0;
+	if (!defMouse)
+	{
+		perr << "Unable to load '@data/mouse.tga'" << ". Exiting" << std::endl;
+		std::exit(-1);
+	}
+	delete dm;
+	pushMouseCursor();
+
 
 	pout << "Create Desktop" << std::endl;
 	desktopGump = new DesktopGump(0,0, width, height);
@@ -889,9 +1065,6 @@ void GUIApp::GraphicSysInit()
 	palettemanager = new PaletteManager(screen);
 
 	runGraphicSysInit=true;
-
-	// setup normal mouse cursor
-	pushMouseCursor();
 
 	// Do initial console paint
 	paint();
@@ -1895,6 +2068,39 @@ void GUIApp::ConCmd_drawRenderStats(const Console::ArgsType &args, const Console
 	else
 	{
 		GUIApp::get_instance()->drawRenderStats = std::strtol(argv[1].c_str(), 0, 0) != 0;
+	}
+}
+
+void GUIApp::ConCmd_changeGame(const Console::ArgsType &args, const Console::ArgvType &argv)
+{
+	if (argv.size() == 1)
+	{
+		pout << "Current game is: " << GUIApp::get_instance()->gamename << std::endl;
+	}
+	else
+	{
+		GUIApp::get_instance()->changeGame(argv[1]);
+	}
+}
+
+void GUIApp::ConCmd_listGames(const Console::ArgsType &args, const Console::ArgvType &argv)
+{
+	GUIApp *app = GUIApp::get_instance(); 
+	std::vector<Pentagram::istring> games;
+	games = app->settingman->listGames();
+	std::vector<Pentagram::istring>::iterator iter;
+	for (iter = games.begin(); iter != games.end(); ++iter) {
+		Pentagram::istring game = *iter;
+		GameInfo info;
+		bool detected = app->getGameInfo(game, &info);
+		con.Printf(MM_INFO, "%s: ", game.c_str());
+		if (detected) {
+			std::string details = info.getPrintDetails();
+			con.Print(MM_INFO, details.c_str());
+		} else {
+			con.Print(MM_INFO, "(unknown)");
+		}
+		con.Print(MM_INFO, "\n");
 	}
 }
 

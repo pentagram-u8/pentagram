@@ -162,7 +162,7 @@ void AudioProcess::saveData(ODataSource* ods)
 {
 	Process::saveData(ods);
 
-	ods->write1(sample_info.size());
+	ods->write1(static_cast<uint8>(sample_info.size()));
 
 	std::list<SampleInfo>::iterator it;
 	for (it = sample_info.begin(); it != sample_info.end(); ++it) {
@@ -175,8 +175,8 @@ void AudioProcess::saveData(ODataSource* ods)
 
 		if (it->sfxnum == -1)	// Speech
 		{
-			ods->write4(it->barked.size());
-			ods->write(it->barked.c_str(),it->barked.size());
+			ods->write4(static_cast<uint32>(it->barked.size()));
+			ods->write(it->barked.c_str(),static_cast<uint32>(it->barked.size()));
 		}
 	}
 }

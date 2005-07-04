@@ -62,6 +62,12 @@ public:
 	virtual const char *	ScalerCopyright() const;	//< Scaler Copyright info
 };
 
+extern const _2xSaIScaler		_2xSaI_scaler;
+extern const Super2xSaIScaler	Super2xSaI_scaler;
+extern const SuperEagleScaler	SuperEagle_scaler;
+
+#ifdef COMPILE_GAMMA_CORRECT_SCALERS
+
 class GC_2xSaIScaler : public Scaler
 {
 public:
@@ -101,13 +107,10 @@ public:
 	virtual const char *	ScalerCopyright() const;	//< Scaler Copyright info
 };
 
-extern const _2xSaIScaler		_2xSaI_scaler;
-extern const Super2xSaIScaler	Super2xSaI_scaler;
-extern const SuperEagleScaler	SuperEagle_scaler;
-
 extern const GC_2xSaIScaler			GC_2xSaI_scaler;
 extern const GC_Super2xSaIScaler	GC_Super2xSaI_scaler;
 extern const GC_SuperEagleScaler	GC_SuperEagle_scaler;
+#endif
 };
 
 #endif

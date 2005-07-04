@@ -914,6 +914,8 @@ const char *SuperEagleScaler::ScalerCopyright() const { return "Copyright (c) 19
 const SuperEagleScaler SuperEagle_scaler;
 
 
+#ifdef COMPILE_GAMMA_CORRECT_SCALERS
+
 //
 // Gamma Corrected 2xSaI 
 //
@@ -989,6 +991,7 @@ const char *GC_SuperEagleScaler::ScalerCopyright() const { return "Copyright (c)
 
 const GC_SuperEagleScaler GC_SuperEagle_scaler;
 
+#endif
 
 };	// Namespace
 

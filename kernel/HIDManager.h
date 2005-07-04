@@ -40,6 +40,9 @@ public:
 	//! \return a HIDBinding or null if no binding was present
 	HIDBinding getBinding(const SDL_Event& event);
 	
+	//! Reset the keybindings
+	void resetBindings();
+
 	//! loads the keybindings from the configuration
 	void loadBindings();
 

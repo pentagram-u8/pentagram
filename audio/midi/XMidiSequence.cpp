@@ -89,7 +89,7 @@ void XMidiSequence::ChannelShadow::reset()
 {
 	pitchWheel = combined_value;
 
-	program = 0;
+	program = -1;
 
 	// Bank Select
 	bank[0] = 0;
@@ -400,7 +400,7 @@ void XMidiSequence::applyShadow(int i)
 	handler->sequenceSendEvent(sequence_id, i | (MIDI_STATUS_CONTROLLER << 4) | (XMIDI_CONTROLLER_BANK_CHANGE << 8) | (shadows[i].xbank << 16));
 
 	// Bank Select
-	handler->sequenceSendEvent(sequence_id, i | (MIDI_STATUS_PROG_CHANGE << 4) | (shadows[i].program << 8));
+	if (shadows[i].program != -1) handler->sequenceSendEvent(sequence_id, i | (MIDI_STATUS_PROG_CHANGE << 4) | (shadows[i].program << 8));
 	SendController(0,bank);
 }
 

@@ -46,6 +46,7 @@ class HIDManager;
 class AvatarMoverProcess;
 class IDataSource;
 class ODataSource;
+struct Texture;
 
 namespace Pentagram {
 	class AudioMixer;
@@ -69,6 +70,12 @@ public:
 		{ return p_dynamic_cast<GUIApp*>(application); }
 	
 	void startup();
+	void shutdown();
+
+	void startupGame();
+	void startupPentagramMenu();
+	void shutdownGame();
+	void changeGame(Pentagram::istring newgame);
 
 	virtual void run();
 	virtual void handleEvent(const SDL_Event& event);
@@ -183,8 +190,12 @@ private:
 	//! create core gumps (DesktopGump, GameMapGump, ConsoleGump, ...)
 	void setupCoreGumps();
 
+	//! Does a Full reset of the Engine (including shutting down Video)
+	void fullReset();
+
 	// full system
 	Game* game;
+	Pentagram::istring change_gamename;
 
 	ObjectManager* objectmanager;
 	HIDManager* hidmanager;
@@ -233,6 +244,8 @@ private:
 	bool showTouching;			//!< If true, highlight items touching Avatar
 
 	int mouseX, mouseY;
+
+	Texture *defMouse;		//!< Default Pentagram mouse for when there is no GameData
 
 	//! get the current mouse frame
 	int getMouseFrame();
@@ -299,6 +312,9 @@ private:
 	static void			ConCmd_newGame(const Console::ArgsType &args, const Console::ArgvType &argv);	//!< "GUIApp::newGame" console command
 
 	static void			ConCmd_quit(const Console::ArgsType &args, const Console::ArgvType &argv);		//!< "quit" console command
+
+	static void			ConCmd_changeGame(const Console::ArgsType &args, const Console::ArgvType &argv);//!< "GuiApp::changeGame" console command
+	static void			ConCmd_listGames(const Console::ArgsType &args, const Console::ArgvType &argv);	//!< "GuiApp::listGames" console command
 
 	// This should be a console variable once they are implemented
 	bool				drawRenderStats;

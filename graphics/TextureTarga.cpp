@@ -60,14 +60,26 @@ bool TextureTarga::Read(IDataSource &ds)
 	ds.read(static_cast<uint8 *>(header), 12);
 
 	// Is it uncompressed?
-	if(memcmp(uTGAcompare, header, 12) == 0) tga.Compressed = false;
-	// Maybe it's compressed?
-	else if(memcmp(cTGAcompare, header, 12) == 0) tga.Compressed = true;
-	// Not a recognized Targa
-	else return false;																
+	//if(memcmp(uTGAcompare+1, header+1, 11) == 0) tga.Compressed = false;
+	//// Maybe it's compressed?
+	//else if(memcmp(cTGAcompare+1, header+1, 11) == 0) tga.Compressed = true;
+	/// Not a recognized Targa
+	//else return false;																
+
+	// Colour Map? We don't support it
+	if (header[1] != 0) return false;
+
+	// Image type. Only True Colour image data
+	if (header[2] == 2) tga.Compressed = false;
+	else if (header[2] == 10) tga.Compressed = true;
+	else return false;
+
+	// Don't care about the other header data
 
 	// Read TGA header
 	tga.Read(ds);
+
+	ds.skip(header[0]);
 
 	// Set Width and Height
 	width	= tga.Width;

@@ -40,7 +40,7 @@ AudioMixer::AudioMixer(int sample_rate_, bool stereo_, int num_channels_) :
 {
 	the_audio_mixer = this;
 
-	pout << "Initializing AudioMixer" << std::endl;
+	pout << "Initializing AudioMixer..." << std::endl;
 
 	SDL_AudioSpec desired, obtained;
 
@@ -62,13 +62,12 @@ AudioMixer::AudioMixer(int sample_rate_, bool stereo_, int num_channels_) :
 	audio_ok = (ret == 0);
 
 	if (audio_ok) {
+		pout << "Audio opened using format: " << obtained.freq << " Hz " << (int) obtained.channels << " Channels" <<  std::endl;
 		// Lock the audio
 		Lock();
 
 		sample_rate = obtained.freq;
 		stereo = obtained.channels == 2;
-
-		init_midi();
 
 		channels = new AudioChannel*[num_channels];
 		for (int i=0;i<num_channels;i++)
@@ -95,12 +94,7 @@ void AudioMixer::createProcesses()
 
 AudioMixer::~AudioMixer(void)
 {
-	if (midi_driver) midi_driver->destroyMidiDriver();
-
-	Lock();
-	delete midi_driver;
-	midi_driver = 0;
-	Unlock();
+	closeMidiOutput();
 
 	SDL_CloseAudio();
 
@@ -260,10 +254,13 @@ void AudioMixer::MixAudio(sint16 *stream, uint32 bytes)
 		if (channels[i]->isPlaying()) channels[i]->resampleAndMix(stream,bytes);
 }
 
-void AudioMixer::init_midi()
+void AudioMixer::openMidiOutput()
 {
+	if (midi_driver) return;
+	if (!audio_ok) return;
+
 	MidiDriver * new_driver = 0;
-	pout << "Initializing MidiDriver" << std::endl;
+	pout << "Initializing MidiDriver..." << std::endl;
 
 	SettingManager *settingman = SettingManager::get_instance();
 
@@ -278,10 +275,21 @@ void AudioMixer::init_midi()
 	// If the driver is a 'sample' producer we need to hook it to SDL
 	if (new_driver)
 	{
-		new_driver->setGlobalVolume(midi_volume);
-
+		Lock();
 		midi_driver = new_driver;
+		Unlock();
+		midi_driver->setGlobalVolume(midi_volume);
 	}
+}
+
+void AudioMixer::closeMidiOutput()
+{
+	if (midi_driver) midi_driver->destroyMidiDriver();
+
+	Lock();
+	delete midi_driver;
+	midi_driver = 0;
+	Unlock();
 }
 
 };

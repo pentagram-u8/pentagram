@@ -181,21 +181,26 @@ template<class uintX, class Manip, class uintS>
 bool BilinearScalerInternal_Arb(Texture *tex, sint32 sx, sint32 sy, sint32 sw, sint32 sh, 
 					uint8* pixel, sint32 dw, sint32 dh, sint32 pitch, bool clamp_src);
 
+#ifdef COMPILE_GAMMA_CORRECT_SCALERS
+#define InstantiateFunc(func,a,b,c) \
+	template bool func<a,b,c> (Texture*,sint32,sint32,sint32,sint32,uint8*,sint32,sint32,sint32,bool); \
+	template bool func<a,b##_GC,c> (Texture*,sint32,sint32,sint32,sint32,uint8*,sint32,sint32,sint32,bool)
+#else
 #define InstantiateFunc(func,a,b,c) \
 	template bool func<a,b,c> (Texture*,sint32,sint32,sint32,sint32,uint8*,sint32,sint32,sint32,bool)
+#endif
 
+#ifdef COMPILE_ALL_BILINEAR_SCALERS
 #define InstantiateBilinearScalerFunc(func) \
 	InstantiateFunc(func,uint16,Manip_Nat2Nat_16,uint16); \
 	InstantiateFunc(func,uint16,Manip_Sta2Nat_16,uint32); \
 	InstantiateFunc(func,uint32,Manip_Nat2Nat_32,uint32); \
 	InstantiateFunc(func,uint32,Manip_Sta2Nat_32,uint32); \
 	InstantiateFunc(func,uint32,Manip_32_A888,uint32); \
-	InstantiateFunc(func,uint32,Manip_32_888A,uint32); \
-	InstantiateFunc(func,uint16,Manip_Nat2Nat_16_GC,uint16); \
-	InstantiateFunc(func,uint16,Manip_Sta2Nat_16_GC,uint32); \
-	InstantiateFunc(func,uint32,Manip_Nat2Nat_32_GC,uint32); \
-	InstantiateFunc(func,uint32,Manip_Sta2Nat_32_GC,uint32); \
-	InstantiateFunc(func,uint32,Manip_32_A888_GC,uint32); \
-	InstantiateFunc(func,uint32,Manip_32_888A_GC,uint32)
+	InstantiateFunc(func,uint32,Manip_32_888A,uint32)
+#else
+#define InstantiateBilinearScalerFunc(func) \
+	InstantiateFunc(func,uint32,Manip_Nat2Nat_32,uint32); \
+	InstantiateFunc(func,uint32,Manip_Sta2Nat_32,uint32)
+#endif
 };
-

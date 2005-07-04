@@ -90,19 +90,23 @@ public:
 			{
 				if (RenderSurface::format.a_mask == 0xFF000000)
 				{
+					if (!Scale32_A888) return 0;
 					return Scale32_A888(texture,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
 				}
 				else if (RenderSurface::format.a_mask == 0x000000FF)
 				{
+					if (!Scale32_888A) return 0;
 					return Scale32_888A(texture,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
 				}
 				else 
 				{
+					if (!Scale32Nat) return 0;
 					return Scale32Nat(texture,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
 				}
 			}
 			else if (texture->format == TEX_FMT_STANDARD)
 			{
+				if (!Scale32Sta) return 0;
 				return Scale32Sta(texture,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
 			}
 		}
@@ -110,10 +114,12 @@ public:
 		{
 			if (texture->format == TEX_FMT_NATIVE)
 			{
+				if (!Scale16Nat) return 0;
 				return Scale16Nat(texture,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
 			}
 			else if (texture->format == TEX_FMT_STANDARD)
 			{
+				if (!Scale16Sta) return 0;
 				return Scale16Sta(texture,sx,sy,sw,sh,pixel,dw,dh,pitch,clamp_src);
 			}
 		}

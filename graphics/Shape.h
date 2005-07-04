@@ -39,7 +39,7 @@ public:
 	void setPalette(const Pentagram::Palette* pal) { palette = pal; }
 	const Pentagram::Palette* getPalette() const { return palette; }
 
-	unsigned int frameCount() const { return frames.size(); }
+	uint32 frameCount() const { return static_cast<uint32>(frames.size()); }
 
 	//! Returns the dimensions of all frames combined
 	//! (w,h) = size of smallest rectangle covering all frames

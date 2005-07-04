@@ -47,6 +47,9 @@ public:
 	void			setVolume(int chan, int lvol, int rvol);
 	void			getVolume(int chan, int &lvol, int &rvol);
 
+	void			openMidiOutput();
+	void			closeMidiOutput();
+
 private:
 	bool			audio_ok;
 	uint32			sample_rate;
@@ -57,7 +60,6 @@ private:
 	int				num_channels;
 	AudioChannel	**channels;
 
-	// Should probably go somewhere else.... perhaps in some 'audio manager'
 	void			init_midi();
 	static void		sdlAudioCallback(void *userdata, uint8 *stream, int len);
 

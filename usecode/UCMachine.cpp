@@ -1911,7 +1911,7 @@ bool UCMachine::execProcess(UCProcess* p)
 		p->ip = static_cast<uint16>(cs.getPos());	// TRUNCATES!
 
 		// check if we suspended ourselves
-		cede |= (p->flags & Process::PROC_SUSPENDED);
+		cede |= (p->flags & Process::PROC_SUSPENDED)!=0;
 
 	} // while(!cede && !error && !p->terminated && !p->terminate_deferred)
 

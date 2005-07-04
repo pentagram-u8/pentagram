@@ -25,7 +25,8 @@ struct GameInfo {
 		GAME_UNKNOWN = 0,
 		GAME_U8,
 		GAME_REMORSE,
-		GAME_REGRET 
+		GAME_REGRET,
+		GAME_PENTAGRAM_MENU
 	} type;
 
 	//! version number, encoded as 100*major + minor
@@ -43,6 +44,8 @@ struct GameInfo {
 
 	char getLanguageFileLetter() const;
 	std::string getGameTitle() const;
+
+	std::string getPrintDetails() const;
 
 	GameInfo() : type(GAME_UNKNOWN), version(0), language(GAMELANG_UNKNOWN) { }
 };

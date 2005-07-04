@@ -195,11 +195,13 @@ std::vector<istring> SettingManager::listGames()
 	std::vector<istring> sections, games;
 	sections = conffileman->listSections("settings", false);
 
+	games.push_back("pentagram");
+
 	for (unsigned int i = 0; i < sections.size(); ++i) {
 		istring name = sections[i];
 
 		istring pathkey = "settings/" + name + "/path";
-		if (name.find(':') == istring::npos && conffileman->exists(pathkey))
+		if (name.find(':') == istring::npos && conffileman->exists(pathkey) && name != "pentagram")
 			games.push_back(name);
 	}
 

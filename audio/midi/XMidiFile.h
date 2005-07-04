@@ -35,6 +35,7 @@ class XMidiEventList;
 #define XMIDIFILE_HINT_U7VOICE_MT_FILE		6
 #define XMIDIFILE_HINT_XMIDI_MT_FILE		7
 #define XMIDIFILE_HINT_SYX_FILE				8
+#define XMIDIFILE_HINT_SYSEX_IN_MID			9
 
 class   XMidiFile
 {
@@ -109,6 +110,7 @@ private:
 
 	int ExtractTracksFromU7V (IDataSource *source);
 	int ExtractTracksFromXMIDIMT (IDataSource *source);
+	void InsertDisplayEvents();
 };
 
 #endif //XMIDIFILE_H_INCLUDED

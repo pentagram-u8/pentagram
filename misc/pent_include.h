@@ -61,6 +61,7 @@
 // Strings
 //
 #include <string>
+#include <cstring>
 #include "istring.h"
 
 // Empty string

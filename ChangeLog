@@ -1,3 +1,31 @@
+2005-07-04  Ryan Nunn <colourles@users.sourceforge.net>
+	* audio/midi/* : Sync with Exult
+	* graphics/Scaler* : Added 2 new compile options 
+	  COMPILE_GAMMA_CORRECT_SCALERS to enable compiling of the GC scalers
+	  and COMPILE_ALL_BILINEAR_SCALERS to enable full compiling of the 
+	  bilinear scalers (by default 16 bit is not supported and don't 
+	  compile all the optimized variants)
+	* graphics/TextureTarga.cpp : Fixed up errors with file type detection
+	* misc/p_dynamic_cast.h, misc/pent_include.h : Added new 
+	  virtual Classname::IsOfType(const char*) method so you can supply a 
+	  string to check what a class is (instead having to include the header
+	  and use the Classname)
+	* filesys/IDataSource.h, /filesys/ODataSource.h, kernel/Process.h, 
+	  graphics/Shape.h, audio/AudioProcess.cpp, usecode/UCMachine.cpp : 
+	  Getting rid of warnings
+	* audio/AudioMixer.* : Made creating and destroying the MidiDriver 
+	  independant to AudioMixer
+	* kernel/GUIApp.*, pentagram/objects.mk, data/mouse.tga : Added a 
+	  'default' mouse cursor for when no gamedata is loaded
+	* Everything : Added ability for Pentagram to load without starting a 
+	  game and the ability to shutdown and change games. A number of 
+	  changes to the way the engine is intialized. Made many changes that 
+	  should in theory have separated 'Game' from 'Engine' intializations.
+	  The console commands "GUI::changeGame" and "GUIApp::listGames" should
+	  be the most relevant command. the "pentagram" game will be used to 
+	  drop to the 'coming soon' Pentagram Menu. Currently it just drops to 
+	  the console.
+
 2005-07-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/getObject.h: some (non-class) functions to get an Object,
 	  Item, Container, Actor, MainActor or Gump

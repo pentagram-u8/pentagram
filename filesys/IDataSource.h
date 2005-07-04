@@ -403,7 +403,7 @@ public:
 		if (buf_ptr >= buf + size) return 0;
 		sint32 count = num_bytes;
 		if (buf_ptr + num_bytes > buf + size)
-			count = buf - buf_ptr + size;
+			count = static_cast<sint32>(buf - buf_ptr + size);
 		std::memcpy(str, buf_ptr, count);
 		buf_ptr += count;
 		return count;
@@ -422,7 +422,7 @@ public:
 	}
 
 	virtual uint32 getPos() {
-		return (buf_ptr - buf);
+		return static_cast<uint32>(buf_ptr - buf);
 	}
 
 	virtual bool eof() { return (static_cast<uint32>(buf_ptr-buf))>=size; }

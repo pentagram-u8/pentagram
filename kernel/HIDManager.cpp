@@ -30,27 +30,8 @@ HIDManager* HIDManager::hidmanager = 0;
 
 HIDManager::HIDManager()
 {
-	uint16 key, button, js;
 	assert(hidmanager == 0);
 	hidmanager = this;
-
-	for (key=0; key < SDLK_LAST; ++key)
-	{
-		keybindings[key] = 0;
-	}
-	
-	for (button=0; button < NUM_MOUSEBUTTONS+1; ++button)
-	{
-		mousebindings[button] = 0;
-	}
-
-	for (js=0; js < NUM_JOYSTICKS; ++js)
-	{
-		for (button=0; button < NUM_MOUSEBUTTONS; ++button)
-		{
-			joybindings[js][button] = 0;
-		}
-	}
 
 	InitJoystick();
 
@@ -82,8 +63,6 @@ HIDManager::HIDManager()
 	bindingMap.insert( HIDBINDING_PAIR(quickMoveQuarterSpeed) );
 	bindingMap.insert( HIDBINDING_PAIR(quickMoveClipping) );
 	bindingMap.insert( HIDBINDING_PAIR(highlightItems) );
-	keybindings[SDLK_ESCAPE] = &HIDBindings::showMenu;
-	keybindings[SDLK_BACKQUOTE] = &HIDBindings::toggleConsole;
 
 	HIDBindingMap::iterator i;
 	Pentagram::istring conCmd;
@@ -93,6 +72,9 @@ HIDManager::HIDManager()
 		conCmd.append(i->first);
 		con.AddConsoleCommand(conCmd, HIDManager::ConCmd_execBinding);
 	}
+
+	resetBindings();
+	loadBindings();
 }
 
 HIDManager::~HIDManager()
@@ -191,6 +173,32 @@ void HIDManager::buildEvent(HID_Event& hidEvent, const SDL_Event& sdlEvent)
 			hidEvent.type = HID_UNHANDLED;
 			hidEvent.device = HID_OTHER;
 	}
+}
+
+void HIDManager::resetBindings()
+{
+	uint16 key, button, js;
+
+	for (key=0; key < SDLK_LAST; ++key)
+	{
+		keybindings[key] = 0;
+	}
+	
+	for (button=0; button < NUM_MOUSEBUTTONS+1; ++button)
+	{
+		mousebindings[button] = 0;
+	}
+
+	for (js=0; js < NUM_JOYSTICKS; ++js)
+	{
+		for (button=0; button < NUM_MOUSEBUTTONS; ++button)
+		{
+			joybindings[js][button] = 0;
+		}
+	}
+
+	keybindings[SDLK_ESCAPE] = &HIDBindings::showMenu;
+	keybindings[SDLK_BACKQUOTE] = &HIDBindings::toggleConsole;
 }
 
 void HIDManager::loadBindings()

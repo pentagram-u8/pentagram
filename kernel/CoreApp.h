@@ -73,17 +73,17 @@ protected:
 	//! \param game The id of the game to check (from pentagram.cfg)
 	//! \param gameinfo The GameInfo struct to fill
 	//! \return true if detected all the fields, false if detection failed
-	bool getGameInfo(std::string& game, GameInfo* gameinfo);
+	bool getGameInfo(Pentagram::istring& game, GameInfo* gameinfo);
 
 	//! Setup the virtual game paths for the given game/GameInfo
 	//! Specifically, @u8 and @work (//!!FIXME)
 	//! \param game The id of the game
 	//! \param gameinfo The GameInfo for the game
-	void setupGamePaths(std::string& game, GameInfo* gameinfo);
+	void setupGamePaths(Pentagram::istring& game, GameInfo* gameinfo);
 
 	bool isRunning;
 	
-	std::string gamename;
+	Pentagram::istring gamename;
 	
 	// minimal system
 	GameInfo* gameinfo;
@@ -117,9 +117,17 @@ private:
 	void loadConfig();
 
 protected:
-	//! select and init game
-	void initGame();
-	
+	//! Do initial Game init
+	//! \return false if no default game (implies go to Pentagram Menu)
+	bool getDefaultGame();
+
+	//! Setup up a game
+	//! \return false if failed (implies go to Pentagram Menu)
+	bool setupGameInfo();
+
+	//! kill current gameinfo
+	void killGame();
+
 	bool oHelp;
 	bool oQuiet;
 	bool oVQuiet;

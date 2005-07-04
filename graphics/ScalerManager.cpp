@@ -40,23 +40,23 @@ ScalerManager::~ScalerManager()
 //
 // Get the Index of a scaler from its Name
 //
-int	ScalerManager::GetIndexForName(const Pentagram::istring name)
+uint32 ScalerManager::GetIndexForName(const Pentagram::istring name)
 {
 	std::vector<const Pentagram::Scaler*>::iterator it;
-	int index = 0;
+	uint32 index = 0;
 
 	for (it = scalers.begin(); it != scalers.end(); ++it, ++index) {
 
 		if (name == (*it)->ScalerName()) return index;
 	}
 
-	return -1;
+	return 0xFFFFFFFF;
 }
 
 //
 // Get Name of a Scaler from its Index
 //
-const char *ScalerManager::GetNameForIndex(unsigned int index)
+const char *ScalerManager::GetNameForIndex(uint32 index)
 {
 	if (index >= scalers.size()) return 0;
 
@@ -67,9 +67,9 @@ const char *ScalerManager::GetNameForIndex(unsigned int index)
 //
 // Get a Scaler from its Index
 //
-const Pentagram::Scaler *ScalerManager::GetScaler(unsigned int index)
+const Pentagram::Scaler *ScalerManager::GetScaler(uint32 index)
 {
-	if (index < 0 || index >= scalers.size()) return 0;
+	if (index >= scalers.size()) return 0;
 	
 	return scalers[index];
 }
@@ -92,12 +92,12 @@ const Pentagram::Scaler	*ScalerManager::GetScaler(const Pentagram::istring name)
 //
 // Adds a scaler
 // 
-int ScalerManager::AddScaler(const Pentagram::Scaler *scaler)
+uint32 ScalerManager::AddScaler(const Pentagram::Scaler *scaler)
 {
-	if (!scaler) return -1;
+	if (!scaler) return 0xFFFFFFFF;
 
 	std::vector<const Pentagram::Scaler*>::iterator it;
-	int index = 0;
+	uint32 index = 0;
 
 	for (it = scalers.begin(); it != scalers.end(); ++it, ++index) {
 

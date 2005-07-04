@@ -42,6 +42,7 @@ struct RunTimeClassType
 #define ENABLE_RUNTIME_CLASSTYPE()												\
 	static const RunTimeClassType	ClassType;									\
 	virtual bool IsOfType(const RunTimeClassType & type);						\
+	virtual bool IsOfType(const char * type);									\
 	template<class T> inline bool IsOfType() { return IsOfType(T::ClassType); }	\
 	virtual const RunTimeClassType & GetClassType() { return ClassType; }
 	
@@ -57,7 +58,13 @@ const RunTimeClassType Classname::ClassType = {						\
 																	\
 bool Classname::IsOfType(const RunTimeClassType & type)				\
 {																	\
-	if (type == ClassType) return true;							\
+	if (type == ClassType) return true;								\
+	return false;													\
+}																	\
+																	\
+bool Classname::IsOfType(const char * type)							\
+{																	\
+	if (!std::strcmp(type,ClassType.class_name)) return true;		\
 	return false;													\
 }
 
@@ -73,6 +80,12 @@ const RunTimeClassType Classname::ClassType = {						\
 bool Classname::IsOfType(const RunTimeClassType & type)				\
 {																	\
 	if (type == ClassType) return true;								\
+	return ParentClassname::IsOfType(type);							\
+}																	\
+																	\
+bool Classname::IsOfType(const char * type)							\
+{																	\
+	if (!std::strcmp(type,ClassType.class_name)) return true;		\
 	return ParentClassname::IsOfType(type);							\
 }
 
@@ -91,6 +104,16 @@ bool Classname::IsOfType(const RunTimeClassType &type)					\
 	typedef Parent1 P1;													\
 	typedef Parent2 P2;													\
 	if (type == ClassType) return true;									\
+	bool ret = P1::IsOfType(type);										\
+	if (ret) return true;												\
+	return P2::IsOfType(type);											\
+}																		\
+																		\
+bool Classname::IsOfType(const char * type)								\
+{																		\
+	typedef Parent1 P1;													\
+	typedef Parent2 P2;													\
+	if (!std::strcmp(type,ClassType.class_name)) return true;			\
 	bool ret = P1::IsOfType(type);										\
 	if (ret) return true;												\
 	return P2::IsOfType(type);											\

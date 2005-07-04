@@ -50,6 +50,7 @@ static bool ScaleBilinear( Texture *tex, sint32 sx, sint32 sy, sint32 sw, sint32
 
 BilinearScaler::BilinearScaler() : Scaler()
 {
+#ifdef COMPILE_ALL_BILINEAR_SCALERS
 	Scale16Nat = BilinearScalerInternal<uint16, Manip_Nat2Nat_16, uint16>::ScaleBilinear;
 	Scale16Sta = BilinearScalerInternal<uint16, Manip_Sta2Nat_16, uint32>::ScaleBilinear;
 
@@ -57,6 +58,15 @@ BilinearScaler::BilinearScaler() : Scaler()
 	Scale32Sta = BilinearScalerInternal<uint32, Manip_Sta2Nat_32, uint32>::ScaleBilinear;
 	Scale32_A888 = BilinearScalerInternal<uint32, Manip_32_A888, uint32>::ScaleBilinear;
 	Scale32_888A = BilinearScalerInternal<uint32, Manip_32_888A, uint32>::ScaleBilinear;
+#else
+	Scale16Nat = 0;
+	Scale16Sta = 0;
+
+	Scale32Nat = BilinearScalerInternal<uint32, Manip_Nat2Nat_32, uint32>::ScaleBilinear;
+	Scale32Sta = BilinearScalerInternal<uint32, Manip_Sta2Nat_32, uint32>::ScaleBilinear;
+	Scale32_A888 = Scale32Nat;
+	Scale32_888A = Scale32Nat;
+#endif
 }
 
 const uint32 BilinearScaler::ScaleBits() const { return 0xFFFFFFFF; }
@@ -68,9 +78,10 @@ const char *BilinearScaler::ScalerCopyright() const { return "Copyright (C) 2005
 
 const BilinearScaler bilinear_scaler;
 
-
+#ifdef COMPILE_GAMMA_CORRECT_SCALERS
 GC_BilinearScaler::GC_BilinearScaler() : Scaler()
 {
+#ifdef COMPILE_ALL_BILINEAR_SCALERS
 	Scale16Nat = BilinearScalerInternal<uint16, Manip_Nat2Nat_16_GC, uint16>::ScaleBilinear;
 	Scale16Sta = BilinearScalerInternal<uint16, Manip_Sta2Nat_16_GC, uint32>::ScaleBilinear;
 
@@ -78,6 +89,15 @@ GC_BilinearScaler::GC_BilinearScaler() : Scaler()
 	Scale32Sta = BilinearScalerInternal<uint32, Manip_Sta2Nat_32_GC, uint32>::ScaleBilinear;
 	Scale32_A888 = BilinearScalerInternal<uint32, Manip_32_A888_GC, uint32>::ScaleBilinear;
 	Scale32_888A = BilinearScalerInternal<uint32, Manip_32_888A_GC, uint32>::ScaleBilinear;
+#else
+	Scale16Nat = 0;
+	Scale16Sta = 0;
+
+	Scale32Nat = BilinearScalerInternal<uint32, Manip_Nat2Nat_32_GC, uint32>::ScaleBilinear;
+	Scale32Sta = BilinearScalerInternal<uint32, Manip_Sta2Nat_32_GC, uint32>::ScaleBilinear;
+	Scale32_A888 = Scale32Nat;
+	Scale32_888A = Scale32Nat;
+#endif
 }
 
 const uint32 GC_BilinearScaler::ScaleBits() const { return 0xFFFFFFFF; }
@@ -88,5 +108,5 @@ const char *GC_BilinearScaler::ScalerDesc() const { return "Gamma 2.2 Correct Bi
 const char *GC_BilinearScaler::ScalerCopyright() const { return "Copyright (C) 2005 The Pentagram Team"; }
 
 const GC_BilinearScaler GC_bilinear_scaler;
-
+#endif
 };

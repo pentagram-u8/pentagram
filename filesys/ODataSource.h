@@ -221,7 +221,7 @@ public:
 	
 	virtual uint32 getSize() { return size; };
 	
-	virtual uint32 getPos() { return (buf_ptr-buf); };
+	virtual uint32 getPos() { return static_cast<uint32>(buf_ptr-buf); };
 };
 
 class ODequeDataSource : public ODataSource
@@ -295,9 +295,9 @@ class ODequeDataSource : public ODataSource
 	virtual void seek(uint32 /*pos*/) { /*out->seekp(pos); FIXME: Do something here. */ }
 	virtual void skip(sint32 /*pos*/) { /*out->seekp(pos, std::ios::cur); FIXME: Do something here. */ }
 
-	virtual uint32 getSize()      { return out.size(); }
+	virtual uint32 getSize()      { return static_cast<uint32>(out.size()); }
 	
-	virtual uint32 getPos() { return out.size(); /*return out->tellp(); FIXME: Do something here. */ }
+	virtual uint32 getPos() { return static_cast<uint32>(out.size()); /*return out->tellp(); FIXME: Do something here. */ }
 
 };
 
@@ -322,7 +322,7 @@ protected:
 		if (loc > allocated)
 		{
 			// The old pointer position
-			uint32 pos = buf_ptr-buf;
+			uint32 pos = static_cast<uint32>(buf_ptr-buf);
 
 			// The new buffer and size (2 times what is needed)
 			allocated = loc*2;
@@ -441,7 +441,7 @@ public:
 	
 	virtual uint32 getSize() { return size; };
 	
-	virtual uint32 getPos() { return (buf_ptr-buf); };
+	virtual uint32 getPos() { return static_cast<uint32>(buf_ptr-buf); };
 
 	// Don't actually do anything substantial
 	virtual void clear()          

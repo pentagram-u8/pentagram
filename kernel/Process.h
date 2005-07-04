@@ -43,8 +43,8 @@ public:
 	uint32 getProcessFlags() const { return flags; }
 	bool is_active() const { return (flags & PROC_ACTIVE); }
 	bool is_terminated() const { return (flags & (PROC_TERMINATED |
-												  PROC_TERM_DEFERRED)); }
-	bool is_suspended() const { return (flags & PROC_SUSPENDED); }
+												  PROC_TERM_DEFERRED))!=0; }
+	bool is_suspended() const { return (flags & PROC_SUSPENDED)!=0; }
 
 	//! terminate the process and recursively fail all processes waiting for it
 	void fail();
