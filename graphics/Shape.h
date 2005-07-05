@@ -57,6 +57,8 @@ public:
 
 	ENABLE_RUNTIME_CLASSTYPE();
 
+	ENABLE_CUSTOM_MEMORY_ALLOCATION();
+
 protected:
 
 	// This will load a u8 style shape 'optimized'.

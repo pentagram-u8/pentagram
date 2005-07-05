@@ -23,6 +23,7 @@
 // We will define c_empty_string here, unless we say not to
 #ifndef DONT_DEFINE_C_EMPTY_STRING
 const std::string c_empty_string;
+#endif
 
 namespace Pentagram
 {
@@ -36,4 +37,3 @@ void setAllocationFunctions(allocFunc a, deallocFunc d)
 }
 
 }
-#endif

@@ -1,3 +1,7 @@
+2005-07-05  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* misc/pent_include.*: fix ifndef for memory allocation functions
+	* graphics/Shape.*: use memory management on Shapes
+
 2005-07-04  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* pentagram.cpp: Initialize the MemoryManager before GUIApp starts.
 	* kernel/*Allocator.*: add info and ability to free unused pools
