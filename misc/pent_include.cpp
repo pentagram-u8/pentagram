@@ -23,4 +23,17 @@
 // We will define c_empty_string here, unless we say not to
 #ifndef DONT_DEFINE_C_EMPTY_STRING
 const std::string c_empty_string;
+
+namespace Pentagram
+{
+allocFunc palloc = malloc;
+deallocFunc pfree = free;
+
+void setAllocationFunctions(allocFunc a, deallocFunc d)
+{
+	palloc = a;
+	pfree = d;
+}
+
+}
 #endif

@@ -31,7 +31,6 @@ class UCMachine;
 class FileSystem;
 class ConfigFileManager;
 class SettingManager;
-class MemoryManager;
 struct GameInfo;
 
 class CoreApp
@@ -91,7 +90,6 @@ protected:
 	FileSystem* filesystem;
 	ConfigFileManager* configfileman;
 	SettingManager* settingman;
-	MemoryManager* memorymanager;
 
 	Args parameters;
 	

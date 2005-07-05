@@ -122,14 +122,28 @@ extern const std::string c_empty_string;
 #define CANT_HAPPEN_MSG(msg) do { assert(msg && false); } while(0)
 
 // Memory Management through Allocators
-// See MemoryManager.h for DEFINE_CUSTOM_MEMORY_MANAGEMENT
-class Allocator;
+typedef void * (*allocFunc)(size_t size);
+typedef void (*deallocFunc)(void * ptr);
+
+namespace Pentagram
+{
+extern allocFunc palloc;
+extern deallocFunc pfree;
+void setAllocationFunctions(allocFunc a, deallocFunc d);
+}
 
 #define ENABLE_CUSTOM_MEMORY_ALLOCATION()							\
 	static void * operator new(size_t size);						\
-	static void operator delete(void * ptr);						\
-	static void * operator new(size_t size, Allocator * a);			\
-	static void operator delete(void * ptr, Allocator * a);
+	static void operator delete(void * ptr);
+
+#define DEFINE_CUSTOM_MEMORY_ALLOCATION(Classname)					\
+void * Classname::operator new(size_t size) {						\
+	return Pentagram::palloc(size);									\
+}																	\
+																	\
+void Classname::operator delete(void * ptr) {						\
+	Pentagram::pfree(ptr);											\
+}
 
 //
 // Precompiled Header Support

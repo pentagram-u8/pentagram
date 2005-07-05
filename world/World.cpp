@@ -37,6 +37,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Gump.h" // For MapChanged notification
 #include "Animation.h"
 #include "getObject.h"
+#include "MemoryManager.h"
 
 //#define DUMP_ITEMS
 
@@ -171,6 +172,8 @@ bool World::switchMap(uint32 newmap)
 	// reset camera
 	CameraProcess::SetCameraProcess(new CameraProcess(1));
 	CameraProcess::SetEarthquake(0);
+
+	MemoryManager::get_instance()->freeResources();
 
 	return true;
 }

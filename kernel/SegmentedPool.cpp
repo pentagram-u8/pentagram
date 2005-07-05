@@ -47,11 +47,6 @@ SegmentedPool::SegmentedPool(size_t nodeCapacity_, uint32 nodes_)
 	startOfPool = new uint8[nodeOffset * nodes_];
 	endOfPool = startOfPool + (nodeOffset * nodes_);
 
-/*
-	con.Printf("Pool Info:\n start %X\tend %X\n nodeOffset %X\t nodeCapacity %X\n nodes %X\n",
-			startOfPool, endOfPool, nodeOffset, nodeCapacity, nodes);
-*/
-
 	firstFree = reinterpret_cast<SegmentedPoolNode*>(startOfPool);
 	firstFree->pool = this;
 	firstFree->size = 0;
@@ -126,6 +121,45 @@ void SegmentedPool::deallocate(void * ptr)
 			lastFree = lastFree->nextFree;
 		}
 		++freeNodeCount;
+	}
+}
+
+void SegmentedPool::printInfo()
+{
+	uint16 i;
+	size_t max, min, total;
+	SegmentedPoolNode * node;
+
+	con.Printf("   start address 0x%X\tend address 0x%X\tnodeOffset 0x%X\n",
+			startOfPool, endOfPool, nodeOffset);
+	con.Printf("   nodeCapacity %d b\n   total nodes %d\tfree nodes %d\n",
+			nodeCapacity, nodes, freeNodeCount);
+	con.Printf("   total memory: %d\tfree memory: %d\n",
+			nodeCapacity * nodes, nodeCapacity * freeNodeCount);
+
+	max = 0;
+	min = nodeCapacity;
+	total = 0;
+
+	for (i = 0; i < nodes; ++i)
+	{
+		node = reinterpret_cast<SegmentedPoolNode*>(startOfPool + i * nodeOffset);
+		if (node->size > 0)
+		{
+			max = node->size > max ? node->size : max;
+			min = node->size < min ? node->size : min;
+			total += node->size;
+		}
+	}
+
+	if (nodes > freeNodeCount)
+	{
+		con.Printf("   smallest node: %d b\tlargest node: %d b\taverage size: %d b\n",
+				min, max, total / (nodes - freeNodeCount));
+	}
+	else
+	{
+		con.Printf("   Empty pool!!!\n");
 	}
 }
 

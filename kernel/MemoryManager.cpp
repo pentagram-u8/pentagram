@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "MemoryManager.h"
 
-#include "Object.h"
 #include "SegmentedAllocator.h"
 
 MemoryManager* MemoryManager::memorymanager = 0;
@@ -30,22 +29,38 @@ MemoryManager::MemoryManager()
 	assert(memorymanager == 0);
 	memorymanager = this;
 
-	allocators[objectAllocator] = new SegmentedAllocator(256, 10000);
-	allocators[processAllocator] = new SegmentedAllocator(256, 10000);
-	allocators[UCProcessAllocator] = new SegmentedAllocator(4224, 10);
+	//!!! CONSTANT !!!!
+	allocatorCount = 2;
+	// Tune these with averages from MemoryManager::MemInfo when needed
+	allocators[0] = new SegmentedAllocator(192, 8500);
+	allocators[1] = new SegmentedAllocator(4224, 25);
+
+	Pentagram::setAllocationFunctions(MemoryManager::allocate,
+									  MemoryManager::deallocate);
 }
 
 MemoryManager::~MemoryManager()
 {
 	memorymanager = 0;
 
-	delete allocators[objectAllocator];
-	delete allocators[processAllocator];
-	delete allocators[UCProcessAllocator];
+	Pentagram::setAllocationFunctions(malloc, free);
+	delete allocators[0];
+	delete allocators[1];
 }
 
-void * MemoryManager::allocate(size_t size)
+void * MemoryManager::_allocate(size_t size)
 {
+	int i;
+	// get the memory from the first allocator that can hold "size"
+	for (i = 0; i < allocatorCount; ++i)
+	{
+		if (allocators[i]->getCapacity() >= size)
+		{
+			return allocators[i]->allocate(size);
+		}
+	}
+
+	// else
 	void * ptr = malloc(size);
 #ifdef DEBUG
 	con.Printf("MemoryManager::allocate - Allocated %d bytes to 0x%X\n", size, ptr);
@@ -54,41 +69,96 @@ void * MemoryManager::allocate(size_t size)
 	return ptr;
 }
 
-void MemoryManager::deallocate(void * ptr)
+void MemoryManager::_deallocate(void * ptr)
 {
 	Pool * p;
-	p = allocators[objectAllocator]->findPool(ptr);
+	int i;
+	for (i = 0; i < allocatorCount; ++i)
+	{
+		p = allocators[i]->findPool(ptr);
+		if (p)
+		{
+			p->deallocate(ptr);
+			return;
+		}
+	}
 
 #ifdef DEBUG
 	con.Printf("MemoryManager::deallocate - deallocating memory at 0x%X\n", ptr);
 #endif
+	// Pray!
+	free(ptr);
+}
 
-	// try other allocators
-	if (!p)
-		p = allocators[processAllocator]->findPool(ptr);
-
-	if (!p)
-		p = allocators[UCProcessAllocator]->findPool(ptr);
-
-	if (p)
+void MemoryManager::freeResources()
+{
+	int i;
+	for (i = 0; i < allocatorCount; ++i)
 	{
-		p->deallocate(ptr);
-	}
-	else
-	{
-		// Pray!
-		free(ptr);
+		allocators[i]->freeResources();
 	}
 }
 
 void MemoryManager::ConCmd_MemInfo(const Console::ArgsType &args, const Console::ArgvType &argv)
 {
-	//! Todo: Write this!
+	MemoryManager * mm = MemoryManager::get_instance();
+	int i, count;
+
+	if (!mm)
+		return;
+
+	count = mm->getAllocatorCount();
+
+	pout << "Allocators: " << count << std::endl;
+	for (i = 0; i < count; ++i)
+	{
+		pout << " Allocator " << i << ": " << std::endl;
+		mm->getAllocator(i)->printInfo();
+		pout << "==============" << std::endl;
+	}
 }
 
-#if 0
+#ifdef DEBUG
+
+#include <SDL.h>
 // Test classes purely here to check the speed of Allocators vs. normal allocation
-class TestClassOne
+class TestClassBase
+{
+public:
+	TestClassBase()
+	{
+		next = 0;
+	}
+
+	virtual ~TestClassBase()
+	{
+	}
+
+	void setNext(TestClassBase * n)
+	{
+		n->next = next;
+		next = n;
+	}
+
+	void removeNext()
+	{
+		TestClassBase * n;
+		if (! next)
+			return;
+		n = next;
+		next = n->next;
+		delete n;
+	}
+
+	ENABLE_RUNTIME_CLASSTYPE();
+
+	TestClassBase *next;
+	int arr[32];
+};
+
+DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(TestClassBase);
+
+class TestClassOne: public TestClassBase
 {
 public:
 	TestClassOne()
@@ -100,13 +170,12 @@ public:
 	}
 
 	ENABLE_RUNTIME_CLASSTYPE();
-private:
-	int arr[32];
 };
 
-DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(TestClassOne);
+DEFINE_RUNTIME_CLASSTYPE_CODE(TestClassOne, TestClassBase);
 
-class TestClassTwo: public TestClassOne
+
+class TestClassTwo: public TestClassBase
 {
 public:
 	TestClassTwo()
@@ -119,41 +188,77 @@ public:
 
 	ENABLE_RUNTIME_CLASSTYPE();
 	ENABLE_CUSTOM_MEMORY_ALLOCATION();
-private:
-	int arr[32];
 };
 
-DEFINE_RUNTIME_CLASSTYPE_CODE(TestClassTwo, TestClassOne);
-DEFINE_CUSTOM_MEMORY_ALLOCATION(TestClassTwo, MemoryManager::objectAllocator);
+DEFINE_RUNTIME_CLASSTYPE_CODE(TestClassTwo, TestClassBase);
+DEFINE_CUSTOM_MEMORY_ALLOCATION(TestClassTwo);
 
 void MemoryManager::ConCmd_test(const Console::ArgsType &args, const Console::ArgvType &argv)
 {
-	int i;
-	TestClassOne * test[10000];
+	// Just some numbers of classes to allocate and free
+	int a[10] = {1000, 1231, 2423, 1233, 3213, 2554, 1123, 2432, 3311, 1022};
+	int b[10] = {900, 1111, 2321, 1000, 1321, 1432, 1123, 2144, 2443, 0};
+	int i, j, repeat;
+	uint32 pooled, unpooled;
+	TestClassBase * t;
 
-	// Un pooled
-	for (i = 0; i < 10000; ++i)
+	t = new TestClassBase();
+
+	unpooled = SDL_GetTicks();
+	for (repeat=0; repeat < 100; ++repeat)
 	{
-		test[i] = new TestClassOne();
+		for (i=0; i < 10; ++i)
+		{
+			// allocate
+			for (j=0; j < a[i]; ++j)
+			{
+				t->setNext(new TestClassOne());
+			}
+			// free
+			for (j=0; j < b[i]; ++j)
+			{
+				t->removeNext();
+			}
+		}
+		while (t->next)
+		{
+			t->removeNext();
+		}
 	}
+	unpooled = SDL_GetTicks() - unpooled;
 
-	for (i = 0; i < 10000; ++i)
+	pooled = SDL_GetTicks();
+	for (repeat=0; repeat < 100; ++repeat)
 	{
-		delete test[i];
+		for (i=0; i < 10; ++i)
+		{
+			// allocate
+			for (j=0; j < a[i]; ++j)
+			{
+				t->setNext(new TestClassTwo());
+			}
+			// free
+			for (j=0; j < b[i]; ++j)
+			{
+				t->removeNext();
+			}
+		}
+		while (t->next)
+		{
+			t->removeNext();
+		}
 	}
+	pooled = SDL_GetTicks() - pooled;
 
-	// pooled with the objectAllocator
-	for (i = 0; i < 10000; ++i)
-	{
-		test[i] = new TestClassTwo();
-	}
+	delete t;
 
-	for (i = 0; i < 10000; ++i)
-	{
-		delete test[i];
-	}
-
-	delete twoAllocator;
+	con.Printf("Unpooled Allocation: %d ms\nPooled Allocation: %d ms\n", unpooled, pooled);
 }
+
+#else
+void MemoryManager::ConCmd_test(const Console::ArgsType &args, const Console::ArgvType &argv)
+{
+}
+
 #endif
 

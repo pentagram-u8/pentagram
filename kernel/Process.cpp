@@ -22,12 +22,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Kernel.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
-#include "MemoryManager.h"
 
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(Process);
 
-DEFINE_CUSTOM_MEMORY_ALLOCATION(Process, MemoryManager::processAllocator);
+DEFINE_CUSTOM_MEMORY_ALLOCATION(Process);
 
 Process::Process(ObjId it, uint16 ty)
 	: pid(0xFFFF), flags(0), item_num(it), type(ty), result(0)

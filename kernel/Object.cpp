@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Object.h"
 #include "Kernel.h"
 #include "ObjectManager.h"
+#include "World.h"
 #include "MemoryManager.h"
 
 #include "UCProcess.h"
@@ -31,7 +32,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(Object);
 
-DEFINE_CUSTOM_MEMORY_ALLOCATION(Object, MemoryManager::objectAllocator);
+DEFINE_CUSTOM_MEMORY_ALLOCATION(Object);
 
 Object::~Object()
 {

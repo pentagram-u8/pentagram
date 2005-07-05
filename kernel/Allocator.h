@@ -32,6 +32,13 @@ public:
 	virtual void * allocate(size_t size) = 0;
 
 	virtual Pool * findPool(void * ptr) = 0;
+
+	// Frees unneeded system resources
+	virtual void freeResources() = 0;
+
+	virtual size_t getCapacity() = 0;
+
+	virtual void printInfo() = 0;
 };
 
 #endif

@@ -2,17 +2,17 @@ KERNEL = \
 	kernel/DelayProcess.o \
 	kernel/Kernel.o \
 	kernel/CoreApp.o \
-	kernel/MemoryManager.o \
-	kernel/Allocator.o \
-	kernel/SegmentedAllocator.o \
-	kernel/Pool.o \
-	kernel/SegmentedPool.o \
 	kernel/Process.o
 
 KERNEL2 = \
 	kernel/HIDManager.o \
 	kernel/ObjectManager.o \
 	kernel/Object.o \
+	kernel/MemoryManager.o \
+	kernel/Allocator.o \
+	kernel/SegmentedAllocator.o \
+	kernel/Pool.o \
+	kernel/SegmentedPool.o \
 	kernel/Mouse.o \
 	kernel/Joystick.o
 

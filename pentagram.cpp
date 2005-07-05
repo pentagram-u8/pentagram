@@ -20,10 +20,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <SDL.h>
 #include "GUIApp.h"
+#include "MemoryManager.h"
 #include "version.h"
 
 int main(int argc, char* argv[])
 {
+	// Initialize Memory Manager here to avoid extra tools depending on it
+	MemoryManager mm;
 	GUIApp app(argc, argv);
 
 #ifdef SAFE_CONSOLE_STREAMS

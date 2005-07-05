@@ -35,7 +35,11 @@ public:
 
 	virtual Pool * findPool(void * ptr);
 
-	size_t getNodeCapacity() {return nodeCapacity;}
+	virtual void freeResources();
+
+	virtual size_t getCapacity() {return nodeCapacity;}
+
+	void printInfo();
 
 private:
 	std::vector<SegmentedPool *> pools;

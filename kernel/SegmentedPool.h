@@ -54,6 +54,8 @@ public:
 
 	virtual bool inPool(void * ptr) {return (ptr > startOfPool && ptr < endOfPool);}
 
+	void printInfo();
+
 	size_t getNodeCapacity() {return nodeCapacity;}
 
 	SegmentedPoolNode* getPoolNode(void * ptr);

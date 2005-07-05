@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ObjectManager.h"
 #include "GameInfo.h"
 #include "FontManager.h"
+#include "MemoryManager.h"
 
 #include "HIDManager.h"
 #include "HIDBinding.h"
@@ -179,6 +180,10 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 						  ObjectManager::ConCmd_objectTypes);
 	con.AddConsoleCommand("ObjectManager::objectInfo",
 						  ObjectManager::ConCmd_objectInfo);
+	con.AddConsoleCommand("MemoryManager::MemInfo",
+						  MemoryManager::ConCmd_MemInfo);
+	con.AddConsoleCommand("MemoryManager::test",
+						  MemoryManager::ConCmd_test);
 
 	// Game related console commands are now added in startupGame
 }
@@ -203,6 +208,8 @@ GUIApp::~GUIApp()
 	con.RemoveConsoleCommand("Kernel::listItemProcesses");
 	con.RemoveConsoleCommand("ObjectManager::objectTypes");
 	con.RemoveConsoleCommand("ObjectManager::objectInfo");
+	con.RemoveConsoleCommand("MemoryManager::MemInfo");
+	con.RemoveConsoleCommand("MemoryManager::test");
 
 	// Game related console commands are now removed in shutdownGame
 

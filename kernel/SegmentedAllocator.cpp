@@ -79,3 +79,32 @@ Pool * SegmentedAllocator::findPool(void * ptr)
 	}
 	return 0;
 }
+
+void SegmentedAllocator::freeResources()
+{
+	if (pools.empty())
+		return;
+
+	// Pop back only -- it should suffice.
+	while(pools.back()->isEmpty())
+	{
+		delete pools.back();
+		pools.pop_back();
+
+		if (pools.empty())
+			return;
+	}
+}
+
+void SegmentedAllocator::printInfo()
+{
+	std::vector<SegmentedPool *>::iterator it;
+	int i = 0;
+
+	pout << "Pools: " <<  pools.size() << std::endl;
+	for (it = pools.begin(); it != pools.end(); ++it)
+	{
+		pout << "  Pool " << i++ << ":" << std::endl;
+		(*it)->printInfo();
+	}
+}

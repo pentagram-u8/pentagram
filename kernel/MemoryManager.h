@@ -19,34 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef MEMORYMANAGER_H
 #define MEMORYMANAGER_H
 
-#include "Allocator.h"
-
-#define DEFINE_CUSTOM_MEMORY_ALLOCATION(Classname, AllocatorType)	\
-void * Classname::operator new(size_t size) {						\
-	void * ptr = MemoryManager::get_instance()						\
-		->getAllocator(AllocatorType)->allocate(size);				\
-	if (!ptr) ptr = MemoryManager::get_instance()->allocate(size);	\
-	return ptr;														\
-}																	\
-																	\
-void Classname::operator delete(void * ptr) {						\
-	Pool * p = MemoryManager::get_instance()						\
-		->getAllocator(AllocatorType)->findPool(ptr);				\
-	if (p) p->deallocate(ptr);										\
-	else MemoryManager::get_instance()->deallocate(ptr);			\
-}																	\
-																	\
-void * Classname::operator new(size_t size, Allocator * a) {		\
-	void * ptr = a->allocate(size);									\
-	if (!ptr) ptr = MemoryManager::get_instance()->allocate(size);	\
-	return ptr;														\
-}																	\
-																	\
-void Classname::operator delete(void * ptr, Allocator * a) {		\
-	Pool * p = a->findPool(ptr);									\
-	if (p) p->deallocate(ptr);										\
-	else MemoryManager::get_instance()->deallocate(ptr);			\
-}
+class Allocator;
 
 class MemoryManager
 {
@@ -57,29 +30,33 @@ public:
 	static MemoryManager* get_instance() { return memorymanager; }
 
 	//! Allocates memory with the default allocator or malloc
-	void * allocate(size_t size);
+	static void * allocate(size_t size)
+		{ return memorymanager ? memorymanager->_allocate(size) : 0; }
 
 	//! Checks all known Allocators to free memory
-	void deallocate(void * ptr);
+	static void deallocate(void * ptr)
+		{ memorymanager->_deallocate(ptr); }
 
-	enum AllocatorType
-	{
-		objectAllocator = 0,
-		processAllocator,
-		UCProcessAllocator
-	};
+	Allocator * getAllocator(uint16 index)
+		{ return index < allocatorCount ? allocators[index] : 0; }
 
-	Allocator * getAllocator(enum AllocatorType type)
-		{ return allocators[type]; }
+	uint16 getAllocatorCount()
+		{ return allocatorCount; }
+
+	void freeResources();
 
 	//! "MemoryManager::MemInfo" console command
 	static void ConCmd_MemInfo(const Console::ArgsType &args, const Console::ArgvType &argv);
 
 	//! "MemoryManager::test" console command
-//	static void ConCmd_test(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void ConCmd_test(const Console::ArgsType &args, const Console::ArgvType &argv);
 
 private:
-	Allocator* allocators[3];
+	Allocator* allocators[10];
+	uint16 allocatorCount;
+
+	void * _allocate(size_t size);
+	void _deallocate(void * ptr);
 
 	static MemoryManager* memorymanager;
 };

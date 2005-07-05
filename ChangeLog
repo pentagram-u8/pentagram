@@ -1,3 +1,15 @@
+2005-07-04  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* pentagram.cpp: Initialize the MemoryManager before GUIApp starts.
+	* kernel/*Allocator.*: add info and ability to free unused pools
+	* kernel/CoreApp.*: MemoryManager initialization moved
+	* kernel/GUIApp.cpp: MemoryManager console commands
+	* kernel/MemoryManager.*: console command and new allocation methods
+	* kernel/Object.cpp, kernel/Process.cpp, usecode/UCProcess.*: switch
+	  to new allocation method
+	* kernel/*Pool.*: added info
+	* misc/pent_include.*: added default allocation through malloc and free
+	* world/World.cpp: free unused memory resources on map change
+
 2005-07-04  Ryan Nunn <colourles@users.sourceforge.net>
 	* audio/midi/* : Sync with Exult
 	* graphics/Scaler* : Added 2 new compile options 

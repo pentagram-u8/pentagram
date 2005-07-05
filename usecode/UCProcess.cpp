@@ -25,12 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IDataSource.h"
 #include "ODataSource.h"
 
-#include "MemoryManager.h"
-
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(UCProcess,Process);
-
-DEFINE_CUSTOM_MEMORY_ALLOCATION(UCProcess, MemoryManager::UCProcessAllocator);
 
 UCProcess::UCProcess() : Process()// !! fixme
 {

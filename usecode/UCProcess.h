@@ -42,9 +42,6 @@ public:
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	// memory pooling stuff
-	ENABLE_CUSTOM_MEMORY_ALLOCATION();
-
 	virtual bool run(const uint32 framenum);
 
 	virtual void terminate();

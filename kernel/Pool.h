@@ -35,6 +35,8 @@ public:
 	virtual bool isEmpty() = 0;
 
 	virtual bool inPool(void * ptr) = 0;
+
+	virtual void printInfo() = 0;
 };
 
 #endif
