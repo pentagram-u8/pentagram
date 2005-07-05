@@ -37,6 +37,15 @@
 	  be the most relevant command. the "pentagram" game will be used to 
 	  drop to the 'coming soon' Pentagram Menu. Currently it just drops to 
 	  the console.
+	* graphics/fonts/FixedWidthFont.*,  misc/Console.*, kernel/GUIApp.cpp,
+	  graphics/*RenderSurface.* : More proper fixed font handling
+	* graphics/Texture.* : Change DataSource references to pointers to be
+	  consistent with like everything else
+	* kernel/CoreApp.cpp, kernel/GUIApp.cpp : Small output message changes
+	* data/fixedfont12.ini, data/fixedfont12.tga : A new bigger alternative
+	  console font. Put "console_font=@data/fixedfont12.ini" in the 
+	  pentagram section of the INI to use it (note it is not included in 
+	  the compiled in data)
 
 2005-07-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/getObject.h: some (non-class) functions to get an Object,

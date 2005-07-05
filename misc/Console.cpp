@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ODataSource.h"
 #include "RenderSurface.h"
 #include "util.h"
+#include "FixedWidthFont.h"
 
 #include <cstdio>
 #include <cstring>
@@ -141,7 +142,10 @@ void Console::CheckResize (int scrwidth)
 	// Need to do this first
 	PrintPutchar();
 
-	width = (scrwidth >> 3) - 2;
+	if (!confont)
+		width = (scrwidth >> 3) - 2;
+	else
+		width = (scrwidth / confont->width) - 2;
 
 	if (width == linewidth)
 		return;
@@ -847,9 +851,9 @@ void Console::DrawConsole (RenderSurface *surf, int height)
 
 	y = lines - 24;
 #else
-	rows = (lines-16)>>3;		// rows of text to draw
+	rows = (lines/confont->height)-2;		// rows of text to draw
 
-	y = lines - 24;
+	y = lines - (confont->height*3);
 #endif
 
 // draw from the bottom up
@@ -857,14 +861,14 @@ void Console::DrawConsole (RenderSurface *surf, int height)
 	{
 	// draw arrows to show the buffer is backscrolled
 		for (x=0 ; x<linewidth ; x+=4)
-			surf->PrintCharFixed(confont, '^', (x+1)<<3, y);
+			surf->PrintCharFixed(confont, '^', (x+1)*confont->width, y);
 	
-		y -= 8;
+		y -= confont->height;
 		rows--;
 	}
 	
 	row = display;
-	for (i=0 ; i<rows ; i++, y-=8, row--)
+	for (i=0 ; i<rows ; i++, y-=confont->height, row--)
 	{
 		if (row < 0)
 			break;
@@ -874,7 +878,7 @@ void Console::DrawConsole (RenderSurface *surf, int height)
 		char *txt = text + (row % totallines)*linewidth;
 
 		for (x=0 ; x<linewidth ; x++) {
-			surf->PrintCharFixed(confont, txt[x], (x+1)<<3, y);
+			surf->PrintCharFixed(confont, txt[x], (x+1)*confont->width, y);
 		//	putchar (txt[x]);
 		}
 		//putchar ('\n');
@@ -896,20 +900,20 @@ void Console::DrawConsole (RenderSurface *surf, int height)
 		cur_pos = linewidth-2;
 	}
 
-	y = lines-16;
+	y = lines-(confont->height*2);
 
-	surf->PrintCharFixed(confont, ']', 8, y);
+	surf->PrintCharFixed(confont, ']', confont->width, y);
 
 	for (x=0 ; x<(linewidth-2) && com[x]; x++) {
-		surf->PrintCharFixed(confont, com[x], (x+2)<<3, y);
+		surf->PrintCharFixed(confont, com[x], (x+2)*confont->width, y);
 	//	putchar (txt[x]);
 	}
 
 	// Now for cursor position
 	if (commandInsert)
-		surf->Fill32(0xFFFFFFFF, ((cur_pos+2)<<3)+1, y, 2, 8);
+		surf->Fill32(0xFFFFFFFF, ((cur_pos+2)*confont->width)+1, y, 2, confont->height);
 	else
-		surf->Fill32(0xFFFFFFFF, ((cur_pos+2)<<3)+1, y+6, 8, 2);
+		surf->Fill32(0xFFFFFFFF, ((cur_pos+2)*confont->width)+1, y+confont->height-2, confont->width, 2);
 }
 
 
@@ -934,9 +938,9 @@ void Console::DrawConsoleNotify (RenderSurface *surf)
 		txt = text + (i % totallines)*linewidth;
 		
 		for (x = 0 ; x < con.linewidth ; x++)
-			surf->PrintCharFixed(confont, txt[x], (x+1)<<3, v);
+			surf->PrintCharFixed(confont, txt[x], (x+1)*confont->width, v);
 
-		v += 8;
+		v += confont->height;
 	}
 }
 

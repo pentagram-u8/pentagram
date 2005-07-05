@@ -113,12 +113,12 @@ struct Texture
 	}
 
 	// Create a texture from a Data Source (filename is use to help detection of type)
-	static Texture * Create(IDataSource &ds, const char *filename = NULL);
+	static Texture * Create(IDataSource *ds, const char *filename = NULL);
 
 protected:
 
 	// Read from a File. No filetype supported by this class
-	virtual bool Read(IDataSource &/*ds*/) { return false; }
+	virtual bool Read(IDataSource *	/*ds*/) { return false; }
 };
 
 #endif //TEXTURE_H

@@ -284,7 +284,7 @@ bool CoreApp::setupGameInfo()
 {
 	pout << "Selected game: " << gamename << std::endl;
 
-	if (gamename == "pentagram") return false;
+	if (gamename == "pentagram" || gamename == "") return false;
 
 	// fill our GameInfo struct
 	bool ok = getGameInfo(gamename, gameinfo);

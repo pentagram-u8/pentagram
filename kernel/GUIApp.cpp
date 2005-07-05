@@ -37,6 +37,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "RenderSurface.h"
 #include "Texture.h"
+#include "FixedWidthFont.h"
 #include "PaletteManager.h"
 #include "Palette.h"
 #include "GameData.h"
@@ -110,10 +111,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef WIN32
 #include <windows.h>
-#endif
-
-#if defined(WIN32) && defined(COLOURLESS_WANTS_A_DATA_FREE_PENATGRAM)
-#include "resource.h"
 #endif
 
 #if defined(WIN32) && defined(I_AM_COLOURLESS_EXPERIMENTING_WITH_HW_CURSORS)
@@ -319,7 +316,7 @@ void GUIApp::startup()
 	// Audio Mixer
 	audiomixer = new Pentagram::AudioMixer(22050,true,8);
 
-	pout << "-- Pentagram Initialized -- " << std::endl;
+	pout << "-- Pentagram Initialized -- " << std::endl << std::endl;
 
 	// We Attempt to startup game
 	getDefaultGame();
@@ -335,7 +332,7 @@ void GUIApp::startup()
 
 void GUIApp::startupGame()
 {
-	pout << "-- Initializing Game --" << std::endl;
+	pout  << std::endl << "-- Initializing Game: " << gamename << " --" << std::endl;
 
 	// Generic Commands
 	con.AddConsoleCommand("GUIApp::saveGame", ConCmd_saveGame);
@@ -413,12 +410,12 @@ void GUIApp::startupGame()
 
 	consoleGump->HideConsole();
 
-	pout << "-- Game Initialized --" << std::endl;
+	pout << "-- Game Initialized --" << std::endl << std::endl;
 }
 
 void GUIApp::startupPentagramMenu()
 {
-	pout << "-- Initializing Pentagram Menu -- " << std::endl;
+	pout << std::endl << "-- Initializing Pentagram Menu -- " << std::endl;
 
 	gamename = "pentagram";	// Just to be sure
 
@@ -426,7 +423,7 @@ void GUIApp::startupPentagramMenu()
 	con.SetAutoPaint(0);
 	enterTextMode(consoleGump);
 
-	pout << "-- Pentagram Menu Initialized -- " << std::endl;
+	pout << "-- Pentagram Menu Initialized -- " << std::endl << std::endl;
 
 	pout << "Type \"GUIApp::listGames\" to list available games" << std::endl;
 	pout << "Type \"GUIApp::changeGame <gamename>\" to choose a game" << std::endl;
@@ -520,7 +517,7 @@ void GUIApp::shutdownGame()
 
 	runGraphicSysInit = true;
 
-	pout << "-- Game Shutdown-- " << std::endl;
+	pout << "-- Game Shutdown -- " << std::endl;
 	enterTextMode(consoleGump);
 }
 
@@ -838,23 +835,23 @@ void GUIApp::paint()
 	prev = now;
 
 	char buf[256];
-	Texture *confont = con.GetConFont();
+	FixedWidthFont *confont = con.GetConFont();
 	int v_offset = 0;
-	int char_w = confont->width/16;
+	int char_w = confont->width;
 
 	if (drawRenderStats)
 	{
 		snprintf(buf, 255, "Rendering time %li ms %li FPS ", diff, 1000/diff);
 		screen->PrintTextFixed(confont, buf, dims.w-char_w*strlen(buf), v_offset);
-		v_offset += confont->height/16;
+		v_offset += confont->height;
 
 		snprintf(buf, 255, "Paint Gumps %li ms ", after_gumps-before_gumps);
 		screen->PrintTextFixed(confont, buf, dims.w-char_w*strlen(buf), v_offset);
-		v_offset += confont->height/16;
+		v_offset += confont->height;
 
 		snprintf(buf, 255, "t %02d:%02d gh %i ", I_getTimeInMinutes(0,0), I_getTimeInSeconds(0,0)%60, I_getTimeInGameHours(0,0));
 		screen->PrintTextFixed(confont, buf, dims.w-char_w*strlen(buf), v_offset);
-		v_offset += confont->height/16;
+		v_offset += confont->height;
 	}
 
 	// End painting
@@ -1043,7 +1040,7 @@ void GUIApp::GraphicSysInit()
 	// setup normal mouse cursor
 	pout << "Load Default Mouse Cursor" << std::endl;
 	IDataSource *dm = filesystem->ReadFile("@data/mouse.tga");
-	if (dm) defMouse = Texture::Create(*dm, "@data/mouse.tga");
+	if (dm) defMouse = Texture::Create(dm, "@data/mouse.tga");
 	else defMouse = 0;
 	if (!defMouse)
 	{
@@ -1053,6 +1050,7 @@ void GUIApp::GraphicSysInit()
 	delete dm;
 	pushMouseCursor();
 
+	LoadConsoleFont();
 
 	pout << "Create Desktop" << std::endl;
 	desktopGump = new DesktopGump(0,0, width, height);
@@ -1062,8 +1060,6 @@ void GUIApp::GraphicSysInit()
 	pout << "Create Graphics Console" << std::endl;
 	consoleGump = new ConsoleGump(0, 0, width, height);
 	consoleGump->InitGump(0);
-
-	LoadConsoleFont();
 
 	// Create desktop
 	Pentagram::Rect dims;
@@ -1079,14 +1075,6 @@ void GUIApp::GraphicSysInit()
 
 void GUIApp::LoadConsoleFont()
 {
-#if defined(WIN32) && defined(COLOURLESS_WANTS_A_DATA_FREE_PENATGRAM)
-	HRSRC res = FindResource(NULL,  MAKEINTRESOURCE(IDR_FIXED_FONT_TGA), RT_RCDATA);
-	if (res) filesystem->MountFileInMemory("@data/fixedfont.tga", static_cast<uint8*>(LockResource(LoadResource(NULL, res))), SizeofResource(NULL, res));
-
-	res = FindResource(NULL, MAKEINTRESOURCE(IDR_FIXED_FONT_INI), RT_RCDATA);
-	if (res) filesystem->MountFileInMemory("@data/fixedfont.ini", static_cast<uint8*>(LockResource(LoadResource(NULL, res))), SizeofResource(NULL, res));
-#endif
-
 	std::string data;
 	std::string confontfile;
 	std::string confontini("@data/fixedfont.ini");
@@ -1098,31 +1086,17 @@ void GUIApp::LoadConsoleFont()
 
 	// try to load the file
 	pout << "Loading console font config: " << confontini << "... ";
-	if(configfileman->readConfigFile(confontini, "font", true))
+	if(configfileman->readConfigFile(confontini, "confont", true))
 		pout << "Ok" << std::endl;
 	else
 		pout << "Failed" << std::endl;
 
-	// search for the path to the font...
-	if (!configfileman->get("font/font/path", confontfile))
-	{
-		pout << "Error: Console font path not found! Unable to continue. "
-			 << "Exiting." << std::endl;
-		std::exit(-1);
-	}
+	FixedWidthFont *confont = FixedWidthFont::Create("confont");
 
-	// Load confont
-	pout << "Loading Confont: " << confontfile << std::endl;
-	IDataSource *cf = filesystem->ReadFile(confontfile.c_str());
-	Texture *confont;
-	if (cf) confont = Texture::Create(*cf, confontfile.c_str());
-	else confont = 0;
-	if (!confont)
-	{
-		perr << "Unable to load " << confontfile << ". Exiting" << std::endl;
+	if (!confont) {
+		perr << "Failed to load Console Font. Exiting" << std::endl;
 		std::exit(-1);
 	}
-	delete cf;
 
 	con.SetConFont(confont);
 }

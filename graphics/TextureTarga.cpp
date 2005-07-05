@@ -30,12 +30,12 @@ struct TGA
 	bool		Flipped;
 	bool		Compressed;
 
-	void Read(IDataSource &ds)
+	void Read(IDataSource *ds)
 	{
-		Width	= ds.read2();
-		Height	= ds.read2();
-		Bpp	= ds.read1();					
-		Flags = ds.read1();
+		Width	= ds->read2();
+		Height	= ds->read2();
+		Bpp	= ds->read1();					
+		Flags = ds->read1();
 
 		Flipped = (Flags&(1<<5))?false:true;
 		bytesPerPixel	= Bpp / 8;
@@ -45,7 +45,7 @@ struct TGA
 static const uint8 uTGAcompare[12] = {0,0,2, 0,0,0,0,0,0,0,0,0};	// Uncompressed TGA Header
 static const uint8 cTGAcompare[12] = {0,0,10,0,0,0,0,0,0,0,0,0};	// Compressed TGA Header
 
-bool TextureTarga::Read(IDataSource &ds)
+bool TextureTarga::Read(IDataSource *ds)
 {
 	// TGA File Header
 	uint8 header[12];										
@@ -54,10 +54,10 @@ bool TextureTarga::Read(IDataSource &ds)
 	TGA tga;
 
 	// Seek to start
-	ds.seek(0);
+	ds->seek(0);
 
 	// Attempt to read 12 byte header from file
-	ds.read(static_cast<uint8 *>(header), 12);
+	ds->read(static_cast<uint8 *>(header), 12);
 
 	// Is it uncompressed?
 	//if(memcmp(uTGAcompare+1, header+1, 11) == 0) tga.Compressed = false;
@@ -79,7 +79,7 @@ bool TextureTarga::Read(IDataSource &ds)
 	// Read TGA header
 	tga.Read(ds);
 
-	ds.skip(header[0]);
+	ds->skip(header[0]);
 
 	// Set Width and Height
 	width	= tga.Width;
@@ -105,7 +105,7 @@ bool TextureTarga::Read(IDataSource &ds)
 
 		while(image < end)
 		{
-			uint32 chunkheader = ds.read1();
+			uint32 chunkheader = ds->read1();
 
 			// RAW (copy chunkheader+1 pixels)
 			if(chunkheader < 128)
@@ -113,7 +113,7 @@ bool TextureTarga::Read(IDataSource &ds)
 				chunkheader = (chunkheader+1)*tga.bytesPerPixel;
 
 				// Read chunkheader pixels
-				ds.read(static_cast<uint8 *>(image), chunkheader);
+				ds->read(static_cast<uint8 *>(image), chunkheader);
 
 				image += chunkheader;
 			}
@@ -124,7 +124,7 @@ bool TextureTarga::Read(IDataSource &ds)
 
 				// Read the pixel
 				static uint8 colorbuffer[4];
-				ds.read(static_cast<uint8 *>(colorbuffer), tga.bytesPerPixel);
+				ds->read(static_cast<uint8 *>(colorbuffer), tga.bytesPerPixel);
 
 				uint8 *end_run = image + chunkheader;
 
@@ -149,7 +149,7 @@ bool TextureTarga::Read(IDataSource &ds)
 	else
 	{
 		// Is uncompressed
-		ds.read(static_cast<uint8 *>(temp_buffer), width * height * tga.bytesPerPixel);
+		ds->read(static_cast<uint8 *>(temp_buffer), width * height * tga.bytesPerPixel);
 	}
 
 	// Create Actual Buffer

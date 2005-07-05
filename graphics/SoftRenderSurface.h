@@ -111,11 +111,11 @@ public:
 	//
 	// Basic Font Drawing
 	//
-	// Draw fixed width from a Texture buffer (16x16 characters fixed width and height)
-	virtual void PrintTextFixed(Texture *, const char *text, int x, int y);
+	// Draw FixedWidthFont
+	virtual void PrintTextFixed(FixedWidthFont *, const char *text, int x, int y);
 
-	// Draw a fixed width character from a Texture buffer
-	virtual void PrintCharFixed(Texture *, int character, int x, int y);
+	// Draw a fixed width character from a FixedWidthFont
+	virtual void PrintCharFixed(FixedWidthFont *, int character, int x, int y);
 
 
 	//

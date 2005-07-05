@@ -62,7 +62,7 @@ else {										\
 //
 // Create a texture from a Data Source (filename is use to help detection of type)
 //
-Texture * Texture::Create(IDataSource &ds, const char *filename)
+Texture * Texture::Create(IDataSource *ds, const char *filename)
 {
 	Texture *tex;
 

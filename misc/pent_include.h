@@ -30,7 +30,7 @@
 
 // Include msvc_include under MSVC
 #if defined(_MSC_VER) && !defined(UNDER_CE)
-#  include "msvc_include.h"
+#  include "system/windows/msvc_include.h"
 #endif
 
 // Include wince_include under Embedded Visual C++

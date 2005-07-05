@@ -33,12 +33,12 @@ struct BMPHeader {
 		uint16		bfReserved2;
 		uint32		bfOffBits;
 
-		void Read(IDataSource &ds) {
-			bfType = ds.read2();
-			bfSize = ds.read4();
-			bfReserved1 = ds.read2();
-			bfReserved2 = ds.read2();
-			bfOffBits = ds.read4();
+		void Read(IDataSource *ds) {
+			bfType = ds->read2();
+			bfSize = ds->read4();
+			bfReserved1 = ds->read2();
+			bfReserved2 = ds->read2();
+			bfOffBits = ds->read4();
 		}
 };
 
@@ -58,18 +58,18 @@ struct BMPInfoHeader {
 		uint32		biClrUsed;
 		uint32		biClrImportant;
 
-		void Read(IDataSource &ds) {
-			biSize = ds.read4();
-			biWidth = ds.read4();
-    		biHeight = ds.read4();
-    		biPlanes = ds.read2();
-    		biBitCount = ds.read2();
-    		biCompression = ds.read4();
-    		biSizeImage = ds.read4();
-    		biXPelsPerMeter = ds.read4();
-    		biYPelsPerMeter = ds.read4();
-    		biClrUsed = ds.read4();
-    		biClrImportant = ds.read4();
+		void Read(IDataSource *ds) {
+			biSize = ds->read4();
+			biWidth = ds->read4();
+    		biHeight = ds->read4();
+    		biPlanes = ds->read2();
+    		biBitCount = ds->read2();
+    		biCompression = ds->read4();
+    		biSizeImage = ds->read4();
+    		biXPelsPerMeter = ds->read4();
+    		biYPelsPerMeter = ds->read4();
+    		biClrUsed = ds->read4();
+    		biClrImportant = ds->read4();
 		}
 };
 
@@ -77,10 +77,10 @@ struct BMPInfoHeader {
 //
 // Read from a Data Source
 //
-bool TextureBitmap::Read(IDataSource &ds)
+bool TextureBitmap::Read(IDataSource *ds)
 {
 	// Seek to start
-	ds.seek(0);
+	ds->seek(0);
 
     // looping index
 	int index;
@@ -110,17 +110,17 @@ bool TextureBitmap::Read(IDataSource &ds)
 	{
 		for (index=0; index < 256; index++)
 		{
-			palette[index*3] = ds.read1();
-			palette[index*3+1] = ds.read1();
-			palette[index*3+2] = ds.read1();
-			ds.skip(1);
+			palette[index*3] = ds->read1();
+			palette[index*3+1] = ds->read1();
+			palette[index*3+2] = ds->read1();
+			ds->skip(1);
 			
 		}
 		
     }
 	
 	// finally the image data itself
-	ds.seek(ds.getSize()-bitmapinfoheader.biSizeImage);
+	ds->seek(ds->getSize()-bitmapinfoheader.biSizeImage);
 	
 	// allocate temporary buffer
 	if (0 == (temp_buffer = new uint8 [bitmapinfoheader.biSizeImage]))
@@ -137,7 +137,7 @@ bool TextureBitmap::Read(IDataSource &ds)
 	} // end if
 	
 	// now read it in
-	ds.read(static_cast<uint8 *>(temp_buffer),bitmapinfoheader.biSizeImage);
+	ds->read(static_cast<uint8 *>(temp_buffer),bitmapinfoheader.biSizeImage);
 
 	// 8 Bit Palette
 	if (bitmapinfoheader.biBitCount == 8) {

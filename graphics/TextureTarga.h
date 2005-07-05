@@ -31,7 +31,7 @@ struct TextureTarga : public Texture
 	}
 
 	// False on Error
-	virtual bool Read(IDataSource &ds);
+	virtual bool Read(IDataSource *ds);
 
 protected:
 

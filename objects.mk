@@ -118,7 +118,8 @@ FONTS = \
 	graphics/fonts/ShapeFont.o \
 	graphics/fonts/ShapeRenderedText.o \
 	graphics/fonts/TTFont.o \
-	graphics/fonts/TTFRenderedText.o
+	graphics/fonts/TTFRenderedText.o \
+	graphics/fonts/FixedWidthFont.o
 
 MISC = \
 	misc/encoding.o \

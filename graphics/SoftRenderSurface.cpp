@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Shape.h"
 #include "ShapeFrame.h"
 #include "Palette.h"
+#include "FixedWidthFont.h"
 #include "memset_n.h"
 
 #include "XFormBlend.h"
@@ -191,11 +192,14 @@ template<> void SoftRenderSurface<uint32>::Fill32(uint32 rgb, sint32 sx, sint32 
 template<class uintX> void SoftRenderSurface<uintX>::Blit(Texture *tex, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy)
 {
 	// Clamp or wrap or return?
-	if (w > static_cast<sint32>(tex->width)) 
+	if (sx+w > static_cast<sint32>(tex->width)) 
 		return;
 	
 	// Clamp or wrap or return?
-	if (h > static_cast<sint32>(tex->height)) 
+	if (sy+h > static_cast<sint32>(tex->height)) 
+		return;
+
+	if (sx < 0 || sy < 0) 
 		return;
 	
 	// Clip to window
@@ -479,58 +483,64 @@ template<class uintX> bool SoftRenderSurface<uintX>::ScalerBlit(Texture *texture
 }
 
 //
-// SoftRenderSurface::PrintCharFixed(Texture *, char character, int x, int y)
+// SoftRenderSurface::PrintCharFixed(FixedWidthFont *, char character, int x, int y)
 //
 // Desc: Draw a fixed width character from a Texture buffer
 //
-template<class uintX> void SoftRenderSurface<uintX>::PrintCharFixed(Texture *texture, int character, int x, int y)
+template<class uintX> void SoftRenderSurface<uintX>::PrintCharFixed(FixedWidthFont *font, int character, int x, int y)
 {
-	int char_width = texture->width/16;
-	int char_height = texture->height/16;
-
 	if (character == ' ') return;	// Don't paint spaces
 
-	if (char_width == 16 && char_height == 16)
+	int align_x = font->align_x;
+	int align_y = font->align_y;
+	int char_width = font->width;
+	int char_height = font->height;
+	Texture *texture = font->tex;
+
+	if (align_x == 16 && align_y == 16)
 	{
-		SoftRenderSurface::Blit(texture, (character&0x0F) << 4, character&0xF0, 16, 16, x, y);
+		SoftRenderSurface::Blit(texture, (character&0x0F) << 4, character&0xF0, char_width, char_height, x, y);
 	}
-	else if (char_width == 8 && char_height == 8)
+	else if (align_x == 8 && align_y == 8)
 	{
-		SoftRenderSurface::Blit(texture, (character&0x0F) << 3, (character>>1)&0x78, 8, 8, x, y);
+		SoftRenderSurface::Blit(texture, (character&0x0F) << 3, (character>>1)&0x78, char_width, char_height, x, y);
 	}
 	else
 	{
-		SoftRenderSurface::Blit(texture,  (character&0x0F) * char_width, (character&0xF0>>4) * char_height, char_width, char_height, x, y);
+		SoftRenderSurface::Blit(texture,  (character&0x0F) * align_x, (character&0xF0>>4) * align_y, char_width, char_height, x, y);
 	}
 }
 
 
 //
-// SoftRenderSurface::PrintTextFixed(Texture *, const char *text, int x, int y)
+// SoftRenderSurface::PrintTextFixed(FixedWidthFont *, const char *text, int x, int y)
 //
 // Desc: Draw fixed width from a Texture buffer (16x16 characters fixed width and height)
 //
-template<class uintX> void SoftRenderSurface<uintX>::PrintTextFixed(Texture *texture, const char *text, int x, int y)
+template<class uintX> void SoftRenderSurface<uintX>::PrintTextFixed(FixedWidthFont *font, const char *text, int x, int y)
 {
-	int char_width = texture->width/16;
-	int char_height = texture->height/16;
+	int align_x = font->align_x;
+	int align_y = font->align_y;
+	int char_width = font->width;
+	int char_height = font->height;
+	Texture *texture = font->tex;
 
 	int character;
-	if (char_width == 16 && char_height == 16) while ( 0 != (character = *text))
+	if (align_x == 16 && align_y == 16) while ( 0 != (character = *text))
 	{
-		SoftRenderSurface::Blit(texture, (character&0x0F) << 4, character&0xF0, 16, 16, x, y);
+		SoftRenderSurface::Blit(texture, (character&0x0F) << 4, character&0xF0, char_width, char_height, x, y);
 		++text;
-		x+=16;
+		x+=char_width;
 	}
-	else if (char_width == 8 && char_height == 8) while (0 != (character = *text))
+	else if (align_x == 8 && align_y == 8) while (0 != (character = *text))
 	{
-		SoftRenderSurface::Blit(texture, (character&0x0F) << 3, (character>>1)&0x78, 8, 8, x, y);
+		SoftRenderSurface::Blit(texture, (character&0x0F) << 3, (character>>1)&0x78, char_width, char_height, x, y);
 		++text;
-		x+=8;
+		x+=char_width;
 	}
 	else while (0 != (character = *text))
 	{
-		SoftRenderSurface::Blit(texture,  (character&0x0F) * char_width, (character&0xF0>>4) * char_height, char_width, char_height, x, y);
+		SoftRenderSurface::Blit(texture,  (character&0x0F) * align_x, (character&0xF0>>4) * align_y, char_width, char_height, x, y);
 		++text;
 		x+=char_width;
 	}

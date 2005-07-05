@@ -40,7 +40,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class ODataSource;
 class RenderSurface;
-struct Texture;
+struct FixedWidthFont;
 
 enum MsgMask {
 	/* Output no message(s). For obvious reasons this probably should never need to be used... */
@@ -104,8 +104,8 @@ class Console
 	ODataSource	*stdout_redir;
 	ODataSource	*stderr_redir;
 
-	// Confont texture
-	Texture		*confont;
+	// Confont 
+	FixedWidthFont		*confont;
 
 	void		(*auto_paint)(void);
 
@@ -143,10 +143,10 @@ public:
 	void	DrawConsoleNotify (RenderSurface *surf);
 
 	// Set the console font texture
-	void	SetConFont(Texture *cf) { confont = cf; }
+	void	SetConFont(FixedWidthFont *cf) { confont = cf; }
 
 	// Get the console font texture
-	Texture *GetConFont() { return confont; }
+	FixedWidthFont *GetConFont() { return confont; }
 
 	// Autopaint will cause the GUIApp to re-paint everything after a linefeed
 	void	SetAutoPaint(void (*func)(void)) { auto_paint = func; }
