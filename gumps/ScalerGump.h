@@ -22,6 +22,7 @@
 #include "DesktopGump.h"
 #include <vector>
 class RenderSurface;
+struct Texture;
 
 namespace Pentagram {
 	class Scaler;

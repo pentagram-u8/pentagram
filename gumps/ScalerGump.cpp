@@ -24,6 +24,7 @@
 #include "Scaler.h"
 #include "ScalerManager.h"
 #include "SettingManager.h"
+#include "GUIApp.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(ScalerGump,DesktopGump);
 
