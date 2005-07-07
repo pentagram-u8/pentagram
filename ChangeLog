@@ -1,3 +1,17 @@
+2005-07-07  Ryan Nunn <colourles@users.sourceforge.net>
+	* audio/midi/LowLevelMidiDriver.cpp : Fixing bad bad bug with the 
+	  MidiDriver getting deleted before the thread had finish exiting
+	* Various Files: Changing Init and Shutdown messages
+	* games/stdbindings.*, kernel/HIDManager.cpp, data/u8bindings.ini :
+	  Removed ShowMenu from always being bound to Escape (is now bound in
+	  u8bindings.ini). Also F4 is now bound to toggleFullscreen.
+	* kernel/GUIApp.cpp, gumps/*.* : Updated things so screen resoultion 
+	  can be changed in game. Use GUIApp::setVideoMode and 
+	  GUIApp::toggleFullscreen
+	* kernel/GUIApp.cpp. gumps/ScalerGump.*: Moved scaler handling from 
+	  GUIApp to ScalerGump. Added ability to change scaler at run time.
+	  Use ScalerGump::changeScaler and ScalerGump::listScalers.
+
 2005-07-05  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* misc/pent_include.*: fix ifndef for memory allocation functions
 	* graphics/Shape.*: use memory management on Shapes

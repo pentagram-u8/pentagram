@@ -38,8 +38,11 @@ public:
 
 	bool loadData(IDataSource* ids, uint32 version);
 
+	void RenderSurfaceChanged(RenderSurface *surf);
+
 protected:
 	virtual void saveData(ODataSource* ods);
+	virtual void RenderSurfaceChanged();
 };
 
 #endif

@@ -28,17 +28,38 @@ PaletteManager* PaletteManager::palettemanager = 0;
 PaletteManager::PaletteManager(RenderSurface *rs)
 	: rendersurface(rs)
 {
+	con.Print(MM_INFO, "Creating PaletteManager...\n");
+
 	assert(palettemanager == 0);
 	palettemanager = this;
 }
 
 PaletteManager::~PaletteManager()
 {
+	reset();
+	con.Print(MM_INFO, "Destroying PaletteManager...\n");
+	palettemanager = 0;
+}
+
+// Reset the Palette Manager
+void PaletteManager::reset()
+{
+	con.Print(MM_INFO, "Resetting PaletteManager...\n");
+
 	for (unsigned int i = 0; i < palettes.size(); ++i)
 		delete palettes[i];
 	palettes.clear();
+}
 
-	palettemanager = 0;
+
+// Change the Render Surface used by the PaletteManager
+void PaletteManager::RenderSurfaceChanged(RenderSurface* rs)
+{
+	rendersurface = rs;
+
+	// Create native palettes for all currently loaded palettes
+	for (unsigned int i = 0; i < palettes.size(); ++i)
+		rendersurface->CreateNativePalette(palettes[i]); 
 }
 
 void PaletteManager::load(PalIndex index, IDataSource& ds,IDataSource &xformds)

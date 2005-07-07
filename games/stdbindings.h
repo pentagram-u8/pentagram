@@ -99,7 +99,9 @@ bool quickMoveClipping(const HID_Event& event);
 //! \see HIDBinding
 bool highlightItems(const HID_Event& event);
 
-
+//! Toggle Fullscreen Mode
+//! \see HIDBinding
+bool toggleFullscreen(const HID_Event& event);
 };
 
 #endif

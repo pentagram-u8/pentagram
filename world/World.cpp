@@ -46,13 +46,16 @@ World* World::world = 0;
 World::World()
 	: currentmap(0)
 {
+	con.Print(MM_INFO, "Creating World...\n");
 	assert(world == 0);
+
 	world = this;
 }
 
 
 World::~World()
 {
+	con.Print(MM_INFO, "Destroying World...\n");
 	clear();
 
 	world = 0;
@@ -78,6 +81,8 @@ void World::clear()
 
 void World::reset()
 {
+	con.Print(MM_INFO, "Resetting World...\n");
+
 	clear();
 
 	initMaps();

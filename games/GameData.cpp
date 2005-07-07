@@ -47,12 +47,16 @@ GameData::GameData()
 	: fixed(0), mainshapes(0), mainusecode(0), globs(0), fonts(0), gumps(0),
 	  mouse(0), music(0), weaponoverlay(0), soundflex(0), speech(1024)
 {
+	con.Print(MM_INFO, "Creating GamaData...\n");
+
 	assert(gamedata == 0);
 	gamedata = this;
 }
 
 GameData::~GameData()
 {
+	con.Print(MM_INFO, "Destroying GamaData...\n");
+
 	delete fixed;
 	fixed = 0;
 

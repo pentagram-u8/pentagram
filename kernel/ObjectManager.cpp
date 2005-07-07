@@ -69,6 +69,8 @@ struct ObjectLoader {
 
 ObjectManager::ObjectManager()
 {
+	con.Print(MM_INFO, "Creating ObjectManager...\n");
+
 	assert(objectmanager == 0);
 	objectmanager = this;
 
@@ -84,6 +86,7 @@ ObjectManager::ObjectManager()
 ObjectManager::~ObjectManager()
 {
 	reset();
+	con.Print(MM_INFO, "Destroying ObjectManager...\n");
 
 	objectmanager = 0;
 
@@ -93,6 +96,8 @@ ObjectManager::~ObjectManager()
 
 void ObjectManager::reset()
 {
+	con.Print(MM_INFO, "Resetting ObjectManager...\n");
+
 	unsigned int i;
 
 	for (i = 0; i < objects.size(); ++i) {

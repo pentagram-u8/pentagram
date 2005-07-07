@@ -131,3 +131,9 @@ void InverterGump::GumpToParent(int &gx, int &gy)
 	if (GUIApp::get_instance()->isInverted()) gy = dims.h - gy - 1;
 	gy += y;
 }
+
+void InverterGump::RenderSurfaceChanged()
+{
+	DesktopGump::RenderSurfaceChanged();
+	FORGET_OBJECT(buffer);
+}

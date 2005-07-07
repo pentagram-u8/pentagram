@@ -49,6 +49,18 @@ ConsoleGump::~ConsoleGump()
 {
 }
 
+void ConsoleGump::RenderSurfaceChanged()
+{
+	// Resize the desktop gump to match the RenderSurface
+	Pentagram::Rect new_dims;
+	parent->GetDims(new_dims);
+	con.CheckResize(new_dims.w);
+	dims.w = new_dims.w;
+	dims.h = new_dims.h;
+
+	Gump::RenderSurfaceChanged();
+}
+
 void ConsoleGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 {
 	Gump::PaintThis(surf,lerp_factor);

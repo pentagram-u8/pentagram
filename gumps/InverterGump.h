@@ -37,6 +37,8 @@ public:
 	virtual void ParentToGump(int &px, int &py);
 	virtual void GumpToParent(int &gx, int &gy);
 	
+	virtual void RenderSurfaceChanged();
+
 protected:
 	RenderSurface* buffer;
 };

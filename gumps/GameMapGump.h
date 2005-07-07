@@ -75,6 +75,8 @@ public:
 	static void			SetHighlightItems(bool highlight) { highlightItems = highlight; }
 	static bool			isHighlightItems() { return highlightItems; }
 
+	virtual void		RenderSurfaceChanged();
+
 protected:
 	virtual void saveData(ODataSource* ods);
 

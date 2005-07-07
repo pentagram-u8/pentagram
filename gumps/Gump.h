@@ -122,9 +122,8 @@ public:
 	virtual bool		GetMouseCursor(int mx, int my, Shape &shape,
 									   sint32 &frame);
 
-	// Update the RenderSurface of this gump and all children (probably
-	//  only needed for scaled gumps).
-	//virtual bool		DeviceChanged();
+	// Notify gumps the render surface changed.
+	virtual void		RenderSurfaceChanged();
 
 	//! Run the gump
 	//! \return true if repaint required

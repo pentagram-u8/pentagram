@@ -80,6 +80,8 @@ UCMachine* UCMachine::ucmachine = 0;
 
 UCMachine::UCMachine(Intrinsic *iset)
 {
+	con.Print(MM_INFO, "Creating UCMachine...\n");
+
 	assert(ucmachine == 0);
 	ucmachine = this;
 
@@ -109,6 +111,8 @@ UCMachine::UCMachine(Intrinsic *iset)
 
 UCMachine::~UCMachine()
 {
+	con.Print(MM_INFO, "Destroying UCMachine...\n");
+
 	con.RemoveConsoleCommand("UCMachine::getGlobal");
 	con.RemoveConsoleCommand("UCMachine::setGlobal");
 #ifdef DEBUG
@@ -129,6 +133,8 @@ UCMachine::~UCMachine()
 
 void UCMachine::reset()
 {
+	con.Print(MM_INFO, "Resetting UCMachine\n");
+
 	// clear globals
 	globals->setSize(0x1000);
 

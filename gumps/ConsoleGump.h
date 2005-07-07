@@ -61,6 +61,8 @@ public:
 
 	virtual void PaintThis(RenderSurface *surf, sint32 lerp_factor);
 
+	virtual void RenderSurfaceChanged();
+
 	virtual bool		OnTextInput(int unicode);
 	virtual void		OnFocus(bool /*gain*/);
 	virtual bool		OnKeyDown(int key, int mod);

@@ -530,6 +530,23 @@ void GameMapGump::DropItem(Item* item, int mx, int my)
 	item->fall();
 }
 
+void GameMapGump::RenderSurfaceChanged()
+{
+	dims.x += dims.w/2;
+	dims.y += dims.h/2;
+
+	// Resize the desktop gump to match the parent
+	Pentagram::Rect new_dims;
+	parent->GetDims(new_dims);
+	dims.w = new_dims.w;
+	dims.h = new_dims.h;
+
+	dims.x -= dims.w/2;
+	dims.y -= dims.h/2;
+
+	Gump::RenderSurfaceChanged();
+}
+
 void GameMapGump::saveData(ODataSource* ods)
 {
 	CANT_HAPPEN_MSG("Trying to save GameMapGump");

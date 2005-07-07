@@ -101,9 +101,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MovieGump.h"
 #include "ShapeViewerGump.h"
 
-#include "ScalerManager.h"
-#include "Scaler.h"
-
 #include "AudioMixer.h"
 
 #include "DisasmProcess.h"
@@ -138,9 +135,9 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(GUIApp,CoreApp);
 
 GUIApp::GUIApp(int argc, const char* const* argv)
 	: CoreApp(argc, argv), save_count(0), game(0), objectmanager(0),
-	  hidmanager(0), ucmachine(0), screen(0), palettemanager(0), gamedata(0),
-	  world(0), desktopGump(0), consoleGump(0), gameMapGump(0),
-	  avatarMoverProcess(0), runGraphicSysInit(false), runSDLInit(false),
+	  hidmanager(0), ucmachine(0), screen(0), fullscreen(false), palettemanager(0), 
+	  gamedata(0), world(0), desktopGump(0), consoleGump(0), gameMapGump(0),
+	  avatarMoverProcess(0), runSDLInit(false),
 	  frameSkip(false), frameLimit(true), interpolate(false),
 	  animationRate(100), avatarInStasis(false), paintEditorItems(false),
 	  painting(false), showTouching(false), mouseX(0), mouseY(0),
@@ -163,6 +160,9 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 
 	con.AddConsoleCommand("GUIApp::changeGame",ConCmd_changeGame);
 	con.AddConsoleCommand("GUIApp::listGames",ConCmd_listGames);
+
+	con.AddConsoleCommand("GUIApp::setVideoMode",ConCmd_setVideoMode);
+	con.AddConsoleCommand("GUIApp::toggleFullscreen",ConCmd_toggleFullscreen);
 
 	con.AddConsoleCommand("HIDManager::bind", HIDManager::ConCmd_bind);
 	con.AddConsoleCommand("HIDManager::unbind", HIDManager::ConCmd_unbind);
@@ -196,6 +196,9 @@ GUIApp::~GUIApp()
 	con.RemoveConsoleCommand("GUIApp::changeGame");
 	con.RemoveConsoleCommand("GUIApp::listGames");
 
+	con.RemoveConsoleCommand("GUIApp::setVideoMode");
+	con.RemoveConsoleCommand("GUIApp::toggleFullscreen");
+
 	con.RemoveConsoleCommand("HIDManager::bind");
 	con.RemoveConsoleCommand("HIDManager::unbind");
 	con.RemoveConsoleCommand("HIDManager::listbinds");
@@ -224,10 +227,10 @@ GUIApp::~GUIApp()
 
 void GUIApp::startup()
 {
-	pout << "-- Initializing Pentagram -- " << std::endl;
-
 	// Set the console to auto paint, till we have finished initing
 	con.SetAutoPaint(conAutoPaint);
+
+	pout << "-- Initializing Pentagram -- " << std::endl;
 
 	// parent's startup first
 	CoreApp::startup();
@@ -302,7 +305,6 @@ void GUIApp::startup()
 	kernel->addProcessLoader("ActorBarkNotifyProcess",
 							 ProcessLoader<ActorBarkNotifyProcess>::load);
 
-	pout << "Create ObjectManager" << std::endl;
 	objectmanager = new ObjectManager();
 
 	GraphicSysInit();
@@ -310,7 +312,6 @@ void GUIApp::startup()
 	SDL_ShowCursor(SDL_DISABLE);
 	SDL_GetMouseState(&mouseX, &mouseY);
 
-	pout << "Create HIDManager" << std::endl;
 	hidmanager = new HIDManager();
 
 	// Audio Mixer
@@ -332,7 +333,16 @@ void GUIApp::startup()
 
 void GUIApp::startupGame()
 {
+	con.SetAutoPaint(conAutoPaint);
+
 	pout  << std::endl << "-- Initializing Game: " << gamename << " --" << std::endl;
+
+	GraphicSysInit();
+
+	// set window title to current game
+	std::string title = "Pentagram - ";
+	title += getGameInfo()->getGameTitle();
+	SDL_WM_SetCaption(title.c_str(), "");
 
 	// Generic Commands
 	con.AddConsoleCommand("GUIApp::saveGame", ConCmd_saveGame);
@@ -357,8 +367,6 @@ void GUIApp::startupGame()
 
 	gamedata = new GameData();
 
-	pout << "Loading HIDBindings" << std::endl;
-
 	if (getGameInfo()->type == GameInfo::GAME_U8) {
 		// system-wide config
 		if (configfileman->readConfigFile("@data/u8bindings.ini",
@@ -368,26 +376,18 @@ void GUIApp::startupGame()
 			con.Print(MM_MINOR_WARN, "@data/u8bindings.ini... Failed\n");
 	}
 
-	hidmanager->resetBindings();
 	hidmanager->loadBindings();
 	
-	pout << "Create UCMachine" << std::endl;
 	ucmachine = new UCMachine(U8Intrinsics);
 
 	inBetweenFrame = 0;
 	lerpFactor = 256;
 
 	// Initialize world
-	pout << "Initialize World" << std::endl;
 	world = new World();
 	world->initMaps();
 
 	game = Game::createGame(getGameInfo());
-
-	// set window title to current game
-	std::string title = "Pentagram - ";
-	title += getGameInfo()->getGameTitle();
-	SDL_WM_SetCaption(title.c_str(), "");
 
 	settingman->setDefault("ttf", false);
 	settingman->get("ttf", ttfoverrides);
@@ -395,12 +395,12 @@ void GUIApp::startupGame()
 	game->loadFiles();
 	gamedata->setupTTFOverrides();
 
+	// Unset the console auto paint (can't have it from here on)
+	con.SetAutoPaint(0);
+
 	// Create Midi Driver for Ultima 8
 	if (getGameInfo()->type == GameInfo::GAME_U8) 
 		audiomixer->openMidiOutput();
-
-	// Unset the console auto paint, since we have finished initing
-	con.SetAutoPaint(0);
 
 #if 1
 	newGame();
@@ -415,9 +415,13 @@ void GUIApp::startupGame()
 
 void GUIApp::startupPentagramMenu()
 {
+	con.SetAutoPaint(conAutoPaint);
+
 	pout << std::endl << "-- Initializing Pentagram Menu -- " << std::endl;
 
 	gamename = "pentagram";	// Just to be sure
+
+	GraphicSysInit();
 
 	// Unset the console auto paint, since we have finished initing
 	con.SetAutoPaint(0);
@@ -431,39 +435,44 @@ void GUIApp::startupPentagramMenu()
 
 void GUIApp::shutdown()
 {
-	shutdownGame();
+	shutdownGame(false);
 }
 
-void GUIApp::shutdownGame()
+void GUIApp::shutdownGame(bool reloading)
 {
 	pout << "-- Shutting down Game -- " << std::endl;
 
 	// Save config here....
 
-	runGraphicSysInit = false;
-
 	SDL_WM_SetCaption("Pentagram", "");
-
-	if (audiomixer) {
-		audiomixer->closeMidiOutput();
-		audiomixer->reset();
-	}
-	if (world) world->reset();
-	if (ucmachine) ucmachine->reset();
-	if (objectmanager) objectmanager->reset();
-	if (kernel) kernel->reset();
-
-	desktopGump = 0;
-	consoleGump = 0;
-	gameMapGump = 0;
-	scalerGump = 0;
-	inverterGump = 0;
 
 	textmodes.clear();
 
 	// reset mouse cursor
 	while (!cursors.empty()) cursors.pop();
 	pushMouseCursor();
+
+	if (audiomixer) {
+		audiomixer->closeMidiOutput();
+		audiomixer->reset();
+	}
+
+	FORGET_OBJECT(world);
+	objectmanager->reset();
+	FORGET_OBJECT(ucmachine);
+	kernel->reset();
+	hidmanager->resetBindings();
+	palettemanager->reset();
+	fontmanager->reset();
+
+	FORGET_OBJECT(game);
+	FORGET_OBJECT(gamedata);
+
+	desktopGump = 0;
+	consoleGump = 0;
+	gameMapGump = 0;
+	scalerGump = 0;
+	inverterGump = 0;
 
 	timeOffset = -(sint32)Kernel::get_instance()->getFrameNum();
 	inversion = 0;
@@ -488,37 +497,26 @@ void GUIApp::shutdownGame()
 	con.RemoveConsoleCommand("FastAreaVisGump::toggle");
 	con.RemoveConsoleCommand("MiniMapGump::toggle");
 
-
-	FORGET_OBJECT(game);
-	FORGET_OBJECT(fontmanager);
-	FORGET_OBJECT(gamedata);
-	FORGET_OBJECT(world);
-	FORGET_OBJECT(ucmachine);
-	FORGET_OBJECT(palettemanager);
-
 	// Kill Game
 	CoreApp::killGame();
 
-	fontmanager = new FontManager();
-
-	Pentagram::Rect dims;
-	screen->GetSurfaceDims(dims);
-
-	//pout << "Create Desktop" << std::endl;
-	desktopGump = new DesktopGump(0,0, dims.w, dims.h);
-	desktopGump->InitGump(0);
-	desktopGump->MakeFocus();
-
-	//pout << "Create Graphics Console" << std::endl;
-	consoleGump = new ConsoleGump(0, 0, dims.w, dims.h);
-	consoleGump->InitGump(0);
-
-	palettemanager = new PaletteManager(screen);
-
-	runGraphicSysInit = true;
-
 	pout << "-- Game Shutdown -- " << std::endl;
-	enterTextMode(consoleGump);
+
+	if (reloading) {
+		Pentagram::Rect dims;
+		screen->GetSurfaceDims(dims);
+
+		con.Print(MM_INFO, "Creating Desktop...\n");
+		desktopGump = new DesktopGump(0,0, dims.w, dims.h);
+		desktopGump->InitGump(0);
+		desktopGump->MakeFocus();
+
+		con.Print(MM_INFO, "Creating Graphics Console...\n");
+		consoleGump = new ConsoleGump(0, 0, dims.w, dims.h);
+		consoleGump->InitGump(0);
+
+		enterTextMode(consoleGump);
+	}
 }
 
 void GUIApp::changeGame(Pentagram::istring newgame)
@@ -792,7 +790,7 @@ void GUIApp::CreateHWCursors()
 // Paint the screen
 void GUIApp::paint()
 {
-	if(!runGraphicSysInit) // need to worry if the graphics system has been started. Need nicer way.
+	if(!screen) // need to worry if the graphics system has been started. Need nicer way.
 		return;
 
 	painting = true;
@@ -990,23 +988,14 @@ void GUIApp::popMouseCursor()
 
 void GUIApp::GraphicSysInit()
 {
-	// if we've already done this...
-	if(runGraphicSysInit) return;
-	//else...
-
-	fontmanager = new FontManager();
-
-	// Set Screen Resolution
-	pout << "Set Video Mode" << std::endl;
-
 	settingman->setDefault("fullscreen", false);
 	settingman->setDefault("width", 640);
 	settingman->setDefault("height", 480);
 	settingman->setDefault("bpp", 32);
 
-	bool fullscreen;
+	bool new_fullscreen;
 	int width, height, bpp;
-	settingman->get("fullscreen", fullscreen);
+	settingman->get("fullscreen", new_fullscreen);
 	settingman->get("width", width);
 	settingman->get("height", height);
 	settingman->get("bpp", bpp);
@@ -1021,24 +1010,51 @@ void GUIApp::GraphicSysInit()
 	settingman->set("width", width);
 	settingman->set("height", height);
 	settingman->set("bpp", bpp);
-	settingman->set("fullscreen", fullscreen);
+	settingman->set("fullscreen", new_fullscreen);
 #endif
 
-	screen = RenderSurface::SetVideoMode(width, height, bpp,
-										 fullscreen, false);
+	if (screen) {
+		Pentagram::Rect old_dims;
+		screen->GetSurfaceDims(old_dims);
+		if (new_fullscreen == fullscreen && width == old_dims.w && height == old_dims.h) return;
+		bpp = RenderSurface::format.s_bpp;
 
-	if (!screen)
+		delete screen;
+	}
+	screen = 0;
+
+	fullscreen = new_fullscreen;
+
+	// Set Screen Resolution
+	con.Printf(MM_INFO, "Setting Video Mode %ix%ix%i %s...\n", width, height, bpp, fullscreen?"fullscreen":"windowed");
+
+	RenderSurface *new_screen = RenderSurface::SetVideoMode(width, height, bpp, fullscreen, false);
+
+	if (!new_screen)
 	{
-		perr << "Unable to set video mode. Exiting" << std::endl;
+		perr << "Unable to set new video mode. Trying 640x480x32 windowed" << std::endl;
+		new_screen = RenderSurface::SetVideoMode(640, 480, 32, fullscreen=false, false);
+	}
+
+	if (!new_screen)
+	{
+		perr << "Unable to set video mode. Exiting." << std::endl;
 		std::exit(-1);
+	}
+
+	if (desktopGump) {
+		palettemanager->RenderSurfaceChanged(new_screen);
+		static_cast<DesktopGump*>(desktopGump)->RenderSurfaceChanged(new_screen);
+		screen = new_screen;
+		paint();
+		return;
 	}
 
 	// set window title
 	SDL_WM_SetCaption("Pentagram", "");
 
-
 	// setup normal mouse cursor
-	pout << "Load Default Mouse Cursor" << std::endl;
+	con.Print(MM_INFO, "Loading Default Mouse Cursor...\n");
 	IDataSource *dm = filesystem->ReadFile("@data/mouse.tga");
 	if (dm) defMouse = Texture::Create(dm, "@data/mouse.tga");
 	else defMouse = 0;
@@ -1050,55 +1066,70 @@ void GUIApp::GraphicSysInit()
 	delete dm;
 	pushMouseCursor();
 
-	LoadConsoleFont();
+	std::string alt_confont;
+	bool confont_loaded = false;
 
-	pout << "Create Desktop" << std::endl;
+	if (settingman->get("console_font", alt_confont)) {
+		con.Print(MM_INFO, "Alternate console font found...\n");
+		confont_loaded = LoadConsoleFont(alt_confont);
+    }
+
+	if (!confont_loaded) {
+		con.Print(MM_INFO, "Loading default console font...\n");
+		if (!LoadConsoleFont("@data/fixedfont.ini")) {
+			perr << "Failed to load console font. Exiting" << std::endl;
+			std::exit(-1);
+		}
+	}
+
 	desktopGump = new DesktopGump(0,0, width, height);
 	desktopGump->InitGump(0);
 	desktopGump->MakeFocus();
 
-	pout << "Create Graphics Console" << std::endl;
 	consoleGump = new ConsoleGump(0, 0, width, height);
 	consoleGump->InitGump(0);
 
-	// Create desktop
-	Pentagram::Rect dims;
-	screen->GetSurfaceDims(dims);
+	screen = new_screen;
 
-	palettemanager = new PaletteManager(screen);
+	fontmanager = new FontManager();
+	palettemanager = new PaletteManager(new_screen);
 
-	runGraphicSysInit=true;
-
-	// Do initial console paint
 	paint();
 }
 
-void GUIApp::LoadConsoleFont()
+void GUIApp::changeVideoMode(int width, int height, int new_fullscreen)
 {
-	std::string data;
-	std::string confontfile;
-	std::string confontini("@data/fixedfont.ini");
+	if (new_fullscreen == -2) settingman->set("fullscreen", !fullscreen);
+	else if (new_fullscreen == 0) settingman->set("fullscreen", false);
+	else if (new_fullscreen == 1) settingman->set("fullscreen", true);
 
-	if (settingman->get("console_font", data)) {
-		confontini = data;
-		pout << "Alternate console font found." << std::endl;
-	}
+	if (width > 0) settingman->set("width", width);
+	if (height > 0) settingman->set("height", height);
 
+	GraphicSysInit();
+}
+
+bool GUIApp::LoadConsoleFont(std::string confontini)
+{
 	// try to load the file
-	pout << "Loading console font config: " << confontini << "... ";
+	con.Printf(MM_INFO, "Loading console font config: %s... ", confontini.c_str());
 	if(configfileman->readConfigFile(confontini, "confont", true))
 		pout << "Ok" << std::endl;
-	else
+	else {
 		pout << "Failed" << std::endl;
+		return false;
+	}
 
 	FixedWidthFont *confont = FixedWidthFont::Create("confont");
 
 	if (!confont) {
-		perr << "Failed to load Console Font. Exiting" << std::endl;
-		std::exit(-1);
+		perr << "Failed to load Console Font." << std::endl;
+		return false;
 	}
 
 	con.SetConFont(confont);
+
+	return true;
 }
 
 void GUIApp::enterTextMode(Gump *gump)
@@ -1674,6 +1705,8 @@ bool GUIApp::saveGame(std::string filename, std::string desc,
 
 void GUIApp::resetEngine()
 {
+	con.Print(MM_INFO, "-- Resetting Engine --\n");
+
 	// kill music
 	if (audiomixer) audiomixer->reset();
 
@@ -1702,55 +1735,40 @@ void GUIApp::resetEngine()
 	inversion = 0;
 	save_count = 0;
 	has_cheated = false;
+
+	con.Print(MM_INFO, "-- Engine Reset --\n");
 }
 
 void GUIApp::setupCoreGumps()
 {
+	con.Print(MM_INFO, "Setting up core game gumps...\n");
+
 	Pentagram::Rect dims;
 	screen->GetSurfaceDims(dims);
 
-	// Scaler stuff... should probably be elsewhere
-	int scalex, scaley;
-	std::string scalername;
-	const Pentagram::Scaler *scaler;
-	settingman->setDefault("scalex", 320);
-	settingman->get("scalex", scalex);
-	settingman->setDefault("scaley", 200);
-	settingman->get("scaley", scaley);
-	settingman->setDefault("scaler", "point");
-	settingman->get("scaler", scalername);
-	
-	scaler = ScalerManager::get_instance()->GetScaler(scalername);
-	if (!scaler) scaler = ScalerManager::get_instance()->GetPointScaler();
-
-	if (scalex < 0) scalex= -scalex;
-	else if (scalex < 100) scalex = dims.w/scalex;
-
-	if (scaley < 0) scaley= -scaley;
-	else if (scaley < 100) scaley = dims.h/scaley;
-
-	if (dims.w!=scalex && dims.h!=scaley)
-		pout << "Using Scaler: " << scaler->ScalerDesc() << ". " << scaler->ScalerCopyright() << std::endl;
-
-	pout << "Create Desktop" << std::endl;
+	con.Print(MM_INFO, "Creating Desktop...\n");
 	desktopGump = new DesktopGump(0,0, dims.w, dims.h);
 	desktopGump->InitGump(0);
 	desktopGump->MakeFocus();
 
-	pout << "Create Scalergump" << std::endl;
-	scalerGump = new ScalerGump(0,0, dims.w, dims.h,scalex,scaley,scaler);
+	con.Print(MM_INFO, "Creating ScalerGump...\n");
+	scalerGump = new ScalerGump(0, 0, dims.w, dims.h);
 	scalerGump->InitGump(0);
 
-	pout << "Create Graphics Console" << std::endl;
+	Pentagram::Rect scaled_dims;
+	scalerGump->GetDims(scaled_dims);
+
+	con.Print(MM_INFO, "Creating Graphics Console...\n");
 	consoleGump = new ConsoleGump(0, 0, dims.w, dims.h);
 	consoleGump->InitGump(0);
 	consoleGump->HideConsole();
 	
-	inverterGump = new InverterGump(0, 0, scalex,scaley);
+	con.Print(MM_INFO, "Creating Inverter...\n");
+	inverterGump = new InverterGump(0, 0, scaled_dims.w, scaled_dims.h);
 	inverterGump->InitGump(0);
 
-	pout << "Create GameMapGump" << std::endl;
-	gameMapGump = new GameMapGump(0, 0, scalex,scaley);
+	con.Print(MM_INFO, "Creating GameMapGump...\n");
+	gameMapGump = new GameMapGump(0, 0, scaled_dims.w, scaled_dims.h);
 	gameMapGump->InitGump(0);
 
 
@@ -1768,16 +1786,18 @@ void GUIApp::setupCoreGumps()
 
 bool GUIApp::newGame()
 {
+	con.Print(MM_INFO, "Starting New Game...\n");
+
 	resetEngine();
 
 	setupCoreGumps();
 
 	game->startGame();
 
-	pout << "Create Camera" << std::endl;
+	con.Print(MM_INFO, "Create Camera...\n");
 	CameraProcess::SetCameraProcess(new CameraProcess(1)); // Follow Avatar
 
-	pout << "Create persistent Processes" << std::endl;
+	con.Print(MM_INFO, "Create persistent Processes...\n");
 	avatarMoverProcess = new AvatarMoverProcess();
 	kernel->addProcess(avatarMoverProcess);
 
@@ -1804,7 +1824,7 @@ bool GUIApp::newGame()
 
 bool GUIApp::loadGame(std::string filename)
 {
-	pout << "Loading..." << std::endl;
+	con.Print(MM_INFO, "Loading...\n");
 
 	IDataSource* ids = filesystem->ReadFile(filename);
 	if (!ids) {
@@ -2083,6 +2103,29 @@ void GUIApp::ConCmd_listGames(const Console::ArgsType &args, const Console::Argv
 		}
 		con.Print(MM_INFO, "\n");
 	}
+}
+
+void GUIApp::ConCmd_setVideoMode(const Console::ArgsType &args, const Console::ArgvType &argv)
+{
+	int fullscreen = -1;
+	
+	//if (argv.size() == 4) {
+	//	if (argv[3] == "fullscreen") fullscreen = 1;
+	//	else fullscreen = 0;
+	//} else 
+	if (argv.size() != 3)
+	{
+		//pout << "Usage: GUIApp::setVidMode width height [fullscreen/windowed]" << std::endl;
+		pout << "Usage: GUIApp::setVidMode width height" << std::endl;
+		return;
+	}
+
+	GUIApp::get_instance()->changeVideoMode(strtol(argv[1].c_str(), 0, 0), strtol(argv[2].c_str(), 0, 0), fullscreen);
+}
+
+void GUIApp::ConCmd_toggleFullscreen(const Console::ArgsType &args, const Console::ArgvType &argv)
+{
+	GUIApp::get_instance()->changeVideoMode(-1, -1, -2);
 }
 
 //

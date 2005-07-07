@@ -40,29 +40,39 @@ public:
 	//! \param swidth1 width before scaling (usually game-width)
 	//! \param sheight1 height before scaling (usually game-height)
 	//! \param scaler1 scaler to use
-	ScalerGump(sint32 x, sint32 y, sint32 width, sint32 height, sint32 swidth1, sint32 sheight1, const Pentagram::Scaler *scaler1, sint32 swidth2=0, sint32 sheight2=0, const Pentagram::Scaler *scaler2=0);
+	ScalerGump(sint32 x, sint32 y, sint32 width, sint32 height);
 	virtual ~ScalerGump(void);
 
 	virtual void Paint(RenderSurface* surf, sint32 lerp_factor);
-
+	virtual void RenderSurfaceChanged();
 	virtual void ParentToGump(int &px, int &py);
 	virtual void GumpToParent(int &gx, int &gy);
 	
 	void GetScaledSize(sint32 &sw, sint32 &sh) const { sw = swidth1; sh = sheight1; }
+	void ChangeScaler(std::string scalername, int scalex, int scaley);
 
 protected:
-	sint32					swidth1;
-	sint32					sheight1;
+	int						swidth1;
+	int						sheight1;
 	const Pentagram::Scaler	*scaler1;
 	RenderSurface			*buffer1;
 
-	sint32					swidth2;
-	sint32					sheight2;
+	int						swidth2;
+	int						sheight2;
 	const Pentagram::Scaler	*scaler2;
 	RenderSurface			*buffer2;
 
 	sint32					width;
 	sint32					height;
+
+private:
+	void SetupScalers();
+
+	void DoScalerBlit(Texture* src, int swidth, int sheight, RenderSurface *dest, int dwidth, int dheight, const Pentagram::Scaler *scaler);
+
+	static void			ConCmd_changeScaler(const Console::ArgsType &args, const Console::ArgvType &argv);		//!< "GuiApp::changeScaler" console command
+	static void			ConCmd_listScalers(const Console::ArgsType &args, const Console::ArgvType &argv);		//!< "GuiApp::changeScaler" console command
+
 };
 
 #endif

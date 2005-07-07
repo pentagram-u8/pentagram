@@ -121,13 +121,10 @@ void CoreApp::sysInit()
 	gameinfo = new GameInfo();
 
 	// Create the kernel
-	con.Print(MM_INFO, "Creating Kernel...\n");
 	kernel = new Kernel;
 
-	con.Print(MM_INFO, "Creating FileSystem...\n");
 	filesystem = new FileSystem;
 
-	con.Print(MM_INFO, "Creating Configuration...\n");
 	configfileman = new ConfigFileManager();
 	settingman = new SettingManager();
 	settingman->setDomainName(SettingManager::DOM_GLOBAL, "pentagram");

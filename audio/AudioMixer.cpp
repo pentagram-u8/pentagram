@@ -40,7 +40,7 @@ AudioMixer::AudioMixer(int sample_rate_, bool stereo_, int num_channels_) :
 {
 	the_audio_mixer = this;
 
-	pout << "Initializing AudioMixer..." << std::endl;
+	con.Print(MM_INFO, "Creating AudioMixer...\n");
 
 	SDL_AudioSpec desired, obtained;
 
@@ -94,6 +94,8 @@ void AudioMixer::createProcesses()
 
 AudioMixer::~AudioMixer(void)
 {
+	con.Print(MM_INFO, "Destroying AudioMixer...\n");
+
 	closeMidiOutput();
 
 	SDL_CloseAudio();
@@ -117,6 +119,8 @@ void AudioMixer::Unlock()
 void AudioMixer::reset()
 {
 	if (!audio_ok) return;
+
+	con.Print(MM_INFO, "Resetting AudioMixer...\n");
 
 	Lock();
 
@@ -260,7 +264,7 @@ void AudioMixer::openMidiOutput()
 	if (!audio_ok) return;
 
 	MidiDriver * new_driver = 0;
-	pout << "Initializing MidiDriver..." << std::endl;
+	con.Print(MM_INFO, "Initializing MidiDriver...\n");
 
 	SettingManager *settingman = SettingManager::get_instance();
 
@@ -284,7 +288,10 @@ void AudioMixer::openMidiOutput()
 
 void AudioMixer::closeMidiOutput()
 {
-	if (midi_driver) midi_driver->destroyMidiDriver();
+	if (!midi_driver) return;
+	con.Print(MM_INFO, "Destroying MidiDriver...\n");
+
+	midi_driver->destroyMidiDriver();
 
 	Lock();
 	delete midi_driver;

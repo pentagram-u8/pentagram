@@ -450,7 +450,7 @@ void LowLevelMidiDriver::destroyThreadedSynth()
 	{
 		giveinfo();
 		// Wait 1 MS before trying again
-		if (peekComMessageType() == LLMD_MSG_THREAD_EXIT)
+		if (peekComMessageType() != 0)
 		{
 			yield ();
 			SDL_Delay(1);
@@ -461,7 +461,7 @@ void LowLevelMidiDriver::destroyThreadedSynth()
 	}
 
 	// We waited a while and it still didn't terminate
-	if (count == 400 && peekComMessageType() == LLMD_MSG_THREAD_EXIT) {
+	if (count == 400 && peekComMessageType() != 0) {
 		perr << "MidiPlayer Thread failed to stop in time. Killing it." << std::endl;
 		SDL_KillThread (thread);
 	}
@@ -525,6 +525,9 @@ int LowLevelMidiDriver::threadMain()
 	sendMT32SystemMessage(all_dev_reset_base,0,1,exit_display);
 	SDL_Delay(40);
 
+	// Close the device
+	close();
+
 	lockComMessage();
 	{
 		// Pop all messages
@@ -532,9 +535,6 @@ int LowLevelMidiDriver::threadMain()
 		initialized = false;
 	}
 	unlockComMessage();
-
-	// Close the device
-	close();
 
 	return 0;
 }
@@ -673,7 +673,11 @@ bool LowLevelMidiDriver::playSequences ()
 	{
 		while (!messages.empty()) 
 		{
-			ComMessage &message = messages.front();
+			ComMessage message = messages.front();
+
+			// Quick Exit if we get a 'queue' and get an exit command
+			if (messages.back().type == LLMD_MSG_THREAD_EXIT)
+				message = messages.back();
 
 			switch (message.type)
 			{

@@ -22,23 +22,30 @@
 #include "RenderSurface.h"
 #include "Texture.h"
 #include "Scaler.h"
+#include "ScalerManager.h"
+#include "SettingManager.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(ScalerGump,DesktopGump);
 
-ScalerGump::ScalerGump(sint32 _x, sint32 _y, sint32 _width, sint32 _height, 
-						sint32 _swidth1, sint32 _sheight1, const Pentagram::Scaler *_scaler1, 
-						sint32 _swidth2, sint32 _sheight2, const Pentagram::Scaler *_scaler2)
-	: DesktopGump(_x, _y, _swidth1, _sheight1), 
-	  swidth1(_swidth1), sheight1(_sheight1), scaler1(_scaler1), buffer1(0),
-	  swidth2(_swidth2), sheight2(_sheight2), scaler2(_scaler2), buffer2(0),
+ScalerGump::ScalerGump(sint32 _x, sint32 _y, sint32 _width, sint32 _height) :
+	  DesktopGump(_x, _y, _width, _height),
+	  swidth1(_width), sheight1(_height), scaler1(0), buffer1(0),
+	  swidth2(_width), sheight2(_height), scaler2(0), buffer2(0),
 	  width(_width), height(_height)
 {
+	con.AddConsoleCommand("ScalerGump::changeScaler",ConCmd_changeScaler);
+	con.AddConsoleCommand("ScalerGump::listScalers",ConCmd_listScalers);
+
+	SetupScalers();
 }
 
 ScalerGump::~ScalerGump()
 {
-	delete buffer1;
-	delete buffer2;
+	con.RemoveConsoleCommand("ScalerGump::changeScaler");
+	con.RemoveConsoleCommand("ScalerGump::listScalers");
+
+	FORGET_OBJECT(buffer1);
+	FORGET_OBJECT(buffer2);
 }
 
 void ScalerGump::Paint(RenderSurface* surf, sint32 lerp_factor)
@@ -51,56 +58,63 @@ void ScalerGump::Paint(RenderSurface* surf, sint32 lerp_factor)
 	// Don't paint if hidden
 	if (IsHidden()) return;
 
-	// We don't care, we are not going to support filters, at least not at the moment
-	if (swidth1 == width && sheight1 == height)
-	{
+	// No scaling or filtering
+	if (!buffer1) {
 		PaintChildren(surf, lerp_factor);
 		return;
 	}
 
-	// need a backbuffer
-	if (!buffer1) {
-		buffer1 = RenderSurface::CreateSecondaryRenderSurface(swidth1, sheight1);
-	}
-
-	// Paint children
+	// Render to texture
+	buffer1->BeginPainting();
 	PaintChildren(buffer1, lerp_factor);
+	buffer1->EndPainting();
 
-	Texture* tex = buffer1->GetSurfaceAsTexture();
-	
+	if (!buffer2) {
+		DoScalerBlit(buffer1->GetSurfaceAsTexture(),swidth1, sheight1,surf,width,height,scaler1);
+	}
+	else {
+		buffer2->BeginPainting();
+		DoScalerBlit(buffer1->GetSurfaceAsTexture(),swidth2,sheight2,buffer2,swidth2,sheight2,scaler1);
+		buffer2->EndPainting();
+
+		DoScalerBlit(buffer2->GetSurfaceAsTexture(),swidth2,sheight2,surf,width,height,scaler2);
+	}
+}
+
+void ScalerGump::DoScalerBlit(Texture* src, int swidth, int sheight, RenderSurface *dest, int dwidth, int dheight, const Pentagram::Scaler *scaler)
+{
 	bool ok = true;
 
 	// Cheap and nasty method to use a 2x scaler to do a 2.4x scale vertically
-	if (width==640 && swidth1==320 && height==480 && sheight1==200 && !scaler2 && !scaler1->ScaleArbitrary())
+	if (dwidth==640 && swidth==320 && dheight==480 && sheight==200 && !scaler->ScaleArbitrary())
 	{
-		ok = surf->ScalerBlit(tex, 0, 0, swidth1, 1, 0, 0, width, 2, scaler1);
+		ok = dest->ScalerBlit(src, 0, 0, swidth, 1, 0, 0, dwidth, 2, scaler);
 
 		int d = 1, s = 0;
 		while(d<468 && ok) {
-			ok = surf->ScalerBlit(tex, 0, s, swidth1, 3, 0, d, width, 6, scaler1);
+			ok = dest->ScalerBlit(src, 0, s, swidth, 3, 0, d, dwidth, 6, scaler);
 			d+=5; s+=2;
 
 			if (!ok) break;
 
-			ok = surf->ScalerBlit(tex, 0, s, swidth1, 4, 0, d, width, 8, scaler1);
+			ok = dest->ScalerBlit(src, 0, s, swidth, 4, 0, d, dwidth, 8, scaler);
 			d+=7; s+=3;
 		}
 
 		while(d<478 && ok) {
-			ok = surf->ScalerBlit(tex, 0, s, swidth1, 3, 0, d, width, 6, scaler1);
+			ok = dest->ScalerBlit(src, 0, s, swidth, 3, 0, d, dwidth, 6, scaler);
 			d+=5; s+=2;
 		}
 	}
 	else
 	{
-		ok = surf->ScalerBlit(tex, 0, 0, swidth1, sheight1, 0, 0, width, height, scaler1);
+		ok = dest->ScalerBlit(src, 0, 0, swidth, sheight, 0, 0, dwidth, dheight, scaler);
 	}
 
 	if (!ok)
 	{
-		surf->StretchBlit(tex, 0, 0, swidth1, sheight1, 0, 0, width, height);
+		dest->StretchBlit(src, 0, 0, swidth, sheight, 0, 0, dwidth, dheight);
 	}
-
 }
 
 // Convert a parent relative point to a gump point
@@ -126,3 +140,101 @@ void ScalerGump::GumpToParent(int &gx, int &gy)
 	gy /= dims.h;
 	gy += y;
 }
+
+void ScalerGump::RenderSurfaceChanged()
+{
+	// Resize the gump to match the RenderSurface
+	Pentagram::Rect new_dims;
+	parent->GetDims(new_dims);
+
+	width = new_dims.w;
+	height = new_dims.h;
+
+	SetupScalers();
+
+	Gump::RenderSurfaceChanged();
+}
+
+void ScalerGump::ChangeScaler(std::string scalername, int scalex, int scaley)
+{
+	SettingManager *settingman = SettingManager::get_instance();
+
+	if (scalex != 0) settingman->set("scalex", scalex);
+	if (scaley != 0) settingman->set("scaley", scaley);
+	if (scalername != "") settingman->set("scaler", scalername);
+	
+	SetupScalers();
+
+	Gump::RenderSurfaceChanged();
+}
+
+void ScalerGump::SetupScalers()
+{
+	FORGET_OBJECT(buffer1);
+	FORGET_OBJECT(buffer2);
+
+	SettingManager *settingman = SettingManager::get_instance();
+
+	settingman->setDefault("scalex", 320);
+	settingman->setDefault("scaley", 200);
+	settingman->setDefault("scaler", "point");
+
+	std::string scaler1name;
+	settingman->get("scalex", swidth1);
+	settingman->get("scaley", sheight1);
+	settingman->get("scaler", scaler1name);
+	
+	scaler1 = ScalerManager::get_instance()->GetScaler(scaler1name);
+	if (!scaler1) scaler1 = ScalerManager::get_instance()->GetPointScaler();
+
+	if (swidth1 < 0) swidth1= -swidth1;
+	else if (swidth1 < 100) swidth1 = width/swidth1;
+
+	if (sheight1 < 0) sheight1= -sheight1;
+	else if (sheight1 < 100) sheight1 = height/sheight1;
+
+	dims.w = swidth1;
+	dims.h = sheight1;
+
+	// We don't care, we are not going to support filters, at least not at the moment
+	if (swidth1 == width && sheight1 == height) return;
+
+	buffer1 = RenderSurface::CreateSecondaryRenderSurface(swidth1, sheight1);
+	con.Printf(MM_INFO, "Using Scaler: %s. %s\n", scaler1->ScalerDesc(), scaler1->ScalerCopyright());
+}
+
+void ScalerGump::ConCmd_changeScaler(const Console::ArgsType &args, const Console::ArgvType &argv)
+{
+	if (argv.size() != 4 && argv.size() != 2)
+	{
+		pout << "Usage: ScalerGump::changeScaler scaler [scalex] [scaley]" << std::endl;
+		return;
+	}
+
+	ScalerGump *scalerGump = static_cast<ScalerGump*>(GUIApp::get_instance()->getDesktopGump()->FindGump<ScalerGump>());
+
+	if (scalerGump) {
+		if (argv.size() != 2)
+			scalerGump->ChangeScaler(argv[1], strtol(argv[2].c_str(), 0, 0), strtol(argv[3].c_str(), 0, 0));
+		else
+			scalerGump->ChangeScaler(argv[1], 0, 0);
+	}
+}
+
+void ScalerGump::ConCmd_listScalers(const Console::ArgsType &args, const Console::ArgvType &argv)
+{
+	ScalerManager *scaleman = ScalerManager::get_instance();
+	uint32 numScalers = scaleman->GetNumScalers();
+
+	for (uint32 i = 0; i < numScalers; i++) {
+		const Pentagram::Scaler *s = scaleman->GetScaler(i);
+
+		pout << s->ScalerName() << ": " << s->ScalerDesc() << " -";
+
+		if (s->ScaleArbitrary()) pout << " Arbitrary";
+		else for (int b = 0; b < 32; b++) if (s->ScaleBits() & (1<<b)) pout << " " << b << "x";
+
+		pout << std::endl;
+	}
+}
+

@@ -29,7 +29,6 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(DesktopGump,Gump);
 DesktopGump::DesktopGump()
 	: Gump()
 {
-
 }
 
 DesktopGump::DesktopGump(sint32 _x, sint32 _y, sint32 _width, sint32 _height) :
@@ -48,9 +47,10 @@ void DesktopGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 
 #ifndef DEBUG
 	ConsoleGump *console = GUIApp::get_instance()->getConsoleGump();
-	if (console->ConsoleIsVisible()) 
+	if (console->ConsoleIsVisible() || children.front()->IsOfType<ConsoleGump>())
 #endif
-		surf->Fill32(0x3f3f3f, 0, 0, dims.w, dims.h);
+		surf->Fill32(0x000000, 0, 0, dims.w, dims.h);
+		//surf->Fill32(0x3f3f3f, 0, 0, dims.w, dims.h);
 }
 
 bool DesktopGump::StartDraggingChild(Gump* gump, int mx, int my)
@@ -70,6 +70,28 @@ void DesktopGump::DraggingChild(Gump* gump, int mx, int my)
 void DesktopGump::StopDraggingChild(Gump* gump)
 {
 
+}
+
+void DesktopGump::RenderSurfaceChanged(RenderSurface *surf)
+{
+	// Resize the desktop gump to match the RenderSurface 
+	Pentagram::Rect new_dims;
+	surf->GetSurfaceDims(new_dims);
+	dims.w = new_dims.w;
+	dims.h = new_dims.h;
+
+	Gump::RenderSurfaceChanged();
+}
+
+void DesktopGump::RenderSurfaceChanged()
+{
+	// Resize the desktop gump to match the parent
+	Pentagram::Rect new_dims;
+	parent->GetDims(new_dims);
+	dims.w = new_dims.w;
+	dims.h = new_dims.h;
+
+	Gump::RenderSurfaceChanged();
 }
 
 void DesktopGump::saveData(ODataSource* ods)

@@ -74,8 +74,11 @@ public:
 
 	void startupGame();
 	void startupPentagramMenu();
-	void shutdownGame();
+	void shutdownGame(bool reloading=true);
 	void changeGame(Pentagram::istring newgame);
+
+	void changeVideoMode(int width, int height, int fullscreen=-1);	// -1 = no change, -2 = fullscreen toggle
+	RenderSurface *getScreen() { return screen; }
 
 	virtual void run();
 	virtual void handleEvent(const SDL_Event& event);
@@ -201,6 +204,7 @@ private:
 	HIDManager* hidmanager;
 	UCMachine* ucmachine;
 	RenderSurface *screen;
+	bool fullscreen;
 	PaletteManager *palettemanager;
 	GameData *gamedata;
 	World *world;
@@ -215,13 +219,12 @@ private:
 	AvatarMoverProcess* avatarMoverProcess;
 	
 	// called depending upon command line arguments
-	void GraphicSysInit(); // starts the graphics subsystem
-	void LoadConsoleFont(); // loads the console font
+	void GraphicSysInit(); // starts/restarts the graphics subsystem
+	bool LoadConsoleFont(std::string confontini); // loads the console font
 	
 	void handleDelayedEvents();
 	
 	// Various dependancy flags
-	bool runGraphicSysInit;
 	bool runSDLInit;
 	
 	// Timing stuff
@@ -307,18 +310,21 @@ private:
 	std::list<ObjId>	textmodes;		//!< Gumps that want text mode
 
 	// Load and save games from arbitrary filenames from the console
-	static void			ConCmd_saveGame(const Console::ArgsType &args, const Console::ArgvType &argv);	//!< "GUIApp::saveGame <filename>" console command
-	static void			ConCmd_loadGame(const Console::ArgsType &args, const Console::ArgvType &argv);	//!< "GUIApp::loadGame <filename>" console command
-	static void			ConCmd_newGame(const Console::ArgsType &args, const Console::ArgvType &argv);	//!< "GUIApp::newGame" console command
+	static void			ConCmd_saveGame(const Console::ArgsType &args, const Console::ArgvType &argv);			//!< "GUIApp::saveGame <filename>" console command
+	static void			ConCmd_loadGame(const Console::ArgsType &args, const Console::ArgvType &argv);			//!< "GUIApp::loadGame <filename>" console command
+	static void			ConCmd_newGame(const Console::ArgsType &args, const Console::ArgvType &argv);			//!< "GUIApp::newGame" console command
 
-	static void			ConCmd_quit(const Console::ArgsType &args, const Console::ArgvType &argv);		//!< "quit" console command
+	static void			ConCmd_quit(const Console::ArgsType &args, const Console::ArgvType &argv);				//!< "quit" console command
 
-	static void			ConCmd_changeGame(const Console::ArgsType &args, const Console::ArgvType &argv);//!< "GuiApp::changeGame" console command
-	static void			ConCmd_listGames(const Console::ArgsType &args, const Console::ArgvType &argv);	//!< "GuiApp::listGames" console command
+	static void			ConCmd_changeGame(const Console::ArgsType &args, const Console::ArgvType &argv);		//!< "GuiApp::changeGame" console command
+	static void			ConCmd_listGames(const Console::ArgsType &args, const Console::ArgvType &argv);			//!< "GuiApp::listGames" console command
+
+	static void			ConCmd_setVideoMode(const Console::ArgsType &args, const Console::ArgvType &argv);		//!< "GuiApp::setVideoMode" console command
+	static void			ConCmd_toggleFullscreen(const Console::ArgsType &args, const Console::ArgvType &argv);	//!< "GuiApp::toggleFullscreen" console command
 
 	// This should be a console variable once they are implemented
 	bool				drawRenderStats;
-	static void			ConCmd_drawRenderStats(const Console::ArgsType &args, const Console::ArgvType &argv);		//!< "GUIApp::drawRenderStats" console command
+	static void			ConCmd_drawRenderStats(const Console::ArgsType &args, const Console::ArgvType &argv);	//!< "GUIApp::drawRenderStats" console command
 
 	bool				ttfoverrides;
 

@@ -30,6 +30,8 @@ HIDManager* HIDManager::hidmanager = 0;
 
 HIDManager::HIDManager()
 {
+	con.Print(MM_INFO, "Creating HIDManager...\n");
+
 	assert(hidmanager == 0);
 	hidmanager = this;
 
@@ -54,6 +56,7 @@ HIDManager::HIDManager()
 	bindingMap.insert( HIDBINDING_PAIR(showMenu) );
 	bindingMap.insert( HIDBINDING_PAIR(quit) );
 	bindingMap.insert( HIDBINDING_PAIR(toggleConsole) );
+	bindingMap.insert( HIDBINDING_PAIR(toggleFullscreen) );
 	bindingMap.insert( HIDBINDING_PAIR(quickMoveUp) );
 	bindingMap.insert( HIDBINDING_PAIR(quickMoveDown) );
 	bindingMap.insert( HIDBINDING_PAIR(quickMoveLeft) );
@@ -79,6 +82,8 @@ HIDManager::HIDManager()
 
 HIDManager::~HIDManager()
 {
+	con.Print(MM_INFO, "Destroying HIDManager...\n");
+
 	con.RemoveConsoleFunction(HIDManager::ConCmd_execBinding);
 	ShutdownJoystick();
 	hidmanager = 0;
@@ -177,6 +182,8 @@ void HIDManager::buildEvent(HID_Event& hidEvent, const SDL_Event& sdlEvent)
 
 void HIDManager::resetBindings()
 {
+	con.Print(MM_INFO, "Resetting HIDBindings...\n");
+
 	uint16 key, button, js;
 
 	for (key=0; key < SDLK_LAST; ++key)
@@ -197,12 +204,15 @@ void HIDManager::resetBindings()
 		}
 	}
 
-	keybindings[SDLK_ESCAPE] = &HIDBindings::showMenu;
+	//keybindings[SDLK_ESCAPE] = &HIDBindings::showMenu;
+	keybindings[SDLK_F4] = &HIDBindings::toggleFullscreen;
 	keybindings[SDLK_BACKQUOTE] = &HIDBindings::toggleConsole;
 }
 
 void HIDManager::loadBindings()
 {
+	con.Print(MM_INFO, "Loading HIDBindings...\n");
+
 	SettingManager* settings = SettingManager::get_instance();
 	std::map<Pentagram::istring, std::string> keys;
 	keys = settings->listDataValues("keys");
@@ -212,7 +222,7 @@ void HIDManager::loadBindings()
 	
 	if (i == end)
 	{
-		pout << "Loading default HIDBindings..." << std::endl;
+		con.Print(MM_INFO, "Loading default HIDBindings...\n");
 		ConfigFileManager* config = ConfigFileManager::get_instance();
 		keys = config->listKeyValues("bindings/bindings");
 		i = keys.begin();
@@ -318,7 +328,8 @@ void HIDManager::bind(const Pentagram::istring& control, const Pentagram::istrin
 
 		for (key=0; key < SDLK_LAST; ++key)
 		{
-			if (key == SDLK_ESCAPE || key == SDLK_BACKQUOTE)
+			//if (key == SDLK_ESCAPE || key == SDLK_BACKQUOTE)
+			if (key == SDLK_BACKQUOTE)
 			{	// We will not allow these keys to be rebound
 				++key; 
 			}
@@ -371,7 +382,8 @@ void HIDManager::unbind(const Pentagram::istring& control)
 	{	// we are unbinding all keys with the HIDBinding "control"
 		for (key=0; key < SDLK_LAST; ++key)
 		{
-			if (key == SDLK_ESCAPE || key == SDLK_BACKQUOTE)
+			//if (key == SDLK_ESCAPE || key == SDLK_BACKQUOTE)
+			if (key == SDLK_BACKQUOTE)
 			{	// We will not allow these keys to be rebound
 				++key; 
 			}
@@ -404,7 +416,8 @@ void HIDManager::unbind(const Pentagram::istring& control)
 	{	// assume we are unbinding a specific key
 		for (key=0; key < SDLK_LAST; ++key)
 		{
-			if (key == SDLK_ESCAPE || key == SDLK_BACKQUOTE)
+			//if (key == SDLK_ESCAPE || key == SDLK_BACKQUOTE)
+			if (key == SDLK_BACKQUOTE)
 			{	// We will not allow these keys to be rebound
 				++key; 
 			}

@@ -84,7 +84,7 @@ RenderSurface *RenderSurface::SetVideoMode(uint32 width,		// Width of desired mo
 	if (!fullscreen) 
 	{
 		// Use the BPP of the desktop
-		bpp = vinfo->vfmt->BitsPerPixel;
+		//bpp = vinfo->vfmt->BitsPerPixel;
 
 		// check to make sure we are in 16 bit or 32 bit
 		if (bpp != 16 && bpp != 32)

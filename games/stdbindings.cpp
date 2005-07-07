@@ -432,4 +432,20 @@ bool highlightItems(const HID_Event& event)
 	return handled;
 }
 
+bool toggleFullscreen(const HID_Event& event)
+{
+	bool handled = false;
+	switch (event.type) {
+	case HID_DOWN:
+	{
+		GUIApp::get_instance()->changeVideoMode(-1,-1,-2);
+		handled = true;
+	} break;
+	default:
+		break;
+	}
+	return handled;
+}
+
+
 };

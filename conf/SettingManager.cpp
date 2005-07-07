@@ -27,6 +27,8 @@ SettingManager* SettingManager::settingmanager = 0;
 
 SettingManager::SettingManager()
 {
+	con.Print(MM_INFO, "Creating SettingManager...\n");
+
 	assert(settingmanager == 0);
 	settingmanager = this;
 
@@ -39,6 +41,8 @@ SettingManager::SettingManager()
 
 SettingManager::~SettingManager()
 {
+	con.Print(MM_INFO, "Destroying SettingManager...\n");
+
 	settingmanager = 0;
 }
 

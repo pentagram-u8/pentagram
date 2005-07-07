@@ -38,6 +38,14 @@ ScalerManager::~ScalerManager()
 }
 
 //
+// Get the total Number of scalers
+//
+uint32 ScalerManager::GetNumScalers()
+{
+	return scalers.size();
+}
+
+//
 // Get the Index of a scaler from its Name
 //
 uint32 ScalerManager::GetIndexForName(const Pentagram::istring name)

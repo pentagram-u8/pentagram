@@ -43,6 +43,8 @@ FileSystem* FileSystem::filesystem = 0;
 FileSystem::FileSystem(bool noforced)
 	: noforcedvpaths(noforced), allowdataoverride(true)
 {
+	con.Print(MM_INFO, "Creating FileSystem...\n");
+
 	assert(filesystem == 0);
 	filesystem = this;
 
@@ -82,6 +84,8 @@ FileSystem::FileSystem(bool noforced)
 
 FileSystem::~FileSystem()
 {
+	con.Print(MM_INFO, "Destroying FileSystem...\n");
+
 	filesystem = 0;
 }
 

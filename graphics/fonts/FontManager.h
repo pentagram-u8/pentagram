@@ -56,6 +56,8 @@ public:
 	bool loadTTFont(unsigned int ttfnum, std::string filename,
 				int pointsize, uint32 rgb, int bordersize);
 
+	// Reset the font manager
+	void reset();
 private:
 
 	struct TTFId {

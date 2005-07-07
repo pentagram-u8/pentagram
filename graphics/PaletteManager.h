@@ -55,6 +55,12 @@ public:
 	// Alpha will set how much of original palette to keep. 0 = keep none
 	static void getTransformMatrix(sint16 matrix[12], uint32 col32);	
 
+	//! Change the Render Surface used by the PaletteManager
+	void RenderSurfaceChanged(RenderSurface* rs);
+
+	//! Reset the Palette Manager
+	void reset();
+
 private:
 	std::vector<Pentagram::Palette*> palettes;
 	RenderSurface *rendersurface;

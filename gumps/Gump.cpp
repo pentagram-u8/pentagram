@@ -139,6 +139,19 @@ void Gump::Close(bool no_del)
 	}
 }
 
+void Gump::RenderSurfaceChanged()
+{
+	// Iterate all children
+	std::list<Gump*>::reverse_iterator it = children.rbegin();
+	std::list<Gump*>::reverse_iterator end = children.rend();
+
+	while (it != end)
+	{
+		(*it)->RenderSurfaceChanged();
+		++it;
+	}
+}
+
 bool Gump::Run(const uint32 framenum)
 {
 	// Iterate all children
@@ -213,7 +226,7 @@ bool Gump::GetMouseCursor(int mx, int my, Shape &shape, sint32 &frame)
 	std::list<Gump*>::reverse_iterator it;
 	for (it = children.rbegin(); it != children.rend(); ++it)
 	{
-		Gump *g = *--it;
+		Gump *g = *it;
 
 		// Not if closing
 		if (g->flags & FLAG_CLOSING) continue;

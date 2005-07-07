@@ -51,7 +51,7 @@ public:
 	}
 
 	inline unsigned int getSP() const {
-		return (buf_ptr - buf);
+		return static_cast<unsigned int>(buf_ptr - buf);
 	}
 
 	inline void setSP(unsigned int pos) {
