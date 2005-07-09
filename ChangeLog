@@ -1,6 +1,8 @@
 2005-07-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* filesys/ZipFile.cpp: fix failed assertion when savegame is corrupt
 	* kernel/GUIApp.cpp: clearer message for a corrupt savegame
+	* usecode/UCProcess.cpp, usecode/UsecodeFlex.cpp: fix crash in
+	  UCProcess::dumpInfo if IP is undefined (classid==0xFFFF)	
 
 2005-07-07  Ryan Nunn <colourles@users.sourceforge.net>
 	* audio/midi/LowLevelMidiDriver.cpp : Fixing bad bad bug with the 

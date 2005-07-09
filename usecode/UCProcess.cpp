@@ -156,7 +156,14 @@ void UCProcess::terminate()
 void UCProcess::dumpInfo()
 {
 	Process::dumpInfo();
-	pout.printf("classname: %s, IP: %04X:%04X\n", GameData::get_instance()->getMainUsecode()->get_class_name(classid), classid, ip);
+
+	if (classid == 0xFFFF) {
+		pout.printf("IP undefined\n");
+	} else {
+		const char* classname = GameData::get_instance()->getMainUsecode()->
+			get_class_name(classid);
+		pout.printf("classname: %s, IP: %04X:%04X\n", classname, classid, ip);
+	}
 }
 
 void UCProcess::saveData(ODataSource* ods)
