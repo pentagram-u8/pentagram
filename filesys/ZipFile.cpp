@@ -149,6 +149,7 @@ uint32 ZipFile::getSize(const std::string& name)
 uint8* ZipFile::getObject(const std::string& name, uint32* sizep)
 {
 	PentZip::unzFile unzfile = static_cast<PentZip::unzFile>(unzipfile);
+	if (sizep) *sizep = 0;
 
 	if (PentZip::unzLocateFile(unzfile, name.c_str(), 1) != UNZ_OK) return 0;
 

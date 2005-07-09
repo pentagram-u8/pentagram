@@ -1834,6 +1834,11 @@ bool GUIApp::loadGame(std::string filename)
 
 	Savegame* sg = new Savegame(ids);
 	uint32 version = sg->getVersion();
+	if (version == 0) {
+		perr << "Invalid or corrupt savegame." << std::endl;
+		return false;
+	}
+
 	if (version != 1) {
 		perr << "Unsupported savegame version (" << version << ")"
 			 << std::endl;
