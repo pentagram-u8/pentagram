@@ -31,6 +31,7 @@ struct AnimFrame
 	uint32 flags;
 
 	enum AnimFrameFlags {
+		AFF_UNK1     = 0x01,
 		AFF_ONGROUND = 0x02,
 		AFF_FLIPPED  = 0x20
 	};

@@ -202,6 +202,19 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 						 << "] ActorAnimProcess done; terminating"
 						 << std::endl;
 #endif
+
+				// TODO: there are _three_ places where we can fall; clean up
+				if (tracker->isUnsupported()) {
+#ifdef WATCHACTOR
+					if (item_num == watchactor) {
+						pout << "Animation ["
+							 << Kernel::get_instance()->getFrameNum()
+							 << "] falling" << std::endl;
+					}
+#endif
+					a->fall();
+				}
+
 				terminate();
 				return true;
 			}
@@ -217,6 +230,19 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 						 << "] ActorAnimProcess blocked; terminating"
 						 << std::endl;
 #endif
+
+				if (tracker->isUnsupported()) {
+#ifdef WATCHACTOR
+					if (item_num == watchactor) {
+						pout << "Animation ["
+							 << Kernel::get_instance()->getFrameNum()
+							 << "] falling" << std::endl;
+					}
+#endif
+					a->fall();
+				}
+
+
 				terminate();
 				return true;
 			}
@@ -261,7 +287,13 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 	a->setFrame(tracker->getFrame());
 
 	if (repeatcounter == tracker->getAnimAction()->framerepeat) {
-		if (tracker->isUnsupported()) {
+		// CHECKME: I think AFF_UNK1 should cancel AAF_UNSTOPPABLE for this
+		// frame. As far as I know it's only used in the animation where
+		// Torwin jumps off the cliff. (shape 389, action 20, direction 6)
+		// -wjp (20050710)
+		if (tracker->isUnsupported() &&
+			(!(tracker->getAnimAction()->flags&AnimAction::AAF_UNSTOPPABLE) ||
+			 (tracker->getAnimFrame()->flags & AnimFrame::AFF_UNK1))) {
 			animAborted = true;
 
 #ifdef WATCHACTOR

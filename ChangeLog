@@ -1,6 +1,8 @@
 2005-07-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/ActorAnimProcess.cpp: fix timing of fall if unsupported
 	* world/GravityProcess.*: specialized GravityProcess::dumpInfo()
+	* world/actors/AnimAction.h, world/actors/ActorAnimProcess.cpp:
+	  guessing at meaning of flag, fixing Torwin's failed leap of faith.
 
 2005-07-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* filesys/ZipFile.cpp: fix failed assertion when savegame is corrupt
