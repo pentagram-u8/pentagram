@@ -1,4 +1,7 @@
 2005-07-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* configure.ac: add switches for the gc scalers, all bilinear scalers
+
+2005-07-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/ActorAnimProcess.cpp: fix timing of fall if unsupported
 	* world/GravityProcess.*: specialized GravityProcess::dumpInfo()
 	* world/actors/AnimAction.h, world/actors/ActorAnimProcess.cpp:

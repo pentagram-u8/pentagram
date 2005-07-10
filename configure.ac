@@ -407,7 +407,7 @@ fi
 
 
 # HQ2X scaler
-AC_ARG_ENABLE(hq2x, [[  --enable-hq2x           Enable hq2x scaler support [default no]]],,enable_hq2x=no)
+AC_ARG_ENABLE(hq2x,       [[  --enable-hq2x           Enable hq2x scaler support [default no]]],,enable_hq2x=no)
 AC_MSG_CHECKING(if we should build the hq2x scaler)
 if test x$enable_hq2x = xyes; then
 	pent_hq2x=yes
@@ -416,6 +416,29 @@ else
 	pent_hq2x=no
 fi
 AC_MSG_RESULT($pent_hq2x)
+
+
+# gamma-correcting scalers
+AC_ARG_ENABLE(gc_scalers,   [[  --enable-gc-scalers     Enable gamma-correcting scalers [default no]]],,enable_gc_scalers=no)
+AC_MSG_CHECKING(if we should build the gamma-correcting scalers)
+if test x$enable_gc_scalers = xyes; then
+	pent_gc_scalers=yes
+	AC_DEFINE(COMPILE_GAMMA_CORRECT_SCALERS, 1, [Build gamma-correcting scalers])
+else
+	pent_gc_scalers=no
+fi
+AC_MSG_RESULT($pent_gc_scalers)
+
+# all bilinear scaler variants
+AC_ARG_ENABLE(all_bilinear, [[  --enable-all-bilinear   Enable all bilinear scaler variants [default no]]],,enable_all_bilinear=no)
+AC_MSG_CHECKING(if we should build all bilinear scaler variants)
+if test x$enable_all_bilinear = xyes; then
+	pent_all_bilinear=yes
+	AC_DEFINE(COMPILE_ALL_BILINEAR_SCALERS, 1, [Build all bilinear scaler variants])
+else
+	pent_all_bilinear=no
+fi
+AC_MSG_RESULT($pent_all_bilinear)
 
 
 # Built-in data files
@@ -499,6 +522,8 @@ echo "Debugging:			$pent_debug"
 echo "FMOPL midi:			$pent_fmopl"
 echo "Timidity midi:			$pent_timidity"
 echo "HQ2x scaler:			$pent_hq2x"
+echo "Gamma-correcting scalers:	$pent_gc_scalers"
+echo "All bilinear scaler variants:	$pent_all_bilinear"
 echo "Built-in data files:		$pent_nodata"
 echo ""
 echo "Optional libraries:"
