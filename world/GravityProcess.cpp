@@ -215,6 +215,14 @@ void GravityProcess::terminate()
 	Process::terminate();
 }
 
+void GravityProcess::dumpInfo()
+{
+	Process::dumpInfo();
+
+	pout << "gravity: " << gravity << ", speed: (" << xspeed << ","
+		 << yspeed << "," << zspeed << ")" << std::endl;
+}
+
 
 void GravityProcess::saveData(ODataSource* ods)
 {

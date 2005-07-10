@@ -1,3 +1,7 @@
+2005-07-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/ActorAnimProcess.cpp: fix timing of fall if unsupported
+	* world/GravityProcess.*: specialized GravityProcess::dumpInfo()
+
 2005-07-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* filesys/ZipFile.cpp: fix failed assertion when savegame is corrupt
 	* kernel/GUIApp.cpp: clearer message for a corrupt savegame

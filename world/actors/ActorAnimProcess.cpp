@@ -123,7 +123,7 @@ bool ActorAnimProcess::init()
 	if (item_num == watchactor)
 		pout << "Animation [" << Kernel::get_instance()->getFrameNum()
 			 << "] ActorAnimProcess " << getPid() << " created ("
-			 << action << "," << dir << ")" << std::endl;
+			 << action << "," << dir << ") steps " << steps << std::endl;
 #endif
 
 	return true;
@@ -241,21 +241,36 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 	tracker->getInterpolatedPosition(x,y,z,repeatcounter+1);
 
 #ifdef WATCHACTOR
-	if (repeatcounter == 0 && item_num == watchactor)
+	if (item_num == watchactor) {
 		pout << "Animation [" << Kernel::get_instance()->getFrameNum()
-			 << "] showing next frame (" << x << "," << y << "," << z << ")"
+			 << "] showing frame (" << x << "," << y << "," << z << ")"
 			 << " shape (" << a->getShape() << "," << tracker->getFrame()
-			 << ") sfx " << tracker->getAnimFrame()->sfx << std::endl;
+			 << ") sfx " << tracker->getAnimFrame()->sfx
+			 << " rep " << repeatcounter << " ";
+
+		if (tracker->isDone()) pout << "D";
+		if (tracker->isBlocked()) pout << "B";
+		if (tracker->isUnsupported()) pout << "U";
+		if (tracker->hitSomething()) pout << "H";
+		pout << std::endl;
+	}
 #endif
 
 
 	a->collideMove(x, y, z, false, true); // forced move
 	a->setFrame(tracker->getFrame());
 
-	if (repeatcounter == 0) {
-		if (!result && tracker->isUnsupported()) {
+	if (repeatcounter == tracker->getAnimAction()->framerepeat) {
+		if (tracker->isUnsupported()) {
 			animAborted = true;
 
+#ifdef WATCHACTOR
+			if (item_num == watchactor) {
+				pout << "Animation [" << Kernel::get_instance()->getFrameNum()
+					 << "] falling" << std::endl;
+			}
+#endif
+			
 			a->fall();
 			// TODO: inertia
 			

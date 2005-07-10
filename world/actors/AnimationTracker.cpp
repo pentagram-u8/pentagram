@@ -235,6 +235,12 @@ bool AnimationTracker::step()
 		}
 	}
 
+#ifdef WATCHACTOR
+	if (a->getObjId() == watchactor) {
+		pout << "AnimationTracker: step (" << dx << "," << dy << "," << dz
+			 << ")" << std::endl;
+	}
+#endif
 
 	x += dx;
 	y += dy;
@@ -316,12 +322,14 @@ void AnimationTracker::checkWeaponHit()
 {
 	int range = animaction->frames[dir][currentframe].attack_range();
 
-#if 0
-	pout << "Checking hit (" << range << "): ";
-#endif
-
 	Actor *a = getActor(actor);
 	assert(a);
+
+#ifdef WATCHACTOR
+	if (a->getObjId() == watchactor) {
+		pout << "AnimationTracker: Checking hit, range " << range << ": ";
+	}
+#endif
 
 	Pentagram::Box abox = a->getWorldBox();
 	abox.MoveAbs(x,y,z);
@@ -348,16 +356,18 @@ void AnimationTracker::checkWeaponHit()
 		{
 			// FIXME: is it right to only allow hitting NPCs??
 			hit = itemid;
-#if 0
-			pout << "hit ";
-			item->dumpInfo();
+#ifdef WATCHACTOR
+			if (a->getObjId() == watchactor) {
+				pout << "hit: ";
+				item->dumpInfo();
+			}
 #endif
 			break;
 		}
 	}
 
-#if 0
-	if (!hit) {
+#ifdef WATCHACTOR
+	if (a->getObjId() == watchactor && !hit) {
 		pout << "nothing" << std::endl;
 	}
 #endif
