@@ -304,7 +304,7 @@ fi
 # Semi-pointless usecode compiler, compilation flags
 # ------------------
 #AC_MSG_CHECKING(if we want quirky usecode compiler comments)
-#AC_ARG_ENABLE(compiler_quirks, [  --enable-compiler-quirks        Enable quirky compiler comments [default yes]],,enable_compiler_quirks=yes)
+#AC_ARG_ENABLE(compiler_quirks, [[  --enable-compiler-quirks        Enable quirky compiler comments [default yes]]],,enable_compiler_quirks=yes)
 #if test x$enable_compiler_quirks = xyes; then
 #	AC_MSG_RESULT(yes)
 #	AC_DEFINE(USE_CQUIRKS, 1, [Random quirky comments, rather then default normalness])
@@ -313,7 +313,7 @@ fi
 #fi
 
 #AC_MSG_CHECKING(if we want usecode compiler regression tester built)
-#AC_ARG_ENABLE(compiler_tester, [  --enable-compiler-tester        Usecode compiler regression tester [default no]],,enable_compiler_tester=no)
+#AC_ARG_ENABLE(compiler_tester, [[  --enable-compiler-tester        Usecode compiler regression tester [default no]]],,enable_compiler_tester=no)
 #if test x$enable_compiler_tester = xyes; then
 #	AC_MSG_RESULT(yes)
 #	AC_DEFINE(COMPILER_TEST, 1, [Enable the compiler regression tester])
@@ -327,7 +327,7 @@ fi
 # ------------------
 
 # debugging
-AC_ARG_ENABLE(debug,           [[  --disable-debug         Disable debugging mode]],,enable_debug=yes)
+AC_ARG_ENABLE(debug, [[  --disable-debug         Disable debugging mode]],,enable_debug=yes)
 AC_MSG_CHECKING(for debug mode)
 if test x$enable_debug = xyes; then
 	AC_DEFINE(DEBUG, 1, [Debugging mode])
@@ -339,7 +339,7 @@ AC_MSG_RESULT($pent_debug)
 
 
 # fmopl midi
-AC_ARG_ENABLE(fmopl_midi,      [[  --disable-fmopl-midi    Disable built-in FMOPL midi]],,enable_fmopl_midi=yes)
+AC_ARG_ENABLE(fmopl_midi, [[  --disable-fmopl-midi    Disable built-in FMOPL midi]],,enable_fmopl_midi=yes)
 AC_MSG_CHECKING(if we want to use FMOPL midi)
 if test x$enable_fmopl_midi = xyes; then
 	AC_DEFINE(USE_FMOPL_MIDI, 1, [Enable FMOPL midi])
@@ -351,8 +351,8 @@ AC_MSG_RESULT($pent_fmopl)
 
 
 # timidity midi
-AC_ARG_ENABLE(timidity_midi,      [[  --disable-timidity-midi Disable built-in timidity midi]],,enable_timidity_midi=yes)
-AC_ARG_WITH(timidity,             [[  --with-timidity=path    path to timidity.cfg (optional)]],,)
+AC_ARG_ENABLE(timidity_midi, [[  --disable-timidity-midi Disable built-in timidity midi]],,enable_timidity_midi=yes)
+AC_ARG_WITH(timidity, [[  --with-timidity=path    path to timidity.cfg (optional)]],,)
 AC_MSG_CHECKING(if we want to use timidity midi)
 if test x$enable_timidity_midi = xyes; then
 	AC_DEFINE(USE_TIMIDITY_MIDI, 1, [Enable timidity midi])
@@ -371,7 +371,7 @@ AC_MSG_RESULT($pent_timidity)
 
 # alsa midi
 AC_CHECK_HEADER(alsa/asoundlib.h, HAVEALSA=yes, HAVEALSA=no)
-AC_ARG_ENABLE(alsa,[[  --disable-alsa          Disable ALSA midi support]],,enable_alsa=yes)
+AC_ARG_ENABLE(alsa, [[  --disable-alsa          Disable ALSA midi support]],,enable_alsa=yes)
 AC_MSG_CHECKING(if we want to use ALSA midi)
 pent_alsa=no
 if test x$HAVEALSA = xyes; then
@@ -389,7 +389,7 @@ fi
 
 # fluidsynth midi
 AC_CHECK_HEADER(fluidsynth.h, HAVEFLUIDSYNTH=yes, HAVEFLUIDSYNTH=no)
-AC_ARG_ENABLE(fluidsynth,[[  --disable-fluidsynth    Disable fluidsynth midi support]],,enable_fluidsynth=yes)
+AC_ARG_ENABLE(fluidsynth, [[  --disable-fluidsynth    Disable fluidsynth midi support]],,enable_fluidsynth=yes)
 AC_MSG_CHECKING(if we want to use fluidsynth midi)
 pent_fluidsynth=no
 if test x$HAVEFLUIDSYNTH = xyes; then
@@ -407,7 +407,7 @@ fi
 
 
 # HQ2X scaler
-AC_ARG_ENABLE(hq2x,       [[  --enable-hq2x           Enable hq2x scaler support [default no]]],,enable_hq2x=no)
+AC_ARG_ENABLE(hq2x, [[  --enable-hq2x           Enable hq2x scaler support [default no]]],,enable_hq2x=no)
 AC_MSG_CHECKING(if we should build the hq2x scaler)
 if test x$enable_hq2x = xyes; then
 	pent_hq2x=yes
@@ -419,7 +419,7 @@ AC_MSG_RESULT($pent_hq2x)
 
 
 # gamma-correcting scalers
-AC_ARG_ENABLE(gc_scalers,   [[  --enable-gc-scalers     Enable gamma-correcting scalers [default no]]],,enable_gc_scalers=no)
+AC_ARG_ENABLE(gc_scalers, [[  --enable-gc-scalers     Enable gamma-correcting scalers [default no]]],,enable_gc_scalers=no)
 AC_MSG_CHECKING(if we should build the gamma-correcting scalers)
 if test x$enable_gc_scalers = xyes; then
 	pent_gc_scalers=yes
@@ -458,7 +458,7 @@ AC_MSG_RESULT($pent_nodata)
 # GIMP plugin
 # -------------------
 AM_CONDITIONAL(GIMP_PLUGIN, false)
-AC_ARG_ENABLE(gimp-plugin,   [[  --enable-gimp-plugin    Build the GIMP plugin [default no]]],,enable_gimp_plugin=no)
+AC_ARG_ENABLE(gimp-plugin, [[  --enable-gimp-plugin    Build the GIMP plugin [default no]]],,enable_gimp_plugin=no)
 AC_MSG_CHECKING(whether to build the GIMP plugin)
 pent_gimp=no
 if test x$enable_gimp_plugin = xyes; then
