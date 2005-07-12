@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2003 The Pentagram team
+Copyright (C) 2002-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -44,7 +44,7 @@ uint32 UsecodeFlex::get_class_size(uint32 classid)
 
 const char* UsecodeFlex::get_class_name(uint32 classid)
 {
-	if (get_size(classid) > 0) {
+	if (get_size(classid+2) > 0) {
 		const uint8* name_object = get_object_nodel(1);
 		return reinterpret_cast<const char*>(name_object+4+(13 * classid));
 	} else {
