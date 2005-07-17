@@ -1,3 +1,7 @@
+2005-07-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/Actor.cpp: output actor flags in dumpInfo
+	* world/actors/Actor.cpp: don't abort receiveHit if invincible/immortal
+
 2005-07-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* configure.ac: add switches for the gc scalers, all bilinear scalers
 

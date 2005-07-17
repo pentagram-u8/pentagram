@@ -658,9 +658,6 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 		pout << "Damage: " << damage << std::endl;
 	}
 
-	if (getActorFlags() & (ACT_IMMORTAL | ACT_INVINCIBLE))
-		return; // invincible
- 
 	if (damage >= 4 && objid == 1 && attacker) {
 		// play blood sprite
 		int start = 0, end = 12;
@@ -675,24 +672,26 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 		Kernel::get_instance()->addProcess(sp);
 	}
 
-	if (damage >= hitpoints) {
-		// we're dead
+	if (damage > 0 && !(getActorFlags() & (ACT_IMMORTAL | ACT_INVINCIBLE))) {
+		if (damage >= hitpoints) {
+			// we're dead
 
-		if (getActorFlags() & ACT_WITHSTANDDEATH) {
-			// or maybe not...
+			if (getActorFlags() & ACT_WITHSTANDDEATH) {
+				// or maybe not...
 
-			setHP(getMaxHP());
-			AudioProcess* audioproc = AudioProcess::get_instance();
-			if (audioproc) audioproc->playSFX(59, 0x60, objid, 0);
-			clearActorFlag(ACT_WITHSTANDDEATH);
-		} else {
-			die(damage_type);
+				setHP(getMaxHP());
+				AudioProcess* audioproc = AudioProcess::get_instance();
+				if (audioproc) audioproc->playSFX(59, 0x60, objid, 0);
+				clearActorFlag(ACT_WITHSTANDDEATH);
+			} else {
+				die(damage_type);
+			}
+			return;
 		}
-		return;
-	}
 
-	// not dead yet
-	setHP(static_cast<uint16>(hitpoints - damage));
+		// not dead yet
+		setHP(static_cast<uint16>(hitpoints - damage));
+	}
 
 	ProcId fallingprocid = 0;
 	if (objid == 1 && damage > 0) {
@@ -1131,7 +1130,8 @@ void Actor::dumpInfo()
 		 << ", dex: " << dexterity << ", int: " << intelligence
 		 << ", ac: " << getArmourClass() << ", defense: " << std::hex
 		 << getDefenseType() << " align: " << getAlignment() << " enemy: "
-		 << getEnemyAlignment() << std::dec << std::endl;
+		 << getEnemyAlignment() << ", flags: " << actorflags
+		 << std::dec << std::endl;
 }
 
 void Actor::saveData(ODataSource* ods)
