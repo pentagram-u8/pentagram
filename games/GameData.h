@@ -28,7 +28,7 @@ class FontShapeArchive;
 class GumpShapeArchive;
 class ShapeArchive;
 class Usecode;
-class Glob;
+class MapGlob;
 class Shape;
 class MusicFlex;
 class WpnOvlayDat;
@@ -50,7 +50,7 @@ public:
 	Usecode* getMainUsecode() const { return mainusecode; }
 	MainShapeArchive* getMainShapes() const { return mainshapes; }
 	RawArchive* getFixed() const { return fixed; }
-	Glob* getGlob(uint32 glob) const;
+	MapGlob* getGlob(uint32 glob) const;
 	FontShapeArchive* getFonts() const { return fonts; }
 	GumpShapeArchive* getGumps() const { return gumps; }
 	Shape* getMouse() const { return mouse; }
@@ -77,7 +77,7 @@ private:
 	RawArchive* fixed;
 	MainShapeArchive* mainshapes;
 	Usecode* mainusecode;
-	std::vector<Glob*> globs;
+	std::vector<MapGlob*> globs;
 	FontShapeArchive* fonts;
 	GumpShapeArchive* gumps;
 	Shape* mouse;

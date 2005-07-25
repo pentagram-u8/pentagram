@@ -18,21 +18,21 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 
-#include "world/Glob.h"
+#include "MapGlob.h"
 #include "IDataSource.h"
 
-Glob::Glob()
+MapGlob::MapGlob()
 {
 
 }
 
 
-Glob::~Glob()
+MapGlob::~MapGlob()
 {
 	contents.clear();
 }
 
-void Glob::read(IDataSource* ds)
+void MapGlob::read(IDataSource* ds)
 {
 	unsigned int itemcount = ds->read2();
 	assert(ds->getSize() >= 2+itemcount*6);

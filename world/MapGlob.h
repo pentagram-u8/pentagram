@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,8 +16,8 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef GLOB_H
-#define GLOB_H
+#ifndef MAPGLOB_H
+#define MAPGLOB_H
 
 #include <vector>
 
@@ -31,13 +31,13 @@ struct GlobItem {
 	int frame;
 };
 
-class Glob
+class MapGlob
 {
 	friend class GlobEgg;
 
 public:
-	Glob();
-	~Glob();
+	MapGlob();
+	~MapGlob();
 
 	void read(IDataSource* ds);
 

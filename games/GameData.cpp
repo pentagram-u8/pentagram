@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "FontShapeArchive.h"
 #include "GumpShapeArchive.h"
 #include "RawArchive.h"
-#include "world/Glob.h"
+#include "MapGlob.h"
 #include "PaletteManager.h"
 #include "Shape.h"
 #include "MusicFlex.h"
@@ -98,7 +98,7 @@ GameData::~GameData()
 	speech.clear();
 }
 
-Glob* GameData::getGlob(uint32 glob) const
+MapGlob* GameData::getGlob(uint32 glob) const
 {
 	if (glob < globs.size())
 		return globs[glob];
@@ -308,11 +308,11 @@ void GameData::loadU8Data()
 	globs.clear();
 	globs.resize(globflex->getCount());
 	for (unsigned int i = 0; i < globflex->getCount(); ++i) {
-		Glob* glob = 0;
+		MapGlob* glob = 0;
 		IDataSource* globds = globflex->get_datasource(i);
 
 		if (globds && globds->getSize()) {
-			glob = new Glob;
+			glob = new MapGlob();
 			glob->read(globds);
 		}
 		delete globds;

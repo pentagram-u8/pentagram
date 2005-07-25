@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "GlobEgg.h"
-#include "world/Glob.h"
+#include "MapGlob.h"
 #include "GameData.h"
 #include "ItemFactory.h"
 #include "CurrentMap.h"
@@ -46,7 +46,7 @@ void GlobEgg::enterFastArea()
 	// Expand it
 	if (!(flags & FLG_FASTAREA)) 
 	{
-		Glob* glob = GameData::get_instance()->getGlob(quality);
+		MapGlob* glob = GameData::get_instance()->getGlob(quality);
 		if (!glob) return;
 
 		std::vector<GlobItem>::iterator iter;
