@@ -1,4 +1,12 @@
 2005-07-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/Pathfinder.*: use advance animations instead of walks in
+	  combat mode; try attack anim to see if target reached
+	* world/actors/PathfinderProcess.*, world/actors/CombatProcess.cpp:
+	  use new combat Pathfinder
+	* world/actors/ActorAnimProcess.cpp:handle hits at start of framerepeat
+	* world/actors/AnimationTracker.cpp: fix combat hit checking
+
+2005-07-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: renamed Glob class to MapGlob to prevent confusion with the
 	  system header glob.h on case insensitive systems.
 

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,7 +28,7 @@ class PathfinderProcess : public Process
 {
 public:
 	PathfinderProcess();
-	PathfinderProcess(Actor* actor, ObjId item);
+	PathfinderProcess(Actor* actor, ObjId item, bool hit=false);
 	PathfinderProcess(Actor* actor, sint32 x, sint32 y, sint32 z);
 	virtual ~PathfinderProcess();
 
@@ -46,6 +46,7 @@ protected:
 
 	sint32 targetx, targety, targetz;
 	ObjId targetitem;
+	bool hitmode;
 
 	std::vector<PathfindingAction> path;
 	unsigned int currentstep;

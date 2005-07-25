@@ -261,6 +261,18 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 			doSpecial();
 		}
 
+
+		// attacking?
+		if (!attackedSomething) {
+			ObjId hit = tracker->hitSomething();
+			if (hit) {
+				attackedSomething = true;
+				Item* hit_item = getItem(hit);
+				assert(hit_item);
+				hit_item->receiveHit(item_num, (dir+4)%8, 0, 0);
+				doHitSpecial(hit_item);
+			}
+		}
 	}
 
 	sint32 x,y,z;
@@ -309,18 +321,6 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 			// Note: do not wait for the fall to finish: this breaks
 			// the scene where Devon kills Mordea
 			return true;
-		}
-
-		// attacking?
-		if (!attackedSomething) {
-			ObjId hit = tracker->hitSomething();
-			if (hit) {
-				attackedSomething = true;
-				Item* hit_item = getItem(hit);
-				assert(hit_item);
-				hit_item->receiveHit(item_num, (dir+4)%8, 0, 0);
-				doHitSpecial(hit_item);
-			}
 		}
 	}
 

@@ -117,7 +117,7 @@ bool CombatProcess::run(const uint32 /*framenum*/)
 	} else if (combatmode != CM_PATHFINDING) {
 		// not in range? See if we can get in range
 
-		Process* pfproc = new PathfinderProcess(a, target);
+		Process* pfproc = new PathfinderProcess(a, target, true);
 		
 		waitFor(Kernel::get_instance()->addProcess(pfproc));
 		combatmode = CM_PATHFINDING;

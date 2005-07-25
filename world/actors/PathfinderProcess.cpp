@@ -37,7 +37,7 @@ PathfinderProcess::PathfinderProcess() : Process()
 
 }
 
-PathfinderProcess::PathfinderProcess(Actor* actor_, ObjId item_)
+PathfinderProcess::PathfinderProcess(Actor* actor_, ObjId item_, bool hit)
 {
 	assert(actor_);
 	item_num = actor_->getObjId();
@@ -55,18 +55,20 @@ PathfinderProcess::PathfinderProcess(Actor* actor_, ObjId item_)
 
 	currentstep = 0;
 	targetitem = item_;
+	hitmode = hit;
 	assert(targetitem);
 
 	item->getLocation(targetx, targety, targetz);
 
 	Pathfinder pf;
 	pf.init(actor_);
-	pf.setTarget(item);
+	pf.setTarget(item, hit);
 
 	bool ok = pf.pathfind(path);
 
 	if (!ok) {
-		perr << "PathfinderProcess: failed to find path" << std::endl;
+		perr << "PathfinderProcess: actor " << item_num
+			 << " failed to find path" << std::endl;
 		// can't get there...
 		result = PATH_FAILED;
 		terminateDeferred();
@@ -97,7 +99,8 @@ PathfinderProcess::PathfinderProcess(Actor* actor_,
 	bool ok = pf.pathfind(path);
 
 	if (!ok) {
-		perr << "PathfinderProcess: failed to find path" << std::endl;
+		perr << "PathfinderProcess: actor " << item_num
+			 << " failed to find path" << std::endl;
 		// can't get there...
 		result = PATH_FAILED;
 		terminateDeferred();
@@ -199,7 +202,7 @@ bool PathfinderProcess::run(const uint32 /*framenum*/)
 			if (!item)
 				ok = false;
 			else {
-				pf.setTarget(item);
+				pf.setTarget(item, hitmode);
 				item->getLocation(targetx, targety, targetz);
 			}
 		} else {
@@ -210,7 +213,8 @@ bool PathfinderProcess::run(const uint32 /*framenum*/)
 
 		currentstep = 0;
 		if (!ok) {
-			perr << "PathfinderProcess: failed to find path" << std::endl;
+			perr << "PathfinderProcess: actor " << item_num
+				 << " failed to find path" << std::endl;
 			// can't get there anymore
 			result = PATH_FAILED;
 			terminate();
@@ -250,6 +254,7 @@ void PathfinderProcess::saveData(ODataSource* ods)
 	ods->write2(static_cast<uint16>(targetx));
 	ods->write2(static_cast<uint16>(targety));
 	ods->write2(static_cast<uint16>(targetz));
+	ods->write1(hitmode ? 1 : 0);
 	ods->write2(static_cast<uint16>(currentstep));
 
 	ods->write2(static_cast<uint16>(path.size()));
@@ -267,6 +272,7 @@ bool PathfinderProcess::loadData(IDataSource* ids, uint32 version)
 	targetx = ids->read2();
 	targety = ids->read2();
 	targetz = ids->read2();
+	hitmode = (ids->read1() != 0);
 	currentstep = ids->read2();
 
 	unsigned int pathsize = ids->read2();

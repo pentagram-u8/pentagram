@@ -34,10 +34,12 @@ struct PathfindingState
 	uint32 direction;
 	bool flipped;
 	bool firststep;
+	bool combat;
 
 	void load(Actor* actor);
 	bool checkPoint(sint32 x_, sint32 y_, sint32 z_,int xyRange,int zRange);
 	bool checkItem(Item* item, int xyRange, int zRange);
+	bool checkHit(Actor* actor, Actor* target);
 };
 
 struct PathfindingAction
@@ -62,7 +64,7 @@ public:
 
 	void init(Actor* actor, PathfindingState* state=0);
 	void setTarget(sint32 x, sint32 y, sint32 z);
-	void setTarget(Item* item);
+	void setTarget(Item* item, bool hit=false);
 
 	//! try to reach the target by pathfinding
 	bool canReach();
@@ -75,6 +77,10 @@ protected:
 	Actor* actor;
 	sint32 targetx, targety, targetz;
 	Item* targetitem;
+	bool hitmode;
+
+	sint32 actor_xd,actor_yd,actor_zd;
+
 	std::list<PathfindingState> visited;
 	std::priority_queue<PathNode*,std::vector<PathNode*>,PathNodeCmp> nodes;
 

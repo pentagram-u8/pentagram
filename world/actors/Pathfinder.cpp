@@ -42,6 +42,7 @@ void PathfindingState::load(Actor* actor)
 	direction = actor->getDir();
 	firststep = (actor->getActorFlags() & Actor::ACT_FIRSTSTEP) != 0;
 	flipped = (actor->getFlags() & Item::FLG_FLIPPED) != 0;
+	combat = actor->isInCombat();
 }
 
 bool PathfindingState::checkPoint(sint32 x_, sint32 y_, sint32 z_,
@@ -78,6 +79,28 @@ bool PathfindingState::checkItem(Item* item, int xyRange, int zRange)
 	return (range <= xyRange);
 }
 
+bool PathfindingState::checkHit(Actor* actor, Actor* target)
+{
+#if 0
+	pout << "Trying hit in direction " << actor->getDirToItemCentre(*target) << std::endl;
+#endif
+	AnimationTracker tracker;
+	if (!tracker.init(actor, Animation::attack,
+					  actor->getDirToItemCentre(*target), this))
+	{
+		return false;
+	}
+
+	while (tracker.step()) {
+		if (tracker.hitSomething()) break;
+	}
+
+	ObjId hit = tracker.hitSomething();
+	if (hit == target->getObjId()) return true;
+
+	return false;	
+}
+
 bool PathNodeCmp::operator()(PathNode* n1, PathNode* n2)
 {
 	return (n1->heuristicTotalCost > n2->heuristicTotalCost);
@@ -106,6 +129,8 @@ void Pathfinder::init(Actor* actor_, PathfindingState* state)
 {
 	actor = actor_;
 
+	actor->getFootpadWorld(actor_xd,actor_yd,actor_zd);
+
 	if (state)
 		start = *state;
 	else
@@ -118,9 +143,10 @@ void Pathfinder::setTarget(sint32 x, sint32 y, sint32 z)
 	targety = y;
 	targetz = z;
 	targetitem = 0;
+	hitmode = false;
 }
 
-void Pathfinder::setTarget(Item* item)
+void Pathfinder::setTarget(Item* item, bool hit)
 {
 	targetitem = item;
 	while (targetitem->getParentAsContainer())
@@ -129,6 +155,14 @@ void Pathfinder::setTarget(Item* item)
 	// set target to centre of item for the cost heuristic
 	item->getCentre(targetx, targety, targetz);
 	targetz = item->getZ();
+
+	if (hit) {
+		assert(start.combat);
+		assert(p_dynamic_cast<Actor*>(targetitem));
+		hitmode = true;
+	} else {
+		hitmode = false;
+	}
 }
 
 bool Pathfinder::canReach()
@@ -154,10 +188,16 @@ bool Pathfinder::checkTarget(PathNode* node)
 {
 	// TODO: these ranges are probably a bit too high,
 	// but otherwise it won't work properly yet -wjp
-	if (targetitem)
-		return node->state.checkItem(targetitem, 32, 8);
-	else
+	if (targetitem) {
+		if (hitmode) {
+			return node->state.checkHit(actor,
+										p_dynamic_cast<Actor*>(targetitem));
+		} else {
+			return node->state.checkItem(targetitem, 32, 8);
+		}
+	} else {
 		return node->state.checkPoint(targetx, targety, targetz, 32, 8);
+	}
 }
 
 unsigned int Pathfinder::costHeuristic(PathNode* node)
@@ -166,8 +206,10 @@ unsigned int Pathfinder::costHeuristic(PathNode* node)
 
 	double sqrddist;
 
-	sqrddist = (targetx - node->state.x)*(targetx - node->state.x);
-	sqrddist += (targety - node->state.y)*(targety - node->state.y);
+	sqrddist = (targetx - node->state.x + actor_xd/2) *
+		(targetx - node->state.x + actor_xd/2);
+	sqrddist += (targety - node->state.y + actor_yd/2) *
+		(targety - node->state.y + actor_yd/2);
 
 	unsigned int dist = static_cast<unsigned int>(std::sqrt(sqrddist));
 
@@ -235,30 +277,38 @@ void Pathfinder::newNode(PathNode* oldnode, PathfindingState& state,
 
 void Pathfinder::expandNode(PathNode* node)
 {
-	Animation::Sequence c_walk_anim = Animation::walk;
+	Animation::Sequence walkanim = Animation::walk;
 	PathfindingState state, closeststate;
 	AnimationTracker tracker;
 	expandednodes++;
 
+	if (actor->isInCombat())
+		walkanim = Animation::advance;
+
 	// try walking in all 8 directions
 	for (uint32 dir = 0; dir < 8; ++dir) {
 		state = node->state;
-		state.lastanim = c_walk_anim;
+		state.lastanim = walkanim;
 		state.direction = dir;
+		state.combat = actor->isInCombat();
 		uint32 steps = 0, beststeps = 0;
 		int bestsqdist;
-		bestsqdist = (targetx - node->state.x)*(targetx - node->state.x);
-		bestsqdist += (targety - node->state.y)*(targety - node->state.y);
+		bestsqdist = (targetx - node->state.x + actor_xd/2) *
+			(targetx - node->state.x + actor_xd/2);
+		bestsqdist += (targety - node->state.y + actor_yd/2) *
+			(targety - node->state.y + actor_yd/2);
 
-		if (!tracker.init(actor, c_walk_anim, dir, &state)) continue;
+		if (!tracker.init(actor, walkanim, dir, &state)) continue;
 		while (tracker.step())
 		{
 			steps++;
 			tracker.updateState(state);
 
 			int sqrddist;
-			sqrddist = (targetx - state.x)*(targetx - state.x);
-			sqrddist += (targety - state.y)*(targety - state.y);
+			sqrddist = (targetx - state.x + actor_xd/2) *
+				(targetx - state.x + actor_xd/2);
+			sqrddist += (targety - state.y + actor_yd/2) *
+				(targety - state.y + actor_yd/2);
 
 			if (sqrddist < bestsqdist) {
 				bestsqdist = sqrddist;
@@ -275,7 +325,9 @@ void Pathfinder::expandNode(PathNode* node)
 			}
 		}
 
-		if (beststeps != 0 && beststeps != steps) {
+		if (beststeps != 0 && (beststeps != steps ||
+							   (!tracker.isDone() && targetitem)))
+		{
 			newNode(node, closeststate, beststeps);
 			visited.push_back(closeststate);
 		}
@@ -307,7 +359,7 @@ bool Pathfinder::pathfind(std::vector<PathfindingAction>& path)
 	nodes.push(startnode);
 
 	unsigned int expandednodes = 0;
-	const unsigned int NODELIMIT = 200; //! constant
+	const unsigned int NODELIMIT = 100; //! constant
 	bool found = false;
 
 	while (expandednodes < NODELIMIT && !nodes.empty() && !found) {
@@ -358,7 +410,10 @@ bool Pathfinder::pathfind(std::vector<PathfindingAction>& path)
 			}
 
 			if (length) {
-				path[length-1].action = Animation::stand;
+				if (node->state.combat)
+					path[length-1].action = Animation::combat_stand;
+				else
+					path[length-1].action = Animation::stand;
 				path[length-1].direction = path[length-2].direction;
 			}
 

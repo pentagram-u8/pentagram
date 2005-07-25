@@ -490,6 +490,7 @@ PathfinderProcess: Process (v1)
 <Process>
 uint16 targetitem
 uint16 targetx, targety, targetz
+uint8 hitmode (boolean)
 uint16 currentstep
 uint16 pathsize
 (uint16 action,uint16 direction) path[pathsize]

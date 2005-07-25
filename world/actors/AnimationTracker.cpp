@@ -325,22 +325,25 @@ void AnimationTracker::checkWeaponHit()
 	Actor *a = getActor(actor);
 	assert(a);
 
-#ifdef WATCHACTOR
-	if (a->getObjId() == watchactor) {
-		pout << "AnimationTracker: Checking hit, range " << range << ": ";
-	}
-#endif
 
 	Pentagram::Box abox = a->getWorldBox();
 	abox.MoveAbs(x,y,z);
 	abox.MoveRel(x_fact[dir]*32*range,y_fact[dir]*32*range,0);
+
+#ifdef WATCHACTOR
+	if (a->getObjId() == watchactor) {
+		pout << "AnimationTracker: Checking hit, range " << range << ", box "
+			 << abox.x << "," << abox.y << "," << abox.z << "," << abox.xd
+			 << "," << abox.yd << "," << abox.zd << ": ";
+	}
+#endif
 
 	CurrentMap* cm = World::get_instance()->getCurrentMap();
 
 	UCList itemlist(2);
 	LOOPSCRIPT(script, LS_TOKEN_END);
 
-	cm->areaSearch(&itemlist, script, sizeof(script), a, 320, false, x, y);
+	cm->areaSearch(&itemlist, script, sizeof(script), 0, 320, false, x, y);
 
 	ObjId hit = 0;
 	for (unsigned int i = 0; i < itemlist.getSize(); ++i) {
@@ -352,9 +355,8 @@ void AnimationTracker::checkWeaponHit()
 
 		Pentagram::Box ibox = item->getWorldBox();
 
-		if (abox.Overlaps(ibox) && !a->getShapeInfo()->is_fixed())
+		if (abox.Overlaps(ibox))
 		{
-			// FIXME: is it right to only allow hitting NPCs??
 			hit = itemid;
 #ifdef WATCHACTOR
 			if (a->getObjId() == watchactor) {
