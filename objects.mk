@@ -182,7 +182,7 @@ WORLD = \
 	world/Egg.o \
 	world/EggHatcherProcess.o \
 	world/FireballProcess.o \
-	world/Glob.o \
+	world/MapGlob.o \
 	world/GlobEgg.o \
 	world/GravityProcess.o \
 	world/Item.o \
