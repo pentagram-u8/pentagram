@@ -1,3 +1,7 @@
+2005-07-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* various: replace Glob.h includes with world/Glob.h to prevent
+	  confusion with the system header glob.h on case insensitive systems.
+
 2005-07-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Actor.cpp: output actor flags in dumpInfo
 	* world/actors/Actor.cpp: don't abort receiveHit if invincible/immortal

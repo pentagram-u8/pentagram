@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "GlobEgg.h"
-#include "Glob.h"
+#include "world/Glob.h"
 #include "GameData.h"
 #include "ItemFactory.h"
 #include "CurrentMap.h"

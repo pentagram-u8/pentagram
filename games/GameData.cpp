@@ -27,7 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "FontShapeArchive.h"
 #include "GumpShapeArchive.h"
 #include "RawArchive.h"
-#include "Glob.h"
+#include "world/Glob.h"
 #include "PaletteManager.h"
 #include "Shape.h"
 #include "MusicFlex.h"
