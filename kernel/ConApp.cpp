@@ -106,13 +106,9 @@ void ConApp::run()
 
 		if (kernel->runProcesses()) repaint = true;
 	
-		if(kernel->getNumProcesses(0, 6)==0)
+		if (kernel->getNumProcesses(0, 6) == 0)
 			isRunning=false;
 
-		// get & handle all events in queue
-		while (isRunning && SDL_PollEvent(&event)) {
-			handleEvent(event);
-		}
 	}
 }
 

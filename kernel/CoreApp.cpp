@@ -29,8 +29,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GameInfo.h"
 #include "GameDetector.h"
 
-#include "SDL.h"
-
 #if defined(WIN32) && defined(WIN32_USE_MY_DOCUMENTS)
 #include <shlobj.h>
 #endif
@@ -101,18 +99,8 @@ void CoreApp::DeclareArgs()
 	parameters.declare("-qq",		&oVQuiet,	true);	
 }
 
-// Init sdl
-void CoreApp::SDLInit()
-{
-	con.Print(MM_INFO, "Initialising SDL...\n");
-	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
-	atexit(SDL_Quit);
-}
-
 void CoreApp::sysInit()
 {
-	SDLInit();
-
 	gameinfo = new GameInfo();
 
 	filesystem = new FileSystem;

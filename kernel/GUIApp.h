@@ -189,6 +189,9 @@ private:
 	//! load CoreApp/GUIApp data
 	bool load(IDataSource* ids, uint32 version);
 	
+	//! start SDL
+	void SDLInit();
+
 	//! reset engine (including World, UCMachine, a.o.)
 	void resetEngine();
 

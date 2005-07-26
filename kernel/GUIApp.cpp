@@ -226,8 +226,18 @@ GUIApp::~GUIApp()
 	FORGET_OBJECT(fontmanager);
 }
 
+// Init sdl
+void GUIApp::SDLInit()
+{
+	con.Print(MM_INFO, "Initialising SDL...\n");
+	SDL_Init(SDL_INIT_VIDEO | SDL_INIT_JOYSTICK);
+	atexit(SDL_Quit);
+}
+
 void GUIApp::startup()
 {
+	SDLInit();
+
 	// Set the console to auto paint, till we have finished initing
 	con.SetAutoPaint(conAutoPaint);
 

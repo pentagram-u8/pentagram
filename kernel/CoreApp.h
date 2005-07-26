@@ -22,7 +22,6 @@
 #ifndef COREAPP_H
 #define COREAPP_H
 
-#include "SDL_events.h"
 #include "intrinsics.h"
 #include "Args.h"
 
@@ -43,7 +42,6 @@ public:
 	virtual void run()=0; // FIXME: Need stub
 	virtual void paint()=0; // probably shouldn't exist
 	virtual bool isPainting() { return false; }
-	virtual void handleEvent(const SDL_Event&event)=0; // FIXME: need stub
 	
 	virtual void ForceQuit() { isRunning=false; };
 
@@ -95,9 +93,6 @@ protected:
 private:
 	int argc;
 	const char* const* argv;
-
-	//! start SDL
-	void SDLInit();
 
 	//! start filesystem, kernel, config
 	virtual void sysInit();

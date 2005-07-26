@@ -1,6 +1,7 @@
 2005-07-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/{Core,Con,GUI}App.*: removed Kernel from CoreApp
 	* object.mk, */module.mk: adapt object list to new CoreApp
+	* kernel/{Core,Con,GUI}App.*: move SDL init from CoreApp to GUIApp
 
 2005-07-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/ActorAnimProcess.cpp: fix teleports while moving
