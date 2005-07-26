@@ -2,7 +2,7 @@
  *	CoreApp.h - Base application class that contains the minimal functality to
  *	            support an instance of the pentagram engine
  *
- *  Copyright (C) 2002-2003 The Pentagram Team
+ *  Copyright (C) 2002-2005 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@
 
 #include <SDL.h>
 
+class Kernel;
+
 class ConApp : public CoreApp
 {
 public:
@@ -42,15 +44,16 @@ public:
 	virtual void run();
 	virtual void paint() {}; // should be removed from CoreApp
 	virtual void handleEvent(const SDL_Event& /*event*/) {}; // should this be in CoreApp?
-	
+
 protected:
 	virtual void DeclareArgs();
+
+	Kernel* kernel;
 
 private:
 	// various temporary state flags, to be moved somewhere more appropriate in time.
 	bool weAreDisasming;
 	bool weAreCompiling;
-	bool weAreWeAreWeAreTheMany; // false for the time being. *grin*
 };
 
 #endif

@@ -1,8 +1,8 @@
 /*
- *	CoreApp.h - Base application class that contains the minimal functality to
- *	            support an instance of the pentagram engine
+ *	CoreApp.h - Base application class that contains the minimal functionality
+ *              to support pentagram tools
  *
- *  Copyright (C) 2002-2004 The Pentagram Team
+ *  Copyright (C) 2002-2005  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -26,8 +26,6 @@
 #include "intrinsics.h"
 #include "Args.h"
 
-class Kernel;
-class UCMachine;
 class FileSystem;
 class ConfigFileManager;
 class SettingManager;
@@ -86,7 +84,6 @@ protected:
 	
 	// minimal system
 	GameInfo* gameinfo;
-	Kernel* kernel;
 	FileSystem* filesystem;
 	ConfigFileManager* configfileman;
 	SettingManager* settingman;

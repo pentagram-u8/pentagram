@@ -1,20 +1,18 @@
 KERNEL = \
-	kernel/DelayProcess.o \
-	kernel/Kernel.o \
-	kernel/CoreApp.o \
-	kernel/Process.o
-
-KERNEL2 = \
-	kernel/HIDManager.o \
-	kernel/ObjectManager.o \
-	kernel/Object.o \
-	kernel/MemoryManager.o \
 	kernel/Allocator.o \
-	kernel/SegmentedAllocator.o \
-	kernel/Pool.o \
-	kernel/SegmentedPool.o \
+	kernel/CoreApp.o \
+	kernel/DelayProcess.o \
+	kernel/HIDManager.o \
+	kernel/Joystick.o \
+	kernel/Kernel.o \
+	kernel/MemoryManager.o \
 	kernel/Mouse.o \
-	kernel/Joystick.o
+	kernel/Object.o \
+	kernel/ObjectManager.o \
+	kernel/Process.o \
+	kernel/Pool.o \
+	kernel/SegmentedAllocator.o \
+	kernel/SegmentedPool.o
 
 USECODE = \
 	usecode/BitSet.o \
@@ -44,9 +42,8 @@ FILESYS = \
 	filesys/Savegame.o \
 	filesys/SavegameWriter.o \
 	filesys/ZipFile.o \
-	filesys/data.o
-
-UNZIP = \
+	filesys/data.o \
+	\
 	filesys/zip/unzip.o \
 	filesys/zip/ioapi.o \
 	filesys/zip/zip.o

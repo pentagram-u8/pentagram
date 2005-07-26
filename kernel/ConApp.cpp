@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2003 The Pentagram team
+Copyright (C) 2002-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,13 +20,14 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "ConApp.h"
 
+#include "Kernel.h"
+
 #include "DisasmProcess.h"
 #include "CompileProcess.h"
 
-#include "Kernel.h"
-
 ConApp::ConApp(int argc, const char* const* argv)
-	: CoreApp(argc, argv), weAreDisasming(false), weAreCompiling(false)
+	: CoreApp(argc, argv), kernel(0),
+	  weAreDisasming(false), weAreCompiling(false)
 	// FIXME! Need a 'console' intrinsic set instead of the 0 above!
 {
 	application = this;
@@ -35,6 +36,8 @@ ConApp::ConApp(int argc, const char* const* argv)
 void ConApp::startup()
 {
 	CoreApp::startup();
+
+	kernel = new Kernel();
 
 	if(weAreDisasming==true)
 	{

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,14 +20,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "CoreApp.h"
 
-#include "Kernel.h"
 #include "FileSystem.h"
 #include "ConfigFileManager.h"
 #include "SettingManager.h"
 
-#include "UCMachine.h"
-#include "UCProcess.h"
-#include "UsecodeFlex.h"
 #include "IDataSource.h"
 #include "Args.h"
 #include "GameInfo.h"
@@ -50,7 +46,7 @@ DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(CoreApp);
 CoreApp* CoreApp::application = 0;
 
 CoreApp::CoreApp(int argc_, const char* const* argv_)
-	: isRunning(false), gameinfo(0), kernel(0), filesystem(0),
+	: isRunning(false), gameinfo(0), filesystem(0),
 	  configfileman(0), settingman(0), argc(argc_),
 	  argv(argv_), oHelp(false), oQuiet(false), oVQuiet(false)
 {
@@ -60,7 +56,6 @@ CoreApp::CoreApp(int argc_, const char* const* argv_)
 
 CoreApp::~CoreApp()
 {
-	FORGET_OBJECT(kernel);
 	FORGET_OBJECT(filesystem);
 	FORGET_OBJECT(settingman);
 	FORGET_OBJECT(configfileman);
@@ -119,9 +114,6 @@ void CoreApp::sysInit()
 	SDLInit();
 
 	gameinfo = new GameInfo();
-
-	// Create the kernel
-	kernel = new Kernel;
 
 	filesystem = new FileSystem;
 

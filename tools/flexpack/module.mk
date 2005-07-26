@@ -11,18 +11,9 @@ flexpack_OBJ = \
 	$(ARGS) \
 	$(MISC) \
 	$(CONF) \
-	$(KERNEL) \
 	$(GAMES) \
-	filesys/FileSystem.o \
-	filesys/RawArchive.o \
-	filesys/Archive.o \
-	filesys/ArchiveFile.o \
-	filesys/FlexFile.o \
-	filesys/ZipFile.o \
-	filesys/U8SaveFile.o \
-	filesys/DirFile.o \
-	filesys/zip/ioapi.o \
-	filesys/zip/unzip.o \
+	$(FILESYS) \
+	kernel/CoreApp.o \
 	tools/flexpack/FlexWriter.o \
 	tools/flexpack/FlexPack.o
 

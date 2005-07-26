@@ -1,4 +1,8 @@
 2005-07-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/{Core,Con,GUI}App.*: removed Kernel from CoreApp
+	* object.mk, */module.mk: adapt object list to new CoreApp
+
+2005-07-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/ActorAnimProcess.cpp: fix teleports while moving
 
 2005-07-26  Ryan Nunn <colourles@users.sourceforge.net>

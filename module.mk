@@ -10,10 +10,8 @@ include $(srcdir)/objects.mk
 
 pentagram_OBJ = \
 	$(KERNEL) \
-	$(KERNEL2) \
 	$(USECODE) \
 	$(FILESYS) \
-	$(UNZIP) \
 	$(GAMES) \
 	$(GAMES2) \
 	$(GRAPHICS) \
@@ -36,10 +34,8 @@ pentagram_OBJ = \
 
 llc_OBJ = \
 	$(KERNEL) \
-	$(KERNEL2) \
 	$(USECODE) \
 	$(FILESYS) \
-	$(UNZIP) \
 	$(GAMES) \
 	$(GAMES2) \
 	$(GRAPHICS) \
@@ -58,8 +54,8 @@ llc_OBJ = \
 	$(AUDIO) \
 	$(MIDI) \
 	$(TIMIDITY) \
-	kernel/GUIApp.o \
 	kernel/ConApp.o \
+	kernel/GUIApp.o \
 	tools/compile/llc.o
 # Unfortunately we still need to split things a bit more cleanly before
 # removing the dependancy of the console stuff on the GUIApp.

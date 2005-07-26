@@ -3,19 +3,24 @@
 LPATH := tools/shapeconv
 
 LSRC := $(wildcard $(srcdir)/$(LPATH)/*.cpp)
-LPRODUCTS := 
-#shapeconv
+LPRODUCTS := shapeconv
 
 shapeconv_OBJ = \
 	tools/shapeconv/ShapeConv.o \
-	filesys/FileSystem.o \
+	$(FILESYS) \
 	misc/Args.o \
 	misc/Console.o \
-	misc/Q_strcasecmp.o \
+	misc/istring.o \
+	misc/util.o \
 	convert/u8/ConvertShapeU8.o \
 	convert/crusader/ConvertShapeCrusader.o \
 	convert/ConvertShape.o \
-	kernel/CoreApp.o
+	kernel/CoreApp.o \
+	games/GameDetector.o \
+	games/GameInfo.o \
+	conf/SettingManager.o \
+	conf/ConfigFileManager.o \
+	conf/INIFile.o
 
 # Common rules
 include $(srcdir)/common.mk

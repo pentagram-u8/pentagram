@@ -134,7 +134,7 @@ using std::string;
 DEFINE_RUNTIME_CLASSTYPE_CODE(GUIApp,CoreApp);
 
 GUIApp::GUIApp(int argc, const char* const* argv)
-	: CoreApp(argc, argv), save_count(0), game(0), objectmanager(0),
+	: CoreApp(argc, argv), save_count(0), game(0), kernel(0), objectmanager(0),
 	  hidmanager(0), ucmachine(0), screen(0), fullscreen(false), palettemanager(0), 
 	  gamedata(0), world(0), desktopGump(0), consoleGump(0), gameMapGump(0),
 	  avatarMoverProcess(0), runSDLInit(false),
@@ -213,6 +213,7 @@ GUIApp::~GUIApp()
 
 	// Game related console commands are now removed in shutdownGame
 
+	FORGET_OBJECT(kernel);
 	FORGET_OBJECT(defMouse);
 	FORGET_OBJECT(objectmanager);
 	FORGET_OBJECT(hidmanager);
@@ -240,6 +241,8 @@ void GUIApp::startup()
 						 SettingManager::DOM_GLOBAL))
 		dataoverride = false;
 	filesystem->initBuiltinData(dataoverride);
+
+	kernel = new Kernel();
 
 	//!! move this elsewhere
 	kernel->addProcessLoader("DelayProcess",

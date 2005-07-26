@@ -3,7 +3,7 @@
 LPATH := tools/disasm
 
 LSRC := $(wildcard $(srcdir)/$(LPATH)/*.cpp)
-LPRODUCTS := disasm
+LPRODUCTS := #disasm
 
 include $(srcdir)/objects.mk
 
