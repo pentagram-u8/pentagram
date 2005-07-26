@@ -319,6 +319,12 @@ inline bool SortItem::operator<(const SortItem& si2) const
 	if (si1.y <= si2.yfar) return true;
 	else if (si1.yfar >= si2.y) return false;
 
+	// Are overlapping in all 3 dimentions if we come here
+
+	// ZTops?
+	if (si1.ztop < si2.ztop) return true;
+	else if (si1.ztop > si2.ztop) return false;
+
 	// Biased Clearly in z
 	if ((si1.ztop+si1.z)/2 <= si2.z) return true;
 	else if (si1.z >= (si2.ztop+si2.z)/2) return false;
@@ -486,6 +492,10 @@ inline bool SortItem::operator<<(const SortItem& si2) const
 	//else if (si1.yfar >= si2.y) return false;
 	COMPARISON_RETURN_TF(si1.y,<=,si2.yfar,true,"\t");
 	COMPARISON_RETURN_TF(si1.yfar,>=,si2.y,false,"\t");
+
+	// ZTops?
+	COMPARISON_RETURN_TF(si1.ztop,<,si2.z,true,"");
+	COMPARISON_RETURN_TF(si1.ztop,>,si2.ztop,false,"");
 
 	// Biased Clearly in z
 	//if ((si1.ztop+si1.z)/2 <= si2.z) return true;

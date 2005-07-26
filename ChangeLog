@@ -1,3 +1,8 @@
+2005-07-26  Ryan Nunn <colourles@users.sourceforge.net>
+	* world/ItemSorter.cpp : Adjusting sorting so if 2 items overlap in all
+	  3 world coords then the one with the highest top z should be drawn as
+	  top. Fixes up the problem with Mythrans book not being visable.
+
 2005-07-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Pathfinder.*: use advance animations instead of walks in
 	  combat mode; try attack anim to see if target reached
