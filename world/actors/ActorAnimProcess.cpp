@@ -275,8 +275,21 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 		}
 	}
 
-	sint32 x,y,z;
-	tracker->getInterpolatedPosition(x,y,z,repeatcounter+1);
+	sint32 x,y,z,x2,y2,z2;
+	a->getLocation(x,y,z);
+	tracker->getInterpolatedPosition(x2,y2,z2,repeatcounter);
+	if (x == x2 && y == y2 && z == z2) {
+		tracker->getInterpolatedPosition(x,y,z,repeatcounter+1);
+		a->collideMove(x, y, z, false, true); // forced move
+		a->setFrame(tracker->getFrame());
+	} else {
+#ifdef WATCHACTOR
+		if (item_num == watchactor) {
+			pout << "Animation [" << Kernel::get_instance()->getFrameNum()
+				 << "] moved, so aborting this frame." << std::endl;
+		}
+#endif
+	}
 
 #ifdef WATCHACTOR
 	if (item_num == watchactor) {
@@ -294,9 +307,6 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 	}
 #endif
 
-
-	a->collideMove(x, y, z, false, true); // forced move
-	a->setFrame(tracker->getFrame());
 
 	if (repeatcounter == tracker->getAnimAction()->framerepeat) {
 		// CHECKME: I think AFF_UNK1 should cancel AAF_UNSTOPPABLE for this
