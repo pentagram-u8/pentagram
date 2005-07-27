@@ -24,8 +24,6 @@
 
 #include "CoreApp.h"
 
-#include <SDL.h>
-
 class Kernel;
 
 class ConApp : public CoreApp

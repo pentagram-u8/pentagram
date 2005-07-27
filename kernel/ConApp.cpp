@@ -93,7 +93,6 @@ void ConApp::run()
 	// At the moment only it's ignored
 	bool repaint;
 
-	SDL_Event event;
 	while (isRunning) {
 		// this needs some major changes, including possibly:
 		// - handling events in-between processes?
