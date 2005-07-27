@@ -24,7 +24,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "IDataSource.h"
 #include "ODataSource.h"
-#include "ItemFactory.h"
 
 #include <map>
 
