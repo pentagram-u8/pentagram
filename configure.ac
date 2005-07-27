@@ -263,9 +263,19 @@ else
 	AC_DEFINE(HAVE_SDL_TTF_H, 1, [Define to 1 if you have the "SDL_ttf.h" header file])
 fi
 
-dnl AC_CHECK_LIB(SDL_ttf, TTF_Init,,AC_MSG_ERROR([*** SDL_ttf not found!]))
-
-LIBS="$LIBS -lSDL_ttf"
+TTFNOTFOUND=no
+AC_CHECK_LIB(SDL_ttf, TTF_Init,,TTFNOTFOUND=yes)
+if test x$TTFNOTFOUND = xyes; then
+	# If linking failed, try again with -lfreetype.
+	# Note we check for TTF_OpenFont instead of TTF_Init this time
+	# to prevent configure from reusing the cached failed AC_CHECK_LIB.
+	AC_CHECK_LIB(SDL_ttf, TTF_OpenFont,,
+			      AC_MSG_ERROR([*** SDL_ttf not found!]),
+			      -lfreetype)
+	LIBS="$LIBS -lSDL_ttf -lfreetype"
+else
+	LIBS="$LIBS -lSDL_ttf"
+fi
 
 # reset CPPFLAGS/LDFLAGS
 CPPFLAGS="$BACKUPCPPFLAGS"
