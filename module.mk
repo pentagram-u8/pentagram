@@ -45,8 +45,6 @@ llc_OBJ = \
 	kernel/CoreApp.o \
 	kernel/ConApp.o \
 	tools/compile/llc.o
-# Unfortunately we still need to split things a bit more cleanly before
-# removing the dependancy of the console stuff on the GUIApp.
 
 # make version.o depend on everything to force a rebuild (for build time/date)
 misc/version.o: $(filter-out misc/version.o,$(pentagram_OBJ))
