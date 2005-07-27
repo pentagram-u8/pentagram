@@ -4,6 +4,7 @@ LPATH := .
 
 LSRC := $(wildcard $(srcdir)/$(LPATH)/*.cpp)
 LGUIPRODUCTS := pentagram
+#LCONPRODUCTS := llc
 
 include $(srcdir)/objects.mk
 
@@ -32,29 +33,17 @@ pentagram_OBJ = \
 	pentagram.o
 
 llc_OBJ = \
-	$(KERNEL) \
-	$(USECODE) \
+	kernel/Kernel.o \
+	kernel/Process.o \
 	$(FILESYS) \
 	$(GAMES) \
-	$(GAMES2) \
-	$(GRAPHICS) \
-	$(SCALERS) \
-	$(FONTS) \
 	$(MISC) \
-	$(CONVERT) \
 	$(CONF) \
-	$(GUMPS) \
-	$(WIDGETS) \
-	$(WORLD) \
-	$(ACTORS) \
 	$(COMPILE) \
 	$(DISASM) \
 	$(ARGS) \
-	$(AUDIO) \
-	$(MIDI) \
-	$(TIMIDITY) \
+	kernel/CoreApp.o \
 	kernel/ConApp.o \
-	kernel/GUIApp.o \
 	tools/compile/llc.o
 # Unfortunately we still need to split things a bit more cleanly before
 # removing the dependancy of the console stuff on the GUIApp.

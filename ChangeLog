@@ -3,6 +3,7 @@
 	* configure.ac, common.mk, Makefile.in, */module.mk:
 	  split targets into GUI and console apps. Don't link console apps
 	  against SDL and audio libs.
+	* module.mk, tools/compile/llc.cpp: fix llc build, but keep disabled
 
 2005-07-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/{Core,Con,GUI}App.*: removed Kernel from CoreApp
