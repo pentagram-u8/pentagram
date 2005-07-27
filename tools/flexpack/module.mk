@@ -3,7 +3,7 @@
 LPATH := tools/flexpack
 
 LSRC := $(wildcard $(srcdir)/$(LPATH)/*.cpp)
-LPRODUCTS := flexpack
+LCONPRODUCTS := flexpack
 
 include $(srcdir)/objects.mk
 

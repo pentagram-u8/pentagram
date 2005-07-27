@@ -3,8 +3,7 @@
 LPATH := .
 
 LSRC := $(wildcard $(srcdir)/$(LPATH)/*.cpp)
-LPRODUCTS := pentagram
-LINSTALL := pentagram
+LGUIPRODUCTS := pentagram
 
 include $(srcdir)/objects.mk
 

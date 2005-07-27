@@ -3,7 +3,6 @@
 LPATH := convert
 
 LSRC := $(wildcard $(srcdir)/$(LPATH)/*.cpp)
-LPRODUCTS := 
 
 # Common rules
 include $(srcdir)/common.mk

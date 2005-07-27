@@ -3,7 +3,7 @@
 LPATH := tools/disasm
 
 LSRC := $(wildcard $(srcdir)/$(LPATH)/*.cpp)
-LPRODUCTS := #disasm
+LCONPRODUCTS := disasm
 
 include $(srcdir)/objects.mk
 
@@ -11,18 +11,9 @@ disasm_OBJ = \
 	$(ARGS) \
 	$(MISC) \
 	$(CONF) \
-	$(KERNEL) \
 	$(GAMES) \
-	filesys/FileSystem.o \
-	filesys/RawArchive.o \
-	filesys/Archive.o \
-	filesys/ArchiveFile.o \
-	filesys/FlexFile.o \
-	filesys/ZipFile.o \
-	filesys/U8SaveFile.o \
-	filesys/DirFile.o \
-	filesys/zip/ioapi.o \
-	filesys/zip/unzip.o \
+	$(FILESYS) \
+	kernel/CoreApp.o \
 	tools/disasm/Disasm.o \
 	tools/fold/Type.o \
 	tools/fold/IfNode.o \
@@ -33,7 +24,5 @@ disasm_OBJ = \
 	tools/fold/FuncNodes.o \
 	tools/fold/LoopScriptNodes.o
 
-
-# ../../filesys/Flex.o
 # Common rules
 include $(srcdir)/common.mk

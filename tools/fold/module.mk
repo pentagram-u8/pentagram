@@ -3,7 +3,7 @@
 LPATH := tools/fold
 
 LSRC := $(wildcard $(srcdir)/$(LPATH)/*.cpp)
-LPRODUCTS := fold
+LCONPRODUCTS := fold
 
 fold_OBJ = \
 	$(ARGS) \

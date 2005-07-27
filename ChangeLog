@@ -1,5 +1,8 @@
 2005-07-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
-	* configure.ac: check if -lSDL_ttf needs -lfreetype
+	* acinclude.m4: wrote custom SDL_ttf configure check PENT_CHECK_SDLTTF
+	* configure.ac, common.mk, Makefile.in, */module.mk:
+	  split targets into GUI and console apps. Don't link console apps
+	  against SDL and audio libs.
 
 2005-07-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/{Core,Con,GUI}App.*: removed Kernel from CoreApp

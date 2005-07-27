@@ -3,7 +3,6 @@
 LPATH := tools/compile
 
 LSRC := $(wildcard $(srcdir)/$(LPATH)/*.cpp)
-LPRODUCTS :=
 
 tools/compile/llcLexer.l: 
 

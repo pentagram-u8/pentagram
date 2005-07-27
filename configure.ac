@@ -53,11 +53,15 @@ DATAPATH="$datadir/pentagram"
 
 # We define one of the following
 #   UNIX  (and maybe LINUX, OPENBSD, ...)
-#   BEOS
 #   WIN32 (and maybe CYGWIN)
 #   MACOSX
 
 # HAVE_HOME is defined if the HOME env.var points to the user's home dir.
+
+# We define three sets of libraries/ldflags
+#   SYS_LIBS is used in all built applications
+#   GUI_LIBS is only for full GUI applications, including SDL, audio
+#   CON_LIBS is only for console applications
 
 AC_MSG_CHECKING(system)
 case "$host_os" in
@@ -67,17 +71,12 @@ case "$host_os" in
 		AC_DEFINE(HAVE_HOME, 1, [HOME env.var exists])
 		AC_MSG_RESULT(UNIX (GNU/Linux))
 		;;
-	beos*)
-		AC_DEFINE(BEOS, 1, [BeOS])
-		AC_DEFINE(HAVE_HOME, 1, [HOME env.var exists])
-		AC_MSG_RESULT(BeOS)
-		LIBS="$LIBS -lbe -lmidi"
-		enable_timidity="no"
-		;;
 	mingw32* )
 		AC_DEFINE(WIN32, 1, [Windows])
 		AC_MSG_RESULT(Win32 (mingw32))
-		LIBS="$LIBS -lwinmm -lstdc++"
+		# note that -mwindows is added by SDL_LIBS
+		GUI_LIBS="$GUI_LIBS -lwinmm"
+		CON_LIBS="$CON_LIBS -mconsole"
 		enable_timidity="no"
 		EMPTY_FILE=nul
 		;;
@@ -86,7 +85,7 @@ case "$host_os" in
 		AC_DEFINE(CYGWIN, 1, [Cygwin])
 		AC_MSG_RESULT(Win32 (cygwin))
 		CXXFLAGS="$CXXFLAGS -mno-cygwin"
-		LIBS="$LIBS -lwinmm"
+		GUI_LIBS="$GUI_LIBS -lwinmm"
 		enable_timidity="no"
 		EMPTY_FILE=nul
 		;;
@@ -95,13 +94,13 @@ case "$host_os" in
 		AC_DEFINE(HAVE_HOME, 1, [HOME env.var exists])
 		AC_DEFINE(OPENBSD, 1, [OpenBSD])
 		AC_MSG_RESULT(UNIX (OpenBSD))
-		LIBS="$LIBS -L/usr/X11R6/lib -lX11 -lXext -lXxf86vm -lXxf86dga"
+		GUI_LIBS="$GUI_LIBS -L/usr/X11R6/lib -lX11 -lXext -lXxf86vm -lXxf86dga"
 		;;
 	solaris* )
 		AC_DEFINE(UNIX, 1, [UNIX-variant])
 		AC_DEFINE(HAVE_HOME, 1, [HOME env.var exists])
 		AC_MSG_RESULT(UNIX (Solaris))
-		LIBS="$LIBS -lsocket -lX11"
+		GUI_LIBS="$GUI_LIBS -lX11"
 		;;
 	darwin*)
 		dnl We have a problem here: both MacOS X and Darwin report 
@@ -111,7 +110,7 @@ case "$host_os" in
 		dnl For now I am lazy and do not add proper detection code.
 		AC_DEFINE(MACOSX, 1, [Mac OS X])
 		AC_MSG_RESULT(Mac OS X)
-		LIBS="$LIBS -framework AudioUnit -framework CoreMIDI"
+		GUI_LIBS="$GUI_LIBS -framework AudioUnit -framework CoreMIDI"
 		DATAPATH="data"
 		;;
 	*)
@@ -219,11 +218,10 @@ fi
 # ---------------------------------------------------------------------
 # SDL
 # ---------------------------------------------------------------------
-SDL_VERSION=1.2.0
-AM_PATH_SDL($SDL_VERSION,
-	:,
-	AC_MSG_ERROR([[*** SDL version $SDL_VERSION not found!]])
+AM_PATH_SDL(1.2.0,:,AC_MSG_ERROR([[*** SDL version $SDL_VERSION not found!]])
 )
+
+GUI_LIBS="$GUI_LIBS $SDL_LIBS"
 
 # -----
 # zlib
@@ -231,56 +229,14 @@ AM_PATH_SDL($SDL_VERSION,
 
 AC_CHECK_HEADER(zlib.h,,AC_MSG_ERROR([*** zlib not found!]))
 AC_CHECK_LIB(z,deflate,,AC_MSG_ERROR([*** zlib not found!]))
-LIBS="$LIBS -lz"
+SYS_LIBS="$SYS_LIBS -lz"
 
 # --------
 # SDL_ttf
 # --------
 
-# backup CPPFLAGS/LDFLAGS and add SDL_CFLAGS/SDL_LIBS
-BACKUPCPPFLAGS="$CPPFLAGS"
-BACKUPLDFLAGS="$LDFLAGS"
-
-CPPFLAGS="$CPPFLAGS $SDL_CFLAGS"
-LDFLAGS="$LDFLAGS $SDL_LIBS"
-
-AC_MSG_CHECKING(for SDL_ttf.h)
-
-dnl we do this check manually because we want to check for "SDL_ttf.h" and not
-dnl for <SDL_ttf.h>
-AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
-#include "SDL_ttf.h"
-]],)],sdlttfh_found=yes,sdlttfh_found=no)
-AC_MSG_RESULT($sdlttfh_found)
-if test x$sdlttfh_found = xno; then
-	AC_CHECK_HEADER(SDL/SDL_ttf.h,sdlsdlttfh_found=yes,sdlsdlttfh_found=no)
-	if test x$sdlsdlttfh_found = xno; then
-		AC_MSG_ERROR([*** SDL_ttf not found!])
-	else
-		AC_DEFINE(HAVE_SDL_SDL_TTF_H, 1, [Define to 1 if you have the <SDL/SDL_ttf.h> header file but not "SDL_ttf.h"])
-	fi
-else
-	AC_DEFINE(HAVE_SDL_TTF_H, 1, [Define to 1 if you have the "SDL_ttf.h" header file])
-fi
-
-TTFNOTFOUND=no
-AC_CHECK_LIB(SDL_ttf, TTF_Init,,TTFNOTFOUND=yes)
-if test x$TTFNOTFOUND = xyes; then
-	# If linking failed, try again with -lfreetype.
-	# Note we check for TTF_OpenFont instead of TTF_Init this time
-	# to prevent configure from reusing the cached failed AC_CHECK_LIB.
-	AC_CHECK_LIB(SDL_ttf, TTF_OpenFont,,
-			      AC_MSG_ERROR([*** SDL_ttf not found!]),
-			      -lfreetype)
-	LIBS="$LIBS -lSDL_ttf -lfreetype"
-else
-	LIBS="$LIBS -lSDL_ttf"
-fi
-
-# reset CPPFLAGS/LDFLAGS
-CPPFLAGS="$BACKUPCPPFLAGS"
-LDFLAGS="$BACKUPLDFLAGS"
-
+PENT_CHECK_SDLTTF(:,AC_MSG_ERROR([*** SDL_ttf not found!]))
+GUI_LIBS="$GUI_LIBS $SDLTTF_LIBS"
 
 # ------------------
 # Warning level
@@ -389,7 +345,7 @@ if test x$HAVEALSA = xyes; then
 		AC_MSG_RESULT(yes)
 		pent_alsa=yes
 		AC_DEFINE(USE_ALSA_MIDI, 1, [Enable ALSA midi])
-		LIBS="$LIBS -lasound"
+		GUI_LIBS="$GUI_LIBS -lasound"
 	else
 		AC_MSG_RESULT(no)
 	fi
@@ -407,7 +363,7 @@ if test x$HAVEFLUIDSYNTH = xyes; then
 		pent_fluidsynth=yes
                 AC_MSG_RESULT(yes)
                 AC_DEFINE(USE_FLUIDSYNTH_MIDI, 1, [Enable fluidsynth midi])
-                LIBS="$LIBS -lfluidsynth"
+                GUI_LIBS="$GUI_LIBS -lfluidsynth"
         else
                 AC_MSG_RESULT(no)
         fi
@@ -512,6 +468,9 @@ AC_SUBST(PROFILE)
 AC_SUBST(DATAPATH)
 AC_SUBST(USE_PCH)
 AC_SUBST(USE_BUILTIN_DATA)
+AC_SUBST(SYS_LIBS)
+AC_SUBST(GUI_LIBS)
+AC_SUBST(CON_LIBS)
 
 AC_CONFIG_FILES([
 Makefile

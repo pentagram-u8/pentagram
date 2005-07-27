@@ -2,9 +2,6 @@
 # includes us, since that has to know our path anyway.
 LPATH := tools/data2c
 
-LPRODUCTS :=
-LSRC :=
-
 clean-data2cbin:
 	-$(RM) tools/data2c/data2c$(BUILDEXEEXT)
 

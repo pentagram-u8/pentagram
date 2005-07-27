@@ -1,19 +1,19 @@
-# When config.status generates a header, we must update config.h.stamp.
-# This file resides in the same directory as the config header
-# that is generated.
+dnl When config.status generates a header, we must update config.h.stamp.
+dnl This file resides in the same directory as the config header
+dnl  that is generated.
 
-# Autoconf calls _AC_AM_CONFIG_HEADER_HOOK (when defined) in the
-# loop where config.status creates the headers, so we can generate
-# our stamp files there.
+dnl Autoconf calls _AC_AM_CONFIG_HEADER_HOOK (when defined) in the
+dnl loop where config.status creates the headers, so we can generate
+dnl our stamp files there.
 AC_DEFUN([_AC_AM_CONFIG_HEADER_HOOK],
 [[echo "# timestamp for $1" >$1.stamp]])
 
 
 
 
-# Set CC_FOR_BUILD to a native compiler. This is used to compile
-# tools needed for the Pentagram build process on the build machine.
-# (adapted from config.guess, (C) 1992-2005 Free Software Foundation, Inc.)
+dnl Set CC_FOR_BUILD to a native compiler. This is used to compile
+dnl tools needed for the Pentagram build process on the build machine.
+dnl (adapted from config.guess, (C) 1992-2005 Free Software Foundation, Inc.)
 AC_DEFUN([PENT_BUILDCC],[
 if test x$cross_compiling = xyes; then
   AC_MSG_CHECKING(for a native C compiler)
@@ -49,6 +49,117 @@ else
 fi
 ]);
 
+
+
+dnl Check if we have SDL_ttf (header and library)
+dnl Input:
+dnl SDL_CFLAGS, SDL_LIBS are set correctly by AM_PATH_SDL
+dnl Output:
+dnl SDLTTF_LIBS contains the necessary libs/ldflags
+dnl HAVE_SDL_TTF_H is AC_DEFINE-d if including "SDL_ttf.h" works
+dnl HAVE_SDL_SDL_TTF_H is AC_DEFINE-d if including <SDL/SDL_ttf.h> works
+
+dnl TODO: accept arguments to run if SDL_ttf found/not found like other check
+dnl       macros
+
+AC_DEFUN([PENT_CHECK_SDLTTF],[
+  AC_MSG_CHECKING(for SDL_ttf)
+
+  pent_backupcppflags="$CPPFLAGS"
+  pent_backupldflags="$LDFLAGS"
+  pent_backuplibs="$LIBS"
+
+  CPPFLAGS="$CPPFLAGS $SDL_CFLAGS"
+  LDFLAGS="$LDFLAGS $SDL_LIBS"
+
+  pent_sdlttfok=yes
+
+  dnl First: include "SDL_ttf.h"
+
+  AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+  #include "SDL_ttf.h"
+  ]],)],sdlttfh_found=yes,sdlttfh_found=no)
+
+  if test x$sdlttfh_found = xno; then
+
+    dnl If failed: include <SDL/SDL_ttf.h>
+
+    AC_COMPILE_IFELSE([AC_LANG_PROGRAM([[
+    #include <SDL/SDL_ttf.h>
+    ]],)],sdlsdlttfh_found=yes,sdlsdlttfh_found=no)
+    if test x$sdlsdlttfh_found = xno; then
+      pent_sdlttfok=no
+    else
+      AC_DEFINE(HAVE_SDL_SDL_TTF_H, 1, [Define to 1 if you have the <SDL/SDL_ttf.h> header file but not "SDL_ttf.h"])
+    fi
+  else
+    AC_DEFINE(HAVE_SDL_TTF_H, 1, [Define to 1 if you have the "SDL_ttf.h" header file])
+  fi
+
+
+  dnl Next: try linking
+
+  if test x$pent_sdlttfok = xyes; then
+
+    LIBS="$LIBS -lSDL_ttf"
+
+    AC_LINK_IFELSE([AC_LANG_SOURCE([[
+    #include "SDL.h"
+    #ifdef HAVE_SDL_TTF
+    #include "SDL_ttf.h"
+    #else
+    #include <SDL/SDL_ttf.h>
+    #endif
+
+    int main(int argc, char* argv[]) {
+      TTF_Init();
+      return 0;
+    }
+    ]])],sdlttflinkok=yes,sdlttflinkok=no)
+    if test x$sdlttflinkok = xno; then
+
+      dnl If failed: try -lSDL_ttf -lfreetype
+      dnl Note: This is mainly for my personal convenience. It should not
+      dnl       be necessary usually, but shouldn't hurt either -wjp, 20050727
+      dnl       (The reason is that I often statically link against SDL_ttf)
+
+      LIBS="$LIBS -lfreetype"
+      AC_LINK_IFELSE([AC_LANG_SOURCE([[
+      #include "SDL.h"
+      #ifdef HAVE_SDL_TTF
+      #include "SDL_ttf.h"
+      #else
+      #include <SDL/SDL_ttf.h>
+      #endif
+
+      int main(int argc, char* argv[]) {
+        TTF_Init();
+        return 0;
+      }
+      ]])],sdlttflinkok=yes,sdlttflinkok=no)
+
+      if test x$sdlttflinkok = xno; then
+        pent_sdlttfok=no
+      else
+        SDLTTF_LIBS="-lSDL_ttf -lfreetype"
+      fi
+    else  
+      SDLTTF_LIBS="-lSDL_ttf"
+    fi
+  fi
+
+  AC_MSG_RESULT($pent_sdlttfok)
+
+  LDFLAGS="$pent_backupldflags"
+  CPPFLAGS="$pent_backupcppflags"
+  LIBS="$pent_backuplibs"
+
+  if test x$pent_sdlttfok = xyes; then
+    ifelse([$1], , :, [$1])
+  else
+    ifelse([$2], , :, [$2])
+  fi
+]);
 
 
 # Configure paths for SDL
@@ -234,3 +345,4 @@ int main(int argc, char *argv[])
   AC_SUBST(SDL_LIBS)
   rm -f conf.sdltest
 ])
+

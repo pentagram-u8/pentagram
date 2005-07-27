@@ -3,7 +3,6 @@
 LPATH := tools/gimp-plugin
 
 LSRC := $(wildcard $(LPATH)/*.cpp)
-LPRODUCTS :=
 
 include $(srcdir)/objects.mk
 

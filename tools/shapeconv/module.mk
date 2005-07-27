@@ -3,7 +3,7 @@
 LPATH := tools/shapeconv
 
 LSRC := $(wildcard $(srcdir)/$(LPATH)/*.cpp)
-LPRODUCTS := shapeconv
+LCONPRODUCTS := shapeconv
 
 shapeconv_OBJ = \
 	tools/shapeconv/ShapeConv.o \

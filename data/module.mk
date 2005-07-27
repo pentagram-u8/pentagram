@@ -2,9 +2,6 @@
 # includes us, since that has to know our path anyway.
 LPATH := data
 
-LSRC := 
-LPRODUCTS := 
-
 $(LPATH)/data.h: $(top_builddir)/tools/data2c/data2c$(BUILDEXEEXT) $(DATA_FILES)
 	@$(MKDIR) $(@D)
 	$(top_builddir)/tools/data2c/data2c$(BUILDEXEEXT) $@ $(patsubst %,$(top_srcdir)/%,$(DATA_FILES))

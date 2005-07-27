@@ -1,13 +1,22 @@
 # This file is included by all module.mk files, and provides common functionality
 # You normally should never have to edit it.
 
-# Generate .rules files for each application target
-LRULES := $(patsubst %,$(LPATH)/$(DEPDIR)/%.rules,$(LPRODUCTS))
+# Generate .rules files for each GUI application target
+LRULES := $(patsubst %,$(LPATH)/$(DEPDIR)/%.rules,$(LGUIPRODUCTS))
 $(LRULES): system/auto/genrules.pl
 	-$(MKDIR) $(dir $@)
-	$(top_srcdir)/system/auto/genrules.pl $(notdir $(basename $@)) > $@
+	$(top_srcdir)/system/auto/genrules.pl --gui $(notdir $(basename $@)) > $@
 -include $(LRULES) $(EMPTY_FILE)
 
+
+# Generate .rules files for each console application target
+LRULES := $(patsubst %,$(LPATH)/$(DEPDIR)/%.rules,$(LCONPRODUCTS))
+$(LRULES): system/auto/genrules.pl
+	-$(MKDIR) $(dir $@)
+	$(top_srcdir)/system/auto/genrules.pl --con $(notdir $(basename $@)) > $@
+-include $(LRULES) $(EMPTY_FILE)
+
+LPRODUCTS := $(LGUIPRODUCTS) $(LCONPRODUCTS)
 
 # include generated dependencies (we append EMPTY_FILE to avoid warnings if
 # the list happens to be empty)
@@ -35,5 +44,13 @@ clean-$(LPATH): clean-% :
 # The global all/clean targets should invoke all sub-targets, we do that here
 all: all-$(LPATH)
 clean: clean-$(LPATH)
+
+
+# reset variables
+
+LSRC :=
+LGUIPRODUCTS :=
+LCONPRODUCTS :=
+
 
 .PHONY: $(LPATH) all-$(LPATH) clean-$(LPATH)

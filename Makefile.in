@@ -48,10 +48,12 @@ BUILDEXEEXT := @BUILDEXEEXT@
 
 DEPDIR := .deps
 SDL_CFLAGS := @SDL_CFLAGS@
-SDL_LIBS := @SDL_LIBS@
 CPPFLAGS := @CPPFLAGS@ @DEFS@ -DDATA_PATH=\"@DATAPATH@\"
 CXXFLAGS := -g @CXXFLAGS@ @PROFILE@
-LDFLAGS := @LDFLAGS@ @LIBS@ @PROFILE@
+LDFLAGS := @LDFLAGS@ @PROFILE@
+SYS_LIBS := @SYS_LIBS@
+CON_LIBS := @CON_LIBS@
+GUI_LIBS := @GUI_LIBS@
 WARNINGS := @WARNINGS@
 
 GIMPTOOL = @GIMPTOOL@
@@ -113,6 +115,10 @@ clean: clean-pch clean-datah
 distclean: clean
 	-$(RM) -r $(DEPDIRS)
 	-$(RM) $(top_builddir)/misc/config.h $(top_builddir)/misc/config.h.stamp
+
+# reset variables
+LSRC :=
+LPRODUCTS :=
 
 # Include additional rules for each module
 include $(patsubst %,$(top_srcdir)/%/module.mk,$(MODULES))
