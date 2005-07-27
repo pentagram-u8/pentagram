@@ -118,7 +118,8 @@ distclean: clean
 
 # reset variables
 LSRC :=
-LPRODUCTS :=
+LGUIPRODUCTS :=
+LCONPRODUCTS :=
 
 # Include additional rules for each module
 include $(patsubst %,$(top_srcdir)/%/module.mk,$(MODULES))
