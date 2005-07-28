@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003 The Pentagram Team
+ *  Copyright (C) 2003-2005 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 #include "ShapeFrame.h"
 #include "ConvertShape.h"
 #include "u8/ConvertShapeU8.h"
+#include "IDataSource.h"
 
 /*
   parse data and fill class
