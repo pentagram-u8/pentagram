@@ -255,8 +255,11 @@ void GameData::loadU8Data()
 	// Load main shapes
 	pout << "Load Shapes" << std::endl;
 	IDataSource *sf = filesystem->ReadFile("@u8/static/u8shapes.flx");
+	if (!sf) sf = filesystem->ReadFile("@u8/static/shapes.flx");
+	if (!sf) sf = filesystem->ReadFile("@u8/static/u8shapes.cmp");
+
 	if (!sf) {
-		perr << "Unable to load static/u8shapes.flx. Exiting" << std::endl;
+		perr << "Unable to load static/u8shapes.flx or static/shapes.flx or static/u8shapes.cmp. Exiting" << std::endl;
 		std::exit(-1);
 	}
 	mainshapes = new MainShapeArchive(sf, MAINSHAPES,

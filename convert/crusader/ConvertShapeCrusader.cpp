@@ -26,6 +26,7 @@ const ConvertShapeFormat		CrusaderShapeFormat =
 	6,		// header
 	"",		// ident
 	0,		// bytes_ident 
+	0,		// bytes_special
 	4,		// header_unk
 	2,		// num_frames
 
@@ -54,6 +55,7 @@ const ConvertShapeFormat		Crusader2DShapeFormat =
 	6,		// header
 	"",		// ident
 	0,		// bytes_ident 
+	0,		// bytes_special
 	4,		// header_unk
 	2,		// num_frames
 

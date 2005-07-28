@@ -143,6 +143,14 @@ void Shape::LoadGenericFormat(const uint8* data, uint32 size, const ConvertShape
 	uint32 framesize;
 	IBufferDataSource ds(data,size);
 
+	// Read special buffer
+	uint8 special[256];
+	if (format->bytes_special) {
+		memset(special, 0, 256);
+		for (uint32 i = 0; i < format->bytes_special; i++) special[ds.read1()&0xFF] = i+2;
+	}
+
+
 	if (format->bytes_ident) {
 		uint8* ident = new uint8[format->bytes_ident];
 		ds.read(ident, format->bytes_ident);
@@ -166,7 +174,7 @@ void Shape::LoadGenericFormat(const uint8* data, uint32 size, const ConvertShape
 
 	for (unsigned int i = 0; i < framecount; ++i) {
 		// Read the offset
-		if (format->bytes_frame_offset) frameoffset = ds.readX(format->bytes_frame_offset);
+		if (format->bytes_frame_offset) frameoffset = ds.readX(format->bytes_frame_offset) + format->bytes_special;
 		else frameoffset = format->len_header + (format->len_frameheader*i);
 
 		// Skip the unknown
@@ -176,7 +184,14 @@ void Shape::LoadGenericFormat(const uint8* data, uint32 size, const ConvertShape
 		if (format->bytes_frame_length) framesize = ds.readX(format->bytes_frame_length) + format->bytes_frame_length_kludge;
 		else framesize = size-frameoffset;
 		
-		frames.push_back(new ShapeFrame(data + frameoffset, framesize, format));
+		ConvertShapeFrame *prev=0, p;
+
+		if (format->bytes_special && i > 0) {
+			prev = &p;
+			frames[i-1]->getConvertShapeFrame(p);
+		}
+
+		frames.push_back(new ShapeFrame(data + frameoffset, framesize, format, special, prev));
 	}
 }
 
@@ -189,20 +204,24 @@ const ConvertShapeFormat *Shape::DetectShapeFormat(const uint8* data, uint32 siz
 
 const ConvertShapeFormat *Shape::DetectShapeFormat(IDataSource * ds, uint32 size)
 {
-	if (CheckShapeFormatUnsafe(ds, &PentagramShapeFormat, size))
-		return &PentagramShapeFormat;
-	else if (CheckShapeFormatUnsafe(ds, &U8SKFShapeFormat, size))
-		return &U8SKFShapeFormat;
-	else if (CheckShapeFormatUnsafe(ds, &U8ShapeFormat, size))
-		return &U8ShapeFormat;
-	else if (CheckShapeFormatUnsafe(ds, &U82DShapeFormat, size))
-		return &U82DShapeFormat;
-	else if (CheckShapeFormatUnsafe(ds, &CrusaderShapeFormat, size))
-		return &CrusaderShapeFormat;
-	else if (CheckShapeFormatUnsafe(ds, &Crusader2DShapeFormat, size))
-		return &Crusader2DShapeFormat;
+	const ConvertShapeFormat *ret = 0;
 
-	return 0;
+	if (CheckShapeFormatUnsafe(ds, &PentagramShapeFormat, size))
+		ret = &PentagramShapeFormat;
+	else if (CheckShapeFormatUnsafe(ds, &U8SKFShapeFormat, size))
+		ret = &U8SKFShapeFormat;
+	else if (CheckShapeFormatUnsafe(ds, &U8ShapeFormat, size))
+		ret = &U8ShapeFormat;
+	else if (CheckShapeFormatUnsafe(ds, &U82DShapeFormat, size))
+		ret = &U82DShapeFormat;
+	else if (CheckShapeFormatUnsafe(ds, &CrusaderShapeFormat, size))
+		ret = &CrusaderShapeFormat;
+	else if (CheckShapeFormatUnsafe(ds, &Crusader2DShapeFormat, size))
+		ret = &Crusader2DShapeFormat;
+	else if (CheckShapeFormatUnsafe(ds, &U8CMPShapeFormat, size))
+		ret = &U8CMPShapeFormat;
+
+	return ret;
 }
 
 void Shape::getTotalDimensions(sint32& w,sint32& h,sint32& x,sint32& y) const

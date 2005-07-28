@@ -21,6 +21,7 @@
 #include "ShapeArchive.h"
 #include "Shape.h"
 #include "Palette.h"
+#include "ConvertShape.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(ShapeArchive,Pentagram::Archive);
 
@@ -50,7 +51,10 @@ void ShapeArchive::cache(uint32 shapenum)
 	if (!data || shpsize == 0) return;
 
 	// Auto detect format
-	if (!format) format = Shape::DetectShapeFormat(data,shpsize);
+	if (!format) {
+		format = Shape::DetectShapeFormat(data,shpsize);
+		if (format) pout << "Detected Shape Format: " << format->name << std::endl;
+	}
 	
 	if (!format)
 	{

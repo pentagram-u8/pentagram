@@ -1,3 +1,14 @@
+2005-07-27  Ryan Nunn <colourles@users.sourceforge.net>
+	* convert/ConvertShape.*, convert/crusader/ConvertShapeCrusader.cpp,
+	  convert/u8/ConvertShapeU8.* : Added ability to load 'CMP' shapes 
+	  using ConvertShape
+	* tools/shapeconv/ShapeConv.cpp : Updated to support reading 
+	  u8shapes.cmp
+	* games/GameData.*, graphics/ShapeArchive.cpp, graphics/ShapeFrame.* :
+	  Updated to support decompressing u8shapes.cmp at runtime. Also 
+	  changed things so Pentagram will attempt to read u8shapes.flx,
+	  shapes.flx and u8shapes.cmp (in that order)
+
 2005-07-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* acinclude.m4: wrote custom SDL_ttf configure check PENT_CHECK_SDLTTF
 	* configure.ac, common.mk, Makefile.in, */module.mk:

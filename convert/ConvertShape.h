@@ -19,8 +19,8 @@
 #ifndef CONVERTSHAPE_H
 #define CONVERTSHAPE_H
 
-#include "IDataSource.h"
-#include "ODataSource.h"
+class IDataSource;
+class ODataSource;
 
 // Convert shape C
 
@@ -28,29 +28,30 @@
 struct ConvertShapeFormat
 {
 	const char *		name;
-													//	U8		U8 Gump	U8.SKF	Cru		Cru2D	Pent
-	uint32				len_header;					//	6		6		2		6		6		8
-	const char *		ident;						//  ""		""		"\2\0"	""		""		"PSHP"
-	uint32				bytes_ident;				//	0		0		2		0		0		4
-	uint32				bytes_header_unk;			//	4		4		0		4		4		0
-	uint32				bytes_num_frames;			//	2		2		0		2		2		4
+													//	U8		U8 Gump	U8.SKF	Cru		Cru2D	Pent	Comp
+	uint32				len_header;					//	6		6		2		6		6		8		11
+	const char *		ident;						//  ""		""		"\2\0"	""		""		"PSHP"	""
+	uint32				bytes_ident;				//	0		0		2		0		0		4		0
+	uint32				bytes_special;				//	0		0		0		0		0		0		5
+	uint32				bytes_header_unk;			//	4		4		0		4		4		0		4
+	uint32				bytes_num_frames;			//	2		2		0		2		2		4		2
 
-	uint32				len_frameheader;			//	6		6		0		8		8		8
-	uint32				bytes_frame_offset;			//	3		3		0		3		3		4
-	uint32				bytes_frameheader_unk;		//	1		2		0		2		2		0
-	uint32				bytes_frame_length;			//	2		2		0		3		3		4
-	uint32				bytes_frame_length_kludge;	//	0		8		0		0		0		0
+	uint32				len_frameheader;			//	6		6		0		8		8		8		6
+	uint32				bytes_frame_offset;			//	3		3		0		3		3		4		4
+	uint32				bytes_frameheader_unk;		//	1		2		0		2		2		0		0
+	uint32				bytes_frame_length;			//	2		2		0		3		3		4		2
+	uint32				bytes_frame_length_kludge;	//	0		8		0		0		0		0		0
 
-	uint32				len_frameheader2;			//	18		18		10		28		20		20
-	uint32				bytes_frame_unknown;		//	8		8		0		8		0		0
-	uint32				bytes_frame_compression;	//	2		2		2		4		4		4
-	uint32				bytes_frame_width;			//	2		2		2		4		4		4
-	uint32				bytes_frame_height;			//	2		2		2		4		4		4
-	uint32				bytes_frame_xoff;			//	2		2		2		4		4		4
-	uint32				bytes_frame_yoff;			//	2		2		2		4		4		4
+	uint32				len_frameheader2;			//	18		18		10		28		20		20		10
+	uint32				bytes_frame_unknown;		//	8		8		0		8		0		0		0
+	uint32				bytes_frame_compression;	//	2		2		2		4		4		4		2
+	uint32				bytes_frame_width;			//	2		2		2		4		4		4		2
+	uint32				bytes_frame_height;			//	2		2		2		4		4		4		2
+	uint32				bytes_frame_xoff;			//	2		2		2		4		4		4		2
+	uint32				bytes_frame_yoff;			//	2		2		2		4		4		4		2
 
-	uint32				bytes_line_offset;			//	2		2		2		4		4		4
-	uint32				line_offset_absolute;		//	0		0		0		0		0		1
+	uint32				bytes_line_offset;			//	2		2		2		4		4		4		0
+	uint32				line_offset_absolute;		//	0		0		0		0		0		1		0
 };
 
 // ConvertShapeFrame structure
@@ -79,6 +80,12 @@ struct ConvertShapeFrame
 		delete [] rle_data;
 		rle_data = 0;
 	}
+
+	void Read(IDataSource *source, const ConvertShapeFormat *csf, uint32 frame_length);
+
+	void ReadCmpFrame(IDataSource *source, const ConvertShapeFormat *csf, const uint8 special[256], ConvertShapeFrame *prev);
+
+	void GetPixels(uint8 *buf, sint32 count, sint32 x, sint32 y);
 };
 
 
@@ -126,5 +133,7 @@ bool CheckShapeFormatUnsafe(IDataSource *source, const ConvertShapeFormat *csf, 
 
 // Shape format configuration for Pentagram format
 extern const ConvertShapeFormat		PentagramShapeFormat;
+
+void FreeConvertShapeTempBuffers();
 
 #endif //CONVERTSHAPE_H

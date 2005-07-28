@@ -125,6 +125,8 @@ void ConvertFlexes(IDataSource *readfile, ODataSource *writefile)
 				read_format = &Crusader2DShapeFormat;
 			else if (CheckShapeFormat(readfile, &PentagramShapeFormat, read_size))
 				read_format = &PentagramShapeFormat;
+			else if (CheckShapeFormat(readfile, &U8CMPShapeFormat, read_size))
+				read_format = &U8CMPShapeFormat;
 			else
 			{
 				perr << "Error: Unable to detect shape format!" << std::endl;
@@ -181,6 +183,8 @@ void ConvertShp(IDataSource *readfile, ODataSource *writefile)
 			read_format = &Crusader2DShapeFormat;
 		else if (CheckShapeFormat(readfile, &PentagramShapeFormat, read_size))
 			read_format = &PentagramShapeFormat;
+		else if (CheckShapeFormat(readfile, &U8CMPShapeFormat, read_size))
+			read_format = &U8CMPShapeFormat;
 		else
 		{
 			perr << "Error: Unable to detect shape format!" << std::endl;
@@ -213,7 +217,7 @@ const ConvertShapeFormat *GetShapeFormat(const char *game)
 int main(int argc, char **argv)
 {
 	if (argc < 3) {
-		perr << "Usage: ShapeConv <inflx> <outflx> [--ifmt u8|u82D|u8skf|cru|cru2D|pent|auto] [--ofmt u8|u82D|u8skf|cru|cru2D|pent] [--singlefile]" << std::endl;
+		perr << "Usage: ShapeConv <inflx> <outflx> [--ifmt u8|u82D|u8skf|u8cmp|cru|cru2D|pent|auto] [--ofmt u8|u82D|u8skf|cru|cru2D|pent] [--singlefile]" << std::endl;
 		perr << std::endl;
 		perr << "Default input format: Auto Detect" << std::endl;
 		perr << "Default output format: Ultima 8" << std::endl;
@@ -232,6 +236,7 @@ int main(int argc, char **argv)
 	parameters.process(argc, argv);
 
 	if (!Pentagram::strcasecmp(ifmt.c_str(), "auto")) read_format = &AutoShapeFormat;
+	else if (!Pentagram::strcasecmp(ifmt.c_str(), "u8cmp")) read_format = &U8CMPShapeFormat;
 	else read_format = GetShapeFormat(ifmt.c_str());
 
 	write_format = GetShapeFormat(ofmt.c_str());

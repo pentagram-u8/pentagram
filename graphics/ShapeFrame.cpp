@@ -25,13 +25,16 @@
 /*
   parse data and fill class
  */
-ShapeFrame::ShapeFrame(const uint8* data, uint32 size, const ConvertShapeFormat* format) : line_offsets(0)
+ShapeFrame::ShapeFrame(const uint8* data, uint32 size, const ConvertShapeFormat* format,
+					   const uint8 special[256], ConvertShapeFrame *prev) : line_offsets(0)
 {
 	// Load it as u8
 	if (!format || format == &U8ShapeFormat || format == &U82DShapeFormat)
 		LoadU8Format(data,size);
 	else if (format == &PentagramShapeFormat)
 		LoadPentagramFormat(data,size);
+	else if (format == &U8CMPShapeFormat)
+		LoadU8CMPFormat(data, size, format, special, prev);
 	else
 		LoadGenericFormat(data,size,format);
 }
@@ -118,6 +121,31 @@ void ShapeFrame::LoadGenericFormat(const uint8* data, uint32 size, const Convert
 	}
 
 	rle_data = data + format->len_frameheader2 + height*format->bytes_line_offset;
+}
+
+// This will load any sort of shape via a ConvertShapeFormat struct
+void ShapeFrame::LoadU8CMPFormat(const uint8* data, uint32 size, const ConvertShapeFormat* format, const uint8 special[256], ConvertShapeFrame *prev)
+{
+	IBufferDataSource ds(data,size);
+
+	ConvertShapeFrame f;
+
+	f.ReadCmpFrame(&ds,format,special,prev);
+
+	uint32 to_alloc = f.height + (f.bytes_rle+3)/4;
+	line_offsets = new uint32[to_alloc];
+	rle_data = reinterpret_cast<uint8*>(line_offsets+f.height);
+
+	compressed = f.compression;
+	height = f.height;
+	width = f.width;
+	xoff = f.xoff;
+	yoff = f.yoff;
+
+	std::memcpy (line_offsets, f.line_offsets, f.height*4);
+	std::memcpy (const_cast<uint8*>(rle_data), f.rle_data, f.bytes_rle);
+
+	f.Free();
 }
 
 // Checks to see if the frame has a pixel at the point
@@ -211,3 +239,16 @@ uint8 ShapeFrame::getPixelAtPoint(sint32 x, sint32 y) const
 
 	return 0xFF;
 }
+
+void ShapeFrame::getConvertShapeFrame(ConvertShapeFrame &csf, bool need_bytes_rle)
+{
+	csf.compression = compressed;
+	csf.width = width;
+	csf.height = height;
+	csf.xoff = xoff;
+	csf.yoff = yoff;
+	csf.line_offsets = line_offsets;
+	csf.bytes_rle = 0;
+	csf.rle_data = const_cast<uint8*>(rle_data);
+}
+

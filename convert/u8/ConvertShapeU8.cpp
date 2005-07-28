@@ -26,6 +26,7 @@ const ConvertShapeFormat		U8ShapeFormat =
 	6,		// header
 	"",		// ident
 	0,		// bytes_ident 
+	0,		// bytes_special
 	4,		// header_unk
 	2,		// num_frames
 
@@ -54,6 +55,7 @@ const ConvertShapeFormat		U82DShapeFormat =
 	6,		// header
 	"",		// ident
 	0,		// bytes_ident 
+	0,		// bytes_special
 	4,		// header_unk
 	2,		// num_frames
 
@@ -82,6 +84,7 @@ const ConvertShapeFormat		U8SKFShapeFormat =
 	2,		// header
 	"\2",	// ident
 	2,		// bytes_ident 
+	0,		// bytes_special
 	0,		// header_unk
 	0,		// num_frames
 
@@ -102,3 +105,33 @@ const ConvertShapeFormat		U8SKFShapeFormat =
 	2,		// line_offset
 	0		// line_offset_absolute
 };
+
+// Shape format configuration for Compressed Ultima 8 shapes
+const ConvertShapeFormat		U8CMPShapeFormat =
+{
+	"Ultima8 CMP",
+	11,		// header
+	"",		// ident
+	0,		// bytes_ident 
+	5,		// bytes_special
+	4,		// header_unk
+	2,		// num_frames
+
+	6,		// frameheader
+	4,		// frame_offset
+	2,		// frameheader_unk
+	0,//2,		// frame_length
+	0,//-16,	// frame_length_kludge
+
+	10,		// frameheader2
+	0,		// frame_unknown
+	2,		// frame_compression
+	2,		// frame_width
+	2,		// frame_height
+	2,		// frame_xoff
+	2,		// frame_yoff
+
+	0,		// line_offset
+	0		// line_offset_absolute
+};
+

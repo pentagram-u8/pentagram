@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define SHAPEFRAME_H
 
 struct ConvertShapeFormat;
+struct ConvertShapeFrame;
 
 class ShapeFrame 
 {
@@ -31,7 +32,8 @@ public:
 	// all the unknown crap is removed. It's designed to allow for painting
 	// only, and for speed when loading.
 	
-	ShapeFrame(const uint8* data, uint32 size, const ConvertShapeFormat* format=0);
+	ShapeFrame(const uint8* data, uint32 size, const ConvertShapeFormat* format=0,
+		const uint8 special[256]=0, ConvertShapeFrame *prev=0);
 	~ShapeFrame();
 
 	uint32				compressed;
@@ -44,6 +46,8 @@ public:
 	bool hasPoint(sint32 x, sint32 y) const;	// Check to see if a point is in the frame
 
 	uint8 getPixelAtPoint(sint32 x, sint32 y) const;	// Get the pixel at the point 
+
+	void getConvertShapeFrame(ConvertShapeFrame &csf, bool need_bytes_rle=false);
 protected:
 
 	// This will load a u8 style shape 'optimzed'.
@@ -55,6 +59,10 @@ protected:
 	// This will load any sort of shape via a ConvertShapeFormat struct
 	// Crusader shapes must be loaded this way
 	void LoadGenericFormat(const uint8* data, uint32 size, const ConvertShapeFormat* format);
+
+	// This will load any sort of shape via a ConvertShapeFormat struct
+	// Crusader shapes must be loaded this way
+	void LoadU8CMPFormat(const uint8* data, uint32 size, const ConvertShapeFormat* format, const uint8 special[256], ConvertShapeFrame *prev);
 };
 
 

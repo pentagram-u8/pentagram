@@ -30,4 +30,7 @@ extern const ConvertShapeFormat		U82DShapeFormat;
 // Shape format configuration for Ultima 8 SKF file shapes
 extern const ConvertShapeFormat		U8SKFShapeFormat;
 
+// Shape format configuration for Compressed Ultima 8 shapes
+extern const ConvertShapeFormat		U8CMPShapeFormat;
+
 #endif //CONVERTSHAPEU8_H
