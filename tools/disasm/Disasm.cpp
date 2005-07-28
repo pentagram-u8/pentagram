@@ -968,7 +968,6 @@ int main(int argc, char **argv)
 	
 	printfunc(func, nameoffset, ucfile);
 	
-	con.Dump("disasm_output.txt");
 	return 0;
 }
 
