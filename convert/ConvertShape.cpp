@@ -65,6 +65,8 @@ void ConvertShape::Read(IDataSource *source, const ConvertShapeFormat *csf, uint
 	// Now read num_frames
 	num_frames = 1;
 	if (csf->bytes_num_frames) num_frames = source->readX(csf->bytes_num_frames);
+	if (num_frames == 0) num_frames = CalcNumFrames(source,csf,real_len,start_pos);
+
 #ifdef COMP_SHAPENUM
 	if (shapenum == COMP_SHAPENUM) pout << "num_frames " << num_frames << std::endl;
 #endif
@@ -373,7 +375,40 @@ void ConvertShapeFrame::GetPixels(uint8 *buf, sint32 count, sint32 x, sint32 y)
 	} while (xpos < width);
 }
 
-bool CheckShapeFormat(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len)
+int ConvertShape::CalcNumFrames(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len, uint32 start_pos)
+{
+	int f=0;
+	uint32 first_offset = 0xFFFFFFFF;
+
+	uint32 save_pos = source->getPos();
+
+	for (f=0;;f++) {
+
+		// Seek to initial pos
+		source->seek(start_pos + csf->len_header + (csf->len_frameheader*f));
+
+		if ((source->getPos()-start_pos) >= first_offset) break;
+
+		// Read the offset
+		uint32 frame_offset = csf->len_header + (csf->len_frameheader*f);
+		if (csf->bytes_frame_offset) frame_offset = source->readX(csf->bytes_frame_offset) + csf->bytes_special;
+
+		if (frame_offset < first_offset) first_offset = frame_offset;
+
+		// Read the unknown
+		if (csf->bytes_frameheader_unk) source->skip(csf->bytes_frameheader_unk);
+
+		// Read frame_length
+		uint32 frame_length = real_len-frame_offset;
+		if (csf->bytes_frame_length) frame_length = source->readX(csf->bytes_frame_length) + csf->bytes_frame_length_kludge;
+	}
+
+	source->seek(save_pos);
+
+	return f;
+}
+
+bool ConvertShape::Check(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len)
 {
 #if 0
 	pout << "Testing " << csf->name << "..." << std::endl;
@@ -407,6 +442,7 @@ bool CheckShapeFormat(IDataSource *source, const ConvertShapeFormat *csf, uint32
 	// Now read num_frames
 	int num_frames = 1;
 	if (csf->bytes_num_frames) num_frames = source->readX(csf->bytes_num_frames);
+	if (num_frames == 0) num_frames = CalcNumFrames(source,csf,real_len,start_pos);
 
 	// Create frames array
 	ConvertShapeFrame oneframe;
@@ -562,7 +598,7 @@ bool CheckShapeFormat(IDataSource *source, const ConvertShapeFormat *csf, uint32
 	return result;
 }
 
-bool CheckShapeFormatUnsafe(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len)
+bool ConvertShape::CheckUnsafe(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len)
 {
 #if 0
 	pout << "Testing " << csf->name << "..." << std::endl;
@@ -596,6 +632,7 @@ bool CheckShapeFormatUnsafe(IDataSource *source, const ConvertShapeFormat *csf, 
 	// Now read num_frames
 	int num_frames = 1;
 	if (csf->bytes_num_frames) num_frames = source->readX(csf->bytes_num_frames);
+	if (num_frames == 0) num_frames = CalcNumFrames(source,csf,real_len,start_pos);
 
 	// Create frames array
 	ConvertShapeFrame oneframe;

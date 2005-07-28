@@ -113,19 +113,19 @@ void ConvertFlexes(IDataSource *readfile, ODataSource *writefile)
 		{
 			pout << "Auto detecting format..." << std::endl;
 
-			if (CheckShapeFormat(readfile, &U8ShapeFormat, read_size))
+			if (ConvertShape::Check(readfile, &U8ShapeFormat, read_size))
 				read_format = &U8ShapeFormat;
-			else if (CheckShapeFormat(readfile, &U82DShapeFormat, read_size))
+			else if (ConvertShape::Check(readfile, &U82DShapeFormat, read_size))
 				read_format = &U82DShapeFormat;
-			else if (CheckShapeFormat(readfile, &U8SKFShapeFormat, read_size))
+			else if (ConvertShape::Check(readfile, &U8SKFShapeFormat, read_size))
 				read_format = &U8SKFShapeFormat;
-			else if (CheckShapeFormat(readfile, &CrusaderShapeFormat, read_size))
+			else if (ConvertShape::Check(readfile, &CrusaderShapeFormat, read_size))
 				read_format = &CrusaderShapeFormat;
-			else if (CheckShapeFormat(readfile, &Crusader2DShapeFormat, read_size))
+			else if (ConvertShape::Check(readfile, &Crusader2DShapeFormat, read_size))
 				read_format = &Crusader2DShapeFormat;
-			else if (CheckShapeFormat(readfile, &PentagramShapeFormat, read_size))
+			else if (ConvertShape::Check(readfile, &PentagramShapeFormat, read_size))
 				read_format = &PentagramShapeFormat;
-			else if (CheckShapeFormat(readfile, &U8CMPShapeFormat, read_size))
+			else if (ConvertShape::Check(readfile, &U8CMPShapeFormat, read_size))
 				read_format = &U8CMPShapeFormat;
 			else
 			{
@@ -171,19 +171,19 @@ void ConvertShp(IDataSource *readfile, ODataSource *writefile)
 	if (read_format == &AutoShapeFormat)
 	{
 		pout << "Auto detecting format..." << std::endl;
-		if (CheckShapeFormat(readfile, &U8ShapeFormat, read_size))
+		if (ConvertShape::Check(readfile, &U8ShapeFormat, read_size))
 			read_format = &U8ShapeFormat;
-		else if (CheckShapeFormat(readfile, &U82DShapeFormat, read_size))
+		else if (ConvertShape::Check(readfile, &U82DShapeFormat, read_size))
 			read_format = &U82DShapeFormat;
-		else if (CheckShapeFormat(readfile, &U8SKFShapeFormat, read_size))
+		else if (ConvertShape::Check(readfile, &U8SKFShapeFormat, read_size))
 			read_format = &U8SKFShapeFormat;
-		else if (CheckShapeFormat(readfile, &CrusaderShapeFormat, read_size))
+		else if (ConvertShape::Check(readfile, &CrusaderShapeFormat, read_size))
 			read_format = &CrusaderShapeFormat;
-		else if (CheckShapeFormat(readfile, &Crusader2DShapeFormat, read_size))
+		else if (ConvertShape::Check(readfile, &Crusader2DShapeFormat, read_size))
 			read_format = &Crusader2DShapeFormat;
-		else if (CheckShapeFormat(readfile, &PentagramShapeFormat, read_size))
+		else if (ConvertShape::Check(readfile, &PentagramShapeFormat, read_size))
 			read_format = &PentagramShapeFormat;
-		else if (CheckShapeFormat(readfile, &U8CMPShapeFormat, read_size))
+		else if (ConvertShape::Check(readfile, &U8CMPShapeFormat, read_size))
 			read_format = &U8CMPShapeFormat;
 		else
 		{

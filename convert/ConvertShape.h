@@ -122,18 +122,18 @@ public:
 	void Read(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len);
 	void Write(ODataSource *source, const ConvertShapeFormat *csf, uint32 &write_len);
 
+	// This will check to see if a Shape is of a certain type. Return true if ok, false if bad
+	static bool Check(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len);
+
+	// This will also check to see if a shape is of a certain type. However it won't check
+	// the rle data, it only checks headers. Return true if ok, false if bad
+	static bool CheckUnsafe(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len);
+
+	// Algorithmically calculate the number of frames
+	static int CalcNumFrames(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len, uint32 start_pos);
 };
-
-// This will check to see if a Shape is of a certain type. Return true if ok, false if bad
-bool CheckShapeFormat(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len);
-
-// This will also check to see if a shape is of a certain type. However it won't check
-// the rle data, it only checks headers. Return true if ok, false if bad
-bool CheckShapeFormatUnsafe(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len);
 
 // Shape format configuration for Pentagram format
 extern const ConvertShapeFormat		PentagramShapeFormat;
-
-void FreeConvertShapeTempBuffers();
 
 #endif //CONVERTSHAPE_H

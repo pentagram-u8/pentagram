@@ -106,9 +106,14 @@ void Shape::getShapeId(uint16 & id, uint32 & shape)
 #define READ4(data,offset) (data[offset] + (data[offset+1] << 8) + (data[offset+2] << 16) + (data[offset+3] << 24))
 
 // This will load a u8 style shape 'optimzed'.
-void Shape::LoadU8Format(const uint8* data, uint32 /*size*/, const ConvertShapeFormat* format)
+void Shape::LoadU8Format(const uint8* data, uint32 size, const ConvertShapeFormat* format)
 {
 	unsigned int framecount = READ2(data,4);
+
+	if (framecount == 0) {
+		LoadGenericFormat(data, size, format);
+		return;
+	}
 
 	frames.reserve(framecount);
 
@@ -121,9 +126,14 @@ void Shape::LoadU8Format(const uint8* data, uint32 /*size*/, const ConvertShapeF
 }
 
 // This will load a pentagram style shape 'optimzed'.
-void Shape::LoadPentagramFormat(const uint8* data, uint32 /*size*/, const ConvertShapeFormat* format)
+void Shape::LoadPentagramFormat(const uint8* data, uint32 size, const ConvertShapeFormat* format)
 {
 	unsigned int framecount = READ4(data,4);
+
+	if (framecount == 0) {
+		LoadGenericFormat(data, size, format);
+		return;
+	}
 
 	frames.reserve(framecount);
 
@@ -143,14 +153,6 @@ void Shape::LoadGenericFormat(const uint8* data, uint32 size, const ConvertShape
 	uint32 framesize;
 	IBufferDataSource ds(data,size);
 
-	// Read special buffer
-	uint8 special[256];
-	if (format->bytes_special) {
-		memset(special, 0, 256);
-		for (uint32 i = 0; i < format->bytes_special; i++) special[ds.read1()&0xFF] = i+2;
-	}
-
-
 	if (format->bytes_ident) {
 		uint8* ident = new uint8[format->bytes_ident];
 		ds.read(ident, format->bytes_ident);
@@ -163,12 +165,20 @@ void Shape::LoadGenericFormat(const uint8* data, uint32 size, const ConvertShape
 		}
 	}
 
+	// Read special buffer
+	uint8 special[256];
+	if (format->bytes_special) {
+		memset(special, 0, 256);
+		for (uint32 i = 0; i < format->bytes_special; i++) special[ds.read1()&0xFF] = i+2;
+	}
+
 	// Skip unknown
 	ds.skip(format->bytes_header_unk);
 
 	// Read framecount, default 1 if no
 	if (format->bytes_num_frames) framecount = ds.readX(format->bytes_num_frames);
 	else framecount = 1;
+	if (framecount == 0) framecount = ConvertShape::CalcNumFrames(&ds,format,size,0);
 
 	frames.reserve(framecount);
 
@@ -206,19 +216,19 @@ const ConvertShapeFormat *Shape::DetectShapeFormat(IDataSource * ds, uint32 size
 {
 	const ConvertShapeFormat *ret = 0;
 
-	if (CheckShapeFormatUnsafe(ds, &PentagramShapeFormat, size))
+	if (ConvertShape::CheckUnsafe(ds, &PentagramShapeFormat, size))
 		ret = &PentagramShapeFormat;
-	else if (CheckShapeFormatUnsafe(ds, &U8SKFShapeFormat, size))
+	else if (ConvertShape::CheckUnsafe(ds, &U8SKFShapeFormat, size))
 		ret = &U8SKFShapeFormat;
-	else if (CheckShapeFormatUnsafe(ds, &U8ShapeFormat, size))
+	else if (ConvertShape::CheckUnsafe(ds, &U8ShapeFormat, size))
 		ret = &U8ShapeFormat;
-	else if (CheckShapeFormatUnsafe(ds, &U82DShapeFormat, size))
+	else if (ConvertShape::CheckUnsafe(ds, &U82DShapeFormat, size))
 		ret = &U82DShapeFormat;
-	else if (CheckShapeFormatUnsafe(ds, &CrusaderShapeFormat, size))
+	else if (ConvertShape::CheckUnsafe(ds, &CrusaderShapeFormat, size))
 		ret = &CrusaderShapeFormat;
-	else if (CheckShapeFormatUnsafe(ds, &Crusader2DShapeFormat, size))
+	else if (ConvertShape::CheckUnsafe(ds, &Crusader2DShapeFormat, size))
 		ret = &Crusader2DShapeFormat;
-	else if (CheckShapeFormatUnsafe(ds, &U8CMPShapeFormat, size))
+	else if (ConvertShape::CheckUnsafe(ds, &U8CMPShapeFormat, size))
 		ret = &U8CMPShapeFormat;
 
 	return ret;
