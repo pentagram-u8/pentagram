@@ -67,6 +67,9 @@ public:
 	void setLastAnim(Animation::Sequence anim) { lastanim = anim; }
 	uint16 getDir() const { return direction; }
 	void setDir(uint16 dir) { direction = dir; }
+	sint32 getFallStart() const { return fallstart; }
+	void setFallStart(sint32 z) { fallstart = z; }
+	void setUnk0C(uint8 b) { unk0C = b; }
 
 	uint32 getActorFlags() const { return actorflags; }
 	void setActorFlag(uint32 mask) { actorflags |= mask; }
@@ -146,7 +149,7 @@ public:
 	Animation::Result tryAnim(Animation::Sequence anim, int dir, unsigned int steps=0, PathfindingState* state=0);
 
 	//! create an actor, assign objid, make it ethereal and load monster stats.
-	static Actor* createActor(uint32 shape);
+	static Actor* createActor(uint32 shape, uint32 frame);
 
 	virtual uint16 assignObjId(); // assign an NPC objid
 
@@ -240,6 +243,9 @@ protected:
 	Animation::Sequence lastanim;
 	uint16 animframe;
 	uint16 direction;
+
+	sint32 fallstart;
+	uint8 unk0C; // unknown byte 0x0C from npcdata.dat
 
 	uint32 actorflags;
 };

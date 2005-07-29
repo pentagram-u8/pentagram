@@ -251,8 +251,6 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 		npcds->seek(7 + i * 0x31);
 		frame += npcds->read1() << 8;
 
-		// TODO: locate inventory
-
 		if (shape == 0) {
 			// U8's itemcach has a lot of garbage in it.
 			// Ignore it.
@@ -284,28 +282,31 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 		actor->setInt(npcds->read1()); // 0x02: intelligence
 		actor->setHP(npcds->read1());  // 0x03: hitpoints
 		actor->setDir(npcds->read1()); // 0x04: direction
-		actor->setLastAnim(static_cast<Animation::Sequence>(npcds->read2())); // 0x05: last anim
-		npcds->skip(1); // 0x07: unknown 
+		uint16 la = npcds->read2();    // 0x05,0x06: last anim
+		actor->setLastAnim(static_cast<Animation::Sequence>(la));
+		npcds->skip(1); // 0x07: high byte of framenum
 		npcds->skip(1); // 0x08: current anim frame
 		npcds->skip(1); // 0x09: start Z of current fall
-		npcds->skip(1); // 0x0A: unknown
+		npcds->skip(1); // 0x0A: unknown, always zero
 		uint8 align = npcds->read1(); // 0x0B: alignments
 		actor->setAlignment(align & 0x0F);
 		actor->setEnemyAlignment(align & 0xF0);
-		npcds->skip(15); // 0x0C-0x1A: unknown
+		actor->setUnk0C(npcds->read1()); // 0x0C: unknown; 
+		                // 0x0C is almost always zero, except for
+                        // the avatar (0xC0) and
+                        // Malchir, Vardion, Gorgrond, Beren (0xE0)
+		npcds->skip(14); // 0x0D-0x1A: unknown, always zero
 		actor->clearActorFlag(0xFF);
 		actor->setActorFlag(npcds->read1()); // 0x1B: flags
-		npcds->skip(1); // 0x1C: unknown
+		npcds->skip(1);  // 0x1C: unknown, always zero
 		npcds->skip(16); // 0x1D-0x2C: equipment
-		sint16 mana = static_cast<sint16>(npcds->read2()); // 0x2D: mana
+		sint16 mana = static_cast<sint16>(npcds->read2()); // 0x2D,0x2E: mana
 		actor->setMana(mana);
 		actor->clearActorFlag(0xFFFF00);
 		uint32 flags2F = npcds->read1(); // 0x2F: flags
 		actor->setActorFlag(flags2F << 8);
 		uint32 flags30 = npcds->read1(); // 0x30: flags
 		actor->setActorFlag(flags30 << 16);
-
-		// TODO: decode and use rest of npcdata.dat
 	}
 
 	delete itemds;

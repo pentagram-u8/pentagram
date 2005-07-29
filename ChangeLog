@@ -1,3 +1,7 @@
+2005-07-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/World.cpp, world/actors/Actor.*: added extra fields from
+	  npcdata.dat to pentagram savegames, for future use.
+
 2005-07-27  Ryan Nunn <colourles@users.sourceforge.net>
 	* convert/ConvertShape.*, convert/crusader/ConvertShapeCrusader.cpp,
 	  convert/u8/ConvertShapeU8.* : Added ability to load 'CMP' shapes 
@@ -8,10 +12,10 @@
 	  Updated to support decompressing u8shapes.cmp at runtime. Also 
 	  changed things so Pentagram will attempt to read u8shapes.flx,
 	  shapes.flx and u8shapes.cmp (in that order)
-	* convert/ConvertShape.cpp, graphics/Shape.cpp : Support loading of the 
-	  munged U8 Spanish gumps
+	* convert/ConvertShape.cpp, graphics/Shape.cpp : Support loading of
+	  the munged U8 Spanish gumps
 	* convert/ConvertShape.*, tools/shapeconv/ShapeConv.cpp : Made Check 
-	  functons static members of ConvertShape
+	  functions static members of ConvertShape
 
 2005-07-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* acinclude.m4: wrote custom SDL_ttf configure check PENT_CHECK_SDLTTF

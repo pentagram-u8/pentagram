@@ -1099,9 +1099,9 @@ uint16 Actor::schedule(uint32 time)
 }
 
 //static
-Actor* Actor::createActor(uint32 shape)
+Actor* Actor::createActor(uint32 shape, uint32 frame)
 {
-	Actor* newactor = ItemFactory::createActor(shape, 0, 0, Item::FLG_IN_NPC_LIST, 0, 0, 0);
+	Actor* newactor = ItemFactory::createActor(shape, frame, 0, Item::FLG_IN_NPC_LIST, 0, 0, 0);
 	if (!newactor)
 		return 0;
 	uint16 objID = newactor->assignObjId();
@@ -1147,7 +1147,9 @@ void Actor::saveData(ODataSource* ods)
 	ods->write2(lastanim);
 	ods->write2(animframe);
 	ods->write2(direction);
+	ods->write4(fallstart);
 	ods->write4(actorflags);
+	ods->write1(unk0C);
 }
 
 bool Actor::loadData(IDataSource* ids, uint32 version)
@@ -1164,10 +1166,9 @@ bool Actor::loadData(IDataSource* ids, uint32 version)
 	lastanim = static_cast<Animation::Sequence>(ids->read2());
 	animframe = ids->read2();
 	direction = ids->read2();
+	fallstart = ids->read4();
 	actorflags = ids->read4();
-
-	//! TODO: get rid of this hack sometime in the future -wjp 20050128
-	if (objid < 62) extendedflags |= Item::EXT_PERMANENT_NPC;
+	unk0C = ids->read1();
 
 	return true;
 }
@@ -1635,11 +1636,11 @@ uint32 Actor::I_createActor(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_UC_PTR(ptr);
 	ARG_UINT16(shape);
-	ARG_UINT16(unknown); // !!! what's this?
+	ARG_UINT16(frame);
 
 	//!! do we need to flag actor as temporary?
 
-	Actor* newactor = createActor(shape);
+	Actor* newactor = createActor(shape, frame);
 	if (!newactor) {
 		perr << "I_createActor failed to create actor (" << shape
 			 <<	")." << std::endl;
