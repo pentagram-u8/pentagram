@@ -178,7 +178,9 @@ uint16 hp
 sint16 mana
 uint16 alignment, enemyalignment
 uint16 lastanim, animframe, direction
+sint32 fallstart
 uint32 actorflags
+uint8 unk0C
 
 MainActor: (v1)
 <Actor>
