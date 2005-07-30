@@ -305,12 +305,14 @@ bool AvatarMoverProcess::handleNormalMode()
 		return false;
 	}
 
+	bool m0clicked = false;
 	bool m1clicked = false;
 
     // check mouse state to see what needs to be done
 	if (!(mouseButton[0].state & MBS_HANDLED) &&
 		now - mouseButton[0].curDown > DOUBLE_CLICK_TIMEOUT)
 	{
+		m0clicked = true;
 		mouseButton[0].state |= MBS_HANDLED;
 	}
 
@@ -415,7 +417,7 @@ bool AvatarMoverProcess::handleNormalMode()
 		}
 	}
 
-	if (!(mouseButton[0].state & MBS_HANDLED) &&
+	if ((!(mouseButton[0].state & MBS_HANDLED) || m0clicked) &&
 		(mouseButton[1].state & MBS_DOWN))
 	{
 		mouseButton[0].state |= MBS_HANDLED;

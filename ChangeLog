@@ -1,4 +1,8 @@
 2005-07-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/AvatarMoverProcess.cpp: don't let left-clicks for
+	  a running jump be ignored when busy waiting for animation to finish
+
+2005-07-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* misc/md5.*: md5 computation code
 	* games/Game{Info,Detector}.*: compute md5 when detecting a game.
 	* games/GameInfo.*: cleanup
