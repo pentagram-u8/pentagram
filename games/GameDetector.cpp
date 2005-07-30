@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "RawArchive.h"
 #include "md5.h"
 
+#include "gamemd5.h"
+
 bool GameDetector::detect(std::string path, GameInfo *info)
 {
 	FileSystem* fs = FileSystem::get_instance();
@@ -32,8 +34,40 @@ bool GameDetector::detect(std::string path, GameInfo *info)
 
 	IDataSource* ids;
 
-	//!! this should be properly thought through sometime...
-	//!! for now:
+
+	// Strategy: find eusecode.flx, fusecode.flx or gusecode.flx,
+	// compute its MD5, and check it against our MD5 table.
+	// Should that fail, try a manual check to at least identify the
+	// game type and its language.
+
+	ids = fs->ReadFile("@detect/usecode/eusecode.flx");
+	if (!ids)
+		ids = fs->ReadFile("@detect/usecode/fusecode.flx");
+	if (!ids)
+		ids = fs->ReadFile("@detect/usecode/gusecode.flx");
+	if (!ids)
+		return false; // all games have usecode
+
+	Pentagram::md5_file(ids, info->md5, 0);
+	delete ids;
+
+	std::string md5s = info->getPrintableMD5();
+
+	int i = 0;
+	while (md5table[i].md5) {
+		if (md5s == md5table[i].md5) {
+			info->type = md5table[i].type;
+			info->language = md5table[i].language;
+			info->version = md5table[i].version;
+			return true;
+		}
+		i++;
+	}
+
+	perr << "MD5-based game autodetection failed (" << md5s << "). "
+		 << std::endl << "Trying manual detection." << std::endl;
+
+
 
 	// game type
 	if (info->type == GameInfo::GAME_UNKNOWN) {
@@ -75,8 +109,6 @@ bool GameDetector::detect(std::string path, GameInfo *info)
 	if (info->language == GameInfo::GAMELANG_UNKNOWN) {
 		ids = fs->ReadFile("@detect/usecode/eusecode.flx");
 		if (ids) {
-			Pentagram::md5_file(ids, info->md5, 0);
-
 			if (info->type == GameInfo::GAME_U8) {
 				// distinguish between english and spanish
 				RawArchive* f = new RawArchive(ids);
@@ -107,7 +139,6 @@ bool GameDetector::detect(std::string path, GameInfo *info)
 	if (info->language == GameInfo::GAMELANG_UNKNOWN) {
 		ids = fs->ReadFile("@detect/usecode/fusecode.flx");
 		if (ids) {
-			Pentagram::md5_file(ids, info->md5, 0);
 			info->language = GameInfo::GAMELANG_FRENCH;
 			delete ids; ids = 0;
 		}
@@ -115,7 +146,6 @@ bool GameDetector::detect(std::string path, GameInfo *info)
 	if (info->language == GameInfo::GAMELANG_UNKNOWN) {
 		ids = fs->ReadFile("@detect/usecode/gusecode.flx");
 		if (ids) {
-			Pentagram::md5_file(ids, info->md5, 0);
 			info->language = GameInfo::GAMELANG_GERMAN;
 			delete ids; ids = 0;
 		}

@@ -3,6 +3,8 @@
 	* games/Game{Info,Detector}.*: compute md5 when detecting a game.
 	* games/GameInfo.*: cleanup
 	* kernel/GUIApp.cpp: store GameInfo in savegame and check when loading
+	* games/gamemd5.h: list of MD5 hashes of usecode files
+	* games/GameDetector.cpp: use MD5 to identify game
 
 2005-07-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/World.cpp, world/actors/Actor.*: added extra fields from

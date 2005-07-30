@@ -64,10 +64,20 @@ GameInfo::GameInfo()
 
 char GameInfo::getLanguageFileLetter() const
 {
-	unsigned int l = static_cast<unsigned int>(language);
-	assert(l < (sizeof(gamelangs)/sizeof(gamelangs[0]))-1);
+	switch (type) {
+	case GAME_U8:
+	{
+		unsigned int l = static_cast<unsigned int>(language);
+		assert(l < (sizeof(gamelangs)/sizeof(gamelangs[0]))-1);
 
-	return gamelangs[l].letter;
+		return gamelangs[l].letter;
+	}
+	case GAME_REMORSE:
+	case GAME_REGRET:
+		return 'e';
+	default:
+		return 0;
+	}
 }
 
 std::string GameInfo::getLanguage() const
