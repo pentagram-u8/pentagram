@@ -1865,6 +1865,12 @@ bool GUIApp::loadGame(std::string filename)
 	GameInfo saveinfo;
 	ds = sg->getDataSource("GAME");
 	bool ok = saveinfo.load(ds, version);
+
+	if (!ok) {
+		perr << "Invalid or corrupt savegame: missing GameInfo" << std::endl;
+		return false;
+	}
+
 	if (!gameinfo->match(saveinfo)) {
 		perr << "Game mismatch:" << std::endl;
 		perr << "Running game: " << gameinfo->getPrintDetails() << std::endl;

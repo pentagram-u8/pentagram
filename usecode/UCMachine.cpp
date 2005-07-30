@@ -2270,7 +2270,7 @@ bool UCMachine::loadGlobals(IDataSource* ids, uint32 version)
 
 bool UCMachine::loadStrings(IDataSource* ids, uint32 version)
 {
-	stringIDs->load(ids, version);
+	if (!stringIDs->load(ids, version)) return false;
 
 	uint32 stringcount = ids->read4();
 	for (unsigned int i = 0; i < stringcount; ++i)
@@ -2293,7 +2293,7 @@ bool UCMachine::loadStrings(IDataSource* ids, uint32 version)
 
 bool UCMachine::loadLists(IDataSource* ids, uint32 version)
 {
-	listIDs->load(ids, version);
+	if (!listIDs->load(ids, version)) return false;
 
 	uint32 listcount = ids->read4();
 	for (unsigned int i = 0; i < listcount; ++i)
