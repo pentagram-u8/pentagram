@@ -222,7 +222,6 @@ FrameID GameData::translate(FrameID f)
 	return t;
 }
 
-
 void GameData::loadU8Data()
 {
 	FileSystem* filesystem = FileSystem::get_instance();

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "FileSystem.h"
 #include "GameInfo.h"
 #include "RawArchive.h"
+#include "md5.h"
 
 bool GameDetector::detect(std::string path, GameInfo *info)
 {
@@ -74,6 +75,8 @@ bool GameDetector::detect(std::string path, GameInfo *info)
 	if (info->language == GameInfo::GAMELANG_UNKNOWN) {
 		ids = fs->ReadFile("@detect/usecode/eusecode.flx");
 		if (ids) {
+			Pentagram::md5_file(ids, info->md5, 0);
+
 			if (info->type == GameInfo::GAME_U8) {
 				// distinguish between english and spanish
 				RawArchive* f = new RawArchive(ids);
@@ -104,6 +107,7 @@ bool GameDetector::detect(std::string path, GameInfo *info)
 	if (info->language == GameInfo::GAMELANG_UNKNOWN) {
 		ids = fs->ReadFile("@detect/usecode/fusecode.flx");
 		if (ids) {
+			Pentagram::md5_file(ids, info->md5, 0);
 			info->language = GameInfo::GAMELANG_FRENCH;
 			delete ids; ids = 0;
 		}
@@ -111,6 +115,7 @@ bool GameDetector::detect(std::string path, GameInfo *info)
 	if (info->language == GameInfo::GAMELANG_UNKNOWN) {
 		ids = fs->ReadFile("@detect/usecode/gusecode.flx");
 		if (ids) {
+			Pentagram::md5_file(ids, info->md5, 0);
 			info->language = GameInfo::GAMELANG_GERMAN;
 			delete ids; ids = 0;
 		}

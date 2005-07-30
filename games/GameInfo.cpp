@@ -20,6 +20,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "GameInfo.h"
 
+GameInfo::GameInfo()
+	: type(GAME_UNKNOWN), version(0), language(GAMELANG_UNKNOWN)
+{
+	for (int i = 0; i < 16; ++i)
+		md5[i] = 0;
+}
+
 char GameInfo::getLanguageFileLetter() const
 {
 	switch (language) {
@@ -94,6 +101,21 @@ std::string GameInfo::getPrintDetails() const
 		ret += "Unknown";
 		break;
 	}
+
+	return ret;
+}
+
+
+std::string GameInfo::getPrintableMD5() const
+{
+	std::string ret;
+
+	char buf[33];
+	for (int i = 0; i < 16; ++i) {
+		sprintf(buf+2*i, "%02x", md5[i]);
+	}
+
+	ret = buf;
 
 	return ret;
 }

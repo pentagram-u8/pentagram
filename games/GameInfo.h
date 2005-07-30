@@ -21,6 +21,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 //! GameInfo contains detailed information about the game
 struct GameInfo {
+	GameInfo();
+
 	enum GameType {
 		GAME_UNKNOWN = 0,
 		GAME_U8,
@@ -42,12 +44,14 @@ struct GameInfo {
 		GAMELANG_SPANISH
 	} language;
 
+	uint8 md5[16];
+
 	char getLanguageFileLetter() const;
 	std::string getGameTitle() const;
 
 	std::string getPrintDetails() const;
 
-	GameInfo() : type(GAME_UNKNOWN), version(0), language(GAMELANG_UNKNOWN) { }
+	std::string getPrintableMD5() const;
 };
 
 #endif

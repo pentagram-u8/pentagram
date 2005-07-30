@@ -123,6 +123,7 @@ MISC = \
 	misc/istring.o \
 	misc/Console.o \
 	misc/idMan.o \
+	misc/md5.o \
 	misc/pent_include.o \
 	misc/util.o
 
