@@ -206,7 +206,6 @@ bool CoreApp::getDefaultGame()
 		} else {
 			con.Print(MM_INFO, "(unknown)");
 		}
-		con.Printf(MM_INFO, ", md5: %s", info.getPrintableMD5().c_str());
 		con.Print(MM_INFO, "\n");
 	}
 

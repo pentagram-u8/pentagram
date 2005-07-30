@@ -40,7 +40,8 @@ VERSION: (unversioned)
 uint32 version		global savegame version
 
 GAME: (v1)
-[...]
+a single human-readable string:
+"%s,%s,%d,%s\n", type.shortname, language.name, version, md5
 
 INFO: (v1)
 uint16 year

@@ -19,6 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef GAMEINFO_H
 #define GAMEINFO_H
 
+class IDataSource;
+class ODataSource;
+
 //! GameInfo contains detailed information about the game
 struct GameInfo {
 	GameInfo();
@@ -47,11 +50,16 @@ struct GameInfo {
 	uint8 md5[16];
 
 	char getLanguageFileLetter() const;
+	std::string getLanguage() const;
 	std::string getGameTitle() const;
 
 	std::string getPrintDetails() const;
-
 	std::string getPrintableMD5() const;
+
+	bool match(GameInfo& other, bool ignoreMD5=false) const;
+
+	void save(ODataSource* ods);
+	bool load(IDataSource* ids, uint32 version);
 };
 
 #endif

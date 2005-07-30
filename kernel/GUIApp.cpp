@@ -1664,6 +1664,10 @@ bool GUIApp::saveGame(std::string filename, std::string desc,
 	// We'll make it 2KB initially
 	OAutoBufferDataSource buf(2048);
 
+	gameinfo->save(&buf);
+	sgw->writeFile("GAME", &buf);
+	buf.clear();
+
 	writeSaveInfo(&buf);
 	sgw->writeFile("INFO", &buf);
 	buf.clear();
@@ -1857,15 +1861,23 @@ bool GUIApp::loadGame(std::string filename)
 			 << std::endl;
 		return false;
 	}
+	IDataSource* ds;
+	GameInfo saveinfo;
+	ds = sg->getDataSource("GAME");
+	bool ok = saveinfo.load(ds, version);
+	if (!gameinfo->match(saveinfo)) {
+		perr << "Game mismatch:" << std::endl;
+		perr << "Running game: " << gameinfo->getPrintDetails() << std::endl;
+		perr << "Savegame    : " << saveinfo.getPrintDetails() << std::endl;
+		return false;
+	}
 
 	resetEngine();
 
 	setupCoreGumps();
 
-	bool ok, totalok = true;
-
  	// and load everything back (order matters)
-	IDataSource* ds;
+	bool totalok = true;
 
 
 	// UCSTRINGS, UCGLOBALS, UCLISTS don't depend on anything else,
