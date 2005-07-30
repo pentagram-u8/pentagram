@@ -362,7 +362,7 @@ void ActorAnimProcess::doSpecial()
 			unsigned int skullcount = a->countNearby(0x19d, 6*256);
 			if (skullcount > 5) return;
 
-			Actor* skull = Actor::createActor(0x19d);
+			Actor* skull = Actor::createActor(0x19d, 0);
 			if (!skull) return;
 			skull->setFlag(Item::FLG_FAST_ONLY);
 			sint32 x,y,z;
@@ -380,7 +380,7 @@ void ActorAnimProcess::doSpecial()
 			x += (std::rand() % (6*256)) - 3*256;
 			y += (std::rand() % (6*256)) - 3*256;
 
-			Actor* ghoul = Actor::createActor(0x8e);
+			Actor* ghoul = Actor::createActor(0x8e, 0);
 			if (!ghoul) return;
 			ghoul->setFlag(Item::FLG_FAST_ONLY);
 			if (!ghoul->canExistAt(x,y,z,true)) {
