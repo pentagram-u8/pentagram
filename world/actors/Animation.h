@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -35,8 +35,6 @@ namespace Animation
 		runningJump = 10,
 		shakeHead = 11,
 		step = 12,
-		//stepBackReachingWeapon = 13,
-		// I'm fairly sure this is the animation when avatar is hit.
 		stumbleBackwards = 13,
 		die = 14,
 		combat_stand = 15,
@@ -99,8 +97,7 @@ namespace Animation
 	};
 
 	bool isCombatAnim(const Sequence anim);
-	Sequence checkWeapon(const Sequence nextanim,
-		const Sequence lastanim);
+	Sequence checkWeapon(const Sequence nextanim, const Sequence lastanim);
 };
 
 #endif
