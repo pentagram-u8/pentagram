@@ -18,9 +18,9 @@ Savegame files:
 
 global version 1-in-progress:
 
+savegame description stored in zip global comment field
 VERSION: Savegame version
 GAME: GameInfo
-DESCRIPTION: Savegame description
 INFO: savegame/avatar info (shouldn't contain anything that is actually used)
 SCREEN: screenshot
 KERNEL: Processes
