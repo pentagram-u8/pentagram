@@ -24,6 +24,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "GameInfo.h"
 
+namespace Pentagram {
+
 struct GameMD5Entry {
 	GameInfo::GameType type;
 	GameInfo::GameLanguage language;
@@ -89,3 +91,5 @@ static GameMD5Entry md5table[] = {
 
 	{ GameInfo::GAME_UNKNOWN, GameInfo::GAMELANG_UNKNOWN, 0, 0 }
 };
+
+}
