@@ -491,6 +491,8 @@ void MainActor::getWeaponOverlay(const WeaponOverlayFrame*& frame,
 	shape = 0;
 	frame = 0;
 
+	if (!isInCombat() && lastanim != Animation::unreadyWeapon) return;
+
 	ObjId weaponid = getEquip(ShapeInfo::SE_WEAPON);
 	Item* weapon = getItem(weaponid);
 	if (!weapon) return;

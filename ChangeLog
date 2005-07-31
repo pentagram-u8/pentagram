@@ -1,6 +1,7 @@
 2005-07-31  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* games/GameDetector.cpp: set version to 999 if custom usecode found
 	* games/gamemd5.h: move table to Pentagram namespace
+	* world/actors/MainActor.cpp: only show weapon if in combat
 
 2005-07-31  Ryan Nunn <colourles@users.sourceforge.net>
 	* games/GameInfo.cpp : Fixing problem with save game version being 0 
