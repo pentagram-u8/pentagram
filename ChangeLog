@@ -1,3 +1,8 @@
+2005-07-31  Ryan Nunn <colourles@users.sourceforge.net>
+	* games/GameInfo.cpp : Fixing problem with save game version being 0 
+	  when loaded. Problem was the version argument for the load function 
+	  was being used instead of the GameInfo::version member variable
+
 2005-07-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AvatarMoverProcess.cpp: don't let left-clicks for
 	  a running jump be ignored when busy waiting for animation to finish

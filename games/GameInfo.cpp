@@ -195,7 +195,7 @@ bool GameInfo::load(IDataSource* ids, uint32 version)
 	}
 	if (!gamelangs[i].name) return false;
 
-	version = std::strtol(parts[2].c_str(), 0, 0);
+	this->version = std::strtol(parts[2].c_str(), 0, 0);
 
 	for (int i = 0; i < 16; ++i) {
 		char buf[3];
