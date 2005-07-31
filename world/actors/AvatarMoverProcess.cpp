@@ -571,19 +571,27 @@ void AvatarMoverProcess::jump(Animation::Sequence action, int direction)
 	gameMap->ScreenSpaceToGump(mx,my);
 	ObjId targetId = gameMap->TraceCoordinates(mx,my,coords);
 	Item * target = getItem(targetId);
+
+	sint32 ax,ay,az;
+	avatar->getCentre(ax,ay,az);
+
+	sint32 xrange = ax-coords[0];
+	if (xrange < 0) xrange = -xrange;
+	sint32 yrange = ay-coords[1];
+	if (yrange < 0) yrange = -yrange;
+	int maxrange = avatar->getStr() * 32;
 	
-	if (target && target->getShapeInfo()->is_land())
+	if (target && target->getShapeInfo()->is_land() &&
+		xrange < maxrange && yrange < maxrange)
 	{	// Original also only lets you jump at the Z_FACE
 		Process *p = new TargetedAnimProcess(avatar, Animation::jumpUp,
 											 direction, coords);
 		waitFor(Kernel::get_instance()->addProcess(p));
 		return;
 	}
-	else
-	{
-		waitFor(avatar->doAnim(Animation::shakeHead, direction));
-		return;
-	}
+
+	// invalid target or out of range
+	waitFor(avatar->doAnim(Animation::shakeHead, direction));
 }
 
 void AvatarMoverProcess::turnToDirection(int direction)
