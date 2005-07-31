@@ -46,6 +46,10 @@ AvatarMoverProcess::AvatarMoverProcess() : Process()
 	lastHeadShakeAnim = Animation::lookLeft;
 	mouseButton[0].state = MBS_HANDLED | MBS_RELHANDLED;
 	mouseButton[1].state = MBS_HANDLED | MBS_RELHANDLED;
+	mouseButton[0].curDown = 0;
+	mouseButton[1].curDown = 0;
+	mouseButton[0].lastDown = 0;
+	mouseButton[1].lastDown = 0;
 	combatRun = false;
 	type = 1; // CONSTANT! (type 1 = persistent)
 }
