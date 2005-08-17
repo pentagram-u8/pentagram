@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 FontManager* FontManager::fontmanager = 0;
 
-FontManager::FontManager()
+FontManager::FontManager(bool ttf_antialiasing_) : ttf_antialiasing(ttf_antialiasing_)
 {
 	con.Print(MM_INFO, "Creating Font Manager...\n");
 
@@ -139,7 +139,7 @@ bool FontManager::addTTFOverride(unsigned int fontnum, std::string filename,
 	if (!f)
 		return false;
 
-	TTFont* font = new TTFont(f, rgb, bordersize);
+	TTFont* font = new TTFont(f, rgb, bordersize, ttf_antialiasing);
 
 	if (fontnum >= overrides.size())
 		overrides.resize(fontnum+1);
@@ -164,7 +164,7 @@ bool FontManager::loadTTFont(unsigned int fontnum, std::string filename,
 	if (!f)
 		return false;
 
-	TTFont* font = new TTFont(f, rgb, bordersize);
+	TTFont* font = new TTFont(f, rgb, bordersize, ttf_antialiasing);
 
 	if (fontnum >= ttfonts.size())
 		ttfonts.resize(fontnum+1);

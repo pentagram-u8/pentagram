@@ -34,17 +34,30 @@
 
 extern const uint8 U8XFormPal[1024];
 
-inline uint32 P_FASTCALL BlendPreModulated(uint32 xform, uint32 dst)
+inline uint32 P_FASTCALL BlendPreModulated(uint32 src, uint32 dst)
 {
 	uint32 r, g, b;
 	UNPACK_RGB8(dst,r,g,b);
-	r*=256-TEX32_A(xform);
-	g*=256-TEX32_A(xform);
-	b*=256-TEX32_A(xform);
-	r+=256*TEX32_R(xform);
-	g+=256*TEX32_G(xform);
-	b+=256*TEX32_B(xform);
+	r*=256-TEX32_A(src);
+	g*=256-TEX32_A(src);
+	b*=256-TEX32_A(src);
+	r+=256*TEX32_R(src);
+	g+=256*TEX32_G(src);
+	b+=256*TEX32_B(src);
 	return PACK_RGB16(r>65535?65535:r, g>65535?65535:g, b>65535?65535:b);
+}
+
+inline uint32 P_FASTCALL BlendPreModFast(uint32 src, uint32 dst)
+{
+	uint32 r, g, b;
+	UNPACK_RGB8(dst,r,g,b);
+	r*=256-TEX32_A(src);
+	g*=256-TEX32_A(src);
+	b*=256-TEX32_A(src);
+	r+=256*TEX32_R(src);
+	g+=256*TEX32_G(src);
+	b+=256*TEX32_B(src);
+	return PACK_RGB16(r, g, b);
 }
 
 // This does the red highlight blending. 

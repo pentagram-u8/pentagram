@@ -42,13 +42,13 @@ TTFRenderedText::~TTFRenderedText()
 
 void TTFRenderedText::draw(RenderSurface* surface, int x, int y)
 {
-	surface->Blit(texture, 0, 0, width, height, x, y-font->getBaseline());
+	surface->Blit(texture, 0, 0, width, height, x, y-font->getBaseline(), font->isAntaliased());
 }
 
 void TTFRenderedText::drawBlended(RenderSurface* surface, int x, int y,
 								  uint32 col)
 {
 	surface->FadedBlit(texture, 0, 0, width, height,
-					   x, y-font->getBaseline(), col);
+					   x, y-font->getBaseline(), col, font->isAntaliased());
 }
 

@@ -36,7 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 DEFINE_RUNTIME_CLASSTYPE_CODE(TTFont,Pentagram::Font);
 
 
-TTFont::TTFont(TTF_Font* font, uint32 rgb_, int bordersize_)
+TTFont::TTFont(TTF_Font* font, uint32 rgb_, int bordersize_, bool antiAliased_) : antiAliased(antiAliased_)
 {
 	ttf_font = font;
 
@@ -111,8 +111,6 @@ RenderedText* TTFont::renderText(const std::string& text,
 												  resultwidth, resultheight,
 												  cursor);
 
-	SDL_Color white = { 0xFF , 0xFF , 0xFF, 0 };
-
 	// create 32bit RGBA texture buffer
 	uint32* buf = new uint32[resultwidth*resultheight];
 	memset(buf, 0, 4*resultwidth*resultheight);
@@ -142,10 +140,21 @@ RenderedText* TTFont::renderText(const std::string& text,
 		unicodetext[strlen(t)] = 0;
 
 		// let SDL_ttf render the text
-		SDL_Surface* textsurf = TTF_RenderUNICODE_Solid(ttf_font,
-														unicodetext,
-														white);
-		if (textsurf) {
+		SDL_Surface* textsurf;
+
+		if (!antiAliased)
+		{
+			SDL_Color white = { 0xFF , 0xFF , 0xFF, 0 };
+			textsurf = TTF_RenderUNICODE_Solid(ttf_font, unicodetext, white);
+		}
+		else 
+		{
+			SDL_Color colour = { TEX32_R(rgb) , TEX32_G(rgb), TEX32_B(rgb), 0 };
+			SDL_Color black = { 0x00 , 0x00 , 0x00, 0 };
+			textsurf = TTF_RenderUNICODE_Shaded(ttf_font, unicodetext, colour, black);
+		}
+
+		if (textsurf) { 
 			SDL_LockSurface(textsurf);
 
 #if 0
@@ -153,6 +162,7 @@ RenderedText* TTFont::renderText(const std::string& text,
 				 << textsurf->w << "," << textsurf->h << ": " << iter->text
 				 << std::endl;
 #endif
+			SDL_Palette *pal = textsurf->format->palette;
 
 			// render the text surface into our texture buffer
 			for (int y = 0; y < textsurf->h; y++) {
@@ -160,8 +170,9 @@ RenderedText* TTFont::renderText(const std::string& text,
 				// CHECKME: bordersize!
 				uint32* bufrow = buf + (iter->dims.y+y+bordersize)*resultwidth;
 				for (int x = 0; x < textsurf->w; x++) {
-					if (surfrow[x] == 1) {
-//					bufrow[iter->dims.x+x+1] = 0xFFFFFFFF;
+
+					if (!antiAliased && surfrow[x] == 1) {
+
 						bufrow[iter->dims.x+x+bordersize] = rgb | 0xFF000000;
 						if (bordersize <= 0) continue;
 						if (bordersize == 1) {
@@ -188,6 +199,50 @@ RenderedText* TTFont::renderText(const std::string& text,
 								{
 									if (buf[(y+iter->dims.y+dy+bordersize)*resultwidth + x+bordersize+iter->dims.x+dx] == 0) {
 										buf[(y+iter->dims.y+dy+bordersize)*resultwidth + x+bordersize+iter->dims.x+dx] = 0xFF000000;
+									}
+								}
+							}
+						}
+					}
+					else if (antiAliased)
+					{
+						uint32 idx = surfrow[x];
+
+						if (idx == 0) continue;
+						SDL_Color pe = pal->colors[idx];
+
+						if (bordersize <= 0) {
+							bufrow[iter->dims.x+x+bordersize] = TEX32_PACK_RGBA(pe.r, pe.g, pe.b, idx);
+						}
+						else {
+							bufrow[iter->dims.x+x+bordersize] = TEX32_PACK_RGBA(pe.r, pe.g, pe.b, 0xFF);
+							
+							// optimize common case
+							if (bordersize == 1) for (int dx = -1; dx <= 1; dx++) {
+								for (int dy = -1; dy <= 1; dy++) {
+									if (x + 1 + iter->dims.x + dx >= 0 &&
+										x + 1 + iter->dims.x + dx < resultwidth &&
+										y + 1 + dy >= 0 && y + 1 + dy < resultheight)
+									{
+										uint32 alpha = TEX32_A(buf[(y+iter->dims.y+dy+1)*resultwidth + x+1+iter->dims.x+dx]);
+										if (alpha != 0xFF) {
+											alpha = 255-(((255-alpha) * (255-idx))>>8);
+											buf[(y+iter->dims.y+dy+1)*resultwidth + x+1+iter->dims.x+dx] = alpha<<TEX32_A_SHIFT;
+										}
+									}
+								}
+							}
+							else for (int dx = -bordersize; dx <= bordersize; dx++) {
+								for (int dy = -bordersize; dy <= bordersize; dy++) {
+									if (x + bordersize + iter->dims.x + dx >= 0 &&
+										x + bordersize + iter->dims.x + dx < resultwidth &&
+										y + bordersize + dy >= 0 && y + bordersize + dy < resultheight)
+									{
+										uint32 alpha = TEX32_A(buf[(y+iter->dims.y+dy+bordersize)*resultwidth + x+bordersize+iter->dims.x+dx]);
+										if (alpha != 0xFF) {
+											alpha = 255-(((255-alpha) * (255-idx))>>8);
+											buf[(y+iter->dims.y+dy+bordersize)*resultwidth + x+bordersize+iter->dims.x+dx] = alpha<<TEX32_A_SHIFT;
+										}
 									}
 								}
 							}

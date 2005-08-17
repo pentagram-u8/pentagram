@@ -1104,7 +1104,11 @@ void GUIApp::GraphicSysInit()
 
 	screen = new_screen;
 
-	fontmanager = new FontManager();
+	bool ttf_antialiasing = true;
+	settingman->setDefault("ttf_antialiasing", true);
+	settingman->get("ttf_antialiasing", ttf_antialiasing);
+
+	fontmanager = new FontManager(ttf_antialiasing);
 	palettemanager = new PaletteManager(new_screen);
 
 	paint();

@@ -31,7 +31,7 @@ typedef struct _TTF_Font TTF_Font;
 class FontManager
 {
 public:
-	FontManager();
+	FontManager(bool ttf_antialiasing);
 	~FontManager();
 
 	static FontManager* get_instance() { return fontmanager; }
@@ -70,6 +70,7 @@ private:
 		}
 	};
 	std::map<TTFId, TTF_Font*> ttf_fonts;
+	bool ttf_antialiasing;
 
 	//! Get a (possibly cached) TTF_Font structure for filename/pointsize,
 	//! loading it if necessary.

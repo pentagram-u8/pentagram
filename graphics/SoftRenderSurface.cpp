@@ -185,11 +185,11 @@ template<> void SoftRenderSurface<uint32>::Fill32(uint32 rgb, sint32 sx, sint32 
 
 
 //
-// SoftRenderSurface::Blit(Texture *, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy)
+// SoftRenderSurface::Blit(Texture *, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy, bool alpha_blend)
 //
 // Desc: Blit a region from a Texture (Alpha == 0 -> skipped)
 //
-template<class uintX> void SoftRenderSurface<uintX>::Blit(Texture *tex, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy)
+template<class uintX> void SoftRenderSurface<uintX>::Blit(Texture *tex, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy, bool alpha_blend)
 {
 	// Clamp or wrap or return?
 	if (sx+w > static_cast<sint32>(tex->width)) 
@@ -223,11 +223,25 @@ template<class uintX> void SoftRenderSurface<uintX>::Blit(Texture *tex, sint32 s
 
 		while (pixel != end)
 		{
-			while (pixel != line_end)
+			if (!alpha_blend) while (pixel != line_end)
 			{
 				if (*texel & TEX32_A_MASK)
 				{
 					*(reinterpret_cast<uintX*>(pixel)) = static_cast<uintX>(PACK_RGB8( TEX32_R(*texel), TEX32_G(*texel), TEX32_B(*texel) ));
+				}
+				pixel+=sizeof(uintX);
+				texel++;
+			}
+			else while (pixel != line_end)
+			{
+				uint32 alpha = *texel & TEX32_A_MASK;
+				if (alpha == 0xFF)
+				{
+					*(reinterpret_cast<uintX*>(pixel)) = static_cast<uintX>(PACK_RGB8( TEX32_R(*texel), TEX32_G(*texel), TEX32_B(*texel) ));
+				}
+				else if (alpha) {
+					uintX* dest = reinterpret_cast<uintX*>(pixel);
+					*dest = static_cast<uintX>(BlendPreModFast(*texel,*dest));
 				}
 				pixel+=sizeof(uintX);
 				texel++;
@@ -340,7 +354,7 @@ template<class uintX> void SoftRenderSurface<uintX>::Blit(Texture *tex, sint32 s
 //
 // Desc: Blit a region from a Texture (Alpha == 0 -> skipped)
 //
-template<class uintX> void SoftRenderSurface<uintX>::FadedBlit(Texture *tex, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy, uint32 col32)
+template<class uintX> void SoftRenderSurface<uintX>::FadedBlit(Texture *tex, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy, uint32 col32, bool alpha_blend)
 {
 	// Clamp or wrap or return?
 	if (w > static_cast<sint32>(tex->width)) 
@@ -377,7 +391,7 @@ template<class uintX> void SoftRenderSurface<uintX>::FadedBlit(Texture *tex, sin
 
 		while (pixel != end)
 		{
-			while (pixel != line_end)
+			if (!alpha_blend) while (pixel != line_end)
 			{
 				if (*texel & TEX32_A_MASK)
 				{
@@ -388,6 +402,38 @@ template<class uintX> void SoftRenderSurface<uintX>::FadedBlit(Texture *tex, sin
 							(TEX32_B(*texel)*ia+b)>>8 
 							)
 						);
+				}
+				pixel+=sizeof(uintX);
+				texel++;
+			}
+			else while (pixel != line_end)
+			{
+				uint32 alpha = *texel & TEX32_A_MASK;
+				if (alpha == 0xFF)
+				{
+					*(reinterpret_cast<uintX*>(pixel)) = static_cast<uintX>(
+						PACK_RGB8( 
+							(TEX32_R(*texel)*ia+r)>>8, 
+							(TEX32_G(*texel)*ia+g)>>8, 
+							(TEX32_B(*texel)*ia+b)>>8 
+							)
+						);
+				}
+				else if (alpha) {
+					uintX* dest = reinterpret_cast<uintX*>(pixel);
+
+					uint32 src= *texel;
+					uint32 dr, dg, db;
+					UNPACK_RGB8(*dest,dr,dg,db);
+
+					dr*=256-TEX32_A(src);
+					dg*=256-TEX32_A(src);
+					db*=256-TEX32_A(src);
+					dr+=TEX32_R(src)*ia+((r*TEX32_A(src))>>8);
+					dg+=TEX32_G(src)*ia+((g*TEX32_A(src))>>8);
+					db+=TEX32_B(src)*ia+((b*TEX32_A(src))>>8);
+
+					*dest = PACK_RGB16(dr, dg, db);
 				}
 				pixel+=sizeof(uintX);
 				texel++;
