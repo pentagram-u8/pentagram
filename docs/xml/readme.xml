@@ -165,7 +165,7 @@
 							<comment># You may need to set alsa_port if you choose midi_driver=alsa.</comment>
 						</configtag>
 						<configtag name="unixseqdevice">
-							dev/sequencer
+							/dev/sequencer
 							<comment># You may need to set unixseqdevice if you choose midi_driver=unixseq.</comment>
 						</configtag>
 					</configsec>
