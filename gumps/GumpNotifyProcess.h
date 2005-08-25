@@ -43,6 +43,8 @@ public:
 
 	virtual bool run(const uint32 framenum);
 
+	virtual void dumpInfo();
+
 	bool loadData(IDataSource* ids, uint32 version);
 protected:
 	virtual void saveData(ODataSource* ods);

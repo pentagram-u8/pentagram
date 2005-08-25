@@ -71,6 +71,12 @@ bool GumpNotifyProcess::run(const uint32)
 	return false;
 }
 
+void GumpNotifyProcess::dumpInfo()
+{
+	Process::dumpInfo();
+	pout << " gump: " << gump << std::endl;
+}
+
 void GumpNotifyProcess::saveData(ODataSource* ods)
 {
 	Process::saveData(ods);
