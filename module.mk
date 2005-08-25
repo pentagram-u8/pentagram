@@ -6,8 +6,6 @@ LSRC := $(wildcard $(srcdir)/$(LPATH)/*.cpp)
 LGUIPRODUCTS := pentagram
 #LCONPRODUCTS := llc
 
-include $(srcdir)/objects.mk
-
 pentagram_OBJ = \
 	$(KERNEL) \
 	$(USECODE) \

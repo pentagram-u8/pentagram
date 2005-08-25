@@ -121,6 +121,8 @@ LSRC :=
 LGUIPRODUCTS :=
 LCONPRODUCTS :=
 
+# Include list of objects
+include $(top_srcdir)/objects.mk
 # Include additional rules for each module
 include $(patsubst %,$(top_srcdir)/%/module.mk,$(MODULES))
 
