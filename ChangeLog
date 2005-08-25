@@ -1,3 +1,7 @@
+2005-08-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/widgets/SlidingWidget.cpp: don't give SlidingWidget a
+	  GumpNotifyProcess
+
 2005-08-17  Ryan Nunn <colourles@users.sourceforge.net>
 	* gumps/Gump.cpp: Removed Virtual Function call from Gump destructor.
 	* graphics/RenderSurface.h, graphics/SoftRenderSurface.*, 
