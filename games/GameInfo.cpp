@@ -107,16 +107,20 @@ std::string GameInfo::getPrintDetails() const
 
 	std::string lang = getLanguage();
 	if (lang == "") lang = "Unknown";
-
 	ret += lang;
-	ret += ", version ";
 
-	char buf[16];
-	sprintf(buf, "%d", version);
-	ret += buf;
+	if (type != GAME_PENTAGRAM_MENU) {
+		// version, md5 don't make sense for the pentagram menu
 
-	ret += ", md5 ";
-	ret += getPrintableMD5();
+		ret += ", version ";
+
+		char buf[16];
+		sprintf(buf, "%d", version);
+		ret += buf;
+
+		ret += ", md5 ";
+		ret += getPrintableMD5();
+	}
 
 	return ret;
 }
