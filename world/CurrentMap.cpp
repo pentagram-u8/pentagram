@@ -390,7 +390,7 @@ void CurrentMap::updateFastArea(sint32 from_x, sint32 from_y, sint32 from_z, sin
 
 	// Work out Fine (screenspace) Limits of chunks with half chunk border
 	Pentagram::Rect dims;
-	GUIApp::get_instance()->getGameMapMapGump()->GetDims(dims);
+	GUIApp::get_instance()->getGameMapGump()->GetDims(dims);
 
 	sint32 sleft  = ((x_min - y_min)/4)         - (dims.w/2 + MAP_CHUNK_SIZE/4);
 	sint32 stop   = ((x_min + y_min)/8 - z_max) - (dims.h/2 + MAP_CHUNK_SIZE/8);
