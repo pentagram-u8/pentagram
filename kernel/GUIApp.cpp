@@ -1594,6 +1594,8 @@ void GUIApp::stopDragging(int mx, int my)
 		}
 		
 		if (dragging == DRAG_OK) {
+			item->movedByPlayer();
+
 			gump = desktopGump->FindGump(mx, my);
 			int gx = mx, gy = my;
 			gump->ScreenSpaceToGump(gx, gy);

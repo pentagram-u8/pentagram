@@ -157,9 +157,9 @@ bool Container::moveItemToEnd(Item* item)
 		}
 	}
 
-	// not found; try to add normally
+	// not found
 
-	return addItem(item);
+	return false;
 }
 
 void Container::removeContents()

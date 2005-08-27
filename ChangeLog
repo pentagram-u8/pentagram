@@ -1,4 +1,11 @@
 2005-08-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Container.*: don't let moveItemToEnd add item
+	* kernel/GUIApp.cpp, world/Item.*: stealing checks
+	* world/Item.cpp: AvatarStoleSomething is event 0x13, not 0x14
+	* world/Item.cpp: set OWNED flag if adding to avatar
+	* world/Item.h: clarify meaning of OWNED flag
+
+2005-08-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GUIApp.h: s/getGameMapMapGump/getGameMapGump/
 	* various: minor cleanup
 

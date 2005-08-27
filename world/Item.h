@@ -69,6 +69,9 @@ public:
 	//! Move an item out of the Ethereal Void to where it originally was
 	void returnFromEtherealVoid();
 
+	//! Check if moving this item is stealing; call AvatarStoleSomething if so
+	void movedByPlayer();
+
 	//! Get the location of the top-most container this Item is in, or
 	//! this Item's location if not in a container.
 	void getLocationAbsolute(sint32& x, sint32& y, sint32& z) const;
@@ -500,14 +503,14 @@ private:
 public:
 	enum statusflags {
 		FLG_DISPOSABLE	 = 0x0002,	//!< Item is discarded on map change
-		FLG_OWNED		 = 0x0004,	//!< Item is owned by someone (can't be stolen)
+		FLG_OWNED		 = 0x0004,	//!< Item is owned by avatar
 		FLG_CONTAINED	 = 0x0008,	//!< Item is in a container
 		FLG_INVISIBLE	 = 0x0010,	//!< Item is invisible
 		FLG_FLIPPED		 = 0x0020,	//!< Item is flipped horizontally
 		FLG_IN_NPC_LIST	 = 0x0040,	//!< Item is a NPC
 		FLG_FAST_ONLY	 = 0x0080,	//!< Item is discarded when leaving fast area
 		FLG_GUMP_OPEN	 = 0x0100,	//!< Item has a gump open
-		FLG_EQUIPPED	 = 0x0200,	//!< Item is equiped
+		FLG_EQUIPPED	 = 0x0200,	//!< Item is equipped
 		FLG_BOUNCING	 = 0x0400,	//!< Item has bounced
 		FLG_ETHEREAL	 = 0x0800,	//!< Item is in the ethereal list
 		FLG_HANGING		 = 0x1000,	//!< Item is suspended in the air

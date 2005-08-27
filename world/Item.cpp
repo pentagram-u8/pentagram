@@ -280,6 +280,14 @@ bool Item::moveToContainer(Container *container, bool checkwghtvol)
 
 	// Set us contained
 	flags |= FLG_CONTAINED;
+
+	// If moving to avatar, mark as OWNED
+	Item *p = this;
+	while (p->getParentAsContainer())
+		p = p->getParentAsContainer();
+	// In Avatar's inventory?
+	if (p->getObjId() == 1)
+		flags |= FLG_OWNED;
 	
 	// No lerping when moving to a container
 	extendedflags |= EXT_LERP_NOPREV;
@@ -349,6 +357,28 @@ void Item::returnFromEtherealVoid()
 		move(x,y,z);
 	}
 
+}
+
+void Item::movedByPlayer()
+{
+	// owned-by-avatar items can't be stolen
+	if (flags & FLG_OWNED) return;
+
+	// Otherwise, player is stealing.
+	// See if anybody is around to notice.
+	Item* avatar = getItem(1);
+	UCList itemlist(2);
+	LOOPSCRIPT(script2, LS_TOKEN_TRUE);
+	CurrentMap* currentmap = World::get_instance()->getCurrentMap();
+	currentmap->areaSearch(&itemlist, script2, sizeof(script2),
+						   avatar, 640, false);
+	
+	for (unsigned int i = 0; i < itemlist.getSize(); ++i) {
+		Item *item = getItem(itemlist.getuint16(i));
+		if (p_dynamic_cast<Actor*>(item))
+			pout << "Stealing seen by " << itemlist.getuint16(i) << std::endl;
+		item->callUsecodeEvent_AvatarStoleSomething(getObjId());
+	}
 }
 
 void Item::getLocation(sint32& X, sint32& Y, sint32& Z) const
@@ -1135,11 +1165,11 @@ uint32 Item::callUsecodeEvent_justMoved()						// event 12
 	return callUsecodeEvent(0x12);	// CONSTANT
 }
 
-uint32 Item::callUsecodeEvent_AvatarStoleSomething(uint16 unk)	// event 14
+uint32 Item::callUsecodeEvent_AvatarStoleSomething(uint16 unk)	// event 13
 {
 	DynamicUCStack	arg_stack(2);
 	arg_stack.push2(unk);
-	return callUsecodeEvent(0x14, arg_stack.access(), 2); // CONSTANT 0x14
+	return callUsecodeEvent(0x13, arg_stack.access(), 2); // CONSTANT 0x13
 }
 
 uint32 Item::callUsecodeEvent_guardianBark(sint16 unk)			// event 15
