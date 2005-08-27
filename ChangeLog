@@ -1,3 +1,7 @@
+2005-08-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/GUIApp.h: s/getGameMapMapGump/getGameMapGump/
+	* various: minor cleanup
+
 2005-08-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* games/GameInfo.cpp: don't show version,md5 for 'pentagram menu' game
 

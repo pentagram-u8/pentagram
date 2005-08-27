@@ -108,7 +108,7 @@ public:
 
 	uint32 getGameTimeInSeconds();
 	
-	GameMapGump* getGameMapMapGump() { return gameMapGump; }
+	GameMapGump* getGameMapGump() { return gameMapGump; }
 	ConsoleGump* getConsoleGump() { return consoleGump; }
 	Gump* getDesktopGump() { return desktopGump; }
 	Gump* getGump(uint16 gumpid);

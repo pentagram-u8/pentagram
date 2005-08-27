@@ -379,13 +379,11 @@ bool quickMoveQuarterSpeed(const HID_Event& event)
 	case HID_DOWN:
 	{
 		QuickAvatarMoverProcess::setQuarterSpeed(true);
-		pout << "QuickAvatarMoverProcess::quarter = " << QuickAvatarMoverProcess::isQuarterSpeed() << std::endl;
 		handled = true;
 	} break;
 	case HID_UP:
 	{
 		QuickAvatarMoverProcess::setQuarterSpeed(false);
-		pout << "QuickAvatarMoverProcess::quarter = " << QuickAvatarMoverProcess::isQuarterSpeed() << std::endl;
 		handled = true;
 	}
 	default:

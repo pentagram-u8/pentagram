@@ -1507,7 +1507,7 @@ void GUIApp::startDragging(int startx, int starty)
 	}
 
 	Object* obj = ObjectManager::get_instance()->getObject(dragging_objid);
-	perr << "Dragging object " << dragging_objid << " (class=" << (obj ? obj->GetClassType().class_name : "NULL") << ")" << std::endl;
+//	perr << "Dragging object " << dragging_objid << " (class=" << (obj ? obj->GetClassType().class_name : "NULL") << ")" << std::endl;
 	pushMouseCursor();
 	setMouseCursor(MOUSE_NORMAL);
 	
@@ -1567,7 +1567,7 @@ void GUIApp::moveDragging(int mx, int my)
 
 void GUIApp::stopDragging(int mx, int my)
 {
-	perr << "Dropping object " << dragging_objid << std::endl;
+//	perr << "Dropping object " << dragging_objid << std::endl;
 	
 	Gump *gump = getGump(dragging_objid);
 	Item *item = getItem(dragging_objid);

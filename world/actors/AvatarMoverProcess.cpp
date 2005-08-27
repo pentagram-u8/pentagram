@@ -120,7 +120,7 @@ bool AvatarMoverProcess::handleCombatMode()
 	if (lastanim == Animation::startblock &&
 		!(mouseButton[0].state & MBS_DOWN))
 	{
-		pout << "AvatarMover: combat stop blocking" << std::endl;
+//		pout << "AvatarMover: combat stop blocking" << std::endl;
 		waitFor(avatar->doAnim(Animation::stopblock, direction));
 		return false;
 	}
@@ -155,7 +155,7 @@ bool AvatarMoverProcess::handleCombatMode()
 		if (lastanim == Animation::startblock)
 			return false;
 
-		pout << "AvatarMover: combat block" << std::endl;
+//		pout << "AvatarMover: combat block" << std::endl;
 
 		if (checkTurn(mousedir, false)) return false;
 
@@ -172,7 +172,7 @@ bool AvatarMoverProcess::handleCombatMode()
 
 		if (canAttack()) {
 			// double left click = attack
-			pout << "AvatarMover: combat attack" << std::endl;
+//			pout << "AvatarMover: combat attack" << std::endl;
 
 			if (checkTurn(mousedir, true)) return false;
 
@@ -204,7 +204,7 @@ bool AvatarMoverProcess::handleCombatMode()
 
 		if (canAttack()) {
 			// double right click = kick
-			pout << "AvatarMover: combat kick" << std::endl;
+//			pout << "AvatarMover: combat kick" << std::endl;
 
 			if (checkTurn(mousedir, false)) return false;
 			
@@ -297,14 +297,14 @@ bool AvatarMoverProcess::handleNormalMode()
 
 	// If Avatar has fallen down, stand up.
 	if (lastanim == Animation::die || lastanim == Animation::fallBackwards) {
-		pout << "AvatarMover: standing up" << std::endl;
+//		pout << "AvatarMover: standing up" << std::endl;
 		waitFor(avatar->doAnim(Animation::standUp, direction));
 		return false;
 	}
 
 	// If still in combat stance, sheathe weapon
 	if (Animation::isCombatAnim(lastanim)) {
-		pout << "AvatarMover: sheating weapon" << std::endl;
+//		pout << "AvatarMover: sheathing weapon" << std::endl;
 		waitFor(avatar->doAnim(Animation::unreadyWeapon, direction));
 		return false;
 	}
@@ -434,11 +434,11 @@ bool AvatarMoverProcess::handleNormalMode()
 
 		// check if we need to do a running jump
 		if (lastanim == Animation::run || lastanim == Animation::runningJump) {
-			pout << "AvatarMover: running jump" << std::endl;
+//			pout << "AvatarMover: running jump" << std::endl;
 			jump(Animation::runningJump, direction);
 			return false;
 		} else if (mouselength > 0) {
-			pout << "AvatarMover: jump" << std::endl;
+//			pout << "AvatarMover: jump" << std::endl;
 			jump(Animation::jump, direction);
 			return false;
 		}
@@ -566,7 +566,7 @@ void AvatarMoverProcess::jump(Animation::Sequence action, int direction)
 	//! TODO: add gameplay option: targetedJump or not
 
 	sint32 coords[3];
-	GameMapGump * gameMap = guiapp->getGameMapMapGump();
+	GameMapGump * gameMap = guiapp->getGameMapGump();
 	// We need the Gump's x/y for TraceCoordinates
 	gameMap->ScreenSpaceToGump(mx,my);
 	ObjId targetId = gameMap->TraceCoordinates(mx,my,coords);
