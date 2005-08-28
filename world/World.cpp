@@ -264,7 +264,7 @@ void World::loadItemCachNPCData(IDataSource* itemcach, IDataSource* npcdata)
 		Actor *actor = ItemFactory::createActor(shape,frame,quality,
 												flags|Item::FLG_IN_NPC_LIST,
 												npcnum,mapnum,
-												Item::EXT_PERMANENT_NPC);
+												Item::EXT_PERMANENT_NPC,false);
 		if (!actor) {
 #ifdef DUMP_ITEMS
 			pout << "Couldn't create actor" << std::endl;

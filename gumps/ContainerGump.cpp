@@ -457,14 +457,13 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 			splittarget = ItemFactory::createItem(
 				item->getShape(), item->getFrame(), 0,
 				item->getFlags() & (Item::FLG_DISPOSABLE | Item::FLG_OWNED | Item::FLG_INVISIBLE | Item::FLG_FLIPPED | Item::FLG_FAST_ONLY | Item::FLG_LOW_FRICTION), item->getNpcNum(), item->getMapNum(),
-				item->getExtFlags() & (Item::EXT_SPRITE | Item::EXT_HIGHLIGHT | Item::EXT_TRANSPARENT));
+				item->getExtFlags() & (Item::EXT_SPRITE | Item::EXT_HIGHLIGHT | Item::EXT_TRANSPARENT), true);
 			if (!splittarget) {
 				perr << "ContainerGump failed to create item ("
 					 << item->getShape() << "," << item->getFrame()
 					 << ") while splitting" << std::endl;
 				return;
 			}
-			splittarget->assignObjId();
 
 
 			if (targetcontainer) {

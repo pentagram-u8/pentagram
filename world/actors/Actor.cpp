@@ -183,8 +183,7 @@ bool Actor::giveTreasure()
 												   Item::FLG_DISPOSABLE,//flags
 												   0, // npcnum,
 												   0, // mapnum
-												   0); // ext. flags
-					item->assignObjId();
+												   0, true); // ext.flags,objid
 					item->moveToContainer(this);
 					item->randomGumpLocation();
 					break;
@@ -210,8 +209,7 @@ bool Actor::giveTreasure()
 
 					item = ItemFactory::createItem(shape, frame, quality,
 												   Item::FLG_DISPOSABLE,
-												   0, 0, 0);
-					item->assignObjId();
+												   0, 0, 0, true);
 					item->moveToContainer(this);
 					item->randomGumpLocation();
 				}
@@ -231,8 +229,7 @@ bool Actor::giveTreasure()
 
 					item = ItemFactory::createItem(shape, frame, quality,
 												   Item::FLG_DISPOSABLE,
-												   0, 0, 0);
-					item->assignObjId();
+												   0, 0, 0, true);
 					item->moveToContainer(this);
 					item->randomGumpLocation();
 				}
@@ -259,8 +256,7 @@ bool Actor::giveTreasure()
 
 					item = ItemFactory::createItem(shape, frame, quality,
 												   Item::FLG_DISPOSABLE,
-												   0, 0, 0);
-					item->assignObjId();
+												   0, 0, 0, true);
 					item->moveToContainer(this);
 					item->randomGumpLocation();
 				}
@@ -280,8 +276,7 @@ bool Actor::giveTreasure()
 
 					item = ItemFactory::createItem(shape, frame, quality,
 												   Item::FLG_DISPOSABLE,
-												   0, 0, 0);
-					item->assignObjId();
+												   0, 0, 0, true);
 					item->moveToContainer(this);
 					item->randomGumpLocation();
 				}
@@ -312,8 +307,7 @@ bool Actor::giveTreasure()
 											   Item::FLG_DISPOSABLE, // flags
 											   0, // npcnum,
 											   0, // mapnum
-											   0); // ext. flags
-				item->assignObjId();
+											   0, true); // ext. flags, objid
 				item->moveToContainer(this);
 				item->randomGumpLocation();
 				item->callUsecodeEvent_combine(); // this sets the right frame
@@ -354,8 +348,7 @@ bool Actor::giveTreasure()
 										   Item::FLG_DISPOSABLE, // flags
 										   0, // npcnum,
 										   0, // mapnum
-										   0); // ext. flags
-			item->assignObjId();
+										   0, true); // ext. flags, objid
 			item->moveToContainer(this);
 			item->randomGumpLocation();
 		}
@@ -824,9 +817,8 @@ ProcId Actor::die(uint16 damageType)
 												  Item::FLG_FAST_ONLY, //flags,
 												  0, // npcnum
 												  0, // mapnum
-												  0 // extended. flags
+												  0, true // ext. flags, objid
 				);
-			piece->assignObjId();
 			piece->move(x - 128 + 32*(std::rand()%6),
 						y - 128 + 32*(std::rand()%6),
 						z + std::rand()%8 ); // move to near actor's position
@@ -1101,10 +1093,12 @@ uint16 Actor::schedule(uint32 time)
 //static
 Actor* Actor::createActor(uint32 shape, uint32 frame)
 {
-	Actor* newactor = ItemFactory::createActor(shape, frame, 0, Item::FLG_IN_NPC_LIST, 0, 0, 0);
+	Actor* newactor = ItemFactory::createActor(shape, frame, 0,
+											   Item::FLG_IN_NPC_LIST,
+											   0, 0, 0, true);
 	if (!newactor)
 		return 0;
-	uint16 objID = newactor->assignObjId();
+	uint16 objID = newactor->getObjId();
 
 	// set stats
 	if (!newactor->loadMonsterStats()) {

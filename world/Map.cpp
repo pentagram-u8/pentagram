@@ -123,8 +123,8 @@ void Map::loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds,
 		pout << shape << "," << frame << ":\t(" << x << "," << y << "," << z << "),\t" << std::hex << flags << std::dec << ", " << quality << ", " << npcnum << ", " << mapnum << ", " << next << std::endl;
 #endif
 
-		Item *item = ItemFactory::createItem(shape,frame,quality,flags,
-											 npcnum,mapnum,extendedflags);
+		Item *item = ItemFactory::createItem(shape,frame,quality,flags,npcnum,
+											 mapnum,extendedflags,false);
 		if (!item) {
 			pout << shape << "," << frame << ":\t(" << x << "," << y << "," << z << "),\t" << std::hex << flags << std::dec << ", " << quality << ", " << npcnum << ", " << mapnum << ", " << next;
 

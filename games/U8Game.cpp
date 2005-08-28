@@ -130,10 +130,7 @@ bool U8Game::startGame()
 	av->setName("Avatar"); // default name
 
 	// avatar needs a backpack ... CONSTANTs and all that
-	Container* backpack = p_dynamic_cast<Container*>(
-		ItemFactory::createItem(529, 0, 0, 0, 0, 0, 0));
-
-	backpack->assignObjId();
+	Item* backpack = ItemFactory::createItem(529, 0, 0, 0, 0, 0, 0, true);
 	backpack->moveToContainer(av);
 
 	World::get_instance()->switchMap(av->getMapNum());
@@ -151,140 +148,124 @@ void U8Game::ConCmd_cheatItems(const Console::ArgsType &args, const Console::Arg
 	if (!backpack) return;
 
 	// obsidian
-	Item* money = ItemFactory::createItem(143, 7, 500, 0, 0, 0, 0);
-	money->assignObjId();
+	Item* money = ItemFactory::createItem(143, 7, 500, 0, 0, 0, 0, true);
 	money->moveToContainer(backpack);
 	money->setGumpLocation(40, 20);
 
 	// skull of quakes
-	Item *skull = ItemFactory::createItem(814, 0, 0, 0, 0, 0, 0);
-	skull->assignObjId();
+	Item *skull = ItemFactory::createItem(814, 0, 0, 0, 0, 0, 0, true);
 	skull->moveToContainer(backpack);  
 	skull->setGumpLocation(60, 20);
 
 	// recall item
-	Item *recall = ItemFactory::createItem(833, 0, 0, 0, 0, 0, 0);
-	recall->assignObjId();
+	Item *recall = ItemFactory::createItem(833, 0, 0, 0, 0, 0, 0, true);
 	recall->moveToContainer(backpack);
 	recall->setGumpLocation(20, 20);
 
 	// sword
-	Item* sword = ItemFactory::createItem(420, 0, 0, 0, 0, 0, 0);
-	sword->assignObjId();
+	Item* sword = ItemFactory::createItem(420, 0, 0, 0, 0, 0, 0, true);
 	sword->moveToContainer(backpack);
 	sword->setGumpLocation(20, 30);
 
-	Item* flamesting = ItemFactory::createItem(817, 0, 0, 0, 0, 0, 0);
-	flamesting->assignObjId();
+	Item* flamesting = ItemFactory::createItem(817, 0, 0, 0, 0, 0, 0, true);
 	flamesting->moveToContainer(backpack);
 	flamesting->setGumpLocation(20, 30);
 
-	Item* hammer = ItemFactory::createItem(815, 0, 0, 0, 0, 0, 0);
-	hammer->assignObjId();
+	Item* hammer = ItemFactory::createItem(815, 0, 0, 0, 0, 0, 0, true);
 	hammer->moveToContainer(backpack);
 	hammer->setGumpLocation(20, 30);
 
-	Item* slayer = ItemFactory::createItem(816, 0, 0, 0, 0, 0, 0);
-	slayer->assignObjId();
+	Item* slayer = ItemFactory::createItem(816, 0, 0, 0, 0, 0, 0, true);
 	slayer->moveToContainer(backpack);
 	slayer->setGumpLocation(20, 30);
 
 	// necromancy reagents
-	Item* bagitem = ItemFactory::createItem(637, 0, 0, 0, 0, 0, 0);
-	bagitem->assignObjId();
+	Item* bagitem = ItemFactory::createItem(637, 0, 0, 0, 0, 0, 0, true);
 	bagitem->moveToContainer(backpack);
 	bagitem->setGumpLocation(70, 40);
 
-	bagitem = ItemFactory::createItem(637, 0, 0, 0, 0, 0, 0);
+	bagitem = ItemFactory::createItem(637, 0, 0, 0, 0, 0, 0, true);
 	Container* bag = p_dynamic_cast<Container*>(bagitem);
 
-	Item* reagents = ItemFactory::createItem(395, 0, 50, 0, 0, 0, 0); 
+	Item* reagents = ItemFactory::createItem(395, 0, 50, 0, 0, 0, 0, true);
 	reagents->moveToContainer(bag);
 	reagents->setGumpLocation(10, 10);
-	reagents = ItemFactory::createItem(395, 6, 50, 0, 0, 0, 0); 
+	reagents = ItemFactory::createItem(395, 6, 50, 0, 0, 0, 0, true);
 	reagents->moveToContainer(bag);
 	reagents->setGumpLocation(30, 10);
-	reagents = ItemFactory::createItem(395, 8, 50, 0, 0, 0, 0); 
+	reagents = ItemFactory::createItem(395, 8, 50, 0, 0, 0, 0, true);
 	reagents->moveToContainer(bag);
 	reagents->setGumpLocation(50, 10);
-	reagents = ItemFactory::createItem(395, 9, 50, 0, 0, 0, 0); 
+	reagents = ItemFactory::createItem(395, 9, 50, 0, 0, 0, 0, true);
 	reagents->moveToContainer(bag);
 	reagents->setGumpLocation(20, 30);
-	reagents = ItemFactory::createItem(395, 10, 50, 0, 0, 0, 0); 
+	reagents = ItemFactory::createItem(395, 10, 50, 0, 0, 0, 0, true);
 	reagents->moveToContainer(bag);
 	reagents->setGumpLocation(40, 30);
-	reagents = ItemFactory::createItem(395, 14, 50, 0, 0, 0, 0); 
+	reagents = ItemFactory::createItem(395, 14, 50, 0, 0, 0, 0, true);
 	reagents->moveToContainer(bag);
 	reagents->setGumpLocation(60, 30);
 
-	bagitem->assignObjId();
 	bagitem->moveToContainer(backpack);
 	bagitem->setGumpLocation(70, 20);
 
 	// theurgy foci
-	bagitem = ItemFactory::createItem(637, 0, 0, 0, 0, 0, 0);
+	bagitem = ItemFactory::createItem(637, 0, 0, 0, 0, 0, 0, true);
 	bag = p_dynamic_cast<Container*>(bagitem);
 
-	Item* focus = ItemFactory::createItem(396, 8, 0, 0, 0, 0, 0);
+	Item* focus = ItemFactory::createItem(396, 8, 0, 0, 0, 0, 0, true);
 	focus->moveToContainer(bag);
 	focus->setGumpLocation(10, 10);
-	focus = ItemFactory::createItem(396, 9, 0, 0, 0, 0, 0);
+	focus = ItemFactory::createItem(396, 9, 0, 0, 0, 0, 0, true);
 	focus->moveToContainer(bag);
 	focus->setGumpLocation(25, 10);
-	focus = ItemFactory::createItem(396, 10, 0, 0, 0, 0, 0);
+	focus = ItemFactory::createItem(396, 10, 0, 0, 0, 0, 0, true);
 	focus->moveToContainer(bag);
 	focus->setGumpLocation(40, 10);
-	focus = ItemFactory::createItem(396, 11, 0, 0, 0, 0, 0);
+	focus = ItemFactory::createItem(396, 11, 0, 0, 0, 0, 0, true);
 	focus->moveToContainer(bag);
 	focus->setGumpLocation(55, 10);
-	focus = ItemFactory::createItem(396, 12, 0, 0, 0, 0, 0);
+	focus = ItemFactory::createItem(396, 12, 0, 0, 0, 0, 0, true);
 	focus->moveToContainer(bag);
 	focus->setGumpLocation(70, 10);
-	focus = ItemFactory::createItem(396, 13, 0, 0, 0, 0, 0);
+	focus = ItemFactory::createItem(396, 13, 0, 0, 0, 0, 0, true);
 	focus->moveToContainer(bag);
 	focus->setGumpLocation(10, 30);
-	focus = ItemFactory::createItem(396, 14, 0, 0, 0, 0, 0);
+	focus = ItemFactory::createItem(396, 14, 0, 0, 0, 0, 0, true);
 	focus->moveToContainer(bag);
 	focus->setGumpLocation(30, 30);
-	focus = ItemFactory::createItem(396, 15, 0, 0, 0, 0, 0);
+	focus = ItemFactory::createItem(396, 15, 0, 0, 0, 0, 0, true);
 	focus->moveToContainer(bag);
 	focus->setGumpLocation(50, 30);	
-	focus = ItemFactory::createItem(396, 17, 0, 0, 0, 0, 0);
+	focus = ItemFactory::createItem(396, 17, 0, 0, 0, 0, 0, true);
 	focus->moveToContainer(bag);
 	focus->setGumpLocation(70, 30);	
 
-	bagitem->assignObjId();
 	bagitem->moveToContainer(backpack);
 	bagitem->setGumpLocation(0, 30);
 
 
 	// oil flasks
-	Item* flask = ItemFactory::createItem(579, 0, 0, 0, 0, 0, 0);
-	flask->assignObjId();
+	Item* flask = ItemFactory::createItem(579, 0, 0, 0, 0, 0, 0, true);
 	flask->moveToContainer(backpack);
 	flask->setGumpLocation(30, 40);
-	flask = ItemFactory::createItem(579, 0, 0, 0, 0, 0, 0);
-	flask->assignObjId();
+	flask = ItemFactory::createItem(579, 0, 0, 0, 0, 0, 0, true);
 	flask->moveToContainer(backpack);
 	flask->setGumpLocation(30, 40);
-	flask = ItemFactory::createItem(579, 0, 0, 0, 0, 0, 0);
-	flask->assignObjId();
+	flask = ItemFactory::createItem(579, 0, 0, 0, 0, 0, 0, true);
 	flask->moveToContainer(backpack);
 	flask->setGumpLocation(30, 40);
 
 	// zealan shield
-	Item* shield = ItemFactory::createItem(828, 0, 0, 0, 0, 0, 0);
-	shield->assignObjId();
+	Item* shield = ItemFactory::createItem(828, 0, 0, 0, 0, 0, 0, true);
 	shield->moveToContainer(backpack);
 	shield->randomGumpLocation();
 
-	shield = ItemFactory::createItem(539, 0, 0, 0, 0, 0, 0);
-	shield->assignObjId();
+	shield = ItemFactory::createItem(539, 0, 0, 0, 0, 0, 0, true);
 	shield->moveToContainer(backpack);
 	shield->randomGumpLocation();
 
-	Item* armour = ItemFactory::createItem(64, 0, 0, 0, 0, 0, 0);
-	armour->assignObjId();
+	Item* armour = ItemFactory::createItem(64, 0, 0, 0, 0, 0, 0, true);
 	armour->moveToContainer(backpack);
 	armour->randomGumpLocation();
 }
@@ -310,34 +291,28 @@ void U8Game::ConCmd_cheatEquip(const Console::ArgsType &args, const Console::Arg
 	// give new equipment:
 
 	// deceiver
-	item = ItemFactory::createItem(822, 0, 0, 0, 0, 0, 0);
-	item->assignObjId();
-	av->setEquip(item, false); // don't check weight/volume
+	item = ItemFactory::createItem(822, 0, 0, 0, 0, 0, 0, true);
+	av->setEquip(item, false);
 
 	// armour
-	item = ItemFactory::createItem(841, 0, 0, 0, 0, 0, 0);
-	item->assignObjId();
-	av->setEquip(item, false); // don't check weight/volume
+	item = ItemFactory::createItem(841, 0, 0, 0, 0, 0, 0, true);
+	av->setEquip(item, false);
 
 	// shield
-	item = ItemFactory::createItem(842, 0, 0, 0, 0, 0, 0);
-	item->assignObjId();
-	av->setEquip(item, false); // don't check weight/volume
+	item = ItemFactory::createItem(842, 0, 0, 0, 0, 0, 0, true);
+	av->setEquip(item, false);
 
 	// helmet
-	item = ItemFactory::createItem(843, 0, 0, 0, 0, 0, 0);
-	item->assignObjId();
-	av->setEquip(item, false); // don't check weight/volume
+	item = ItemFactory::createItem(843, 0, 0, 0, 0, 0, 0, true);
+	av->setEquip(item, false);
 
 	// arm guards
-	item = ItemFactory::createItem(844, 0, 0, 0, 0, 0, 0);
-	item->assignObjId();
-	av->setEquip(item, false); // don't check weight/volume
+	item = ItemFactory::createItem(844, 0, 0, 0, 0, 0, 0, true);
+	av->setEquip(item, false);
 
 	// leggings
-	item = ItemFactory::createItem(845, 0, 0, 0, 0, 0, 0);
-	item->assignObjId();
-	av->setEquip(item, false); // don't check weight/volume
+	item = ItemFactory::createItem(845, 0, 0, 0, 0, 0, 0, true);
+	av->setEquip(item, false);
 }
 
 bool U8Game::startInitialUsecode()

@@ -287,7 +287,7 @@ bool Item::moveToContainer(Container *container, bool checkwghtvol)
 		p = p->getParentAsContainer();
 	// In Avatar's inventory?
 	if (p->getObjId() == 1)
-		flags |= FLG_OWNED;
+		setFlagRecursively(FLG_OWNED);
 	
 	// No lerping when moving to a container
 	extendedflags |= EXT_LERP_NOPREV;
@@ -375,8 +375,6 @@ void Item::movedByPlayer()
 	
 	for (unsigned int i = 0; i < itemlist.getSize(); ++i) {
 		Item *item = getItem(itemlist.getuint16(i));
-		if (p_dynamic_cast<Actor*>(item))
-			pout << "Stealing seen by " << itemlist.getuint16(i) << std::endl;
 		item->callUsecodeEvent_AvatarStoleSomething(getObjId());
 	}
 }
@@ -2253,13 +2251,13 @@ uint32 Item::I_legalCreateAtPoint(const uint8* args, unsigned int /*argsize*/)
 	if (!valid)
 		return 0;
 
-	Item* newitem = ItemFactory::createItem(shape, frame, 0, 0, 0, 0, 0);
+	Item* newitem = ItemFactory::createItem(shape, frame, 0, 0, 0, 0, 0, true);
 	if (!newitem) {
 		perr << "I_legalCreateAtPoint failed to create item (" << shape
 			 <<	"," << frame << ")." << std::endl;
 		return 0;
 	}
-	uint16 objID = newitem->assignObjId();
+	uint16 objID = newitem->getObjId();
 	newitem->move(point.getX(), point.getY(), point.getZ());
 
 	uint8 buf[2];
@@ -2286,13 +2284,13 @@ uint32 Item::I_legalCreateAtCoords(const uint8* args, unsigned int /*argsize*/)
 		return 0;
 
 	// if yes, create it
-	Item* newitem = ItemFactory::createItem(shape, frame, 0, 0, 0, 0, 0);
+	Item* newitem = ItemFactory::createItem(shape, frame, 0, 0, 0, 0, 0, true);
 	if (!newitem) {
 		perr << "I_legalCreateAtCoords failed to create item (" << shape
 			 <<	"," << frame << ")." << std::endl;
 		return 0;
 	}
-	uint16 objID = newitem->assignObjId();
+	uint16 objID = newitem->getObjId();
 	newitem->move(x, y, z);
 
 	uint8 buf[2];
@@ -2319,7 +2317,7 @@ uint32 Item::I_legalCreateInCont(const uint8* args, unsigned int /*argsize*/)
 	// Create an item and try to add it to the given container.
 	// If it fits, return id; otherwise return 0.
 
-	Item* newitem = ItemFactory::createItem(shape, frame, 0, 0, 0, 0, 0);
+	Item* newitem = ItemFactory::createItem(shape, frame, 0, 0, 0, 0, 0, true);
 	if (!newitem) {
 		perr << "I_legalCreateInCont failed to create item (" << shape
 			 <<	"," << frame << ")." << std::endl;
@@ -2328,7 +2326,7 @@ uint32 Item::I_legalCreateInCont(const uint8* args, unsigned int /*argsize*/)
 
 	// also need to check weight, volume maybe??
 	if (newitem->moveToContainer(container)) {
-		uint16 objID = newitem->assignObjId();
+		uint16 objID = newitem->getObjId();
 
 		uint8 buf[2];
 		buf[0] = static_cast<uint8>(objID);
@@ -2340,7 +2338,7 @@ uint32 Item::I_legalCreateInCont(const uint8* args, unsigned int /*argsize*/)
 		perr << "I_legalCreateInCont failed to add item to container (" 
 			 << container->getObjId() << ")" << std::endl;
 		// failed to add; clean up
-		delete newitem;
+		newitem->destroy();
 
 		return 0;
 	}
@@ -2446,13 +2444,13 @@ uint32 Item::I_create(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(shape);
 	ARG_UINT16(frame);
 
-	Item* newitem = ItemFactory::createItem(shape, frame, 0, 0, 0, 0, 0);
+	Item* newitem = ItemFactory::createItem(shape, frame, 0, 0, 0, 0, 0, true);
 	if (!newitem) {
 		perr << "I_create failed to create item (" << shape
 			 <<	"," << frame << ")." << std::endl;
 		return 0;
 	}
-	uint16 objID = newitem->assignObjId();
+	uint16 objID = newitem->getObjId();
 
 #if 0
 	pout << "Item::create: created item " << objID << " (" << shape

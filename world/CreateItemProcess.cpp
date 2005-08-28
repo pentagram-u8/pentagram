@@ -53,8 +53,7 @@ CreateItemProcess::~CreateItemProcess(void)
 bool CreateItemProcess::run(const uint32)
 {
 	Item *item = ItemFactory::createItem(shape, frame, quality, flags,
-										 npcnum, mapnum, extendedflags);
-	item->assignObjId();
+										 npcnum, mapnum, extendedflags, true);
 	item->move(x,y,z);
 
 	result = item->getObjId();

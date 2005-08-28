@@ -68,6 +68,9 @@ public:
 	//! Destroy all contents.
 	void destroyContents();
 
+	//! Set flag on container and all its contents recursively
+	virtual void setFlagRecursively(uint32 mask);
+
 	//! Search the container for items matching the given loopscript.
 	//! \param itemlist The matching items are appended to this list
 	//! \param loopscript The loopscript to match items against

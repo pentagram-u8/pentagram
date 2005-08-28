@@ -56,13 +56,13 @@ uint16 MonsterEgg::hatch()
 
 	Actor* newactor = ItemFactory::createActor(shape, 0, 0,
 								FLG_FAST_ONLY|FLG_DISPOSABLE|FLG_IN_NPC_LIST, 
-								0, 0, 0);
+								0, 0, 0, true);
 	if (!newactor) {
 		perr << "MonsterEgg::hatch failed to create actor (" << shape
 			 <<	")." << std::endl;
 		return 0;
 	}
-	uint16 objID = newactor->assignObjId();
+	uint16 objID = newactor->getObjId();
 
 	// set stats
 	if (!newactor->loadMonsterStats()) {

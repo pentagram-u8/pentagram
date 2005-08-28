@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 							  uint16 flags, uint16 npcnum, uint16 mapnum,
-							  uint32 extendedflags)
+							  uint32 extendedflags, bool objid)
 {
 	// check what class to create
 	ShapeInfo *info = GameData::get_instance()->getMainShapes()->
@@ -64,6 +64,7 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 		item->npcnum = npcnum;
 		item->mapnum = mapnum;
 		item->extendedflags = extendedflags;
+		if (objid) item->assignObjId();
 		return item;
 	}
 
@@ -79,6 +80,7 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 		container->npcnum = npcnum;
 		container->mapnum = mapnum;
 		container->extendedflags = extendedflags;
+		if (objid) container->assignObjId();
 		return container;
 	}
 
@@ -94,6 +96,7 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 		globegg->npcnum = npcnum;
 		globegg->mapnum = mapnum;
 		globegg->extendedflags = extendedflags;
+		if (objid) globegg->assignObjId();
 		return globegg;
 	}
 
@@ -107,12 +110,12 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 		egg->npcnum = npcnum;
 		egg->mapnum = mapnum;
 		egg->extendedflags = extendedflags;
+		if (objid) egg->assignObjId();
 		return egg;
 	}
 
 	case ShapeInfo::SF_MONSTEREGG:
 	{
-		// this obviously isn't quite correct yet :-)
 		MonsterEgg* egg = new MonsterEgg();
 		egg->setShape(shape);
 		egg->frame = frame;
@@ -121,12 +124,12 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 		egg->npcnum = npcnum;
 		egg->mapnum = mapnum;
 		egg->extendedflags = extendedflags;
+		if (objid) egg->assignObjId();
 		return egg;
 	}
 
 	case ShapeInfo::SF_TELEPORTEGG:
 	{
-//		perr.printf("TeleportEgg: %d,%d,%d,%d,%d\n", shape, frame, quality, npcnum, mapnum);
 		TeleportEgg* egg = new TeleportEgg();
 		egg->setShape(shape);
 		egg->frame = frame;
@@ -135,6 +138,7 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 		egg->npcnum = npcnum;
 		egg->mapnum = mapnum;
 		egg->extendedflags = extendedflags;
+		if (objid) egg->assignObjId();
 		return egg;
 	}
 
@@ -147,7 +151,7 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 
 Actor* ItemFactory::createActor(uint32 shape, uint32 frame, uint16 quality,
 								uint16 flags, uint16 npcnum, uint16 mapnum,
-								uint32 extendedflags)
+								uint32 extendedflags, bool objid)
 {
 	// this function should probably differentiate between the Avatar,
 	// NPCs, monsters?
@@ -170,7 +174,7 @@ Actor* ItemFactory::createActor(uint32 shape, uint32 frame, uint16 quality,
 		actor->flags = flags;
 		actor->npcnum = npcnum;
 		actor->mapnum = mapnum;
-		actor->objid = static_cast<uint16>(npcnum);
+		actor->objid = 1;
 		actor->extendedflags = extendedflags;
 		return actor;
 	}
@@ -183,9 +187,7 @@ Actor* ItemFactory::createActor(uint32 shape, uint32 frame, uint16 quality,
 	actor->flags = flags;
 	actor->npcnum = npcnum;
 	actor->mapnum = mapnum;
-	if (npcnum != 0) {
-		actor->objid = static_cast<uint16>(npcnum);
-	}
+	if (objid) actor->assignObjId();
 	actor->extendedflags = extendedflags;
 
 	return actor;

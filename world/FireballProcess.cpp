@@ -123,8 +123,7 @@ bool FireballProcess::run(uint32 /*framenum*/)
 		// enlarge tail
 		Item* newtail = ItemFactory::createItem(261, 0, 0,
 												Item::FLG_DISPOSABLE, 0, 0,
-												Item::EXT_SPRITE);
-		newtail->assignObjId();
+												Item::EXT_SPRITE, true);
 		tail[2] = newtail->getObjId();
 	}
 
@@ -185,12 +184,11 @@ uint32 FireballProcess::I_TonysBalls(const uint8* args,
 	ARG_UINT16(z);
 
 	Item* ball = ItemFactory::createItem(260, 4, 0, Item::FLG_FAST_ONLY,
-										 0, 0, 0);
+										 0, 0, 0, true);
 	if (!ball) {
 		perr << "I_TonysBalls failed to create item (260, 4)." << std::endl;
 		return 0;
 	}
-	ball->assignObjId();
 	if (!ball->canExistAt(x, y, z)) {
 		perr << "I_TonysBalls: failed to create fireball." << std::endl;
 		ball->destroy();

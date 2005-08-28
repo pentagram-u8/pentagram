@@ -56,9 +56,8 @@ void GlobEgg::enterFastArea()
 			Item* item = ItemFactory::createItem(globitem.shape,globitem.frame,
 												 0,
 												 FLG_DISPOSABLE|FLG_FAST_ONLY,
-												 0, 0, 0);
+												 0, 0, 0, true);
 
-			item->assignObjId();
 
 			// calculate object's world position
 			sint32 itemx = (x & ~0x1FF) + 2 * globitem.x + 1;

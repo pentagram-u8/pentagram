@@ -119,6 +119,8 @@ public:
 	//! Set the flags set in the given mask.
 	void setFlag(uint32 mask) { flags |= mask; }
 
+	virtual void setFlagRecursively(uint32 mask) { setFlag(mask); }
+
 	//! Clear the flags set in the given mask.
 	void clearFlag(uint32 mask) { flags &= ~mask; }
 

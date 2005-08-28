@@ -241,11 +241,11 @@ bool AnimationTracker::step()
 			 << ")" << std::endl;
 	}
 #endif
-
+		
 	x += dx;
 	y += dy;
 	z += dz;
-
+	
 
 	// if attack animation, see if we hit something
 	if ((animaction->flags & AnimAction::AAF_ATTACK) &&
@@ -253,7 +253,6 @@ bool AnimationTracker::step()
 	{
 		checkWeaponHit();
 	}
-		
 
 	if (f.flags & AnimFrame::AFF_ONGROUND) {
 		// needs support

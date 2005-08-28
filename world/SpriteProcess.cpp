@@ -50,8 +50,7 @@ SpriteProcess::SpriteProcess(int Shape, int Frame, int LastFrame,
 void SpriteProcess::init()
 {
 	Item *item = ItemFactory::createItem(shape, frame, 
-						0, Item::FLG_DISPOSABLE, 0, 0, Item::EXT_SPRITE);
-	item->assignObjId();
+						0, Item::FLG_DISPOSABLE, 0, 0, Item::EXT_SPRITE, true);
 	item->move(x,y,z);
 	setItemNum(item->getObjId());
 	initialized = true;

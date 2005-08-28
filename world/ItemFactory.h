@@ -28,17 +28,19 @@ class ItemFactory
 {
 public:
 
-	// create an item.
-	// look up (where?) what type of item the given shape is, and
-	// create an instance of the corresponding Item class.
+	//! create an item.
+	//! look up (where?) what type of item the given shape is, and
+	//! create an instance of the corresponding Item class.
+	//! If objid is set, assign item an objectid
 	static Item* createItem(uint32 shape, uint32 frame, uint16 quality,
 							uint16 flags, uint16 npcnum, uint16 mapnum,
-							uint32 extendedflags);
+							uint32 extendedflags, bool objid);
 
-	// create an actor.
+	//! create an actor.
+	//! If objid is set, assign actor an actor-objid
 	static Actor* createActor(uint32 shape, uint32 frame, uint16 quality,
 							  uint16 flags, uint16 npcnum, uint16 mapnum,
-							  uint32 extendedflags);
+							  uint32 extendedflags, bool objid);
 };
 
 #endif

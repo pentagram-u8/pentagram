@@ -193,6 +193,18 @@ void Container::destroyContents()
 	}
 }
 
+void Container::setFlagRecursively(uint32 mask)
+{
+	setFlag(mask);
+
+	std::list<Item*>::iterator iter;
+	for (iter = contents.begin(); iter != contents.end(); ++iter) {
+		(*iter)->setFlag(mask);
+		Container *cont = p_dynamic_cast<Container*>(*iter);
+		if (cont) cont->setFlagRecursively(mask);
+	}
+}
+
 void Container::destroy(bool delnow)
 {
 	//! What do we do with our contents?
@@ -209,7 +221,7 @@ uint32 Container::getTotalWeight()
 
 	std::list<Item*>::iterator iter;
 	
-	for (iter = contents.begin(); iter != contents.end(); ++iter) {	
+	for (iter = contents.begin(); iter != contents.end(); ++iter) {
 		weight += (*iter)->getTotalWeight();
 	}
 

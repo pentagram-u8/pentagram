@@ -1,3 +1,7 @@
+2005-08-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/ItemFactory.*: give createItem/createActor the option of
+	  assigning an objid.
+
 2005-08-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Container.*: don't let moveItemToEnd add item
 	* kernel/GUIApp.cpp, world/Item.*: stealing checks
