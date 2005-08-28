@@ -112,13 +112,6 @@ void ObjectManager::reset()
 	}
 
 	for (i = 0; i < objects.size(); ++i) {
-#if 0
-		if (objects[i]) {
-			perr << i << ": " << objects[i]->GetClassType().class_name << std::endl;
-			delete objects[i];
-
-		}
-#endif
 		assert(objects[i] == 0);
 	}
 

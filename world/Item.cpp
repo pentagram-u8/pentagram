@@ -368,9 +368,9 @@ void Item::movedByPlayer()
 	// See if anybody is around to notice.
 	Item* avatar = getItem(1);
 	UCList itemlist(2);
-	LOOPSCRIPT(script2, LS_TOKEN_TRUE);
+	LOOPSCRIPT(script, LS_TOKEN_TRUE);
 	CurrentMap* currentmap = World::get_instance()->getCurrentMap();
-	currentmap->areaSearch(&itemlist, script2, sizeof(script2),
+	currentmap->areaSearch(&itemlist, script, sizeof(script),
 						   avatar, 640, false);
 	
 	for (unsigned int i = 0; i < itemlist.getSize(); ++i) {
