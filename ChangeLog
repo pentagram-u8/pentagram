@@ -2,6 +2,7 @@
 	* world/ItemFactory.*: give createItem/createActor the option of
 	  assigning an objid.
 	* gumps/ContainerGump.cpp: minor cleanup of drag/drop code
+	* gumps/ContainerGump.*: don't try to drop container into itself
 
 2005-08-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Container.*: don't let moveItemToEnd add item

@@ -276,15 +276,19 @@ void ContainerGump::Close(bool no_del)
 	ItemRelativeGump::Close(no_del);
 }
 
-Container* ContainerGump::getTargetContainer(int mx, int my)
+Container* ContainerGump::getTargetContainer(Item* item, int mx, int my)
 {
 	int px = mx, py = my;
 	GumpToParent(px, py);
 	Container* targetcontainer = getContainer(TraceObjId(px, py));
 
+	if (targetcontainer && targetcontainer->getObjId() == item->getObjId())
+		targetcontainer = 0;
+
 	if (targetcontainer) {
 		ShapeInfo * targetinfo = targetcontainer->getShapeInfo();
-		if (targetinfo->is_land() || 
+		if ((targetcontainer->getObjId() == item->getObjId()) ||
+			targetinfo->is_land() || 
 			(targetcontainer->getFlags() & Item::FLG_IN_NPC_LIST))
 		{
 			targetcontainer = 0;
@@ -412,7 +416,7 @@ bool ContainerGump::DraggingItem(Item* item, int mx, int my)
 	}
 
 	// check if item will fit (weight/volume/adding container to itself)
-	Container* target = getTargetContainer(mx,my);
+	Container* target = getTargetContainer(item,mx,my);
 	if (!target || !target->CanAddItem(item, true)) {
 		display_dragging = false;
 		return false;
@@ -517,7 +521,7 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 		}
 	}
 
-	targetcontainer = getTargetContainer(mx,my);
+	targetcontainer = getTargetContainer(item,mx,my);
 	assert(targetcontainer);
 
 	if (targetcontainer->getObjId() != owner) {

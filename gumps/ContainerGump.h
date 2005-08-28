@@ -70,7 +70,7 @@ protected:
 
 	virtual void GetItemLocation(sint32 lerp_factor);
 
-	virtual Container* getTargetContainer(int mx, int my);
+	virtual Container* getTargetContainer(Item* item, int mx, int my);
 
 	void getItemCoords(Item* item, sint32& itemx, sint32& itemy);
 
