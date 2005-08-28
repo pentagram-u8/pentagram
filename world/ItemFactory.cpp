@@ -187,7 +187,11 @@ Actor* ItemFactory::createActor(uint32 shape, uint32 frame, uint16 quality,
 	actor->flags = flags;
 	actor->npcnum = npcnum;
 	actor->mapnum = mapnum;
-	if (objid) actor->assignObjId();
+	if (npcnum != 0) {
+		actor->objid = static_cast<uint16>(npcnum);
+	} else if (objid) {
+		actor->assignObjId();
+	}
 	actor->extendedflags = extendedflags;
 
 	return actor;
