@@ -282,6 +282,15 @@ Container* ContainerGump::getTargetContainer(int mx, int my)
 	GumpToParent(px, py);
 	Container* targetcontainer = getContainer(TraceObjId(px, py));
 
+	if (targetcontainer) {
+		ShapeInfo * targetinfo = targetcontainer->getShapeInfo();
+		if (targetinfo->is_land() || 
+			(targetcontainer->getFlags() & Item::FLG_IN_NPC_LIST))
+		{
+			targetcontainer = 0;
+		}
+	}
+
 	if (!targetcontainer)
 		targetcontainer = getContainer(owner);
 
@@ -468,7 +477,7 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 
 			if (targetcontainer) {
 				splittarget->moveToContainer(targetcontainer);
-				splittarget->setGumpLocation(0, 0); //TODO: randomize!
+				splittarget->randomGumpLocation();
 			} else {
 				splittarget->moveToContainer(getContainer(owner));
 				splittarget->setGumpLocation(dragging_x, dragging_y);
@@ -508,40 +517,33 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 		}
 	}
 
-
-	if (targetcontainer) {
-		// do not move to containers marked as land or is an NPC,
-		// just in case you decided to start collecting bodies in trunks
-		
-		// Note: this is taking advantage of keyring being marked as land
-		ShapeInfo * targetinfo = targetcontainer->getShapeInfo();
-		if (! targetinfo->is_land() &&
-			! (targetcontainer->getFlags() & Item::FLG_IN_NPC_LIST))
-		{
-			item->moveToContainer(targetcontainer);
-			item->randomGumpLocation();
-			return;
-		}
-	}
-
-	targetcontainer = getContainer(owner);
-
-	// add item to container
+	targetcontainer = getTargetContainer(mx,my);
 	assert(targetcontainer);
 
-	if (item->getParent() == owner) {
-		// already in this container, so move item to let it be drawn
-		// on top of all other items
-		targetcontainer->moveItemToEnd(item);
+	if (targetcontainer->getObjId() != owner) {
+		if (item->getParent() == targetcontainer->getObjId()) {
+			// already in this container, so move item to let it be drawn
+			// on top of all other items
+			targetcontainer->moveItemToEnd(item);
+		} else {
+			item->moveToContainer(targetcontainer);
+			item->randomGumpLocation();
+		}
 	} else {
-		item->moveToContainer(targetcontainer);
-	}
+		// add item to self
 
-	int dox, doy;
-	GUIApp::get_instance()->getDraggingOffset(dox, doy);
-	dragging_x = mx - itemarea.x - dox;
-	dragging_y = my - itemarea.y - doy;
-	item->setGumpLocation(dragging_x, dragging_y);
+		if (item->getParent() == owner) {
+			targetcontainer->moveItemToEnd(item);
+		} else {
+			item->moveToContainer(targetcontainer);
+		}
+
+		int dox, doy;
+		GUIApp::get_instance()->getDraggingOffset(dox, doy);
+		dragging_x = mx - itemarea.x - dox;
+		dragging_y = my - itemarea.y - doy;
+		item->setGumpLocation(dragging_x, dragging_y);
+	}
 }
 
 void ContainerGump::saveData(ODataSource* ods)
