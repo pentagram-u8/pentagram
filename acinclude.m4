@@ -105,7 +105,7 @@ AC_DEFUN([PENT_CHECK_SDLTTF],[
 
     AC_LINK_IFELSE([AC_LANG_SOURCE([[
     #include "SDL.h"
-    #ifdef HAVE_SDL_TTF
+    #ifdef HAVE_SDL_TTF_H
     #include "SDL_ttf.h"
     #else
     #include <SDL/SDL_ttf.h>
@@ -126,7 +126,7 @@ AC_DEFUN([PENT_CHECK_SDLTTF],[
       LIBS="$LIBS -lfreetype"
       AC_LINK_IFELSE([AC_LANG_SOURCE([[
       #include "SDL.h"
-      #ifdef HAVE_SDL_TTF
+      #ifdef HAVE_SDL_TTF_H
       #include "SDL_ttf.h"
       #else
       #include <SDL/SDL_ttf.h>
