@@ -1,3 +1,6 @@
+2005-09-24  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* misc/util.*: Added utility function ArgvToString
+
 2005-08-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/ItemFactory.*: give createItem/createActor the option of
 	  assigning an objid.

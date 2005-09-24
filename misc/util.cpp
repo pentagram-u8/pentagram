@@ -86,6 +86,11 @@ template<class T> void StringToArgv(const T &args, std::vector<T> &argv)
 					ch = '\t';
 					++it;
 				}
+				else if (*next == ' ')
+				{
+					ch = ' ';
+					++it;
+				}
 			}
 		}
 
@@ -114,6 +119,52 @@ template<class T> void StringToArgv(const T &args, std::vector<T> &argv)
 template void StringToArgv<std::string>(const std::string &args, std::vector<std::string> &argv);
 template void StringToArgv<Pentagram::istring>(const Pentagram::istring &args, std::vector<Pentagram::istring> &argv);
 
+template<class T> void ArgvToString(const std::vector<T> &argv, T &args)
+{
+	// Clear the string
+	args.clear();
+
+	typename std::vector<T>::const_iterator i;
+	typename T::const_iterator j;
+	int ch;
+
+	for(i = argv.begin(); i != argv.end(); ++i)
+	{
+		for(j = i->begin(); j != i->end(); ++j)
+		{
+			ch = *j;
+
+			// No quoting, only escaping
+
+			// Handle \, ", ', \n, \r, \t., ' '
+			if (ch == '\\' || ch == '\"' || ch == '\'' || ch == ' ')
+			{
+				args += '\\';
+			}
+			else if (ch == '\n')
+			{
+				args += '\\';
+				ch = 'n';
+			}
+			else if (ch == '\r')
+			{
+				args += '\\';
+				ch = 'r';
+			}
+			else if (ch == '\t')
+			{
+				args += '\\';
+				ch = 't';
+			}
+
+			args += ch;
+		}
+		args += ' ';
+	}
+}
+
+template void ArgvToString<std::string>(const std::vector<std::string> &argv, std::string &args);
+template void ArgvToString<Pentagram::istring>(const std::vector<Pentagram::istring> &argv, Pentagram::istring &args);
 
 template<class T> void TrimSpaces(T& str)
 {
