@@ -1,4 +1,7 @@
 2005-10-05  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* games/*bindings.*, kernel/HIDBinding.h: Removed useless files
+
+2005-10-05  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* kernel/Mouse.*, kernel/Joystick.*, kernel/HIDManager.*,
 	  kernel/GUIApp.*, games/*bindings.*: removed hidbindings in favor of
 	  console commands

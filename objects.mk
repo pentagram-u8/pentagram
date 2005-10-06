@@ -68,9 +68,7 @@ GAMES2 = \
 	games/GameData.o \
 	games/StartU8Process.o \
 	games/TreasureLoader.o \
-	games/U8Game.o \
-	games/u8bindings.o \
-	games/stdbindings.o
+	games/U8Game.o
 
 GRAPHICS = \
 	graphics/AnimDat.o \
