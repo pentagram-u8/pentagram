@@ -526,7 +526,8 @@ bool AvatarMoverProcess::handleNormalMode()
 	return false;
 }
 
-void AvatarMoverProcess::step(Animation::Sequence action, int direction)
+void AvatarMoverProcess::step(Animation::Sequence action, int direction,
+							  bool adjusted)
 {
 	assert(action == Animation::step || action == Animation::walk ||
 		   action == Animation::run);
@@ -556,10 +557,10 @@ void AvatarMoverProcess::step(Animation::Sequence action, int direction)
 				// Try to take a smaller step
 
 				if (action == Animation::walk) {
-					step(Animation::step, direction);
+					step(Animation::step, direction, true);
 					return;
 				} else if (action == Animation::run) {
-					step(Animation::walk, direction);
+					step(Animation::walk, direction, true);
 					return;
 				}
 
@@ -574,7 +575,7 @@ void AvatarMoverProcess::step(Animation::Sequence action, int direction)
 	}
 
 	if (action == Animation::step && res == Animation::END_OFF_LAND &&
-		lastanim != Animation::keepBalance)
+		lastanim != Animation::keepBalance && !adjusted)
 	{
 		if (checkTurn(stepdir, false)) return;
 		waitFor(avatar->doAnim(Animation::keepBalance, stepdir));

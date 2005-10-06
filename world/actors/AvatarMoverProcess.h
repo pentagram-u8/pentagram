@@ -44,7 +44,7 @@ protected:
 	bool handleCombatMode();
 	bool handleNormalMode();
 
-	void step(Animation::Sequence action, int direction);
+	void step(Animation::Sequence action, int direction, bool adjusted=false);
 	void jump(Animation::Sequence action, int direction);
 	void turnToDirection(int direction);
 	bool checkTurn(int direction, bool moving);
