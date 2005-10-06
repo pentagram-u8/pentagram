@@ -159,6 +159,13 @@ enum HID_Key {
 	HID_PAUSE,
 	HID_ESCAPE,
 
+	HID_LEFTSHIFT,
+	HID_RIGHTSHIFT,
+	HID_LEFTCONTROL,
+	HID_RIGHTCONTROL,
+	HID_LEFTALT,
+	HID_RIGHTALT,
+
 	/* Mouse Buttons */
 	HID_MOUSE1,
 	HID_MOUSE2,
@@ -204,5 +211,16 @@ HID_Key HID_GetKeyFromName(Pentagram::istring & name);
 HID_Key HID_translateSDLKey(SDLKey key);
 HID_Key HID_translateSDLMouseButton(uint8 button);
 HID_Key HID_translateSDLJoystickButton(uint8 button);
+
+enum HID_Event {
+	HID_EVENT_DEPRESS = 0,
+	HID_EVENT_RELEASE,
+	HID_EVENT_DOUBLE,
+	HID_EVENT_CLICK,
+	HID_EVENT_LAST
+};
+
+Pentagram::istring & HID_GetEventName(HID_Event event);
+HID_Event HID_GetEventFromName(Pentagram::istring & name);
 
 #endif

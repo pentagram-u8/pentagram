@@ -104,8 +104,8 @@ private:
 
 	static UCMachine* ucmachine;
 
-	static void		ConCmd_getGlobal(const Console::ArgsType &args, const Console::ArgvType &argv);
-	static void		ConCmd_setGlobal(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void		ConCmd_getGlobal(const Console::ArgvType &argv);
+	static void		ConCmd_setGlobal(const Console::ArgvType &argv);
 
 
 #ifdef DEBUG
@@ -125,11 +125,11 @@ private:
 		return false;
 	}
 
-	static void		ConCmd_tracePID(const Console::ArgsType &args, const Console::ArgvType &argv);
-	static void		ConCmd_traceObjID(const Console::ArgsType &args, const Console::ArgvType &argv);
-	static void		ConCmd_traceClass(const Console::ArgsType &args, const Console::ArgvType &argv);
-	static void		ConCmd_traceAll(const Console::ArgsType &args, const Console::ArgvType &argv);
-	static void		ConCmd_stopTrace(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void		ConCmd_tracePID(const Console::ArgvType &argv);
+	static void		ConCmd_traceObjID(const Console::ArgvType &argv);
+	static void		ConCmd_traceClass(const Console::ArgvType &argv);
+	static void		ConCmd_traceAll(const Console::ArgvType &argv);
+	static void		ConCmd_stopTrace(const Console::ArgvType &argv);
 #endif
 };
 

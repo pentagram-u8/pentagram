@@ -116,7 +116,7 @@ uint32 InverterProcess::I_invertScreen(const uint8* args,
 	return invertScreen();
 }
 
-void InverterProcess::ConCmd_invertScreen(const Console::ArgsType &args, const Console::ArgvType &argv)
+void InverterProcess::ConCmd_invertScreen(const Console::ArgvType &argv)
 {
 	invertScreen();
 }

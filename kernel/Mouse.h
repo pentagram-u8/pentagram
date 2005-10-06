@@ -20,7 +20,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define MOUSE_H
 
 const unsigned int DOUBLE_CLICK_TIMEOUT = 200;
-const int NUM_MOUSEBUTTONS = 10;
 
 struct MButton
 {
@@ -39,17 +38,9 @@ enum MouseButtonState {
 
 enum MouseButton {
 	BUTTON_LEFT = 1,
-	BUTTON_MIDDLE = 2,
-	BUTTON_RIGHT = 3,
-	WHEEL_UP = 4,
-	WHEEL_DOWN = 5,
-	MOUSE_6 = 6,
-	MOUSE_7 = 7,
-	MOUSE_8 = 8,
-	MOUSE_9 = 9,
-	MOUSE_10 = 10
+	BUTTON_MIDDLE,
+	BUTTON_RIGHT,
+	MOUSE_LAST
 };
-
-const char* GetMouseButtonName(MouseButton button);
 
 #endif

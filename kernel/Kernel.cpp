@@ -267,12 +267,12 @@ void Kernel::processTypes()
 	}	
 }
 
-void Kernel::ConCmd_processTypes(const Console::ArgsType & /*args*/, const Console::ArgvType & /*argv*/)
+void Kernel::ConCmd_processTypes(const Console::ArgvType & /*argv*/)
 {
 	Kernel::get_instance()->processTypes();
 }
 
-void Kernel::ConCmd_listItemProcesses(const Console::ArgsType & /*args*/, const Console::ArgvType &argv)
+void Kernel::ConCmd_listItemProcesses(const Console::ArgvType &argv)
 {
 	if (argv.size() != 2) {
 		pout << "usage: listItemProcesses <itemnum>" << std::endl;
@@ -293,7 +293,7 @@ void Kernel::ConCmd_listItemProcesses(const Console::ArgsType & /*args*/, const 
 
 }
 
-void Kernel::ConCmd_processInfo(const Console::ArgsType& args, const Console::ArgvType& argv)
+void Kernel::ConCmd_processInfo(const Console::ArgvType& argv)
 {
 	if (argv.size() != 2) {
 		pout << "usage: processInfo <objectnum>" << std::endl;
@@ -312,6 +312,26 @@ void Kernel::ConCmd_processInfo(const Console::ArgsType& args, const Console::Ar
 	}
 }
 
+void Kernel::ConCmd_toggleFrameByFrame(const Console::ArgvType& argv)
+{
+	Kernel* kernel = Kernel::get_instance();
+	bool fbf = !kernel->isFrameByFrame();
+	kernel->setFrameByFrame(fbf);
+	pout << "FrameByFrame = " << fbf << std::endl;
+	if (fbf)
+		kernel->pause();
+	else
+		kernel->unpause();
+}
+
+void Kernel::ConCmd_advanceFrame(const Console::ArgvType& argv)
+{
+	Kernel* kernel = Kernel::get_instance();
+	if (kernel->isFrameByFrame()) {
+		kernel->unpause();
+		pout << "FrameByFrame: Next Frame" << std::endl;
+	}
+}
 
 uint32 Kernel::getNumProcesses(ObjId objid, uint16 processtype)
 {

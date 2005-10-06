@@ -273,7 +273,7 @@ private:
 	static void	conAutoPaint(void);
 
 	// mouse input state
-	MButton mouseButton[NUM_MOUSEBUTTONS+1];
+	MButton mouseButton[MOUSE_LAST];
 
 	uint16 mouseOverGump;
 
@@ -316,21 +316,27 @@ private:
 	std::list<ObjId>	textmodes;		//!< Gumps that want text mode
 
 	// Load and save games from arbitrary filenames from the console
-	static void			ConCmd_saveGame(const Console::ArgsType &args, const Console::ArgvType &argv);			//!< "GUIApp::saveGame <filename>" console command
-	static void			ConCmd_loadGame(const Console::ArgsType &args, const Console::ArgvType &argv);			//!< "GUIApp::loadGame <filename>" console command
-	static void			ConCmd_newGame(const Console::ArgsType &args, const Console::ArgvType &argv);			//!< "GUIApp::newGame" console command
+	static void			ConCmd_saveGame(const Console::ArgvType &argv);			//!< "GUIApp::saveGame <filename>" console command
+	static void			ConCmd_loadGame(const Console::ArgvType &argv);			//!< "GUIApp::loadGame <filename>" console command
+	static void			ConCmd_newGame(const Console::ArgvType &argv);			//!< "GUIApp::newGame" console command
 
-	static void			ConCmd_quit(const Console::ArgsType &args, const Console::ArgvType &argv);				//!< "quit" console command
+	static void			ConCmd_quit(const Console::ArgvType &argv);				//!< "quit" console command
 
-	static void			ConCmd_changeGame(const Console::ArgsType &args, const Console::ArgvType &argv);		//!< "GuiApp::changeGame" console command
-	static void			ConCmd_listGames(const Console::ArgsType &args, const Console::ArgvType &argv);			//!< "GuiApp::listGames" console command
+	static void			ConCmd_changeGame(const Console::ArgvType &argv);		//!< "GuiApp::changeGame" console command
+	static void			ConCmd_listGames(const Console::ArgvType &argv);			//!< "GuiApp::listGames" console command
 
-	static void			ConCmd_setVideoMode(const Console::ArgsType &args, const Console::ArgvType &argv);		//!< "GuiApp::setVideoMode" console command
-	static void			ConCmd_toggleFullscreen(const Console::ArgsType &args, const Console::ArgvType &argv);	//!< "GuiApp::toggleFullscreen" console command
+	static void			ConCmd_setVideoMode(const Console::ArgvType &argv);		//!< "GuiApp::setVideoMode" console command
+	static void			ConCmd_toggleFullscreen(const Console::ArgvType &argv);	//!< "GuiApp::toggleFullscreen" console command
 
 	// This should be a console variable once they are implemented
 	bool				drawRenderStats;
-	static void			ConCmd_drawRenderStats(const Console::ArgsType &args, const Console::ArgvType &argv);	//!< "GUIApp::drawRenderStats" console command
+	static void			ConCmd_drawRenderStats(const Console::ArgvType &argv);	//!< "GUIApp::drawRenderStats" console command
+
+	static void			ConCmd_engineStats(const Console::ArgvType &argv);	//!< "GUIApp::engineStats" console command
+
+	static void			ConCmd_toggleAvatarInStasis(const Console::ArgvType &argv);	//!< "GUIApp::toggleAvatarInStasis" console command
+	static void			ConCmd_togglePaintEditorItems(const Console::ArgvType &argv);	//!< "GUIApp::togglePaintEditorItems" console command
+	static void			ConCmd_toggleShowTouchingItems(const Console::ArgvType &argv);	//!< "GUIApp::toggleShowTouchingItems" console command
 
 	bool				ttfoverrides;
 

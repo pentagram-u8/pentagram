@@ -33,6 +33,8 @@ using Pentagram::istring;
 ConsoleGump::ConsoleGump()
 	: Gump()
 {
+	con.AddConsoleCommand("ConsoleGump::toggle",
+						  ConsoleGump::ConCmd_toggle);
 }
 
 ConsoleGump::ConsoleGump(int X, int Y, int Width, int Height) :
@@ -43,10 +45,14 @@ ConsoleGump::ConsoleGump(int X, int Y, int Width, int Height) :
 
 	// Resize it
 	con.CheckResize(Width);
+
+	con.AddConsoleCommand("ConsoleGump::toggle",
+						  ConsoleGump::ConCmd_toggle);
 }
 
 ConsoleGump::~ConsoleGump()
 {
+	con.RemoveConsoleCommand(ConsoleGump::ConCmd_toggle);
 }
 
 void ConsoleGump::RenderSurfaceChanged()
@@ -283,6 +289,12 @@ bool ConsoleGump::Run(const uint32 framenum)
 	}
 
 	return true;	// Always repaint, even though we really could just try to detect it
+}
+
+void ConsoleGump::ConCmd_toggle(const Console::ArgvType &argv)
+{
+	ConsoleGump * consoleGump = GUIApp::get_instance()->getConsoleGump();
+	consoleGump->ToggleConsole();
 }
 
 void ConsoleGump::saveData(ODataSource* ods)

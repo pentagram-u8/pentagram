@@ -56,8 +56,8 @@ U8Game::U8Game() : Game()
 
 U8Game::~U8Game()
 {
-	con.RemoveConsoleCommand("Cheat::items");
-	con.RemoveConsoleCommand("Cheat::equip");
+	con.RemoveConsoleCommand(U8Game::ConCmd_cheatItems);
+	con.RemoveConsoleCommand(U8Game::ConCmd_cheatEquip);
 }
 
 bool U8Game::loadFiles()
@@ -140,7 +140,7 @@ bool U8Game::startGame()
 	return true;
 }
 
-void U8Game::ConCmd_cheatItems(const Console::ArgsType &args, const Console::ArgvType &argv)
+void U8Game::ConCmd_cheatItems(const Console::ArgvType &argv)
 {
 	MainActor* av = getMainActor();
 	if (!av) return;
@@ -270,7 +270,7 @@ void U8Game::ConCmd_cheatItems(const Console::ArgsType &args, const Console::Arg
 	armour->randomGumpLocation();
 }
 
-void U8Game::ConCmd_cheatEquip(const Console::ArgsType &args, const Console::ArgvType &argv)
+void U8Game::ConCmd_cheatEquip(const Console::ArgvType &argv)
 {
 	MainActor* av = getMainActor();
 	if (!av) return;

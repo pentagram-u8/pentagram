@@ -76,17 +76,31 @@ public:
 	bool loadData(IDataSource* ids, uint32 version);
 
 	//! "teleport" console command
-	static void ConCmd_teleport(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void ConCmd_teleport(const Console::ArgvType &argv);
 	//! "mark" console command
-	static void ConCmd_mark(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void ConCmd_mark(const Console::ArgvType &argv);
 	//! "recall" console command
-	static void ConCmd_recall(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void ConCmd_recall(const Console::ArgvType &argv);
 	//! "listmarks" console command
-	static void ConCmd_listmarks(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void ConCmd_listmarks(const Console::ArgvType &argv);
 	//! "maxstats" console command
-	static void ConCmd_maxstats(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void ConCmd_maxstats(const Console::ArgvType &argv);
 	//! "Name" console command
-	static void ConCmd_name(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void ConCmd_name(const Console::ArgvType &argv);
+
+	//! "useBackpack" console command
+	static void ConCmd_useBackpack(const Console::ArgvType &argv);
+	//! "useInventory" console command
+	static void ConCmd_useInventory(const Console::ArgvType &argv);
+	//! "useRecall" console command
+	static void ConCmd_useRecall(const Console::ArgvType &argv);
+	//! "useBedroll" console command
+	static void ConCmd_useBedroll(const Console::ArgvType &argv);
+	//! "useKeyring" console command
+	static void ConCmd_useKeyring(const Console::ArgvType &argv);
+
+	//! "toggleCombat" console command
+	static void ConCmd_toggleCombat(const Console::ArgvType &argv);
 
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
@@ -104,6 +118,8 @@ public:
 
 protected:
 	virtual void saveData(ODataSource* ods);
+
+	void useInventoryItem(uint32 shapenum);
 
 	bool justTeleported;
 

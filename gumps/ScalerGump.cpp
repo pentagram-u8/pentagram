@@ -42,8 +42,8 @@ ScalerGump::ScalerGump(sint32 _x, sint32 _y, sint32 _width, sint32 _height) :
 
 ScalerGump::~ScalerGump()
 {
-	con.RemoveConsoleCommand("ScalerGump::changeScaler");
-	con.RemoveConsoleCommand("ScalerGump::listScalers");
+	con.RemoveConsoleCommand(ConCmd_changeScaler);
+	con.RemoveConsoleCommand(ConCmd_listScalers);
 
 	FORGET_OBJECT(buffer1);
 	FORGET_OBJECT(buffer2);
@@ -204,7 +204,7 @@ void ScalerGump::SetupScalers()
 	con.Printf(MM_INFO, "Using Scaler: %s. %s\n", scaler1->ScalerDesc(), scaler1->ScalerCopyright());
 }
 
-void ScalerGump::ConCmd_changeScaler(const Console::ArgsType &args, const Console::ArgvType &argv)
+void ScalerGump::ConCmd_changeScaler(const Console::ArgvType &argv)
 {
 	if (argv.size() != 4 && argv.size() != 2)
 	{
@@ -222,7 +222,7 @@ void ScalerGump::ConCmd_changeScaler(const Console::ArgsType &args, const Consol
 	}
 }
 
-void ScalerGump::ConCmd_listScalers(const Console::ArgsType &args, const Console::ArgvType &argv)
+void ScalerGump::ConCmd_listScalers(const Console::ArgvType &argv)
 {
 	ScalerManager *scaleman = ScalerManager::get_instance();
 	uint32 numScalers = scaleman->GetNumScalers();

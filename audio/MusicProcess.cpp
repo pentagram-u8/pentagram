@@ -240,7 +240,7 @@ uint32 MusicProcess::I_musicStop(const uint8* /*args*/,
 }
 
 
-void MusicProcess::ConCmd_playMusic(const Console::ArgsType & /*args*/, const Console::ArgvType &argv)
+void MusicProcess::ConCmd_playMusic(const Console::ArgvType &argv)
 {
 	if (the_music_process) 
 	{

@@ -71,8 +71,8 @@ private:
 
 	void DoScalerBlit(Texture* src, int swidth, int sheight, RenderSurface *dest, int dwidth, int dheight, const Pentagram::Scaler *scaler);
 
-	static void			ConCmd_changeScaler(const Console::ArgsType &args, const Console::ArgvType &argv);		//!< "GuiApp::changeScaler" console command
-	static void			ConCmd_listScalers(const Console::ArgsType &args, const Console::ArgvType &argv);		//!< "GuiApp::changeScaler" console command
+	static void			ConCmd_changeScaler(const Console::ArgvType &argv);		//!< "GuiApp::changeScaler" console command
+	static void			ConCmd_listScalers(const Console::ArgvType &argv);		//!< "GuiApp::changeScaler" console command
 
 };
 

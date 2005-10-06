@@ -45,12 +45,12 @@ MiniMapGump::MiniMapGump(int x, int y) :
 
 MiniMapGump::MiniMapGump() : Gump()
 {
-
+	con.RemoveConsoleCommand(MiniMapGump::ConCmd_generateWholeMap);
 }
 
 MiniMapGump::~MiniMapGump(void)
 {
-	con.RemoveConsoleCommand("MiniMapGump::generateWholeMap");
+	con.RemoveConsoleCommand(MiniMapGump::ConCmd_generateWholeMap);
 }
 
 void MiniMapGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
@@ -169,7 +169,7 @@ uint32 MiniMapGump::sampleAtPoint(int x, int y, CurrentMap *currentmap)
 	else return 0;
 }
 
-void MiniMapGump::ConCmd_toggle(const Console::ArgsType &args, const Console::ArgvType &argv)
+void MiniMapGump::ConCmd_toggle(const Console::ArgvType &argv)
 {
 	GUIApp *app = GUIApp::get_instance();
 	Gump *desktop = app->getDesktopGump();
@@ -186,7 +186,7 @@ void MiniMapGump::ConCmd_toggle(const Console::ArgsType &args, const Console::Ar
 	}
 }
 
-void MiniMapGump::ConCmd_generateWholeMap(const Console::ArgsType &args, const Console::ArgvType &argv)
+void MiniMapGump::ConCmd_generateWholeMap(const Console::ArgvType &argv)
 {
 	World *world = World::get_instance();
 	CurrentMap *currentmap = world->getCurrentMap();

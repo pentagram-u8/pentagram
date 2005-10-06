@@ -88,8 +88,8 @@ void ControlEntryGump::init()
 
 	dims.h = rect.h;
 
-	hidmanager->getBindings(bindingName, controls);
-	int x = 120;
+	//hidmanager->getBindings(bindingName, controls);
+/*	int x = 120;
 	for (i = controls.begin(); i != controls.end(); ++i)
 	{
 		widget = new TextWidget(x, 0, *i, font);
@@ -97,6 +97,7 @@ void ControlEntryGump::init()
 		widget->GetDims(rect);
 		x += rect.w + 5;
 	}
+*/
 }
 
 void ControlEntryGump::ChildNotify(Gump *child, uint32 message)

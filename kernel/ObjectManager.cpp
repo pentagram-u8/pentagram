@@ -158,12 +158,12 @@ void ObjectManager::objectTypes()
 	}
 }
 
-void ObjectManager::ConCmd_objectTypes(const Console::ArgsType & /*args*/, const Console::ArgvType & /*argv*/)
+void ObjectManager::ConCmd_objectTypes(const Console::ArgvType & /*argv*/)
 {
 	ObjectManager::get_instance()->objectTypes();
 }
 
-void ObjectManager::ConCmd_objectInfo(const Console::ArgsType& args, const Console::ArgvType& argv)
+void ObjectManager::ConCmd_objectInfo(const Console::ArgvType& argv)
 {
 	if (argv.size() != 2) {
 		pout << "usage: objectInfo <objectnum>" << std::endl;

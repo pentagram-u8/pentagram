@@ -19,6 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "Egg.h"
+#include "GUIApp.h"
 #include "getObject.h"
 #include "UCMachine.h"
 
@@ -129,3 +130,4 @@ uint32 Egg::I_setEggId(const uint8* args, unsigned int /*argsize*/)
 	
 	return 0;
 }
+

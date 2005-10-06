@@ -109,8 +109,7 @@ ProcId MovieGump::U8MovieViewer(RawArchive* movie, bool introMusicHack)
 }
 
 //static
-void MovieGump::ConCmd_play(const Console::ArgsType &args,
-							const Console::ArgvType &argv)
+void MovieGump::ConCmd_play(const Console::ArgvType &argv)
 {
 	if (argv.size() != 2) {
 		pout << "play usage: play <moviename>" << std::endl;

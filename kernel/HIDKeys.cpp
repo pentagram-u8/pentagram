@@ -226,6 +226,18 @@ static KeyName keyNames[] =
 	{HID_SCROLL_LOCK, "Scroll-Lock"},
 	{HID_PAUSE, "Pause"},
 
+	{HID_LEFTSHIFT, "Left-Shift"},
+	{HID_RIGHTSHIFT, "Right-Shift"},
+
+	{HID_LEFTCONTROL, "Left-Control"},
+	{HID_LEFTCONTROL, "Left-Ctrl"},
+
+	{HID_RIGHTCONTROL, "Right-Control"},
+	{HID_RIGHTCONTROL, "Right-Ctrl"},
+
+	{HID_LEFTALT, "Left-Alt"},
+	{HID_RIGHTALT, "Right-Alt"},
+
 	{HID_MOUSE1, "Mouse1"},
 	{HID_MOUSE2, "Mouse2"},
 	{HID_MOUSE3, "Mouse3"},
@@ -261,6 +273,18 @@ static KeyName keyNames[] =
 	{HID_JOY16, "Joy16"},
 
 	{HID_LAST, ""}
+};
+
+struct EventName {HID_Event event; Pentagram::istring name;};
+
+static EventName eventNames[] =
+{
+	{HID_EVENT_DEPRESS, ""},
+	{HID_EVENT_DEPRESS, "<Depress>"},
+	{HID_EVENT_RELEASE, "<Release>"},
+	{HID_EVENT_DOUBLE, "<Double>"},
+	{HID_EVENT_CLICK, "<Click>"},
+	{HID_EVENT_LAST, ""}
 };
 
 Pentagram::istring & HID_GetKeyName(HID_Key key)
@@ -409,6 +433,12 @@ HID_Key HID_translateSDLKey(SDLKey key)
 		case SDLK_SCROLLOCK: return HID_SCROLL_LOCK;
 		case SDLK_PAUSE: return HID_PAUSE;
 		case SDLK_ESCAPE: return HID_ESCAPE;
+		case SDLK_RSHIFT: return HID_RIGHTSHIFT;
+		case SDLK_LSHIFT: return HID_LEFTSHIFT;
+		case SDLK_RCTRL: return HID_RIGHTCONTROL;
+		case SDLK_LCTRL: return HID_LEFTCONTROL;
+		case SDLK_RALT: return HID_RIGHTALT;
+		case SDLK_LALT: return HID_LEFTALT;
 		default:
 			break;
 	}
@@ -467,4 +497,25 @@ HID_Key HID_translateSDLJoystickButton(uint8 button)
 	return HID_LAST;
 }
 
+Pentagram::istring & HID_GetEventName(HID_Event event)
+{
+	int i;
+	for (i=0; eventNames[i].event != HID_EVENT_LAST; ++i)
+	{
+		if (event == eventNames[i].event)
+			return eventNames[i].name;
+	}
+	return eventNames[0].name;
+}
+
+HID_Event HID_GetEventFromName(Pentagram::istring & name)
+{
+	int i;
+	for (i=0; eventNames[i].event != HID_EVENT_LAST; ++i)
+	{
+		if (name == eventNames[i].name)
+			return eventNames[i].event;
+	}
+	return HID_EVENT_LAST;
+}
 

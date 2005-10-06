@@ -23,41 +23,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 namespace HIDBindings {
 
-// ! opens the Avatar's backback
-// ! \see HIDBinding
-bool openBackpack(const HID_Event& event);
-
-// ! opens the Avatar's Inventory Panel
-// ! \see HIDBinding
-bool openInventory(const HID_Event& event);
-
-// ! Activates recall
-// ! \see HIDBinding
-bool recall(const HID_Event& event);
-
-// ! Use bedroll
-// ! \see HIDBinding
-bool useBedroll(const HID_Event& event);
-
-// ! Use keyring
-// ! \see HIDBinding
-bool useKeyring(const HID_Event& event);
-
-// ! run the begining scene 
-// ! \see HIDBinding
-bool runFirstEgg(const HID_Event& event);
-
-// ! toggles the avatar combat readiness
-// ! \see HIDBinding
-bool toggleCombat(const HID_Event& event);
-
-// ! U8 shape viewer
-// ! \see HIDBinding
-bool u8ShapeViewer(const HID_Event& event);
-
-// ! U8 game menu
-// ! \see HIDBinding
-bool showMenu(const HID_Event& event);
+//bool openBackpack(const HID_Event& event);
+//bool openInventory(const HID_Event& event);
+//bool recall(const HID_Event& event);
+//bool useBedroll(const HID_Event& event);
+//bool useKeyring(const HID_Event& event);
+//bool runFirstEgg(const HID_Event& event);
+//bool toggleCombat(const HID_Event& event);
+//bool u8ShapeViewer(const HID_Event& event);
+//bool showMenu(const HID_Event& event);
 
 };
 

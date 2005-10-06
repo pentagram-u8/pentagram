@@ -1,8 +1,8 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
-modify it under the terms of the GNU General Public License
+eventify it under the terms of the GNU General Public License
 as published by the Free Software Foundation; either version 2
 of the License, or (at your option) any later version.
 
@@ -19,10 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 #include "HIDManager.h"
 
-#include <string>
-#include "stdbindings.h"
-#include "u8bindings.h"
+#include "SDL_timer.h"
 #include "SettingManager.h"
+#include "Console.h"
+#include "util.h"
 
 #include "ConfigFileManager.h" // temporary!
 
@@ -37,180 +37,151 @@ HIDManager::HIDManager()
 
 	InitJoystick();
 
-	bindingMap.insert( HIDBINDING_PAIR(quickSave) );
-	bindingMap.insert( HIDBINDING_PAIR(quickLoad) );
-	bindingMap.insert( HIDBINDING_PAIR(avatarInStasis) );
-	bindingMap.insert( HIDBINDING_PAIR(engineStats) );
-	bindingMap.insert( HIDBINDING_PAIR(paintEditorItems) );
-	bindingMap.insert( HIDBINDING_PAIR(showTouchingItems) );
-	bindingMap.insert( HIDBINDING_PAIR(toggleCombat) );
-	bindingMap.insert( HIDBINDING_PAIR(openInventory) );
-	bindingMap.insert( HIDBINDING_PAIR(openBackpack) );
-	bindingMap.insert( HIDBINDING_PAIR(recall) );
-	bindingMap.insert( HIDBINDING_PAIR(useKeyring) );
-	bindingMap.insert( HIDBINDING_PAIR(useBedroll) );
-	bindingMap.insert( HIDBINDING_PAIR(runFirstEgg) );
-	bindingMap.insert( HIDBINDING_PAIR(toggleFrameByFrame) );
-	bindingMap.insert( HIDBINDING_PAIR(advanceFrameByFrame) );
-	bindingMap.insert( HIDBINDING_PAIR(u8ShapeViewer) );
-	bindingMap.insert( HIDBINDING_PAIR(showMenu) );
-	bindingMap.insert( HIDBINDING_PAIR(quit) );
-	bindingMap.insert( HIDBINDING_PAIR(toggleConsole) );
-	bindingMap.insert( HIDBINDING_PAIR(toggleFullscreen) );
-	bindingMap.insert( HIDBINDING_PAIR(quickMoveUp) );
-	bindingMap.insert( HIDBINDING_PAIR(quickMoveDown) );
-	bindingMap.insert( HIDBINDING_PAIR(quickMoveLeft) );
-	bindingMap.insert( HIDBINDING_PAIR(quickMoveRight) );
-	bindingMap.insert( HIDBINDING_PAIR(quickMoveAscend) );
-	bindingMap.insert( HIDBINDING_PAIR(quickMoveDescend) );
-	bindingMap.insert( HIDBINDING_PAIR(quickMoveQuarterSpeed) );
-	bindingMap.insert( HIDBINDING_PAIR(quickMoveClipping) );
-	bindingMap.insert( HIDBINDING_PAIR(highlightItems) );
-
-	HIDBindingMap::iterator i;
-	Pentagram::istring conCmd;
-	for (i = bindingMap.begin(); i != bindingMap.end(); ++i)
-	{
-		conCmd = "HIDBinding::";
-		conCmd.append(i->first);
-		con.AddConsoleCommand(conCmd, HIDManager::ConCmd_execBinding);
-	}
-
 	resetBindings();
-	loadBindings();
+	double_timeout = 200;
 }
 
 HIDManager::~HIDManager()
 {
+	std::vector<Console::ArgvType *>::iterator it;
 	con.Print(MM_INFO, "Destroying HIDManager...\n");
 
-	con.RemoveConsoleFunction(HIDManager::ConCmd_execBinding);
+	for (it = commands.begin(); it != commands.end(); ++it)
+	{
+		if (*it)
+		{
+			delete *it;
+		}
+	}
+	commands.clear();
+
 	ShutdownJoystick();
 	hidmanager = 0;
-	bindingMap.clear();
 }
 
-HIDBinding HIDManager::getBinding(const SDL_Event& event)
+bool HIDManager::handleEvent(const SDL_Event & event)
 {
-	HIDBinding binding = 0;
+	bool handled = false;
+	HID_Key key = HID_LAST;
+	HID_Event evn = HID_EVENT_LAST;
+	Console::ArgvType * command = 0;
 	switch (event.type) {
-	case SDL_KEYUP: case SDL_KEYDOWN:
-	{
-		uint16 key = event.key.keysym.sym;
-		if (key < SDLK_LAST)
-			binding = keybindings[key];
-	}
-	break;
-	case SDL_MOUSEBUTTONDOWN: case SDL_MOUSEBUTTONUP:
-	{
-		uint16 button = event.button.button;
-		if (button < NUM_MOUSEBUTTONS)
-			binding = mousebindings[button];
-	}
-	break;
-	case SDL_JOYBUTTONDOWN: case SDL_JOYBUTTONUP:
-	{
-		uint16 js = event.jbutton.which;
-		uint16 button = event.jbutton.button;
-		if (js < NUM_JOYSTICKS && button < NUM_JOYBUTTONS)
-			binding = joybindings[js][button];
-	}
-	break;
-	}
-
-	return binding;
-}
-
-HIDBinding HIDManager::getBinding(const Pentagram::istring& bindingName)
-{
-	HIDBinding binding = 0;
-	HIDBindingMap::iterator j = bindingMap.find(bindingName);
-	if (j != bindingMap.end())
-	{
-		binding = j->second;
-	}
-	return binding;
-}
-
-void HIDManager::buildEvent(HID_Event& hidEvent, const SDL_Event& sdlEvent)
-{
-	hidEvent.xrel = 0;
-	hidEvent.yrel = 0;
-	hidEvent.value = 0;
-
-	switch (sdlEvent.type) {
-		case SDL_MOUSEBUTTONUP:
-			hidEvent.type = HID_UP;
-			hidEvent.device = HID_MOUSE;
-			break;
-		case SDL_KEYUP:
-			hidEvent.type = HID_UP;
-			hidEvent.device = HID_KEYBOARD;
-			break;
-		case SDL_JOYBUTTONUP:
-			hidEvent.type = HID_UP;
-			hidEvent.device = HID_JOYSTICK;
-			break;
-		case SDL_MOUSEBUTTONDOWN:
-			hidEvent.type = HID_DOWN;
-			hidEvent.device = HID_MOUSE;
-			break;
 		case SDL_KEYDOWN:
-			hidEvent.type = HID_DOWN;
-			hidEvent.device = HID_KEYBOARD;
-			break;
+			key = HID_translateSDLKey(event.key.keysym.sym);
+			evn = HID_EVENT_DEPRESS;
+		break;
+		case SDL_KEYUP:
+			key = HID_translateSDLKey(event.key.keysym.sym);
+			evn = HID_EVENT_RELEASE;
+		break;
+		case SDL_MOUSEBUTTONDOWN:
+			key = HID_translateSDLMouseButton(event.button.button);
+			evn = HID_EVENT_DEPRESS;
+		break;
+		case SDL_MOUSEBUTTONUP:
+			key = HID_translateSDLMouseButton(event.button.button);
+			evn = HID_EVENT_RELEASE;
+		break;
 		case SDL_JOYBUTTONDOWN:
-			hidEvent.type = HID_DOWN;
-			hidEvent.device = HID_JOYSTICK;
-			break;
-		case SDL_MOUSEMOTION:
-			hidEvent.type = HID_MOTION;
-			hidEvent.device = HID_MOUSE;
-			hidEvent.xrel = sdlEvent.motion.xrel;
-			hidEvent.yrel = sdlEvent.motion.yrel;
-			break;
-		case SDL_JOYAXISMOTION:
-			hidEvent.type = HID_MOTION;
-			hidEvent.device = HID_JOYSTICK;
-			hidEvent.value = sdlEvent.jaxis.value;
-			break;
-		default:
-			hidEvent.type = HID_UNHANDLED;
-			hidEvent.device = HID_OTHER;
+			key = HID_translateSDLJoystickButton(event.jbutton.button);
+			evn = HID_EVENT_DEPRESS;
+		break;
+		case SDL_JOYBUTTONUP:
+			key = HID_translateSDLJoystickButton(event.jbutton.button);
+			evn = HID_EVENT_RELEASE;
+		break;
+	}
+
+	if (key < HID_LAST && evn < HID_EVENT_LAST)
+	{
+		command = bindings[key][evn];
+	}
+
+	if (command)
+	{
+		con.ExecuteConsoleCommand(*command);
+		handled = true;
+	}
+
+	// Handle double separately since it should not stop depress
+	if (key < HID_LAST && evn == HID_EVENT_DEPRESS )
+	{
+		uint32 now = SDL_GetTicks();
+		if (now - lastDown[key] < double_timeout &&
+			lastDown[key] != 0)
+		{
+			lastDown[key] = 0;
+			command = bindings[key][HID_EVENT_DOUBLE];
+			if (command)
+			{
+				con.ExecuteConsoleCommand(*command);
+				handled = true;
+			}
+		}
+		else
+		{
+			lastDown[key] = now;
+		}
+	}
+
+	return handled;
+}
+
+void HIDManager::handleDelayedEvents()
+{
+	uint16 key;
+	uint32 now = SDL_GetTicks();
+	Console::ArgvType * command = 0;
+
+	for (key=0; key < HID_LAST; ++key)
+	{
+		if (now - lastDown[key] > double_timeout &&
+			lastDown[key] != 0)
+		{
+			lastDown[key] = 0;
+			command = bindings[key][HID_EVENT_CLICK];
+			if (command)
+				con.ExecuteConsoleCommand(*command);
+		}
 	}
 }
 
 void HIDManager::resetBindings()
 {
-	con.Print(MM_INFO, "Resetting HIDBindings...\n");
+	uint16 key, event;
+	Console::ArgvType * cmd;
+	std::vector<Console::ArgvType *>::iterator it;
 
-	uint16 key, button, js;
-
-	for (key=0; key < SDLK_LAST; ++key)
+	for (key=0; key < HID_LAST; ++key)
 	{
-		keybindings[key] = 0;
-	}
-	
-	for (button=0; button < NUM_MOUSEBUTTONS+1; ++button)
-	{
-		mousebindings[button] = 0;
-	}
-
-	for (js=0; js < NUM_JOYSTICKS; ++js)
-	{
-		for (button=0; button < NUM_MOUSEBUTTONS; ++button)
+		lastDown[key] = 0;
+		for (event=0; event < HID_EVENT_LAST; ++event)
 		{
-			joybindings[js][button] = 0;
+			bindings[key][event]=0;
 		}
 	}
 
-	//keybindings[SDLK_ESCAPE] = &HIDBindings::showMenu;
-	keybindings[SDLK_F4] = &HIDBindings::toggleFullscreen;
-	keybindings[SDLK_BACKQUOTE] = &HIDBindings::toggleConsole;
+	for (it = commands.begin(); it != commands.end(); ++it)
+	{
+		if (*it)
+		{
+			delete *it;
+		}
+	}
+	commands.clear();
+
+	cmd = new Console::ArgvType;
+	cmd->push_back("ConsoleGump::toggle");
+	commands.push_back(cmd);
+
+	bindings[HID_BACKQUOTE][HID_EVENT_DEPRESS]= commands.back();
 }
 
 void HIDManager::loadBindings()
 {
+	Console::ArgsType args;
+	Console::ArgvType argv;
+
 	con.Print(MM_INFO, "Loading HIDBindings...\n");
 
 	SettingManager* settings = SettingManager::get_instance();
@@ -231,248 +202,127 @@ void HIDManager::loadBindings()
 
 	while (i != keys.end())
 	{
-		Pentagram::istring bindingName = i->second.c_str();
-		bind((*i).first, bindingName);
+		args = i->second.c_str();
+		argv.clear();
+
+		Pentagram::StringToArgv(args, argv);
+		bind(i->first, argv);
 		++i;
 	}
-//	listBindings();
+	listBindings();
 }
 
 void HIDManager::saveBindings()
 {
-	uint16 key, button, js;
+	uint16 key, event;
 	SettingManager* settings = SettingManager::get_instance();
 	Pentagram::istring section = "keys/";
 	Pentagram::istring confkey;
 
-	// first clear old bindings which are now unused
-	for (key=0; key < SDLK_LAST; ++key)
+	for (key=0; key < HID_LAST; ++key)
 	{
-		if (keybindings[key] == 0)
+		for (event=0; event < HID_EVENT_LAST; ++event)
 		{
-			confkey = section + SDL_GetKeyName((SDLKey) key);
-			if (settings->exists(confkey))
+			confkey = section +
+				HID_GetEventName((HID_Event) event) +
+				HID_GetKeyName((HID_Key) key);
+			if (bindings[key][event])
+			{
+				Console::ArgsType command;
+				Pentagram::ArgvToString(*bindings[key][event], command);
+				settings->set(confkey, command);
+			}
+			else if (settings->exists(confkey))
 			{
 				settings->unset(confkey);
-			}
-		}
-	}
-
-	for (button=1; button < NUM_MOUSEBUTTONS+1; ++button)
-	{
-		if (mousebindings[button] == 0)
-		{
-			confkey = section + GetMouseButtonName((MouseButton) button);
-			if (settings->exists(confkey))
-			{
-				settings->unset(confkey);
-			}
-		}
-	}
-
-	for (js=0; js < NUM_JOYSTICKS; ++js)
-	{
-		for (button=0; button < NUM_MOUSEBUTTONS; ++button)
-		{
-			confkey = section + GetJoystickButtonName(js, button);
-			if (settings->exists(confkey))
-			{
-				settings->unset(confkey);
-			}
-		}
-	}
-
-	HIDBindingMap::iterator i;
-	for (i = bindingMap.begin(); i != bindingMap.end(); ++i)
-	{
-		for (key=0; key < SDLK_LAST; ++key)
-		{
-			if (keybindings[key] == i->second)
-			{
-				confkey = section + SDL_GetKeyName((SDLKey) key);
-				settings->set(confkey, i->first);
-			}
-		}
-
-		for (button=1; button < NUM_MOUSEBUTTONS+1; ++button)
-		{
-			if (mousebindings[button] == i->second)
-			{
-				confkey = section + GetMouseButtonName((MouseButton) button);
-				settings->set(confkey, i->first);
-			}
-		}
-
-		for (js=0; js < NUM_JOYSTICKS; ++js)
-		{
-			for (button=0; button < NUM_MOUSEBUTTONS; ++button)
-			{
-				if (joybindings[js][button] == i->second)
-				{
-					confkey = section + GetJoystickButtonName(js, button);
-					settings->set(confkey, i->first);
-				}
 			}
 		}
 	}
 }
 
-void HIDManager::bind(const Pentagram::istring& control, const Pentagram::istring& bindingName)
+void HIDManager::bind(const Pentagram::istring& control, const Console::ArgvType& argv)
 {
-	uint16 key, button, js;
-	const char * name = 0;
-	HIDBindingMap::iterator j = bindingMap.find(bindingName);
+	HID_Key key = HID_LAST;
+	HID_Event event = HID_EVENT_DEPRESS;
+	std::vector<Pentagram::istring> ctrl_argv;
+	Console::ArgvType * command = 0;
 
-	if (j != bindingMap.end())
+	if (! argv.empty())
 	{
-
-		for (key=0; key < SDLK_LAST; ++key)
+		std::vector<Console::ArgvType *>::iterator it;
+		for (it = commands.begin(); it != commands.end(); ++it)
 		{
-			//if (key == SDLK_ESCAPE || key == SDLK_BACKQUOTE)
-			if (key == SDLK_BACKQUOTE)
-			{	// We will not allow these keys to be rebound
-				++key; 
-			}
-			name = SDL_GetKeyName((SDLKey) key);
-			if (control == name)
+			if (argv == (**it))
 			{
-				keybindings[key] = j->second;
-
-				// We found the matching SDLKey. Stop searching;
-				return;
+				// Change from iterator to pointer
+				command = *it;
+				break;
 			}
 		}
 
-		// Only bind Mouse 2 and up for now
-		for (button=2; button < NUM_MOUSEBUTTONS+1; ++button)
+		if (!command)
 		{
-			name = GetMouseButtonName((MouseButton) button);
-			if (control == name)
-			{
-				mousebindings[button] = j->second;
-
-				// We found the matching Mouse Button. Stop searching;
-				return;
-			}
+			command = new Console::ArgvType(argv);
+			commands.push_back(command);
 		}
+	}
 
-		for (js=0; js < NUM_JOYSTICKS; ++js)
-		{
-			for (button=0; button < NUM_MOUSEBUTTONS; ++button)
-			{
-				name = GetJoystickButtonName(js, button);
-				if (control == name)
-				{
-					joybindings[js][button] = j->second;
+	Pentagram::StringToArgv(control, ctrl_argv);
+	if (ctrl_argv.size() == 1)
+	{
+		key = HID_GetKeyFromName(ctrl_argv[0]);
+	}
+	else if (ctrl_argv.size() > 1)
+	{ // we have a event
+		event = HID_GetEventFromName(ctrl_argv[0]);
+		key = HID_GetKeyFromName(ctrl_argv[1]);
+	}
 
-					//We found the matching Joystick Button. Stop searching;
-					return;
-				}
-			}
-		}
+	if (event < HID_EVENT_LAST && key < HID_LAST && key != HID_BACKQUOTE)
+	{
+		bindings[key][event] = command;
+	}
+	else
+	{
+		pout << "Error: Cannot bind " << control << std::endl;
 	}
 }
 
 void HIDManager::unbind(const Pentagram::istring& control)
 {
-	uint16 key, button, js;
-	const char * name = 0;
-	HIDBindingMap::iterator j = bindingMap.find(control);
-	if (j != bindingMap.end())
-	{	// we are unbinding all keys with the HIDBinding "control"
-		for (key=0; key < SDLK_LAST; ++key)
-		{
-			//if (key == SDLK_ESCAPE || key == SDLK_BACKQUOTE)
-			if (key == SDLK_BACKQUOTE)
-			{	// We will not allow these keys to be rebound
-				++key; 
-			}
-			if (keybindings[key] == j->second)
-			{
-				keybindings[key] = 0;
-			}
-		}
-
-		for (button=2; button < NUM_MOUSEBUTTONS+1; ++button)
-		{
-			if (mousebindings[button] == j->second)
-			{
-				mousebindings[button] = 0;
-			}
-		}
-
-		for (js=0; js < NUM_JOYSTICKS; ++js)
-		{
-			for (button=0; button < NUM_MOUSEBUTTONS; ++button)
-			{
-				if (joybindings[js][button] == j->second)
-				{
-					joybindings[js][button] = 0;
-				}
-			}
-		}
-	}
-	else
-	{	// assume we are unbinding a specific key
-		for (key=0; key < SDLK_LAST; ++key)
-		{
-			//if (key == SDLK_ESCAPE || key == SDLK_BACKQUOTE)
-			if (key == SDLK_BACKQUOTE)
-			{	// We will not allow these keys to be rebound
-				++key; 
-			}
-			name = SDL_GetKeyName((SDLKey) key);
-			if (control == name)
-			{
-				keybindings[key] = 0;
-			}
-		}
-
-		for (button=2; button < NUM_MOUSEBUTTONS+1; ++button)
-		{
-			name = GetMouseButtonName((MouseButton) button);
-			if (control == name)
-			{
-				mousebindings[button] = 0;
-			}
-		}
-
-		for (js=0; js < NUM_JOYSTICKS; ++js)
-		{
-			for (button=0; button < NUM_MOUSEBUTTONS; ++button)
-			{
-				name = GetJoystickButtonName(js, button);
-				if (control == name)
-				{
-					joybindings[js][button] = 0;
-				}
-			}
-		}
-	}
+	// bind to an empty control
+	Console::ArgvType command;
+	bind(control, command);
 }
 
-void HIDManager::ConCmd_bind(const Console::ArgsType &args, const Console::ArgvType &argv)
+void HIDManager::ConCmd_bind(const Console::ArgvType &argv)
 {
-	if (argv.size() != 3)
+	Console::ArgvType argv2;
+	Console::ArgvType::const_iterator it;
+	if (argv.size() < 3)
 	{
 		if (! argv.empty())
-			pout << "Usage: " << argv[0] << " <key> <action>: binds a key or button to an action" << std::endl;
+			pout << "Usage: " << argv[0] << " <key> <action> [<arg> ...]: binds a key or button to an action" << std::endl;
 		return;
 	}
 	HIDManager * hidmanager = HIDManager::get_instance();
-	
-	Pentagram::istring control(argv[1]);
-	Pentagram::istring bindingName(argv[2]);
 
-	hidmanager->bind(control, bindingName);
+	Pentagram::istring control(argv[1]);
+
+	it = argv.begin();
+	++it;
+	++it;
+	argv2.assign(it, argv.end());
+
+	hidmanager->bind(control, argv2);
 }
 
-void HIDManager::ConCmd_unbind(const Console::ArgsType &args, const Console::ArgvType &argv)
+void HIDManager::ConCmd_unbind(const Console::ArgvType &argv)
 {
 	if (argv.size() != 2)
 	{
 		if (! argv.empty())
-			pout << "Usage: " << argv[0] << " <key or action>: unbinds a key, button, or action" << std::endl;
+			pout << "Usage: " << argv[0] << " <key>: unbinds a key or button" << std::endl;
 		return;
 	}
 	HIDManager * hidmanager = HIDManager::get_instance();
@@ -482,13 +332,13 @@ void HIDManager::ConCmd_unbind(const Console::ArgsType &args, const Console::Arg
 	hidmanager->unbind(control);
 }
 
-void HIDManager::ConCmd_listbinds(const Console::ArgsType &args, const Console::ArgvType &argv)
+void HIDManager::ConCmd_listbinds(const Console::ArgvType &argv)
 {
 	HIDManager * hidmanager = HIDManager::get_instance();
 	hidmanager->listBindings();
 }
 
-void HIDManager::ConCmd_save(const Console::ArgsType &args, const Console::ArgvType &argv)
+void HIDManager::ConCmd_save(const Console::ArgvType &argv)
 {
 	HIDManager * hidmanager = HIDManager::get_instance();
 	hidmanager->saveBindings();
@@ -497,91 +347,31 @@ void HIDManager::ConCmd_save(const Console::ArgsType &args, const Console::ArgvT
 	settings->write();
 }
 
-void HIDManager::ConCmd_execBinding(const Console::ArgsType &args, const Console::ArgvType &argv)
-{
-	uint32 pos = argv[0].find_last_of(':');
-	assert (pos != Pentagram::istring::npos);
-	Pentagram::istring bindingName = argv[0].substr( pos + 1 );
-	HID_Event event;
-	event.xrel = 0;
-	event.yrel = 0;
-	event.value = 0;
-	event.device = HID_OTHER;
-	event.type = HID_DOWN;
-
-	if (argv.size() > 1)
-	{
-		if (argv[1] == "HID_UP" || argv[1] == "OFF" || argv[1] == "0")
-		{
-			event.type = HID_UP;
-		}
-	}
-
-	HIDManager * hidmanager = HIDManager::get_instance();
-	HIDBinding binding = hidmanager->getBinding(bindingName);
-	if (binding)
-		binding(event);
-}
-
 void HIDManager::listBindings()
 {
-	HIDBindingMap::iterator it;
-	std::vector<const char *> controls;
-	std::vector<const char *>::iterator j;
+	uint16 key, event;
+	Console::ArgsType command;
 
-	con.Printf("%-25sKeys\n", "Controls");
-	for (it = bindingMap.begin(); it != bindingMap.end(); ++it)
+	for (key=0; key < HID_LAST; ++key)
 	{
-		hidmanager->getBindings(it->first, controls);
-		con.Printf(" %-25s", it->first.c_str());
-		for (j = controls.begin(); j != controls.end(); ++j)
+		for (event=0; event < HID_EVENT_LAST; ++event)
 		{
-			con.Printf("%s ", *j);
-		}
-		con.Putchar('\n');
-	}
-}
-
-
-void HIDManager::getBindings(const Pentagram::istring& bindingName, std::vector<const char *>& controls)
-{
-	controls.clear();
-	HIDBindingMap::iterator j = bindingMap.find(bindingName);
-	if (j != bindingMap.end())
-	{
-		uint16 key, button, js;
-
-		for (key=0; key < SDLK_LAST; ++key)
-		{
-			if (keybindings[key] == j->second)
+			if (bindings[key][event])
 			{
-				controls.push_back(SDL_GetKeyName((SDLKey) key));
-			}
-		}
-
-		for (button=1; button < NUM_MOUSEBUTTONS+1; ++button)
-		{
-			if (mousebindings[button] == j->second)
-			{
-				controls.push_back(GetMouseButtonName((MouseButton) button));
-			}
-		}
-
-		for (js=0; js < NUM_JOYSTICKS; ++js)
-		{
-			for (button=0; button < NUM_MOUSEBUTTONS; ++button)
-			{
-				if (joybindings[js][button] == j->second)
+				Pentagram::ArgvToString(*bindings[key][event], command);
+				if (event != HID_EVENT_DEPRESS)
 				{
-					controls.push_back(GetJoystickButtonName(js, button));
+					pout << HID_GetEventName((HID_Event) event) << ' ' <<
+						HID_GetKeyName((HID_Key) key) <<
+						" = " << command << std::endl;
+				}
+				else
+				{
+					pout << HID_GetKeyName((HID_Key) key) <<
+						" = " << command << std::endl;
 				}
 			}
 		}
 	}
 }
 
-//! checks to see if that key is being used to toggle the console.
-bool HIDManager::isToggleConsole(const SDL_Event& event)
-{
-	return getBinding(event) == HIDBindings::toggleConsole;
-}

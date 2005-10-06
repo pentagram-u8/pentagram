@@ -97,12 +97,17 @@ public:
 	uint32 getFrameNum() const { return framenum; };
 
 	//! "Kernel::processTypes" console command
-	static void ConCmd_processTypes(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void ConCmd_processTypes(const Console::ArgvType &argv);
 	//! "Kernel::listItemProcesses" console command
-	static void ConCmd_listItemProcesses(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void ConCmd_listItemProcesses(const Console::ArgvType &argv);
 	//! "Kernel::processInfo" console command
-	static void ConCmd_processInfo(const Console::ArgsType &args, const Console::ArgvType &argv);
-	
+	static void ConCmd_processInfo(const Console::ArgvType &argv);
+
+	//! "Kernel::toggleFrameByFrame" console command
+	static void ConCmd_toggleFrameByFrame(const Console::ArgvType &argv);
+	//! "Kernel::advanceFrame" console command
+	static void ConCmd_advanceFrame(const Console::ArgvType &argv);
+
 	INTRINSIC(I_getNumProcesses);
 	INTRINSIC(I_resetRef);
 private:

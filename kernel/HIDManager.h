@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,10 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define HIDMANAGER_H
 
 #include <vector>
-#include "SDL_events.h"
-#include "HIDBinding.h"
-#include "Mouse.h"
+#include "HIDKeys.h"
 #include "Joystick.h"
+#include "SDL_events.h"
 
 //! Responsible to loading the keybindings and storing them
 class HIDManager
@@ -34,22 +33,19 @@ public:
 
 	//! obtain the singleton instance of the HIDManager
 	static HIDManager * get_instance() { return hidmanager; }
-	
-	//! obtain the HIDBinding associated with the event
-	//! \param event an SDL_Event used to find an appropriate HIDBinding
-	//! \return a HIDBinding or null if no binding was present
-	HIDBinding getBinding(const SDL_Event& event);
-	
+
+	//! execute the Console command associated with the event
+	//! \param event an SDL_Event used to find an appropriate Console command
+	//! \return true if a console command is executed
+	bool handleEvent(const SDL_Event & event);
+
+	void handleDelayedEvents();
+
 	//! Reset the keybindings
 	void resetBindings();
 
 	//! loads the keybindings from the configuration
 	void loadBindings();
-
-	//! Builds a HID_Event from ta SDL_Event
-	//! \param hidEvent a blank HID_Event
-	//! \param sdlEvent the SDL_Event to transfer
-	void buildEvent(HID_Event& hidEvent, const SDL_Event& sdlEvent);
 
 	//! saves the keybindings to the configuration
 	void saveBindings();
@@ -57,47 +53,32 @@ public:
 	//! loads a single keybinding
 	//! \param control a key or button to bind
 	//! \param bindingName name of the HIDBinding
-    void bind(const Pentagram::istring& control, const Pentagram::istring& bindingName);
+    void bind(const Pentagram::istring& control, const Console::ArgvType& argv);
 
 	//! removes all controls to a HIDBinding or the binding to one specified key
 	//! \param bindingName name of a HIDBinding or the name of key
 	void unbind(const Pentagram::istring& control);
 
 	//! "bind" console command
-	static void ConCmd_bind(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void ConCmd_bind(const Console::ArgvType &argv);
 
 	//! "unbind" console command
-	static void ConCmd_unbind(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void ConCmd_unbind(const Console::ArgvType &argv);
 
 	//! "listbinds" console command
-	static void ConCmd_listbinds(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void ConCmd_listbinds(const Console::ArgvType &argv);
 
 	//! "save" console command
-	static void ConCmd_save(const Console::ArgsType &args, const Console::ArgvType &argv);
-
-	//! all binding console commands
-	static void ConCmd_execBinding(const Console::ArgsType &args, const Console::ArgvType &argv);
-
-	//! stores the names of all controls bond to bindingName in a vector
-	//! \param bindingName name of a HIDBinding
-	//! \param controls vector to store the controls attached to bindingName
-	void getBindings(const Pentagram::istring& bindingName, std::vector<const char *>& controls);
-
-	//! checks to see if that key is being used to toggle the console.
-	bool isToggleConsole(const SDL_Event& event);
+	static void ConCmd_save(const Console::ArgvType &argv);
 
 private:
 	void HIDManager::listBindings();
 
-	//! obtain the HIDBinding by name
-	//! \param bindingName name of a HIDBinding
-	//! \return a HIDBinding or null if no binding was present
-	HIDBinding getBinding(const Pentagram::istring& bindingName);
+	std::vector<Console::ArgvType *> commands;
+	Console::ArgvType * bindings[HID_LAST][HID_EVENT_LAST];
+	uint32 lastDown[HID_LAST];
+	uint32 double_timeout;
 
-	HIDBindingMap bindingMap;
-	HIDBinding keybindings[SDLK_LAST];
-	HIDBinding mousebindings[NUM_MOUSEBUTTONS+1];
-	HIDBinding joybindings[NUM_JOYSTICKS][NUM_JOYBUTTONS];
 	static HIDManager* hidmanager;
 };
 

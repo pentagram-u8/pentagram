@@ -43,6 +43,8 @@ public:
 	virtual void ChildNotify(Gump *child, uint32 message);
 
 	static void showMenu();
+	static void ConCmd_showMenu(const Console::ArgvType &argv);
+
 	static void inputName();
 
 protected:

@@ -219,8 +219,8 @@ Console::Console () : current(0), x(0), display(0), linewidth(-1),
 //
 Console::~Console()
 {
-	RemoveConsoleCommand("Console::CmdList");
-	RemoveConsoleCommand("Console::CmdHistory");
+	RemoveConsoleCommand(Console::ConCmd_CmdList);
+	RemoveConsoleCommand(Console::ConCmd_CmdHistory);
 
 	// Need to do this first
 	PrintPutchar();
@@ -562,19 +562,14 @@ void Console::ScrollConsole(sint32 lines)
 // Console commands
 //
 
-void Console::AddConsoleCommand(const Pentagram::istring &command, Console::Function function)
+void Console::AddConsoleCommand(const ArgsType &command, Console::Function function)
 {
 	ConsoleCommands[command] = function;
 }
 
-void Console::RemoveConsoleCommand(const Pentagram::istring &command)
+void Console::RemoveConsoleCommand(Console::Function function)
 {
-	ConsoleCommands[command] = 0;
-}
-
-void Console::RemoveConsoleFunction(Console::Function function)
-{
-	std::map<Pentagram::istring,Console::Function>::iterator it;
+	std::map<Console::ArgsType,Console::Function>::iterator it;
 	for (it = ConsoleCommands.begin(); it != ConsoleCommands.end(); ++it)
 	{
 		if (it->second == function)
@@ -584,13 +579,17 @@ void Console::RemoveConsoleFunction(Console::Function function)
 		}
 	}
 }
-
 void Console::ExecuteConsoleCommand(const Console::ArgsType &args)
 {
-	std::map<Pentagram::istring,Console::Function>::iterator it;
-	
 	Console::ArgvType argv;
 	Pentagram::StringToArgv(args,argv);
+
+	ExecuteConsoleCommand(argv);
+}
+
+void Console::ExecuteConsoleCommand(const Console::ArgvType &argv)
+{
+	std::map<Console::ArgsType,Console::Function>::iterator it;
 
 	// Empty?!?
 	if (argv.empty()) return;
@@ -598,7 +597,7 @@ void Console::ExecuteConsoleCommand(const Console::ArgsType &args)
 	it = ConsoleCommands.find(argv[0]);
 
 	if (it != ConsoleCommands.end())
-		it->second(args, argv);
+		it->second(argv);
 	else
 		pout << "Unknown command: " << argv[0] << std::endl;
 }
@@ -665,9 +664,9 @@ void Console::AddCharacterToCommandBuffer(int ch)
 		if (!commandBuffer.empty()) {
 
 			int count = 0;
-			Pentagram::istring common;
-			std::map<Pentagram::istring,Console::Function>::iterator it;
-			std::map<Pentagram::istring,Console::Function>::iterator found = 0;
+			Console::ArgsType common;
+			std::map<Console::ArgsType,Console::Function>::iterator it;
+			std::map<Console::ArgsType,Console::Function>::iterator found = 0;
 
 			for (it = ConsoleCommands.begin(); it != ConsoleCommands.end(); ++it)
 				if (it->second) {
@@ -681,13 +680,13 @@ void Console::AddCharacterToCommandBuffer(int ch)
 					}
 					else
 					{
-						Pentagram::istring::iterator it1 = common.begin();
-						Pentagram::istring::const_iterator it2 = it->first.begin();
+						Console::ArgsType::iterator it1 = common.begin();
+						Console::ArgsType::const_iterator it2 = it->first.begin();
 						int comsize = 0;
 
 						while (it1 != common.end())
 						{
-							if (!Pentagram::istring::traits_type::eq(*it1,*it2)) break;
+							if (!Console::ArgsType::traits_type::eq(*it1,*it2)) break;
 							
 							comsize++;
 							++it1;
@@ -712,7 +711,7 @@ void Console::AddCharacterToCommandBuffer(int ch)
 						ArgvType argv;
 						Pentagram::StringToArgv(args,argv);
 
-						ConCmd_CmdList(args,argv);
+						ConCmd_CmdList(argv);
 						commandBuffer = common;
 					}
 					else 
@@ -769,7 +768,7 @@ void Console::MoveCommandCursor(int num)
 	if (commandCursorPos > static_cast<int>(commandBuffer.size())) commandCursorPos = static_cast<int>(commandBuffer.size());
 }
 
-void Console::ConCmd_CmdList(const Console::ArgsType & /*args*/, const Console::ArgvType &argv)
+void Console::ConCmd_CmdList(const Console::ArgvType &argv)
 {
 	std::map<ArgsType,Function>::iterator it;
 	int i = 0;
@@ -803,7 +802,7 @@ void Console::ConCmd_CmdList(const Console::ArgsType & /*args*/, const Console::
 	pout << i << " commands" << std::endl;
 }
 
-void Console::ConCmd_CmdHistory(const Console::ArgsType & /*args*/, const Console::ArgvType & /*argv*/)
+void Console::ConCmd_CmdHistory(const Console::ArgvType & /*argv*/)
 {
 	std::vector<ArgsType>::iterator it;
 

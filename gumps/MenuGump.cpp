@@ -268,6 +268,12 @@ void MenuGump::showMenu()
 	gump->setRelativePosition(CENTER);
 }
 
+// static
+void MenuGump::ConCmd_showMenu(const Console::ArgvType &argv)
+{
+	MenuGump::showMenu();
+}
+
 //static
 void MenuGump::inputName()
 {

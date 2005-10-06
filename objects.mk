@@ -3,6 +3,7 @@ KERNEL = \
 	kernel/CoreApp.o \
 	kernel/DelayProcess.o \
 	kernel/HIDManager.o \
+	kernel/HIDKeys.o \
 	kernel/Joystick.o \
 	kernel/Kernel.o \
 	kernel/MemoryManager.o \

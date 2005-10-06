@@ -37,7 +37,7 @@ public:
 	virtual bool run(const uint32 framenum);
 
 	static ProcId invertScreen();
-	static void ConCmd_invertScreen(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void ConCmd_invertScreen(const Console::ArgvType &argv);
 
 	INTRINSIC(I_invertScreen);
 

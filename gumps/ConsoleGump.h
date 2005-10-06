@@ -67,6 +67,8 @@ public:
 	virtual void		OnFocus(bool /*gain*/);
 	virtual bool		OnKeyDown(int key, int mod);
 
+	static void			ConCmd_toggle(const Console::ArgvType &argv);	//!< "ConsoleGump::toggle" console command
+
 	bool	loadData(IDataSource* ids, uint32 version);
 
 protected:

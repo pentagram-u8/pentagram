@@ -98,7 +98,7 @@ public:
 	void unpauseAllSamples();
 
 	// AudioProcess::playSound console command
-	//static void ConCmd_playSound(const Console::ArgsType &args, const Console::ArgvType &argv);
+	//static void ConCmd_playSound(const Console::ArgvType &argv);
 
 	bool loadData(IDataSource* ids, uint32 version);
 

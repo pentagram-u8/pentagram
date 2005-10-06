@@ -19,22 +19,3 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 #include "Mouse.h"
 
-static const char* mouseButtonName[] = {
-	"",
-	"LeftButton",
-	"MiddleButton",
-	"RightButton",
-	"WheelUp",
-	"WheelDown",
-	"Mouse6",
-	"Mouse7",
-	"Mouse8",
-	"Mouse9",
-	"Mouse10"
-};
-
-const char* GetMouseButtonName(MouseButton button)
-{
-	assert(button > 0 && button <= NUM_MOUSEBUTTONS);
-	return mouseButtonName[button];
-}

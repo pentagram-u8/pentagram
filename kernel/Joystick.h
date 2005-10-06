@@ -24,11 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
    and we are ignoring anything other than buttons (hats, axes, and balls)
 */
 
-const int NUM_JOYBUTTONS = 16;
-const int NUM_JOYSTICKS = 1;
-
-const char* GetJoystickButtonName(uint16 joystick, uint16 button);
-
 void InitJoystick();
 void ShutdownJoystick();
+
 #endif

@@ -21,58 +21,49 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "SDL_events.h"
 
-static SDL_Joystick * joy1 = 0;
-
-static const char * joyButtonName[] = {
-	"Joy1-Bx00",
-	"Joy1-Bx01",
-	"Joy1-Bx02",
-	"Joy1-Bx03",
-	"Joy1-Bx04",
-	"Joy1-Bx05",
-	"Joy1-Bx06",
-	"Joy1-Bx07",
-	"Joy1-Bx08",
-	"Joy1-Bx09",
-	"Joy1-Bx0A",
-	"Joy1-Bx0B",
-	"Joy1-Bx0C",
-	"Joy1-Bx0D",
-	"Joy1-Bx0E",
-	"Joy1-Bx0F"
+enum Joystick {
+	JOY1 = 0,
+	JOY_LAST
 };
 
-const char* GetJoystickButtonName(uint16 joystick, uint16 button)
-{
-	// Limitations
-	if (button < NUM_JOYBUTTONS && joystick < NUM_JOYSTICKS)
-		return joyButtonName[button];
-
-	return 0;
-}
+static SDL_Joystick * joy[JOY_LAST] = {0};
 
 void InitJoystick()
 {
-	if (SDL_NumJoysticks() > 0)
+	int i, buttons, axes, balls, hats;
+	int joys = SDL_NumJoysticks();
+
+	for (i = 0; i < joys; ++i)
 	{
-		if(! SDL_JoystickOpened(0))
+		if (i >= JOY_LAST)
 		{
-			joy1 = SDL_JoystickOpen(0);
-			if (joy1)
+			perr << "Additional joysticks detected. Cannot initialize more than "
+				<< JOY_LAST << "." << std::endl;
+			break;
+		}
+
+		joy[i] = 0;
+
+		if(! SDL_JoystickOpened(i))
+		{
+			joy[i] = SDL_JoystickOpen(i);
+			if (joy[i])
 			{
-				pout << "Initialized joystick." << std::endl;
-				pout << "\tButtons: " << SDL_JoystickNumButtons(joy1)
-					 << std::endl;
-				pout << "\tAxes: " << SDL_JoystickNumAxes(joy1)
-					 << std::endl;
-				pout << "\tBalls: " << SDL_JoystickNumBalls(joy1)
-					 << std::endl;
-				pout << "\tHats: " << SDL_JoystickNumHats(joy1)
-					 << std::endl;
+				buttons = SDL_JoystickNumButtons(joy[i]);
+				axes = SDL_JoystickNumAxes(joy[i]);
+				balls = SDL_JoystickNumBalls(joy[i]);
+				hats = SDL_JoystickNumHats(joy[i]);
+
+				pout << "Initialized joystick " << i + 1 << "." << std::endl;
+				pout << "\tButtons: " << buttons << std::endl;
+				pout << "\tAxes: " << axes << std::endl;
+				pout << "\tBalls: " << balls << std::endl;
+				pout << "\tHats: " << hats << std::endl;
 			}
 			else
 			{
-				pout << "Error while initializing joystick." << std::endl;
+				perr << "Error while initializing joystick " << i + 1 << "."
+					<< std::endl;
 			}
 		}
 	}
@@ -80,9 +71,13 @@ void InitJoystick()
 
 void ShutdownJoystick()
 {
-	if(SDL_JoystickOpened(1))
+	int i;
+	for (i = 0; i < JOY_LAST; ++i)
 	{
-		SDL_JoystickClose(joy1);
+		if(joy[i] && SDL_JoystickOpened(i))
+		{
+			SDL_JoystickClose(joy[i]);
+		}
+		joy[i] = 0;
 	}
-	joy1 = 0;
 }

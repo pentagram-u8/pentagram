@@ -47,7 +47,7 @@ void FastAreaVisGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 			if (currentmap->isChunkFast(x,y)) surf->Fill32(0xFFFFFFFF,x+1,y+1,1,1);
 }
 
-void FastAreaVisGump::ConCmd_toggle(const Console::ArgsType &args, const Console::ArgvType &argv)
+void FastAreaVisGump::ConCmd_toggle(const Console::ArgvType &argv)
 {
 	GUIApp *app = GUIApp::get_instance();
 	Gump *desktop = app->getDesktopGump();

@@ -48,8 +48,7 @@ public:
 	static ProcId U8MovieViewer(RawArchive* skf, bool introMusicHack = false);
 
 	//! "play" console command
-	static void ConCmd_play(const Console::ArgsType &args,
-							const Console::ArgvType &argv);
+	static void ConCmd_play(const Console::ArgvType &argv);
 
 	bool loadData(IDataSource* ids);
 protected:

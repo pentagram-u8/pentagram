@@ -33,7 +33,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MemoryManager.h"
 
 #include "HIDManager.h"
-#include "HIDBinding.h"
 
 #include "RenderSurface.h"
 #include "Texture.h"
@@ -59,6 +58,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "FastAreaVisGump.h"
 #include "MiniMapGump.h"
 #include "QuitGump.h"
+#include "MenuGump.h"
 
 // For gump positioning... perhaps shouldn't do it this way....
 #include "BarkGump.h"
@@ -148,21 +148,29 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 {
 	application = this;
 
-	for (int i = 0; i < NUM_MOUSEBUTTONS+1; ++i) {
+	for (int i = 0; i < MOUSE_LAST; ++i) {
 		mouseButton[i].downGump = 0;
 		mouseButton[i].lastDown = 0;
 		mouseButton[i].state = MBS_HANDLED;
 	}
 
-	con.AddConsoleCommand("quit", ConCmd_quit);	
-	con.AddConsoleCommand("GUIApp::quit", ConCmd_quit);	
+	con.AddConsoleCommand("quit", ConCmd_quit);
+	con.AddConsoleCommand("GUIApp::quit", ConCmd_quit);
+	con.AddConsoleCommand("QuitGump::verifyQuit", QuitGump::ConCmd_verifyQuit);
+	con.AddConsoleCommand("ShapeViewerGump::U8ShapeViewer", ShapeViewerGump::ConCmd_U8ShapeViewer);
+	con.AddConsoleCommand("MenuGump::showMenu", MenuGump::ConCmd_showMenu);
 	con.AddConsoleCommand("GUIApp::drawRenderStats", ConCmd_drawRenderStats);
+	con.AddConsoleCommand("GUIApp::engineStats", ConCmd_engineStats);
 
 	con.AddConsoleCommand("GUIApp::changeGame",ConCmd_changeGame);
 	con.AddConsoleCommand("GUIApp::listGames",ConCmd_listGames);
 
 	con.AddConsoleCommand("GUIApp::setVideoMode",ConCmd_setVideoMode);
 	con.AddConsoleCommand("GUIApp::toggleFullscreen",ConCmd_toggleFullscreen);
+
+	con.AddConsoleCommand("GUIApp::toggleAvatarInStasis",ConCmd_toggleAvatarInStasis);
+	con.AddConsoleCommand("GUIApp::togglePaintEditorItems",ConCmd_togglePaintEditorItems);
+	con.AddConsoleCommand("GUIApp::toggleShowTouchingItems",ConCmd_toggleShowTouchingItems);
 
 	con.AddConsoleCommand("HIDManager::bind", HIDManager::ConCmd_bind);
 	con.AddConsoleCommand("HIDManager::unbind", HIDManager::ConCmd_unbind);
@@ -173,6 +181,9 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	con.AddConsoleCommand("Kernel::processInfo", Kernel::ConCmd_processInfo);
 	con.AddConsoleCommand("Kernel::listItemProcesses",
 						  Kernel::ConCmd_listItemProcesses);
+	con.AddConsoleCommand("Kernel::toggleFrameByFrame",
+						  Kernel::ConCmd_toggleFrameByFrame);
+	con.AddConsoleCommand("Kernel::advanceFrame", Kernel::ConCmd_advanceFrame);
 	con.AddConsoleCommand("ObjectManager::objectTypes",
 						  ObjectManager::ConCmd_objectTypes);
 	con.AddConsoleCommand("ObjectManager::objectInfo",
@@ -182,6 +193,38 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	con.AddConsoleCommand("MemoryManager::test",
 						  MemoryManager::ConCmd_test);
 
+	con.AddConsoleCommand("QuickAvatarMoverProcess::startMoveUp",
+						  QuickAvatarMoverProcess::ConCmd_startMoveUp);
+	con.AddConsoleCommand("QuickAvatarMoverProcess::startMoveDown",
+						  QuickAvatarMoverProcess::ConCmd_startMoveDown);
+	con.AddConsoleCommand("QuickAvatarMoverProcess::startMoveLeft",
+						  QuickAvatarMoverProcess::ConCmd_startMoveLeft);
+	con.AddConsoleCommand("QuickAvatarMoverProcess::startMoveRight",
+						  QuickAvatarMoverProcess::ConCmd_startMoveRight);
+	con.AddConsoleCommand("QuickAvatarMoverProcess::startAscend",
+						  QuickAvatarMoverProcess::ConCmd_startAscend);
+	con.AddConsoleCommand("QuickAvatarMoverProcess::startDescend",
+						  QuickAvatarMoverProcess::ConCmd_startDescend);
+	con.AddConsoleCommand("QuickAvatarMoverProcess::stopMoveUp",
+						  QuickAvatarMoverProcess::ConCmd_stopMoveUp);
+	con.AddConsoleCommand("QuickAvatarMoverProcess::stopMoveDown",
+						  QuickAvatarMoverProcess::ConCmd_stopMoveDown);
+	con.AddConsoleCommand("QuickAvatarMoverProcess::stopMoveLeft",
+						  QuickAvatarMoverProcess::ConCmd_stopMoveLeft);
+	con.AddConsoleCommand("QuickAvatarMoverProcess::stopMoveRight",
+						  QuickAvatarMoverProcess::ConCmd_stopMoveRight);
+	con.AddConsoleCommand("QuickAvatarMoverProcess::stopAscend",
+						  QuickAvatarMoverProcess::ConCmd_stopAscend);
+	con.AddConsoleCommand("QuickAvatarMoverProcess::stopDescend",
+						  QuickAvatarMoverProcess::ConCmd_stopDescend);
+	con.AddConsoleCommand("QuickAvatarMoverProcess::toggleQuarterSpeed",
+						  QuickAvatarMoverProcess::ConCmd_toggleQuarterSpeed);
+	con.AddConsoleCommand("QuickAvatarMoverProcess::toggleClipping",
+						  QuickAvatarMoverProcess::ConCmd_toggleClipping);
+
+	con.AddConsoleCommand("GameMapGump::toggleHightlightItems",
+						  GameMapGump::ConCmd_toggleHightlightItems);
+
 	// Game related console commands are now added in startupGame
 }
 
@@ -189,27 +232,53 @@ GUIApp::~GUIApp()
 {
 	shutdown();
 
-	con.RemoveConsoleCommand("quit");
-	con.RemoveConsoleCommand("GUIApp::quit");
-	con.RemoveConsoleCommand("GUIApp::drawRenderStats");
+	con.RemoveConsoleCommand(GUIApp::ConCmd_quit);
+	con.RemoveConsoleCommand(QuitGump::ConCmd_verifyQuit);
+	con.RemoveConsoleCommand(ShapeViewerGump::ConCmd_U8ShapeViewer);
+	con.RemoveConsoleCommand(MenuGump::ConCmd_showMenu);
+	con.RemoveConsoleCommand(GUIApp::ConCmd_drawRenderStats);
+	con.RemoveConsoleCommand(GUIApp::ConCmd_engineStats);
 
-	con.RemoveConsoleCommand("GUIApp::changeGame");
-	con.RemoveConsoleCommand("GUIApp::listGames");
+	con.RemoveConsoleCommand(GUIApp::ConCmd_changeGame);
+	con.RemoveConsoleCommand(GUIApp::ConCmd_listGames);
 
-	con.RemoveConsoleCommand("GUIApp::setVideoMode");
-	con.RemoveConsoleCommand("GUIApp::toggleFullscreen");
+	con.RemoveConsoleCommand(GUIApp::ConCmd_setVideoMode);
+	con.RemoveConsoleCommand(GUIApp::ConCmd_toggleFullscreen);
 
-	con.RemoveConsoleCommand("HIDManager::bind");
-	con.RemoveConsoleCommand("HIDManager::unbind");
-	con.RemoveConsoleCommand("HIDManager::listbinds");
-	con.RemoveConsoleCommand("HIDManager::save");
-	con.RemoveConsoleCommand("Kernel::processTypes");
-	con.RemoveConsoleCommand("Kernel::processInfo");
-	con.RemoveConsoleCommand("Kernel::listItemProcesses");
-	con.RemoveConsoleCommand("ObjectManager::objectTypes");
-	con.RemoveConsoleCommand("ObjectManager::objectInfo");
-	con.RemoveConsoleCommand("MemoryManager::MemInfo");
-	con.RemoveConsoleCommand("MemoryManager::test");
+	con.RemoveConsoleCommand(GUIApp::ConCmd_toggleAvatarInStasis);
+	con.RemoveConsoleCommand(GUIApp::ConCmd_togglePaintEditorItems);
+	con.RemoveConsoleCommand(GUIApp::ConCmd_toggleShowTouchingItems);
+
+	con.RemoveConsoleCommand(HIDManager::ConCmd_bind);
+	con.RemoveConsoleCommand(HIDManager::ConCmd_unbind);
+	con.RemoveConsoleCommand(HIDManager::ConCmd_listbinds);
+	con.RemoveConsoleCommand(HIDManager::ConCmd_save);
+	con.RemoveConsoleCommand(Kernel::ConCmd_processTypes);
+	con.RemoveConsoleCommand(Kernel::ConCmd_processInfo);
+	con.RemoveConsoleCommand(Kernel::ConCmd_listItemProcesses);
+	con.RemoveConsoleCommand(Kernel::ConCmd_toggleFrameByFrame);
+	con.RemoveConsoleCommand(Kernel::ConCmd_advanceFrame);
+	con.RemoveConsoleCommand(ObjectManager::ConCmd_objectTypes);
+	con.RemoveConsoleCommand(ObjectManager::ConCmd_objectInfo);
+	con.RemoveConsoleCommand(MemoryManager::ConCmd_MemInfo);
+	con.RemoveConsoleCommand(MemoryManager::ConCmd_test);
+
+	con.RemoveConsoleCommand(QuickAvatarMoverProcess::ConCmd_startMoveUp);
+	con.RemoveConsoleCommand(QuickAvatarMoverProcess::ConCmd_startMoveDown);
+	con.RemoveConsoleCommand(QuickAvatarMoverProcess::ConCmd_startMoveLeft);
+	con.RemoveConsoleCommand(QuickAvatarMoverProcess::ConCmd_startMoveRight);
+	con.RemoveConsoleCommand(QuickAvatarMoverProcess::ConCmd_startAscend);
+	con.RemoveConsoleCommand(QuickAvatarMoverProcess::ConCmd_startDescend);
+	con.RemoveConsoleCommand(QuickAvatarMoverProcess::ConCmd_stopMoveUp);
+	con.RemoveConsoleCommand(QuickAvatarMoverProcess::ConCmd_stopMoveDown);
+	con.RemoveConsoleCommand(QuickAvatarMoverProcess::ConCmd_stopMoveLeft);
+	con.RemoveConsoleCommand(QuickAvatarMoverProcess::ConCmd_stopMoveRight);
+	con.RemoveConsoleCommand(QuickAvatarMoverProcess::ConCmd_stopAscend);
+	con.RemoveConsoleCommand(QuickAvatarMoverProcess::ConCmd_stopDescend);
+	con.RemoveConsoleCommand(QuickAvatarMoverProcess::ConCmd_toggleQuarterSpeed);
+	con.RemoveConsoleCommand(QuickAvatarMoverProcess::ConCmd_toggleClipping);
+
+	con.RemoveConsoleCommand(GameMapGump::ConCmd_toggleHightlightItems);
 
 	// Game related console commands are now removed in shutdownGame
 
@@ -377,6 +446,18 @@ void GUIApp::startupGame()
 						  FastAreaVisGump::ConCmd_toggle);
 	con.AddConsoleCommand("MiniMapGump::toggle",
 						  MiniMapGump::ConCmd_toggle);
+	con.AddConsoleCommand("MainActor::useBackpack",
+						  MainActor::ConCmd_useBackpack);
+	con.AddConsoleCommand("MainActor::useInventory",
+						  MainActor::ConCmd_useInventory);
+	con.AddConsoleCommand("MainActor::useRecall",
+						  MainActor::ConCmd_useRecall);
+	con.AddConsoleCommand("MainActor::useBedroll",
+						  MainActor::ConCmd_useBedroll);
+	con.AddConsoleCommand("MainActor::useKeyring",
+						  MainActor::ConCmd_useKeyring);
+	con.AddConsoleCommand("MainActor::toggleCombat",
+						  MainActor::ConCmd_toggleCombat);
 
 	gamedata = new GameData();
 
@@ -474,7 +555,6 @@ void GUIApp::shutdownGame(bool reloading)
 	objectmanager->reset();
 	FORGET_OBJECT(ucmachine);
 	kernel->reset();
-	hidmanager->resetBindings();
 	palettemanager->reset();
 	fontmanager->reset();
 
@@ -493,22 +573,28 @@ void GUIApp::shutdownGame(bool reloading)
 	has_cheated = false;
 
 	// Generic Game 
-	con.RemoveConsoleCommand("GUIApp::saveGame");
-	con.RemoveConsoleCommand("GUIApp::loadGame");
-	con.RemoveConsoleCommand("GUIApp::newGame");
+	con.RemoveConsoleCommand(GUIApp::ConCmd_saveGame);
+	con.RemoveConsoleCommand(GUIApp::ConCmd_loadGame);
+	con.RemoveConsoleCommand(GUIApp::ConCmd_newGame);
 
 	// U8 Only kind of
-	con.RemoveConsoleCommand("MainActor::teleport");
-	con.RemoveConsoleCommand("MainActor::mark");
-	con.RemoveConsoleCommand("MainActor::recall");
-	con.RemoveConsoleCommand("MainActor::listmarks");
-	con.RemoveConsoleCommand("Cheat::maxstats");
-	con.RemoveConsoleCommand("MainActor::name");
-	con.RemoveConsoleCommand("MovieGump::play");
-	con.RemoveConsoleCommand("MusicProcess::playMusic");
-	con.RemoveConsoleCommand("InverterProcess::invertScreen");
-	con.RemoveConsoleCommand("FastAreaVisGump::toggle");
-	con.RemoveConsoleCommand("MiniMapGump::toggle");
+	con.RemoveConsoleCommand(MainActor::ConCmd_teleport);
+	con.RemoveConsoleCommand(MainActor::ConCmd_mark);
+	con.RemoveConsoleCommand(MainActor::ConCmd_recall);
+	con.RemoveConsoleCommand(MainActor::ConCmd_listmarks);
+	con.RemoveConsoleCommand(MainActor::ConCmd_maxstats);
+	con.RemoveConsoleCommand(MainActor::ConCmd_name);
+	con.RemoveConsoleCommand(MovieGump::ConCmd_play);
+	con.RemoveConsoleCommand(MusicProcess::ConCmd_playMusic);
+	con.RemoveConsoleCommand(InverterProcess::ConCmd_invertScreen);
+	con.RemoveConsoleCommand(FastAreaVisGump::ConCmd_toggle);
+	con.RemoveConsoleCommand(MiniMapGump::ConCmd_toggle);
+	con.RemoveConsoleCommand(MainActor::ConCmd_useBackpack);
+	con.RemoveConsoleCommand(MainActor::ConCmd_useInventory);
+	con.RemoveConsoleCommand(MainActor::ConCmd_useRecall);
+	con.RemoveConsoleCommand(MainActor::ConCmd_useBedroll);
+	con.RemoveConsoleCommand(MainActor::ConCmd_useKeyring);
+	con.RemoveConsoleCommand(MainActor::ConCmd_toggleCombat);
 
 	// Kill Game
 	CoreApp::killGame();
@@ -610,6 +696,7 @@ void GUIApp::run()
 			handleEvent(event);
 		}
 		handleDelayedEvents();
+		hidmanager->handleDelayedEvents();
 
 		// Paint Screen
 		paint();
@@ -1192,8 +1279,8 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			switch (event.type) {
 				case SDL_KEYDOWN:
 					// Break if console Key
-					if (event.key.keysym.sym == SDLK_BACKQUOTE || 
-						hidmanager->isToggleConsole(event)) break;
+					if (event.key.keysym.sym == SDLK_BACKQUOTE)
+						break;
 
 #ifdef WIN32 
 					// Paste from Clip-Board on Ctrl-V - Note this should be a flag of some sort
@@ -1232,8 +1319,10 @@ void GUIApp::handleEvent(const SDL_Event& event)
 
 				case SDL_KEYUP:
 					// Break if console Key
-					if (event.key.keysym.sym == SDLK_BACKQUOTE || 
-						hidmanager->isToggleConsole(event)) break;
+					if (event.key.keysym.sym == SDLK_BACKQUOTE)
+						break;
+//					if (event.key.keysym.sym == SDLK_BACKQUOTE || 
+//						hidmanager->isToggleConsole(event)) break;
 					gump->OnKeyUp(event.key.keysym.sym);
 					return;
 
@@ -1268,7 +1357,9 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		int button = event.button.button;
 		int mx = event.button.x;
 		int my = event.button.y;
-		assert(button >= 0 && button <= NUM_MOUSEBUTTONS);
+
+		if (button >= MOUSE_LAST)
+			break;
 
 		Gump *mousedowngump = desktopGump->OnMouseDown(button, mx, my);
 		if (mousedowngump)
@@ -1308,10 +1399,12 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		int button = event.button.button;
 		int mx = event.button.x;
 		int my = event.button.y;
-		assert(button >= 0 && button <= NUM_MOUSEBUTTONS);
+
+		if (button >= MOUSE_LAST)
+			break;
 
 		mouseButton[button].state &= ~MBS_DOWN;
-		
+
 		// Need to store the last down position of the mouse
 		// when the button is released.
 		mouseButton[button].downX = mx;
@@ -1323,7 +1416,8 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		{
 			int mx2 = mx, my2 = my;
 			Gump *parent = gump->GetParent();
-			if (parent) parent->ScreenSpaceToGump(mx2,my2);
+			if (parent)
+				parent->ScreenSpaceToGump(mx2,my2);
 			gump->OnMouseUp(button, mx2, my2);
 			handled = true;
 		}
@@ -1404,9 +1498,6 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			if (event.key.keysym.mod & KMOD_CTRL)
 				ForceQuit();
 			break;
-		case SDLK_x: // confirm quit
-			QuitGump::verifyQuit();
-			break;
 		case SDLK_LEFTBRACKET: gameMapGump->IncSortOrder(-1); break;
 		case SDLK_RIGHTBRACKET: gameMapGump->IncSortOrder(+1); break;
 
@@ -1422,16 +1513,8 @@ void GUIApp::handleEvent(const SDL_Event& event)
 	}
 
 	if (dragging == DRAG_NOT && ! handled) {
-		HIDBinding binding = hidmanager->getBinding(event);
-
-		if (binding) {
-			HID_Event hidEvent;
-			hidmanager->buildEvent(hidEvent, event);
-
-			handled = binding(hidEvent);
-			if (handled)
-				return;
-		}
+		if (hidmanager->handleEvent(event))
+			return;
 	}
 
 }
@@ -1439,7 +1522,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 void GUIApp::handleDelayedEvents()
 {
 	uint32 now = SDL_GetTicks();
-	for (int button = 0; button <= NUM_MOUSEBUTTONS; ++button) {
+	for (int button = 0; button <= MOUSE_LAST; ++button) {
 		if (!(mouseButton[button].state & (MBS_HANDLED | MBS_DOWN)) &&
 			now - mouseButton[button].lastDown > DOUBLE_CLICK_TIMEOUT)
 		{
@@ -2065,7 +2148,7 @@ bool GUIApp::load(IDataSource* ids, uint32 version)
 // Console Commands
 //
 
-void GUIApp::ConCmd_saveGame(const Console::ArgsType &args, const Console::ArgvType &argv)
+void GUIApp::ConCmd_saveGame(const Console::ArgvType &argv)
 {
 	if (argv.size()==1)
 	{
@@ -2078,7 +2161,7 @@ void GUIApp::ConCmd_saveGame(const Console::ArgsType &args, const Console::ArgvT
 	GUIApp::get_instance()->saveGame(filename, argv[1]);
 }
 
-void GUIApp::ConCmd_loadGame(const Console::ArgsType &args, const Console::ArgvType &argv)
+void GUIApp::ConCmd_loadGame(const Console::ArgvType &argv)
 {
 	if (argv.size()==1)
 	{
@@ -2091,18 +2174,18 @@ void GUIApp::ConCmd_loadGame(const Console::ArgsType &args, const Console::ArgvT
 	GUIApp::get_instance()->loadGame(filename);
 }
 
-void GUIApp::ConCmd_newGame(const Console::ArgsType &args, const Console::ArgvType &argv)
+void GUIApp::ConCmd_newGame(const Console::ArgvType &argv)
 {
 	GUIApp::get_instance()->newGame();
 }
 
 
-void GUIApp::ConCmd_quit(const Console::ArgsType &args, const Console::ArgvType &argv)
+void GUIApp::ConCmd_quit(const Console::ArgvType &argv)
 {
 	GUIApp::get_instance()->isRunning = false;
 }
 
-void GUIApp::ConCmd_drawRenderStats(const Console::ArgsType &args, const Console::ArgvType &argv)
+void GUIApp::ConCmd_drawRenderStats(const Console::ArgvType &argv)
 {
 	if (argv.size() == 1)
 	{
@@ -2114,7 +2197,15 @@ void GUIApp::ConCmd_drawRenderStats(const Console::ArgsType &args, const Console
 	}
 }
 
-void GUIApp::ConCmd_changeGame(const Console::ArgsType &args, const Console::ArgvType &argv)
+void GUIApp::ConCmd_engineStats(const Console::ArgvType &argv)
+{
+	Kernel::get_instance()->kernelStats();
+	ObjectManager::get_instance()->objectStats();
+	UCMachine::get_instance()->usecodeStats();
+	World::get_instance()->worldStats();
+}
+
+void GUIApp::ConCmd_changeGame(const Console::ArgvType &argv)
 {
 	if (argv.size() == 1)
 	{
@@ -2126,7 +2217,7 @@ void GUIApp::ConCmd_changeGame(const Console::ArgsType &args, const Console::Arg
 	}
 }
 
-void GUIApp::ConCmd_listGames(const Console::ArgsType &args, const Console::ArgvType &argv)
+void GUIApp::ConCmd_listGames(const Console::ArgvType &argv)
 {
 	GUIApp *app = GUIApp::get_instance(); 
 	std::vector<Pentagram::istring> games;
@@ -2147,7 +2238,7 @@ void GUIApp::ConCmd_listGames(const Console::ArgsType &args, const Console::Argv
 	}
 }
 
-void GUIApp::ConCmd_setVideoMode(const Console::ArgsType &args, const Console::ArgvType &argv)
+void GUIApp::ConCmd_setVideoMode(const Console::ArgvType &argv)
 {
 	int fullscreen = -1;
 	
@@ -2165,9 +2256,30 @@ void GUIApp::ConCmd_setVideoMode(const Console::ArgsType &args, const Console::A
 	GUIApp::get_instance()->changeVideoMode(strtol(argv[1].c_str(), 0, 0), strtol(argv[2].c_str(), 0, 0), fullscreen);
 }
 
-void GUIApp::ConCmd_toggleFullscreen(const Console::ArgsType &args, const Console::ArgvType &argv)
+void GUIApp::ConCmd_toggleFullscreen(const Console::ArgvType &argv)
 {
 	GUIApp::get_instance()->changeVideoMode(-1, -1, -2);
+}
+
+void GUIApp::ConCmd_toggleAvatarInStasis(const Console::ArgvType &argv)
+{
+	GUIApp * g = GUIApp::get_instance();
+	g->toggleAvatarInStasis();
+	pout << "avatarInStasis = " << g->isAvatarInStasis() << std::endl;
+}
+
+void GUIApp::ConCmd_togglePaintEditorItems(const Console::ArgvType &argv)
+{
+	GUIApp * g = GUIApp::get_instance();
+	g->togglePaintEditorItems();
+	pout << "paintEditorItems = " << g->isPaintEditorItems() << std::endl;
+}
+
+void GUIApp::ConCmd_toggleShowTouchingItems(const Console::ArgvType &argv)
+{
+	GUIApp * g = GUIApp::get_instance();
+	g->toggleShowTouchingItems();
+	pout << "ShowTouchingItems = " << g->isShowTouchingItems() << std::endl;
 }
 
 //

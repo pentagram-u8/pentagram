@@ -113,14 +113,14 @@ UCMachine::~UCMachine()
 {
 	con.Print(MM_INFO, "Destroying UCMachine...\n");
 
-	con.RemoveConsoleCommand("UCMachine::getGlobal");
-	con.RemoveConsoleCommand("UCMachine::setGlobal");
+	con.RemoveConsoleCommand(UCMachine::ConCmd_getGlobal);
+	con.RemoveConsoleCommand(UCMachine::ConCmd_setGlobal);
 #ifdef DEBUG
-	con.RemoveConsoleCommand("UCMachine::traceObjID");
-	con.RemoveConsoleCommand("UCMachine::tracePID");
-	con.RemoveConsoleCommand("UCMachine::traceClass");
-	con.RemoveConsoleCommand("UCMachine::traceAll");
-	con.RemoveConsoleCommand("UCMachine::stopTrace");
+	con.RemoveConsoleCommand(UCMachine::ConCmd_traceObjID);
+	con.RemoveConsoleCommand(UCMachine::ConCmd_tracePID);
+	con.RemoveConsoleCommand(UCMachine::ConCmd_traceClass);
+	con.RemoveConsoleCommand(UCMachine::ConCmd_traceAll);
+	con.RemoveConsoleCommand(UCMachine::ConCmd_stopTrace);
 #endif
 
 	ucmachine = 0;
@@ -2360,8 +2360,7 @@ uint32 UCMachine::I_rndRange(const uint8* args, unsigned int /*argsize*/)
 }
 
 
-void UCMachine::ConCmd_getGlobal(const Console::ArgsType & /*args*/,
-								 const Console::ArgvType &argv)
+void UCMachine::ConCmd_getGlobal(const Console::ArgvType &argv)
 {
 	UCMachine *uc = UCMachine::get_instance();
 	if (argv.size() != 3) {
@@ -2376,8 +2375,7 @@ void UCMachine::ConCmd_getGlobal(const Console::ArgsType & /*args*/,
 				uc->globals->getBits(offset, size));
 }
 
-void UCMachine::ConCmd_setGlobal(const Console::ArgsType & /*args*/,
-								 const Console::ArgvType &argv)
+void UCMachine::ConCmd_setGlobal(const Console::ArgvType &argv)
 {
 	UCMachine *uc = UCMachine::get_instance();
 	if (argv.size() != 4) {
@@ -2397,8 +2395,7 @@ void UCMachine::ConCmd_setGlobal(const Console::ArgsType & /*args*/,
 
 #ifdef DEBUG
 
-void UCMachine::ConCmd_tracePID(const Console::ArgsType & /*args*/,
-								const Console::ArgvType &argv)
+void UCMachine::ConCmd_tracePID(const Console::ArgvType &argv)
 {
 	if (argv.size() != 2) {
 		pout << "Usage: UCMachine::tracePID pid" << std::endl;
@@ -2414,8 +2411,7 @@ void UCMachine::ConCmd_tracePID(const Console::ArgsType & /*args*/,
 	pout << "UCMachine: tracing process " << pid << std::endl;
 }
 
-void UCMachine::ConCmd_traceObjID(const Console::ArgsType &/*args*/,
-								  const Console::ArgvType &argv)
+void UCMachine::ConCmd_traceObjID(const Console::ArgvType &argv)
 {
 	if (argv.size() != 2) {
 		pout << "Usage: UCMachine::traceObjID objid" << std::endl;
@@ -2431,8 +2427,7 @@ void UCMachine::ConCmd_traceObjID(const Console::ArgsType &/*args*/,
 	pout << "UCMachine: tracing object " << objid << std::endl;
 }
 
-void UCMachine::ConCmd_traceClass(const Console::ArgsType &/*args*/,
-								  const Console::ArgvType &argv)
+void UCMachine::ConCmd_traceClass(const Console::ArgvType &argv)
 {
 	if (argv.size() != 2) {
 		pout << "Usage: UCMachine::traceClass class" << std::endl;
@@ -2448,8 +2443,7 @@ void UCMachine::ConCmd_traceClass(const Console::ArgsType &/*args*/,
 	pout << "UCMachine: tracing class " << ucclass << std::endl;
 }
 
-void UCMachine::ConCmd_traceAll(const Console::ArgsType &/*args*/,
-								const Console::ArgvType &argv)
+void UCMachine::ConCmd_traceAll(const Console::ArgvType &argv)
 {
 	UCMachine *uc = UCMachine::get_instance();
 	uc->tracing_enabled = true;
@@ -2460,8 +2454,7 @@ void UCMachine::ConCmd_traceAll(const Console::ArgsType &/*args*/,
 
 
 
-void UCMachine::ConCmd_stopTrace(const Console::ArgsType &/*args*/,
-								 const Console::ArgvType &/*argv*/)
+void UCMachine::ConCmd_stopTrace(const Console::ArgvType &/*argv*/)
 {
 	UCMachine *uc = UCMachine::get_instance();
 	uc->trace_ObjIDs.clear();

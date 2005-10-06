@@ -244,24 +244,24 @@ public:
 
 	typedef Pentagram::istring ArgsType;
 	typedef std::vector<ArgsType> ArgvType;
-	typedef void (*Function)(const ArgsType &args, const ArgvType &argv);
+	typedef void (*Function)(const ArgvType &argv);
 
 	//! Add a command to the console
 	//! \param command The command to add
 	//! \param function Function pointer for command
-	void			AddConsoleCommand(const Pentagram::istring &command, Console::Function function);
-
-	//! Remove a command from the console
-	//! \param command The command to remove
-	void			RemoveConsoleCommand(const Pentagram::istring &command);
+	void			AddConsoleCommand(const ArgsType &command, Console::Function function);
 
 	//! Remove all commands associated with a function from the console
 	//! \param function Function pointer for command
-	void			RemoveConsoleFunction(Console::Function function);
+	void			RemoveConsoleCommand(Console::Function function);
 
 	//! Execute a specific console command
 	//! \param command The command to execute with args
 	void			ExecuteConsoleCommand(const Console::ArgsType &args);
+
+	//! Execute a specific console command
+	//! \param command The command to execute with argv
+	void			ExecuteConsoleCommand(const Console::ArgvType &argv);
 
 	//! Execute the currently queued console command
 	void			ExecuteCommandBuffer();
@@ -292,10 +292,10 @@ public:
 	void			ToggleCommandInsert() { commandInsert = !commandInsert; }
 
 	//! "CmdList" console command
-	static void		ConCmd_CmdList(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void		ConCmd_CmdList(const Console::ArgvType &argv);
 
 	//! "CmdHistory" console command
-	static void		ConCmd_CmdHistory(const Console::ArgsType &args, const Console::ArgvType &argv);
+	static void		ConCmd_CmdHistory(const Console::ArgvType &argv);
 
 private:
 

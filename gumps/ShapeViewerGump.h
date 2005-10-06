@@ -43,6 +43,7 @@ public:
 	virtual bool OnTextInput(int unicode);
 
 	static void U8ShapeViewer();
+	static void ConCmd_U8ShapeViewer(const Console::ArgvType &argv);
 
 	bool loadData(IDataSource* ids);
 protected:

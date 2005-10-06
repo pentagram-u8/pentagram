@@ -158,6 +158,18 @@ void QuickAvatarMoverProcess::terminateMover(int _dir)
 		p->terminate();
 }
 
+void QuickAvatarMoverProcess::startMover(int x, int y, int z, int _dir)
+{
+	GUIApp * g = GUIApp::get_instance();
+	if (! g->isAvatarInStasis())
+	{
+		Process *p = new QuickAvatarMoverProcess(x,y,z,_dir);
+		Kernel::get_instance()->addProcess(p);
+	} else {
+		pout << "Can't: avatarInStasis" << std::endl;
+	}
+}
+
 void QuickAvatarMoverProcess::saveData(ODataSource* ods)
 {
 	Process::saveData(ods);
@@ -180,3 +192,73 @@ bool QuickAvatarMoverProcess::loadData(IDataSource* ids, uint32 version)
 	terminateDeferred(); // Don't allow this process to continue
 	return true;
 }
+
+void QuickAvatarMoverProcess::ConCmd_startMoveUp(const Console::ArgvType &argv)
+{
+	QuickAvatarMoverProcess::startMover(-64,-64,0,0);
+}
+
+void QuickAvatarMoverProcess::ConCmd_startMoveDown(const Console::ArgvType &argv)
+{
+	QuickAvatarMoverProcess::startMover(+64,+64,0,1);
+}
+
+void QuickAvatarMoverProcess::ConCmd_startMoveLeft(const Console::ArgvType &argv)
+{
+	QuickAvatarMoverProcess::startMover(-64,+64,0,2);
+}
+
+void QuickAvatarMoverProcess::ConCmd_startMoveRight(const Console::ArgvType &argv)
+{
+	QuickAvatarMoverProcess::startMover(+64,-64,0,3);
+}
+
+void QuickAvatarMoverProcess::ConCmd_startAscend(const Console::ArgvType &argv)
+{
+	QuickAvatarMoverProcess::startMover(0,0,8,4);
+}
+
+void QuickAvatarMoverProcess::ConCmd_startDescend(const Console::ArgvType &argv){
+	QuickAvatarMoverProcess::startMover(0,0,-8,5);
+}
+
+void QuickAvatarMoverProcess::ConCmd_stopMoveUp(const Console::ArgvType &argv)
+{
+	QuickAvatarMoverProcess::terminateMover(0);
+}
+
+void QuickAvatarMoverProcess::ConCmd_stopMoveDown(const Console::ArgvType &argv){
+	QuickAvatarMoverProcess::terminateMover(1);
+}
+
+void QuickAvatarMoverProcess::ConCmd_stopMoveLeft(const Console::ArgvType &argv)
+{
+	QuickAvatarMoverProcess::terminateMover(2);
+}
+
+void QuickAvatarMoverProcess::ConCmd_stopMoveRight(const Console::ArgvType &argv)
+{
+	QuickAvatarMoverProcess::terminateMover(3);
+}
+
+void QuickAvatarMoverProcess::ConCmd_stopAscend(const Console::ArgvType &argv)
+{
+	QuickAvatarMoverProcess::terminateMover(4);
+}
+
+void QuickAvatarMoverProcess::ConCmd_stopDescend(const Console::ArgvType &argv)
+{
+	QuickAvatarMoverProcess::terminateMover(5);
+}
+
+void QuickAvatarMoverProcess::ConCmd_toggleQuarterSpeed(const Console::ArgvType &argv)
+{
+	QuickAvatarMoverProcess::setQuarterSpeed(!QuickAvatarMoverProcess::isQuarterSpeed());
+}
+
+void QuickAvatarMoverProcess::ConCmd_toggleClipping(const Console::ArgvType &argv)
+{
+	QuickAvatarMoverProcess::toggleClipping();
+	pout << "QuickAvatarMoverProcess::clipping = " << QuickAvatarMoverProcess::isClipping() << std::endl;
+}
+

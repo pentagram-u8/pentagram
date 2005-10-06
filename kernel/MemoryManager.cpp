@@ -99,7 +99,7 @@ void MemoryManager::freeResources()
 	}
 }
 
-void MemoryManager::ConCmd_MemInfo(const Console::ArgsType &args, const Console::ArgvType &argv)
+void MemoryManager::ConCmd_MemInfo(const Console::ArgvType &argv)
 {
 	MemoryManager * mm = MemoryManager::get_instance();
 	int i, count;
@@ -193,7 +193,7 @@ public:
 DEFINE_RUNTIME_CLASSTYPE_CODE(TestClassTwo, TestClassBase);
 DEFINE_CUSTOM_MEMORY_ALLOCATION(TestClassTwo);
 
-void MemoryManager::ConCmd_test(const Console::ArgsType &args, const Console::ArgvType &argv)
+void MemoryManager::ConCmd_test(const Console::ArgvType &argv)
 {
 	// Just some numbers of classes to allocate and free
 	int a[10] = {1000, 1231, 2423, 1233, 3213, 2554, 1123, 2432, 3311, 1022};
@@ -256,7 +256,7 @@ void MemoryManager::ConCmd_test(const Console::ArgsType &args, const Console::Ar
 }
 
 #else
-void MemoryManager::ConCmd_test(const Console::ArgsType &args, const Console::ArgvType &argv)
+void MemoryManager::ConCmd_test(const Console::ArgvType &argv)
 {
 }
 

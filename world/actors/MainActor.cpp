@@ -37,6 +37,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AudioProcess.h"
 #include "World.h"
 #include "getObject.h"
+#include "UCList.h"
+#include "LoopScript.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -328,7 +330,7 @@ ProcId MainActor::die(uint16 damageType)
 }
 
 
-void MainActor::ConCmd_teleport(const Console::ArgsType &args, const Console::ArgvType &argv)
+void MainActor::ConCmd_teleport(const Console::ArgvType &argv)
 {
 	MainActor* mainactor = getMainActor();
 	int curmap = mainactor->getMapNum();
@@ -364,7 +366,7 @@ void MainActor::ConCmd_teleport(const Console::ArgsType &args, const Console::Ar
 	}
 }
 
-void MainActor::ConCmd_mark(const Console::ArgsType &args, const Console::ArgvType &argv)
+void MainActor::ConCmd_mark(const Console::ArgvType &argv)
 {
 	if (argv.size() == 1) {
 		pout << "Usage: mark <mark>: set named mark to this location" << std::endl;
@@ -387,9 +389,9 @@ void MainActor::ConCmd_mark(const Console::ArgsType &args, const Console::ArgvTy
 	pout << "Set mark \"" << argv[1].c_str() << "\" to " << buf << std::endl;
 }
 
-void MainActor::ConCmd_recall(const Console::ArgsType &args, const Console::ArgvType &argv)
+void MainActor::ConCmd_recall(const Console::ArgvType &argv)
 {
-	if (args.size() == 1) {
+	if (argv.size() == 1) {
 		pout << "Usage: recall <mark>: recall to named mark" << std::endl;
 		return;
 	}
@@ -413,7 +415,7 @@ void MainActor::ConCmd_recall(const Console::ArgsType &args, const Console::Argv
 	mainactor->teleport(t[0], t[1], t[2], t[3]);
 }
 
-void MainActor::ConCmd_listmarks(const Console::ArgsType &args, const Console::ArgvType &argv)
+void MainActor::ConCmd_listmarks(const Console::ArgvType &argv)
 {
 	SettingManager* settings = SettingManager::get_instance();
 	std::vector<Pentagram::istring> marks;
@@ -425,7 +427,7 @@ void MainActor::ConCmd_listmarks(const Console::ArgsType &args, const Console::A
 	}
 }
 
-void MainActor::ConCmd_maxstats(const Console::ArgsType &args, const Console::ArgvType &argv)
+void MainActor::ConCmd_maxstats(const Console::ArgvType &argv)
 {
 	MainActor* mainactor = getMainActor();
 
@@ -612,8 +614,7 @@ uint32 MainActor::I_isAvatarInCombat(const uint8* /*args*/,
 		return 0;
 }
 
-void MainActor::ConCmd_name(const Console::ArgsType & /*args*/,
-								   const Console::ArgvType &argv)
+void MainActor::ConCmd_name(const Console::ArgvType &argv)
 {
 	MainActor* av = getMainActor();
 	if (argv.size() > 1)
@@ -621,3 +622,76 @@ void MainActor::ConCmd_name(const Console::ArgsType & /*args*/,
 
 	pout << "MainActor::name = \"" << av->getName() << "\"" << std::endl;
 }
+
+void MainActor::ConCmd_useBackpack(const Console::ArgvType &argv)
+{
+	if (GUIApp::get_instance()->isAvatarInStasis())
+	{
+		pout << "Can't: avatarInStasis" << std::endl;
+		return;
+	}
+	MainActor* av = getMainActor();
+	Item* backpack = getItem(av->getEquip(7));
+	if (backpack)
+		backpack->callUsecodeEvent_use();
+}
+
+void MainActor::ConCmd_useInventory(const Console::ArgvType &argv)
+{
+	if (GUIApp::get_instance()->isAvatarInStasis())
+	{
+		pout << "Can't: avatarInStasis" << std::endl;
+		return;
+	}
+	MainActor* av = getMainActor();
+	av->callUsecodeEvent_use();
+}
+
+void MainActor::useInventoryItem(uint32 shapenum)
+{
+	if (GUIApp::get_instance()->isAvatarInStasis())
+	{
+		pout << "Can't: avatarInStasis" << std::endl;
+		return;
+	}
+	LOOPSCRIPT(script, LS_SHAPE_EQUAL(shapenum));
+	UCList uclist(2);
+	this->containerSearch(&uclist, script, sizeof(script), true);
+	if (uclist.getSize() < 1)
+		return;
+
+	uint16 objid = uclist.getuint16(0);
+	Item* item = getItem(objid);
+	item->callUsecodeEvent_use();
+
+}
+
+void MainActor::ConCmd_useRecall(const Console::ArgvType &argv)
+{
+	MainActor* av = getMainActor();
+	av->useInventoryItem(833);
+}
+
+void MainActor::ConCmd_useBedroll(const Console::ArgvType &argv)
+{
+	MainActor* av = getMainActor();
+	av->useInventoryItem(534);
+}
+
+void MainActor::ConCmd_useKeyring(const Console::ArgvType &argv)
+{
+	MainActor* av = getMainActor();
+	av->useInventoryItem(79);
+}
+
+void MainActor::ConCmd_toggleCombat(const Console::ArgvType &argv)
+{
+	if (GUIApp::get_instance()->isAvatarInStasis())
+	{
+		pout << "Can't: avatarInStasis" << std::endl;
+		return;
+	}
+	MainActor* av = getMainActor();
+	av->toggleInCombat();
+}
+
