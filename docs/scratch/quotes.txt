@@ -107,3 +107,5 @@ cute... an explosion just knocked back several staircases
 (wjp upon discovering that implementing physics is more complicated then it
 first appears.)
 
+not that I have anything against nuclear holocaust or anything
+(watt on IRC on scripting languages)
