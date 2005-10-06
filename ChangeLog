@@ -1,3 +1,8 @@
+2005-10-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/AvatarMoverProcess.*: adjust direction/size of steps
+	* world/AnimationTracker.cpp: allow small adjustments of avatar anims
+	* world/actors/AvatarMoverProcess.cpp: don't move while falling
+
 2005-10-05  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* games/*bindings.*, kernel/HIDBinding.h: Removed useless files
 

@@ -37,10 +37,11 @@
 #include "ODataSource.h"
 #include "Mouse.h"
 #include "getObject.h"
+#include "AvatarMoverProcess.h"
+
 
 #include "GravityProcess.h" // hack...
 #include "PathfinderProcess.h"
-#include "AvatarMoverProcess.h"
 #include "UCList.h"
 #include "LoopScript.h"
 

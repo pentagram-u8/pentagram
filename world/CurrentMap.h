@@ -100,8 +100,15 @@ public:
 						 ObjId item,
 						 ObjId* support=0, ObjId* roof=0);
 
+	// Note that this version of isValidPosition can not take 'flipped'
+	// into account!
 	bool isValidPosition(sint32 x, sint32 y, sint32 z, uint32 shape,
 						 ObjId item, ObjId* support=0, ObjId* roof=0);
+
+	//! Scan for a valid position for item in directions orthogonal to movedir
+	bool scanForValidPosition(sint32 x, sint32 y, sint32 z, Item* item,
+							  int movedir, bool wantsupport,
+							  sint32& tx, sint32& ty, sint32& tz);
 
 	struct SweepItem {
 		SweepItem(ObjId it, sint32 ht, sint32 et, bool touch,

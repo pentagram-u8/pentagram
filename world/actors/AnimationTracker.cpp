@@ -208,27 +208,42 @@ bool AnimationTracker::step()
 	// It might be worth it creating a 'scanForValidPosition' function
 	// (in CurrentMap maybe) that scans a small area around the given
 	// coordinates for a valid position (with 'must be supported' as a flag).
+	// Note that it should only check in directions orthogonal to the movement
+	// direction (to prevent it becoming impossible to step off a ledge).
 
 	// I seem to recall that the teleporter from the Upper Catacombs teleporter
 	// to the Upper Catacombs places you inside the floor. Using this
 	// scanForValidPosition after a teleport would work around that problem.
 
+	sint32 tx,ty,tz;
+	tx = x+dx;
+	ty = y+dy;
+	tz = z+dz;
+
 	ObjId support;
-	bool targetok = cm->isValidPosition(x+dx,y+dy,z+dz, xd,yd,zd,
+	bool targetok = cm->isValidPosition(tx,ty,tz, xd,yd,zd,
 										a->getShapeInfo()->flags,
 										actor, &support, 0);
 
-	if (!targetok) {
-		// TODO: try to adjust properly...
-		// for now just a hack to try to step up 8
+	if (!targetok || ((f.flags & AnimFrame::AFF_ONGROUND) && !support)) {
 
-		targetok = cm->isValidPosition(x+dx,y+dy,z+dz+8, xd,yd,zd,
-									   a->getShapeInfo()->flags,
-									   actor, 0, 0);
+		// If Avatar, and on ground, try to adjust properly
+		if (actor == 1 && (f.flags & AnimFrame::AFF_ONGROUND)) {
+			targetok = cm->scanForValidPosition(tx,ty,tz, a, dir,
+												true, tx,ty,tz);
 
-		// Should only try to increase height if ONGROUND
-		if (targetok && (f.flags & AnimFrame::AFF_ONGROUND)) {
-			dz+=8;
+			if (!targetok) {
+				blocked = true;
+				return false;
+			} else {
+#ifdef WATCHACTOR
+				if (a->getObjId() == watchactor) {
+					pout << "AnimationTracker: adjusted step: "
+						 << tx-(x+dx) << "," << ty-(y+dy) << "," << tz-(z+dz)
+						 << std::endl;
+				}
+#endif
+			}
 		} else {
 			blocked = true;
 			return false;
@@ -237,14 +252,14 @@ bool AnimationTracker::step()
 
 #ifdef WATCHACTOR
 	if (a->getObjId() == watchactor) {
-		pout << "AnimationTracker: step (" << dx << "," << dy << "," << dz
-			 << ")" << std::endl;
+		pout << "AnimationTracker: step (" << tx-x << "," << ty-y
+			 << "," << tz-z << ")" << std::endl;
 	}
 #endif
 		
-	x += dx;
-	y += dy;
-	z += dz;
+	x = tx;
+	y = ty;
+	z = tz;
 	
 
 	// if attack animation, see if we hit something
@@ -257,28 +272,28 @@ bool AnimationTracker::step()
 	if (f.flags & AnimFrame::AFF_ONGROUND) {
 		// needs support
 
+		/*bool targetok = */ cm->isValidPosition(tx,ty,tz, xd,yd,zd,
+												 a->getShapeInfo()->flags,
+												 actor, &support, 0);
+		
+
 		if (!support) {
-			// TODO: try to adjust...
-			// for now just a hack to try to step down 8
-
-			targetok = cm->isValidPosition(x,y,z-8, xd,yd,zd,
-										   a->getShapeInfo()->flags,
-										   actor, &support, 0);
-
-			if (targetok && support) {
-				z -= 8;
-			} else {
-				unsupported = true;
-				return false;
-			}
+			unsupported = true;
+			return false;
 		} else {
+#if 0
+			// This check causes really weird behaviour when fall()
+			// doesn't make things fall off non-land items, so disabled for now
+
 			Item* supportitem = getItem(support);
 			assert(supportitem);
 			if (!supportitem->getShapeInfo()->is_land()) {
+//				pout << "Not land: "; supportitem->dumpInfo();
 				// invalid support
 				unsupported = true;
 				return false;
 			}
+#endif
 		}
 	}
 

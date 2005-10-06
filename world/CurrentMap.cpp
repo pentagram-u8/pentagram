@@ -36,6 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MainShapeArchive.h"
 #include "GUIApp.h"
 #include "GameMapGump.h"
+#include "Direction.h"
 #include "getObject.h"
 
 #include "IDataSource.h"	
@@ -64,7 +65,6 @@ CurrentMap::~CurrentMap()
 {
 //	clear();
 
-	//! get rid of constants
 	for (unsigned int i = 0; i < MAP_NUM_CHUNKS; i++) {
 		delete[] items[i];
 		delete[] fast[i];
@@ -75,7 +75,6 @@ CurrentMap::~CurrentMap()
 
 void CurrentMap::clear()
 {
-	//! get rid of constants
 	for (unsigned int i = 0; i < MAP_NUM_CHUNKS; i++) {
 		for (unsigned int j = 0; j < MAP_NUM_CHUNKS; j++) {
 			item_list::iterator iter;
@@ -118,8 +117,6 @@ void CurrentMap::writeback()
 {
 	if (!current_map)
 		return;
-
-	//! constants
 
 	for (unsigned int i = 0; i < MAP_NUM_CHUNKS; i++) {
 		for (unsigned int j = 0; j < MAP_NUM_CHUNKS; j++) {
@@ -242,7 +239,6 @@ void CurrentMap::addItem(Item* item)
 
 	item->getLocation(ix, iy, iz);
 
-	//! constants
 	if (ix < 0 || ix >= MAP_CHUNK_SIZE*MAP_NUM_CHUNKS || 
 		iy < 0 || iy >= MAP_CHUNK_SIZE*MAP_NUM_CHUNKS) {
 		perr << "Skipping item: out of range (" 
@@ -270,7 +266,6 @@ void CurrentMap::addItemToEnd(Item* item)
 
 	item->getLocation(ix, iy, iz);
 
-	//! constants
 	if (ix < 0 || ix >= MAP_CHUNK_SIZE*MAP_NUM_CHUNKS || 
 		iy < 0 || iy >= MAP_CHUNK_SIZE*MAP_NUM_CHUNKS) {
 		perr << "Skipping item: out of range (" 
@@ -308,7 +303,6 @@ void CurrentMap::removeItemFromList(Item* item, sint32 oldx, sint32 oldy)
 	// if it's really a problem we could change the item lists into sets
 	// or something, but let's see how it turns out
 
-	//! constants
 	if (oldx < 0 || oldx >= MAP_CHUNK_SIZE*MAP_NUM_CHUNKS || 
 		oldy < 0 || oldy >= MAP_CHUNK_SIZE*MAP_NUM_CHUNKS) {
 		perr << "Skipping item: out of range (" 
@@ -484,7 +478,6 @@ void CurrentMap::areaSearch(UCList* itemlist, const uint8* loopscript,
 
 	int minx, miny, maxx, maxy;
 
-	//! constants
 	minx = ((x-xd-range)/MAP_CHUNK_SIZE) - 1;
 	maxx = ((x+range)/MAP_CHUNK_SIZE) + 1;
 	miny = ((y-yd-range)/MAP_CHUNK_SIZE) - 1;
@@ -567,7 +560,6 @@ void CurrentMap::surfaceSearch(UCList* itemlist, const uint8* loopscript,
 
 	sint32 minx, miny, maxx, maxy;
 
-	//! constants
 	minx = ((origin[0] - dims[0])/MAP_CHUNK_SIZE) - 1;
 	maxx = ((origin[0])/MAP_CHUNK_SIZE) + 1;
 	miny = ((origin[1] - dims[1])/MAP_CHUNK_SIZE) - 1;
@@ -633,7 +625,6 @@ void CurrentMap::surfaceSearch(UCList* itemlist, const uint8* loopscript,
 
 TeleportEgg* CurrentMap::findDestination(uint16 id)
 {
-	//! constants
 	for (unsigned int i = 0; i < MAP_NUM_CHUNKS; i++) {
 		for (unsigned int j = 0; j < MAP_NUM_CHUNKS; j++) {
 			item_list::iterator iter;
@@ -681,7 +672,6 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 
 	int minx, miny, maxx, maxy;
 
-	//! constants
 	minx = ((x-xd)/MAP_CHUNK_SIZE) - 1;
 	maxx = (x/MAP_CHUNK_SIZE) + 1;
 	miny = ((y-yd)/MAP_CHUNK_SIZE) - 1;
@@ -761,6 +751,145 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 	return valid;
 }
 
+bool CurrentMap::scanForValidPosition(sint32 x, sint32 y, sint32 z, Item* item,
+									  int movedir, bool wantsupport,
+									  sint32& tx, sint32& ty, sint32& tz)
+{
+	const uint32 flagmask = (ShapeInfo::SI_SOLID | ShapeInfo::SI_DAMAGING |
+							 ShapeInfo::SI_ROOF);
+	static uint32 validmask[17];
+	static uint32 supportmask[17];
+
+	int searchdir = (movedir + 2) % 4;
+
+	int xdir = (x_fact[searchdir] != 0) ? 1 : 0;
+	int ydir = (y_fact[searchdir] != 0) ? 1 : 0;
+
+	// mark everything as valid, but without support
+	for (int i = 0; i < 17; ++i) {
+		validmask[i] = 0x1FFFF;
+		supportmask[i] = 0;
+	}
+
+	sint32 xd,yd,zd;
+	item->getFootpadWorld(xd, yd, zd);	
+
+	// next, we'll loop over all objects in the area, and mark the areas
+	// overlapped and supported by each object
+
+	int minx, miny, maxx, maxy;
+
+	minx = ((x-xd)/MAP_CHUNK_SIZE) - 1;
+	maxx = (x/MAP_CHUNK_SIZE) + 1;
+	miny = ((y-yd)/MAP_CHUNK_SIZE) - 1;
+	maxy = (y/MAP_CHUNK_SIZE) + 1;
+	if (minx < 0) minx = 0;
+	if (maxx >= MAP_NUM_CHUNKS) maxx = MAP_NUM_CHUNKS-1;
+	if (miny < 0) miny = 0;
+	if (maxy >= MAP_NUM_CHUNKS) maxy = MAP_NUM_CHUNKS-1;
+
+	for (int cx = minx; cx <= maxx; cx++) {
+		for (int cy = miny; cy <= maxy; cy++) {
+			item_list::iterator iter;
+			for (iter = items[cx][cy].begin();
+				 iter != items[cx][cy].end(); ++iter)
+			{
+				Item* citem = *iter;
+				if (citem->getObjId() == item->getObjId()) continue;
+				if (citem->getExtFlags() & Item::EXT_SPRITE) continue;
+
+				ShapeInfo* si = citem->getShapeInfo();
+				//!! need to check is_sea() and is_land() maybe?
+				if (!(si->flags & flagmask))
+					continue; // not an interesting item
+
+				sint32 ix, iy, iz, ixd, iyd, izd;
+				citem->getLocation(ix, iy, iz);
+				citem->getFootpadWorld(ixd, iyd, izd);
+
+				int minv = iz-z-zd+1;
+				int maxv = iz+izd-z-1;
+				if (minv < -8) minv = -8;
+				if (maxv > 8) maxv = 8;
+
+				int sminx,smaxx,sminy,smaxy;
+				sminx = ix-ixd+1 -x;
+				smaxx = ix+xd-1  -x;
+				sminy = iy-iyd+1 -y;
+				smaxy = iy+yd-1  -y;
+
+				int minh = -100;
+				int maxh = 100;
+				if (xdir && minh < sminx)
+					minh = sminx;
+				if (xdir && maxh > smaxx)
+					maxh = smaxx;
+				if ((ydir && searchdir != 3) && minh < sminy)
+					minh = sminy;
+				if ((ydir && searchdir != 3) && maxh > smaxy)
+					maxh = smaxy;
+				if (searchdir == 3 && minh < -smaxy)
+					minh = -smaxy;
+				if (searchdir == 3 && maxh > -sminy)
+					maxh = -sminy;
+				
+				if (minh < -8) minh = -8;
+				if (maxh > 8) maxh = 8;
+
+				for (int j = minv; j <= maxv; ++j)
+					for (int i = minh; i <= maxh; ++i)
+						validmask[j+8] &= ~(1 << (i+8));
+
+				if (wantsupport && si->is_solid() &&
+					iz+izd >= z-8 && iz+izd <= z+8)
+				{
+					for (int i = minh; i <= maxh; ++i)
+						supportmask[iz+izd-z+8] |= (1 << (i+8));
+
+				}
+			}
+		}
+	}
+
+	bool foundunsupported = false;
+
+	for (unsigned int i = 0; i < 5; ++i) {
+		int horiz;
+		if (i % 2 == 0)
+			horiz = 4*(i/2);
+		else
+			horiz = -1 - 4*(i/2);
+		
+		for (unsigned int j = 0; j < 5; ++j) {
+			int vert;
+			if (j % 2 == 0)
+				vert = 4*(j/2);
+			else
+				vert = -4 - 4*(j/2);
+
+			if (validmask[vert+8] & (1<<(horiz+8))) {
+				if (!wantsupport || !foundunsupported || 
+					(supportmask[vert+8] & (1<<(horiz+8))))
+				{
+					tz = z + vert;
+					tx = x + x_fact[searchdir]*horiz;
+					ty = y + y_fact[searchdir]*horiz;
+				}
+				if (!wantsupport || (supportmask[vert+8] & (1<<(horiz+8))))
+					return true;
+				foundunsupported = true;
+			}
+		}
+	}
+
+	// no supported location found, so return unsupported unblocked one
+	if (foundunsupported)
+		return true;
+
+	return false;
+}
+
+
 // Do a sweepTest of an item from start to end point.
 // dims is the bounding box size.
 // item is the item that we are checking to move
@@ -778,7 +907,6 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 
 	int i;
 
-	//! constants
 	int minx, miny, maxx, maxy;
 	minx = ((start[0]-dims[0])/MAP_CHUNK_SIZE) - 1;
 	maxx = (start[0]/MAP_CHUNK_SIZE) + 1;
@@ -786,7 +914,6 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 	maxy = (start[1]/MAP_CHUNK_SIZE) + 1;
 
 	{
-		//! constants
 		int dminx, dminy, dmaxx, dmaxy;
 		dminx = ((end[0]-dims[0])/MAP_CHUNK_SIZE) - 1;
 		dmaxx = (end[0]/MAP_CHUNK_SIZE) + 1;

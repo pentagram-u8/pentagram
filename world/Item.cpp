@@ -1674,7 +1674,7 @@ int Item::getThrowRange()
 {
 	if (!canDrag()) return 0;
 
-	// TODO: implement this. (Depends on weight)
+	// TODO: implement this. (Depends on weight, avatar strengh?)
 
 	return 256;
 }

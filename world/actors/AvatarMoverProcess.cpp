@@ -74,16 +74,16 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 
 
 	GUIApp* guiapp = GUIApp::get_instance();
+	MainActor* avatar = getMainActor();
 
 	// in stasis or busy, so don't move
 	if (guiapp->isAvatarInStasis() ||
-		Kernel::get_instance()->getNumProcesses(1, 0x00F0) > 0)
+		Kernel::get_instance()->getNumProcesses(1, 0x00F0) > 0 ||
+		avatar->getGravityProcess() != 0)
 	{
 		idleTime = 0;
 		return false;
 	}
-
-	MainActor* avatar = getMainActor();
 
 	if (avatar->isInCombat() && !combatRun)
 		return handleCombatMode();
@@ -471,16 +471,8 @@ bool AvatarMoverProcess::handleNormalMode()
 	{
 		// right mouse button is down long enough to act on it
 		// if facing right direction, walk
-		//!! TODO: check if you can actually take this step
 
 		nextanim = Animation::step;
-
-		//Not perfect, but don't think anyone will ever notice or care.
-		if ((avatar->tryAnim(nextanim, mousedir) == Animation::END_OFF_LAND) &&
-			(lastanim != Animation::keepBalance))
-		{
-			nextanim = Animation::keepBalance;
-		}
 
 		if (mouselength == 1)
 			nextanim = Animation::walk;
@@ -495,13 +487,7 @@ bool AvatarMoverProcess::handleNormalMode()
 				nextanim = Animation::walk;
 		}
 
-		bool moving = (nextanim == Animation::run ||
-					   nextanim == Animation::walk);
-
-		if (checkTurn(mousedir, moving)) return false;
-
-		nextanim = Animation::checkWeapon(nextanim, lastanim);
-		waitFor(avatar->doAnim(nextanim, mousedir));
+		step(nextanim, mousedir);
 		return false;
 	}
 
@@ -538,6 +524,75 @@ bool AvatarMoverProcess::handleNormalMode()
 	}
 
 	return false;
+}
+
+void AvatarMoverProcess::step(Animation::Sequence action, int direction)
+{
+	assert(action == Animation::step || action == Animation::walk ||
+		   action == Animation::run);
+
+	MainActor* avatar = getMainActor();
+	Animation::Sequence lastanim = avatar->getLastAnim();
+
+	Animation::Result res = avatar->tryAnim(action, direction);
+
+	int stepdir = direction;
+
+	if (res == Animation::FAILURE ||
+		(action == Animation::step && res == Animation::END_OFF_LAND))
+	{
+		int altdir1 = (stepdir + 1)%8;
+		int altdir2 = (stepdir + 7)%8;
+
+		res = avatar->tryAnim(action, altdir1);
+		if (res == Animation::FAILURE ||
+			(action == Animation::step && res == Animation::END_OFF_LAND))
+		{
+			res = avatar->tryAnim(action, altdir2);
+			if (res == Animation::FAILURE ||
+				(action == Animation::step && res == Animation::END_OFF_LAND))
+			{
+				// Can't walk in this direction.
+				// Try to take a smaller step
+
+				if (action == Animation::walk) {
+					step(Animation::step, direction);
+					return;
+				} else if (action == Animation::run) {
+					step(Animation::walk, direction);
+					return;
+				}
+
+			} else {
+				stepdir = altdir2;
+			}
+		} else {
+			stepdir = altdir1;
+		}
+
+
+	}
+
+	if (action == Animation::step && res == Animation::END_OFF_LAND &&
+		lastanim != Animation::keepBalance)
+	{
+		if (checkTurn(stepdir, false)) return;
+		waitFor(avatar->doAnim(Animation::keepBalance, stepdir));
+		return;
+	}
+
+	if (action == Animation::step && res == Animation::FAILURE)
+	{
+		action = Animation::stand;
+	}
+
+
+	bool moving = (action == Animation::run || action == Animation::walk);
+	
+	if (checkTurn(stepdir, moving)) return;
+	
+	action = Animation::checkWeapon(action, lastanim);
+	waitFor(avatar->doAnim(action, stepdir));
 }
 
 void AvatarMoverProcess::jump(Animation::Sequence action, int direction)
