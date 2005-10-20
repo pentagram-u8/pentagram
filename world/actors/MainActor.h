@@ -83,10 +83,13 @@ public:
 	static void ConCmd_recall(const Console::ArgvType &argv);
 	//! "listmarks" console command
 	static void ConCmd_listmarks(const Console::ArgvType &argv);
-	//! "maxstats" console command
-	static void ConCmd_maxstats(const Console::ArgvType &argv);
 	//! "Name" console command
 	static void ConCmd_name(const Console::ArgvType &argv);
+
+	//! "maxstats" console command
+	static void ConCmd_maxstats(const Console::ArgvType &argv);
+	//! "heal" console command
+	static void ConCmd_heal(const Console::ArgvType &argv);
 
 	//! "useBackpack" console command
 	static void ConCmd_useBackpack(const Console::ArgvType &argv);

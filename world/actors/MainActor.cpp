@@ -442,6 +442,15 @@ void MainActor::ConCmd_maxstats(const Console::ArgvType &argv)
 	if (audioproc) audioproc->playSFX(0x36, 0x60, 1, 0); //constants!!
 }
 
+void MainActor::ConCmd_heal(const Console::ArgvType &argv)
+{
+	MainActor* mainactor = getMainActor();
+
+	mainactor->setHP(mainactor->getMaxHP());
+	mainactor->setMana(mainactor->getMaxMana());
+}
+
+
 void MainActor::accumulateStr(int n)
 {
 	// already max?
