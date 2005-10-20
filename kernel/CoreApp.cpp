@@ -54,6 +54,12 @@ CoreApp::CoreApp(int argc_, const char* const* argv_)
 
 CoreApp::~CoreApp()
 {
+	std::map<Pentagram::istring, GameInfo*>::iterator i;
+	for (i = games.begin(); i != games.end(); ++i)
+		delete i->second;
+
+	games.clear();
+
 	FORGET_OBJECT(filesystem);
 	FORGET_OBJECT(settingman);
 	FORGET_OBJECT(configfileman);
@@ -92,7 +98,7 @@ void CoreApp::startup()
 
 void CoreApp::DeclareArgs()
 {
-	parameters.declare("--game",	&gamename,	"");
+	parameters.declare("--game",	&oGamename,	"");
 	parameters.declare("-h",		&oHelp, 	true);
 	parameters.declare("--help",	&oHelp,		true);
 	parameters.declare("-q", 		&oQuiet,	true);
@@ -101,7 +107,7 @@ void CoreApp::DeclareArgs()
 
 void CoreApp::sysInit()
 {
-	gameinfo = new GameInfo();
+	gameinfo = 0;
 
 	filesystem = new FileSystem;
 
@@ -189,89 +195,97 @@ void CoreApp::loadConfig()
 	}
 }
 
-bool CoreApp::getDefaultGame()
+void CoreApp::setupGameList()
 {
-	std::vector<Pentagram::istring> games;
-	games = settingman->listGames();
+	std::vector<Pentagram::istring> gamelist;
+	gamelist = settingman->listGames();
 	con.Print(MM_INFO, "Scanning config file for games:\n");
 	std::vector<Pentagram::istring>::iterator iter;
-	for (iter = games.begin(); iter != games.end(); ++iter) {
+	Pentagram::istring gamename;
+
+	for (iter = gamelist.begin(); iter != gamelist.end(); ++iter) {
 		Pentagram::istring game = *iter;
-		GameInfo info;
-		bool detected = getGameInfo(game, &info);
+		GameInfo* info = new GameInfo;
+		bool detected = getGameInfo(game, info);
+
+		// output detected game info
 		con.Printf(MM_INFO, "%s: ", game.c_str());
 		if (detected) {
-			std::string details = info.getPrintDetails();
+			// add game to games map
+			games[game] = info;
+
+			std::string details = info->getPrintDetails();
 			con.Print(MM_INFO, details.c_str());
 		} else {
-			con.Print(MM_INFO, "(unknown)");
+			con.Print(MM_INFO, "unknown, skipping");
 		}
 		con.Print(MM_INFO, "\n");
 	}
+}
 
-	if (gamename == "") {
-		std::string defaultgame;
-		bool defaultset = settingman->get("defaultgame", defaultgame,
-										  SettingManager::DOM_GLOBAL);
-		if (defaultset) {
-			// default game specified in config file
-			gamename = defaultgame;
-		} else if (games.size() == 2) {		// TODO - Do this in a better method
-			// only one game in config file, so pick that
-			gamename = games.back().c_str();
-		} else if (games.size() == 1) {
-			perr << "----------------------------------------" << std::endl
-				 << "No games set up in configuration. " << std::endl
-				 << "Please read the README for instructions." << std::endl
-				 << "----------------------------------------" << std::endl;
-				// FIXME - report more useful error message
-			return false;
-		} else {		
-			perr << "Multiple games found in configuration, but no default "
-				 << "game is selected." << std::endl
-				 << "Either start Pentagram with the \"--game <gamename>\","
-				 << std::endl
-				 << "or set pentagram/defaultgame in pentagram.ini"
-				 << std::endl;	// FIXME - report more useful error message
-			return false;
+GameInfo* CoreApp::getDefaultGame()
+{
+	Pentagram::istring gamename;
+
+	std::string defaultgame;
+	bool defaultset = settingman->get("defaultgame", defaultgame,
+									  SettingManager::DOM_GLOBAL);
+
+	if (oGamename != "") {
+		// game specified on commandline
+		gamename = oGamename;
+	} else if (defaultset) {
+		// default game specified in config file
+		gamename = defaultgame;
+	} else if (games.size() == 2) {// TODO - Do this in a better method
+		// only one game in config file, so pick that
+		std::map<Pentagram::istring, GameInfo*>::iterator i;
+		for (i = games.begin(); i != games.end(); ++i) {
+			if (i->second->name != "pentagram")
+				gamename = i->second->name;
 		}
+	} else if (games.size() == 1) {
+		perr << "----------------------------------------" << std::endl
+			 << "No games set up in configuration. " << std::endl
+			 << "Please read the README for instructions." << std::endl
+			 << "----------------------------------------" << std::endl;
+		// FIXME - report more useful error message
+		return 0;
+	} else {		
+		perr << "Multiple games found in configuration, but no default "
+			 << "game is selected." << std::endl
+			 << "Either start Pentagram with the \"--game <gamename>\","
+			 << std::endl
+			 << "or set pentagram/defaultgame in pentagram.ini"
+			 << std::endl;	// FIXME - report more useful error message
+		return 0;
 	}
 
 	pout << "Default game: " << gamename << std::endl;
 
-	bool foundgame = false;
-	for (unsigned int i = 0; i < games.size(); ++i) {
-		if (games[i] == gamename) {
-			foundgame = true;
-			break;
-		}
-	}
+	GameInfo* info = getGameInfo(gamename);
 
-	if (!foundgame) {
+	if (!info) {
 		perr << "Game \"" << gamename << "\" not found." << std::endl;
-		return false;
 	}
-
 
 	// We've got a default game name, doesn't mean it will work though
-	return true;
+	return info;
 }
 
-bool CoreApp::setupGameInfo()
+bool CoreApp::setupGame(GameInfo* info)
 {
-	pout << "Selected game: " << gamename << std::endl;
+	if (!info) return false;
+	assert(info->name != "");
 
-	if (gamename == "pentagram" || gamename == "") return false;
+	gameinfo = info;
 
-	// fill our GameInfo struct
-	bool ok = getGameInfo(gamename, gameinfo);
+	if (info->name == "pentagram") return false;
 
-	if (!ok) {
-		perr << "No installed game found." << std::endl;
-		return false;
-	}
+	pout << "Selected game: " << info->name << std::endl;
+	pout << info->getPrintDetails() << std::endl;
 
-	setupGamePaths(gamename, gameinfo);
+	setupGamePaths();
 
 	return true;
 }
@@ -290,7 +304,7 @@ void CoreApp::killGame()
 	configfileman->clearRoot("game");
 	settingman->setCurrentDomain(SettingManager::DOM_GLOBAL);
 
-	gamename = "";
+	gameinfo = 0;
 }
 
 
@@ -299,6 +313,7 @@ bool CoreApp::getGameInfo(Pentagram::istring& game, GameInfo* gameinfo)
 	// first try getting the information from the config file
 	// if that fails, try to autodetect it
 
+	gameinfo->name = game;
 	gameinfo->type = GameInfo::GAME_UNKNOWN;
 	gameinfo->version = 0;
 	gameinfo->language = GameInfo::GAMELANG_UNKNOWN;
@@ -360,8 +375,12 @@ bool CoreApp::getGameInfo(Pentagram::istring& game, GameInfo* gameinfo)
 	return true;
 }
 
-void CoreApp::setupGamePaths(Pentagram::istring& game, GameInfo* /*gameinfo*/)
+void CoreApp::setupGamePaths()
 {
+	assert(gameinfo);
+	assert(gameinfo->name != "pentagram");
+	Pentagram::istring game = gameinfo->name;
+
 	settingman->setDomainName(SettingManager::DOM_GAME, game);
 	settingman->setCurrentDomain(SettingManager::DOM_GAME);
 
@@ -417,6 +436,16 @@ void CoreApp::helpMe()
 	con.Print("\t--game {name}\t- select a game\n");
 }
 
+GameInfo* CoreApp::getGameInfo(Pentagram::istring game) const
+{
+	std::map<Pentagram::istring, GameInfo*>::const_iterator i;
+	i = games.find(game);
+
+	if (i != games.end())
+		return i->second;
+	else
+		return 0;
+}
 
 
 static void ToLower(std::string& str)

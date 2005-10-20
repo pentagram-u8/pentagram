@@ -51,6 +51,9 @@ public:
 
 	//! Get current GameInfo struct
 	GameInfo* getGameInfo() const { return gameinfo; }
+
+	//! Get GameInfo for other configured game, or 0 for an invalid name.
+	GameInfo* getGameInfo(Pentagram::istring game) const;
 	
 	virtual void helpMe();
 	
@@ -64,24 +67,12 @@ protected:
 	//! Should call parent class' DeclareArgs().
 	virtual void DeclareArgs();
 	
-	//! Fill a GameInfo struct for the give game name
-	//! \param game The id of the game to check (from pentagram.cfg)
-	//! \param gameinfo The GameInfo struct to fill
-	//! \return true if detected all the fields, false if detection failed
-	bool getGameInfo(Pentagram::istring& game, GameInfo* gameinfo);
-
-	//! Setup the virtual game paths for the given game/GameInfo
-	//! Specifically, @u8 and @work (//!!FIXME)
-	//! \param game The id of the game
-	//! \param gameinfo The GameInfo for the game
-	void setupGamePaths(Pentagram::istring& game, GameInfo* gameinfo);
-
 	bool isRunning;
 	
-	Pentagram::istring gamename;
+	std::map<Pentagram::istring, GameInfo*> games;
+	GameInfo* gameinfo;
 	
 	// minimal system
-	GameInfo* gameinfo;
 	FileSystem* filesystem;
 	ConfigFileManager* configfileman;
 	SettingManager* settingman;
@@ -100,6 +91,17 @@ private:
 	//! parse commandline arguments
 	void ParseArgs(int argc, const char* const*  argv);
 
+	//! Fill a GameInfo struct for the give game name
+	//! \param game The id of the game to check (from pentagram.cfg)
+	//! \param gameinfo The GameInfo struct to fill
+	//! \return true if detected all the fields, false if detection failed
+	bool getGameInfo(Pentagram::istring& game, GameInfo* gameinfo);
+
+	//! Setup the virtual game paths for the current game (set in gameinfo)
+	//! Specifically, @u8 and @work (//!!FIXME)
+	void setupGamePaths();
+
+
 	//! setup default virtual paths (@home, @data)
 	void setupVirtualPaths();
 
@@ -107,17 +109,20 @@ private:
 	void loadConfig();
 
 protected:
-	//! Do initial Game init
-	//! \return false if no default game (implies go to Pentagram Menu)
-	bool getDefaultGame();
+	void setupGameList();
+
+	//! return default game
+	//! \return 0 if no default game (implies go to Pentagram Menu)
+	GameInfo* getDefaultGame();
 
 	//! Setup up a game
 	//! \return false if failed (implies go to Pentagram Menu)
-	bool setupGameInfo();
+	bool setupGame(GameInfo* info);
 
 	//! kill current gameinfo
 	void killGame();
 
+	std::string oGamename;
 	bool oHelp;
 	bool oQuiet;
 	bool oVQuiet;

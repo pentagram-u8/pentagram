@@ -1,3 +1,9 @@
+2005-10-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/*App.*: refactored GameInfo/gamename use. Current game is
+	  now stored in GameInfo* CoreApp::gameinfo, which has a 'name' field
+	  for the name of the game. The (pointers to) GameInfo objects for
+	  all configured games are stored in a std::map in CoreApp.
+
 2005-10-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AvatarMoverProcess.*: adjust direction/size of steps
 	* world/AnimationTracker.cpp: allow small adjustments of avatar anims

@@ -402,9 +402,12 @@ void GUIApp::startup()
 	pout << "-- Pentagram Initialized -- " << std::endl << std::endl;
 
 	// We Attempt to startup game
-	getDefaultGame();
-	if (setupGameInfo()) startupGame();
-	else startupPentagramMenu();
+	setupGameList();
+	GameInfo* info = getDefaultGame();
+	if (setupGame(info))
+		startupGame();
+	else
+		startupPentagramMenu();
 
 	// Unset the console auto paint, since we have finished initing
 	con.SetAutoPaint(0);
@@ -417,7 +420,7 @@ void GUIApp::startupGame()
 {
 	con.SetAutoPaint(conAutoPaint);
 
-	pout  << std::endl << "-- Initializing Game: " << gamename << " --" << std::endl;
+	pout  << std::endl << "-- Initializing Game: " << gameinfo->name << " --" << std::endl;
 
 	GraphicSysInit();
 
@@ -437,6 +440,7 @@ void GUIApp::startupGame()
 	con.AddConsoleCommand("MainActor::recall", MainActor::ConCmd_recall);
 	con.AddConsoleCommand("MainActor::listmarks", MainActor::ConCmd_listmarks);
 	con.AddConsoleCommand("Cheat::maxstats", MainActor::ConCmd_maxstats);
+	con.AddConsoleCommand("Cheat::heal", MainActor::ConCmd_heal);
 	con.AddConsoleCommand("MainActor::name", MainActor::ConCmd_name);
 	con.AddConsoleCommand("MovieGump::play", MovieGump::ConCmd_play);
 	con.AddConsoleCommand("MusicProcess::playMusic", MusicProcess::ConCmd_playMusic);
@@ -513,7 +517,8 @@ void GUIApp::startupPentagramMenu()
 
 	pout << std::endl << "-- Initializing Pentagram Menu -- " << std::endl;
 
-	gamename = "pentagram";	// Just to be sure
+	setupGame(getGameInfo("pentagram"));
+	assert(gameinfo);
 
 	GraphicSysInit();
 
@@ -583,6 +588,7 @@ void GUIApp::shutdownGame(bool reloading)
 	con.RemoveConsoleCommand(MainActor::ConCmd_recall);
 	con.RemoveConsoleCommand(MainActor::ConCmd_listmarks);
 	con.RemoveConsoleCommand(MainActor::ConCmd_maxstats);
+	con.RemoveConsoleCommand(MainActor::ConCmd_heal);
 	con.RemoveConsoleCommand(MainActor::ConCmd_name);
 	con.RemoveConsoleCommand(MovieGump::ConCmd_play);
 	con.RemoveConsoleCommand(MusicProcess::ConCmd_playMusic);
@@ -703,15 +709,18 @@ void GUIApp::run()
 
 		if (!change_gamename.empty()) {
 			pout << "Changing Game to: " << change_gamename << std::endl;
-			GameInfo info;
 
-			if (getGameInfo(change_gamename, &info)) {
+			GameInfo* info = getGameInfo(change_gamename);
+
+			if (info) {
 				shutdownGame();
-	
-				gamename = change_gamename;
+
 				change_gamename.clear();
-				if (setupGameInfo()) startupGame();
-				else startupPentagramMenu();
+
+				if (setupGame(info))
+					startupGame();
+				else
+					startupPentagramMenu();
 			}
 			else {
 				perr << "Game '" << change_gamename << "' not found" << std::endl;
@@ -2209,7 +2218,7 @@ void GUIApp::ConCmd_changeGame(const Console::ArgvType &argv)
 {
 	if (argv.size() == 1)
 	{
-		pout << "Current game is: " << GUIApp::get_instance()->gamename << std::endl;
+		pout << "Current game is: " << GUIApp::get_instance()->gameinfo->name << std::endl;
 	}
 	else
 	{
@@ -2225,11 +2234,10 @@ void GUIApp::ConCmd_listGames(const Console::ArgvType &argv)
 	std::vector<Pentagram::istring>::iterator iter;
 	for (iter = games.begin(); iter != games.end(); ++iter) {
 		Pentagram::istring game = *iter;
-		GameInfo info;
-		bool detected = app->getGameInfo(game, &info);
+		GameInfo* info = app->getGameInfo(game);
 		con.Printf(MM_INFO, "%s: ", game.c_str());
-		if (detected) {
-			std::string details = info.getPrintDetails();
+		if (info) {
+			std::string details = info->getPrintDetails();
 			con.Print(MM_INFO, details.c_str());
 		} else {
 			con.Print(MM_INFO, "(unknown)");
