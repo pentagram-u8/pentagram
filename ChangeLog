@@ -1,5 +1,6 @@
 2005-10-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/U8SaveGump.cpp: properly wrap lines in load mode
+	* world/actors/GrantPeaceProcess.cpp: correctly check if target is dead
 
 2005-10-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/*App.*: refactored GameInfo/gamename use. Current game is

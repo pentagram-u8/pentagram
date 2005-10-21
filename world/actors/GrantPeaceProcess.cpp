@@ -109,7 +109,7 @@ bool GrantPeaceProcess::run(const uint32 /*framenum*/)
 			if (!t) continue;
 			if (t == caster) continue;
 
-			if (t->getFlags() & Actor::ACT_DEAD) continue;
+			if (t->getActorFlags() & Actor::ACT_DEAD) continue;
 
 			// undead?
 			if (t->getDefenseType() & WeaponInfo::DMG_UNDEAD) {
