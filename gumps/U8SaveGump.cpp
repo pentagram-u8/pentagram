@@ -99,7 +99,7 @@ void U8SaveGump::InitGump(Gump* newparent, bool take_focus)
 			// special case for 'The Beginning...' save
 			Gump* widget = new TextWidget(xbase, 12+entryheight,
 										  _TL_("The Beginning..."),
-										  entryfont);
+										  entryfont, 95);
 			widget->InitGump(this, false);
 
 		} else {
@@ -114,7 +114,8 @@ void U8SaveGump::InitGump(Gump* newparent, bool take_focus)
 			} else {
 				// load
 				Gump* widget = new TextWidget(xbase, entryheight+4+40*yi,
-											  descriptions[i], entryfont);
+											  descriptions[i], entryfont,
+											  95);
 				widget->InitGump(this, false);
 			}
 		}
