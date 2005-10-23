@@ -1452,11 +1452,41 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		if (gump && mouseOverGump != gump->getObjId())
 		{
 			Gump * oldGump = getGump(mouseOverGump);
-			if (oldGump)
-				oldGump->OnMouseLeft();
+			std::list<Gump*> oldgumplist;
+			std::list<Gump*> newgumplist;
+
+			// create lists of parents of old and new 'mouseover' gumps
+			if (oldGump) {
+				while (oldGump) {
+					oldgumplist.push_front(oldGump);
+					oldGump = oldGump->GetParent();
+				}
+			}
+			Gump* newGump = gump;
+			while (newGump) {
+				newgumplist.push_front(newGump);
+				newGump = newGump->GetParent();
+			}
+
+			std::list<Gump*>::iterator olditer = oldgumplist.begin();
+			std::list<Gump*>::iterator newiter = newgumplist.begin();
+
+			// strip common prefix from lists
+			while (olditer != oldgumplist.end() &&
+				   newiter != newgumplist.end() &&
+				   *olditer == *newiter)
+			{
+				++olditer; ++newiter;
+			}
+
+			// send events to remaining gumps
+			for (; olditer != oldgumplist.end(); ++olditer)
+				(*olditer)->OnMouseLeft();
 
 			mouseOverGump = gump->getObjId();
-			gump->OnMouseOver();
+
+			for (; newiter != newgumplist.end(); ++newiter)
+				(*newiter)->OnMouseOver();
 		}
 
 		if (dragging == DRAG_NOT) {
