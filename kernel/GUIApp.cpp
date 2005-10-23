@@ -522,12 +522,7 @@ void GUIApp::startupPentagramMenu()
 
 	// Unset the console auto paint, since we have finished initing
 	con.SetAutoPaint(0);
-	enterTextMode(consoleGump);
-
-	pout << "-- Pentagram Menu Initialized -- " << std::endl << std::endl;
-
-	pout << "Type \"GUIApp::listGames\" to list available games" << std::endl;
-	pout << "Type \"GUIApp::changeGame <gamename>\" to choose a game" << std::endl;
+	consoleGump->HideConsole();
 
 	Gump* menugump = new PentagramMenuGump(0,0,640,400);
 	menugump->InitGump(0, true);

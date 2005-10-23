@@ -29,7 +29,9 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(PentagramMenuGump,ModalGump);
 PentagramMenuGump::PentagramMenuGump(int X, int Y, int Width, int Height) :
 	ModalGump(X,Y,Width,Height)
 {
-
+	gameScrollPos = 0;
+	gameScrollTarget = 0;
+	gameScrollLastDelta = 0;
 }
 
 PentagramMenuGump::~PentagramMenuGump()
@@ -49,16 +51,19 @@ void PentagramMenuGump::InitGump(Gump* newparent, bool take_focus)
 	std::vector<Pentagram::istring> games;
 	// TODO: listGames() should probably be in CoreApp
 	games = SettingManager::get_instance()->listGames();
-	std::vector<Pentagram::istring>::iterator iter;
-	for (iter = games.begin(); iter != games.end(); ++iter) {
-		Pentagram::istring game = *iter;
+	unsigned int index = 0;
+	for (unsigned int i = 0; i < games.size(); ++i) {
+		Pentagram::istring game = games[i];
 
 		if (game == "pentagram") continue;
 
 		g = new GameWidget(150, y, game);
 		g->InitGump(this, false);
+		g->SetIndex(index++);
 		y += 114;
 	}
+
+	gamecount = index;
 }
 
 void PentagramMenuGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
@@ -95,8 +100,10 @@ void PentagramMenuGump::PaintChildren(RenderSurface *surf, sint32 lerp_factor)
 	{
 		Gump *g = *it;
 
-		if (g->IsOfType<GameWidget>())
+		if (g->IsOfType<GameWidget>()) {
 			surf->SetClippingRect(game_clip_rect);
+			g->Move(150, 50 + 114*g->GetIndex() + gameScrollPos);
+		}
 
 		g->Paint(surf, lerp_factor);
 
@@ -128,32 +135,43 @@ void PentagramMenuGump::ChildNotify(Gump *child, uint32 message)
 	}
 }
 
+bool PentagramMenuGump::Run(const uint32 framenum)
+{
+	int oldpos = gameScrollPos;
+
+	if (gameScrollPos != gameScrollTarget) {
+		int diff = gameScrollTarget - gameScrollPos;
+		if (diff < 20 && diff > -20) {
+			gameScrollPos = gameScrollTarget;
+		} else {
+			gameScrollPos += diff/3;
+		}
+	}
+
+	gameScrollLastDelta = gameScrollPos - oldpos;
+
+	return true;
+}
+
 
 bool PentagramMenuGump::OnKeyDown(int key, int mod)
 {
 	int delta = 0;
 
 	if (key == SDLK_DOWN) {
-		delta = -57;
+		delta = -114;
 	} else if (key == SDLK_UP) {
-		delta = 57;
+		delta = 114;
 	}
 
-	if (delta) {
-		// Iterate all children
-		std::list<Gump*>::iterator it = children.begin();
-		std::list<Gump*>::iterator end = children.end();
+	if (delta && gamecount > 3) {
+		gameScrollTarget += delta;
 
-		while (it != end)
-		{
-			Gump *g = *it;
-			
-			if (g->IsOfType<GameWidget>()) {
-				g->MoveRelative(0, delta);
-			}
+		if (gameScrollTarget > 0)
+			gameScrollTarget = 0;
+		if (gameScrollTarget < -114*(gamecount-3))
+			gameScrollTarget = -114*(gamecount-3);
 
-			++it;
-		}
 		return true;
 	}
 

@@ -39,9 +39,9 @@ public:
 
 	virtual bool OnKeyDown(int key, int mod);
 
-#if 0
 	virtual bool Run(const uint32 framenum);
 
+#if 0
 	virtual uint16 TraceObjId(int mx, int my);
 
 	virtual bool StartDraggingChild(Gump* gump, int mx, int my);
@@ -55,6 +55,15 @@ public:
 
 	virtual void RenderSurfaceChanged();
 #endif
+
+private:
+
+	int gameScrollPos;
+	int gameScrollTarget;
+	int gameScrollLastDelta;
+
+	int gamecount;
+
 };
 
 #endif

@@ -167,6 +167,7 @@ bool MenuGump::OnKeyDown(int key, int mod)
 	if (!nameEntryMode) {
 
 		if (key == SDLK_ESCAPE) {
+			// FIXME: this check should probably be in Game or GUIApp
 			MainActor* av = getMainActor();
 			if (av && !(av->getActorFlags() & Actor::ACT_DEAD))
 				Close(); // don't allow closing if dead/game over
@@ -213,6 +214,13 @@ void MenuGump::selectEntry(int entry)
 		break;
 	case 2: case 3: // Read/Write Diary
 	{
+		if (entry == 3) {
+			// can't save if game over
+			// FIXME: this check should probably be in Game or GUIApp
+			MainActor* av = getMainActor();
+			if (!av || (av->getActorFlags() & Actor::ACT_DEAD)) break;
+		}
+
 		PagedGump * gump = new PagedGump(34, -38, 3, gumpShape);
 		gump->InitGump(this);
 

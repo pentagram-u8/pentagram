@@ -1,5 +1,8 @@
-2005-10-24  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
-	* kernel/GUIApp.*: gumps get mouseover events if mouse is over child
+2005-10-23  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/GUIApp.cpp: gumps get mouseover events if mouse is over child
+	* gumps/MenuGump.cpp: don't enter save screen if game over
+	* gumps/PentagramMenuGump.*: small temporary improvement to scrolling
+	* kernel/GUIApp.cpp: hide console in menu
 
 2005-10-23  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/widgets/GameWidget.*: widget used for game selection
