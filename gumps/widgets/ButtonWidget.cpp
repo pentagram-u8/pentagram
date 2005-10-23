@@ -37,13 +37,13 @@ ButtonWidget::ButtonWidget()
 {
 }
 
-ButtonWidget::ButtonWidget(int X, int Y, std::string txt, int font,
-						   uint32 mouseOverBlendCol_, int w, int h,
-						   sint32 layer) :
+ButtonWidget::ButtonWidget(int X, int Y, std::string txt, bool gamefont,
+						   int font, uint32 mouseOverBlendCol_,
+						   int w, int h, sint32 layer) :
 	Gump(X,Y,w,h,0,0,layer), shape_up(0), shape_down(0),
 	mouseOver(false), origw(w), origh(h)
 {
-	TextWidget* widget = new TextWidget(0,0,txt,font,w,h);
+	TextWidget* widget = new TextWidget(0,0,txt,gamefont,font,w,h);
 	textwidget = widget->getObjId();
 	mouseOverBlendCol = mouseOverBlendCol_;
 	mouseOver = (mouseOverBlendCol != 0);

@@ -55,26 +55,26 @@ void OptionsGump::InitGump(Gump* newparent, bool take_focus)
 	Gump * widget;
 
 #if 0
-	widget = new ButtonWidget(x, y, "1. Video", font, 0x804000B0);
+	widget = new ButtonWidget(x, y, "1. Video", true, font, 0x804000B0);
 	widget->InitGump(this);
 	widget->SetIndex(1);
 #endif
 	y+= 14;
 
 #if 0
-	widget = new ButtonWidget(x, y, "2. Audio", font, 0x804000B0);
+	widget = new ButtonWidget(x, y, "2. Audio", true, font, 0x804000B0);
 	widget->InitGump(this);
 	widget->SetIndex(2);
 #endif
 	y+= 14;
 
-	widget = new ButtonWidget(x, y, "3. Controls", font, 0x804000B0);
+	widget = new ButtonWidget(x, y, "3. Controls", true, font, 0x804000B0);
 	widget->InitGump(this);
 	widget->SetIndex(3);
 	y+= 14;
 
 #if 0
-	widget = new ButtonWidget(x, y, "4. Gameplay", font, 0x804000B0);
+	widget = new ButtonWidget(x, y, "4. Gameplay", true, font, 0x804000B0);
 	widget->InitGump(this);
 	widget->SetIndex(4);
 #endif

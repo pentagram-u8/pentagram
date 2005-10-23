@@ -82,7 +82,7 @@ void ControlEntryGump::init()
 	Gump * widget;
 
 	Pentagram::Rect rect;
-	button = new ButtonWidget(0, 0, displayedName, font, 0x80D000D0);
+	button = new ButtonWidget(0, 0, displayedName, true, font, 0x80D000D0);
 	button->InitGump(this);
 	button->GetDims(rect);
 
@@ -92,7 +92,7 @@ void ControlEntryGump::init()
 /*	int x = 120;
 	for (i = controls.begin(); i != controls.end(); ++i)
 	{
-		widget = new TextWidget(x, 0, *i, font);
+		widget = new TextWidget(x, 0, *i, true, font);
 		widget->InitGump(this, false);
 		widget->GetDims(rect);
 		x += rect.w + 5;
@@ -135,9 +135,9 @@ void ControlsGump::InitGump(Gump* newparent, bool take_focus)
 	dims.w = 220;
 	dims.h = 120;
 
-	Gump * widget = new TextWidget(0, 0, "Controls", font);
+	Gump * widget = new TextWidget(0, 0, "Controls", true, font);
 	widget->InitGump(this, false);
-	widget = new TextWidget(120, 0, "Keys", font);
+	widget = new TextWidget(120, 0, "Keys", true, font);
 	widget->InitGump(this, false);
 }
 

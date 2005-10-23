@@ -69,7 +69,7 @@ void BarkGump::InitGump(Gump* newparent, bool take_focus)
 	}
 
 	// Create the TextWidget
-	TextWidget *widget = new TextWidget(0,0,barked,fontnum,194,55);
+	TextWidget *widget = new TextWidget(0,0,barked,true,fontnum,194,55);
 	widget->InitGump(this);
 
 	textwidget = widget->getObjId();

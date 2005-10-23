@@ -164,6 +164,9 @@ public:
 	//! Move this gump
 	virtual void		Move(int x_, int y_) { x = x_; y = y_; }
 
+	//! Move this gump relative to its current position
+	virtual void		MoveRelative(int x_, int y_) { x += x_; y += y_; }
+
 	enum Position {
 		CENTER = 1,
 		TOP_LEFT = 2,

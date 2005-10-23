@@ -160,14 +160,14 @@ void GameData::loadTranslation()
 			perr << "Unknown language." << std::endl;
 			break;
 		}
+	}
 
-		if (!translationfile.empty()) {
-			translationfile = "@data/" + translationfile;
+	if (!translationfile.empty()) {
+		translationfile = "@data/" + translationfile;
 
-			pout << "Loading translation: " << translationfile << std::endl;
-
-			config->readConfigFile(translationfile, "language", true);
-		}
+		pout << "Loading translation: " << translationfile << std::endl;
+		
+		config->readConfigFile(translationfile, "language", true);
 	}
 }
 

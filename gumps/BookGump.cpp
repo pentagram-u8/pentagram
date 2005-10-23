@@ -56,11 +56,11 @@ void BookGump::InitGump(Gump* newparent, bool take_focus)
 	ModalGump::InitGump(newparent, take_focus);
 
 	// Create the TextWidgets (NOTE: they _must_ have exactly the same dims)
-	TextWidget *widget = new TextWidget(15,10,text,9,120,125); //!! constants
+	TextWidget *widget = new TextWidget(15,10,text,true,9,120,125); //!! constants
 	widget->InitGump(this);
 	textwidgetL = widget->getObjId();
 	
-	widget = new TextWidget(150,10,text,9,120,125); //!! constants
+	widget = new TextWidget(150,10,text,true,9,120,125); //!! constants
 	widget->InitGump(this);
 	textwidgetR = widget->getObjId();
 	widget->setupNextText();

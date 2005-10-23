@@ -37,7 +37,7 @@ struct GameLangDesc {
 // Keep order the same as the GameType enum!
 static GameTypeDesc gametypes[] = {
 	{ "", "" },
-	{ "ultima8", "Ultima 8: Pagan" },
+	{ "ultima8", "Ultima VIII: Pagan" },
 	{ "remorse", "Crusader: No Remorse" },
 	{ "regret", "Crusader: No Regret" },
 	{ "pentmenu", "Pentagram Menu" },

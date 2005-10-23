@@ -136,18 +136,18 @@ void MenuGump::InitGump(Gump* newparent, bool take_focus)
 
 		if (!name.empty()) {
 			Pentagram::Rect rect;
-			widget = new TextWidget(0, 0, name, 6);
+			widget = new TextWidget(0, 0, name, true, 6);
 			widget->InitGump(this, false);
 			widget->GetDims(rect);
 			widget->Move(90 - rect.w / 2, dims.h - 40);
 		}
 	} else {
 		Gump * widget;
-		widget = new TextWidget(0, 0, _TL_("Give thy name:"), 6); // CONSTANT!
+		widget = new TextWidget(0, 0, _TL_("Give thy name:"), true, 6); // CONSTANT!
 		widget->InitGump(this, false);
 		widget->Move(dims.w / 2 + 6, 10);
 
-		widget = new EditWidget(0, 0, "", 6, 110, 40, 15); // CONSTANTS!
+		widget = new EditWidget(0, 0, "", true, 6, 110, 40, 15); // CONSTANTS!
 		widget->InitGump(this, true);
 		widget->Move(dims.w / 2 + 6, 25);
 		widget->MakeFocus();

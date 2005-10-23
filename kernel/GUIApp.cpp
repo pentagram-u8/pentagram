@@ -59,6 +59,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MiniMapGump.h"
 #include "QuitGump.h"
 #include "MenuGump.h"
+#include "PentagramMenuGump.h"
 
 // For gump positioning... perhaps shouldn't do it this way....
 #include "BarkGump.h"
@@ -102,9 +103,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ShapeViewerGump.h"
 
 #include "AudioMixer.h"
-
-#include "DisasmProcess.h"
-#include "CompileProcess.h"
 
 #ifdef WIN32
 #include <windows.h>
@@ -530,6 +528,9 @@ void GUIApp::startupPentagramMenu()
 
 	pout << "Type \"GUIApp::listGames\" to list available games" << std::endl;
 	pout << "Type \"GUIApp::changeGame <gamename>\" to choose a game" << std::endl;
+
+	Gump* menugump = new PentagramMenuGump(0,0,640,400);
+	menugump->InitGump(0, true);
 }
 
 void GUIApp::shutdown()
@@ -561,7 +562,7 @@ void GUIApp::shutdownGame(bool reloading)
 	FORGET_OBJECT(ucmachine);
 	kernel->reset();
 	palettemanager->reset();
-	fontmanager->reset();
+	fontmanager->resetGameFonts();
 
 	FORGET_OBJECT(game);
 	FORGET_OBJECT(gamedata);
@@ -1207,6 +1208,9 @@ void GUIApp::GraphicSysInit()
 	fontmanager = new FontManager(ttf_antialiasing);
 	palettemanager = new PaletteManager(new_screen);
 
+	fontmanager->loadTTFont(0, "Vera.ttf", 18, 0xFFFFFF, 0);
+	fontmanager->loadTTFont(1, "VeraBd.ttf", 12, 0xFFFFFF, 0);
+
 	paint();
 }
 
@@ -1598,8 +1602,11 @@ void GUIApp::startDragging(int startx, int starty)
 		dragging = DRAG_INVALID;
 	}
 
+#if 0
 	Object* obj = ObjectManager::get_instance()->getObject(dragging_objid);
-//	perr << "Dragging object " << dragging_objid << " (class=" << (obj ? obj->GetClassType().class_name : "NULL") << ")" << std::endl;
+	perr << "Dragging object " << dragging_objid << " (class=" << (obj ? obj->GetClassType().class_name : "NULL") << ")" << std::endl;
+#endif
+
 	pushMouseCursor();
 	setMouseCursor(MOUSE_NORMAL);
 	
@@ -2069,8 +2076,10 @@ void GUIApp::addGump(Gump* gump)
 
 	if (gump->IsOfType<ShapeViewerGump>() || gump->IsOfType<MiniMapGump>() ||
 		gump->IsOfType<ConsoleGump>() || gump->IsOfType<ScalerGump>() ||
+		gump->IsOfType<PentagramMenuGump>() ||
 		(ttfoverrides && (gump->IsOfType<BarkGump>() ||
-						  gump->IsOfType<AskGump>())))
+						  gump->IsOfType<AskGump>()))
+		)
 	{
 //		pout << "adding to desktopgump: "; gump->dumpInfo();
 		desktopGump->AddChild(gump);

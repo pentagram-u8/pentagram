@@ -63,7 +63,7 @@ void ReadableGump::InitGump(Gump* newparent, bool take_focus)
 	dims.w = sf->width;
 	dims.h = sf->height;
 
-	Gump *widget = new TextWidget(0, 0, text, fontnum, dims.w - 16, 0, Pentagram::Font::TEXT_CENTER);
+	Gump *widget = new TextWidget(0, 0, text, true, fontnum, dims.w - 16, 0, Pentagram::Font::TEXT_CENTER);
 	widget->InitGump(this);
 	widget->setRelativePosition(CENTER);
 

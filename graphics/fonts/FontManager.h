@@ -56,8 +56,8 @@ public:
 	bool loadTTFont(unsigned int ttfnum, std::string filename,
 				int pointsize, uint32 rgb, int bordersize);
 
-	// Reset the font manager
-	void reset();
+	// Reset the game fonts
+	void resetGameFonts();
 private:
 
 	struct TTFId {

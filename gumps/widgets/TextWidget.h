@@ -35,6 +35,7 @@ class TextWidget : public Gump
 {
 protected:
 	std::string		text;
+	bool			gamefont;
 	int				fontnum;
 	uint32 			blendColour;
 
@@ -49,7 +50,7 @@ public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
 	TextWidget();
-	TextWidget(int X, int Y, std::string txt, int fontnum,
+	TextWidget(int X, int Y, std::string txt, bool gamefont, int fontnum,
 			   int width = 0, int height = 0,
 			   Font::TextAlign align = Font::TEXT_LEFT);
 	virtual ~TextWidget(void);
@@ -84,6 +85,8 @@ public:
 
 protected:
 	void renderText();
+
+	Pentagram::Font* getFont() const;
 
 public:
 	bool loadData(IDataSource* ids, uint32 version);

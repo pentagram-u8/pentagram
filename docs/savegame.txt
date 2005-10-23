@@ -48,7 +48,7 @@ uint16 year
 uint8 month, day [1-12, 1-31]
 uint8 hour, min, sec [0-23, 0-59, 0-60]
 uint32 save_count
-uint8 has_cheated (bool)
+uint8 has_cheated (boolean)
 uint32 gametime [in seconds]
 uint8 name_length
 char avatar_name[name_length]
@@ -67,7 +67,7 @@ uint16 avatarMoverProcess (pid)
 sint16 palette_transform_matrix[12]
 uint16 inversion
 uint32 save_count
-uint8 has_cheated (bool)
+uint8 has_cheated (boolean)
 
 KERNEL: (v1)
 uint32 framenum
@@ -281,6 +281,7 @@ MiniMapGump: (v1)
 
 TextWidget: (v1)
 <Gump>
+uint8 gamefont (boolean)
 sint32 fontnum
 uint32 blendColour
 sint32 current_start
@@ -498,6 +499,30 @@ uint16 currentstep
 uint16 pathsize
 (uint16 action,uint16 direction) path[pathsize]
 
+
+Pathfinder (v1)
+uint16 actor_objid
+sint32 targetx, targety, targetz
+uint16 target_objid
+uint8 hitmode (boolean)
+uint32 nodecount
+PathNode nodelist[nodecount]
+uint32 activenodes
+uint32 visitedcount
+PathfindingState visited[visitedcount]
+
+PathNode (v1)
+uint32 parentid
+PathfindingState state
+uint32 depth
+uint32 cost,heuristicTotalCost
+uint32 stepfromparent
+
+PathfindingState (v1)
+sint32 x,y,z
+uint16 lastanim
+uint8 direction
+uint8 flipped, firststep, combat (boolean)
 
 LoiterProcess: Process (v1)
 <Process>

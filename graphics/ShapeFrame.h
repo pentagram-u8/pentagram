@@ -50,18 +50,17 @@ public:
 	void getConvertShapeFrame(ConvertShapeFrame &csf, bool need_bytes_rle=false);
 protected:
 
-	// This will load a u8 style shape 'optimzed'.
+	// This will load a u8 style shape 'optimized'.
 	void LoadU8Format(const uint8* data, uint32 size);
 
-	// This will load a pentagram style shape 'optimzed'.
+	// This will load a pentagram style shape 'optimized'.
 	void LoadPentagramFormat(const uint8* data, uint32 size);
 
 	// This will load any sort of shape via a ConvertShapeFormat struct
 	// Crusader shapes must be loaded this way
 	void LoadGenericFormat(const uint8* data, uint32 size, const ConvertShapeFormat* format);
 
-	// This will load any sort of shape via a ConvertShapeFormat struct
-	// Crusader shapes must be loaded this way
+	// This will load a u8-compressed shape
 	void LoadU8CMPFormat(const uint8* data, uint32 size, const ConvertShapeFormat* format, const uint8 special[256], ConvertShapeFrame *prev);
 };
 

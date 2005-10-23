@@ -48,24 +48,9 @@ FontManager::FontManager(bool ttf_antialiasing_) : ttf_antialiasing(ttf_antialia
 
 FontManager::~FontManager()
 {
-	reset();
-
 	con.Print(MM_INFO, "Destroying Font Manager...\n");
 
-	TTF_Quit();
-
-	assert(fontmanager == this);
-	fontmanager = 0;
-}
-
-// Reset the font manager
-void FontManager::reset()
-{
-	con.Print(MM_INFO, "Resetting Font Manager...\n");
-
-	for (unsigned int i = 0; i < overrides.size(); ++i)
-		delete overrides[i];
-	overrides.clear();
+	resetGameFonts();
 
 	for (unsigned int i = 0; i < ttfonts.size(); ++i)
 		delete ttfonts[i];
@@ -75,6 +60,19 @@ void FontManager::reset()
 	for (iter = ttf_fonts.begin(); iter != ttf_fonts.end(); ++iter)
 		TTF_CloseFont(iter->second);
 	ttf_fonts.clear();
+
+	TTF_Quit();
+
+	assert(fontmanager == this);
+	fontmanager = 0;
+}
+
+// Reset the font manager
+void FontManager::resetGameFonts()
+{
+	for (unsigned int i = 0; i < overrides.size(); ++i)
+		delete overrides[i];
+	overrides.clear();
 }
 
 Pentagram::Font* FontManager::getGameFont(unsigned int fontnum,

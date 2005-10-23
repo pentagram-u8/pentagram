@@ -32,11 +32,11 @@ TextWidget::TextWidget()
 
 }
 
-TextWidget::TextWidget(int X, int Y, std::string txt, int font,
+TextWidget::TextWidget(int X, int Y, std::string txt, bool gamefont_, int font,
 					   int w, int h, Font::TextAlign align) :
-	Gump(X, Y, w, h), text(txt), fontnum(font), blendColour(0),
-	current_start(0), current_end(0), targetwidth(w), targetheight(h),
-	cached_text(0), textalign(align)
+	Gump(X, Y, w, h), text(txt), gamefont(gamefont_), fontnum(font),
+	blendColour(0), current_start(0), current_end(0),
+	targetwidth(w), targetheight(h), cached_text(0), textalign(align)
 {
 
 }
@@ -52,8 +52,7 @@ void TextWidget::InitGump(Gump* newparent, bool take_focus)
 {
 	Gump::InitGump(newparent, take_focus);
 
-	Pentagram::Font *font;
-	font = FontManager::get_instance()->getGameFont(fontnum, true);
+	Pentagram::Font *font = getFont();
 
 	// Y offset is always baseline
 	dims.y = -font->getBaseline();
@@ -71,14 +70,21 @@ int TextWidget::getVlead()
 	return cached_text->getVlead();
 }
 
+Pentagram::Font* TextWidget::getFont() const
+{
+	if (gamefont)
+		return FontManager::get_instance()->getGameFont(fontnum, true);
+	else
+		return FontManager::get_instance()->getTTFont(fontnum);
+}
+
 bool TextWidget::setupNextText()
 {
 	current_start = current_end;
 
 	if (current_start >= text.size()) return false;
 
-	Pentagram::Font *font;
-	font = FontManager::get_instance()->getGameFont(fontnum, true);
+	Pentagram::Font *font = getFont();
 
 	int tx, ty;
 	unsigned int remaining;
@@ -105,8 +111,7 @@ void TextWidget::rewind()
 void TextWidget::renderText()
 {
 	if (!cached_text) {
-		Pentagram::Font *font;
-		font = FontManager::get_instance()->getGameFont(fontnum, true);
+		Pentagram::Font *font = getFont();
 
 		unsigned int remaining;
 		cached_text = font->renderText(text.substr(current_start,
@@ -140,6 +145,7 @@ void TextWidget::saveData(ODataSource* ods)
 {
 	Gump::saveData(ods);
 
+	ods->write1(gamefont ? 1 : 0);
 	ods->write4(static_cast<uint32>(fontnum));
 	ods->write4(blendColour);
 	ods->write4(static_cast<uint32>(current_start));
@@ -155,6 +161,7 @@ bool TextWidget::loadData(IDataSource* ids, uint32 version)
 {
 	if (!Gump::loadData(ids, version)) return false;
 
+	gamefont = (ids->read1() != 0);
 	fontnum = static_cast<int>(ids->read4());
 	blendColour = ids->read4();
 	current_start = static_cast<int>(ids->read4());
@@ -174,9 +181,9 @@ bool TextWidget::loadData(IDataSource* ids, uint32 version)
 		text = "";
 	}
 
-	// HACK ALERT
-	Pentagram::Font *font;
-	font = FontManager::get_instance()->getGameFont(fontnum, true);
+	// HACK ALERT: this is to deal with possibly changing font sizes
+	// after loading.
+	Pentagram::Font *font = getFont();
 
 	int tx, ty;
 	unsigned int remaining;

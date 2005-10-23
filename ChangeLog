@@ -1,3 +1,9 @@
+2005-10-23  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/widgets/GameWidget.*: widget used for game selection
+	* gumps/PentagramMenuGump.*: unfinished pentagram game selection menu
+	* gumps/widgets/TextWidget.*: allow using non-game truetype fonts
+	* various: using new TextWidget construction syntax
+
 2005-10-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/U8SaveGump.cpp: properly wrap lines in load mode
 	* world/actors/GrantPeaceProcess.cpp: correctly check if target is dead

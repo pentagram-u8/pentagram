@@ -16,69 +16,48 @@
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  */
 
-#ifndef EDITWIDGET_H
-#define EDITWIDGET_H
-
-//
-// EditWidget. Widget for text input (single or multi-line)
-//
+#ifndef GAMEWIDGET_H
+#define GAMEWIDGET_H
 
 #include "Gump.h"
 
-#include "Font.h"
+struct GameInfo;
 
-using Pentagram::Font;
-
-class RenderedText;
-
-class EditWidget : public Gump
+class GameWidget : public Gump
 {
 public:
+	// p_dynamic_class stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	EditWidget(int X, int Y, std::string txt, bool gamefont, int fontnum,
-			   int width, int height, unsigned int maxlength=0,
-			   bool multiline=false);
-	virtual ~EditWidget(void);
+	GameWidget(int X, int Y, Pentagram::istring& game);
+	virtual ~GameWidget();
+
+	Pentagram::istring getGameName();
 
 	virtual void InitGump(Gump* newparent, bool take_focus=true);
 
+	virtual uint16 TraceObjId(int mx, int my);
+
 	virtual void PaintThis(RenderSurface*, sint32 lerp_factor);
 
-	virtual Gump* OnMouseMotion(int mx, int my);
-	virtual bool OnKeyDown(int key, int mod);
-	virtual bool OnKeyUp(int key);
-	virtual bool OnTextInput(int unicode);
+	virtual Gump* OnMouseDown(int button, int mx, int my);
+	virtual void OnMouseOver();
+	virtual void OnMouseLeft();
 
-	//! get the current text
-	std::string getText() const { return text; }
-	void setText(const std::string& t);
+	virtual void ChildNotify(Gump *child, uint32 message);
 
 	enum Message
 	{
-		EDIT_ENTER = 16,
-		EDIT_ESCAPE = 17
+		GAME_PLAY     = 1,
+		GAME_LOAD     = 2,
+		GAME_SETTINGS = 3,
+		GAME_REMOVE   = 4
 	};
 
-
 protected:
-	std::string text;
-	std::string::size_type cursor;
-	bool gamefont;
-	int fontnum;
-	unsigned int maxlength;
-	bool multiline;
+	GameInfo* info;
 
-	uint32 cursor_changed;
-	bool cursor_visible;
-
-	void ensureCursorVisible();
-	bool textFits(std::string& t);
-	void renderText();
-	Pentagram::Font* getFont() const;
-
-	RenderedText* cached_text;
-
+	bool highlight;
 };
 
 #endif

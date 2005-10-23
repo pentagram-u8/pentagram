@@ -124,7 +124,7 @@ void ShapeFrame::LoadGenericFormat(const uint8* data, uint32 size, const Convert
 	rle_data = data + format->len_frameheader2 + height*format->bytes_line_offset;
 }
 
-// This will load any sort of shape via a ConvertShapeFormat struct
+// This will load an U8-compressed shape
 void ShapeFrame::LoadU8CMPFormat(const uint8* data, uint32 size, const ConvertShapeFormat* format, const uint8 special[256], ConvertShapeFrame *prev)
 {
 	IBufferDataSource ds(data,size);

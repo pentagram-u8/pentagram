@@ -29,15 +29,9 @@
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(EditWidget,Gump);
 
-EditWidget::EditWidget()
-	: Gump(), cursor_changed(0), cursor_visible(true), cached_text(0)
-{
-
-}
-
-EditWidget::EditWidget(int X, int Y, std::string txt, int font,
+EditWidget::EditWidget(int X, int Y, std::string txt, bool gamefont_, int font,
 					   int w, int h, unsigned int maxlength_, bool multiline_)
-	: Gump(X, Y, w, h), text(txt), fontnum(font),
+	: Gump(X, Y, w, h), text(txt), gamefont(gamefont_), fontnum(font),
 	  maxlength(maxlength_), multiline(multiline_),
 	  cursor_changed(0), cursor_visible(true), cached_text(0)
 {
@@ -55,14 +49,21 @@ void EditWidget::InitGump(Gump* newparent, bool take_focus)
 {
 	Gump::InitGump(newparent, take_focus);
 
-	Pentagram::Font *font;
-	font = FontManager::get_instance()->getGameFont(fontnum, true);
+	Pentagram::Font *font = getFont();
 
 	// Y offset is always baseline
 	dims.y = -font->getBaseline();
 
 	// No X offset
 	dims.x = 0;
+}
+
+Pentagram::Font* EditWidget::getFont() const
+{
+	if (gamefont)
+		return FontManager::get_instance()->getGameFont(fontnum, true);
+	else
+		return FontManager::get_instance()->getTTFont(fontnum);
 }
 
 void EditWidget::setText(const std::string& t)
@@ -80,8 +81,7 @@ void EditWidget::ensureCursorVisible()
 
 bool EditWidget::textFits(std::string& t)
 {
-	Pentagram::Font *font;
-	font = FontManager::get_instance()->getGameFont(fontnum, true);
+	Pentagram::Font *font = getFont();
 	
 	unsigned int remaining;
 	int width, height;
@@ -114,8 +114,7 @@ void EditWidget::renderText()
 	}
 
 	if (!cached_text) {
-		Pentagram::Font *font;
-		font = FontManager::get_instance()->getGameFont(fontnum, true);
+		Pentagram::Font *font = getFont();
 
 		unsigned int remaining;
 		cached_text = font->renderText(text, remaining,
@@ -211,43 +210,3 @@ bool EditWidget::OnTextInput(int unicode)
 
 	return true;
 }
-
-void EditWidget::saveData(ODataSource* ods)
-{
-	Gump::saveData(ods);
-
-	ods->write4(static_cast<uint32>(fontnum));
-	ods->write4(static_cast<uint32>(maxlength));
-	ods->write4(static_cast<uint32>(cursor));
-	ods->write4(text.size());
-	ods->write(text.c_str(), text.size());
-}
-
-bool EditWidget::loadData(IDataSource* ids, uint32 version)
-{
-	if (!Gump::loadData(ids, version)) return false;
-
-	fontnum = static_cast<int>(ids->read4());
-	maxlength = static_cast<int>(ids->read4());
-	cursor = ids->read4();
-	uint32 slen = ids->read4();
-	if (slen > 0) {
-		char* buf = new char[slen+1];
-		ids->read(buf, slen);
-		buf[slen] = 0;
-		text = buf;
-		delete[] buf;
-	} else {
-		text = "";
-	}
-
-	// HACK ALERT (need to do this since the ttf setting might have changed)
-	Pentagram::Font *font;
-	font = FontManager::get_instance()->getGameFont(fontnum, true);
-
-	// Y offset is always baseline
-	dims.y = -font->getBaseline();
-
-	return true;
-}
-

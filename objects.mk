@@ -139,19 +139,23 @@ GUMPS = \
 	gumps/ControlsGump.o \
 	gumps/CreditsGump.o \
 	gumps/DesktopGump.o \
+	gumps/FastAreaVisGump.o \
 	gumps/GameMapGump.o \
 	gumps/Gump.o \
 	gumps/GumpNotifyProcess.o \
 	gumps/InverterGump.o \
 	gumps/ItemRelativeGump.o \
 	gumps/MainMenuProcess.o \
-	gumps/MiniStatsGump.o \
 	gumps/MenuGump.o \
+	gumps/MiniMapGump.o \
+	gumps/MiniStatsGump.o \
 	gumps/ModalGump.o \
 	gumps/MovieGump.o \
 	gumps/OptionsGump.o \
 	gumps/PagedGump.o \
 	gumps/PaperdollGump.o \
+	gumps/PentagramMenuGump.o \
+	gumps/QuitGump.o \
 	gumps/ReadableGump.o \
 	gumps/ResizableGump.o \
 	gumps/ScalerGump.o \
@@ -159,14 +163,12 @@ GUMPS = \
 	gumps/ShapeViewerGump.o \
 	gumps/SliderGump.o \
 	gumps/TargetGump.o \
-	gumps/U8SaveGump.o \
-	gumps/QuitGump.o \
-	gumps/FastAreaVisGump.o \
-	gumps/MiniMapGump.o
+	gumps/U8SaveGump.o
 
 WIDGETS = \
 	gumps/widgets/ButtonWidget.o \
 	gumps/widgets/EditWidget.o \
+	gumps/widgets/GameWidget.o \
 	gumps/widgets/SlidingWidget.o \
 	gumps/widgets/TextWidget.o
 

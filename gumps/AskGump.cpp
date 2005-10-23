@@ -75,7 +75,8 @@ void AskGump::InitGump(Gump* newparent, bool take_focus)
 		std::string str_answer = "@ ";
 		str_answer += UCMachine::get_instance()->getString(answers->getStringIndex(i));
 
-		ButtonWidget *child = new ButtonWidget(px, py, str_answer, fontnum);
+		ButtonWidget *child = new ButtonWidget(px, py, str_answer,
+											   true, fontnum);
 		child->InitGump(this);
 		child->SetIndex(i);
 
