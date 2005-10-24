@@ -56,6 +56,7 @@ void PentagramMenuGump::InitGump(Gump* newparent, bool take_focus)
 		Pentagram::istring game = games[i];
 
 		if (game == "pentagram") continue;
+		if (!GUIApp::get_instance()->getGameInfo(game)) continue;
 
 		g = new GameWidget(150, y, game);
 		g->InitGump(this, false);

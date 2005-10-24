@@ -1,3 +1,6 @@
+2005-10-24  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/PentagramMenuGump.cpp: skip unknown games
+
 2005-10-23  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GUIApp.cpp: gumps get mouseover events if mouse is over child
 	* gumps/MenuGump.cpp: don't enter save screen if game over
