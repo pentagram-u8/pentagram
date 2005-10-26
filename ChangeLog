@@ -1,3 +1,6 @@
+2005-10-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/CurrentMap.cpp: fix block check in scanForValidPosition
+
 2005-10-24  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/PentagramMenuGump.cpp: skip unknown games
 

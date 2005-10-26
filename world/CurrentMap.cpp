@@ -820,6 +820,9 @@ bool CurrentMap::scanForValidPosition(sint32 x, sint32 y, sint32 z, Item* item,
 
 				int minh = -100;
 				int maxh = 100;
+				if (!xdir && (sminx > 0 || smaxx < 0)) continue;
+				if (!ydir && (sminy > 0 || smaxy < 0)) continue;
+
 				if (xdir && minh < sminx)
 					minh = sminx;
 				if (xdir && maxh > smaxx)
@@ -852,6 +855,13 @@ bool CurrentMap::scanForValidPosition(sint32 x, sint32 y, sint32 z, Item* item,
 	}
 
 	bool foundunsupported = false;
+
+#if 0
+	for (unsigned int i = 0; i < 17; ++i) {
+		pout.printf("%05x | %05x\n", validmask[16-i], supportmask[16-i]);
+	}
+	pout.printf("-----------\n");
+#endif
 
 	for (unsigned int i = 0; i < 5; ++i) {
 		int horiz;
