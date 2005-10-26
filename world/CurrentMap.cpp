@@ -664,6 +664,7 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 {
 	const uint32 flagmask = (ShapeInfo::SI_SOLID | ShapeInfo::SI_DAMAGING |
 							 ShapeInfo::SI_ROOF);
+	const uint32 blockflagmask = (ShapeInfo::SI_SOLID|ShapeInfo::SI_DAMAGING);
 
 	bool valid = true;
 	ObjId support = 0;
@@ -710,7 +711,7 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 #endif
 
 				// check overlap
-				if ((si->flags & shapeflags & flagmask) &&
+				if ((si->flags & shapeflags & blockflagmask) &&
 					!(x <= ix - ixd || x - xd >= ix ||
 					  y <= iy - iyd || y - yd >= iy ||
 					  z + zd <= iz || z >= iz + izd))
@@ -755,8 +756,7 @@ bool CurrentMap::scanForValidPosition(sint32 x, sint32 y, sint32 z, Item* item,
 									  int movedir, bool wantsupport,
 									  sint32& tx, sint32& ty, sint32& tz)
 {
-	const uint32 flagmask = (ShapeInfo::SI_SOLID | ShapeInfo::SI_DAMAGING |
-							 ShapeInfo::SI_ROOF);
+	uint32 blockflagmask = (ShapeInfo::SI_SOLID | ShapeInfo::SI_DAMAGING);
 	static uint32 validmask[17];
 	static uint32 supportmask[17];
 
@@ -770,6 +770,8 @@ bool CurrentMap::scanForValidPosition(sint32 x, sint32 y, sint32 z, Item* item,
 		validmask[i] = 0x1FFFF;
 		supportmask[i] = 0;
 	}
+
+	blockflagmask &= item->getShapeInfo()->flags;
 
 	sint32 xd,yd,zd;
 	item->getFootpadWorld(xd, yd, zd);	
@@ -800,7 +802,7 @@ bool CurrentMap::scanForValidPosition(sint32 x, sint32 y, sint32 z, Item* item,
 
 				ShapeInfo* si = citem->getShapeInfo();
 				//!! need to check is_sea() and is_land() maybe?
-				if (!(si->flags & flagmask))
+				if (!(si->flags & blockflagmask))
 					continue; // not an interesting item
 
 				sint32 ix, iy, iz, ixd, iyd, izd;
@@ -912,8 +914,7 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 						   ObjId item, bool blocking_only,
 						   std::list<SweepItem> *hit)
 {
-	const uint32 flagmask = (ShapeInfo::SI_SOLID | ShapeInfo::SI_DAMAGING |
-							 ShapeInfo::SI_ROOF);
+	const uint32 blockflagmask = (ShapeInfo::SI_SOLID|ShapeInfo::SI_DAMAGING);
 
 	int i;
 
@@ -974,7 +975,8 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 				if (other_item->getExtFlags() & Item::EXT_SPRITE) continue;
 
 				uint32 othershapeflags = other_item->getShapeInfo()->flags;
-				bool blocking = (othershapeflags & shapeflags & flagmask) != 0;
+				bool blocking = (othershapeflags & shapeflags &
+								 blockflagmask) != 0;
 
 				// This WILL hit everything and return them unless
 				// blocking_only is set
