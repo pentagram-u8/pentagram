@@ -245,8 +245,10 @@ bool AnimationTracker::step()
 #endif
 			}
 		} else {
-			blocked = true;
-			return false;
+			if (!targetok) {
+				blocked = true;
+				return false;
+			}
 		}
 	}
 

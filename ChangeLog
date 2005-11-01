@@ -1,3 +1,6 @@
+2005-11-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/AnimationTracker.cpp: fixed unsupported animations
+
 2005-10-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/CurrentMap.cpp: fix block check in scanForValidPosition
 
