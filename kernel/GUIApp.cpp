@@ -439,6 +439,7 @@ void GUIApp::startupGame()
 	con.AddConsoleCommand("MainActor::listmarks", MainActor::ConCmd_listmarks);
 	con.AddConsoleCommand("Cheat::maxstats", MainActor::ConCmd_maxstats);
 	con.AddConsoleCommand("Cheat::heal", MainActor::ConCmd_heal);
+	con.AddConsoleCommand("Cheat::toggleInvincibility", MainActor::ConCmd_toggleInvincibility);
 	con.AddConsoleCommand("MainActor::name", MainActor::ConCmd_name);
 	con.AddConsoleCommand("MovieGump::play", MovieGump::ConCmd_play);
 	con.AddConsoleCommand("MusicProcess::playMusic", MusicProcess::ConCmd_playMusic);
@@ -585,6 +586,7 @@ void GUIApp::shutdownGame(bool reloading)
 	con.RemoveConsoleCommand(MainActor::ConCmd_listmarks);
 	con.RemoveConsoleCommand(MainActor::ConCmd_maxstats);
 	con.RemoveConsoleCommand(MainActor::ConCmd_heal);
+	con.RemoveConsoleCommand(MainActor::ConCmd_toggleInvincibility);
 	con.RemoveConsoleCommand(MainActor::ConCmd_name);
 	con.RemoveConsoleCommand(MovieGump::ConCmd_play);
 	con.RemoveConsoleCommand(MusicProcess::ConCmd_playMusic);

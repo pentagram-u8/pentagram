@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -90,6 +90,9 @@ public:
 	static void ConCmd_maxstats(const Console::ArgvType &argv);
 	//! "heal" console command
 	static void ConCmd_heal(const Console::ArgvType &argv);
+	//! "toggleInvincibility" console command
+	static void ConCmd_toggleInvincibility(const Console::ArgvType &argv);
+
 
 	//! "useBackpack" console command
 	static void ConCmd_useBackpack(const Console::ArgvType &argv);

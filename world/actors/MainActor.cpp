@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2005 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -703,4 +703,23 @@ void MainActor::ConCmd_toggleCombat(const Console::ArgvType &argv)
 	MainActor* av = getMainActor();
 	av->toggleInCombat();
 }
+
+void MainActor::ConCmd_toggleInvincibility(const Console::ArgvType &argv)
+{
+	MainActor* av = getMainActor();
+
+	if (av->getActorFlags() & Actor::ACT_INVINCIBLE) {
+
+		av->clearActorFlag(Actor::ACT_INVINCIBLE);
+		pout << "Avatar is no longer invincible." << std::endl;
+
+
+	} else {
+
+		av->setActorFlag(Actor::ACT_INVINCIBLE);
+		pout << "Avatar invincible." << std::endl;
+
+	}
+}
+
 
