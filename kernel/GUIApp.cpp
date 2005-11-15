@@ -1790,7 +1790,7 @@ bool GUIApp::saveGame(std::string filename, std::string desc,
 	save_count++;
 
 	SavegameWriter* sgw = new SavegameWriter(ods);
-	sgw->writeVersion(1);
+	sgw->writeVersion(Pentagram::savegame_version);
 	sgw->writeDescription(desc);
 
 	// We'll make it 2KB initially
@@ -1988,7 +1988,7 @@ bool GUIApp::loadGame(std::string filename)
 		return false;
 	}
 
-	if (version != 1) {
+	if (version == 1 || version > Pentagram::savegame_version) {
 		perr << "Unsupported savegame version (" << version << ")"
 			 << std::endl;
 		return false;

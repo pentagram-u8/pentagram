@@ -52,6 +52,8 @@ struct Texture;
 
 namespace Pentagram {
 	class AudioMixer;
+
+	const unsigned int savegame_version = 2;
 };
 
 // Hack alert

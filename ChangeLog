@@ -1,3 +1,11 @@
+2005-11-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/GUIApp.*: increased savegame version to 2. Version 1 is
+	  no longer supported. From this point on, don't change savegame format
+	  without increasing version number and implementing backward
+	  compatibility.
+	* gumps/U8SaveGump.cpp: renumbered savegame filenames to make them
+	  match entry numbers in the gump
+
 2005-11-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/MainActor.*: Cheat::toggleInvincibility
 

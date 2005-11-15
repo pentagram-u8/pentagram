@@ -109,7 +109,7 @@ void U8SaveGump::InitGump(Gump* newparent, bool take_focus)
 												descriptions[i],
 												true, entryfont,
 												95, 38-entryheight, 0, true);
-				ew->SetIndex(i);
+				ew->SetIndex(i+1);
 				ew->InitGump(this, false);
 				editwidgets[i] = ew;
 			} else {
@@ -176,7 +176,7 @@ void U8SaveGump::OnMouseClick(int button, int mx, int my)
 		return;
 
 	int i = 3*x + y;
-	int index = 6*page + i;
+	int index = 6*page + i + 1;
 
 	if (save && !focus_child && editwidgets[i]) {
 		editwidgets[i]->MakeFocus();
@@ -248,7 +248,7 @@ static std::string getFilename(int index) {
 
 bool U8SaveGump::loadgame(int index)
 {
-	if (index == 0) {
+	if (index == 1) {
 		GUIApp::get_instance()->newGame();
 		return true;
 	}
@@ -277,7 +277,7 @@ void U8SaveGump::loadDescriptions()
 	descriptions.resize(6);
 
 	for (int i = 0; i < 6; ++i) {
-		int index = 6*page + i;
+		int index = 6*page + i + 1;
 
 		std::string filename = getFilename(index);
 		IDataSource* ids = FileSystem::get_instance()->ReadFile(filename);
@@ -285,9 +285,18 @@ void U8SaveGump::loadDescriptions()
 
 		Savegame* sg = new Savegame(ids);
 		uint32 version = sg->getVersion();
-		if (version != 1) continue; // FIXME: move version checks elsewhere!!
+		descriptions[i] = "";
 
-		descriptions[i] = sg->getDescription();
+		// FIXME: move version checks elsewhere!!
+		if (version == 0) {
+			descriptions[i] = "[corrupt] ";
+		} else if (version == 1) {
+			descriptions[i] = "[outdated] ";
+		} else if (version > Pentagram::savegame_version) {
+			descriptions[i] = "[too modern] ";
+		}
+
+		descriptions[i] += sg->getDescription();
 		delete sg;
 	}
 }

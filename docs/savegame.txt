@@ -16,34 +16,33 @@ uint8 data[datalen]    data
 
 Savegame files:
 
-global version 1-in-progress:
+global version 2:
 
 savegame description stored in zip global comment field
 VERSION: Savegame version
 GAME: GameInfo
 INFO: savegame/avatar info (shouldn't contain anything that is actually used)
-SCREEN: screenshot
 KERNEL: Processes
 OBJECTS: Objects (includes currently loaded items, gumps)
 WORLD: World data (currently current map, ethereal items)
 MAPS: Maps ('nonfixed' data)
 CURRENTMAP: fast area
-UCGLOBALS: Globals
 UCSTRINGS: Strings
+UCGLOBALS: Globals
 UCLISTS: Lists
 APP: GUIApp/CoreApp data
-pentagram version (current and starting?), current game resolution
 
+future plans: screenshots, pentagram version, current resolution?
 
 
 VERSION: (unversioned)
 uint32 version		global savegame version
 
-GAME: (v1)
+GAME: (v2)
 a single human-readable string:
 "%s,%s,%d,%s\n", type.shortname, language.name, version, md5
 
-INFO: (v1)
+INFO: (v2)
 uint16 year
 uint8 month, day [1-12, 1-31]
 uint8 hour, min, sec [0-23, 0-59, 0-60]
@@ -60,7 +59,7 @@ sint16 mana, maxmana
 uint16 armour, weight
 (uint32 shape,frame)[6] avatar_equipment (shield,arm,head,body,legs,weapon)
 
-APP: (v1)
+APP: (v2)
 uint8 avatarInStasis (boolean)
 sint32 timeOffset (FIXME!)
 uint16 avatarMoverProcess (pid)
@@ -69,7 +68,7 @@ uint16 inversion
 uint32 save_count
 uint8 has_cheated (boolean)
 
-KERNEL: (v1)
+KERNEL: (v2)
 uint32 framenum
 idMan pids
 uint32 processcount
@@ -77,7 +76,7 @@ uint32 processcount
 
 see below for individual process descriptions
 
-idMan: (v1)
+idMan: (v2)
 uint16 begin
 uint16 end
 uint16 max_end
@@ -86,7 +85,7 @@ uint16 usedcount
 uint16 unused[]
 uint16 terminator (0)
 
-OBJECTS: (v1)
+OBJECTS: (v2)
 idMan objIDs
 idMan actorIDs
 [...objects...]
@@ -95,14 +94,14 @@ uint16 terminator (0)
 see below for individual object descriptions
 
 
-WORLD: (v1)
+WORLD: (v2)
 uint32 mapnum
 uint16 egghatcher
 uint32 etherealcount
 [etherealcount uint16s, bottom of the stack first]
 
 
-MAPS: (v1)
+MAPS: (v2)
 uint32 mapcount
 [mapcount maps, stored in order from 0-<mapcount-1>]
 
@@ -111,11 +110,11 @@ uint32 itemcount
 [itemcount items]
 
 
-CURRENTMAP: (v1)
+CURRENTMAP: (v2)
 uint32[MAP_NUM_CHUNKS][MAP_NUM_CHUNKS/32] fast
 
 
-UCSTRINGS: (v1)
+UCSTRINGS: (v2)
 idMan stringIDs
 uint32 stringcount
 [stringcount strings]
@@ -126,12 +125,12 @@ uint32 length
 char str[length]	the actual string (not NULL terminated)
 
 
-UCGLOBALS: (v1)
+UCGLOBALS: (v2)
 uint32 size		size in bits
 uint8 data[bytes]	"bytes" = size/8, rounded up
 
 
-UCLISTS: (v1)
+UCLISTS: (v2)
 idMan listIDs
 uint32 listcount
 [listcount lists]
@@ -146,17 +145,17 @@ uint8 data[size*elementsize]
 Individual Objects:
 --------------------
 
-each object: (v1)
+each object: (v2)
 uint16 classlen			size of classname
 char classname[classlen]	class name of this Object
 [data for this object (see below)]
 
 
 
-Object: (v1)
+Object: (v2)
 uint16 objid
 
-Item: (v1)
+Item: (v2)
 <Object>
 uint16 extendedflags
 uint16 flags
@@ -166,13 +165,13 @@ uint16 quality, npcnum, mapnum
 if (objid != 0xFFFF) uint16 gump, gravity_pid
 if (ETHEREAL && (CONTAINED || EQUIPPED)) uint16 parent
 
-Container: (v1)
+Container: (v2)
 <Item>
 uint32 contentcount
 [contentcount Objects]
 
 
-Actor: (v1)
+Actor: (v2)
 <Container>
 sint16 str, dex, int
 uint16 hp
@@ -183,7 +182,7 @@ sint32 fallstart
 uint32 actorflags
 uint8 unk0C
 
-MainActor: (v1)
+MainActor: (v2)
 <Actor>
 uint8 justTeleported (boolean)
 sint32 accumStr, accumDex, accumInt
@@ -191,21 +190,21 @@ uint8 name_length
 char name[name_length]
 
 
-Egg: (v1)
+Egg: (v2)
 <Item>
 uint16 hatched (boolean)
 
-MonsterEgg: (v1)
+MonsterEgg: (v2)
 <Item>
 
-TeleportEgg: (v1)
+TeleportEgg: (v2)
 <Egg>
 
-GlobEgg: (v1)
+GlobEgg: (v2)
 <Item>
 
 
-Gump: (v1)
+Gump: (v2)
 <Object>
 uint16 owner
 sint32 x
@@ -227,27 +226,27 @@ uint32 childcount
 [childcount gumps, in order]
 
 
-DesktopGump: (v1)
+DesktopGump: (v2)
 (not saved)
 
-GameMapGump: (v1)
+GameMapGump: (v2)
 (not saved)
 
-ConsoleGump: (v1)
+ConsoleGump: (v2)
 (not saved)
 
 
-ItemRelativeGump: (v1)
+ItemRelativeGump: (v2)
 <Gump>
 
 
-AskGump: (v1)
+AskGump: (v2)
 uint16 version
 <ItemRelativeGump>
 UCList list
 
 
-BarkGump: (v1)
+BarkGump: (v2)
 <ItemRelativeGump>
 sint32 counter
 uint16 textwidget
@@ -258,7 +257,7 @@ uint32 textsize
 char barked[textsize]
 
 
-ContainerGump: (v1)
+ContainerGump: (v2)
 <ItemRelativeGump>
 sint32 itemarea.x
 sint32 itemarea.y
@@ -266,20 +265,20 @@ sint32 itemarea.w
 sint32 itemarea.h
 
 
-PaperdollGump: (v1)
+PaperdollGump: (v2)
 <ContainerGump>
 uint16 statbuttongump
 
 
-MiniStatsGump: (v1)
+MiniStatsGump: (v2)
 <Gump>
 
 
-MiniMapGump: (v1)
+MiniMapGump: (v2)
 <Gump>
 
 
-TextWidget: (v1)
+TextWidget: (v2)
 <Gump>
 uint8 gamefont (boolean)
 sint32 fontnum
@@ -293,7 +292,7 @@ uint32 strlen
 char text[strlen]
 
 
-ButtonWidget: (v1)
+ButtonWidget: (v2)
 <Gump>
 uint16 shape_upFlexId
 uint32 shape_upNum
@@ -306,20 +305,20 @@ uint32 mouseOverBlendCol
 uint8 mouseOver (boolean)
 
 
-SlidingWidget: (v1)
+SlidingWidget: (v2)
 <Gump>
 
 
 Individual Processes:
 -----------------------
-each process: (v1)
+each process: (v2)
 uint16 classlen			size of classname
 char classname[classlen]	class name of this Process
 [saved data from this process]
 
 
 
-Process (v1)
+Process (v2)
 uint16 pid
 uint32 flags
 uint16 item_num
@@ -329,7 +328,7 @@ uint32 waitingcount
 uint16 waiting[waitingcount]
 
 
-ActorAnimProcess: Process (v1)
+ActorAnimProcess: Process (v2)
 <Process>
 uint8 firstframe (boolean)
 uint8 animAborted (boolean)
@@ -342,7 +341,7 @@ uint16 currentstep
 uint8 hasTracker (boolean)
 if (hasTracker) AnimationTracker tracker
 
-AnimationTracker (v1)
+AnimationTracker (v2)
 uint32 startframe, endframe
 uint8 firstframe (boolean)
 uint32 currentframe
@@ -362,12 +361,12 @@ uint8 blocked (boolean)
 uint8 supported (boolean)
 
 
-TargetedAnimProcess: Process (v1)
+TargetedAnimProcess: Process (v2)
 <ActorAnimProcess>
 uint32 x,y,z
 
 
-CameraProcess: Process (v1)
+CameraProcess: Process (v2)
 <Process>
 sint32 sx, sy, sz
 sint32 ex, ey, ez
@@ -378,12 +377,12 @@ static sint32 earthquake
 static sint32 eq_x, eq_y
 
 
-MusicProcess: Process (v1)
+MusicProcess: Process (v2)
 <Process>
 sint32 wanted_track
 
 
-AudioProcess: Process (v1)
+AudioProcess: Process (v2)
 <Process>
 uint8 samplecount
 followed by, per sample:
@@ -396,7 +395,7 @@ followed by, per sample:
 	 if (sfxnum == -1) uint32 strlen; char text[strlen]
 
 
-UCProcess: Process (v1)
+UCProcess: Process (v2)
 <Process>
 uint16 bp
 uint16 classid
@@ -406,33 +405,33 @@ uint32 freecount
 (uint16,sint32) freeonterminate[freecount]
 UCStack stack
 
-UCStack: (v1)
+UCStack: (v2)
 uint32 size
 uint32 SP
 uint8 data[size-SP]
 
 
 
-GumpNotifyProcess: Process (v1)
+GumpNotifyProcess: Process (v2)
 <Process>
 uint16 gump
 
 
-ActorBarkNotifyProcess: GumpNotifyProcess (v1)
+ActorBarkNotifyProcess: GumpNotifyProcess (v2)
 <GumpNotifyProcess>
 
-DelayProcess: Process (v1)
+DelayProcess: Process (v2)
 <Process>
 sint32 count
 
 
-GravityProcess: Process (v1)
+GravityProcess: Process (v2)
 <Process>
 sint32 gravity
 sint32 xspeed, yspeed, zspeed
 
 
-MissileProcess: Process (v1)
+MissileProcess: Process (v2)
 <Process>
 sint32 from_x, from_y, from_z
 sint32 to_x, to_y, to_z
@@ -440,7 +439,7 @@ sint32 speed, currentpos
 uint8 curve (boolean)
 
 
-SpriteProcess: Process (v1)
+SpriteProcess: Process (v2)
 <Process>
 sint32 frame
 sint32 first_frame, last_frame
@@ -448,13 +447,13 @@ sint32 repeats
 sint32 delay, delay_counter
 
 
-TeleportToEggProcess: Process (v1)
+TeleportToEggProcess: Process (v2)
 <Process>
 sint32 mapnum
 sint32 teleport_id
 
 
-PaletteFaderProcess: Process (v1)
+PaletteFaderProcess: Process (v2)
 <Process>
 sint32 priority
 sint32 counter, max_counter
@@ -462,35 +461,35 @@ sint16 old_matrix[12]
 sint16 new_matrix[12]
 
 
-AvatarMoverProcess: Process (v1)
+AvatarMoverProcess: Process (v2)
 <Process>
 uint32 lastAttack
 uint32 idleTime
 uint16 lastHeadShakeAnim
 
-QuickAvatarMoverProcess: Process (v1)		terminates after loading
+QuickAvatarMoverProcess: Process (v2)		terminates after loading
 <Process>
 sint32 dir
 
 
-ResurrectionProcess: Process (v1)
+ResurrectionProcess: Process (v2)
 <Process>
 
 
-DeleteItemProcess: Process (v1)
+DeleteItemProcess: Process (v2)
 <Process>
 
 
-ClearFeignDeathProcess: Process (v1)
+ClearFeignDeathProcess: Process (v2)
 <Process>
 
 
-SplitItemProcess: Process (v1)
+SplitItemProcess: Process (v2)
 <Process>
 uint16 target
 
 
-PathfinderProcess: Process (v1)
+PathfinderProcess: Process (v2)
 <Process>
 uint16 targetitem
 uint16 targetx, targety, targetz
@@ -500,7 +499,7 @@ uint16 pathsize
 (uint16 action,uint16 direction) path[pathsize]
 
 
-Pathfinder (v1)
+Pathfinder (v2)
 uint16 actor_objid
 sint32 targetx, targety, targetz
 uint16 target_objid
@@ -511,40 +510,40 @@ uint32 activenodes
 uint32 visitedcount
 PathfindingState visited[visitedcount]
 
-PathNode (v1)
+PathNode (v2)
 uint32 parentid
 PathfindingState state
 uint32 depth
 uint32 cost,heuristicTotalCost
 uint32 stepfromparent
 
-PathfindingState (v1)
+PathfindingState (v2)
 sint32 x,y,z
 uint16 lastanim
 uint8 direction
 uint8 flipped, firststep, combat (boolean)
 
-LoiterProcess: Process (v1)
+LoiterProcess: Process (v2)
 <Process>
 
 
-AvatarDeathProcess: Process (v1)
+AvatarDeathProcess: Process (v2)
 <Process>
 
 
-CombatProcess: Process (v1)
+CombatProcess: Process (v2)
 <Process>
 uint16 target
 uint16 fixedtarget
 uint8 combatmode (CombatMode)
 
 
-GrantPeaceProcess: Process (v1)
+GrantPeaceProcess: Process (v2)
 <Process>
 uint8 havetarget (boolean)
 
 
-FireballProcess: Process (v1)
+FireballProcess: Process (v2)
 <Process>
 sint32 xspeed, yspeed
 uint16 target
@@ -552,16 +551,16 @@ uint16 tail[3]
 uint16 age
 
 
-HealProcess: Process (v1)
+HealProcess: Process (v2)
 <Process>
 uint16 healCounter
 uint16 hungerCounter
 
 
-InverterProcess: Process (v1)
+InverterProcess: Process (v2)
 <Process>
 uint16 targetstate
 
 
-EggHatcherProcess: Process (v1)
+EggHatcherProcess: Process (v2)
 <Process>
