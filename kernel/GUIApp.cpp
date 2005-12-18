@@ -1562,7 +1562,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 void GUIApp::handleDelayedEvents()
 {
 	uint32 now = SDL_GetTicks();
-	for (int button = 0; button <= MOUSE_LAST; ++button) {
+	for (int button = 0; button < MOUSE_LAST; ++button) {
 		if (!(mouseButton[button].state & (MBS_HANDLED | MBS_DOWN)) &&
 			now - mouseButton[button].lastDown > DOUBLE_CLICK_TIMEOUT)
 		{

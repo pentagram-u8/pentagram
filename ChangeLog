@@ -1,3 +1,6 @@
+2005-12-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/GUIApp.*: fixed off-by-one click handling bug
+
 2005-11-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GUIApp.*: increased savegame version to 2. Version 1 is
 	  no longer supported. From this point on, don't change savegame format
