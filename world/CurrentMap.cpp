@@ -470,7 +470,7 @@ void CurrentMap::areaSearch(UCList* itemlist, const uint8* loopscript,
 	// if item != 0, search an area around item. Otherwise, search an area
 	// around (x,y)
 	if (check) {
-		check->getLocation(x,y,z);
+		check->getLocationAbsolute(x,y,z);
 		check->getFootpadWorld(xd,yd,zd);
 	}
 
@@ -544,7 +544,7 @@ void CurrentMap::surfaceSearch(UCList* itemlist, const uint8* loopscript,
 {
 	sint32 origin[3];
 	sint32 dims[3];
-	check->getLocation(origin[0], origin[1], origin[2]);
+	check->getLocationAbsolute(origin[0], origin[1], origin[2]);
 	check->getFootpadWorld(dims[0], dims[1], dims[2]);
 	surfaceSearch(itemlist, loopscript, scriptsize, check->getObjId(),
 				origin, dims, above, below, recurse);

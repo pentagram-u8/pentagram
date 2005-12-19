@@ -1114,7 +1114,7 @@ bool UCMachine::execProcess(UCProcess* p)
 
 				LOGPF(("push indirect\t%02Xh bytes", ui16a));
 				if (!error && ui16a == 2) {
-					LOGPF((" = %04X\n", p->stack.access2(p->stack.getSP())));
+					LOGPF((" = %04Xh\n", p->stack.access2(p->stack.getSP())));
 				} else {
 					LOGPF(("\n"));
 				}

@@ -38,24 +38,7 @@ void Process::fail()
 {
 	assert(!(flags & PROC_TERMINATED));
 
-	Kernel *kernel = Kernel::get_instance();
-
-	// fail all waiting processes
-	for (std::vector<ProcId>::iterator i = waiting.begin();
-		 i != waiting.end(); ++i)
-	{
-		Process *p = kernel->getProcess(*i);
-		if (p && !(p->flags & PROC_TERMINATED)) {
-			if (p->type == 1)
-				p->wakeUp(0); // CHECKME: this probably isn't right
-			else
-				p->fail();
-		}
-	}
-	waiting.clear(); // to prevent terminate() from waking them again
-
 	flags |= PROC_FAILED;
-
 	terminate();
 }
 
