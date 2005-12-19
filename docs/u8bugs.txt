@@ -69,7 +69,8 @@ class 02C3 (PESANT1)
 "It is a quick way to loose your money and your life" (s/loose/lose/)
 
 class 0401 (AVATAR)
-"Restortation" (Restoration)
+"Restortation" (Restoration, 2x)
+"Etherial Travel" (Ethereal Travel, 2x)
 
 class 0572 (STEVBOOK)
 "it carried in it's arms", "driven to it's knees", "it begged for it's life"
