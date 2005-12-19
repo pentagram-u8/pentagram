@@ -27,23 +27,17 @@ SpeechFlex::SpeechFlex(IDataSource* ds) : SoundFlex(ds)
 {
 	uint32 size = getRawSize(0);
 	uint8* buf = getRawObject(0);
-	char* strings = reinterpret_cast<char*>(buf);
-	char* strend = strings+size;
 
-	// Now we s
-	while (strings < strend) {
+	Pentagram::istring strings(reinterpret_cast<char*>(buf), size);
+	std::vector<Pentagram::istring> s;
+	Pentagram::SplitString(strings, 0, s);
 
-		char *end = reinterpret_cast<char*>(std::memchr(strings,0,size));
-		if (!end) end = strend;
+	for (unsigned int i = 0; i < s.size(); ++i) {
+		Pentagram::TrimSpaces(s[i]);
 
-		Pentagram::istring text = Pentagram::istring(strings,end-strings);
-		Pentagram::TrimSpaces(text);
+//		pout << "Found string: \"" << s[i] << "\"" << std::endl;
 
-		// pout << "Found string: \"" << text << "\"" << std::endl;
-
-		phrases.push_back(text);
-
-		strings = end+1;
+		phrases.push_back(s[i]);
 	}
 
 	delete [] buf;
@@ -68,12 +62,12 @@ int	SpeechFlex::getIndexForPhrase(const std::string &phrase,
 	std::string::size_type pos2 = text.find_last_not_of(' ');
 	text = text.substr(pos1, pos2-pos1+1);
 
-	// pout << "Looking for string: \"" << text << "\"" << std::endl;
+//	pout << "Looking for string: \"" << text << "\"" << std::endl;
 
 	for(it = phrases.begin(); it != phrases.end(); ++it)
 	{
 		if (text.find(*it) == 0) {
-			// pout << "Found: " << i << std::endl;
+//			pout << "Found: " << i << std::endl;
 			end = (*it).size() + start + pos1;
 			if (end >= start + pos2)
 				end = phrase.size();
@@ -82,7 +76,7 @@ int	SpeechFlex::getIndexForPhrase(const std::string &phrase,
 		i++;
 	}
 
-	// pout << "Not found" << std::endl;
+//	pout << "Not found" << std::endl;
 
 	return 0;
 }
