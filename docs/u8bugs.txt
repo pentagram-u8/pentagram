@@ -59,6 +59,21 @@ unknown
 
 
 
+Tenebrae gate guard initial conversation:
+
+When you approach the Tenebrae gate guard for the first time while
+he is in the middle of a turn, the turn will continue while the
+guard is pathfinding towards you. The reason is that the 'Halt, stranger'
+process only kills the patrol process, and leaves its child turn process.
+
+FIX:
+Kill the turn process as well when killing the patrol process?
+
+WORKAROUND:
+unknown
+
+
+
 Typos:
 
 class 0181 (STRATOS)
