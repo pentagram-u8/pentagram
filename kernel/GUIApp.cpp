@@ -222,6 +222,8 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 
 	con.AddConsoleCommand("GameMapGump::toggleHightlightItems",
 						  GameMapGump::ConCmd_toggleHightlightItems);
+	con.AddConsoleCommand("GameMapGump::dumpMap",
+						  GameMapGump::ConCmd_dumpMap);
 
 	// Game related console commands are now added in startupGame
 }
@@ -277,6 +279,7 @@ GUIApp::~GUIApp()
 	con.RemoveConsoleCommand(QuickAvatarMoverProcess::ConCmd_toggleClipping);
 
 	con.RemoveConsoleCommand(GameMapGump::ConCmd_toggleHightlightItems);
+	con.RemoveConsoleCommand(GameMapGump::ConCmd_dumpMap);
 
 	// Game related console commands are now removed in shutdownGame
 

@@ -1,3 +1,6 @@
+2005-12-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/GameMapGump.cpp: experimental dumping of map to tga file
+
 2005-12-19  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/Process.cpp: disable cascading process failure
 	* world/CurrentMap.cpp: allow areasearch around item in container

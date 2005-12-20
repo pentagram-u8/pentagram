@@ -45,6 +45,11 @@
 #include "UCList.h"
 #include "LoopScript.h"
 
+// map dumping
+#include "Texture.h"
+#include "FileSystem.h"
+
+
 DEFINE_RUNTIME_CLASSTYPE_CODE(GameMapGump,Gump);
 
 bool GameMapGump::highlightItems = false;
@@ -59,7 +64,7 @@ GameMapGump::GameMapGump(int X, int Y, int Width, int Height) :
 	Gump(X,Y,Width,Height, 0, FLAG_DONT_SAVE | FLAG_CORE_GUMP, LAYER_GAMEMAP),
 	display_list(0), display_dragging(false)
 {
-	// Offset us the gump. We want 0,0 to be the centre
+	// Offset the gump. We want 0,0 to be the centre
 	dims.x -= dims.w/2;
 	dims.y -= dims.h/2;
 
@@ -534,6 +539,134 @@ void GameMapGump::DropItem(Item* item, int mx, int my)
 void GameMapGump::ConCmd_toggleHightlightItems(const Console::ArgvType &argv)
 {
 	GameMapGump::SetHighlightItems(!GameMapGump::isHighlightItems());
+}
+
+void GameMapGump::ConCmd_dumpMap(const Console::ArgvType &)
+{
+	// Actual size 
+	sint32 awidth = 8192;
+	sint32 aheight = 8192;
+
+	sint32 xpos = 0;
+	sint32 ypos = 0;
+
+	sint32 left = 16384;
+	sint32 right = 0;
+	sint32 top = 16384;
+	sint32 bot = 0;
+
+	sint32 camheight = 256;
+
+	// Work out the map limit we do this very coarsly
+	// Now render the map
+	for (sint32 y = 0; y < 64; y++)
+	{
+		for (sint32 x = 0; x < 64; x++)
+		{
+			const std::list<Item *> *list =
+				World::get_instance()->getCurrentMap()->getItemList(x,y);
+
+			// Should iterate the items!
+			// (items could extend outside of this chunk and they have height)
+			if (list && list->size() != 0) 
+			{
+				sint32 l = (x*512 - y*512)/4 - 128;
+				sint32 r = (x*512 - y*512)/4 + 128;
+				sint32 t = (x*512 + y*512)/8 - 256;
+				sint32 b = (x*512 + y*512)/8;
+
+				t -= 256; // approx. adjustment for height of items in chunk
+
+				if (l < left) left = l;
+				if (r > right) right = r;
+				if (t < top) top = t;
+				if (b > bot) bot = b;
+			}
+		}
+	}
+
+	if (right == 0) return;
+
+	// camera height
+	bot += camheight;
+	top += camheight;
+
+	awidth = right-left;
+	aheight = bot-top;
+
+	ypos = top;
+	xpos = left;
+
+	// Buffer Size
+	sint32 bwidth = awidth;
+	sint32 bheight = 256;
+
+	// Tile size
+	sint32 twidth = bwidth/8;
+	sint32 theight = bheight;
+
+
+	GameMapGump* g = new GameMapGump(0, 0, twidth, theight);
+	getMainActor()->setFlag(Item::FLG_INVISIBLE);
+	World::get_instance()->getCurrentMap()->setWholeMapFast();
+
+	RenderSurface* s = RenderSurface::CreateSecondaryRenderSurface(bwidth,
+																   bheight);
+	Texture* t = s->GetSurfaceAsTexture();
+
+
+	// Write tga header
+	std::string filename = "@home/mapdump";
+	char buf[32];
+	sprintf(buf, "%02d",  World::get_instance()->getCurrentMap()->getNum());
+	filename += buf;
+	filename += ".tga";
+	ODataSource *ds = FileSystem::get_instance()->WriteFile(filename);
+	// Uncompressed TGA Header
+	const uint8 uTGAheader[12] = {0,0,2, 0,0,0,0,0,0,0,0,0};
+	ds->write(uTGAheader,12);
+	ds->write2(awidth);		// width
+	ds->write2(aheight);	// Height
+	ds->write1(32);			// bpp
+	ds->write1(1<<5);		// flags: flipped
+
+	// Now render the map
+	for (sint32 y = 0; y < aheight; y+=theight)
+	{
+		for (sint32 x = 0; x < awidth; x+=twidth)
+		{
+			// Work out 'effective' and world coords
+			sint32 ex = xpos+x+twidth/2;
+			sint32 ey = ypos+y+theight/2;
+			sint32 wx = ex*2 + ey*4;
+			sint32 wy = ey*4 - ex*2;
+
+			s->SetOrigin(x,y%bheight);
+			CameraProcess::SetCameraProcess(
+				new CameraProcess(wx+4*camheight, wy+4*camheight, camheight));
+			g->Paint(s, 256);
+
+		}
+
+		// Write out the current buffer
+		if (((y+theight)%bheight) == 0) {
+			for (int i = 0; i < bwidth*bheight; ++i)
+				t->buffer[i] |= 0xFF000000;
+
+			ds->write(t->buffer,4*bwidth*bheight);
+
+			std::memset(t->buffer, 0, 4*bwidth*bheight);
+		}
+	}
+
+	delete ds;
+
+	delete g;
+	delete s;
+	getMainActor()->clearFlag(Item::FLG_INVISIBLE);
+	CameraProcess::SetCameraProcess(new CameraProcess(1));
+
+	pout << "Map stored in " << filename << "." << std::endl;
 }
 
 void GameMapGump::RenderSurfaceChanged()
