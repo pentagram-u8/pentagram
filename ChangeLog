@@ -1,3 +1,6 @@
+2005-12-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/GameMapGump.cpp: some byteorder fixes for mapdumping (by Ryan)
+
 2005-12-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/GameMapGump.cpp: experimental dumping of map to tga file
 

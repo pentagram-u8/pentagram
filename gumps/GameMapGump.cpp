@@ -543,6 +543,9 @@ void GameMapGump::ConCmd_toggleHightlightItems(const Console::ArgvType &argv)
 
 void GameMapGump::ConCmd_dumpMap(const Console::ArgvType &)
 {
+	// We only support 32 bits per pixel for now
+	if (RenderSurface::format.s_bpp != 32) return;
+
 	// Actual size 
 	sint32 awidth = 8192;
 	sint32 aheight = 8192;
@@ -650,8 +653,13 @@ void GameMapGump::ConCmd_dumpMap(const Console::ArgvType &)
 
 		// Write out the current buffer
 		if (((y+theight)%bheight) == 0) {
-			for (int i = 0; i < bwidth*bheight; ++i)
-				t->buffer[i] |= 0xFF000000;
+			for (int i = 0; i < bwidth*bheight; ++i) {
+				// Convert to correct pixel format
+				uint8 r, g, b;
+				UNPACK_RGB8(t->buffer[i],r,g,b);
+				uint8 *buf = reinterpret_cast<uint8*>(&t->buffer[i]);
+				buf[0] = b; buf[1] = g; buf[2] = r; buf[3] = 0xFF;
+			}
 
 			ds->write(t->buffer,4*bwidth*bheight);
 
