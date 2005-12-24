@@ -554,9 +554,9 @@ void GameMapGump::ConCmd_dumpMap(const Console::ArgvType &)
 	sint32 ypos = 0;
 
 	sint32 left = 16384;
-	sint32 right = 0;
+	sint32 right = -16384;
 	sint32 top = 16384;
-	sint32 bot = 0;
+	sint32 bot = -16384;
 
 	sint32 camheight = 256;
 
@@ -588,7 +588,7 @@ void GameMapGump::ConCmd_dumpMap(const Console::ArgvType &)
 		}
 	}
 
-	if (right == 0) return;
+	if (right == -16384) return;
 
 	// camera height
 	bot += camheight;
