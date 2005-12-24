@@ -73,12 +73,10 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 	lastframe = framenum;
 
 
-	GUIApp* guiapp = GUIApp::get_instance();
 	MainActor* avatar = getMainActor();
 
-	// in stasis or busy, so don't move
-	if (guiapp->isAvatarInStasis() ||
-		Kernel::get_instance()->getNumProcesses(1, 0x00F0) > 0 ||
+	// busy, so don't move
+	if (Kernel::get_instance()->getNumProcesses(1, 0x00F0) > 0 ||
 		avatar->getGravityProcess() != 0)
 	{
 		idleTime = 0;
@@ -124,6 +122,10 @@ bool AvatarMoverProcess::handleCombatMode()
 		waitFor(avatar->doAnim(Animation::stopblock, direction));
 		return false;
 	}
+
+	// can't do any new actions if in stasis
+	if (guiapp->isAvatarInStasis())
+		return false;
 
 	bool m0clicked = false;
 	bool m1clicked = false;
@@ -364,6 +366,10 @@ bool AvatarMoverProcess::handleNormalMode()
 		waitFor(avatar->doAnim(Animation::stand, direction));
 		return false;		
 	}
+
+	// can't do any new actions if in stasis
+	if (guiapp->isAvatarInStasis())
+		return false;
 
 	// both mouse buttons down
 	if (!(mouseButton[0].state & MBS_HANDLED) &&

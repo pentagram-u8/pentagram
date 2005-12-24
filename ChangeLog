@@ -1,3 +1,7 @@
+2005-12-24  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/AvatarMoverProcess.cpp: properly stop walking/running
+	  even if in stasis
+
 2005-12-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/GameMapGump.cpp: some byteorder fixes for mapdumping (by Ryan)
 
