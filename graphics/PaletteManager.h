@@ -61,6 +61,9 @@ public:
 	//! Reset the Palette Manager
 	void reset();
 
+	//! Reset all the transforms back to default
+	void resetTransforms();
+
 private:
 	std::vector<Pentagram::Palette*> palettes;
 	RenderSurface *rendersurface;

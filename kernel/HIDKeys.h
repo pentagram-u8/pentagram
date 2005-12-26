@@ -205,7 +205,7 @@ enum HID_Key {
 	HID_LAST
 };
 
-Pentagram::istring & HID_GetKeyName(HID_Key key);
+const char *HID_GetKeyName(HID_Key key);
 HID_Key HID_GetKeyFromName(Pentagram::istring & name);
 
 HID_Key HID_translateSDLKey(SDLKey key);
@@ -220,7 +220,7 @@ enum HID_Event {
 	HID_EVENT_LAST
 };
 
-Pentagram::istring & HID_GetEventName(HID_Event event);
+const char *HID_GetEventName(HID_Event event);
 HID_Event HID_GetEventFromName(Pentagram::istring & name);
 
 #endif

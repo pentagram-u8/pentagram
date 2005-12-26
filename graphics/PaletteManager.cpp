@@ -51,6 +51,22 @@ void PaletteManager::reset()
 	palettes.clear();
 }
 
+// Reset all the transforms back to default
+void PaletteManager::resetTransforms()
+{
+	con.Print(MM_INFO, "Resetting Palette Transforms...\n");
+
+	sint16 matrix[12];
+	getTransformMatrix(matrix, Pentagram::Transform_None);
+
+	for (unsigned int i = 0; i < palettes.size(); ++i)
+	{
+		Pentagram::Palette* pal = palettes[i];
+		pal->transform = Pentagram::Transform_None;
+		for (int j = 0; j < 12; j++) pal->matrix[j] = matrix[j];
+		rendersurface->CreateNativePalette(pal); // convert to native format
+	}
+}
 
 // Change the Render Surface used by the PaletteManager
 void PaletteManager::RenderSurfaceChanged(RenderSurface* rs)

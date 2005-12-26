@@ -1869,6 +1869,7 @@ void GUIApp::resetEngine()
 	// all processes/objects
 	objectmanager->reset();
 	kernel->reset();
+	palettemanager->resetTransforms();
 
 	// Reset thet gumps
 	desktopGump = 0;

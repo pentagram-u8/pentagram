@@ -19,9 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 #include "HIDKeys.h"
 
-struct KeyName {HID_Key key; Pentagram::istring name;};
+struct KeyName {HID_Key key; const char* name;};
 
-static KeyName keyNames[] =
+static const KeyName keyNames[] =
 {
 	{HID_BACKSPACE, "Backspace"},
 	{HID_TAB, "Tab"},
@@ -275,9 +275,9 @@ static KeyName keyNames[] =
 	{HID_LAST, ""}
 };
 
-struct EventName {HID_Event event; Pentagram::istring name;};
+struct EventName {HID_Event event; const char* name;};
 
-static EventName eventNames[] =
+static const EventName eventNames[] =
 {
 	{HID_EVENT_DEPRESS, ""},
 	{HID_EVENT_DEPRESS, "<Depress>"},
@@ -287,7 +287,7 @@ static EventName eventNames[] =
 	{HID_EVENT_LAST, ""}
 };
 
-Pentagram::istring & HID_GetKeyName(HID_Key key)
+const char *HID_GetKeyName(HID_Key key)
 {
 	int i;
 	for (i=0; keyNames[i].key != HID_LAST; ++i)
@@ -497,7 +497,7 @@ HID_Key HID_translateSDLJoystickButton(uint8 button)
 	return HID_LAST;
 }
 
-Pentagram::istring & HID_GetEventName(HID_Event event)
+const char *HID_GetEventName(HID_Event event)
 {
 	int i;
 	for (i=0; eventNames[i].event != HID_EVENT_LAST; ++i)
