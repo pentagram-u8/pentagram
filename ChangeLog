@@ -1,3 +1,9 @@
+2006-01-18	Darke  <darkepaw@users.sf.net>
+	* tools/fold/*: fixed the fact it didn't work since last time I made
+	  a commit a year ago. It would appear it works now for the first
+	  usecode funcs for remorse and regret. Hopefully it'll take me less
+	  then a year to fix this so more works. *grin*
+
 2005-12-24  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AvatarMoverProcess.cpp: properly stop walking/running
 	  even if in stasis

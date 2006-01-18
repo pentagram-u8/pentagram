@@ -99,7 +99,7 @@ void Unit::print_bin(ODequeDataSource &o) const
 /****************************************************************************
 	DCUnit
  ****************************************************************************/
-//#define UNITDEBUG
+#define UNITDEBUG
 /* returns true if we've finished folding the current function */
 const bool DCUnit::fold(Node *n)
 {
@@ -147,12 +147,21 @@ const bool DCUnit::fold(Node *n)
 		if(ifstack.size()>0 && last!=ifstack.back() && last->elsenode==0)
 		{
 			IfNode *newnode = new IfNode(IfNode::I_ELSE, last->TargetOffset());
+			//con.Printf(">Fnord<\n");
+			//print_assert(ifstack.back(), this);
+			//con.Printf(">Fnord<\n");
 			newnode->fold_else(this, ifstack.back()->nodes());
 			assert(last->elsenode==0 || print_assert(last->elsenode, this));
 			assert(ifstack.back()->opcode()==0x51);
 			ifstack.back()->nodes().push_back(newnode);
 		}
-		else if(nodes.size()>0 && last!=nodes.back() && last->elsenode==0)
+		else if(nodes.size()>0 &&
+				last!=nodes.back() &&
+				last->elsenode==0 //&&
+				//nodes.back()->opcode()!=0x77 &&
+				//nodes.back()->opcode()!=0x78 // 77 and 78 are special.
+				)
+							// Not sure why they're not being stripped before getting here though...
 		{
 			IfNode *newnode = new IfNode(IfNode::I_ELSE, last->TargetOffset());
 			newnode->fold_else(this, nodes);
@@ -250,6 +259,8 @@ const bool DCUnit::fold(Node *n)
 
 void Folder::fold(Node *n)
 {
+	//con.Printf("\t%04X:\t%02X\n", n->offset(), n->opcode());
+	//n->print_asm(con);
 	if(curr->fold(n))
 	{
 		//assert(curr!=0);

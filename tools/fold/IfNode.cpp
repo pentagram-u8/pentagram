@@ -292,6 +292,8 @@ bool IfNode::fold_else(DCUnit *unit, std::deque<Node *> &nodes)
 						ifnodes.push_front(nodes.back());
 						nodes.pop_back();
 					}
+					if(nodes.size()==0)
+						finished = true; // test!
 				}
 			}
 			break;

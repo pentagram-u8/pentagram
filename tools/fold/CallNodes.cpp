@@ -489,7 +489,7 @@ void DCCallNode::print_asm(Console &o) const
 
 				Node::print_asm(o);
 				o.Printf("call\t\t%04X:%04X\n", uclass, targetOffset);
-				o.Putchar('\n');
+				//o.Putchar('\n');
 				if(addSP!=0)
 					addSP->print_asm(o);
 				if(rtype()!=Type::T_VOID)
