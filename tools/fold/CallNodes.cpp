@@ -276,7 +276,7 @@ bool DCCallNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 		return true;
 	// we've just gotten our addsp opcode
 	else if((addSP!=0 && retVal==0) // normal
-		|| (ctype==SPAWN && addSP==0 && retVal==0 && spsize==0)) // 'spawn' with thispsize==0
+		|| (ctype==SPAWN && (thispsize>0 && thisP==0)/*&& addSP==0 && retVal==0 && spsize==0*/)) // 'spawn' with thispsize!=0
 	{
 		con.Printf("Op %02X %04X\n", nodes.back()->opcode(), nodes.back()->offset());
 		// we need to remove ourselves from the stack before doing anything tricky
@@ -289,15 +289,18 @@ bool DCCallNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 		if(thispsize>0 && ctype==SPAWN)
 		{
 			thisP = grab(nodes);
+			//con.Printf("SPAWN THISP GRAB:\n");
+			//print_assert(thisP, unit);
 			//need to make sure it's a dword too.
-			assert(thisP->rtype()==Type::T_DWORD);
+			assert(thisP!=0 && thisP->rtype()==Type::T_DWORD);
 		}
 		// grab the nodes, note the '-', gotta invert the value since it's the number
 		// we're _removing_ from the stack
 		// if we're a SPAWN, we need to double this
-		if(ctype==SPAWN)
-			grab_p(nodes, std::abs(static_cast<sint32>(addSP->size())) * 2);
-		else
+		if(ctype==SPAWN) {
+			if(spsize>0)
+				grab_p(nodes, std::abs(static_cast<sint32>(addSP->size()))/* * 2*/);
+		} else
 			grab_p(nodes, std::abs(static_cast<sint32>(addSP->size())));
 
 		// add us back to the stack

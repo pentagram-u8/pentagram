@@ -882,7 +882,13 @@ Node *ConvertUsecode::readOpGeneric(IDataSource *ucfile, uint32 &dbg_symbol_offs
 		case 0x30: // not
 			n = new UniOperatorNode(opcode, offset);
 			break;
+		case 0x32: // and
+			n = new BinOperatorNode(opcode, offset);
+			break;
 		case 0x34: // or
+			n = new BinOperatorNode(opcode, offset);
+			break;
+		case 0x36: // ne
 			n = new BinOperatorNode(opcode, offset);
 			break;
 		case 0x3F: // pushing a word var (2 bytes)
@@ -998,7 +1004,9 @@ Node *ConvertUsecode::readOpGeneric(IDataSource *ucfile, uint32 &dbg_symbol_offs
 		
 		// can't happen.
 		default:
-			con.Printf("db\t\t%02X\t", opcode);
+			con.Printf("\n*** ERROR?:");
+			con.Printf("\n*** potential opcode:\t%02X", opcode);
+			con.Printf("\n*** next four bytes:\t");
 			printbytes(ucfile, 4);
 			con.Putchar('\n');
 			return 0;

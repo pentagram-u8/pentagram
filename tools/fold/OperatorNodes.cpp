@@ -449,7 +449,9 @@ void BinOperatorNode::print_unk(Console &o, const uint32 isize) const
 		case M_LT:  o.Printf(" < ");  break;
 		case M_LE:  o.Printf(" <= "); break;
 		case M_GT:  o.Printf(" > ");  break;
+		case M_AND:  o.Printf(" and "); break;
 		case M_OR:  o.Printf(" or "); break;
+		case M_NE: o.Printf(" != "); break;
 		case M_IMPLIES: o.Printf(" <=> "); break;
 		default: assert(false); // can't happen
 	}
@@ -477,7 +479,9 @@ void BinOperatorNode::print_asm(Console &o) const
 		case M_LT:  o.Printf("lt");  break;
 		case M_LE:  o.Printf("le");  break;
 		case M_GT:  o.Printf("gt");  break;
+		case M_AND:  o.Printf("and");  break;
 		case M_OR:  o.Printf("or");  break;
+		case M_NE:  o.Printf("ne");  break;
 		case M_IMPLIES: o.Printf("implies\t\t01 01"); break;
 		default: assert(false); // can't happen
 	}
@@ -501,7 +505,9 @@ void BinOperatorNode::print_bin(ODequeDataSource &o) const
 		case M_LT:  o.write1(0x28); break;
 		case M_LE:  o.write1(0x2A); break;
 		case M_GT:  o.write1(0x2C); break;
+		case M_AND: o.write1(0x32); break;
 		case M_OR:  o.write1(0x34); break;
+		case M_NE:  o.write1(0x36); break;
 		case M_IMPLIES: o.write1(0x54); o.write2(0x0101); break;
 		default: assert(false); // can't happen
 	}
@@ -512,8 +518,8 @@ bool BinOperatorNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 	switch(otype)
 	{
 		case M_ADD:	case M_SUB:	case M_MUL:
-		case M_CMP:	case M_LT:	case M_LE:	case M_GT:
-		case M_OR:
+		case M_CMP:	case M_LT:	case M_LE:	case M_GT:  case M_NE:
+		case M_AND: case M_OR:
 			assert(acceptType(nodes.back()->rtype(), Type::T_WORD, Type::T_BYTE));
 			grab_r(nodes);
 			//fold_linenum(nodes);
@@ -526,7 +532,7 @@ bool BinOperatorNode::fold(DCUnit *unit, std::deque<Node *> &nodes)
 			assert(acceptType(nodes.back()->rtype(), Type::T_WORD, Type::T_BYTE, Type::T_PID) || print_assert(this, unit));
 			grab_r(nodes);
 			//fold_linenum(nodes);
-			assert(acceptType(nodes.back()->rtype(), Type::T_WORD, Type::T_BYTE, Type::T_PID));
+			assert(acceptType(nodes.back()->rtype(), Type::T_WORD, Type::T_BYTE, Type::T_PID) || print_assert(nodes.back(), unit) || print_assert(this, unit));
 			grab_l(nodes);
 			fold_linenum(nodes);
 			rtype(Type::T_WORD);

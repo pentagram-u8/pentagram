@@ -259,7 +259,11 @@ const bool DCUnit::fold(Node *n)
 
 void Folder::fold(Node *n)
 {
-	//con.Printf("\t%04X:\t%02X\n", n->offset(), n->opcode());
+	if(n!=0)
+		con.Printf("\t%04X:\t%02X\n", n->offset(), n->opcode());
+	else
+		con.Printf("WARNING: Got a null node, so something's not right, will terminate soon...\n");
+
 	//n->print_asm(con);
 	if(curr->fold(n))
 	{

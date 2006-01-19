@@ -1,3 +1,9 @@
+2006-01-19	Darke  <darkepaw@users.sf.net>
+	* convert/Convert.h, tools/fold/*: Added 0x32 (and) and 0x36 (ne) in fold.
+	* tools/fold/*: Fixed spawn opcode (testing value==0 in if statement,
+	  then relying on value!=0 within if statement makes no sense and is
+	  surprisingly difficult to track down...).
+	
 2006-01-18	Darke  <darkepaw@users.sf.net>
 	* tools/fold/*: fixed the fact it didn't work since last time I made
 	  a commit a year ago. It would appear it works now for the first

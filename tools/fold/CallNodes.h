@@ -142,6 +142,7 @@ class DCCallNode : public ColNode
 			: ColNode(opcode, offset, Type(Type::T_VOID)), addSP(0), retVal(0), thisP(0)
 			{
 				assert(acceptOp(opcode, 0x57));
+				con.Printf("SPAWN: %04X: %02X %02X %02X\n", opcode, offset, newValue1, newValue2);
 				switch(opcode)
 				{
 					case 0x57:

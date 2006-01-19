@@ -155,7 +155,7 @@ class BinOperatorNode : public BinNode
 			: BinNode(opcode, offset, Type(Type::T_INVALID))
 			{
 				assert(acceptOp(opcode, 0x14, 0x1C, 0x1E) || acceptOp(opcode, 0x24, 0x28, 0x2A, 0x2C)
-					|| acceptOp(opcode, 0x34) || acceptOp(opcode, 0x54));
+					|| acceptOp(opcode, 0x32, 0x34, 0x36) || acceptOp(opcode, 0x54));
 				switch(opcode)
 				{
 					case 0x14: otype = M_ADD;     rtype(Type::T_WORD); break;
@@ -166,8 +166,10 @@ class BinOperatorNode : public BinNode
 					case 0x28: otype = M_LT;      rtype(Type::T_WORD); break;
 					case 0x2A: otype = M_LE;      rtype(Type::T_WORD); break;
 					case 0x2C: otype = M_GT;      rtype(Type::T_WORD); break;
+					case 0x32: otype = M_AND;     rtype(Type::T_WORD); break;
 					case 0x34: otype = M_OR;      rtype(Type::T_WORD); break;
-					
+					case 0x36: otype = M_NE;      rtype(Type::T_WORD); break;
+
 					case 0x54: otype = M_IMPLIES; rtype(Type::T_WORD); break;
 
 					default: assert(false);
@@ -181,7 +183,7 @@ class BinOperatorNode : public BinNode
 		bool fold(DCUnit *unit, std::deque<Node *> &nodes);
 
 	protected:
-		enum optype { M_ADD, M_SUB, M_MUL, M_CMP, M_OR, M_LT, M_LE, M_GT, M_IMPLIES } otype;
+		enum optype { M_ADD, M_SUB, M_MUL, M_CMP, M_AND, M_OR, M_NE, M_LT, M_LE, M_GT, M_IMPLIES } otype;
 
 	private:
 };

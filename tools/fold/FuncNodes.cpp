@@ -72,8 +72,8 @@ void FuncMutatorNode::print_asm(Console &o) const
 	
 	switch(mtype)
 	{
-		case RET:         CANT_HAPPEN(); break;
-		case INIT:        CANT_HAPPEN(); break;
+		case RET:         print_assert(this); CANT_HAPPEN(); break;
+		case INIT:        print_assert(this); CANT_HAPPEN(); break;
 		case LINE_NUMBER: o.Printf("line number\t%i (%04Xh)", _linenum, _linenum); break;
 		case SYMBOL_INFO: o.Printf("symbol info\toffset %04Xh = \"%s\"", _symboloffset, _classname.c_str()); break;
 		case SUSPEND:     o.Printf("suspend"); break;
