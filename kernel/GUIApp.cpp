@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2005 The Pentagram team
+Copyright (C) 2002-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -1322,7 +1322,9 @@ void GUIApp::handleEvent(const SDL_Event& event)
 #endif
 
 					if (event.key.keysym.unicode >= ' ' &&
-						event.key.keysym.unicode <= 255)
+						event.key.keysym.unicode <= 255 &&
+						!(event.key.keysym.unicode >= 0x7F && // control chars
+						  event.key.keysym.unicode <= 0x9F))
 					{
 						gump->OnTextInput(event.key.keysym.unicode);
 					}

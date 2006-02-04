@@ -1,5 +1,6 @@
 2006-02-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* tools/data2c/data2c.c: make output valid C++
+	* kernel/GUIApp.cpp: don't pass unicode control chars to OnTextInput
 
 2006-01-19	Darke  <darkepaw@users.sf.net>
 	* convert/Convert.h, tools/fold/*: Added 0x32 (and) and 0x36 (ne) in fold.
