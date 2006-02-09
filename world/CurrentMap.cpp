@@ -776,6 +776,14 @@ bool CurrentMap::scanForValidPosition(sint32 x, sint32 y, sint32 z, Item* item,
 	sint32 xd,yd,zd;
 	item->getFootpadWorld(xd, yd, zd);	
 
+	// Note on scan direction:
+	// The 'horiz' variable below will always mean a direction in
+	// the positive x/y directions, with the exception of searchdir 3,
+	// in which case positive horiz points in the (positive x, negative y)
+	// direction. This is reflected below in
+	// tx = x + x_fact[searchdir]*horiz; ty = y - y_fact[searchdir]*horiz;
+
+
 	// next, we'll loop over all objects in the area, and mark the areas
 	// overlapped and supported by each object
 
