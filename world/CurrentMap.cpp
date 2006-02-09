@@ -870,7 +870,7 @@ bool CurrentMap::scanForValidPosition(sint32 x, sint32 y, sint32 z, Item* item,
 		if (i % 2 == 0)
 			horiz = 4*(i/2);
 		else
-			horiz = -1 - 4*(i/2);
+			horiz = -4 - 4*(i/2);
 		
 		for (unsigned int j = 0; j < 5; ++j) {
 			int vert;
@@ -885,7 +885,7 @@ bool CurrentMap::scanForValidPosition(sint32 x, sint32 y, sint32 z, Item* item,
 				{
 					tz = z + vert;
 					tx = x + x_fact[searchdir]*horiz;
-					ty = y + y_fact[searchdir]*horiz;
+					ty = y - y_fact[searchdir]*horiz;
 				}
 				if (!wantsupport || (supportmask[vert+8] & (1<<(horiz+8))))
 					return true;

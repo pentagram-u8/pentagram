@@ -1,3 +1,7 @@
+2006-02-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/CurrentMap.cpp: fixed sign bug which caused the avatar to
+	  move into walls occasionally
+
 2006-02-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* tools/data2c/data2c.c: make output valid C++
 	* kernel/GUIApp.cpp: don't pass unicode control chars to OnTextInput
