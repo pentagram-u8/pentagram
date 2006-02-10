@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2005 The Pentagram team
+Copyright (C) 2002-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -24,6 +24,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Kernel.h"
 #include "DelayProcess.h"
 #include "CoreApp.h"
+#include "GameInfo.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
 #include "CurrentMap.h"
@@ -375,10 +376,14 @@ bool UCMachine::execProcess(UCProcess* p)
 
 
 				// REALLY MAJOR HACK:
+				// see docs/u8bugs.txt and
 				// https://sourceforge.net/tracker/index.php?func=detail&aid=1018748&group_id=53819&atid=471709
 
 				// FIXME: need to make this U8-only
-				if (p->classid == 0x48B && func == 0xD0) { // setAvatarInStasis
+				if (CoreApp::get_instance()->getGameInfo()->type ==
+							  GameInfo::GAME_U8 &&
+					p->classid == 0x48B && func == 0xD0) // setAvatarInStasis
+				{
 					globals->setBits(0, 1, 1);
 				}
 

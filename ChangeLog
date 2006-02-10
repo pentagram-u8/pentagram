@@ -1,3 +1,8 @@
+2006-02-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* docs/u8bugs.txt: map bug: holes in floor in U8 map 62
+	* world/Map.cpp: workaround for these holes
+	* usecode/UCMachine.cpp: only apply workaround for usecode bug in U8
+
 2006-02-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/CurrentMap.cpp: fixed sign bug which caused the avatar to
 	  move into walls occasionally

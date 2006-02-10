@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,6 +27,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Item.h"
 #include "Container.h"
 #include "ObjectManager.h"
+#include "CoreApp.h"
+#include "GameInfo.h"
 
 #include "ShapeInfo.h" // debugging only
 #include "GameData.h" // ""
@@ -69,6 +71,99 @@ void Map::loadNonFixed(IDataSource* ds)
 void Map::loadFixed(IDataSource* ds)
 {
 	loadFixedFormatObjects(fixeditems, ds, Item::EXT_FIXED);
+
+
+
+
+	// U8 hack for missing ground/lava tiles on map 62. See docs/u8bugs.txt
+	if (CoreApp::get_instance()->getGameInfo()->type == GameInfo::GAME_U8 &&
+		mapnum == 62)
+	{
+		Item* item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+											Item::EXT_FIXED, false);
+		item->setLocation(16255, 6143, 48);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+									  Item::EXT_FIXED, false);
+		item->setLocation(16639, 6143, 48);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+									  Item::EXT_FIXED, false);
+		item->setLocation(16511, 6143, 48);
+		fixeditems.push_back(item);
+
+
+		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+									  Item::EXT_FIXED, false);
+		item->setLocation(15999, 6143, 48);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+									  Item::EXT_FIXED, false);
+		item->setLocation(15871, 6143, 48);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+									  Item::EXT_FIXED, false);
+		item->setLocation(15743, 6143, 48);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+									  Item::EXT_FIXED, false);
+		item->setLocation(15615, 6143, 48);
+		fixeditems.push_back(item);
+
+
+
+		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+									  Item::EXT_FIXED, false);
+		item->setLocation(15999, 6015, 48);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+									  Item::EXT_FIXED, false);
+		item->setLocation(15871, 6015, 48);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+									  Item::EXT_FIXED, false);
+		item->setLocation(15743, 6015, 48);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+									  Item::EXT_FIXED, false);
+		item->setLocation(15615, 6015, 48);
+		fixeditems.push_back(item);
+
+
+
+		item = ItemFactory::createItem(497, 0, 0, 0, 0, 0,
+									  Item::EXT_FIXED, false);
+		item->setLocation(15487, 6271, 48);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(497, 0, 0, 0, 0, 0,
+									  Item::EXT_FIXED, false);
+		item->setLocation(15359, 6271, 48);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(409, 32, 0, 0, 0, 0,
+									  Item::EXT_FIXED, false);
+		item->setLocation(14975, 6399, 0);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(409, 32, 0, 0, 0, 0,
+									  Item::EXT_FIXED, false);
+		item->setLocation(14975, 6015, 0);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(409, 32, 0, 0, 0, 0,
+									  Item::EXT_FIXED, false);
+		item->setLocation(15103, 6015, 0);
+		fixeditems.push_back(item);
+	}
 }
 
 void Map::unloadFixed()
