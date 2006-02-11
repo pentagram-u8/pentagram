@@ -1,4 +1,8 @@
 2006-02-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* games/GameInfo.*: add LANG_JAPANESE
+	* games/GameDetector.cpp: presence of jusecode.flx means Japanese
+
+2006-02-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.cpp: display warning when avatar falls below Z=0
 
 2006-02-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>

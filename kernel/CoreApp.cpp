@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2005 The Pentagram team
+Copyright (C) 2004-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -356,6 +356,8 @@ bool CoreApp::getGameInfo(Pentagram::istring& game, GameInfo* gameinfo)
 		gameinfo->language = GameInfo::GAMELANG_GERMAN;
 	} else if (language == "spanish") {
 		gameinfo->language = GameInfo::GAMELANG_SPANISH;
+	} else if (language == "japanese") {
+		gameinfo->language = GameInfo::GAMELANG_JAPANESE;
 	}
 
 	if (gameinfo->type == GameInfo::GAME_UNKNOWN ||

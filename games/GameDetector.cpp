@@ -46,6 +46,8 @@ bool GameDetector::detect(std::string path, GameInfo *info)
 	if (!ids)
 		ids = fs->ReadFile("@detect/usecode/gusecode.flx");
 	if (!ids)
+		ids = fs->ReadFile("@detect/usecode/jusecode.flx");
+	if (!ids)
 		return false; // all games have usecode
 
 	Pentagram::md5_file(ids, info->md5, 0);
@@ -148,6 +150,13 @@ bool GameDetector::detect(std::string path, GameInfo *info)
 		ids = fs->ReadFile("@detect/usecode/gusecode.flx");
 		if (ids) {
 			info->language = GameInfo::GAMELANG_GERMAN;
+			delete ids; ids = 0;
+		}
+	}
+	if (info->language == GameInfo::GAMELANG_UNKNOWN) {
+		ids = fs->ReadFile("@detect/usecode/jusecode.flx");
+		if (ids) {
+			info->language = GameInfo::GAMELANG_JAPANESE;
 			delete ids; ids = 0;
 		}
 	}

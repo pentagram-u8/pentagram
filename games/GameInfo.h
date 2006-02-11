@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -46,7 +46,8 @@ struct GameInfo {
 		GAMELANG_ENGLISH,
 		GAMELANG_FRENCH,
 		GAMELANG_GERMAN,
-		GAMELANG_SPANISH
+		GAMELANG_SPANISH,
+		GAMELANG_JAPANESE
 	} language;
 
 	uint8 md5[16];
