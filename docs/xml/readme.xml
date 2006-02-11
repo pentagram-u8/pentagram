@@ -236,8 +236,8 @@
 			<body>
 				<para>
 					At the moment we only support the English version of Ultima 8 regardless of the
-					game version. The German and French versions will probably also work.
-					The Spanish version will not work at this point.
+					game version. The German, French and Spanish versions will probably also work.
+					The Japanese version will probably not work.
 					The games we don't support are defined in the <extref doc="faq" target="tgwds_tgyds"/>.
 				</para>
 			</body>
