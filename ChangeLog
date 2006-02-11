@@ -1,3 +1,6 @@
+2006-02-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Item.cpp: display warning when avatar falls below Z=0
+
 2006-02-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* docs/u8bugs.txt: map bug: holes in floor in U8 map 62
 	* world/Map.cpp: workaround for these holes

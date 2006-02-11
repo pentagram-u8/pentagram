@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -126,6 +126,10 @@ void Item::move(sint32 X, sint32 Y, sint32 Z)
 {
 	bool no_lerping = false;
 	CurrentMap * map = World::get_instance()->getCurrentMap();
+
+	if (getObjId() == 1 && Z < 0) {
+		perr.printf("Warning: moving avatar below Z=0. (%d,%d,%d)\n", X, Y, Z);
+	}
 
 	// It's currently in the ethereal void, remove it from there
 	if (flags & FLG_ETHEREAL) {
