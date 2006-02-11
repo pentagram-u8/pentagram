@@ -113,8 +113,8 @@ MAP BUGS:
 
 Map 62: (Ancient Necromancers)
 
-There are many missing ground tiles in the region from around (16555,6075,48)
-to the lava in the west.
+There are many missing ground/wall tiles in the region from
+around (16555,6075,48) to the lava in the west.
 
 FIX:
 Add the tiles listed below to the map in fixed.dat after checking
@@ -130,3 +130,11 @@ Walls at: (15487, 6271, 48), (15359, 6271, 48)
 Lava at: (14975, 6399, 0), (14975, 6015, 0),(15103, 6015, 0) 
 (Ground: shape 301/1, Wall: shape 497/0, Lava: shape 409/32)
 
+
+
+Map 25: (Lava river, after Carthax lake)
+
+Missing ground/wall tiles around (17547,30275) and (17715,30307)
+
+WORKAROUND:
+None yet
