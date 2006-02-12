@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004-2005  The Pentagram Team
+ *  Copyright (C) 2004-2006  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -28,11 +28,16 @@
 #include "GumpNotifyProcess.h"
 #include "Item.h"
 #include "getObject.h"
+#include "CoreApp.h"
+#include "GameInfo.h"
+#include "util.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(ReadableGump,ModalGump);
+
+const int jpsub_font = 6;
 
 ReadableGump::ReadableGump()
 	: ModalGump()
@@ -63,16 +68,29 @@ void ReadableGump::InitGump(Gump* newparent, bool take_focus)
 	dims.w = sf->width;
 	dims.h = sf->height;
 
+	if (CoreApp::get_instance()->getGameInfo()->language ==
+		GameInfo::GAMELANG_JAPANESE)
+	{
+		// Japanese subtitles
+		std::string::size_type pos;
+		pos = text.find('%');
+		if (pos != std::string::npos) {
+			std::string jpsub = text.substr(pos + 1);
+			text = text.substr(0, pos);
+
+			Gump* subwidget = new TextWidget(0, 0, jpsub, true, jpsub_font, 0, 0, Pentagram::Font::TEXT_CENTER);
+			subwidget->InitGump(this);
+			subwidget->setRelativePosition(BOTTOM_CENTER, 0, -8);
+		}
+	}
+
 	Gump *widget = new TextWidget(0, 0, text, true, fontnum, dims.w - 16, 0, Pentagram::Font::TEXT_CENTER);
 	widget->InitGump(this);
 	widget->setRelativePosition(CENTER);
-
-	textwidget = widget->getObjId();
 }
 
 Gump *ReadableGump::OnMouseDown(int button, int mx, int my)
 {
-	// maybe TODO: Scroll to next text, if possible
 	Close();
 	return this;
 }

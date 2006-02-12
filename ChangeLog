@@ -1,4 +1,7 @@
 2006-02-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/ReadableGump.*: handle Japanese plaques/graves
+
+2006-02-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Map.cpp: handle teleport to missing map more gracefully
 
 2006-02-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>

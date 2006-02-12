@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004-2005  The Pentagram Team
+ *  Copyright (C) 2004-2006  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -27,7 +27,6 @@ class ReadableGump : public ModalGump
 	uint16 shapenum;
 	int fontnum;
 	std::string	text;
-	ObjId textwidget;
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
