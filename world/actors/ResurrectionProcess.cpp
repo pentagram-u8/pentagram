@@ -71,8 +71,12 @@ bool ResurrectionProcess::run(const uint32 /*framenum*/)
 			 << a->getShape() << ")." << std::endl;
 	}
 
-	// done
-	terminate();
+	// go into combat mode
+	a->setInCombat();
+
+	// we should already be killed by going into combat mode.
+	if (!(flags & PROC_TERMINATED))
+		terminate();
 
 	return true;
 }

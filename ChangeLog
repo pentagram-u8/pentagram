@@ -2,6 +2,7 @@
 	* data/u8monsters.ini, world/actors/MonsterInfo.h:
 	  add booleans for ranged attacks, shapeshifting
 	* kernel/Kernel.cpp: don't terminate processes that are TERM_DEFERRED
+	* world/actors/RessurectionProcess.cpp: go into combat mode after res.
 
 2006-02-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/ReadableGump.*: handle Japanese plaques/graves
