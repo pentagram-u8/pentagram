@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2005 The Pentagram team
+Copyright (C) 2002-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -380,7 +380,8 @@ void Kernel::killProcesses(ObjId objid, uint16 processtype, bool fail)
 
 		if (p->item_num != 0 && (objid == 0 || objid == p->item_num) &&
 			(processtype == 6 || processtype == p->type) && 
-			!(p->flags & Process::PROC_TERMINATED))
+			!(p->flags & Process::PROC_TERMINATED) &&
+			!(p->flags & Process::PROC_TERM_DEFERRED))
 		{
 			if (fail)
 				p->fail();
@@ -398,7 +399,8 @@ void Kernel::killProcessesNotOfType(ObjId objid, uint16 processtype, bool fail)
 
 		if (p->item_num != 0 && (objid == 0 || objid == p->item_num) &&
 			(p->type != processtype) &&
-			!(p->flags & Process::PROC_TERMINATED))
+			!(p->flags & Process::PROC_TERMINATED) &&
+			!(p->flags & Process::PROC_TERM_DEFERRED))
 		{
 			if (fail)
 				p->fail();
