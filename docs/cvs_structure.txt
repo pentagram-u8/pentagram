@@ -1,49 +1,67 @@
-Just a quick overview of all the important subdirectories. Most of them will be
-currently unimplemented, until at least someone actually writes code for them,
-or transfers it from the 'old' cvs module. *grin*
+audio/ -- audio related classes and code
 
-audio/     -- Pretty obviously for audio related classes and code
+audio/midi/ -- MIDI drivers
 
-convert/  -- The conversion related classes, used for converting the
-shapes, usecode, etc from their game dependant formats, to our game
-independant formats, hopefully. *grin*
+audio/midi/timidity/ -- internal timidity driver, ported from SDL_mixer
+
+convert/  -- The conversion related classes, used for reading/converting the
+shapes, usecode, etc from their game dependant formats
 
 filesys/  -- The pentagram FileSystem related classes (file wrappers,
 buffers, etc.
 
-graphics/ -- IIRC, it's everything to do with shapes/gumps/maps and the
-rendering of such.
+filesys/zip/ -- unzip/zip code for use in the savegames
 
-gumps/     -- For all the gump related classes. In my vision, gumps will
-almost be like our own windowing system.
+games/ -- Code related to game detection and game data
 
-input/     -- For the input handling classes (maybe). This just depends on
-how we actually handle input. Ideally I think the should only be a single
-event handling function in the engine which then dispatches the input to
-the component that currently has focus. Another dir for this may not be
-needed.
+graphics/ -- everything to do with shapes and rendering
 
-kernel/   -- Here goes the Kernel and it's associated classes, including
-the UsecodeMachine.
+graphics/fonts/ -- font rendering/caching code
 
-mainmenu/  -- Darke's funky main menu system. If it's implemented with
-gumps, it should probably go under gumps instead.
+graphics/scalers/ -- scalers
 
-savegame/  -- For the files related to savegame handling. The name of this
-dir possibly should not be called 'savegame' as that was the name of the
-original Ultima8's savegame dir. A better name is required, but it's
-obvious the purpose of the dir.
+gumps/ -- For all the gump related classes. Gumps are our own windowing system.
 
-utils/    -- (misc/ maybe?) Just the random header and utility files.
-Like the [su]int[8|16|32] defines.
+gumps/widgets/ -- smaller, reusable gumps
 
-world/     -- For world and object managing code. Probably would contain
-the physics code too. The code to resolve an item number into a world
-object would be here somewhere (as part of the object manager).
+kernel/ --The Kernel and its associated classes, such as the
+	  ObjectManager, application classes and basic Processes
 
-With the addition:
+usecode/ -- All usecode related classes, centered around UCMachine
 
-tools/     -- Inside this there's a subdirectory for each tool, and the 
-relevant source goes into that directory. For 
-compilers/disassemblers/decompilers/viewers/commandline converters/etc.
+misc/ -- Random header and utility files.
+
+world/ - For world and object managing code.
+
+world/actors -- all avatar/NPC related classes
+
+---
+
+tools/ - a subdirectory for each tool.
+
+tools/amf2mod/ -- converts Crusader's AMF files into MOD files
+
+tools/compile/ -- work-in-progress usecode compiler
+
+tools/data2c/ -- converts binary file to C header. Used at build-time
+
+toold/disasm/ -- usecode disassembler
+
+toold/flexpack/ -- archive utility for U8's flex format
+
+tools/fold/ -- work-in-progress usecode decompiler
+
+tools/gimp-plugin/ -- work-in-progress plugin for The Gimp for u8's shapes
+
+tools/shapeconv/ -- converts between the shape formats used by U8/Crusader
+
+--
+
+docs/ -- mostly unorganized documentation
+
+docs/xml -- readme/faq sources
+
+system/ -- build/distribution related system-specific file
+
+system/auto/ -- support files for the autoconf-based build system
 
