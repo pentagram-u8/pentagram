@@ -1,4 +1,7 @@
 2006-02-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Map.cpp: handle teleport to missing map more gracefully
+
+2006-02-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/SKFPlayer.cpp: increased width of subtitle area
 	* graphics/fonts/JPFont.*, graphics/fonts/JPRenderedText.*:
 	  unfinished implementation of japanese font support. No colour yet.

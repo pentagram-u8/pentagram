@@ -73,9 +73,14 @@ void Map::loadFixed(IDataSource* ds)
 	loadFixedFormatObjects(fixeditems, ds, Item::EXT_FIXED);
 
 
+	// U8 hack for missing ground tiles on map 25. See docs/u8bugs.txt
+	if (CoreApp::get_instance()->getGameInfo()->type == GameInfo::GAME_U8 &&
+		mapnum == 25)
+	{
+		// TODO
+	}
 
-
-	// U8 hack for missing ground/lava tiles on map 62. See docs/u8bugs.txt
+	// U8 hack for missing ground/wall tiles on map 62. See docs/u8bugs.txt
 	if (CoreApp::get_instance()->getGameInfo()->type == GameInfo::GAME_U8 &&
 		mapnum == 62)
 	{
@@ -85,82 +90,82 @@ void Map::loadFixed(IDataSource* ds)
 		fixeditems.push_back(item);
 
 		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
-									  Item::EXT_FIXED, false);
+									   Item::EXT_FIXED, false);
 		item->setLocation(16639, 6143, 48);
 		fixeditems.push_back(item);
 
 		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
-									  Item::EXT_FIXED, false);
+									   Item::EXT_FIXED, false);
 		item->setLocation(16511, 6143, 48);
 		fixeditems.push_back(item);
 
 
 		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
-									  Item::EXT_FIXED, false);
+									   Item::EXT_FIXED, false);
 		item->setLocation(15999, 6143, 48);
 		fixeditems.push_back(item);
 
 		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
-									  Item::EXT_FIXED, false);
+									   Item::EXT_FIXED, false);
 		item->setLocation(15871, 6143, 48);
 		fixeditems.push_back(item);
 
 		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
-									  Item::EXT_FIXED, false);
+									   Item::EXT_FIXED, false);
 		item->setLocation(15743, 6143, 48);
 		fixeditems.push_back(item);
 
 		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
-									  Item::EXT_FIXED, false);
+									   Item::EXT_FIXED, false);
 		item->setLocation(15615, 6143, 48);
 		fixeditems.push_back(item);
 
 
 
 		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
-									  Item::EXT_FIXED, false);
+									   Item::EXT_FIXED, false);
 		item->setLocation(15999, 6015, 48);
 		fixeditems.push_back(item);
 
 		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
-									  Item::EXT_FIXED, false);
+									   Item::EXT_FIXED, false);
 		item->setLocation(15871, 6015, 48);
 		fixeditems.push_back(item);
 
 		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
-									  Item::EXT_FIXED, false);
+									   Item::EXT_FIXED, false);
 		item->setLocation(15743, 6015, 48);
 		fixeditems.push_back(item);
 
 		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
-									  Item::EXT_FIXED, false);
+									   Item::EXT_FIXED, false);
 		item->setLocation(15615, 6015, 48);
 		fixeditems.push_back(item);
 
 
 
 		item = ItemFactory::createItem(497, 0, 0, 0, 0, 0,
-									  Item::EXT_FIXED, false);
+									   Item::EXT_FIXED, false);
 		item->setLocation(15487, 6271, 48);
 		fixeditems.push_back(item);
 
 		item = ItemFactory::createItem(497, 0, 0, 0, 0, 0,
-									  Item::EXT_FIXED, false);
+									   Item::EXT_FIXED, false);
 		item->setLocation(15359, 6271, 48);
 		fixeditems.push_back(item);
 
 		item = ItemFactory::createItem(409, 32, 0, 0, 0, 0,
-									  Item::EXT_FIXED, false);
+									   Item::EXT_FIXED, false);
 		item->setLocation(14975, 6399, 0);
 		fixeditems.push_back(item);
 
 		item = ItemFactory::createItem(409, 32, 0, 0, 0, 0,
-									  Item::EXT_FIXED, false);
+									   Item::EXT_FIXED, false);
 		item->setLocation(14975, 6015, 0);
 		fixeditems.push_back(item);
 
 		item = ItemFactory::createItem(409, 32, 0, 0, 0, 0,
-									  Item::EXT_FIXED, false);
+									   Item::EXT_FIXED, false);
 		item->setLocation(15103, 6015, 0);
 		fixeditems.push_back(item);
 	}
@@ -179,6 +184,7 @@ void Map::unloadFixed()
 void Map::loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds,
 								 uint32 extendedflags)
 {
+	if (!ds) return;
 	uint32 size = ds->getSize();
 	if (size == 0) return;
 
