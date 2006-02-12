@@ -1,3 +1,6 @@
+2006-02-12	Darke  <darkepaw@users.sf.net>
+	* tools/disasm/*: Minor change to support u8jp.
+
 2006-02-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* games/GameInfo.*: add LANG_JAPANESE
 	* games/GameDetector.cpp: presence of jusecode.flx means Japanese

@@ -743,7 +743,7 @@ void readfunctionnames(void)
 int main(int argc, char **argv)
 {
 	if (argc < 3) {
-		perr << "Usage: " << argv[0] << " <file> [<function number>|-a] {--game [u8|crusader]} {--lang [english|german|french]} {--odir <directory>}" << endl;
+		perr << "Usage: " << argv[0] << " <file> [<function number>|-a] {--game [u8|crusader]} {--lang [english|german|french|japanese]} {--odir <directory>}" << endl;
 		perr << "or" << endl;
 		perr << "Usage: " << argv[0] << " <file> -l" << endl;
 		perr << "or" << endl;
@@ -789,12 +789,15 @@ int main(int argc, char **argv)
 			case 'f': case 'F':
 				gamelanguage = "french";
 				break;
+			case 'j': case 'J':
+				gamelanguage = "japanese";
+				break;
 			default:
 				perr << "Could not determine game language. Defaulting to english." << std::endl;
 				gamelanguage = "english";
 		}
 	}
-	if ( (gamelanguage != "german") && (gamelanguage != "english") && (gamelanguage != "french"))
+	if ( (gamelanguage != "german") && (gamelanguage != "english") && (gamelanguage != "french") && (gamelanguage != "japanese"))
 	{
 		perr << "Warning: unknown language specified (" << gamelanguage << ")." << std::endl;
 	}
