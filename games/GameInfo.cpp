@@ -49,8 +49,8 @@ static GameTypeDesc gametypes[] = {
 static GameLangDesc gamelangs[] = {
 	{ 0, 0, "unknown" },
 	{ 'e', 'e', "English" },
-	{ 'f', 'e', "French" },
-	{ 'g', 'e', "German" },
+	{ 'f', 'f', "French" },
+	{ 'g', 'g', "German" },
 	{ 'e', 'e', "Spanish" },
 	{ 'e', 'j', "Japanese" },
 	{ 0, 0 }
