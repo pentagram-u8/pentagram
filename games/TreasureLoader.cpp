@@ -79,8 +79,6 @@ bool TreasureLoader::parse(std::string desc,
 bool TreasureLoader::internalParse(std::string desc, TreasureInfo& ti,
 								   bool loadingDefault)
 {
-	// TODO: be a bit more liberal with the separation into key=value pairs
-
 	ti.special = "";
 	ti.chance = 1;
 	ti.map = 0;
