@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2005 The Pentagram team
+Copyright (C) 2004-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "IDataSource.h"
 #include "FileSystem.h"
 #include "TTFont.h"
+#include "JPFont.h"
 
 FontManager* FontManager::fontmanager = 0;
 
@@ -130,6 +131,18 @@ TTF_Font* FontManager::getTTF_Font(std::string filename, int pointsize)
 	return font;
 }
 
+void FontManager::setOverride(unsigned int fontnum, Pentagram::Font* override)
+{
+	if (fontnum >= overrides.size())
+		overrides.resize(fontnum+1);
+
+	if (overrides[fontnum])
+		delete overrides[fontnum];
+
+	overrides[fontnum] = override;
+}
+
+
 bool FontManager::addTTFOverride(unsigned int fontnum, std::string filename,
 								 int pointsize, uint32 rgb, int bordersize)
 {
@@ -139,16 +152,28 @@ bool FontManager::addTTFOverride(unsigned int fontnum, std::string filename,
 
 	TTFont* font = new TTFont(f, rgb, bordersize, ttf_antialiasing);
 
-	if (fontnum >= overrides.size())
-		overrides.resize(fontnum+1);
-
-	if (overrides[fontnum])
-		delete overrides[fontnum];
-
-	overrides[fontnum] = font;
+	setOverride(fontnum, font);
 
 #ifdef DEBUG
 	pout << "Added TTF override for font " << fontnum << std::endl;
+#endif
+
+	return true;
+}
+
+bool FontManager::addJPOverride(unsigned int fontnum,
+								unsigned int jpfont, uint32 rgb)
+{
+	ShapeFont* jf = p_dynamic_cast<ShapeFont*>(GameData::get_instance()->getFonts()->getFont(jpfont));
+	if (!jf)
+		return false;
+
+	JPFont* font = new JPFont(jf, rgb);
+
+	setOverride(fontnum, font);
+
+#ifdef DEBUG
+	pout << "Added JP override for font " << fontnum << std::endl;
 #endif
 
 	return true;

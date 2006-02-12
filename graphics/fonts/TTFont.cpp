@@ -72,14 +72,14 @@ void TTFont::getStringSize(const std::string& text, int& width, int& height)
 #if 0
 	uint16* unicodetext = new uint16[text.size()+1];
 	for (unsigned int i = 0; i < text.size(); ++i) {
-		unicodetext[i] = encoding[(unsigned char)(text[i])];
+		unicodetext[i] = Pentagram::encoding[(unsigned char)(text[i])];
 	}
 	unicodetext[text.size()] = 0;
 #else
 	const char* t = text.c_str();
 	uint16* unicodetext = new uint16[strlen(t)+1];
 	for (unsigned int i = 0; i < strlen(t); ++i) {
-		unicodetext[i] = encoding[static_cast<unsigned char>(t[i])];
+		unicodetext[i] = Pentagram::encoding[static_cast<unsigned char>(t[i])];
 	}
 	unicodetext[strlen(t)] = 0;
 #endif
@@ -134,7 +134,7 @@ RenderedText* TTFont::renderText(const std::string& text,
 //		perr << "Hex: " << std::hex;
 		for (unsigned int i = 0; i < strlen(t); ++i) {
 //			perr << std::setw(2) << std::setfill('0') << (unsigned int)(t[i]) << " ";
-			unicodetext[i] = encoding[static_cast<unsigned char>(t[i])];
+			unicodetext[i] = Pentagram::encoding[static_cast<unsigned char>(t[i])];
 		}
 //		perr << std::dec << std::endl;
 		unicodetext[strlen(t)] = 0;

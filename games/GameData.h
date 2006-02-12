@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -45,7 +45,7 @@ public:
 	static GameData* get_instance() { return gamedata; }
 
 	void loadU8Data(); // probably only temporary
-	void setupTTFOverrides();
+	void setupFontOverrides();
 
 	Usecode* getMainUsecode() const { return mainusecode; }
 	MainShapeArchive* getMainShapes() const { return mainshapes; }
@@ -73,6 +73,8 @@ public:
 	};
 private:
 	void loadTranslation();
+	void setupTTFOverrides();
+	void setupJPOverrides();
 
 	RawArchive* fixed;
 	MainShapeArchive* mainshapes;

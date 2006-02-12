@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2005-2006 The Pentagram team
+Copyright (C) 2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,20 +16,29 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef MISC_ENCODING_H
-#define MISC_ENCODING_H
+#ifndef JPRENDEREDTEXT_H
+#define JPRENDEREDTEXT_H
 
-namespace Pentagram {
+#include "RenderedText.h"
+#include "Font.h"
 
-extern uint8 reverse_encoding[256];
-extern uint16 encoding[256];
+class ShapeFont;
 
-// first byte in shift_jis character stream encoded as LSbyte in sjis
-// if first byte is >= 0x80 then second byte in character stream as MSB in sjis
-// return value is index in U8's japanese font. 0 for missing codepoints
+class JPRenderedText : public RenderedText
+{
+public:
+	JPRenderedText(std::list<PositionedText>& lines,
+				   int width, int height, int vlead, ShapeFont* font);
+	virtual ~JPRenderedText();
 
-uint16 shiftjis_to_ultima8(uint16 sjis);
+	virtual void draw(RenderSurface* surface, int x, int y);
+	virtual void drawBlended(RenderSurface* surface, int x, int y, uint32 col);
 
-}
+	ENABLE_RUNTIME_CLASSTYPE();
+
+protected:
+	std::list<PositionedText> lines;
+	ShapeFont* font;
+};
 
 #endif

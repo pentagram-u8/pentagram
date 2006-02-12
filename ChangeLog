@@ -1,8 +1,18 @@
+2006-02-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/SKFPlayer.cpp: increased width of subtitle area
+	* graphics/fonts/JPFont.*, graphics/fonts/JPRenderedText.*:
+	  unfinished implementation of japanese font support. No colour yet.
+	* graphics/fonts/FontManager.*: japanese font overrides
+	* data/u8japanese.ini: japanese font overrides
+	* games/GameInfo.*: separately specify language letter for usecode file
+	* misc/encoding.*: shift_jis to Ultima 8's font encoding converter
+	* games/gamemd5.h: jusecode.flx md5
+
 2006-02-12	Darke  <darkepaw@users.sf.net>
 	* tools/disasm/*: Minor change to support u8jp.
 
 2006-02-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
-	* games/GameInfo.*: add LANG_JAPANESE
+	* games/GameInfo.*: add GAMELANG_JAPANESE
 	* games/GameDetector.cpp: presence of jusecode.flx means Japanese
 
 2006-02-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>

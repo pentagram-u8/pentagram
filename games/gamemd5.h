@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2005 The Pentagram team
+Copyright (C) 2005-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -52,6 +52,8 @@ static GameMD5Entry md5table[] = {
 	  "9675900bd1a9c9f72b331e84a6cdbc23" },
 	{ GameInfo::GAME_U8, GameInfo::GAMELANG_GERMAN, 212,
 	  "473991399cfb176b0df6f088d30301c5" },
+	{ GameInfo::GAME_U8, GameInfo::GAMELANG_JAPANESE, 212,
+	  "304a315f7a436d18397c4ec544585f7e" },
 
 	// U8, 2.13
 	{ GameInfo::GAME_U8, GameInfo::GAMELANG_ENGLISH, 213,

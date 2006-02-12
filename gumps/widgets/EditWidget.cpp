@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2005  The Pentagram Team
+ *  Copyright (C) 2005-2006  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -196,7 +196,7 @@ bool EditWidget::OnTextInput(int unicode)
 
 	char c = 0;
 	if (unicode >= 0 && unicode < 256)
-		c = reverse_encoding[unicode];
+		c = Pentagram::reverse_encoding[unicode];
 	if (!c) return true;
 
 	std::string newtext = text;

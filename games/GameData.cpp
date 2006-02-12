@@ -156,6 +156,9 @@ void GameData::loadTranslation()
 		case GameInfo::GAMELANG_SPANISH:
 			translationfile = "u8spanish.ini";
 			break;
+		case GameInfo::GAMELANG_JAPANESE:
+			translationfile = "u8japanese.ini";
+			break;
 		default:
 			perr << "Unknown language." << std::endl;
 			break;
@@ -234,7 +237,7 @@ void GameData::loadU8Data()
 	fixed = new RawArchive(fd);
 
 	GameInfo* gameinfo = CoreApp::get_instance()->getGameInfo();
-	char langletter = gameinfo->getLanguageFileLetter();
+	char langletter = gameinfo->getLanguageUsecodeLetter();
 	if (!langletter) {
 		perr << "Unknown language. Unable to open usecode." << std::endl;
 		std::exit(-1);
@@ -375,6 +378,46 @@ void GameData::loadU8Data()
 	soundflex = new SoundFlex(sndflx);
 
 	loadTranslation();
+}
+
+void GameData::setupFontOverrides()
+{
+	GameInfo* gameinfo = CoreApp::get_instance()->getGameInfo();
+	if (gameinfo->language == GameInfo::GAMELANG_JAPANESE)
+		setupJPOverrides();
+
+	setupTTFOverrides();
+}
+
+void GameData::setupJPOverrides()
+{
+	ConfigFileManager* config = ConfigFileManager::get_instance();
+	FontManager* fontmanager = FontManager::get_instance();
+	std::map<Pentagram::istring, std::string> jpkeyvals;
+	std::map<Pentagram::istring, std::string>::iterator iter;
+
+	jpkeyvals = config->listKeyValues("language/jpfonts");
+	for (iter = jpkeyvals.begin(); iter != jpkeyvals.end(); ++iter)
+	{
+		int fontnum = std::atoi(iter->first.c_str());
+		std::string fontdesc = iter->second;
+
+		std::vector<std::string> vals;
+		Pentagram::SplitString(fontdesc, ',', vals);
+		if (vals.size() != 2) {
+			perr << "Invalid jpfont override: " << fontdesc << std::endl;
+			continue;
+		}
+
+		unsigned int jpfontnum = std::atoi(vals[0].c_str());
+		uint32 col32 = std::strtol(vals[1].c_str(), 0, 0);
+
+		if (!fontmanager->addJPOverride(fontnum, jpfontnum, col32))
+		{
+			perr << "failed to setup jpfont override for font " << fontnum
+				 << std::endl;
+		}
+	}
 }
 
 void GameData::setupTTFOverrides()

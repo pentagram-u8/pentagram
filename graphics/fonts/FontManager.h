@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2005 The Pentagram team
+Copyright (C) 2004-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,10 +23,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include <map>
 
 namespace Pentagram { class Font; }
-class IDataSource;
 
-class TTFont;
+
+// This is TTF_Font struct from SDL_ttf
 typedef struct _TTF_Font TTF_Font;
+class IDataSource;
+class TTFont;
+
 
 class FontManager
 {
@@ -52,9 +55,15 @@ public:
 	bool addTTFOverride(unsigned int fontnum, std::string filename,
 						int pointsize, uint32 rgb, int bordersize);
 
-	//! load a TTF font (for non-game fonts)
+	//! override a game font with a Japanese font.
+	//! \param fontnum the font to override
+	//! \param jpfont the fontnum of the Japanese font to use
+	//! \param rgb the color to use
+	bool addJPOverride(unsigned int fontnum, unsigned int jpfont, uint32 rgb);
+
+	//! load a TTF (for non-game fonts)
 	bool loadTTFont(unsigned int ttfnum, std::string filename,
-				int pointsize, uint32 rgb, int bordersize);
+					int pointsize, uint32 rgb, int bordersize);
 
 	// Reset the game fonts
 	void resetGameFonts();
@@ -75,6 +84,9 @@ private:
 	//! Get a (possibly cached) TTF_Font structure for filename/pointsize,
 	//! loading it if necessary.
 	TTF_Font* getTTF_Font(std::string filename, int pointsize);
+
+	//! Override fontnum with override
+	void setOverride(unsigned int fontnum, Pentagram::Font* override);
 
 	std::vector<Pentagram::Font*> overrides;
 

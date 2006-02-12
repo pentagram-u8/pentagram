@@ -31,6 +31,7 @@ struct GameTypeDesc {
 };
 struct GameLangDesc {
 	char letter;
+	char usecodeletter;
 	const char* name;
 };
 
@@ -46,12 +47,12 @@ static GameTypeDesc gametypes[] = {
 
 // Keep order the same as the GameLanguage enum!
 static GameLangDesc gamelangs[] = {
-	{ 0, "unknown" },
-	{ 'e', "English" },
-	{ 'f', "French" },
-	{ 'g', "German" },
-	{ 'e', "Spanish" },
-	{ 'j', "Japanese" },
+	{ 0, 0, "unknown" },
+	{ 'e', 'e', "English" },
+	{ 'f', 'e', "French" },
+	{ 'g', 'e', "German" },
+	{ 'e', 'e', "Spanish" },
+	{ 'e', 'j', "Japanese" },
 	{ 0, 0 }
 };
 
@@ -72,6 +73,24 @@ char GameInfo::getLanguageFileLetter() const
 		assert(l < (sizeof(gamelangs)/sizeof(gamelangs[0]))-1);
 
 		return gamelangs[l].letter;
+	}
+	case GAME_REMORSE:
+	case GAME_REGRET:
+		return 'e';
+	default:
+		return 0;
+	}
+}
+
+char GameInfo::getLanguageUsecodeLetter() const
+{
+	switch (type) {
+	case GAME_U8:
+	{
+		unsigned int l = static_cast<unsigned int>(language);
+		assert(l < (sizeof(gamelangs)/sizeof(gamelangs[0]))-1);
+
+		return gamelangs[l].usecodeletter;
 	}
 	case GAME_REMORSE:
 	case GAME_REGRET:

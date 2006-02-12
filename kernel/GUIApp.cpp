@@ -493,7 +493,7 @@ void GUIApp::startupGame()
 	settingman->get("ttf", ttfoverrides);
 
 	game->loadFiles();
-	gamedata->setupTTFOverrides();
+	gamedata->setupFontOverrides();
 
 	// Unset the console auto paint (can't have it from here on)
 	con.SetAutoPaint(0);

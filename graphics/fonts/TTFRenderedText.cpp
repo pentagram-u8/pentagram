@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2005 The Pentagram team
+Copyright (C) 2004-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -42,13 +42,13 @@ TTFRenderedText::~TTFRenderedText()
 
 void TTFRenderedText::draw(RenderSurface* surface, int x, int y)
 {
-	surface->Blit(texture, 0, 0, width, height, x, y-font->getBaseline(), font->isAntaliased());
+	surface->Blit(texture, 0, 0, width, height, x, y-font->getBaseline(), font->isAntialiased());
 }
 
 void TTFRenderedText::drawBlended(RenderSurface* surface, int x, int y,
 								  uint32 col)
 {
 	surface->FadedBlit(texture, 0, 0, width, height,
-					   x, y-font->getBaseline(), col, font->isAntaliased());
+					   x, y-font->getBaseline(), col, font->isAntialiased());
 }
 

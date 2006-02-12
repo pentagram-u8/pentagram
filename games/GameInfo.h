@@ -53,6 +53,7 @@ struct GameInfo {
 	uint8 md5[16];
 
 	char getLanguageFileLetter() const;
+	char getLanguageUsecodeLetter() const;
 	std::string getLanguage() const;
 	std::string getGameTitle() const;
 

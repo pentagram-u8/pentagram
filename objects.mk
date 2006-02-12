@@ -110,6 +110,8 @@ FONTS = \
 	graphics/fonts/Font.o \
 	graphics/fonts/FontManager.o \
 	graphics/fonts/FontShapeArchive.o \
+	graphics/fonts/JPFont.o \
+	graphics/fonts/JPRenderedText.o \
 	graphics/fonts/RenderedText.o \
 	graphics/fonts/ShapeFont.o \
 	graphics/fonts/ShapeRenderedText.o \
@@ -264,14 +266,15 @@ TIMIDITY = \
 DATA_FILES = \
 	data/fixedfont.ini \
 	data/fixedfont.tga \
+	data/u8.ini \
 	data/u8armour.ini \
-	data/u8bindings.ini \
+	data/u8weapons.ini \
+	data/u8monsters.ini \
 	data/u8french.ini \
 	data/u8german.ini \
-	data/u8.ini \
-	data/u8monsters.ini \
+	data/u8japanese.ini \
 	data/u8spanish.ini \
-	data/u8weapons.ini \
+	data/u8bindings.ini \
 	data/VeraBd.ttf \
 	data/Vera.ttf \
 	data/mouse.tga

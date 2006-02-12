@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2005 The Pentagram team
+Copyright (C) 2005-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -17,6 +17,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
 #include "pent_include.h"
+
+#include "encoding.h"
+
+namespace Pentagram {
+
+// U8's encoding to unicode
 
 uint16 encoding[256] = {
 	0x0000,0x0001,0x0002,0x0003, 0x0004,0x0005,0x0006,0x0007, //0x00
@@ -54,6 +60,7 @@ uint16 encoding[256] = {
 	0x00B0,0x00A8,0x00B7,0x00B9, 0x00B3,0x00B2,0x25A0,0x00A0
 };
 
+// first 256 unicode code points to U8's encoding
 
 uint8 reverse_encoding[256] = {
 	0x00,0x01,0x02,0x03, 0x04,0x05,0x06,0x07,
@@ -90,3 +97,52 @@ uint8 reverse_encoding[256] = {
 	0xD0,0xA4,0x95,0xA2, 0x93,0xE4,0x94,0xF6, //0xF0
 	0x9B,0x97,0xA3,0x96, 0x81,0xEC,0xE7,0x98
 };
+
+uint16 shiftjis_to_ultima8(uint16 sjis)
+{
+	// Step 1: extract two bytes
+
+	uint8 s1 = sjis & 0xFF;
+	uint8 s2 = sjis >> 8;
+
+	// Step 2: handle low characters
+
+	if (s1 < 0x80) return s1;
+
+
+	// Step 3: ignore everything past the level 1 kanji from JIS X 0208
+
+	if (s1 > 0x98) return 0;
+
+	// Step 4: decode Shift_JIS to JIS X 0208 codepoints
+	// jr is the JIS row, jc the JIS column
+	// NB: This is not a full Shift_JIS decoder. It only decodes the
+	// first 79 JIS rows.
+
+	uint8 jr = 2*(s1 - 112) - 1;
+	uint8 jc;
+	if (s2 > 157) {
+		jc = s2 - 126;
+		jr++;
+	} else {
+		jc = s2 - 31 - (s2 >> 7);
+	}
+
+	// Step 5: map JIS rows into U8's font encoding
+
+	if (jr == 33) {
+		return (257-34 + jc); // symbols
+	} else if (jr == 35) {
+		return (365-48 + jc); // latin
+	} else if (jr == 36) {
+		return (444-33 + jc); // hiragana
+	} else if (jr == 37) {
+		return (538-33 + jc); // katakana
+	} else if (jr >= 48 && jr <= 79) {
+		return (632-33 + (jr - 48)*94 + jc); // kanji
+	} else {
+		return 0;
+	}
+}
+
+}

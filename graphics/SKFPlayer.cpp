@@ -131,13 +131,13 @@ void SKFPlayer::paint(RenderSurface* surf, int /*lerp*/)
 	if (!fadelevel) {
 		surf->Blit(tex, 0, 0, width, height, 0, 0);
 		if (subs)
-			subs->draw(surf, 80, subtitley);
+			subs->draw(surf, 60, subtitley);
 	} else {
 		uint32 fade = TEX32_PACK_RGBA(fadecolour,fadecolour,fadecolour,
 									  (fadelevel*255)/FADESTEPS);
 		surf->FadedBlit(tex, 0, 0, width, height, 0, 0, fade);
 		if (subs)
-			subs->drawBlended(surf, 80, subtitley, fade);
+			subs->drawBlended(surf, 60, subtitley, fade);
 	}
 }
 
@@ -248,7 +248,7 @@ void SKFPlayer::run()
 				delete subs;
 				subtitley = textbuf[4] + (textbuf[5]<<8);
 				unsigned int remaining;
-				subs = redfont->renderText(subtitle, remaining, 160, 0,
+				subs = redfont->renderText(subtitle, remaining, 200, 0,
 										   Pentagram::Font::TEXT_CENTER);
 			}
 			delete textbuf;
