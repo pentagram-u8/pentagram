@@ -235,9 +235,9 @@
 			<header>Supported games and versions</header>
 			<body>
 				<para>
-					At the moment we only support the English version of Ultima 8 regardless of the
-					game version. The German, French and Spanish versions will probably also work.
-					The Japanese version will probably not work.
+					At the moment we only support the English versions of Ultima 8, both pre-patch
+					and post-patch. The German, French and Spanish versions should also work, but are
+					less well-tested. The Japanese version has a chance of working, but has hardly been tested at all.
 					The games we don't support are defined in the <extref doc="faq" target="tgwds_tgyds"/>.
 				</para>
 			</body>
