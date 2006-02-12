@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004 The Pentagram Team
+ *  Copyright (C) 2003-2006 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -287,6 +287,16 @@ void TypeFlags::loadMonsterInfo()
 			mi->vanish = (val != 0);
 		else
 			mi->vanish = false;
+
+		if (config->get(k + "/ranged", val))
+			mi->ranged = (val != 0);
+		else
+			mi->ranged = false;
+
+		if (config->get(k + "/shifter", val))
+			mi->shifter = (val != 0);
+		else
+			mi->shifter = false;
 
 		if (config->get(k + "/explode", val))
 			mi->explode = val;

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -33,6 +33,8 @@ struct MonsterInfo {
 	uint16 defense_type;
 	bool resurrection; // auto-resurrection after being killed
 	bool vanish; // body disappears after being killed
+	bool ranged; // ranged attack
+	bool shifter; // shapeshifter
 	uint32 explode; // shape to hurl around after being killed (or 0)
 
 	std::vector<TreasureInfo> treasure;

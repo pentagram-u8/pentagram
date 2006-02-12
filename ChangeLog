@@ -1,4 +1,8 @@
 2006-02-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* data/u8monsters.ini, world/actors/MonsterInfo.h:
+	  add booleans for ranged attacks, shapeshifting
+
+2006-02-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/ReadableGump.*: handle Japanese plaques/graves
 
 2006-02-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
