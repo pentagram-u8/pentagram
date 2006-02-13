@@ -1,3 +1,9 @@
+2006-02-12  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* kernel/GUIApp.*: setMouseCoords function to allow other methods of
+	  moving the cursor
+	* kernel/Joystick.*: JoystickCursorProcess to move the cursor using
+	  a joystick
+
 2006-02-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* data/u8monsters.ini, world/actors/MonsterInfo.h:
 	  add booleans for ranged attacks, shapeshifting

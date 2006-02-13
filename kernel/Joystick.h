@@ -19,12 +19,39 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef JOYSTICK_H
 #define JOYSTICK_H
 
+#include "Process.h"
+
 /*
    For now, we are limiting to one joystick, 16 buttons,
-   and we are ignoring anything other than buttons (hats, axes, and balls)
+   and we are ignoring anything other than buttons and axes (hats and balls)
 */
+
+enum Joystick {
+	JOY1 = 0,
+	JOY_LAST
+};
 
 void InitJoystick();
 void ShutdownJoystick();
+
+class JoystickCursorProcess : public Process {
+public:
+	explicit JoystickCursorProcess(Joystick js_, int x_axis_, int y_axis_);
+	virtual ~JoystickCursorProcess();
+
+	ENABLE_RUNTIME_CLASSTYPE();
+
+	virtual bool run(const uint32 framenum);
+
+	bool loadData(IDataSource* ids, uint32 version);
+protected:
+	virtual void saveData(ODataSource* ods);
+
+	Joystick js;
+	int x_axis, y_axis;
+	int ticks;
+	int accel;
+	static JoystickCursorProcess * cursor_process;
+};
 
 #endif

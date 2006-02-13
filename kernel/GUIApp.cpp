@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MemoryManager.h"
 
 #include "HIDManager.h"
+#include "Joystick.h"
 
 #include "RenderSurface.h"
 #include "Texture.h"
@@ -1075,6 +1076,80 @@ int GUIApp::getMouseFrame()
 
 }
 
+void GUIApp::setMouseCoords(int mx, int my)
+{
+	Pentagram::Rect dims;
+	screen->GetSurfaceDims(dims);
+
+	if (mx < dims.x)
+		mx = dims.x;
+	else if (mx > dims.w)
+		mx = dims.w;
+
+	if (my < dims.y)
+		my = dims.y;
+	else if (my > dims.h)
+		my = dims.h;
+
+	mouseX = mx; mouseY = my;
+	Gump * gump = desktopGump->OnMouseMotion(mx, my);
+	if (gump && mouseOverGump != gump->getObjId())
+	{
+		Gump * oldGump = getGump(mouseOverGump);
+		std::list<Gump*> oldgumplist;
+		std::list<Gump*> newgumplist;
+
+		// create lists of parents of old and new 'mouseover' gumps
+		if (oldGump) {
+			while (oldGump) {
+				oldgumplist.push_front(oldGump);
+				oldGump = oldGump->GetParent();
+			}
+		}
+		Gump* newGump = gump;
+		while (newGump) {
+			newgumplist.push_front(newGump);
+			newGump = newGump->GetParent();
+		}
+
+		std::list<Gump*>::iterator olditer = oldgumplist.begin();
+		std::list<Gump*>::iterator newiter = newgumplist.begin();
+
+		// strip common prefix from lists
+		while (olditer != oldgumplist.end() &&
+			   newiter != newgumplist.end() &&
+			   *olditer == *newiter)
+		{
+			++olditer; ++newiter;
+		}
+
+		// send events to remaining gumps
+		for (; olditer != oldgumplist.end(); ++olditer)
+			(*olditer)->OnMouseLeft();
+
+		mouseOverGump = gump->getObjId();
+
+		for (; newiter != newgumplist.end(); ++newiter)
+			(*newiter)->OnMouseOver();
+	}
+
+	if (dragging == DRAG_NOT) {
+		if (mouseButton[BUTTON_LEFT].state & MBS_DOWN) {
+			int startx = mouseButton[BUTTON_LEFT].downX;
+			int starty = mouseButton[BUTTON_LEFT].downY;
+			if (abs(startx - mx) > 2 ||
+				abs(starty - my) > 2)
+			{
+				startDragging(startx, starty);
+			}
+		}
+	}
+
+	if (dragging == DRAG_OK || dragging == DRAG_TEMPFAIL) {
+		moveDragging(mx, my);
+	}
+}
+
 void GUIApp::setMouseCursor(MouseCursor cursor)
 {
 	cursors.pop();
@@ -1449,63 +1524,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 	{
 		int mx = event.button.x;
 		int my = event.button.y;
-		mouseX = mx; mouseY = my;
-		Gump * gump = desktopGump->OnMouseMotion(mx, my);
-		if (gump && mouseOverGump != gump->getObjId())
-		{
-			Gump * oldGump = getGump(mouseOverGump);
-			std::list<Gump*> oldgumplist;
-			std::list<Gump*> newgumplist;
-
-			// create lists of parents of old and new 'mouseover' gumps
-			if (oldGump) {
-				while (oldGump) {
-					oldgumplist.push_front(oldGump);
-					oldGump = oldGump->GetParent();
-				}
-			}
-			Gump* newGump = gump;
-			while (newGump) {
-				newgumplist.push_front(newGump);
-				newGump = newGump->GetParent();
-			}
-
-			std::list<Gump*>::iterator olditer = oldgumplist.begin();
-			std::list<Gump*>::iterator newiter = newgumplist.begin();
-
-			// strip common prefix from lists
-			while (olditer != oldgumplist.end() &&
-				   newiter != newgumplist.end() &&
-				   *olditer == *newiter)
-			{
-				++olditer; ++newiter;
-			}
-
-			// send events to remaining gumps
-			for (; olditer != oldgumplist.end(); ++olditer)
-				(*olditer)->OnMouseLeft();
-
-			mouseOverGump = gump->getObjId();
-
-			for (; newiter != newgumplist.end(); ++newiter)
-				(*newiter)->OnMouseOver();
-		}
-
-		if (dragging == DRAG_NOT) {
-			if (mouseButton[BUTTON_LEFT].state & MBS_DOWN) {
-				int startx = mouseButton[BUTTON_LEFT].downX;
-				int starty = mouseButton[BUTTON_LEFT].downY;
-				if (abs(startx - mx) > 2 ||
-					abs(starty - my) > 2)
-				{
-					startDragging(startx, starty);
-				}
-			}
-		}
-
-		if (dragging == DRAG_OK || dragging == DRAG_TEMPFAIL) {
-			moveDragging(mx, my);
-		}
+		setMouseCoords(mx, my);
 	}
 	break;
 
@@ -1962,6 +1981,7 @@ bool GUIApp::newGame()
 
 	if (audiomixer) audiomixer->createProcesses();
 
+	kernel->addProcess(new JoystickCursorProcess(JOY1, 0, 1));
 
 //	av->teleport(40, 16240, 15240, 64); // central Tenebrae
 //	av->teleport(3, 11391, 1727, 64); // docks, near gate

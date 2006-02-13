@@ -19,12 +19,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 #include "Joystick.h"
 
+#include "SDL_timer.h"
 #include "SDL_events.h"
-
-enum Joystick {
-	JOY1 = 0,
-	JOY_LAST
-};
+#include "GUIApp.h"
 
 static SDL_Joystick * joy[JOY_LAST] = {0};
 
@@ -80,4 +77,89 @@ void ShutdownJoystick()
 		}
 		joy[i] = 0;
 	}
+}
+
+DEFINE_RUNTIME_CLASSTYPE_CODE(JoystickCursorProcess,Process);
+
+JoystickCursorProcess * JoystickCursorProcess::cursor_process = 0;
+
+JoystickCursorProcess::JoystickCursorProcess(Joystick js_, int x_axis_, int y_axis_)
+	: Process(), js(js_), x_axis(x_axis_), y_axis(y_axis_), ticks(0), accel(0)
+{
+	cursor_process = this;
+	flags |= PROC_RUNPAUSED;
+	type = 1;
+
+	if(joy[js] && js < JOY_LAST)
+	{
+		int axes = SDL_JoystickNumAxes(joy[js]);
+		if (x_axis >= axes && y_axis >= axes)
+		{
+			perr << "Failed to start JoystickCursorProcess: illegal axis for x (" << x_axis << ") or y (" << y_axis << ")" << std::endl;
+			terminate();
+		}
+	}
+	else
+	{
+		terminate();
+	}
+
+}
+
+JoystickCursorProcess::~JoystickCursorProcess()
+{
+	cursor_process = 0;
+}
+
+#define AXIS_TOLERANCE 1000
+
+//! CONSTANTS - and a lot of guess work
+bool JoystickCursorProcess::run(const uint32 /*framenum*/)
+{
+	int dx = 0, dy = 0;
+	int now = SDL_GetTicks();
+
+	if(joy[js] && ticks)
+	{
+		int tx = now - ticks;
+		int r = 350 - accel * 30;
+		sint16 jx = SDL_JoystickGetAxis(joy[js], x_axis);
+		sint16 jy = SDL_JoystickGetAxis(joy[js], y_axis);
+		if (jx > AXIS_TOLERANCE || jx < -AXIS_TOLERANCE)
+			dx = ((jx / 1000) * tx) / r;
+		if (jy > AXIS_TOLERANCE || jy < -AXIS_TOLERANCE)
+			dy = ((jy / 1000) * tx) / r;
+	}
+
+	ticks = now;
+
+	if (dx || dy)
+	{
+		int mx, my;
+		GUIApp * app = GUIApp::get_instance();
+		app->getMouseCoords(mx, my);
+		mx += dx;
+		my += dy;
+		app->setMouseCoords(mx, my);
+		++accel;
+		if (accel > 10)
+			accel = 10;
+	}
+	else
+	{
+		accel = 0;
+	}
+
+	return false;
+}
+
+bool JoystickCursorProcess::loadData(IDataSource* ids, uint32 version)
+{
+	// saves no status
+	return true;
+}
+
+void JoystickCursorProcess::saveData(ODataSource* ods)
+{
+	// saves no status
 }

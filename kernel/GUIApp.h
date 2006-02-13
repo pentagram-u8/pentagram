@@ -145,6 +145,9 @@ public:
 	//! get current mouse cursor location
 	void getMouseCoords(int& mx, int& my) { mx = mouseX; my = mouseY; }
 
+	//! set current mouse cursor location
+	void setMouseCoords(int mx, int my);
+
 	bool isMouseDown(MouseButton button);
 
 	enum MouseCursor {
