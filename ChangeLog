@@ -1,3 +1,6 @@
+2006-02-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/fonts/*Font.*: temporary fix for japanese crash
+
 2006-02-12  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* kernel/GUIApp.*: setMouseCoords function to allow other methods of
 	  moving the cursor

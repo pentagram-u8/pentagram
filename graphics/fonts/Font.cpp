@@ -205,6 +205,7 @@ std::list<PositionedText> Font::typesetText(const std::string& text,
 					i = nextword;
 				} else {
 					// word is longer than the line; have to break in mid-word
+					// FIXME: broken with Shift-JIS!
 					i = nextword;
 					newline.clear();
 					do {
