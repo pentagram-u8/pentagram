@@ -388,6 +388,8 @@ void GUIApp::startup()
 							 ProcessLoader<InverterProcess>::load);
 	kernel->addProcessLoader("ActorBarkNotifyProcess",
 							 ProcessLoader<ActorBarkNotifyProcess>::load);
+	kernel->addProcessLoader("JoystickCursorProcess",
+							 ProcessLoader<JoystickCursorProcess>::load);
 
 	objectmanager = new ObjectManager();
 
@@ -1905,6 +1907,8 @@ void GUIApp::resetEngine()
 	while (!cursors.empty()) cursors.pop();
 	pushMouseCursor();
 
+	kernel->addProcess(new JoystickCursorProcess(JOY1, 0, 1));
+
 	timeOffset = -(sint32)Kernel::get_instance()->getFrameNum();
 	inversion = 0;
 	save_count = 0;
@@ -1980,8 +1984,6 @@ bool GUIApp::newGame()
 	kernel->addProcess(new SchedulerProcess());
 
 	if (audiomixer) audiomixer->createProcesses();
-
-	kernel->addProcess(new JoystickCursorProcess(JOY1, 0, 1));
 
 //	av->teleport(40, 16240, 15240, 64); // central Tenebrae
 //	av->teleport(3, 11391, 1727, 64); // docks, near gate

@@ -36,7 +36,8 @@ void ShutdownJoystick();
 
 class JoystickCursorProcess : public Process {
 public:
-	explicit JoystickCursorProcess(Joystick js_, int x_axis_, int y_axis_);
+	JoystickCursorProcess();
+	JoystickCursorProcess(Joystick js_, int x_axis_, int y_axis_);
 	virtual ~JoystickCursorProcess();
 
 	ENABLE_RUNTIME_CLASSTYPE();
@@ -51,7 +52,6 @@ protected:
 	int x_axis, y_axis;
 	int ticks;
 	int accel;
-	static JoystickCursorProcess * cursor_process;
 };
 
 #endif

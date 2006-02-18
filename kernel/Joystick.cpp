@@ -81,12 +81,14 @@ void ShutdownJoystick()
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(JoystickCursorProcess,Process);
 
-JoystickCursorProcess * JoystickCursorProcess::cursor_process = 0;
+JoystickCursorProcess::JoystickCursorProcess()
+	: Process(), js(JOY1), x_axis(0), y_axis(1), ticks(0), accel(0)
+{
+}
 
 JoystickCursorProcess::JoystickCursorProcess(Joystick js_, int x_axis_, int y_axis_)
 	: Process(), js(js_), x_axis(x_axis_), y_axis(y_axis_), ticks(0), accel(0)
 {
-	cursor_process = this;
 	flags |= PROC_RUNPAUSED;
 	type = 1;
 
@@ -108,7 +110,6 @@ JoystickCursorProcess::JoystickCursorProcess(Joystick js_, int x_axis_, int y_ax
 
 JoystickCursorProcess::~JoystickCursorProcess()
 {
-	cursor_process = 0;
 }
 
 #define AXIS_TOLERANCE 1000
@@ -155,11 +156,14 @@ bool JoystickCursorProcess::run(const uint32 /*framenum*/)
 
 bool JoystickCursorProcess::loadData(IDataSource* ids, uint32 version)
 {
-	// saves no status
+	if (!Process::loadData(ids, version)) return false;
+
+	terminateDeferred(); // Don't allow this process to continue
 	return true;
 }
 
 void JoystickCursorProcess::saveData(ODataSource* ods)
 {
+	Process::saveData(ods);
 	// saves no status
 }

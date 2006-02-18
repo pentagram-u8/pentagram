@@ -1,3 +1,7 @@
+2006-02-18  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* kernel/GUIApp.cpp, kernel/Joystick.*: load JoystickCursorProcess
+	  properly
+
 2006-02-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/fonts/*Font.*: temporary fix for japanese crash
 
