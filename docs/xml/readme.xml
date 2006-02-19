@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE readme SYSTEM "docs.dtd">
-<readme title="Pentagram" changed="22 May 2005 (GMT)">	
+<readme title="Pentagram" changed="19 February 2006 (GMT)">	
 	<section title="Building CVS">
 		<sub name="dependencies">
 			<header>Build dependencies</header>

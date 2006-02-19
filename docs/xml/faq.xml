@@ -1,74 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE faqs SYSTEM "docs.dtd">
-<faqs title="Pentagram" changed="22 May 2005 (GMT)">
+<faqs title="Pentagram" changed="19 February 2006 (GMT)">
 	<section title="Introduction">
 		<sub name="pent_is">
-			<header>What is <Pent/>?</header>
-			<body><para>
-				<Pent/> is not Exult. Any similarities between 
-				<Pent/> and Exult are purely coincidental.
-			</para></body>
-		</sub>
-		<sub name="exult_u8">
-			<header>Is it Exult for Ultima 8?</header>
-			<body><para>
-				Of course not. As stated in <ref target="pent_is"/> 
-				"<Pent/> is not Exult". Anyway, what sort of fool 
-				would attempt such a thing anyway.
-			</para></body>
-		</sub>
-		<sub name="when_playable">
-			<header>When will <Pent/> be playable?</header>
-			<body><para>
-				Define 'playable'
-			</para></body>
-		</sub>
-		<sub name="support_crusader">
-			<header>Does <Pent/> support Crusader? </header>
-			<body><para>
-				Crusader? What's that?
-			</para></body>
-		</sub>
-		<sub name="multiplayer">
-			<header>Will <Pent/> be Multiplayer/Online?</header>
-			<body><para>
-				HELL NO!
-			</para></body>
-		</sub>
-		<sub name="tgwds_tgyds">
-			<header>What are TGWDS or TGYDS?</header>
-			<body><para>
-				The Games We/You Don't Support.
-			</para></body>
-		</sub>
-		<sub name="really_tgwds">
-			<header>But what _are_ TGWDS/TGYDS?</header>
-			<body><para>
-				You don't need to know what they are, since we 
-				don't support them. QED.
-			</para></body>
-		</sub>
-		<sub name="lost_vale">
-			<header>Will we finish The Lost Vale?</header>
-			<body><para>
-				See the answer to <ref target="multiplayer"/>.
-			</para></body>
-		</sub>
-		<sub name="feature_x">
-			<header>Why doesn't feature X work properly?</header>
-			<body><para>
-				We prefer playing games to be a challenge.
-			</para></body>
-		</sub>
-		<sub name="feature_y">
-			<header>Why isn't feature Y implemented?</header>
-			<body><para>
-				It's better this way. Trust us.
-			</para></body>
-		</sub>
-	</section>
-	<section title="Introduction Part II">
-		<sub name="pent_is_2">
 			<header>What is <Pent/>?</header>
 			<body><para>
 				<Pent/> is a game engine for running Ultima 8 on modern 
@@ -83,10 +17,9 @@
 		<sub name="name_origin">
 			<header>Why is it called <Pent/> - are you satanists or something?</header>
 			<body><para>
-				If you ever played Ultima 8 or actually bought the game 
-				when it came out, then you will have noticed the big 
-				pentagram on the game box and the intro. That is the sole 
-				reason for this name.
+				If you ever played Ultima 8 or bought the first release of the game,
+				then you will have noticed the big pentagram on the game box and the
+				intro. That is the sole reason for this name.
 			</para></body>
 		</sub>
 		<sub name="donations">
@@ -95,7 +28,7 @@
 				No, the <Pent/> team will not accept donations. For us there 
 				are greater legal matters involved, which none of us 
 				particularly want to explore. We do not want to risk the wrath 
-				of EA for directly profiting off Pentagram. If you want to donate 
+				of EA for directly profiting from <Pent/>. If you want to donate 
 				to anyone, donate to Sourceforge. We wouldn't be here if it 
 				weren't for them.
 			</para></body>
@@ -105,9 +38,9 @@
 			<body><para>
 				First of all, Origin has been owned by EA for a long time now and 
 				from recent developments it seems that Origin only exists now to 
-				maintain Ultima Online. Furthermore since we never managed to make 
+				maintain Ultima Online. Furthermore since we have never managed to make 
 				contact with EA or Origin while working on Exult we didn't even try 
-				to contact them this time. So, no, Origin or EA does not support 
+				to contact them this time. So, no, Origin and EA do not support 
 				<Pent/> and will most likely just ignore questions about us.
 			</para></body>
 		</sub>
@@ -116,16 +49,16 @@
 			<body><para>
 				No. All Ultimas are so different it wouldn't make sense to support 
 				them with the <Pent/> engine. However, for most Ultimas engines are 
-				being developed tailored exactly for each Ultima's need.
+				being developed similar to <Pent/>.
 			</para></body>
 		</sub>
 		<sub name="multiplayer">
 			<header>Will <Pent/> ever be multiplayer?</header>
 			<body><para>
-				There are no plans to ever make <Pent/> a multiplayer engine. And it 
+				There are no plans to ever make <Pent/> a multiplayer engine, and it 
 				really wouldn't make sense for Ultima 8 to be played by more than one 
 				person.<br/>
-				However a deathmatch scenario for the Crusader games would be fun (in 
+				However, a deathmatch scenario for the Crusader games would be fun (in 
 				Dominus' opinion at least) and once we support these two games, people 
 				are welcome to develop a multiplayer version.
 			</para></body>
@@ -158,7 +91,7 @@
 			<header>And what is that old snapshot supposed to be?</header>
 			<body><para>
 				For that you'll have to take a look at <Pent/>'s history.<br/> 
-				The project started out as a pet project by some of the Exult programers. 
+				The project started out as a pet project by some of the Exult programmers. 
 				We tried to figure out the various file formats and used a sub tree of the 
 				Exult source code space. For example we developed a map viewer, a shapes 
 				viewer (shapes are the graphic files of Ultima 8) and many other tools.<br/>
@@ -169,7 +102,7 @@
 				for a full game engine, we decided to start from scratch on <Pent/> itself.
 			</para><para>
 				Some of the tools in the old snapshot are not yet ported over to the actual 
-				Pentagram code and therefore users and programers might find it still useful. 
+				Pentagram code and therefore users and programmers might find it still useful. 
 				A listing of the tools follows.
 			</para><ul>
 				<li><strong>unpackshp</strong><br/>
@@ -187,7 +120,7 @@
 				</li>
 				<li><strong>u8extract</strong><br/>
 				Extracts the archives Ultima 8 used to store its files. Their file ending is 
-				.flx and are called flex files.
+				.flx and they are called flex files.
 				</li>
 				<li><strong>u8savextract</strong><br/>
 				Used to extract savegames. The initial game is also a savegame and to actually 
@@ -233,21 +166,21 @@
 		<sub name="u8_playable">
 			<header>Is Ultima 8 playable?</header>
 			<body><para>
-				Yes and no. Most of the plot works and we had a report of someone who managed to 
-				play through Ultima 8 already. But there are thousands of things not yet working 
-				at all or only partially.
+				Yes and no. Most of the plot works and several people have managed to 
+				play through Ultima 8 already. However, there are many things not yet
+				fully working.
 			</para></body>
 		</sub>
 		<sub name="u8_versions">
 			<header>Does <Pent/> work with all versions of Ultima 8?</header>
 			<body><para>
-				Ultima 8 was released in English, French, German and Spanish. As of now only the 
-				first three run in <Pent/> because the Spanish version had a slightly different 
-				graphics file format.
+				Ultima 8 was released in English, French, German, Spanish and Japanese.
+				All five should run in <Pent/>, but the non-English versions,
+				especially the Japanese version, need much more testing.
 			</para><para>
-				On a side note, we heard that the Spanish version was not actually finishable. At 
+				On a side note, we heard that the Spanish version might not have been actually finishable. At 
 				some point in the game you are supposed to get the tear of seas from Devon but the 
-				conversation option is not there.
+				conversation option might not be there.
 			</para></body>
 		</sub>
 		<sub name="lost_vale2">
@@ -270,8 +203,8 @@
 		<sub name="save_compat">
 			<header>Do <Pent/> savegames work on all Operating Systems?</header>
 			<body><para>
-				<Pent/> savegames are compatible on all supported Operating Systems. For 
-				example a game saved on Mac OSX works on Windows XP as well.
+				<Pent/> savegames are compatible between all supported Operating Systems. For 
+				example a game saved on Mac OS X works on Windows XP as well.
 			</para></body>
 		</sub>
 		<sub name="obtain_u8">
@@ -288,6 +221,9 @@
 				You also might want to look for the
 				Ultima Collection, which contains all
 				the previous Ultima games as well.
+				It is also typically easier to find
+				than Ultima 8 because it was released
+				much more recently.
 			</para></body>
 		</sub>
 		<sub name="filthy_pirate">
@@ -346,6 +282,12 @@
 		</sub>
 	</section>
 	<section title="Changes to the FAQ">
+		<sub name="19022006">
+			<header>- 19 February 2006</header>
+			<body><para>
+				status updates
+			</para></body>
+		</sub>
 		<sub name="22052005">
 			<header>- 22 May 2005</header>
 			<body><para>
