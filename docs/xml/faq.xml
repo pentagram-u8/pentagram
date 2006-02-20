@@ -179,7 +179,7 @@
 				especially the Japanese version, need much more testing.
 			</para><para>
 				On a side note, we heard that the Spanish version might not have been actually finishable. At 
-				some point in the game you are supposed to get the tear of seas from Devon but the 
+				some point in the game you are supposed to get the Tear of Seas from Devon but the 
 				conversation option might not be there.
 			</para></body>
 		</sub>
@@ -201,10 +201,10 @@
 			</para></body>
 		</sub>
 		<sub name="save_compat">
-			<header>Do <Pent/> savegames work on all Operating Systems?</header>
+			<header>Do <Pent/> savegames work on all operating systems?</header>
 			<body><para>
-				<Pent/> savegames are compatible between all supported Operating Systems. For 
-				example a game saved on Mac OS X works on Windows XP as well.
+				<Pent/> savegames are compatible between all supported operating systems. For 
+				example a game saved on Mac&nbsp;OS&nbsp;X works on Windows&nbsp;XP as well.
 			</para></body>
 		</sub>
 		<sub name="obtain_u8">
