@@ -1,9 +1,0 @@
-aclocal.m4
-autom4te*.cache
-confstat*
-config.log
-config.status
-configure
-pentagram
-llc
-cachegrind.out.*
