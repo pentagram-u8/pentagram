@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -58,7 +58,8 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(Actor,Container);
 Actor::Actor()
 	: strength(0), dexterity(0), intelligence(0),
 	  hitpoints(0), mana(0), alignment(0), enemyalignment(0),
-	  lastanim(Animation::walk), animframe(0), direction(0), actorflags(0)
+	  lastanim(Animation::walk), animframe(0), direction(0),
+	  fallstart(0), unk0C(0), actorflags(0)
 {
 
 }

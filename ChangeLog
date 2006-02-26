@@ -1,3 +1,6 @@
+2006-02-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/Actor.cpp: uninitialized variables
+
 2006-02-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* ALL: converted from CVS to subversion repository
 
