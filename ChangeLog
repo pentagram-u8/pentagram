@@ -1,3 +1,6 @@
+2006-02-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* audio/midi/ALSAMidiDriver.cpp: clear event structure before use
+
 2006-02-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* misc/pent_valgrind.h: more stub defines
 	* kernel/SegmentedPool.*: make valgrind aware of the SegmentedPool
