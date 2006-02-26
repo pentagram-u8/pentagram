@@ -1,4 +1,9 @@
 2006-02-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* configure.ac, misc/pent_valgrind.h: add --enable-valgrind switch
+	  to include valgrind/memcheck.h in pent_include.h.
+	* filesys/SavegameWriter.cpp: let valgrind check data before saving it
+
+2006-02-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Actor.cpp: uninitialized variables
 
 2006-02-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>

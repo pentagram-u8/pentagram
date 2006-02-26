@@ -75,6 +75,11 @@ bool SavegameWriter::writeFile(const char* name,
 	PentZip::zipFile zfile = static_cast<PentZip::zipFile>(zipfile);
 	perr << name << ": " << size << std::endl;
 
+	// Because zlib's deflate causes false positives in valgrind,
+	// check the data to be saved manually, so deflate can be
+	// suppressed safely.
+	VALGRIND_CHECK_READABLE(data, size);
+
 	if (PentZip::zipOpenNewFileInZip(zfile, name, 0, 0, 0, 0, 0, 0,
 									 Z_DEFLATED, Z_BEST_COMPRESSION) != ZIP_OK)
 		return false;

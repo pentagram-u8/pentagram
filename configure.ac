@@ -304,6 +304,24 @@ fi
 AC_MSG_RESULT($pent_debug)
 
 
+# extra valgrind memory debugging code
+AC_ARG_ENABLE(valgrind, [[  --enable-valgrind       Enable extra valgrind support]],,enable_valgrind=no)
+AC_CHECK_HEADER(valgrind/memcheck.h, HAVEVALGRIND=yes, HAVEVALGRIND=no)
+AC_MSG_CHECKING(for valgrind support)
+pent_valgrind=no
+if test x$enable_valgrind = xyes; then
+	if test x$HAVEVALGRIND = xyes; then
+		AC_MSG_RESULT(yes)
+		pent_valgrind=yes
+		AC_DEFINE(USE_VALGRIND, 1, [Enable Valgrind support])
+	else
+		AC_MSG_RESULT(no; valgrind header not found)
+	fi
+else
+	AC_MSG_RESULT(no)
+fi
+
+
 # fmopl midi
 AC_ARG_ENABLE(fmopl_midi, [[  --disable-fmopl-midi    Disable built-in FMOPL midi]],,enable_fmopl_midi=yes)
 AC_MSG_CHECKING(if we want to use FMOPL midi)
@@ -488,6 +506,7 @@ echo "Configure results:"
 echo ""
 echo "Built-in features:"
 echo "Debugging:			$pent_debug"
+echo "Extra valgrind support:		$pent_valgrind"
 echo "FMOPL midi:			$pent_fmopl"
 echo "Timidity midi:			$pent_timidity"
 echo "HQ2x scaler:			$pent_hq2x"

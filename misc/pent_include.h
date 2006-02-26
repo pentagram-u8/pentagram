@@ -1,7 +1,7 @@
 /*
  *  pent_include.h - Basic Pentagram types, and precompiled header
  *
- *  Copyright (C) 2002, 2003  The Pentagram Team
+ *  Copyright (C) 2002-2006  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -120,6 +120,11 @@ extern const std::string c_empty_string;
 // May not work on all compilers or runtimes as expected
 //
 #define CANT_HAPPEN_MSG(msg) do { assert(msg && false); } while(0)
+
+//
+// Wrapper around valgrind functions.
+#include "pent_valgrind.h"
+
 
 // Memory Management through Allocators
 typedef void * (*allocFunc)(size_t size);
