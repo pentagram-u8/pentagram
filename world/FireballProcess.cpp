@@ -108,7 +108,7 @@ bool FireballProcess::run(uint32 /*framenum*/)
 	}
 
 	// limit speed
-	int speed = static_cast<int>(sqrt(xspeed*xspeed + yspeed*yspeed));
+	int speed = static_cast<int>(sqrt(static_cast<float>(xspeed*xspeed + yspeed*yspeed)));
 	if (speed > 32) {
 		xspeed = (xspeed * 32) / speed;
 		yspeed = (yspeed * 32) / speed;

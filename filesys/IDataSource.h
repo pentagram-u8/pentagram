@@ -269,7 +269,7 @@ class IFileDataSource: public IDataSource
 
 	virtual uint32 getPos() { return in->tellg(); }
 
-	virtual bool eof() { in->get(); bool ret = in->eof(); if (!ret) in->unget(); return ret; }
+	virtual bool eof() { return in->peek() == std::char_traits<char>::eof(); }
 
 	virtual std::ifstream *GetRawIfstream() {
 		return in; 
