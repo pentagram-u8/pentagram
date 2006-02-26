@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -30,6 +30,23 @@ DEFINE_RUNTIME_CLASSTYPE_CODE(SegmentedPool,Pool);
 
 #define OFFSET_ALIGN(X) ( (X + sizeof(uintptr) - 1) & ~(sizeof(uintptr) - 1) )
 
+#ifdef USE_VALGRIND
+const int redzoneSize = 8;
+#else
+const int redzoneSize = 0;
+#endif
+
+struct SegmentedPoolNode
+{
+	SegmentedPool * pool;
+	SegmentedPoolNode * nextFree;
+#ifdef USE_VALGRIND
+	int valgrind_handle;
+#endif
+	size_t size;
+};
+
+
 // We pad both the PoolNode and the memory to align it.
 
 SegmentedPool::SegmentedPool(size_t nodeCapacity_, uint32 nodes_) 
@@ -38,14 +55,19 @@ SegmentedPool::SegmentedPool(size_t nodeCapacity_, uint32 nodes_)
 	uint32 i;
 
 	// Give it its real capacity.
-	nodeCapacity = OFFSET_ALIGN(nodeCapacity_);
+	// One redzone is added after the memory block.
+	nodeCapacity = OFFSET_ALIGN(nodeCapacity_ + redzoneSize);
 	nodes = nodes_;
 	
-	// Node offesets are aligned to the next uintptr offset after the real size
-	nodeOffset = OFFSET_ALIGN(sizeof(SegmentedPoolNode)) + nodeCapacity;
+	// Node offsets are aligned to the next uintptr offset after the real size.
+	// Another redzone is added between the node and the memory block.
+	nodeOffset = OFFSET_ALIGN(sizeof(SegmentedPoolNode) + redzoneSize)
+		+ nodeCapacity;
 
 	startOfPool = new uint8[nodeOffset * nodes_];
 	endOfPool = startOfPool + (nodeOffset * nodes_);
+
+	VALGRIND_CREATE_MEMPOOL(startOfPool, redzoneSize, 0);
 
 	firstFree = reinterpret_cast<SegmentedPoolNode*>(startOfPool);
 	firstFree->pool = this;
@@ -68,6 +90,8 @@ SegmentedPool::SegmentedPool(size_t nodeCapacity_, uint32 nodes_)
 SegmentedPool::~SegmentedPool()
 {
 	assert(isEmpty());
+
+	VALGRIND_DESTROY_MEMPOOL(startOfPool);
 
 	delete [] startOfPool;
 }
@@ -96,7 +120,16 @@ void * SegmentedPool::allocate(size_t size)
 	node->nextFree = 0;
 
 //	con.Printf("Allocating Node 0x%08X\n", node);
-	return (reinterpret_cast<uint8 *>(node) + OFFSET_ALIGN(sizeof(SegmentedPoolNode)) );
+	uint8* p = reinterpret_cast<uint8 *>(node) +
+		OFFSET_ALIGN(sizeof(SegmentedPoolNode) + redzoneSize);
+
+	VALGRIND_MEMPOOL_ALLOC(startOfPool, p, size);
+#ifdef USE_VALGRIND
+	node->valgrind_handle = VALGRIND_CREATE_BLOCK(p, size,
+												  "SegmentedPoolBlock");
+#endif
+
+	return p;
 }
 
 void SegmentedPool::deallocate(void * ptr)
@@ -108,6 +141,9 @@ void SegmentedPool::deallocate(void * ptr)
 		node = getPoolNode(ptr);
 		node->size = 0;
 		assert(node->pool == this);
+
+		VALGRIND_MEMPOOL_FREE(startOfPool, ptr);
+		VALGRIND_DISCARD(node->valgrind_handle);
 
 //	con.Printf("Free Node 0x%08X\n", node);
 		if (isFull())

@@ -1,4 +1,12 @@
 2006-02-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* misc/pent_valgrind.h: more stub defines
+	* kernel/SegmentedPool.*: make valgrind aware of the SegmentedPool
+
+2006-02-26  Ryan Nunn <colourles@users.sourceforge.net>
+	* world/FireballProcess.cpp : Resolving ambiguity with sqrt function
+	* filesys/IDataSource.h : Improving IFileDataSource::eof() method
+
+2006-02-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* configure.ac, misc/pent_valgrind.h: add --enable-valgrind switch
 	  to include valgrind/memcheck.h in pent_include.h.
 	* filesys/SavegameWriter.cpp: let valgrind check data before saving it

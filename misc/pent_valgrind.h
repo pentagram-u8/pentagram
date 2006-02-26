@@ -1,5 +1,5 @@
 /*
- *  pent_valgrind.h - Wrapper around valgrind.h
+ *  pent_valgrind.h - Wrapper around valgrind.h/memcheck.h
  *
  *  Copyright (C) 2006  The Pentagram Team
  *
@@ -33,6 +33,14 @@
 
 #define VALGRIND_CHECK_READABLE(_qzz_addr,_qzz_len)
 #define VALGRIND_CHECK_WRITABLE(_qzz_addr,_qzz_len)
+
+#define VALGRIND_CREATE_MEMPOOL(pool,rzB,is_zeroed)
+#define VALGRIND_DESTROY_MEMPOOL(pool)
+#define VALGRIND_MEMPOOL_ALLOC(pool,addr,size)
+#define VALGRIND_MEMPOOL_FREE(pool,addr)
+
+#define VALGRIND_CREATE_BLOCK(_qzz_addr,_qzz_len,_qzz_desc) 0
+#define VALGRIND_DISCARD(_wzz_blkindex)
 
 #endif
 

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,12 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 class SegmentedPool;
 
-struct SegmentedPoolNode
-{
-	SegmentedPool * pool;
-	SegmentedPoolNode * nextFree;
-	size_t size;
-};
+struct SegmentedPoolNode;
 
 /**
  * A pool with memory broken into even length segments.
