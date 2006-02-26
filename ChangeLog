@@ -1,3 +1,6 @@
+2006-02-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* ALL: converted from CVS to subversion repository
+
 2006-02-18  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* kernel/GUIApp.cpp, kernel/Joystick.*: load JoystickCursorProcess
 	  properly
