@@ -71,7 +71,7 @@ Texture * Texture::Create(IDataSource *ds, const char *filename)
 	if (filename) {
 		// Looks like it's a PNG
 		if (std::strstr(filename, ".png")) {
-			TRY_TYPE(TextureBitmap);
+			TRY_TYPE(TexturePNG);
 		}
 		// Looks like it's a BMP
 		if (std::strstr(filename, ".bmp")) {
