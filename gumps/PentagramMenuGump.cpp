@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2005  The Pentagram Team
+ *  Copyright (C) 2003-2006  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,6 +23,9 @@
 #include "GUIApp.h"
 #include "GameWidget.h"
 #include "SettingManager.h"
+#include "FileSystem.h"
+#include "IDataSource.h"
+#include "TexturePNG.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(PentagramMenuGump,ModalGump);
 
@@ -32,6 +35,10 @@ PentagramMenuGump::PentagramMenuGump(int X, int Y, int Width, int Height) :
 	gameScrollPos = 0;
 	gameScrollTarget = 0;
 	gameScrollLastDelta = 0;
+	titleImage = 0;
+	navbarImage = 0;
+	coversImage = 0;
+	flagsImage = 0;
 }
 
 PentagramMenuGump::~PentagramMenuGump()
@@ -65,25 +72,44 @@ void PentagramMenuGump::InitGump(Gump* newparent, bool take_focus)
 	}
 
 	gamecount = index;
+
+	IDataSource* ds = FileSystem::get_instance()->ReadFile("@data/title.png");
+	titleImage = Texture::Create(ds, "title.png");
+	delete ds;
+
+	ds = FileSystem::get_instance()->ReadFile("@data/navbar.png");
+	navbarImage = Texture::Create(ds, "navbar.png");
+	delete ds;
+
+	ds = FileSystem::get_instance()->ReadFile("@data/covers.png");
+	coversImage = Texture::Create(ds, "covers.png");
+	delete ds;
+
+	ds = FileSystem::get_instance()->ReadFile("@data/flags.png");
+	flagsImage = Texture::Create(ds, "flags.png");
+	delete ds;
 }
 
 void PentagramMenuGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 {
+	int w = dims.w, h = dims.h;
 #if 1
 	// CHECKME: fast enough?
-	for (unsigned int i = 0; i < 400; i+=4) {
-		unsigned int r = (140 * i)/400;
-		unsigned int gb = (21 * i)/400;
+	for (unsigned int i = 0; i < h; i+=4) {
+		unsigned int r = (140 * i)/h;
+		unsigned int gb = (21 * i)/h;
 		uint32 col = 0xFF000000 + (r << 16) + (gb << 8) + gb;
-		surf->Fill32(col, 0, i, 640, 4);
+		surf->Fill32(col, 0, i, w, 4);
 	}
 #else
-	surf->Fill32(0xFF440A0A, 0, 0, 640, 400);
+	surf->Fill32(0xFF440A0A, 0, 0, w, h);
 #endif
 
-	surf->Fill32(0xFFDCB95C, 18, 0, 90, 400);
+//	surf->Fill32(0xFFDCB95C, 18, 0, 90, 400);
+	surf->Blit(navbarImage, 0,0, navbarImage->width, navbarImage->height, 9,0);
 
-	surf->Fill32(0xFFC11515, 200, 6, 340, 36);
+//	surf->Fill32(0xFFC11515, 200, 6, 340, 36);
+	surf->Blit(titleImage, 0,0, titleImage->width, titleImage->height, 200, 6);
 }
 
 void PentagramMenuGump::PaintChildren(RenderSurface *surf, sint32 lerp_factor)
@@ -92,7 +118,7 @@ void PentagramMenuGump::PaintChildren(RenderSurface *surf, sint32 lerp_factor)
 	std::list<Gump*>::iterator it = children.begin();
 	std::list<Gump*>::iterator end = children.end();
 
-	Pentagram::Rect game_clip_rect(0, 45, 640, 342);
+	Pentagram::Rect game_clip_rect(0, 45, 640, dims.h - 58);
 	Pentagram::Rect cur_clip_rect;
 	surf->GetClippingRect(cur_clip_rect);
 

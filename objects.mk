@@ -278,4 +278,8 @@ DATA_FILES = \
 	data/u8bindings.ini \
 	data/VeraBd.ttf \
 	data/Vera.ttf \
-	data/mouse.tga
+	data/mouse.tga \
+	data/title.png \
+	data/navbar.png \
+	data/flags.png \
+	data/covers.png

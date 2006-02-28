@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2005  The Pentagram Team
+ *  Copyright (C) 2005-2006  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@
 
 #include "ModalGump.h"
 
+struct Texture;
 
 class PentagramMenuGump : public ModalGump
 {
@@ -56,6 +57,9 @@ public:
 	virtual void RenderSurfaceChanged();
 #endif
 
+	Texture* getCovers() const { return coversImage; }
+	Texture* getFlags() const { return flagsImage; }
+
 private:
 
 	int gameScrollPos;
@@ -63,6 +67,11 @@ private:
 	int gameScrollLastDelta;
 
 	int gamecount;
+
+	Texture* titleImage;
+	Texture* navbarImage;
+	Texture* coversImage;
+	Texture* flagsImage;
 
 };
 

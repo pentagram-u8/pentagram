@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2005  The Pentagram Team
+ *  Copyright (C) 2005-2006  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@
 #include "RenderSurface.h"
 #include "TextWidget.h"
 #include "ButtonWidget.h"
+#include "PentagramMenuGump.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(GameWidget,Gump);
 
@@ -65,19 +66,19 @@ void GameWidget::InitGump(Gump* newparent, bool take_focus)
 	w = new TextWidget(65, 50, path, false, 0, 350, 180);
 	w->InitGump(this, false);
 
-	w = new ButtonWidget(13, 85, "Play Game", false, 1, 0x80D000D0);
+	w = new ButtonWidget(13, 86, "Play Game", false, 1, 0x80D000D0);
 	w->SetIndex(static_cast<sint32>(GAME_PLAY));
 	w->InitGump(this, false);
 
-	w = new ButtonWidget(122, 85, "Load Savegame", false, 1, 0x80D000D0);
+	w = new ButtonWidget(122, 86, "Load Savegame", false, 1, 0x80D000D0);
 	w->SetIndex(static_cast<sint32>(GAME_LOAD));
 	w->InitGump(this, false);
 
-	w = new ButtonWidget(270, 85, "Settings", false, 1, 0x80D000D0);
+	w = new ButtonWidget(270, 86, "Settings", false, 1, 0x80D000D0);
 	w->SetIndex(static_cast<sint32>(GAME_SETTINGS));
 	w->InitGump(this, false);
 
-	w = new ButtonWidget(361, 85, "Remove", false, 1, 0x80D000D0);
+	w = new ButtonWidget(361, 86, "Remove", false, 1, 0x80D000D0);
 	w->SetIndex(static_cast<sint32>(GAME_REMOVE));
 	w->InitGump(this, false);
 }
@@ -121,6 +122,10 @@ void GameWidget::OnMouseLeft()
 
 void GameWidget::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 {
+	PentagramMenuGump* p = p_dynamic_cast<PentagramMenuGump*>(GetParent());
+	Texture* coversImage = p->getCovers();
+	Texture* flagsImage = p->getFlags();
+
 	// Note: we're not painting a background to make this widget transparent
 
 	// outer border
@@ -139,13 +144,16 @@ void GameWidget::PaintThis(RenderSurface* surf, sint32 lerp_factor)
 	surf->Fill32(0xFFFFFFFF,57,23,443-57,1);
 
 	// box graphics
-	surf->Fill32(0xFFAFAFFF,1,1,56,80);
+//	surf->Fill32(0xFFAFAFFF,1,1,56,80);
+	surf->Blit(coversImage, (info->type-1)*56,0, 56,80, 1,1); // HACK...
 
 	if (highlight)
 		surf->Fill32(0xFF30308F,58,1,443-57-2,22);
 
 	// flag
-	surf->Fill32(0xFFAFFFAF,417,4,22,16);
+//	surf->Fill32(0xFFAFFFAF,415,4,24,16);
+	surf->Blit(flagsImage, (info->language-1)*24,0, 24,16, 415,4); // HACK...
+
 
 #if 0
 	Pentagram::Font* font = FontManager::get_instance()->getTTFont(1);

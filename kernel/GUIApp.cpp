@@ -531,7 +531,10 @@ void GUIApp::startupPentagramMenu()
 	con.SetAutoPaint(0);
 	consoleGump->HideConsole();
 
-	Gump* menugump = new PentagramMenuGump(0,0,640,400);
+	Pentagram::Rect dims;
+	desktopGump->GetDims(dims);
+
+	Gump* menugump = new PentagramMenuGump(0,0,dims.w,dims.h);
 	menugump->InitGump(0, true);
 }
 
