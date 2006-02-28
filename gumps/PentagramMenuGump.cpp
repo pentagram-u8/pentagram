@@ -43,7 +43,10 @@ PentagramMenuGump::PentagramMenuGump(int X, int Y, int Width, int Height) :
 
 PentagramMenuGump::~PentagramMenuGump()
 {
-
+	delete titleImage;
+	delete navbarImage;
+	delete coversImage;
+	delete flagsImage;
 }
 
 void PentagramMenuGump::InitGump(Gump* newparent, bool take_focus)
@@ -95,7 +98,7 @@ void PentagramMenuGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
 	int w = dims.w, h = dims.h;
 #if 1
 	// CHECKME: fast enough?
-	for (unsigned int i = 0; i < h; i+=4) {
+	for (int i = 0; i < h; i+=4) {
 		unsigned int r = (140 * i)/h;
 		unsigned int gb = (21 * i)/h;
 		uint32 col = 0xFF000000 + (r << 16) + (gb << 8) + gb;
