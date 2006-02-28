@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2002  Ryan Nunn and The Pentagram Team
+ *  Copyright (C) 2002-2006  Ryan Nunn and The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #include "Texture.h"
 #include "TextureBitmap.h"
 #include "TextureTarga.h"
+#include "TexturePNG.h"
 
 #include <cstring>
 
@@ -60,13 +61,18 @@ else {										\
 }
 
 //
-// Create a texture from a Data Source (filename is use to help detection of type)
+// Create a texture from a Data Source
+// (filename is used to help detection of type)
 //
 Texture * Texture::Create(IDataSource *ds, const char *filename)
 {
 	Texture *tex;
 
 	if (filename) {
+		// Looks like it's a PNG
+		if (std::strstr(filename, ".png")) {
+			TRY_TYPE(TextureBitmap);
+		}
 		// Looks like it's a BMP
 		if (std::strstr(filename, ".bmp")) {
 			TRY_TYPE(TextureBitmap);
@@ -78,6 +84,7 @@ Texture * Texture::Create(IDataSource *ds, const char *filename)
 	}
 
 	// Now go through each type 1 by 1
+	TRY_TYPE(TexturePNG);
 	TRY_TYPE(TextureBitmap);
 	TRY_TYPE(TextureTarga);
 

@@ -81,6 +81,7 @@ GRAPHICS = \
 	graphics/Texture.o \
 	graphics/TextureTarga.o \
 	graphics/TextureBitmap.o \
+	graphics/TexturePNG.o \
 	graphics/Shape.o \
 	graphics/ShapeFrame.o \
 	graphics/SKFPlayer.o \

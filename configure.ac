@@ -238,6 +238,14 @@ SYS_LIBS="$SYS_LIBS -lz"
 PENT_CHECK_SDLTTF(:,AC_MSG_ERROR([*** SDL_ttf not found!]))
 GUI_LIBS="$GUI_LIBS $SDLTTF_LIBS"
 
+# --------
+# libpng
+# --------
+
+AC_CHECK_HEADER(png.h,,AC_MSG_ERROR([*** libpng not found!]))
+AC_CHECK_LIB(png,png_create_read_struct,,AC_MSG_ERROR([*** libpng not found!]))
+GUI_LIBS="$GUI_LIBS -lpng"
+
 # ------------------
 # Warning level
 # ------------------

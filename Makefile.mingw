@@ -37,7 +37,7 @@ CFLAGS=-O2
 CC=gcc
 
 LFLAGS=-mwindows
-LIBS=-lmingw32 -lwinmm -lz $(SDL_LIBS)
+LIBS=-lmingw32 -lwinmm -lz -lpng $(SDL_LIBS)
 
 include objects.mk
 

@@ -1,3 +1,7 @@
+2006-02-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/TexturePNG.*: PNG reading
+	* configure.ac, Makefile.mingw: check for and use libpng
+
 2006-02-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* audio/midi/ALSAMidiDriver.cpp: clear event structure before use
 
