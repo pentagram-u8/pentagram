@@ -1,6 +1,7 @@
 2006-03-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/GameMapGump.cpp: check weight/volume when dragging onto Avatar
 	* world/Item.cpp: don't make FAST_ONLY items disappear from containers
+	* world/actors/HealProcess.cpp: heal instead of harm when eating
 
 2006-02-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* data/*.png: art for the main menu

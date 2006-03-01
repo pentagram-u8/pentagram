@@ -92,7 +92,7 @@ void HealProcess::feedAvatar(uint16 food)
 	uint16 oldCounter = hungerCounter;
 	hungerCounter -= food;
 
-	uint16 hp = avatar->getHP() + (hungerCounter / 4) - (oldCounter / 4);
+	uint16 hp = avatar->getHP() - (hungerCounter / 4) + (oldCounter / 4);
 	if (hp > avatar->getMaxHP()) hp = avatar->getMaxHP();
 
 	avatar->setHP(hp);
