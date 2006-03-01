@@ -2,6 +2,7 @@
 	* gumps/GameMapGump.cpp: check weight/volume when dragging onto Avatar
 	* world/Item.cpp: don't make FAST_ONLY items disappear from containers
 	* world/actors/HealProcess.cpp: heal instead of harm when eating
+	* gumps/ContainerGump.cpp: don't let item combine with itself
 
 2006-02-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* data/*.png: art for the main menu
@@ -51,7 +52,7 @@
 	* data/u8monsters.ini, world/actors/MonsterInfo.h:
 	  add booleans for ranged attacks, shapeshifting
 	* kernel/Kernel.cpp: don't terminate processes that are TERM_DEFERRED
-	* world/actors/RessurectionProcess.cpp: go into combat mode after res.
+	* world/actors/ResurrectionProcess.cpp: go into combat mode after res.
 
 2006-02-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/ReadableGump.*: handle Japanese plaques/graves

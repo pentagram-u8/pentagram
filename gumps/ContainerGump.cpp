@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2005  The Pentagram Team
+ *  Copyright (C) 2003-2006  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -458,7 +458,8 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 		int family = item->getShapeInfo()->family;
 		// Note: can only combine SF_REAGENTS when frame is equal
 		// see U8's usecode FREE::2767
-		if (targetitem && targetitem->getShape() == item->getShape() &&
+		if (targetitem && targetitem->getObjId() != item->getObjId() &&
+			targetitem->getShape() == item->getShape() &&
 			(targetitem->getFrame() == item->getFrame() ||
 			 family == ShapeInfo::SF_QUANTITY))
 		{
