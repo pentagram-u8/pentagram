@@ -56,6 +56,7 @@ struct GameInfo {
 	char getLanguageUsecodeLetter() const;
 	std::string getLanguage() const;
 	std::string getGameTitle() const;
+	std::string getPrintableVersion() const;
 
 	std::string getPrintDetails() const;
 	std::string getPrintableMD5() const;

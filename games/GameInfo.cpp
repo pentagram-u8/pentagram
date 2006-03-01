@@ -116,6 +116,13 @@ std::string GameInfo::getGameTitle() const
 	return gametypes[t].longname;
 }
 
+std::string GameInfo::getPrintableVersion() const
+{
+	char buf[32];
+	sprintf(buf, "%d.%02d", version/100, version%100);
+	return buf;
+}
+
 std::string GameInfo::getPrintDetails() const
 {
 	std::string ret;
@@ -133,10 +140,7 @@ std::string GameInfo::getPrintDetails() const
 		// version, md5 don't make sense for the pentagram menu
 
 		ret += ", version ";
-
-		char buf[16];
-		sprintf(buf, "%d", version);
-		ret += buf;
+		ret += getPrintableVersion();
 
 		ret += ", md5 ";
 		ret += getPrintableMD5();

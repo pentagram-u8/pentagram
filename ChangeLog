@@ -1,6 +1,7 @@
 2006-02-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* data/*.png: art for the main menu
 	* gumps/PentagramMenuGump.*, gumps/widget/GameWidget.cpp: display art
+	* games/GameInfo.*, gumps/widget/GameWidget.cpp: display game version
 
 2006-02-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/TexturePNG.*: PNG reading

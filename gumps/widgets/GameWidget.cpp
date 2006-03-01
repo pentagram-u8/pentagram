@@ -66,6 +66,10 @@ void GameWidget::InitGump(Gump* newparent, bool take_focus)
 	w = new TextWidget(65, 50, path, false, 0, 350, 180);
 	w->InitGump(this, false);
 
+	std::string version = info->getPrintableVersion();
+	w = new TextWidget(360, 70, version, false, 2, 70, 0, Font::TEXT_RIGHT);
+	w->InitGump(this, false);
+
 	w = new ButtonWidget(13, 86, "Play Game", false, 1, 0x80D000D0);
 	w->SetIndex(static_cast<sint32>(GAME_PLAY));
 	w->InitGump(this, false);

@@ -1290,6 +1290,7 @@ void GUIApp::GraphicSysInit()
 
 	fontmanager->loadTTFont(0, "Vera.ttf", 18, 0xFFFFFF, 0);
 	fontmanager->loadTTFont(1, "VeraBd.ttf", 12, 0xFFFFFF, 0);
+	fontmanager->loadTTFont(2, "Vera.ttf", 8, 0xA0A0A0, 0);
 
 	paint();
 }
