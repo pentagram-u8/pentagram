@@ -1288,8 +1288,10 @@ void GUIApp::GraphicSysInit()
 	fontmanager = new FontManager(ttf_antialiasing);
 	palettemanager = new PaletteManager(new_screen);
 
+	// TODO: assign names to these fontnumbers somehow
 	fontmanager->loadTTFont(0, "Vera.ttf", 18, 0xFFFFFF, 0);
 	fontmanager->loadTTFont(1, "VeraBd.ttf", 12, 0xFFFFFF, 0);
+	// GameWidget's version number information:
 	fontmanager->loadTTFont(2, "Vera.ttf", 8, 0xA0A0A0, 0);
 
 	paint();
