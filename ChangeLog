@@ -1,3 +1,6 @@
+2006-03-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/GameMapGump.cpp: check weight/volume when dragging onto Avatar
+
 2006-02-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* data/*.png: art for the main menu
 	* gumps/PentagramMenuGump.*, gumps/widget/GameWidget.cpp: display art

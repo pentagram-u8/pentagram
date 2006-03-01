@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2005  The Pentagram Team
+ *  Copyright (C) 2003-2006  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -457,12 +457,18 @@ bool GameMapGump::DraggingItem(Item* item, int mx, int my)
 
 	// determine if item can be dropped here
 
-	if (!TraceCoordinates(mx, my, dragging_pos, dox, doy, item))
+	ObjId trace = TraceCoordinates(mx, my, dragging_pos, dox, doy, item);
+	if (!trace)
 		return false;
 
-	bool throwing = false;
-
 	MainActor* avatar = getMainActor();
+	if (trace == 1) { // dropping on self
+		ObjId bp = avatar->getEquip(7); // !! constant
+		Container* backpack = getContainer(bp);
+		return  backpack->CanAddItem(item, true);
+	}
+
+	bool throwing = false;
 	if (!avatar->canReach(item, 128, // CONSTANT!
 						  dragging_pos[0], dragging_pos[1], dragging_pos[2]))
 	{
