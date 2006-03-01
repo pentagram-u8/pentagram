@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2005 The Pentagram team
+Copyright (C) 2004-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -26,11 +26,17 @@ const char *features = ""
 #ifdef DEBUG
   "debug "
 #endif
+#ifdef USE_VALGRIND
+  "valgrind "
+#endif
 #ifdef USE_TIMIDITY_MIDI
   "Timidity "
 #endif
 #ifdef USE_FMOPL_MIDI
   "FMOPL "
+#endif
+#ifdef USE_FLUIDSYNTH_MIDI
+  "FluidSynth "
 #endif
 #ifdef USE_ALSA_MIDI
   "ALSA "
