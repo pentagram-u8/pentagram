@@ -1392,8 +1392,8 @@ void Item::leaveFastArea()
 	// CHECKME: what do we need to do exactly?
 	// currently,  destroy object
 
-	// Kill us if we are fast only
-	if (flags & FLG_FAST_ONLY) {
+	// Kill us if we are fast only, unless we're in a container
+	if ((flags & FLG_FAST_ONLY) && !getParent()) {
 		// destroy contents if container
 		Container* c = p_dynamic_cast<Container*>(this);
 		if (c) c->destroyContents();
