@@ -27,8 +27,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 DEFINE_RUNTIME_CLASSTYPE_CODE(JPFont,Pentagram::Font);
 
 
-JPFont::JPFont(ShapeFont* jpfont, uint32 rgb_)
-	: rgb(rgb_), shapefont(jpfont)
+JPFont::JPFont(ShapeFont* jpfont, unsigned int fontnum_)
+	: fontnum(fontnum_), shapefont(jpfont)
 {
 	assert(shapefont->frameCount() > 256);
 }
@@ -76,7 +76,6 @@ void JPFont::getStringSize(const std::string& text, int& width, int& height)
 				uint16 t = text[++i] & 0xFF;
 				sjis += (t << 8);
 			}
-			pout.printf("SJIS: %04X, U8: %d\n", sjis, Pentagram::shiftjis_to_ultima8(sjis));
 			width += getWidth(Pentagram::shiftjis_to_ultima8(sjis))-hlead;
 		}
 	}
@@ -308,7 +307,7 @@ RenderedText* JPFont::renderText(const std::string& text,
 												  cursor);
 
 	return new JPRenderedText(lines, resultwidth, resultheight,
-							  shapefont->getVlead(), shapefont);
+							  shapefont->getVlead(), shapefont, fontnum);
 }
 
 

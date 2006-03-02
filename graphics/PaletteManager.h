@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram Team
+Copyright (C) 2003-2006 The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -35,12 +35,18 @@ public:
 
 	enum PalIndex {
 		Pal_Game = 0,
-		Pal_Movie = 1
+		Pal_Movie = 1,
+		Pal_JPFontStart = 16
 	};
 
 	void load(PalIndex index, IDataSource& ds, IDataSource &xformds);
 	void load(PalIndex index, IDataSource& ds);
 	Pentagram::Palette* getPalette(PalIndex index);
+
+	void duplicate(PalIndex src, PalIndex dest);
+
+	//! Re-convert a palette to native format after modifying it
+	void updatedFont(PalIndex index);
 
 	//! Apply a transform matrix to a palette (-4.11 fixed)
 	void transformPalette(PalIndex index, sint16 matrix[12]);
@@ -49,7 +55,8 @@ public:
 	void untransformPalette(PalIndex index);
 
 	// Get a TransformMatrix from a PalTransforms value (-4.11 fixed)
-	static void getTransformMatrix(sint16 matrix[12], Pentagram::PalTransforms trans);
+	static void getTransformMatrix(sint16 matrix[12],
+								   Pentagram::PalTransforms trans);
 
 	// Create a custom Transform Matrix from RGBA col32. (-4.11 fixed)
 	// Alpha will set how much of original palette to keep. 0 = keep none

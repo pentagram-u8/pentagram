@@ -28,7 +28,8 @@ class JPRenderedText : public RenderedText
 {
 public:
 	JPRenderedText(std::list<PositionedText>& lines,
-				   int width, int height, int vlead, ShapeFont* font);
+				   int width, int height, int vlead, ShapeFont* font,
+				   unsigned int fontnum);
 	virtual ~JPRenderedText();
 
 	virtual void draw(RenderSurface* surface, int x, int y);
@@ -39,6 +40,7 @@ public:
 protected:
 	std::list<PositionedText> lines;
 	ShapeFont* font;
+	unsigned int fontnum;
 };
 
 #endif

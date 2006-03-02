@@ -24,14 +24,15 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "encoding.h"
 #include "ShapeFrame.h"
+#include "PaletteManager.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(JPRenderedText,RenderedText);
 
 
 JPRenderedText::JPRenderedText(std::list<PositionedText>& lines_,
 							   int width_, int height_, int vlead_,
-							   ShapeFont* font_)
-	: lines(lines_), font(font_)
+							   ShapeFont* font_, unsigned int fontnum_)
+	: lines(lines_), font(font_), fontnum(fontnum_)
 {
 	width = width_;
 	height = height_;
@@ -45,6 +46,13 @@ JPRenderedText::~JPRenderedText()
 
 void JPRenderedText::draw(RenderSurface* surface, int x, int y)
 {
+	PaletteManager* palman = PaletteManager::get_instance();
+	PaletteManager::PalIndex fontpal = static_cast<PaletteManager::PalIndex>
+		(PaletteManager::Pal_JPFontStart+fontnum);
+	Pentagram::Palette* pal = palman->getPalette(fontpal);
+	const Pentagram::Palette* savepal = font->getPalette();
+	font->setPalette(pal);
+
 	std::list<PositionedText>::iterator iter;
 
 	for (iter = lines.begin(); iter != lines.end(); ++iter)
@@ -76,6 +84,8 @@ void JPRenderedText::draw(RenderSurface* surface, int x, int y)
 							1, iter->dims.h);
 		}
 	}
+
+	font->setPalette(savepal);
 }
 
 void JPRenderedText::drawBlended(RenderSurface* surface, int x, int y,

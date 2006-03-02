@@ -34,6 +34,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "FileSystem.h"
 #include "TTFont.h"
 #include "JPFont.h"
+#include "PaletteManager.h"
+#include "Palette.h"
 
 FontManager* FontManager::fontmanager = 0;
 
@@ -168,9 +170,24 @@ bool FontManager::addJPOverride(unsigned int fontnum,
 	if (!jf)
 		return false;
 
-	JPFont* font = new JPFont(jf, rgb);
+	JPFont* font = new JPFont(jf, fontnum);
 
 	setOverride(fontnum, font);
+
+	PaletteManager* palman = PaletteManager::get_instance();
+	PaletteManager::PalIndex fontpal = static_cast<PaletteManager::PalIndex>
+		(PaletteManager::Pal_JPFontStart+fontnum);
+	palman->duplicate(PaletteManager::Pal_Game, fontpal);
+	Pentagram::Palette* pal = palman->getPalette(fontpal);
+	// TODO: maybe a small gradient
+	// the main text uses index 3
+	// indices 1,2 and 3 are in use for the bullets for conversation options
+	for (int i = 1; i < 4; ++i) {
+		pal->palette[3*i+0] = (rgb >> 16) & 0xFF; 
+		pal->palette[3*i+1] = (rgb >> 8) & 0xFF; 
+		pal->palette[3*i+2] = (rgb) & 0xFF;
+	} 
+	palman->updatedFont(fontpal);
 
 #ifdef DEBUG
 	pout << "Added JP override for font " << fontnum << std::endl;

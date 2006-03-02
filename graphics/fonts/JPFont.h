@@ -26,7 +26,7 @@ class ShapeFont;
 class JPFont : public Pentagram::Font
 {
 public:
-	JPFont(ShapeFont* jpfont, uint32 rgb);
+	JPFont(ShapeFont* jpfont, unsigned int fontnum);
 	virtual ~JPFont();
 
 	int getWidth(int c);
@@ -66,7 +66,7 @@ protected:
 												  std::string::size_type cursor
 												  =std::string::npos);
 
-	uint32 rgb;
+	unsigned int fontnum;
 	ShapeFont* shapefont;
 };
 

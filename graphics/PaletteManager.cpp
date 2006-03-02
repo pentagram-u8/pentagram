@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -51,6 +51,13 @@ void PaletteManager::reset()
 	palettes.clear();
 }
 
+void PaletteManager::updatedFont(PalIndex index)
+{
+	Pentagram::Palette* pal = getPalette(index);
+	if (pal)
+		rendersurface->CreateNativePalette(pal); // convert to native format
+}
+
 // Reset all the transforms back to default
 void PaletteManager::resetTransforms()
 {
@@ -62,6 +69,7 @@ void PaletteManager::resetTransforms()
 	for (unsigned int i = 0; i < palettes.size(); ++i)
 	{
 		Pentagram::Palette* pal = palettes[i];
+		if (!pal) continue;
 		pal->transform = Pentagram::Transform_None;
 		for (int j = 0; j < 12; j++) pal->matrix[j] = matrix[j];
 		rendersurface->CreateNativePalette(pal); // convert to native format
@@ -75,7 +83,8 @@ void PaletteManager::RenderSurfaceChanged(RenderSurface* rs)
 
 	// Create native palettes for all currently loaded palettes
 	for (unsigned int i = 0; i < palettes.size(); ++i)
-		rendersurface->CreateNativePalette(palettes[i]); 
+		if (palettes[i])
+			rendersurface->CreateNativePalette(palettes[i]); 
 }
 
 void PaletteManager::load(PalIndex index, IDataSource& ds,IDataSource &xformds)
@@ -108,9 +117,24 @@ void PaletteManager::load(PalIndex index, IDataSource& ds)
 	palettes[index] = pal;
 }
 
+void PaletteManager::duplicate(PalIndex src, PalIndex dest)
+{
+	Pentagram::Palette* newpal = getPalette(dest);
+	if (!newpal)
+		newpal = new Pentagram::Palette;
+	Pentagram::Palette* srcpal = getPalette(src);
+	if (srcpal)
+		*newpal = *srcpal;
+
+	rendersurface->CreateNativePalette(newpal); // convert to native format
+	if (palettes.size() <= static_cast<unsigned int>(dest))
+		palettes.resize(dest+1);
+	palettes[dest] = newpal;
+}
+
 Pentagram::Palette* PaletteManager::getPalette(PalIndex index)
 {
-	if (static_cast<unsigned int>(index) > palettes.size())
+	if (static_cast<unsigned int>(index) >= palettes.size())
 		return 0;
 
 	return palettes[index];
