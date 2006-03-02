@@ -91,6 +91,13 @@ void JPRenderedText::draw(RenderSurface* surface, int x, int y)
 void JPRenderedText::drawBlended(RenderSurface* surface, int x, int y,
 								 uint32 col)
 {
+	PaletteManager* palman = PaletteManager::get_instance();
+	PaletteManager::PalIndex fontpal = static_cast<PaletteManager::PalIndex>
+		(PaletteManager::Pal_JPFontStart+fontnum);
+	Pentagram::Palette* pal = palman->getPalette(fontpal);
+	const Pentagram::Palette* savepal = font->getPalette();
+	font->setPalette(pal);
+
 	std::list<PositionedText>::iterator iter;
 
 	for (iter = lines.begin(); iter != lines.end(); ++iter)
@@ -114,4 +121,6 @@ void JPRenderedText::drawBlended(RenderSurface* surface, int x, int y,
 		}
 		
 	}
+
+	font->setPalette(savepal);
 }
