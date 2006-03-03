@@ -1,3 +1,7 @@
+2006-03-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/PNGWriter.*: PNG writing
+	* gumps/GameMapGump.cpp: dumpMap now writes a PNG file
+
 2006-03-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/fonts/JP*, graphics/PaletteManager.*:coloured Japanese fonts
 

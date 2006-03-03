@@ -48,6 +48,7 @@
 // map dumping
 #include "Texture.h"
 #include "FileSystem.h"
+#include "PNGWriter.h"
 
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(GameMapGump,Gump);
@@ -616,12 +617,15 @@ void GameMapGump::ConCmd_dumpMap(const Console::ArgvType &)
 
 
 	GameMapGump* g = new GameMapGump(0, 0, twidth, theight);
+	bool isInvisible = (getMainActor()->getFlags() & Item::FLG_INVISIBLE) != 0;
 	getMainActor()->setFlag(Item::FLG_INVISIBLE);
 	World::get_instance()->getCurrentMap()->setWholeMapFast();
 
 	RenderSurface* s = RenderSurface::CreateSecondaryRenderSurface(bwidth,
 																   bheight);
 	Texture* t = s->GetSurfaceAsTexture();
+	// clear buffer
+	std::memset(t->buffer, 0, 4*bwidth*bheight);
 
 
 	// Write tga header
@@ -629,15 +633,14 @@ void GameMapGump::ConCmd_dumpMap(const Console::ArgvType &)
 	char buf[32];
 	sprintf(buf, "%02d",  World::get_instance()->getCurrentMap()->getNum());
 	filename += buf;
-	filename += ".tga";
+	filename += ".png";
 	ODataSource *ds = FileSystem::get_instance()->WriteFile(filename);
-	// Uncompressed TGA Header
-	const uint8 uTGAheader[12] = {0,0,2, 0,0,0,0,0,0,0,0,0};
-	ds->write(uTGAheader,12);
-	ds->write2(awidth);		// width
-	ds->write2(aheight);	// Height
-	ds->write1(32);			// bpp
-	ds->write1(1<<5);		// flags: flipped
+	std::string pngcomment = "Map ";
+	pngcomment += buf;
+	pngcomment += ", dumped by Pentagram.";
+
+	PNGWriter* pngw = new PNGWriter(ds);
+	pngw->init(awidth, aheight, pngcomment);
 
 	// Now render the map
 	for (sint32 y = 0; y < aheight; y+=theight)
@@ -667,17 +670,24 @@ void GameMapGump::ConCmd_dumpMap(const Console::ArgvType &)
 				buf[0] = b; buf[1] = g; buf[2] = r; buf[3] = 0xFF;
 			}
 
-			ds->write(t->buffer,4*bwidth*bheight);
+			pngw->writeRows(bheight, t);
 
+			// clear buffer for next set
 			std::memset(t->buffer, 0, 4*bwidth*bheight);
 		}
 	}
+
+	pngw->finish();
+	delete pngw;
 
 	delete ds;
 
 	delete g;
 	delete s;
-	getMainActor()->clearFlag(Item::FLG_INVISIBLE);
+
+	if (!isInvisible)
+		getMainActor()->clearFlag(Item::FLG_INVISIBLE);
+
 	CameraProcess::SetCameraProcess(new CameraProcess(1));
 
 	pout << "Map stored in " << filename << "." << std::endl;

@@ -88,6 +88,7 @@ GRAPHICS = \
 	graphics/Palette.o \
 	graphics/PaletteManager.o \
 	graphics/PaletteFaderProcess.o \
+	graphics/PNGWriter.o \
 	graphics/ShapeArchive.o \
 	graphics/ShapeInfo.o \
 	graphics/MainShapeArchive.o \
