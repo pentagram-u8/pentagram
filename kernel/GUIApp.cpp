@@ -295,6 +295,7 @@ GUIApp::~GUIApp()
 	FORGET_OBJECT(world);
 	FORGET_OBJECT(ucmachine);
 	FORGET_OBJECT(fontmanager);
+	FORGET_OBJECT(screen);
 }
 
 // Init sdl
