@@ -1,3 +1,6 @@
+2006-03-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* data/u8japanese.ini: Japanese books/scrolls have red text
+
 2006-03-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/PNGWriter.*: PNG writing
 	* gumps/GameMapGump.cpp: dumpMap now writes a PNG file
