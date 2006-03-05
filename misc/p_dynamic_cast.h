@@ -1,7 +1,7 @@
 /*
  *  p_dynamic_cast.cpp - Pentagram Dynamic Cast Emulation Header
  *
- *  Copyright (C) 2003  The Pentagram Team
+ *  Copyright (C) 2003-2006  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -43,7 +43,7 @@ struct RunTimeClassType
 	static const RunTimeClassType	ClassType;									\
 	virtual bool IsOfType(const RunTimeClassType & type);						\
 	virtual bool IsOfType(const char * type);									\
-	template<class T> inline bool IsOfType() { return IsOfType(T::ClassType); }	\
+	template<class Type> inline bool IsOfType() { return IsOfType(Type::ClassType); }	\
 	virtual const RunTimeClassType & GetClassType() { return ClassType; }
 	
 

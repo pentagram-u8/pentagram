@@ -40,12 +40,16 @@ TTFRenderedText::~TTFRenderedText()
 	delete texture;
 }
 
-void TTFRenderedText::draw(RenderSurface* surface, int x, int y, bool destmasked)
+void TTFRenderedText::draw(RenderSurface* surface, int x, int y,
+						   bool destmasked)
 {
 	if (!destmasked)
-		surface->Blit(texture, 0, 0, width, height, x, y-font->getBaseline(), font->isAntialiased());
+		surface->Blit(texture, 0, 0, width, height, x, y-font->getBaseline(),
+					  font->isAntialiased());
 	else
-		surface->MaskedBlit(texture, 0, 0, width, height, x, y-font->getBaseline(), 0, font->isAntialiased());
+		surface->MaskedBlit(texture, 0, 0, width, height,
+							x, y-font->getBaseline(),
+							0, font->isAntialiased());
 }
 
 void TTFRenderedText::drawBlended(RenderSurface* surface, int x, int y,
@@ -53,9 +57,11 @@ void TTFRenderedText::drawBlended(RenderSurface* surface, int x, int y,
 {
 	if (!destmasked)
 		surface->FadedBlit(texture, 0, 0, width, height,
-						   x, y-font->getBaseline(), col, font->isAntialiased());
+						   x, y-font->getBaseline(), col,
+						   font->isAntialiased());
 	else
 		surface->MaskedBlit(texture, 0, 0, width, height,
-						   x, y-font->getBaseline(), col, font->isAntialiased());
+						   x, y-font->getBaseline(), col,
+							font->isAntialiased());
 }
 

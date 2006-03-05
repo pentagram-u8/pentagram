@@ -102,11 +102,10 @@ RenderedText* ShapeFont::renderText(const std::string& text,
 									std::string::size_type cursor)
 {
 	int resultwidth, resultheight;
-	std::list<PositionedText> lines = typesetText(text, remaining,
-												  width, height,
-												  align, u8specials,
-												  resultwidth, resultheight,
-												  cursor);
+	std::list<PositionedText> lines;
+	lines = typesetText<Traits>(this, text, remaining,
+								width, height, align, u8specials,
+								resultwidth, resultheight, cursor);
 
 	return new ShapeRenderedText(lines, resultwidth, resultheight,
 								 getVlead(), this);

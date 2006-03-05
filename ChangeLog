@@ -1,4 +1,9 @@
 2006-03-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/fonts/*: removed separate SJIS version of typesetText,
+	  allow TTF support for Japanese text.
+	* misc/encoding.*: SJIS to unicode conversion
+
+2006-03-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/widget/TextWidget.cpp: adjust TextWidget width,height
 	  to mixed-scale rendering
 

@@ -29,6 +29,7 @@ extern uint16 encoding[256];
 // return value is index in U8's japanese font. 0 for missing codepoints
 
 uint16 shiftjis_to_ultima8(uint16 sjis);
+uint32 shiftjis_to_unicode(uint16 sjis);
 
 }
 

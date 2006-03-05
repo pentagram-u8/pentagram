@@ -28,6 +28,7 @@ namespace Pentagram { class Font; }
 // This is TTF_Font struct from SDL_ttf
 typedef struct _TTF_Font TTF_Font;
 class IDataSource;
+
 class TTFont;
 
 
@@ -50,10 +51,14 @@ public:
 
 	//! override a game font with a TTF.
 	//! \param fontnum the font to override
-	//! \param ttf the alias of the TTF to override it with
+	//! \param filename the filename of the TTF
+	//! \param pointsize the pointsize to use
 	//! \param rgb the color to use for the font
+	//! \param bordersize the size of the black border to add
+	//! \param SJIS true for a Japanese game font
 	bool addTTFOverride(unsigned int fontnum, std::string filename,
-						int pointsize, uint32 rgb, int bordersize);
+						int pointsize, uint32 rgb, int bordersize,
+						bool SJIS=false);
 
 	//! override a game font with a Japanese font.
 	//! \param fontnum the font to override
@@ -72,10 +77,13 @@ private:
 	struct TTFId {
 		std::string filename;
 		int pointsize;
+		bool SJIS;
 		bool operator<(const TTFId& other) const {
 			return (pointsize < other.pointsize ||
 					(pointsize == other.pointsize &&
-					 filename < other.filename));
+					 ((!SJIS && other.SJIS) ||
+					  (SJIS == other.SJIS &&
+					   filename < other.filename))));
 		}
 	};
 	std::map<TTFId, TTF_Font*> ttf_fonts;
@@ -83,7 +91,7 @@ private:
 
 	//! Get a (possibly cached) TTF_Font structure for filename/pointsize,
 	//! loading it if necessary.
-	TTF_Font* getTTF_Font(std::string filename, int pointsize);
+	TTF_Font* getTTF_Font(std::string filename, int pointsize, bool SJIS);
 
 	//! Override fontnum with override
 	void setOverride(unsigned int fontnum, Pentagram::Font* override);

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2005 The Pentagram team
+Copyright (C) 2004-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -36,10 +36,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 DEFINE_RUNTIME_CLASSTYPE_CODE(TTFont,Pentagram::Font);
 
 
-TTFont::TTFont(TTF_Font* font, uint32 rgb_, int bordersize_, bool antiAliased_) : antiAliased(antiAliased_)
+TTFont::TTFont(TTF_Font* font, uint32 rgb_, int bordersize_,
+			   bool antiAliased_, bool SJIS_)
+	: ttf_font(font), antiAliased(antiAliased_), SJIS(SJIS_)
 {
-	ttf_font = font;
-
 //	rgb = PACK_RGB8( (rgb_>>16)&0xFF , (rgb_>>8)&0xFF , rgb_&0xFF );
 	// This should be performed by PACK_RGB8, but it is not initialized at this point.
 	rgb = (rgb_>>16)&0xFF | ((rgb_>>8)&0xFF)<<8 | (rgb_&0xFF)<<16;
@@ -66,23 +66,35 @@ int TTFont::getBaselineSkip()
 	return TTF_FontLineSkip(ttf_font);
 }
 
+
+template<class T>
+static uint16* toUnicode(const std::string& text)
+{
+	std::string::size_type l = T::length(text);
+	uint16* unicodetext = new uint16[l+1];
+	std::string::const_iterator iter = text.begin();
+	for (unsigned int i = 0; i < l; ++i) {
+		uint32 u = T::unicode(iter);
+		if (u > 0xFFFF) {
+			perr.printf("Warning: unicode character out of range for SDL_ttf: %x\n", u);
+			unicodetext[i] = '?';
+		} else {
+			unicodetext[i] = u;
+		}
+	}
+	unicodetext[l] = 0;
+	return unicodetext;
+}
+
+
 void TTFont::getStringSize(const std::string& text, int& width, int& height)
 {
 	// convert to unicode
-#if 0
-	uint16* unicodetext = new uint16[text.size()+1];
-	for (unsigned int i = 0; i < text.size(); ++i) {
-		unicodetext[i] = Pentagram::encoding[(unsigned char)(text[i])];
-	}
-	unicodetext[text.size()] = 0;
-#else
-	const char* t = text.c_str();
-	uint16* unicodetext = new uint16[strlen(t)+1];
-	for (unsigned int i = 0; i < strlen(t); ++i) {
-		unicodetext[i] = Pentagram::encoding[static_cast<unsigned char>(t[i])];
-	}
-	unicodetext[strlen(t)] = 0;
-#endif
+	uint16* unicodetext;
+	if (!SJIS)
+		unicodetext = toUnicode<Traits>(text);
+	else
+		unicodetext = toUnicode<SJISTraits>(text);
 
 	TTF_SizeUNICODE(ttf_font, unicodetext, &width, &height);
 	delete[] unicodetext;
@@ -98,6 +110,24 @@ void TTFont::getStringSize(const std::string& text, int& width, int& height)
 	height += 2*bordersize;
 }
 
+void TTFont::getTextSize(const std::string& text,
+						 int& resultwidth, int& resultheight,
+						 unsigned int& remaining,
+						 int width, int height, TextAlign align,
+						 bool u8specials)
+{
+	std::list<PositionedText> tmp;
+	if (!SJIS)
+		tmp = typesetText<Traits>(this, text, remaining,
+								  width, height, align, u8specials,
+								  resultwidth, resultheight);		
+	else
+		tmp = typesetText<SJISTraits>(this, text, remaining,
+									  width, height, align, u8specials,
+									  resultwidth, resultheight);		
+}
+
+
 RenderedText* TTFont::renderText(const std::string& text,
 								 unsigned int& remaining,
 								 int width, int height,
@@ -105,11 +135,15 @@ RenderedText* TTFont::renderText(const std::string& text,
 								 std::string::size_type cursor)
 {
 	int resultwidth, resultheight;
-	std::list<PositionedText> lines = typesetText(text, remaining,
-												  width, height,
-												  align, u8specials,
-												  resultwidth, resultheight,
-												  cursor);
+	std::list<PositionedText> lines;
+	if (!SJIS)
+		lines = typesetText<Traits>(this, text, remaining,
+									width, height, align, u8specials,
+									resultwidth, resultheight, cursor);
+	else
+		lines = typesetText<SJISTraits>(this, text, remaining,
+										width, height, align, u8specials,
+										resultwidth, resultheight, cursor);
 
 	// create 32bit RGBA texture buffer
 	uint32* buf = new uint32[resultwidth*resultheight];
@@ -128,16 +162,11 @@ RenderedText* TTFont::renderText(const std::string& text,
 	for (iter = lines.begin(); iter != lines.end(); ++iter)
 	{
 		// convert to unicode
-		const char* t = iter->text.c_str();
-		uint16* unicodetext = new uint16[strlen(t)+1];
-//		perr << "Text: " << t << std::endl;
-//		perr << "Hex: " << std::hex;
-		for (unsigned int i = 0; i < strlen(t); ++i) {
-//			perr << std::setw(2) << std::setfill('0') << (unsigned int)(t[i]) << " ";
-			unicodetext[i] = Pentagram::encoding[static_cast<unsigned char>(t[i])];
-		}
-//		perr << std::dec << std::endl;
-		unicodetext[strlen(t)] = 0;
+		uint16* unicodetext;
+		if (!SJIS)
+			unicodetext = toUnicode<Traits>(iter->text);
+		else
+			unicodetext = toUnicode<SJISTraits>(iter->text);
 
 		// let SDL_ttf render the text
 		SDL_Surface* textsurf;
@@ -257,7 +286,7 @@ RenderedText* TTFont::renderText(const std::string& text,
 
 		if (iter->cursor != std::string::npos) {
 			int w, h;
-			assert(iter->cursor <= strlen(t));
+			assert(iter->cursor <= iter->text.size());
 			unicodetext[iter->cursor] = 0;
 			TTF_SizeUNICODE(ttf_font, unicodetext,&w,&h);
 			for (int y = 0; y < iter->dims.h; y++) {
@@ -275,4 +304,3 @@ RenderedText* TTFont::renderText(const std::string& text,
 	return new TTFRenderedText(texture, resultwidth, resultheight,
 							   getBaselineSkip() - getHeight(), this);
 }
-

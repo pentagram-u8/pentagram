@@ -21,6 +21,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <list>
 #include "Rect.h"
+#include "encoding.h"
 
 class RenderedText;
 
@@ -96,17 +97,74 @@ public:
 	
 
 protected:
-	virtual std::list<PositionedText> typesetText(const std::string& text,
-												  unsigned int& remaining,
-												  int width, int height,
-												  TextAlign align,
-												  bool u8specials,
-												  int& resultwidth,
-												  int& resultheight,
-												  std::string::size_type cursor
-												  =std::string::npos);
+
+	struct Traits
+	{
+		static bool isSpace(std::string::const_iterator& i, bool u8specials) {
+			char c = *i;
+			return (c == ' ' || c == '\t' || c == '\n' || c == '\r' ||
+					(u8specials && (c == '%' || c == '~' || c == '*')));
+		}
+		static bool isTab(std::string::const_iterator& i, bool u8specials) {
+			char c = *i;
+			return (c == '\t' ||
+					(u8specials && (c == '\t' || c == '%')));
+		}
+		static bool isBreak(std::string::const_iterator& i, bool u8specials) {
+			char c = *i;
+			return (c == '\n' ||
+					(u8specials && (c == '\n' || c == '~' || c == '*')));
+		}
+		static void advance(std::string::const_iterator& i) {
+			++i;
+		}
+		static std::string::size_type length(const std::string& t) {
+			return t.size();
+		}
+		static uint32 unicode(std::string::const_iterator& i) {
+			return Pentagram::encoding[static_cast<uint8>(*i++)];
+		}
+	};
+	struct SJISTraits : public Traits
+	{
+		static void advance(std::string::const_iterator& i) {
+			// FIXME: this can advance past the end of a malformed string
+			uint8 c = *i;
+			i++;
+			if (c >= 0x80) i++;
+		}
+		static std::string::size_type length(const std::string& t) {
+			std::string::size_type l = 0;
+			std::string::const_iterator iter = t.begin();
+			while (iter != t.end()) {
+				advance(iter);
+				l++;
+			}
+			return l;
+		}
+		static uint32 unicode(std::string::const_iterator& i) {
+			uint16 s = static_cast<uint8>(*i);
+			i++;
+			if (s >= 0x80) {
+				uint16 t = static_cast<uint8>(*i++);
+				s |= (t << 8);
+			}
+			return Pentagram::shiftjis_to_unicode(s);
+		}
+	};
 };
 
 }
+
+template<class T>
+std::list<PositionedText> typesetText(Pentagram::Font* font,
+									  const std::string& text,
+									  unsigned int& remaining,
+									  int width, int height,
+									  Pentagram::Font::TextAlign align,
+									  bool u8specials,
+									  int& resultwidth, int& resultheight,
+									  std::string::size_type cursor
+									  =std::string::npos);
 
 #endif

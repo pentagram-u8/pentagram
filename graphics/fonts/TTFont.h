@@ -27,7 +27,8 @@ typedef struct _TTF_Font TTF_Font;
 class TTFont : public Pentagram::Font
 {
 public:
-	TTFont(TTF_Font* font, uint32 rgb, int bordersize, bool antiAliased);
+	TTFont(TTF_Font* font, uint32 rgb, int bordersize,
+		   bool antiAliased, bool SJIS);
 	virtual ~TTFont();
 
 	virtual int getHeight();
@@ -38,6 +39,12 @@ public:
 
 	virtual void getStringSize(const std::string& text,
 							   int& width, int& height);
+
+	virtual void getTextSize(const std::string& text,
+							 int& resultwidth, int& resultheight,
+							 unsigned int& remaining,
+							 int width=0, int height=0,
+							 TextAlign align=TEXT_LEFT, bool u8specials=false);
 
 	virtual RenderedText* renderText(const std::string& text,
 									 unsigned int& remaining,
@@ -53,6 +60,7 @@ protected:
 	uint32 rgb;
 	int bordersize;
 	bool antiAliased;
+	bool SJIS;
 };
 
 

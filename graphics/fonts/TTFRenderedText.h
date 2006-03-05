@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2005 The Pentagram team
+Copyright (C) 2004-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -32,8 +32,10 @@ public:
 					TTFont* font);
 	virtual ~TTFRenderedText();
 
-	virtual void draw(RenderSurface* surface, int x, int y, bool destmasked = false);
-	virtual void drawBlended(RenderSurface* surface, int x, int y, uint32 col, bool destmasked = false);
+	virtual void draw(RenderSurface* surface, int x, int y,
+					  bool destmasked = false);
+	virtual void drawBlended(RenderSurface* surface, int x, int y, uint32 col,
+							 bool destmasked = false);
 
 	ENABLE_RUNTIME_CLASSTYPE();
 

@@ -37,13 +37,11 @@ public:
 
 	virtual void getStringSize(const std::string& text,
 							   int& width, int& height);
-#if 0
 	virtual void getTextSize(const std::string& text,
 							 int& resultwidth, int& resultheight,
 							 unsigned int& remaining,
 							 int width=0, int height=0,
 							 TextAlign align=TEXT_LEFT, bool u8specials=false);
-#endif
 
 	virtual RenderedText* renderText(const std::string& text,
 									 unsigned int& remaining,
@@ -55,16 +53,6 @@ public:
 
 	ENABLE_RUNTIME_CLASSTYPE();
 protected:
-
-	virtual std::list<PositionedText> typesetText(const std::string& text,
-												  unsigned int& remaining,
-												  int width, int height,
-												  TextAlign align,
-												  bool u8specials,
-												  int& resultwidth,
-												  int& resultheight,
-												  std::string::size_type cursor
-												  =std::string::npos);
 
 	unsigned int fontnum;
 	ShapeFont* shapefont;

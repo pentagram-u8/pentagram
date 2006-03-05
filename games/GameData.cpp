@@ -382,15 +382,16 @@ void GameData::loadU8Data()
 
 void GameData::setupFontOverrides()
 {
+	setupTTFOverrides("game/fontoverride", false);
+
 	GameInfo* gameinfo = CoreApp::get_instance()->getGameInfo();
 	if (gameinfo->language == GameInfo::GAMELANG_JAPANESE)
 		setupJPOverrides();
-
-	setupTTFOverrides();
 }
 
 void GameData::setupJPOverrides()
 {
+	SettingManager* settingman = SettingManager::get_instance();
 	ConfigFileManager* config = ConfigFileManager::get_instance();
 	FontManager* fontmanager = FontManager::get_instance();
 	std::map<Pentagram::istring, std::string> jpkeyvals;
@@ -418,9 +419,14 @@ void GameData::setupJPOverrides()
 				 << std::endl;
 		}
 	}
+
+	bool ttfoverrides = false;
+	settingman->get("ttf", ttfoverrides);
+	if (ttfoverrides)
+		setupTTFOverrides("language/fontoverride", true);
 }
 
-void GameData::setupTTFOverrides()
+void GameData::setupTTFOverrides(const char* configkey, bool SJIS)
 {
 	ConfigFileManager* config = ConfigFileManager::get_instance();
 	SettingManager* settingman = SettingManager::get_instance();
@@ -432,7 +438,7 @@ void GameData::setupTTFOverrides()
 	settingman->get("ttf", ttfoverrides);
 	if (!ttfoverrides) return;
 
-	ttfkeyvals = config->listKeyValues("game/fontoverride");
+	ttfkeyvals = config->listKeyValues(configkey);
 	for (iter = ttfkeyvals.begin(); iter != ttfkeyvals.end(); ++iter)
 	{
 		int fontnum = std::atoi(iter->first.c_str());
@@ -451,7 +457,7 @@ void GameData::setupTTFOverrides()
 		int border = std::atoi(vals[3].c_str());
 
 		if (!fontmanager->addTTFOverride(fontnum, filename, pointsize,
-										 col32, border))
+										 col32, border, SJIS))
 		{
 			perr << "failed to setup ttf override for font " << fontnum
 				 << std::endl;

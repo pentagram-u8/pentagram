@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2005 The Pentagram team
+Copyright (C) 2004-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -32,63 +32,49 @@ Font::Font()
 
 Font::~Font()
 {
-
 }
 
-static inline bool isSpace(char c, bool u8specials)
-{
-	return (c == ' ' || c == '\t' || c == '\n' || c == '\r' ||
-			(u8specials && (c == '%' || c == '~' || c == '*')));
-}
-
-static inline bool isTab(char c, bool u8specials)
-{
-	return (c == '\t' || (u8specials && c == '%'));
-}
-
-static inline bool isBreak(char c, bool u8specials)
-{
-	return (c == '\n' || (u8specials && (c == '~' || c == '*')));
-}
-
-
-static unsigned int findWordEnd(const std::string& text, unsigned int start,
-								bool u8specials)
-{
-	unsigned int index = start;
-	while (index < text.size()) {
-		if (isSpace(text[index], u8specials))
-			return index; 
-
-		index++;
-	}
-	return index;
-}
-
-static unsigned int passSpace(const std::string& text, unsigned int start,
-							  bool u8specials)
-{
-	unsigned int index = start;
-	while (index < text.size()) {
-		if (!isSpace(text[index], u8specials))
-			return index; 
-
-		index++;
-	}
-	return index;
-}
 
 void Font::getTextSize(const std::string& text,
 					   int& resultwidth, int& resultheight,
 					   unsigned int& remaining,
-					   int width, int height,
-					   TextAlign align, bool u8specials)
+					   int width, int height, TextAlign align,
+					   bool u8specials)
 {
-	std::list<PositionedText> tmp = typesetText(text, remaining,
-												width, height,
-												align, u8specials,
-												resultwidth, resultheight);
+	std::list<PositionedText> tmp;
+	tmp = typesetText<Traits>(this, text, remaining,
+							  width, height, align, u8specials,
+							  resultwidth, resultheight);
 }
+
+}
+
+
+
+
+template<class T>
+static void findWordEnd(const std::string& text,
+						std::string::const_iterator& iter, bool u8specials)
+{
+	while (iter != text.end()) {
+		if (T::isSpace(iter, u8specials)) return; 
+		T::advance(iter);
+	}
+}
+
+template<class T>
+static void passSpace(const std::string& text,
+					  std::string::const_iterator& iter, bool u8specials)
+{
+	while (iter != text.end()) {
+		if (!T::isSpace(iter, u8specials)) return;
+		T::advance(iter);
+	}
+	return;
+}
+
+
+
 
 /*
   Special characters in U8:
@@ -101,13 +87,15 @@ CHECKME: any others? (page breaks for books?)
 
 */
 
-std::list<PositionedText> Font::typesetText(const std::string& text,
-											unsigned int& remaining,
-											int width, int height,
-											TextAlign align, bool u8specials,
-											int& resultwidth,
-											int& resultheight,
-											std::string::size_type cursor)
+template<class T>
+std::list<PositionedText> typesetText(Pentagram::Font* font,
+									  const std::string& text,
+									  unsigned int& remaining,
+									  int width, int height,
+									  Pentagram::Font::TextAlign align,
+									  bool u8specials,
+									  int& resultwidth, int& resultheight,
+									  std::string::size_type cursor)
 {
 #if 0
 	pout << "typeset (" << width << "," << height << ") : "
@@ -117,7 +105,6 @@ std::list<PositionedText> Font::typesetText(const std::string& text,
 	// be optimistic and assume everything will fit
 	remaining = text.size();
 
-	unsigned int curlinestart = 0;
 	std::string curline;
 
 	int totalwidth = 0;
@@ -126,25 +113,28 @@ std::list<PositionedText> Font::typesetText(const std::string& text,
 	std::list<PositionedText> lines;
 	PositionedText line;
 
-	unsigned int i = 0;
+	std::string::const_iterator iter = text.begin();
+	std::string::const_iterator cursoriter = text.begin();
+	if (cursor != std::string::npos) cursoriter += cursor;
+	std::string::const_iterator curlinestart = text.begin();
 
 	bool breakhere = false;
 	while (true)
 	{
-		if (i >= text.size() || breakhere || isBreak(text[i],u8specials))
+		if (iter == text.end() || breakhere || T::isBreak(iter, u8specials))
 		{
 			// break here
 			int stringwidth = 0, stringheight = 0;
-			getStringSize(curline, stringwidth, stringheight);
+			font->getStringSize(curline, stringwidth, stringheight);
 			line.dims.x = 0; line.dims.y = totalheight;
 			line.dims.w = stringwidth;
 			line.dims.h = stringheight;
 			line.text = curline;
 			line.cursor = std::string::npos;
-			if (cursor != std::string::npos && cursor >= curlinestart &&
-				(cursor < i || (!breakhere && cursor == i)))
+			if (cursor != std::string::npos && cursoriter >= curlinestart &&
+				(cursoriter < iter || (!breakhere && cursoriter == iter)))
 			{
-				line.cursor = cursor - curlinestart;
+				line.cursor = cursoriter - curlinestart;
 				if (line.dims.w == 0) {
 					stringwidth = line.dims.w = 2;
 				}
@@ -152,82 +142,93 @@ std::list<PositionedText> Font::typesetText(const std::string& text,
 			lines.push_back(line);
 
 			if (stringwidth > totalwidth) totalwidth = stringwidth;
-			totalheight += getBaselineSkip();
+			totalheight += font->getBaselineSkip();
 
 			curline = "";
 
-			if (i >= text.size())
+			if (iter == text.end())
 				break; // done
 
 			if (breakhere) {
 				breakhere = false;
-				curlinestart = i;
+				curlinestart = iter;
 			} else {
-				i = curlinestart = i+1; // FIXME: CR/LF?
+				T::advance(iter);
+				curlinestart = iter;
 			}
 
-			if (height != 0 && totalheight + getHeight() > height) {
+			if (height != 0 && totalheight + font->getHeight() > height) {
 				// next line won't fit
-				remaining = curlinestart;
+				remaining = curlinestart - text.begin();
 				break;
 			}
 
 		} else {
 
 			// see if next word still fits on the current line
-			unsigned int nextword = passSpace(text, i, u8specials);
+			std::string::const_iterator nextword = iter;
+			passSpace<T>(text, nextword, u8specials);
 
 			// process spaces
 			bool foundLF = false;
 			std::string spaces;
-			for (; i < nextword; ++i) {
-				if (isBreak(text[i],u8specials)) {
+			for (; iter < nextword; T::advance(iter)) {
+				if (T::isBreak(iter, u8specials)) {
 					foundLF = true;
 					break;
-				} else if (isTab(text[i],u8specials)) {
+				} else if (T::isTab(iter, u8specials)) {
 					spaces.append("    ");
-				} else if (!curline.empty()){
+				} else if (!curline.empty()) {
 					spaces.append(" ");
 				}
 			}
 			if (foundLF) continue;
 
 			// process word
-			unsigned int endofnextword = findWordEnd(text,nextword,u8specials);
+			std::string::const_iterator endofnextword = iter;
+			findWordEnd<T>(text, endofnextword, u8specials);
 			int stringwidth = 0, stringheight = 0;
 			std::string newline = curline + spaces +
-				text.substr(nextword,endofnextword-nextword);
-			getStringSize(newline, stringwidth, stringheight);
+				text.substr(nextword-text.begin(),endofnextword-nextword);
+			font->getStringSize(newline, stringwidth, stringheight);
 
 			// if not, break line before this word
 			if (width != 0 && stringwidth > width) {
 				if (!curline.empty()) {
-					i = nextword;
+					iter = nextword;
 				} else {
 					// word is longer than the line; have to break in mid-word
-					// FIXME: broken with Shift-JIS!
-					i = nextword;
+					// FIXME: this is rather inefficient; binary search?
+					// (OTOH, it should rarely be used, so no priority)
+					// FIXME: can't break Japanese lines after each character.
+					// http://www.wesnoth.org/wiki/JapaneseTranslation has a
+					// nice list under 'Word-Wrapping'.
+					iter = nextword;
+					std::string::const_iterator saveiter;
 					newline.clear();
 					do {
-						newline += text[i];
-						getStringSize(newline, stringwidth, stringheight);
-						if (stringwidth <= width) {
-							curline += text[i];
-							i++;
-						}
+						curline = newline;
+						saveiter = iter;
+
+						// try next character
+						T::advance(iter);
+						newline = text.substr(nextword-text.begin(),
+											  iter-nextword);
+						font->getStringSize(newline, stringwidth,stringheight);
 					} while (stringwidth <= width);
+					iter = saveiter;
 				}
 				breakhere = true;
 				continue;
 			} else {
 				// copy next word into curline
 				curline = newline;
-				i = endofnextword;
+				iter = endofnextword;
 			}
 		}
 	}
 
-	if (lines.size() == 1 && align == TEXT_LEFT) {
+	if (lines.size() == 1 && align == Pentagram::Font::TEXT_LEFT) {
 		// only one line, so use the actual text width
 	    width = totalwidth;
 	}
@@ -235,26 +236,26 @@ std::list<PositionedText> Font::typesetText(const std::string& text,
 	if (width != 0) totalwidth = width;
 
 	// adjust total height
-	totalheight -= getBaselineSkip();
-	totalheight += getHeight();
+	totalheight -= font->getBaselineSkip();
+	totalheight += font->getHeight();
 
 	// fixup x coordinates of lines
-	std::list<PositionedText>::iterator iter;
-	for (iter = lines.begin(); iter != lines.end(); ++iter) {
+	std::list<PositionedText>::iterator lineiter;
+	for (lineiter = lines.begin(); lineiter != lines.end(); ++lineiter) {
 		switch (align) {
-		case TEXT_LEFT:
+		case Pentagram::Font::TEXT_LEFT:
 			break;
-		case TEXT_RIGHT:
-			iter->dims.x = totalwidth - iter->dims.w;
+		case Pentagram::Font::TEXT_RIGHT:
+			lineiter->dims.x = totalwidth - lineiter->dims.w;
 			break;
-		case TEXT_CENTER:
-			iter->dims.x = (totalwidth - iter->dims.w) / 2;
+		case Pentagram::Font::TEXT_CENTER:
+			lineiter->dims.x = (totalwidth - lineiter->dims.w) / 2;
 			break;
 		}
 #if 0
-		pout << iter->dims.x << "," << iter->dims.y << " "
-			 << iter->dims.w << "," << iter->dims.h << ": "
-			 << iter->text << std::endl;
+		pout << lineiter->dims.x << "," << lineiter->dims.y << " "
+			 << lineiter->dims.w << "," << lineiter->dims.h << ": "
+			 << lineiter->text << std::endl;
 #endif
 	}
 
@@ -265,7 +266,17 @@ std::list<PositionedText> Font::typesetText(const std::string& text,
 }
 
 
+// explicit instantiations
+template
+std::list<PositionedText> typesetText<Pentagram::Font::Traits>
+(Pentagram::Font* font, const std::string& text,
+ unsigned int& remaining, int width, int height,
+ Pentagram::Font::TextAlign align, bool u8specials,
+ int& resultwidth, int& resultheight, std::string::size_type cursor);
 
-}
-
-
+template
+std::list<PositionedText> typesetText<Pentagram::Font::SJISTraits>
+(Pentagram::Font* font, const std::string& text,
+ unsigned int& remaining, int width, int height,
+ Pentagram::Font::TextAlign align, bool u8specials,
+ int& resultwidth, int& resultheight, std::string::size_type cursor);
