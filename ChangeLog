@@ -4,9 +4,9 @@
 	  Mostly means TTF fonts wont overlap on top of scaled gumps anymore.
 	* graphics\scalers\BilinearScalerInternal_Arb.cpp : Fixing 2x downscaling
 	* graphics\PNGWriter.cpp, graphics\TexturePNG.cpp : MSVC fixes
-	* graphics\*RenderSurface.* : Added RenderSurface::MaskedBlit() function to
-	  allow correct painting of shapes in Gump::PaintComposited() methods as it
-	  might be useful.
+	* graphics\*RenderSurface.* : Added RenderSurface::PaintMasked() function 
+	  to allow correct painting of shapes in Gump::PaintComposited() methods as
+	  it might be useful.
 
 2006-03-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* data/u8japanese.ini: Japanese books/scrolls have red text
