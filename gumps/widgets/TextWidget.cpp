@@ -64,6 +64,17 @@ void TextWidget::InitGump(Gump* newparent, bool take_focus)
 	// No X offset
 	dims.x = 0;
 
+	if (gamefont && !getFont()->IsOfType<ShapeFont>()) {
+		int tw = targetwidth;
+		int th = targetheight;
+
+		GumpVecToScreenSpace(tw, th);
+
+		// 0 is special, so don't replace that.
+		if (targetwidth > 0) targetwidth = tw;
+		if (targetheight > 0) targetheight = th;
+	}
+
 	setupNextText();
 }
 

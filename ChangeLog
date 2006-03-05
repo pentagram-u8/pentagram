@@ -1,3 +1,7 @@
+2006-03-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/widget/TextWidget.cpp: adjust TextWidget width,height
+	  to mixed-scale rendering
+
 2006-03-05  Ryan Nunn <colourles@users.sourceforge.net>
 	* Most files : Improved support for Mixed Scale rendering as outlined in 
 	  the email i sent to the Dev mailing list (when it get through...). 
