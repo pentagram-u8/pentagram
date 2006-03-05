@@ -44,6 +44,9 @@ bool BilinearScalerInternal_Arb(Texture *tex, sint32 sx, sint32 sy, sint32 sw, s
 	uint32 dst_y = (sh<<16) - (add_y * dh);
 	uint32 end_y = 1<<16;
 
+	if (sw == dw*2) start_x += 0x8000;
+	if (sh == dh*2) dst_y += 0x8000;
+
 	uint8* blockline_start = 0;
 	uint8* next_block = 0;
 

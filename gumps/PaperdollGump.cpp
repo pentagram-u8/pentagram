@@ -185,10 +185,10 @@ void PaperdollGump::PaintStats(RenderSurface* surf, sint32 lerp_factor)
 	PaintStat(surf, 6, _TL_("WGHT"), a->getTotalWeight()/10);
 }
 
-void PaperdollGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
+void PaperdollGump::PaintThis(RenderSurface* surf, sint32 lerp_factor, bool scaled)
 {
 	// paint self
-	ItemRelativeGump::PaintThis(surf, lerp_factor);
+	ItemRelativeGump::PaintThis(surf, lerp_factor, scaled);
 
 	Actor* a = getActor(owner);
 

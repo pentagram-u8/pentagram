@@ -84,9 +84,9 @@ void PagedGump::InitGump(Gump* newparent, bool take_focus)
 	guiapp->setMouseCursor(GUIApp::MOUSE_HAND); // default cursor
 }
 
-void PagedGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
+void PagedGump::PaintThis(RenderSurface* surf, sint32 lerp_factor, bool scaled)
 {
-	Gump::PaintThis(surf, lerp_factor);
+	Gump::PaintThis(surf, lerp_factor, scaled);
 }
 
 

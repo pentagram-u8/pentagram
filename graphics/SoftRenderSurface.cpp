@@ -185,6 +185,46 @@ template<> void SoftRenderSurface<uint32>::Fill32(uint32 rgb, sint32 sx, sint32 
 
 
 //
+// SoftRenderSurface::FillAlpha(uint8 alpha, sint32 sx, sint32 sy, sint32 w, sint32 h)
+//
+// Desc: Fill alpha channel
+//
+
+template<class uintX> void SoftRenderSurface<uintX>::FillAlpha(uint8 alpha, sint32 sx, sint32 sy, sint32 w, sint32 h)
+{
+	clip_window.IntersectOther(sx,sy,w,h);
+	if (!w || !h || !RenderSurface::format.a_mask) return;
+
+	// An optimization.
+	if ((w*sizeof(uintX)) == pitch)
+	{
+		w *= h;
+		h = 1;
+	}
+
+	uint8 *pixel = pixels + sy * pitch + sx * sizeof(uintX);
+	uint8 *end = pixel + h * pitch;
+
+	uint8 *line_end = pixel + w*sizeof(uintX);
+	int diff = pitch - w*sizeof(uintX);
+
+	uintX a = (((uintX)alpha)<<RenderSurface::format.a_shift)&RenderSurface::format.a_mask;
+
+	while (pixel != end)
+	{
+		while (pixel != line_end)
+		{
+			uintX *dest = reinterpret_cast<uintX*>(pixel);
+			*dest =( *dest & ~RenderSurface::format.a_mask) | a;
+			pixel+=sizeof(uintX);
+		}
+
+		line_end += pitch;
+		pixel += diff;
+	}
+}
+
+//
 // SoftRenderSurface::Blit(Texture *, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy, bool alpha_blend)
 //
 // Desc: Blit a region from a Texture (Alpha == 0 -> skipped)
@@ -467,7 +507,136 @@ template<class uintX> void SoftRenderSurface<uintX>::FadedBlit(Texture *tex, sin
 			texel+= tex_diff;
 		}
 	}
+}
 
+
+//
+// void SoftRenderSurface::MaskedBlit(Texture *, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy, uint32 col32, bool alpha_blend=false)
+//
+// Desc Blit a region from a Texture with a Colour blend masked based on DestAlpha (AlphaTex == 0 || AlphaDest == 0 -> skipped. AlphaCol32 -> Blend Factors)
+//
+//
+template<class uintX> void SoftRenderSurface<uintX>::MaskedBlit(Texture *tex, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy, uint32 col32, bool alpha_blend)
+{
+	// Clamp or wrap or return?
+	if (w > static_cast<sint32>(tex->width)) 
+		return;
+	
+	// Clamp or wrap or return?
+	if (h > static_cast<sint32>(tex->height)) 
+		return;
+	
+	// Clip to window
+	int px = dx, py = dy;
+	clip_window.IntersectOther(dx,dy,w,h);
+	if (!w || !h) return;
+
+	// Adjust source x and y
+	if (px != dx) sx += dx - px;
+	if (py != dy) sy += dy - py;
+
+	uint8 *pixel = pixels + dy * pitch + dx * sizeof(uintX);
+	uint8 *line_end = pixel + w*sizeof(uintX);
+	uint8 *end = pixel + h * pitch;
+	int diff = pitch - w*sizeof(uintX);
+	
+	uint32 a = TEX32_A(col32);
+	uint32 ia = 256-a;
+	uint32 r = (TEX32_R(col32)*a);
+	uint32 g = (TEX32_G(col32)*a);
+	uint32 b = (TEX32_B(col32)*a);
+
+	if (tex->format == TEX_FMT_STANDARD)
+	{
+		uint32 *texel = tex->buffer + (sy * tex->width + sx);
+		int tex_diff = tex->width - w;
+
+		while (pixel != end)
+		{
+			if (!alpha_blend) while (pixel != line_end)
+			{
+				uintX* dest = reinterpret_cast<uintX*>(pixel);
+
+				if ((*texel & TEX32_A_MASK) && (*dest & RenderSurface::format.a_mask))
+				{
+					*dest = static_cast<uintX>(
+						PACK_RGB8( 
+							(TEX32_R(*texel)*ia+r)>>8, 
+							(TEX32_G(*texel)*ia+g)>>8, 
+							(TEX32_B(*texel)*ia+b)>>8 
+							)
+						);
+				}
+				pixel+=sizeof(uintX);
+				texel++;
+			}
+			else while (pixel != line_end)
+			{
+				uintX* dest = reinterpret_cast<uintX*>(pixel);
+
+				if (*dest & RenderSurface::format.a_mask)
+				{
+					uint32 alpha = *texel & TEX32_A_MASK;
+					if (alpha == 0xFF)
+					{
+						*dest = static_cast<uintX>(
+							PACK_RGB8( 
+								(TEX32_R(*texel)*ia+r)>>8, 
+								(TEX32_G(*texel)*ia+g)>>8, 
+								(TEX32_B(*texel)*ia+b)>>8 
+								)
+							);
+					}
+					else if (alpha) {
+						uint32 src= *texel;
+						uint32 dr, dg, db;
+						UNPACK_RGB8(*dest,dr,dg,db);
+
+						dr*=256-TEX32_A(src);
+						dg*=256-TEX32_A(src);
+						db*=256-TEX32_A(src);
+						dr+=TEX32_R(src)*ia+((r*TEX32_A(src))>>8);
+						dg+=TEX32_G(src)*ia+((g*TEX32_A(src))>>8);
+						db+=TEX32_B(src)*ia+((b*TEX32_A(src))>>8);
+
+						*dest = PACK_RGB16(dr, dg, db);
+					}
+				}
+				pixel+=sizeof(uintX);
+				texel++;
+			}
+
+			line_end += pitch;
+			pixel += diff;
+			texel+= tex_diff;
+		}
+	}
+	else if (tex->format == TEX_FMT_NATIVE)
+	{
+		uintX *texel = reinterpret_cast<uintX*>(tex->buffer) + (sy * tex->width + sx);
+		int tex_diff = tex->width - w;
+
+		while (pixel != end)
+		{
+			while (pixel != line_end)
+			{
+				uintX* dest = reinterpret_cast<uintX*>(pixel);
+
+				// Uh, not completely supported right now
+				//if ((*texel & RenderSurface::format.a_mask) && (*dest & RenderSurface::format.a_mask))
+				if (*dest & RenderSurface::format.a_mask)
+				{
+					*dest = BlendHighlight(*texel, r, g, b, 1, ia);
+				}
+				pixel+=sizeof(uintX);
+				texel++;
+			}
+
+			line_end += pitch;
+			pixel += diff;
+			texel+= tex_diff;
+		}
+	}
 }
 
 

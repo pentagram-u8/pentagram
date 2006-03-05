@@ -120,9 +120,9 @@ void SliderGump::drawText(RenderSurface* surf)
 	renderedtext->draw(surf, labelx, labely);
 }
 
-void SliderGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
+void SliderGump::PaintThis(RenderSurface* surf, sint32 lerp_factor, bool scaled)
 {
-	Gump::PaintThis(surf, lerp_factor);
+	Gump::PaintThis(surf, lerp_factor, scaled);
 
 	drawText(surf);
 }

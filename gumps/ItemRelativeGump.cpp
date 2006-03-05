@@ -89,10 +89,10 @@ void ItemRelativeGump::MoveOnScreen()
 
 // Paint the Gump (RenderSurface is relative to parent).
 // Calls PaintThis and PaintChildren
-void ItemRelativeGump::Paint(RenderSurface*surf, sint32 lerp_factor)
+void ItemRelativeGump::Paint(RenderSurface*surf, sint32 lerp_factor, bool scaled)
 {
 	GetItemLocation(lerp_factor);
-	Gump::Paint(surf,lerp_factor);
+	Gump::Paint(surf,lerp_factor, scaled);
 }
 
 

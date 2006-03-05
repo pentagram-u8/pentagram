@@ -31,10 +31,10 @@ public:
 	//! \param surface The surface to draw to
 	//! \param x X coordinate of target
 	//! \param y Y coordinate of target. This will be the top baseline.
-	virtual void draw(RenderSurface* surface, int x, int y)=0;
+	virtual void draw(RenderSurface* surface, int x, int y, bool destmasked = false)=0;
 
 	//! Draw self to a rendersurface blended (0xAABBGGRR, alpha is blend level)
-	virtual void drawBlended(RenderSurface* surface, int x, int y, uint32 col)=0;
+	virtual void drawBlended(RenderSurface* surface, int x, int y, uint32 col, bool destmasked = false)=0;
 
 	//! Get dimensions.
 	//! \param x Returns the width

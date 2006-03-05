@@ -52,12 +52,12 @@ void BindGump::InitGump(Gump* newparent, bool take_focus)
 }
 
 
-void BindGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
+void BindGump::PaintThis(RenderSurface* surf, sint32 lerp_factor, bool scaled)
 {
 	uint32 rgb = 0x000000;
 	surf->Fill32(rgb, 0, 0, dims.w, dims.h);
 
-	Gump::PaintThis(surf, lerp_factor);
+	Gump::PaintThis(surf, lerp_factor, scaled);
 }
 
 bool BindGump::OnKeyDown(int key, int mod)

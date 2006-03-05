@@ -72,9 +72,9 @@ void MiniStatsGump::InitGump(Gump* newparent, bool take_focus)
 	dims.h = sf->height;
 }
 
-void MiniStatsGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
+void MiniStatsGump::PaintThis(RenderSurface* surf, sint32 lerp_factor, bool scaled)
 {
-	Gump::PaintThis(surf, lerp_factor);
+	Gump::PaintThis(surf, lerp_factor, scaled);
 
 	Actor *a = getMainActor();
 	assert(a);

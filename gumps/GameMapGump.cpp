@@ -101,7 +101,7 @@ void GameMapGump::GetCameraLocation(sint32& lx, sint32& ly, sint32& lz,
 }
 
 
-void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
+void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor, bool scaled)
 {
 	World *world = World::get_instance();
 	if (!world) return;	// Is it possible the world doesn't exist?
@@ -656,7 +656,7 @@ void GameMapGump::ConCmd_dumpMap(const Console::ArgvType &)
 			s->SetOrigin(x,y%bheight);
 			CameraProcess::SetCameraProcess(
 				new CameraProcess(wx+4*camheight, wy+4*camheight, camheight));
-			g->Paint(s, 256);
+			g->Paint(s, 256, false);
 
 		}
 

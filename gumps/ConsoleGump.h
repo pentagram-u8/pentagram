@@ -59,7 +59,7 @@ public:
 
 	virtual bool Run(const uint32 framenum);
 
-	virtual void PaintThis(RenderSurface *surf, sint32 lerp_factor);
+	virtual void PaintThis(RenderSurface *surf, sint32 lerp_factor, bool scaled);
 
 	virtual void RenderSurfaceChanged();
 

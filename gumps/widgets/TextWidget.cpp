@@ -23,6 +23,9 @@
 #include "IDataSource.h"
 #include "ODataSource.h"
 #include "TTFont.h"
+#include "BarkGump.h"
+#include "AskGump.h"
+#include "ButtonWidget.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(TextWidget,Gump);
 
@@ -67,7 +70,12 @@ int TextWidget::getVlead()
 {
 	renderText();
 	assert(cached_text);
-	return cached_text->getVlead();
+
+	int ssx = 0, vlead = cached_text->getVlead();
+
+	if (!gamefont || getFont()->IsOfType<ShapeFont>()) return cached_text->getVlead();
+	ScreenSpaceToGumpVec(ssx,vlead);
+	return vlead;
 }
 
 Pentagram::Font* TextWidget::getFont() const
@@ -86,10 +94,10 @@ bool TextWidget::setupNextText()
 
 	Pentagram::Font *font = getFont();
 
-	int tx, ty;
 	unsigned int remaining;
 	font->getTextSize(text.substr(current_start), tx, ty, remaining,
 					  targetwidth, targetheight, textalign, true);
+
 
 	dims.w = tx;
 	dims.h = ty;
@@ -97,6 +105,22 @@ bool TextWidget::setupNextText()
 
 	delete cached_text;
 	cached_text = 0;
+
+	if (gamefont) 
+	{
+		Pentagram::Font *font = getFont();
+		if (!font->IsOfType<ShapeFont>()) 
+		{
+			int ssx = tx, ssy = ty;
+			ScreenSpaceToGumpVec(ssx,ssy);
+			dims.w = ssx+1;
+			dims.h = ssy+1;
+
+			ssy = font->getBaseline();
+			ScreenSpaceToGumpVec(ssx,ssy);
+			dims.y = -ssy;
+		}
+	}
 
 	return true;
 }
@@ -122,16 +146,90 @@ void TextWidget::renderText()
 }
 
 // Overloadable method to Paint just this Gump (RenderSurface is relative to this)
-void TextWidget::PaintThis(RenderSurface*surf, sint32 lerp_factor)
+void TextWidget::PaintThis(RenderSurface*surf, sint32 lerp_factor, bool scaled)
 {
-	Gump::PaintThis(surf,lerp_factor);
+	Gump::PaintThis(surf,lerp_factor,scaled);
 
 	renderText();
+
+	if (scaled && gamefont && !getFont()->IsOfType<ShapeFont>())
+	{
+		surf->FillAlpha(0xFF,dims.x,dims.y,dims.w, dims.h);
+		return;
+	}
 
 	if (!blendColour)
 		cached_text->draw(surf, 0, 0);
 	else
 		cached_text->drawBlended(surf, 0, 0, blendColour);
+}
+
+void TextWidget::PaintCompositing(RenderSurface* surf, sint32 lerp_factor, sint32 sx, sint32 sy)
+{
+	// Don't paint if hidden
+	if (IsHidden()) return;
+
+	// Get old Origin
+	int ox=0, oy=0;
+	surf->GetOrigin(ox, oy);
+
+	// FIXME - Big accuracy problems here with the origin
+
+	// Set the new Origin
+	int nx=0, ny=0;
+	GumpToParent(nx,ny);
+	surf->SetOrigin(ox+ScaleCoord(nx,sx), oy+ScaleCoord(ny,sy));
+
+	// Get Old Clipping Rect
+	Pentagram::Rect old_rect;
+	surf->GetClippingRect(old_rect);
+
+	// Set new clipping rect
+	Pentagram::Rect new_rect( 0, -getFont()->getBaseline(), tx, ty );
+	new_rect.Intersect(old_rect);
+	surf->SetClippingRect(new_rect);
+
+	// Iterate all children
+	std::list<Gump*>::reverse_iterator it = children.rbegin();
+	std::list<Gump*>::reverse_iterator end = children.rend();
+
+	while (it != end)
+	{
+		Gump *g = *it;
+		// Paint if not closing
+		if (!g->IsClosing()) 
+			g->PaintCompositing(surf, lerp_factor, sx, sy);
+
+		++it;
+	}	
+
+	// Paint This
+	PaintComposited(surf, lerp_factor, sx, sy);
+
+	// Reset The Clipping Rect
+	surf->SetClippingRect(old_rect);
+
+	// Reset The Origin
+	surf->SetOrigin(ox, oy);
+}
+
+// Overloadable method to Paint just this gumps unscaled components that require compositing (RenderSurface is relative to parent).
+void TextWidget::PaintComposited(RenderSurface* surf, sint32 lerp_factor, sint32 sx, sint32 sy)
+{
+	Pentagram::Font *font = getFont();
+
+	if (!gamefont || font->IsOfType<ShapeFont>()) return;
+
+	if (!blendColour)
+		cached_text->draw(surf, 0, 0, true);
+	else
+		cached_text->drawBlended(surf, 0, 0, blendColour, true);
+
+	if (parent->IsOfType<BarkGump>()) return;
+
+	if (parent->IsOfType<ButtonWidget>() && parent->GetParent()->IsOfType<AskGump>()) return;
+
+	surf->FillAlpha(0x00, 0, -getFont()->getBaseline(), tx, ty);
 }
 
 // don't handle any mouse motion events, so let parent handle them for us.

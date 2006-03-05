@@ -33,8 +33,8 @@ public:
 
 	virtual void InitGump(Gump* newparent, bool take_focus=true);
 
-	virtual void PaintThis(RenderSurface *surf, sint32 lerp_factor);
-	virtual void PaintChildren(RenderSurface *surf, sint32 lerp_factor);
+	virtual void PaintThis(RenderSurface *surf, sint32 lerp_factor, bool scaled);
+	virtual void PaintChildren(RenderSurface *surf, sint32 lerp_factor, bool scaled);
 
 	virtual void ChildNotify(Gump *child, uint32 message);
 

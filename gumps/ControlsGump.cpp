@@ -164,9 +164,9 @@ void ControlsGump::ChildNotify(Gump *child, uint32 message)
 	}
 }
 
-void ControlsGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
+void ControlsGump::PaintThis(RenderSurface* surf, sint32 lerp_factor, bool scaled)
 {
-	Gump::PaintThis(surf, lerp_factor);
+	Gump::PaintThis(surf, lerp_factor, scaled);
 }
 
 bool ControlsGump::OnKeyDown(int key, int mod)

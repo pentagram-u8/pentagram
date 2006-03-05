@@ -33,7 +33,7 @@ FastAreaVisGump::~FastAreaVisGump(void)
 {
 }
 
-void FastAreaVisGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
+void FastAreaVisGump::PaintThis(RenderSurface* surf, sint32 lerp_factor, bool scaled)
 {
 	World *world = World::get_instance();
 	CurrentMap *currentmap = world->getCurrentMap();

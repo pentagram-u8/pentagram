@@ -31,7 +31,7 @@ public:
 
 	virtual void InitGump(Gump* newparent, bool take_focus=true);
 
-	virtual void PaintThis(RenderSurface*, sint32 lerp_factor);
+	virtual void PaintThis(RenderSurface*, sint32 lerp_factor, bool scaled);
 
 	virtual bool OnKeyDown(int key, int mod);
 	virtual bool OnTextInput(int unicode);

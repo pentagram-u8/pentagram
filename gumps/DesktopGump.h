@@ -30,7 +30,7 @@ public:
 	DesktopGump(sint32 x, sint32 y, sint32 width, sint32 height);
 	virtual ~DesktopGump(void);
 
-	virtual void PaintThis(RenderSurface *surf, sint32 lerp_factor);
+	virtual void PaintThis(RenderSurface *surf, sint32 lerp_factor, bool scaled);
 
 	virtual bool StartDraggingChild(Gump* gump, int mx, int my);
 	virtual void DraggingChild(Gump* gump, int mx, int my);

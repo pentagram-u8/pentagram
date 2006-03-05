@@ -124,7 +124,7 @@ void GameWidget::OnMouseLeft()
 }
 
 
-void GameWidget::PaintThis(RenderSurface* surf, sint32 lerp_factor)
+void GameWidget::PaintThis(RenderSurface* surf, sint32 lerp_factor, bool /*scaled*/)
 {
 	PentagramMenuGump* p = p_dynamic_cast<PentagramMenuGump*>(GetParent());
 	Texture* coversImage = p->getCovers();

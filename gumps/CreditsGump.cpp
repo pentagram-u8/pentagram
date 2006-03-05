@@ -345,7 +345,7 @@ bool CreditsGump::Run(const uint32 framenum)
 	return true;
 }
 
-void CreditsGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
+void CreditsGump::PaintThis(RenderSurface* surf, sint32 lerp_factor, bool scaled)
 {
 	surf->Fill32(0xFF000000,0,0,320,200); // black background
 	surf->Fill32(0xFFD43030,64,41,192,1); // line between title and scroller

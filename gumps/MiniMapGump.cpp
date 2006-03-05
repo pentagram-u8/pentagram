@@ -53,7 +53,7 @@ MiniMapGump::~MiniMapGump(void)
 	con.RemoveConsoleCommand(MiniMapGump::ConCmd_generateWholeMap);
 }
 
-void MiniMapGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
+void MiniMapGump::PaintThis(RenderSurface* surf, sint32 lerp_factor, bool scaled)
 {
 	World *world = World::get_instance();
 	CurrentMap *currentmap = world->getCurrentMap();

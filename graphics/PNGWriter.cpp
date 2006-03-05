@@ -123,7 +123,12 @@ bool PNGWriter::writeRows(uint32 nrows, Texture* img)
 		return false;
     }
 
+#ifdef _MSC_VER
+	png_bytep *row_pointers = (png_bytep *) alloca(nrows*sizeof(png_bytep));
+#else
 	png_bytep row_pointers[nrows];
+#endif
+
 	for (unsigned int i = 0; i < nrows; ++i) {
 		row_pointers[i] = reinterpret_cast<png_bytep>(&img->buffer[i*width]);
 	}

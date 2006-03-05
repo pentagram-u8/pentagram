@@ -78,7 +78,7 @@ bool MovieGump::Run(const uint32 framenum)
 	return true;
 }
 
-void MovieGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
+void MovieGump::PaintThis(RenderSurface* surf, sint32 lerp_factor, bool scaled)
 {
 	player->paint(surf, lerp_factor);
 }

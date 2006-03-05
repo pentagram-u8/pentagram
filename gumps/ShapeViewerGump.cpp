@@ -68,7 +68,7 @@ ShapeViewerGump::~ShapeViewerGump()
 
 }
 
-void ShapeViewerGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
+void ShapeViewerGump::PaintThis(RenderSurface* surf, sint32 lerp_factor, bool /*scaled*/)
 {
 	if (flexes.empty()) {
 		Close();

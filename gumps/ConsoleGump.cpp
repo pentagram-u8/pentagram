@@ -67,9 +67,9 @@ void ConsoleGump::RenderSurfaceChanged()
 	Gump::RenderSurfaceChanged();
 }
 
-void ConsoleGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
+void ConsoleGump::PaintThis(RenderSurface *surf, sint32 lerp_factor, bool scaled)
 {
-	Gump::PaintThis(surf,lerp_factor);
+	Gump::PaintThis(surf,lerp_factor, scaled);
 
 	if (scroll_state == NOTIFY_OVERLAY)
 	{

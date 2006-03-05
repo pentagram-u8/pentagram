@@ -37,7 +37,7 @@ public:
 	virtual bool PointOnGump(int mx, int my);
 	virtual void InitGump(Gump* newparent, bool take_focus=true);
 	virtual void Close(bool no_del = false);
-	virtual void PaintThis(RenderSurface* surf, sint32 lerp_factor);
+	virtual void PaintThis(RenderSurface* surf, sint32 lerp_factor, bool scaled);
 	virtual void OnMouseUp(int button, int mx, int my);
 
 	INTRINSIC(I_target);

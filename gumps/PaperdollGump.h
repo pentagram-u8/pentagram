@@ -40,7 +40,7 @@ public:
 	virtual void Close(bool no_del = false);
 
 	// Paint this Gump
-	virtual void PaintThis(RenderSurface*, sint32 lerp_factor);
+	virtual void PaintThis(RenderSurface*, sint32 lerp_factor, bool scaled);
 
 	virtual void ChildNotify(Gump *child, uint32 message);
 

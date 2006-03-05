@@ -49,7 +49,7 @@ ScalerGump::~ScalerGump()
 	FORGET_OBJECT(buffer2);
 }
 
-void ScalerGump::Paint(RenderSurface* surf, sint32 lerp_factor)
+void ScalerGump::Paint(RenderSurface* surf, sint32 lerp_factor, bool scaled)
 {
 	// Skip the clipping rect/origin setting, since they will already be set
 	// correctly by our parent.
@@ -61,13 +61,13 @@ void ScalerGump::Paint(RenderSurface* surf, sint32 lerp_factor)
 
 	// No scaling or filtering
 	if (!buffer1) {
-		PaintChildren(surf, lerp_factor);
+		PaintChildren(surf, lerp_factor, scaled);
 		return;
 	}
 
 	// Render to texture
 	buffer1->BeginPainting();
-	PaintChildren(buffer1, lerp_factor);
+	PaintChildren(buffer1, lerp_factor, true);
 	buffer1->EndPainting();
 
 	if (!buffer2) {
@@ -75,11 +75,28 @@ void ScalerGump::Paint(RenderSurface* surf, sint32 lerp_factor)
 	}
 	else {
 		buffer2->BeginPainting();
-		DoScalerBlit(buffer1->GetSurfaceAsTexture(),swidth2,sheight2,buffer2,swidth2,sheight2,scaler1);
+		DoScalerBlit(buffer1->GetSurfaceAsTexture(),swidth1,sheight1,buffer2,swidth2,sheight2,scaler1);
 		buffer2->EndPainting();
 
 		DoScalerBlit(buffer2->GetSurfaceAsTexture(),swidth2,sheight2,surf,width,height,scaler2);
 	}
+
+	sint32 scalex = (width<<16)/swidth1;
+	sint32 scaley = (height<<16)/sheight1;
+
+	// Iterate all children
+	std::list<Gump*>::reverse_iterator it = children.rbegin();
+	std::list<Gump*>::reverse_iterator end = children.rend();
+
+	while (it != end)
+	{
+		Gump *g = *it;
+		// Paint if not closing
+		if (!g->IsClosing()) 
+			g->PaintCompositing(surf, lerp_factor, scalex, scaley);
+
+		++it;
+	}	
 }
 
 void ScalerGump::DoScalerBlit(Texture* src, int swidth, int sheight, RenderSurface *dest, int dwidth, int dheight, const Pentagram::Scaler *scaler)

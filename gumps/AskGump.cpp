@@ -71,6 +71,9 @@ void AskGump::InitGump(Gump* newparent, bool take_focus)
 
 	int px = 0, py = 0;
 
+	// This is a hack. We init the gump twice...
+	ItemRelativeGump::InitGump(newparent, take_focus);
+
 	for (unsigned int i = 0; i < answers->getSize(); ++i) {
 		std::string str_answer = "@ ";
 		str_answer += UCMachine::get_instance()->getString(answers->getStringIndex(i));

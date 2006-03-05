@@ -920,7 +920,7 @@ void GUIApp::paint()
 	screen->GetSurfaceDims(dims);
 
 	long before_gumps = SDL_GetTicks();
-	desktopGump->Paint(screen, lerpFactor);
+	desktopGump->Paint(screen, lerpFactor, false);
 	long after_gumps = SDL_GetTicks();
 
 	// Mouse
@@ -2138,9 +2138,9 @@ void GUIApp::addGump(Gump* gump)
 
 	if (gump->IsOfType<ShapeViewerGump>() || gump->IsOfType<MiniMapGump>() ||
 		gump->IsOfType<ConsoleGump>() || gump->IsOfType<ScalerGump>() ||
-		gump->IsOfType<PentagramMenuGump>() ||
-		(ttfoverrides && (gump->IsOfType<BarkGump>() ||
-						  gump->IsOfType<AskGump>()))
+		gump->IsOfType<PentagramMenuGump>()// ||
+		//(ttfoverrides && (gump->IsOfType<BarkGump>() ||
+		//				  gump->IsOfType<AskGump>()))
 		)
 	{
 //		pout << "adding to desktopgump: "; gump->dumpInfo();

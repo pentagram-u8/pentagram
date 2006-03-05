@@ -137,20 +137,40 @@ public:
 	//! Calls PaintThis and PaintChildren
 	// \param surf The RenderSurface to paint to
 	// \param lerp_factor The lerp_factor to paint at (0-256)
-	virtual void		Paint(RenderSurface* surf, sint32 lerp_factor);
+	// \param scaled Set if the gump is being drawn scaled. 
+	virtual void		Paint(RenderSurface* surf, sint32 lerp_factor, bool scaled);
+
+	//! Paint the unscaled compontents of the Gump with compositing (RenderSurface is relative to parent).
+	//! Calls PaintComposited on self and PaintCompositing on children
+	// \param surf The RenderSurface to paint to
+	// \param lerp_factor The lerp_factor to paint at (0-256)
+	// \param scalex Fixed point scaling factor for x coord
+	// \param scaley Fixed point scaling factor for y coord
+	virtual void		PaintCompositing(RenderSurface* surf, sint32 lerp_factor, sint32 scalex, sint32 scaley);
 
 protected:
 
-	//! Overloadable method to Paint just this Gump
-	//! (RenderSurface is relative to this)
+	//! Overloadable method to Paint just this Gump (RenderSurface is relative to this)
 	// \param surf The RenderSurface to paint to
 	// \param lerp_factor The lerp_factor to paint at (0-256)
-	virtual void		PaintThis(RenderSurface* surf, sint32 lerp_factor);
+	// \param scaled Set if the gump is being drawn scaled. 
+	virtual void		PaintThis(RenderSurface* surf, sint32 lerp_factor, bool scaled);
 
 	//! Paint the Gumps Children (RenderSurface is relative to this)
 	// \param surf The RenderSurface to paint to
 	// \param lerp_factor The lerp_factor to paint at (0-256)
-	virtual void		PaintChildren(RenderSurface* surf, sint32 lerp_factor);
+	// \param scaled Set if the gump is being drawn scaled. 
+	virtual void		PaintChildren(RenderSurface* surf, sint32 lerp_factor, bool scaled);
+
+	//! Overloadable method to Paint just this gumps unscaled components that require compositing (RenderSurface is relative to parent).
+	// \param surf The RenderSurface to paint to
+	// \param lerp_factor The lerp_factor to paint at (0-256)
+	// \param scalex Fixed point scaling factor for x coord
+	// \param scaley Fixed point scaling factor for y coord
+	virtual void		PaintComposited(RenderSurface* surf, sint32 lerp_factor, sint32 scalex, sint32 scaley);
+
+	static inline sint32 ScaleCoord(sint32 c, sint32 factor) { return ((c*factor)+(1<<15))>>16; }
+	static inline sint32 UnscaleCoord(sint32 c, sint32 factor) { return (c<<16)/factor; }
 
 public:
 
@@ -204,6 +224,12 @@ public:
 
 	//! Convert a gump point to parent relative point
 	virtual void		GumpToParent(int &gx, int &gy);
+
+	//! Transform a position invariant vector to screenspace from gumpspace
+	virtual void		GumpVecToScreenSpace(int &vx, int &vy);
+
+	//! Transform a position invariant vector to gumpspace from screenspace
+	virtual void		ScreenSpaceToGumpVec(int &vx, int &vy);
 
 
 	//! Trace a click, and return ObjId

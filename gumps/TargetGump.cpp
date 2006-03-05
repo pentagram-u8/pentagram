@@ -46,7 +46,7 @@ TargetGump::~TargetGump()
 
 }
 
-void TargetGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
+void TargetGump::PaintThis(RenderSurface* surf, sint32 lerp_factor, bool scaled)
 {
 	// we're invisible
 }

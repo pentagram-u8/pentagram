@@ -101,10 +101,10 @@ void ContainerGump::getItemCoords(Item* item, sint32& itemx, sint32& itemy)
 }
 
 
-void ContainerGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
+void ContainerGump::PaintThis(RenderSurface* surf, sint32 lerp_factor, bool scaled)
 {
 	// paint self
-	ItemRelativeGump::PaintThis(surf, lerp_factor);
+	ItemRelativeGump::PaintThis(surf, lerp_factor, scaled);
 
 	Container* c = getContainer(owner);
 

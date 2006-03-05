@@ -234,7 +234,7 @@ bool Gump::GetMouseCursor(int mx, int my, Shape &shape, sint32 &frame)
 	return ret;
 }
 
-void Gump::Paint(RenderSurface *surf, sint32 lerp_factor)
+void Gump::Paint(RenderSurface *surf, sint32 lerp_factor, bool scaled)
 {
 	// Don't paint if hidden
 	if (IsHidden()) return;
@@ -253,15 +253,15 @@ void Gump::Paint(RenderSurface *surf, sint32 lerp_factor)
 	surf->GetClippingRect(old_rect);
 
 	// Set new clipping rect
-	Pentagram::Rect new_rect = old_rect;
-	new_rect.Intersect(dims);
+	Pentagram::Rect new_rect = dims;
+	new_rect.Intersect(old_rect);
 	surf->SetClippingRect(new_rect);
 
 	// Paint This
-	PaintThis(surf, lerp_factor);
+	PaintThis(surf, lerp_factor, scaled);
 
 	// Paint children
-	PaintChildren(surf, lerp_factor);
+	PaintChildren(surf, lerp_factor, scaled);
 
 	// Reset The Clipping Rect
 	surf->SetClippingRect(old_rect);
@@ -270,7 +270,7 @@ void Gump::Paint(RenderSurface *surf, sint32 lerp_factor)
 	surf->SetOrigin(ox, oy);
 }
 
-void Gump::PaintThis(RenderSurface* surf, sint32 /*lerp_factor*/)
+void Gump::PaintThis(RenderSurface* surf, sint32 /*lerp_factor*/, bool /*scaled*/)
 {
 	if (shape)
 	{
@@ -292,7 +292,7 @@ void Gump::PaintThis(RenderSurface* surf, sint32 /*lerp_factor*/)
 	}
 }
 
-void Gump::PaintChildren(RenderSurface *surf, sint32 lerp_factor)
+void Gump::PaintChildren(RenderSurface *surf, sint32 lerp_factor, bool scaled)
 {
 	// Iterate all children
 	std::list<Gump*>::iterator it = children.begin();
@@ -303,10 +303,63 @@ void Gump::PaintChildren(RenderSurface *surf, sint32 lerp_factor)
 		Gump *g = *it;
 		// Paint if not closing
 		if (!(g->flags & FLAG_CLOSING)) 
-			g->Paint(surf, lerp_factor);
+			g->Paint(surf, lerp_factor, scaled);
 
 		++it;
 	}	
+}
+
+void Gump::PaintCompositing(RenderSurface* surf, sint32 lerp_factor, sint32 sx, sint32 sy)
+{
+	// Don't paint if hidden
+	if (IsHidden()) return;
+
+	// Get old Origin
+	int ox=0, oy=0;
+	surf->GetOrigin(ox, oy);
+
+	// FIXME - Big accuracy problems here with the origin and clipping rect
+
+	// Set the new Origin
+	int nx=0, ny=0;
+	GumpToParent(nx,ny);
+	surf->SetOrigin(ox+ScaleCoord(nx,sx), oy+ScaleCoord(ny,sy));
+
+	// Get Old Clipping Rect
+	Pentagram::Rect old_rect;
+	surf->GetClippingRect(old_rect);
+
+	// Set new clipping rect
+	Pentagram::Rect new_rect( ScaleCoord(dims.x,sx), ScaleCoord(dims.y,sy), ScaleCoord(dims.w,sx), ScaleCoord(dims.h,sy) );
+	new_rect.Intersect(old_rect);
+	surf->SetClippingRect(new_rect);
+
+	// Iterate all children
+	std::list<Gump*>::reverse_iterator it = children.rbegin();
+	std::list<Gump*>::reverse_iterator end = children.rend();
+
+	while (it != end)
+	{
+		Gump *g = *it;
+		// Paint if not closing
+		if (!g->IsClosing()) 
+			g->PaintCompositing(surf, lerp_factor, sx, sy);
+
+		++it;
+	}	
+
+	// Paint This
+	PaintComposited(surf, lerp_factor, sx, sy);
+
+	// Reset The Clipping Rect
+	surf->SetClippingRect(old_rect);
+
+	// Reset The Origin
+	surf->SetOrigin(ox, oy);
+}
+
+void Gump::PaintComposited(RenderSurface* /*surf*/, sint32 /*lerp_factor*/, sint32 /*scalex*/, sint32 /*scaley*/)
+{
 }
 
 Gump* Gump::FindGump(int mx, int my)
@@ -444,6 +497,30 @@ void Gump::GumpToParent(int &gx, int &gy)
 	gx += x;
 	gy -= dims.y;
 	gy += y;
+}
+
+// Transform a position invariant vector to screenspace from gumpspace
+void Gump::GumpVecToScreenSpace(int &vx, int &vy)
+{
+	int ssx = 0, ssy = 0;
+	ScreenSpaceToGump(ssx,ssy);
+	ssx += vx;
+	ssy += vy;
+	GumpToScreenSpace(ssx,ssy);
+	vx = ssx;//(ssx>=0?ssx:-ssx);
+	vy = ssy;//(ssy>=0?ssy:-ssy);
+}
+
+// Transform a position invariant vector to gumpspace from screenspace
+void Gump::ScreenSpaceToGumpVec(int &vx, int &vy)
+{
+	int ssx = 0, ssy = 0;
+	GumpToScreenSpace(ssx,ssy);
+	ssx += vx;
+	ssy += vy;
+	ScreenSpaceToGump(ssx,ssy);
+	vx = ssx;//(ssx>=0?ssx:-ssx);
+	vy = ssy;//(ssy>=0?ssy:-ssy);
 }
 
 uint16 Gump::TraceObjId(int mx, int my)

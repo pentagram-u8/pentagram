@@ -1,3 +1,10 @@
+2006-03-05  Ryan Nunn <colourles@users.sourceforge.net>
+	* Most files : Improved support for Mixed Scale rendering as outlined in 
+	  the email i sent to the Dev mailing list (when it get through...). 
+	  Mostly means TTF fonts wont overlap on top of scaled gumps anymore.
+	* graphics\scalers\BilinearScalerInternal_Arb.cpp : Fixing 2x downscaling
+	* graphics\RenderSurface.h, graphics\TexturePNG.cpp : MSVC fixes
+
 2006-03-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* data/u8japanese.ini: Japanese books/scrolls have red text
 

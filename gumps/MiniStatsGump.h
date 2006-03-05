@@ -35,7 +35,7 @@ public:
 	virtual void InitGump(Gump* newparent, bool take_focus=true);
 
 	// Paint this Gump
-	virtual void PaintThis(RenderSurface*, sint32 lerp_factor);
+	virtual void PaintThis(RenderSurface*, sint32 lerp_factor, bool scaled);
 
 	// Trace a click, and return ObjId
 	virtual uint16 TraceObjId(int mx, int my);

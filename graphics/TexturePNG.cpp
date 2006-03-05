@@ -108,7 +108,11 @@ bool TexturePNG::Read(IDataSource *ds)
 	   return false;	   
    }
 
-   png_bytep row_pointers[height];
+#ifdef _MSC_VER
+	png_bytep *row_pointers = (png_bytep *) alloca(height*sizeof(png_bytep));
+#else
+	png_bytep row_pointers[height];
+#endif
    for (unsigned int i = 0; i < height; ++i) {
 	   row_pointers[i] = reinterpret_cast<png_bytep>(&buffer[i*width]);
    }

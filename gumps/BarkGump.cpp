@@ -68,6 +68,9 @@ void BarkGump::InitGump(Gump* newparent, bool take_focus)
 			break;
 	}
 
+	// This is a hack. We init the gump twice...
+	ItemRelativeGump::InitGump(newparent, take_focus);
+
 	// Create the TextWidget
 	TextWidget *widget = new TextWidget(0,0,barked,true,fontnum,194,55);
 	widget->InitGump(this);

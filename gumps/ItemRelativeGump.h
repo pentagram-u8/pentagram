@@ -37,7 +37,7 @@ public:
 
 	// Paint the Gump (RenderSurface is relative to parent).
 	// Calls PaintThis and PaintChildren.
-	virtual void		Paint(RenderSurface*, sint32 lerp_factor);
+	virtual void		Paint(RenderSurface*, sint32 lerp_factor, bool scaled);
 
 	virtual void		ParentToGump(int &px, int &py);
 	virtual void		GumpToParent(int &gx, int &gy);

@@ -31,8 +31,8 @@ public:
 					  int width, int height, int vlead, ShapeFont* font);
 	virtual ~ShapeRenderedText();
 
-	virtual void draw(RenderSurface* surface, int x, int y);
-	virtual void drawBlended(RenderSurface* surface, int x, int y, uint32 col);
+	virtual void draw(RenderSurface* surface, int x, int y, bool destmasked = false);
+	virtual void drawBlended(RenderSurface* surface, int x, int y, uint32 col, bool destmasked = false);
 
 	ENABLE_RUNTIME_CLASSTYPE();
 

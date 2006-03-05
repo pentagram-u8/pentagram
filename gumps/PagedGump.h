@@ -34,7 +34,7 @@ public:
 	virtual void Close(bool no_del = false);
 
 	// Paint the Gump
-	virtual void PaintThis(RenderSurface*, sint32 lerp_factor);
+	virtual void PaintThis(RenderSurface*, sint32 lerp_factor, bool scaled);
 
 	virtual bool OnKeyDown(int key, int mod);
 	virtual void ChildNotify(Gump *child, uint32 message);

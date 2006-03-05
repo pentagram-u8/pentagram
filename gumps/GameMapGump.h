@@ -39,7 +39,7 @@ public:
 
 	virtual bool		Run(const uint32 framenum);
 
-	virtual void		PaintThis(RenderSurface *surf, sint32 lerp_factor);
+	virtual void		PaintThis(RenderSurface *surf, sint32 lerp_factor, bool scaled);
 
 	void				GetCameraLocation(sint32& x, sint32& y, sint32& z,
 										  int lerp_factor=256);

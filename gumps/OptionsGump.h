@@ -33,7 +33,7 @@ public:
 	virtual void InitGump(Gump* newparent, bool take_focus=true);
 
 	// Paint the Gump
-	virtual void PaintThis(RenderSurface*, sint32 lerp_factor);
+	virtual void PaintThis(RenderSurface*, sint32 lerp_factor, bool scaled);
 
 	virtual bool OnKeyDown(int key, int mod);
 	virtual void ChildNotify(Gump *child, uint32 message);

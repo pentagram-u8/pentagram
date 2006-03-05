@@ -147,17 +147,20 @@ void MenuGump::InitGump(Gump* newparent, bool take_focus)
 		widget->InitGump(this, false);
 		widget->Move(dims.w / 2 + 6, 10);
 
+		Pentagram::Rect textdims;
+		widget->GetDims(textdims);
+
 		widget = new EditWidget(0, 0, "", true, 6, 110, 40, 15); // CONSTANTS!
 		widget->InitGump(this, true);
-		widget->Move(dims.w / 2 + 6, 25);
+		widget->Move(dims.w / 2 + 6, 10 + textdims.h);
 		widget->MakeFocus();
 	}
 }
 
 
-void MenuGump::PaintThis(RenderSurface* surf, sint32 lerp_factor)
+void MenuGump::PaintThis(RenderSurface* surf, sint32 lerp_factor, bool scaled)
 {
-	Gump::PaintThis(surf, lerp_factor);
+	Gump::PaintThis(surf, lerp_factor, scaled);
 }
 
 bool MenuGump::OnKeyDown(int key, int mod)

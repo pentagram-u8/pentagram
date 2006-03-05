@@ -55,6 +55,8 @@ public:
 	// Fill buffer (using a RGB colour)
 	virtual void Fill32(uint32 rgb, sint32 sx, sint32 sy, sint32 w, sint32 h);
 
+	//! Fill alpha channel
+	virtual void FillAlpha(uint8 alpha, sint32 sx, sint32 sy, sint32 w, sint32 h);
 
 	//
 	// The rule for painting methods:
@@ -127,6 +129,9 @@ public:
 
 	// Blit a region from a Texture with a Colour blend (AlphaTex == 0 -> skipped. AlphaCol32 -> Blend Factors)
 	virtual void FadedBlit(Texture *, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy, uint32 col32, bool alpha_blend=false);
+
+	// Blit a region from a Texture with a Colour blend masked based on DestAlpha (AlphaTex == 0 || AlphaDest == 0 -> skipped. AlphaCol32 -> Blend Factors)
+	virtual void MaskedBlit(Texture *, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy, uint32 col32, bool alpha_blend=false);
 
 	// Blit a stretched region from a Texture (Alpha == 0 -> skipped)
 	virtual void StretchBlit(Texture *, sint32 sx, sint32 sy, sint32 sw, sint32 sh, sint32 dx, sint32 dy, sint32 dw, sint32 dh, bool bilinear = false, bool clampedges = false);

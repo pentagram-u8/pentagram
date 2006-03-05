@@ -54,7 +54,7 @@ static inline int getIndex(int line, int n)
                 return 2*n - 1 - (line/2);
 }
 
-void InverterGump::Paint(RenderSurface* surf, sint32 lerp_factor)
+void InverterGump::Paint(RenderSurface* surf, sint32 lerp_factor, bool scaled)
 {
 	// Skip the clipping rect/origin setting, since they will already be set
 	// correctly by our parent.
@@ -65,26 +65,26 @@ void InverterGump::Paint(RenderSurface* surf, sint32 lerp_factor)
 	if (IsHidden()) return;
 
 	// Paint This
-	PaintThis(surf, lerp_factor);
+	PaintThis(surf, lerp_factor, scaled);
 
 	// Paint children
-	PaintChildren(surf, lerp_factor);
+	PaintChildren(surf, lerp_factor, scaled);
 }
 
 
-void InverterGump::PaintChildren(RenderSurface* surf, sint32 lerp_factor)
+void InverterGump::PaintChildren(RenderSurface* surf, sint32 lerp_factor, bool scaled)
 {
 	unsigned int state = GUIApp::get_instance()->getInversion();
 
 	if (state == 0) {
-		DesktopGump::PaintChildren(surf, lerp_factor);
+		DesktopGump::PaintChildren(surf, lerp_factor, scaled);
 		return;
 	}
 	else if (state == 0x8000) {
 		bool old_flipped = surf->IsFlipped();
 		surf->SetFlipped(!old_flipped);
 
-		DesktopGump::PaintChildren(surf, lerp_factor);
+		DesktopGump::PaintChildren(surf, lerp_factor, scaled);
 
 		surf->SetFlipped(old_flipped);
 		return;
@@ -98,7 +98,7 @@ void InverterGump::PaintChildren(RenderSurface* surf, sint32 lerp_factor)
 		buffer = RenderSurface::CreateSecondaryRenderSurface(width, height);
 	}
 
-	DesktopGump::PaintChildren(buffer, lerp_factor);
+	DesktopGump::PaintChildren(buffer, lerp_factor, scaled);
 
 	Texture* tex = buffer->GetSurfaceAsTexture();
 

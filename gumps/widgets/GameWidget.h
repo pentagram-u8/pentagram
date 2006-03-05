@@ -38,7 +38,7 @@ public:
 
 	virtual uint16 TraceObjId(int mx, int my);
 
-	virtual void PaintThis(RenderSurface*, sint32 lerp_factor);
+	virtual void PaintThis(RenderSurface*, sint32 lerp_factor, bool scaled);
 
 	virtual Gump* OnMouseDown(int button, int mx, int my);
 	virtual void OnMouseOver();

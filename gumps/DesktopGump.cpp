@@ -41,7 +41,7 @@ DesktopGump::~DesktopGump(void)
 {
 }
 
-void DesktopGump::PaintThis(RenderSurface *surf, sint32 lerp_factor)
+void DesktopGump::PaintThis(RenderSurface *surf, sint32 lerp_factor, bool scaled)
 {
 	// Just fill it (only if console showing, or in debug mode)
 

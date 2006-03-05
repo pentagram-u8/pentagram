@@ -56,6 +56,17 @@ void EditWidget::InitGump(Gump* newparent, bool take_focus)
 
 	// No X offset
 	dims.x = 0;
+
+	if (gamefont) 
+	{
+		Pentagram::Font *font = getFont();
+		if (!font->IsOfType<ShapeFont>()) 
+		{
+			int ssx = 0, ssy = font->getBaseline();
+			ScreenSpaceToGumpVec(ssx,ssy);
+			dims.y = -ssy;
+		}
+	}
 }
 
 Pentagram::Font* EditWidget::getFont() const
@@ -85,9 +96,16 @@ bool EditWidget::textFits(std::string& t)
 	
 	unsigned int remaining;
 	int width, height;
+
+	int max_width = multiline ? dims.w : 0;
+	int max_height = dims.h;
+	if (gamefont && !font->IsOfType<ShapeFont>()) GumpVecToScreenSpace(max_width,max_height);
+
 	font->getTextSize(t, width, height, remaining,
-					  multiline ? dims.w : 0, dims.h,
+					  max_width, max_height,
 					  Pentagram::Font::TEXT_LEFT, false);
+
+	if (gamefont && !font->IsOfType<ShapeFont>()) ScreenSpaceToGumpVec(width,height);
 
 	if (multiline)
 		return (remaining >= t.size());
@@ -116,21 +134,96 @@ void EditWidget::renderText()
 	if (!cached_text) {
 		Pentagram::Font *font = getFont();
 
+		int max_width = multiline ? dims.w : 0;
+		int max_height = dims.h;
+		if (gamefont && !font->IsOfType<ShapeFont>()) GumpVecToScreenSpace(max_width,max_height);
+
 		unsigned int remaining;
 		cached_text = font->renderText(text, remaining,
-									   multiline ? dims.w : 0, dims.h,
+									   max_width, max_height,
 									   Pentagram::Font::TEXT_LEFT,
 									   false, cv ? cursor : std::string::npos);
 	}
 }
 
 // Overloadable method to Paint just this Gump (RenderSurface is relative to this)
-void EditWidget::PaintThis(RenderSurface*surf, sint32 lerp_factor)
+void EditWidget::PaintThis(RenderSurface*surf, sint32 lerp_factor, bool scaled)
 {
-	Gump::PaintThis(surf,lerp_factor);
+	Gump::PaintThis(surf,lerp_factor, scaled);
 
 	renderText();
+
+	if (scaled && gamefont && !getFont()->IsOfType<ShapeFont>())
+	{
+		surf->FillAlpha(0xFF,dims.x,dims.y,dims.w, dims.h);
+		return;
+	}
+
 	cached_text->draw(surf, 0, 0);
+}
+
+void EditWidget::PaintCompositing(RenderSurface* surf, sint32 lerp_factor, sint32 sx, sint32 sy)
+{
+	// Don't paint if hidden
+	if (IsHidden()) return;
+
+	// Get old Origin
+	int ox=0, oy=0;
+	surf->GetOrigin(ox, oy);
+
+	// FIXME - Big accuracy problems here with the origin and clipping rect
+
+	// Set the new Origin
+	int nx=0, ny=0;
+	GumpToParent(nx,ny);
+	surf->SetOrigin(ox+ScaleCoord(nx,sx), oy+ScaleCoord(ny,sy));
+
+	// Get Old Clipping Rect
+	Pentagram::Rect old_rect;
+	surf->GetClippingRect(old_rect);
+
+	// Set new clipping rect
+	Pentagram::Rect new_rect( 0, -getFont()->getBaseline(), ScaleCoord(dims.w,sx), ScaleCoord(dims.h,sy) );
+	new_rect.Intersect(old_rect);
+	surf->SetClippingRect(new_rect);
+
+	// Iterate all children
+	std::list<Gump*>::reverse_iterator it = children.rbegin();
+	std::list<Gump*>::reverse_iterator end = children.rend();
+
+	while (it != end)
+	{
+		Gump *g = *it;
+		// Paint if not closing
+		if (!g->IsClosing()) 
+			g->PaintCompositing(surf, lerp_factor, sx, sy);
+
+		++it;
+	}	
+
+	// Paint This
+	PaintComposited(surf, lerp_factor, sx, sy);
+
+	// Reset The Clipping Rect
+	surf->SetClippingRect(old_rect);
+
+	// Reset The Origin
+	surf->SetOrigin(ox, oy);
+}
+
+// Overloadable method to Paint just this gumps unscaled components that require compositing (RenderSurface is relative to parent).
+void EditWidget::PaintComposited(RenderSurface* surf, sint32 lerp_factor, sint32 sx, sint32 sy)
+{
+	Pentagram::Font *font = getFont();
+
+	if (!gamefont || font->IsOfType<ShapeFont>()) 
+	{
+		return;
+	}
+
+	cached_text->draw(surf, 0, 0, true);
+
+	surf->FillAlpha(0x00, 0, -getFont()->getBaseline(), ScaleCoord(dims.w,sx), ScaleCoord(dims.h,sy));
 }
 
 // don't handle any mouse motion events, so let parent handle them for us.

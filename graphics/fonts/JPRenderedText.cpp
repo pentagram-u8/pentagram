@@ -44,8 +44,10 @@ JPRenderedText::~JPRenderedText()
 
 }
 
-void JPRenderedText::draw(RenderSurface* surface, int x, int y)
+void JPRenderedText::draw(RenderSurface* surface, int x, int y, bool /*destmasked*/)
 {
+	// TODO support masking here??
+
 	PaletteManager* palman = PaletteManager::get_instance();
 	PaletteManager::PalIndex fontpal = static_cast<PaletteManager::PalIndex>
 		(PaletteManager::Pal_JPFontStart+fontnum);
@@ -89,8 +91,10 @@ void JPRenderedText::draw(RenderSurface* surface, int x, int y)
 }
 
 void JPRenderedText::drawBlended(RenderSurface* surface, int x, int y,
-								 uint32 col)
+								 uint32 col, bool /*destmasked*/)
 {
+	// TODO Support masking here??
+
 	PaletteManager* palman = PaletteManager::get_instance();
 	PaletteManager::PalIndex fontpal = static_cast<PaletteManager::PalIndex>
 		(PaletteManager::Pal_JPFontStart+fontnum);

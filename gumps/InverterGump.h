@@ -31,8 +31,8 @@ public:
 	InverterGump(sint32 x, sint32 y, sint32 width, sint32 height);
 	virtual ~InverterGump(void);
 
-	virtual void Paint(RenderSurface* surf, sint32 lerp_factor);
-	virtual void PaintChildren(RenderSurface* surf, sint32 lerp_factor);
+	virtual void Paint(RenderSurface* surf, sint32 lerp_factor, bool scaled);
+	virtual void PaintChildren(RenderSurface* surf, sint32 lerp_factor, bool scaled);
 
 	virtual void ParentToGump(int &px, int &py);
 	virtual void GumpToParent(int &gx, int &gy);
