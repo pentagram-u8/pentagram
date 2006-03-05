@@ -19,6 +19,7 @@
 #include "EditWidget.h"
 #include "ShapeFont.h"
 #include "RenderedText.h"
+#include "RenderSurface.h"
 #include "FontManager.h"
 #include "IDataSource.h"
 #include "ODataSource.h"

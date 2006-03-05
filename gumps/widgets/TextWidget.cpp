@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2005  The Pentagram Team
+ *  Copyright (C) 2003-2006  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,6 +19,7 @@
 #include "TextWidget.h"
 #include "ShapeFont.h"
 #include "RenderedText.h"
+#include "RenderSurface.h"
 #include "FontManager.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
