@@ -12,6 +12,7 @@
 				<li>SDL;</li>
 				<li>SDL_ttf;</li>
 				<li>zlib;</li>
+				<li>libpng;</li>
 				<li>for Linux/Unix, you need autoconf and automake.</li>
 			</ul>
 			</body>
@@ -113,7 +114,7 @@
 							disabled/windows/fmopl/timidity/alsa/unixseq/coreaudio
 							<comment># If you don't specify midi_driver, Pentagram will automatically select one,</comment>
 							<comment># based on your platform.</comment>
-							<comment># (Note: Windows will only work on Windows. CoreAudio only on Mac&nbsp;OS&nbsp;X.</comment>
+							<comment># (Note: Windows will only work on Windows. CoreAudio only on Mac OS X.</comment>
 							<comment># Alsa is Linux-only and UnixSeq will only work on Unix variants.)</comment>
 							<comment># See further down for more options on Linux.</comment>
 						</configtag>						
