@@ -98,6 +98,9 @@ public:
 	// TODO: virtual void PaintHighlightInvis(CachedShape* s, uint32 frame, sint32 x, sint32 y, bool trans, bool mirrored, uint32 col32);
 	virtual void PaintHighlightInvis(Shape* s, uint32 frame, sint32 x, sint32 y, bool trans, bool mirrored, uint32 col32, bool untformed_pal = false);
 
+	// Paint a shape masked against destination alpha
+	virtual void PaintMasked(Shape* s, uint32 framenum, sint32 x, sint32 y, bool trans, bool mirrored, uint32 col32 = 0, bool untformed_pal = false);
+
 
 	//
 	// Basic Line Drawing

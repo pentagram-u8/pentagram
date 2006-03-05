@@ -147,6 +147,19 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 #endif
 
 //
+// Destination Alpha Masking
+//
+#ifdef DESTALPHA_MASK
+
+#define NOT_DESTINATION_MASKED	(*pixptr & RenderSurface::format.a_mask)
+
+#else
+
+#define NOT_DESTINATION_MASKED	(1)
+
+#endif
+
+//
 // The Function
 //
 
@@ -216,7 +229,7 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 				{
 					while (pixptr != endrun) 
 					{
-						if (NOT_CLIPPED_X) 
+						if (NOT_CLIPPED_X && NOT_DESTINATION_MASKED) 
 						{
 							#ifdef XFORM_SHAPES
 							if (USE_XFORM_FUNC) 
@@ -241,7 +254,7 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 					{
 						while (pixptr != endrun) 
 						{
-							if (NOT_CLIPPED_X) *pixptr = CUSTOM_BLEND(BlendPreModulated(xform_pal[*linedata],*pixptr));
+							if (NOT_CLIPPED_X && NOT_DESTINATION_MASKED) *pixptr = CUSTOM_BLEND(BlendPreModulated(xform_pal[*linedata],*pixptr));
 							pixptr += XNEG(1);
 						}
 					} 
@@ -251,7 +264,7 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 						pix = pal[*linedata];
 						while (pixptr != endrun) 
 						{
-							if (NOT_CLIPPED_X) 
+							if (NOT_CLIPPED_X && NOT_DESTINATION_MASKED) 
 							{
 								*pixptr = CUSTOM_BLEND(pix);
 							}
@@ -291,7 +304,7 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 
 				while (pixptr != endrun) 
 				{
-					if (NOT_CLIPPED_X) 
+					if (NOT_CLIPPED_X && NOT_DESTINATION_MASKED) 
 					{
 						#ifdef XFORM_SHAPES
 						if (USE_XFORM_FUNC) 
