@@ -97,6 +97,7 @@ bool AvatarMoverProcess::handleCombatMode()
 	Animation::Sequence nextanim = Animation::walk;
 	sint32 direction = avatar->getDir();
 	uint32 now = SDL_GetTicks();
+	bool stasis = guiapp->isAvatarInStasis();
 
 	int mx, my;
 	guiapp->getMouseCoords(mx, my);
@@ -110,7 +111,8 @@ bool AvatarMoverProcess::handleCombatMode()
 
 	// If Avatar has fallen down, stand up.
 	if (lastanim == Animation::die || lastanim == Animation::fallBackwards) {
-		waitFor(avatar->doAnim(Animation::standUp, mousedir));
+		if (!stasis)
+			waitFor(avatar->doAnim(Animation::standUp, mousedir));
 		return false;
 	}
 
@@ -124,7 +126,7 @@ bool AvatarMoverProcess::handleCombatMode()
 	}
 
 	// can't do any new actions if in stasis
-	if (guiapp->isAvatarInStasis())
+	if (stasis)
 		return false;
 
 	bool m0clicked = false;
@@ -278,6 +280,7 @@ bool AvatarMoverProcess::handleNormalMode()
 	Animation::Sequence nextanim = Animation::walk;
 	sint32 direction = avatar->getDir();
 	uint32 now = SDL_GetTicks();
+	bool stasis = guiapp->isAvatarInStasis();
 
 	int mx, my;
 	guiapp->getMouseCoords(mx, my);
@@ -299,15 +302,23 @@ bool AvatarMoverProcess::handleNormalMode()
 
 	// If Avatar has fallen down, stand up.
 	if (lastanim == Animation::die || lastanim == Animation::fallBackwards) {
-//		pout << "AvatarMover: standing up" << std::endl;
-		waitFor(avatar->doAnim(Animation::standUp, direction));
+		if (!stasis) {
+//			pout << "AvatarMover: standing up" << std::endl;
+			waitFor(avatar->doAnim(Animation::standUp, direction));
+		}
 		return false;
 	}
 
 	// If still in combat stance, sheathe weapon
-	if (Animation::isCombatAnim(lastanim)) {
+	if (!stasis && Animation::isCombatAnim(lastanim)) {
 //		pout << "AvatarMover: sheathing weapon" << std::endl;
-		waitFor(avatar->doAnim(Animation::unreadyWeapon, direction));
+
+		ProcId anim1 = avatar->doAnim(Animation::unreadyWeapon, direction);
+		ProcId anim2 = avatar->doAnim(Animation::stand, direction);
+		Process* anim2p = Kernel::get_instance()->getProcess(anim2);
+		anim2p->waitFor(anim1);
+		waitFor(anim2);
+
 		return false;
 	}
 
@@ -337,6 +348,7 @@ bool AvatarMoverProcess::handleNormalMode()
 		mouseButton[1].state |= MBS_RELHANDLED;
 
 		// if we were running in combat mode, slow to a walk, draw weapon
+		// (even in stasis)
 		if (combatRun)
 		{
 			MainActor* avatar = getMainActor();
@@ -351,6 +363,7 @@ bool AvatarMoverProcess::handleNormalMode()
 		}
 
 		// if we were running, slow to a walk before stopping
+		// (even in stasis)
 		if (lastanim == Animation::run) {
 			ProcId walkpid = avatar->doAnim(Animation::walk, direction);
 			ProcId standpid = avatar->doAnim(Animation::stand, direction);
@@ -363,12 +376,13 @@ bool AvatarMoverProcess::handleNormalMode()
 		// TODO: if we were hanging, fall
 
 		// otherwise, stand
-		waitFor(avatar->doAnim(Animation::stand, direction));
+		if (!stasis)
+			waitFor(avatar->doAnim(Animation::stand, direction));
 		return false;		
 	}
 
 	// can't do any new actions if in stasis
-	if (guiapp->isAvatarInStasis())
+	if (stasis)
 		return false;
 
 	// both mouse buttons down
