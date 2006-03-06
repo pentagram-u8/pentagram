@@ -35,6 +35,8 @@ static void idatasource_png_read_data(png_structp png_ptr,
 
 bool TexturePNG::Read(IDataSource *ds)
 {
+	png_bytep* row_pointers = 0;
+
 	png_byte header[8];
 	if (ds->read(header, 8) < 8) return false;
 	if (png_sig_cmp(header, 0, 8)) {
@@ -60,6 +62,7 @@ bool TexturePNG::Read(IDataSource *ds)
     }
 
     if (setjmp(png_jmpbuf(png_ptr))) {
+		delete[] row_pointers;
         png_destroy_read_struct(&png_ptr, &info_ptr, &end_info);
         return false;
     }
@@ -108,11 +111,7 @@ bool TexturePNG::Read(IDataSource *ds)
 	   return false;	   
    }
 
-#ifdef _MSC_VER
-	png_bytep *row_pointers = (png_bytep *) alloca(height*sizeof(png_bytep));
-#else
-	png_bytep row_pointers[height];
-#endif
+   row_pointers = new png_bytep[height];
    for (unsigned int i = 0; i < height; ++i) {
 	   row_pointers[i] = reinterpret_cast<png_bytep>(&buffer[i*width]);
    }
@@ -129,6 +128,8 @@ bool TexturePNG::Read(IDataSource *ds)
    this->format = TEX_FMT_STANDARD;
    this->wlog2 = -1;
    this->hlog2 = -1;
+
+   delete[] row_pointers;
 
    return true;
 }

@@ -110,6 +110,7 @@ bool PNGWriter::init(uint32 width, uint32 height, const std::string& comment)
 
 bool PNGWriter::writeRows(uint32 nrows, Texture* img)
 {
+	png_bytep* row_pointers = 0;
 	png_structp png_ptr = reinterpret_cast<png_structp>(png);
 	png_infop info_ptr = reinterpret_cast<png_infop>(info);
 	if (!png_ptr) return false;
@@ -120,14 +121,11 @@ bool PNGWriter::writeRows(uint32 nrows, Texture* img)
     if (setjmp(png_jmpbuf(png_ptr)))
     {
 		png_destroy_write_struct(&png_ptr, &info_ptr);
+		delete[] row_pointers;
 		return false;
     }
 
-#ifdef _MSC_VER
-	png_bytep *row_pointers = (png_bytep *) alloca(nrows*sizeof(png_bytep));
-#else
-	png_bytep row_pointers[nrows];
-#endif
+	row_pointers = new png_bytep[nrows];
 
 	for (unsigned int i = 0; i < nrows; ++i) {
 		row_pointers[i] = reinterpret_cast<png_bytep>(&img->buffer[i*width]);
@@ -136,6 +134,8 @@ bool PNGWriter::writeRows(uint32 nrows, Texture* img)
 	png_write_rows(png_ptr, row_pointers, nrows);
 
     png_write_flush(png_ptr);
+
+	delete[] row_pointers;
 
 	return true;
 }
