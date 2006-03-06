@@ -1,3 +1,6 @@
+2006-03-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* audio/SpeechFlex.cpp: convert tabs to spaces before comparing strings
+
 2006-03-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/fonts/*: removed separate SJIS version of typesetText,
 	  allow TTF support for Japanese text.

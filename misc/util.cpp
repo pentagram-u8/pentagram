@@ -183,6 +183,20 @@ template<class T> void TrimSpaces(T& str)
 template void TrimSpaces<std::string>(std::string& str);
 template void TrimSpaces<Pentagram::istring>(Pentagram::istring& str);
 
+
+template<class T> void TabsToSpaces(T& str, unsigned int n)
+{
+	T repl(n, ' ');
+	typename T::size_type p;
+	while ((p = str.find('\t')) != T::npos)
+		str.replace(p, 1, repl);
+}
+
+template void TabsToSpaces<std::string>(std::string& str, unsigned int n);
+template void TabsToSpaces<Pentagram::istring>(Pentagram::istring& str,
+											   unsigned int n);
+
+
 template<class T> void SplitString(const T &args, char sep,
 								   std::vector<T> &argv)
 {

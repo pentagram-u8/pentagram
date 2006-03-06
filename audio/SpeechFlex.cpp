@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005  The Pentagram Team
+Copyright (C) 2003-2006  The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -33,6 +33,7 @@ SpeechFlex::SpeechFlex(IDataSource* ds) : SoundFlex(ds)
 	Pentagram::SplitString(strings, 0, s);
 
 	for (unsigned int i = 0; i < s.size(); ++i) {
+		Pentagram::TabsToSpaces(s[i], 1);
 		Pentagram::TrimSpaces(s[i]);
 
 //		pout << "Found string: \"" << s[i] << "\"" << std::endl;
@@ -55,6 +56,7 @@ int	SpeechFlex::getIndexForPhrase(const std::string &phrase,
 	int i = 1;
 
 	std::string text = phrase.substr(start);
+	Pentagram::TabsToSpaces(text, 1);
 
 	std::string::size_type pos1 = text.find_first_not_of(' ');
 	if (pos1 == std::string::npos) return 0;

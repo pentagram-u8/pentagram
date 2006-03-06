@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2005 The Pentagram team
+Copyright (C) 2002-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -32,6 +32,8 @@ template<class T> void ArgvToString(const std::vector<T> &argv, T &args);
 
 
 template<class T> void TrimSpaces(T& str);
+
+template<class T> void TabsToSpaces(T& str, unsigned int nspaces);
 
 template<class T> void SplitString(const T &args, char sep,
 								   std::vector<T> &argv);
