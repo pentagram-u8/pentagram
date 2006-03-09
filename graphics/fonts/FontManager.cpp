@@ -36,6 +36,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "JPFont.h"
 #include "PaletteManager.h"
 #include "Palette.h"
+#include "SettingManager.h"
 
 FontManager* FontManager::fontmanager = 0;
 
@@ -45,6 +46,9 @@ FontManager::FontManager(bool ttf_antialiasing_) : ttf_antialiasing(ttf_antialia
 
 	assert(fontmanager == 0);
 	fontmanager = this;
+
+	SettingManager* settingman = SettingManager::get_instance();
+	settingman->setDefault("ttf_highres", true);
 
 	TTF_Init();
 }
@@ -156,6 +160,10 @@ bool FontManager::addTTFOverride(unsigned int fontnum, std::string filename,
 		return false;
 
 	TTFont* font = new TTFont(f, rgb, bordersize, ttf_antialiasing, SJIS);
+	SettingManager* settingman = SettingManager::get_instance();
+	bool highres;
+	settingman->get("ttf_highres", highres);
+	font->setHighRes(highres);
 
 	setOverride(fontnum, font);
 
@@ -208,6 +216,12 @@ bool FontManager::loadTTFont(unsigned int fontnum, std::string filename,
 		return false;
 
 	TTFont* font = new TTFont(f, rgb, bordersize, ttf_antialiasing, false);
+
+	// TODO: check if this is indeed what we want for non-gamefonts
+	SettingManager* settingman = SettingManager::get_instance();
+	bool highres;
+	settingman->get("ttf_highres", highres);
+	font->setHighRes(highres);
 
 	if (fontnum >= ttfonts.size())
 		ttfonts.resize(fontnum+1);

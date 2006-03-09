@@ -24,7 +24,7 @@ namespace Pentagram {
 
 DEFINE_RUNTIME_CLASSTYPE_CODE_BASE_CLASS(Font)
 
-Font::Font()
+Font::Font() : highRes(false)
 {
 
 }

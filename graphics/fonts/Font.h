@@ -94,6 +94,12 @@ public:
 							 unsigned int& remaining,
 							 int width=0, int height=0,
 							 TextAlign align=TEXT_LEFT, bool u8specials=false);
+
+	void setHighRes(bool hr) { highRes = hr; }
+	bool isHighRes() const { return highRes; }
+
+protected:
+	bool highRes;
 	
 
 protected:

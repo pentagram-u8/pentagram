@@ -64,7 +64,7 @@ void TextWidget::InitGump(Gump* newparent, bool take_focus)
 	// No X offset
 	dims.x = 0;
 
-	if (gamefont && !getFont()->IsOfType<ShapeFont>()) {
+	if (gamefont && getFont()->isHighRes()) {
 		int tw = targetwidth;
 		int th = targetheight;
 
@@ -85,8 +85,10 @@ int TextWidget::getVlead()
 
 	int ssx = 0, vlead = cached_text->getVlead();
 
-	if (!gamefont || getFont()->IsOfType<ShapeFont>()) return cached_text->getVlead();
-	ScreenSpaceToGumpVec(ssx,vlead);
+	if (gamefont && getFont()->isHighRes()) {
+		ScreenSpaceToGumpVec(ssx,vlead);
+	}
+
 	return vlead;
 }
 
@@ -121,7 +123,7 @@ bool TextWidget::setupNextText()
 	if (gamefont) 
 	{
 		Pentagram::Font *font = getFont();
-		if (!font->IsOfType<ShapeFont>()) 
+		if (font->isHighRes())
 		{
 			int ssx = tx, ssy = ty;
 			ScreenSpaceToGumpVec(ssx,ssy);
@@ -164,7 +166,7 @@ void TextWidget::PaintThis(RenderSurface*surf, sint32 lerp_factor, bool scaled)
 
 	renderText();
 
-	if (scaled && gamefont && !getFont()->IsOfType<ShapeFont>())
+	if (scaled && gamefont && getFont()->isHighRes())
 	{
 		surf->FillAlpha(0xFF,dims.x,dims.y,dims.w, dims.h);
 		return;
@@ -230,7 +232,7 @@ void TextWidget::PaintComposited(RenderSurface* surf, sint32 lerp_factor, sint32
 {
 	Pentagram::Font *font = getFont();
 
-	if (!gamefont || font->IsOfType<ShapeFont>()) return;
+	if (!gamefont || !font->isHighRes()) return;
 
 	if (!blendColour)
 		cached_text->draw(surf, 0, 0, true);

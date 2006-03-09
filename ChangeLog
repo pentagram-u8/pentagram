@@ -1,3 +1,7 @@
+2006-03-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/fonts/FontManager.cpp: added ttf_highres option to ini
+	* graphics/fonts/Font.cpp: added isHighRes() function
+
 2006-03-06  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* audio/SpeechFlex.cpp: convert tabs to spaces before comparing strings
 	* world/actors/AvatarMoverProcess.cpp: don't stand up when in stasis

@@ -61,7 +61,7 @@ void EditWidget::InitGump(Gump* newparent, bool take_focus)
 	if (gamefont) 
 	{
 		Pentagram::Font *font = getFont();
-		if (!font->IsOfType<ShapeFont>()) 
+		if (font->isHighRes())
 		{
 			int ssx = 0, ssy = font->getBaseline();
 			ScreenSpaceToGumpVec(ssx,ssy);
@@ -100,13 +100,15 @@ bool EditWidget::textFits(std::string& t)
 
 	int max_width = multiline ? dims.w : 0;
 	int max_height = dims.h;
-	if (gamefont && !font->IsOfType<ShapeFont>()) GumpVecToScreenSpace(max_width,max_height);
+	if (gamefont && font->isHighRes())
+		GumpVecToScreenSpace(max_width,max_height);
 
 	font->getTextSize(t, width, height, remaining,
 					  max_width, max_height,
 					  Pentagram::Font::TEXT_LEFT, false);
 
-	if (gamefont && !font->IsOfType<ShapeFont>()) ScreenSpaceToGumpVec(width,height);
+	if (gamefont && font->isHighRes())
+		ScreenSpaceToGumpVec(width,height);
 
 	if (multiline)
 		return (remaining >= t.size());
@@ -137,7 +139,8 @@ void EditWidget::renderText()
 
 		int max_width = multiline ? dims.w : 0;
 		int max_height = dims.h;
-		if (gamefont && !font->IsOfType<ShapeFont>()) GumpVecToScreenSpace(max_width,max_height);
+		if (gamefont && font->isHighRes())
+			GumpVecToScreenSpace(max_width,max_height);
 
 		unsigned int remaining;
 		cached_text = font->renderText(text, remaining,
@@ -154,7 +157,7 @@ void EditWidget::PaintThis(RenderSurface*surf, sint32 lerp_factor, bool scaled)
 
 	renderText();
 
-	if (scaled && gamefont && !getFont()->IsOfType<ShapeFont>())
+	if (scaled && gamefont && getFont()->isHighRes())
 	{
 		surf->FillAlpha(0xFF,dims.x,dims.y,dims.w, dims.h);
 		return;
@@ -217,7 +220,7 @@ void EditWidget::PaintComposited(RenderSurface* surf, sint32 lerp_factor, sint32
 {
 	Pentagram::Font *font = getFont();
 
-	if (!gamefont || font->IsOfType<ShapeFont>()) 
+	if (!gamefont || !font->isHighRes())
 	{
 		return;
 	}
