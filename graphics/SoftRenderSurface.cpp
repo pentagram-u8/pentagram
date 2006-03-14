@@ -190,6 +190,8 @@ template<> void SoftRenderSurface<uint32>::Fill32(uint32 rgb, sint32 sx, sint32 
 // Desc: Fill alpha channel
 //
 
+//#define CHECK_ALPHA_FILLS
+
 template<class uintX> void SoftRenderSurface<uintX>::FillAlpha(uint8 alpha, sint32 sx, sint32 sy, sint32 w, sint32 h)
 {
 	clip_window.IntersectOther(sx,sy,w,h);
@@ -210,12 +212,30 @@ template<class uintX> void SoftRenderSurface<uintX>::FillAlpha(uint8 alpha, sint
 
 	uintX a = (((uintX)alpha)<<RenderSurface::format.a_shift)&RenderSurface::format.a_mask;
 
+#ifdef CHECK_ALPHA_FILLS
+	uintX c;
+	uintX m;
+	if (a == 0)
+	{
+		c = (RenderSurface::format.b_mask>>1)&RenderSurface::format.b_mask;
+		m = RenderSurface::format.b_mask;
+	}
+	else 
+	{
+		c = (RenderSurface::format.r_mask>>1)&RenderSurface::format.r_mask;
+		m = RenderSurface::format.r_mask;
+	}
+#endif
+
 	while (pixel != end)
 	{
 		while (pixel != line_end)
 		{
 			uintX *dest = reinterpret_cast<uintX*>(pixel);
 			*dest =( *dest & ~RenderSurface::format.a_mask) | a;
+#ifdef CHECK_ALPHA_FILLS
+			*dest = (*dest&~m) | (c + (((*dest&m)>>1)&m));
+#endif
 			pixel+=sizeof(uintX);
 		}
 

@@ -3,6 +3,9 @@
 	  building Pentagram 
 	* misc\Console.cpp, graphics\SoftRenderSurface.inl : Fixing up some 
 	  compiling probs
+	* graphics/SoftRenderSurface.cpp : Added CHECK_ALPHA_FILLS define for
+	  SoftRenderSurface::FillAlpha() to enable some checking of what is 
+	  happening with the alpha filling.
 	  
 2006-03-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/fonts/FontManager.cpp: added ttf_highres option to ini
