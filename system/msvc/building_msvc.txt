@@ -1,0 +1,115 @@
+General
+-------
+This MSVC Solution has been created in VC++ 2005 Express Edition. It should 
+work in the commercial editions too, but hasn't been tested. The solution can 
+compile for i386 or AMD64 (see section below for details).
+
+Executable output files will be placed in the root Pentagram directory.
+AMD64 builds will have a '64' suffix. 
+Debug builds will have a 'D' suffix.
+
+
+Libraries
+---------
+
+Pentagram requires the following libraries:
+libpng
+SDL
+SDL_ttf
+zlib
+
+The file libs\libs.zip contains the libaries and headers for libpng 1.2.8,
+SDL 1.2.9, SDL_ttf 2.0.7 and zlib 1.2.1 compiled for both i386 and AMD64. The
+AMD64 libraries have a '64' suffix.
+
+Extract the zip file with directories into the libs directory to compile with 
+the supplied libraries. Otherwise obtain your own versions and update the libs
+project to point to the correct versions. You'll end up with a directory 
+structure like so:
+msvc\libs\lpng128
+msvc\libs\SDL-1.2.9\include
+msvc\libs\SDL-1.2.9\lib
+msvc\libs\SDL_ttf-2.0.7\include
+msvc\libs\SDL_ttf-2.0.7\lib
+msvc\libs\zlib-1.2.1
+
+The libs project will includ all the required library files for all the other
+projects. It is setup to select the correct library depending on the 
+architecture.
+
+Source code for the libraries is in the libs\libs_src.zip file. There are 
+various interdependencies between the libraries. Rebuilding should be done in
+this order: zlib, libpng, SDL, freetype, SDL_ttf.
+
+
+AMD64 Building+Cross Compiling
+------------------------------
+
+As Visual C++ 2005 Express Edition doesn't natively support compiling to AMD64,
+building requires the Platform SDK and a very specific setup to work. One 
+problem is you can not switch between targets on the fly. You need to quit and 
+reload Visual C++ 2005 Express Edition.
+
+Firstly, download the Windows Server 2003 SP1 Platform SDK 
+http://www.microsoft.com/downloads/details.aspx?FamilyID=a55b6b43-e24f-4ea3-a93e-40c0ec4f68e5&DisplayLang=en
+When installing make sure you have the 'AMD64 Build tools' selected for 
+installation. The AMD64 Build Tools support cross compiling so you can build
+AMD64 executables in 32Bit Windows. The instructions below are the same for 
+both.
+
+Next step is to tell Visual C++ 2005 Express Edition to use the AMD64 compiler
+and libraries. This is done by opening a Platform SDK "Server 2003 X64 Build 
+environment" and running 'VCExpress' with the /useenv switch.
+
+WARNING: the /useenv switch is sticky! It will wipe out all of the directories
+you may have set for VC++ in the Options dialogbox if you are not careful.
+
+To automate this procedure I put a VCExpressEnv.cmd file in the 
+"\Program Files\Microsoft Visual Studio 8\Common7\IDE" directory and 
+run that. The contents of my VCExpressEnv.cmd :
+@echo off
+call "..\..\vc\vcvarsall.bat"
+set MSVCDir=%VCINSTALLDIR%	
+call "T:\Program Files\Microsoft Platform SDK\SetEnv" %1 %2
+call "%DXSDK_DIR%Utilities\Bin\dx_setenv"  
+set INCLUDE=%INCLUDE%;$(VCInstallDir)\Include
+start VCExpress.exe /useenv
+
+Just note that I also have the DirectX SDK installed and I setup the 
+envrionment for that too and you'll want to change the paths. Also if you need 
+to, you should add any extra INCLUDE or LIB paths to the environment variables
+before the 'start VCExpress.exe /useenv' line.
+
+After that, you then run VCExpressEnv.cmd with different arguements depending on
+what operating system and architechture you want to use.
+
+VCExpressEnv.cmd         - target Windows XP 32
+VCExpressEnv.cmd /2000   - target Windows 2000 and IE 5.0
+VCExpressEnv.cmd /XP32   - target Windows XP 32
+VCExpressEnv.cmd /XP64   - target Windows XP 64
+VCExpressEnv.cmd /SRV32  - target Windows Server 2003 32 bit
+VCExpressEnv.cmd /SRV64  - target Windows Server 2003 64 bit (IA64 - Itanium)
+VCExpressEnv.cmd /X64    - target Windows X64 (AMD64)
+
+I have 2 shortcuts to VCExpressEnv.cmd in my QuickLaunch depending on what 
+architecture I want to build for. I recommend you do the same.
+
+Microsoft Visual C++ 2005 Express Edition AMD64 Build
+Target: "T:\Program Files (x86)\Microsoft Visual Studio 8\Common7\IDE\VCExpressENV.cmd" /X64
+
+Microsoft Visual C++ 2005 Express Edition Win 2000 Build
+Target: "T:\Program Files (x86)\Microsoft Visual Studio 8\Common7\IDE\VCExpressENV.cmd" /2000
+
+If everything is done correctly, you should now be able to build Pentagram for 
+AMD64. Just a note because the project settings are different (and mutually 
+imcompatible) between the i386 and AMD64 builds, I have included a special 
+testarch.cmd in the MSVC directory to ensure that the build environment is 
+setup correctly. TestARCH is run in the Prebuild phase of each project and will
+return an error if something is wrong.
+
+I have NOT tried building Pentagram for IA64. I imagine that it should compile
+fine but you'll need to add an extra project configuration named 
+Debug IA64 and Release IA64
+
+I also have NOT tried building Pentagram with the Feburary 2006 CTP Platform 
+SDK either. 

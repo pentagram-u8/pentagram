@@ -1,3 +1,9 @@
+2006-03-14  Ryan Nunn <colourles@users.sourceforge.net>
+	* system\msvc\*, misc\pent_include.h : Visual C++ 2005 Express Projects for
+	  building Pentagram 
+	* misc\Console.cpp, graphics\SoftRenderSurface.inl : Fixing up some 
+	  compiling probs
+	  
 2006-03-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/fonts/FontManager.cpp: added ttf_highres option to ini
 	* graphics/fonts/Font.cpp: added isHighRes() function

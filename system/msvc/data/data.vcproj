@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="Windows-1252"?>
+<VisualStudioProject
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="data.h"
+	ProjectGUID="{0CE98989-F599-43D1-B950-3E4CB376552F}"
+	RootNamespace="data.h"
+	Keyword="MakeFileProj"
+	>
+	<Platforms>
+		<Platform
+			Name="Win32"
+		/>
+	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
+	<Configurations>
+		<Configuration
+			Name="Debug AMD64|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="0"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; build /NOLOGO"
+				ReBuildCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; rebuild /NOLOGO"
+				CleanCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; clean /NOLOGO"
+				Output="../../../data/data.h"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release AMD64|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="0"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; build /NOLOGO"
+				ReBuildCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; rebuild /NOLOGO"
+				CleanCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; clean /NOLOGO"
+				Output="../../../data/data.h"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Debug i386|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="0"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; build /NOLOGO"
+				ReBuildCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; rebuild /NOLOGO"
+				CleanCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; clean /NOLOGO"
+				Output="../../../data/data.h"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+		<Configuration
+			Name="Release i386|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
+			ConfigurationType="0"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
+			>
+			<Tool
+				Name="VCNMakeTool"
+				BuildCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; build /NOLOGO"
+				ReBuildCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; rebuild /NOLOGO"
+				CleanCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; clean /NOLOGO"
+				Output="../../../data/data.h"
+				PreprocessorDefinitions=""
+				IncludeSearchPath=""
+				ForcedIncludes=""
+				AssemblySearchPath=""
+				ForcedUsingAssemblies=""
+				CompileAsManaged=""
+			/>
+		</Configuration>
+	</Configurations>
+	<References>
+	</References>
+	<Files>
+		<File
+			RelativePath="..\..\..\data\covers.png"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\data\fixedfont.ini"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\data\fixedfont.tga"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\data\flags.png"
+			>
+		</File>
+		<File
+			RelativePath="Makefile"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\data\mouse.tga"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\data\navbar.png"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\objects.mk"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\data\title.png"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\data\u8.ini"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\data\u8armour.ini"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\data\u8bindings.ini"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\data\u8french.ini"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\data\u8german.ini"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\data\u8monsters.ini"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\data\u8spanish.ini"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\data\u8weapons.ini"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\data\Vera.ttf"
+			>
+		</File>
+		<File
+			RelativePath="..\..\..\data\VeraBd.ttf"
+			>
+		</File>
+	</Files>
+	<Globals>
+	</Globals>
+</VisualStudioProject>

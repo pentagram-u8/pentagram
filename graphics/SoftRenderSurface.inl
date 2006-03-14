@@ -327,6 +327,7 @@ const sint32 neg = (FLIP_CONDITIONAL)?-1:0;
 		}
 	}
 
+#undef NOT_DESTINATION_MASKED
 #undef OFFSET_PIXELS
 #undef CUSTOM_BLEND
 #undef LINE_END_ASSIGN

@@ -666,7 +666,7 @@ void Console::AddCharacterToCommandBuffer(int ch)
 			int count = 0;
 			Console::ArgsType common;
 			std::map<Console::ArgsType,Console::Function>::iterator it;
-			std::map<Console::ArgsType,Console::Function>::iterator found = 0;
+			std::map<Console::ArgsType,Console::Function>::iterator found;
 
 			for (it = ConsoleCommands.begin(); it != ConsoleCommands.end(); ++it)
 				if (it->second) {
