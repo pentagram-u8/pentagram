@@ -1,6 +1,12 @@
+2006-03-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/Gump.*: add rounding-style parameters to coordinate conversion
+	  functions
+	* gumps/Gump.*: use screenspace in PaintCompositing/PaintComposited to
+	  avoid rounding errors
+
 2006-03-14  Ryan Nunn <colourles@users.sourceforge.net>
-	* system\msvc\*, misc\pent_include.h : Visual C++ 2005 Express Projects for
-	  building Pentagram 
+	* system\msvc\*, misc\pent_include.h : Visual C++ 2005 Express Projects
+	  for building Pentagram 
 	* misc\Console.cpp, graphics\SoftRenderSurface.inl : Fixing up some 
 	  compiling probs
 	* graphics/SoftRenderSurface.cpp : Added CHECK_ALPHA_FILLS define for

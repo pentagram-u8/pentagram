@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2005  The Pentagram Team
+ *  Copyright (C) 2003-2006  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -309,7 +309,8 @@ void Gump::PaintChildren(RenderSurface *surf, sint32 lerp_factor, bool scaled)
 	}	
 }
 
-void Gump::PaintCompositing(RenderSurface* surf, sint32 lerp_factor, sint32 sx, sint32 sy)
+void Gump::PaintCompositing(RenderSurface* surf, sint32 lerp_factor,
+							sint32 sx, sint32 sy)
 {
 	// Don't paint if hidden
 	if (IsHidden()) return;
@@ -321,16 +322,16 @@ void Gump::PaintCompositing(RenderSurface* surf, sint32 lerp_factor, sint32 sx, 
 	// FIXME - Big accuracy problems here with the origin and clipping rect
 
 	// Set the new Origin
-	int nx=0, ny=0;
-	GumpToParent(nx,ny);
-	surf->SetOrigin(ox+ScaleCoord(nx,sx), oy+ScaleCoord(ny,sy));
+	surf->SetOrigin(0,0);
 
 	// Get Old Clipping Rect
 	Pentagram::Rect old_rect;
 	surf->GetClippingRect(old_rect);
 
 	// Set new clipping rect
-	Pentagram::Rect new_rect( ScaleCoord(dims.x,sx), ScaleCoord(dims.y,sy), ScaleCoord(dims.w,sx), ScaleCoord(dims.h,sy) );
+	int cx=dims.x,cy=dims.y,cw=dims.w,ch=dims.h;
+	GumpRectToScreenSpace(cx,cy,cw,ch,ROUND_OUTSIDE);
+	Pentagram::Rect new_rect(cx,cy,cw,ch);
 	new_rect.Intersect(old_rect);
 	surf->SetClippingRect(new_rect);
 
@@ -460,29 +461,29 @@ bool Gump::PointOnGump(int mx, int my)
 }
 
 // Convert a screen space point to a gump point
-void Gump::ScreenSpaceToGump(int &sx, int &sy)
+void Gump::ScreenSpaceToGump(int &sx, int &sy, PointRoundDir r)
 {
 	// This is a recursive operation. We get each
 	// parent to convert the point into their local
 	// coords. 
-	if (parent) parent->ScreenSpaceToGump(sx,sy);
+	if (parent) parent->ScreenSpaceToGump(sx,sy,r);
 
-	ParentToGump(sx,sy);
+	ParentToGump(sx,sy,r);
 }
 
 // Convert a gump point to a screen space point
-void Gump::GumpToScreenSpace(int &gx, int &gy)
+void Gump::GumpToScreenSpace(int &gx, int &gy, PointRoundDir r)
 {
 	// This is a recursive operation. We get each
 	// gump to convert the point to their parent
 
-	GumpToParent(gx,gy);
+	GumpToParent(gx,gy,r);
 
-	if (parent) parent->GumpToScreenSpace(gx,gy);
+	if (parent) parent->GumpToScreenSpace(gx,gy,r);
 }
 
 // Convert a parent relative point to a gump point
-void Gump::ParentToGump(int &px, int &py)
+void Gump::ParentToGump(int &px, int &py, PointRoundDir)
 {
 	px -= x;
 	px += dims.x;
@@ -491,7 +492,7 @@ void Gump::ParentToGump(int &px, int &py)
 }
 
 // Convert a gump point to parent relative point
-void Gump::GumpToParent(int &gx, int &gy)
+void Gump::GumpToParent(int &gx, int &gy, PointRoundDir)
 {
 	gx -= dims.x;
 	gx += x;
@@ -499,28 +500,38 @@ void Gump::GumpToParent(int &gx, int &gy)
 	gy += y;
 }
 
-// Transform a position invariant vector to screenspace from gumpspace
-void Gump::GumpVecToScreenSpace(int &vx, int &vy)
+// Transform a rectangle to screenspace from gumpspace
+void Gump::GumpRectToScreenSpace(int &gx, int &gy, int &gw, int &gh,
+								 RectRoundDir r)
 {
-	int ssx = 0, ssy = 0;
-	ScreenSpaceToGump(ssx,ssy);
-	ssx += vx;
-	ssy += vy;
-	GumpToScreenSpace(ssx,ssy);
-	vx = ssx;//(ssx>=0?ssx:-ssx);
-	vy = ssy;//(ssy>=0?ssy:-ssy);
+	PointRoundDir tl = (r==ROUND_INSIDE ? ROUND_BOTTOMRIGHT : ROUND_TOPLEFT);
+	PointRoundDir br = (r==ROUND_OUTSIDE ? ROUND_BOTTOMRIGHT : ROUND_TOPLEFT);
+
+	int x1 = gx, y1 = gy;
+	int x2 = gx+gw, y2 = gy+gh;
+	GumpToScreenSpace(x1,y1,tl);
+	GumpToScreenSpace(x2,y2,br);
+	gx = x1;
+	gy = y1;
+	if (gw != 0) gw = x2-x1;
+	if (gh != 0) gh = y2-y1;
 }
 
-// Transform a position invariant vector to gumpspace from screenspace
-void Gump::ScreenSpaceToGumpVec(int &vx, int &vy)
+// Transform a rectangle to gumpspace from screenspace
+void Gump::ScreenSpaceToGumpRect(int &sx, int &sy, int &sw, int &sh,
+								 RectRoundDir r)
 {
-	int ssx = 0, ssy = 0;
-	GumpToScreenSpace(ssx,ssy);
-	ssx += vx;
-	ssy += vy;
-	ScreenSpaceToGump(ssx,ssy);
-	vx = ssx;//(ssx>=0?ssx:-ssx);
-	vy = ssy;//(ssy>=0?ssy:-ssy);
+	PointRoundDir tl = (r==ROUND_INSIDE ? ROUND_BOTTOMRIGHT : ROUND_TOPLEFT);
+	PointRoundDir br = (r==ROUND_OUTSIDE ? ROUND_BOTTOMRIGHT : ROUND_TOPLEFT);
+
+	int x1 = sx, y1 = sy;
+	int x2 = sx+sw, y2 = sy+sh;
+	ScreenSpaceToGump(x1,y1,tl);
+	ScreenSpaceToGump(x2,y2,br);
+	sx = x1;
+	sy = y1;
+	if (sw != 0) sw = x2-x1;
+	if (sh != 0) sh = y2-y1;
 }
 
 uint16 Gump::TraceObjId(int mx, int my)

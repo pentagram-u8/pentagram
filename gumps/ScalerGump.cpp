@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004-2005  The Pentagram Team
+ *  Copyright (C) 2004-2006  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -136,25 +136,33 @@ void ScalerGump::DoScalerBlit(Texture* src, int swidth, int sheight, RenderSurfa
 }
 
 // Convert a parent relative point to a gump point
-void ScalerGump::ParentToGump(int &px, int &py)
+void ScalerGump::ParentToGump(int &px, int &py, PointRoundDir r)
 {
 	px -= x;
 	px *= dims.w;
+	if (px < 0 && r == ROUND_TOPLEFT) px -= (width - 1);
+	if (px > 0 && r == ROUND_BOTTOMRIGHT) px += (width - 1);
 	px /= width;
 
 	py -= y;
 	py *= dims.h;
+	if (py < 0 && r == ROUND_TOPLEFT) py -= (height - 1);
+	if (py > 0 && r == ROUND_BOTTOMRIGHT) py += (height - 1);
 	py /= height;
 }
 
 // Convert a gump point to parent relative point
-void ScalerGump::GumpToParent(int &gx, int &gy)
+void ScalerGump::GumpToParent(int &gx, int &gy, PointRoundDir r)
 {
 	gx *= width;
+	if (gx < 0 && r == ROUND_TOPLEFT) gx -= (dims.w - 1);
+	if (gx > 0 && r == ROUND_BOTTOMRIGHT) gx += (dims.w - 1);
 	gx /= dims.w;
 	gx += x;
 
 	gy *= height;
+	if (gy < 0 && r == ROUND_TOPLEFT) gy -= (dims.h - 1);
+	if (gy > 0 && r == ROUND_BOTTOMRIGHT) gy += (dims.h - 1);
 	gy /= dims.h;
 	gy += y;
 }

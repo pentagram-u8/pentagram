@@ -65,14 +65,21 @@ void TextWidget::InitGump(Gump* newparent, bool take_focus)
 	dims.x = 0;
 
 	if (gamefont && getFont()->isHighRes()) {
-		int tw = targetwidth;
-		int th = targetheight;
+		int w = 0;
+		int x = 0, y = 0;
+		ScreenSpaceToGumpRect(x, y, w, dims.y, ROUND_OUTSIDE);
 
-		GumpVecToScreenSpace(tw, th);
+		int tx = dims.x;
+		int ty = dims.y;
 
-		// 0 is special, so don't replace that.
-		if (targetwidth > 0) targetwidth = tw;
-		if (targetheight > 0) targetheight = th;
+		// Note that GumpRectToScreenSpace is guaranteed to keep
+		// targetwidth/targetheight zero if they already were.
+		GumpRectToScreenSpace(tx,ty, targetwidth,targetheight, ROUND_OUTSIDE);
+
+		dims.w = targetwidth;
+		dims.h = targetheight;
+		x = 0; y = 0;
+		ScreenSpaceToGumpRect(x, y, dims.w, dims.h, ROUND_OUTSIDE);
 	}
 
 	setupNextText();
@@ -83,10 +90,11 @@ int TextWidget::getVlead()
 	renderText();
 	assert(cached_text);
 
-	int ssx = 0, vlead = cached_text->getVlead();
+	int vlead = cached_text->getVlead();
 
 	if (gamefont && getFont()->isHighRes()) {
-		ScreenSpaceToGumpVec(ssx,vlead);
+		int x=0,y=0,w=0;
+		ScreenSpaceToGumpRect(x, y, w, vlead, ROUND_OUTSIDE);
 	}
 
 	return vlead;
@@ -115,6 +123,8 @@ bool TextWidget::setupNextText()
 
 	dims.w = tx;
 	dims.h = ty;
+	dims.y = -font->getBaseline();
+	dims.x = 0;
 	current_end = current_start + remaining;
 
 	delete cached_text;
@@ -125,14 +135,12 @@ bool TextWidget::setupNextText()
 		Pentagram::Font *font = getFont();
 		if (font->isHighRes())
 		{
-			int ssx = tx, ssy = ty;
-			ScreenSpaceToGumpVec(ssx,ssy);
-			dims.w = ssx+1;
-			dims.h = ssy+1;
+			int x = 0, y = 0;
+			ScreenSpaceToGumpRect(x,y, dims.w,dims.h, ROUND_OUTSIDE);
 
-			ssy = font->getBaseline();
-			ScreenSpaceToGumpVec(ssx,ssy);
-			dims.y = -ssy;
+			int w = 0;
+			x = 0; y = 0;
+			ScreenSpaceToGumpRect(x, y, w, dims.y, ROUND_OUTSIDE);
 		}
 	}
 
@@ -178,55 +186,6 @@ void TextWidget::PaintThis(RenderSurface*surf, sint32 lerp_factor, bool scaled)
 		cached_text->drawBlended(surf, 0, 0, blendColour);
 }
 
-void TextWidget::PaintCompositing(RenderSurface* surf, sint32 lerp_factor, sint32 sx, sint32 sy)
-{
-	// Don't paint if hidden
-	if (IsHidden()) return;
-
-	// Get old Origin
-	int ox=0, oy=0;
-	surf->GetOrigin(ox, oy);
-
-	// FIXME - Big accuracy problems here with the origin
-
-	// Set the new Origin
-	int nx=0, ny=0;
-	GumpToParent(nx,ny);
-	surf->SetOrigin(ox+ScaleCoord(nx,sx), oy+ScaleCoord(ny,sy));
-
-	// Get Old Clipping Rect
-	Pentagram::Rect old_rect;
-	surf->GetClippingRect(old_rect);
-
-	// Set new clipping rect
-	Pentagram::Rect new_rect( 0, -getFont()->getBaseline(), tx, ty );
-	new_rect.Intersect(old_rect);
-	surf->SetClippingRect(new_rect);
-
-	// Iterate all children
-	std::list<Gump*>::reverse_iterator it = children.rbegin();
-	std::list<Gump*>::reverse_iterator end = children.rend();
-
-	while (it != end)
-	{
-		Gump *g = *it;
-		// Paint if not closing
-		if (!g->IsClosing()) 
-			g->PaintCompositing(surf, lerp_factor, sx, sy);
-
-		++it;
-	}	
-
-	// Paint This
-	PaintComposited(surf, lerp_factor, sx, sy);
-
-	// Reset The Clipping Rect
-	surf->SetClippingRect(old_rect);
-
-	// Reset The Origin
-	surf->SetOrigin(ox, oy);
-}
-
 // Overloadable method to Paint just this gumps unscaled components that require compositing (RenderSurface is relative to parent).
 void TextWidget::PaintComposited(RenderSurface* surf, sint32 lerp_factor, sint32 sx, sint32 sy)
 {
@@ -234,16 +193,22 @@ void TextWidget::PaintComposited(RenderSurface* surf, sint32 lerp_factor, sint32
 
 	if (!gamefont || !font->isHighRes()) return;
 
+	int x=0,y=0;
+	GumpToScreenSpace(x,y,ROUND_BOTTOMRIGHT);
+
 	if (!blendColour)
-		cached_text->draw(surf, 0, 0, true);
+		cached_text->draw(surf, x, y, true);
 	else
-		cached_text->drawBlended(surf, 0, 0, blendColour, true);
+		cached_text->drawBlended(surf, x, y, blendColour, true);
 
 	if (parent->IsOfType<BarkGump>()) return;
 
 	if (parent->IsOfType<ButtonWidget>() && parent->GetParent()->IsOfType<AskGump>()) return;
 
-	surf->FillAlpha(0x00, 0, -getFont()->getBaseline(), tx, ty);
+	x=dims.x; y=dims.y;
+	int w=dims.w, h=dims.h;
+	GumpRectToScreenSpace(x, y, w, h, ROUND_OUTSIDE);
+	surf->FillAlpha(0x00, x, y, w, h);
 }
 
 // don't handle any mouse motion events, so let parent handle them for us.

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2005  The Pentagram Team
+ *  Copyright (C) 2003-2006  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -213,24 +213,38 @@ public:
 	//! Detect if a point is on the gump
 	virtual bool		PointOnGump(int mx, int my);
 
+	enum PointRoundDir {
+		ROUND_TOPLEFT = 0,
+		ROUND_BOTTOMRIGHT = 1
+	};
+	enum RectRoundDir {
+		ROUND_INSIDE,
+		ROUND_OUTSIDE
+	};
+
 	//! Convert a screen space point to a gump point
-	virtual void		ScreenSpaceToGump(int &sx, int &sy);
+	virtual void		ScreenSpaceToGump(int &sx, int &sy,
+										  PointRoundDir r = ROUND_TOPLEFT);
 
 	//! Convert a gump point to a screen space point
-	virtual void		GumpToScreenSpace(int &gx, int &gy);
+	virtual void		GumpToScreenSpace(int &gx, int &gy,
+										  PointRoundDir r = ROUND_TOPLEFT);
 
 	//! Convert a parent relative point to a gump point
-	virtual void		ParentToGump(int &px, int &py);
+	virtual void		ParentToGump(int &px, int &py,
+									 PointRoundDir r = ROUND_TOPLEFT);
 
 	//! Convert a gump point to parent relative point
-	virtual void		GumpToParent(int &gx, int &gy);
+	virtual void		GumpToParent(int &gx, int &gy,
+									 PointRoundDir r = ROUND_TOPLEFT);
 
-	//! Transform a position invariant vector to screenspace from gumpspace
-	virtual void		GumpVecToScreenSpace(int &vx, int &vy);
+	//! Transform a rectangle to screenspace from gumpspace
+	virtual void		GumpRectToScreenSpace(int &gx,int &gy, int &gw,int &gh,
+											  RectRoundDir r = ROUND_OUTSIDE);
 
-	//! Transform a position invariant vector to gumpspace from screenspace
-	virtual void		ScreenSpaceToGumpVec(int &vx, int &vy);
-
+	//! Transform a rectangle to gumpspace from screenspace
+	virtual void		ScreenSpaceToGumpRect(int &sx,int &sy, int &sw,int &sh,
+											 RectRoundDir r = ROUND_OUTSIDE);
 
 	//! Trace a click, and return ObjId
 	virtual uint16		TraceObjId(int mx, int my);

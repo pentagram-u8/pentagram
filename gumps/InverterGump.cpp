@@ -113,7 +113,7 @@ void InverterGump::PaintChildren(RenderSurface* surf, sint32 lerp_factor, bool s
 }
 
 // Convert a parent relative point to a gump point
-void InverterGump::ParentToGump(int &px, int &py)
+void InverterGump::ParentToGump(int &px, int &py, PointRoundDir)
 {
 	px -= x;
 	px += dims.x;
@@ -123,7 +123,7 @@ void InverterGump::ParentToGump(int &px, int &py)
 }
 
 // Convert a gump point to parent relative point
-void InverterGump::GumpToParent(int &gx, int &gy)
+void InverterGump::GumpToParent(int &gx, int &gy, PointRoundDir)
 {
 	gx -= dims.x;
 	gx += x;

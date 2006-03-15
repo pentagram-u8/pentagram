@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2005  The Pentagram Team
+ *  Copyright (C) 2003-2006  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -62,7 +62,6 @@ public:
 	// Overloadable method to Paint just this Gump (RenderSurface is relative to this)
 	virtual void			PaintThis(RenderSurface*, sint32 lerp_factor, bool scaled);
 
-	virtual void			PaintCompositing(RenderSurface* surf, sint32 lerp_factor, sint32 scalex, sint32 scaley);
 	virtual void			PaintComposited(RenderSurface* surf, sint32 lerp_factor, sint32 scalex, sint32 scaley);
 
 	virtual Gump* OnMouseMotion(int mx, int my);

@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2005  The Pentagram Team
+ *  Copyright (C) 2003-2006  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -39,8 +39,10 @@ public:
 	// Calls PaintThis and PaintChildren.
 	virtual void		Paint(RenderSurface*, sint32 lerp_factor, bool scaled);
 
-	virtual void		ParentToGump(int &px, int &py);
-	virtual void		GumpToParent(int &gx, int &gy);
+	virtual void		ParentToGump(int &px, int &py,
+									 PointRoundDir r = ROUND_TOPLEFT);
+	virtual void		GumpToParent(int &gx, int &gy,
+									 PointRoundDir r = ROUND_TOPLEFT);
 
 	virtual void		Move(int x, int y);
 

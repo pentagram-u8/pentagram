@@ -44,7 +44,6 @@ public:
 	virtual void InitGump(Gump* newparent, bool take_focus=true);
 
 	virtual void PaintThis(RenderSurface*, sint32 lerp_factor, bool scaled);
-	virtual void PaintCompositing(RenderSurface* surf, sint32 lerp_factor, sint32 sx, sint32 sy);
 	virtual void PaintComposited(RenderSurface* surf, sint32 lerp_factor, sint32 sx, sint32 sy);
 
 	virtual Gump* OnMouseMotion(int mx, int my);

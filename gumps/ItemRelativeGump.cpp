@@ -97,17 +97,17 @@ void ItemRelativeGump::Paint(RenderSurface*surf, sint32 lerp_factor, bool scaled
 
 
 // Convert a parent relative point to a gump point
-void ItemRelativeGump::ParentToGump(int &px, int &py)
+void ItemRelativeGump::ParentToGump(int &px, int &py, PointRoundDir r)
 {
 	px -= ix; 
 	py -= iy;
-	Gump::ParentToGump(px,py);
+	Gump::ParentToGump(px,py,r);
 }
 
 // Convert a gump point to parent relative point
-void ItemRelativeGump::GumpToParent(int &gx, int &gy)
+void ItemRelativeGump::GumpToParent(int &gx, int &gy, PointRoundDir r)
 {
-	Gump::GumpToParent(gx,gy);
+	Gump::GumpToParent(gx,gy,r);
 	gx += ix;
 	gy += iy;
 }
