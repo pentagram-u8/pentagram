@@ -279,7 +279,6 @@ struct EventName {HID_Event event; const char* name;};
 
 static const EventName eventNames[] =
 {
-	{HID_EVENT_DEPRESS, ""},
 	{HID_EVENT_DEPRESS, "<Depress>"},
 	{HID_EVENT_RELEASE, "<Release>"},
 	{HID_EVENT_DOUBLE, "<Double>"},
@@ -295,7 +294,7 @@ const char *HID_GetKeyName(HID_Key key)
 		if (key == keyNames[i].key)
 			return keyNames[i].name;
 	}
-	return keyNames[0].name;
+	return "";
 }
 
 HID_Key HID_GetKeyFromName(Pentagram::istring & name)
@@ -505,7 +504,7 @@ const char *HID_GetEventName(HID_Event event)
 		if (event == eventNames[i].event)
 			return eventNames[i].name;
 	}
-	return eventNames[0].name;
+	return "";
 }
 
 HID_Event HID_GetEventFromName(Pentagram::istring & name)
