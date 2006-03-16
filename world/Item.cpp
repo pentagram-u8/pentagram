@@ -30,7 +30,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Actor.h"
 #include "Kernel.h"
 #include "getObject.h"
-
 #include "MainShapeArchive.h"
 #include "GumpShapeArchive.h"
 #include "Shape.h"
@@ -58,6 +57,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UCProcess.h"
 #include "DestroyItemProcess.h"
 #include "AudioProcess.h"
+#include "GameInfo.h"
 
 #include <cstdlib>
 
@@ -1805,13 +1805,19 @@ bool Item::canMergeWith(Item* other)
 	// dirt: frame 9
 	// ex.hood: frame 10-12
 	// blackmoor: frame 14-15
-	if (getShape() != 395) return false;
+	if (CoreApp::get_instance()->getGameInfo()->type == GameInfo::GAME_U8)
+	{
+		if (getShape() != 395) return false;
 
-	if (frame1 <= 5 && frame2 <= 5) return true;
-	if (frame1 >= 6 && frame1 <= 7 && frame2 >= 6 && frame2 <= 7) return true;
-	if (frame1>=10 && frame1<=12 && frame2>=10 & frame2<=12) return true;
-	if (frame1>=14 && frame1<=15 && frame2>=14 & frame2<=15) return true;
-
+		if (frame1 <= 5 && frame2 <= 5)
+			return true;
+		if (frame1 >= 6 && frame1 <= 7 && frame2 >= 6 && frame2 <= 7)
+			return true;
+		if (frame1 >= 10 && frame1 <= 12 && frame2 >= 10 & frame2 <= 12)
+			return true;
+		if (frame1 >= 14 && frame1 <= 15 && frame2 >= 14 & frame2 <= 15)
+			return true;
+	}
 	return false;
 }
 
