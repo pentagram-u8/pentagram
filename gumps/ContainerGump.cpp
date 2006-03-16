@@ -455,14 +455,7 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 		Item* splittarget = 0;
 
 		// also try to combine
-		int family = item->getShapeInfo()->family;
-		// Note: can only combine SF_REAGENTS when frame is equal
-		// see U8's usecode FREE::2767
-		if (targetitem && targetitem->getObjId() != item->getObjId() &&
-			targetitem->getShape() == item->getShape() &&
-			(targetitem->getFrame() == item->getFrame() ||
-			 family == ShapeInfo::SF_QUANTITY))
-		{
+		if (targetitem && item->canMergeWith(targetitem)) {
 			splittarget = targetitem;
 		}
 

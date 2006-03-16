@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -95,7 +95,7 @@ public:
 	void setGumpLocation(sint32 x, sint32 y);
 
 	//! Randomize the Item's location in a ContainerGump. Effectively
-	//! This sets the coordinates to (255,255) and lets the ContainerGump
+	//! this sets the coordinates to (255,255) and lets the ContainerGump
 	//! randomize the position when it is next opened.
 	void randomGumpLocation();
 
@@ -186,6 +186,9 @@ public:
 	//! Get the family of the shape number of this Item. (This is a
 	//! member of the ShapeInfo object.)
 	uint16 getFamily();
+
+	//! Check if we can merge with another item.
+	bool canMergeWith(Item* other);
 
 	//! Get the open ContainerGump for this Item, if any. (NULL if not open.)
 	ObjId getGump() { return gump; }

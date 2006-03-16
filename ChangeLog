@@ -1,3 +1,8 @@
+2006-03-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Item.*: add Item::canMergeWith function that determines if two
+	  Items can be merged together. Check for earth reagents with
+	  different frames.
+
 2006-03-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/Gump.*: add rounding-style parameters to coordinate conversion
 	  functions
@@ -31,14 +36,15 @@
 	  to mixed-scale rendering
 
 2006-03-05  Ryan Nunn <colourles@users.sourceforge.net>
-	* Most files : Improved support for Mixed Scale rendering as outlined in 
-	  the email i sent to the Dev mailing list (when it get through...). 
+	* Most files : Improved support for Mixed Scale rendering as outlined
+	  in the email i sent to the Dev mailing list (when it get through...).
 	  Mostly means TTF fonts wont overlap on top of scaled gumps anymore.
-	* graphics\scalers\BilinearScalerInternal_Arb.cpp : Fixing 2x downscaling
+	* graphics\scalers\BilinearScalerInternal_Arb.cpp : Fixing 2x
+	  downscaling
 	* graphics\PNGWriter.cpp, graphics\TexturePNG.cpp : MSVC fixes
-	* graphics\*RenderSurface.* : Added RenderSurface::PaintMasked() function 
-	  to allow correct painting of shapes in Gump::PaintComposited() methods as
-	  it might be useful.
+	* graphics\*RenderSurface.* : Added RenderSurface::PaintMasked()
+	  function to allow correct painting of shapes in
+	  Gump::PaintComposited() methods as it might be useful.
 
 2006-03-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* data/u8japanese.ini: Japanese books/scrolls have red text
@@ -146,7 +152,8 @@
 	* kernel/GUIApp.cpp: don't pass unicode control chars to OnTextInput
 
 2006-01-19	Darke  <darkepaw@users.sf.net>
-	* convert/Convert.h, tools/fold/*: Added 0x32 (and) and 0x36 (ne) in fold.
+	* convert/Convert.h, tools/fold/*: Added 0x32 (and) and 0x36 (ne)
+	  in fold.
 	* tools/fold/*: Fixed spawn opcode (testing value==0 in if statement,
 	  then relying on value!=0 within if statement makes no sense and is
 	  surprisingly difficult to track down...).

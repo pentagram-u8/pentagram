@@ -1782,6 +1782,39 @@ bool Item::canReach(Item* other, int range,
 	return ok;
 }
 
+bool Item::canMergeWith(Item* other)
+{
+	// can't merge with self
+	if (other->getObjId() == getObjId()) return false;
+
+	if (other->getShape() != getShape()) return false;
+
+	int family = getFamily();
+	if (family == ShapeInfo::SF_QUANTITY) return true;
+
+	if (family != ShapeInfo::SF_REAGENT) return false;
+
+	uint32 frame1 = getFrame();
+	uint32 frame2 = other->getFrame();
+	if (frame1 == frame2) return true;
+
+	// special cases: necromancy reagents, shape 395
+	// blood: frame 0-5
+	// bone: frame 6-7
+	// wood: frame 8
+	// dirt: frame 9
+	// ex.hood: frame 10-12
+	// blackmoor: frame 14-15
+	if (getShape() != 395) return false;
+
+	if (frame1 <= 5 && frame2 <= 5) return true;
+	if (frame1 >= 6 && frame1 <= 7 && frame2 >= 6 && frame2 <= 7) return true;
+	if (frame1>=10 && frame1<=12 && frame2>=10 & frame2<=12) return true;
+	if (frame1>=14 && frame1<=15 && frame2>=14 & frame2<=15) return true;
+
+	return false;
+}
+
 
 void Item::saveData(ODataSource* ods)
 {
