@@ -378,8 +378,6 @@ bool UCMachine::execProcess(UCProcess* p)
 				// REALLY MAJOR HACK:
 				// see docs/u8bugs.txt and
 				// https://sourceforge.net/tracker/index.php?func=detail&aid=1018748&group_id=53819&atid=471709
-
-				// FIXME: need to make this U8-only
 				if (CoreApp::get_instance()->getGameInfo()->type ==
 							  GameInfo::GAME_U8 &&
 					p->classid == 0x48B && func == 0xD0) // setAvatarInStasis
