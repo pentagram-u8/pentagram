@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004-2005  The Pentagram Team
+ *  Copyright (C) 2004-2006  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ void ScrollGump::InitGump(Gump* newparent, bool take_focus)
 	ModalGump::InitGump(newparent, take_focus);
 
 	// Create the TextWidget
-	Gump *widget = new TextWidget(25,25,text,true,9,196,125); //!! constants
+	Gump *widget = new TextWidget(22,29,text,true,9,204,115); //!! constants
 	widget->InitGump(this);
 	textwidget = widget->getObjId();
 
