@@ -1,6 +1,7 @@
 2006-03-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/fonts/Font.*: added line-breaking rules for Japanese
 	* graphics/fonts/FontManager.*: removed unnecessary sjis field in TTFId
+	* graphics/fonts/Font.*: properly handle spaces before too long lines
 
 2006-03-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.*: add Item::canMergeWith function that determines if two

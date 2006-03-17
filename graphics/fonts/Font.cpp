@@ -255,7 +255,7 @@ std::list<PositionedText> typesetText(Pentagram::Font* font,
 					std::string::const_iterator saveiter;
 					std::string::const_iterator saveiter_fail;
 					std::string curline_fail;
-					newline.clear();
+					newline = spaces;
 					bool breakok = true;
 					int breakcount = -1;
 					do {
@@ -267,12 +267,14 @@ std::list<PositionedText> typesetText(Pentagram::Font* font,
 						curline_fail = newline;
 						saveiter_fail = iter;
 
+						if (iter == text.end()) break;
+
 						breakok = T::canBreakAfter(iter);
 
 						// try next character
 						T::advance(iter);
-						newline = text.substr(nextword-text.begin(),
-											  iter-nextword);
+						newline = spaces + text.substr(nextword-text.begin(),
+													   iter-nextword);
 						font->getStringSize(newline, stringwidth,stringheight);
 					} while (stringwidth <= width);
 					if (breakcount > 0) {
