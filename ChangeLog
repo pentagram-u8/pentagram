@@ -1,3 +1,6 @@
+2006-03-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/fonts/Font.*: added line-breaking rules for Japanese
+
 2006-03-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.*: add Item::canMergeWith function that determines if two
 	  Items can be merged together. Check for earth reagents with

@@ -47,10 +47,61 @@ void Font::getTextSize(const std::string& text,
 							  resultwidth, resultheight);
 }
 
+
+//static
+bool Font::Traits::canBreakAfter(std::string::const_iterator& i)
+{
+	// It's not really relevant what we do here, because this probably will
+	// not be used at normal font sizes.
+	return true;
 }
 
 
+//static
+bool Font::SJISTraits::canBreakAfter(std::string::const_iterator& i)
+{
+	std::string::const_iterator j = i;
+	uint32 u1 = unicode(j);
 
+	// See: http://www.wesnoth.org/wiki/JapaneseTranslation#Word-Wrapping
+	// and: http://ja.wikipedia.org/wiki/%E7%A6%81%E5%89%87
+
+	switch (u1) {
+	case 0xff08: case 0x3014: case 0xff3b: case 0xff5b: case 0x3008:
+	case 0x300a: case 0x300c: case 0x300e: case 0x3010: case 0x2018:
+	case 0x201c:
+		return false;
+	default:
+		break;
+	}
+
+	uint32 u2 = unicode(j);
+	switch (u2) {
+	case 0x3001: case 0x3002: case 0xff0c: case 0xff0e: case 0xff09:
+	case 0x3015: case 0xff3d: case 0xff5d: case 0x3009: case 0x300b:
+	case 0x300d: case 0x300f: case 0x3011: case 0x2019: case 0x201d:
+	case 0x309d: case 0x309e: case 0x30fd: case 0x30fe: case 0x3005:
+	case 0xff1f: case 0xff01: case 0xff1a: case 0xff1b: case 0x3041:
+	case 0x3043: case 0x3045: case 0x3047: case 0x3049: case 0x3083:
+	case 0x3085: case 0x3087: case 0x308e: case 0x30a1: case 0x30a3:
+	case 0x30a5: case 0x30a7: case 0x30a9: case 0x30e3: case 0x30e5:
+	case 0x30e7: case 0x30ee: case 0x3063: case 0x30f5: case 0x30c3:
+	case 0x30f6: case 0x30fb: case 0x2026: case 0x30fc:
+		return false;
+	default:
+		break;
+	}
+
+	// Also don't allow breaking between roman characters
+	if (((u1 >= 'A' && u1 <= 'Z') || (u1 >= 'a' && u1 <= 'z')) &&
+		((u2 >= 'A' && u2 <= 'Z') || (u2 >= 'a' && u2 <= 'z')))
+	{
+		return false;
+	}
+	return true;
+}
+
+}
 
 template<class T>
 static void findWordEnd(const std::string& text,
@@ -199,16 +250,24 @@ std::list<PositionedText> typesetText(Pentagram::Font* font,
 				} else {
 					// word is longer than the line; have to break in mid-word
 					// FIXME: this is rather inefficient; binary search?
-					// (OTOH, it should rarely be used, so no priority)
-					// FIXME: can't break Japanese lines after each character.
-					// http://www.wesnoth.org/wiki/JapaneseTranslation has a
-					// nice list under 'Word-Wrapping'.
+					// FIXME: clean up...
 					iter = nextword;
 					std::string::const_iterator saveiter;
+					std::string::const_iterator saveiter_fail;
+					std::string curline_fail;
 					newline.clear();
+					bool breakok = true;
+					int breakcount = -1;
 					do {
-						curline = newline;
-						saveiter = iter;
+						if (breakok) {
+							curline = newline;
+							saveiter = iter;
+							breakcount++;
+						}
+						curline_fail = newline;
+						saveiter_fail = iter;
+
+						breakok = T::canBreakAfter(iter);
 
 						// try next character
 						T::advance(iter);
@@ -216,7 +275,12 @@ std::list<PositionedText> typesetText(Pentagram::Font* font,
 											  iter-nextword);
 						font->getStringSize(newline, stringwidth,stringheight);
 					} while (stringwidth <= width);
-					iter = saveiter;
+					if (breakcount > 0) {
+						iter = saveiter;
+					} else {
+						iter = saveiter_fail;
+						curline = curline_fail;
+					}
 				}
 				breakhere = true;
 				continue;

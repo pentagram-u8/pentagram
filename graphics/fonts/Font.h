@@ -121,6 +121,7 @@ protected:
 			return (c == '\n' ||
 					(u8specials && (c == '\n' || c == '~' || c == '*')));
 		}
+		static bool canBreakAfter(std::string::const_iterator& i);
 		static void advance(std::string::const_iterator& i) {
 			++i;
 		}
@@ -133,6 +134,7 @@ protected:
 	};
 	struct SJISTraits : public Traits
 	{
+		static bool canBreakAfter(std::string::const_iterator& i);
 		static void advance(std::string::const_iterator& i) {
 			// FIXME: this can advance past the end of a malformed string
 			uint8 c = *i;
