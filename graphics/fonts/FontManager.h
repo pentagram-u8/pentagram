@@ -77,13 +77,10 @@ private:
 	struct TTFId {
 		std::string filename;
 		int pointsize;
-		bool SJIS;
 		bool operator<(const TTFId& other) const {
 			return (pointsize < other.pointsize ||
 					(pointsize == other.pointsize &&
-					 ((!SJIS && other.SJIS) ||
-					  (SJIS == other.SJIS &&
-					   filename < other.filename))));
+					 filename < other.filename));
 		}
 	};
 	std::map<TTFId, TTF_Font*> ttf_fonts;
@@ -91,7 +88,7 @@ private:
 
 	//! Get a (possibly cached) TTF_Font structure for filename/pointsize,
 	//! loading it if necessary.
-	TTF_Font* getTTF_Font(std::string filename, int pointsize, bool SJIS);
+	TTF_Font* getTTF_Font(std::string filename, int pointsize);
 
 	//! Override fontnum with override
 	void setOverride(unsigned int fontnum, Pentagram::Font* override);
