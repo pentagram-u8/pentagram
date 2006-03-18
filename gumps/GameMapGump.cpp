@@ -408,7 +408,9 @@ void GameMapGump::OnMouseDouble(int button, int mx, int my)
 			item->getLocation(x,y,z);
 			item->dumpInfo();
 
-			if (avatar->canReach(item, 128)) { // CONSTANT!
+			if (p_dynamic_cast<Actor*>(item) ||
+				avatar->canReach(item, 128)) // CONSTANT!
+			{
 				// call the 'use' event
 				item->use();
 			} else {

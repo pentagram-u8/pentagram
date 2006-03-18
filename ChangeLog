@@ -1,5 +1,6 @@
 2006-03-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/BookGump.cpp, gumps/ScrollGump.cpp: adjusted text rectangles
+	* gumps/GameMapGump.cpp: don't do range checks for talking to NPCs
 
 2006-03-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/fonts/Font.*: added line-breaking rules for Japanese
