@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -778,10 +778,9 @@ bool CurrentMap::scanForValidPosition(sint32 x, sint32 y, sint32 z, Item* item,
 
 	// Note on scan direction:
 	// The 'horiz' variable below will always mean a direction in
-	// the positive x/y directions, with the exception of searchdir 3,
+	// the positive  x/y directions, with the exception of searchdir 1,
 	// in which case positive horiz points in the (positive x, negative y)
-	// direction. This is reflected below in
-	// tx = x + x_fact[searchdir]*horiz; ty = y - y_fact[searchdir]*horiz;
+	// direction.
 
 
 	// next, we'll loop over all objects in the area, and mark the areas
@@ -837,13 +836,13 @@ bool CurrentMap::scanForValidPosition(sint32 x, sint32 y, sint32 z, Item* item,
 					minh = sminx;
 				if (xdir && maxh > smaxx)
 					maxh = smaxx;
-				if ((ydir && searchdir != 3) && minh < sminy)
+				if ((ydir && searchdir != 1) && minh < sminy)
 					minh = sminy;
-				if ((ydir && searchdir != 3) && maxh > smaxy)
+				if ((ydir && searchdir != 1) && maxh > smaxy)
 					maxh = smaxy;
-				if (searchdir == 3 && minh < -smaxy)
+				if (searchdir == 1 && minh < -smaxy)
 					minh = -smaxy;
-				if (searchdir == 3 && maxh > -sminy)
+				if (searchdir == 1 && maxh > -sminy)
 					maxh = -sminy;
 				
 				if (minh < -8) minh = -8;
@@ -892,8 +891,14 @@ bool CurrentMap::scanForValidPosition(sint32 x, sint32 y, sint32 z, Item* item,
 					(supportmask[vert+8] & (1<<(horiz+8))))
 				{
 					tz = z + vert;
-					tx = x + x_fact[searchdir]*horiz;
-					ty = y - y_fact[searchdir]*horiz;
+					tx = x;
+					if (searchdir != 0)
+						tx += horiz;
+					ty = y;
+					if (searchdir == 1) 
+						ty -= horiz;
+					else if (searchdir != 2)
+						ty += horiz;
 				}
 				if (!wantsupport || (supportmask[vert+8] & (1<<(horiz+8))))
 					return true;

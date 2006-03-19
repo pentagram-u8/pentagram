@@ -1,5 +1,6 @@
 2006-03-19  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/BarkGump.cpp: determine text speed by 'textdelay' setting
+	* world/CurrentMap.cpp: fix scanForValidPosition diagonal scan dirs
 
 2006-03-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/BookGump.cpp, gumps/ScrollGump.cpp: adjusted text rectangles
