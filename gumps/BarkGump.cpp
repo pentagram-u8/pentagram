@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2005  The Pentagram Team
+ *  Copyright (C) 2003-2006  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,6 +22,7 @@
 #include "Kernel.h"
 #include "AudioProcess.h"
 #include "getObject.h"
+#include "SettingManager.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -42,6 +43,7 @@ BarkGump::BarkGump(uint16 owner, std::string msg, uint32 speechshapenum_) :
 	barked(msg), counter(100), speechshapenum(speechshapenum_),
 	speechlength(0), totaltextheight(0)
 {
+	SettingManager::get_instance()->get("textdelay", textdelay);
 }
 
 BarkGump::~BarkGump(void)
@@ -104,7 +106,7 @@ void BarkGump::InitGump(Gump* newparent, bool take_focus)
 	if (speechlength && totaltextheight) {
 		counter = (d.h * speechlength) / totaltextheight;
 	} else {
-		counter = d.h*5; //! constant
+		counter = d.h * textdelay;
 	}
 	dims.h = d.h;
 	dims.w = d.w;
@@ -124,7 +126,7 @@ bool BarkGump::NextText()
 		if (speechlength && totaltextheight) {
 			counter = (d.h * speechlength) / totaltextheight;
 		} else {
-			counter = d.h*5; //! constant
+			counter = d.h * textdelay;
 		}
 		dims.h = d.h;
 		dims.w = d.w;
@@ -157,7 +159,7 @@ bool BarkGump::Run(const uint32 framenum)
 				if (!speechplaying)
 					Close();
 				else
-					counter = 5;
+					counter = textdelay;
 			}
 		}
 	}
@@ -217,10 +219,12 @@ bool BarkGump::loadData(IDataSource* ids, uint32 version)
 
 	TextWidget *widget = p_dynamic_cast<TextWidget*>(getGump(textwidget));
 
+	SettingManager::get_instance()->get("textdelay", textdelay);
+
 	// This is just a hack
 	Pentagram::Rect d;
 	widget->GetDims(d);
-	counter = d.h*5; //! constant
+	counter = d.h * textdelay;
 	dims.h = d.h;
 	dims.w = d.w;
 

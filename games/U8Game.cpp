@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2005 The Pentagram team
+Copyright (C) 2004-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -49,6 +49,7 @@ U8Game::U8Game() : Game()
 	settingman->setDefault("quotes", false);
 	settingman->setDefault("footsteps", true);
 	settingman->setDefault("cheat", true);
+	settingman->setDefault("textdelay", 5);
 
 	con.AddConsoleCommand("Cheat::items", U8Game::ConCmd_cheatItems);
 	con.AddConsoleCommand("Cheat::equip", U8Game::ConCmd_cheatEquip);

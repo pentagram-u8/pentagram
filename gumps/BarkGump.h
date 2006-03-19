@@ -50,7 +50,9 @@ public:
 protected:
 	//! show next text.
 	//! returns false if no more text available
-	bool NextText(); 
+	bool NextText();
+
+	int textdelay;
 
 public:
 	bool loadData(IDataSource* ids, uint32 version);

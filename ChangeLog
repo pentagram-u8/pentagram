@@ -1,3 +1,6 @@
+2006-03-19  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/BarkGump.cpp: determine text speed by 'textdelay' setting
+
 2006-03-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/BookGump.cpp, gumps/ScrollGump.cpp: adjusted text rectangles
 	* gumps/GameMapGump.cpp: don't do range checks for talking to NPCs
