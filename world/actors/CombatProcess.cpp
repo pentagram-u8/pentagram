@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2005 The Pentagram team
+Copyright (C) 2004-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -29,7 +29,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Kernel.h"
 #include "DelayProcess.h"
 #include "PathfinderProcess.h"
+#include "ShapeInfo.h"
+#include "MonsterInfo.h"
 #include "getObject.h"
+#include "LoiterProcess.h"
+#include "AmbushProcess.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -75,9 +79,7 @@ bool CombatProcess::run(const uint32 /*framenum*/)
 		target = seekTarget();
 
 		if (!target) {
-			// still nothing? wait a bit (1-3 seconds)
-			waitFor(Kernel::get_instance()->addProcess(
-						new DelayProcess(30+(std::rand()%60))));
+			waitForTarget();
 			return false;
 		}
 
@@ -98,19 +100,42 @@ bool CombatProcess::run(const uint32 /*framenum*/)
 		pout << "[COMBAT " << item_num << "] target (" << target
 			 << ") in range" << std::endl;
 
-		// attack
-		ProcId attackanim = a->doAnim(Animation::attack, a->getDir());
+		bool hasidle1 = a->hasAnim(Animation::idle1);
+		bool hasidle2 = a->hasAnim(Animation::idle2);
 
-		// wait a while, depending on dexterity, before attacking again
-		int dex = a->getDex();
-		if (dex < 25) {
-			int recoverytime = 3 * (25 - dex);
-			Process* waitproc = new DelayProcess(recoverytime);
-			ProcId waitpid = Kernel::get_instance()->addProcess(waitproc);
-			waitproc->waitFor(attackanim);
-			waitFor(waitpid);
-		} else {
-			waitFor(attackanim);
+		if ((hasidle1 || hasidle2) && (std::rand()%5) == 0) {
+			// every once in a while, act threatening instead of attacking
+			// TODO: maybe make frequency depend on monster type
+			Animation::Sequence idleanim;
+
+			if (!hasidle1) {
+				idleanim = Animation::idle2;
+			} else if (!hasidle2) {
+				idleanim = Animation::idle1;
+			} else {
+				if (std::rand()%2)
+					idleanim = Animation::idle1;
+				else
+					idleanim = Animation::idle2;
+			}
+			uint16 idlepid = a->doAnim(idleanim, 8);
+			waitFor(idlepid);			
+ 		} else {
+
+			// attack
+			ProcId attackanim = a->doAnim(Animation::attack, 8);
+
+			// wait a while, depending on dexterity, before attacking again
+			int dex = a->getDex();
+			if (dex < 25) {
+				int recoverytime = 3 * (25 - dex);
+				Process* waitproc = new DelayProcess(recoverytime);
+				ProcId waitpid = Kernel::get_instance()->addProcess(waitproc);
+				waitproc->waitFor(attackanim);
+				waitFor(waitpid);
+			} else {
+				waitFor(attackanim);
+			}
 		}
 
 		return false;
@@ -124,10 +149,8 @@ bool CombatProcess::run(const uint32 /*framenum*/)
 		return false;
 	}
 
-	waitFor(Kernel::get_instance()->addProcess(
-				new DelayProcess(20+(std::rand()%40))));
 	combatmode = CM_WAITING;
-
+	waitForTarget();
 	return false;
 }
 
@@ -256,9 +279,12 @@ void CombatProcess::turnToDirection(int direction)
 bool CombatProcess::inAttackRange()
 {
 	Actor* a = getActor(item_num);
+	ShapeInfo* shapeinfo = a->getShapeInfo();
+	MonsterInfo* mi = 0;
+	if (shapeinfo) mi = shapeinfo->monsterinfo;
 
-	if (a->getShape() == 0x19b) // constant! (ghost)
-		return true; // ghosts throw fireballs; always in range
+	if (mi && mi->ranged)
+		return true; // ranged attacks (ghost's fireball) always in range
 
 	AnimationTracker tracker;
 	if (!tracker.init(a, Animation::attack, a->getDir(), 0))
@@ -272,6 +298,33 @@ bool CombatProcess::inAttackRange()
 	if (hit == target) return true;
 
 	return false;
+}
+
+void CombatProcess::waitForTarget()
+{
+	Actor* a = getActor(item_num);
+	ShapeInfo* shapeinfo = a->getShapeInfo();
+	MonsterInfo* mi = 0;
+	if (shapeinfo) mi = shapeinfo->monsterinfo;
+
+	if (mi && mi->shifter && a->getMapNum() != 43 && (std::rand()%2) == 0 ) {
+		// changelings (except the ones at the U8 endgame pentagram)
+
+		// shift into a tree if nobody is around
+
+		ProcId shift1pid = a->doAnim(static_cast<Animation::Sequence>(20), 8);
+		Process* ambushproc = new AmbushProcess(a);
+		ProcId ambushpid = Kernel::get_instance()->addProcess(ambushproc);
+		ProcId shift2pid = a->doAnim(static_cast<Animation::Sequence>(21), 8);
+		Process* shift2proc = Kernel::get_instance()->getProcess(shift2pid);
+
+		ambushproc->waitFor(shift1pid);
+		shift2proc->waitFor(ambushpid);
+		waitFor(shift2proc);
+
+	} else {
+		waitFor(Kernel::get_instance()->addProcess(new LoiterProcess(a, 1)));
+	}
 }
 
 void CombatProcess::dumpInfo()

@@ -462,13 +462,6 @@ uint16 Actor::doAnim(Animation::Sequence anim, int dir, unsigned int steps)
 	}
 #endif
 
-	if (dir == 8) {
-		//!!! CHECKME
-		//!! what does dir == 8 mean? Guessing 'last direction'
-		// (should it be direction 'now' or direction when starting animation?)
-		dir = direction;
-	}
-
 	Process *p = new ActorAnimProcess(this, anim, dir, steps);
 
 	return Kernel::get_instance()->addProcess(p);

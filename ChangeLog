@@ -1,5 +1,13 @@
 2006-04-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Animation.h: renamed some animation names
+	* world/actors/LoiterProcess.*: support limited number of loiter steps
+	* world/actors/ActorAnimProcess.cpp: change meaning of animation dir 8
+	  to the current direction at the time the animation actually starts
+	* world/actors/*: use direction 8 where appropriate
+	* world/actors/AmbushProcess.*: process waiting for avatar to approach
+	* world/actors/CombatProcess.cpp: idle between attacks occasionally
+	* world/actors/CombatProcess.cpp: shifters ambush avatar
+	* *: savegame version increased to 3
 
 2006-03-19  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/BarkGump.cpp: determine text speed by 'textdelay' setting

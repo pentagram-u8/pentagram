@@ -204,6 +204,7 @@ ACTORS = \
 	world/actors/Actor.o \
 	world/actors/ActorAnimProcess.o \
 	world/actors/ActorBarkNotifyProcess.o \
+	world/actors/AmbushProcess.o \
 	world/actors/AnimAction.o \
 	world/actors/Animation.o \
 	world/actors/AnimationTracker.o \

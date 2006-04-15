@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -79,17 +79,20 @@ ActorAnimProcess::ActorAnimProcess(Actor* actor_, Animation::Sequence action_,
 
 bool ActorAnimProcess::init()
 {
-	if (dir > 7) {
-		// invalid direction
-		return false;
-	}
-
 	repeatcounter = 0;
 	animAborted = false;
 	attackedSomething = false;
 
 	Actor* actor = getActor(item_num);
 	assert(actor);
+
+	if (dir == 8)
+		dir = actor->getDir();
+
+	if (dir > 7) {
+		// invalid direction
+		return false;
+	}
 
 	if (!(actor->getFlags() & Item::FLG_FASTAREA)) {
 		// not in the fast area? Can't play an animation then.

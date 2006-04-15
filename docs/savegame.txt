@@ -333,7 +333,20 @@ ActorAnimProcess: Process (v2)
 uint8 firstframe (boolean)
 uint8 animAborted (boolean)
 uint8 attackedSomething (boolean)
-uint8 dir
+uint8 dir [0-7]
+uint16 action
+uint16 steps
+uint16 repeatcounter
+uint16 currentstep
+uint8 hasTracker (boolean)
+if (hasTracker) AnimationTracker tracker
+
+ActorAnimProcess: Process (v3)
+<Process>
+uint8 firstframe (boolean)
+uint8 animAborted (boolean)
+uint8 attackedSomething (boolean)
+uint8 dir [0-8]
 uint16 action
 uint16 steps
 uint16 repeatcounter
@@ -526,6 +539,10 @@ uint8 flipped, firststep, combat (boolean)
 LoiterProcess: Process (v2)
 <Process>
 
+LoiterProcess: Process (v3)
+<Process>
+sint32 count
+
 
 AvatarDeathProcess: Process (v2)
 <Process>
@@ -564,3 +581,8 @@ uint16 targetstate
 
 EggHatcherProcess: Process (v2)
 <Process>
+
+
+AmbushProcess: Process (v3)
+<Process>
+uint32 delaycount

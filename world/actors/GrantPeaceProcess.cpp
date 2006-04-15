@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2005 The Pentagram team
+Copyright (C) 2004-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -198,14 +198,14 @@ uint32 GrantPeaceProcess::I_castGrantPeace(const uint8* args,
 	Kernel::get_instance()->addProcess(gpp);
 
 	// start casting
-	ProcId anim1 = avatar->doAnim(Animation::cast1, avatar->getDir());
+	ProcId anim1 = avatar->doAnim(Animation::cast1, 8);
 
 	// cast
-	ProcId anim2 = avatar->doAnim(Animation::cast3, avatar->getDir());
+	ProcId anim2 = avatar->doAnim(Animation::cast3, 8);
 	Process* anim2p = Kernel::get_instance()->getProcess(anim2);
 
 	// end casting
-	ProcId anim3 = avatar->doAnim(Animation::cast2, avatar->getDir());
+	ProcId anim3 = avatar->doAnim(Animation::cast2, 8);
 	Process* anim3p = Kernel::get_instance()->getProcess(anim3);
 
 	anim2p->waitFor(anim1);
