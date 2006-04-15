@@ -35,6 +35,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(TTFont,Pentagram::Font);
 
+// various unicode characters which look like small black circles
+static const Uint16 bullets[] = { 0x2022, 0x30FB, 0x25CF, 0 };
+
 
 TTFont::TTFont(TTF_Font* font, uint32 rgb_, int bordersize_,
 			   bool antiAliased_, bool SJIS_)
@@ -44,6 +47,22 @@ TTFont::TTFont(TTF_Font* font, uint32 rgb_, int bordersize_,
 	// This should be performed by PACK_RGB8, but it is not initialized at this point.
 	rgb = (rgb_>>16)&0xFF | ((rgb_>>8)&0xFF)<<8 | (rgb_&0xFF)<<16;
 	bordersize = bordersize_;
+
+	bullet = 0;
+	// scan for a character to use as a conversation option bullet
+	for (int i = 0; bullets[i]; ++i) {
+		int minx, maxx, miny, maxy;
+		if (TTF_GlyphMetrics(font, bullets[i], &minx, &maxx,
+							 &miny, &maxy, 0) == 0) {
+			if ((minx != 0 || maxx != 0) && (miny != 0 || maxy != 0)) {
+				bullet = bullets[i];
+				break;
+			}
+		}
+	}
+	if (bullet == 0) {
+		bullet = '*';
+	}
 }
 
 TTFont::~TTFont()
@@ -68,7 +87,7 @@ int TTFont::getBaselineSkip()
 
 
 template<class T>
-static uint16* toUnicode(const std::string& text)
+static uint16* toUnicode(const std::string& text, uint16 bullet)
 {
 	std::string::size_type l = T::length(text);
 	uint16* unicodetext = new uint16[l+1];
@@ -78,6 +97,8 @@ static uint16* toUnicode(const std::string& text)
 		if (u > 0xFFFF) {
 			perr.printf("Warning: unicode character out of range for SDL_ttf: %x\n", u);
 			unicodetext[i] = '?';
+		} else if (u == 64) {
+			unicodetext[i] = bullet;
 		} else {
 			unicodetext[i] = u;
 		}
@@ -92,9 +113,9 @@ void TTFont::getStringSize(const std::string& text, int& width, int& height)
 	// convert to unicode
 	uint16* unicodetext;
 	if (!SJIS)
-		unicodetext = toUnicode<Traits>(text);
+		unicodetext = toUnicode<Traits>(text, bullet);
 	else
-		unicodetext = toUnicode<SJISTraits>(text);
+		unicodetext = toUnicode<SJISTraits>(text, bullet);
 
 	TTF_SizeUNICODE(ttf_font, unicodetext, &width, &height);
 	delete[] unicodetext;
@@ -164,9 +185,9 @@ RenderedText* TTFont::renderText(const std::string& text,
 		// convert to unicode
 		uint16* unicodetext;
 		if (!SJIS)
-			unicodetext = toUnicode<Traits>(iter->text);
+			unicodetext = toUnicode<Traits>(iter->text, bullet);
 		else
-			unicodetext = toUnicode<SJISTraits>(iter->text);
+			unicodetext = toUnicode<SJISTraits>(iter->text, bullet);
 
 		// let SDL_ttf render the text
 		SDL_Surface* textsurf;

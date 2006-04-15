@@ -61,6 +61,8 @@ protected:
 	int bordersize;
 	bool antiAliased;
 	bool SJIS;
+
+	uint16 bullet;
 };
 
 

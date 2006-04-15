@@ -1,4 +1,8 @@
 2006-04-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* misc/encoding.cpp: keep @ character as-is
+	* world/graphics/TTFont.*: scan for character to use as bullet
+
+2006-04-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Animation.h: renamed some animation names
 	* world/actors/LoiterProcess.*: support limited number of loiter steps
 	* world/actors/ActorAnimProcess.cpp: change meaning of animation dir 8

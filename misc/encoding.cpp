@@ -1428,8 +1428,6 @@ uint16 shiftjis_to_ultima8(uint16 sjis)
 
 uint32 shiftjis_to_unicode(uint16 sjis)
 {
-	if (sjis == 64) return 0x2022; // special case for conversation bullet
-
 	if ((sjis & 0xFF) < 0x80) return (sjis & 0xFF);
 
 	uint8 jr, jc;
