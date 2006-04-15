@@ -1,3 +1,6 @@
+2006-04-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/Animation.h: renamed some animation names
+
 2006-03-19  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/BarkGump.cpp: determine text speed by 'textdelay' setting
 	* world/CurrentMap.cpp: fix scanForValidPosition diagonal scan dirs

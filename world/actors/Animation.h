@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -71,8 +71,8 @@ namespace Animation
 		fallBackwards = 44,
 		hang = 45,
 		climbUp = 46,
-		magicallyGlowingHands = 47,
-		idle = 48,
+		idle1 = 47,
+		idle2 = 48,
 		kneel2 = 49,
 		stopKneeling = 50,
 		sitDownInChair = 51,
