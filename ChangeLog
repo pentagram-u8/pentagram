@@ -1,5 +1,6 @@
 2006-04-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* acinclude.m4: check for SDL_ttf >= 2.0.7
+	* acinclude.m4: ignore HOST_CC and SAVED_CC in CC_FOR_BUILD check
 
 2006-04-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* misc/encoding.cpp: keep @ character as-is

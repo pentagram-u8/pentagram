@@ -17,21 +17,18 @@ dnl (adapted from config.guess, (C) 1992-2005 Free Software Foundation, Inc.)
 AC_DEFUN([PENT_BUILDCC],[
 if test x$cross_compiling = xyes; then
   AC_MSG_CHECKING(for a native C compiler)
-  case $CC_FOR_BUILD,$HOST_CC,$SAVED_CC in
-   ,,)    echo "int x;" > conftest.$ac_ext ;
-          for c in cc gcc c89 c99 ; do
-            if ($c -c -o conftest.o conftest.$ac_ext) >/dev/null 2>&1 ; then
-               CC_FOR_BUILD="$c"; break ;
-            fi ;
-          done ;
-          if test x"$CC_FOR_BUILD" = x ; then
-            CC_FOR_BUILD=no_compiler_found ;
-          fi
-          ;;
-   ,,*)   CC_FOR_BUILD=$SAVED_CC ;;
-   ,*,*)  CC_FOR_BUILD=$HOST_CC ;;
-  esac ;
-  if test x$CC_FOR_BUILD = xno_compiler_found ; then
+  if test "x$CC_FOR_BUILD" = x ; then
+    echo "int x;" > conftest.$ac_ext
+    for c in cc gcc c89 c99 ; do
+      if ($c -c -o conftest.o conftest.$ac_ext) >/dev/null 2>&1 ; then
+        CC_FOR_BUILD="$c"; break
+      fi
+    done
+    if test x"$CC_FOR_BUILD" = x ; then
+      CC_FOR_BUILD=no_compiler_found
+    fi
+  fi
+  if test "x$CC_FOR_BUILD" = xno_compiler_found ; then
     AC_MSG_RESULT(none found)
   else
     AC_MSG_RESULT($CC_FOR_BUILD)
@@ -51,16 +48,13 @@ fi
 
 
 
-dnl Check if we have SDL_ttf (header and library)
+dnl Check if we have SDL_ttf (header and library) version >= 2.0.7
 dnl Input:
 dnl SDL_CFLAGS, SDL_LIBS are set correctly by AM_PATH_SDL
 dnl Output:
 dnl SDLTTF_LIBS contains the necessary libs/ldflags
 dnl HAVE_SDL_TTF_H is AC_DEFINE-d if including "SDL_ttf.h" works
 dnl HAVE_SDL_SDL_TTF_H is AC_DEFINE-d if including <SDL/SDL_ttf.h> works
-
-dnl TODO: accept arguments to run if SDL_ttf found/not found like other check
-dnl       macros
 
 AC_DEFUN([PENT_CHECK_SDLTTF],[
   AC_MSG_CHECKING(for SDL_ttf - version >= 2.0.7)
