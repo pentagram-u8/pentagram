@@ -63,7 +63,7 @@ dnl TODO: accept arguments to run if SDL_ttf found/not found like other check
 dnl       macros
 
 AC_DEFUN([PENT_CHECK_SDLTTF],[
-  AC_MSG_CHECKING(for SDL_ttf)
+  AC_MSG_CHECKING(for SDL_ttf - version >= 2.0.7)
 
   pent_backupcppflags="$CPPFLAGS"
   pent_backupldflags="$LDFLAGS"
@@ -96,10 +96,31 @@ AC_DEFUN([PENT_CHECK_SDLTTF],[
     AC_DEFINE(HAVE_SDL_TTF_H, 1, [Define to 1 if you have the "SDL_ttf.h" header file])
   fi
 
+  dnl Next: version check (cross-compile-friendly idea borrowed from autoconf)
+
+  REQ_MAJOR=2
+  REQ_MINOR=0
+  REQ_PATCHLEVEL=7
+
+  AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+  #include "SDL.h"
+  #ifdef HAVE_SDL_TTF_H
+  #include "SDL_ttf.h"
+  #else
+  #include <SDL/SDL_ttf.h>
+  #endif
+
+  int main()
+  {
+    static int test_array[1-2*!(SDL_TTF_MAJOR_VERSION>$REQ_MAJOR||(SDL_TTF_MAJOR_VERSION==$REQ_MAJOR&&(SDL_TTF_MINOR_VERSION>$REQ_MINOR||(SDL_TTF_MINOR_VERSION==$REQ_MINOR&&SDL_TTF_PATCHLEVEL>=$REQ_PATCHLEVEL))))];
+    test_array[0] = 0;
+    return 0;
+  }
+  ]])],,[[pent_sdlttfok="no, version < 2.0.7"]])
 
   dnl Next: try linking
 
-  if test x$pent_sdlttfok = xyes; then
+  if test "x$pent_sdlttfok" = xyes; then
 
     LIBS="$LIBS -lSDL_ttf"
 
@@ -154,7 +175,7 @@ AC_DEFUN([PENT_CHECK_SDLTTF],[
   CPPFLAGS="$pent_backupcppflags"
   LIBS="$pent_backuplibs"
 
-  if test x$pent_sdlttfok = xyes; then
+  if test "x$pent_sdlttfok" = xyes; then
     ifelse([$1], , :, [$1])
   else
     ifelse([$2], , :, [$2])
