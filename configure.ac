@@ -216,8 +216,7 @@ fi
 # ---------------------------------------------------------------------
 # SDL
 # ---------------------------------------------------------------------
-AM_PATH_SDL(1.2.0,:,AC_MSG_ERROR([[*** SDL version $SDL_VERSION not found!]])
-)
+PENT_CHECK_SDL(:,AC_MSG_ERROR([[*** SDL version >= 1.2.0 not found!]]))
 
 GUI_LIBS="$GUI_LIBS $SDL_LIBS"
 
@@ -233,7 +232,7 @@ SYS_LIBS="$SYS_LIBS -lz"
 # SDL_ttf
 # --------
 
-PENT_CHECK_SDLTTF(:,AC_MSG_ERROR([*** SDL_ttf not found!]))
+PENT_CHECK_SDLTTF(:,AC_MSG_ERROR([*** SDL_ttf version >= 2.0.7 not found!]))
 GUI_LIBS="$GUI_LIBS $SDLTTF_LIBS"
 
 # --------

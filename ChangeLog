@@ -1,3 +1,6 @@
+2006-04-24  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* acinclude.m4: rewrote SDL check to be more cross-compile-friendly
+
 2006-04-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* acinclude.m4: check for SDL_ttf >= 2.0.7
 	* acinclude.m4: ignore HOST_CC and SAVED_CC in CC_FOR_BUILD check
