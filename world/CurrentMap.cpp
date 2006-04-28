@@ -1109,6 +1109,7 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 //					pout << "hit item      (" << other[0] << ", " << other[1] << ", " << other[2] << ")" << std::endl;
 //					pout << "hit item time (" << u_0[0] << "-" << u_1[0] << ") (" << u_0[1] << "-" << u_1[1] << ") ("
 //						 << u_0[2] << "-" << u_1[2] << ")" << std::endl;
+//					pout << "touch: " << touch << ", floor: " << touch_floor << ", block: " << blocking << std::endl;
 				}
 			}
 		}
