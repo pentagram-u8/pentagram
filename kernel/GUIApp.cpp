@@ -1376,7 +1376,9 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			switch (event.type) {
 				case SDL_KEYDOWN:
 					// Break if console Key
-					if (event.key.keysym.sym == SDLK_BACKQUOTE)
+					// FIXME: make console key configurable
+					if (event.key.keysym.sym == SDLK_BACKQUOTE ||
+						event.key.keysym.sym == SDLK_F5)
 						break;
 
 #ifdef WIN32 
@@ -1418,7 +1420,9 @@ void GUIApp::handleEvent(const SDL_Event& event)
 
 				case SDL_KEYUP:
 					// Break if console Key
-					if (event.key.keysym.sym == SDLK_BACKQUOTE)
+					// FIXME: make this configurable
+					if (event.key.keysym.sym == SDLK_BACKQUOTE ||
+						event.key.keysym.sym == SDLK_F5)
 						break;
 //					if (event.key.keysym.sym == SDLK_BACKQUOTE || 
 //						hidmanager->isToggleConsole(event)) break;

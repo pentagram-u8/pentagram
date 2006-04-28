@@ -175,6 +175,7 @@ void HIDManager::resetBindings()
 	commands.push_back(cmd);
 
 	bindings[HID_BACKQUOTE][HID_EVENT_DEPRESS]= commands.back();
+	bindings[HID_F5][HID_EVENT_DEPRESS]= commands.back();
 }
 
 void HIDManager::loadBindings()
