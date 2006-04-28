@@ -1716,14 +1716,12 @@ bool Item::canReach(Item* other, int range,
 	// if not, do line of sight between origins of items
 	sint32 start[3];
 	sint32 end[3];
-	sint32 dims[3] = { 0, 0, 0 };
+	sint32 dims[3] = { 2, 2, 2 };
 
 	start[0] = thisX; start[1] = thisY; start[2] = thisZ;
 	end[0] = otherX; end[1] = otherY; end[2] = otherZ;
 	if (otherZ > thisZ && otherZ < thisZ + thisZd)
 		start[2] = end[2]; // bottom of other between bottom and top of this
-	else if (thisZ < otherZ + otherZd)
-		end[2] = start[2];
 
 	std::list<CurrentMap::SweepItem> collisions;
 	std::list<CurrentMap::SweepItem>::iterator it;
@@ -1758,7 +1756,7 @@ bool Item::canReach(Item* other, int range,
 
 	end[0] = otherX - otherXd/2; // xyz center of other
 	end[1] = otherY - otherYd/2;
-	end[2] = otherZ - otherZd/2;
+	end[2] = otherZ + otherZd/2;
 
 	collisions.clear();
 	map->sweepTest(start, end, dims, ShapeInfo::SI_SOLID,

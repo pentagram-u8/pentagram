@@ -1,4 +1,8 @@
 2006-04-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Item.cpp: prevent line-of-sight test from going between walls
+	  by using a 2x2x2 sweeptest instead of a 0x0x0 one
+
+2006-04-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GUIApp.cpp, kernel/HIDManager.cpp: F5 toggles console as well
 
 2006-04-24  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
