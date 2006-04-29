@@ -1,5 +1,6 @@
 2006-04-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: crusader anim.dat, wpnovlay.dat, typeflag.dat loading
+	* usecode/*: clean up handling of headers; crusader usecodeflex support
 
 2006-04-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: renamed @u8 virtual path to @game

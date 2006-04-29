@@ -156,8 +156,9 @@ bool UCMachine::execProcess(UCProcess* p)
 {
 	assert(p);
 
-	IBufferDataSource cs(p->usecode->get_class(p->classid),
-						 p->usecode->get_class_size(p->classid));
+	uint32 base = p->usecode->get_class_base_offset(p->classid);
+	IBufferDataSource cs(p->usecode->get_class(p->classid) + base,
+						 p->usecode->get_class_size(p->classid) - base);
 	cs.seek(p->ip);
 
 #ifdef DEBUG
@@ -399,8 +400,9 @@ bool UCMachine::execProcess(UCProcess* p)
 				p->call(new_classid, new_offset);
 
 				// Update the code segment
-				cs.load(p->usecode->get_class(p->classid),
-						p->usecode->get_class_size(p->classid));
+				uint32 base = p->usecode->get_class_base_offset(p->classid);
+				cs.load(p->usecode->get_class(p->classid) + base,
+						p->usecode->get_class_size(p->classid) - base);
 				cs.seek(p->ip);
 
 				// Resume execution
@@ -1190,8 +1192,9 @@ bool UCMachine::execProcess(UCProcess* p)
 				// return value is stored in temp32 register
 
 				// Update the code segment
-				cs.load(p->usecode->get_class(p->classid),
-						p->usecode->get_class_size(p->classid));
+				uint32 base = p->usecode->get_class_base_offset(p->classid);
+				cs.load(p->usecode->get_class(p->classid) + base,
+						p->usecode->get_class_size(p->classid) - base);
 				cs.seek(p->ip);
 			}
 

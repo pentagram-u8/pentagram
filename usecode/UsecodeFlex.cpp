@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2005 The Pentagram team
+Copyright (C) 2002-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -19,27 +19,18 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "UsecodeFlex.h"
-#include <cstring>
+#include "CoreApp.h"
 
 const uint8* UsecodeFlex::get_class(uint32 classid)
 {
 	const uint8* obj = get_object_nodel(classid+2);
-	if (obj) {
-		// 0x0C = header size. Clean up.
-		return obj + 0x0C;
-	} else {
-		return 0;
-	}
+	return obj;
 }
 
 uint32 UsecodeFlex::get_class_size(uint32 classid)
 {
-	// 0x0C = header size. Clean up.
 	uint32 size = get_size(classid+2);
-	if (size >= 0x0C)
-		return size - 0x0C;
-	else
-		return 0;
+	return size;
 }
 
 const char* UsecodeFlex::get_class_name(uint32 classid)
@@ -52,3 +43,34 @@ const char* UsecodeFlex::get_class_name(uint32 classid)
 	}
 }
 
+uint32 UsecodeFlex::get_class_base_offset(uint32 classid)
+{
+	if (get_size(classid+2) == 0) return 0;
+
+	if (GAME_IS_U8) {
+		return 0x0C;
+	} else if (GAME_IS_CRUSADER) {
+		const uint8* obj = get_object_nodel(classid+2);
+		uint32 offset = obj[8];
+		offset += obj[9] << 8;
+		offset += obj[10] << 16;
+		offset += obj[11] << 24;
+		offset--;
+		return offset;
+	} else {
+		CANT_HAPPEN_MSG("Invalid game type.");
+	}
+}
+
+uint32 UsecodeFlex::get_class_event_count(uint32 classid)
+{
+	if (get_size(classid+2) == 0) return 0;
+
+	if (GAME_IS_U8) {
+		return 32;
+	} else if (GAME_IS_CRUSADER) {
+		return (get_class_base_offset(classid)+19)/6;
+	} else {
+		CANT_HAPPEN_MSG("Invalid game type.");
+	}
+}
