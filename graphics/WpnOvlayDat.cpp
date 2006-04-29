@@ -63,7 +63,6 @@ void WpnOvlayDat::load(RawArchive *overlaydat)
 	MainShapeArchive* msf = GameData::get_instance()->getMainShapes();
 	assert(msf);
 
-	// CONSTANT!
 	overlay.resize(overlaydat->getCount());
 
 	for (unsigned int action = 0; action < overlay.size(); action++)
@@ -72,18 +71,27 @@ void WpnOvlayDat::load(RawArchive *overlaydat)
 		overlay[action] = 0;
 
 		if (ds && ds->getSize()) {
+			// get Avatar's animation
+			AnimAction* anim = msf->getAnim(1, action);
+			if (!anim) {
+				perr << "Skipping wpnovlay action " << action << " because animation doesn't exist." << std::endl;
+				continue;
+			}
+
 			AnimWeaponOverlay* awo = new AnimWeaponOverlay;
 			overlay[action] = awo;
 
-			// get Avatar's animation
-			AnimAction* anim = msf->getAnim(1, action); // CONSTANT !
 			unsigned int animlength = anim->size;
+			unsigned int dircount = anim->dircount;
 
-			unsigned int typecount = ds->getSize() / (4 * 8 * animlength);
+			unsigned int typecount = ds->getSize() / (4*dircount*animlength);
 			awo->overlay.resize(typecount);
 
 			for (unsigned int type = 0; type < typecount; type++) {
-				for (unsigned int dir = 0; dir < 8; dir++) {
+				awo->overlay[type].dircount = dircount;
+				awo->overlay[type].frames =
+					new std::vector<WeaponOverlayFrame>[dircount];
+				for (unsigned int dir = 0; dir < dircount; dir++) {
 					awo->overlay[type].frames[dir].resize(animlength);
 					for (unsigned int frame = 0; frame < animlength; frame++) {
 						unsigned int offset = type*8*animlength

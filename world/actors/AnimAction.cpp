@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003 The Pentagram team
+Copyright (C) 2003-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,7 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 void AnimAction::getAnimRange(unsigned int lastanim, int lastdir,
 					  bool firststep, int dir,
-					  unsigned int& startframe, unsigned int& endframe)
+					  unsigned int& startframe, unsigned int& endframe) const
 {
 	startframe = 0;
 	endframe = size;
@@ -55,7 +55,8 @@ void AnimAction::getAnimRange(unsigned int lastanim, int lastdir,
 }
 
 void AnimAction::getAnimRange(Actor* actor, int dir,
-							  unsigned int& startframe, unsigned int& endframe)
+							  unsigned int& startframe,
+							  unsigned int& endframe) const
 {
 	getAnimRange(actor->getLastAnim(), actor->getDir(),
 				 (actor->getActorFlags() & Actor::ACT_FIRSTSTEP) != 0,

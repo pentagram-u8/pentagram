@@ -26,6 +26,7 @@
 #include "MainShapeArchive.h"
 #include "Shape.h"
 #include "TreasureLoader.h"
+#include "GameInfo.h"
 
 TypeFlags::TypeFlags()
 {
@@ -53,53 +54,71 @@ void TypeFlags::load(IDataSource *ds)
 	// (Or probably pass it as parameter)
 	// The 'parsing' below is only for U8
 
+	unsigned int blocksize = 8;
+	if (GAME_IS_CRUSADER) {
+		blocksize = 9;
+	}
+
 	uint32 size = ds->getSize();
-	uint32 count = size / 8;
+	uint32 count = size / blocksize;
 
 	shapeInfo.clear();
 	shapeInfo.resize(count);
 
 	for (uint32 i = 0; i < count; ++i)
 	{
-		uint8 data[8];
-		ds->read(data, 8);
+		uint8 data[blocksize];
+		ds->read(data, blocksize);
 
 		ShapeInfo si;
-
 		si.flags = 0;
-		if (data[0] & 0x01) si.flags |= ShapeInfo::SI_FIXED;
-		if (data[0] & 0x02) si.flags |= ShapeInfo::SI_SOLID;
-		if (data[0] & 0x04) si.flags |= ShapeInfo::SI_SEA;
-		if (data[0] & 0x08) si.flags |= ShapeInfo::SI_LAND;
-		if (data[0] & 0x10) si.flags |= ShapeInfo::SI_OCCL;
-		if (data[0] & 0x20) si.flags |= ShapeInfo::SI_BAG;
-		if (data[0] & 0x40) si.flags |= ShapeInfo::SI_DAMAGING;
-		if (data[0] & 0x80) si.flags |= ShapeInfo::SI_NOISY;
 
-		if (data[1] & 0x01) si.flags |= ShapeInfo::SI_DRAW;
-		if (data[1] & 0x02) si.flags |= ShapeInfo::SI_IGNORE;
-		if (data[1] & 0x04) si.flags |= ShapeInfo::SI_ROOF;
-		if (data[1] & 0x08) si.flags |= ShapeInfo::SI_TRANSL;
-		si.family = data[1] >> 4;
+		if (GAME_IS_U8) {
 
-		si.equiptype = data[2] & 0x0F;
-		si.x = data[2] >> 4;
+			if (data[0] & 0x01) si.flags |= ShapeInfo::SI_FIXED;
+			if (data[0] & 0x02) si.flags |= ShapeInfo::SI_SOLID;
+			if (data[0] & 0x04) si.flags |= ShapeInfo::SI_SEA;
+			if (data[0] & 0x08) si.flags |= ShapeInfo::SI_LAND;
+			if (data[0] & 0x10) si.flags |= ShapeInfo::SI_OCCL;
+			if (data[0] & 0x20) si.flags |= ShapeInfo::SI_BAG;
+			if (data[0] & 0x40) si.flags |= ShapeInfo::SI_DAMAGING;
+			if (data[0] & 0x80) si.flags |= ShapeInfo::SI_NOISY;
 
-		si.y = data[3] & 0x0F;
-		si.z = data[3] >> 4;
+			if (data[1] & 0x01) si.flags |= ShapeInfo::SI_DRAW;
+			if (data[1] & 0x02) si.flags |= ShapeInfo::SI_IGNORE;
+			if (data[1] & 0x04) si.flags |= ShapeInfo::SI_ROOF;
+			if (data[1] & 0x08) si.flags |= ShapeInfo::SI_TRANSL;
+			si.family = data[1] >> 4;
 
-		si.animtype = data[4] & 0x0F;
-		si.animdata = data[4] >> 4;
+			si.equiptype = data[2] & 0x0F;
+			si.x = data[2] >> 4;
 
-		si.unknown = data[5] & 0x0F;
-		if (data[5] & 0x10) si.flags |= ShapeInfo::SI_EDITOR;
-		if (data[5] & 0x20) si.flags |= ShapeInfo::SI_EXPLODE;
-		if (data[5] & 0x40) si.flags |= ShapeInfo::SI_UNKNOWN46;
-		if (data[5] & 0x80) si.flags |= ShapeInfo::SI_UNKNOWN47;
+			si.y = data[3] & 0x0F;
+			si.z = data[3] >> 4;
 
-		si.weight = data[6];
+			si.animtype = data[4] & 0x0F;
+			si.animdata = data[4] >> 4;
 
-		si.volume = data[7];
+			si.unknown = data[5] & 0x0F;
+			if (data[5] & 0x10) si.flags |= ShapeInfo::SI_EDITOR;
+			if (data[5] & 0x20) si.flags |= ShapeInfo::SI_EXPLODE;
+			if (data[5] & 0x40) si.flags |= ShapeInfo::SI_UNKNOWN46;
+			if (data[5] & 0x80) si.flags |= ShapeInfo::SI_UNKNOWN47;
+
+			si.weight = data[6];
+
+			si.volume = data[7];
+
+		} else if (GAME_IS_CRUSADER) {
+
+			// might have to split up remorse/regret at some point
+			
+			// (copied from old/viewer/ShapeManager.h)
+			si.x = ((data[3]<<3) | (data[2]>>5)) & 0x1F;
+			si.y = (data[3] >> 2) & 0x1F;
+			si.z = ((data[4]<<1) | (data[3]>>7)) & 0x1F;
+
+		}
 
 		si.weaponinfo = 0;
 		si.armourinfo = 0;

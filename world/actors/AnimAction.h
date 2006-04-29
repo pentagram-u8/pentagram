@@ -45,10 +45,12 @@ struct AnimAction {
 	uint32 shapenum;
 	uint32 action;
 
-	std::vector<AnimFrame> frames[8]; // 8 directions
+	std::vector<AnimFrame> frames[16]; // 8 or 16 directions
 	unsigned int size;
 	int framerepeat;
 	uint32 flags;
+
+	unsigned int dircount;
 
 	//! return the range of the animation to play
 	//! \param actor The actor to play the animation for
@@ -56,7 +58,7 @@ struct AnimAction {
 	//! \param startframe The first frame to play
 	//! \param endframe The frame after the last frame to play
 	void getAnimRange(Actor* actor, int dir,
-					  unsigned int& startframe, unsigned int& endframe);
+					  unsigned int& startframe, unsigned int& endframe) const;
 
 	//! return the range of the animation to play
 	//! \param lastanim The lastanim of the Actor
@@ -67,7 +69,9 @@ struct AnimAction {
 	//! \param endframe The frame after the last frame to play
 	void getAnimRange(unsigned int lastanim, int lastdir,
 					  bool firststep, int dir,
-					  unsigned int& startframe, unsigned int& endframe);
+					  unsigned int& startframe, unsigned int& endframe) const;
+
+	unsigned int getDirCount() const;
 
 	enum AnimActionFlags {
 		AAF_TWOSTEP     = 0x0001,
@@ -75,7 +79,8 @@ struct AnimAction {
 		AAF_LOOPING     = 0x0004,
 		AAF_UNSTOPPABLE = 0x0008,
 		AAF_LOOPING2    = 0x0010, // CHECKME: guessing at this flag
-		AAF_HANGING     = 0x0080
+		AAF_HANGING     = 0x0080,
+		AAF_CRUS_16DIRS = 0x4000  // Crusader
 	};
 };
 

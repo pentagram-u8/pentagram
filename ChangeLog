@@ -1,4 +1,7 @@
 2006-04-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* various: crusader anim.dat, wpnovlay.dat, typeflag.dat loading
+
+2006-04-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: renamed @u8 virtual path to @game
 	* CoreApp.h: add defines for which game is running, e.g., GAME_IS_U8
 	* world/actors/AnimAction.h: 'special' is flag for frames, not actions

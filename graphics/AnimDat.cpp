@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003 The Pentagram Team
+ *  Copyright (C) 2003-2006 The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@
 #include "IDataSource.h"
 #include "ActorAnim.h"
 #include "AnimAction.h"
+#include "CoreApp.h"
 
 AnimDat::AnimDat()
 {
@@ -60,6 +61,10 @@ void AnimDat::load(IDataSource *ds)
 	// CONSTANT !
 	anims.resize(2048);
 
+	unsigned int actioncount = 64;
+	if (GAME_IS_CRUSADER)
+		actioncount = 256;
+
 	for (unsigned int shape = 0; shape < anims.size(); shape++)
 	{
 		ds->seek(4*shape);
@@ -73,9 +78,9 @@ void AnimDat::load(IDataSource *ds)
 		ActorAnim *a = new ActorAnim();
 
 		// CONSTANT !
-		a->actions.resize(64);
+		a->actions.resize(actioncount);
 
-		for (unsigned int action = 0; action < a->actions.size(); action++)
+		for (unsigned int action = 0; action < actioncount; action++)
 		{
 			ds->seek(offset + action*4);
 			uint32 actionoffset = ds->read4();
@@ -95,22 +100,46 @@ void AnimDat::load(IDataSource *ds)
 			a->actions[action]->size = actionsize;
 			a->actions[action]->flags = ds->read1();
 			a->actions[action]->framerepeat = ds->read1();
-			ds->skip(1); // unknown
+			a->actions[action]->flags |= ds->read1() << 8;
 
-			for (unsigned int dir = 0; dir < 8; dir++)
+			unsigned int dircount = 8;
+			if (GAME_IS_CRUSADER &&
+				(a->actions[action]->flags & AnimAction::AAF_CRUS_16DIRS))
+			{
+				dircount = 16;
+			}
+			a->actions[action]->dircount = dircount;
+
+			for (unsigned int dir = 0; dir < dircount; dir++)
 			{
 				a->actions[action]->frames[dir].clear();
 
 				for (unsigned int j = 0; j < actionsize; j++)
 				{
-					f.frame = ds->read1(); // & 0x7FF;
-					uint8 x = ds->read1();
-					f.frame += (x & 0x7) << 8;
-					f.deltaz = ds->readXS(1);
-					f.sfx = ds->read1();
-					f.deltadir = ds->readXS(1);
-					f.flags = ds->read1();
-					f.flags += (x & 0xF8) << 8;
+					if (GAME_IS_U8) {
+						f.frame = ds->read1(); // & 0x7FF;
+						uint8 x = ds->read1();
+						f.frame += (x & 0x7) << 8;
+						f.deltaz = ds->readXS(1);
+						f.sfx = ds->read1();
+						f.deltadir = ds->readXS(1);
+						f.flags = ds->read1();
+						f.flags += (x & 0xF8) << 8;
+					} else if (GAME_IS_CRUSADER) {
+						// byte 0: low byte of frame
+						f.frame = ds->read1();
+						// byte 1: low nibble part of frame
+						uint8 x = ds->read1();
+						f.frame += (x & 0xF) << 8;
+						// byte 2, 3: unknown; byte 3 might contain flags
+						ds->skip(2);
+						// byte 4: deltadir (signed)
+						f.deltadir = ds->readXS(1);
+						// byte 5: flags?
+						f.flags = ds->read1();
+						// byte 6, 7: unknown
+						ds->skip(2);
+					}
 					a->actions[action]->frames[dir].push_back(f);
 				}
 			}

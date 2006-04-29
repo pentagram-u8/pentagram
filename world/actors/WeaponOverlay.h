@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,7 +28,10 @@ struct WeaponOverlayFrame {
 };
 
 struct WeaponOverlay {
-	std::vector<WeaponOverlayFrame> frames[8];
+	unsigned int dircount;
+	std::vector<WeaponOverlayFrame>* frames; // 8 or 16 directions
+
+	~WeaponOverlay() { delete[] frames; }
 };
 
 struct AnimWeaponOverlay {
@@ -41,7 +44,7 @@ struct AnimWeaponOverlay {
 									   unsigned int direction,
 									   unsigned int frame) const {
 		if (type >= overlay.size()) return 0;
-		if (direction >= 8) return 0;
+		if (direction >= overlay[type].dircount) return 0;
 		if (frame >= overlay[type].frames[direction].size()) return 0;
 		return &(overlay[type].frames[direction][frame]);
 	}
