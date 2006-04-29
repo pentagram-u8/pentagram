@@ -74,15 +74,13 @@ void Map::loadFixed(IDataSource* ds)
 
 
 	// U8 hack for missing ground tiles on map 25. See docs/u8bugs.txt
-	if (CoreApp::get_instance()->getGameInfo()->type == GameInfo::GAME_U8 &&
-		mapnum == 25)
+	if (GAME_IS_U8 && mapnum == 25)
 	{
 		// TODO
 	}
 
 	// U8 hack for missing ground/wall tiles on map 62. See docs/u8bugs.txt
-	if (CoreApp::get_instance()->getGameInfo()->type == GameInfo::GAME_U8 &&
-		mapnum == 62)
+	if (GAME_IS_U8 && mapnum == 62)
 	{
 		Item* item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
 											Item::EXT_FIXED, false);

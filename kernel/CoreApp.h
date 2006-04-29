@@ -2,7 +2,7 @@
  *	CoreApp.h - Base application class that contains the minimal functionality
  *              to support pentagram tools
  *
- *  Copyright (C) 2002-2005  The Pentagram Team
+ *  Copyright (C) 2002-2006  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,6 +29,13 @@ class FileSystem;
 class ConfigFileManager;
 class SettingManager;
 struct GameInfo;
+
+
+#define GAME_IS_U8 (CoreApp::get_instance()->getGameInfo()->type == GameInfo::GAME_U8)
+#define GAME_IS_REMORSE (CoreApp::get_instance()->getGameInfo()->type == GameInfo::GAME_REMORSE)
+#define GAME_IS_REGRET (CoreApp::get_instance()->getGameInfo()->type == GameInfo::GAME_REGRET)
+#define GAME_IS_CRUSADER (GAME_IS_REMORSE || GAME_IS_REGRET)
+
 
 class CoreApp
 {
