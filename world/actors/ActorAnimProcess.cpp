@@ -257,7 +257,7 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 			if (audioproc) audioproc->playSFX(curframe->sfx,0x60,item_num,0);
 		}
 
-		if (curframe && (curframe->flags & AnimAction::AAF_SPECIAL)) {
+		if (curframe && (curframe->flags & AnimFrame::AFF_SPECIAL)) {
 			// Flag to trigger a special action
 			// E.g.: play draw/sheathe SFX for avatar when weapon equipped,
 			// throw skull-fireball when ghost attacks, ...

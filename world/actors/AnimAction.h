@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -31,9 +31,10 @@ struct AnimFrame
 	uint32 flags;
 
 	enum AnimFrameFlags {
-		AFF_UNK1     = 0x01,
-		AFF_ONGROUND = 0x02,
-		AFF_FLIPPED  = 0x20
+		AFF_UNK1     = 0x0001,
+		AFF_ONGROUND = 0x0002,
+		AFF_FLIPPED  = 0x0020,
+		AFF_SPECIAL  = 0x0800
 	};
 
 	inline bool is_flipped() { return (flags & AFF_FLIPPED) != 0; }
@@ -74,8 +75,7 @@ struct AnimAction {
 		AAF_LOOPING     = 0x0004,
 		AAF_UNSTOPPABLE = 0x0008,
 		AAF_LOOPING2    = 0x0010, // CHECKME: guessing at this flag
-		AAF_HANGING     = 0x0080,
-		AAF_SPECIAL     = 0x0800
+		AAF_HANGING     = 0x0080
 	};
 };
 
