@@ -98,7 +98,7 @@ private:
 	bool getGameInfo(Pentagram::istring& game, GameInfo* gameinfo);
 
 	//! Setup the virtual game paths for the current game (set in gameinfo)
-	//! Specifically, @u8 and @work (//!!FIXME)
+	//! Specifically, @game and @work
 	void setupGamePaths();
 
 

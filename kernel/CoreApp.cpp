@@ -292,7 +292,7 @@ bool CoreApp::setupGame(GameInfo* info)
 
 void CoreApp::killGame()
 {
-	filesystem->RemoveVirtualPath("@u8"); //!!FIXME (u8 specific)
+	filesystem->RemoveVirtualPath("@game");
 	filesystem->RemoveVirtualPath("@work");
 	filesystem->RemoveVirtualPath("@save");
 
@@ -389,7 +389,7 @@ void CoreApp::setupGamePaths()
 	// load main game data path
 	std::string gpath;
 	settingman->get("path", gpath, SettingManager::DOM_GAME);
-	filesystem->AddVirtualPath("@u8", gpath); //!!FIXME (u8 specific)
+	filesystem->AddVirtualPath("@game", gpath);
 	con.Printf(MM_INFO, "Game Path: %s\n", gpath.c_str());
 
 

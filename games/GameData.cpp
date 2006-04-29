@@ -229,7 +229,7 @@ void GameData::loadU8Data()
 {
 	FileSystem* filesystem = FileSystem::get_instance();
 
-	IDataSource *fd = filesystem->ReadFile("@u8/static/fixed.dat");
+	IDataSource *fd = filesystem->ReadFile("@game/static/fixed.dat");
 	if (!fd) {
 		perr << "Unable to load static/fixed.dat. Exiting" << std::endl;
 		std::exit(-1);
@@ -242,7 +242,7 @@ void GameData::loadU8Data()
 		perr << "Unknown language. Unable to open usecode." << std::endl;
 		std::exit(-1);
 	}
-	std::string filename = "@u8/usecode/";
+	std::string filename = "@game/usecode/";
 	filename += langletter;
 	filename += "usecode.flx";
 
@@ -256,9 +256,9 @@ void GameData::loadU8Data()
 
 	// Load main shapes
 	pout << "Load Shapes" << std::endl;
-	IDataSource *sf = filesystem->ReadFile("@u8/static/u8shapes.flx");
-	if (!sf) sf = filesystem->ReadFile("@u8/static/shapes.flx");
-	if (!sf) sf = filesystem->ReadFile("@u8/static/u8shapes.cmp");
+	IDataSource *sf = filesystem->ReadFile("@game/static/u8shapes.flx");
+	if (!sf) sf = filesystem->ReadFile("@game/static/shapes.flx");
+	if (!sf) sf = filesystem->ReadFile("@game/static/u8shapes.cmp");
 
 	if (!sf) {
 		perr << "Unable to load static/u8shapes.flx or static/shapes.flx or static/u8shapes.cmp. Exiting" << std::endl;
@@ -275,7 +275,7 @@ void GameData::loadU8Data()
 	config->readConfigFile("@data/u8.ini", "game", true);
 
 	// Load typeflags
-	IDataSource *tfs = filesystem->ReadFile("@u8/static/typeflag.dat");
+	IDataSource *tfs = filesystem->ReadFile("@game/static/typeflag.dat");
 	if (!tfs) {
 		perr << "Unable to load static/typeflag.dat. Exiting" << std::endl;
 		std::exit(-1);
@@ -284,7 +284,7 @@ void GameData::loadU8Data()
 	delete tfs;
 
 	// Load animdat
-	IDataSource *af = filesystem->ReadFile("@u8/static/anim.dat");
+	IDataSource *af = filesystem->ReadFile("@game/static/anim.dat");
 	if (!af) {
 		perr << "Unable to load static/anim.dat. Exiting" << std::endl;
 		std::exit(-1);
@@ -293,7 +293,7 @@ void GameData::loadU8Data()
 	delete af;
 
 	// Load weapon overlay data
-	IDataSource* wod = filesystem->ReadFile("@u8/static/wpnovlay.dat");
+	IDataSource* wod = filesystem->ReadFile("@game/static/wpnovlay.dat");
 	if (!wod) {
 		perr << "Unable to load static/wpnovlay.dat. Exiting" << std::endl;
 		std::exit(-1);
@@ -304,7 +304,7 @@ void GameData::loadU8Data()
 	delete overlayflex;
 
 	// Load globs
-	IDataSource *gds = filesystem->ReadFile("@u8/static/glob.flx");
+	IDataSource *gds = filesystem->ReadFile("@game/static/glob.flx");
 	if (!gds) {
 		perr << "Unable to load static/glob.flx. Exiting" << std::endl;
 		std::exit(-1);
@@ -327,7 +327,7 @@ void GameData::loadU8Data()
 	delete globflex;
 
 	// Load fonts
-	IDataSource *fds = filesystem->ReadFile("@u8/static/u8fonts.flx");
+	IDataSource *fds = filesystem->ReadFile("@game/static/u8fonts.flx");
 	if (!fds) {
 		perr << "Unable to load static/u8fonts.flx. Exiting" << std::endl;
 		std::exit(-1);
@@ -337,7 +337,7 @@ void GameData::loadU8Data()
 	fonts->setHVLeads();
 
 	// Load mouse
-	IDataSource *msds = filesystem->ReadFile("@u8/static/u8mouse.shp");
+	IDataSource *msds = filesystem->ReadFile("@game/static/u8mouse.shp");
 	if (!msds) {
 		perr << "Unable to load static/u8mouse.shp. Exiting" << std::endl;
 		std::exit(-1);
@@ -346,7 +346,7 @@ void GameData::loadU8Data()
 	mouse->setPalette(PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
 	delete msds;
 
-	IDataSource *gumpds = filesystem->ReadFile("@u8/static/u8gumps.flx");
+	IDataSource *gumpds = filesystem->ReadFile("@game/static/u8gumps.flx");
 	if (!gumpds) {
 		perr << "Unable to load static/u8gumps.flx. Exiting" << std::endl;
 		std::exit(-1);
@@ -354,7 +354,7 @@ void GameData::loadU8Data()
 	gumps = new GumpShapeArchive(gumpds, GUMPS,
 		PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
 
-	IDataSource *gumpageds = filesystem->ReadFile("@u8/static/gumpage.dat");
+	IDataSource *gumpageds = filesystem->ReadFile("@game/static/gumpage.dat");
 	if (!gumpageds) {
 		perr << "Unable to load static/gumpage.dat. Exiting" << std::endl;
 		std::exit(-1);
@@ -363,14 +363,14 @@ void GameData::loadU8Data()
 	delete gumpageds;
 
 
-	IDataSource *mf = filesystem->ReadFile("@u8/sound/music.flx");
+	IDataSource *mf = filesystem->ReadFile("@game/sound/music.flx");
 	if (!mf) {
 		perr << "Unable to load sound/music.flx. Exiting" << std::endl;
 		std::exit(-1);
 	}
 	music = new MusicFlex(mf);
 
-	IDataSource *sndflx = filesystem->ReadFile("@u8/sound/sound.flx");
+	IDataSource *sndflx = filesystem->ReadFile("@game/sound/sound.flx");
 	if (!sndflx) {
 		perr << "Unable to load sound/sound.flx. Exiting" << std::endl;
 		std::exit(-1);
@@ -477,7 +477,7 @@ SpeechFlex* GameData::getSpeechFlex(uint32 shapenum)
 
 	FileSystem* filesystem = FileSystem::get_instance();
 
-	std::string u8_sound_ = "@u8/sound/";
+	std::string u8_sound_ = "@game/sound/";
 	char num_flx [32];
 	snprintf(num_flx ,32,"%i.flx", shapenum);
 

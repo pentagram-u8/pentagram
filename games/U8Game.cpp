@@ -65,7 +65,7 @@ bool U8Game::loadFiles()
 {
 	// Load palette
 	pout << "Load Palette" << std::endl;
-	IDataSource *pf = FileSystem::get_instance()->ReadFile("@u8/static/u8pal.pal");
+	IDataSource *pf = FileSystem::get_instance()->ReadFile("@game/static/u8pal.pal");
 	if (!pf) {
 		perr << "Unable to load static/u8pal.pal." << std::endl;
 		return false;
@@ -97,7 +97,7 @@ bool U8Game::startGame()
 	// reserve ObjId 666 for the Guardian Bark hack
 	objman->reserveObjId(666);
 
-	IDataSource *saveds = FileSystem::get_instance()->ReadFile("@u8/savegame/u8save.000");
+	IDataSource *saveds = FileSystem::get_instance()->ReadFile("@game/savegame/u8save.000");
 	if (!saveds) {
 		perr << "Unable to load savegame/u8save.000." << std::endl;
 		return false;
@@ -334,7 +334,7 @@ ProcId U8Game::playIntroMovie()
 		return 0;
 	}
 
-	std::string filename = "@u8/static/";
+	std::string filename = "@game/static/";
 	filename += langletter;
 	filename += "intro.skf";
 
@@ -351,7 +351,7 @@ ProcId U8Game::playIntroMovie()
 
 ProcId U8Game::playEndgameMovie()
 {
-	std::string filename = "@u8/static/endgame.skf";
+	std::string filename = "@game/static/endgame.skf";
 	FileSystem* filesys = FileSystem::get_instance();
 	IDataSource* skf = filesys->ReadFile(filename);
 	if (!skf) {
@@ -371,7 +371,7 @@ void U8Game::playCredits()
 		perr << "U8Game::playCredits: Unknown language." << std::endl;
 		return;
 	}
-	std::string filename = "@u8/static/";
+	std::string filename = "@game/static/";
 	filename += langletter;
 	filename += "credits.dat";
 
@@ -395,7 +395,7 @@ void U8Game::playCredits()
 
 void U8Game::playQuotes()
 {
-	std::string filename = "@u8/static/quotes.dat";
+	std::string filename = "@game/static/quotes.dat";
 
 	IDataSource* ids = FileSystem::get_instance()->ReadFile(filename);
 	if (!ids) {

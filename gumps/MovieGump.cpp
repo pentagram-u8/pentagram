@@ -116,7 +116,7 @@ void MovieGump::ConCmd_play(const Console::ArgvType &argv)
 		return;
 	}
 
-	std::string filename = "@u8/static/" + argv[1] + ".skf";
+	std::string filename = "@game/static/" + argv[1] + ".skf";
 	FileSystem* filesys = FileSystem::get_instance();
 	IDataSource* skf = filesys->ReadFile(filename);
 	if (!skf) {
