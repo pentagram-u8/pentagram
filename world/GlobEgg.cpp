@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GameData.h"
 #include "ItemFactory.h"
 #include "CurrentMap.h"
+#include "CoreApp.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
 
@@ -43,6 +44,13 @@ GlobEgg::~GlobEgg()
 // Called when an item has entered the fast area
 void GlobEgg::enterFastArea()
 {
+	uint32 coordmask = ~0x1FF;
+	unsigned int coordshift = 1;
+	if (GAME_IS_CRUSADER) {
+		coordmask = ~0x3FF;
+		coordshift = 2;
+	}
+
 	// Expand it
 	if (!(flags & FLG_FASTAREA)) 
 	{
@@ -60,8 +68,8 @@ void GlobEgg::enterFastArea()
 
 
 			// calculate object's world position
-			sint32 itemx = (x & ~0x1FF) + 2 * globitem.x + 1;
-			sint32 itemy = (y & ~0x1FF) + 2 * globitem.y + 1;
+			sint32 itemx = (x & coordmask) + (globitem.x << coordshift) + 1;
+			sint32 itemy = (y & coordmask) + (globitem.y << coordshift) + 1;
 			sint32 itemz = z + globitem.z;
 
 			item->move(itemx, itemy, itemz);

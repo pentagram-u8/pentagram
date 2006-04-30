@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -39,6 +39,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "SettingManager.h"
 #include "SoundFlex.h"
 #include "SpeechFlex.h"
+#include "crusader/ConvertShapeCrusader.h"
 
 GameData* GameData::gamedata = 0;
 
@@ -47,7 +48,7 @@ GameData::GameData()
 	: fixed(0), mainshapes(0), mainusecode(0), globs(0), fonts(0), gumps(0),
 	  mouse(0), music(0), weaponoverlay(0), soundflex(0), speech(1024)
 {
-	con.Print(MM_INFO, "Creating GamaData...\n");
+	con.Print(MM_INFO, "Creating GameData...\n");
 
 	assert(gamedata == 0);
 	gamedata = this;
@@ -55,7 +56,7 @@ GameData::GameData()
 
 GameData::~GameData()
 {
-	con.Print(MM_INFO, "Destroying GamaData...\n");
+	con.Print(MM_INFO, "Destroying GameData...\n");
 
 	delete fixed;
 	fixed = 0;
@@ -257,11 +258,10 @@ void GameData::loadU8Data()
 	// Load main shapes
 	pout << "Load Shapes" << std::endl;
 	IDataSource *sf = filesystem->ReadFile("@game/static/u8shapes.flx");
-	if (!sf) sf = filesystem->ReadFile("@game/static/shapes.flx");
 	if (!sf) sf = filesystem->ReadFile("@game/static/u8shapes.cmp");
 
 	if (!sf) {
-		perr << "Unable to load static/u8shapes.flx or static/shapes.flx or static/u8shapes.cmp. Exiting" << std::endl;
+		perr << "Unable to load static/u8shapes.flx or static/u8shapes.cmp. Exiting" << std::endl;
 		std::exit(-1);
 	}
 	mainshapes = new MainShapeArchive(sf, MAINSHAPES,
@@ -496,4 +496,172 @@ SpeechFlex* GameData::getSpeechFlex(uint32 shapenum)
 	speech[shapenum] = s;
 
 	return *s;
+}
+
+
+void GameData::loadRemorseData()
+{
+	FileSystem* filesystem = FileSystem::get_instance();
+
+	IDataSource *fd = filesystem->ReadFile("@game/static/fixed.dat");
+	if (!fd) {
+		perr << "Unable to load static/fixed.dat. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	fixed = new RawArchive(fd);
+
+	GameInfo* gameinfo = CoreApp::get_instance()->getGameInfo();
+	char langletter = gameinfo->getLanguageUsecodeLetter();
+	if (!langletter) {
+		perr << "Unknown language. Unable to open usecode." << std::endl;
+		std::exit(-1);
+	}
+	std::string filename = "@game/usecode/";
+	filename += langletter;
+	filename += "usecode.flx";
+
+
+	IDataSource* uds = filesystem->ReadFile(filename);
+	if (!uds) {
+		perr << "Unable to load " << filename << ". Exiting" << std::endl;
+		std::exit(-1);
+	}
+	mainusecode = new UsecodeFlex(uds);
+
+	// Load main shapes
+	pout << "Load Shapes" << std::endl;
+	IDataSource *sf = filesystem->ReadFile("@game/static/shapes.flx");
+
+	if (!sf) {
+		perr << "Unable to load static/shapes.flx. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	mainshapes = new MainShapeArchive(sf, MAINSHAPES,
+		PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game),
+									  &CrusaderShapeFormat);
+
+	ConfigFileManager* config = ConfigFileManager::get_instance();
+#if 0
+	// Load weapon, armour info
+	config->readConfigFile("@data/u8weapons.ini", "weapons", true);
+	config->readConfigFile("@data/u8armour.ini", "armour", true);
+	config->readConfigFile("@data/u8monsters.ini", "monsters", true);
+#endif
+	config->readConfigFile("@data/remorse.ini", "game", true);
+
+	// Load typeflags
+	IDataSource *tfs = filesystem->ReadFile("@game/static/typeflag.dat");
+	if (!tfs) {
+		perr << "Unable to load static/typeflag.dat. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	mainshapes->loadTypeFlags(tfs);
+	delete tfs;
+
+	// Load animdat
+	IDataSource *af = filesystem->ReadFile("@game/static/anim.dat");
+	if (!af) {
+		perr << "Unable to load static/anim.dat. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	mainshapes->loadAnimDat(af);
+	delete af;
+
+	// Load weapon overlay data
+	IDataSource* wod = filesystem->ReadFile("@game/static/wpnovlay.dat");
+	if (!wod) {
+		perr << "Unable to load static/wpnovlay.dat. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	RawArchive* overlayflex = new RawArchive(wod);
+	weaponoverlay = new WpnOvlayDat();
+	weaponoverlay->load(overlayflex);
+	delete overlayflex;
+
+	// Load globs
+	IDataSource *gds = filesystem->ReadFile("@game/static/glob.flx");
+	if (!gds) {
+		perr << "Unable to load static/glob.flx. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	RawArchive* globflex = new RawArchive(gds);
+	globs.clear();
+	globs.resize(globflex->getCount());
+	for (unsigned int i = 0; i < globflex->getCount(); ++i) {
+		MapGlob* glob = 0;
+		IDataSource* globds = globflex->get_datasource(i);
+
+		if (globds && globds->getSize()) {
+			glob = new MapGlob();
+			glob->read(globds);
+		}
+		delete globds;
+
+		globs[i] = glob;
+	}
+	delete globflex;
+
+	// Load fonts
+	IDataSource *fds = filesystem->ReadFile("@game/static/fonts.flx");
+	if (!fds) {
+		perr << "Unable to load static/fonts.flx. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	fonts = new FontShapeArchive(fds, OTHER,
+		PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
+	fonts->setHVLeads();
+
+	// Load mouse
+	IDataSource *msds = filesystem->ReadFile("@game/static/mouse.shp");
+	if (!msds) {
+		perr << "Unable to load static/mouse.shp. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	mouse = new Shape(msds, 0);
+	mouse->setPalette(PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
+	delete msds;
+
+	IDataSource *gumpds = filesystem->ReadFile("@game/static/gumps.flx");
+	if (!gumpds) {
+		perr << "Unable to load static/gumps.flx. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	gumps = new GumpShapeArchive(gumpds, GUMPS,
+		PaletteManager::get_instance()->getPalette(PaletteManager::Pal_Game));
+
+#if 0
+	IDataSource *gumpageds = filesystem->ReadFile("@game/static/gumpage.dat");
+	if (!gumpageds) {
+		perr << "Unable to load static/gumpage.dat. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	gumps->loadGumpage(gumpageds);
+	delete gumpageds;
+#endif
+
+	IDataSource* dummyds = filesystem->ReadFile("@data/empty.flx");
+	music = 0; //new MusicFlex(dummyds);
+	delete dummyds;
+#if 0
+	IDataSource *mf = filesystem->ReadFile("@game/sound/music.flx");
+	if (!mf) {
+		perr << "Unable to load sound/music.flx. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	music = new MusicFlex(mf);
+#endif
+
+	dummyds = filesystem->ReadFile("@data/empty.flx");
+	soundflex = new SoundFlex(dummyds);
+	delete dummyds;
+#if 0
+	IDataSource *sndflx = filesystem->ReadFile("@game/sound/sound.flx");
+	if (!sndflx) {
+		perr << "Unable to load sound/sound.flx. Exiting" << std::endl;
+		std::exit(-1);
+	}
+	soundflex = new SoundFlex(sndflx);
+#endif
+
+	loadTranslation();
 }

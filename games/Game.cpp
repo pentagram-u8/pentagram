@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2005 The Pentagram team
+Copyright (C) 2004-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "Game.h"
 #include "U8Game.h"
+#include "RemorseGame.h"
 #include "SettingManager.h"
 #include "PaletteManager.h"
 #include "Kernel.h"
@@ -46,6 +47,8 @@ Game* Game::createGame(GameInfo* info)
 	switch (info->type) {
 	case GameInfo::GAME_U8:
 		return new U8Game();
+	case GameInfo::GAME_REMORSE:
+		return new RemorseGame();
 	default:
 		CANT_HAPPEN_MSG("createGame: invalid game");
 	}

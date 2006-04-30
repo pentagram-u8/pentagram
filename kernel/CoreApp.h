@@ -24,6 +24,7 @@
 
 #include "intrinsics.h"
 #include "Args.h"
+#include "GameInfo.h"
 
 class FileSystem;
 class ConfigFileManager;

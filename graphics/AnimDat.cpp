@@ -140,6 +140,9 @@ void AnimDat::load(IDataSource *ds)
 						f.flags = ds->read1();
 						// byte 6, 7: unknown
 						ds->skip(2);
+
+						f.deltaz = 0;
+						f.sfx = 0;
 					}
 					a->actions[action]->frames[dir].push_back(f);
 				}

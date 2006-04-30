@@ -126,6 +126,7 @@ void Item::move(sint32 X, sint32 Y, sint32 Z)
 {
 	bool no_lerping = false;
 	CurrentMap * map = World::get_instance()->getCurrentMap();
+	int mapChunkSize = map->getChunkSize();
 
 	if (getObjId() == 1 && Z < 0) {
 		perr.printf("Warning: moving avatar below Z=0. (%d,%d,%d)\n", X, Y, Z);
@@ -160,8 +161,8 @@ void Item::move(sint32 X, sint32 Y, sint32 Z)
 	// Item needs to be removed if it in the map, and it is moving to a 
 	// different chunk
 	else if ((extendedflags & EXT_INCURMAP) && 
-			((x / MAP_CHUNK_SIZE != X / MAP_CHUNK_SIZE) || 
-			(y / MAP_CHUNK_SIZE != Y / MAP_CHUNK_SIZE))) {
+			((x / mapChunkSize != X / mapChunkSize) || 
+			(y / mapChunkSize != Y / mapChunkSize))) {
 
 		// Remove us from the map
 		map->removeItem(this);
@@ -190,7 +191,7 @@ void Item::move(sint32 X, sint32 Y, sint32 Z)
 	callUsecodeEvent_justMoved();
 
 	// Are we moving somewhere fast
-	bool dest_fast = map->isChunkFast(X/MAP_CHUNK_SIZE, Y/MAP_CHUNK_SIZE);
+	bool dest_fast = map->isChunkFast(X/mapChunkSize, Y/mapChunkSize);
 
 	// No lerping for this move
 	if (no_lerping) extendedflags |= EXT_LERP_NOPREV;
@@ -1080,7 +1081,10 @@ uint32 Item::callUsecodeEvent(uint32 event, const uint8* args, int argsize)
 	uint32 offset = u->get_class_event(class_id, event);
 	if (!offset) return 0; // event not found
 
-	//pout << "Item: " << objid << " calling usecode event " << event << " @ " << class_id << ":" << offset << std::endl;
+//	pout << "Item: " << objid << " calling usecode event " << event << " @ " << class_id << ":" << offset << std::endl;
+
+	// FIXME: Disabled usecode in crusader for now
+	if (GAME_IS_CRUSADER) return 0;
 
 	return callUsecode(static_cast<uint16>(class_id), 
 						static_cast<uint16>(offset),
@@ -1343,7 +1347,7 @@ void Item::animateItem()
 		break;
 
 	default:
-		pout <<"type " << info->animtype << " data " << anim_data  << std::endl;
+		pout << "type " << info->animtype << " data " << anim_data <<std::endl;
 		break;
 	}
 	//return dirty;

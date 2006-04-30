@@ -66,6 +66,7 @@ GAMES = \
 GAMES2 = \
 	games/Game.o \
 	games/GameData.o \
+	games/RemorseGame.o \
 	games/StartU8Process.o \
 	games/TreasureLoader.o \
 	games/U8Game.o
@@ -269,6 +270,7 @@ TIMIDITY = \
 DATA_FILES = \
 	data/fixedfont.ini \
 	data/fixedfont.tga \
+	data/remorsebindings.ini \
 	data/u8.ini \
 	data/u8armour.ini \
 	data/u8weapons.ini \

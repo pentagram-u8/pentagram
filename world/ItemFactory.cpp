@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Egg.h"
 #include "MonsterEgg.h"
 #include "TeleportEgg.h"
+#include "CoreApp.h"
 #include "IDataSource.h"
 
 Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
@@ -45,6 +46,14 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 	extendedflags |= Item::EXT_LERP_NOPREV;
 
 	uint32 family = info->family;
+
+	// CRUSADER HACK!
+	if (GAME_IS_CRUSADER) {
+		if (shape==16)
+			family = ShapeInfo::SF_GLOBEGG;
+		else
+			family = ShapeInfo::SF_GENERIC;
+	}
 
 	switch (family) {
 	case ShapeInfo::SF_GENERIC:

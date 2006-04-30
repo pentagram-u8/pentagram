@@ -75,7 +75,7 @@ public:
 	static void			SetHighlightItems(bool highlight) { highlightItems = highlight; }
 	static bool			isHighlightItems() { return highlightItems; }
 
-	static void ConCmd_toggleHightlightItems(const Console::ArgvType &argv);
+	static void ConCmd_toggleHighlightItems(const Console::ArgvType &argv);
 	static void ConCmd_dumpMap(const Console::ArgvType &argv);
 
 	virtual void		RenderSurfaceChanged();

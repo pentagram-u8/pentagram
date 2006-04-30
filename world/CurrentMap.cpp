@@ -58,6 +58,14 @@ CurrentMap::CurrentMap()
 		fast[i] = new uint32[MAP_NUM_CHUNKS/32];
 		std::memset(fast[i],false,sizeof(uint32)*MAP_NUM_CHUNKS/32);
 	}
+
+	if (GAME_IS_U8) {
+		mapChunkSize = 512;
+	} else if (GAME_IS_CRUSADER) {
+		mapChunkSize = 1024;
+	} else {
+		CANT_HAPPEN_MSG("Unknown game type in CurrentMap constructor.");
+	}
 }
 
 
@@ -239,15 +247,15 @@ void CurrentMap::addItem(Item* item)
 
 	item->getLocation(ix, iy, iz);
 
-	if (ix < 0 || ix >= MAP_CHUNK_SIZE*MAP_NUM_CHUNKS || 
-		iy < 0 || iy >= MAP_CHUNK_SIZE*MAP_NUM_CHUNKS) {
+	if (ix < 0 || ix >= mapChunkSize*MAP_NUM_CHUNKS || 
+		iy < 0 || iy >= mapChunkSize*MAP_NUM_CHUNKS) {
 		perr << "Skipping item: out of range (" 
 			 << ix << "," << iy << ")" << std::endl;
 		return;
 	}
 
-	sint32 cx = ix / MAP_CHUNK_SIZE;
-	sint32 cy = iy / MAP_CHUNK_SIZE;
+	sint32 cx = ix / mapChunkSize;
+	sint32 cy = iy / mapChunkSize;
 
 	items[cx][cy].push_front(item);
 	item->setExtFlag(Item::EXT_INCURMAP);
@@ -266,15 +274,15 @@ void CurrentMap::addItemToEnd(Item* item)
 
 	item->getLocation(ix, iy, iz);
 
-	if (ix < 0 || ix >= MAP_CHUNK_SIZE*MAP_NUM_CHUNKS || 
-		iy < 0 || iy >= MAP_CHUNK_SIZE*MAP_NUM_CHUNKS) {
+	if (ix < 0 || ix >= mapChunkSize*MAP_NUM_CHUNKS || 
+		iy < 0 || iy >= mapChunkSize*MAP_NUM_CHUNKS) {
 		perr << "Skipping item: out of range (" 
 			 << ix << "," << iy << ")" << std::endl;
 		return;
 	}
 
-	sint32 cx = ix / MAP_CHUNK_SIZE;
-	sint32 cy = iy / MAP_CHUNK_SIZE;
+	sint32 cx = ix / mapChunkSize;
+	sint32 cy = iy / mapChunkSize;
 
 	items[cx][cy].push_back(item);
 	item->setExtFlag(Item::EXT_INCURMAP);
@@ -303,30 +311,30 @@ void CurrentMap::removeItemFromList(Item* item, sint32 oldx, sint32 oldy)
 	// if it's really a problem we could change the item lists into sets
 	// or something, but let's see how it turns out
 
-	if (oldx < 0 || oldx >= MAP_CHUNK_SIZE*MAP_NUM_CHUNKS || 
-		oldy < 0 || oldy >= MAP_CHUNK_SIZE*MAP_NUM_CHUNKS) {
+	if (oldx < 0 || oldx >= mapChunkSize*MAP_NUM_CHUNKS || 
+		oldy < 0 || oldy >= mapChunkSize*MAP_NUM_CHUNKS) {
 		perr << "Skipping item: out of range (" 
 			 << oldx << "," << oldy << ")" << std::endl;
 		return;
 	}
 
-	sint32 cx = oldx / MAP_CHUNK_SIZE;
-	sint32 cy = oldy / MAP_CHUNK_SIZE;
+	sint32 cx = oldx / mapChunkSize;
+	sint32 cy = oldy / mapChunkSize;
 
 	items[cx][cy].remove(item);
 	item->clearExtFlag(Item::EXT_INCURMAP);
 }
 
 // Check to see if the chunk is on the screen 
-static inline bool ChunkOnScreen(sint32 cx, sint32 cy, sint32 sleft, sint32 stop, sint32 sright, sint32 sbot)
+static inline bool ChunkOnScreen(sint32 cx, sint32 cy, sint32 sleft, sint32 stop, sint32 sright, sint32 sbot, int mapChunkSize)
 {
-	sint32 scx = (cx*MAP_CHUNK_SIZE - cy*MAP_CHUNK_SIZE)/4;
-	sint32 scy = ((cx*MAP_CHUNK_SIZE + cy*MAP_CHUNK_SIZE)/8);
+	sint32 scx = (cx*mapChunkSize - cy*mapChunkSize)/4;
+	sint32 scy = ((cx*mapChunkSize + cy*mapChunkSize)/8);
 
 	// Screenspace bounding box left extent    (LNT x coord)
-	sint32 cxleft = scx-MAP_CHUNK_SIZE/4;
+	sint32 cxleft = scx-mapChunkSize/4;
 	// Screenspace bounding box right extent   (RFT x coord)
-	sint32 cxright= scx+MAP_CHUNK_SIZE/4;
+	sint32 cxright= scx+mapChunkSize/4;
 
 	// Screenspace bounding box top extent     (LFT y coord)
 	sint32 cytop = scy - 256;
@@ -386,10 +394,10 @@ void CurrentMap::updateFastArea(sint32 from_x, sint32 from_y, sint32 from_z, sin
 	Pentagram::Rect dims;
 	GUIApp::get_instance()->getGameMapGump()->GetDims(dims);
 
-	sint32 sleft  = ((x_min - y_min)/4)         - (dims.w/2 + MAP_CHUNK_SIZE/4);
-	sint32 stop   = ((x_min + y_min)/8 - z_max) - (dims.h/2 + MAP_CHUNK_SIZE/8);
-	sint32 sright = ((x_max - y_max)/4)         + (dims.w/2 + MAP_CHUNK_SIZE/4);
-	sint32 sbot   = ((x_max + y_max)/8 - z_min) + (dims.h/2 + MAP_CHUNK_SIZE/8);
+	sint32 sleft  = ((x_min - y_min)/4)         - (dims.w/2 + mapChunkSize/4);
+	sint32 stop   = ((x_min + y_min)/8 - z_max) - (dims.h/2 + mapChunkSize/8);
+	sint32 sright = ((x_max - y_max)/4)         + (dims.w/2 + mapChunkSize/4);
+	sint32 sbot   = ((x_max + y_max)/8 - z_min) + (dims.h/2 + mapChunkSize/8);
 
 	// Don't do anything IF the regions are the same
 	if (fast_x_min == sleft && fast_y_min == stop &&
@@ -409,10 +417,10 @@ void CurrentMap::updateFastArea(sint32 from_x, sint32 from_y, sint32 from_z, sin
 
 	CalcFastAreaLimits(sx_limit, sy_limit, xy_limit, dims);
 
-	x_min = x_min/MAP_CHUNK_SIZE - xy_limit;
-	x_max = x_max/MAP_CHUNK_SIZE + xy_limit;
-	y_min = y_min/MAP_CHUNK_SIZE - xy_limit;
-	y_max = y_max/MAP_CHUNK_SIZE + xy_limit;
+	x_min = x_min/mapChunkSize - xy_limit;
+	x_max = x_max/mapChunkSize + xy_limit;
+	y_min = y_min/mapChunkSize - xy_limit;
+	y_max = y_max/mapChunkSize + xy_limit;
 
 	for (sint32 cy = 0; cy < MAP_NUM_CHUNKS; cy++) {
 		for (sint32 cx = 0; cx < MAP_NUM_CHUNKS; cx++) {
@@ -421,7 +429,7 @@ void CurrentMap::updateFastArea(sint32 from_x, sint32 from_y, sint32 from_z, sin
 			bool want_fast = cx>=x_min && cx<=x_max && cy>=y_min && cy<=y_max;
 
 			// Fine
-			if (want_fast) want_fast = ChunkOnScreen(cx,cy,sleft,stop,sright,sbot);
+			if (want_fast) want_fast = ChunkOnScreen(cx,cy,sleft,stop,sright,sbot,mapChunkSize);
 
 			bool currently_fast = isChunkFast(cx,cy);
 
@@ -478,10 +486,10 @@ void CurrentMap::areaSearch(UCList* itemlist, const uint8* loopscript,
 
 	int minx, miny, maxx, maxy;
 
-	minx = ((x-xd-range)/MAP_CHUNK_SIZE) - 1;
-	maxx = ((x+range)/MAP_CHUNK_SIZE) + 1;
-	miny = ((y-yd-range)/MAP_CHUNK_SIZE) - 1;
-	maxy = ((y+range)/MAP_CHUNK_SIZE) + 1;
+	minx = ((x-xd-range)/mapChunkSize) - 1;
+	maxx = ((x+range)/mapChunkSize) + 1;
+	miny = ((y-yd-range)/mapChunkSize) - 1;
+	maxy = ((y+range)/mapChunkSize) + 1;
 	if (minx < 0) minx = 0;
 	if (maxx >= MAP_NUM_CHUNKS) maxx = MAP_NUM_CHUNKS-1;
 	if (miny < 0) miny = 0;
@@ -560,10 +568,10 @@ void CurrentMap::surfaceSearch(UCList* itemlist, const uint8* loopscript,
 
 	sint32 minx, miny, maxx, maxy;
 
-	minx = ((origin[0] - dims[0])/MAP_CHUNK_SIZE) - 1;
-	maxx = ((origin[0])/MAP_CHUNK_SIZE) + 1;
-	miny = ((origin[1] - dims[1])/MAP_CHUNK_SIZE) - 1;
-	maxy = ((origin[1])/MAP_CHUNK_SIZE) + 1;
+	minx = ((origin[0] - dims[0])/mapChunkSize) - 1;
+	maxx = ((origin[0])/mapChunkSize) + 1;
+	miny = ((origin[1] - dims[1])/mapChunkSize) - 1;
+	maxy = ((origin[1])/mapChunkSize) + 1;
 	if (minx < 0) minx = 0;
 	if (maxx >= MAP_NUM_CHUNKS) maxx = MAP_NUM_CHUNKS-1;
 	if (miny < 0) miny = 0;
@@ -673,10 +681,10 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 
 	int minx, miny, maxx, maxy;
 
-	minx = ((x-xd)/MAP_CHUNK_SIZE) - 1;
-	maxx = (x/MAP_CHUNK_SIZE) + 1;
-	miny = ((y-yd)/MAP_CHUNK_SIZE) - 1;
-	maxy = (y/MAP_CHUNK_SIZE) + 1;
+	minx = ((x-xd)/mapChunkSize) - 1;
+	maxx = (x/mapChunkSize) + 1;
+	miny = ((y-yd)/mapChunkSize) - 1;
+	maxy = (y/mapChunkSize) + 1;
 	if (minx < 0) minx = 0;
 	if (maxx >= MAP_NUM_CHUNKS) maxx = MAP_NUM_CHUNKS-1;
 	if (miny < 0) miny = 0;
@@ -788,10 +796,10 @@ bool CurrentMap::scanForValidPosition(sint32 x, sint32 y, sint32 z, Item* item,
 
 	int minx, miny, maxx, maxy;
 
-	minx = ((x-xd)/MAP_CHUNK_SIZE) - 1;
-	maxx = (x/MAP_CHUNK_SIZE) + 1;
-	miny = ((y-yd)/MAP_CHUNK_SIZE) - 1;
-	maxy = (y/MAP_CHUNK_SIZE) + 1;
+	minx = ((x-xd)/mapChunkSize) - 1;
+	maxx = (x/mapChunkSize) + 1;
+	miny = ((y-yd)/mapChunkSize) - 1;
+	maxy = (y/mapChunkSize) + 1;
 	if (minx < 0) minx = 0;
 	if (maxx >= MAP_NUM_CHUNKS) maxx = MAP_NUM_CHUNKS-1;
 	if (miny < 0) miny = 0;
@@ -932,17 +940,17 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 	int i;
 
 	int minx, miny, maxx, maxy;
-	minx = ((start[0]-dims[0])/MAP_CHUNK_SIZE) - 1;
-	maxx = (start[0]/MAP_CHUNK_SIZE) + 1;
-	miny = ((start[1]-dims[1])/MAP_CHUNK_SIZE) - 1;
-	maxy = (start[1]/MAP_CHUNK_SIZE) + 1;
+	minx = ((start[0]-dims[0])/mapChunkSize) - 1;
+	maxx = (start[0]/mapChunkSize) + 1;
+	miny = ((start[1]-dims[1])/mapChunkSize) - 1;
+	maxy = (start[1]/mapChunkSize) + 1;
 
 	{
 		int dminx, dminy, dmaxx, dmaxy;
-		dminx = ((end[0]-dims[0])/MAP_CHUNK_SIZE) - 1;
-		dmaxx = (end[0]/MAP_CHUNK_SIZE) + 1;
-		dminy = ((end[1]-dims[1])/MAP_CHUNK_SIZE) - 1;
-		dmaxy = (end[1]/MAP_CHUNK_SIZE) + 1;
+		dminx = ((end[0]-dims[0])/mapChunkSize) - 1;
+		dmaxx = (end[0]/mapChunkSize) + 1;
+		dminy = ((end[1]-dims[1])/mapChunkSize) - 1;
+		dmaxy = (end[1]/mapChunkSize) + 1;
 		if (dminx < minx) minx = dminx;
 		if (dmaxx > maxx) maxx = dmaxx;
 		if (dminy < miny) miny = dminy;
@@ -1130,10 +1138,10 @@ Item *CurrentMap::traceTopItem(sint32 x, sint32 y, sint32 ztop, sint32 zbot, Obj
 	}
 
 	int minx, miny, maxx, maxy;
-	minx = (x/MAP_CHUNK_SIZE);
-	maxx = (x/MAP_CHUNK_SIZE) + 1;
-	miny = (y/MAP_CHUNK_SIZE);
-	maxy = (y/MAP_CHUNK_SIZE) + 1;
+	minx = (x/mapChunkSize);
+	maxx = (x/mapChunkSize) + 1;
+	miny = (y/mapChunkSize);
+	maxy = (y/mapChunkSize) + 1;
 	if (minx < 0) minx = 0;
 	if (maxx >= MAP_NUM_CHUNKS) maxx = MAP_NUM_CHUNKS-1;
 	if (miny < 0) miny = 0;

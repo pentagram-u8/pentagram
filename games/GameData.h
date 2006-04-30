@@ -44,7 +44,8 @@ public:
 
 	static GameData* get_instance() { return gamedata; }
 
-	void loadU8Data(); // probably only temporary
+	void loadU8Data();
+	void loadRemorseData();
 	void setupFontOverrides();
 
 	Usecode* getMainUsecode() const { return mainusecode; }

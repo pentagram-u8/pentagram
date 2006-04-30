@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -31,7 +31,6 @@ class IDataSource;
 class ODataSource;
 
 #define MAP_NUM_CHUNKS	64
-#define MAP_CHUNK_SIZE	512
 
 class CurrentMap
 {
@@ -50,6 +49,8 @@ public:
 
 	//! Get the map number of the CurrentMap
 	uint32 getNum() const;
+
+	unsigned int getChunkSize() const { return mapChunkSize; }
 
 	//! Add an item to the beginning of the item list
 	void addItem(Item* item);
@@ -204,6 +205,8 @@ private:
 	// Fast area bit masks -> fast[ry][rx/32]&(1<<(rx&31));
 	uint32** fast;	
 	sint32 fast_x_min, fast_y_min, fast_x_max, fast_y_max;
+
+	int mapChunkSize;
 
 	void setChunkFast(sint32 cx, sint32 cy);
 	void unsetChunkFast(sint32 cx, sint32 cy);

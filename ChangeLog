@@ -1,3 +1,11 @@
+2006-04-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* games/RemorseGame.*: very incomplete No Remorse Game class
+	* games/GameData.*: load some No Remorse data files
+	* world/*: crusader map loading
+	* usecode/remorseintrinsics.h: empty intrinsics table
+	* various: hacks to disable some pentagram functions in crusader
+	* data/u8bindings.ini, kernel/GUIApp.cpp: fix typo in keybinding
+
 2006-04-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: crusader anim.dat, wpnovlay.dat, typeflag.dat loading
 	* usecode/*: clean up handling of headers; crusader usecodeflex support

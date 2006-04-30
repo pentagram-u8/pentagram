@@ -112,11 +112,30 @@ void TypeFlags::load(IDataSource *ds)
 		} else if (GAME_IS_CRUSADER) {
 
 			// might have to split up remorse/regret at some point
+
+			// unchecked
+			if (data[0] & 0x01) si.flags |= ShapeInfo::SI_FIXED;
+			if (data[0] & 0x02) si.flags |= ShapeInfo::SI_SOLID;
+			if (data[0] & 0x04) si.flags |= ShapeInfo::SI_SEA;
+			if (data[0] & 0x08) si.flags |= ShapeInfo::SI_LAND;
+			if (data[0] & 0x10) si.flags |= ShapeInfo::SI_OCCL;
+			if (data[0] & 0x20) si.flags |= ShapeInfo::SI_BAG;
+			if (data[0] & 0x40) si.flags |= ShapeInfo::SI_DAMAGING;
+			if (data[0] & 0x80) si.flags |= ShapeInfo::SI_NOISY;
+
+			// unchecked
+			if (data[1] & 0x01) si.flags |= ShapeInfo::SI_DRAW;
+			if (data[1] & 0x02) si.flags |= ShapeInfo::SI_IGNORE;
+			if (data[1] & 0x04) si.flags |= ShapeInfo::SI_ROOF;
+			if (data[1] & 0x08) si.flags |= ShapeInfo::SI_TRANSL;
+			si.family = data[1] >> 4;
 			
 			// (copied from old/viewer/ShapeManager.h)
 			si.x = ((data[3]<<3) | (data[2]>>5)) & 0x1F;
 			si.y = (data[3] >> 2) & 0x1F;
 			si.z = ((data[4]<<1) | (data[3]>>7)) & 0x1F;
+
+			si.animtype = 0;
 
 		}
 

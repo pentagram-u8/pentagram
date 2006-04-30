@@ -545,7 +545,7 @@ void GameMapGump::DropItem(Item* item, int mx, int my)
 	item->fall();
 }
 
-void GameMapGump::ConCmd_toggleHightlightItems(const Console::ArgvType &argv)
+void GameMapGump::ConCmd_toggleHighlightItems(const Console::ArgvType &argv)
 {
 	GameMapGump::SetHighlightItems(!GameMapGump::isHighlightItems());
 }

@@ -198,6 +198,11 @@ void Map::loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds,
 		sint32 y = static_cast<sint32>(ds->readX(2));
 		sint32 z = static_cast<sint32>(ds->readX(1));
 
+		if (GAME_IS_CRUSADER) {
+			x *= 2;
+			y *= 2;
+		}
+
 		uint32 shape = ds->read2();
 		uint32 frame = ds->read1();
 		uint16 flags = ds->read2();

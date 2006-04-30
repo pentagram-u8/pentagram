@@ -73,6 +73,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ActorAnimProcess.h"
 #include "TargetedAnimProcess.h"
 #include "u8intrinsics.h"
+#include "remorseintrinsics.h"
 #include "Egg.h"
 #include "CurrentMap.h"
 #include "InverterProcess.h"
@@ -221,8 +222,8 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	con.AddConsoleCommand("QuickAvatarMoverProcess::toggleClipping",
 						  QuickAvatarMoverProcess::ConCmd_toggleClipping);
 
-	con.AddConsoleCommand("GameMapGump::toggleHightlightItems",
-						  GameMapGump::ConCmd_toggleHightlightItems);
+	con.AddConsoleCommand("GameMapGump::toggleHighlightItems",
+						  GameMapGump::ConCmd_toggleHighlightItems);
 	con.AddConsoleCommand("GameMapGump::dumpMap",
 						  GameMapGump::ConCmd_dumpMap);
 
@@ -279,7 +280,7 @@ GUIApp::~GUIApp()
 	con.RemoveConsoleCommand(QuickAvatarMoverProcess::ConCmd_toggleQuarterSpeed);
 	con.RemoveConsoleCommand(QuickAvatarMoverProcess::ConCmd_toggleClipping);
 
-	con.RemoveConsoleCommand(GameMapGump::ConCmd_toggleHightlightItems);
+	con.RemoveConsoleCommand(GameMapGump::ConCmd_toggleHighlightItems);
 	con.RemoveConsoleCommand(GameMapGump::ConCmd_dumpMap);
 
 	// Game related console commands are now removed in shutdownGame
@@ -471,18 +472,30 @@ void GUIApp::startupGame()
 
 	gamedata = new GameData();
 
-	if (getGameInfo()->type == GameInfo::GAME_U8) {
+	std::string bindingsfile;
+	if (GAME_IS_U8) {
+		bindingsfile = "@data/u8bindings.ini";
+	} else if (GAME_IS_REMORSE) {
+		bindingsfile = "@data/remorsebindings.ini";
+	}
+	if (!bindingsfile.empty()) {
 		// system-wide config
-		if (configfileman->readConfigFile("@data/u8bindings.ini",
+		if (configfileman->readConfigFile(bindingsfile,
 										  "bindings", true))
-			con.Print(MM_INFO, "@data/u8bindings.ini... Ok\n");
+			con.Printf(MM_INFO, "%s... Ok\n", bindingsfile.c_str());
 		else
-			con.Print(MM_MINOR_WARN, "@data/u8bindings.ini... Failed\n");
+			con.Printf(MM_MINOR_WARN, "%s... Failed\n", bindingsfile.c_str());
 	}
 
 	hidmanager->loadBindings();
 	
-	ucmachine = new UCMachine(U8Intrinsics);
+	if (GAME_IS_U8) {
+		ucmachine = new UCMachine(U8Intrinsics);
+	} else if (GAME_IS_REMORSE) {
+		ucmachine = new UCMachine(RemorseIntrinsics);
+	} else {
+		CANT_HAPPEN_MSG("Invalid game type.");
+	}
 
 	inBetweenFrame = 0;
 	lerpFactor = 256;

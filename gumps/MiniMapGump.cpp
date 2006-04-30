@@ -57,6 +57,7 @@ void MiniMapGump::PaintThis(RenderSurface* surf, sint32 lerp_factor, bool scaled
 {
 	World *world = World::get_instance();
 	CurrentMap *currentmap = world->getCurrentMap();
+	int mapChunkSize = currentmap->getChunkSize();
 
 	if (currentmap->getNum() != lastMapNum) {
 		std::memset(texbuffer,0,sizeof(texbuffer));
@@ -76,8 +77,8 @@ void MiniMapGump::PaintThis(RenderSurface* surf, sint32 lerp_factor, bool scaled
 			{
 				if (texbuffer[y*MINMAPGUMP_SCALE+j][x*MINMAPGUMP_SCALE+i] == 0)
 					texbuffer[y*MINMAPGUMP_SCALE+j][x*MINMAPGUMP_SCALE+i] = sampleAtPoint(
-						x*MAP_CHUNK_SIZE + MAP_CHUNK_SIZE/(MINMAPGUMP_SCALE*2) + (MAP_CHUNK_SIZE*i)/MINMAPGUMP_SCALE, 
-						y*MAP_CHUNK_SIZE + MAP_CHUNK_SIZE/(MINMAPGUMP_SCALE*2) + (MAP_CHUNK_SIZE*j)/MINMAPGUMP_SCALE,
+						x*mapChunkSize + mapChunkSize/(MINMAPGUMP_SCALE*2) + (mapChunkSize*i)/MINMAPGUMP_SCALE, 
+						y*mapChunkSize + mapChunkSize/(MINMAPGUMP_SCALE*2) + (mapChunkSize*j)/MINMAPGUMP_SCALE,
 						currentmap);
 			}
 		}
@@ -90,11 +91,11 @@ void MiniMapGump::PaintThis(RenderSurface* surf, sint32 lerp_factor, bool scaled
 	sint32 ax,ay,az;
 	av->getLocation(ax,ay,az);
 
-	ax = ax/(MAP_CHUNK_SIZE/MINMAPGUMP_SCALE);
-	ay = ay/(MAP_CHUNK_SIZE/MINMAPGUMP_SCALE);
+	ax = ax/(mapChunkSize/MINMAPGUMP_SCALE);
+	ay = ay/(mapChunkSize/MINMAPGUMP_SCALE);
 
-	sx = ax - (MAP_CHUNK_SIZE/(4*2));
-	sy = ay - (MAP_CHUNK_SIZE/(4*2));
+	sx = ax - (mapChunkSize/(4*2));
+	sy = ay - (mapChunkSize/(4*2));
 	ax = ax - sx;
 	ay = ay - sy;
 
