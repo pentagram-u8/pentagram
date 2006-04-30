@@ -129,6 +129,7 @@ void TypeFlags::load(IDataSource *ds)
 			if (data[1] & 0x04) si.flags |= ShapeInfo::SI_ROOF;
 			if (data[1] & 0x08) si.flags |= ShapeInfo::SI_TRANSL;
 			si.family = data[1] >> 4;
+			si.family += (data[2] & 1) << 4;
 			
 			// (copied from old/viewer/ShapeManager.h)
 			si.x = ((data[3]<<3) | (data[2]>>5)) & 0x1F;
@@ -136,6 +137,13 @@ void TypeFlags::load(IDataSource *ds)
 			si.z = ((data[4]<<1) | (data[3]>>7)) & 0x1F;
 
 			if (data[6] & 0x01) si.flags |= ShapeInfo::SI_EDITOR;
+			if (data[6] & 0x02) si.flags |= ShapeInfo::SI_CRUSUNK61;
+			if (data[6] & 0x04) si.flags |= ShapeInfo::SI_CRUSUNK62;
+			if (data[6] & 0x08) si.flags |= ShapeInfo::SI_CRUSUNK63;
+			if (data[6] & 0x10) si.flags |= ShapeInfo::SI_CRUSUNK64;
+			if (data[6] & 0x20) si.flags |= ShapeInfo::SI_CRUS_NPC;
+			if (data[6] & 0x40) si.flags |= ShapeInfo::SI_CRUSUNK66;
+			if (data[6] & 0x80) si.flags |= ShapeInfo::SI_CRUSUNK67;
 
 			si.animtype = 0;
 

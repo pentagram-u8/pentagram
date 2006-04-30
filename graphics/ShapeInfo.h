@@ -42,7 +42,14 @@ public:
 		SI_EDITOR  = 0x1000,
 		SI_EXPLODE = 0x2000,
 		SI_UNKNOWN46 = 0x4000,
-		SI_UNKNOWN47 = 0x8000
+		SI_UNKNOWN47 = 0x8000,
+		SI_CRUSUNK61 = 0x2000,
+		SI_CRUSUNK62 = 0x4000,
+		SI_CRUSUNK63 = 0x8000,
+		SI_CRUSUNK64 = 0x10000,
+		SI_CRUS_NPC  = 0x20000,
+		SI_CRUSUNK66 = 0x40000,
+		SI_CRUSUNK67 = 0x80000,
 	};
 
 	enum SFamily {
@@ -100,6 +107,8 @@ public:
 		{ return (family == SF_QUANTITY || family == SF_REAGENT); }
 
 	bool getTypeFlag(int typeflag);
+	bool getTypeFlagU8(int typeflag);
+	bool getTypeFlagCrusader(int typeflag);
 
 	ShapeInfo() : weaponinfo(0), armourinfo(0), monsterinfo(0) { }
 

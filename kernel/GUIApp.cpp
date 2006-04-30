@@ -490,9 +490,9 @@ void GUIApp::startupGame()
 	hidmanager->loadBindings();
 	
 	if (GAME_IS_U8) {
-		ucmachine = new UCMachine(U8Intrinsics);
+		ucmachine = new UCMachine(U8Intrinsics, 256);
 	} else if (GAME_IS_REMORSE) {
-		ucmachine = new UCMachine(RemorseIntrinsics);
+		ucmachine = new UCMachine(RemorseIntrinsics, 308);
 	} else {
 		CANT_HAPPEN_MSG("Invalid game type.");
 	}

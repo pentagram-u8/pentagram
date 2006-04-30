@@ -405,6 +405,8 @@ public:
 	INTRINSIC(I_getQHi);
 	INTRINSIC(I_getQLo);
 	INTRINSIC(I_setQ);
+	INTRINSIC(I_setQHi);
+	INTRINSIC(I_setQLo);
 	INTRINSIC(I_setQuality);
 	INTRINSIC(I_setQuantity);
 	INTRINSIC(I_getFamily);
@@ -423,6 +425,7 @@ public:
 	INTRINSIC(I_bark);
 	INTRINSIC(I_getMapArray);
 	INTRINSIC(I_setMapArray);
+	INTRINSIC(I_getNpcNum);
 	INTRINSIC(I_getDirToCoords);
 	INTRINSIC(I_getDirFromCoords);
 	INTRINSIC(I_getDirToItem);
@@ -462,6 +465,7 @@ public:
 	INTRINSIC(I_explode);
 	INTRINSIC(I_canReach);
 	INTRINSIC(I_getRange);
+	INTRINSIC(I_isCrusTypeNPC);
 
 private:
 	uint32 shape;	// DO NOT modify this directly! Always use setShape()!

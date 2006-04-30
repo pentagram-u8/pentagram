@@ -79,7 +79,7 @@ enum UCSegments {
 
 UCMachine* UCMachine::ucmachine = 0;
 
-UCMachine::UCMachine(Intrinsic *iset)
+UCMachine::UCMachine(Intrinsic *iset, unsigned int icount)
 {
 	con.Print(MM_INFO, "Creating UCMachine...\n");
 
@@ -90,7 +90,7 @@ UCMachine::UCMachine(Intrinsic *iset)
 	globals = new BitSet(0x1000);
 
 	convuse = new ConvertUsecodeU8; //!...
-	loadIntrinsics(iset); //!...
+	loadIntrinsics(iset, icount); //!...
 
 	listIDs = new idMan(1, 65534, 128);
 	stringIDs = new idMan(1, 65534, 256);
@@ -147,9 +147,10 @@ void UCMachine::reset()
 	stringHeap.clear();
 }
 
-void UCMachine::loadIntrinsics(Intrinsic *i)
+void UCMachine::loadIntrinsics(Intrinsic *i, unsigned int icount)
 {
 	intrinsics=i;
+	intrinsiccount=icount;
 }
 
 bool UCMachine::execProcess(UCProcess* p)
@@ -356,9 +357,9 @@ bool UCMachine::execProcess(UCProcess* p)
 				LOGPF(("calli\t\t%04Xh (%02Xh arg bytes) %s \n", func, arg_bytes, convuse->intrinsics()[func]));
 
 				// !constants
-				if (func >= 0x100 || intrinsics[func] == 0) {
+				if (func >= intrinsiccount || intrinsics[func] == 0) {
 					p->temp32 = 0;
-//					perr << "Unhandled intrinsic \'" << convuse->intrinsics()[func] << "\' (" << std::hex << func << std::dec << ") called" << std::endl;
+					perr << "Unhandled intrinsic \'" << convuse->intrinsics()[func] << "\' (" << std::hex << func << std::dec << ") called" << std::endl;
 				} else {
 					//!! hackish
 					if (intrinsics[func] == UCMachine::I_dummyProcess ||

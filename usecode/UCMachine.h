@@ -36,7 +36,7 @@ class idMan;
 class UCMachine
 {
 public:
-	UCMachine(Intrinsic *iset);
+	UCMachine(Intrinsic *iset, unsigned int icount);
 	~UCMachine();
 
 	static UCMachine* get_instance() { return ucmachine; }
@@ -84,12 +84,13 @@ public:
 	INTRINSIC(I_getCurrentTimerTick);
 
 protected:
-	void loadIntrinsics(Intrinsic *i);
+	void loadIntrinsics(Intrinsic *i, unsigned int icount);
 
 private:
 
 	ConvertUsecode*	convuse;
 	Intrinsic* intrinsics;
+	unsigned int intrinsiccount;
 
 	BitSet* globals;
 

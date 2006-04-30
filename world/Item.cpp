@@ -2032,10 +2032,15 @@ uint32 Item::I_getUnkEggType(const uint8* args, unsigned int /*argsize*/)
 	ARG_ITEM_FROM_PTR(item);
 	if (!item) return 0;
 
-	if (item->getFamily() == ShapeInfo::SF_UNKEGG)
-		return item->getQuality();
-	else
+	if (item->getFamily() == ShapeInfo::SF_UNKEGG) {
+		if (GAME_IS_U8) {
+			return item->getQuality();
+		} else {
+			return item->getQuality() & 0xFF;
+		}
+	} else {
 		return 0;
+	}
 }
 
 uint32 Item::I_getQuantity(const uint8* args, unsigned int /*argsize*/)
@@ -2117,6 +2122,30 @@ uint32 Item::I_setQ(const uint8* args, unsigned int /*argsize*/)
 	return 0;
 }
 
+uint32 Item::I_setQLo(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM_FROM_PTR(item);
+	ARG_UINT16(q);
+	if (!item) return 0;
+
+	uint16 iq = item->getQuality() & 0xFF00;
+
+	item->setQuality(iq | (q & 0xFF));
+	return 0;
+}
+
+uint32 Item::I_setQHi(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM_FROM_PTR(item);
+	ARG_UINT16(q);
+	if (!item) return 0;
+
+	uint16 iq = item->getQuality() & 0x00FF;
+
+	item->setQuality(iq | ((q<<8) & 0xFF00));
+	return 0;
+}
+
 uint32 Item::I_setQuality(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM_FROM_PTR(item);
@@ -2158,7 +2187,9 @@ uint32 Item::I_getTypeFlag(const uint8* args, unsigned int /*argsize*/)
 
 	ShapeInfo *info = item->getShapeInfo();
 
-	if (typeflag >= 64)
+	if (GAME_IS_U8 && typeflag >= 64)
+		perr << "Invalid TypeFlag greater than 63 requested (" << typeflag << ") by Usecode" << std::endl;
+	if (GAME_IS_CRUSADER && typeflag >= 72)
 		perr << "Invalid TypeFlag greater than 63 requested (" << typeflag << ") by Usecode" << std::endl;
 
 	if (info->getTypeFlag(typeflag))
@@ -2712,6 +2743,14 @@ uint32 Item::I_setMapArray(const uint8* args, unsigned int /*argsize*/)
 	return 0;
 }
 
+uint32 Item::I_getNpcNum(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM_FROM_PTR(item);
+	if (!item) return 0;
+
+	return item->getNpcNum();
+}
+
 uint32 Item::I_getDirToCoords(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM_FROM_PTR(item);
@@ -2963,4 +3002,20 @@ uint32 Item::I_getRange(const uint8* args, unsigned int /*argsize*/)
 	if (!other) return 0;
 
 	return item->getRange(*other);
+}
+
+uint32 Item::I_isCrusTypeNPC(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_UINT16(sh);
+
+	if (sh == 0x7FE) return 1;
+
+	ShapeInfo* info;
+	info = GameData::get_instance()->getMainShapes()->getShapeInfo(sh);
+	if (!info) return 0;
+
+	if (info->flags & ShapeInfo::SI_CRUS_NPC)
+		return 1;
+	else
+		return 0;
 }
