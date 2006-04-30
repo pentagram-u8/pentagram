@@ -1,4 +1,7 @@
 2006-04-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/UCMachine.cpp: fixing crusader call opcode semantics
+
+2006-04-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* games/RemorseGame.*: very incomplete No Remorse Game class
 	* games/GameData.*: load some No Remorse data files
 	* world/*: crusader map loading

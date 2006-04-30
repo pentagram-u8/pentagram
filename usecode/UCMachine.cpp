@@ -390,11 +390,18 @@ bool UCMachine::execProcess(UCProcess* p)
 
 		case 0x11:
 			// 11 xx xx yy yy
+			// Ultima 8:
 			// call the function at offset yy yy of class xx xx
+			// Crusader:
+			// call function number yy yy of class xx xx
 			{
 				uint16 new_classid = cs.read2();
 				uint16 new_offset = cs.read2();
 				LOGPF(("call\t\t%04X:%04X\n", new_classid, new_offset));
+				if (GAME_IS_CRUSADER) {
+					new_offset = p->usecode->get_class_event(new_classid,
+															 new_offset);
+				}
 
 				p->ip = static_cast<uint16>(cs.getPos());	// Truncates!!
 				p->call(new_classid, new_offset);
@@ -1304,6 +1311,10 @@ bool UCMachine::execProcess(UCProcess* p)
 				
 				LOGPF(("spawn\t\t%02X %02X %04X:%04X\n",
 					   arg_bytes, this_size, classid, offset));
+
+				if (GAME_IS_CRUSADER) {
+					offset = p->usecode->get_class_event(classid, offset);
+				}
 
 				UCProcess* newproc = new UCProcess(classid, offset,
 												   thisptr,
