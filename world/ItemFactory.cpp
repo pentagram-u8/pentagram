@@ -47,14 +47,6 @@ Item* ItemFactory::createItem(uint32 shape, uint32 frame, uint16 quality,
 
 	uint32 family = info->family;
 
-	// CRUSADER HACK!
-	if (GAME_IS_CRUSADER) {
-		if (shape==16)
-			family = ShapeInfo::SF_GLOBEGG;
-		else
-			family = ShapeInfo::SF_GENERIC;
-	}
-
 	switch (family) {
 	case ShapeInfo::SF_GENERIC:
 	case ShapeInfo::SF_QUALITY:
