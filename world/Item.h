@@ -402,6 +402,8 @@ public:
 	INTRINSIC(I_getContainer);
 	INTRINSIC(I_getRootContainer);
 	INTRINSIC(I_getQ);
+	INTRINSIC(I_getQHi);
+	INTRINSIC(I_getQLo);
 	INTRINSIC(I_setQ);
 	INTRINSIC(I_setQuality);
 	INTRINSIC(I_setQuantity);

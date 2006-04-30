@@ -1083,8 +1083,8 @@ uint32 Item::callUsecodeEvent(uint32 event, const uint8* args, int argsize)
 
 //	pout << "Item: " << objid << " calling usecode event " << event << " @ " << class_id << ":" << offset << std::endl;
 
-	// FIXME: Disabled usecode in crusader for now
-	if (GAME_IS_CRUSADER) return 0;
+	// FIXME: Disabled usecode except for Use events in crusader for now
+	if (GAME_IS_CRUSADER && event != 1) return 0;
 
 	return callUsecode(static_cast<uint16>(class_id), 
 						static_cast<uint16>(offset),
@@ -2089,6 +2089,22 @@ uint32 Item::I_getQ(const uint8* args, unsigned int /*argsize*/)
 	if (!item) return 0;
 
 	return item->getQuality();
+}
+
+uint32 Item::I_getQLo(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM_FROM_PTR(item);
+	if (!item) return 0;
+
+	return item->getQuality() & 0xFF;
+}
+
+uint32 Item::I_getQHi(const uint8* args, unsigned int /*argsize*/)
+{
+	ARG_ITEM_FROM_PTR(item);
+	if (!item) return 0;
+
+	return (item->getQuality() >> 8) & 0xFF;
 }
 
 uint32 Item::I_setQ(const uint8* args, unsigned int /*argsize*/)

@@ -1,5 +1,6 @@
 2006-04-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCMachine.cpp: fixing crusader call opcode semantics
+	* world/Item.*: get_QHi, get_QLo intrinsics
 
 2006-04-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* games/RemorseGame.*: very incomplete No Remorse Game class
