@@ -24,6 +24,7 @@
 #include "ActorAnim.h"
 #include "AnimAction.h"
 #include "CoreApp.h"
+#include "GameInfo.h"
 
 AnimDat::AnimDat()
 {

@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "UsecodeFlex.h"
 #include "CoreApp.h"
+#include "GameInfo.h"
 
 const uint8* UsecodeFlex::get_class(uint32 classid)
 {
