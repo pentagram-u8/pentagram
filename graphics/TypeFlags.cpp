@@ -135,6 +135,8 @@ void TypeFlags::load(IDataSource *ds)
 			si.y = (data[3] >> 2) & 0x1F;
 			si.z = ((data[4]<<1) | (data[3]>>7)) & 0x1F;
 
+			if (data[6] & 0x01) si.flags |= ShapeInfo::SI_EDITOR;
+
 			si.animtype = 0;
 
 		}
