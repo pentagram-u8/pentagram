@@ -371,9 +371,12 @@ bool ContainerGump::StartDraggingItem(Item* item, int mx, int my)
 	// probably don't need to check if item can be moved, since it shouldn't
 	// be in a container otherwise
 
+	Container* c = getContainer(owner);
+	assert(c);
+
 	// check if the container the item is in is in range
 	MainActor* avatar = getMainActor();
-	if (!avatar->canReach(item, 128)) return false;
+	if (!avatar->canReach(c, 128)) return false;
 
 	sint32 itemx,itemy;
 	getItemCoords(item, itemx, itemy);

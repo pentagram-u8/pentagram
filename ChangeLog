@@ -1,3 +1,6 @@
+2006-05-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/ContainerGump.cpp: fix container range check
+
 2006-04-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCMachine.cpp: fixing crusader call opcode semantics
 	* world/Item.*: get_QHi, get_QLo intrinsics
