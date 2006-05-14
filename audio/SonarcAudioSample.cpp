@@ -164,7 +164,7 @@ void SonarcAudioSample::decode_LPC(int order, int nsamples,
 		uint8* loopdest = dest++;
 		int accum = 0;
 		for (int j = order-1; j >= 0; --j) {
-			char val1 = (loopdest<startdest)? 0: (*loopdest);
+			sint8 val1 = (loopdest<startdest)? 0: (*loopdest);
 			loopdest++;
 			val1 ^= 0x80;
 			sint16 val2 = factors[j*2] + (factors[j*2+1]<<8);
@@ -172,7 +172,7 @@ void SonarcAudioSample::decode_LPC(int order, int nsamples,
 		}
 
 		accum += 0x00000800;
-		*loopdest -= (char)((accum >> 12) & 0xFF);
+		*loopdest -= (sint8)((accum >> 12) & 0xFF);
 	}
 }
 

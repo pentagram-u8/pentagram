@@ -1,3 +1,6 @@
+2006-05-14  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* audio/SonarcAudioSample.cpp: don't assume signed char (bug #1488390)
+
 2006-05-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/ContainerGump.cpp: fix container range check
 
