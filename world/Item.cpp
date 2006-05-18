@@ -1687,6 +1687,35 @@ int Item::getThrowRange()
 	return 256;
 }
 
+static bool checkLineOfSightCollisions(
+	const std::list<CurrentMap::SweepItem>& collisions,
+	bool usingAlternatePos, ObjId item, ObjId other)
+{
+	std::list<CurrentMap::SweepItem>::const_iterator it;
+	sint32 other_hit_time = 0x4000;
+	sint32 blocked_time = 0x4000;
+	for (it = collisions.begin(); it != collisions.end(); it++)
+	{
+		// ignore self and other
+		if (it->item == item) continue;
+		if (it->item == other && !usingAlternatePos) {
+			other_hit_time = it->hit_time;
+			continue;
+		}
+
+		// only touching?
+		if (it->touching) continue;
+
+		// hit something 
+		if (it->blocking && it->hit_time < blocked_time) {
+			blocked_time = it->hit_time;
+		}
+	}
+
+	// 'other' must be the first item that is hit.
+	return (blocked_time >= other_hit_time);
+}
+
 bool Item::canReach(Item* other, int range,
 					sint32 otherX, sint32 otherY, sint32 otherZ)
 {
@@ -1696,6 +1725,8 @@ bool Item::canReach(Item* other, int range,
 	sint32 otherXd, otherYd, otherZd;
 	sint32 thisXmin, thisYmin;
 	sint32 otherXmin, otherYmin;
+
+	bool usingAlternatePos = (otherX != 0);
 
 	getLocationAbsolute(thisX, thisY, thisZ);
 	if (otherX == 0)
@@ -1733,23 +1764,9 @@ bool Item::canReach(Item* other, int range,
 	CurrentMap *map = world->getCurrentMap();
 	map->sweepTest(start, end, dims, ShapeInfo::SI_SOLID,
 				   objid, false, &collisions);
-	bool ok = true;
-	for (it = collisions.begin(); it != collisions.end(); it++)
-	{
-		// ignore self and other
-		if (it->item == getObjId() || it->item == other->getObjId()) continue;
-
-		// only touching?
-		if (it->touching) continue;
-
-		// hit something 
-		if (it->blocking) {
-			ok = false;
-			break;
-		}
-	}
-
-	if (ok) return true;
+	if (checkLineOfSightCollisions(collisions, usingAlternatePos,
+								   getObjId(), other->getObjId()))
+		return true;
 
 	// if that fails, try line of sight between centers
 	start[0] = thisX - thisXd/2; // xy center of this
@@ -1765,23 +1782,8 @@ bool Item::canReach(Item* other, int range,
 	collisions.clear();
 	map->sweepTest(start, end, dims, ShapeInfo::SI_SOLID,
 				   objid, false, &collisions);
-	ok = true;
-	for (it = collisions.begin(); it != collisions.end(); it++)
-	{
-		// ignore self and other
-		if (it->item == getObjId() || it->item == other->getObjId()) continue;
-
-		// only touching?
-		if (it->touching) continue;
-
-		// hit something 
-		if (it->blocking) {
-			ok = false;
-			break;
-		}
-	}
-
-	return ok;
+	return checkLineOfSightCollisions(collisions, usingAlternatePos,
+									  getObjId(), other->getObjId());
 }
 
 bool Item::canMergeWith(Item* other)
