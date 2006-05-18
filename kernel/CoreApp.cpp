@@ -333,6 +333,8 @@ bool CoreApp::getGameInfo(Pentagram::istring& game, GameInfo* gameinfo)
 
 		if (gametype == "u8") {
 			gameinfo->type = GameInfo::GAME_U8;
+		} else if (gametype == "remorse") {
+			gameinfo->type = GameInfo::GAME_REMORSE;
 		}
 	}
 
