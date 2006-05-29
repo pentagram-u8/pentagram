@@ -8,503 +8,241 @@
 
 /* Begin PBXBuildFile section */
 		002F39FA09D0881F00EBEB88 /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 002F39F909D0881F00EBEB88 /* SDL.framework */; };
-		002F3A0009D0884600EBEB88 /* SDL.framework in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 002F39F909D0881F00EBEB88 /* SDL.framework */; };
 		002F3A2E09D0888800EBEB88 /* SDLMain.m in Sources */ = {isa = PBXBuildFile; fileRef = 002F3A2C09D0888800EBEB88 /* SDLMain.m */; };
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		981645890A28768F00D28F6F /* pentagram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 981645880A28768F00D28F6F /* pentagram.cpp */; };
 		982067F70A28C092002F143C /* ConfigFileManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 982067EF0A28C092002F143C /* ConfigFileManager.cpp */; };
-		982067F80A28C092002F143C /* ConfigFileManager.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 982067F00A28C092002F143C /* ConfigFileManager.h */; };
 		982067F90A28C092002F143C /* INIFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 982067F10A28C092002F143C /* INIFile.cpp */; };
-		982067FA0A28C092002F143C /* INIFile.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 982067F20A28C092002F143C /* INIFile.h */; };
 		982067FD0A28C092002F143C /* SettingManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 982067F50A28C092002F143C /* SettingManager.cpp */; };
-		982067FE0A28C092002F143C /* SettingManager.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 982067F60A28C092002F143C /* SettingManager.h */; };
 		9865E9820A287796008DBB06 /* AudioChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7850A287796008DBB06 /* AudioChannel.cpp */; };
-		9865E9830A287796008DBB06 /* AudioChannel.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7860A287796008DBB06 /* AudioChannel.h */; };
 		9865E9840A287796008DBB06 /* AudioMixer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7870A287796008DBB06 /* AudioMixer.cpp */; };
-		9865E9850A287796008DBB06 /* AudioMixer.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7880A287796008DBB06 /* AudioMixer.h */; };
 		9865E9860A287796008DBB06 /* AudioProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7890A287796008DBB06 /* AudioProcess.cpp */; };
-		9865E9870A287796008DBB06 /* AudioProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E78A0A287796008DBB06 /* AudioProcess.h */; };
 		9865E9880A287796008DBB06 /* AudioSample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E78B0A287796008DBB06 /* AudioSample.cpp */; };
-		9865E9890A287796008DBB06 /* AudioSample.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E78C0A287796008DBB06 /* AudioSample.h */; };
 		9865E98A0A287796008DBB06 /* ALSAMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E78E0A287796008DBB06 /* ALSAMidiDriver.cpp */; };
-		9865E98B0A287796008DBB06 /* ALSAMidiDriver.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E78F0A287796008DBB06 /* ALSAMidiDriver.h */; };
 		9865E98C0A287796008DBB06 /* CoreAudioMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7900A287796008DBB06 /* CoreAudioMidiDriver.cpp */; };
-		9865E98D0A287796008DBB06 /* CoreAudioMidiDriver.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7910A287796008DBB06 /* CoreAudioMidiDriver.h */; };
 		9865E98E0A287796008DBB06 /* FluidSynthMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7920A287796008DBB06 /* FluidSynthMidiDriver.cpp */; };
-		9865E98F0A287796008DBB06 /* FluidSynthMidiDriver.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7930A287796008DBB06 /* FluidSynthMidiDriver.h */; };
 		9865E9900A287796008DBB06 /* fmopl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7940A287796008DBB06 /* fmopl.cpp */; };
-		9865E9910A287796008DBB06 /* fmopl.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7950A287796008DBB06 /* fmopl.h */; };
 		9865E9920A287796008DBB06 /* FMOplMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7960A287796008DBB06 /* FMOplMidiDriver.cpp */; };
-		9865E9930A287796008DBB06 /* FMOplMidiDriver.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7970A287796008DBB06 /* FMOplMidiDriver.h */; };
 		9865E9940A287796008DBB06 /* LowLevelMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7980A287796008DBB06 /* LowLevelMidiDriver.cpp */; };
-		9865E9950A287796008DBB06 /* LowLevelMidiDriver.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7990A287796008DBB06 /* LowLevelMidiDriver.h */; };
 		9865E9960A287796008DBB06 /* MidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E79A0A287796008DBB06 /* MidiDriver.cpp */; };
-		9865E9970A287796008DBB06 /* MidiDriver.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E79B0A287796008DBB06 /* MidiDriver.h */; };
 		9865E99A0A287796008DBB06 /* timidity.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E79F0A287796008DBB06 /* timidity.cpp */; };
-		9865E99B0A287796008DBB06 /* timidity.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7A00A287796008DBB06 /* timidity.h */; };
 		9865E99C0A287796008DBB06 /* timidity_common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7A10A287796008DBB06 /* timidity_common.cpp */; };
-		9865E99D0A287796008DBB06 /* timidity_common.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7A20A287796008DBB06 /* timidity_common.h */; };
 		9865E99E0A287796008DBB06 /* timidity_controls.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7A30A287796008DBB06 /* timidity_controls.cpp */; };
-		9865E99F0A287796008DBB06 /* timidity_controls.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7A40A287796008DBB06 /* timidity_controls.h */; };
 		9865E9A00A287796008DBB06 /* timidity_filter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7A50A287796008DBB06 /* timidity_filter.cpp */; };
-		9865E9A10A287796008DBB06 /* timidity_filter.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7A60A287796008DBB06 /* timidity_filter.h */; };
 		9865E9A20A287796008DBB06 /* timidity_instrum.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7A70A287796008DBB06 /* timidity_instrum.cpp */; };
-		9865E9A30A287796008DBB06 /* timidity_instrum.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7A80A287796008DBB06 /* timidity_instrum.h */; };
 		9865E9A40A287796008DBB06 /* timidity_mix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7A90A287796008DBB06 /* timidity_mix.cpp */; };
-		9865E9A50A287796008DBB06 /* timidity_mix.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7AA0A287796008DBB06 /* timidity_mix.h */; };
 		9865E9A60A287796008DBB06 /* timidity_output.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7AB0A287796008DBB06 /* timidity_output.cpp */; };
-		9865E9A70A287796008DBB06 /* timidity_output.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7AC0A287796008DBB06 /* timidity_output.h */; };
 		9865E9A80A287796008DBB06 /* timidity_playmidi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7AD0A287796008DBB06 /* timidity_playmidi.cpp */; };
-		9865E9A90A287796008DBB06 /* timidity_playmidi.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7AE0A287796008DBB06 /* timidity_playmidi.h */; };
 		9865E9AA0A287796008DBB06 /* timidity_readmidi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7AF0A287796008DBB06 /* timidity_readmidi.cpp */; };
-		9865E9AB0A287796008DBB06 /* timidity_readmidi.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7B00A287796008DBB06 /* timidity_readmidi.h */; };
 		9865E9AC0A287796008DBB06 /* timidity_resample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7B10A287796008DBB06 /* timidity_resample.cpp */; };
-		9865E9AD0A287796008DBB06 /* timidity_resample.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7B20A287796008DBB06 /* timidity_resample.h */; };
 		9865E9AE0A287796008DBB06 /* timidity_sdl_a.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7B30A287796008DBB06 /* timidity_sdl_a.cpp */; };
 		9865E9AF0A287796008DBB06 /* timidity_sdl_c.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7B40A287796008DBB06 /* timidity_sdl_c.cpp */; };
 		9865E9B00A287796008DBB06 /* timidity_tables.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7B50A287796008DBB06 /* timidity_tables.cpp */; };
-		9865E9B10A287796008DBB06 /* timidity_tables.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7B60A287796008DBB06 /* timidity_tables.h */; };
 		9865E9B20A287796008DBB06 /* TimidityMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7B70A287796008DBB06 /* TimidityMidiDriver.cpp */; };
-		9865E9B30A287796008DBB06 /* TimidityMidiDriver.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7B80A287796008DBB06 /* TimidityMidiDriver.h */; };
 		9865E9B40A287796008DBB06 /* UnixSeqMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7B90A287796008DBB06 /* UnixSeqMidiDriver.cpp */; };
-		9865E9B50A287796008DBB06 /* UnixSeqMidiDriver.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7BA0A287796008DBB06 /* UnixSeqMidiDriver.h */; };
 		9865E9B60A287796008DBB06 /* WindowsMidiDriver.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7BB0A287796008DBB06 /* WindowsMidiDriver.cpp */; };
-		9865E9B70A287796008DBB06 /* WindowsMidiDriver.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7BC0A287796008DBB06 /* WindowsMidiDriver.h */; };
-		9865E9B80A287796008DBB06 /* XMidiEvent.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7BD0A287796008DBB06 /* XMidiEvent.h */; };
 		9865E9B90A287796008DBB06 /* XMidiEventList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7BE0A287796008DBB06 /* XMidiEventList.cpp */; };
-		9865E9BA0A287796008DBB06 /* XMidiEventList.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7BF0A287796008DBB06 /* XMidiEventList.h */; };
 		9865E9BB0A287796008DBB06 /* XMidiFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7C00A287796008DBB06 /* XMidiFile.cpp */; };
-		9865E9BC0A287796008DBB06 /* XMidiFile.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7C10A287796008DBB06 /* XMidiFile.h */; };
-		9865E9BD0A287796008DBB06 /* XMidiNoteStack.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7C20A287796008DBB06 /* XMidiNoteStack.h */; };
 		9865E9BE0A287796008DBB06 /* XMidiSequence.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7C30A287796008DBB06 /* XMidiSequence.cpp */; };
-		9865E9BF0A287796008DBB06 /* XMidiSequence.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7C40A287796008DBB06 /* XMidiSequence.h */; };
-		9865E9C00A287796008DBB06 /* XMidiSequenceHandler.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7C50A287796008DBB06 /* XMidiSequenceHandler.h */; };
 		9865E9C20A287796008DBB06 /* MusicFlex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7C70A287796008DBB06 /* MusicFlex.cpp */; };
-		9865E9C30A287796008DBB06 /* MusicFlex.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7C80A287796008DBB06 /* MusicFlex.h */; };
 		9865E9C40A287796008DBB06 /* MusicProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7C90A287796008DBB06 /* MusicProcess.cpp */; };
-		9865E9C50A287796008DBB06 /* MusicProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7CA0A287796008DBB06 /* MusicProcess.h */; };
 		9865E9C60A287796008DBB06 /* RawAudioSample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7CB0A287796008DBB06 /* RawAudioSample.cpp */; };
-		9865E9C70A287796008DBB06 /* RawAudioSample.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7CC0A287796008DBB06 /* RawAudioSample.h */; };
 		9865E9C80A287796008DBB06 /* SonarcAudioSample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7CD0A287796008DBB06 /* SonarcAudioSample.cpp */; };
-		9865E9C90A287796008DBB06 /* SonarcAudioSample.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7CE0A287796008DBB06 /* SonarcAudioSample.h */; };
 		9865E9CA0A287796008DBB06 /* SoundFlex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7CF0A287796008DBB06 /* SoundFlex.cpp */; };
-		9865E9CB0A287796008DBB06 /* SoundFlex.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7D00A287796008DBB06 /* SoundFlex.h */; };
 		9865E9CC0A287796008DBB06 /* SpeechFlex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7D10A287796008DBB06 /* SpeechFlex.cpp */; };
-		9865E9CD0A287796008DBB06 /* SpeechFlex.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7D20A287796008DBB06 /* SpeechFlex.h */; };
-		9865E9CE0A287796008DBB06 /* Convert.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7D40A287796008DBB06 /* Convert.h */; };
 		9865E9CF0A287796008DBB06 /* ConvertShape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7D50A287796008DBB06 /* ConvertShape.cpp */; };
-		9865E9D00A287796008DBB06 /* ConvertShape.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7D60A287796008DBB06 /* ConvertShape.h */; };
 		9865E9D10A287796008DBB06 /* ConvertShapeCrusader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7D80A287796008DBB06 /* ConvertShapeCrusader.cpp */; };
-		9865E9D20A287796008DBB06 /* ConvertShapeCrusader.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7D90A287796008DBB06 /* ConvertShapeCrusader.h */; };
-		9865E9D30A287796008DBB06 /* ConvertUsecodeCrusader.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7DA0A287796008DBB06 /* ConvertUsecodeCrusader.h */; };
 		9865E9D60A287796008DBB06 /* ConvertShapeU8.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7DE0A287796008DBB06 /* ConvertShapeU8.cpp */; };
-		9865E9D70A287796008DBB06 /* ConvertShapeU8.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7DF0A287796008DBB06 /* ConvertShapeU8.h */; };
-		9865E9D80A287796008DBB06 /* ConvertUsecodeU8.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7E00A287796008DBB06 /* ConvertUsecodeU8.h */; };
 		9865E9DA0A287796008DBB06 /* Archive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7E30A287796008DBB06 /* Archive.cpp */; };
-		9865E9DB0A287796008DBB06 /* Archive.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7E40A287796008DBB06 /* Archive.h */; };
 		9865E9DC0A287796008DBB06 /* ArchiveFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7E50A287796008DBB06 /* ArchiveFile.cpp */; };
-		9865E9DD0A287796008DBB06 /* ArchiveFile.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7E60A287796008DBB06 /* ArchiveFile.h */; };
 		9865E9DE0A287796008DBB06 /* data.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7E70A287796008DBB06 /* data.cpp */; };
 		9865E9DF0A287796008DBB06 /* DirFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7E80A287796008DBB06 /* DirFile.cpp */; };
-		9865E9E00A287796008DBB06 /* DirFile.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7E90A287796008DBB06 /* DirFile.h */; };
 		9865E9E10A287796008DBB06 /* FileSystem.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7EA0A287796008DBB06 /* FileSystem.cpp */; };
-		9865E9E20A287796008DBB06 /* FileSystem.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7EB0A287796008DBB06 /* FileSystem.h */; };
 		9865E9E30A287796008DBB06 /* FlexFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7EC0A287796008DBB06 /* FlexFile.cpp */; };
-		9865E9E40A287796008DBB06 /* FlexFile.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7ED0A287796008DBB06 /* FlexFile.h */; };
-		9865E9E50A287796008DBB06 /* IDataSource.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7EE0A287796008DBB06 /* IDataSource.h */; };
-		9865E9E60A287796008DBB06 /* ListFiles.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7EF0A287796008DBB06 /* ListFiles.h */; };
-		9865E9E80A287796008DBB06 /* NamedArchiveFile.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7F10A287796008DBB06 /* NamedArchiveFile.h */; };
-		9865E9E90A287796008DBB06 /* ODataSource.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7F20A287796008DBB06 /* ODataSource.h */; };
 		9865E9EA0A287796008DBB06 /* RawArchive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7F30A287796008DBB06 /* RawArchive.cpp */; };
-		9865E9EB0A287796008DBB06 /* RawArchive.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7F40A287796008DBB06 /* RawArchive.h */; };
 		9865E9EC0A287796008DBB06 /* Savegame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7F50A287796008DBB06 /* Savegame.cpp */; };
-		9865E9ED0A287796008DBB06 /* Savegame.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7F60A287796008DBB06 /* Savegame.h */; };
 		9865E9EE0A287796008DBB06 /* SavegameWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7F70A287796008DBB06 /* SavegameWriter.cpp */; };
-		9865E9EF0A287796008DBB06 /* SavegameWriter.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7F80A287796008DBB06 /* SavegameWriter.h */; };
 		9865E9F00A287796008DBB06 /* U8SaveFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7F90A287796008DBB06 /* U8SaveFile.cpp */; };
-		9865E9F10A287796008DBB06 /* U8SaveFile.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7FA0A287796008DBB06 /* U8SaveFile.h */; };
 		9865E9F20A287796008DBB06 /* ioapi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7FC0A287796008DBB06 /* ioapi.cpp */; };
-		9865E9F30A287796008DBB06 /* ioapi.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E7FD0A287796008DBB06 /* ioapi.h */; };
 		9865E9F50A287796008DBB06 /* unzip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7FF0A287796008DBB06 /* unzip.cpp */; };
-		9865E9F60A287796008DBB06 /* unzip.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8000A287796008DBB06 /* unzip.h */; };
 		9865E9F70A287796008DBB06 /* zip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8010A287796008DBB06 /* zip.cpp */; };
-		9865E9F80A287796008DBB06 /* zip.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8020A287796008DBB06 /* zip.h */; };
 		9865E9F90A287796008DBB06 /* ZipFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8030A287796008DBB06 /* ZipFile.cpp */; };
-		9865E9FA0A287796008DBB06 /* ZipFile.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8040A287796008DBB06 /* ZipFile.h */; };
 		9865E9FB0A287796008DBB06 /* Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8060A287796008DBB06 /* Game.cpp */; };
-		9865E9FC0A287796008DBB06 /* Game.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8070A287796008DBB06 /* Game.h */; };
 		9865E9FD0A287796008DBB06 /* GameData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8080A287796008DBB06 /* GameData.cpp */; };
-		9865E9FE0A287796008DBB06 /* GameData.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8090A287796008DBB06 /* GameData.h */; };
 		9865E9FF0A287796008DBB06 /* GameDetector.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E80A0A287796008DBB06 /* GameDetector.cpp */; };
-		9865EA000A287796008DBB06 /* GameDetector.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E80B0A287796008DBB06 /* GameDetector.h */; };
 		9865EA010A287796008DBB06 /* GameInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E80C0A287796008DBB06 /* GameInfo.cpp */; };
-		9865EA020A287796008DBB06 /* GameInfo.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E80D0A287796008DBB06 /* GameInfo.h */; };
-		9865EA030A287796008DBB06 /* gamemd5.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E80E0A287796008DBB06 /* gamemd5.h */; };
 		9865EA050A287796008DBB06 /* RemorseGame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8100A287796008DBB06 /* RemorseGame.cpp */; };
-		9865EA060A287796008DBB06 /* RemorseGame.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8110A287796008DBB06 /* RemorseGame.h */; };
 		9865EA070A287796008DBB06 /* StartU8Process.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8120A287796008DBB06 /* StartU8Process.cpp */; };
-		9865EA080A287796008DBB06 /* StartU8Process.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8130A287796008DBB06 /* StartU8Process.h */; };
 		9865EA090A287796008DBB06 /* TreasureLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8140A287796008DBB06 /* TreasureLoader.cpp */; };
-		9865EA0A0A287796008DBB06 /* TreasureLoader.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8150A287796008DBB06 /* TreasureLoader.h */; };
 		9865EA0B0A287796008DBB06 /* U8Game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8160A287796008DBB06 /* U8Game.cpp */; };
-		9865EA0C0A287796008DBB06 /* U8Game.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8170A287796008DBB06 /* U8Game.h */; };
 		9865EA0D0A287796008DBB06 /* AnimDat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8190A287796008DBB06 /* AnimDat.cpp */; };
-		9865EA0E0A287796008DBB06 /* AnimDat.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E81A0A287796008DBB06 /* AnimDat.h */; };
 		9865EA0F0A287796008DBB06 /* BaseSoftRenderSurface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E81B0A287796008DBB06 /* BaseSoftRenderSurface.cpp */; };
-		9865EA100A287796008DBB06 /* BaseSoftRenderSurface.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E81C0A287796008DBB06 /* BaseSoftRenderSurface.h */; };
 		9865EA110A287796008DBB06 /* FixedWidthFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E81E0A287796008DBB06 /* FixedWidthFont.cpp */; };
-		9865EA120A287796008DBB06 /* FixedWidthFont.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E81F0A287796008DBB06 /* FixedWidthFont.h */; };
 		9865EA130A287796008DBB06 /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8200A287796008DBB06 /* Font.cpp */; };
-		9865EA140A287796008DBB06 /* Font.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8210A287796008DBB06 /* Font.h */; };
 		9865EA150A287796008DBB06 /* FontManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8220A287796008DBB06 /* FontManager.cpp */; };
-		9865EA160A287796008DBB06 /* FontManager.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8230A287796008DBB06 /* FontManager.h */; };
 		9865EA170A287796008DBB06 /* FontShapeArchive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8240A287796008DBB06 /* FontShapeArchive.cpp */; };
-		9865EA180A287796008DBB06 /* FontShapeArchive.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8250A287796008DBB06 /* FontShapeArchive.h */; };
 		9865EA190A287796008DBB06 /* JPFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8260A287796008DBB06 /* JPFont.cpp */; };
-		9865EA1A0A287796008DBB06 /* JPFont.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8270A287796008DBB06 /* JPFont.h */; };
 		9865EA1B0A287796008DBB06 /* JPRenderedText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8280A287796008DBB06 /* JPRenderedText.cpp */; };
-		9865EA1C0A287796008DBB06 /* JPRenderedText.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8290A287796008DBB06 /* JPRenderedText.h */; };
 		9865EA1E0A287796008DBB06 /* RenderedText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E82B0A287796008DBB06 /* RenderedText.cpp */; };
-		9865EA1F0A287796008DBB06 /* RenderedText.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E82C0A287796008DBB06 /* RenderedText.h */; };
 		9865EA200A287796008DBB06 /* ShapeFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E82D0A287796008DBB06 /* ShapeFont.cpp */; };
-		9865EA210A287796008DBB06 /* ShapeFont.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E82E0A287796008DBB06 /* ShapeFont.h */; };
 		9865EA220A287796008DBB06 /* ShapeRenderedText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E82F0A287796008DBB06 /* ShapeRenderedText.cpp */; };
-		9865EA230A287796008DBB06 /* ShapeRenderedText.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8300A287796008DBB06 /* ShapeRenderedText.h */; };
 		9865EA240A287796008DBB06 /* TTFont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8310A287796008DBB06 /* TTFont.cpp */; };
-		9865EA250A287796008DBB06 /* TTFont.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8320A287796008DBB06 /* TTFont.h */; };
 		9865EA260A287796008DBB06 /* TTFRenderedText.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8330A287796008DBB06 /* TTFRenderedText.cpp */; };
-		9865EA270A287796008DBB06 /* TTFRenderedText.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8340A287796008DBB06 /* TTFRenderedText.h */; };
 		9865EA280A287796008DBB06 /* FrameID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8350A287796008DBB06 /* FrameID.cpp */; };
-		9865EA290A287796008DBB06 /* FrameID.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8360A287796008DBB06 /* FrameID.h */; };
-		9865EA2A0A287796008DBB06 /* GraphicsErrors.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8370A287796008DBB06 /* GraphicsErrors.h */; };
 		9865EA2B0A287796008DBB06 /* GumpShapeArchive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8380A287796008DBB06 /* GumpShapeArchive.cpp */; };
-		9865EA2C0A287796008DBB06 /* GumpShapeArchive.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8390A287796008DBB06 /* GumpShapeArchive.h */; };
 		9865EA2D0A287796008DBB06 /* InverterProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E83A0A287796008DBB06 /* InverterProcess.cpp */; };
-		9865EA2E0A287796008DBB06 /* InverterProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E83B0A287796008DBB06 /* InverterProcess.h */; };
 		9865EA2F0A287796008DBB06 /* MainShapeArchive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E83C0A287796008DBB06 /* MainShapeArchive.cpp */; };
-		9865EA300A287796008DBB06 /* MainShapeArchive.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E83D0A287796008DBB06 /* MainShapeArchive.h */; };
-		9865EA310A287796008DBB06 /* Manips.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E83E0A287796008DBB06 /* Manips.h */; };
 		9865EA330A287796008DBB06 /* Palette.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8400A287796008DBB06 /* Palette.cpp */; };
-		9865EA340A287796008DBB06 /* Palette.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8410A287796008DBB06 /* Palette.h */; };
 		9865EA350A287796008DBB06 /* PaletteFaderProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8420A287796008DBB06 /* PaletteFaderProcess.cpp */; };
-		9865EA360A287796008DBB06 /* PaletteFaderProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8430A287796008DBB06 /* PaletteFaderProcess.h */; };
 		9865EA370A287796008DBB06 /* PaletteManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8440A287796008DBB06 /* PaletteManager.cpp */; };
-		9865EA380A287796008DBB06 /* PaletteManager.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8450A287796008DBB06 /* PaletteManager.h */; };
 		9865EA390A287796008DBB06 /* PNGWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8460A287796008DBB06 /* PNGWriter.cpp */; };
-		9865EA3A0A287796008DBB06 /* PNGWriter.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8470A287796008DBB06 /* PNGWriter.h */; };
 		9865EA3B0A287796008DBB06 /* RenderSurface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8480A287796008DBB06 /* RenderSurface.cpp */; };
-		9865EA3C0A287796008DBB06 /* RenderSurface.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8490A287796008DBB06 /* RenderSurface.h */; };
-		9865EA3D0A287796008DBB06 /* Scaler.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E84A0A287796008DBB06 /* Scaler.h */; };
 		9865EA3E0A287796008DBB06 /* ScalerManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E84B0A287796008DBB06 /* ScalerManager.cpp */; };
-		9865EA3F0A287796008DBB06 /* ScalerManager.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E84C0A287796008DBB06 /* ScalerManager.h */; };
 		9865EA400A287796008DBB06 /* 2xSaIScalers.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E84E0A287796008DBB06 /* 2xSaIScalers.cpp */; };
-		9865EA410A287796008DBB06 /* 2xSaIScalers.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E84F0A287796008DBB06 /* 2xSaIScalers.h */; };
 		9865EA420A287796008DBB06 /* BilinearScaler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8500A287796008DBB06 /* BilinearScaler.cpp */; };
-		9865EA430A287796008DBB06 /* BilinearScaler.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8510A287796008DBB06 /* BilinearScaler.h */; };
-		9865EA440A287796008DBB06 /* BilinearScalerInternal.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8520A287796008DBB06 /* BilinearScalerInternal.h */; };
 		9865EA450A287796008DBB06 /* BilinearScalerInternal_2x.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8530A287796008DBB06 /* BilinearScalerInternal_2x.cpp */; };
 		9865EA460A287796008DBB06 /* BilinearScalerInternal_Arb.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8540A287796008DBB06 /* BilinearScalerInternal_Arb.cpp */; };
 		9865EA470A287796008DBB06 /* BilinearScalerInternal_X1Y12.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8550A287796008DBB06 /* BilinearScalerInternal_X1Y12.cpp */; };
 		9865EA480A287796008DBB06 /* BilinearScalerInternal_X2Y24.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8560A287796008DBB06 /* BilinearScalerInternal_X2Y24.cpp */; };
 		9865EA490A287796008DBB06 /* hq2xScaler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8570A287796008DBB06 /* hq2xScaler.cpp */; };
-		9865EA4A0A287796008DBB06 /* hq2xScaler.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8580A287796008DBB06 /* hq2xScaler.h */; };
 		9865EA4C0A287796008DBB06 /* PointScaler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E85A0A287796008DBB06 /* PointScaler.cpp */; };
-		9865EA4D0A287796008DBB06 /* PointScaler.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E85B0A287796008DBB06 /* PointScaler.h */; };
 		9865EA4E0A287796008DBB06 /* Scale2xScaler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E85C0A287796008DBB06 /* Scale2xScaler.cpp */; };
-		9865EA4F0A287796008DBB06 /* Scale2xScaler.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E85D0A287796008DBB06 /* Scale2xScaler.h */; };
 		9865EA500A287796008DBB06 /* Shape.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E85E0A287796008DBB06 /* Shape.cpp */; };
-		9865EA510A287796008DBB06 /* Shape.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E85F0A287796008DBB06 /* Shape.h */; };
 		9865EA520A287796008DBB06 /* ShapeArchive.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8600A287796008DBB06 /* ShapeArchive.cpp */; };
-		9865EA530A287796008DBB06 /* ShapeArchive.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8610A287796008DBB06 /* ShapeArchive.h */; };
 		9865EA540A287796008DBB06 /* ShapeFrame.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8620A287796008DBB06 /* ShapeFrame.cpp */; };
-		9865EA550A287796008DBB06 /* ShapeFrame.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8630A287796008DBB06 /* ShapeFrame.h */; };
 		9865EA560A287796008DBB06 /* ShapeInfo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8640A287796008DBB06 /* ShapeInfo.cpp */; };
-		9865EA570A287796008DBB06 /* ShapeInfo.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8650A287796008DBB06 /* ShapeInfo.h */; };
 		9865EA580A287796008DBB06 /* SKFPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8660A287796008DBB06 /* SKFPlayer.cpp */; };
-		9865EA590A287796008DBB06 /* SKFPlayer.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8670A287796008DBB06 /* SKFPlayer.h */; };
 		9865EA5A0A287796008DBB06 /* SoftRenderSurface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8680A287796008DBB06 /* SoftRenderSurface.cpp */; };
-		9865EA5B0A287796008DBB06 /* SoftRenderSurface.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8690A287796008DBB06 /* SoftRenderSurface.h */; };
-		9865EA5C0A287796008DBB06 /* SoftRenderSurface.inl in Resources */ = {isa = PBXBuildFile; fileRef = 9865E86A0A287796008DBB06 /* SoftRenderSurface.inl */; };
 		9865EA5D0A287796008DBB06 /* Texture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E86B0A287796008DBB06 /* Texture.cpp */; };
-		9865EA5E0A287796008DBB06 /* Texture.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E86C0A287796008DBB06 /* Texture.h */; };
 		9865EA5F0A287796008DBB06 /* TextureBitmap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E86D0A287796008DBB06 /* TextureBitmap.cpp */; };
-		9865EA600A287796008DBB06 /* TextureBitmap.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E86E0A287796008DBB06 /* TextureBitmap.h */; };
 		9865EA610A287796008DBB06 /* TexturePNG.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E86F0A287796008DBB06 /* TexturePNG.cpp */; };
-		9865EA620A287796008DBB06 /* TexturePNG.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8700A287796008DBB06 /* TexturePNG.h */; };
 		9865EA630A287796008DBB06 /* TextureTarga.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8710A287796008DBB06 /* TextureTarga.cpp */; };
-		9865EA640A287796008DBB06 /* TextureTarga.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8720A287796008DBB06 /* TextureTarga.h */; };
 		9865EA650A287796008DBB06 /* TypeFlags.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8730A287796008DBB06 /* TypeFlags.cpp */; };
-		9865EA660A287796008DBB06 /* TypeFlags.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8740A287796008DBB06 /* TypeFlags.h */; };
 		9865EA670A287796008DBB06 /* WpnOvlayDat.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8750A287796008DBB06 /* WpnOvlayDat.cpp */; };
-		9865EA680A287796008DBB06 /* WpnOvlayDat.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8760A287796008DBB06 /* WpnOvlayDat.h */; };
 		9865EA690A287796008DBB06 /* XFormBlend.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8770A287796008DBB06 /* XFormBlend.cpp */; };
-		9865EA6A0A287796008DBB06 /* XFormBlend.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8780A287796008DBB06 /* XFormBlend.h */; };
 		9865EA6B0A287796008DBB06 /* AskGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E87A0A287796008DBB06 /* AskGump.cpp */; };
-		9865EA6C0A287796008DBB06 /* AskGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E87B0A287796008DBB06 /* AskGump.h */; };
 		9865EA6D0A287796008DBB06 /* BarkGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E87C0A287796008DBB06 /* BarkGump.cpp */; };
-		9865EA6E0A287796008DBB06 /* BarkGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E87D0A287796008DBB06 /* BarkGump.h */; };
 		9865EA6F0A287796008DBB06 /* BindGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E87E0A287796008DBB06 /* BindGump.cpp */; };
-		9865EA700A287796008DBB06 /* BindGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E87F0A287796008DBB06 /* BindGump.h */; };
 		9865EA710A287796008DBB06 /* BookGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8800A287796008DBB06 /* BookGump.cpp */; };
-		9865EA720A287796008DBB06 /* BookGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8810A287796008DBB06 /* BookGump.h */; };
 		9865EA730A287796008DBB06 /* ConsoleGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8820A287796008DBB06 /* ConsoleGump.cpp */; };
-		9865EA740A287796008DBB06 /* ConsoleGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8830A287796008DBB06 /* ConsoleGump.h */; };
 		9865EA750A287796008DBB06 /* ContainerGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8840A287796008DBB06 /* ContainerGump.cpp */; };
-		9865EA760A287796008DBB06 /* ContainerGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8850A287796008DBB06 /* ContainerGump.h */; };
 		9865EA770A287796008DBB06 /* ControlsGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8860A287796008DBB06 /* ControlsGump.cpp */; };
-		9865EA780A287796008DBB06 /* ControlsGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8870A287796008DBB06 /* ControlsGump.h */; };
 		9865EA790A287796008DBB06 /* CreditsGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8880A287796008DBB06 /* CreditsGump.cpp */; };
-		9865EA7A0A287796008DBB06 /* CreditsGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8890A287796008DBB06 /* CreditsGump.h */; };
 		9865EA7B0A287796008DBB06 /* DesktopGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E88A0A287796008DBB06 /* DesktopGump.cpp */; };
-		9865EA7C0A287796008DBB06 /* DesktopGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E88B0A287796008DBB06 /* DesktopGump.h */; };
 		9865EA7D0A287796008DBB06 /* FastAreaVisGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E88C0A287796008DBB06 /* FastAreaVisGump.cpp */; };
-		9865EA7E0A287796008DBB06 /* FastAreaVisGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E88D0A287796008DBB06 /* FastAreaVisGump.h */; };
 		9865EA7F0A287796008DBB06 /* GameMapGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E88E0A287796008DBB06 /* GameMapGump.cpp */; };
-		9865EA800A287796008DBB06 /* GameMapGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E88F0A287796008DBB06 /* GameMapGump.h */; };
 		9865EA810A287796008DBB06 /* Gump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8900A287796008DBB06 /* Gump.cpp */; };
-		9865EA820A287796008DBB06 /* Gump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8910A287796008DBB06 /* Gump.h */; };
 		9865EA830A287796008DBB06 /* GumpNotifyProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8920A287796008DBB06 /* GumpNotifyProcess.cpp */; };
-		9865EA840A287796008DBB06 /* GumpNotifyProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8930A287796008DBB06 /* GumpNotifyProcess.h */; };
 		9865EA850A287796008DBB06 /* InverterGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8940A287796008DBB06 /* InverterGump.cpp */; };
-		9865EA860A287796008DBB06 /* InverterGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8950A287796008DBB06 /* InverterGump.h */; };
 		9865EA870A287796008DBB06 /* ItemRelativeGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8960A287796008DBB06 /* ItemRelativeGump.cpp */; };
-		9865EA880A287796008DBB06 /* ItemRelativeGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8970A287796008DBB06 /* ItemRelativeGump.h */; };
 		9865EA890A287796008DBB06 /* MainMenuProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8980A287796008DBB06 /* MainMenuProcess.cpp */; };
-		9865EA8A0A287796008DBB06 /* MainMenuProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8990A287796008DBB06 /* MainMenuProcess.h */; };
 		9865EA8B0A287796008DBB06 /* MenuGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E89A0A287796008DBB06 /* MenuGump.cpp */; };
-		9865EA8C0A287796008DBB06 /* MenuGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E89B0A287796008DBB06 /* MenuGump.h */; };
 		9865EA8D0A287796008DBB06 /* MiniMapGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E89C0A287796008DBB06 /* MiniMapGump.cpp */; };
-		9865EA8E0A287796008DBB06 /* MiniMapGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E89D0A287796008DBB06 /* MiniMapGump.h */; };
 		9865EA8F0A287796008DBB06 /* MiniStatsGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E89E0A287796008DBB06 /* MiniStatsGump.cpp */; };
-		9865EA900A287796008DBB06 /* MiniStatsGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E89F0A287796008DBB06 /* MiniStatsGump.h */; };
 		9865EA910A287796008DBB06 /* ModalGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8A00A287796008DBB06 /* ModalGump.cpp */; };
-		9865EA920A287796008DBB06 /* ModalGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8A10A287796008DBB06 /* ModalGump.h */; };
 		9865EA940A287796008DBB06 /* MovieGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8A30A287796008DBB06 /* MovieGump.cpp */; };
-		9865EA950A287796008DBB06 /* MovieGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8A40A287796008DBB06 /* MovieGump.h */; };
 		9865EA960A287796008DBB06 /* OptionsGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8A50A287796008DBB06 /* OptionsGump.cpp */; };
-		9865EA970A287796008DBB06 /* OptionsGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8A60A287796008DBB06 /* OptionsGump.h */; };
 		9865EA980A287796008DBB06 /* PagedGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8A70A287796008DBB06 /* PagedGump.cpp */; };
-		9865EA990A287796008DBB06 /* PagedGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8A80A287796008DBB06 /* PagedGump.h */; };
 		9865EA9A0A287796008DBB06 /* PaperdollGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8A90A287796008DBB06 /* PaperdollGump.cpp */; };
-		9865EA9B0A287796008DBB06 /* PaperdollGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8AA0A287796008DBB06 /* PaperdollGump.h */; };
 		9865EA9C0A287796008DBB06 /* PentagramMenuGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8AB0A287796008DBB06 /* PentagramMenuGump.cpp */; };
-		9865EA9D0A287796008DBB06 /* PentagramMenuGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8AC0A287796008DBB06 /* PentagramMenuGump.h */; };
 		9865EA9E0A287796008DBB06 /* QuitGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8AD0A287796008DBB06 /* QuitGump.cpp */; };
-		9865EA9F0A287796008DBB06 /* QuitGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8AE0A287796008DBB06 /* QuitGump.h */; };
 		9865EAA00A287796008DBB06 /* ReadableGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8AF0A287796008DBB06 /* ReadableGump.cpp */; };
-		9865EAA10A287796008DBB06 /* ReadableGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8B00A287796008DBB06 /* ReadableGump.h */; };
 		9865EAA20A287796008DBB06 /* ResizableGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8B10A287796008DBB06 /* ResizableGump.cpp */; };
-		9865EAA30A287796008DBB06 /* ResizableGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8B20A287796008DBB06 /* ResizableGump.h */; };
 		9865EAA40A287796008DBB06 /* ScalerGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8B30A287796008DBB06 /* ScalerGump.cpp */; };
-		9865EAA50A287796008DBB06 /* ScalerGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8B40A287796008DBB06 /* ScalerGump.h */; };
 		9865EAA60A287796008DBB06 /* ScrollGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8B50A287796008DBB06 /* ScrollGump.cpp */; };
-		9865EAA70A287796008DBB06 /* ScrollGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8B60A287796008DBB06 /* ScrollGump.h */; };
 		9865EAA80A287796008DBB06 /* ShapeViewerGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8B70A287796008DBB06 /* ShapeViewerGump.cpp */; };
-		9865EAA90A287796008DBB06 /* ShapeViewerGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8B80A287796008DBB06 /* ShapeViewerGump.h */; };
 		9865EAAA0A287796008DBB06 /* SliderGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8B90A287796008DBB06 /* SliderGump.cpp */; };
-		9865EAAB0A287796008DBB06 /* SliderGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8BA0A287796008DBB06 /* SliderGump.h */; };
 		9865EAAC0A287796008DBB06 /* TargetGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8BB0A287796008DBB06 /* TargetGump.cpp */; };
-		9865EAAD0A287796008DBB06 /* TargetGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8BC0A287796008DBB06 /* TargetGump.h */; };
 		9865EAAE0A287796008DBB06 /* U8SaveGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8BD0A287796008DBB06 /* U8SaveGump.cpp */; };
-		9865EAAF0A287796008DBB06 /* U8SaveGump.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8BE0A287796008DBB06 /* U8SaveGump.h */; };
 		9865EAB00A287796008DBB06 /* ButtonWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8C00A287796008DBB06 /* ButtonWidget.cpp */; };
-		9865EAB10A287796008DBB06 /* ButtonWidget.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8C10A287796008DBB06 /* ButtonWidget.h */; };
 		9865EAB20A287796008DBB06 /* EditWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8C20A287796008DBB06 /* EditWidget.cpp */; };
-		9865EAB30A287796008DBB06 /* EditWidget.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8C30A287796008DBB06 /* EditWidget.h */; };
 		9865EAB40A287796008DBB06 /* GameWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8C40A287796008DBB06 /* GameWidget.cpp */; };
-		9865EAB50A287796008DBB06 /* GameWidget.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8C50A287796008DBB06 /* GameWidget.h */; };
 		9865EAB70A287796008DBB06 /* SlidingWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8C70A287796008DBB06 /* SlidingWidget.cpp */; };
-		9865EAB80A287796008DBB06 /* SlidingWidget.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8C80A287796008DBB06 /* SlidingWidget.h */; };
 		9865EAB90A287796008DBB06 /* TextWidget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8C90A287796008DBB06 /* TextWidget.cpp */; };
-		9865EABA0A287796008DBB06 /* TextWidget.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8CA0A287796008DBB06 /* TextWidget.h */; };
 		9865EABB0A287796008DBB06 /* Allocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8CC0A287796008DBB06 /* Allocator.cpp */; };
-		9865EABC0A287796008DBB06 /* Allocator.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8CD0A287796008DBB06 /* Allocator.h */; };
 		9865EABD0A287796008DBB06 /* ConApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8CE0A287796008DBB06 /* ConApp.cpp */; };
-		9865EABE0A287796008DBB06 /* ConApp.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8CF0A287796008DBB06 /* ConApp.h */; };
 		9865EABF0A287796008DBB06 /* CoreApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8D00A287796008DBB06 /* CoreApp.cpp */; };
-		9865EAC00A287796008DBB06 /* CoreApp.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8D10A287796008DBB06 /* CoreApp.h */; };
 		9865EAC10A287796008DBB06 /* DelayProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8D20A287796008DBB06 /* DelayProcess.cpp */; };
-		9865EAC20A287796008DBB06 /* DelayProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8D30A287796008DBB06 /* DelayProcess.h */; };
 		9865EAC30A287796008DBB06 /* GUIApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8D40A287796008DBB06 /* GUIApp.cpp */; };
-		9865EAC40A287796008DBB06 /* GUIApp.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8D50A287796008DBB06 /* GUIApp.h */; };
 		9865EAC50A287796008DBB06 /* HIDKeys.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8D60A287796008DBB06 /* HIDKeys.cpp */; };
-		9865EAC60A287796008DBB06 /* HIDKeys.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8D70A287796008DBB06 /* HIDKeys.h */; };
 		9865EAC70A287796008DBB06 /* HIDManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8D80A287796008DBB06 /* HIDManager.cpp */; };
-		9865EAC80A287796008DBB06 /* HIDManager.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8D90A287796008DBB06 /* HIDManager.h */; };
 		9865EAC90A287796008DBB06 /* Joystick.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8DA0A287796008DBB06 /* Joystick.cpp */; };
-		9865EACA0A287796008DBB06 /* Joystick.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8DB0A287796008DBB06 /* Joystick.h */; };
 		9865EACB0A287796008DBB06 /* Kernel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8DC0A287796008DBB06 /* Kernel.cpp */; };
-		9865EACC0A287796008DBB06 /* Kernel.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8DD0A287796008DBB06 /* Kernel.h */; };
 		9865EACD0A287796008DBB06 /* MemoryManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8DE0A287796008DBB06 /* MemoryManager.cpp */; };
-		9865EACE0A287796008DBB06 /* MemoryManager.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8DF0A287796008DBB06 /* MemoryManager.h */; };
 		9865EAD00A287796008DBB06 /* Mouse.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8E10A287796008DBB06 /* Mouse.cpp */; };
-		9865EAD10A287796008DBB06 /* Mouse.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8E20A287796008DBB06 /* Mouse.h */; };
 		9865EAD20A287796008DBB06 /* Object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8E30A287796008DBB06 /* Object.cpp */; };
-		9865EAD30A287796008DBB06 /* Object.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8E40A287796008DBB06 /* Object.h */; };
 		9865EAD40A287796008DBB06 /* ObjectManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8E50A287796008DBB06 /* ObjectManager.cpp */; };
-		9865EAD50A287796008DBB06 /* ObjectManager.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8E60A287796008DBB06 /* ObjectManager.h */; };
 		9865EAD60A287796008DBB06 /* Pool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8E70A287796008DBB06 /* Pool.cpp */; };
-		9865EAD70A287796008DBB06 /* Pool.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8E80A287796008DBB06 /* Pool.h */; };
 		9865EAD80A287796008DBB06 /* Process.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8E90A287796008DBB06 /* Process.cpp */; };
-		9865EAD90A287796008DBB06 /* Process.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8EA0A287796008DBB06 /* Process.h */; };
 		9865EADA0A287796008DBB06 /* SegmentedAllocator.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8EB0A287796008DBB06 /* SegmentedAllocator.cpp */; };
-		9865EADB0A287796008DBB06 /* SegmentedAllocator.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8EC0A287796008DBB06 /* SegmentedAllocator.h */; };
 		9865EADC0A287796008DBB06 /* SegmentedPool.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8ED0A287796008DBB06 /* SegmentedPool.cpp */; };
-		9865EADD0A287796008DBB06 /* SegmentedPool.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8EE0A287796008DBB06 /* SegmentedPool.h */; };
 		9865EADE0A287796008DBB06 /* Args.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8F00A287796008DBB06 /* Args.cpp */; };
-		9865EADF0A287796008DBB06 /* Args.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8F10A287796008DBB06 /* Args.h */; };
-		9865EAE00A287796008DBB06 /* Box.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8F20A287796008DBB06 /* Box.h */; };
-		9865EAE10A287796008DBB06 /* common_types.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8F30A287796008DBB06 /* common_types.h */; };
 		9865EAE20A287796008DBB06 /* Console.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8F40A287796008DBB06 /* Console.cpp */; };
-		9865EAE30A287796008DBB06 /* Console.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8F50A287796008DBB06 /* Console.h */; };
-		9865EAE40A287796008DBB06 /* Direction.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8F60A287796008DBB06 /* Direction.h */; };
 		9865EAE50A287796008DBB06 /* encoding.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8F70A287796008DBB06 /* encoding.cpp */; };
-		9865EAE60A287796008DBB06 /* encoding.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8F80A287796008DBB06 /* encoding.h */; };
-		9865EAE70A287796008DBB06 /* Errors.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8F90A287796008DBB06 /* Errors.h */; };
 		9865EAE80A287796008DBB06 /* idMan.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8FA0A287796008DBB06 /* idMan.cpp */; };
-		9865EAE90A287796008DBB06 /* idMan.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8FB0A287796008DBB06 /* idMan.h */; };
 		9865EAEA0A287796008DBB06 /* istring.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8FC0A287796008DBB06 /* istring.cpp */; };
-		9865EAEB0A287796008DBB06 /* istring.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8FD0A287796008DBB06 /* istring.h */; };
 		9865EAEC0A287796008DBB06 /* md5.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E8FE0A287796008DBB06 /* md5.cpp */; };
-		9865EAED0A287796008DBB06 /* md5.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E8FF0A287796008DBB06 /* md5.h */; };
-		9865EAEE0A287796008DBB06 /* memset_n.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9000A287796008DBB06 /* memset_n.h */; };
-		9865EAF00A287796008DBB06 /* p_dynamic_cast.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9020A287796008DBB06 /* p_dynamic_cast.h */; };
 		9865EAF10A287796008DBB06 /* pent_include.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9030A287796008DBB06 /* pent_include.cpp */; };
-		9865EAF20A287796008DBB06 /* pent_include.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9040A287796008DBB06 /* pent_include.h */; };
-		9865EAF30A287796008DBB06 /* pent_valgrind.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9050A287796008DBB06 /* pent_valgrind.h */; };
-		9865EAF40A287796008DBB06 /* Rect.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9060A287796008DBB06 /* Rect.h */; };
 		9865EAF50A287796008DBB06 /* util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9070A287796008DBB06 /* util.cpp */; };
-		9865EAF60A287796008DBB06 /* util.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9080A287796008DBB06 /* util.h */; };
 		9865EAF70A287796008DBB06 /* version.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9090A287796008DBB06 /* version.cpp */; };
-		9865EAF80A287796008DBB06 /* version.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E90A0A287796008DBB06 /* version.h */; };
 		9865EAF90A287796008DBB06 /* BitSet.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E90C0A287796008DBB06 /* BitSet.cpp */; };
-		9865EAFA0A287796008DBB06 /* BitSet.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E90D0A287796008DBB06 /* BitSet.h */; };
-		9865EAFB0A287796008DBB06 /* intrinsics.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E90E0A287796008DBB06 /* intrinsics.h */; };
-		9865EAFD0A287796008DBB06 /* remorseintrinsics.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9100A287796008DBB06 /* remorseintrinsics.h */; };
-		9865EAFE0A287796008DBB06 /* u8intrinsics.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9110A287796008DBB06 /* u8intrinsics.h */; };
 		9865EAFF0A287796008DBB06 /* UCList.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9120A287796008DBB06 /* UCList.cpp */; };
-		9865EB000A287796008DBB06 /* UCList.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9130A287796008DBB06 /* UCList.h */; };
 		9865EB010A287796008DBB06 /* UCMachine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9140A287796008DBB06 /* UCMachine.cpp */; };
-		9865EB020A287796008DBB06 /* UCMachine.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9150A287796008DBB06 /* UCMachine.h */; };
 		9865EB030A287796008DBB06 /* UCProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9160A287796008DBB06 /* UCProcess.cpp */; };
-		9865EB040A287796008DBB06 /* UCProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9170A287796008DBB06 /* UCProcess.h */; };
 		9865EB050A287796008DBB06 /* UCStack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9180A287796008DBB06 /* UCStack.cpp */; };
-		9865EB060A287796008DBB06 /* UCStack.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9190A287796008DBB06 /* UCStack.h */; };
 		9865EB070A287796008DBB06 /* Usecode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E91A0A287796008DBB06 /* Usecode.cpp */; };
-		9865EB080A287796008DBB06 /* Usecode.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E91B0A287796008DBB06 /* Usecode.h */; };
 		9865EB090A287796008DBB06 /* UsecodeFlex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E91C0A287796008DBB06 /* UsecodeFlex.cpp */; };
-		9865EB0A0A287796008DBB06 /* UsecodeFlex.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E91D0A287796008DBB06 /* UsecodeFlex.h */; };
 		9865EB0B0A287796008DBB06 /* Actor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9200A287796008DBB06 /* Actor.cpp */; };
-		9865EB0C0A287796008DBB06 /* Actor.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9210A287796008DBB06 /* Actor.h */; };
-		9865EB0D0A287796008DBB06 /* ActorAnim.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9220A287796008DBB06 /* ActorAnim.h */; };
 		9865EB0E0A287796008DBB06 /* ActorAnimProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9230A287796008DBB06 /* ActorAnimProcess.cpp */; };
-		9865EB0F0A287796008DBB06 /* ActorAnimProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9240A287796008DBB06 /* ActorAnimProcess.h */; };
 		9865EB100A287796008DBB06 /* ActorBarkNotifyProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9250A287796008DBB06 /* ActorBarkNotifyProcess.cpp */; };
-		9865EB110A287796008DBB06 /* ActorBarkNotifyProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9260A287796008DBB06 /* ActorBarkNotifyProcess.h */; };
 		9865EB120A287796008DBB06 /* AmbushProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9270A287796008DBB06 /* AmbushProcess.cpp */; };
-		9865EB130A287796008DBB06 /* AmbushProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9280A287796008DBB06 /* AmbushProcess.h */; };
 		9865EB140A287796008DBB06 /* AnimAction.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9290A287796008DBB06 /* AnimAction.cpp */; };
-		9865EB150A287796008DBB06 /* AnimAction.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E92A0A287796008DBB06 /* AnimAction.h */; };
 		9865EB160A287796008DBB06 /* Animation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E92B0A287796008DBB06 /* Animation.cpp */; };
-		9865EB170A287796008DBB06 /* Animation.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E92C0A287796008DBB06 /* Animation.h */; };
 		9865EB180A287796008DBB06 /* AnimationTracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E92D0A287796008DBB06 /* AnimationTracker.cpp */; };
-		9865EB190A287796008DBB06 /* AnimationTracker.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E92E0A287796008DBB06 /* AnimationTracker.h */; };
 		9865EB1A0A287796008DBB06 /* AvatarDeathProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E92F0A287796008DBB06 /* AvatarDeathProcess.cpp */; };
-		9865EB1B0A287796008DBB06 /* AvatarDeathProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9300A287796008DBB06 /* AvatarDeathProcess.h */; };
 		9865EB1C0A287796008DBB06 /* AvatarMoverProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9310A287796008DBB06 /* AvatarMoverProcess.cpp */; };
-		9865EB1D0A287796008DBB06 /* AvatarMoverProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9320A287796008DBB06 /* AvatarMoverProcess.h */; };
 		9865EB1E0A287796008DBB06 /* ClearFeignDeathProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9330A287796008DBB06 /* ClearFeignDeathProcess.cpp */; };
-		9865EB1F0A287796008DBB06 /* ClearFeignDeathProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9340A287796008DBB06 /* ClearFeignDeathProcess.h */; };
 		9865EB200A287796008DBB06 /* CombatProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9350A287796008DBB06 /* CombatProcess.cpp */; };
-		9865EB210A287796008DBB06 /* CombatProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9360A287796008DBB06 /* CombatProcess.h */; };
 		9865EB220A287796008DBB06 /* GrantPeaceProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9370A287796008DBB06 /* GrantPeaceProcess.cpp */; };
-		9865EB230A287796008DBB06 /* GrantPeaceProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9380A287796008DBB06 /* GrantPeaceProcess.h */; };
 		9865EB240A287796008DBB06 /* HealProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9390A287796008DBB06 /* HealProcess.cpp */; };
-		9865EB250A287796008DBB06 /* HealProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E93A0A287796008DBB06 /* HealProcess.h */; };
 		9865EB260A287796008DBB06 /* LoiterProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E93B0A287796008DBB06 /* LoiterProcess.cpp */; };
-		9865EB270A287796008DBB06 /* LoiterProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E93C0A287796008DBB06 /* LoiterProcess.h */; };
 		9865EB280A287796008DBB06 /* MainActor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E93D0A287796008DBB06 /* MainActor.cpp */; };
-		9865EB290A287796008DBB06 /* MainActor.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E93E0A287796008DBB06 /* MainActor.h */; };
-		9865EB2B0A287796008DBB06 /* MonsterInfo.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9400A287796008DBB06 /* MonsterInfo.h */; };
 		9865EB2C0A287796008DBB06 /* Pathfinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9410A287796008DBB06 /* Pathfinder.cpp */; };
-		9865EB2D0A287796008DBB06 /* Pathfinder.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9420A287796008DBB06 /* Pathfinder.h */; };
 		9865EB2E0A287796008DBB06 /* PathfinderProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9430A287796008DBB06 /* PathfinderProcess.cpp */; };
-		9865EB2F0A287796008DBB06 /* PathfinderProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9440A287796008DBB06 /* PathfinderProcess.h */; };
 		9865EB300A287796008DBB06 /* QuickAvatarMoverProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9450A287796008DBB06 /* QuickAvatarMoverProcess.cpp */; };
-		9865EB310A287796008DBB06 /* QuickAvatarMoverProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9460A287796008DBB06 /* QuickAvatarMoverProcess.h */; };
 		9865EB320A287796008DBB06 /* ResurrectionProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9470A287796008DBB06 /* ResurrectionProcess.cpp */; };
-		9865EB330A287796008DBB06 /* ResurrectionProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9480A287796008DBB06 /* ResurrectionProcess.h */; };
 		9865EB340A287796008DBB06 /* SchedulerProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9490A287796008DBB06 /* SchedulerProcess.cpp */; };
-		9865EB350A287796008DBB06 /* SchedulerProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E94A0A287796008DBB06 /* SchedulerProcess.h */; };
 		9865EB360A287796008DBB06 /* TargetedAnimProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E94B0A287796008DBB06 /* TargetedAnimProcess.cpp */; };
-		9865EB370A287796008DBB06 /* TargetedAnimProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E94C0A287796008DBB06 /* TargetedAnimProcess.h */; };
 		9865EB380A287796008DBB06 /* TeleportToEggProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E94D0A287796008DBB06 /* TeleportToEggProcess.cpp */; };
-		9865EB390A287796008DBB06 /* TeleportToEggProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E94E0A287796008DBB06 /* TeleportToEggProcess.h */; };
-		9865EB3A0A287796008DBB06 /* TreasureInfo.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E94F0A287796008DBB06 /* TreasureInfo.h */; };
-		9865EB3B0A287796008DBB06 /* WeaponOverlay.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9500A287796008DBB06 /* WeaponOverlay.h */; };
-		9865EB3C0A287796008DBB06 /* ArmourInfo.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9510A287796008DBB06 /* ArmourInfo.h */; };
 		9865EB3D0A287796008DBB06 /* CameraProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9520A287796008DBB06 /* CameraProcess.cpp */; };
-		9865EB3E0A287796008DBB06 /* CameraProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9530A287796008DBB06 /* CameraProcess.h */; };
 		9865EB3F0A287796008DBB06 /* Container.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9540A287796008DBB06 /* Container.cpp */; };
-		9865EB400A287796008DBB06 /* Container.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9550A287796008DBB06 /* Container.h */; };
 		9865EB410A287796008DBB06 /* CreateItemProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9560A287796008DBB06 /* CreateItemProcess.cpp */; };
-		9865EB420A287796008DBB06 /* CreateItemProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9570A287796008DBB06 /* CreateItemProcess.h */; };
 		9865EB430A287796008DBB06 /* CurrentMap.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9580A287796008DBB06 /* CurrentMap.cpp */; };
-		9865EB440A287796008DBB06 /* CurrentMap.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9590A287796008DBB06 /* CurrentMap.h */; };
 		9865EB450A287796008DBB06 /* DestroyItemProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E95A0A287796008DBB06 /* DestroyItemProcess.cpp */; };
-		9865EB460A287796008DBB06 /* DestroyItemProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E95B0A287796008DBB06 /* DestroyItemProcess.h */; };
 		9865EB470A287796008DBB06 /* Egg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E95C0A287796008DBB06 /* Egg.cpp */; };
-		9865EB480A287796008DBB06 /* Egg.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E95D0A287796008DBB06 /* Egg.h */; };
 		9865EB490A287796008DBB06 /* EggHatcherProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E95E0A287796008DBB06 /* EggHatcherProcess.cpp */; };
-		9865EB4A0A287796008DBB06 /* EggHatcherProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E95F0A287796008DBB06 /* EggHatcherProcess.h */; };
 		9865EB4B0A287796008DBB06 /* FireballProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9600A287796008DBB06 /* FireballProcess.cpp */; };
-		9865EB4C0A287796008DBB06 /* FireballProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9610A287796008DBB06 /* FireballProcess.h */; };
 		9865EB4D0A287796008DBB06 /* getObject.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9620A287796008DBB06 /* getObject.cpp */; };
-		9865EB4E0A287796008DBB06 /* getObject.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9630A287796008DBB06 /* getObject.h */; };
 		9865EB4F0A287796008DBB06 /* GlobEgg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9640A287796008DBB06 /* GlobEgg.cpp */; };
-		9865EB500A287796008DBB06 /* GlobEgg.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9650A287796008DBB06 /* GlobEgg.h */; };
 		9865EB510A287796008DBB06 /* GravityProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9660A287796008DBB06 /* GravityProcess.cpp */; };
-		9865EB520A287796008DBB06 /* GravityProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9670A287796008DBB06 /* GravityProcess.h */; };
 		9865EB530A287796008DBB06 /* Item.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9680A287796008DBB06 /* Item.cpp */; };
-		9865EB540A287796008DBB06 /* Item.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9690A287796008DBB06 /* Item.h */; };
 		9865EB550A287796008DBB06 /* ItemFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E96A0A287796008DBB06 /* ItemFactory.cpp */; };
-		9865EB560A287796008DBB06 /* ItemFactory.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E96B0A287796008DBB06 /* ItemFactory.h */; };
 		9865EB570A287796008DBB06 /* ItemSorter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E96C0A287796008DBB06 /* ItemSorter.cpp */; };
-		9865EB580A287796008DBB06 /* ItemSorter.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E96D0A287796008DBB06 /* ItemSorter.h */; };
-		9865EB590A287796008DBB06 /* LoopScript.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E96E0A287796008DBB06 /* LoopScript.h */; };
 		9865EB5A0A287796008DBB06 /* Map.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E96F0A287796008DBB06 /* Map.cpp */; };
-		9865EB5B0A287796008DBB06 /* Map.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9700A287796008DBB06 /* Map.h */; };
 		9865EB5C0A287796008DBB06 /* MapGlob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9710A287796008DBB06 /* MapGlob.cpp */; };
-		9865EB5D0A287796008DBB06 /* MapGlob.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9720A287796008DBB06 /* MapGlob.h */; };
 		9865EB5E0A287796008DBB06 /* MissileProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9730A287796008DBB06 /* MissileProcess.cpp */; };
-		9865EB5F0A287796008DBB06 /* MissileProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9740A287796008DBB06 /* MissileProcess.h */; };
 		9865EB610A287796008DBB06 /* MonsterEgg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9760A287796008DBB06 /* MonsterEgg.cpp */; };
-		9865EB620A287796008DBB06 /* MonsterEgg.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9770A287796008DBB06 /* MonsterEgg.h */; };
 		9865EB630A287796008DBB06 /* SplitItemProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E9780A287796008DBB06 /* SplitItemProcess.cpp */; };
-		9865EB640A287796008DBB06 /* SplitItemProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9790A287796008DBB06 /* SplitItemProcess.h */; };
 		9865EB650A287796008DBB06 /* SpriteProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E97A0A287796008DBB06 /* SpriteProcess.cpp */; };
-		9865EB660A287796008DBB06 /* SpriteProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E97B0A287796008DBB06 /* SpriteProcess.h */; };
 		9865EB670A287796008DBB06 /* TeleportEgg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E97C0A287796008DBB06 /* TeleportEgg.cpp */; };
-		9865EB680A287796008DBB06 /* TeleportEgg.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E97D0A287796008DBB06 /* TeleportEgg.h */; };
-		9865EB690A287796008DBB06 /* WeaponInfo.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E97E0A287796008DBB06 /* WeaponInfo.h */; };
 		9865EB6A0A287796008DBB06 /* World.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E97F0A287796008DBB06 /* World.cpp */; };
-		9865EB6B0A287796008DBB06 /* World.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9800A287796008DBB06 /* World.h */; };
-		9865EB6C0A287796008DBB06 /* WorldPoint.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865E9810A287796008DBB06 /* WorldPoint.h */; };
-		9865ED380A28A102008DBB06 /* macosx_include.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 9865ED370A28A102008DBB06 /* macosx_include.h */; };
 		98AE6FBD0A2A081200E558F6 /* SDL_ttf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98AE6FB80A2A081200E558F6 /* SDL_ttf.framework */; };
 		98AE71330A2A1C5500E558F6 /* png.c in Sources */ = {isa = PBXBuildFile; fileRef = 98AE70470A2A1C5500E558F6 /* png.c */; };
-		98AE71340A2A1C5500E558F6 /* png.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 98AE70480A2A1C5500E558F6 /* png.h */; };
 		98AE71AA0A2A1D9D00E558F6 /* DisasmProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98AE71A50A2A1D9D00E558F6 /* DisasmProcess.cpp */; };
-		98AE71AB0A2A1D9D00E558F6 /* DisasmProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 98AE71A60A2A1D9D00E558F6 /* DisasmProcess.h */; };
 		98AE71BC0A2A1DF400E558F6 /* Compile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98AE71B00A2A1DF400E558F6 /* Compile.cpp */; };
-		98AE71BD0A2A1DF400E558F6 /* CompileNodes.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 98AE71B10A2A1DF400E558F6 /* CompileNodes.h */; };
 		98AE71BE0A2A1DF400E558F6 /* CompileProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98AE71B20A2A1DF400E558F6 /* CompileProcess.cpp */; };
-		98AE71BF0A2A1DF400E558F6 /* CompileProcess.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 98AE71B30A2A1DF400E558F6 /* CompileProcess.h */; };
-		98AE71C00A2A1DF400E558F6 /* CompileUnit.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 98AE71B40A2A1DF400E558F6 /* CompileUnit.h */; };
 		98AE71C20A2A1DF400E558F6 /* llcLexer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98AE71B60A2A1DF400E558F6 /* llcLexer.cpp */; };
-		98AE71C30A2A1DF400E558F6 /* llcLexer.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 98AE71B70A2A1DF400E558F6 /* llcLexer.h */; };
-		98AE71C50A2A1DF400E558F6 /* llcTokens.h in Copy Frameworks into .app bundle */ = {isa = PBXBuildFile; fileRef = 98AE71B90A2A1DF400E558F6 /* llcTokens.h */; };
 		98AE72090A2A2A0C00E558F6 /* pngread.c in Sources */ = {isa = PBXBuildFile; fileRef = 98AE72080A2A2A0C00E558F6 /* pngread.c */; };
 		98AE720C0A2A2A4500E558F6 /* pngerror.c in Sources */ = {isa = PBXBuildFile; fileRef = 98AE720B0A2A2A4500E558F6 /* pngerror.c */; };
 		98AE720F0A2A2A8800E558F6 /* pngmem.c in Sources */ = {isa = PBXBuildFile; fileRef = 98AE720E0A2A2A8800E558F6 /* pngmem.c */; };
@@ -527,14 +265,12 @@
 		98AE726D0A2A3EC600E558F6 /* flags.png in Resources */ = {isa = PBXBuildFile; fileRef = 98AE72560A2A3EC600E558F6 /* flags.png */; };
 		98AE726F0A2A3EC600E558F6 /* mouse.tga in Resources */ = {isa = PBXBuildFile; fileRef = 98AE72580A2A3EC600E558F6 /* mouse.tga */; };
 		98AE72700A2A3EC600E558F6 /* navbar.png in Resources */ = {isa = PBXBuildFile; fileRef = 98AE72590A2A3EC600E558F6 /* navbar.png */; };
-		98AE72710A2A3EC600E558F6 /* remorsebindings.ini in Resources */ = {isa = PBXBuildFile; fileRef = 98AE725A0A2A3EC600E558F6 /* remorsebindings.ini */; };
 		98AE72720A2A3EC600E558F6 /* title.png in Resources */ = {isa = PBXBuildFile; fileRef = 98AE725B0A2A3EC600E558F6 /* title.png */; };
 		98AE72730A2A3EC600E558F6 /* u8.ini in Resources */ = {isa = PBXBuildFile; fileRef = 98AE725C0A2A3EC600E558F6 /* u8.ini */; };
 		98AE72740A2A3EC600E558F6 /* u8armour.ini in Resources */ = {isa = PBXBuildFile; fileRef = 98AE725D0A2A3EC600E558F6 /* u8armour.ini */; };
 		98AE72750A2A3EC600E558F6 /* u8bindings.ini in Resources */ = {isa = PBXBuildFile; fileRef = 98AE725E0A2A3EC600E558F6 /* u8bindings.ini */; };
 		98AE72760A2A3EC600E558F6 /* u8french.ini in Resources */ = {isa = PBXBuildFile; fileRef = 98AE725F0A2A3EC600E558F6 /* u8french.ini */; };
 		98AE72770A2A3EC600E558F6 /* u8german.ini in Resources */ = {isa = PBXBuildFile; fileRef = 98AE72600A2A3EC600E558F6 /* u8german.ini */; };
-		98AE72780A2A3EC600E558F6 /* u8japanese.ini in Resources */ = {isa = PBXBuildFile; fileRef = 98AE72610A2A3EC600E558F6 /* u8japanese.ini */; };
 		98AE72790A2A3EC600E558F6 /* u8monsters.ini in Resources */ = {isa = PBXBuildFile; fileRef = 98AE72620A2A3EC600E558F6 /* u8monsters.ini */; };
 		98AE727A0A2A3EC600E558F6 /* u8spanish.ini in Resources */ = {isa = PBXBuildFile; fileRef = 98AE72630A2A3EC600E558F6 /* u8spanish.ini */; };
 		98AE727B0A2A3EC600E558F6 /* u8weapons.ini in Resources */ = {isa = PBXBuildFile; fileRef = 98AE72640A2A3EC600E558F6 /* u8weapons.ini */; };
@@ -545,281 +281,10 @@
 		98AE72DB0A2A418300E558F6 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98AE72C90A2A418300E558F6 /* AudioUnit.framework */; };
 		98AE72E50A2A41DB00E558F6 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98AE72DD0A2A41DB00E558F6 /* CoreMIDI.framework */; };
 		98AE74400A2A5A6F00E558F6 /* macosx_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 98AE743F0A2A5A6F00E558F6 /* macosx_utils.m */; };
+		98C300B70A2B8C74008A38A2 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8D1107310486CEB800E47090 /* Info.plist */; };
+		98C300B80A2B8C78008A38A2 /* remorsebindings.ini in Resources */ = {isa = PBXBuildFile; fileRef = 98AE725A0A2A3EC600E558F6 /* remorsebindings.ini */; };
+		98C300B90A2B8C7A008A38A2 /* u8japanese.ini in Resources */ = {isa = PBXBuildFile; fileRef = 98AE72610A2A3EC600E558F6 /* u8japanese.ini */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		002F39FD09D0883400EBEB88 /* Copy Frameworks into .app bundle */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				002F3A0009D0884600EBEB88 /* SDL.framework in Copy Frameworks into .app bundle */,
-				9865E9830A287796008DBB06 /* AudioChannel.h in Copy Frameworks into .app bundle */,
-				9865E9850A287796008DBB06 /* AudioMixer.h in Copy Frameworks into .app bundle */,
-				9865E9870A287796008DBB06 /* AudioProcess.h in Copy Frameworks into .app bundle */,
-				9865E9890A287796008DBB06 /* AudioSample.h in Copy Frameworks into .app bundle */,
-				9865E98B0A287796008DBB06 /* ALSAMidiDriver.h in Copy Frameworks into .app bundle */,
-				9865E98D0A287796008DBB06 /* CoreAudioMidiDriver.h in Copy Frameworks into .app bundle */,
-				9865E98F0A287796008DBB06 /* FluidSynthMidiDriver.h in Copy Frameworks into .app bundle */,
-				9865E9910A287796008DBB06 /* fmopl.h in Copy Frameworks into .app bundle */,
-				9865E9930A287796008DBB06 /* FMOplMidiDriver.h in Copy Frameworks into .app bundle */,
-				9865E9950A287796008DBB06 /* LowLevelMidiDriver.h in Copy Frameworks into .app bundle */,
-				9865E9970A287796008DBB06 /* MidiDriver.h in Copy Frameworks into .app bundle */,
-				9865E99B0A287796008DBB06 /* timidity.h in Copy Frameworks into .app bundle */,
-				9865E99D0A287796008DBB06 /* timidity_common.h in Copy Frameworks into .app bundle */,
-				9865E99F0A287796008DBB06 /* timidity_controls.h in Copy Frameworks into .app bundle */,
-				9865E9A10A287796008DBB06 /* timidity_filter.h in Copy Frameworks into .app bundle */,
-				9865E9A30A287796008DBB06 /* timidity_instrum.h in Copy Frameworks into .app bundle */,
-				9865E9A50A287796008DBB06 /* timidity_mix.h in Copy Frameworks into .app bundle */,
-				9865E9A70A287796008DBB06 /* timidity_output.h in Copy Frameworks into .app bundle */,
-				9865E9A90A287796008DBB06 /* timidity_playmidi.h in Copy Frameworks into .app bundle */,
-				9865E9AB0A287796008DBB06 /* timidity_readmidi.h in Copy Frameworks into .app bundle */,
-				9865E9AD0A287796008DBB06 /* timidity_resample.h in Copy Frameworks into .app bundle */,
-				9865E9B10A287796008DBB06 /* timidity_tables.h in Copy Frameworks into .app bundle */,
-				9865E9B30A287796008DBB06 /* TimidityMidiDriver.h in Copy Frameworks into .app bundle */,
-				9865E9B50A287796008DBB06 /* UnixSeqMidiDriver.h in Copy Frameworks into .app bundle */,
-				9865E9B70A287796008DBB06 /* WindowsMidiDriver.h in Copy Frameworks into .app bundle */,
-				9865E9B80A287796008DBB06 /* XMidiEvent.h in Copy Frameworks into .app bundle */,
-				9865E9BA0A287796008DBB06 /* XMidiEventList.h in Copy Frameworks into .app bundle */,
-				9865E9BC0A287796008DBB06 /* XMidiFile.h in Copy Frameworks into .app bundle */,
-				9865E9BD0A287796008DBB06 /* XMidiNoteStack.h in Copy Frameworks into .app bundle */,
-				9865E9BF0A287796008DBB06 /* XMidiSequence.h in Copy Frameworks into .app bundle */,
-				9865E9C00A287796008DBB06 /* XMidiSequenceHandler.h in Copy Frameworks into .app bundle */,
-				9865E9C30A287796008DBB06 /* MusicFlex.h in Copy Frameworks into .app bundle */,
-				9865E9C50A287796008DBB06 /* MusicProcess.h in Copy Frameworks into .app bundle */,
-				9865E9C70A287796008DBB06 /* RawAudioSample.h in Copy Frameworks into .app bundle */,
-				9865E9C90A287796008DBB06 /* SonarcAudioSample.h in Copy Frameworks into .app bundle */,
-				9865E9CB0A287796008DBB06 /* SoundFlex.h in Copy Frameworks into .app bundle */,
-				9865E9CD0A287796008DBB06 /* SpeechFlex.h in Copy Frameworks into .app bundle */,
-				9865E9CE0A287796008DBB06 /* Convert.h in Copy Frameworks into .app bundle */,
-				9865E9D00A287796008DBB06 /* ConvertShape.h in Copy Frameworks into .app bundle */,
-				9865E9D20A287796008DBB06 /* ConvertShapeCrusader.h in Copy Frameworks into .app bundle */,
-				9865E9D30A287796008DBB06 /* ConvertUsecodeCrusader.h in Copy Frameworks into .app bundle */,
-				9865E9D70A287796008DBB06 /* ConvertShapeU8.h in Copy Frameworks into .app bundle */,
-				9865E9D80A287796008DBB06 /* ConvertUsecodeU8.h in Copy Frameworks into .app bundle */,
-				9865E9DB0A287796008DBB06 /* Archive.h in Copy Frameworks into .app bundle */,
-				9865E9DD0A287796008DBB06 /* ArchiveFile.h in Copy Frameworks into .app bundle */,
-				9865E9E00A287796008DBB06 /* DirFile.h in Copy Frameworks into .app bundle */,
-				9865E9E20A287796008DBB06 /* FileSystem.h in Copy Frameworks into .app bundle */,
-				9865E9E40A287796008DBB06 /* FlexFile.h in Copy Frameworks into .app bundle */,
-				9865E9E50A287796008DBB06 /* IDataSource.h in Copy Frameworks into .app bundle */,
-				9865E9E60A287796008DBB06 /* ListFiles.h in Copy Frameworks into .app bundle */,
-				9865E9E80A287796008DBB06 /* NamedArchiveFile.h in Copy Frameworks into .app bundle */,
-				9865E9E90A287796008DBB06 /* ODataSource.h in Copy Frameworks into .app bundle */,
-				9865E9EB0A287796008DBB06 /* RawArchive.h in Copy Frameworks into .app bundle */,
-				9865E9ED0A287796008DBB06 /* Savegame.h in Copy Frameworks into .app bundle */,
-				9865E9EF0A287796008DBB06 /* SavegameWriter.h in Copy Frameworks into .app bundle */,
-				9865E9F10A287796008DBB06 /* U8SaveFile.h in Copy Frameworks into .app bundle */,
-				9865E9F30A287796008DBB06 /* ioapi.h in Copy Frameworks into .app bundle */,
-				9865E9F60A287796008DBB06 /* unzip.h in Copy Frameworks into .app bundle */,
-				9865E9F80A287796008DBB06 /* zip.h in Copy Frameworks into .app bundle */,
-				9865E9FA0A287796008DBB06 /* ZipFile.h in Copy Frameworks into .app bundle */,
-				9865E9FC0A287796008DBB06 /* Game.h in Copy Frameworks into .app bundle */,
-				9865E9FE0A287796008DBB06 /* GameData.h in Copy Frameworks into .app bundle */,
-				9865EA000A287796008DBB06 /* GameDetector.h in Copy Frameworks into .app bundle */,
-				9865EA020A287796008DBB06 /* GameInfo.h in Copy Frameworks into .app bundle */,
-				9865EA030A287796008DBB06 /* gamemd5.h in Copy Frameworks into .app bundle */,
-				9865EA060A287796008DBB06 /* RemorseGame.h in Copy Frameworks into .app bundle */,
-				9865EA080A287796008DBB06 /* StartU8Process.h in Copy Frameworks into .app bundle */,
-				9865EA0A0A287796008DBB06 /* TreasureLoader.h in Copy Frameworks into .app bundle */,
-				9865EA0C0A287796008DBB06 /* U8Game.h in Copy Frameworks into .app bundle */,
-				9865EA0E0A287796008DBB06 /* AnimDat.h in Copy Frameworks into .app bundle */,
-				9865EA100A287796008DBB06 /* BaseSoftRenderSurface.h in Copy Frameworks into .app bundle */,
-				9865EA120A287796008DBB06 /* FixedWidthFont.h in Copy Frameworks into .app bundle */,
-				9865EA140A287796008DBB06 /* Font.h in Copy Frameworks into .app bundle */,
-				9865EA160A287796008DBB06 /* FontManager.h in Copy Frameworks into .app bundle */,
-				9865EA180A287796008DBB06 /* FontShapeArchive.h in Copy Frameworks into .app bundle */,
-				9865EA1A0A287796008DBB06 /* JPFont.h in Copy Frameworks into .app bundle */,
-				9865EA1C0A287796008DBB06 /* JPRenderedText.h in Copy Frameworks into .app bundle */,
-				9865EA1F0A287796008DBB06 /* RenderedText.h in Copy Frameworks into .app bundle */,
-				9865EA210A287796008DBB06 /* ShapeFont.h in Copy Frameworks into .app bundle */,
-				9865EA230A287796008DBB06 /* ShapeRenderedText.h in Copy Frameworks into .app bundle */,
-				9865EA250A287796008DBB06 /* TTFont.h in Copy Frameworks into .app bundle */,
-				9865EA270A287796008DBB06 /* TTFRenderedText.h in Copy Frameworks into .app bundle */,
-				9865EA290A287796008DBB06 /* FrameID.h in Copy Frameworks into .app bundle */,
-				9865EA2A0A287796008DBB06 /* GraphicsErrors.h in Copy Frameworks into .app bundle */,
-				9865EA2C0A287796008DBB06 /* GumpShapeArchive.h in Copy Frameworks into .app bundle */,
-				9865EA2E0A287796008DBB06 /* InverterProcess.h in Copy Frameworks into .app bundle */,
-				9865EA300A287796008DBB06 /* MainShapeArchive.h in Copy Frameworks into .app bundle */,
-				9865EA310A287796008DBB06 /* Manips.h in Copy Frameworks into .app bundle */,
-				9865EA340A287796008DBB06 /* Palette.h in Copy Frameworks into .app bundle */,
-				9865EA360A287796008DBB06 /* PaletteFaderProcess.h in Copy Frameworks into .app bundle */,
-				9865EA380A287796008DBB06 /* PaletteManager.h in Copy Frameworks into .app bundle */,
-				9865EA3A0A287796008DBB06 /* PNGWriter.h in Copy Frameworks into .app bundle */,
-				9865EA3C0A287796008DBB06 /* RenderSurface.h in Copy Frameworks into .app bundle */,
-				9865EA3D0A287796008DBB06 /* Scaler.h in Copy Frameworks into .app bundle */,
-				9865EA3F0A287796008DBB06 /* ScalerManager.h in Copy Frameworks into .app bundle */,
-				9865EA410A287796008DBB06 /* 2xSaIScalers.h in Copy Frameworks into .app bundle */,
-				9865EA430A287796008DBB06 /* BilinearScaler.h in Copy Frameworks into .app bundle */,
-				9865EA440A287796008DBB06 /* BilinearScalerInternal.h in Copy Frameworks into .app bundle */,
-				9865EA4A0A287796008DBB06 /* hq2xScaler.h in Copy Frameworks into .app bundle */,
-				9865EA4D0A287796008DBB06 /* PointScaler.h in Copy Frameworks into .app bundle */,
-				9865EA4F0A287796008DBB06 /* Scale2xScaler.h in Copy Frameworks into .app bundle */,
-				9865EA510A287796008DBB06 /* Shape.h in Copy Frameworks into .app bundle */,
-				9865EA530A287796008DBB06 /* ShapeArchive.h in Copy Frameworks into .app bundle */,
-				9865EA550A287796008DBB06 /* ShapeFrame.h in Copy Frameworks into .app bundle */,
-				9865EA570A287796008DBB06 /* ShapeInfo.h in Copy Frameworks into .app bundle */,
-				9865EA590A287796008DBB06 /* SKFPlayer.h in Copy Frameworks into .app bundle */,
-				9865EA5B0A287796008DBB06 /* SoftRenderSurface.h in Copy Frameworks into .app bundle */,
-				9865EA5E0A287796008DBB06 /* Texture.h in Copy Frameworks into .app bundle */,
-				9865EA600A287796008DBB06 /* TextureBitmap.h in Copy Frameworks into .app bundle */,
-				9865EA620A287796008DBB06 /* TexturePNG.h in Copy Frameworks into .app bundle */,
-				9865EA640A287796008DBB06 /* TextureTarga.h in Copy Frameworks into .app bundle */,
-				9865EA660A287796008DBB06 /* TypeFlags.h in Copy Frameworks into .app bundle */,
-				9865EA680A287796008DBB06 /* WpnOvlayDat.h in Copy Frameworks into .app bundle */,
-				9865EA6A0A287796008DBB06 /* XFormBlend.h in Copy Frameworks into .app bundle */,
-				9865EA6C0A287796008DBB06 /* AskGump.h in Copy Frameworks into .app bundle */,
-				9865EA6E0A287796008DBB06 /* BarkGump.h in Copy Frameworks into .app bundle */,
-				9865EA700A287796008DBB06 /* BindGump.h in Copy Frameworks into .app bundle */,
-				9865EA720A287796008DBB06 /* BookGump.h in Copy Frameworks into .app bundle */,
-				9865EA740A287796008DBB06 /* ConsoleGump.h in Copy Frameworks into .app bundle */,
-				9865EA760A287796008DBB06 /* ContainerGump.h in Copy Frameworks into .app bundle */,
-				9865EA780A287796008DBB06 /* ControlsGump.h in Copy Frameworks into .app bundle */,
-				9865EA7A0A287796008DBB06 /* CreditsGump.h in Copy Frameworks into .app bundle */,
-				9865EA7C0A287796008DBB06 /* DesktopGump.h in Copy Frameworks into .app bundle */,
-				9865EA7E0A287796008DBB06 /* FastAreaVisGump.h in Copy Frameworks into .app bundle */,
-				9865EA800A287796008DBB06 /* GameMapGump.h in Copy Frameworks into .app bundle */,
-				9865EA820A287796008DBB06 /* Gump.h in Copy Frameworks into .app bundle */,
-				9865EA840A287796008DBB06 /* GumpNotifyProcess.h in Copy Frameworks into .app bundle */,
-				9865EA860A287796008DBB06 /* InverterGump.h in Copy Frameworks into .app bundle */,
-				9865EA880A287796008DBB06 /* ItemRelativeGump.h in Copy Frameworks into .app bundle */,
-				9865EA8A0A287796008DBB06 /* MainMenuProcess.h in Copy Frameworks into .app bundle */,
-				9865EA8C0A287796008DBB06 /* MenuGump.h in Copy Frameworks into .app bundle */,
-				9865EA8E0A287796008DBB06 /* MiniMapGump.h in Copy Frameworks into .app bundle */,
-				9865EA900A287796008DBB06 /* MiniStatsGump.h in Copy Frameworks into .app bundle */,
-				9865EA920A287796008DBB06 /* ModalGump.h in Copy Frameworks into .app bundle */,
-				9865EA950A287796008DBB06 /* MovieGump.h in Copy Frameworks into .app bundle */,
-				9865EA970A287796008DBB06 /* OptionsGump.h in Copy Frameworks into .app bundle */,
-				9865EA990A287796008DBB06 /* PagedGump.h in Copy Frameworks into .app bundle */,
-				9865EA9B0A287796008DBB06 /* PaperdollGump.h in Copy Frameworks into .app bundle */,
-				9865EA9D0A287796008DBB06 /* PentagramMenuGump.h in Copy Frameworks into .app bundle */,
-				9865EA9F0A287796008DBB06 /* QuitGump.h in Copy Frameworks into .app bundle */,
-				9865EAA10A287796008DBB06 /* ReadableGump.h in Copy Frameworks into .app bundle */,
-				9865EAA30A287796008DBB06 /* ResizableGump.h in Copy Frameworks into .app bundle */,
-				9865EAA50A287796008DBB06 /* ScalerGump.h in Copy Frameworks into .app bundle */,
-				9865EAA70A287796008DBB06 /* ScrollGump.h in Copy Frameworks into .app bundle */,
-				9865EAA90A287796008DBB06 /* ShapeViewerGump.h in Copy Frameworks into .app bundle */,
-				9865EAAB0A287796008DBB06 /* SliderGump.h in Copy Frameworks into .app bundle */,
-				9865EAAD0A287796008DBB06 /* TargetGump.h in Copy Frameworks into .app bundle */,
-				9865EAAF0A287796008DBB06 /* U8SaveGump.h in Copy Frameworks into .app bundle */,
-				9865EAB10A287796008DBB06 /* ButtonWidget.h in Copy Frameworks into .app bundle */,
-				9865EAB30A287796008DBB06 /* EditWidget.h in Copy Frameworks into .app bundle */,
-				9865EAB50A287796008DBB06 /* GameWidget.h in Copy Frameworks into .app bundle */,
-				9865EAB80A287796008DBB06 /* SlidingWidget.h in Copy Frameworks into .app bundle */,
-				9865EABA0A287796008DBB06 /* TextWidget.h in Copy Frameworks into .app bundle */,
-				9865EABC0A287796008DBB06 /* Allocator.h in Copy Frameworks into .app bundle */,
-				9865EABE0A287796008DBB06 /* ConApp.h in Copy Frameworks into .app bundle */,
-				9865EAC00A287796008DBB06 /* CoreApp.h in Copy Frameworks into .app bundle */,
-				9865EAC20A287796008DBB06 /* DelayProcess.h in Copy Frameworks into .app bundle */,
-				9865EAC40A287796008DBB06 /* GUIApp.h in Copy Frameworks into .app bundle */,
-				9865EAC60A287796008DBB06 /* HIDKeys.h in Copy Frameworks into .app bundle */,
-				9865EAC80A287796008DBB06 /* HIDManager.h in Copy Frameworks into .app bundle */,
-				9865EACA0A287796008DBB06 /* Joystick.h in Copy Frameworks into .app bundle */,
-				9865EACC0A287796008DBB06 /* Kernel.h in Copy Frameworks into .app bundle */,
-				9865EACE0A287796008DBB06 /* MemoryManager.h in Copy Frameworks into .app bundle */,
-				9865EAD10A287796008DBB06 /* Mouse.h in Copy Frameworks into .app bundle */,
-				9865EAD30A287796008DBB06 /* Object.h in Copy Frameworks into .app bundle */,
-				9865EAD50A287796008DBB06 /* ObjectManager.h in Copy Frameworks into .app bundle */,
-				9865EAD70A287796008DBB06 /* Pool.h in Copy Frameworks into .app bundle */,
-				9865EAD90A287796008DBB06 /* Process.h in Copy Frameworks into .app bundle */,
-				9865EADB0A287796008DBB06 /* SegmentedAllocator.h in Copy Frameworks into .app bundle */,
-				9865EADD0A287796008DBB06 /* SegmentedPool.h in Copy Frameworks into .app bundle */,
-				9865EADF0A287796008DBB06 /* Args.h in Copy Frameworks into .app bundle */,
-				9865EAE00A287796008DBB06 /* Box.h in Copy Frameworks into .app bundle */,
-				9865EAE10A287796008DBB06 /* common_types.h in Copy Frameworks into .app bundle */,
-				9865EAE30A287796008DBB06 /* Console.h in Copy Frameworks into .app bundle */,
-				9865EAE40A287796008DBB06 /* Direction.h in Copy Frameworks into .app bundle */,
-				9865EAE60A287796008DBB06 /* encoding.h in Copy Frameworks into .app bundle */,
-				9865EAE70A287796008DBB06 /* Errors.h in Copy Frameworks into .app bundle */,
-				9865EAE90A287796008DBB06 /* idMan.h in Copy Frameworks into .app bundle */,
-				9865EAEB0A287796008DBB06 /* istring.h in Copy Frameworks into .app bundle */,
-				9865EAED0A287796008DBB06 /* md5.h in Copy Frameworks into .app bundle */,
-				9865EAEE0A287796008DBB06 /* memset_n.h in Copy Frameworks into .app bundle */,
-				9865EAF00A287796008DBB06 /* p_dynamic_cast.h in Copy Frameworks into .app bundle */,
-				9865EAF20A287796008DBB06 /* pent_include.h in Copy Frameworks into .app bundle */,
-				9865EAF30A287796008DBB06 /* pent_valgrind.h in Copy Frameworks into .app bundle */,
-				9865EAF40A287796008DBB06 /* Rect.h in Copy Frameworks into .app bundle */,
-				9865EAF60A287796008DBB06 /* util.h in Copy Frameworks into .app bundle */,
-				9865EAF80A287796008DBB06 /* version.h in Copy Frameworks into .app bundle */,
-				9865EAFA0A287796008DBB06 /* BitSet.h in Copy Frameworks into .app bundle */,
-				9865EAFB0A287796008DBB06 /* intrinsics.h in Copy Frameworks into .app bundle */,
-				9865EAFD0A287796008DBB06 /* remorseintrinsics.h in Copy Frameworks into .app bundle */,
-				9865EAFE0A287796008DBB06 /* u8intrinsics.h in Copy Frameworks into .app bundle */,
-				9865EB000A287796008DBB06 /* UCList.h in Copy Frameworks into .app bundle */,
-				9865EB020A287796008DBB06 /* UCMachine.h in Copy Frameworks into .app bundle */,
-				9865EB040A287796008DBB06 /* UCProcess.h in Copy Frameworks into .app bundle */,
-				9865EB060A287796008DBB06 /* UCStack.h in Copy Frameworks into .app bundle */,
-				9865EB080A287796008DBB06 /* Usecode.h in Copy Frameworks into .app bundle */,
-				9865EB0A0A287796008DBB06 /* UsecodeFlex.h in Copy Frameworks into .app bundle */,
-				9865EB0C0A287796008DBB06 /* Actor.h in Copy Frameworks into .app bundle */,
-				9865EB0D0A287796008DBB06 /* ActorAnim.h in Copy Frameworks into .app bundle */,
-				9865EB0F0A287796008DBB06 /* ActorAnimProcess.h in Copy Frameworks into .app bundle */,
-				9865EB110A287796008DBB06 /* ActorBarkNotifyProcess.h in Copy Frameworks into .app bundle */,
-				9865EB130A287796008DBB06 /* AmbushProcess.h in Copy Frameworks into .app bundle */,
-				9865EB150A287796008DBB06 /* AnimAction.h in Copy Frameworks into .app bundle */,
-				9865EB170A287796008DBB06 /* Animation.h in Copy Frameworks into .app bundle */,
-				9865EB190A287796008DBB06 /* AnimationTracker.h in Copy Frameworks into .app bundle */,
-				9865EB1B0A287796008DBB06 /* AvatarDeathProcess.h in Copy Frameworks into .app bundle */,
-				9865EB1D0A287796008DBB06 /* AvatarMoverProcess.h in Copy Frameworks into .app bundle */,
-				9865EB1F0A287796008DBB06 /* ClearFeignDeathProcess.h in Copy Frameworks into .app bundle */,
-				9865EB210A287796008DBB06 /* CombatProcess.h in Copy Frameworks into .app bundle */,
-				9865EB230A287796008DBB06 /* GrantPeaceProcess.h in Copy Frameworks into .app bundle */,
-				9865EB250A287796008DBB06 /* HealProcess.h in Copy Frameworks into .app bundle */,
-				9865EB270A287796008DBB06 /* LoiterProcess.h in Copy Frameworks into .app bundle */,
-				9865EB290A287796008DBB06 /* MainActor.h in Copy Frameworks into .app bundle */,
-				9865EB2B0A287796008DBB06 /* MonsterInfo.h in Copy Frameworks into .app bundle */,
-				9865EB2D0A287796008DBB06 /* Pathfinder.h in Copy Frameworks into .app bundle */,
-				9865EB2F0A287796008DBB06 /* PathfinderProcess.h in Copy Frameworks into .app bundle */,
-				9865EB310A287796008DBB06 /* QuickAvatarMoverProcess.h in Copy Frameworks into .app bundle */,
-				9865EB330A287796008DBB06 /* ResurrectionProcess.h in Copy Frameworks into .app bundle */,
-				9865EB350A287796008DBB06 /* SchedulerProcess.h in Copy Frameworks into .app bundle */,
-				9865EB370A287796008DBB06 /* TargetedAnimProcess.h in Copy Frameworks into .app bundle */,
-				9865EB390A287796008DBB06 /* TeleportToEggProcess.h in Copy Frameworks into .app bundle */,
-				9865EB3A0A287796008DBB06 /* TreasureInfo.h in Copy Frameworks into .app bundle */,
-				9865EB3B0A287796008DBB06 /* WeaponOverlay.h in Copy Frameworks into .app bundle */,
-				9865EB3C0A287796008DBB06 /* ArmourInfo.h in Copy Frameworks into .app bundle */,
-				9865EB3E0A287796008DBB06 /* CameraProcess.h in Copy Frameworks into .app bundle */,
-				9865EB400A287796008DBB06 /* Container.h in Copy Frameworks into .app bundle */,
-				9865EB420A287796008DBB06 /* CreateItemProcess.h in Copy Frameworks into .app bundle */,
-				9865EB440A287796008DBB06 /* CurrentMap.h in Copy Frameworks into .app bundle */,
-				9865EB460A287796008DBB06 /* DestroyItemProcess.h in Copy Frameworks into .app bundle */,
-				9865EB480A287796008DBB06 /* Egg.h in Copy Frameworks into .app bundle */,
-				9865EB4A0A287796008DBB06 /* EggHatcherProcess.h in Copy Frameworks into .app bundle */,
-				9865EB4C0A287796008DBB06 /* FireballProcess.h in Copy Frameworks into .app bundle */,
-				9865EB4E0A287796008DBB06 /* getObject.h in Copy Frameworks into .app bundle */,
-				9865EB500A287796008DBB06 /* GlobEgg.h in Copy Frameworks into .app bundle */,
-				9865EB520A287796008DBB06 /* GravityProcess.h in Copy Frameworks into .app bundle */,
-				9865EB540A287796008DBB06 /* Item.h in Copy Frameworks into .app bundle */,
-				9865EB560A287796008DBB06 /* ItemFactory.h in Copy Frameworks into .app bundle */,
-				9865EB580A287796008DBB06 /* ItemSorter.h in Copy Frameworks into .app bundle */,
-				9865EB590A287796008DBB06 /* LoopScript.h in Copy Frameworks into .app bundle */,
-				9865EB5B0A287796008DBB06 /* Map.h in Copy Frameworks into .app bundle */,
-				9865EB5D0A287796008DBB06 /* MapGlob.h in Copy Frameworks into .app bundle */,
-				9865EB5F0A287796008DBB06 /* MissileProcess.h in Copy Frameworks into .app bundle */,
-				9865EB620A287796008DBB06 /* MonsterEgg.h in Copy Frameworks into .app bundle */,
-				9865EB640A287796008DBB06 /* SplitItemProcess.h in Copy Frameworks into .app bundle */,
-				9865EB660A287796008DBB06 /* SpriteProcess.h in Copy Frameworks into .app bundle */,
-				9865EB680A287796008DBB06 /* TeleportEgg.h in Copy Frameworks into .app bundle */,
-				9865EB690A287796008DBB06 /* WeaponInfo.h in Copy Frameworks into .app bundle */,
-				9865EB6B0A287796008DBB06 /* World.h in Copy Frameworks into .app bundle */,
-				9865EB6C0A287796008DBB06 /* WorldPoint.h in Copy Frameworks into .app bundle */,
-				9865ED380A28A102008DBB06 /* macosx_include.h in Copy Frameworks into .app bundle */,
-				982067F80A28C092002F143C /* ConfigFileManager.h in Copy Frameworks into .app bundle */,
-				982067FA0A28C092002F143C /* INIFile.h in Copy Frameworks into .app bundle */,
-				982067FE0A28C092002F143C /* SettingManager.h in Copy Frameworks into .app bundle */,
-				98AE71340A2A1C5500E558F6 /* png.h in Copy Frameworks into .app bundle */,
-				98AE71AB0A2A1D9D00E558F6 /* DisasmProcess.h in Copy Frameworks into .app bundle */,
-				98AE71BD0A2A1DF400E558F6 /* CompileNodes.h in Copy Frameworks into .app bundle */,
-				98AE71BF0A2A1DF400E558F6 /* CompileProcess.h in Copy Frameworks into .app bundle */,
-				98AE71C00A2A1DF400E558F6 /* CompileUnit.h in Copy Frameworks into .app bundle */,
-				98AE71C30A2A1DF400E558F6 /* llcLexer.h in Copy Frameworks into .app bundle */,
-				98AE71C50A2A1DF400E558F6 /* llcTokens.h in Copy Frameworks into .app bundle */,
-			);
-			name = "Copy Frameworks into .app bundle";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		002F39F909D0881F00EBEB88 /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL.framework; path = /Library/Frameworks/SDL.framework; sourceTree = "<absolute>"; };
@@ -1311,6 +776,8 @@
 		9865E9800A287796008DBB06 /* World.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = World.h; sourceTree = "<group>"; };
 		9865E9810A287796008DBB06 /* WorldPoint.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WorldPoint.h; sourceTree = "<group>"; };
 		9865ED370A28A102008DBB06 /* macosx_include.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.h; fileEncoding = 4; path = macosx_include.h; sourceTree = "<group>"; };
+		989B07180A2ABE6E009D9729 /* pngconf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pngconf.h; sourceTree = "<group>"; };
+		989B071A0A2ABF58009D9729 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
 		98AE6FB80A2A081200E558F6 /* SDL_ttf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL_ttf.framework; path = /Library/Frameworks/SDL_ttf.framework; sourceTree = "<absolute>"; };
 		98AE70470A2A1C5500E558F6 /* png.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = png.c; sourceTree = "<group>"; };
 		98AE70480A2A1C5500E558F6 /* png.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = png.h; sourceTree = "<group>"; };
@@ -1364,6 +831,58 @@
 		98AE72C90A2A418300E558F6 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = /System/Library/Frameworks/AudioUnit.framework; sourceTree = "<absolute>"; };
 		98AE72DD0A2A41DB00E558F6 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = /System/Library/Frameworks/CoreMIDI.framework; sourceTree = "<absolute>"; };
 		98AE743F0A2A5A6F00E558F6 /* macosx_utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = macosx_utils.m; sourceTree = "<group>"; };
+		98C300060A2B8601008A38A2 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = "<group>"; };
+		98C300070A2B8601008A38A2 /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ChangeLog; sourceTree = "<group>"; };
+		98C300080A2B8601008A38A2 /* COPYING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
+		98C300090A2B8601008A38A2 /* FAQ */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = FAQ; sourceTree = "<group>"; };
+		98C3000A0A2B8601008A38A2 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		98C300110A2B8622008A38A2 /* cvs_structure.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cvs_structure.txt; sourceTree = "<group>"; };
+		98C300130A2B8622008A38A2 /* classes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = classes.txt; sourceTree = "<group>"; };
+		98C300140A2B8622008A38A2 /* colourless0.cc */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = colourless0.cc; sourceTree = "<group>"; };
+		98C300150A2B8622008A38A2 /* items.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = items.txt; sourceTree = "<group>"; };
+		98C300160A2B8622008A38A2 /* opengl.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = opengl.txt; sourceTree = "<group>"; };
+		98C300170A2B8622008A38A2 /* ucmachine.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ucmachine.txt; sourceTree = "<group>"; };
+		98C300180A2B8622008A38A2 /* features.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = features.txt; sourceTree = "<group>"; };
+		98C300190A2B8622008A38A2 /* maps.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = maps.txt; sourceTree = "<group>"; };
+		98C3001A0A2B8622008A38A2 /* musiceggs.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = musiceggs.txt; sourceTree = "<group>"; };
+		98C3001B0A2B8622008A38A2 /* musicflx.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = musicflx.txt; sourceTree = "<group>"; };
+		98C3001C0A2B8622008A38A2 /* savegame.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = savegame.txt; sourceTree = "<group>"; };
+		98C3001E0A2B8622008A38A2 /* credits.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = credits.txt; sourceTree = "<group>"; };
+		98C300200A2B8622008A38A2 /* regret1.01.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = regret1.01.txt; sourceTree = "<group>"; };
+		98C300210A2B8622008A38A2 /* regretdemo.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = regretdemo.txt; sourceTree = "<group>"; };
+		98C300220A2B8622008A38A2 /* remorse1.01.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = remorse1.01.txt; sourceTree = "<group>"; };
+		98C300230A2B8622008A38A2 /* remorse1.21.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = remorse1.21.txt; sourceTree = "<group>"; };
+		98C300240A2B8622008A38A2 /* u8e2.12_unused.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = u8e2.12_unused.txt; sourceTree = "<group>"; };
+		98C300250A2B8622008A38A2 /* u8e2.12_used.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = u8e2.12_used.txt; sourceTree = "<group>"; };
+		98C300260A2B8622008A38A2 /* invert.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = invert.cpp; sourceTree = "<group>"; };
+		98C300270A2B8622008A38A2 /* quotes.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = quotes.txt; sourceTree = "<group>"; };
+		98C300280A2B8622008A38A2 /* saving */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = saving; sourceTree = "<group>"; };
+		98C300290A2B8622008A38A2 /* shapes.cmp.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = shapes.cmp.txt; sourceTree = "<group>"; };
+		98C3002A0A2B8622008A38A2 /* snippets.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = snippets.txt; sourceTree = "<group>"; };
+		98C3002B0A2B8622008A38A2 /* u8anim.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = u8anim.txt; sourceTree = "<group>"; };
+		98C3002C0A2B8622008A38A2 /* u8bugs.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = u8bugs.txt; sourceTree = "<group>"; };
+		98C3002D0A2B8622008A38A2 /* u8cheat.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = u8cheat.txt; sourceTree = "<group>"; };
+		98C3002E0A2B8622008A38A2 /* u8encoding.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = u8encoding.txt; sourceTree = "<group>"; };
+		98C3002F0A2B8622008A38A2 /* u8fonts.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = u8fonts.txt; sourceTree = "<group>"; };
+		98C300300A2B8622008A38A2 /* u8gfxfmt.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = u8gfxfmt.txt; sourceTree = "<group>"; };
+		98C300310A2B8622008A38A2 /* u8mapfmt.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = u8mapfmt.txt; sourceTree = "<group>"; };
+		98C300320A2B8622008A38A2 /* u8npc.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = u8npc.txt; sourceTree = "<group>"; };
+		98C300330A2B8622008A38A2 /* u8savfmt.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = u8savfmt.txt; sourceTree = "<group>"; };
+		98C300340A2B8622008A38A2 /* u8sfxfmt.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = u8sfxfmt.txt; sourceTree = "<group>"; };
+		98C300350A2B8622008A38A2 /* u8skf.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = u8skf.txt; sourceTree = "<group>"; };
+		98C300360A2B8622008A38A2 /* u8typeflag.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = u8typeflag.txt; sourceTree = "<group>"; };
+		98C300370A2B8622008A38A2 /* u8usecode.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = u8usecode.txt; sourceTree = "<group>"; };
+		98C300380A2B8622008A38A2 /* u8weapon.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = u8weapon.txt; sourceTree = "<group>"; };
+		98C300390A2B8622008A38A2 /* u8wpnovlay.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = u8wpnovlay.txt; sourceTree = "<group>"; };
+		98C3003B0A2B8622008A38A2 /* docs.dtd */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = docs.dtd; sourceTree = "<group>"; };
+		98C3003C0A2B8622008A38A2 /* faq.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = faq.xml; sourceTree = "<group>"; };
+		98C3003D0A2B8622008A38A2 /* html.xsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = html.xsl; sourceTree = "<group>"; };
+		98C3003E0A2B8622008A38A2 /* Makefile */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.make; path = Makefile; sourceTree = "<group>"; };
+		98C3003F0A2B8622008A38A2 /* Makefile.win32 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = Makefile.win32; sourceTree = "<group>"; };
+		98C300400A2B8622008A38A2 /* php.xsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = php.xsl; sourceTree = "<group>"; };
+		98C300410A2B8622008A38A2 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
+		98C300420A2B8622008A38A2 /* readme.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = readme.xml; sourceTree = "<group>"; };
+		98C300430A2B8622008A38A2 /* text.xsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = text.xsl; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1425,6 +944,7 @@
 		29B97314FDCFA39411CA2CEA /* Pentagram */ = {
 			isa = PBXGroup;
 			children = (
+				98C300050A2B8593008A38A2 /* Documentation */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -2124,6 +1644,8 @@
 		98AE6FC70A2A1C5500E558F6 /* libpng-1.2.10 */ = {
 			isa = PBXGroup;
 			children = (
+				989B071A0A2ABF58009D9729 /* config.h */,
+				989B07180A2ABE6E009D9729 /* pngconf.h */,
 				98AE72460A2A359500E558F6 /* pnggccrd.c */,
 				98AE722C0A2A2C5C00E558F6 /* pngwutil.c */,
 				98AE72290A2A2C2A00E558F6 /* pngwtran.c */,
@@ -2207,6 +1729,106 @@
 			path = ../../../data;
 			sourceTree = SOURCE_ROOT;
 		};
+		98C300050A2B8593008A38A2 /* Documentation */ = {
+			isa = PBXGroup;
+			children = (
+				98C300100A2B8622008A38A2 /* docs */,
+				98C300060A2B8601008A38A2 /* AUTHORS */,
+				98C300070A2B8601008A38A2 /* ChangeLog */,
+				98C300080A2B8601008A38A2 /* COPYING */,
+				98C300090A2B8601008A38A2 /* FAQ */,
+				98C3000A0A2B8601008A38A2 /* README */,
+			);
+			name = Documentation;
+			path = ../../..;
+			sourceTree = "<group>";
+		};
+		98C300100A2B8622008A38A2 /* docs */ = {
+			isa = PBXGroup;
+			children = (
+				98C300110A2B8622008A38A2 /* cvs_structure.txt */,
+				98C300120A2B8622008A38A2 /* design */,
+				98C300180A2B8622008A38A2 /* features.txt */,
+				98C300190A2B8622008A38A2 /* maps.txt */,
+				98C3001A0A2B8622008A38A2 /* musiceggs.txt */,
+				98C3001B0A2B8622008A38A2 /* musicflx.txt */,
+				98C3001C0A2B8622008A38A2 /* savegame.txt */,
+				98C3001D0A2B8622008A38A2 /* scratch */,
+				98C300290A2B8622008A38A2 /* shapes.cmp.txt */,
+				98C3002A0A2B8622008A38A2 /* snippets.txt */,
+				98C3002B0A2B8622008A38A2 /* u8anim.txt */,
+				98C3002C0A2B8622008A38A2 /* u8bugs.txt */,
+				98C3002D0A2B8622008A38A2 /* u8cheat.txt */,
+				98C3002E0A2B8622008A38A2 /* u8encoding.txt */,
+				98C3002F0A2B8622008A38A2 /* u8fonts.txt */,
+				98C300300A2B8622008A38A2 /* u8gfxfmt.txt */,
+				98C300310A2B8622008A38A2 /* u8mapfmt.txt */,
+				98C300320A2B8622008A38A2 /* u8npc.txt */,
+				98C300330A2B8622008A38A2 /* u8savfmt.txt */,
+				98C300340A2B8622008A38A2 /* u8sfxfmt.txt */,
+				98C300350A2B8622008A38A2 /* u8skf.txt */,
+				98C300360A2B8622008A38A2 /* u8typeflag.txt */,
+				98C300370A2B8622008A38A2 /* u8usecode.txt */,
+				98C300380A2B8622008A38A2 /* u8weapon.txt */,
+				98C300390A2B8622008A38A2 /* u8wpnovlay.txt */,
+				98C3003A0A2B8622008A38A2 /* xml */,
+			);
+			path = docs;
+			sourceTree = "<group>";
+		};
+		98C300120A2B8622008A38A2 /* design */ = {
+			isa = PBXGroup;
+			children = (
+				98C300130A2B8622008A38A2 /* classes.txt */,
+				98C300140A2B8622008A38A2 /* colourless0.cc */,
+				98C300150A2B8622008A38A2 /* items.txt */,
+				98C300160A2B8622008A38A2 /* opengl.txt */,
+				98C300170A2B8622008A38A2 /* ucmachine.txt */,
+			);
+			path = design;
+			sourceTree = "<group>";
+		};
+		98C3001D0A2B8622008A38A2 /* scratch */ = {
+			isa = PBXGroup;
+			children = (
+				98C3001E0A2B8622008A38A2 /* credits.txt */,
+				98C3001F0A2B8622008A38A2 /* globals */,
+				98C300260A2B8622008A38A2 /* invert.cpp */,
+				98C300270A2B8622008A38A2 /* quotes.txt */,
+				98C300280A2B8622008A38A2 /* saving */,
+			);
+			path = scratch;
+			sourceTree = "<group>";
+		};
+		98C3001F0A2B8622008A38A2 /* globals */ = {
+			isa = PBXGroup;
+			children = (
+				98C300200A2B8622008A38A2 /* regret1.01.txt */,
+				98C300210A2B8622008A38A2 /* regretdemo.txt */,
+				98C300220A2B8622008A38A2 /* remorse1.01.txt */,
+				98C300230A2B8622008A38A2 /* remorse1.21.txt */,
+				98C300240A2B8622008A38A2 /* u8e2.12_unused.txt */,
+				98C300250A2B8622008A38A2 /* u8e2.12_used.txt */,
+			);
+			path = globals;
+			sourceTree = "<group>";
+		};
+		98C3003A0A2B8622008A38A2 /* xml */ = {
+			isa = PBXGroup;
+			children = (
+				98C3003B0A2B8622008A38A2 /* docs.dtd */,
+				98C3003C0A2B8622008A38A2 /* faq.xml */,
+				98C3003D0A2B8622008A38A2 /* html.xsl */,
+				98C3003E0A2B8622008A38A2 /* Makefile */,
+				98C3003F0A2B8622008A38A2 /* Makefile.win32 */,
+				98C300400A2B8622008A38A2 /* php.xsl */,
+				98C300410A2B8622008A38A2 /* README */,
+				98C300420A2B8622008A38A2 /* readme.xml */,
+				98C300430A2B8622008A38A2 /* text.xsl */,
+			);
+			path = xml;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -2217,7 +1839,6 @@
 				8D1107290486CEB800E47090 /* Resources */,
 				8D11072C0486CEB800E47090 /* Sources */,
 				8D11072E0486CEB800E47090 /* Frameworks */,
-				002F39FD09D0883400EBEB88 /* Copy Frameworks into .app bundle */,
 			);
 			buildRules = (
 			);
@@ -2250,7 +1871,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */,
-				9865EA5C0A287796008DBB06 /* SoftRenderSurface.inl in Resources */,
 				98AE72680A2A3EC600E558F6 /* covers.png in Resources */,
 				98AE72690A2A3EC600E558F6 /* fixedfont.ini in Resources */,
 				98AE726A0A2A3EC600E558F6 /* fixedfont.tga in Resources */,
@@ -2259,20 +1879,21 @@
 				98AE726D0A2A3EC600E558F6 /* flags.png in Resources */,
 				98AE726F0A2A3EC600E558F6 /* mouse.tga in Resources */,
 				98AE72700A2A3EC600E558F6 /* navbar.png in Resources */,
-				98AE72710A2A3EC600E558F6 /* remorsebindings.ini in Resources */,
 				98AE72720A2A3EC600E558F6 /* title.png in Resources */,
 				98AE72730A2A3EC600E558F6 /* u8.ini in Resources */,
 				98AE72740A2A3EC600E558F6 /* u8armour.ini in Resources */,
 				98AE72750A2A3EC600E558F6 /* u8bindings.ini in Resources */,
 				98AE72760A2A3EC600E558F6 /* u8french.ini in Resources */,
 				98AE72770A2A3EC600E558F6 /* u8german.ini in Resources */,
-				98AE72780A2A3EC600E558F6 /* u8japanese.ini in Resources */,
 				98AE72790A2A3EC600E558F6 /* u8monsters.ini in Resources */,
 				98AE727A0A2A3EC600E558F6 /* u8spanish.ini in Resources */,
 				98AE727B0A2A3EC600E558F6 /* u8weapons.ini in Resources */,
 				98AE727C0A2A3EC600E558F6 /* Vera.ttf in Resources */,
 				98AE727D0A2A3EC600E558F6 /* Vera_copyright.txt in Resources */,
 				98AE727E0A2A3EC600E558F6 /* VeraBd.ttf in Resources */,
+				98C300B70A2B8C74008A38A2 /* Info.plist in Resources */,
+				98C300B80A2B8C78008A38A2 /* remorsebindings.ini in Resources */,
+				98C300B90A2B8C7A008A38A2 /* u8japanese.ini in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2618,6 +2239,7 @@
 					"$(HEADER_SEARCH_PATHS)",
 				);
 				MACH_O_TYPE = mh_execute;
+				MACOSX_DEPLOYMENT_TARGET = 10.3;
 				OTHER_LDFLAGS = "-lz";
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
@@ -2660,6 +2282,7 @@
 					"$(HEADER_SEARCH_PATHS)",
 				);
 				MACH_O_TYPE = mh_execute;
+				MACOSX_DEPLOYMENT_TARGET = 10.3;
 				OTHER_LDFLAGS = "-lz";
 				PREBINDING = NO;
 				SDKROOT = /Developer/SDKs/MacOSX10.4u.sdk;
