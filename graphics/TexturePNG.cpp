@@ -119,6 +119,7 @@ bool TexturePNG::Read(IDataSource *ds)
    png_read_image(png_ptr, row_pointers);
 
    delete[] row_pointers;
+   row_pointers = 0;
 
    // the end_info struct isn't used, but passing it anyway for now
    png_read_end(png_ptr, end_info);
