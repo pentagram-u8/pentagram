@@ -1,3 +1,6 @@
+2006-05-29  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* graphics/TexturePNG.cpp:repack RGBA on pngs to fix ppc
+
 2006-05-28  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* kernel/CoreApp.cpp: use the application resource path for @data in
 	  Mac OS X

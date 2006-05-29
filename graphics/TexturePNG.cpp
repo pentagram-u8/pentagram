@@ -118,6 +118,8 @@ bool TexturePNG::Read(IDataSource *ds)
 
    png_read_image(png_ptr, row_pointers);
 
+   delete[] row_pointers;
+
    // the end_info struct isn't used, but passing it anyway for now
    png_read_end(png_ptr, end_info);
 
@@ -129,7 +131,14 @@ bool TexturePNG::Read(IDataSource *ds)
    this->wlog2 = -1;
    this->hlog2 = -1;
 
-   delete[] row_pointers;
+   // Repack RGBA
+   for (unsigned int i = 0; i < height * width; ++i) {
+       png_bytep p = reinterpret_cast<png_bytep>(&buffer[i]);
+       buffer[i] =(p[0] << TEX32_R_SHIFT) 
+                | (p[1] << TEX32_G_SHIFT)
+                | (p[2] << TEX32_B_SHIFT)
+                | (p[3] << TEX32_A_SHIFT);
+   }
 
    return true;
 }
