@@ -23,6 +23,8 @@
 //
 // {s,u}int{8,16,32,ptr}
 //
+#ifndef BASIC_TYPES_DEFINED
+#define BASIC_TYPES_DEFINED
 
 #ifndef EX_TYPE_INT8
 #  define EX_TYPE_INT8 char /* guaranteed by ISO */
@@ -73,6 +75,8 @@ typedef	signed EX_TYPE_INT32	sint32;
 
 typedef unsigned EX_TYPE_INTPTR uintptr;
 typedef signed EX_TYPE_INTPTR sintptr;
+
+#endif
 
 // ObjId and ProcId
 

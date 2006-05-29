@@ -38,6 +38,9 @@
 #  include "wince_include.h"
 #endif
 
+#ifdef __APPLE__
+#  include  "macosx_include.h"
+#endif
 
 //
 // Common/base types

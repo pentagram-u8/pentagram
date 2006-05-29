@@ -1,3 +1,10 @@
+2006-05-28  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* kernel/CoreApp.cpp: use the application resource path for @data in
+	  Mac OS X
+	* misc/common_types.h: do not define basic types if already declared
+	* misc/pent_include.h: include macosx_include.h if __APPLE__ defined
+	* system/xcode/*: Xcode project files and other OS X specific sources
+
 2006-05-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.cpp: fix line-of-sight checks for plaques hanging on walls
 	* kernel/CoreApp.cpp: allow remorse gametype-override in config file

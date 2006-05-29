@@ -146,6 +146,8 @@ void CoreApp::setupVirtualPaths()
 	std::string data;
 #ifdef DATA_PATH
 	data = DATA_PATH;
+#elif defined(MACOSX)
+    data = macosxResourcePath();
 #else
 	data = "data";
 #endif
