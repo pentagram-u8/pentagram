@@ -284,6 +284,8 @@
 		98C300B70A2B8C74008A38A2 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8D1107310486CEB800E47090 /* Info.plist */; };
 		98C300B80A2B8C78008A38A2 /* remorsebindings.ini in Resources */ = {isa = PBXBuildFile; fileRef = 98AE725A0A2A3EC600E558F6 /* remorsebindings.ini */; };
 		98C300B90A2B8C7A008A38A2 /* u8japanese.ini in Resources */ = {isa = PBXBuildFile; fileRef = 98AE72610A2A3EC600E558F6 /* u8japanese.ini */; };
+		98C302350A2BBDF5008A38A2 /* pentagram.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98C302340A2BBDF5008A38A2 /* pentagram.icns */; };
+		98C302790A2BC5C4008A38A2 /* pentagram.png in Resources */ = {isa = PBXBuildFile; fileRef = 98C302780A2BC5C4008A38A2 /* pentagram.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -883,6 +885,8 @@
 		98C300410A2B8622008A38A2 /* README */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = README; sourceTree = "<group>"; };
 		98C300420A2B8622008A38A2 /* readme.xml */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = readme.xml; sourceTree = "<group>"; };
 		98C300430A2B8622008A38A2 /* text.xsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xml; path = text.xsl; sourceTree = "<group>"; };
+		98C302340A2BBDF5008A38A2 /* pentagram.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = pentagram.icns; sourceTree = "<group>"; };
+		98C302780A2BC5C4008A38A2 /* pentagram.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = pentagram.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1702,6 +1706,8 @@
 		98AE72500A2A3EC600E558F6 /* data */ = {
 			isa = PBXGroup;
 			children = (
+				98C302780A2BC5C4008A38A2 /* pentagram.png */,
+				98C302340A2BBDF5008A38A2 /* pentagram.icns */,
 				98AE72510A2A3EC600E558F6 /* covers.png */,
 				98AE72520A2A3EC600E558F6 /* fixedfont.ini */,
 				98AE72530A2A3EC600E558F6 /* fixedfont.tga */,
@@ -1894,6 +1900,8 @@
 				98C300B70A2B8C74008A38A2 /* Info.plist in Resources */,
 				98C300B80A2B8C78008A38A2 /* remorsebindings.ini in Resources */,
 				98C300B90A2B8C7A008A38A2 /* u8japanese.ini in Resources */,
+				98C302350A2BBDF5008A38A2 /* pentagram.icns in Resources */,
+				98C302790A2BC5C4008A38A2 /* pentagram.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
