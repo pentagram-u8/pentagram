@@ -105,7 +105,7 @@ int main(int argc, char* argv[])
 
 		infile = fopen(filename, "rb");
 		if (!infile) {
-			fprintf(stderr, "Error opening input file: %s\n", filename[i]);
+			fprintf(stderr, "Error opening input file: %s\n", filename);
 			fclose(outfile);
 			unlink(outfilename);
 			return 1;
