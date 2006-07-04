@@ -126,6 +126,7 @@ void CoreApp::setupVirtualPaths()
 	//       NB: @data can be overwritten by config files
 	//       this should be a default set by configure (or other build systems)
 
+	bool ok;
 	std::string home;
 #ifdef HAVE_HOME
 	home = getenv("HOME");
@@ -137,11 +138,19 @@ void CoreApp::setupVirtualPaths()
 	home += "\\Pentagram";
 //#elif defined(UNDER_CE)
 //	home = "\\\\Pierce\\Moo\\UC";
+#elif defined(MACOSX)
+	home = getenv("HOME");
+	home += "/Library/Application Support/Pentagram";
 #else
 	// TODO: what to do on systems without $HOME?
 	home = ".";
 #endif
-	filesystem->AddVirtualPath("@home", home);
+	ok = filesystem->AddVirtualPath("@home", home, true);
+	if (!ok) {
+		pout << "Error opening default home directory: " << home << std::endl;
+	} else {
+		pout << "Default home path: " << home << std::endl;
+	}
 
 	std::string data;
 #ifdef DATA_PATH
@@ -151,7 +160,7 @@ void CoreApp::setupVirtualPaths()
 #else
 	data = "data";
 #endif
-	bool ok = filesystem->AddVirtualPath("@data", data);
+	ok = filesystem->AddVirtualPath("@data", data);
 	if (!ok) {
 #ifndef BUILTIN_DATA
 		pout << "Error opening default data directory: " << data << std::endl;

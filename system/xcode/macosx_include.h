@@ -31,7 +31,6 @@
 
 #define MACOSX
 
-#define HAVE_HOME           1
 #define HAVE_SYS_STAT_H     1
 #define HAVE_SYS_TYPES_H	1
 

@@ -7,7 +7,7 @@
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
 	<key>CFBundleIconFile</key>
-	<string></string>
+	<string>pentagram</string>
 	<key>CFBundleIdentifier</key>
 	<string>net.sourceforge.pentagram</string>
 	<key>CFBundleInfoDictionaryVersion</key>
