@@ -1,3 +1,6 @@
+2006-07-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/GUIApp.cpp: add missing loader for AmbushProcess
+
 2006-07-04  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* kernel/CoreApp.cpp: use ~/Library/Application Support/Pentagram for
 	  @home on Mac OS X

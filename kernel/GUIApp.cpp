@@ -100,6 +100,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CombatProcess.h"
 #include "FireballProcess.h"
 #include "DestroyItemProcess.h"
+#include "AmbushProcess.h"
 
 #include "MovieGump.h"
 #include "ShapeViewerGump.h"
@@ -392,6 +393,8 @@ void GUIApp::startup()
 							 ProcessLoader<ActorBarkNotifyProcess>::load);
 	kernel->addProcessLoader("JoystickCursorProcess",
 							 ProcessLoader<JoystickCursorProcess>::load);
+	kernel->addProcessLoader("AmbushProcess",
+							 ProcessLoader<AmbushProcess>::load);
 
 	objectmanager = new ObjectManager();
 
