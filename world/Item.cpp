@@ -115,6 +115,19 @@ Container *Item::getParentAsContainer() const
 	return p;
 }
 
+Item* Item::getTopItem()
+{
+	Container *parent = getParentAsContainer();
+
+	if (!parent) return this;
+
+	while (parent->getParentAsContainer()) {
+		parent = parent->getParentAsContainer();
+	}
+
+	return parent;
+}
+
 void Item::setLocation(sint32 X, sint32 Y, sint32 Z)
 {
 	x = X;
@@ -1729,6 +1742,7 @@ bool Item::canReach(Item* other, int range,
 	bool usingAlternatePos = (otherX != 0);
 
 	getLocationAbsolute(thisX, thisY, thisZ);
+	other = other->getTopItem();
 	if (otherX == 0)
 		other->getLocationAbsolute(otherX, otherY, otherZ);
 		

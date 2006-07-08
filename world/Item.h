@@ -49,6 +49,10 @@ public:
 	//! Get the Container this Item is in, if any. (NULL if not in a Container)
 	Container *Item::getParentAsContainer() const;
 
+	//! Get the top-most Container this Item is in, or the Item itself if not
+	//! in a container
+	Item* Item::getTopItem();
+
 	//! Set item location. This strictly sets the location, and does not
 	//! even update CurrentMap
 	void setLocation(sint32 x, sint32 y, sint32 z); // this only sets the loc.
