@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -28,6 +28,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ItemFactory.h"
 #include "MainActor.h"
 #include "getObject.h"
+#include "CoreApp.h"
 
 #include "ShapeInfo.h"
 
@@ -218,6 +219,12 @@ void Container::destroy(bool delnow)
 uint32 Container::getTotalWeight()
 {
 	uint32 weight = Item::getTotalWeight();
+
+	// CONSTANT!
+	if (GAME_IS_U8 && getShape() == 79) {
+		// contents of keyring don't weigh anything
+		return weight;
+	}
 
 	std::list<Item*>::iterator iter;
 	
