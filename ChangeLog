@@ -1,3 +1,6 @@
+2006-07-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* acinclude.m4: fix error message for missing SDL_ttf
+
 2006-07-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.*: check line of sight to top-most item in canReach
 	* world/Container.cpp: ignore weight of keys on keyring

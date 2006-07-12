@@ -95,23 +95,25 @@ AC_DEFUN([PENT_CHECK_SDLTTF],[
     AC_DEFINE(HAVE_SDL_TTF_H, 1, [Define to 1 if you have the "SDL_ttf.h" header file])
   fi
 
-  dnl Next: version check (cross-compile-friendly idea borrowed from autoconf)
+  if test "x$pent_sdlttfok" = xyes; then
+    dnl Version check (cross-compile-friendly idea borrowed from autoconf)
 
-  AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
-  #include "SDL.h"
-  #ifdef HAVE_SDL_TTF_H
-  #include "SDL_ttf.h"
-  #else
-  #include <SDL/SDL_ttf.h>
-  #endif
+    AC_COMPILE_IFELSE([AC_LANG_SOURCE([[
+    #include "SDL.h"
+    #ifdef HAVE_SDL_TTF_H
+    #include "SDL_ttf.h"
+    #else
+    #include <SDL/SDL_ttf.h>
+    #endif
 
-  int main()
-  {
-    static int test_array[1-2*!(SDL_TTF_MAJOR_VERSION>$REQ_MAJOR||(SDL_TTF_MAJOR_VERSION==$REQ_MAJOR&&(SDL_TTF_MINOR_VERSION>$REQ_MINOR||(SDL_TTF_MINOR_VERSION==$REQ_MINOR&&SDL_TTF_PATCHLEVEL>=$REQ_PATCHLEVEL))))];
-    test_array[0] = 0;
-    return 0;
-  }
-  ]])],,[[pent_sdlttfok="no, version < $REQ_VERSION found"]])
+    int main()
+    {
+      static int test_array[1-2*!(SDL_TTF_MAJOR_VERSION>$REQ_MAJOR||(SDL_TTF_MAJOR_VERSION==$REQ_MAJOR&&(SDL_TTF_MINOR_VERSION>$REQ_MINOR||(SDL_TTF_MINOR_VERSION==$REQ_MINOR&&SDL_TTF_PATCHLEVEL>=$REQ_PATCHLEVEL))))];
+      test_array[0] = 0;
+      return 0;
+    }
+    ]])],,[[pent_sdlttfok="no, version < $REQ_VERSION found"]])
+  fi
 
   dnl Next: try linking
 
