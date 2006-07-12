@@ -72,7 +72,7 @@ public:
 	static void ConCmd_save(const Console::ArgvType &argv);
 
 private:
-	void HIDManager::listBindings();
+	void listBindings();
 
 	std::vector<Console::ArgvType *> commands;
 	Console::ArgvType * bindings[HID_LAST][HID_EVENT_LAST];
