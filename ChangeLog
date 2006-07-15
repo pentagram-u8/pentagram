@@ -1,3 +1,6 @@
+2006-07-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/ConsoleGump.cpp: only show notification console in debug mode
+
 2006-07-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* acinclude.m4: fix error message for missing SDL_ttf
 	* world/Item.h, kernel/HIDManager.h: fix gcc 4.1 build

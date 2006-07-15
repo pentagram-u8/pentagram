@@ -73,7 +73,9 @@ void ConsoleGump::PaintThis(RenderSurface *surf, sint32 lerp_factor, bool scaled
 
 	if (scroll_state == NOTIFY_OVERLAY)
 	{
+#ifdef DEBUG
 		con.DrawConsoleNotify(surf);
+#endif
 	}
 	else if (scroll_state != WAITING_TO_SHOW)
 	{
