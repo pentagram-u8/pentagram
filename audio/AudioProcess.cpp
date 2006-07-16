@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2005 The Pentagram team
+Copyright (C) 2005-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -553,3 +553,64 @@ uint32 AudioProcess::I_stopSFX(const uint8* args, unsigned int argsize)
 	return 0;
 }
 
+// static
+void AudioProcess::ConCmd_listSFX(const Console::ArgvType &argv)
+{
+	AudioProcess *ap = AudioProcess::get_instance();
+	if (!ap) {
+		perr << "Error: No AudioProcess" << std::endl;
+		return;
+	}
+
+	std::list<SampleInfo>::iterator it;
+	for (it = ap->sample_info.begin(); it != ap->sample_info.end(); ++it) {
+		pout.printf("Sample: num %d, obj %d, loop %d, prio %d",
+					it->sfxnum, it->objid, it->loops, it->priority);
+		if (!it->barked.empty()) {
+			pout << ", speech: \"" << it->barked.substr(it->curspeech_start, it->curspeech_end - it->curspeech_start) << "\"";
+		}
+		pout << std::endl;
+	}
+}
+
+// static
+void AudioProcess::ConCmd_stopSFX(const Console::ArgvType &argv)
+{
+	AudioProcess *ap = AudioProcess::get_instance();
+	if (!ap) {
+		perr << "Error: No AudioProcess" << std::endl;
+		return;
+	}
+
+	switch (argv.size() - 1) {
+	case 1:
+		ap->stopSFX(strtol(argv[1].c_str(), 0, 0), 0);
+		break;
+	case 2:
+		ap->stopSFX(strtol(argv[1].c_str(), 0, 0),
+					strtol(argv[2].c_str(), 0, 0));
+		break;
+	default:
+		pout << "usage: stopSFX <sfxnum> [<objid>]" << std::endl;
+		break;
+	}
+}
+
+// static
+void AudioProcess::ConCmd_playSFX(const Console::ArgvType &argv)
+{
+	AudioProcess *ap = AudioProcess::get_instance();
+	if (!ap) {
+		perr << "Error: No AudioProcess" << std::endl;
+		return;
+	}
+
+	switch (argv.size() - 1) {
+	case 1:
+		ap->playSFX(strtol(argv[1].c_str(), 0, 0), 0x60, 0, 0);
+		break;
+	default:
+		pout << "usage: playSFX <sfxnum>" << std::endl;
+		break;
+	}
+}

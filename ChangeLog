@@ -1,3 +1,6 @@
+2006-07-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* audio/AudioProcess.*: console commands for SFX debugging
+
 2006-07-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/ConsoleGump.cpp: only show notification console in debug mode
 

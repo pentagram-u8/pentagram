@@ -228,6 +228,10 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	con.AddConsoleCommand("GameMapGump::dumpMap",
 						  GameMapGump::ConCmd_dumpMap);
 
+	con.AddConsoleCommand("AudioProcess::listSFX", AudioProcess::ConCmd_listSFX);
+	con.AddConsoleCommand("AudioProcess::playSFX", AudioProcess::ConCmd_playSFX);
+	con.AddConsoleCommand("AudioProcess::stopSFX", AudioProcess::ConCmd_stopSFX);
+
 	// Game related console commands are now added in startupGame
 }
 
@@ -283,6 +287,10 @@ GUIApp::~GUIApp()
 
 	con.RemoveConsoleCommand(GameMapGump::ConCmd_toggleHighlightItems);
 	con.RemoveConsoleCommand(GameMapGump::ConCmd_dumpMap);
+
+	con.RemoveConsoleCommand(AudioProcess::ConCmd_listSFX);
+	con.RemoveConsoleCommand(AudioProcess::ConCmd_stopSFX);
+	con.RemoveConsoleCommand(AudioProcess::ConCmd_playSFX);
 
 	// Game related console commands are now removed in shutdownGame
 

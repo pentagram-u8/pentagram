@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2005 The Pentagram team
+Copyright (C) 2005-2006 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -69,6 +69,11 @@ public:
 	INTRINSIC(I_isSFXPlaying);
 	INTRINSIC(I_setVolumeSFX);
 	INTRINSIC(I_stopSFX);
+
+	static void ConCmd_listSFX(const Console::ArgvType &argv);
+	static void ConCmd_stopSFX(const Console::ArgvType &argv);
+	static void ConCmd_playSFX(const Console::ArgvType &argv);
+
 
 	virtual bool run(const uint32 framenum);
 
