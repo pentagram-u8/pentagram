@@ -23,7 +23,7 @@ byte 1: flags: bit 0: two-step animation
                bit 7: hanging
 byte 2, bits 0-3: time to show each frame (not sure which unit)
 byte 2, bits 4-7: unknown
-byte 3: unknown
+byte 3: flags: bit 7: destroy actor after animation
 
 header is followed by 8 * length 6-byte frame entries: 
 (8 = number of directions, in the order N NE E SE S SW W NW) 

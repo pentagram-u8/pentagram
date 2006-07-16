@@ -331,11 +331,6 @@ void TypeFlags::loadMonsterInfo()
 		else
 			mi->resurrection = false;
 
-		if (config->get(k + "/vanish", val))
-			mi->vanish = (val != 0);
-		else
-			mi->vanish = false;
-
 		if (config->get(k + "/ranged", val))
 			mi->ranged = (val != 0);
 		else

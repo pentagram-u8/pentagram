@@ -823,17 +823,6 @@ ProcId Actor::die(uint16 damageType)
 		}
 	}
 
-	if (mi && mi->vanish) {
-		// body disappears after the death animation
-
-		pout << "Actor::die: scheduling vanishing" << std::endl;
-
-		Process* vanishproc = new DestroyItemProcess(this);
-		Kernel::get_instance()->addProcess(vanishproc);
-
-		vanishproc->waitFor(animprocid);
-	}
-
 	return animprocid;
 }
 

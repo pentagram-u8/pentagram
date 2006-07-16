@@ -576,16 +576,32 @@ void ActorAnimProcess::doHitSpecial(Item* hit)
 void ActorAnimProcess::terminate()
 {
 #ifdef WATCHACTOR
-				if (item_num == watchactor)
-					pout << "Animation ["
-						 << Kernel::get_instance()->getFrameNum()
-						 << "] ActorAnimProcess terminating"
-						 << std::endl;
+	if (item_num == watchactor)
+		pout << "Animation ["
+			 << Kernel::get_instance()->getFrameNum()
+			 << "] ActorAnimProcess terminating"
+			 << std::endl;
 #endif
 	Actor *a = getActor(item_num);
 	if (a) {
-		if (tracker) // if we were really animating...
+		if (tracker) { // if we were really animating...
 			a->clearActorFlag(Actor::ACT_ANIMLOCK);
+			if (tracker->getAnimAction()->flags & AnimAction::AAF_DESTROYACTOR)
+			{
+				// destroy the actor
+#ifdef WATCHACTOR
+				if (item_num == watchactor)
+					pout << "Animation ["
+						 << Kernel::get_instance()->getFrameNum()
+						 << "] ActorAnimProcess destroying actor " << item_num
+						 << std::endl;
+#endif
+				Process* vanishproc = new DestroyItemProcess(a);
+				Kernel::get_instance()->addProcess(vanishproc);
+
+				return;
+			}
+		}
 	}
 
 	delete tracker;
