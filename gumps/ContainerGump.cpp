@@ -501,13 +501,8 @@ void ContainerGump::DropItem(Item* item, int mx, int my)
 	if (targetitem && item->getShapeInfo()->hasQuantity())
 	{
 		// try to combine items
-		int family = item->getShapeInfo()->family;
-		if (targetitem->getShape() == item->getShape() &&
-			(targetitem->getFrame() == item->getFrame() ||
-			 family == ShapeInfo::SF_QUANTITY))
+		if (item->canMergeWith(targetitem))
 		{
-			// Note: can only combine SF_REAGENTS when frame is equal
-			// see U8's usecode FREE::2767
 			targetitem->setQuality(targetitem->getQuality() +
 								   item->getQuality());
 			targetitem->callUsecodeEvent_combine();
