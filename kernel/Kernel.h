@@ -98,8 +98,8 @@ public:
 
 	//! "Kernel::processTypes" console command
 	static void ConCmd_processTypes(const Console::ArgvType &argv);
-	//! "Kernel::listItemProcesses" console command
-	static void ConCmd_listItemProcesses(const Console::ArgvType &argv);
+	//! "Kernel::listProcesses" console command
+	static void ConCmd_listProcesses(const Console::ArgvType &argv);
 	//! "Kernel::processInfo" console command
 	static void ConCmd_processInfo(const Console::ArgvType &argv);
 

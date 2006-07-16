@@ -272,22 +272,26 @@ void Kernel::ConCmd_processTypes(const Console::ArgvType & /*argv*/)
 	Kernel::get_instance()->processTypes();
 }
 
-void Kernel::ConCmd_listItemProcesses(const Console::ArgvType &argv)
+void Kernel::ConCmd_listProcesses(const Console::ArgvType &argv)
 {
-	if (argv.size() != 2) {
-		pout << "usage: listItemProcesses <itemnum>" << std::endl;
+	if (argv.size() > 2) {
+		pout << "usage: listProcesses [<itemnum>]" << std::endl;
 		return;
 	}
 
-	ObjId item = strtol(argv[1].c_str(), 0, 0);
 	Kernel* kernel = Kernel::get_instance();
-
-	pout << "Processes for item " << item << ":" << std::endl;
+	ObjId item = 0;
+	if (argv.size() == 2) {
+		item = strtol(argv[1].c_str(), 0, 0);
+		pout << "Processes for item " << item << ":" << std::endl;
+	} else {
+		pout << "Processes:" << std::endl;
+	}
 	for (ProcessIterator it = kernel->processes.begin();
 		 it != kernel->processes.end(); ++it)
 	{
 		Process* p = *it;
-		if (p->item_num == item)
+		if (argv.size() == 1 || p->item_num == item)
 			p->dumpInfo();
 	}
 

@@ -180,8 +180,8 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	con.AddConsoleCommand("HIDManager::save", HIDManager::ConCmd_save);
 	con.AddConsoleCommand("Kernel::processTypes", Kernel::ConCmd_processTypes);
 	con.AddConsoleCommand("Kernel::processInfo", Kernel::ConCmd_processInfo);
-	con.AddConsoleCommand("Kernel::listItemProcesses",
-						  Kernel::ConCmd_listItemProcesses);
+	con.AddConsoleCommand("Kernel::listProcesses",
+						  Kernel::ConCmd_listProcesses);
 	con.AddConsoleCommand("Kernel::toggleFrameByFrame",
 						  Kernel::ConCmd_toggleFrameByFrame);
 	con.AddConsoleCommand("Kernel::advanceFrame", Kernel::ConCmd_advanceFrame);
@@ -262,7 +262,7 @@ GUIApp::~GUIApp()
 	con.RemoveConsoleCommand(HIDManager::ConCmd_save);
 	con.RemoveConsoleCommand(Kernel::ConCmd_processTypes);
 	con.RemoveConsoleCommand(Kernel::ConCmd_processInfo);
-	con.RemoveConsoleCommand(Kernel::ConCmd_listItemProcesses);
+	con.RemoveConsoleCommand(Kernel::ConCmd_listProcesses);
 	con.RemoveConsoleCommand(Kernel::ConCmd_toggleFrameByFrame);
 	con.RemoveConsoleCommand(Kernel::ConCmd_advanceFrame);
 	con.RemoveConsoleCommand(ObjectManager::ConCmd_objectTypes);
