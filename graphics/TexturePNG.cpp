@@ -83,7 +83,7 @@ bool TexturePNG::Read(IDataSource *ds)
 		png_set_palette_to_rgb(png_ptr);
 
 	if (color_type == PNG_COLOR_TYPE_GRAY || 
-		color_type == PNG_COLOR_TYPE_RGB_ALPHA)
+		color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
 		png_set_gray_to_rgb(png_ptr);
 
 	if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
