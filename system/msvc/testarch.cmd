@@ -8,6 +8,11 @@ if x%Conf2:~0,5%x == xAMD64x (
 	set ConfCPU=i386
 )
 
+if x%CPU%x == xx (
+	echo TestARCH : warning: CPU environment variable not set. Assuming i386 environment.
+	set CPU=i386
+)
+
 if x%ConfCPU%x == x%CPU%x (
 	echo TestARCH : Buidling for "%CPU%"
 	exit /b 0
