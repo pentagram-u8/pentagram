@@ -764,6 +764,9 @@ bool CurrentMap::scanForValidPosition(sint32 x, sint32 y, sint32 z, Item* item,
 									  int movedir, bool wantsupport,
 									  sint32& tx, sint32& ty, sint32& tz)
 {
+	// TODO: clean this up. Currently the mask arrays are filled with more
+	// data than is actually used.
+
 	uint32 blockflagmask = (ShapeInfo::SI_SOLID | ShapeInfo::SI_DAMAGING);
 	static uint32 validmask[17];
 	static uint32 supportmask[17];
@@ -880,7 +883,7 @@ bool CurrentMap::scanForValidPosition(sint32 x, sint32 y, sint32 z, Item* item,
 	pout.printf("-----------\n");
 #endif
 
-	for (unsigned int i = 0; i < 5; ++i) {
+	for (unsigned int i = 0; i < 3; ++i) {
 		int horiz;
 		if (i % 2 == 0)
 			horiz = 4*(i/2);
