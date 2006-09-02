@@ -37,7 +37,21 @@
 					nothing here yet
 				</para>
 			</body>
-		</sub>	
+		</sub>
+		<sub name="building-macosx">
+			<header>Mac OS X</header>
+			<body>
+				<para>
+					Under OS X, the dependencies are built into the application bundle as embedded frameworks, with the exception of zlib, which is already provided by OS X. SDL.framwork and SDL_ttf.framework can be obtained from libsdl.org. libpng.framework can be obtained the download page or built from source using the Xcode project files also available on the download page.
+				</para>
+				<ol>
+					<li>Place all three frameworks in <kbd>system/xcode/Frameworks</kbd></li>
+					<li>Build from within Xcode using the Pentagram.xcodeproj project under <kbd>system/xcode/Pentagram</kbd> or from a terminal run xcodebuild:<br/>
+						<kbd>xcodebuild -configuration Release</kbd></li>
+					<li>The application bundle will be located at <kbd>system/xcode/Pentagram/build/Release/Pentagram.app</kbd></li>
+				</ol>
+			</body>
+		</sub>
 	</section>
 	<section title="Configuration">
 		<sub name="quick_ini">
@@ -46,7 +60,8 @@
 				<para>
 					<Pent/> needs a pentagram.ini file to point it to the game data files.
 					In Linux, pentagram.ini has to be in the <kbd>~/.pentagram</kbd> directory.
-					In Windows, it has to be in the current directory.<br/>
+					In Windows, it has to be in the current directory.
+					In OS X, it has to be in the <kbd>~/Library/Application Support/Pentagram</kbd> directory<br/>
 					A sample pentagram.ini is included below (this is all that is needed at the
 					moment to run <Pent/>). Comments are marked with <kbd>#</kbd> and are above the ini-entries.<br/>
 					You can copy/paste these settings with the comments to your ini file as <Pent/> will ignore

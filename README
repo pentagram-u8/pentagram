@@ -1,5 +1,5 @@
 Pentagram Documentation
-last changed: 22 May 2005 (GMT)
+last changed: 19 February 2006 (GMT)
 
 The latest version of this document can be found at http://pentagram.sourceforge.net/readme.php
 
@@ -8,6 +8,7 @@ The latest version of this document can be found at http://pentagram.sourceforge
 1.1. Build dependencies
 1.2. Linux/Unix
 1.3. Windows
+1.4. Mac OS X
 
 2. Configuration
 2.1. Quick guide
@@ -22,50 +23,75 @@ The latest version of this document can be found at http://pentagram.sourceforge
 4.1. Supported games and versions
 
 5. Changes to the Documentation
-5.1. - 22 May 2005
-5.2. - 21 May 2005
-5.3. - 14 October 2004
+5.1. - 19 February 2006
+5.2. - 22 May 2005
+5.3. - 21 May 2005
+5.4. - 14 October 2004
 
 
 --------------------------------------------------------------------------------
 
 1. Building CVS
 1.1. Build dependencies
-Before you build Pentagram, make sure you have the following tools/libraries.
-* SDL;
+
+			Before you build Pentagram, make sure you have the following tools/libraries.
+
+			* SDL;
 * SDL_ttf;
 * zlib;
+* libpng;
 * for Linux/Unix, you need autoconf and automake.
 
 
+			
 
 1.2. Linux/Unix
-1. Run the "bootstrap" script to create the "configure" script: ./bootstrap
+
+				1. Run the "bootstrap" script to create the "configure" script: ./bootstrap
 2. Now run configure: ./configure
 3. Finally, start the build as usual: make
 
 
+			
 
 1.3. Windows
-nothing here yet
 
+				nothing here yet
+
+			
+
+1.4. Mac OS X
+
+				Under OS X, the dependencies are built into the application bundle as embedded frameworks, with the exception of zlib, which is already provided by OS X. SDL.framwork and SDL_ttf.framework can be obtained from libsdl.org. libpng.framework can be obtained the download page or built from source using the Xcode project files also available on the download page.
+
+				1. Place all three frameworks in system/xcode/Frameworks
+2. Build from within Xcode using the Pentagram.xcodeproj project under system/xcode/Pentagram or from a terminal run xcodebuild: xcodebuild -configuration Release
+3. The application bundle will be located at system/xcode/Pentagram/build/Release/Pentagram.app
+
+
+			
 
 
 --------------------------------------------------------------------------------
 
 2. Configuration
 2.1. Quick guide
-Pentagram needs a pentagram.ini file to point it to the game data files. In Linux, pentagram.ini has to be in the ~/.pentagram directory. In Windows, it has to be in the current directory. A sample pentagram.ini is included below (this is all that is needed at the moment to run Pentagram). Comments are marked with # and are above the ini-entries. You can copy/paste these settings with the comments to your ini file as Pentagram will ignore lines beginning with #.
 
+				Pentagram needs a pentagram.ini file to point it to the game data files. In Linux, pentagram.ini has to be in the ~/.pentagram directory. In Windows, it has to be in the current directory. In OS X, it has to be in the ~/Library/Application Support/Pentagram directory A sample pentagram.ini is included below (this is all that is needed at the moment to run Pentagram). Comments are marked with # and are above the ini-entries. You can copy/paste these settings with the comments to your ini file as Pentagram will ignore lines beginning with #.
+
+				
 [u8]
 # replace 'path to U8 directory' with the directory containing 'u8.exe'
 path=path to U8 directory
 
 
+			
 
 2.2. Advanced Configuration
-Right now Pentagram assumes some default settings that don't need to be set to make Pentagram work. The settings below are these default settings.
 
+				Right now Pentagram assumes some default settings that don't need to be set to make Pentagram work. The settings below are these default settings.
+
+				
 [pentagram]
 defaultgame=u8
 fullscreen=no
@@ -85,7 +111,8 @@ bpp=32
 ttf=no
 # If you don't specify midi_driver, Pentagram will automatically select one,
 # based on your platform.
-#(Note: Windows will only work on Windows. CoreAudio only on MacOSX.)
+# (Note: Windows will only work on Windows. CoreAudio only on Mac OS X.
+# Alsa is Linux-only and UnixSeq will only work on Unix variants.)
 # See further down for more options on Linux.
 midi_driver=disabled/windows/fmopl/timidity/alsa/unixseq/coreaudio
 # Enable this to skip the intro of U8 and initial conversation with Devon.
@@ -97,12 +124,16 @@ path=path to U8 directory
 # (no, loading of the original's savegames is not supported)
 save=path to U8 savegames directory
 
-You may also override most settings under [pentagram] by writing them under [u8]. Except for defaultgame all can be overriden. Right now this is not necessary as we only support U8 but if we start to support other games it might come in handy.
 
+				You may also override most settings under [pentagram] by writing them under [u8]. Except for defaultgame all can be overriden. Right now this is not necessary as we only support U8 but if we start to support other games it might come in handy.
+
+			
 
 2.3. Optional MIDI settings for Linux
-MIDI used on Linux might need some fine tuning in pentagram.ini to work correctly. Below are the settings you can configure.
 
+				MIDI used on Linux might need some fine tuning in pentagram.ini to work correctly. Below are the settings you can configure.
+
+				
 [pentagram]
 # If you don't specify midi_driver, Pentagram will automatically select one,
 # based on your platform.
@@ -113,28 +144,34 @@ timiditycfg=path to timidity.cfg
 # You may need to set alsa_port if you choose midi_driver=alsa.
 alsa_port=alsa:port
 # You may need to set unixseqdevice if you choose midi_driver=unixseq.
-unixseqdevice=dev/sequencer
+unixseqdevice=/dev/sequencer
 
 
+			
 
 
 --------------------------------------------------------------------------------
 
 3. Movement and Keys
 3.1. Movement
-* Double-click with the right mouse button will make the Avatar find a path to the selected spot.
+
+				* Double-click with the right mouse button will make the Avatar find a path to the selected spot.
 * Left-click on NPCs or objects to identify them.
 * Double-left-click on NPCs or objects to initiate conversations or use the item.
 * On pressing the right mouse button down the Avatar walks or runs (depending on distance between cursor and Avatar).
 * Pressing right and left mouse button, makes the Avatar jump or while running a running jump.
 * You can also move the Avatar with the keypad. Details are in the keycommands table below.
 
-Note that on Mac OS you have to hold down the 'Cmd' key and the mouse button to have the functionality of a right mouse button.
 
+				Note that on Mac OS you have to hold down the 'Cmd' key and the mouse button to have the functionality of a right mouse button.
+
+  			
 
 3.2. Keyboard commands
-All key commands of Pentagram can be changed by editing u8bindings.ini or via the options menu in the game. 'KP' means keypad.
 
+				All key commands of Pentagram can be changed by editing u8bindings.ini or via the options menu in the game. 'KP' means keypad.
+
+				
 Default keyboard commands
 ~ : hides/restores console
 arrow keys : moves Avatar around the map (no walking)
@@ -162,28 +199,43 @@ shift : quarter speed mode. needs to be held down
 [ : clears the screen, multiple presses show the paint order
 ] : above backwards
 
+			
 
 
 --------------------------------------------------------------------------------
 
 4. Other stuff
 4.1. Supported games and versions
-At the moment we only support the English version of Ultima 8 regardless of the game version. The German and French versions will probably also work. The Spanish version will not work at this point. The games we don't support are defined in the FAQ.txt.
 
+				At the moment we only support the English versions of Ultima 8, both pre-patch and post-patch. The German, French and Spanish versions should also work, but are less well-tested. The Japanese version has a chance of working, but has hardly been tested at all.
+
+			
 
 
 --------------------------------------------------------------------------------
 
 5. Changes to the Documentation
-5.1. - 22 May 2005
-2.2. Advanced Configuration some more configurations added. 2.3. Optional MIDI settings for Linux added.
+5.1. - 19 February 2006
 
+				4.1. Supported games and versions: updated status of non-English U8.
 
-5.2. - 21 May 2005
-cleaned up outdated sections
+			
 
+5.2. - 22 May 2005
 
-5.3. - 14 October 2004
-2.2. Advanced Configuration enable font replacement.
+				2.2. Advanced Configuration some more configurations added. 2.3. Optional MIDI settings for Linux added.
 
+			
+
+5.3. - 21 May 2005
+
+				cleaned up outdated sections
+
+			
+
+5.4. - 14 October 2004
+
+				2.2. Advanced Configuration enable font replacement.
+
+			
 

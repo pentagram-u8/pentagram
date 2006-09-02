@@ -1,3 +1,6 @@
+2006-09-02  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* Readme, docs/xml/readme.xml: add OS X build instructions
+
 2006-08-26  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/CurrentMap.cpp: tweak animation adjusting a bit: allow less
 	  horizontal movement per step
