@@ -37,7 +37,7 @@ Kernel::Kernel() : loading(false)
 
 	assert(kernel == 0);
 	kernel = this;
-	pIDs = new idMan(1,32767,128);
+	pIDs = new idMan(1,32766,128);
 	current_process = processes.end();
 	framenum = 0;
 	paused = 0;
