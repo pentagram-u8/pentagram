@@ -49,7 +49,7 @@ U8Game::U8Game() : Game()
 	settingman->setDefault("quotes", false);
 	settingman->setDefault("footsteps", true);
 	settingman->setDefault("cheat", true);
-	settingman->setDefault("textdelay", 5);
+	settingman->setDefault("textdelay", 8);
 
 	con.AddConsoleCommand("Cheat::items", U8Game::ConCmd_cheatItems);
 	con.AddConsoleCommand("Cheat::equip", U8Game::ConCmd_cheatEquip);

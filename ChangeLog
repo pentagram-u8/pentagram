@@ -1,3 +1,6 @@
+2006-10-18  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* games/U8Game.cpp: decrease default text speed
+
 2006-09-02  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* Readme, docs/xml/readme.xml: add OS X build instructions
 
