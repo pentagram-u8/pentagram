@@ -1037,7 +1037,15 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 
 					if ( vel[i] < 0 && A_max>=B_min )		// A_max>=B_min not required
 					{
-						if (A_max==B_min) touch = true; // touch at start
+						// Special case: if moving item has zero height and
+						// other item is a 128x128 flat, then moving item is
+						// considered blocked by the flat
+						// FIXME: it might be better to make this extra check
+						// identical to the 'flats' special case in ItemSorter
+						if (A_max==B_min && !
+							(i == 2 && ext[i] == 0 && oext[i] == 0 &&
+							 oext[0] == 64 && oext[1] == 64))
+							touch = true; // touch at start
 						if (A_min+vel[i]==B_max) touch = true; // touch at end
 
 						// - want to know when rear of A passes front of B
