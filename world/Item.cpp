@@ -1831,9 +1831,9 @@ bool Item::canMergeWith(Item* other)
 			return true;
 		if (frame1 >= 6 && frame1 <= 7 && frame2 >= 6 && frame2 <= 7)
 			return true;
-		if (frame1 >= 10 && frame1 <= 12 && frame2 >= 10 & frame2 <= 12)
+		if (frame1 >= 10 && frame1 <= 12 && frame2 >= 10 && frame2 <= 12)
 			return true;
-		if (frame1 >= 14 && frame1 <= 15 && frame2 >= 14 & frame2 <= 15)
+		if (frame1 >= 14 && frame1 <= 15 && frame2 >= 14 && frame2 <= 15)
 			return true;
 	}
 	return false;
