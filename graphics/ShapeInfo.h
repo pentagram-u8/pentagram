@@ -110,6 +110,8 @@ public:
 	bool getTypeFlagU8(int typeflag);
 	bool getTypeFlagCrusader(int typeflag);
 
+	inline void getFootpadWorld(sint32& X, sint32& Y, sint32& Z, uint16 flipped) const;
+
 	ShapeInfo() : weaponinfo(0), armourinfo(0), monsterinfo(0) { }
 
 	~ShapeInfo() {
@@ -120,5 +122,17 @@ public:
 
 };
 
+inline void ShapeInfo::getFootpadWorld(sint32& X, sint32& Y, sint32& Z, uint16 flipped) const
+{
+	Z = z *  8;
+
+	if (flipped) {
+		X = y * 32;
+		Y = x * 32;
+	} else {
+		X = x * 32;
+		Y = y * 32;
+	}
+}
 
 #endif

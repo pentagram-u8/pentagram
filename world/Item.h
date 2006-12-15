@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #define ITEM_H
 
 #include "Object.h"
+#include "ShapeInfo.h"
 
 #include "intrinsics.h"
 #include "Box.h"
@@ -82,7 +83,7 @@ public:
 
 	//! Get this Item's location. Note that this does not return
 	//! 'usable' coordinates if the Item is contained or equipped.
-	void getLocation(sint32& x, sint32& y, sint32& z) const;
+	inline void getLocation(sint32& x, sint32& y, sint32& z) const;
 
 	//! Get this Item's Z coordinate.
 	sint32 getZ() const;
@@ -108,17 +109,17 @@ public:
 	void getCentre(sint32& x, sint32& y, sint32& z) const;
 
 	//! Get the size of this item's 3D bounding box, in world coordinates.
-	void getFootpadWorld(sint32& x, sint32& y, sint32& z) const;
+	inline void getFootpadWorld(sint32& x, sint32& y, sint32& z) const;
 
 	//! Get the size of this item's 3D bounding box, scaled as in the datafiles
 	//! (i.e., the dimensions are not in the same unit as world coordinates!)
-	void getFootpadData(sint32& x, sint32& y, sint32& z) const;
+	inline void getFootpadData(sint32& x, sint32& y, sint32& z) const;
 
 	//! Get the Box this item occupies in the world. Undef if item is contained
 	Pentagram::Box getWorldBox() const;
 
 	//! Get flags
-	uint16 getFlags() const { return flags; }
+	inline uint16 getFlags() const { return flags; }
 
 	//! Set the flags set in the given mask.
 	void setFlag(uint32 mask) { flags |= mask; }
@@ -132,7 +133,7 @@ public:
 	void setExtFlags(uint32 f) { extendedflags = f; }
 
 	//! Get extendedflags
-	uint32 getExtFlags() const { return extendedflags; }
+	inline uint32 getExtFlags() const { return extendedflags; }
 
 	//! Set the extendedflags set in the given mask.
 	void setExtFlag(uint32 mask) { extendedflags |= mask; }
@@ -176,16 +177,13 @@ public:
 	void setMapNum(uint16 mapnum_) { mapnum = mapnum_; }
 
 	//! Get the ShapeInfo object for this Item. (The pointer will be cached.)
-	ShapeInfo* getShapeInfo();
+	inline ShapeInfo* getShapeInfo() const;
 
-	//! Get the ShapeInfo object for this Item, bypassing the cached pointer.
-	ShapeInfo* getShapeInfoNoCache() const;
+	//! Get the ShapeInfo object for this Item from the game instance.
+	ShapeInfo* getShapeInfoFromGameInstance() const;
 
 	//! Get the Shape object for this Item. (The pointer will be cached.)
-	Shape* getShapeObject();
-
-	//! Get the Shape object for this Item, bypassing the cached pointer.
-	Shape* getShapeObjectNoCache() const;
+	Shape* getShapeObject() const;
 
 	//! Get the family of the shape number of this Item. (This is a
 	//! member of the ShapeInfo object.)
@@ -487,8 +485,8 @@ protected:
 
 	ObjId parent; // objid container this item is in (or 0 for top-level items)
 
-	Shape *cachedShape;
-	ShapeInfo *cachedShapeInfo;
+	mutable Shape *cachedShape;
+	mutable ShapeInfo *cachedShapeInfo;
 
 	// This is stuff that is used for displaying and interpolation
 	struct Lerped
@@ -547,5 +545,48 @@ public:
 		EXT_PERMANENT_NPC= 0x0100	//!< Item is a permanent NPC
 	};
 };
+
+inline ShapeInfo* Item::getShapeInfo() const
+{
+	if (!cachedShapeInfo)
+		cachedShapeInfo = getShapeInfoFromGameInstance();
+	return cachedShapeInfo;
+}
+
+inline void Item::getFootpadData(sint32& X, sint32& Y, sint32& Z) const
+{
+	ShapeInfo* si = getShapeInfo();
+	Z = si->z;
+
+	if (flags & Item::FLG_FLIPPED) {
+		X = si->y;
+		Y = si->x;
+	} else {
+		X = si->x;
+		Y = si->y;
+	}
+}
+
+// like getFootpadData, but scaled to world coordinates
+inline void Item::getFootpadWorld(sint32& X, sint32& Y, sint32& Z) const
+{
+	ShapeInfo* si = getShapeInfo();
+	Z = si->z * 8;
+
+	if (flags & Item::FLG_FLIPPED) {
+		X = si->y * 32;
+		Y = si->x * 32;
+	} else {
+		X = si->x * 32;
+		Y = si->y * 32;
+	}
+}
+
+inline void Item::getLocation(sint32& X, sint32& Y, sint32& Z) const
+{
+	X = x;
+	Y = y;
+	Z = z;
+}
 
 #endif

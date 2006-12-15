@@ -37,7 +37,7 @@ struct PathfindingState
 	bool combat;
 
 	void load(Actor* actor);
-	bool checkPoint(sint32 x_, sint32 y_, sint32 z_,int xyRange,int zRange);
+	bool checkPoint(sint32 x_, sint32 y_, sint32 z_,int range);
 	bool checkItem(Item* item, int xyRange, int zRange);
 	bool checkHit(Actor* actor, Actor* target);
 };
@@ -78,6 +78,7 @@ protected:
 	sint32 targetx, targety, targetz;
 	Item* targetitem;
 	bool hitmode;
+	sint32 expandtime;
 
 	sint32 actor_xd,actor_yd,actor_zd;
 

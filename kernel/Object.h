@@ -36,7 +36,7 @@ public:
 	ENABLE_CUSTOM_MEMORY_ALLOCATION();
 
 	//! get this Object's objID
-	ObjId getObjId() const { return objid; }
+	inline ObjId getObjId() const { return objid; }
 
 	//! Assign self and contents (if any) an objID
 	//! \return the assiged ID

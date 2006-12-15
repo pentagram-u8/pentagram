@@ -127,6 +127,36 @@ bool AnimationTracker::stepFrom(sint32 x_, sint32 y_, sint32 z_)
 	return step();
 }
 
+void AnimationTracker::evaluateMaxAnimTravel(sint32& max_endx, sint32& max_endy, uint32 dir)
+{
+	max_endx = x;
+	max_endy = y;
+
+	if (done) return;
+	
+	Actor* a = getActor(actor);
+	assert(a);
+
+	unsigned int testframe;
+	if (firstframe)
+		testframe = startframe;
+	else
+		testframe = getNextFrame(currentframe);
+
+	for(;;)
+	{
+		AnimFrame& f = animaction->frames[dir][testframe];
+		// determine movement for this frame
+		sint32 dx = 4 * x_fact[dir] * f.deltadir;
+		sint32 dy = 4 * y_fact[dir] * f.deltadir;
+		max_endx += dx;
+		max_endy += dy;
+		if(testframe == endframe)
+			return;
+		testframe = getNextFrame(testframe);
+	}
+}
+
 bool AnimationTracker::step()
 {
 	if (done) return false;

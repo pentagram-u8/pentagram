@@ -706,8 +706,8 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 					continue; // not an interesting item
 
 				sint32 ix, iy, iz, ixd, iyd, izd;
+				si->getFootpadWorld(ixd, iyd, izd, item->getFlags() & Item::FLG_FLIPPED);
 				item->getLocation(ix, iy, iz);
-				item->getFootpadWorld(ixd, iyd, izd);
 
 #if 0
 				if (item->getShape() == 145) {

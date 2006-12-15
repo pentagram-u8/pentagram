@@ -397,13 +397,6 @@ void Item::movedByPlayer()
 	}
 }
 
-void Item::getLocation(sint32& X, sint32& Y, sint32& Z) const
-{
-	X = x;
-	Y = y;
-	Z = z;
-}
-
 sint32 Item::getZ() const
 {
 	return z;
@@ -452,7 +445,7 @@ void Item::randomGumpLocation()
 void Item::getCentre(sint32& X, sint32& Y, sint32& Z) const
 {
 	// constants!
-	ShapeInfo *shapeinfo = getShapeInfoNoCache();
+	ShapeInfo *shapeinfo = getShapeInfo();
 	if (flags & FLG_FLIPPED)
 	{
 		X = x - shapeinfo->y * 16;
@@ -465,30 +458,6 @@ void Item::getCentre(sint32& X, sint32& Y, sint32& Z) const
 	}
 
 	Z = z + shapeinfo->z * 4;
-}
-
-// like getFootpadData, but scaled to world coordinates
-void Item::getFootpadWorld(sint32& X, sint32& Y, sint32& Z) const
-{
-	getFootpadData(X, Y, Z);
-	X *= 32; //! constants
-	Y *= 32;
-	Z *= 8;
-}
-
-
-// note that this is in different units than location
-void Item::getFootpadData(sint32& X, sint32& Y, sint32& Z) const
-{
-	Z = getShapeInfoNoCache()->z;
-
-	if (getFlags() & Item::FLG_FLIPPED) {
-		X = getShapeInfoNoCache()->y;
-		Y = getShapeInfoNoCache()->x;
-	} else {
-		X = getShapeInfoNoCache()->x;
-		Y = getShapeInfoNoCache()->y;
-	}
 }
 
 Pentagram::Box Item::getWorldBox() const
@@ -626,29 +595,15 @@ int Item::getRange(Item& item2, bool checkz) const
 	return range;
 }
 
-
-ShapeInfo* Item::getShapeInfo()
+ShapeInfo* Item::getShapeInfoFromGameInstance() const
 {
-	if (!cachedShapeInfo) cachedShapeInfo = GameData::get_instance()->getMainShapes()->getShapeInfo(shape);
-	return cachedShapeInfo;
-}
-
-ShapeInfo* Item::getShapeInfoNoCache() const
-{
-	if (cachedShapeInfo) return cachedShapeInfo;
 	return GameData::get_instance()->getMainShapes()->getShapeInfo(shape);
 }
 
-Shape* Item::getShapeObject()
+Shape* Item::getShapeObject() const
 {
 	if (!cachedShape) cachedShape = GameData::get_instance()->getMainShapes()->getShape(shape);
 	return cachedShape;
-}
-
-Shape* Item::getShapeObjectNoCache() const
-{
-	if (cachedShape) return cachedShape;
-	return GameData::get_instance()->getMainShapes()->getShape(shape);
 }
 
 uint16 Item::getFamily()

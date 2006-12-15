@@ -20,6 +20,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Pathfinder.h"
 #include "Actor.h"
 #include "AnimationTracker.h"
+#include "SDL_timer.h"
 #include <cmath>
 
 struct PathNode
@@ -46,10 +47,10 @@ void PathfindingState::load(Actor* actor)
 }
 
 bool PathfindingState::checkPoint(sint32 x_, sint32 y_, sint32 z_,
-								  int xyRange, int zRange)
+								  int range)
 {
-	return (abs(z - z_) <= zRange && abs(x - x_) <= xyRange &&
-			abs(y - y_) < xyRange);
+	int distance = (x - x_) * (x - x_) + (y - y_) * (y - y_) + (z - z_) * (z - z_); 
+	return distance < range * range;
 }
 
 bool PathfindingState::checkItem(Item* item, int xyRange, int zRange)
@@ -115,7 +116,7 @@ Pathfinder::~Pathfinder()
 {
 #if 1
 	pout << "~Pathfinder: " << nodelist.size() << " nodes, "
-		 << expandednodes << " expanded nodes." << std::endl;
+		 << expandednodes << " expanded nodes in " << expandtime << "ms." << std::endl;
 #endif
 
 	// clean up nodes
@@ -178,7 +179,7 @@ bool Pathfinder::alreadyVisited(sint32 x, sint32 y, sint32 z)
 	std::list<PathfindingState>::iterator iter;
 
 	for (iter = visited.begin(); iter != visited.end(); ++iter)
-		if (iter->checkPoint(x,y,z,8,0))
+		if (iter->checkPoint(x,y,z,8))
 			return true;
 
 	return false;
@@ -196,7 +197,7 @@ bool Pathfinder::checkTarget(PathNode* node)
 			return node->state.checkItem(targetitem, 32, 8);
 		}
 	} else {
-		return node->state.checkPoint(targetx, targety, targetz, 32, 8);
+		return node->state.checkPoint(targetx, targety, targetz, 32);
 	}
 }
 
@@ -299,6 +300,28 @@ void Pathfinder::expandNode(PathNode* node)
 			(targety - node->state.y + actor_yd/2);
 
 		if (!tracker.init(actor, walkanim, dir, &state)) continue;
+
+		// determine how far the actor will travel if the animation runs to completion
+		sint32 max_endx, max_endy;
+		tracker.evaluateMaxAnimTravel(max_endx, max_endy, dir);
+		if(alreadyVisited(max_endx, max_endy, state.z)) continue;
+		int sqrddist;
+		int x_travel = abs(max_endx - state.x);
+		int xy_maxtravel = x_travel;	// don't have the max(a,b) macro...
+		int y_travel = abs(max_endy - state.y);
+		if(y_travel > xy_maxtravel) xy_maxtravel = y_travel;
+
+		sqrddist = x_travel * x_travel + y_travel * y_travel;
+		if(sqrddist > 400)
+		{
+			// range is greater than 20; see if a node has been visited at range 10
+			if(alreadyVisited(	state.x + x_travel * 10 / xy_maxtravel,
+								state.y + y_travel * 10 / xy_maxtravel,
+								state.z)) {
+				continue;
+			}
+		}
+
 		while (tracker.step())
 		{
 			steps++;
@@ -323,6 +346,12 @@ void Pathfinder::expandNode(PathNode* node)
 				newNode(node, state, 0);
 				visited.push_back(state);
 			}
+		}
+		else
+		{
+			// an obstruction was encountered, so generate a visited node to block
+			// future evaluation at the endpoint.
+			visited.push_back(state);
 		}
 
 		if (beststeps != 0 && (beststeps != steps ||
@@ -359,10 +388,12 @@ bool Pathfinder::pathfind(std::vector<PathfindingAction>& path)
 	nodes.push(startnode);
 
 	unsigned int expandednodes = 0;
-	const unsigned int NODELIMIT = 100; //! constant
+	const unsigned int NODELIMIT_MIN = 30;	//! constant
+	const unsigned int NODELIMIT_MAX = 200;	//! constant
 	bool found = false;
+	Uint32 starttime = SDL_GetTicks();
 
-	while (expandednodes < NODELIMIT && !nodes.empty() && !found) {
+	while (expandednodes < NODELIMIT_MAX && !nodes.empty() && !found) {
 		PathNode* node = nodes.top(); nodes.pop();
 
 #if 0
@@ -417,12 +448,29 @@ bool Pathfinder::pathfind(std::vector<PathfindingAction>& path)
 				path[length-1].direction = path[length-2].direction;
 			}
 
+			expandtime = SDL_GetTicks() - starttime;
 			return true;
 		}
 
 		expandNode(node);
 		expandednodes++;
+
+		if(expandednodes >= NODELIMIT_MIN && ((expandednodes) % 5) == 0)
+		{
+			Uint32 elapsed_ms = SDL_GetTicks() - starttime;
+			if(elapsed_ms > 350) break;
+		}
 	}
+
+	expandtime = SDL_GetTicks() - starttime;
+
+#if 0
+	static sint32 pfcalls = 0;
+	static sint32 pftotaltime = 0;
+	pfcalls++;
+	pftotaltime += expandtime;
+	pout << "maxout average = " << (pftotaltime / pfcalls) << "ms." << std::endl;
+#endif
 
 	return false;
 }

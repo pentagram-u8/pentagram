@@ -40,6 +40,10 @@ public:
 	bool init(Actor* actor, Animation::Sequence action, uint32 dir,
 			  PathfindingState* state=0);
 
+	//! evaluate the maximum distance the actor will travel if the current
+	//! animation runs to completion by incremental calls to step
+	void evaluateMaxAnimTravel(sint32& max_endx, sint32& max_endy, uint32 dir);
+
 	//! do a single step of the animation
 	//! returns true if everything ok, false if not
 	//! caller must decide if animation should continue after a 'false'
