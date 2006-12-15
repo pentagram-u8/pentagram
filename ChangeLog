@@ -1,3 +1,10 @@
+2006-12-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* AUTHORS: adding Brian
+
+2006-12-15  Brian Tietz <btietz@users.sourceforge.net>
+	* various: Pathfinder optimization and time-based limit to prevent
+	  hiccups
+
 2006-10-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/CurrentMap.cpp: add special floor handling to sweepTest to
 	  prevent zero-height objects from falling through floor.
