@@ -113,8 +113,11 @@ bool ActorAnimProcess::init()
 	}
 
 	tracker = new AnimationTracker();
-	if (!tracker->init(actor, action, dir))
+	if (!tracker->init(actor, action, dir)) {
+		delete tracker;
+		tracker = 0;
 		return false;
+	}
 
 	actor->setActorFlag(Actor::ACT_ANIMLOCK);
 

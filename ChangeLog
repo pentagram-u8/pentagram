@@ -1,3 +1,6 @@
+2007-01-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/ActorAnimProcess.cpp: delete tracker when init fails
+
 2006-12-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* AUTHORS: adding Brian
 
