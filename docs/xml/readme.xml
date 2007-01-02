@@ -137,6 +137,10 @@
 							no
 							<comment># Enable this to skip the intro of U8 and initial conversation with Devon.</comment>
 						</configtag>
+						<configtag name="textdelay">
+							8
+							<comment># Conversation speed. Higher is slower.</comment>
+						</configtag>
 					</configsec>
 					<configsec name="u8">
 						<configtag name="path">
