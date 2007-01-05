@@ -34,7 +34,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "ObjectManager.h"
 #include "GUIApp.h"
 #include "CameraProcess.h" // for resetting the camera
-#include "Gump.h" // For MapChanged notification
+#include "Gump.h" // For CloseItemDependents notification
 #include "Animation.h"
 #include "getObject.h"
 #include "MemoryManager.h"
@@ -139,7 +139,7 @@ bool World::switchMap(uint32 newmap)
 	if (gui) 
 	{
 		Gump *desktop = gui->getDesktopGump();
-		if (desktop) desktop->MapChanged();
+		if (desktop) desktop->CloseItemDependents();
 	}
 
 	// get rid of any remaining ethereal items

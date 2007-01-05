@@ -129,9 +129,10 @@ public:
 	//! \return true if repaint required
 	virtual bool		Run(const uint32 framenum);
 
+	//! Close item-dependent gumps (recursively).
 	//! Called when there is a map change (so the gumps can self terminate
-	//! among other things)
-	virtual void		MapChanged(void);
+	//! among other things), or when backspace is pressed by the user.
+	virtual void		CloseItemDependents(void);
 
 	//! Paint the Gump (RenderSurface is relative to parent).
 	//! Calls PaintThis and PaintChildren

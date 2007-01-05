@@ -174,7 +174,7 @@ bool Gump::Run(const uint32 framenum)
 	return repaint;
 }
 
-void Gump::MapChanged()
+void Gump::CloseItemDependents()
 {
 	// Close it, and return
 	if (flags & FLAG_ITEM_DEPENDENT) 
@@ -192,7 +192,7 @@ void Gump::MapChanged()
 		Gump *g = *it;
 
 		// Pass to child if it's not closing
-		if (!(g->flags & FLAG_CLOSING)) g->MapChanged();
+		if (!(g->flags & FLAG_CLOSING)) g->CloseItemDependents();
 
 		// If closing, we can kill it
 		if (g->flags & FLAG_CLOSING)
@@ -205,7 +205,7 @@ void Gump::MapChanged()
 		{
 			++it;
 		}
-	}	
+	}
 }
 
 bool Gump::GetMouseCursor(int mx, int my, Shape &shape, sint32 &frame)
