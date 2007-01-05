@@ -173,6 +173,8 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	con.AddConsoleCommand("GUIApp::togglePaintEditorItems",ConCmd_togglePaintEditorItems);
 	con.AddConsoleCommand("GUIApp::toggleShowTouchingItems",ConCmd_toggleShowTouchingItems);
 
+	con.AddConsoleCommand("GUIApp::closeItemGumps",ConCmd_closeItemGumps);
+
 	con.AddConsoleCommand("HIDManager::bind", HIDManager::ConCmd_bind);
 	con.AddConsoleCommand("HIDManager::unbind", HIDManager::ConCmd_unbind);
 	con.AddConsoleCommand("HIDManager::listbinds",
@@ -255,6 +257,8 @@ GUIApp::~GUIApp()
 	con.RemoveConsoleCommand(GUIApp::ConCmd_toggleAvatarInStasis);
 	con.RemoveConsoleCommand(GUIApp::ConCmd_togglePaintEditorItems);
 	con.RemoveConsoleCommand(GUIApp::ConCmd_toggleShowTouchingItems);
+
+	con.RemoveConsoleCommand(GUIApp::ConCmd_closeItemGumps);
 
 	con.RemoveConsoleCommand(HIDManager::ConCmd_bind);
 	con.RemoveConsoleCommand(HIDManager::ConCmd_unbind);
@@ -2387,6 +2391,12 @@ void GUIApp::ConCmd_toggleShowTouchingItems(const Console::ArgvType &argv)
 	GUIApp * g = GUIApp::get_instance();
 	g->toggleShowTouchingItems();
 	pout << "ShowTouchingItems = " << g->isShowTouchingItems() << std::endl;
+}
+
+void GUIApp::ConCmd_closeItemGumps(const Console::ArgvType &argv)
+{
+	GUIApp * g = GUIApp::get_instance();
+	g->getDesktopGump()->CloseItemDependents();
 }
 
 //

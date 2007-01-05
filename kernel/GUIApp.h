@@ -343,6 +343,8 @@ private:
 	static void			ConCmd_togglePaintEditorItems(const Console::ArgvType &argv);	//!< "GUIApp::togglePaintEditorItems" console command
 	static void			ConCmd_toggleShowTouchingItems(const Console::ArgvType &argv);	//!< "GUIApp::toggleShowTouchingItems" console command
 
+	static void			ConCmd_closeItemGumps(const Console::ArgvType &argv);	//!< "GUIApp::closeItemGumps" console command
+
 	bool				ttfoverrides;
 
 	// Audio Mixer
