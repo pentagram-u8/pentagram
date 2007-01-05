@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2006  The Pentagram Team
+ *  Copyright (C) 2003-2007  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -700,6 +700,26 @@ void Gump::RemoveChild(Gump *gump)
 		FindNewFocusChild();
 	}
 }
+
+void Gump::MoveChildToFront(Gump* gump)
+{
+	if (!gump) return;
+
+	children.remove(gump);
+
+	std::list<Gump*>::iterator	it = children.begin();
+	std::list<Gump*>::iterator	end = children.end();
+	for (;it != end; ++it)
+	{
+		Gump *other = *it;
+
+		// Lower layers get placed before higher layers
+		if (other->layer > gump->layer) break;
+	}
+
+	children.insert(it, gump);
+}
+
 
 Gump * Gump::GetRootGump()
 {

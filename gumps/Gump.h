@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2006  The Pentagram Team
+ *  Copyright (C) 2003-2007  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -308,7 +308,7 @@ public:
 	inline Gump *		GetFocusChild() { return focus_child; }
 
 	// Find a new Child to be the focus
-	void				FindNewFocusChild();	
+	void				FindNewFocusChild();
 
 
 	//
@@ -319,7 +319,10 @@ public:
 	virtual void		AddChild(Gump *, bool take_focus = true);
 
 	//! Remove a gump from the child list
-	virtual void		RemoveChild(Gump *);	
+	virtual void		RemoveChild(Gump *);
+
+	//! Move child to front (within its layer)
+	virtual void		MoveChildToFront(Gump *);
 
 	//! Get the parent
 	inline Gump *		GetParent() { return parent; }

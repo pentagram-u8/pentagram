@@ -1,3 +1,6 @@
+2007-01-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/Gump.*, gump/DesktopGump.cpp: moved dragged gump to front
+
 2007-01-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/ActorAnimProcess.cpp: delete tracker when init fails
 

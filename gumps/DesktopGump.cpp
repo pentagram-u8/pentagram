@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004  The Pentagram Team
+ *  Copyright (C) 2003-2007  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -57,6 +57,7 @@ bool DesktopGump::StartDraggingChild(Gump* gump, int mx, int my)
 {
 	gump->ParentToGump(mx, my);
 	GUIApp::get_instance()->setDraggingOffset(mx, my);
+	MoveChildToFront(gump);
 	return true;
 }
 
