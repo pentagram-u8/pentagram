@@ -240,6 +240,7 @@
 					<keydesc name="ESC">main menu</keydesc>
 					<keydesc name="alt+x">quit</keydesc>
 					<keydesc name="ctrl+q">quits without confirmation </keydesc>
+					<keydesc name="backspace">close all open containers</keydesc>
 					<keydesc name="F7">Quicksave (savegames are not yet stable!)</keydesc>
 					<keydesc name="F8">Quickload</keydesc>
 					<keydesc name="F11">Shapeviewer</keydesc>
