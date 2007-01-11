@@ -1652,7 +1652,7 @@ int Item::getThrowRange()
 
 	// TODO: implement this. (Depends on weight, avatar strengh?)
 
-	return 256;
+	return 650;
 }
 
 static bool checkLineOfSightCollisions(
