@@ -538,7 +538,7 @@ bool Item::isOn(Item& item2) const
 bool Item::canExistAt(sint32 x, sint32 y, sint32 z, bool needsupport) const
 {
 	CurrentMap* cm = World::get_instance()->getCurrentMap();
-	ObjId support;
+	Item* support;
 	bool valid = cm->isValidPosition(x, y, z, getShape(), getObjId(),
 									 &support, 0);
 	return valid && (!needsupport || support);

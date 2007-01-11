@@ -652,7 +652,7 @@ TeleportEgg* CurrentMap::findDestination(uint16 id)
 
 bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 								 uint32 shape,
-								 ObjId item, uint16* support, uint16* roof)
+								 ObjId item, Item** support, uint16* roof)
 {
 	int xd, yd, zd;
 	ShapeInfo* si = GameData::get_instance()->
@@ -668,14 +668,14 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 								 int xd, int yd, int zd,
 								 uint32 shapeflags,
-								 ObjId item_, uint16* support_, uint16* roof_)
+								 ObjId item_, Item** support_, uint16* roof_)
 {
 	const uint32 flagmask = (ShapeInfo::SI_SOLID | ShapeInfo::SI_DAMAGING |
 							 ShapeInfo::SI_ROOF);
 	const uint32 blockflagmask = (ShapeInfo::SI_SOLID|ShapeInfo::SI_DAMAGING);
 
 	bool valid = true;
-	ObjId support = 0;
+	Item* support = 0;
 	ObjId roof = 0;
 	sint32 roofz = 1 << 24; //!! semi-constant
 
@@ -739,7 +739,7 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 					if (support == 0 && si->is_solid() &&
 						iz + izd == z)
 					{
-						support = item->getObjId();
+						support = item;
 					}
 
 					// check roof

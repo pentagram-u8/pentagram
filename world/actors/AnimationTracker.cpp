@@ -250,10 +250,47 @@ bool AnimationTracker::step()
 	ty = y+dy;
 	tz = z+dz;
 
-	ObjId support;
+	Item* support;
 	bool targetok = cm->isValidPosition(tx,ty,tz, xd,yd,zd,
 										a->getShapeInfo()->flags,
 										actor, &support, 0);
+
+	if (targetok && support)
+	{
+		// Might need to check for bridge traversal adjustments
+		uint32 supportshape = support->getShape();
+		if(supportshape >= 675 && supportshape <= 681)
+		{
+			// Could be a sloping portion of a bridge.  For a bridge along the
+			// X axis, positive descent delta is a positive change in Y when
+			// moving to higher X (left to right).  Units are 60x the needed
+			// dy/dx
+			int descentdelta = 0;
+			if(supportshape == 675)
+				descentdelta = -20;			// Descend
+			else if(supportshape == 676)
+				descentdelta = 12;			// Ascend
+			else if(supportshape == 681)
+				descentdelta = -20;			// Descend
+
+			if(descentdelta)
+			{
+				if(dy == 0 && dx != 0 && !(support->getFlags() & Item::FLG_FLIPPED))
+				{
+					// Moving left or right on horizontal bridge
+					// descentdelta = 60*dy/dx
+					// 60*dy = descentdelta * dx
+					// dy = descentdelta * dx / 60;
+					ty += descentdelta * dx / 60;
+				}
+				else if(dx == 0 && dy != 0 && (support->getFlags() & Item::FLG_FLIPPED))
+				{
+					// Moving up or down on vertical bridge
+					tx += descentdelta * dy / 60;
+				}
+			}
+		}
+	}
 
 	if (!targetok || ((f.flags & AnimFrame::AFF_ONGROUND) && !support)) {
 
