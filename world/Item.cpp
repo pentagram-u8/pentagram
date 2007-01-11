@@ -1751,6 +1751,16 @@ bool Item::canReach(Item* other, int range,
 	collisions.clear();
 	map->sweepTest(start, end, dims, ShapeInfo::SI_SOLID,
 				   objid, false, &collisions);
+	if (checkLineOfSightCollisions(collisions, usingAlternatePos,
+								getObjId(), other->getObjId()))
+		return true;
+
+	// if that fails, try line of sight between eye level and top of 2nd
+	end[2] = otherZ + otherZd;
+
+	collisions.clear();
+	map->sweepTest(start, end, dims, ShapeInfo::SI_SOLID,
+                                   objid, false, &collisions);
 	return checkLineOfSightCollisions(collisions, usingAlternatePos,
 									  getObjId(), other->getObjId());
 }
