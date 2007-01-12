@@ -1,3 +1,6 @@
+2007-01-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Item.cpp: fix throwing range
+
 2007-01-12  Brian Tietz <btietz@users.sourceforge.net>
 	* various: Made a few changes to make Visual C++ 6.0 happy
 	* world/actors/Container.cpp: Avatar should be able to carry one

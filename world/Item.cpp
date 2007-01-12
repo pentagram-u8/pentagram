@@ -1650,9 +1650,13 @@ int Item::getThrowRange()
 {
 	if (!canDrag()) return 0;
 
-	// TODO: implement this. (Depends on weight, avatar strengh?)
+	Actor* avatar = getMainActor();
 
-	return 650;
+	int range = 64 - getTotalWeight() + avatar->getStr();
+	if (range < 1) range = 1;
+	range = (range * range)/2;
+
+	return range;
 }
 
 static bool checkLineOfSightCollisions(
