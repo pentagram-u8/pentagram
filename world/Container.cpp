@@ -102,6 +102,21 @@ bool Container::CanAddItem(Item* item, bool checkwghtvol)
 		uint32 volume = getContentVolume();
 		uint32 capacity = getCapacity();
 
+		// Because Avatar should be able to remove backpack and haul a barrel
+		// or chest on his back instead, artificially increase backpack volume
+		// for chests or barrels.
+		uint32 shapeid = item->getShape();
+		if(GAME_IS_U8 && shapeid == 115 /*Barrel*/ || shapeid == 78 /*Chest*/)
+		{
+			MainActor* avatar = getMainActor();
+			ObjId bp = avatar->getEquip(7); // !! constant
+			Container* avatarbackpack = getContainer(bp);
+			if(avatarbackpack == this)
+			{
+				capacity = 500;
+			}
+		}
+
 		// FIXME: this check isn't entirely correct. (combining items,...?)
 		if (volume + item->getVolume() > capacity)
 			return false;
@@ -114,7 +129,7 @@ bool Container::CanAddItem(Item* item, bool checkwghtvol)
 			MainActor* av = getMainActor();
 			unsigned int str = av->getStr();
 			// FIXME: this check isn't entirely correct. (combining items,...?)
-			if (p->getTotalWeight() + item->getWeight() > 40 * str) //CONSTANT!
+			if (p->getTotalWeight() + item->getTotalWeight() > 40 * str) //CONSTANT!
 				return false;
 		}
 	}
@@ -224,6 +239,12 @@ uint32 Container::getTotalWeight()
 	if (GAME_IS_U8 && getShape() == 79) {
 		// contents of keyring don't weigh anything
 		return weight;
+	}
+
+	// CONSTANT!
+	if (GAME_IS_U8 && getShape() == 115) {
+		// barrel weight is unreasonably heavy
+		weight = 300;
 	}
 
 	std::list<Item*>::iterator iter;
