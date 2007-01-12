@@ -2808,14 +2808,13 @@ uint32 Item::I_shoot(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM_FROM_PTR(item);
 	ARG_WORLDPOINT(point);
-	ARG_UINT16(unk1); // either 0x20 (fish) or 0x40 (death disk, dart)
-	ARG_UINT16(unk2); // either 2 (fish) or 1 (death disk, dart)
+	ARG_UINT16(speed); // either 0x20 (fish) or 0x40 (death disk, dart)
+	ARG_UINT16(gravity); // either 2 (fish) or 1 (death disk, dart)
 	if (!item) return 0;
 
-	// maybe speed and vertical movement?
-
 	return Kernel::get_instance()->addProcess(new MissileProcess(item,
-						 point.getX(),point.getY(),point.getZ(),unk1,unk2==2));
+						 point.getX(),point.getY(),point.getZ(),
+						 speed,gravity==2));
 }
 
 uint32 Item::I_fall(const uint8* args, unsigned int /*argsize*/)
