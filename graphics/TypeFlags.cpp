@@ -67,7 +67,7 @@ void TypeFlags::load(IDataSource *ds)
 
 	for (uint32 i = 0; i < count; ++i)
 	{
-		uint8 data[blocksize];
+		uint8 data[9];
 		ds->read(data, blocksize);
 
 		ShapeInfo si;

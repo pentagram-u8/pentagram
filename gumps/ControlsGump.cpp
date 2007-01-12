@@ -77,9 +77,7 @@ void ControlEntryGump::init()
 	}
 
 	std::vector<const char *> controls;
-	std::vector<const char *>::iterator i;
 	HIDManager * hidmanager = HIDManager::get_instance();
-	Gump * widget;
 
 	Pentagram::Rect rect;
 	button = new ButtonWidget(0, 0, displayedName, true, font, 0x80D000D0);
@@ -90,8 +88,10 @@ void ControlEntryGump::init()
 
 	//hidmanager->getBindings(bindingName, controls);
 /*	int x = 120;
+	std::vector<const char *>::iterator i;
 	for (i = controls.begin(); i != controls.end(); ++i)
 	{
+		Gump * widget;
 		widget = new TextWidget(x, 0, *i, true, font);
 		widget->InitGump(this, false);
 		widget->GetDims(rect);

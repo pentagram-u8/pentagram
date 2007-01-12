@@ -314,7 +314,7 @@ protected:
 		if (size) *new_buf_ptr = *buf_ptr;
 
 		// Delete old buffer if requested
-		if (free_buffer) delete[] buf;
+		if (free_buffer) delete[] const_cast<uint8*>(buf);
 
 		buf_ptr = buf = new_buf;
 		size = new_size;

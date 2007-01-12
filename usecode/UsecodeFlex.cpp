@@ -60,6 +60,7 @@ uint32 UsecodeFlex::get_class_base_offset(uint32 classid)
 		return offset;
 	} else {
 		CANT_HAPPEN_MSG("Invalid game type.");
+		return 0;
 	}
 }
 
@@ -73,5 +74,6 @@ uint32 UsecodeFlex::get_class_event_count(uint32 classid)
 		return (get_class_base_offset(classid)+19)/6;
 	} else {
 		CANT_HAPPEN_MSG("Invalid game type.");
+		return 0;
 	}
 }

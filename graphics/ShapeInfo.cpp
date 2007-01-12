@@ -27,8 +27,8 @@ bool ShapeInfo::getTypeFlag(int typeflag)
 		return getTypeFlagU8(typeflag);
 	else if (GAME_IS_CRUSADER)
 		return getTypeFlagCrusader(typeflag);
-	else
-		CANT_HAPPEN_MSG("Invalid game type");
+	CANT_HAPPEN_MSG("Invalid game type");
+	return false;
 }
 
 bool ShapeInfo::getTypeFlagU8(int typeflag)
