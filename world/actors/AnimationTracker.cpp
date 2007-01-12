@@ -33,6 +33,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "IDataSource.h"
 #include "ODataSource.h"
+#include "CoreApp.h"
 
 //#define WATCHACTOR 1
 
@@ -255,7 +256,7 @@ bool AnimationTracker::step()
 										a->getShapeInfo()->flags,
 										actor, &support, 0);
 
-	if (targetok && support)
+	if (GAME_IS_U8 && targetok && support)
 	{
 		// Might need to check for bridge traversal adjustments
 		uint32 supportshape = support->getShape();
