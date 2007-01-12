@@ -1,6 +1,20 @@
+2007-01-12  Brian Tietz <btietz@users.sourceforge.net>
+	* various: Made a few changes to make Visual C++ 6.0 happy
+	* world/actors/Container.cpp: Avatar should be able to carry one
+	  chest or one barrel on his back as long as it isn't too heavy
+	* world/actors/AnimationTracker.cpp: bridge traversal fix is U8-only
+
+2007-01-11  Brian Tietz <btietz@users.sourceforge.net>
+	* pentagram/trunk/world/Item.cpp: increase throwing range
+	* pentagram/trunk/world/Item.cpp: fix line of sight problems
+	* world/actors/AnimationTracker.cpp: change bridge traversal to make
+	  the avatar follow the curve of the bridge
+
 2007-01-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/Gump.*, gump/DesktopGump.cpp: moved dragged gump to front
 	* gumps/Gump.*: rename Gump::MapChanged() to CloseItemDependents()
+	* kernel/GUIApp.*: add GUIApp::closeItemGumps console command
+	* data/u8bindings.ini: make backspace close all item gumps
 
 2007-01-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/ActorAnimProcess.cpp: delete tracker when init fails
