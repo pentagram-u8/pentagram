@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004 The Pentagram team
+Copyright (C) 2004-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -107,6 +107,7 @@ private:
 	// actor state
 	sint32 prevx,prevy,prevz;
 	sint32 x,y,z;
+	sint32 startx,starty,startz;
 	sint32 target_dx,target_dy;
 	bool firststep, flipped;
 	uint32 shapeframe;

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2005 The Pentagram team
+Copyright (C) 2004-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -77,6 +77,9 @@ bool AnimationTracker::init(Actor* actor_, Animation::Sequence action_,
 		y = state_->y;
 		z = state_->z;
 	}
+	startx = x;
+	starty = y;
+	startz = z;
 
 #ifdef WATCHACTOR
 	if (actor_ && actor_->getObjId() == watchactor) {
@@ -252,7 +255,9 @@ bool AnimationTracker::step()
 	tz = z+dz;
 
 	Item* support;
-	bool targetok = cm->isValidPosition(tx,ty,tz, xd,yd,zd,
+	bool targetok = cm->isValidPosition(tx,ty,tz,
+										startx,starty,startz,
+										xd,yd,zd,
 										a->getShapeInfo()->flags,
 										actor, &support, 0);
 
@@ -342,7 +347,9 @@ bool AnimationTracker::step()
 	if (f.flags & AnimFrame::AFF_ONGROUND) {
 		// needs support
 
-		/*bool targetok = */ cm->isValidPosition(tx,ty,tz, xd,yd,zd,
+		/*bool targetok = */ cm->isValidPosition(tx,ty,tz,
+												 startx,starty,startz,
+												 xd,yd,zd,
 												 a->getShapeInfo()->flags,
 												 actor, &support, 0);
 		

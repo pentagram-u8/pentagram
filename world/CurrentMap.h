@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2006 The Pentagram team
+Copyright (C) 2003-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -95,7 +95,16 @@ public:
 	// supporting the given box, or 0 if it isn't supported.
 	// If under_roof is not NULL, *roof is set to the roof item with the lowest
 	// z coordinate that's over the box, or 0 if there is no roof above box.
+	// Ignores collisions which were already occurring at the start position.
 	// NB: isValidPosition doesn't consider item 'item'.
+	bool isValidPosition(sint32 x, sint32 y, sint32 z,
+						 sint32 startx, sint32 starty, sint32 startz,
+						 int xd, int yd, int zd, uint32 shapeflags,
+						 ObjId item,
+						 Item** support=0, ObjId* roof=0);
+
+	// Note that this version of isValidPosition does not look for start
+	// position collisions.
 	bool isValidPosition(sint32 x, sint32 y, sint32 z,
 						 int xd, int yd, int zd, uint32 shapeflags,
 						 ObjId item,

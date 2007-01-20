@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2006 The Pentagram team
+Copyright (C) 2003-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -662,10 +662,26 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 	yd = si->y * 32;
 	zd = si->z * 8;
 
-	return isValidPosition(x,y,z, xd,yd,zd, si->flags, item, support, roof);
+	return isValidPosition(x,y,z,
+						   INT_MAX/2,INT_MAX/2,INT_MAX/2,
+						   xd,yd,zd,
+						   si->flags, item, support, roof);
 }
 
 bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
+								 int xd, int yd, int zd,
+								 uint32 shapeflags,
+								 ObjId item_, Item** support_, uint16* roof_)
+{
+	return isValidPosition(x,y,z,
+						   INT_MAX/2,INT_MAX/2,INT_MAX/2,
+						   xd,yd,zd,
+						   shapeflags,item_,support_,roof_);
+}
+
+
+bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
+								 sint32 startx, sint32 starty, sint32 startz,
 								 int xd, int yd, int zd,
 								 uint32 shapeflags,
 								 ObjId item_, Item** support_, uint16* roof_)
@@ -720,9 +736,14 @@ bool CurrentMap::isValidPosition(sint32 x, sint32 y, sint32 z,
 
 				// check overlap
 				if ((si->flags & shapeflags & blockflagmask) &&
+					/* not non-overlapping */
 					!(x <= ix - ixd || x - xd >= ix ||
 					  y <= iy - iyd || y - yd >= iy ||
-					  z + zd <= iz || z >= iz + izd))
+					  z + zd <= iz || z >= iz + izd) &&
+					/* non-overlapping start position */
+					(startx <= ix - ixd || startx - xd >= ix ||
+					 starty <= iy - iyd || starty - yd >= iy ||
+					 startz + zd <= iz || startz >= iz + izd))
 				{
 					// overlapping an item. Invalid position
 #if 0
