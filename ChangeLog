@@ -1,6 +1,11 @@
+2007-01-22  Brian Tietz <btietz@users.sourceforge.net>
+	* pentagram/trunk/graphics/TypeFlags.cpp: workaround for incorrectly
+	  set solid flag applied to some of the moss curtains used
+	  extensively in the upper catacombs
+
 2007-01-19  Brian Tietz <btietz@users.sourceforge.net>
-        * various: Fixed animation of actors who are spawned in a bad
-          position (overlapping another object)
+	* various: Fixed animation of actors who are spawned in a bad
+	  position (overlapping another object)
 
 2007-01-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.cpp: fix throwing range
