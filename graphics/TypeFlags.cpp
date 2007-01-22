@@ -155,6 +155,14 @@ void TypeFlags::load(IDataSource *ds)
 		shapeInfo[i] = si;
 	}
 
+	if (GAME_IS_U8) {
+		// Workaround for incorrectly set solid flags on some "moss
+		// curtains" in the catacombs.
+		for(uint32 i = 459; i <= 464; ++i) {
+			shapeInfo[i].flags &= ~ShapeInfo::SI_SOLID;
+		}
+	}
+
 	loadWeaponInfo();
 	loadArmourInfo();
 	loadMonsterInfo();

@@ -138,3 +138,19 @@ Missing ground/wall tiles around (17547,30275) and (17715,30307)
 
 WORKAROUND:
 None yet
+
+
+
+MISC BUGS:
+-----------
+
+Items 459 to 464 are "moss curtains" used extensively in the catacombs.
+Some, but not all, include the SI_SOLID flag.  This makes some bodies in
+some alcoves inaccessible.  Described in Pentagram bug tracker ID 1640075.
+
+FIX:
+None yet - would require patching the data files directly somehow, similar
+to what is done for map bugs.
+
+WORKAROUND:
+Clear the SI_SOLID flag for shapes 459 to 464 in TypeFlags::load (U8 only)
