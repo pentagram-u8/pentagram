@@ -19,13 +19,16 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "GravityProcess.h"
-#include "Item.h"
+#include "Actor.h"
 #include "World.h"
 #include "CurrentMap.h"
 #include "getObject.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
+
+#include <cmath>
+
 
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(GravityProcess,Process);
@@ -51,9 +54,6 @@ void GravityProcess::init()
 {
 	Item* item = getItem(item_num);
 	assert(item);
-
-	// FIXME: wrong use of bouncing flag, probably
-	item->setFlag(Item::FLG_BOUNCING);
 
 	item->setGravityProcess(getPid());
 }
@@ -131,10 +131,93 @@ bool GravityProcess::run(uint32 /*framenum*/)
 	}
 #endif
 
-	sint32 dist = item->collideMove(tx,ty,tz, false, false);
+	ObjId hititemid;
+	sint32 dist = item->collideMove(tx,ty,tz, false, false, &hititemid);
 	
 	if (dist == 0 || clipped)
-		terminateDeferred();
+	{
+		// If it landed on top of hititem and hititem is not land, the item
+		// should bounce.
+		bool terminate = true;
+		Item* hititem = getItem(hititemid);
+		if(zspeed < -2 && !p_dynamic_cast<Actor*>(item))
+		{
+			sint32 hitx,hity,hitz;
+			hititem->getLocation(hitx,hity,hitz);
+			sint32 hitdx,hitdy,hitdz;
+			hititem->getFootpadWorld(hitdx,hitdy,hitdz);
+			sint32 endx,endy,endz;
+			item->getLocation(endx,endy,endz);
+
+			// TODO: bounce off vertical surface impacts too?  This only
+			// deals with hitting an item from the top.
+
+			bool allow_land_bounce = ((0-zspeed) > 2*gravity);
+			if(endz == hitz + hitdz &&	// hit an item at the end position
+			   (allow_land_bounce || !hititem->getShapeInfo()->is_land()))
+			{
+				// Bounce!
+				terminate = false;
+//#define BOUNCE_DIAG
+#ifdef BOUNCE_DIAG
+				int xspeedold = xspeed;
+				int yspeedold = yspeed;
+				int zspeedold = zspeed;
+#endif
+				zspeed = 0-zspeed/3;
+				int approx_v = abs(xspeed) + abs(yspeed) + zspeed;
+
+				// Apply an impulse on the x/y plane in a random direction
+				// in a 180 degree pie around the orginal vector in x/y
+				double heading_r = atan2(yspeed, xspeed);
+				double deltah_r = static_cast<double>(rand())
+								  * M_PI / RAND_MAX - M_PI/2;
+#ifdef BOUNCE_DIAG
+				double headingold_r = heading_r;
+#endif
+				heading_r += deltah_r;
+				if(heading_r > M_PI) heading_r -= 2*M_PI;
+				if(heading_r < -M_PI) heading_r += 2*M_PI;
+				yspeed += static_cast<int>(sin(heading_r) *
+										   static_cast<double>(approx_v));
+				xspeed += static_cast<int>(cos(heading_r) *
+										   static_cast<double>(approx_v));
+
+				if(hititem->getShapeInfo()->is_land()) {
+					// Bouncing off land; this bounce approximates what's
+					// seen in the original U8 when the key thrown by
+					// Kilandra's daughters ghost lands on the grass.
+					xspeed /= 4;
+					yspeed /= 4;
+					zspeed /= 2;
+					if(zspeed == 0) terminate = true;
+				} else {
+					// Not on land; this bounce approximates what's seen
+					// in the original U8 when Kilandra's daughters ghost
+					// throws a key at the Avatar's head
+					if(abs(yspeed) > 2) yspeed /= 2;
+					if(abs(xspeed) > 2) xspeed /= 2;
+				}
+#ifdef BOUNCE_DIAG
+				if(!terminate) {
+					pout << "bounce: speed was (" << xspeedold << ","
+						 << yspeedold << "," << zspeedold << ") new zspeed "
+						 << zspeed << " heading " << headingold_r
+						 << " impulse " << heading_r << " ("
+						 << (xspeed-xspeedold) << "," << (yspeed-yspeedold)
+						 << "), " << std::endl;
+				}
+#endif
+			}
+		}
+		if(terminate) {
+			item->clearFlag(Item::FLG_BOUNCING);
+			terminateDeferred();
+		}
+		else {
+			item->setFlag(Item::FLG_BOUNCING);
+		}
+	}
 	else 
 		zspeed -= gravity;
 

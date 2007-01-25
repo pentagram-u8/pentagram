@@ -1,3 +1,14 @@
+2007-01-25  Brian Tietz <btietz@users.sourceforge.net>
+	* various: fixed Kilandra's daughter's ghost throwing key failure,
+	  and presumably other cases where an item should be thrown but
+	  starts inside the actor who is throwing the item.
+	* world/actors/Actor.cpp: implemented item bounce when it lands
+	  on something (related to above - key hits the avatar in the head)
+	* world/actors/Actor.cpp: fixed the avatar becoming "tipsy" when
+	  attempting to step up onto something that isn't land - the "woah"
+	  sound and tipsy animation should only happen when attempting to
+	  step off of land
+
 2007-01-22  Brian Tietz <btietz@users.sourceforge.net>
 	* pentagram/trunk/graphics/TypeFlags.cpp: workaround for incorrectly
 	  set solid flag applied to some of the moss curtains used

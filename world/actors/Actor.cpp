@@ -531,7 +531,7 @@ Animation::Result Actor::tryAnim(Animation::Sequence anim, int dir,
 			return Animation::SUCCESS;
 	}
 
-	return Animation::END_OFF_LAND;
+	return Animation::FAILURE;
 }
 
 uint16 Actor::cSetActivity(int activity)

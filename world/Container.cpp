@@ -106,8 +106,11 @@ bool Container::CanAddItem(Item* item, bool checkwghtvol)
 		// or chest on his back instead, artificially increase backpack volume
 		// for chests or barrels.
 		uint32 shapeid = item->getShape();
-		if(GAME_IS_U8 && shapeid == 115 /*Barrel*/ || shapeid == 78 /*Chest*/)
+		if(GAME_IS_U8 && (shapeid == 115 /*Barrel*/
+		   || shapeid == 78 || shapeid == 117 /*Chests*/))
 		{
+			// TODO: make this off by default, but can enable it through
+			// pentagram.ini
 			MainActor* avatar = getMainActor();
 			ObjId bp = avatar->getEquip(7); // !! constant
 			Container* avatarbackpack = getContainer(bp);
