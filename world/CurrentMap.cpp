@@ -1032,14 +1032,13 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 				other_item->getLocation(other[0], other[1], other[2]);
 				other_item->getFootpadWorld(oext[0], oext[1], oext[2]);
 
-				// If the objects overlapped at the start and vector is
-				// not vertical, ignore collision.  The vector not
-				// vertical provision is so that something which overlaps
-				// the floor at the start won't fall through it.  The -1
-				// and +1 portions are to still consider collisions for
-				// items which were merely touching at the start.
-				if((start[0] != end[0] || start[1] != end[1]) &&
-				   /* not non-overlapping start position */
+				// If the objects overlapped at the start, ignore collision.
+				// The -1 and +1 portions are to still consider collisions
+				// for items which were merely touching at the start for all
+				// intents and purposes, but partially overlapped due to an
+				// off-by-one error (hypothetically, but they do happen so
+				// protect against it).
+				if(/* not non-overlapping start position */
 				   !(start[0] <= other[0] - (oext[0]-1) ||
 					 start[0] - dims[0] >= other[0]-1 ||
 					 start[1] <= other[1] - (oext[1]-1) ||
