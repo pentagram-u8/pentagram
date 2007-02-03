@@ -1,3 +1,12 @@
+2007-02-02  Brian Tietz <btietz@users.sourceforge.net>
+	* world/actors/AnimationTracker.cpp: fixed a pathfinder bug where,
+	  when estimating the distance an actor would travel along an
+	  animation path to "pre-filter" visited node attempts, it would
+	  go one frame too far, past the end of the animation frames.
+	* world/actors/PathfinderProcess.cpp: fixed an assertion failure
+	  which would occur if the Avatar casts confusion blast when
+	  enemies are headed towards him.
+
 2007-01-25  Brian Tietz <btietz@users.sourceforge.net>
 	* various: fixed Kilandra's daughter's ghost throwing key failure,
 	  and presumably other cases where an item should be thrown but

@@ -155,9 +155,9 @@ void AnimationTracker::evaluateMaxAnimTravel(sint32& max_endx, sint32& max_endy,
 		sint32 dy = 4 * y_fact[dir] * f.deltadir;
 		max_endx += dx;
 		max_endy += dy;
+		testframe = getNextFrame(testframe);
 		if(testframe == endframe)
 			return;
-		testframe = getNextFrame(testframe);
 	}
 }
 

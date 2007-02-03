@@ -202,6 +202,10 @@ bool PathfinderProcess::run(const uint32 /*framenum*/)
 			if (!item)
 				ok = false;
 			else {
+				if(hitmode && !actor->isInCombat()) {
+					// Actor exited combat mode
+					hitmode = false;
+				}
 				pf.setTarget(item, hitmode);
 				item->getLocation(targetx, targety, targetz);
 			}
