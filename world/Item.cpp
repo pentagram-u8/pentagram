@@ -1050,7 +1050,12 @@ uint32 Item::callUsecodeEvent(uint32 event, const uint8* args, int argsize)
 	uint32 offset = u->get_class_event(class_id, event);
 	if (!offset) return 0; // event not found
 
-//	pout << "Item: " << objid << " calling usecode event " << event << " @ " << class_id << ":" << offset << std::endl;
+#ifdef DEBUG
+	if (UCMachine::get_instance()->trace_event()) {
+		pout.printf("Item: %d calling usecode event %d @ %04X:%04X\n",
+			    objid, event, class_id, offset);
+	}
+#endif
 
 	// FIXME: Disabled usecode except for Use events in crusader for now
 	if (GAME_IS_CRUSADER && event != 1) return 0;

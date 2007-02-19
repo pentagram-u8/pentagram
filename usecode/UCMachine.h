@@ -113,6 +113,7 @@ private:
 	// tracing
 	bool tracing_enabled;
 	bool trace_all;
+	bool trace_events;
 	std::set<ObjId> trace_ObjIDs;
 	std::set<ProcId> trace_PIDs;
 	std::set<uint16> trace_classes;
@@ -126,10 +127,17 @@ private:
 		return false;
 	}
 
+public:
+	bool trace_event() {
+		return (tracing_enabled && (trace_all || trace_events));
+	}
+
+private:
 	static void		ConCmd_tracePID(const Console::ArgvType &argv);
 	static void		ConCmd_traceObjID(const Console::ArgvType &argv);
 	static void		ConCmd_traceClass(const Console::ArgvType &argv);
 	static void		ConCmd_traceAll(const Console::ArgvType &argv);
+	static void		ConCmd_traceEvents(const Console::ArgvType &argv);
 	static void		ConCmd_stopTrace(const Console::ArgvType &argv);
 #endif
 };

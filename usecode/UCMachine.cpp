@@ -101,6 +101,7 @@ UCMachine::UCMachine(Intrinsic *iset, unsigned int icount)
 	con.AddConsoleCommand("UCMachine::traceObjID", ConCmd_traceObjID);
 	con.AddConsoleCommand("UCMachine::tracePID", ConCmd_tracePID);
 	con.AddConsoleCommand("UCMachine::traceClass", ConCmd_traceClass);
+	con.AddConsoleCommand("UCMachine::traceEvents", ConCmd_traceEvents);
 	con.AddConsoleCommand("UCMachine::traceAll", ConCmd_traceAll);
 	con.AddConsoleCommand("UCMachine::stopTrace", ConCmd_stopTrace);
 
@@ -2471,6 +2472,15 @@ void UCMachine::ConCmd_traceAll(const Console::ArgvType &argv)
 	pout << "UCMachine: tracing all usecode" << std::endl;
 }
 
+void UCMachine::ConCmd_traceEvents(const Console::ArgvType &argv)
+{
+	UCMachine *uc = UCMachine::get_instance();
+	uc->tracing_enabled = true;
+	uc->trace_events = true;
+
+	pout << "UCMachine: tracing usecode events" << std::endl;
+}
+
 
 
 void UCMachine::ConCmd_stopTrace(const Console::ArgvType &/*argv*/)
@@ -2481,6 +2491,7 @@ void UCMachine::ConCmd_stopTrace(const Console::ArgvType &/*argv*/)
 	uc->trace_classes.clear();
 	uc->tracing_enabled = false;
 	uc->trace_all = false;
+	uc->trace_events = false;
 }
 
 #endif
