@@ -393,8 +393,9 @@ void Item::movedByPlayer()
 						   avatar, 640, false);
 	
 	for (unsigned int i = 0; i < itemlist.getSize(); ++i) {
-		Item *item = getItem(itemlist.getuint16(i));
-		item->callUsecodeEvent_AvatarStoleSomething(getObjId());
+		Actor *actor = getActor(itemlist.getuint16(i));
+		if (actor && !actor->isDead())
+			actor->callUsecodeEvent_AvatarStoleSomething(getObjId());
 	}
 }
 
@@ -1163,7 +1164,7 @@ uint32 Item::use()
 {
 	Actor* actor = p_dynamic_cast<Actor*>(this);
 	if (actor) {
-		if (actor->getActorFlags() & Actor::ACT_DEAD) {
+		if (actor->isDead()) {
 			// dead actor, so open/close the dead-body-gump
 			if (getFlags() & FLG_GUMP_OPEN) {
 				closeGump();
@@ -1338,7 +1339,7 @@ void Item::enterFastArea()
 	if (!(flags & FLG_FASTAREA)) {
 
 		Actor* actor = p_dynamic_cast<Actor*>(this);
-		if (actor && (actor->getActorFlags() & Actor::ACT_DEAD)) {
+		if (actor && actor->isDead()) {
 			// dead actor, don't call the usecode
 		} else {
 			callUsecodeEvent_enterFastArea();
@@ -1644,7 +1645,7 @@ bool Item::canDrag()
 	Actor* actor = p_dynamic_cast<Actor*>(this);
 	if (actor) {
 		// living actors can't be moved
-		if (!(actor->getActorFlags() & Actor::ACT_DEAD)) return false;
+		if (!actor->isDead()) return false;
 	}
 
 	// CHECKME: might need more checks here (weight?)
