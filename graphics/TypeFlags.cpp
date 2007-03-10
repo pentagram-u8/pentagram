@@ -157,7 +157,7 @@ void TypeFlags::load(IDataSource *ds)
 
 	if (GAME_IS_U8) {
 		// Workaround for incorrectly set solid flags on some "moss
-		// curtains" in the catacombs.
+		// curtains" in the catacombs. See also docs/u8bugs.txt
 		for(uint32 i = 459; i <= 464; ++i) {
 			shapeInfo[i].flags &= ~ShapeInfo::SI_SOLID;
 		}
