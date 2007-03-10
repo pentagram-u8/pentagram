@@ -31,8 +31,8 @@ struct WeaponOverlay {
 	unsigned int dircount;
 	std::vector<WeaponOverlayFrame>* frames; // 8 or 16 directions
 
-        WeaponOverlay() {frames = NULL;}
-	~WeaponOverlay() { if(frames) delete[] frames; }
+        WeaponOverlay() { frames = NULL; }
+	~WeaponOverlay() { delete[] frames; }
 };
 
 struct AnimWeaponOverlay {
