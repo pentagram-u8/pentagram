@@ -146,7 +146,6 @@ Offset   Size   Description
 --- Information chunk ---
 Offset   Size   Description
      0      4   Position in ITEMCACH.DAT of beginning of file
-                   (Add 1 to this number for actual file position)
      4      4   Size in bytes of file
 
 I'm not sure what the data in the second file is yet, but I know a bit about
