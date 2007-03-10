@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004  The Pentagram Team
+ *  Copyright (C) 2004-2007  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -43,6 +43,13 @@ bool DelayProcess::run(const uint32 /*framenum*/)
 		terminate();
 	return false;
 }
+
+void DelayProcess::dumpInfo()
+{
+	Process::dumpInfo();
+	pout << "Frames left: " << count << std::endl;
+}
+
 
 bool DelayProcess::loadData(IDataSource* ids, uint32 version)
 {
