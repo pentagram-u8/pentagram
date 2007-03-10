@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -48,6 +48,8 @@ public:
 
 	sint16 getMaxMana() const;
 	uint16 getMaxHP() const;
+
+	bool isDead() const { return (actorflags & ACT_DEAD) != 0; }
 
 	bool isInCombat() const { return (actorflags & ACT_INCOMBAT) != 0; }
 	void toggleInCombat() {
