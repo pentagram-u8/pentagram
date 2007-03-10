@@ -4,6 +4,8 @@
 	  (fixing bug #1663109)
 	* kernel/DelayProcess.*: dumpInfo now outputs time left
 	* various: use Actor::isDead()
+	* world/Container.cpp: don't check weight if item already in inventory
+	  (fixing bug #1535471)
 
 2007-02-19  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: add UCMachine::traceEvents debugging console command

@@ -124,15 +124,16 @@ bool Container::CanAddItem(Item* item, bool checkwghtvol)
 		if (volume + item->getVolume() > capacity)
 			return false;
 
-		Item *p = this;
-		while (p->getParentAsContainer())
-			p = p->getParentAsContainer();
-		// In Avatar's inventory?
-		if (p->getObjId() == 1) {
+		Item *p = getTopItem();
+		Item *current = item->getTopItem();
+
+		// From outside to inside Avatar's inventory?
+		if (p->getObjId() == 1 && current->getObjId() != 1) {
 			MainActor* av = getMainActor();
 			unsigned int str = av->getStr();
 			// FIXME: this check isn't entirely correct. (combining items,...?)
-			if (p->getTotalWeight() + item->getTotalWeight() > 40 * str) //CONSTANT!
+			//CONSTANT!
+			if (p->getTotalWeight() + item->getTotalWeight() > 40 * str)
 				return false;
 		}
 	}
