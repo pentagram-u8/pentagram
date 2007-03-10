@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2006 The Pentagram team
+Copyright (C) 2004-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -56,7 +56,7 @@ bool LoiterProcess::run(const uint32 /*framenum*/)
 
 	Actor *a = getActor(item_num);
 
-	if (!a || a->getActorFlags() & Actor::ACT_DEAD) {
+	if (!a || a->isDead()) {
 		// dead?
 		terminate();
 		return false;

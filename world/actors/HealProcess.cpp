@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2005 The Pentagram team
+Copyright (C) 2004-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -41,7 +41,7 @@ bool HealProcess::run(const uint32 /*framenum*/)
 {
 	MainActor *avatar = getMainActor();
 
-	if (!avatar || avatar->getActorFlags() & Actor::ACT_DEAD) {
+	if (!avatar || avatar->isDead()) {
 		// dead?
 		terminate();
 		return false;
@@ -78,7 +78,7 @@ void HealProcess::feedAvatar(uint16 food)
 {
 	MainActor *avatar = getMainActor();
 
-	if (!avatar || avatar->getActorFlags() & Actor::ACT_DEAD) {
+	if (!avatar || avatar->isDead()) {
 		// dead?
 		terminate();
 		return;

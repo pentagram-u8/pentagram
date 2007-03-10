@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2005 The Pentagram team
+Copyright (C) 2004-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -51,7 +51,7 @@ bool ResurrectionProcess::run(const uint32 /*framenum*/)
 		return false;
 	}
 
-	if (!(a->getActorFlags() & Actor::ACT_DEAD)) {
+	if (!a->isDead()) {
 		// not dead?
 		terminate();
 		return false;

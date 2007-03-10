@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2005  The Pentagram Team
+ *  Copyright (C) 2005-2007  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -53,7 +53,7 @@ bool ActorBarkNotifyProcess::run(const uint32)
 	Actor* a = getActor(item_num);
 	if (!a) return false;
 
-	if ((a->getActorFlags() & Actor::ACT_DEAD) || !a->hasAnim(Animation::talk))
+	if (a->isDead() || !a->hasAnim(Animation::talk))
 		return false;
 
 	bool doAnim = true;

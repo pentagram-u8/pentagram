@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2006 The Pentagram team
+Copyright (C) 2004-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -109,7 +109,7 @@ bool GrantPeaceProcess::run(const uint32 /*framenum*/)
 			if (!t) continue;
 			if (t == caster) continue;
 
-			if (t->getActorFlags() & Actor::ACT_DEAD) continue;
+			if (t->isDead()) continue;
 
 			// undead?
 			if (t->getDefenseType() & WeaponInfo::DMG_UNDEAD) {

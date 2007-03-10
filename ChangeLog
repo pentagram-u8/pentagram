@@ -3,6 +3,7 @@
 	* world/Item.cpp: don't let dead actors detect stealing
 	  (fixing bug #1663109)
 	* kernel/DelayProcess.*: dumpInfo now outputs time left
+	* various: use Actor::isDead()
 
 2007-02-19  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* various: add UCMachine::traceEvents debugging console command

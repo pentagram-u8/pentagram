@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2006 The Pentagram team
+Copyright (C) 2004-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -186,7 +186,7 @@ bool CombatProcess::isValidTarget(Actor* target)
 	if (!(target->getFlags() & Item::FLG_FASTAREA)) return false;
 
 	// dead actors don't make good targets
-	if (target->getActorFlags() & Actor::ACT_DEAD) return false;
+	if (target->isDead()) return false;
 
 	// feign death only works on undead and demons
 	if (target->getActorFlags() & Actor::ACT_FEIGNDEATH) {
