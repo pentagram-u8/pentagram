@@ -26,6 +26,7 @@
 class ConvertUsecode
 {
 public:
+		virtual ~ConvertUsecode() { }	
 		class TempOp;
 		class Node;
 		typedef int DebugSymbol;
