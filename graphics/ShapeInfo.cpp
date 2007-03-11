@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2006 The Pentagram team
+Copyright (C) 2003-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -76,7 +76,7 @@ bool ShapeInfo::getTypeFlagU8(int typeflag)
 	{
 		return (unknown >> (typeflag-40)) & 1;
 	}
-	else if (typeflag == 47)	// flags		Byte 5:4-7		Bits 44-47
+	else if (typeflag <= 47)	// flags		Byte 5:4-7		Bits 44-47
 	{
 		return (flags >> (12+typeflag-44)) & 1;
 	}
