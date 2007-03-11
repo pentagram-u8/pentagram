@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -38,6 +38,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Animation.h"
 #include "getObject.h"
 #include "MemoryManager.h"
+#include "AudioProcess.h"
 
 //#define DUMP_ITEMS
 
@@ -114,6 +115,7 @@ bool World::switchMap(uint32 newmap)
 	// Map switching procedure:
 
 	// get rid of camera
+	// stop all sound effects (except speech, such as Guardian barks)
 	// notify all gumps of a map change
 	// delete any ethereal objects
 	// write back CurrentMap to the old map, which
@@ -133,6 +135,9 @@ bool World::switchMap(uint32 newmap)
 
 	// kill camera
 	CameraProcess::ResetCameraProcess();
+
+	AudioProcess *ap = AudioProcess::get_instance();
+	if (ap) ap->stopAllExceptSpeech();
 
 	// Notify all the gumps of the mapchange
 	GUIApp *gui = GUIApp::get_instance();

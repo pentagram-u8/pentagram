@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2005-2006 The Pentagram team
+Copyright (C) 2005-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -101,6 +101,9 @@ public:
 	void pauseAllSamples();
 	//! unpause all currently playing samples
 	void unpauseAllSamples();
+
+	//! stop all samples except speech
+	void stopAllExceptSpeech();
 
 	// AudioProcess::playSound console command
 	//static void ConCmd_playSound(const Console::ArgvType &argv);

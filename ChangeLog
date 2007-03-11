@@ -1,3 +1,7 @@
+2007-03-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/World.cpp, audio/AudioProcess.*: stop all sound effects except
+	  speech when switching maps (fixing bug #1334436)
+
 2007-03-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Actor.h: add Actor::isDead
 	* world/Item.cpp: don't let dead actors detect stealing

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2005-2006 The Pentagram team
+Copyright (C) 2005-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -460,6 +460,21 @@ void AudioProcess::unpauseAllSamples()
 
 	}
 
+}
+
+void AudioProcess::stopAllExceptSpeech()
+{
+	AudioMixer *mixer = AudioMixer::get_instance();
+
+	std::list<SampleInfo>::iterator it;
+	for (it = sample_info.begin(); it != sample_info.end(); ) {
+		if (it->barked.empty()) {
+			if (mixer->isPlaying(it->channel)) mixer->stopSample(it->channel);
+			it = sample_info.erase(it);
+		} else {
+			++it;
+		}
+	}
 }
 
 //
