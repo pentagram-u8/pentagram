@@ -1,3 +1,9 @@
+2007-03-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/MissileProcess.*: deprecate MissileProcess
+	* world/MissileTracker.*: MissileTracker for calculating how to
+	  fire an item so that GravityProcess will move it to the right spot
+	* world/Item.cpp: replace use of MissileProcess by MissileTracker
+
 2007-03-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/World.cpp, audio/AudioProcess.*: stop all sound effects except
 	  speech when switching maps (fixing bug #1334436)

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2007 The Pentagram team
+Copyright (C) 2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,36 +16,24 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#ifndef MISSILEPROCESS_H
-#define MISSILEPROCESS_H
+#ifndef MISSILETRACKER_H
+#define MISSILETRACKER_H
 
-#include "Process.h"
+class Item;
 
-// This class is DEPRECATED.
-// It only exists to provide backward compatibility for savegames
-
-class MissileProcess : public Process
+class MissileTracker
 {
 public:
-	MissileProcess();
+	MissileTracker(Item* item, sint32 tx, sint32 ty, sint32 tz,
+				   sint32 speed, sint32 gravity);
+	~MissileTracker();
 
-	// p_dynamic_cast stuff
-	ENABLE_RUNTIME_CLASSTYPE();
-
-	virtual bool run(const uint32 framenum);
-
-	bool loadData(IDataSource* ids, uint32 version);
-protected:
-	virtual void saveData(ODataSource* ods);
-
-	sint32 from_x, from_y, from_z;
-	sint32 to_x, to_y, to_z;
-
-	int speed;
-	bool curve;
-
-	int currentpos;
+	void launchItem();
+private:
+	ObjId objid;
+	sint32 destx, desty, destz;
+	sint32 speedx, speedy, speedz;
+	sint32 gravity;
 };
-
 
 #endif

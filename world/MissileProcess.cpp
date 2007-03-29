@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -15,6 +15,13 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
+
+
+
+// This class is DEPRECATED.
+// It only exists to provide backward compatibility for savegames
+
+
 
 #include "pent_include.h"
 
@@ -32,24 +39,6 @@ MissileProcess::MissileProcess()
 	: Process()
 {
 
-}
-
-MissileProcess::MissileProcess(Item* item_, sint32 to_x_, sint32 to_y_,
-								 sint32 to_z_, int speed_, bool curve_)
-{
-	assert(item_);
-	item_num = item_->getObjId();
-	
-	to_x = to_x_;
-	to_y = to_y_;
-	to_z = to_z_;
-
-	item_->getLocation(from_x, from_y, from_z);
-
-	speed = speed_*5;
-	curve = curve_;
-
-	currentpos = 0;
 }
 
 bool MissileProcess::run(const uint32 /*framenum*/)

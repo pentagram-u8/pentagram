@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2006 The Pentagram team
+Copyright (C) 2003-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -38,7 +38,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "UCStack.h"
 #include "Direction.h"
-#include "MissileProcess.h"
 #include "BarkGump.h"
 #include "AskGump.h"
 #include "GumpNotifyProcess.h"
@@ -59,6 +58,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AudioProcess.h"
 #include "GameInfo.h"
 #include "MainActor.h"
+#include "MissileTracker.h"
 
 #include <cstdlib>
 
@@ -2823,9 +2823,11 @@ uint32 Item::I_shoot(const uint8* args, unsigned int /*argsize*/)
 	ARG_UINT16(gravity); // either 2 (fish) or 1 (death disk, dart)
 	if (!item) return 0;
 
-	return Kernel::get_instance()->addProcess(new MissileProcess(item,
-						 point.getX(),point.getY(),point.getZ(),
-						 speed,gravity==2));
+	MissileTracker tracker(item, point.getX(), point.getY(), point.getZ(),
+						   speed, gravity);
+	tracker.launchItem();
+
+	return 0;
 }
 
 uint32 Item::I_fall(const uint8* args, unsigned int /*argsize*/)
