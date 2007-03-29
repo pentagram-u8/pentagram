@@ -194,6 +194,7 @@ WORLD = \
 	world/ItemSorter.o \
 	world/Map.o \
 	world/MissileProcess.o \
+	world/MissileTracker.o \
 	world/MonsterEgg.o \
 	world/SplitItemProcess.o \
 	world/SpriteProcess.o \
