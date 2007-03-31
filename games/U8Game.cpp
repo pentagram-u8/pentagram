@@ -272,9 +272,23 @@ void U8Game::ConCmd_cheatItems(const Console::ArgvType &argv)
 	shield->moveToContainer(backpack);
 	shield->randomGumpLocation();
 
+	// armour
 	Item* armour = ItemFactory::createItem(64, 0, 0, 0, 0, 0, 0, true);
 	armour->moveToContainer(backpack);
 	armour->randomGumpLocation();
+
+	// death disks
+	Item* disk = ItemFactory::createItem(750, 0, 0, 0, 0, 0, 0, true);
+	disk->moveToContainer(backpack);
+	disk->randomGumpLocation();
+
+	disk = ItemFactory::createItem(750, 0, 0, 0, 0, 0, 0, true);
+	disk->moveToContainer(backpack);
+	disk->randomGumpLocation();
+
+	disk = ItemFactory::createItem(750, 0, 0, 0, 0, 0, 0, true);
+	disk->moveToContainer(backpack);
+	disk->randomGumpLocation();
 }
 
 void U8Game::ConCmd_cheatEquip(const Console::ArgvType &argv)
