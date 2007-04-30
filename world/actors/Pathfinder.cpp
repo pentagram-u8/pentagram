@@ -238,6 +238,9 @@ unsigned int Pathfinder::costHeuristic(PathNode* node)
 
 static void drawedge(PathNode* from, PathNode* to, bool done)
 {
+	// FIXME: this function assumes that we're using a 2x scaler...
+	// (and is generally a very big hack...)
+
 	RenderSurface* screen = GUIApp::get_instance()->getScreen();
 	screen->BeginPainting();
 	sint32 cx, cy, cz;
@@ -254,7 +257,7 @@ static void drawedge(PathNode* from, PathNode* to, bool done)
 	cz = from->state.z - cz;
 
 	x0 = (d.w/2) + (cx - cy)/2;
-	y0 = (d.h/2) + (cx + cy)/4 - cz;
+	y0 = (d.h/2) + (cx + cy)/4 - cz*2;
 
 	GUIApp::get_instance()->getGameMapGump()->GetCameraLocation(cx, cy, cz);
 
@@ -263,7 +266,7 @@ static void drawedge(PathNode* from, PathNode* to, bool done)
 	cz = to->state.z - cz;
 
 	x1 = (d.w/2) + (cx - cy)/2;
-	y1 = (d.h/2) + (cx + cy)/4 - cz;	
+	y1 = (d.h/2) + (cx + cy)/4 - cz*2;
 
 	screen->DrawLine32(0xFFFFFF00, x0, y0, x1, y1);
 
