@@ -313,8 +313,13 @@ void Pathfinder::newNode(PathNode* oldnode, PathfindingState& state,
 	}
 	
 	newnode->cost = oldnode->cost + dist + 32*turn; //!! constant
-	
-	costHeuristic(newnode);
+
+	bool done = checkTarget(newnode);
+	if (done)
+		newnode->heuristicTotalCost = 0;
+	else
+		costHeuristic(newnode);
+
 #if 0
 	perr << "trying dir " << state.direction;
 
@@ -330,7 +335,7 @@ void Pathfinder::newNode(PathNode* oldnode, PathfindingState& state,
 
 #ifdef DEBUG
 	if (actor->getObjId() == visualdebug_actor)
-		drawedge(oldnode, newnode, checkTarget(newnode));
+		drawedge(oldnode, newnode, done);
 #endif
 
 	nodes.push(newnode);	

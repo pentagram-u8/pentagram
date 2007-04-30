@@ -2,6 +2,7 @@
 	* graphics/*RenderSurface.*: add basic, slow Line32 function
 	* world/actors/Pathfinder.*: add visual pathfinder debugging
 	  (use "Pathfinder::visualDebug actor")
+	* world/actors/Pathfinder.cpp: stop pathfinding when target reached
 
 2007-03-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/MissileProcess.*: deprecate MissileProcess
