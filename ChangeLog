@@ -1,5 +1,7 @@
 2007-04-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/*RenderSurface.*: add basic, slow Line32 function
+	* world/actors/Pathfinder.*: add visual pathfinder debugging
+	  (use "Pathfinder::visualDebug actor")
 
 2007-03-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/MissileProcess.*: deprecate MissileProcess

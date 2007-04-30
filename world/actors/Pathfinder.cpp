@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,6 +22,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AnimationTracker.h"
 #include "SDL_timer.h"
 #include <cmath>
+
+#include "RenderSurface.h"
+#include "GameMapGump.h"
+#include "GUIApp.h"
+
+ObjId Pathfinder::visualdebug_actor = 0xFFFF;
 
 struct PathNode
 {
@@ -227,6 +233,55 @@ unsigned int Pathfinder::costHeuristic(PathNode* node)
 	return node->heuristicTotalCost;
 }
 
+
+#ifdef DEBUG
+
+static void drawedge(PathNode* from, PathNode* to, bool done)
+{
+	RenderSurface* screen = GUIApp::get_instance()->getScreen();
+	screen->BeginPainting();
+	sint32 cx, cy, cz;
+
+	GUIApp::get_instance()->getGameMapGump()->GetCameraLocation(cx, cy, cz);
+
+	Pentagram::Rect d;
+	screen->GetSurfaceDims(d);
+
+	sint32 x0, y0, x1, y1;
+
+	cx = from->state.x - cx;
+	cy = from->state.y - cy;
+	cz = from->state.z - cz;
+
+	x0 = (d.w/2) + (cx - cy)/2;
+	y0 = (d.h/2) + (cx + cy)/4 - cz;
+
+	GUIApp::get_instance()->getGameMapGump()->GetCameraLocation(cx, cy, cz);
+
+	cx = to->state.x - cx;
+	cy = to->state.y - cy;
+	cz = to->state.z - cz;
+
+	x1 = (d.w/2) + (cx - cy)/2;
+	y1 = (d.h/2) + (cx + cy)/4 - cz;	
+
+	screen->DrawLine32(0xFFFFFF00, x0, y0, x1, y1);
+
+	screen->Fill32(0xFFFFFFFF, x0-1,y0-1,3,3);
+
+	if (!done)
+		screen->Fill32(0xFFFFFFFF, x1-1,y1-1,3,3);
+	else
+		screen->Fill32(0xFFFF0000, x1-2,y1-2,5,5);
+
+
+	screen->EndPainting();
+
+	SDL_Delay(250);
+}
+
+#endif
+
 void Pathfinder::newNode(PathNode* oldnode, PathfindingState& state,
 						 unsigned int steps)
 {
@@ -272,7 +327,12 @@ void Pathfinder::newNode(PathNode* oldnode, PathfindingState& state,
 		 << "), cost = " << newnode->cost << ", heurtotcost = "
 		 << newnode->heuristicTotalCost << std::endl;
 #endif
-	
+
+#ifdef DEBUG
+	if (actor->getObjId() == visualdebug_actor)
+		drawedge(oldnode, newnode, checkTarget(newnode));
+#endif
+
 	nodes.push(newnode);	
 }
 
@@ -474,3 +534,23 @@ bool Pathfinder::pathfind(std::vector<PathfindingAction>& path)
 
 	return false;
 }
+
+
+#ifdef DEBUG
+void Pathfinder::ConCmd_visualDebug(const Console::ArgvType &argv)
+{
+	if (argv.size() != 2) {
+		pout << "Usage: Pathfinder::visualDebug objid" << std::endl;
+		pout << "Specify objid -1 to stop tracing." << std::endl;
+		return;
+	}
+	int p = strtol(argv[1].c_str(), 0, 0);
+	if (p == -1) {
+		visualdebug_actor = 0xFFFF;
+		pout << "Pathfinder: stopped visual tracing" << std::endl;
+	} else {
+		visualdebug_actor = (uint16)p;
+		pout << "Pathfinder: visually tracing actor " << visualdebug_actor << std::endl;
+	}
+}
+#endif

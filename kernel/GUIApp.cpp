@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2006 The Pentagram team
+Copyright (C) 2002-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -101,6 +101,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "FireballProcess.h"
 #include "DestroyItemProcess.h"
 #include "AmbushProcess.h"
+#include "Pathfinder.h"
 
 #include "MovieGump.h"
 #include "ShapeViewerGump.h"
@@ -454,6 +455,10 @@ void GUIApp::startupGame()
 	con.AddConsoleCommand("GUIApp::saveGame", ConCmd_saveGame);
 	con.AddConsoleCommand("GUIApp::loadGame", ConCmd_loadGame);
 	con.AddConsoleCommand("GUIApp::newGame", ConCmd_newGame);
+#ifdef DEBUG
+	con.AddConsoleCommand("Pathfinder::visualDebug",
+						  Pathfinder::ConCmd_visualDebug);
+#endif
 
 	// U8 Game commands
 	con.AddConsoleCommand("MainActor::teleport", MainActor::ConCmd_teleport);
@@ -616,6 +621,9 @@ void GUIApp::shutdownGame(bool reloading)
 	con.RemoveConsoleCommand(GUIApp::ConCmd_saveGame);
 	con.RemoveConsoleCommand(GUIApp::ConCmd_loadGame);
 	con.RemoveConsoleCommand(GUIApp::ConCmd_newGame);
+#ifdef DEBUG
+	con.RemoveConsoleCommand(Pathfinder::ConCmd_visualDebug);
+#endif
 
 	// U8 Only kind of
 	con.RemoveConsoleCommand(MainActor::ConCmd_teleport);
@@ -637,6 +645,7 @@ void GUIApp::shutdownGame(bool reloading)
 	con.RemoveConsoleCommand(MainActor::ConCmd_useBedroll);
 	con.RemoveConsoleCommand(MainActor::ConCmd_useKeyring);
 	con.RemoveConsoleCommand(MainActor::ConCmd_toggleCombat);
+
 
 	// Kill Game
 	CoreApp::killGame();
@@ -2074,7 +2083,6 @@ bool GUIApp::loadGame(std::string filename)
 		perr << "Game mismatch:" << std::endl;
 		perr << "Running game: " << gameinfo->getPrintDetails() << std::endl;
 		perr << "Savegame    : " << saveinfo.getPrintDetails() << std::endl;
-		return false;
 	}
 
 	resetEngine();

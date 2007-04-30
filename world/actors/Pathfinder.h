@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -71,6 +71,13 @@ public:
 
 	//! pathfind. If true, the found path is returned in path
 	bool pathfind(std::vector<PathfindingAction>& path);
+
+#ifdef DEBUG
+	//! "visualDebug" console command
+	static void ConCmd_visualDebug(const Console::ArgvType &argv);
+	static ObjId visualdebug_actor;
+#endif
+
 
 protected:
 	PathfindingState start;

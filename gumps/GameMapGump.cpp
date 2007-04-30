@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2006  The Pentagram Team
+ *  Copyright (C) 2003-2007  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -351,8 +351,8 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 			item->getLocation(x,y,z);
 			item->dumpInfo();
 
-#if 0
-			Actor* devon = getActor(2);
+#if 1
+			Actor* devon = getActor(1);
 			PathfinderProcess* pfp = new PathfinderProcess(devon, x, y, z);
 			Kernel::get_instance()->addProcess(pfp);
 #elif 0
