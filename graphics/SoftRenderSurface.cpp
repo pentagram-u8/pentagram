@@ -245,6 +245,65 @@ template<class uintX> void SoftRenderSurface<uintX>::FillAlpha(uint8 alpha, sint
 }
 
 //
+// SoftRenderSurface::DrawLine32(uint32 rgb, sint32 sx, sint32 sy, sint32 ex, sint32 ey);
+//
+// Desc: Draw a (non-antialiased) line from (sx,sy) to (ex,ey) with color rgb
+//
+
+template<class uintX> void SoftRenderSurface<uintX>::DrawLine32(uint32 rgb, sint32 sx, sint32 sy, sint32 ex, sint32 ey)
+{
+	if (sy == ey) {
+		int w;
+		if (sx < ex) {
+			w = ex - sx + 1;
+		} else {
+			w = sx - ex + 1;
+			sx = ex;
+		}
+		Fill32(rgb, sx, sy, w, 1);
+	} else if (sx == ex) {
+		int h;
+		if (sy < ey) {
+			h = ey - sy + 1;
+		} else {
+			h = sy - ey + 1;
+			sy = ey;
+		}
+		Fill32(rgb, sx, sy, 1, h);
+	} else {
+		sint32 t;
+		bool steep = abs(ey - sy) > abs(ex - sx);
+		if (steep) {
+			t = sx; sx = sy; sy = t;
+			t = ex; ex = ey; ey = t;
+		}
+		if (sx > ex) {
+			t = sx; sx = ex; ex = t;
+			t = sy; sy = ey; ey = t;
+		}
+		int deltax = ex - sx;
+		int deltay = abs(ey - sy);
+		int error = -deltax / 2;
+		int y = sy;
+		int ystep = (sy < ey) ? 1 : -1;
+		for (int x = sx; x <= ex; ++x) {
+			// TODO: don't use Fill32 here; it's too slow
+			if (steep) {
+				Fill32(rgb, y, x, 1, 1);
+			} else {
+				Fill32(rgb, x, y, 1, 1);
+			}
+			error += deltay;
+			if (error > 0) {
+				y += ystep;
+				error -= deltax;
+			}
+		}
+	}
+}
+
+
+//
 // SoftRenderSurface::Blit(Texture *, sint32 sx, sint32 sy, sint32 w, sint32 h, sint32 dx, sint32 dy, bool alpha_blend)
 //
 // Desc: Blit a region from a Texture (Alpha == 0 -> skipped)

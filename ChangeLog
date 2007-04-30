@@ -1,3 +1,6 @@
+2007-04-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/*RenderSurface.*: add basic, slow Line32 function
+
 2007-03-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/MissileProcess.*: deprecate MissileProcess
 	* world/MissileTracker.*: MissileTracker for calculating how to
