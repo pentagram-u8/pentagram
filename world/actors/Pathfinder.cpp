@@ -236,6 +236,69 @@ unsigned int Pathfinder::costHeuristic(PathNode* node)
 
 #ifdef DEBUG
 
+static void drawbox(Item* item)
+{
+	RenderSurface* screen = GUIApp::get_instance()->getScreen();
+	screen->BeginPainting();
+	sint32 cx, cy, cz;
+
+	GUIApp::get_instance()->getGameMapGump()->GetCameraLocation(cx, cy, cz);
+
+	Pentagram::Rect d;
+	screen->GetSurfaceDims(d);
+
+	sint32 ix, iy, iz;
+	item->getLocation(ix, iy, iz);
+
+	sint32 xd, yd, zd;
+	item->getFootpadWorld(xd, yd, zd);
+
+	ix -= cx;
+	iy -= cy;
+	iz -= cz;
+
+	sint32 x0,y0,x1,y1,x2,y2,x3,y3;
+
+	x0 = (d.w/2) + (ix - iy)/2;
+	y0 = (d.h/2) + (ix + iy)/4 - iz*2;
+
+	x1 = (d.w/2) + (ix - iy)/2;
+	y1 = (d.h/2) + (ix + iy)/4 - (iz+zd)*2;
+
+	x2 = (d.w/2) + (ix-xd - iy)/2;
+	y2 = (d.h/2) + (ix-xd + iy)/4 - iz*2;
+
+	x3 = (d.w/2) + (ix - iy+yd)/2;
+	y3 = (d.h/2) + (ix + iy-yd)/4 - iz*2;
+
+	screen->Fill32(0xFF0000FF, x0-1, y0-1, 3, 3);
+
+	screen->DrawLine32(0xFF00FF00, x0, y0, x1, y1);
+	screen->DrawLine32(0xFF00FF00, x0, y0, x2, y2);
+	screen->DrawLine32(0xFF00FF00, x0, y0, x3, y3);
+	screen->EndPainting();
+}
+
+static void drawdot(sint32 x, sint32 y, sint32 z)
+{
+	RenderSurface* screen = GUIApp::get_instance()->getScreen();
+	screen->BeginPainting();
+	sint32 cx, cy, cz;
+
+	GUIApp::get_instance()->getGameMapGump()->GetCameraLocation(cx, cy, cz);
+
+	Pentagram::Rect d;
+	screen->GetSurfaceDims(d);
+	x -= cx;
+	y -= cy;
+	z -= cz;
+	sint32 x0,y0;
+	x0 = (d.w/2) + (x - y)/2;
+	y0 = (d.h/2) + (x + y)/4 - z*2;
+	screen->Fill32(0xFF0000FF, x0-2, y0-2, 5, 5);
+	screen->EndPainting();
+}
+
 static void drawedge(PathNode* from, PathNode* to, bool done)
 {
 	// FIXME: this function assumes that we're using a 2x scaler...
@@ -443,6 +506,16 @@ bool Pathfinder::pathfind(std::vector<PathfindingAction>& path)
 		pout << " pathfinding to (" << targetx << "," << targety << "," << targetz << ")" << std::endl;
 	}
 #endif
+
+#ifdef DEBUG
+	if (actor->getObjId() == visualdebug_actor) {
+		if (targetitem)
+			drawbox(targetitem);
+		else
+			drawdot(targetx, targety, targetz);
+	}
+#endif
+
 
 	path.clear();
 

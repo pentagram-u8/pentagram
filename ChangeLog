@@ -3,6 +3,7 @@
 	* world/actors/Pathfinder.*: add visual pathfinder debugging
 	  (use "Pathfinder::visualDebug actor")
 	* world/actors/Pathfinder.cpp: stop pathfinding when target reached
+	* world/actors/Pathfinder.cpp: mark target in pathfinder debugger
 
 2007-03-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/MissileProcess.*: deprecate MissileProcess
