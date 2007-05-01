@@ -238,10 +238,12 @@ unsigned int Pathfinder::costHeuristic(PathNode* node)
 
 #ifdef DEBUG
 
+// FIXME: these functions assume that we're using a 2x scaler...
+// (and the whole system is generally a very big hack...)
+
 static void drawbox(Item* item)
 {
 	RenderSurface* screen = GUIApp::get_instance()->getScreen();
-	screen->BeginPainting();
 	sint32 cx, cy, cz;
 
 	GUIApp::get_instance()->getGameMapGump()->GetCameraLocation(cx, cy, cz);
@@ -278,13 +280,11 @@ static void drawbox(Item* item)
 	screen->DrawLine32(0xFF00FF00, x0, y0, x1, y1);
 	screen->DrawLine32(0xFF00FF00, x0, y0, x2, y2);
 	screen->DrawLine32(0xFF00FF00, x0, y0, x3, y3);
-	screen->EndPainting();
 }
 
-static void drawdot(sint32 x, sint32 y, sint32 z)
+static void drawdot(sint32 x, sint32 y, sint32 z, int size, uint32 rgb)
 {
 	RenderSurface* screen = GUIApp::get_instance()->getScreen();
-	screen->BeginPainting();
 	sint32 cx, cy, cz;
 
 	GUIApp::get_instance()->getGameMapGump()->GetCameraLocation(cx, cy, cz);
@@ -297,17 +297,12 @@ static void drawdot(sint32 x, sint32 y, sint32 z)
 	sint32 x0,y0;
 	x0 = (d.w/2) + (x - y)/2;
 	y0 = (d.h/2) + (x + y)/4 - z*2;
-	screen->Fill32(0xFF0000FF, x0-2, y0-2, 5, 5);
-	screen->EndPainting();
+	screen->Fill32(rgb, x0-size, y0-size, 2*size+1, 2*size+1);
 }
 
-static void drawedge(PathNode* from, PathNode* to, bool done)
+static void drawedge(PathNode* from, PathNode* to, uint32 rgb)
 {
-	// FIXME: this function assumes that we're using a 2x scaler...
-	// (and is generally a very big hack...)
-
 	RenderSurface* screen = GUIApp::get_instance()->getScreen();
-	screen->BeginPainting();
 	sint32 cx, cy, cz;
 
 	GUIApp::get_instance()->getGameMapGump()->GetCameraLocation(cx, cy, cz);
@@ -333,19 +328,28 @@ static void drawedge(PathNode* from, PathNode* to, bool done)
 	x1 = (d.w/2) + (cx - cy)/2;
 	y1 = (d.h/2) + (cx + cy)/4 - cz*2;
 
-	screen->DrawLine32(0xFFFFFF00, x0, y0, x1, y1);
+	screen->DrawLine32(rgb, x0, y0, x1, y1);
+}
 
-	screen->Fill32(0xFFFFFFFF, x0-1,y0-1,3,3);
+static void drawpath(PathNode* to, uint32 rgb, bool done)
+{
+	PathNode* n1 = to;
+	PathNode* n2 = to->parent;
 
-	if (!done)
-		screen->Fill32(0xFFFFFFFF, x1-1,y1-1,3,3);
-	else
-		screen->Fill32(0xFFFF0000, x1-2,y1-2,5,5);
+	while (n2) {
+		drawedge(n1, n2, rgb);
+
+		if (done && n1 == to)
+			drawdot(n1->state.x, n1->state.y, n1->state.z, 2, 0xFFFF0000);
+		else
+			drawdot(n1->state.x, n1->state.y, n1->state.z, 1, 0xFFFFFFFF);
 
 
-	screen->EndPainting();
+		drawdot(n2->state.x, n2->state.y, n2->state.z, 2, 0xFFFFFFFF);
 
-	SDL_Delay(250);
+		n1 = n2;
+		n2 = n1->parent;
+	}
 }
 
 #endif
@@ -402,8 +406,18 @@ void Pathfinder::newNode(PathNode* oldnode, PathfindingState& state,
 #endif
 
 #ifdef DEBUG
-	if (actor->getObjId() == visualdebug_actor)
-		drawedge(oldnode, newnode, done);
+	if (actor->getObjId() == visualdebug_actor) {
+		RenderSurface* screen = GUIApp::get_instance()->getScreen();
+		screen->BeginPainting();
+		drawpath(newnode, 0xFFFFFF00, done);
+		screen->EndPainting();
+		SDL_Delay(250);
+		if (!done) {
+			screen->BeginPainting();
+			drawpath(newnode, 0xFFB0B000, done);
+			screen->EndPainting();
+		}
+	}
 #endif
 
 	nodes.push(newnode);	
@@ -487,6 +501,7 @@ void Pathfinder::expandNode(PathNode* node)
 			visited.push_back(state);
 		}
 
+		// TODO: maybe only allow partial steps close to target?
 		if (beststeps != 0 && (beststeps != steps ||
 							   (!tracker.isDone() && targetitem)))
 		{
@@ -511,10 +526,13 @@ bool Pathfinder::pathfind(std::vector<PathfindingAction>& path)
 
 #ifdef DEBUG
 	if (actor->getObjId() == visualdebug_actor) {
+		RenderSurface* screen = GUIApp::get_instance()->getScreen();
+		screen->BeginPainting();
 		if (targetitem)
 			drawbox(targetitem);
 		else
-			drawdot(targetx, targety, targetz);
+			drawdot(targetx, targety, targetz, 2, 0xFF0000FF);
+		screen->EndPainting();
 	}
 #endif
 

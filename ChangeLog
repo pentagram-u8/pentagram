@@ -1,3 +1,6 @@
+2007-05-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/Pathfinder.cpp: fancier (animating) visual pathfinding
+
 2007-04-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/*RenderSurface.*: add basic, slow Line32 function
 	* world/actors/Pathfinder.*: add visual pathfinder debugging
