@@ -1,7 +1,7 @@
 /*
  *  macosx_utils.m
  *
- *  Copyright (C) 2006  The Pentagram Team
+ *  Copyright (C) 2006-2007  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -24,5 +24,8 @@
 
 const char * macosxResourcePath()
 {
-    return [[[NSBundle mainBundle] resourcePath] cString];
+    NSString * path = [[NSBundle mainBundle] resourcePath];
+    if (path)
+        return [path cString];
+    return "data";
 }

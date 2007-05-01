@@ -18,6 +18,8 @@
 		983E783B0A54373F00940D44 /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 002F39F909D0881F00EBEB88 /* SDL.framework */; };
 		983E7C870A543B1A00940D44 /* SDL_ttf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 983E7C820A543B1A00940D44 /* SDL_ttf.framework */; };
 		983E7C880A543B2200940D44 /* SDL_ttf.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 983E7C820A543B1A00940D44 /* SDL_ttf.framework */; };
+		9849610C0BE7BBA0008EB5DD /* MissileTracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9849610A0BE7BBA0008EB5DD /* MissileTracker.cpp */; };
+		9849610D0BE7BBA0008EB5DD /* MissileTracker.h in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 9849610B0BE7BBA0008EB5DD /* MissileTracker.h */; };
 		9865E9820A287796008DBB06 /* AudioChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7850A287796008DBB06 /* AudioChannel.cpp */; };
 		9865E9840A287796008DBB06 /* AudioMixer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7870A287796008DBB06 /* AudioMixer.cpp */; };
 		9865E9860A287796008DBB06 /* AudioProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7890A287796008DBB06 /* AudioProcess.cpp */; };
@@ -287,6 +289,7 @@
 				002F39FA09D0881F00EBEB88 /* SDL.framework in Copy Frameworks */,
 				983E7C880A543B2200940D44 /* SDL_ttf.framework in Copy Frameworks */,
 				98D6DD020A598F8E001DFF4B /* libpng.framework in Copy Frameworks */,
+				9849610D0BE7BBA0008EB5DD /* MissileTracker.h in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -311,6 +314,8 @@
 		982067F50A28C092002F143C /* SettingManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SettingManager.cpp; sourceTree = "<group>"; };
 		982067F60A28C092002F143C /* SettingManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingManager.h; sourceTree = "<group>"; };
 		983E7C820A543B1A00940D44 /* SDL_ttf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL_ttf.framework; path = ../Frameworks/SDL_ttf.framework; sourceTree = SOURCE_ROOT; };
+		9849610A0BE7BBA0008EB5DD /* MissileTracker.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MissileTracker.cpp; sourceTree = "<group>"; };
+		9849610B0BE7BBA0008EB5DD /* MissileTracker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MissileTracker.h; sourceTree = "<group>"; };
 		9865E7850A287796008DBB06 /* AudioChannel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioChannel.cpp; sourceTree = "<group>"; };
 		9865E7860A287796008DBB06 /* AudioChannel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AudioChannel.h; sourceTree = "<group>"; };
 		9865E7870A287796008DBB06 /* AudioMixer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AudioMixer.cpp; sourceTree = "<group>"; };
@@ -1546,6 +1551,8 @@
 				9865E9720A287796008DBB06 /* MapGlob.h */,
 				9865E9730A287796008DBB06 /* MissileProcess.cpp */,
 				9865E9740A287796008DBB06 /* MissileProcess.h */,
+				9849610A0BE7BBA0008EB5DD /* MissileTracker.cpp */,
+				9849610B0BE7BBA0008EB5DD /* MissileTracker.h */,
 				9865E9760A287796008DBB06 /* MonsterEgg.cpp */,
 				9865E9770A287796008DBB06 /* MonsterEgg.h */,
 				9865E9780A287796008DBB06 /* SplitItemProcess.cpp */,
@@ -2109,6 +2116,7 @@
 				98AE71BE0A2A1DF400E558F6 /* CompileProcess.cpp in Sources */,
 				98AE71C20A2A1DF400E558F6 /* llcLexer.cpp in Sources */,
 				98AE74400A2A5A6F00E558F6 /* macosx_utils.m in Sources */,
+				9849610C0BE7BBA0008EB5DD /* MissileTracker.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

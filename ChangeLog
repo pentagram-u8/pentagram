@@ -1,3 +1,11 @@
+2007-05-01  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* system/xcode/macosx_include.h: #undef DATA_PATH, mostly to note it for
+	  future changes
+	* system/xcode/macosx_utils.h: default the resource path to "data" if
+	  resourcePath returns nothing
+	* system/xcode/Pentagram/Pentagram.xcodeprobj: fix build by including
+	  MissleTracker
+
 2007-05-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Pathfinder.cpp: fancier (animating) visual pathfinding
 

@@ -1,7 +1,7 @@
 /*
  *  macosx_include.h
  *
- *  Copyright (C) 2006  The Pentagram Team
+ *  Copyright (C) 2006-2007  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -33,6 +33,8 @@
 
 #define HAVE_SYS_STAT_H     1
 #define HAVE_SYS_TYPES_H	1
+
+#undef DATA_PATH
 
 typedef	uint8_t     uint8;
 typedef uint16_t    uint16;
