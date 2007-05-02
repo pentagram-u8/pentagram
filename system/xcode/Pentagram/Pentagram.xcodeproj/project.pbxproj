@@ -1920,7 +1920,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "hdiutil create -ov -format UDZO -imagekey zlib-level=9 -fs HFS+ -srcfolder $TARGET_BUILD_DIR -volname \"Pentagram snapshot\" Pentagram.dmg\n";
+			shellScript = "if [ $ACTION = build ] && [ $BUILD_VARIANTS = normal ]; then\n rm Pentagram.dmg\n hdiutil create -ov -format UDZO -imagekey zlib-level=9 -fs HFS+ -srcfolder $TARGET_BUILD_DIR -volname \"Pentagram snapshot\" Pentagram.dmg\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2221,16 +2221,15 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					ppc,
-					i386,
-				);
+				ARCHS = i386;
+				BUILD_VARIANTS = debug;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)",
 					"$(HOME)/Library/Frameworks",
 					/Library/Frameworks,
 					"$(FRAMEWORK_SEARCH_PATHS)",
 				);
+				GCC_PREPROCESSOR_DEFINITIONS = DEBUG;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
