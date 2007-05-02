@@ -1,4 +1,8 @@
 2007-05-01  Matthew Jimenez <mjimenez@users.sourceforge.net>
+    * system/xcode/*: Add build phase to create disk image
+    * various: add svn:ignore properties to a few directories
+
+2007-05-01  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* system/xcode/macosx_include.h: #undef DATA_PATH, mostly to note it for
 	  future changes
 	* system/xcode/macosx_utils.h: default the resource path to "data" if

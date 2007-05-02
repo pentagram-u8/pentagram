@@ -277,6 +277,8 @@
 		98C302790A2BC5C4008A38A2 /* pentagram.png in Resources */ = {isa = PBXBuildFile; fileRef = 98C302780A2BC5C4008A38A2 /* pentagram.png */; };
 		98D6DD010A598F80001DFF4B /* libpng.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98D6DCFB0A598F80001DFF4B /* libpng.framework */; };
 		98D6DD020A598F8E001DFF4B /* libpng.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 98D6DCFB0A598F80001DFF4B /* libpng.framework */; };
+		98E06AF30BE843490044780B /* README.rtf in Copy Disk Image Files */ = {isa = PBXBuildFile; fileRef = 98E06AE90BE841BA0044780B /* README.rtf */; };
+		98E06AF40BE8434D0044780B /* pentagram.ini in Copy Disk Image Files */ = {isa = PBXBuildFile; fileRef = 98E06AE80BE841BA0044780B /* pentagram.ini */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -292,6 +294,18 @@
 				9849610D0BE7BBA0008EB5DD /* MissileTracker.h in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		98E06AE60BE840820044780B /* Copy Disk Image Files */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 16;
+			files = (
+				98E06AF40BE8434D0044780B /* pentagram.ini in Copy Disk Image Files */,
+				98E06AF30BE843490044780B /* README.rtf in Copy Disk Image Files */,
+			);
+			name = "Copy Disk Image Files";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -880,6 +894,8 @@
 		98C302340A2BBDF5008A38A2 /* pentagram.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = pentagram.icns; path = ../system/desktop/pentagram.icns; sourceTree = "<group>"; };
 		98C302780A2BC5C4008A38A2 /* pentagram.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = pentagram.png; path = ../system/desktop/pentagram.png; sourceTree = "<group>"; };
 		98D6DCFB0A598F80001DFF4B /* libpng.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libpng.framework; path = ../Frameworks/libpng.framework; sourceTree = SOURCE_ROOT; };
+		98E06AE80BE841BA0044780B /* pentagram.ini */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = pentagram.ini; sourceTree = "<group>"; };
+		98E06AE90BE841BA0044780B /* README.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = README.rtf; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -943,6 +959,7 @@
 		29B97314FDCFA39411CA2CEA /* Pentagram */ = {
 			isa = PBXGroup;
 			children = (
+				98E06AEC0BE842D00044780B /* Image Files */,
 				98C300050A2B8593008A38A2 /* Documentation */,
 				080E96DDFE201D6D7F000001 /* Classes */,
 				29B97315FDCFA39411CA2CEA /* Sources */,
@@ -1806,6 +1823,15 @@
 			path = xml;
 			sourceTree = "<group>";
 		};
+		98E06AEC0BE842D00044780B /* Image Files */ = {
+			isa = PBXGroup;
+			children = (
+				98E06AE80BE841BA0044780B /* pentagram.ini */,
+				98E06AE90BE841BA0044780B /* README.rtf */,
+			);
+			name = "Image Files";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1817,6 +1843,8 @@
 				983E77DD0A5434F400940D44 /* Copy Frameworks */,
 				8D11072C0486CEB800E47090 /* Sources */,
 				8D11072E0486CEB800E47090 /* Frameworks */,
+				98E06AE60BE840820044780B /* Copy Disk Image Files */,
+				98E06B140BE846AE0044780B /* Build Disk Image */,
 			);
 			buildRules = (
 			);
@@ -1878,6 +1906,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		98E06B140BE846AE0044780B /* Build Disk Image */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Build Disk Image";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "hdiutil create -ov -format UDZO -imagekey zlib-level=9 -fs HFS+ -srcfolder $TARGET_BUILD_DIR -volname \"Pentagram snapshot\" Pentagram.dmg\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		8D11072C0486CEB800E47090 /* Sources */ = {
