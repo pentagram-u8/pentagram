@@ -205,7 +205,7 @@ bool Pathfinder::checkTarget(PathNode* node)
 			return node->state.checkItem(targetitem, 32, 8);
 		}
 	} else {
-		return node->state.checkPoint(targetx, targety, targetz, 32);
+		return node->state.checkPoint(targetx, targety, targetz, 48);
 	}
 }
 
@@ -213,6 +213,7 @@ unsigned int Pathfinder::costHeuristic(PathNode* node)
 {
 	unsigned int cost = node->cost;
 
+#if 0
 	double sqrddist;
 
 	sqrddist = (targetx - node->state.x + actor_xd/2) *
@@ -221,6 +222,15 @@ unsigned int Pathfinder::costHeuristic(PathNode* node)
 		(targety - node->state.y + actor_yd/2);
 
 	unsigned int dist = static_cast<unsigned int>(std::sqrt(sqrddist));
+#else
+	// This calculates the distance to the target using only lines in
+	// the 8 available directions (instead of the straight line above)
+	int xd = abs(targetx - node->state.x + actor_xd/2);
+	int yd = abs(targety - node->state.y + actor_yd/2);
+	double m = (xd < yd) ? xd : yd;
+	unsigned int dist = abs(xd-yd) + static_cast<unsigned int>(m*1.41421356);
+
+#endif
 
 #if 0
 	//!! TODO: divide dist by walking distance
@@ -229,7 +239,10 @@ unsigned int Pathfinder::costHeuristic(PathNode* node)
 
 	node->heuristicTotalCost = cost + (dist*4); //!! constant
 #else
-	node->heuristicTotalCost = cost + dist;
+
+	// Weigh remaining distance more than already travelled distance,
+	// to try to explore more nodes closer to the target.
+	node->heuristicTotalCost = 2*cost + 3*dist;
 #endif
 
 	return node->heuristicTotalCost;
@@ -468,7 +481,6 @@ void Pathfinder::expandNode(PathNode* node)
 				continue;
 			}
 		}
-
 		while (tracker.step())
 		{
 			steps++;

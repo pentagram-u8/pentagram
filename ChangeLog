@@ -1,6 +1,9 @@
+2007-05-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/Pathfinder.cpp: pathfinding heuristic tweaks
+
 2007-05-01  Matthew Jimenez <mjimenez@users.sourceforge.net>
-    * system/xcode/*: Add build phase to create disk image
-    * various: add svn:ignore properties to a few directories
+	* system/xcode/*: Add build phase to create disk image
+	* various: add svn:ignore properties to a few directories
 
 2007-05-01  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* system/xcode/macosx_include.h: #undef DATA_PATH, mostly to note it for
