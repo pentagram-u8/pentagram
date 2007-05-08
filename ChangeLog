@@ -1,6 +1,9 @@
 2007-05-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.h: rename get/setGravityProcess to get/setGravityPID
 	* kernel/GUIApp.cpp: add ignore_savegame_mismatch debugging conf option
+	* world/actors/AvatarGravityProcess.*: special GravityProcess to
+	  handle clinging to ledges
+	* world/actors/AvatarMoverProcess.cpp: handle climbing up after hanging
 
 2007-05-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Pathfinder.cpp: pathfinding heuristic tweaks

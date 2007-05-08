@@ -85,7 +85,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GumpNotifyProcess.h" // guess
 #include "ActorBarkNotifyProcess.h" // guess
 #include "DelayProcess.h"
-#include "GravityProcess.h"
+#include "AvatarGravityProcess.h"
 #include "MissileProcess.h"
 #include "TeleportToEggProcess.h"
 #include "ItemFactory.h"
@@ -346,6 +346,8 @@ void GUIApp::startup()
 							 ProcessLoader<DelayProcess>::load);
 	kernel->addProcessLoader("GravityProcess",
 							 ProcessLoader<GravityProcess>::load);
+	kernel->addProcessLoader("AvatarGravityProcess",
+							 ProcessLoader<AvatarGravityProcess>::load);
 	kernel->addProcessLoader("PaletteFaderProcess",
 							 ProcessLoader<PaletteFaderProcess>::load);
 	kernel->addProcessLoader("TeleportToEggProcess",

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,6 +27,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Kernel.h"
 #include "ActorAnimProcess.h"
 #include "TargetedAnimProcess.h"
+#include "AvatarGravityProcess.h"
 #include "ShapeInfo.h"
 #include "getObject.h"
 
@@ -76,9 +77,18 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 	MainActor* avatar = getMainActor();
 
 	// busy, so don't move
-	if (Kernel::get_instance()->getNumProcesses(1, 0x00F0) > 0 ||
-		avatar->getGravityPID() != 0)
-	{
+	if (Kernel::get_instance()->getNumProcesses(1, 0x00F0) > 0) {
+		idleTime = 0;
+		return false;
+	}
+	   
+
+	if (avatar->getLastAnim() == Animation::hang) {
+		return handleHangingMode();
+	}
+
+	// falling, so don't move
+	if (avatar->getGravityPID() != 0) {
 		idleTime = 0;
 		return false;
 	}
@@ -87,6 +97,54 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 		return handleCombatMode();
 	else
 		return handleNormalMode();
+}
+
+bool AvatarMoverProcess::handleHangingMode()
+{
+	GUIApp* guiapp = GUIApp::get_instance();
+	MainActor* avatar = getMainActor();
+	uint32 now = SDL_GetTicks();
+	bool stasis = guiapp->isAvatarInStasis();
+
+	idleTime = 0;
+
+	if (stasis) return false;
+
+	bool m0clicked = false;
+	bool m1clicked = false;
+	if (!(mouseButton[0].state & MBS_HANDLED) &&
+		now - mouseButton[0].curDown > DOUBLE_CLICK_TIMEOUT)
+	{
+		m0clicked = true;
+		mouseButton[0].state |= MBS_HANDLED;
+	}
+	if (!(mouseButton[1].state & MBS_HANDLED) &&
+		now - mouseButton[1].curDown > DOUBLE_CLICK_TIMEOUT)
+	{
+		m1clicked = true;
+		mouseButton[1].state |= MBS_HANDLED;
+	}
+	if (!(mouseButton[0].state & MBS_RELHANDLED))
+		mouseButton[0].state |= MBS_RELHANDLED;
+	if (!(mouseButton[1].state & MBS_RELHANDLED))
+		mouseButton[1].state |= MBS_RELHANDLED;
+
+
+	// if left mouse is down, try to climb up
+
+	if ((mouseButton[0].state & MBS_DOWN) &&
+		(!(mouseButton[0].state & MBS_HANDLED) || m0clicked))
+	{
+		mouseButton[0].state |= MBS_HANDLED;
+		mouseButton[0].lastDown = 0;
+
+		if (avatar->tryAnim(Animation::climb40, 8) == Animation::SUCCESS) {
+			avatar->ensureGravityProcess()->terminate();
+			waitFor(avatar->doAnim(Animation::climb40, 8));
+		}
+	}
+
+	return false;
 }
 
 bool AvatarMoverProcess::handleCombatMode()
@@ -418,11 +476,12 @@ bool AvatarMoverProcess::handleNormalMode()
 			Animation::Sequence climbanim = Animation::climb72;
 			while (climbanim >= Animation::climb16)
 			{
-				if (avatar->tryAnim(climbanim, direction)==Animation::SUCCESS)
+				if (avatar->tryAnim(climbanim, direction) == 
+					Animation::SUCCESS)
 				{
 					nextanim = climbanim;
 				}
-				climbanim = static_cast<Animation::Sequence>(climbanim - 1);
+				climbanim = static_cast<Animation::Sequence>(climbanim-1);
 			}
 
 			if (nextanim == Animation::jump || nextanim == Animation::jumpUp)
@@ -453,12 +512,13 @@ bool AvatarMoverProcess::handleNormalMode()
 		nextanim = Animation::jumpUp;
 
 		// check if we need to do a running jump
-		if (lastanim == Animation::run || lastanim == Animation::runningJump) {
-//			pout << "AvatarMover: running jump" << std::endl;
+		if (lastanim == Animation::run ||
+			lastanim == Animation::runningJump) {
+			pout << "AvatarMover: running jump" << std::endl;
 			jump(Animation::runningJump, direction);
 			return false;
 		} else if (mouselength > 0) {
-//			pout << "AvatarMover: jump" << std::endl;
+			pout << "AvatarMover: jump" << std::endl;
 			jump(Animation::jump, direction);
 			return false;
 		}
@@ -466,7 +526,6 @@ bool AvatarMoverProcess::handleNormalMode()
 		waitFor(avatar->doAnim(nextanim, direction));
 		return false;
 
-		// TODO: climbing up onto things?
 		// CHECKME: check what needs to happen when keeping left pressed
 	}
 
@@ -640,7 +699,6 @@ void AvatarMoverProcess::jump(Animation::Sequence action, int direction)
 
 
 	//! TODO: add gameplay option: targetedJump or not
-
 	sint32 coords[3];
 	GameMapGump * gameMap = guiapp->getGameMapGump();
 	// We need the Gump's x/y for TraceCoordinates

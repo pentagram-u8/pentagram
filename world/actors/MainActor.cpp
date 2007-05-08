@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -39,6 +39,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "getObject.h"
 #include "UCList.h"
 #include "LoopScript.h"
+#include "AvatarGravityProcess.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -55,6 +56,21 @@ MainActor::MainActor() : justTeleported(false), accumStr(0), accumDex(0),
 MainActor::~MainActor()
 {
 
+}
+
+GravityProcess* MainActor::ensureGravityProcess()
+{
+	AvatarGravityProcess* p = 0;
+	if (gravitypid) {
+		p = p_dynamic_cast<AvatarGravityProcess*>(
+			Kernel::get_instance()->getProcess(gravitypid));
+	} else {
+		p = new AvatarGravityProcess(this, 0);
+		Kernel::get_instance()->addProcess(p);
+		p->init();
+	}
+	assert(p);
+	return p;
 }
 
 bool MainActor::CanAddItem(Item* item, bool checkwghtvol)

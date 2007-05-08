@@ -443,6 +443,9 @@ GravityProcess: Process (v2)
 sint32 gravity
 sint32 xspeed, yspeed, zspeed
 
+AvatarGravityProcess: Process (v3)
+<GravityProcess>
+
 
 MissileProcess: Process (v2)
 <Process>

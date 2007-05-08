@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -54,6 +54,9 @@ public:
 	//! accumulate a little bit of intelligence. When you reach 650 you gain
 	//! one int. point. (There's a chance you gain int. sooner)
 	void accumulateInt(int n);
+
+	//! Get the GravityProcess of this Item, creating it if necessary
+	virtual GravityProcess* ensureGravityProcess();
 
 	virtual uint32 getArmourClass();
 	virtual uint16 getDefenseType();

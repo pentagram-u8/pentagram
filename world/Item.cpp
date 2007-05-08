@@ -1494,6 +1494,21 @@ sint32 Item::ascend(int delta)
 	return dist;
 }
 
+GravityProcess* Item::ensureGravityProcess()
+{
+	GravityProcess* p = 0;
+	if (gravitypid) {
+		p = p_dynamic_cast<GravityProcess*>(
+			Kernel::get_instance()->getProcess(gravitypid));
+	} else {
+		p = new GravityProcess(this, 0);
+		Kernel::get_instance()->addProcess(p);
+		p->init();
+	}
+	assert(p);
+	return p;
+}
+
 void Item::fall()
 {
 	if (flags & FLG_HANGING || getShapeInfo()->is_fixed()) {
@@ -1501,17 +1516,7 @@ void Item::fall()
 		return;
 	}
 
-	GravityProcess* p = 0;
-	if (gravitypid) {
-		p = p_dynamic_cast<GravityProcess*>(
-			Kernel::get_instance()->getProcess(gravitypid));
-		assert(p);
-	} else {
-		p = new GravityProcess(this, 0);
-		Kernel::get_instance()->addProcess(p);
-		p->init();
-	}
-
+	GravityProcess* p = ensureGravityProcess();
 	p->setGravity(4); //!! constant
 }
 
@@ -1549,16 +1554,7 @@ void Item::grab()
 
 void Item::hurl(int xs, int ys, int zs, int grav)
 {
-	GravityProcess* p = 0;
-	if (gravitypid) {
-		p = p_dynamic_cast<GravityProcess*>(
-			Kernel::get_instance()->getProcess(gravitypid));
-		assert(p);
-	} else {
-		p = new GravityProcess(this, grav);
-		Kernel::get_instance()->addProcess(p);
-		p->init();
-	}
+	GravityProcess* p = ensureGravityProcess();
 	p->move(xs,ys,zs);
 }
 
