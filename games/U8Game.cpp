@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2006 The Pentagram team
+Copyright (C) 2004-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -49,6 +49,7 @@ U8Game::U8Game() : Game()
 	settingman->setDefault("quotes", false);
 	settingman->setDefault("footsteps", true);
 	settingman->setDefault("cheat", true);
+	settingman->setDefault("targetedjump", true);
 
 	GameInfo* info = GUIApp::get_instance()->getGameInfo();
 	if (info->language == GameInfo::GAMELANG_JAPANESE) {

@@ -4,6 +4,7 @@
 	* world/actors/AvatarGravityProcess.*: special GravityProcess to
 	  handle clinging to ledges
 	* world/actors/AvatarMoverProcess.cpp: handle climbing up after hanging
+	* world/actors/AvatarMoverProcess.cpp: add targetedjump config option
 
 2007-05-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Pathfinder.cpp: pathfinding heuristic tweaks
