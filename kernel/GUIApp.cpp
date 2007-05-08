@@ -2083,6 +2083,17 @@ bool GUIApp::loadGame(std::string filename)
 		perr << "Game mismatch:" << std::endl;
 		perr << "Running game: " << gameinfo->getPrintDetails() << std::endl;
 		perr << "Savegame    : " << saveinfo.getPrintDetails() << std::endl;
+
+#ifdef DEBUG
+		bool ignore;
+		settingman->setDefault("ignore_savegame_mismatch", false);
+		settingman->get("ignore_savegame_mismatch", ignore);
+
+		if (!ignore)
+			return false;
+#else
+		return false;
+#endif
 	}
 
 	resetEngine();
