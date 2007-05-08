@@ -77,7 +77,7 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 
 	// busy, so don't move
 	if (Kernel::get_instance()->getNumProcesses(1, 0x00F0) > 0 ||
-		avatar->getGravityProcess() != 0)
+		avatar->getGravityPID() != 0)
 	{
 		idleTime = 0;
 		return false;

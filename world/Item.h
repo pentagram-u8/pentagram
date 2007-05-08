@@ -268,11 +268,11 @@ public:
 	//! Hurl the item in the given direction
 	void hurl(int xs, int ys, int zs, int grav);
 
-	//! Assign a GravityProcess to this Item
-	void setGravityProcess(ProcId pid) { gravitypid = pid; }
+	//! Set the PID of the GravityProcess for this Item
+	void setGravityPID(ProcId pid) { gravitypid = pid; }
 
-	//! Get the GravityProcess for this Item (or 0)
-	ProcId getGravityProcess() const { return gravitypid; }
+	//! Get the PID of the GravityProcess for this Item (or 0)
+	ProcId getGravityPID() const { return gravitypid; }
 
 	//! Get the weight of this Item
 	virtual uint32 getWeight();

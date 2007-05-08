@@ -55,7 +55,7 @@ void GravityProcess::init()
 	Item* item = getItem(item_num);
 	assert(item);
 
-	item->setGravityProcess(getPid());
+	item->setGravityPID(getPid());
 }
 
 void GravityProcess::move(int xs, int ys, int zs)
@@ -289,7 +289,7 @@ void GravityProcess::terminate()
 	//signal item GravityProcess is gone
 	Item* item = getItem(item_num);
 	if (item) {
-		item->setGravityProcess(0);
+		item->setGravityPID(0);
 		
 		// no longer bouncing
 		item->clearFlag(Item::FLG_BOUNCING);
