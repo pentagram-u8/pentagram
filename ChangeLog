@@ -1,3 +1,7 @@
+2007-05-09  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* system/xcode/*: Add AvatarGravityProcess to build and fix debug build
+	* world/actors/AvartarGravityProcess.h: declare MainActor to fix compile
+
 2007-05-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.h: rename get/setGravityProcess to get/setGravityPID
 	* kernel/GUIApp.cpp: add ignore_savegame_mismatch debugging conf option

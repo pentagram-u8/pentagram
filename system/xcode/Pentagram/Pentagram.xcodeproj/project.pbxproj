@@ -12,6 +12,7 @@
 		8D11072B0486CEB800E47090 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C165CFE840E0CC02AAC07 /* InfoPlist.strings */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		981645890A28768F00D28F6F /* pentagram.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 981645880A28768F00D28F6F /* pentagram.cpp */; };
+		9818D93B0BF18DB500133157 /* AvatarGravityProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9818D9390BF18DB500133157 /* AvatarGravityProcess.cpp */; };
 		982067F70A28C092002F143C /* ConfigFileManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 982067EF0A28C092002F143C /* ConfigFileManager.cpp */; };
 		982067F90A28C092002F143C /* INIFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 982067F10A28C092002F143C /* INIFile.cpp */; };
 		982067FD0A28C092002F143C /* SettingManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 982067F50A28C092002F143C /* SettingManager.cpp */; };
@@ -19,7 +20,6 @@
 		983E7C870A543B1A00940D44 /* SDL_ttf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 983E7C820A543B1A00940D44 /* SDL_ttf.framework */; };
 		983E7C880A543B2200940D44 /* SDL_ttf.framework in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 983E7C820A543B1A00940D44 /* SDL_ttf.framework */; };
 		9849610C0BE7BBA0008EB5DD /* MissileTracker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9849610A0BE7BBA0008EB5DD /* MissileTracker.cpp */; };
-		9849610D0BE7BBA0008EB5DD /* MissileTracker.h in Copy Frameworks */ = {isa = PBXBuildFile; fileRef = 9849610B0BE7BBA0008EB5DD /* MissileTracker.h */; };
 		9865E9820A287796008DBB06 /* AudioChannel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7850A287796008DBB06 /* AudioChannel.cpp */; };
 		9865E9840A287796008DBB06 /* AudioMixer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7870A287796008DBB06 /* AudioMixer.cpp */; };
 		9865E9860A287796008DBB06 /* AudioProcess.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9865E7890A287796008DBB06 /* AudioProcess.cpp */; };
@@ -270,7 +270,6 @@
 		98AE72DB0A2A418300E558F6 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98AE72C90A2A418300E558F6 /* AudioUnit.framework */; };
 		98AE72E50A2A41DB00E558F6 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98AE72DD0A2A41DB00E558F6 /* CoreMIDI.framework */; };
 		98AE74400A2A5A6F00E558F6 /* macosx_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 98AE743F0A2A5A6F00E558F6 /* macosx_utils.m */; };
-		98C300B70A2B8C74008A38A2 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8D1107310486CEB800E47090 /* Info.plist */; };
 		98C300B80A2B8C78008A38A2 /* remorsebindings.ini in Resources */ = {isa = PBXBuildFile; fileRef = 98AE725A0A2A3EC600E558F6 /* remorsebindings.ini */; };
 		98C300B90A2B8C7A008A38A2 /* u8japanese.ini in Resources */ = {isa = PBXBuildFile; fileRef = 98AE72610A2A3EC600E558F6 /* u8japanese.ini */; };
 		98C302350A2BBDF5008A38A2 /* pentagram.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98C302340A2BBDF5008A38A2 /* pentagram.icns */; };
@@ -291,7 +290,6 @@
 				002F39FA09D0881F00EBEB88 /* SDL.framework in Copy Frameworks */,
 				983E7C880A543B2200940D44 /* SDL_ttf.framework in Copy Frameworks */,
 				98D6DD020A598F8E001DFF4B /* libpng.framework in Copy Frameworks */,
-				9849610D0BE7BBA0008EB5DD /* MissileTracker.h in Copy Frameworks */,
 			);
 			name = "Copy Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -321,6 +319,8 @@
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Pentagram.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Pentagram.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		981645880A28768F00D28F6F /* pentagram.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = pentagram.cpp; path = ../../../pentagram.cpp; sourceTree = SOURCE_ROOT; };
+		9818D9390BF18DB500133157 /* AvatarGravityProcess.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AvatarGravityProcess.cpp; sourceTree = "<group>"; };
+		9818D93A0BF18DB500133157 /* AvatarGravityProcess.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvatarGravityProcess.h; sourceTree = "<group>"; };
 		982067EF0A28C092002F143C /* ConfigFileManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConfigFileManager.cpp; sourceTree = "<group>"; };
 		982067F00A28C092002F143C /* ConfigFileManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConfigFileManager.h; sourceTree = "<group>"; };
 		982067F10A28C092002F143C /* INIFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = INIFile.cpp; sourceTree = "<group>"; };
@@ -1606,6 +1606,8 @@
 				9865E92E0A287796008DBB06 /* AnimationTracker.h */,
 				9865E92F0A287796008DBB06 /* AvatarDeathProcess.cpp */,
 				9865E9300A287796008DBB06 /* AvatarDeathProcess.h */,
+				9818D9390BF18DB500133157 /* AvatarGravityProcess.cpp */,
+				9818D93A0BF18DB500133157 /* AvatarGravityProcess.h */,
 				9865E9310A287796008DBB06 /* AvatarMoverProcess.cpp */,
 				9865E9320A287796008DBB06 /* AvatarMoverProcess.h */,
 				9865E9330A287796008DBB06 /* ClearFeignDeathProcess.cpp */,
@@ -1897,7 +1899,6 @@
 				98AE727C0A2A3EC600E558F6 /* Vera.ttf in Resources */,
 				98AE727D0A2A3EC600E558F6 /* Vera_copyright.txt in Resources */,
 				98AE727E0A2A3EC600E558F6 /* VeraBd.ttf in Resources */,
-				98C300B70A2B8C74008A38A2 /* Info.plist in Resources */,
 				98C300B80A2B8C78008A38A2 /* remorsebindings.ini in Resources */,
 				98C300B90A2B8C7A008A38A2 /* u8japanese.ini in Resources */,
 				98C302350A2BBDF5008A38A2 /* pentagram.icns in Resources */,
@@ -1920,7 +1921,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ $ACTION = build ] && [ $BUILD_VARIANTS = normal ]; then\n rm Pentagram.dmg\n hdiutil create -ov -format UDZO -imagekey zlib-level=9 -fs HFS+ -srcfolder $TARGET_BUILD_DIR -volname \"Pentagram snapshot\" Pentagram.dmg\nfi\n";
+			shellScript = "if [ $ACTION = build ] && [ $CONFIGURATION = Release ]; then\n if [ -e Pentagram.dmg ]; then\n   rm Pentagram.dmg\n fi\n hdiutil create -ov -format UDZO -imagekey zlib-level=9 -fs HFS+ -srcfolder $TARGET_BUILD_DIR -volname \"Pentagram snapshot\" Pentagram.dmg\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -2162,6 +2163,7 @@
 				98AE71C20A2A1DF400E558F6 /* llcLexer.cpp in Sources */,
 				98AE74400A2A5A6F00E558F6 /* macosx_utils.m in Sources */,
 				9849610C0BE7BBA0008EB5DD /* MissileTracker.cpp in Sources */,
+				9818D93B0BF18DB500133157 /* AvatarGravityProcess.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2222,7 +2224,6 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ARCHS = i386;
-				BUILD_VARIANTS = debug;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(BUILT_PRODUCTS_DIR)/$(FRAMEWORKS_FOLDER_PATH)",
 					"$(HOME)/Library/Frameworks",
