@@ -30,6 +30,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AvatarGravityProcess.h"
 #include "ShapeInfo.h"
 #include "SettingManager.h"
+#include "MusicProcess.h"
 #include "getObject.h"
 
 #include "IDataSource.h"
@@ -52,7 +53,6 @@ AvatarMoverProcess::AvatarMoverProcess() : Process()
 	mouseButton[1].curDown = 0;
 	mouseButton[0].lastDown = 0;
 	mouseButton[1].lastDown = 0;
-	combatRun = false;
 	type = 1; // CONSTANT! (type 1 = persistent)
 }
 
@@ -94,6 +94,7 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 		return false;
 	}
 
+	bool combatRun = (avatar->getActorFlags() & Actor::ACT_COMBATRUN);
 	if (avatar->isInCombat() && !combatRun)
 		return handleCombatMode();
 	else
@@ -307,8 +308,9 @@ bool AvatarMoverProcess::handleCombatMode()
 		{
 			// Take a step before running
 			nextanim = Animation::walk;
-			combatRun = true;
+			avatar->setActorFlag(Actor::ACT_COMBATRUN);
 			avatar->toggleInCombat();
+			MusicProcess::get_instance()->playCombatMusic(110); // CONSTANT!!
 		}
 
 		nextanim = Animation::checkWeapon(nextanim, lastanim);
@@ -340,6 +342,7 @@ bool AvatarMoverProcess::handleNormalMode()
 	sint32 direction = avatar->getDir();
 	uint32 now = SDL_GetTicks();
 	bool stasis = guiapp->isAvatarInStasis();
+	bool combatRun = (avatar->getActorFlags() & Actor::ACT_COMBATRUN);
 
 	int mx, my;
 	guiapp->getMouseCoords(mx, my);
@@ -355,7 +358,7 @@ bool AvatarMoverProcess::handleNormalMode()
 	// User toggled combat while in combatRun
 	if (avatar->isInCombat())
 	{
-		combatRun = false;
+		avatar->clearActorFlag(Actor::ACT_COMBATRUN);
 		avatar->toggleInCombat();
 	}
 
@@ -411,8 +414,8 @@ bool AvatarMoverProcess::handleNormalMode()
 		if (combatRun)
 		{
 			MainActor* avatar = getMainActor();
+			avatar->clearActorFlag(Actor::ACT_COMBATRUN);
 			avatar->toggleInCombat();
-			combatRun = false;
 			ProcId walkpid = avatar->doAnim(Animation::walk, direction);
 			ProcId drawpid = avatar->doAnim(Animation::readyWeapon, direction);
 			Process* drawproc = Kernel::get_instance()->getProcess(drawpid);
@@ -698,9 +701,6 @@ void AvatarMoverProcess::jump(Animation::Sequence action, int direction)
 		return;
 	}
 
-
-	//! TODO: add gameplay option: targetedJump or not
-
 	bool targeting;
 	SettingManager::get_instance()->get("targetedjump", targeting);
 
@@ -739,6 +739,7 @@ void AvatarMoverProcess::jump(Animation::Sequence action, int direction)
 void AvatarMoverProcess::turnToDirection(int direction)
 {
 	MainActor* avatar = getMainActor();
+	bool combatRun = (avatar->getActorFlags() & Actor::ACT_COMBATRUN);
 	int curdir = avatar->getDir();
 	int step;
 	bool combat = avatar->isInCombat() && !combatRun;
@@ -788,6 +789,7 @@ void AvatarMoverProcess::turnToDirection(int direction)
 bool AvatarMoverProcess::checkTurn(int direction, bool moving)
 {
 	MainActor* avatar = getMainActor();
+	bool combatRun = (avatar->getActorFlags() & Actor::ACT_COMBATRUN);
 	int curdir = avatar->getDir();
 	bool combat = avatar->isInCombat() && !combatRun;
 	Animation::Sequence lastanim = avatar->getLastAnim();

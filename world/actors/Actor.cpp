@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2006 The Pentagram team
+Copyright (C) 2003-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -45,6 +45,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "AudioProcess.h"
 #include "SpriteProcess.h"
 #include "MainActor.h"
+#include "MusicProcess.h"
 #include "getObject.h"
 
 #include "ItemFactory.h"
@@ -477,7 +478,9 @@ bool Actor::hasAnim(Animation::Sequence anim)
 Animation::Result Actor::tryAnim(Animation::Sequence anim, int dir,
 								 unsigned int steps, PathfindingState* state)
 {
-	if (dir < 0 || dir > 7) return Animation::FAILURE;
+	if (dir < 0 || dir > 8) return Animation::FAILURE;
+
+	if (dir == 8) dir = getDir();
 
 	AnimationTracker tracker;
 	if (!tracker.init(this, anim, dir, state))
@@ -531,7 +534,7 @@ Animation::Result Actor::tryAnim(Animation::Sequence anim, int dir,
 			return Animation::SUCCESS;
 	}
 
-	return Animation::FAILURE;
+	return Animation::END_OFF_LAND;
 }
 
 uint16 Actor::cSetActivity(int activity)
@@ -613,7 +616,7 @@ int Actor::getDamageAmount()
 
 void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 {
-	if (getActorFlags() & ACT_DEAD)
+	if (isDead())
 		return; // already dead, so don't bother
 
 	Item* hitter = getItem(other);
@@ -764,6 +767,19 @@ ProcId Actor::die(uint16 damageType)
 
 	if (!animprocid)
 		animprocid = doAnim(Animation::die, getDir());
+
+
+	MainActor* avatar = getMainActor();
+	// if hostile to avatar
+	if (getEnemyAlignment() & avatar->getAlignment()) {
+		if (avatar->isInCombat()) {
+			// play victory fanfare
+			MusicProcess::get_instance()->playCombatMusic(109);
+			// and resume combat music afterwards
+			MusicProcess::get_instance()->queueMusic(98);
+		}
+	}
+
 
 	destroyContents();
 	giveTreasure();
@@ -1065,7 +1081,7 @@ bool Actor::areEnemiesNear()
 
 uint16 Actor::schedule(uint32 time)
 {
-	if (getActorFlags() & ACT_DEAD)
+	if (isDead())
 		return 0;
 
 	uint32 ret = callUsecodeEvent_schedule(time);
@@ -1418,7 +1434,7 @@ uint32 Actor::I_isDead(const uint8* args, unsigned int /*argsize*/)
 	ARG_ACTOR_FROM_PTR(actor);
 	if (!actor) return 0;
 
-	if (actor->getActorFlags() & ACT_DEAD)
+	if (actor->isDead())
 		return 1;
 	else
 		return 0;

@@ -394,6 +394,12 @@ MusicProcess: Process (v2)
 <Process>
 sint32 wanted_track
 
+MusicProcess: Process (v3)
+<Process>
+sint32 wanted_track
+sint32 last_request
+sint32 queued_track
+
 
 AudioProcess: Process (v2)
 <Process>

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2006 The Pentagram team
+Copyright (C) 2002-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -53,7 +53,7 @@ struct Texture;
 namespace Pentagram {
 	class AudioMixer;
 
-	const unsigned int savegame_version = 3;
+	const unsigned int savegame_version = 4;
 };
 
 // Hack alert

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2005 The Pentagram team
+Copyright (C) 2004-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Kernel.h"
 #include "MainMenuProcess.h"
 #include "GumpNotifyProcess.h"
+#include "MusicProcess.h"
 #include "getObject.h"
 
 #include "IDataSource.h"
@@ -66,6 +67,9 @@ bool AvatarDeathProcess::run(const uint32 /*framenum*/)
 	Process* menuproc = new MainMenuProcess();
 	Kernel::get_instance()->addProcess(menuproc);
 	menuproc->waitFor(gumpproc);
+
+	MusicProcess::get_instance()->unqueueMusic();
+	MusicProcess::get_instance()->playCombatMusic(44); // CONSTANT!!
 
 	// done
 	terminate();

@@ -221,6 +221,7 @@ public:
 		ACT_FIRSTSTEP      = 0x000400, // flags from npcdata byte 0x2F
 		ACT_INCOMBAT       = 0x000800,
 		ACT_DEAD           = 0x001000,
+		ACT_COMBATRUN      = 0x008000,
 		
 		ACT_AIRWALK        = 0x010000, // flags from npcdata byte 0x30
 		ACT_IMMORTAL       = 0x040000,

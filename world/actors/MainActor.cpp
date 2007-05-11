@@ -40,6 +40,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "UCList.h"
 #include "LoopScript.h"
 #include "AvatarGravityProcess.h"
+#include "MusicProcess.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -311,11 +312,13 @@ void MainActor::receiveHit(uint16 other, int dir, int damage,
 void MainActor::setInCombat()
 {
 	setActorFlag(ACT_INCOMBAT);
+	MusicProcess::get_instance()->playCombatMusic(98); // CONSTANT!
 }
 
 void MainActor::clearInCombat()
 {
 	clearActorFlag(ACT_INCOMBAT);
+	MusicProcess::get_instance()->restoreMusic();
 }
 
 ProcId MainActor::die(uint16 damageType)

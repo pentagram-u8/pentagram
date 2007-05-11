@@ -51,8 +51,6 @@ protected:
 	bool checkTurn(int direction, bool moving);
 	bool canAttack();
 	
-	bool combatRun;
-
 	uint32 lastframe;
 
 	// attack speed limiting

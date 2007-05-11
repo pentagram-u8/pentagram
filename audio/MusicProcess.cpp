@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,8 +23,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MidiDriver.h"
 #include "XMidiFile.h"
 #include "XMidiEventList.h"
-
 #include "AudioMixer.h"
+
+#include "ObjectManager.h"
+#include "getObject.h"
+#include "MainActor.h"
+
 #include "IDataSource.h"
 #include "ODataSource.h"
 
@@ -41,7 +45,7 @@ MusicProcess::MusicProcess()
 
 MusicProcess::MusicProcess(MidiDriver *drv) :
 	driver(drv), state(MUSIC_NORMAL), current_track(0),
-	wanted_track(0)
+	wanted_track(0), last_request(0), queued_track(0)
 {
 	std::memset(song_branches, -1, 128*sizeof(int));
 
@@ -57,9 +61,56 @@ MusicProcess::~MusicProcess()
 
 void MusicProcess::playMusic(int track)
 {
+	last_request = track;
+
+	ObjectManager* om = ObjectManager::get_instance();
+	if (om && getMainActor()) {
+		MainActor* av = getMainActor();
+		if (av->isInCombat() || (av->getActorFlags() & Actor::ACT_COMBATRUN))
+		{
+			// combat music active
+			return;
+		}
+	}
+
+	if (queued_track) {
+		queued_track = track;
+		return;
+	}
+
+	playMusic_internal(track);
+}
+
+void MusicProcess::playCombatMusic(int track)
+{
+	playMusic_internal(track);
+}
+
+void MusicProcess::queueMusic(int track)
+{
+	if (wanted_track != track) {
+		queued_track = track;
+	}
+}
+
+void MusicProcess::unqueueMusic()
+{
+	queued_track = 0;
+}
+
+void MusicProcess::restoreMusic()
+{
+	queued_track = 0;
+	playMusic_internal(last_request);
+}
+
+
+
+void MusicProcess::playMusic_internal(int track)
+{
 	if (track < 0 || track > 128)
 	{
-		playMusic(0);
+		playMusic_internal(0);
 		return;
 	}
 
@@ -85,7 +136,7 @@ void MusicProcess::playMusic(int track)
 		uint32 measure = driver->getSequenceCallbackData(0);
 
 		// No transition info, or invalid measure, so fast change
-		if (!info || (measure < 0) || (measure >= info->num_measures) ||
+		if (!info || (measure >= (uint32)info->num_measures) ||
 			!info->transitions[track] || !info->transitions[track][measure])
 		{
 			current_track = 0;
@@ -96,7 +147,7 @@ void MusicProcess::playMusic(int track)
 			}
 			else
 			{
-				playMusic(track);
+				playMusic_internal(track);
 			}
 			return;
 		}
@@ -141,9 +192,12 @@ bool MusicProcess::run(const uint32)
 	switch (state)
 	{
 	case MUSIC_NORMAL:
-		// If it's stopped playing, we aren't playing anything anymore
-		//if (driver && !driver->isSequencePlaying(0)) 
-		//	current_track = wanted_track = 0;
+		if (driver && !driver->isSequencePlaying(0) && queued_track) {
+			wanted_track = queued_track;
+			state = MUSIC_PLAY_WANTED;
+			queued_track = 0;
+		}
+
 		break;
 
 	case MUSIC_TRANSITION:
@@ -186,8 +240,11 @@ bool MusicProcess::run(const uint32)
 					if (!event) song_branches[wanted_track] = 0;
 				}
 
-				if (driver)
-					driver->startSequence(0, list, true, 255, song_branches[wanted_track]);
+				if (driver) {
+					// if there's a track queued, only play this one once
+					bool repeat = (queued_track == 0);
+					driver->startSequence(0, list, repeat, 255, song_branches[wanted_track]);
+				}
 				current_track = wanted_track;
 				song_branches[wanted_track]++;
 			}
@@ -208,6 +265,8 @@ void MusicProcess::saveData(ODataSource* ods)
 	Process::saveData(ods);
 
 	ods->write4(static_cast<uint32>(wanted_track));
+	ods->write4(static_cast<uint32>(last_request));
+	ods->write4(static_cast<uint32>(queued_track));
 }
 
 bool MusicProcess::loadData(IDataSource* ids, uint32 version)
@@ -215,6 +274,15 @@ bool MusicProcess::loadData(IDataSource* ids, uint32 version)
 	if (!Process::loadData(ids, version)) return false;
 
 	wanted_track = static_cast<sint32>(ids->read4());
+
+	if (version >= 4) {
+		last_request = static_cast<sint32>(ids->read4());
+		queued_track = static_cast<sint32>(ids->read4());
+	} else {
+		last_request = wanted_track;
+		queued_track = 0;
+	}
+
 	state = MUSIC_PLAY_WANTED;
 
 	the_music_process = this;
@@ -224,18 +292,18 @@ bool MusicProcess::loadData(IDataSource* ids, uint32 version)
 	return true;
 }
 
+uint32 MusicProcess::I_musicStop(const uint8* /*args*/,
+										unsigned int /*argsize*/)
+{
+	if (the_music_process) the_music_process->playMusic_internal(0);
+	return 0;
+}
+
 uint32 MusicProcess::I_playMusic(const uint8* args,
 										unsigned int /*argsize*/)
 {
 	ARG_UINT8(song);
 	if (the_music_process) the_music_process->playMusic(song&0x7F);
-	return 0;
-}
-
-uint32 MusicProcess::I_musicStop(const uint8* /*args*/,
-										unsigned int /*argsize*/)
-{
-	if (the_music_process) the_music_process->playMusic(0);
 	return 0;
 }
 
@@ -251,7 +319,7 @@ void MusicProcess::ConCmd_playMusic(const Console::ArgvType &argv)
 		else
 		{
 			pout << "Playing track " << argv[1] << std::endl;
-			the_music_process->playMusic(atoi(argv[1].c_str()));
+			the_music_process->playMusic_internal(atoi(argv[1].c_str()));
 		}
 	}
 	else

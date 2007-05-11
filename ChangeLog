@@ -1,6 +1,13 @@
+2007-05-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* kernel/GUIApp.cpp: savegame version 4
+	* audio/MusicProcess.*: added playCombatMusic/restoreMusic for playing
+	  combat music while keeping track of regular music
+	* world/actors/*: start/stop combat music/victory music
+	* world/actors/AvatarDeathProcess.cpp: play death music
+
 2007-05-09  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* system/xcode/*: Add AvatarGravityProcess to build and fix debug build
-	* world/actors/AvartarGravityProcess.h: declare MainActor to fix compile
+	* world/actors/AvatarGravityProcess.h: declare MainActor to fix compile
 
 2007-05-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.h: rename get/setGravityProcess to get/setGravityPID
