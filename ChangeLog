@@ -1,3 +1,7 @@
+2007-05-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/AvatarMoverProcess.cpp: measure attack delay between
+	  the starts of two attacks (instead between end and start)
+
 2007-05-11  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/GUIApp.cpp: savegame version 4
 	* audio/MusicProcess.*: added playCombatMusic/restoreMusic for playing

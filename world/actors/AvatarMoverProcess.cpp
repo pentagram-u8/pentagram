@@ -64,12 +64,6 @@ AvatarMoverProcess::~AvatarMoverProcess()
 
 bool AvatarMoverProcess::run(const uint32 framenum)
 {
-	// small hack: when attacking, we set lastAttack to 0xFFFFFFFF and then
-	// wait for the attack animation to finish. We then set lastAttack to
-	// the time the attack finished here.
-	if (lastAttack == 0xFFFFFFFF)
-		lastAttack = framenum;
-
 	// only run once per frame
 	if (framenum == lastframe) return false;
 	lastframe = framenum;
@@ -85,7 +79,7 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 	   
 
 	if (avatar->getLastAnim() == Animation::hang) {
-		return handleHangingMode();
+		return handleHangingMode(framenum);
 	}
 
 	// falling, so don't move
@@ -96,12 +90,12 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 
 	bool combatRun = (avatar->getActorFlags() & Actor::ACT_COMBATRUN);
 	if (avatar->isInCombat() && !combatRun)
-		return handleCombatMode();
+		return handleCombatMode(framenum);
 	else
-		return handleNormalMode();
+		return handleNormalMode(framenum);
 }
 
-bool AvatarMoverProcess::handleHangingMode()
+bool AvatarMoverProcess::handleHangingMode(const uint32 /*framenum*/)
 {
 	GUIApp* guiapp = GUIApp::get_instance();
 	MainActor* avatar = getMainActor();
@@ -149,7 +143,7 @@ bool AvatarMoverProcess::handleHangingMode()
 	return false;
 }
 
-bool AvatarMoverProcess::handleCombatMode()
+bool AvatarMoverProcess::handleCombatMode(const uint32 framenum)
 {
 	GUIApp* guiapp = GUIApp::get_instance();
 	MainActor* avatar = getMainActor();
@@ -241,7 +235,7 @@ bool AvatarMoverProcess::handleCombatMode()
 			if (checkTurn(mousedir, true)) return false;
 
 			waitFor(avatar->doAnim(Animation::attack, mousedir));
-			lastAttack = 0xFFFFFFFF;
+			lastAttack = framenum;
 
 			// attacking gives str/dex
 			avatar->accumulateStr(1+(std::rand()%2));
@@ -273,7 +267,7 @@ bool AvatarMoverProcess::handleCombatMode()
 			if (checkTurn(mousedir, false)) return false;
 			
 			waitFor(avatar->doAnim(Animation::kick, mousedir));
-			lastAttack = 0xFFFFFFFF;
+			lastAttack = framenum;
 
 			// kicking gives str/dex
 			avatar->accumulateStr(1+(std::rand()%2));
@@ -333,7 +327,7 @@ bool AvatarMoverProcess::handleCombatMode()
 	return false;
 }
 
-bool AvatarMoverProcess::handleNormalMode()
+bool AvatarMoverProcess::handleNormalMode(const uint32 /*framenum*/)
 {
 	GUIApp* guiapp = GUIApp::get_instance();
 	MainActor* avatar = getMainActor();
