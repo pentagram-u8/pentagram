@@ -517,6 +517,14 @@ void AnimationTracker::getInterpolatedPosition(sint32& x_, sint32& y_,
 	z_ = prevz + (dz*fc)/(animaction->framerepeat+1);
 }
 
+void AnimationTracker::getSpeed(sint32& dx, sint32& dy, sint32& dz)
+{
+	dx = x - prevx;
+	dy = y - prevy;
+	dz = z - prevz;
+}
+
+
 void AnimationTracker::save(ODataSource* ods)
 {
 	ods->write4(startframe);

@@ -1,5 +1,10 @@
 2007-05-19  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.cpp: fix missing gravity in Item::hurl
+	* world/actors/AnimationTracker.*: getSpeed() function
+	* world/actors/ActorAnimProcess.*: add inertia when falling
+	* world/actors/ActorAnimProcess.*: don't let the unstoppable flag
+	  prevent falling. The reason for originally adding this
+	  (Torwin's leap of faith) is now fixed by the inertia.
 
 2007-05-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AvatarMoverProcess.cpp: measure attack delay between

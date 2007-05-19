@@ -66,6 +66,9 @@ public:
 
 	void getInterpolatedPosition(sint32& x_, sint32& y_, sint32& z_, int fc);
 
+	//! get the difference between current position and previous position
+	void getSpeed(sint32& dx, sint32& dy, sint32& dz);
+
 	//! get the current (shape)frame
 	uint32 getFrame() { return shapeframe; }
 

@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2006 The Pentagram team
+Copyright (C) 2003-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -218,7 +218,9 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 							 << "] falling" << std::endl;
 					}
 #endif
-					a->fall();
+					sint32 dx,dy,dz;
+					tracker->getSpeed(dx,dy,dz);
+					a->hurl(dx,dy,dz,2);
 				}
 
 				terminate();
@@ -245,6 +247,7 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 							 << "] falling" << std::endl;
 					}
 #endif
+					// no inertia here because we just crashed into something
 					a->fall();
 				}
 
@@ -315,13 +318,7 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 
 
 	if (repeatcounter == tracker->getAnimAction()->framerepeat) {
-		// CHECKME: I think AFF_UNK1 should cancel AAF_UNSTOPPABLE for this
-		// frame. As far as I know it's only used in the animation where
-		// Torwin jumps off the cliff. (shape 389, action 20, direction 6)
-		// -wjp (20050710)
-		if (tracker->isUnsupported() &&
-			(!(tracker->getAnimAction()->flags&AnimAction::AAF_UNSTOPPABLE) ||
-			 (tracker->getAnimFrame()->flags & AnimFrame::AFF_UNK1))) {
+		if (tracker->isUnsupported()) {
 			animAborted = true;
 
 #ifdef WATCHACTOR
@@ -330,9 +327,10 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 					 << "] falling" << std::endl;
 			}
 #endif
-			
-			a->fall();
-			// TODO: inertia
+
+			sint32 dx,dy,dz;
+			tracker->getSpeed(dx,dy,dz);
+			a->hurl(dx,dy,dz,2);
 			
 			// Note: do not wait for the fall to finish: this breaks
 			// the scene where Devon kills Mordea
