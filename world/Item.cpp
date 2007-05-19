@@ -1555,6 +1555,7 @@ void Item::grab()
 void Item::hurl(int xs, int ys, int zs, int grav)
 {
 	GravityProcess* p = ensureGravityProcess();
+	p->setGravity(grav);
 	p->move(xs,ys,zs);
 }
 

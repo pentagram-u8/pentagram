@@ -1,3 +1,6 @@
+2007-05-19  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Item.cpp: fix missing gravity in Item::hurl
+
 2007-05-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AvatarMoverProcess.cpp: measure attack delay between
 	  the starts of two attacks (instead between end and start)
