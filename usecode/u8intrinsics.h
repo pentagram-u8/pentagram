@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -241,7 +241,7 @@ Intrinsic U8Intrinsics[] = {
 	Actor::I_schedule,
 	Actor::I_getEquip,
 	Actor::I_setEquip,
-	0, // closeAllGumps
+	GUIApp::I_closeItemGumps,
 	CameraProcess::I_scrollTo,
 	UCMachine::I_urandom,
 	UCMachine::I_rndRange,

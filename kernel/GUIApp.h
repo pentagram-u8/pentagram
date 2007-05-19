@@ -99,6 +99,7 @@ public:
 	INTRINSIC(I_getTimeInSeconds);
 	INTRINSIC(I_setTimeInGameHours);
 	INTRINSIC(I_makeAvatarACheater);
+	INTRINSIC(I_closeItemGumps);
 
 	void setAvatarInStasis(bool stat) { avatarInStasis = stat; }
 	bool isAvatarInStasis() const { return avatarInStasis; }

@@ -2485,3 +2485,10 @@ uint32 GUIApp::I_setTimeInGameHours(const uint8* args,
 	return 0;
 }
 
+uint32 GUIApp::I_closeItemGumps(const uint8* args, unsigned int /*argsize*/)
+{
+	GUIApp* g = GUIApp::get_instance();
+	g->getDesktopGump()->CloseItemDependents();
+
+	return 0;
+}

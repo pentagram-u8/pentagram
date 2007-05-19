@@ -5,6 +5,7 @@
 	* world/actors/ActorAnimProcess.*: don't let the unstoppable flag
 	  prevent falling. The reason for originally adding this
 	  (Torwin's leap of faith) is now fixed by the inertia.
+	* kernel/GUIApp.cpp: closeItemGumps intrinsic
 
 2007-05-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AvatarMoverProcess.cpp: measure attack delay between
