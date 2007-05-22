@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2003-2004  Pentagram Team
+ *  Copyright (C) 2003-2007  Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -197,10 +197,10 @@ uint32 PaletteFaderProcess::I_fadeFromWhite(const uint8* /*args*/,
 uint32 PaletteFaderProcess::I_lightningBolt(const uint8* /*args*/,
 										unsigned int /*argsize*/)
 {
-	if (fader && fader->priority > 0xFFFF) return 0;
+	if (fader && fader->priority > -1) return 0;
 	else if (fader) fader->terminate();
 
-	fader = new PaletteFaderProcess(0x3FCFCFCF, true, 0xFFFF, 10, false);
+	fader = new PaletteFaderProcess(0x3FCFCFCF, true, -1, 10, false);
 	return Kernel::get_instance()->addProcess(fader);
 }
 

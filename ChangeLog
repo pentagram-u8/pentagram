@@ -1,3 +1,6 @@
+2007-05-22  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/PaletteFaderProcess.cpp: set priority of lightning to -1
+
 2007-05-19  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Item.cpp: fix missing gravity in Item::hurl
 	* world/actors/AnimationTracker.*: getSpeed() function
