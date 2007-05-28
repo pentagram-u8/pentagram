@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -22,6 +22,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Actor.h"
 #include "World.h"
 #include "CurrentMap.h"
+#include "AudioProcess.h"
 #include "getObject.h"
 
 #include "IDataSource.h"
@@ -56,6 +57,11 @@ void GravityProcess::init()
 	assert(item);
 
 	item->setGravityPID(getPid());
+
+	Actor* actor = p_dynamic_cast<Actor*>(item);
+	if (actor) {
+		actor->setFallStart(actor->getZ());
+	}
 }
 
 void GravityProcess::move(int xs, int ys, int zs)
@@ -80,6 +86,11 @@ bool GravityProcess::run(uint32 /*framenum*/)
 	if (!item) {
 		terminate();
 		return false;
+	}
+
+	Actor* actor = p_dynamic_cast<Actor*>(item);
+	if (actor && actor->getFallStart() < actor->getZ()) {
+		actor->setFallStart(actor->getZ());
 	}
 
 	// What to do:
@@ -293,6 +304,48 @@ void GravityProcess::terminate()
 		
 		// no longer bouncing
 		item->clearFlag(Item::FLG_BOUNCING);
+	}
+
+	Actor* actor = p_dynamic_cast<Actor*>(item);
+	if (actor && !actor->isDead()) {
+		// actors take a hit if they fall
+		// CHECKME: might need to do a 'die' animation even if actor is dead
+
+		int height = actor->getFallStart() - actor->getZ();
+
+		if (height >= 80) {
+			int damage = 0;
+
+			if (height < 104) {
+				// medium fall: take some damage
+				damage = (height - 72)/4;
+			} else {
+				// high fall: die
+				damage = actor->getHP();
+			}
+
+			actor->receiveHit(0, actor->getDir(), damage,
+							  WeaponInfo::DMG_FALLING|WeaponInfo::DMG_PIERCE);
+
+			// 'ooof'
+			AudioProcess* audioproc = AudioProcess::get_instance();
+			if (audioproc) audioproc->playSFX(51, 250, item_num, 0); // CONSTANT!
+		}
+
+		if (actor->getLastAnim() != Animation::die) {
+
+			// play land animation, overriding other animations
+			Kernel::get_instance()->killProcesses(item_num, 0xF0, false); // CONSTANT!
+			ProcId lpid = actor->doAnim(Animation::land, 8);
+
+			if (actor->isInCombat()) {
+				// need to get back to a combat stance to prevent weapon from
+				// being drawn again
+				ProcId spid = actor->doAnim(Animation::combatStand, 8);
+				Process* sp = Kernel::get_instance()->getProcess(spid);
+				sp->waitFor(lpid);
+			}
+		}
 	}
 
 	Process::terminate();
