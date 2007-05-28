@@ -1,4 +1,8 @@
 2007-05-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/MissileTracker.*: add isPathClear function
+	* gumps/GameMapGump.cpp: throwing when dragging (partially working)
+
+2007-05-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/Animation.h: rename some constants for consistency
 	* world/GravityProcess.cpp: keep track of fall heights
 	* world/GravityProcess.cpp: land properly after falling, taking damage

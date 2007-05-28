@@ -22,6 +22,19 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "Item.h"
 #include "getObject.h"
 
+MissileTracker::MissileTracker(Item* item, sint32 sx, sint32 sy, sint32 sz,
+							   sint32 tx, sint32 ty, sint32 tz,
+							   sint32 speed, sint32 gravity_)
+{
+	objid = item->getObjId();
+	destx = tx;
+	desty = ty;
+	destz = tz;
+	gravity = gravity_;
+
+	init(sx, sy, sz, speed);
+}
+
 MissileTracker::MissileTracker(Item* item, sint32 tx, sint32 ty, sint32 tz,
 							   sint32 speed, sint32 gravity_)
 {
@@ -36,10 +49,15 @@ MissileTracker::MissileTracker(Item* item, sint32 tx, sint32 ty, sint32 tz,
 	sint32 x,y,z;
 	item->getLocation(x,y,z);
 
-	int range = abs(x - tx) + abs(y - ty);
+	init(x, y, z, speed);
+}
+
+void MissileTracker::init(sint32 x, sint32 y, sint32 z, sint32 speed)
+{
+	int range = abs(x - destx) + abs(y - desty);
 
 	// rounded division: range/speed
-	int frames = (range + (speed/2)) / speed;
+	frames = (range + (speed/2)) / speed;
 
 	/*
 
@@ -82,9 +100,11 @@ MissileTracker::MissileTracker(Item* item, sint32 tx, sint32 ty, sint32 tz,
 		speedx = ((destx - x) + (frames/2)) / frames;
 		speedy = ((desty - y) + (frames/2)) / frames;
 
-		pout.printf("MissileTracker: from (%d,%d,%d) to (%d,%d,%d)\n", x, y, z, tx, ty, tz);
+#if 0
+		pout.printf("MissileTracker: from (%d,%d,%d) to (%d,%d,%d)\n", x, y, z, destx, desty, destz);
 		pout.printf("speed: %d, gravity: %d, frames: %d\n", speed, gravity, frames);
 		pout.printf("resulting speed: (%d,%d,%d)\n", speedx, speedy, speedz);
+#endif
 	} else {
 
 		// no significant horizontal movement
@@ -100,6 +120,56 @@ MissileTracker::~MissileTracker()
 {
 
 }
+
+bool MissileTracker::isPathClear()
+{
+	sint32 start[3];
+	sint32 end[3];
+	sint32 dims[3];
+	sint32 sx,sy,sz;
+
+	sx = speedx;
+	sy = speedy;
+	sz = speedz;
+
+	World *world = World::get_instance();
+	CurrentMap *map = world->getCurrentMap();
+	Item* item = getItem(objid);
+
+	item->getFootpadWorld(dims[0], dims[1], dims[2]);
+	item->getLocation(start[0], start[1], start[2]);
+
+	for (int f = 0; f < frames; ++f) {
+		end[0] = start[0] + sx;
+		end[1] = start[1] + sy;
+		end[2] = start[2] + sz;
+
+		// Do the sweep test
+		std::list<CurrentMap::SweepItem> collisions;
+		std::list<CurrentMap::SweepItem>::iterator it;
+		map->sweepTest(start, end, dims, item->getShapeInfo()->flags, objid,
+					   false, &collisions);
+
+		sint32 hit = 0x4000;
+		for (it = collisions.begin(); it != collisions.end(); it++)
+		{
+			if (it->blocking && !it->touching) {
+				hit = it->hit_time;
+				break;
+			}
+		}
+		if (hit != 0x4000) {
+			// didn't reach end of this path segment
+			return false;
+		}
+
+		sz -= gravity;
+		for (int i = 0; i < 3; ++i) start[i] = end[i];
+	}
+
+	return true;
+}
+
 
 void MissileTracker::launchItem()
 {

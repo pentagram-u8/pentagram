@@ -38,6 +38,8 @@
 #include "Mouse.h"
 #include "getObject.h"
 #include "AvatarMoverProcess.h"
+#include "MissileTracker.h"
+#include "Direction.h"
 
 
 #include "GravityProcess.h" // hack...
@@ -354,6 +356,7 @@ void GameMapGump::OnMouseClick(int button, int mx, int my)
 #if 1
 			Actor* devon = getActor(1);
 			PathfinderProcess* pfp = new PathfinderProcess(devon, x, y, z);
+//			PathfinderProcess* pfp = new PathfinderProcess(devon, objID, false);
 			Kernel::get_instance()->addProcess(pfp);
 #elif 0
 			if (p_dynamic_cast<Actor*>(item)) {
@@ -480,7 +483,17 @@ bool GameMapGump::DraggingItem(Item* item, int mx, int my)
 		if (throwrange && avatar->canReach(item, throwrange, dragging_pos[0],
 										   dragging_pos[1], dragging_pos[2]))
 		{
-			throwing = true;
+			int speed = 64 - item->getTotalWeight() + avatar->getStr();
+			if (speed < 1) speed = 1;
+			sint32 ax,ay,az;
+			avatar->getLocation(ax,ay,az);
+			MissileTracker t(item, ax, ay, az,
+							 dragging_pos[0], dragging_pos[1], dragging_pos[2],
+							 speed, 4);
+			if (t.isPathClear())
+				throwing = true;
+			else
+				return false;
 		} else {
 			return false;
 		}
@@ -507,7 +520,7 @@ void GameMapGump::StopDraggingItem(Item* item, bool moved)
 
 	if (!moved) return; // nothing to do
 
-	// make items on top of item fall
+	// make items on top of item fall and call release on supporting items
 	item->grab();
 }
 
@@ -530,19 +543,48 @@ void GameMapGump::DropItem(Item* item, int mx, int my)
 		}
 	}
 
-	// add item to world 
+	if (!avatar->canReach(item, 128, // CONSTANT!
+						  dragging_pos[0], dragging_pos[1], dragging_pos[2]))
+	{
+		// can't reach, so throw
+		pout << "Throwing item to (" << dragging_pos[0] << ","
+			 << dragging_pos[1] << "," << dragging_pos[2] << ")" << std::endl;
+		int speed = 64 - item->getTotalWeight() + avatar->getStr();
+		if (speed < 1) speed = 1;
+		sint32 ax,ay,az;
+		avatar->getLocation(ax,ay,az);
+		// CHECKME: correct position to throw from?
+		// CHECKME: correct events triggered when doing this move?
+		item->move(ax, ay, az+24);
+		sint32 tx, ty;
+		tx = dragging_pos[0];
+		ty = dragging_pos[1];
+		int inaccuracy = 4 * (30 - avatar->getDex());
+		if (inaccuracy < 20) inaccuracy = 20; // just in case dex > 25
+		tx += (std::rand()%inaccuracy) - (std::rand()%inaccuracy);
+		ty += (std::rand()%inaccuracy) - (std::rand()%inaccuracy);
+		MissileTracker t(item, tx, ty, dragging_pos[2],
+						 speed, 4);
+		t.launchItem();
 
-	//!! TODO: throw item if too far, etc...
+		// FIXME: When doing this animation, sometimes items will
+		//        get stuck on the avatar. Why?
+#if 0
+		avatar->doAnim(Animation::stand,
+					   Get_WorldDirection(dragging_pos[1]-ay,
+										  dragging_pos[0]-ax));
+#endif
+	} else {
+		pout << "Dropping item at (" << dragging_pos[0] << ","
+			 << dragging_pos[1] << "," << dragging_pos[2] << ")" << std::endl;
 
-	pout << "Dropping item at (" << dragging_pos[0] << "," << dragging_pos[1]
-		 << "," << dragging_pos[2] << ")" << std::endl;
+		// CHECKME: collideMove and grab (in StopDraggingItem)
+		// both call release on supporting items.
 
-	// CHECKME: collideMove and grab (in StopDraggingItem) both call release
-	// on supporting items.
-
-	item->collideMove(dragging_pos[0], dragging_pos[1], dragging_pos[2],
-					  true, true); // teleport item
-	item->fall();
+		item->collideMove(dragging_pos[0], dragging_pos[1], dragging_pos[2],
+						  true, true); // teleport item
+		item->fall();
+	}
 }
 
 void GameMapGump::ConCmd_toggleHighlightItems(const Console::ArgvType &argv)

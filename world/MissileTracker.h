@@ -24,16 +24,26 @@ class Item;
 class MissileTracker
 {
 public:
+	MissileTracker(Item* item, sint32 sx, sint32 sy, sint32 sz,
+				   sint32 tx, sint32 ty, sint32 tz,
+				   sint32 speed, sint32 gravity);
 	MissileTracker(Item* item, sint32 tx, sint32 ty, sint32 tz,
 				   sint32 speed, sint32 gravity);
 	~MissileTracker();
 
+	bool isPathClear();
+
 	void launchItem();
+
+protected:
+	void init(sint32 sx, sint32 sy, sint32 sz, sint32 speed);
+
 private:
 	ObjId objid;
 	sint32 destx, desty, destz;
 	sint32 speedx, speedy, speedz;
 	sint32 gravity;
+	int frames;
 };
 
 #endif
