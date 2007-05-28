@@ -171,11 +171,11 @@ bool AvatarMoverProcess::handleCombatMode(const uint32 framenum)
 	}
 
 	// if we were blocking, and no longer holding the mouse, stop
-	if (lastanim == Animation::startblock &&
+	if (lastanim == Animation::startBlock &&
 		!(mouseButton[0].state & MBS_DOWN))
 	{
 //		pout << "AvatarMover: combat stop blocking" << std::endl;
-		waitFor(avatar->doAnim(Animation::stopblock, direction));
+		waitFor(avatar->doAnim(Animation::stopBlock, direction));
 		return false;
 	}
 
@@ -210,14 +210,14 @@ bool AvatarMoverProcess::handleCombatMode(const uint32 framenum)
 		(mouseButton[0].state & MBS_HANDLED) && mouseButton[0].lastDown > 0)
 	{
 		// left click-and-hold = block
-		if (lastanim == Animation::startblock)
+		if (lastanim == Animation::startBlock)
 			return false;
 
 //		pout << "AvatarMover: combat block" << std::endl;
 
 		if (checkTurn(mousedir, false)) return false;
 
-		waitFor(avatar->doAnim(Animation::startblock, mousedir));
+		waitFor(avatar->doAnim(Animation::startBlock, mousedir));
 		return false;
 	}
 
@@ -318,8 +318,8 @@ bool AvatarMoverProcess::handleCombatMode(const uint32 framenum)
 
 	// not doing anything in particular? stand
 	// TODO: make sure falling works properly.
-	if (lastanim != Animation::combat_stand) {
-		nextanim = Animation::combat_stand;
+	if (lastanim != Animation::combatStand) {
+		nextanim = Animation::combatStand;
 		nextanim = Animation::checkWeapon(nextanim, lastanim);
 		waitFor(avatar->doAnim(nextanim, direction));
 	}
@@ -749,8 +749,8 @@ void AvatarMoverProcess::turnToDirection(int direction)
 	}
 
 	if (combat) {
-		turnanim = Animation::combat_stand;
-		standanim = Animation::combat_stand;
+		turnanim = Animation::combatStand;
+		standanim = Animation::combatStand;
 	}
 
 	ProcId prevpid = 0;
@@ -795,7 +795,7 @@ bool AvatarMoverProcess::checkTurn(int direction, bool moving)
 	{
 		if (moving &&
 			(lastanim == Animation::walk || lastanim == Animation::run ||
-			 lastanim == Animation::combat_stand) &&
+			 lastanim == Animation::combatStand) &&
 			(abs(direction - curdir) + 1 % 8 <= 2))
 		{
 			// don't need to explicitly do a turn animation

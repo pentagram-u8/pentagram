@@ -252,7 +252,7 @@ void CombatProcess::turnToDirection(int direction)
 	int curdir = a->getDir();
 	int step = 1;
 	if ((curdir - direction + 8) % 8 < 4) step = -1;
-	Animation::Sequence turnanim = Animation::combat_stand;
+	Animation::Sequence turnanim = Animation::combatStand;
 
 	ProcId prevpid = 0;
 	bool done = false;

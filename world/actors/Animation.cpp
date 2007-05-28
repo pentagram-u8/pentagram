@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2004 The Pentagram team
+Copyright (C) 2003-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,14 +25,14 @@ namespace Animation
 bool isCombatAnim(const Sequence anim)
 {
 	switch (anim) {
-		case combat_stand:
+		case combatStand:
 		case readyWeapon:
 		case advance:
 		case retreat:
 		case attack:
 		case kick:
-		case startblock:
-		case stopblock:
+		case startBlock:
+		case stopBlock:
 			return true;
 		default:
 			return false;

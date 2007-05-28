@@ -615,7 +615,7 @@ bool Pathfinder::pathfind(std::vector<PathfindingAction>& path)
 
 			if (length) {
 				if (node->state.combat)
-					path[length-1].action = Animation::combat_stand;
+					path[length-1].action = Animation::combatStand;
 				else
 					path[length-1].action = Animation::stand;
 				path[length-1].direction = path[length-2].direction;

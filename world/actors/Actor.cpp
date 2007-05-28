@@ -697,10 +697,10 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 		fallingprocid = killAllButFallAnims(false);
 	}
 
-	// if avatar was blocking; do a quick stopblock/startblock and play SFX
-	if (objid == 1 && getLastAnim() == Animation::startblock) {
-		ProcId anim1pid = doAnim(Animation::stopblock, 8);
-		ProcId anim2pid = doAnim(Animation::startblock, 8);
+	// if avatar was blocking; do a quick stopBlock/startBlock and play SFX
+	if (objid == 1 && getLastAnim() == Animation::startBlock) {
+		ProcId anim1pid = doAnim(Animation::stopBlock, 8);
+		ProcId anim2pid = doAnim(Animation::startBlock, 8);
 
 		Process* anim1proc = Kernel::get_instance()->getProcess(anim1pid);
 		Process* anim2proc = Kernel::get_instance()->getProcess(anim2pid);
@@ -741,7 +741,7 @@ void Actor::receiveHit(uint16 other, int dir, int damage, uint16 damage_type)
 		ProcId anim2pid;
 		if (isInCombat())
 			// not doing this would cause you to re-draw your weapon when hit
-			anim2pid = doAnim(Animation::combat_stand, dir);
+			anim2pid = doAnim(Animation::combatStand, dir);
 		else
 			anim2pid = doAnim(Animation::stand, dir);
 		Process* anim1proc = Kernel::get_instance()->getProcess(anim1pid);
@@ -954,8 +954,8 @@ int Actor::calculateAttackDamage(uint16 other, int damage, uint16 damage_type)
 	if (damage && !(damage_type & WeaponInfo::DMG_PIERCE) && !slayer)
 	{
 		// blocking?
-		if ((getLastAnim() == Animation::startblock ||
-			 getLastAnim() == Animation::stopblock) &&
+		if ((getLastAnim() == Animation::startBlock ||
+			 getLastAnim() == Animation::stopBlock) &&
 			!(getActorFlags() & ACT_STUNNED))
 		{
 			damage -= getStr() / 5;

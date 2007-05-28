@@ -41,9 +41,9 @@ public:
 protected:
 	virtual void saveData(ODataSource* ods);
 
-	bool handleHangingMode(const uint32 /*framenum*/);
+	bool handleHangingMode(const uint32 framenum);
 	bool handleCombatMode(const uint32 framenum);
-	bool handleNormalMode(const uint32 /*framenum*/);
+	bool handleNormalMode(const uint32 framenum);
 
 	void step(Animation::Sequence action, int direction, bool adjusted=false);
 	void jump(Animation::Sequence action, int direction);

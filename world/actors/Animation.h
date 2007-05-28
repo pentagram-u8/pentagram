@@ -37,8 +37,8 @@ namespace Animation
 		step = 12,
 		stumbleBackwards = 13,
 		die = 14,
-		combat_stand = 15,
-		prepareJump = 16,
+		combatStand = 15,
+		land = 16,
 		jump = 17,
 		airwalkJump = 18,
 		//19-26: climbing up on increasingly high objects
@@ -83,8 +83,8 @@ namespace Animation
 		drown = 56,
 		burn = 57,
 		kick = 58,
-		startblock = 59,
-		stopblock = 60
+		startBlock = 59,
+		stopBlock = 60
 		//61: unused
 		//62: unused
 		//63: unused
