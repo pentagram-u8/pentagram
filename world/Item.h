@@ -225,7 +225,7 @@ public:
 	//! between the x, y (and possibly z) coordinates of the items.
 	int getRange(Item& item2, bool checkz=false) const;
 
-	//! Check if this item can reach another item.
+	//! Check if this item can reach another item. (This includes LoS.)
 	//! \param other item to be reached
 	//! \param range range
 	//! \param x x coordinate of other to use, If zero, use real coords.
