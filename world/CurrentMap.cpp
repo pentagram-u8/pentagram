@@ -249,7 +249,7 @@ void CurrentMap::addItem(Item* item)
 
 	if (ix < 0 || ix >= mapChunkSize*MAP_NUM_CHUNKS || 
 		iy < 0 || iy >= mapChunkSize*MAP_NUM_CHUNKS) {
-		perr << "Skipping item: out of range (" 
+		perr << "Skipping item " << item->getObjId() << ": out of range (" 
 			 << ix << "," << iy << ")" << std::endl;
 		return;
 	}
@@ -276,7 +276,7 @@ void CurrentMap::addItemToEnd(Item* item)
 
 	if (ix < 0 || ix >= mapChunkSize*MAP_NUM_CHUNKS || 
 		iy < 0 || iy >= mapChunkSize*MAP_NUM_CHUNKS) {
-		perr << "Skipping item: out of range (" 
+		perr << "Skipping item " << item->getObjId() << ": out of range (" 
 			 << ix << "," << iy << ")" << std::endl;
 		return;
 	}
@@ -313,7 +313,7 @@ void CurrentMap::removeItemFromList(Item* item, sint32 oldx, sint32 oldy)
 
 	if (oldx < 0 || oldx >= mapChunkSize*MAP_NUM_CHUNKS || 
 		oldy < 0 || oldy >= mapChunkSize*MAP_NUM_CHUNKS) {
-		perr << "Skipping item: out of range (" 
+		perr << "Skipping item " << item->getObjId() << ": out of range (" 
 			 << oldx << "," << oldy << ")" << std::endl;
 		return;
 	}
