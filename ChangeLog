@@ -1,3 +1,7 @@
+2007-05-28  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* world/MissileTracker.cpp: missing needed headers
+	* gumps/GameMapGump.cpp: missing needed headers
+
 2007-05-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/MissileTracker.*: add isPathClear function
 	* gumps/GameMapGump.cpp: throwing when dragging (partially working)

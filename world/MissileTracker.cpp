@@ -19,7 +19,10 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "MissileTracker.h"
+
+#include "CurrentMap.h"
 #include "Item.h"
+#include "World.h"
 #include "getObject.h"
 
 MissileTracker::MissileTracker(Item* item, sint32 sx, sint32 sy, sint32 sz,

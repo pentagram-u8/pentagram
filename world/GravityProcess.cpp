@@ -19,10 +19,12 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "pent_include.h"
 
 #include "GravityProcess.h"
+
 #include "Actor.h"
-#include "World.h"
-#include "CurrentMap.h"
 #include "AudioProcess.h"
+#include "CurrentMap.h"
+#include "Kernel.h"
+#include "World.h"
 #include "getObject.h"
 
 #include "IDataSource.h"
