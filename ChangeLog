@@ -1,3 +1,8 @@
+2007-06-07  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/GravityProcess.cpp: expand bounce diagnostics
+	* world/GravityProcess.cpp: fix crash when actor is killed by fall
+	* world/GravityProcess.cpp: let avatar fall down when killed by fall
+
 2007-05-28  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* world/MissileTracker.cpp: missing needed headers
 	* gumps/GameMapGump.cpp: missing needed headers

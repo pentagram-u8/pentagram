@@ -81,7 +81,7 @@ void GravityProcess::setGravity(int gravity_)
 		gravity = gravity_;
 }
 
-bool GravityProcess::run(uint32 /*framenum*/)
+bool GravityProcess::run(uint32 framenum)
 {
 	// move item in (xs,ys,zs) direction
 	Item* item = getItem(item_num);
@@ -144,6 +144,8 @@ bool GravityProcess::run(uint32 /*framenum*/)
 	}
 #endif
 
+//#define BOUNCE_DIAG
+
 	ObjId hititemid;
 	sint32 dist = item->collideMove(tx,ty,tz, false, false, &hititemid);
 	
@@ -155,6 +157,11 @@ bool GravityProcess::run(uint32 /*framenum*/)
 		Item* hititem = getItem(hititemid);
 		if(zspeed < -2 && !p_dynamic_cast<Actor*>(item))
 		{
+#ifdef BOUNCE_DIAG
+			pout << "item " << item_num << " bounce [" << framenum
+				 << "]: hit " << hititem->getObjId() << std::endl;
+#endif
+
 			sint32 hitx,hity,hitz;
 			hititem->getLocation(hitx,hity,hitz);
 			sint32 hitdx,hitdy,hitdz;
@@ -171,7 +178,6 @@ bool GravityProcess::run(uint32 /*framenum*/)
 			{
 				// Bounce!
 				terminate = false;
-//#define BOUNCE_DIAG
 #ifdef BOUNCE_DIAG
 				int xspeedold = xspeed;
 				int yspeedold = yspeed;
@@ -212,16 +218,25 @@ bool GravityProcess::run(uint32 /*framenum*/)
 					if(abs(xspeed) > 2) xspeed /= 2;
 				}
 #ifdef BOUNCE_DIAG
-				if(!terminate) {
-					pout << "bounce: speed was (" << xspeedold << ","
-						 << yspeedold << "," << zspeedold << ") new zspeed "
-						 << zspeed << " heading " << headingold_r
-						 << " impulse " << heading_r << " ("
-						 << (xspeed-xspeedold) << "," << (yspeed-yspeedold)
-						 << "), " << std::endl;
-				}
+				pout << "item " << item_num << " bounce [" << framenum
+					 << "]: speed was (" << xspeedold << ","
+					 << yspeedold << "," << zspeedold << ") new zspeed "
+					 << zspeed << " heading " << headingold_r
+					 << " impulse " << heading_r << " ("
+					 << (xspeed-xspeedold) << "," << (yspeed-yspeedold)
+					 << "), terminate: " << terminate << std::endl;
+#endif
+			} else {
+#ifdef BOUNCE_DIAG
+				pout << "item " << item_num << " bounce [" << framenum
+					 << "]: no bounce" << std::endl;
 #endif
 			}
+		} else {
+#ifdef BOUNCE_DIAG
+			pout << "item " << item_num << " bounce [" << framenum
+				 << "]: slow hit" << std::endl;
+#endif			
 		}
 		if(terminate) {
 			item->clearFlag(Item::FLG_BOUNCING);
@@ -308,6 +323,12 @@ void GravityProcess::terminate()
 		item->clearFlag(Item::FLG_BOUNCING);
 	}
 
+	Process::terminate();
+
+	// Note: we need to terminate before calling receiveHit on actor.
+	// If we don't, receiveHit will try to terminate this GravityProcess,
+	// which will cause infinite recursion.
+
 	Actor* actor = p_dynamic_cast<Actor*>(item);
 	if (actor && !actor->isDead()) {
 		// actors take a hit if they fall
@@ -334,7 +355,7 @@ void GravityProcess::terminate()
 			if (audioproc) audioproc->playSFX(51, 250, item_num, 0); // CONSTANT!
 		}
 
-		if (actor->getLastAnim() != Animation::die) {
+		if (!actor->isDead() && actor->getLastAnim() != Animation::die) {
 
 			// play land animation, overriding other animations
 			Kernel::get_instance()->killProcesses(item_num, 0xF0, false); // CONSTANT!
@@ -349,8 +370,6 @@ void GravityProcess::terminate()
 			}
 		}
 	}
-
-	Process::terminate();
 }
 
 void GravityProcess::dumpInfo()
