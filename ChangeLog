@@ -1,3 +1,7 @@
+2007-06-24  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/ActorAnimProcess.cpp: prevent actors from falling
+	  directly after stepping out of the fast area.
+
 2007-06-07  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/GravityProcess.cpp: expand bounce diagnostics
 	* world/GravityProcess.cpp: fix crash when actor is killed by fall

@@ -300,6 +300,19 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 #endif
 	}
 
+	// Did we just leave the fast area?
+	if (!(a->getFlags() & Item::FLG_FASTAREA)) {
+#ifdef WATCHACTOR
+		if (item_num == watchactor)
+			pout << "Animation ["
+				 << Kernel::get_instance()->getFrameNum()
+				 << "] ActorAnimProcess left fastarea; terminating"
+				 << std::endl;
+#endif
+		terminate();
+		return true;
+	}
+
 #ifdef WATCHACTOR
 	if (item_num == watchactor) {
 		pout << "Animation [" << Kernel::get_instance()->getFrameNum()
