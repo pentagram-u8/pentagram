@@ -248,14 +248,17 @@ int XMidiSequence::playEvent()
 		}
 	}
 
-	if (!event) return -1;
+	if (!event)
+	{
+		if (notes_on.GetNotes()) return 1;
+		else return -1;
+	}
 
 	aim = ((event->time-last_tick)*5000)/speed;
 	diff = aim - getTime ();
 
-	if (diff < 0) return 0; // Next even is ready now!
-	else if (diff < 6) return 1; // We need to wait less than 1 MS till the next event
-	else return diff/6; // 1 MS or more till next event
+	if (diff < 0) return 0; // Next event is ready now!
+	return 1; 
 }
 
 sint32 XMidiSequence::timeTillNext()
