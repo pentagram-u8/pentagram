@@ -228,9 +228,11 @@ void LowLevelMidiDriver::destroyMidiDriver()
 
 	SDL_DestroyMutex(mutex);
 	SDL_DestroyMutex(cbmutex);
+	SDL_DestroyCond(cond);
 	cbmutex = 0;
 	mutex = 0;
 	thread = 0;
+	cond = 0;
 
 	giveinfo();
 }

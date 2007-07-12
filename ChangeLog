@@ -1,3 +1,7 @@
+2007-07-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* audio/midi/LowLevelMidiDriver.cpp: sync with exult:
+	  Destroy cond also when the driver is destroyed.
+
 2007-07-12  Ryan Nunn <colourles@users.sourceforge.net>
 	* audio/midi/* : Changes to the MidiDriver code as per Exult bug report 
 	  1750743, with additional changes to ensure that it actually works 
