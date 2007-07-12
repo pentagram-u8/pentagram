@@ -188,7 +188,7 @@ bool GravityProcess::run(uint32 framenum)
 
 				// Apply an impulse on the x/y plane in a random direction
 				// in a 180 degree pie around the orginal vector in x/y
-				double heading_r = atan2(yspeed, xspeed);
+				double heading_r = atan2((double)yspeed, (double)xspeed);
 				double deltah_r = static_cast<double>(rand())
 								  * M_PI / RAND_MAX - M_PI/2;
 #ifdef BOUNCE_DIAG

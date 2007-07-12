@@ -954,6 +954,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\games\RemorseGame.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\games\RemorseGame.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\games\StartU8Process.cpp"
 				>
 			</File>
@@ -2007,6 +2015,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\world\MissileTracker.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\world\MissileTracker.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\world\MonsterEgg.cpp"
 				>
 			</File>
@@ -2087,6 +2103,14 @@
 					>
 				</File>
 				<File
+					RelativePath="..\..\..\world\actors\AmbushProcess.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\world\actors\AmbushProcess.h"
+					>
+				</File>
+				<File
 					RelativePath="..\..\..\world\actors\AnimAction.cpp"
 					>
 				</File>
@@ -2116,6 +2140,14 @@
 				</File>
 				<File
 					RelativePath="..\..\..\world\actors\AvatarDeathProcess.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\world\actors\AvatarGravityProcess.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\world\actors\AvatarGravityProcess.h"
 					>
 				</File>
 				<File

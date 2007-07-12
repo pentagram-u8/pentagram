@@ -40,6 +40,8 @@
 //#define COMPILE_GAMMA_CORRECT_SCALERS
 //#define COMPILE_ALL_BILINEAR_SCALERS
 
+#define _USE_MATH_DEFINES
+
 #ifdef _DEBUG
 #define DEBUG
 #endif

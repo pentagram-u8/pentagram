@@ -1,3 +1,15 @@
+2007-07-12  Ryan Nunn <colourles@users.sourceforge.net>
+	* audio/midi/* : Changes to the MidiDriver code as per Exult bug report 
+	  1750743, with additional changes to ensure that it actually works 
+	  properly in all cases. Also fixed possible problems with sequence speed 
+	  being set to 0, notes being cut off early at the end of a song and 
+	  renamed some variables so they properly reflect what they actually are.
+	* world/GravityProcess.cpp : Removing ambiguous call for MSVC
+	* system/msvc/msvc_include.h : Adding an define required so pentagram 
+	  will compile
+	* system/msvc/Pentagram/Pentagram.vcproj : Updating project to include all 
+	  files
+
 2007-06-24  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/ActorAnimProcess.cpp: prevent actors from falling
 	  directly after stepping out of the fast area.
