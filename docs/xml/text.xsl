@@ -72,7 +72,7 @@
 	<xsl:text>last changed: </xsl:text>
 	<xsl:value-of select="@changed"/>
 	<xsl:text>&#xA;&#xA;</xsl:text>
-	<xsl:text>The latest version of this document can be found at http://pentagram.sourceforge.net/readme.php&#xA;</xsl:text>
+	<xsl:text>The latest version of this document can be found at http://pentagram.sourceforge.net/docs.php&#xA;</xsl:text>
 	<xsl:text>&#xA;&#xA;</xsl:text>
 
 	<!-- BEGIN TOC -->
