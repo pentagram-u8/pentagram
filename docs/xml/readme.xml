@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE readme SYSTEM "docs.dtd">
-<readme title="Pentagram" changed="19 February 2006 (GMT)">	
+<readme title="Pentagram" changed="3 August 2007 (GMT)">	
 	<section title="Building CVS">
 		<sub name="dependencies">
 			<header>Build dependencies</header>
@@ -253,18 +253,45 @@
 		</sub>
   	</section>
   	<section title="Other stuff">
+		<sub name="console_commands">
+			<header>Console commands</header>
+			<body>
+				<para>
+					<Pent/> has a debugging console with various useful commands. A selection is listed below.
+				</para>
+				<keytable title="Console commands">
+					<keydesc name="GUIApp::quit">quit</keydesc>
+					<keydesc name="ConsoleGump::toggle">open/close console</keydesc>
+					<keydesc name="Cheat::heal">heal the avatar</keydesc>
+					<keydesc name="Cheat::equip">equip the avatar with magic armour</keydesc>
+					<keydesc name="Cheat::maxstats">set str/dex/int to 25</keydesc>
+					<keydesc name="Cheat::toggleInvincibility">toggle avatar invincibility</keydesc>
+					<keydesc name="MainActor::name &lt;name&gt;">set avatar name</keydesc>
+					<keydesc name="MainActor::teleport &lt;map&gt; &lt;x&gt; &lt;y&gt; &lt;z&gt;">teleport to coordinates</keydesc>
+					<keydesc name="MiniMapGump::toggle">show/hide minimap</keydesc>
+				</keytable>
+			</body>
+		</sub>
 		<sub name="games_versions">
 			<header>Supported games and versions</header>
 			<body>
 				<para>
 					At the moment we only support the English versions of Ultima 8, both pre-patch
-					and post-patch. The German, French and Spanish versions should also work, but are
+					and post-patch. The German, French, Spanish versions should also work, but are
 					less well-tested. The Japanese version has a chance of working, but has hardly been tested at all.
 				</para>
 			</body>
 		</sub>
 	</section>
 	<section title="Changes to the Documentation">
+		<sub name="03082007">
+			<header>- 3 August 2007</header>
+			<body>
+				<para>
+					<ref1 target="console_commands"/>: added (short) list of console commands.<br/>
+				</para>
+			</body>
+		</sub>
 		<sub name="19022006">
 			<header>- 19 February 2006</header>
 			<body>
