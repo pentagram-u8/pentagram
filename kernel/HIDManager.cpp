@@ -225,7 +225,7 @@ void HIDManager::saveBindings()
 		for (event=0; event < HID_EVENT_LAST; ++event)
 		{
 			confkey = section +
-				HID_GetEventName((HID_Event) event) +
+				HID_GetEventName((HID_Event) event) + ' ' +
 				HID_GetKeyName((HID_Key) key);
 			if (bindings[key][event])
 			{
@@ -279,7 +279,7 @@ void HIDManager::bind(const Pentagram::istring& control, const Console::ArgvType
 		key = HID_GetKeyFromName(ctrl_argv[1]);
 	}
 
-	if (event < HID_EVENT_LAST && key < HID_LAST && key != HID_BACKQUOTE)
+	if (event < HID_EVENT_LAST && key < HID_LAST)
 	{
 		bindings[key][event] = command;
 	}

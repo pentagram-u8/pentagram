@@ -335,6 +335,10 @@ bool ConsoleGump::OnKeyDown(int key, int mod)
 			con.AddCharacterToCommandBuffer(Console::Tab);
 			break;
 
+		case SDLK_ESCAPE:
+			ToggleConsole();
+			break;
+		
 		case SDLK_RETURN:
 		case SDLK_KP_ENTER:
 			con.AddCharacterToCommandBuffer(Console::Enter);

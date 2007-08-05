@@ -1,3 +1,8 @@
+2007-08-05  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* gumps/ConsoleGump.cpp: Close (toggle) console on escape key
+	* kernel/HIDManager.cpp: fix HIDBindings::save and remove limit to
+	  binding different commands to backquote
+
 2007-07-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* audio/midi/LowLevelMidiDriver.cpp: sync with exult:
 	  Destroy cond also when the driver is destroyed.
