@@ -1474,6 +1474,21 @@ void GUIApp::handleEvent(const SDL_Event& event)
 					}
 #endif
 
+#ifdef MACOSX
+					// Paste from Clip-Board on Command-V - Note this should be a flag of some sort
+					if (event.key.keysym.sym == SDLK_v && event.key.keysym.mod & KMOD_META)
+					{
+						const char * str = macosxPasteboardText();
+						if (str != NULL) 
+						{ 
+							// Only read the first line of text
+							while (*str >= ' ')
+								gump->OnTextInput(*str++);
+						} 
+						return;
+					}
+#endif
+
 					if (event.key.keysym.unicode >= ' ' &&
 						event.key.keysym.unicode <= 255 &&
 						!(event.key.keysym.unicode >= 0x7F && // control chars
@@ -1632,8 +1647,13 @@ void GUIApp::handleEvent(const SDL_Event& event)
 
 		switch (event.key.keysym.sym) {
 		case SDLK_q: // Quick quit
+#ifndef MACOSX
 			if (event.key.keysym.mod & KMOD_CTRL)
 				ForceQuit();
+#else
+			if (event.key.keysym.mod & KMOD_META)
+				ForceQuit();
+#endif
 			break;
 		case SDLK_LEFTBRACKET: gameMapGump->IncSortOrder(-1); break;
 		case SDLK_RIGHTBRACKET: gameMapGump->IncSortOrder(+1); break;

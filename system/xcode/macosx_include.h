@@ -52,6 +52,7 @@ extern "C" {
 #endif
     
 const char * macosxResourcePath();
+const char * macosxPasteboardText();
 
 #ifdef __cplusplus
 }

@@ -21,11 +21,18 @@
 #include "macosx_include.h"
 #import <Foundation/NSBundle.h>
 #import <Foundation/NSString.h>
+#import <AppKit/NSPasteboard.h>
 
 const char * macosxResourcePath()
 {
     NSString * path = [[NSBundle mainBundle] resourcePath];
     if (path)
-        return [path cString];
+        return [path UTF8String];
     return "data";
+}
+
+const char * macosxPasteboardText()
+{
+    NSPasteboard *pb = [NSPasteboard generalPasteboard];
+    return [[pb stringForType: NSStringPboardType] UTF8String];
 }

@@ -2,6 +2,10 @@
 	* gumps/ConsoleGump.cpp: Close (toggle) console on escape key
 	* kernel/HIDManager.cpp: fix HIDBindings::save and remove limit to
 	  binding different commands to backquote
+	* kernel/HIDKeys.*, kernel/HIDManager.*, kernel/GUIApp.cpp: add
+	  preemtive key binding and set default console keys to preempt
+	* system/xcode/macosx_utils.*, kernel/GUIApp.cpp: implement clip board
+	  paste on OSX and change quit shortcut to Command-Q on OSX
 
 2007-07-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* audio/midi/LowLevelMidiDriver.cpp: sync with exult:
