@@ -1397,7 +1397,41 @@ void GUIApp::leaveTextMode(Gump *gump)
 void GUIApp::handleEvent(const SDL_Event& event)
 {
 	uint32 now = SDL_GetTicks();
+	HID_Key key = HID_LAST;
+	HID_Event evn = HID_EVENT_LAST;
 	bool handled = false;
+
+	switch (event.type) {
+		case SDL_KEYDOWN:
+			key = HID_translateSDLKey(event.key.keysym.sym);
+			evn = HID_EVENT_DEPRESS;
+		break;
+		case SDL_KEYUP:
+			key = HID_translateSDLKey(event.key.keysym.sym);
+			evn = HID_EVENT_RELEASE;
+		break;
+		case SDL_MOUSEBUTTONDOWN:
+			key = HID_translateSDLMouseButton(event.button.button);
+			evn = HID_EVENT_DEPRESS;
+		break;
+		case SDL_MOUSEBUTTONUP:
+			key = HID_translateSDLMouseButton(event.button.button);
+			evn = HID_EVENT_RELEASE;
+		break;
+		case SDL_JOYBUTTONDOWN:
+			key = HID_translateSDLJoystickButton(event.jbutton.button);
+			evn = HID_EVENT_DEPRESS;
+		break;
+		case SDL_JOYBUTTONUP:
+			key = HID_translateSDLJoystickButton(event.jbutton.button);
+			evn = HID_EVENT_RELEASE;
+		break;
+	}
+
+	if (dragging == DRAG_NOT && evn == HID_EVENT_DEPRESS) {
+		if (hidmanager->handleEvent(key, HID_EVENT_PREEMPT))
+			return;
+	}
 
 	// Text mode input. A few hacks here
 	if (!textmodes.empty()) {
@@ -1414,12 +1448,6 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		if (gump) {
 			switch (event.type) {
 				case SDL_KEYDOWN:
-					// Break if console Key
-					// FIXME: make console key configurable
-					if (event.key.keysym.sym == SDLK_BACKQUOTE ||
-						event.key.keysym.sym == SDLK_F5)
-						break;
-
 #ifdef WIN32 
 					// Paste from Clip-Board on Ctrl-V - Note this should be a flag of some sort
 					if (event.key.keysym.sym == SDLK_v && event.key.keysym.mod & KMOD_CTRL)
@@ -1458,13 +1486,6 @@ void GUIApp::handleEvent(const SDL_Event& event)
 					return;
 
 				case SDL_KEYUP:
-					// Break if console Key
-					// FIXME: make this configurable
-					if (event.key.keysym.sym == SDLK_BACKQUOTE ||
-						event.key.keysym.sym == SDLK_F5)
-						break;
-//					if (event.key.keysym.sym == SDLK_BACKQUOTE || 
-//						hidmanager->isToggleConsole(event)) break;
 					gump->OnKeyUp(event.key.keysym.sym);
 					return;
 
@@ -1629,7 +1650,7 @@ void GUIApp::handleEvent(const SDL_Event& event)
 	}
 
 	if (dragging == DRAG_NOT && ! handled) {
-		if (hidmanager->handleEvent(event))
+		if (hidmanager->handleEvent(key, evn))
 			return;
 	}
 

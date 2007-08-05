@@ -59,38 +59,10 @@ HIDManager::~HIDManager()
 	hidmanager = 0;
 }
 
-bool HIDManager::handleEvent(const SDL_Event & event)
+bool HIDManager::handleEvent(const HID_Key key, const HID_Event evn)
 {
 	bool handled = false;
-	HID_Key key = HID_LAST;
-	HID_Event evn = HID_EVENT_LAST;
 	Console::ArgvType * command = 0;
-	switch (event.type) {
-		case SDL_KEYDOWN:
-			key = HID_translateSDLKey(event.key.keysym.sym);
-			evn = HID_EVENT_DEPRESS;
-		break;
-		case SDL_KEYUP:
-			key = HID_translateSDLKey(event.key.keysym.sym);
-			evn = HID_EVENT_RELEASE;
-		break;
-		case SDL_MOUSEBUTTONDOWN:
-			key = HID_translateSDLMouseButton(event.button.button);
-			evn = HID_EVENT_DEPRESS;
-		break;
-		case SDL_MOUSEBUTTONUP:
-			key = HID_translateSDLMouseButton(event.button.button);
-			evn = HID_EVENT_RELEASE;
-		break;
-		case SDL_JOYBUTTONDOWN:
-			key = HID_translateSDLJoystickButton(event.jbutton.button);
-			evn = HID_EVENT_DEPRESS;
-		break;
-		case SDL_JOYBUTTONUP:
-			key = HID_translateSDLJoystickButton(event.jbutton.button);
-			evn = HID_EVENT_RELEASE;
-		break;
-	}
 
 	if (key < HID_LAST && evn < HID_EVENT_LAST)
 	{
@@ -174,8 +146,9 @@ void HIDManager::resetBindings()
 	cmd->push_back("ConsoleGump::toggle");
 	commands.push_back(cmd);
 
-	bindings[HID_BACKQUOTE][HID_EVENT_DEPRESS]= commands.back();
-	bindings[HID_F5][HID_EVENT_DEPRESS]= commands.back();
+	bindings[HID_BACKQUOTE][HID_EVENT_PREEMPT]= commands.back();
+	bindings[HID_TILDE][HID_EVENT_PREEMPT]= commands.back();
+	bindings[HID_F5][HID_EVENT_PREEMPT]= commands.back();
 }
 
 void HIDManager::loadBindings()

@@ -283,6 +283,7 @@ static const EventName eventNames[] =
 	{HID_EVENT_RELEASE, "<Release>"},
 	{HID_EVENT_DOUBLE, "<Double>"},
 	{HID_EVENT_CLICK, "<Click>"},
+	{HID_EVENT_PREEMPT, "<Preempt>"},
 	{HID_EVENT_LAST, ""}
 };
 

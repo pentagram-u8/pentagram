@@ -35,9 +35,10 @@ public:
 	static HIDManager * get_instance() { return hidmanager; }
 
 	//! execute the Console command associated with the event
-	//! \param event an SDL_Event used to find an appropriate Console command
+	//! \param key a HID_KEY used to find an appropriate Console command
+	//! \param evn a HID_Event used to find an appropriate Console command
 	//! \return true if a console command is executed
-	bool handleEvent(const SDL_Event & event);
+	bool handleEvent(const HID_Key key, const HID_Event evn);
 
 	void handleDelayedEvents();
 
