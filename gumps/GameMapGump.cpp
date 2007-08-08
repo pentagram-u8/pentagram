@@ -737,6 +737,22 @@ void GameMapGump::ConCmd_dumpMap(const Console::ArgvType &)
 	pout << "Map stored in " << filename << "." << std::endl;
 }
 
+void GameMapGump::ConCmd_incrementSortOrder(const Console::ArgvType &argv)
+{
+	GameMapGump* gameMapGump = GUIApp::get_instance()->getGameMapGump();
+	if (gameMapGump) {
+		gameMapGump->IncSortOrder(1);
+	}
+}
+
+void GameMapGump::ConCmd_decrementSortOrder(const Console::ArgvType &argv)
+{
+	GameMapGump* gameMapGump = GUIApp::get_instance()->getGameMapGump();
+	if (gameMapGump) {
+		gameMapGump->IncSortOrder(-1);
+	}
+}
+
 void GameMapGump::RenderSurfaceChanged()
 {
 	dims.x += dims.w/2;

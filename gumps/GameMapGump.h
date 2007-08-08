@@ -78,6 +78,9 @@ public:
 	static void ConCmd_toggleHighlightItems(const Console::ArgvType &argv);
 	static void ConCmd_dumpMap(const Console::ArgvType &argv);
 
+	static void ConCmd_incrementSortOrder(const Console::ArgvType &argv);
+	static void ConCmd_decrementSortOrder(const Console::ArgvType &argv);
+
 	virtual void		RenderSurfaceChanged();
 
 protected:
