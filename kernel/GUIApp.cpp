@@ -156,6 +156,12 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 		mouseButton[i].state = MBS_HANDLED;
 	}
 
+	for (uint16 key=0; key < HID_LAST; ++key)
+	{
+		lastDown[key] = 0;
+		down[key] = 0;
+	}
+
 	con.AddConsoleCommand("quit", ConCmd_quit);
 	con.AddConsoleCommand("GUIApp::quit", ConCmd_quit);
 	con.AddConsoleCommand("QuitGump::verifyQuit", QuitGump::ConCmd_verifyQuit);
@@ -755,7 +761,6 @@ void GUIApp::run()
 			handleEvent(event);
 		}
 		handleDelayedEvents();
-		hidmanager->handleDelayedEvents();
 
 		// Paint Screen
 		paint();
@@ -1415,6 +1420,21 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		case SDL_KEYUP:
 			key = HID_translateSDLKey(event.key.keysym.sym);
 			evn = HID_EVENT_RELEASE;
+			if (dragging == DRAG_NOT)
+			{
+				switch (event.key.keysym.sym) {
+					case SDLK_q: // Quick quit
+#ifndef MACOSX
+						if (event.key.keysym.mod & KMOD_CTRL)
+							ForceQuit();
+#else
+						if (event.key.keysym.mod & KMOD_META)
+							ForceQuit();
+#endif
+					return;
+					default: break;
+				}
+			}
 		break;
 		case SDL_MOUSEBUTTONDOWN:
 			key = HID_translateSDLMouseButton(event.button.button);
@@ -1431,6 +1451,18 @@ void GUIApp::handleEvent(const SDL_Event& event)
 		case SDL_JOYBUTTONUP:
 			key = HID_translateSDLJoystickButton(event.jbutton.button);
 			evn = HID_EVENT_RELEASE;
+		break;
+		case SDL_MOUSEMOTION:
+			int mx = event.button.x;
+			int my = event.button.y;
+			setMouseCoords(mx, my);
+		break;
+
+		case SDL_QUIT:
+			isRunning = false;
+		break;
+		case SDL_ACTIVEEVENT:
+			// pause when lost focus?
 		break;
 	}
 
@@ -1520,19 +1552,6 @@ void GUIApp::handleEvent(const SDL_Event& event)
 
 	//!! TODO: handle mouse handedness. (swap left/right mouse buttons here)
 
-	case SDL_QUIT:
-	{
-		isRunning = false;
-	}
-	break;
-
-	case SDL_ACTIVEEVENT:
-	{
-		// pause when lost focus?
-	}
-	break;
-
-
 	// most of these events will probably be passed to a gump manager,
 	// since almost all (all?) user input will be handled by a gump
 
@@ -1614,14 +1633,6 @@ void GUIApp::handleEvent(const SDL_Event& event)
 	}
 	break;
 
-	case SDL_MOUSEMOTION:
-	{
-		int mx = event.button.x;
-		int my = event.button.y;
-		setMouseCoords(mx, my);
-	}
-	break;
-
 	case SDL_KEYDOWN:
 	{
 		if (dragging != DRAG_NOT) break;
@@ -1647,25 +1658,6 @@ void GUIApp::handleEvent(const SDL_Event& event)
 	}
 	break;
 
-	case SDL_KEYUP:
-	{
-		if (dragging != DRAG_NOT) break;
-
-		switch (event.key.keysym.sym) {
-		case SDLK_q: // Quick quit
-#ifndef MACOSX
-			if (event.key.keysym.mod & KMOD_CTRL)
-				ForceQuit();
-#else
-			if (event.key.keysym.mod & KMOD_META)
-				ForceQuit();
-#endif
-			break;
-		default: break;
-		}
-	}
-	break;
-
 	// any more useful events?
 
 	default:
@@ -1674,15 +1666,40 @@ void GUIApp::handleEvent(const SDL_Event& event)
 
 	if (dragging == DRAG_NOT && ! handled) {
 		if (hidmanager->handleEvent(key, evn))
-			return;
+			handled = true;
+		if (evn == HID_EVENT_DEPRESS)
+		{
+			down[key] = 1;
+			if (now - lastDown[key] < DOUBLE_CLICK_TIMEOUT &&
+				lastDown[key] != 0)
+			{
+				if (hidmanager->handleEvent(key, HID_EVENT_DOUBLE))
+					handled = true;
+				lastDown[key] = 0;
+			}
+			else
+			{
+				lastDown[key] = now;
+			}
+		}
+		else if (evn == HID_EVENT_RELEASE)
+		{
+			down[key] = 0;
+			if (now - lastDown[key] > DOUBLE_CLICK_TIMEOUT &&
+				lastDown[key] != 0)
+			{
+				lastDown[key] = 0;
+			}
+		}
 	}
-
 }
 
 void GUIApp::handleDelayedEvents()
 {
 	uint32 now = SDL_GetTicks();
-	for (int button = 0; button < MOUSE_LAST; ++button) {
+	uint16 key;
+	int button;
+	for (button = 0; button < MOUSE_LAST; ++button) {
 		if (!(mouseButton[button].state & (MBS_HANDLED | MBS_DOWN)) &&
 			now - mouseButton[button].lastDown > DOUBLE_CLICK_TIMEOUT)
 		{
@@ -1698,6 +1715,16 @@ void GUIApp::handleDelayedEvents()
 
 			mouseButton[button].downGump = 0;
 			mouseButton[button].state |= MBS_HANDLED;
+		}
+	}
+
+	for (key=0; key < HID_LAST; ++key)
+	{
+		if (now - lastDown[key] > DOUBLE_CLICK_TIMEOUT &&
+			lastDown[key] != 0 && down[key] == 0)
+		{
+			lastDown[key] = 0;
+			hidmanager->handleEvent((HID_Key) key, HID_EVENT_CLICK);
 		}
 	}
 

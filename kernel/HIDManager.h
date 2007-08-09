@@ -40,8 +40,6 @@ public:
 	//! \return true if a console command is executed
 	bool handleEvent(const HID_Key key, const HID_Event evn);
 
-	void handleDelayedEvents();
-
 	//! Reset the keybindings
 	void resetBindings();
 
@@ -77,8 +75,6 @@ private:
 
 	std::vector<Console::ArgvType *> commands;
 	Console::ArgvType * bindings[HID_LAST][HID_EVENT_LAST];
-	uint32 lastDown[HID_LAST];
-	uint32 double_timeout;
 
 	static HIDManager* hidmanager;
 };

@@ -38,7 +38,6 @@ HIDManager::HIDManager()
 	InitJoystick();
 
 	resetBindings();
-	double_timeout = 200;
 }
 
 HIDManager::~HIDManager()
@@ -62,60 +61,18 @@ HIDManager::~HIDManager()
 bool HIDManager::handleEvent(const HID_Key key, const HID_Event evn)
 {
 	bool handled = false;
-	Console::ArgvType * command = 0;
 
 	if (key < HID_LAST && evn < HID_EVENT_LAST)
 	{
-		command = bindings[key][evn];
-	}
-
-	if (command)
-	{
-		con.ExecuteConsoleCommand(*command);
-		handled = true;
-	}
-
-	// Handle double separately since it should not stop depress
-	if (key < HID_LAST && evn == HID_EVENT_DEPRESS )
-	{
-		uint32 now = SDL_GetTicks();
-		if (now - lastDown[key] < double_timeout &&
-			lastDown[key] != 0)
+		Console::ArgvType * command = bindings[key][evn];
+		if (command)
 		{
-			lastDown[key] = 0;
-			command = bindings[key][HID_EVENT_DOUBLE];
-			if (command)
-			{
-				con.ExecuteConsoleCommand(*command);
-				handled = true;
-			}
-		}
-		else
-		{
-			lastDown[key] = now;
+			con.ExecuteConsoleCommand(*command);
+			handled = true;
 		}
 	}
 
 	return handled;
-}
-
-void HIDManager::handleDelayedEvents()
-{
-	uint16 key;
-	uint32 now = SDL_GetTicks();
-	Console::ArgvType * command = 0;
-
-	for (key=0; key < HID_LAST; ++key)
-	{
-		if (now - lastDown[key] > double_timeout &&
-			lastDown[key] != 0)
-		{
-			lastDown[key] = 0;
-			command = bindings[key][HID_EVENT_CLICK];
-			if (command)
-				con.ExecuteConsoleCommand(*command);
-		}
-	}
 }
 
 void HIDManager::resetBindings()
@@ -126,7 +83,6 @@ void HIDManager::resetBindings()
 
 	for (key=0; key < HID_LAST; ++key)
 	{
-		lastDown[key] = 0;
 		for (event=0; event < HID_EVENT_LAST; ++event)
 		{
 			bindings[key][event]=0;

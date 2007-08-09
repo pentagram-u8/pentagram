@@ -29,6 +29,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "CoreApp.h"
 #include "Mouse.h"
+#include "HIDKeys.h"
 
 class Kernel;
 class UCMachine;
@@ -295,6 +296,9 @@ private:
 
 	int dragging_offsetX, dragging_offsetY;
 	unsigned int inversion;
+
+	uint32 lastDown[HID_LAST];
+	uint8 down[HID_LAST];
 public:
 	void setDraggingOffset(int x, int y)
 		{ dragging_offsetX = x; dragging_offsetY = y; }
