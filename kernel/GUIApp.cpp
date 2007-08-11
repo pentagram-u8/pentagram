@@ -1453,9 +1453,11 @@ void GUIApp::handleEvent(const SDL_Event& event)
 			evn = HID_EVENT_RELEASE;
 		break;
 		case SDL_MOUSEMOTION:
+		{
 			int mx = event.button.x;
 			int my = event.button.y;
 			setMouseCoords(mx, my);
+		}
 		break;
 
 		case SDL_QUIT:
