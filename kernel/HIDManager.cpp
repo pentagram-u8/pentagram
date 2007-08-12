@@ -78,7 +78,6 @@ bool HIDManager::handleEvent(const HID_Key key, const HID_Event evn)
 void HIDManager::resetBindings()
 {
 	uint16 key, event;
-	Console::ArgvType * cmd;
 	std::vector<Console::ArgvType *>::iterator it;
 
 	for (key=0; key < HID_LAST; ++key)
@@ -98,19 +97,14 @@ void HIDManager::resetBindings()
 	}
 	commands.clear();
 
-	cmd = new Console::ArgvType;
-	cmd->push_back("ConsoleGump::toggle");
-	commands.push_back(cmd);
-
-	bindings[HID_BACKQUOTE][HID_EVENT_PREEMPT]= commands.back();
-	bindings[HID_TILDE][HID_EVENT_PREEMPT]= commands.back();
-	bindings[HID_F5][HID_EVENT_PREEMPT]= commands.back();
+	bind(HID_BACKQUOTE, HID_EVENT_PREEMPT, "ConsoleGump::toggle");
+	bind(HID_TILDE, HID_EVENT_PREEMPT, "ConsoleGump::toggle");
+	bind(HID_F5, HID_EVENT_PREEMPT, "ConsoleGump::toggle");
 }
 
 void HIDManager::loadBindings()
 {
 	Console::ArgsType args;
-	Console::ArgvType argv;
 
 	con.Print(MM_INFO, "Loading HIDBindings...\n");
 
@@ -133,10 +127,7 @@ void HIDManager::loadBindings()
 	while (i != keys.end())
 	{
 		args = i->second.c_str();
-		argv.clear();
-
-		Pentagram::StringToArgv(args, argv);
-		bind(i->first, argv);
+		bind(i->first, args);
 		++i;
 	}
 	listBindings();
@@ -175,8 +166,38 @@ void HIDManager::bind(const Pentagram::istring& control, const Console::ArgvType
 	HID_Key key = HID_LAST;
 	HID_Event event = HID_EVENT_DEPRESS;
 	std::vector<Pentagram::istring> ctrl_argv;
-	Console::ArgvType * command = 0;
 
+	Pentagram::StringToArgv(control, ctrl_argv);
+	if (ctrl_argv.size() == 1)
+	{
+		key = HID_GetKeyFromName(ctrl_argv[0]);
+	}
+	else if (ctrl_argv.size() > 1)
+	{ // we have a event
+		event = HID_GetEventFromName(ctrl_argv[0]);
+		key = HID_GetKeyFromName(ctrl_argv[1]);
+	}
+
+	if (event < HID_EVENT_LAST && key < HID_LAST)
+	{
+		bind(key, event, argv);
+	}
+	else
+	{
+		pout << "Error: Cannot bind " << control << std::endl;
+	}
+}
+
+void HIDManager::bind(const Pentagram::istring& control, const Console::ArgsType& args)
+{
+	Console::ArgvType argv;
+	Pentagram::StringToArgv(args, argv);
+	bind(control, argv);
+}
+
+void HIDManager::bind(HID_Key key, HID_Event event, const Console::ArgvType& argv)
+{
+	Console::ArgvType * command = 0;
 	if (! argv.empty())
 	{
 		std::vector<Console::ArgvType *>::iterator it;
@@ -196,26 +217,14 @@ void HIDManager::bind(const Pentagram::istring& control, const Console::ArgvType
 			commands.push_back(command);
 		}
 	}
+	bindings[key][event] = command;
+}
 
-	Pentagram::StringToArgv(control, ctrl_argv);
-	if (ctrl_argv.size() == 1)
-	{
-		key = HID_GetKeyFromName(ctrl_argv[0]);
-	}
-	else if (ctrl_argv.size() > 1)
-	{ // we have a event
-		event = HID_GetEventFromName(ctrl_argv[0]);
-		key = HID_GetKeyFromName(ctrl_argv[1]);
-	}
-
-	if (event < HID_EVENT_LAST && key < HID_LAST)
-	{
-		bindings[key][event] = command;
-	}
-	else
-	{
-		pout << "Error: Cannot bind " << control << std::endl;
-	}
+void HIDManager::bind(HID_Key key, HID_Event event, const Console::ArgsType& args)
+{
+	Console::ArgvType argv;
+	Pentagram::StringToArgv(args, argv);
+	bind(key, event, argv);
 }
 
 void HIDManager::unbind(const Pentagram::istring& control)

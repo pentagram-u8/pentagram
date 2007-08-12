@@ -1,3 +1,7 @@
+2007-08-12  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* kernel/HIDManager.*: additional bind method to ease creation of bindings
+	  in code.
+
 2007-08-09  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* kernel/HIDManager.*, kernel/GUIApp.*: Move logic for determining if click
 	  or double click happens on a key to GUIApp. HIDManager is now only
