@@ -1,3 +1,6 @@
+2007-09-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* misc/memset_n.h: fix memset crash
+
 2007-08-12  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* kernel/HIDManager.*: additional bind method to ease creation of bindings
 	  in code.

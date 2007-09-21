@@ -169,7 +169,7 @@ inline void memset_32(void *buf, uint32 val, uint32 dwords)
 	}
 
 	// Fill Aligned
-	memset_32_aligned(buf,val,dwords);
+	if (dwords) memset_32_aligned(buf,val,dwords);
 
 	// Do the unaligned data
 	if (align)
