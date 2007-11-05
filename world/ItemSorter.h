@@ -19,8 +19,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef ITEMSORTER_H
 #define ITEMSORTER_H
 
-#include <vector>
-
 class MainShapeArchive;
 class Item;
 class RenderSurface;
@@ -31,10 +29,9 @@ class ItemSorter
 	MainShapeArchive	*shapes;
 	RenderSurface	*surf;
 
-	uint32		max_items;
-	uint32		num_items;
-	uint32		num_extra;
 	SortItem	*items;
+	SortItem	*items_tail;
+	SortItem	*items_unused;
 	sint32		sort_limit;
 
 	sint32		order_counter;
@@ -42,7 +39,7 @@ class ItemSorter
 	sint32		cam_sx, cam_sy;
 
 public:
-	ItemSorter(int Max_Items = 2048);
+	ItemSorter();
 	~ItemSorter();
 
 	enum HitFace {

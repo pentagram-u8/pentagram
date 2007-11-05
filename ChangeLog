@@ -1,3 +1,16 @@
+2007-11-05  Ryan Nunn <colourles@users.sourceforge.net>
+	* kernel/GUIApp.* : Made interpolate default again (why was it unset?). 
+	  Added  interpolate, frameSkip and frameLimit ini file settings. Added a 
+	  new console command GuiApp::memberVar that can be used to get and set 
+	  those settings from the console. It allows optional writing of the ini.
+	  It can easily be extended to support other settings.
+	* world/ItemSorter.* : Made the scene graph sort items by z, x and y when
+	  they are added to the lists rather than just added each item to the end
+	  of the list. This solves the halbred sticking through the roof problem, 
+	  makes the rendering order very predictable and should be less prone to 
+	  other artefacts.
+	* world/actors/AvatarMoverProcess.cpp : Fixing some warnings
+
 2007-09-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* misc/memset_n.h: fix memset crash
 

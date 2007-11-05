@@ -88,7 +88,7 @@ bool AvatarMoverProcess::run(const uint32 framenum)
 		return false;
 	}
 
-	bool combatRun = (avatar->getActorFlags() & Actor::ACT_COMBATRUN);
+	bool combatRun = (avatar->getActorFlags() & Actor::ACT_COMBATRUN) != 0;
 	if (avatar->isInCombat() && !combatRun)
 		return handleCombatMode(framenum);
 	else
@@ -336,7 +336,7 @@ bool AvatarMoverProcess::handleNormalMode(const uint32 /*framenum*/)
 	sint32 direction = avatar->getDir();
 	uint32 now = SDL_GetTicks();
 	bool stasis = guiapp->isAvatarInStasis();
-	bool combatRun = (avatar->getActorFlags() & Actor::ACT_COMBATRUN);
+	bool combatRun = (avatar->getActorFlags() & Actor::ACT_COMBATRUN) != 0;
 
 	int mx, my;
 	guiapp->getMouseCoords(mx, my);
@@ -733,7 +733,7 @@ void AvatarMoverProcess::jump(Animation::Sequence action, int direction)
 void AvatarMoverProcess::turnToDirection(int direction)
 {
 	MainActor* avatar = getMainActor();
-	bool combatRun = (avatar->getActorFlags() & Actor::ACT_COMBATRUN);
+	bool combatRun = (avatar->getActorFlags() & Actor::ACT_COMBATRUN) != 0;
 	int curdir = avatar->getDir();
 	int step;
 	bool combat = avatar->isInCombat() && !combatRun;
@@ -783,7 +783,7 @@ void AvatarMoverProcess::turnToDirection(int direction)
 bool AvatarMoverProcess::checkTurn(int direction, bool moving)
 {
 	MainActor* avatar = getMainActor();
-	bool combatRun = (avatar->getActorFlags() & Actor::ACT_COMBATRUN);
+	bool combatRun = (avatar->getActorFlags() & Actor::ACT_COMBATRUN) != 0;
 	int curdir = avatar->getDir();
 	bool combat = avatar->isInCombat() && !combatRun;
 	Animation::Sequence lastanim = avatar->getLastAnim();

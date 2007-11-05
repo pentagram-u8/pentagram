@@ -36,67 +36,13 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 using Pentagram::Rect;
 
-#if 0
-template<class _T> class MyVector
-{
-public:
-	typedef _T *iterator;
-	typedef _T &reference;
-
-private:
-	iterator	_begin;
-	iterator	_end;
-	iterator	_last;
-
-public:
-	MyVector() 
-	{
-		_begin = 0;
-		_end = 0;
-		_last = 0;
-	}
-
-	iterator push_back(reference _R)
-	{
-		if (!_begin)
-		{
-			_begin = new _T[1];
-			_end = _last = _begin + 1;
-			*_begin = _R;
-			return _begin;
-		}
-		
-		if (_end == _last)	// At the end of the list, need to allocate more
-		{
-			size_t _capacity = _last - _begin;
-			iterator _new = new _T[_capacity*2];
-			std::memcpy (_new, _begin, _capacity * sizeof(_T));
-			_end = _new + (_end - _begin);
-			delete [] _begin;
-			_begin = _new;
-			_last = _begin + (_capacity*2);
-		}
-		*_end = _R;
-		_end++;
-		return _end-1;
-	}
-
-	void clear() { _end = _begin; }
-
-	iterator begin() { return _begin; }
-	iterator end() { return _end; }
-private:
-
-	
-};
-
-#endif
-
 // This does NOT need to be in the header
-
 struct SortItem
 {
-	SortItem() : item_num(0), shape(0), order(-1), depends() { }
+	SortItem(SortItem *n) : next(n), prev(0), item_num(0), shape(0), order(-1), depends() { }
+
+	SortItem				*next;
+	SortItem				*prev;
 
 	uint16					item_num;	// Owner item number
 
@@ -158,8 +104,103 @@ struct SortItem
 
 	sint32	order;		// Rendering order. -1 is not yet drawn
 
-	std::vector<SortItem *>	depends;	// All this Items dependencies (i.e. all objects behind)
-//	MyVector<SortItem *>	depends;	// All this Items dependencies (i.e. all objects behind)
+	// Note that std::priority_queue could be used here, BUT there is no guarentee that it's implementation
+	// will be friendly to insertions
+	// Alternatively i could use std::list, BUT there is no guarentee that it will keep wont delete
+	// the unused nodes after doing a clear
+	// So the only reasonable solution is to write my own list
+	struct DependsList
+	{
+		struct Node {
+			Node		*next;
+			Node		*prev;
+			SortItem	*val;
+			Node() : next(0), prev(0), val(0) { }
+		};
+
+		Node *list;
+		Node *tail;
+		Node *unused;	
+
+		struct iterator {
+			Node *n;
+			SortItem *&operator *() { return n->val; }
+			iterator(Node *node) : n(node) { }
+			iterator &operator++() { n = n->next; return *this; }
+			bool operator != (const iterator &o) { return n != o.n; }
+		};
+
+		iterator begin() { return iterator(list); }
+		iterator end() { return iterator(0); }
+
+		void clear() {
+			if (tail) {
+				tail->next = unused; 
+				unused = list;
+				tail = 0;
+				list = 0;
+			}
+		}
+
+		void push_back(SortItem *other)
+		{
+			if (!unused) unused = new Node();
+			Node *nn = unused;
+			unused = unused->next;
+			nn->val = other;
+
+			// Put it at the end
+			if (tail) tail->next = nn;
+			if (!list) list = nn;
+			nn->next = 0;
+			nn->prev = tail;
+			tail = nn;
+		}
+
+		void insert_sorted(SortItem *other)
+		{
+			if (!unused) unused = new Node();
+			Node *nn = unused;
+			unused = unused->next;
+			nn->val = other;
+
+			for (Node *n = list; n != 0; n = n->next)
+			{
+				// Get the insert point... which is before the first item that has higher z than us
+				if (other->ListLessThan(n->val)) 
+				{
+					nn->next = n;
+					nn->prev = n->prev;
+					n->prev = nn;
+					if (nn->prev) nn->prev->next = nn;
+					else list = nn;
+					return;
+				}
+			}
+
+			// No suitable, so put at end
+			if (tail) tail->next = nn;
+			if (!list) list = nn;
+			nn->next = 0;
+			nn->prev = tail;
+			tail = nn;
+		}
+
+		DependsList() : list(0), tail(0), unused(0) { }
+
+		~DependsList() { 
+			clear();
+			while (unused)  {
+				Node *n = unused->next;
+				delete unused;
+				unused = n;
+			}
+		}
+	};
+
+	//std::vector<SortItem *>	depends;	// All this Items dependencies (i.e. all objects behind)
+	//std::list<SortItem *>	depends;	// All this Items dependencies (i.e. all objects behind)
+	DependsList depends;
 
 	// Functions
 
@@ -175,10 +216,15 @@ struct SortItem
 	// Operator left shift (ok, what this does it output the comparisons)
 	inline bool operator<<(const SortItem& si2) const;
 
-};
+	// Comparison for the sorted lists
+	inline bool ListLessThan(const SortItem* other) const
+	{
+		return z < other->z || 
+				(z == other->z && x < other->x) || 
+				(z == other->z && x == other->x && y < other->y);
+	}
 
-typedef std::vector<SortItem *> SortItemVector;
-//typedef MyVector<SortItem *> SortItemVector;
+};
 
 // Check to see if we overlap si2
 inline bool SortItem::overlap(const SortItem &si2) const
@@ -541,19 +587,35 @@ inline bool SortItem::operator<<(const SortItem& si2) const
 	return 0;
 }
 
+
 // 
 // ItemSorter
 //
 
-ItemSorter::ItemSorter(int Max_Items) : 
-		shapes(0), surf(0), max_items(Max_Items), num_items(0), num_extra(0), sort_limit(0)
+ItemSorter::ItemSorter() : 
+		shapes(0), surf(0), items(0), items_tail(0), items_unused(0), sort_limit(0)
 {
-	if (max_items <= 0) max_items = Max_Items = 2048;
-	items = new SortItem [max_items];
+	int i = 2048;
+	while (i--) items_unused = new SortItem(items_unused);
 }
 
 ItemSorter::~ItemSorter()
 {
+	// 
+	if (items_tail) {
+		items_tail->next = items_unused;
+		items_unused = items;
+	}
+	items = 0;
+	items_tail = 0;
+
+	while (items_unused)
+	{
+		SortItem *next = items_unused->next;
+		delete items_unused;
+		items_unused = next;
+	}
+
 	delete [] items;
 }
 
@@ -563,18 +625,17 @@ void ItemSorter::BeginDisplayList(RenderSurface *rs,
 	// Get the shapes, if required
 	if (!shapes) shapes = GameData::get_instance()->getMainShapes();
 
-	// Need to resize
-	if (num_extra)
-	{
-		delete [] items;
-		max_items += num_extra*2;
-		items = new SortItem [max_items];
+	// 
+	if (items_tail) {
+		items_tail->next = items_unused;
+		items_unused = items;
 	}
+	items = 0;
+	items_tail = 0;
+
 	// Set the RenderSurface, and reset the item list
 	surf = rs;
-	num_items = 0;
 	order_counter = 0;
-	num_extra = 0;
 
 	// Screenspace bounding box bottom x coord (RNB x coord)
 	cam_sx = (camx - camy)/4;
@@ -587,15 +648,9 @@ void ItemSorter::AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 
 	//if (z > skip_lift) return;
 	//if (Application::tgwds && shape == 538) return;
 
-	// First thing, get a SortItem to use
-	
-	if (num_items >= max_items)
-	{
-		num_extra++;
-		return;
-	}
-
-	SortItem *si = items+num_items;
+	// First thing, get a SortItem to use (first of unused)
+	if (!items_unused) items_unused = new SortItem(0);
+	SortItem *si = items_unused;
 
 	si->item_num = item_num;
 	si->shape = shapes->getShape(shape_num);
@@ -705,14 +760,18 @@ void ItemSorter::AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 
 	// We will clear all the vector memory
 	// Stictly speaking the vector will sort of leak memory, since they
 	// are never deleted
-	//si->depends.clear();
-	si->depends.erase(si->depends.begin(), si->depends.end());	// MSVC.Netism
+	si->depends.clear();
+	//si->depends.erase(si->depends.begin(), si->depends.end());	// MSVC.Netism
 
 	// Iterate the list and compare shapes
 
 	// Ok, 
-	for (SortItem * si2 = items; si2 != si; ++si2)
+	SortItem *addpoint = 0;
+	for (SortItem * si2 = items; si2 != 0; si2 = si2->next)
 	{
+		// Get the insert point... which is before the first item that has higher z than us
+		if (!addpoint && si->ListLessThan(si2)) addpoint = si2;
+
 		// Doesn't overlap
 		if (si2->occluded || !si->overlap(*si2)) continue;
 
@@ -728,7 +787,7 @@ void ItemSorter::AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 
 			}
 
 			// si1 is behind si2, so add it to si2's dependency list
-			si2->depends.push_back(si);
+			si2->depends.insert_sorted(si);
 		}
 		else
 		{
@@ -739,8 +798,28 @@ void ItemSorter::AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 
 		}
 	}
 
-	// Incrementing num_items adds the Item to the list
-	num_items ++;
+	// Add it to the list
+	items_unused = items_unused->next;
+
+	// have a position
+	//addpoint = 0;
+	if (addpoint)
+	{
+		si->next = addpoint;
+		si->prev = addpoint->prev;
+		addpoint->prev = si;
+		if (si->prev) si->prev->next = si;
+		else items = si;
+	}
+	// Add it to the end of the list
+	else 
+	{
+		if (items_tail) items_tail->next = si;
+		if (!items) items = si;
+		si->next = 0;
+		si->prev = items_tail;
+		items_tail = si;
+	}
 }
 
 void ItemSorter::AddItem(Item *add)
@@ -757,14 +836,8 @@ void ItemSorter::AddItem(Item *add)
 	//if (Application::tgwds && shape == 538) return;
 
 	// First thing, get a SortItem to use
-	
-	if (num_items >= max_items)
-	{
-		num_extra++;
-		return;
-	}
-
-	SortItem *si = items+num_items;
+	if (!items_unused) items_unused = new SortItem(0);
+	SortItem *si = items_unused;
 
 	si->item_num = add->getObjId();
 	si->shape = add->getShapeObject();
@@ -874,14 +947,18 @@ void ItemSorter::AddItem(Item *add)
 	// We will clear all the vector memory
 	// Stictly speaking the vector will sort of leak memory, since they
 	// are never deleted
-	//si->depends.clear();
-	si->depends.erase(si->depends.begin(), si->depends.end());	// MSVC.Netism
+	si->depends.clear();
+	//si->depends.erase(si->depends.begin(), si->depends.end());	// MSVC.Netism
 
 	// Iterate the list and compare shapes
 
 	// Ok, 
-	for (SortItem * si2 = items; si2 != si; ++si2)
+	SortItem *addpoint = 0;
+	for (SortItem * si2 = items; si2 != 0; si2 = si2->next)
 	{
+		// Get the insert point... which is before the first item that has higher z than us
+		if (!addpoint && si->ListLessThan(si2)) addpoint = si2;
+
 		// Doesn't overlap
 		if (si2->occluded || !si->overlap(*si2)) continue;
 
@@ -897,7 +974,7 @@ void ItemSorter::AddItem(Item *add)
 			}
 
 			// si1 is behind si2, so add it to si2's dependency list
-			si2->depends.push_back(si);
+			si2->depends.insert_sorted(si);
 		}
 		else
 		{
@@ -908,8 +985,28 @@ void ItemSorter::AddItem(Item *add)
 		}
 	}
 
-	// Incrementing num_items adds the Item to the list
-	num_items ++;
+	// Add it to the list
+	items_unused = items_unused->next;
+
+	// have a position
+	//addpoint = 0;
+	if (addpoint)
+	{
+		si->next = addpoint;
+		si->prev = addpoint->prev;
+		addpoint->prev = si;
+		if (si->prev) si->prev->next = si;
+		else items = si;
+	}
+	// Add it to the end of the list
+	else 
+	{
+		if (items_tail) items_tail->next = si;
+		if (!items) items = si;
+		si->next = 0;
+		si->prev = items_tail;
+		items_tail = si;
+	}
 #endif
 }
 
@@ -919,12 +1016,12 @@ void ItemSorter::PaintDisplayList(bool item_highlight)
 {
 	prev = 0;
 	SortItem *it = items;
-	SortItem *end = items + num_items;
+	SortItem *end = 0;
 	order_counter = 0;	// Reset the order_counter
 	while (it != end)
 	{
 		if (it->order == -1) if (PaintSortItem(it)) return;
-		++it;
+		it = it->next;
 	}
 
 	// Item highlighting. We redraw each 'item' transparent
@@ -943,7 +1040,7 @@ void ItemSorter::PaintDisplayList(bool item_highlight)
 						(it->flags&Item::FLG_FLIPPED)!=0, 0x1f00ffff);
 			}
 
-			++it;
+			it = it->next;
 		}
 
 	}
@@ -958,8 +1055,8 @@ bool ItemSorter::PaintSortItem(SortItem	*si)
 	si->order = -2;
 	
 	// Iterate through our dependancies, and paint them, if possible
-	SortItemVector::iterator it = si->depends.begin();
-	SortItemVector::iterator end = si->depends.end();
+	SortItem::DependsList::iterator it = si->depends.begin();
+	SortItem::DependsList::iterator end = si->depends.end();
 	while (it != end)
 	{
 		// Well, it can't. Implies infinite recursive sorting.
@@ -1040,8 +1137,8 @@ bool ItemSorter::NullPaintSortItem(SortItem	*si)
 	si->order = -2;
 	
 	// Iterate through our dependancies, and paint them, if possible
-	SortItemVector::iterator it = si->depends.begin();
-	SortItemVector::iterator end = si->depends.end();
+	SortItem::DependsList::iterator it = si->depends.begin();
+	SortItem::DependsList::iterator end = si->depends.end();
 	while (it != end)
 	{
 		// Well, it can't. Implies recursive sorting. Can happen though so
@@ -1063,19 +1160,17 @@ bool ItemSorter::NullPaintSortItem(SortItem	*si)
 uint16 ItemSorter::Trace(sint32 x, sint32 y, HitFace* face, bool item_highlight)
 {
 	SortItem *it;
-	SortItem *end;
 	SortItem *selected;
 
 	if (!order_counter)	// If no order_counter we need to sort the items
 	{
 		it = items;
-		end = items + num_items;
 		order_counter = 0;	// Reset the order_counter
-		while (it != end)
+		while (it != 0)
 		{
 			if (it->order == -1) if (NullPaintSortItem(it)) break;
 
-			++it;
+			it = it->next;
 		}
 	}
 
@@ -1084,11 +1179,10 @@ uint16 ItemSorter::Trace(sint32 x, sint32 y, HitFace* face, bool item_highlight)
 
 	if (item_highlight)
 	{
-		it = items + num_items;
+		it = items_tail;
 		selected = 0;
-		end = items;
 
-		while (it-- != end)
+		for (it = items_tail; it != 0; it = it->prev)
 		{
 			if (!(it->flags & (Item::FLG_DISPOSABLE|Item::FLG_FAST_ONLY)) && !it->fixed )
 			{
@@ -1122,10 +1216,8 @@ uint16 ItemSorter::Trace(sint32 x, sint32 y, HitFace* face, bool item_highlight)
 	// Ok, this is all pretty simple. We iterate all the items.
 	// We then check to see if the item has a point where the trace goes.
 	// Finally we then set the selected SortItem if it's 'order' is highest
-	it = items;
-	end = items + num_items;
 
-	if (!selected) for (;it != end;++it)
+	if (!selected) for (it = items;it != 0;it = it->next)
 	{
 		if (!it->item_num) continue;
 

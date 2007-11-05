@@ -140,7 +140,7 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	  hidmanager(0), ucmachine(0), screen(0), fullscreen(false), palettemanager(0), 
 	  gamedata(0), world(0), desktopGump(0), consoleGump(0), gameMapGump(0),
 	  avatarMoverProcess(0), runSDLInit(false),
-	  frameSkip(false), frameLimit(true), interpolate(false),
+	  frameSkip(false), frameLimit(true), interpolate(true),
 	  animationRate(100), avatarInStasis(false), paintEditorItems(false),
 	  painting(false), showTouching(false), mouseX(0), mouseY(0),
 	  defMouse(0), flashingcursor(0), 
@@ -173,6 +173,7 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	con.AddConsoleCommand("GUIApp::changeGame",ConCmd_changeGame);
 	con.AddConsoleCommand("GUIApp::listGames",ConCmd_listGames);
 
+	con.AddConsoleCommand("GUIApp::memberVar", &GUIApp::ConCmd_memberVar);
 	con.AddConsoleCommand("GUIApp::setVideoMode",ConCmd_setVideoMode);
 	con.AddConsoleCommand("GUIApp::toggleFullscreen",ConCmd_toggleFullscreen);
 
@@ -262,6 +263,7 @@ GUIApp::~GUIApp()
 	con.RemoveConsoleCommand(GUIApp::ConCmd_changeGame);
 	con.RemoveConsoleCommand(GUIApp::ConCmd_listGames);
 
+	con.RemoveConsoleCommand(GUIApp::ConCmd_memberVar);
 	con.RemoveConsoleCommand(GUIApp::ConCmd_setVideoMode);
 	con.RemoveConsoleCommand(GUIApp::ConCmd_toggleFullscreen);
 
@@ -542,6 +544,15 @@ void GUIApp::startupGame()
 
 	settingman->setDefault("ttf", false);
 	settingman->get("ttf", ttfoverrides);
+
+	settingman->setDefault("frameSkip", false);
+	settingman->get("frameSkip", frameSkip);
+
+	settingman->setDefault("frameLimit", true);
+	settingman->get("frameLimit", frameLimit);
+
+	settingman->setDefault("interpolate", true);
+	settingman->get("interpolate", interpolate);
 
 	game->loadFiles();
 	gamedata->setupFontOverrides();
@@ -2491,6 +2502,69 @@ void GUIApp::ConCmd_closeItemGumps(const Console::ArgvType &argv)
 {
 	GUIApp * g = GUIApp::get_instance();
 	g->getDesktopGump()->CloseItemDependents();
+}
+
+void GUIApp::ConCmd_memberVar(const Console::ArgvType &argv)
+{
+	if (argv.size() == 1) {
+		pout << "Usage: GUIApp::memberVar <member> [newvalue] [updateini]" << std::endl;
+		return;
+	}
+
+	GUIApp * g = GUIApp::get_instance();
+
+	// Set the pointer to the correct type
+	bool *b = 0;
+	int *i = 0;
+	std::string *str = 0;
+	Pentagram::istring *istr = 0;
+
+	// ini entry name if supported
+	const char *ini = 0;
+
+	if (argv[1] == "frameLimit") { 
+		b = &g->frameLimit;
+		ini = "frameLimit";
+	}
+	else if (argv[1] == "frameSkip") { 
+		b = &g->frameSkip;
+		ini = "frameSkip";
+	}
+	else if (argv[1] == "interpolate") { 
+		b = &g->interpolate;
+		ini = "interpolate";
+	}
+	else {
+		pout << "Unknown member: " << argv[1] << std::endl;
+		return;
+	}
+
+	// Set the value
+	if (argv.size() >= 3) {
+		if (b) *b = (argv[2] == "yes" || argv[2] == "true");
+		else if (istr) *istr = argv[2];
+		else if (i) *i = std::strtol(argv[2].c_str(), 0, 0);
+		else if (str) *str = argv[2];
+
+		// Set config value
+		if (argv.size() >= 4 && ini && *ini && (argv[3] == "yes" || argv[3] == "true"))
+		{
+			if (b) g->settingman->set(ini,*b);
+			else if (istr) g->settingman->set(ini,*istr);
+			else if (i) g->settingman->set(ini,*i);
+			else if (str) g->settingman->set(ini,*str);
+		}
+	}
+
+	// Print the value
+	pout << "GuiApp::" << argv[1] << " = ";
+	if (b) pout << ((*b)?"true":"false");
+	else if (istr) pout << *istr;
+	else if (i) pout << *i;
+	else if (str) pout << *str;
+	pout << std::endl;
+
+	return;
 }
 
 //

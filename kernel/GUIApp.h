@@ -350,6 +350,8 @@ private:
 
 	static void			ConCmd_closeItemGumps(const Console::ArgvType &argv);	//!< "GUIApp::closeItemGumps" console command
 
+	static void			ConCmd_memberVar(const Console::ArgvType &argv);	//!< "GuiApp::memberVar <member> [newvalue] [updateini]" console command
+
 	bool				ttfoverrides;
 
 	// Audio Mixer
