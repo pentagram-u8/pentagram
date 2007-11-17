@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2007 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,6 +25,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "CurrentMap.h"
 #include "ShapeInfo.h"
 #include "MonsterInfo.h"
+#include "World.h"
 #include "getObject.h"
 
 #include "IDataSource.h"
@@ -75,7 +76,9 @@ uint16 MonsterEgg::hatch()
 		return 0;
 	}
 
-	newactor->setMapNum(getMapNum()); // CHECKME!
+	// mapnum has to be set to the current map. Reason: Beren teleports to
+	// newactor->getMapNum() when newactor is assaulted.
+	newactor->setMapNum(World::get_instance()->getCurrentMap()->getNum());
 	newactor->setNpcNum(objID);
 	newactor->move(x,y,z);
 

@@ -1,3 +1,7 @@
+2007-11-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/MonsterEgg.cpp: Correctly set mapnum when spawning actor.
+	  This fixes Beren appearing when NPCs in town are assaulted.
+
 2007-11-05  Ryan Nunn <colourles@users.sourceforge.net>
 	* kernel/GUIApp.* : Made interpolate default again (why was it unset?). 
 	  Added  interpolate, frameSkip and frameLimit ini file settings. Added a 
