@@ -76,6 +76,8 @@ bool Archive::addSource(IDataSource* ids)
 {
 	ArchiveFile* s = 0;
 
+	if (!ids) return false;
+
 	if (FlexFile::isFlexFile(ids)) {
 		s = new FlexFile(ids);
 	} else if (U8SaveFile::isU8SaveFile(ids)) {

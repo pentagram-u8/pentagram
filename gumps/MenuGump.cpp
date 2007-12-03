@@ -216,27 +216,8 @@ void MenuGump::selectEntry(int entry)
 		Game::get_instance()->playIntroMovie();
 		break;
 	case 2: case 3: // Read/Write Diary
-	{
-		if (entry == 3) {
-			// can't save if game over
-			// FIXME: this check should probably be in Game or GUIApp
-			MainActor* av = getMainActor();
-			if (!av || (av->getActorFlags() & Actor::ACT_DEAD)) break;
-		}
-
-		PagedGump * gump = new PagedGump(34, -38, 3, gumpShape);
-		gump->InitGump(this);
-
-		U8SaveGump* save = new U8SaveGump(entry == 3, 0);
-		save->InitGump(gump, false);
-		gump->addPage(save);
-
-		save = new U8SaveGump(entry == 3, 1);
-		save->InitGump(gump, false);
-		gump->addPage(save);
-
-		gump->setRelativePosition(CENTER);
-	} break;
+		U8SaveGump::showLoadSaveGump(this,entry==3);
+		break;
 	case 4: // Options
 	{
 		PagedGump * gump = new PagedGump(34, -38, 3, gumpShape);

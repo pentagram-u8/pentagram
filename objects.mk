@@ -168,7 +168,8 @@ GUMPS = \
 	gumps/ShapeViewerGump.o \
 	gumps/SliderGump.o \
 	gumps/TargetGump.o \
-	gumps/U8SaveGump.o
+	gumps/U8SaveGump.o \
+	gumps/MessageBoxGump.o
 
 WIDGETS = \
 	gumps/widgets/ButtonWidget.o \

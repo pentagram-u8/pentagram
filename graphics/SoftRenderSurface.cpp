@@ -244,6 +244,52 @@ template<class uintX> void SoftRenderSurface<uintX>::FillAlpha(uint8 alpha, sint
 	}
 }
 
+template<class uintX> void SoftRenderSurface<uintX>::FillBlended(uint32 rgba, sint32 sx, sint32 sy, sint32 w, sint32 h)
+{
+	if ((rgba&TEX32_A_MASK) == TEX32_A_MASK)
+	{
+		Fill32(rgba,sx,sy,w,h);
+		return;
+	}
+	else if (!(rgba&TEX32_A_MASK))
+	{
+		return;
+	}
+
+	clip_window.IntersectOther(sx,sy,w,h);
+	if (!w || !h) return;
+
+	// An optimization.
+	if ((w*sizeof(uintX)) == pitch)
+	{
+		w *= h;
+		h = 1;
+	}
+
+	uint8 *pixel = pixels + sy * pitch + sx * sizeof(uintX);
+	uint8 *end = pixel + h * pitch;
+
+	uint8 *line_end = pixel + w*sizeof(uintX);
+	int diff = pitch - w*sizeof(uintX);
+
+	int alpha = TEX32_A(rgba)+1;
+	rgba = PACK_RGBA16(TEX32_R(rgba)*alpha, TEX32_G(rgba)*alpha, TEX32_B(rgba)*alpha,255*alpha);
+
+	while (pixel != end)
+	{
+		while (pixel != line_end)
+		{
+			uintX *dest = reinterpret_cast<uintX*>(pixel);
+			uintX d = *dest;
+			*dest = (d & RenderSurface::format.a_mask) | BlendPreModFast(rgba,d);
+			pixel+=sizeof(uintX);
+		}
+
+		line_end += pitch;
+		pixel += diff;
+	}
+}
+
 //
 // SoftRenderSurface::DrawLine32(uint32 rgb, sint32 sx, sint32 sy, sint32 ex, sint32 ey);
 //

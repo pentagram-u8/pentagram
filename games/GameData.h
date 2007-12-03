@@ -35,11 +35,12 @@ class WpnOvlayDat;
 class ShapeFrame;
 class SoundFlex;
 class SpeechFlex;
+struct GameInfo;
 
 class GameData
 {
 public:
-	GameData();
+	GameData(GameInfo *gameinfo);
 	~GameData();
 
 	static GameData* get_instance() { return gamedata; }
@@ -89,6 +90,7 @@ private:
 
 	SoundFlex* soundflex;
 	std::vector<SpeechFlex**> speech;
+	GameInfo *gameinfo;
 
 	static GameData* gamedata;
 };

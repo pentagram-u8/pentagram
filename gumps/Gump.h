@@ -76,6 +76,7 @@ public:
 	void						SetNotifyProcess(GumpNotifyProcess* proc);
 	GumpNotifyProcess*			GetNotifyProcess();
 	inline uint32				GetResult() { return process_result; }
+	void						SetResult(uint32 res) { process_result = res; }
 
 	//! Set the Gump's shape/frame
 	inline void					SetShape(Shape *_shape, uint32 _framenum)

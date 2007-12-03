@@ -42,6 +42,10 @@ public:
 	virtual void ChildNotify(Gump *child, uint32 message);
 	virtual void OnFocus(bool gain);
 
+	static std::string getFilename(int index);
+
+	static Gump *showLoadSaveGump(Gump *parent, bool save);
+
 protected:
 	bool save;
 	int page;

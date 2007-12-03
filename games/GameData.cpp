@@ -44,9 +44,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 GameData* GameData::gamedata = 0;
 
 
-GameData::GameData()
+GameData::GameData(GameInfo *gameinfo_)
 	: fixed(0), mainshapes(0), mainusecode(0), globs(0), fonts(0), gumps(0),
-	  mouse(0), music(0), weaponoverlay(0), soundflex(0), speech(1024)
+	  mouse(0), music(0), weaponoverlay(0), soundflex(0), speech(1024), gameinfo(gameinfo_)
 {
 	con.Print(MM_INFO, "Creating GameData...\n");
 
@@ -140,8 +140,6 @@ void GameData::loadTranslation()
 {
 	ConfigFileManager* config = ConfigFileManager::get_instance();
 	std::string translationfile;
-
-	GameInfo* gameinfo = CoreApp::get_instance()->getGameInfo();
 
 	if (gameinfo->type == GameInfo::GAME_U8) {
 		switch (gameinfo->language) {
@@ -237,7 +235,6 @@ void GameData::loadU8Data()
 	}
 	fixed = new RawArchive(fd);
 
-	GameInfo* gameinfo = CoreApp::get_instance()->getGameInfo();
 	char langletter = gameinfo->getLanguageUsecodeLetter();
 	if (!langletter) {
 		perr << "Unknown language. Unable to open usecode." << std::endl;
@@ -384,7 +381,6 @@ void GameData::setupFontOverrides()
 {
 	setupTTFOverrides("game/fontoverride", false);
 
-	GameInfo* gameinfo = CoreApp::get_instance()->getGameInfo();
 	if (gameinfo->language == GameInfo::GAMELANG_JAPANESE)
 		setupJPOverrides();
 }
@@ -481,7 +477,6 @@ SpeechFlex* GameData::getSpeechFlex(uint32 shapenum)
 	char num_flx [32];
 	snprintf(num_flx ,32,"%i.flx", shapenum);
 
-	GameInfo* gameinfo = CoreApp::get_instance()->getGameInfo();
 	char langletter = gameinfo->getLanguageFileLetter();
 	if (!langletter) {
 		perr << "GameData::getSpeechFlex: Unknown language." << std::endl;
@@ -510,7 +505,6 @@ void GameData::loadRemorseData()
 	}
 	fixed = new RawArchive(fd);
 
-	GameInfo* gameinfo = CoreApp::get_instance()->getGameInfo();
 	char langletter = gameinfo->getLanguageUsecodeLetter();
 	if (!langletter) {
 		perr << "Unknown language. Unable to open usecode." << std::endl;

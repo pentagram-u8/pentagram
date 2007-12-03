@@ -26,6 +26,8 @@
 #include "FileSystem.h"
 #include "IDataSource.h"
 #include "TexturePNG.h"
+#include "U8SaveGump.h"
+#include "GumpNotifyProcess.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(PentagramMenuGump,ModalGump);
 
@@ -156,10 +158,38 @@ void PentagramMenuGump::ChildNotify(Gump *child, uint32 message)
 			GUIApp::get_instance()->changeGame(gamename);
 			break;
 		case GameWidget::GAME_LOAD:
+			{
+				GameInfo *info = GUIApp::get_instance()->getGameInfo(gamename);
+				if (info && info->type == GameInfo::GAME_U8)
+				{
+					GUIApp::get_instance()->menuInitMinimal(gamename);
+					Gump *gump = U8SaveGump::showLoadSaveGump(0,false);
+					if (gump)
+					{
+						HideGump();
+						gump->CreateNotifier();
+
+						PentagramMenuCallbackProcess *p = new PentagramMenuCallbackProcess(getObjId(), gamename);
+
+						Kernel::get_instance()->addProcess(p);
+						p->waitFor(gump->GetNotifyProcess());
+					}
+					else
+					{
+						GUIApp::get_instance()->menuInitMinimal("pentagram");
+					}
+				}
+				else
+				{
+					GUIApp::get_instance()->Error("Load Savegame not yet implemented");
+				}
+			}
 			break;
 		case GameWidget::GAME_SETTINGS:
+			GUIApp::get_instance()->Error("Settings not yet implemented");
 			break;
 		case GameWidget::GAME_REMOVE:
+			GUIApp::get_instance()->Error("Remove not yet implemented");
 			break;
 		}
 	}
@@ -206,4 +236,17 @@ bool PentagramMenuGump::OnKeyDown(int key, int mod)
 	}
 
 	return false;
+}
+
+void PentagramMenuGump::ProcessCallback(std::string gamename, int message)
+{
+	if (message != 0)
+	{
+		SettingManager *settingman = SettingManager::get_instance();
+		settingman->set("lastSave", message!=1?U8SaveGump::getFilename(message):std::string());
+		GUIApp::get_instance()->changeGame(gamename);
+	}
+
+	UnhideGump();
+	GUIApp::get_instance()->menuInitMinimal("pentagram");
 }

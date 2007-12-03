@@ -66,6 +66,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "BarkGump.h"
 #include "AskGump.h"
 #include "ModalGump.h"
+#include "MessageBoxGump.h"
 
 
 #include "QuickAvatarMoverProcess.h"
@@ -506,7 +507,7 @@ void GUIApp::startupGame()
 	con.AddConsoleCommand("MainActor::toggleCombat",
 						  MainActor::ConCmd_toggleCombat);
 
-	gamedata = new GameData();
+	gamedata = new GameData(gameinfo);
 
 	std::string bindingsfile;
 	if (GAME_IS_U8) {
@@ -564,11 +565,11 @@ void GUIApp::startupGame()
 	if (getGameInfo()->type == GameInfo::GAME_U8) 
 		audiomixer->openMidiOutput();
 
-#if 1
-	newGame();
-#else
-	loadGame("@save/quicksave");
-#endif
+	std::string savegame;
+	settingman->setDefault("lastSave", "");
+	settingman->get("lastSave", savegame);
+
+	newGame(savegame);
 
 	consoleGump->HideConsole();
 
@@ -671,7 +672,6 @@ void GUIApp::shutdownGame(bool reloading)
 	con.RemoveConsoleCommand(MainActor::ConCmd_useKeyring);
 	con.RemoveConsoleCommand(MainActor::ConCmd_toggleCombat);
 
-
 	// Kill Game
 	CoreApp::killGame();
 
@@ -686,9 +686,21 @@ void GUIApp::shutdownGame(bool reloading)
 		desktopGump->InitGump(0);
 		desktopGump->MakeFocus();
 
+		con.Print(MM_INFO, "Creating ScalerGump...\n");
+		scalerGump = new ScalerGump(0, 0, dims.w, dims.h);
+		scalerGump->InitGump(0);
+
+		Pentagram::Rect scaled_dims;
+		scalerGump->GetDims(scaled_dims);
+
 		con.Print(MM_INFO, "Creating Graphics Console...\n");
 		consoleGump = new ConsoleGump(0, 0, dims.w, dims.h);
 		consoleGump->InitGump(0);
+		consoleGump->HideConsole();
+		
+		con.Print(MM_INFO, "Creating Inverter...\n");
+		inverterGump = new InverterGump(0, 0, scaled_dims.w, scaled_dims.h);
+		inverterGump->InitGump(0);
 
 		enterTextMode(consoleGump);
 	}
@@ -697,6 +709,33 @@ void GUIApp::shutdownGame(bool reloading)
 void GUIApp::changeGame(Pentagram::istring newgame)
 {
 	change_gamename = newgame;
+}
+
+void GUIApp::menuInitMinimal(Pentagram::istring gamename)
+{
+	// Only if in the pentagram menu
+	if (gameinfo->name != "pentagram") return;
+	GameInfo *info = getGameInfo(gamename);
+	if (!info) info = getGameInfo("pentagram");
+	assert(info);
+
+	pout  << std::endl << "-- Loading minimal game data for: " << info->name << " --" << std::endl;
+
+	FORGET_OBJECT(game);
+	FORGET_OBJECT(gamedata);
+
+
+	setupGamePaths(info);
+
+	if (info->name == "pentagram") return;
+
+	gamedata = new GameData(info);
+	game = Game::createGame(info);
+
+	game->loadFiles();
+	gamedata->setupFontOverrides();
+
+	pout << "-- Finished loading minimal--" << std::endl << std::endl;
 }
 
 void GUIApp::DeclareArgs()
@@ -795,6 +834,13 @@ void GUIApp::run()
 				perr << "Game '" << change_gamename << "' not found" << std::endl;
 				change_gamename.clear();
 			}
+		}
+
+		if (!error_message.empty())
+		{
+			MessageBoxGump::Show(error_title, error_message, 0xFF8F3030);
+			error_title.clear();
+			error_message.clear();
 		}
 
 		// Do a delay
@@ -997,6 +1043,8 @@ void GUIApp::paint()
 				screen->Paint(mouse, frame, mouseX, mouseY, true);
 #endif
 			}
+			else if (frame == -2)
+				screen->Blit(defMouse, 0, 0, defMouse->width, defMouse->height, mouseX, mouseY);
 		}
 	}
 	else {
@@ -1132,6 +1180,7 @@ int GUIApp::getMouseFrame()
 	}
 	//!! constants...
 	case MOUSE_NONE: return -1;
+	case MOUSE_POINTER: return -2;
 	case MOUSE_TARGET: return 34;
 	case MOUSE_PENTAGRAM: return 35;
 	case MOUSE_HAND: return 36;
@@ -1338,8 +1387,17 @@ void GUIApp::GraphicSysInit()
 	desktopGump->InitGump(0);
 	desktopGump->MakeFocus();
 
+	scalerGump = new ScalerGump(0, 0, width, height);
+	scalerGump->InitGump(0);
+
 	consoleGump = new ConsoleGump(0, 0, width, height);
 	consoleGump->InitGump(0);
+
+	Pentagram::Rect scaled_dims;
+	scalerGump->GetDims(scaled_dims);
+
+	inverterGump = new InverterGump(0, 0, scaled_dims.w, scaled_dims.h);
+	inverterGump->InitGump(0);
 
 	screen = new_screen;
 
@@ -1355,6 +1413,11 @@ void GUIApp::GraphicSysInit()
 	fontmanager->loadTTFont(1, "VeraBd.ttf", 12, 0xFFFFFF, 0);
 	// GameWidget's version number information:
 	fontmanager->loadTTFont(2, "Vera.ttf", 8, 0xA0A0A0, 0);
+
+	bool faded_modal = true;
+	settingman->setDefault("fadedModal", faded_modal);
+	settingman->get("fadedModal", faded_modal);
+	DesktopGump::SetFadedModal(faded_modal);
 
 	paint();
 }
@@ -2007,6 +2070,8 @@ bool GUIApp::saveGame(std::string filename, std::string desc,
 	// Restore mouse over
 	if (gump) gump->OnMouseOver();
 
+	settingman->set("lastSave", filename);
+
 	pout << "Done" << std::endl;
 
 	return true;
@@ -2096,7 +2161,7 @@ void GUIApp::setupCoreGumps()
 		objectmanager->reserveObjId(i);
 }
 
-bool GUIApp::newGame()
+bool GUIApp::newGame(const std::string &savegame)
 {
 	con.Print(MM_INFO, "Starting New Game...\n");
 
@@ -2128,7 +2193,9 @@ bool GUIApp::newGame()
 //	av->teleport(54, 14783,5959,8); // shrine of the Ancient Ones; Hanoi
 //	av->teleport(5, 5104,22464,48); // East road (tenebrae end)
 
-	game->startInitialUsecode();
+	game->startInitialUsecode(savegame);
+
+	settingman->set("lastSave", savegame);
 
 	return true;
 }
@@ -2139,20 +2206,26 @@ bool GUIApp::loadGame(std::string filename)
 
 	IDataSource* ids = filesystem->ReadFile(filename);
 	if (!ids) {
-		perr << "Can't find file: " << filename << std::endl;
+		Error("Can't load file", "Error Loading savegame " + filename);
+		settingman->set("lastSave", "");
 		return false;
 	}
 
 	Savegame* sg = new Savegame(ids);
 	uint32 version = sg->getVersion();
 	if (version == 0) {
-		perr << "Invalid or corrupt savegame." << std::endl;
+		Error("Invalid or corrupt savegame", "Error Loading savegame " + filename);
+		delete sg;
+		settingman->set("lastSave", "");
 		return false;
 	}
 
 	if (version == 1 || version > Pentagram::savegame_version) {
-		perr << "Unsupported savegame version (" << version << ")"
-			 << std::endl;
+		char vstring[16];
+		std::sprintf (vstring,"%i", version);
+		Error(std::string("Unsupported savegame version (") + vstring + ")", "Error Loading savegame " + filename);
+		delete sg;
+		settingman->set("lastSave", "");
 		return false;
 	}
 	IDataSource* ds;
@@ -2161,14 +2234,15 @@ bool GUIApp::loadGame(std::string filename)
 	bool ok = saveinfo.load(ds, version);
 
 	if (!ok) {
-		perr << "Invalid or corrupt savegame: missing GameInfo" << std::endl;
+		Error("Invalid or corrupt savegame: missing GameInfo", "Error Loading savegame " + filename);
+		delete sg;
 		return false;
 	}
 
 	if (!gameinfo->match(saveinfo)) {
-		perr << "Game mismatch:" << std::endl;
-		perr << "Running game: " << gameinfo->getPrintDetails() << std::endl;
-		perr << "Savegame    : " << saveinfo.getPrintDetails() << std::endl;
+		std::string message = "Game mismatch\n";
+		            message+= "Running game: " + gameinfo->getPrintDetails()  + "\n";
+		            message+= "Savegame    : " + saveinfo.getPrintDetails();
 
 #ifdef DEBUG
 		bool ignore;
@@ -2176,8 +2250,15 @@ bool GUIApp::loadGame(std::string filename)
 		settingman->get("ignore_savegame_mismatch", ignore);
 
 		if (!ignore)
+		{
+			Error(message, "Error Loading savegame " + filename);
+			delete sg;
 			return false;
+		}
+		perr << message << std::endl;
 #else
+		settingman->set("lastSave", "");
+		Error(message,"Error Loading savegame " + filename);
 		return false;
 #endif
 	}
@@ -2189,6 +2270,7 @@ bool GUIApp::loadGame(std::string filename)
  	// and load everything back (order matters)
 	bool totalok = true;
 
+	std::string message;
 
 	// UCSTRINGS, UCGLOBALS, UCLISTS don't depend on anything else,
 	// so load these first
@@ -2196,18 +2278,21 @@ bool GUIApp::loadGame(std::string filename)
 	ok = ucmachine->loadStrings(ds, version);
 	totalok &= ok;
 	perr << "UCSTRINGS: " << (ok ? "ok" : "failed") << std::endl;
+	if (!ok) message += "UCSTRINGS: failed\n";
 	delete ds;
 
 	ds = sg->getDataSource("UCGLOBALS");
 	ok = ucmachine->loadGlobals(ds, version);
 	totalok &= ok;
 	perr << "UCGLOBALS: " << (ok ? "ok" : "failed") << std::endl;
+	if (!ok) message += "UCGLOBALS: failed\n";
 	delete ds;
 
 	ds = sg->getDataSource("UCLISTS");
 	ok = ucmachine->loadLists(ds, version);
 	totalok &= ok;
 	perr << "UCLISTS: " << (ok ? "ok" : "failed")<< std::endl;
+	if (!ok) message += "UCLISTS: failed\n";
 	delete ds;
 
 	// KERNEL must be before OBJECTS, for the egghatcher
@@ -2216,12 +2301,14 @@ bool GUIApp::loadGame(std::string filename)
 	ok = kernel->load(ds, version);
 	totalok &= ok;
 	perr << "KERNEL: " << (ok ? "ok" : "failed") << std::endl;
+	if (!ok) message += "KERNEL: failed\n";
 	delete ds;
 
 	ds = sg->getDataSource("APP");
 	ok = load(ds, version);
 	totalok &= ok;
 	perr << "APP: " << (ok ? "ok" : "failed") << std::endl;
+	if (!ok) message += "APP: failed\n";
 	delete ds;
 
 	// WORLD must be before OBJECTS, for the egghatcher
@@ -2229,35 +2316,58 @@ bool GUIApp::loadGame(std::string filename)
 	ok = world->load(ds, version);
 	totalok &= ok;
 	perr << "WORLD: " << (ok ? "ok" : "failed") << std::endl;
+	if (!ok) message += "WORLD: failed\n";
 	delete ds;
 
 	ds = sg->getDataSource("CURRENTMAP");
 	ok = world->getCurrentMap()->load(ds, version);
 	totalok &= ok;
 	perr << "CURRENTMAP: " << (ok ? "ok" : "failed") << std::endl;
+	if (!ok) message += "CURRENTMAP: failed\n";
 	delete ds;
 
 	ds = sg->getDataSource("OBJECTS");
 	ok = objectmanager->load(ds, version);
 	totalok &= ok;
 	perr << "OBJECTS: " << (ok ? "ok" : "failed") << std::endl;
+	if (!ok) message += "OBJECTS: failed\n";
 	delete ds;
 
 	ds = sg->getDataSource("MAPS");
 	ok = world->loadMaps(ds, version);
 	totalok &= ok;
 	perr << "MAPS: " << (ok ? "ok" : "failed") << std::endl;
+	if (!ok) message += "MAPS: failed\n";
 	delete ds;
 
-	if (!ok) {
-		perr << "Loading failed!" << std::endl;
-		exit(1);
+	if (!totalok) {
+		Error(message, "Error Loading savegame " + filename, true);
+		delete sg;
+		return false;
 	}
 
 	pout << "Done" << std::endl;
 
+	settingman->set("lastSave", filename);
+
 	delete sg;
-	return false;
+	return true;
+}
+
+void GUIApp::Error(std::string message, std::string title, bool exit_to_menu)
+{
+	if (title.empty()) title = exit_to_menu?"Fatal Game Error":"Error";
+
+	perr << title << ": " << message << std::endl;
+	
+	error_message = message;
+	error_title = title;
+
+	if (exit_to_menu) 
+	{
+		change_gamename = "pentagram";
+		Kernel::get_instance()->killProcesses(0,6,false);
+	}
 }
 
 Gump* GUIApp::getGump(uint16 gumpid)
@@ -2275,7 +2385,7 @@ void GUIApp::addGump(Gump* gump)
 
 	if (gump->IsOfType<ShapeViewerGump>() || gump->IsOfType<MiniMapGump>() ||
 		gump->IsOfType<ConsoleGump>() || gump->IsOfType<ScalerGump>() ||
-		gump->IsOfType<PentagramMenuGump>()// ||
+		gump->IsOfType<PentagramMenuGump>() || gump->IsOfType<MessageBoxGump>()// ||
 		//(ttfoverrides && (gump->IsOfType<BarkGump>() ||
 		//				  gump->IsOfType<AskGump>()))
 		)
@@ -2393,7 +2503,7 @@ void GUIApp::ConCmd_loadGame(const Console::ArgvType &argv)
 
 void GUIApp::ConCmd_newGame(const Console::ArgvType &argv)
 {
-	GUIApp::get_instance()->newGame();
+	GUIApp::get_instance()->newGame(std::string());
 }
 
 

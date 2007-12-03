@@ -58,6 +58,9 @@ public:
 	//! Fill alpha channel
 	virtual void FillAlpha(uint8 alpha, sint32 sx, sint32 sy, sint32 w, sint32 h);
 
+	// Fill the region doing alpha blending 
+	virtual void FillBlended(uint32 rgba, sint32 sx, sint32 sy, sint32 w, sint32 h);
+
 	//
 	// The rule for painting methods:
 	//

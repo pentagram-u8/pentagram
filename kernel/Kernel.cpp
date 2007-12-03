@@ -188,6 +188,9 @@ bool Kernel::runProcesses()
 		{
 			runningprocess = p;
 			bool ret = p->run(framenum);
+
+			if (!runningprocess) return true; // If this happens then the list was reset so leave NOW!
+
 			runningprocess = 0;
 			
 			if (ret) dirty = true;

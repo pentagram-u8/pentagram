@@ -23,6 +23,7 @@
 
 class DesktopGump : public Gump
 {
+	static bool faded_modal;
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
@@ -31,6 +32,7 @@ public:
 	virtual ~DesktopGump(void);
 
 	virtual void PaintThis(RenderSurface *surf, sint32 lerp_factor, bool scaled);
+	virtual void PaintChildren(RenderSurface *surf, sint32 lerp_factor, bool scaled);
 
 	virtual bool StartDraggingChild(Gump* gump, int mx, int my);
 	virtual void DraggingChild(Gump* gump, int mx, int my);
@@ -39,6 +41,8 @@ public:
 	bool loadData(IDataSource* ids, uint32 version);
 
 	void RenderSurfaceChanged(RenderSurface *surf);
+
+	static void SetFadedModal(bool set) { faded_modal = set; }
 
 protected:
 	virtual void saveData(ODataSource* ods);

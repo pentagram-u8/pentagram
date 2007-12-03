@@ -1,3 +1,37 @@
+2007-12-03  Ryan Nunn <colourles@users.sourceforge.net>
+	* kernel/CoreApp.cpp : Made it so Settings ARE NOW SAVED on game shutdown.
+	* filesys/Archive.cpp : Fixing a potential crash causer
+	* kernel/Kernel.cpp : Fixing a problem if a process causes an engine reset
+	  or shutdown while it's running (this happens due to other changes i've 
+	  made below)
+	* graphics/*RenderSurface.* : Added FillBlended method to draw transparent 
+	  regions 
+	* gumps/MessageBoxGump.*, kernel/GUIApp.* : Added a generic MessageBox 
+	  gump and added a GUIApp::Error() function that can be used to easily 
+	  display an error message. Buttons can be customized and the return
+	  code from the box is returned via the notifier process
+	* gumps/DesktopGump.*, kernel/GUIApp.cpp : Added an option (enabled by 
+	  default) to fade out the background slightly when modal gumps are shown.
+	  Controlled by ini setting "fadedModal"
+	* gumps/PentagramMenuGump.cpp : Added Messages for the unimplemented 
+	  buttons
+	* games/GameData.*, kernel/GUIApp.*, kernel/CoreApp.* : Added methods and
+	  modified things to allow a minimal (ok, it's not quite so minimal at the 
+	  moment) subset of another games data to be loaded and unloaded while in 
+	  the Pentagram menu game mode. This is primarily done to allow accessing
+	  a games gumps while in the pentagram menu.
+	* games/Game.h, games/RemorseGame.*, games/StartU8Process.*, 
+	  games/U8Game.*, gumps/Gump.h, gumps/MenuGump.cpp, gumps/U8SaveGump.*
+	  gumps/PentagramMenuGump.*, kernel/GUIApp.* : Implemented the Load
+	  Savegame button for Ultima 8 in the Pentagram menu. It loads the games
+	  loadsave gump. Also changed it so the engine remember the last save 
+	  loaded for the game and will reload the last save when you press the 
+	  "Play Game" button. Like the original it will play through the intro
+	  and then load the savegame. The last savegame loaded is controled by the 
+	  "lastSave" ini setting. Changed GuiApp::loadGame() to report error 
+	  messages using GuiApp::Error() so it's more user friendly in the case of
+	  a problem.
+
 2007-11-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/MonsterEgg.cpp: Correctly set mapnum when spawning actor.
 	  This fixes Beren appearing when NPCs in town are assaulted.

@@ -351,6 +351,7 @@
 				PrecompiledHeaderThrough="pent_include.h"
 				WarningLevel="3"
 				SuppressStartupBanner="true"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -369,6 +370,7 @@
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				IgnoreDefaultLibraryNames="libc.lib;msvcrt.lib"
+				GenerateDebugInformation="true"
 				SubSystem="1"
 				OptimizeReferences="2"
 			/>
@@ -1123,6 +1125,14 @@
 			</File>
 			<File
 				RelativePath="..\..\..\gumps\MenuGump.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\gumps\MessageBoxGump.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\gumps\MessageBoxGump.h"
 				>
 			</File>
 			<File

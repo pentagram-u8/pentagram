@@ -337,9 +337,9 @@ void U8Game::ConCmd_cheatEquip(const Console::ArgvType &argv)
 	av->setEquip(item, false);
 }
 
-bool U8Game::startInitialUsecode()
+bool U8Game::startInitialUsecode(const std::string &savegame)
 {
-	Process* proc = new StartU8Process();
+	Process* proc = new StartU8Process(savegame);
 	Kernel::get_instance()->addProcess(proc);
 
 	return true;

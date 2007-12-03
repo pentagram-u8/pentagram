@@ -26,7 +26,7 @@ class Item;
 class StartU8Process : public Process
 {
 public:
-	StartU8Process();
+	StartU8Process(const std::string &savename);
 
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
@@ -39,6 +39,7 @@ protected:
 
 	bool init;
 	bool skipstart;
+	std::string savename;
 };
 
 

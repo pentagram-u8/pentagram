@@ -105,11 +105,6 @@ private:
 	//! \return true if detected all the fields, false if detection failed
 	bool getGameInfo(Pentagram::istring& game, GameInfo* gameinfo);
 
-	//! Setup the virtual game paths for the current game (set in gameinfo)
-	//! Specifically, @game and @work
-	void setupGamePaths();
-
-
 	//! setup default virtual paths (@home, @data)
 	void setupVirtualPaths();
 
@@ -129,6 +124,10 @@ protected:
 
 	//! kill current gameinfo
 	void killGame();
+
+	//! Setup the virtual game paths for the current game (set in gameinfo)
+	//! Specifically, @game and @work
+	void setupGamePaths(GameInfo* gameinfo);
 
 	std::string oGamename;
 	bool oHelp;

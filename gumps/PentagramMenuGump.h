@@ -20,11 +20,27 @@
 #define PENTAGRAMMENUGUMP_H
 
 #include "ModalGump.h"
+#include "Process.h"
 
 struct Texture;
 
 class PentagramMenuGump : public ModalGump
 {
+	class PentagramMenuCallbackProcess : public Process {
+		std::string game;
+	public:
+		PentagramMenuCallbackProcess(ObjId id, std::string game_) : Process(id), game(game_) { flags |= PROC_RUNPAUSED; }
+
+		virtual bool run(const uint32 framenum)
+		{
+			pout << "Gump returned: " << result << std::endl;
+			PentagramMenuGump *menu = p_dynamic_cast<PentagramMenuGump*>(ObjectManager::get_instance()->getObject(getItemNum()));
+			if (menu) menu->ProcessCallback(game, result);
+			terminate();
+			return true;
+		}
+	};
+
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
 
@@ -72,6 +88,8 @@ private:
 	Texture* navbarImage;
 	Texture* coversImage;
 	Texture* flagsImage;
+
+	void ProcessCallback(std::string gamename, int message);
 
 };
 

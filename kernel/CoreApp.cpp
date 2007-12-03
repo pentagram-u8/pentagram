@@ -291,18 +291,20 @@ bool CoreApp::setupGame(GameInfo* info)
 
 	gameinfo = info;
 
-	if (info->name == "pentagram") return false;
-
 	pout << "Selected game: " << info->name << std::endl;
 	pout << info->getPrintDetails() << std::endl;
 
-	setupGamePaths();
+	setupGamePaths(info);
 
-	return true;
+	return info->name != "pentagram";
 }
 
 void CoreApp::killGame()
 {
+	// Save the settings!
+	pout << "Saving settings" << std::endl;
+	settingman->write();
+
 	filesystem->RemoveVirtualPath("@game");
 	filesystem->RemoveVirtualPath("@work");
 	filesystem->RemoveVirtualPath("@save");
@@ -390,11 +392,15 @@ bool CoreApp::getGameInfo(Pentagram::istring& game, GameInfo* gameinfo)
 	return true;
 }
 
-void CoreApp::setupGamePaths()
+void CoreApp::setupGamePaths(GameInfo* ginfo)
 {
-	assert(gameinfo);
-	assert(gameinfo->name != "pentagram");
-	Pentagram::istring game = gameinfo->name;
+	if (!ginfo || ginfo->name == "pentagram")
+	{
+		settingman->setCurrentDomain(SettingManager::DOM_GLOBAL);
+		return;
+	}
+
+	Pentagram::istring game = ginfo->name;
 
 	settingman->setDomainName(SettingManager::DOM_GAME, game);
 	settingman->setCurrentDomain(SettingManager::DOM_GAME);

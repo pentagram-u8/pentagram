@@ -185,6 +185,18 @@ void U8SaveGump::OnMouseClick(int button, int mx, int my)
 	}
 
 	if (!save) {
+
+		// If our parent has a notifiy process, we'll put our result in it and wont actually load the game
+		GumpNotifyProcess* p = parent->GetNotifyProcess();
+		if (p) { 
+			// Do nothing in this case
+			if (index != 1 && descriptions[i].empty()) return;
+
+			parent->SetResult(index);
+			parent->Close(); // close PagedGump (and us)
+			return;
+		}
+
 		loadgame(index); // 'this' will be deleted here!
 	}
 }
@@ -236,7 +248,7 @@ bool U8SaveGump::OnKeyDown(int key, int mod)
 	return false;
 }
 
-static std::string getFilename(int index) {
+std::string U8SaveGump::getFilename(int index) {
 	char buf[32];
 	sprintf(buf, "%02d", index);
 
@@ -249,7 +261,7 @@ static std::string getFilename(int index) {
 bool U8SaveGump::loadgame(int index)
 {
 	if (index == 1) {
-		GUIApp::get_instance()->newGame();
+		GUIApp::get_instance()->newGame(std::string());
 		return true;
 	}
 
@@ -300,3 +312,30 @@ void U8SaveGump::loadDescriptions()
 		delete sg;
 	}
 }
+
+//static
+Gump *U8SaveGump::showLoadSaveGump(Gump *parent, bool save)
+{
+	if (save) {
+		// can't save if game over
+		// FIXME: this check should probably be in Game or GUIApp
+		MainActor* av = getMainActor();
+		if (!av || (av->getActorFlags() & Actor::ACT_DEAD)) return 0;
+	}
+
+	PagedGump * gump = new PagedGump(34, -38, 3, 35);
+	gump->InitGump(parent);
+
+	U8SaveGump* s = new U8SaveGump(save, 0);
+	s->InitGump(gump, false);
+	gump->addPage(s);
+
+	s = new U8SaveGump(save, 1);
+	s->InitGump(gump, false);
+	gump->addPage(s);
+
+	gump->setRelativePosition(CENTER);
+
+	return gump;
+}
+

@@ -81,6 +81,10 @@ public:
 	void startupPentagramMenu();
 	void shutdownGame(bool reloading=true);
 	void changeGame(Pentagram::istring newgame);
+	
+	// When in the Pentagram Menu, load minimal amount of data for the specific game
+	// Used to enable access to the games gumps and shapes
+	void menuInitMinimal(Pentagram::istring game);
 
 	void changeVideoMode(int width, int height, int fullscreen=-1);	// -1 = no change, -2 = fullscreen toggle
 	RenderSurface *getScreen() { return screen; }
@@ -136,7 +140,7 @@ public:
 
 	//! start a new game
 	//! \return true if succesful.
-	bool newGame();
+	bool newGame(const std::string &savegame);
 
 	//! get mouse cursor length. 0 = short, 1 = medium, 2 = long
 	int getMouseLength(int mx, int my);
@@ -160,7 +164,8 @@ public:
 		MOUSE_HAND = 4,
 		MOUSE_QUILL = 5,
 		MOUSE_MAGGLASS = 6,
-		MOUSE_CROSS = 7
+		MOUSE_CROSS = 7,
+		MOUSE_POINTER = 8  //!< Pentagrams default pointer
 	};
 
 	//! set the current mouse cursor
@@ -180,6 +185,11 @@ public:
 
 	//! Leave gump text mode (aka SDL Unicode keyhandling)
 	void leaveTextMode(Gump *);
+
+	//! Display an error message box
+	//! \param message The message to display on the box
+	//! \param exit_to_menu If true, then exit to the Pentagram menu then display the message
+	void Error(std::string message, std::string title=std::string(), bool exit_to_menu=false);
 
 protected:
 	virtual void DeclareArgs();
@@ -211,6 +221,8 @@ private:
 	// full system
 	Game* game;
 	Pentagram::istring change_gamename;
+	std::string error_message;
+	std::string error_title;
 
 	Kernel* kernel;
 	ObjectManager* objectmanager;

@@ -38,10 +38,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 // p_dynamic_cast stuff
 DEFINE_RUNTIME_CLASSTYPE_CODE(StartU8Process,Process);
 
-StartU8Process::StartU8Process() : Process()
+StartU8Process::StartU8Process(const std::string &savename_) : Process(), init(false), savename(savename_)
 {
-	init = false;
-
 	SettingManager::get_instance()->get("skipstart", skipstart);
 }
 
@@ -56,6 +54,11 @@ bool StartU8Process::run(const uint32 /*framenum*/)
 			waitFor(movieproc);
 			return false;
 		}
+	}
+
+	// Try to load the save game, if succeeded this pointer will no longer be valid
+	if (!savename.empty() && GUIApp::get_instance()->loadGame(savename)) {
+		return false;
 	}
 
 	CurrentMap* currentmap = World::get_instance()->getCurrentMap();
