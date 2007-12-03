@@ -28,6 +28,7 @@
 #include "TexturePNG.h"
 #include "U8SaveGump.h"
 #include "GumpNotifyProcess.h"
+#include "Kernel.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(PentagramMenuGump,ModalGump);
 

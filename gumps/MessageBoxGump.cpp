@@ -34,6 +34,8 @@
 #include "util.h"
 #include "FontManager.h"
 #include "Font.h"
+#include "GUIApp.h"
+#include "RenderSurface.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"

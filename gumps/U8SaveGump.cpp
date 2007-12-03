@@ -30,6 +30,8 @@
 #include "FileSystem.h"
 #include "Savegame.h"
 #include "PagedGump.h"
+#include "getObject.h"
+#include "MainActor.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"

@@ -21,6 +21,7 @@
 
 #include "ModalGump.h"
 #include "Process.h"
+#include "kernel/ObjectManager.h"
 
 struct Texture;
 
