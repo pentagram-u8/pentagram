@@ -270,6 +270,7 @@
 		98AE72DB0A2A418300E558F6 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98AE72C90A2A418300E558F6 /* AudioUnit.framework */; };
 		98AE72E50A2A41DB00E558F6 /* CoreMIDI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 98AE72DD0A2A41DB00E558F6 /* CoreMIDI.framework */; };
 		98AE74400A2A5A6F00E558F6 /* macosx_utils.m in Sources */ = {isa = PBXBuildFile; fileRef = 98AE743F0A2A5A6F00E558F6 /* macosx_utils.m */; };
+		98B7FB7A0D04760900E04246 /* MessageBoxGump.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 98B7FB780D04760900E04246 /* MessageBoxGump.cpp */; };
 		98C300B80A2B8C78008A38A2 /* remorsebindings.ini in Resources */ = {isa = PBXBuildFile; fileRef = 98AE725A0A2A3EC600E558F6 /* remorsebindings.ini */; };
 		98C300B90A2B8C7A008A38A2 /* u8japanese.ini in Resources */ = {isa = PBXBuildFile; fileRef = 98AE72610A2A3EC600E558F6 /* u8japanese.ini */; };
 		98C302350A2BBDF5008A38A2 /* pentagram.icns in Resources */ = {isa = PBXBuildFile; fileRef = 98C302340A2BBDF5008A38A2 /* pentagram.icns */; };
@@ -839,6 +840,8 @@
 		98AE72C90A2A418300E558F6 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = /System/Library/Frameworks/AudioUnit.framework; sourceTree = "<absolute>"; };
 		98AE72DD0A2A41DB00E558F6 /* CoreMIDI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMIDI.framework; path = /System/Library/Frameworks/CoreMIDI.framework; sourceTree = "<absolute>"; };
 		98AE743F0A2A5A6F00E558F6 /* macosx_utils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = macosx_utils.m; sourceTree = "<group>"; };
+		98B7FB780D04760900E04246 /* MessageBoxGump.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MessageBoxGump.cpp; sourceTree = "<group>"; };
+		98B7FB790D04760900E04246 /* MessageBoxGump.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MessageBoxGump.h; sourceTree = "<group>"; };
 		98C300060A2B8601008A38A2 /* AUTHORS */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = AUTHORS; sourceTree = "<group>"; };
 		98C300070A2B8601008A38A2 /* ChangeLog */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ChangeLog; sourceTree = "<group>"; };
 		98C300080A2B8601008A38A2 /* COPYING */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = COPYING; sourceTree = "<group>"; };
@@ -1374,6 +1377,8 @@
 				9865E8990A287796008DBB06 /* MainMenuProcess.h */,
 				9865E89A0A287796008DBB06 /* MenuGump.cpp */,
 				9865E89B0A287796008DBB06 /* MenuGump.h */,
+				98B7FB780D04760900E04246 /* MessageBoxGump.cpp */,
+				98B7FB790D04760900E04246 /* MessageBoxGump.h */,
 				9865E89C0A287796008DBB06 /* MiniMapGump.cpp */,
 				9865E89D0A287796008DBB06 /* MiniMapGump.h */,
 				9865E89E0A287796008DBB06 /* MiniStatsGump.cpp */,
@@ -1864,9 +1869,11 @@
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "Pentagram" */;
+			compatibilityVersion = "Xcode 2.4";
 			hasScannedForEncodings = 1;
 			mainGroup = 29B97314FDCFA39411CA2CEA /* Pentagram */;
 			projectDirPath = "";
+			projectRoot = ../../..;
 			targets = (
 				8D1107260486CEB800E47090 /* Pentagram */,
 			);
@@ -2164,6 +2171,7 @@
 				98AE74400A2A5A6F00E558F6 /* macosx_utils.m in Sources */,
 				9849610C0BE7BBA0008EB5DD /* MissileTracker.cpp in Sources */,
 				9818D93B0BF18DB500133157 /* AvatarGravityProcess.cpp in Sources */,
+				98B7FB7A0D04760900E04246 /* MessageBoxGump.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

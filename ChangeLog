@@ -1,3 +1,7 @@
+2007-12-03  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* system/xcode/*: Add MessageBoxGump to build
+	* gumps/PentagramMenuGump.h: fix include statement
+
 2007-12-03  Ryan Nunn <colourles@users.sourceforge.net>
 	* kernel/CoreApp.cpp : Made it so Settings ARE NOW SAVED on game shutdown.
 	* filesys/Archive.cpp : Fixing a potential crash causer
