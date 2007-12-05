@@ -194,7 +194,7 @@
 		<sub name="old_saves">
 			<header>Do save games from the original work in <Pent/>?</header>
 			<body><para>
-				Although we did figure out the savegame format and are able to run the initial 
+				No. Although we did figure out the savegame format and are able to run the initial 
 				one, we can't load other savegames from the original. The way the original 
 				saved processes prevents us from loading them, only the initial savegame has 
 				no processes running.
@@ -203,7 +203,7 @@
 		<sub name="save_compat">
 			<header>Do <Pent/> savegames work on all operating systems?</header>
 			<body><para>
-				<Pent/> savegames are compatible between all supported operating systems. For 
+				Yes. <Pent/> savegames are compatible between all supported operating systems. For 
 				example a game saved on Mac OS X works on Windows XP as well.
 			</para></body>
 		</sub>
