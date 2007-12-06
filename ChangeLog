@@ -1,3 +1,7 @@
+2007-12-05  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* kernel/GUIApp.cpp: Make drawRenderStats readable by displaying stats as
+      an average over ten screen repaints.
+
 2007-12-03  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* system/xcode/*: Add MessageBoxGump to build
 	* gumps/PentagramMenuGump.h: fix include statement

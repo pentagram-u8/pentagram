@@ -1014,9 +1014,22 @@ void GUIApp::CreateHWCursors()
 // Paint the screen
 void GUIApp::paint()
 {
+    static long prev = 0;
+    static long t = 0;
+    static long tdiff = 0;
+    static long tpaint = 0;
+    long now = SDL_GetTicks();
+
 	if(!screen) // need to worry if the graphics system has been started. Need nicer way.
 		return;
 
+    if (prev != 0)
+        tdiff += now - prev;
+    prev = now;
+    if (tdiff == 0)
+        tdiff = 1;
+    ++t;
+    
 	painting = true;
 
 	// Begin painting
@@ -1026,9 +1039,9 @@ void GUIApp::paint()
 	Pentagram::Rect dims;
 	screen->GetSurfaceDims(dims);
 
-	long before_gumps = SDL_GetTicks();
+    tpaint -= SDL_GetTicks();
 	desktopGump->Paint(screen, lerpFactor, false);
-	long after_gumps = SDL_GetTicks();
+	tpaint += SDL_GetTicks();
 
 	// Mouse
 	if (gamedata) {
@@ -1051,25 +1064,29 @@ void GUIApp::paint()
 		if (getMouseFrame() != -1) 
 			screen->Blit(defMouse, 0, 0, defMouse->width, defMouse->height, mouseX, mouseY);
 	}
-
-	static long prev = 0;
-	long now = SDL_GetTicks();
-	long diff = now - prev;
-	if (diff == 0) diff = 1;
-	prev = now;
-
-	char buf[256];
-	FixedWidthFont *confont = con.GetConFont();
-	int v_offset = 0;
-	int char_w = confont->width;
-
+    
 	if (drawRenderStats)
 	{
+        static long diff = 1;
+        static long paint = 1;
+        char buf[256];
+        FixedWidthFont *confont = con.GetConFont();
+        int v_offset = 0;
+        int char_w = confont->width;
+
+        if (t >= 10) {
+            diff = tdiff / t;
+            paint = tpaint / t;
+            t = 0;
+            tdiff = 0;
+            tpaint = 0;
+        }
+ 
 		snprintf(buf, 255, "Rendering time %li ms %li FPS ", diff, 1000/diff);
 		screen->PrintTextFixed(confont, buf, dims.w-char_w*strlen(buf), v_offset);
 		v_offset += confont->height;
 
-		snprintf(buf, 255, "Paint Gumps %li ms ", after_gumps-before_gumps);
+		snprintf(buf, 255, "Paint Gumps %li ms ", paint);
 		screen->PrintTextFixed(confont, buf, dims.w-char_w*strlen(buf), v_offset);
 		v_offset += confont->height;
 
