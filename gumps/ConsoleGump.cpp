@@ -18,7 +18,6 @@
 
 #include "pent_include.h"
 #include "ConsoleGump.h"
-#include "RenderSurface.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
 
@@ -40,7 +39,7 @@ ConsoleGump::ConsoleGump()
 
 ConsoleGump::ConsoleGump(int X, int Y, int Width, int Height) :
 	Gump(X,Y,Width,Height, 0, FLAG_DONT_SAVE | FLAG_CORE_GUMP, LAYER_CONSOLE),
-	scroll_state(NORMAL_DISPLAY), scroll_progress(0)
+	scroll_state(NORMAL_DISPLAY)
 {
 	con.ClearCommandBuffer();
 
@@ -81,34 +80,49 @@ void ConsoleGump::PaintThis(RenderSurface *surf, sint32 lerp_factor, bool scaled
 	else if (scroll_state != WAITING_TO_SHOW)
 	{
 		int h = dims.h;
-		if (scroll_state == SCROLLING_TO_SHOW)
-		{
-			h = (h*(scroll_progress))/1024;
-			if (h > dims.h)
-				h = dims.h;
-		}
-		else if (scroll_state == SCROLLING_TO_HIDE)
-		{
-			h = (h*(1024-scroll_progress))/1024;
-			if (h < 0)
-				h = 0;
-		}
+		if (scroll_state == SCROLLING_TO_SHOW_1) 
+			h = (h*(000+lerp_factor))/1024;
+		else if (scroll_state == SCROLLING_TO_SHOW_2) 
+			h = (h*(256+lerp_factor))/1024;
+		else if (scroll_state == SCROLLING_TO_SHOW_3) 
+			h = (h*(512+lerp_factor))/1024;
+		else if (scroll_state == SCROLLING_TO_SHOW_4) 
+			h = (h*(768+lerp_factor))/1024;
 
-		surf->FillBlended(0x60000000,0,0,dims.w,h);
+		else if (scroll_state == SCROLLING_TO_HIDE_1) 
+			h = (h*(1024-lerp_factor))/1024;
+		else if (scroll_state == SCROLLING_TO_HIDE_2)
+			h = (h*(768-lerp_factor))/1024;
+		else if (scroll_state == SCROLLING_TO_HIDE_3)
+			h = (h*(512-lerp_factor))/1024;
+		else if (scroll_state == SCROLLING_TO_HIDE_4)
+			h = (h*(256-lerp_factor))/1024;
+
 		con.DrawConsole(surf,h);
 	}
 }
 
 void ConsoleGump::ToggleConsole()
 {
-	scroll_progress = 0;
 	switch (scroll_state)
 	{
 	case WAITING_TO_HIDE:
-		scroll_state = SCROLLING_TO_SHOW;
+		scroll_state = SCROLLING_TO_SHOW_4;
 		break;
 
-	case SCROLLING_TO_HIDE:
+	case SCROLLING_TO_HIDE_1:
+		scroll_state = SCROLLING_TO_SHOW_3;
+		break;
+
+	case SCROLLING_TO_HIDE_2:
+		scroll_state = SCROLLING_TO_SHOW_2;
+		break;
+
+	case SCROLLING_TO_HIDE_3:
+		scroll_state = SCROLLING_TO_SHOW_1;
+		break;
+
+	case SCROLLING_TO_HIDE_4:
 		scroll_state = WAITING_TO_SHOW;
 		break;
 
@@ -117,10 +131,22 @@ void ConsoleGump::ToggleConsole()
 		break;
 
 	case WAITING_TO_SHOW:
-		scroll_state = SCROLLING_TO_HIDE;
+		scroll_state = SCROLLING_TO_HIDE_4;
 		break;
 
-	case SCROLLING_TO_SHOW:
+	case SCROLLING_TO_SHOW_1:
+		scroll_state = SCROLLING_TO_HIDE_3;
+		break;
+
+	case SCROLLING_TO_SHOW_2:
+		scroll_state = SCROLLING_TO_HIDE_2;
+		break;
+
+	case SCROLLING_TO_SHOW_3:
+		scroll_state = SCROLLING_TO_HIDE_1;
+		break;
+
+	case SCROLLING_TO_SHOW_4:
 		scroll_state = WAITING_TO_HIDE;
 		break;
 
@@ -138,14 +164,25 @@ void ConsoleGump::ToggleConsole()
 
 void ConsoleGump::HideConsole()
 {
-	scroll_progress = 0;
 	switch (scroll_state)
 	{
 	case WAITING_TO_SHOW:
-		scroll_state = SCROLLING_TO_HIDE;
+		scroll_state = SCROLLING_TO_HIDE_4;
 		break;
 
-	case SCROLLING_TO_SHOW:
+	case SCROLLING_TO_SHOW_1:
+		scroll_state = SCROLLING_TO_HIDE_3;
+		break;
+
+	case SCROLLING_TO_SHOW_2:
+		scroll_state = SCROLLING_TO_HIDE_2;
+		break;
+
+	case SCROLLING_TO_SHOW_3:
+		scroll_state = SCROLLING_TO_HIDE_1;
+		break;
+
+	case SCROLLING_TO_SHOW_4:
 		scroll_state = WAITING_TO_HIDE;
 		break;
 
@@ -163,14 +200,25 @@ void ConsoleGump::HideConsole()
 
 void ConsoleGump::ShowConsole()
 {
-	scroll_progress = 0;
 	switch (scroll_state)
 	{
 	case WAITING_TO_HIDE:
-		scroll_state = SCROLLING_TO_SHOW;
+		scroll_state = SCROLLING_TO_SHOW_4;
 		break;
 
-	case SCROLLING_TO_HIDE:
+	case SCROLLING_TO_HIDE_1:
+		scroll_state = SCROLLING_TO_SHOW_3;
+		break;
+
+	case SCROLLING_TO_HIDE_2:
+		scroll_state = SCROLLING_TO_SHOW_2;
+		break;
+
+	case SCROLLING_TO_HIDE_3:
+		scroll_state = SCROLLING_TO_SHOW_1;
+		break;
+
+	case SCROLLING_TO_HIDE_4:
 		scroll_state = WAITING_TO_SHOW;
 		break;
 
@@ -197,31 +245,45 @@ bool ConsoleGump::Run(const uint32 framenum)
 	switch (scroll_state)
 	{
 	case WAITING_TO_HIDE:
-		scroll_state = SCROLLING_TO_HIDE;
+		scroll_state = SCROLLING_TO_HIDE_1;
 		break;
 
-	case SCROLLING_TO_HIDE:
-		scroll_progress += 128;
-		if (scroll_progress >= 1024)
-		{
-			scroll_progress = 0;
-			scroll_state = NOTIFY_OVERLAY;
-		}
+	case SCROLLING_TO_HIDE_1:
+		scroll_state = SCROLLING_TO_HIDE_2;
+		break;
+
+	case SCROLLING_TO_HIDE_2:
+		scroll_state = SCROLLING_TO_HIDE_3;
+		break;
+
+	case SCROLLING_TO_HIDE_3:
+		scroll_state = SCROLLING_TO_HIDE_4;
+		break;
+
+	case SCROLLING_TO_HIDE_4:
+		scroll_state = NOTIFY_OVERLAY;
 		break;
 
 	case WAITING_TO_SHOW:
-		scroll_state = SCROLLING_TO_SHOW;
+		scroll_state = SCROLLING_TO_SHOW_1;
 		break;
 
-	case SCROLLING_TO_SHOW:
-		scroll_progress += 128;
-		if (scroll_progress >= 1024)
-		{
-			scroll_state = NORMAL_DISPLAY;
-			scroll_progress = 0;
-			GUIApp::get_instance()->enterTextMode(this);
-			con.ClearCommandBuffer();
-		}
+	case SCROLLING_TO_SHOW_1:
+		scroll_state = SCROLLING_TO_SHOW_2;
+		break;
+
+	case SCROLLING_TO_SHOW_2:
+		scroll_state = SCROLLING_TO_SHOW_3;
+		break;
+
+	case SCROLLING_TO_SHOW_3:
+		scroll_state = SCROLLING_TO_SHOW_4;
+		break;
+
+	case SCROLLING_TO_SHOW_4:
+		scroll_state = NORMAL_DISPLAY;
+		GUIApp::get_instance()->enterTextMode(this);
+		con.ClearCommandBuffer();
 		break;
 
 	default:

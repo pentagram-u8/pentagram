@@ -26,14 +26,19 @@ class ConsoleGump : public Gump
 	enum ConsoleScrollState {
 		NORMAL_DISPLAY,
 		WAITING_TO_HIDE,
-		SCROLLING_TO_HIDE,
+		SCROLLING_TO_HIDE_1,
+		SCROLLING_TO_HIDE_2,
+		SCROLLING_TO_HIDE_3,
+		SCROLLING_TO_HIDE_4,
 		NOTIFY_OVERLAY,
 		WAITING_TO_SHOW,
-		SCROLLING_TO_SHOW
+		SCROLLING_TO_SHOW_1,
+		SCROLLING_TO_SHOW_2,
+		SCROLLING_TO_SHOW_3,
+		SCROLLING_TO_SHOW_4
 	};
 
 	ConsoleScrollState	scroll_state;
-	int scroll_progress;
 
 public:
 	typedef void (*ConsoleFunction)(const Pentagram::istring &args);
