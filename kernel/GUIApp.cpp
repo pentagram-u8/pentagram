@@ -1068,21 +1068,23 @@ void GUIApp::paint()
 	if (drawRenderStats)
 	{
         static long diff = 1;
+        static long fps = 1;
         static long paint = 1;
         char buf[256];
         FixedWidthFont *confont = con.GetConFont();
         int v_offset = 0;
         int char_w = confont->width;
 
-        if (t >= 10) {
+        if (tdiff >= 250) {
             diff = tdiff / t;
             paint = tpaint / t;
+            fps = 1000 * t / tdiff;
             t = 0;
             tdiff = 0;
             tpaint = 0;
         }
  
-		snprintf(buf, 255, "Rendering time %li ms %li FPS ", diff, 1000/diff);
+		snprintf(buf, 255, "Rendering time %li ms %li FPS ", diff, fps);
 		screen->PrintTextFixed(confont, buf, dims.w-char_w*strlen(buf), v_offset);
 		v_offset += confont->height;
 
