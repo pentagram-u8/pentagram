@@ -1026,8 +1026,6 @@ void GUIApp::paint()
     if (prev != 0)
         tdiff += now - prev;
     prev = now;
-    if (tdiff == 0)
-        tdiff = 1;
     ++t;
     
 	painting = true;
@@ -1067,9 +1065,9 @@ void GUIApp::paint()
     
 	if (drawRenderStats)
 	{
-        static long diff = 1;
-        static long fps = 1;
-        static long paint = 1;
+        static long diff = 0;
+        static long fps = 0;
+        static long paint = 0;
         char buf[256];
         FixedWidthFont *confont = con.GetConFont();
         int v_offset = 0;
