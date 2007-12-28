@@ -1,3 +1,8 @@
+2007-12-27  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* gumps/ConsoleGump.*: Remove ConsoleGump::ConsoleFunction type - unused
+	  Reduce number of ConsoleScrollStates and use scroll_frame variable to
+	  track scrolling progress
+
 2007-12-08  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* kernel/GUIApp.cpp: Switch drawRenderStats to average after 250ms and
       compute fps during time computation to avoid loss of precision from

@@ -18,6 +18,7 @@
 
 #include "pent_include.h"
 #include "ConsoleGump.h"
+#include "RenderSurface.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
 
@@ -26,9 +27,6 @@
 DEFINE_RUNTIME_CLASSTYPE_CODE(ConsoleGump,Gump);
 
 using Pentagram::istring;
-
-//Pentagram::istring	ConsoleGump::commandBuffer;
-//std::map<Pentagram::istring,ConsoleGump::ConsoleFunction> ConsoleGump::ConsoleCommands;
 
 ConsoleGump::ConsoleGump()
 	: Gump()
@@ -39,7 +37,7 @@ ConsoleGump::ConsoleGump()
 
 ConsoleGump::ConsoleGump(int X, int Y, int Width, int Height) :
 	Gump(X,Y,Width,Height, 0, FLAG_DONT_SAVE | FLAG_CORE_GUMP, LAYER_CONSOLE),
-	scroll_state(NORMAL_DISPLAY)
+	scroll_state(NORMAL_DISPLAY), scroll_frame(8)
 {
 	con.ClearCommandBuffer();
 
@@ -69,37 +67,51 @@ void ConsoleGump::RenderSurfaceChanged()
 
 void ConsoleGump::PaintThis(RenderSurface *surf, sint32 lerp_factor, bool scaled)
 {
+	int h = dims.h;
+	uint32 next_frame = scroll_frame + 1;
 	Gump::PaintThis(surf,lerp_factor, scaled);
 
-	if (scroll_state == NOTIFY_OVERLAY)
+	switch (scroll_state)
 	{
+	case NOTIFY_OVERLAY:
 #ifdef DEBUG
 		con.DrawConsoleNotify(surf);
 #endif
-	}
-	else if (scroll_state != WAITING_TO_SHOW)
-	{
-		int h = dims.h;
-		if (scroll_state == SCROLLING_TO_SHOW_1) 
-			h = (h*(000+lerp_factor))/1024;
-		else if (scroll_state == SCROLLING_TO_SHOW_2) 
-			h = (h*(256+lerp_factor))/1024;
-		else if (scroll_state == SCROLLING_TO_SHOW_3) 
-			h = (h*(512+lerp_factor))/1024;
-		else if (scroll_state == SCROLLING_TO_SHOW_4) 
-			h = (h*(768+lerp_factor))/1024;
+		return;
+	case WAITING_TO_SHOW:
+		return;
 
-		else if (scroll_state == SCROLLING_TO_HIDE_1) 
-			h = (h*(1024-lerp_factor))/1024;
-		else if (scroll_state == SCROLLING_TO_HIDE_2)
-			h = (h*(768-lerp_factor))/1024;
-		else if (scroll_state == SCROLLING_TO_HIDE_3)
-			h = (h*(512-lerp_factor))/1024;
-		else if (scroll_state == SCROLLING_TO_HIDE_4)
-			h = (h*(256-lerp_factor))/1024;
+	case SCROLLING_TO_HIDE:
+		if (scroll_frame == 0)
+			return;
+		// Just reverse next_frame and fall through
+		next_frame = scroll_frame - 1;
+	case SCROLLING_TO_SHOW:
+		if (next_frame > 8)
+			break;
 
-		con.DrawConsole(surf,h);
+		// Take in part from Item::doLerp()
+		if (lerp_factor == 256)
+			h = (h * next_frame) >> 3;
+		else if (lerp_factor == 0)
+			h = (h * scroll_frame) >> 3;
+		else
+			h = (h * ((scroll_frame * (256-lerp_factor))
+						+ (next_frame * lerp_factor))) >> 11;
+
+		if (h > dims.h)
+			h = dims.h;
+		else if (h < 0)
+			h = 0;
+	default:
+		break;
 	}
+
+	//surf->FillBlended(0x60000000,0,0,dims.w,h);
+	
+	// This line shows some draw lag when uncommented
+	//surf->Fill32(0x00FFFFFF,0,h-1,dims.w,h);
+	con.DrawConsole(surf,h);
 }
 
 void ConsoleGump::ToggleConsole()
@@ -107,23 +119,8 @@ void ConsoleGump::ToggleConsole()
 	switch (scroll_state)
 	{
 	case WAITING_TO_HIDE:
-		scroll_state = SCROLLING_TO_SHOW_4;
-		break;
-
-	case SCROLLING_TO_HIDE_1:
-		scroll_state = SCROLLING_TO_SHOW_3;
-		break;
-
-	case SCROLLING_TO_HIDE_2:
-		scroll_state = SCROLLING_TO_SHOW_2;
-		break;
-
-	case SCROLLING_TO_HIDE_3:
-		scroll_state = SCROLLING_TO_SHOW_1;
-		break;
-
-	case SCROLLING_TO_HIDE_4:
-		scroll_state = WAITING_TO_SHOW;
+    case SCROLLING_TO_HIDE:
+		scroll_state = SCROLLING_TO_SHOW;
 		break;
 
 	case NOTIFY_OVERLAY:
@@ -131,23 +128,8 @@ void ConsoleGump::ToggleConsole()
 		break;
 
 	case WAITING_TO_SHOW:
-		scroll_state = SCROLLING_TO_HIDE_4;
-		break;
-
-	case SCROLLING_TO_SHOW_1:
-		scroll_state = SCROLLING_TO_HIDE_3;
-		break;
-
-	case SCROLLING_TO_SHOW_2:
-		scroll_state = SCROLLING_TO_HIDE_2;
-		break;
-
-	case SCROLLING_TO_SHOW_3:
-		scroll_state = SCROLLING_TO_HIDE_1;
-		break;
-
-	case SCROLLING_TO_SHOW_4:
-		scroll_state = WAITING_TO_HIDE;
+	case SCROLLING_TO_SHOW:
+		scroll_state = SCROLLING_TO_HIDE;
 		break;
 
 	case NORMAL_DISPLAY:
@@ -167,23 +149,8 @@ void ConsoleGump::HideConsole()
 	switch (scroll_state)
 	{
 	case WAITING_TO_SHOW:
-		scroll_state = SCROLLING_TO_HIDE_4;
-		break;
-
-	case SCROLLING_TO_SHOW_1:
-		scroll_state = SCROLLING_TO_HIDE_3;
-		break;
-
-	case SCROLLING_TO_SHOW_2:
-		scroll_state = SCROLLING_TO_HIDE_2;
-		break;
-
-	case SCROLLING_TO_SHOW_3:
-		scroll_state = SCROLLING_TO_HIDE_1;
-		break;
-
-	case SCROLLING_TO_SHOW_4:
-		scroll_state = WAITING_TO_HIDE;
+	case SCROLLING_TO_SHOW:
+		scroll_state = SCROLLING_TO_HIDE;
 		break;
 
 	case NORMAL_DISPLAY:
@@ -203,23 +170,8 @@ void ConsoleGump::ShowConsole()
 	switch (scroll_state)
 	{
 	case WAITING_TO_HIDE:
-		scroll_state = SCROLLING_TO_SHOW_4;
-		break;
-
-	case SCROLLING_TO_HIDE_1:
-		scroll_state = SCROLLING_TO_SHOW_3;
-		break;
-
-	case SCROLLING_TO_HIDE_2:
-		scroll_state = SCROLLING_TO_SHOW_2;
-		break;
-
-	case SCROLLING_TO_HIDE_3:
-		scroll_state = SCROLLING_TO_SHOW_1;
-		break;
-
-	case SCROLLING_TO_HIDE_4:
-		scroll_state = WAITING_TO_SHOW;
+	case SCROLLING_TO_HIDE:
+		scroll_state = SCROLLING_TO_SHOW;
 		break;
 
 	case NOTIFY_OVERLAY:
@@ -245,42 +197,30 @@ bool ConsoleGump::Run(const uint32 framenum)
 	switch (scroll_state)
 	{
 	case WAITING_TO_HIDE:
-		scroll_state = SCROLLING_TO_HIDE_1;
+		scroll_state = SCROLLING_TO_HIDE;
 		break;
 
-	case SCROLLING_TO_HIDE_1:
-		scroll_state = SCROLLING_TO_HIDE_2;
-		break;
-
-	case SCROLLING_TO_HIDE_2:
-		scroll_state = SCROLLING_TO_HIDE_3;
-		break;
-
-	case SCROLLING_TO_HIDE_3:
-		scroll_state = SCROLLING_TO_HIDE_4;
-		break;
-
-	case SCROLLING_TO_HIDE_4:
+	case SCROLLING_TO_HIDE:
+		if (scroll_frame > 0)
+		{
+			--scroll_frame;
+			break;
+		}
+		scroll_frame = 0;
 		scroll_state = NOTIFY_OVERLAY;
 		break;
 
 	case WAITING_TO_SHOW:
-		scroll_state = SCROLLING_TO_SHOW_1;
+		scroll_state = SCROLLING_TO_SHOW;
 		break;
 
-	case SCROLLING_TO_SHOW_1:
-		scroll_state = SCROLLING_TO_SHOW_2;
-		break;
-
-	case SCROLLING_TO_SHOW_2:
-		scroll_state = SCROLLING_TO_SHOW_3;
-		break;
-
-	case SCROLLING_TO_SHOW_3:
-		scroll_state = SCROLLING_TO_SHOW_4;
-		break;
-
-	case SCROLLING_TO_SHOW_4:
+	case SCROLLING_TO_SHOW:
+		if (scroll_frame < 8)
+		{
+			++scroll_frame;
+			break;
+		}
+		scroll_frame = 8;
 		scroll_state = NORMAL_DISPLAY;
 		GUIApp::get_instance()->enterTextMode(this);
 		con.ClearCommandBuffer();
