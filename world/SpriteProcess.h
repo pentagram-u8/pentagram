@@ -58,9 +58,7 @@ public:
 	virtual ~SpriteProcess(void);
 
 	//! The SpriteProcess run function
-	//! \param framenum The number of this frame of execution
-	//! \return true if a screen repaint is required
-	virtual bool run(const uint32 framenum);
+	virtual void run();
 
 	INTRINSIC(I_createSprite);
 //	INTRINSIC(I_createSpriteEx);

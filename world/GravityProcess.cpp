@@ -81,13 +81,13 @@ void GravityProcess::setGravity(int gravity_)
 		gravity = gravity_;
 }
 
-bool GravityProcess::run(uint32 framenum)
+void GravityProcess::run()
 {
 	// move item in (xs,ys,zs) direction
 	Item* item = getItem(item_num);
 	if (!item) {
 		terminate();
-		return false;
+		return;
 	}
 
 	Actor* actor = p_dynamic_cast<Actor*>(item);
@@ -158,7 +158,8 @@ bool GravityProcess::run(uint32 framenum)
 		if(zspeed < -2 && !p_dynamic_cast<Actor*>(item))
 		{
 #ifdef BOUNCE_DIAG
-			pout << "item " << item_num << " bounce [" << framenum
+			pout << "item " << item_num << " bounce ["
+				 << Kernel::get_instance()->getFrameNum()
 				 << "]: hit " << hititem->getObjId() << std::endl;
 #endif
 
@@ -218,7 +219,8 @@ bool GravityProcess::run(uint32 framenum)
 					if(abs(xspeed) > 2) xspeed /= 2;
 				}
 #ifdef BOUNCE_DIAG
-				pout << "item " << item_num << " bounce [" << framenum
+				pout << "item " << item_num << " bounce ["
+					 << Kernel::get_instance()->getFrameNum()
 					 << "]: speed was (" << xspeedold << ","
 					 << yspeedold << "," << zspeedold << ") new zspeed "
 					 << zspeed << " heading " << headingold_r
@@ -228,13 +230,15 @@ bool GravityProcess::run(uint32 framenum)
 #endif
 			} else {
 #ifdef BOUNCE_DIAG
-				pout << "item " << item_num << " bounce [" << framenum
+				pout << "item " << item_num << " bounce ["
+					 << Kernel::get_instance()->getFrameNum()
 					 << "]: no bounce" << std::endl;
 #endif
 			}
 		} else {
 #ifdef BOUNCE_DIAG
-			pout << "item " << item_num << " bounce [" << framenum
+			pout << "item " << item_num << " bounce ["
+				 << Kernel::get_instance()->getFrameNum()
 				 << "]: slow hit" << std::endl;
 #endif			
 		}
@@ -308,7 +312,6 @@ bool GravityProcess::run(uint32 framenum)
 		terminate();
 	}
 #endif
-	return true;
 }
 
 

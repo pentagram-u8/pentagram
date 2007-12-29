@@ -34,9 +34,6 @@ public:
 	BookGump(ObjId owner, std::string msg);
 	virtual ~BookGump();
 
-	// Run the gump
-	virtual bool Run(const uint32 framenum);
-
 	// Go to the next page on mouse click
 	virtual void OnMouseClick(int button, int mx, int my);
 

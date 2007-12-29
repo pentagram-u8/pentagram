@@ -128,19 +128,19 @@ void CreditsGump::extractLine(std::string& text,
 }
 
 
-bool CreditsGump::Run(const uint32 framenum)
+void CreditsGump::run()
 {
-	ModalGump::Run(framenum);
+	ModalGump::run();
 
 	if (timer) {
 		timer--;
-		return false;
+		return;
 	}
 
 	if (state == CS_CLOSING) {
 		// pout << "CreditsGump: closing" << std::endl;
 		Close();
-		return true;
+		return;
 	}
 
 	timer = 1;
@@ -165,7 +165,7 @@ bool CreditsGump::Run(const uint32 framenum)
 			settingman->write();
 		}
 
-		return true;
+		return;
 	}
 
 	if (state == CS_PLAYING && available <= 160) {
@@ -341,8 +341,6 @@ bool CreditsGump::Run(const uint32 framenum)
 			nexttitle = 0;
 		}
 	}
-
-	return true;
 }
 
 void CreditsGump::PaintThis(RenderSurface* surf, sint32 lerp_factor, bool scaled)

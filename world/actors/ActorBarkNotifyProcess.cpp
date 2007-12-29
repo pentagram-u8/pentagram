@@ -48,13 +48,13 @@ ActorBarkNotifyProcess::~ActorBarkNotifyProcess(void)
 }
 
 
-bool ActorBarkNotifyProcess::run(const uint32)
+void ActorBarkNotifyProcess::run()
 {
 	Actor* a = getActor(item_num);
-	if (!a) return false;
+	if (!a) return;
 
 	if (a->isDead() || !a->hasAnim(Animation::talk))
-		return false;
+		return;
 
 	bool doAnim = true;
 
@@ -75,7 +75,6 @@ bool ActorBarkNotifyProcess::run(const uint32)
 		a->doAnim(Animation::talk, 8);
 
 	waitFor(delaypid);
-	return false;
 }
 
 void ActorBarkNotifyProcess::saveData(ODataSource* ods)

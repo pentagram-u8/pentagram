@@ -98,7 +98,7 @@ bool AudioProcess::calculateSoundVolume(ObjId objid, int &lvol, int &rvol) const
 	return true;
 }
 
-bool AudioProcess::run(const uint32)
+void AudioProcess::run()
 {
 	AudioMixer *mixer = AudioMixer::get_instance();
 
@@ -124,8 +124,6 @@ bool AudioProcess::run(const uint32)
 			++it;
 		}
 	}
-
-	return false;
 }
 
 bool AudioProcess::continueSpeech(SampleInfo& si)

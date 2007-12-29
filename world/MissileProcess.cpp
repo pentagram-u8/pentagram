@@ -41,7 +41,7 @@ MissileProcess::MissileProcess()
 
 }
 
-bool MissileProcess::run(const uint32 /*framenum*/)
+void MissileProcess::run()
 {
 	// some values to make items use a nice arc :-)
 	// (No, this isn't permanent, but it makes the fish fly nicely ;-) )
@@ -54,7 +54,7 @@ bool MissileProcess::run(const uint32 /*framenum*/)
 	if (!it) {
 		// item gone
 		terminate();
-		return false;
+		return;
 	}
 
 	sint32 x, y, z;
@@ -74,8 +74,6 @@ bool MissileProcess::run(const uint32 /*framenum*/)
 		it->fall();
 		terminate();
 	}
-
-	return true;
 }
 
 void MissileProcess::saveData(ODataSource* ods)

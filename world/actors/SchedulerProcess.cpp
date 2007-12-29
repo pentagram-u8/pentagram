@@ -36,7 +36,7 @@ SchedulerProcess::SchedulerProcess() : Process()
 	type = 0x245; // CONSTANT!
 }
 
-bool SchedulerProcess::run(const uint32 framenum)
+void SchedulerProcess::run()
 {
 	if (nextActor != 0) {
 		// doing a scheduling run at the moment
@@ -53,11 +53,12 @@ bool SchedulerProcess::run(const uint32 framenum)
 		if (nextActor == 256) { // CONSTANT
 			nextActor = 0; // done
 #if 0
-			pout << "Scheduler: finished run at " << framenum << std::endl;
+			pout << "Scheduler: finished run at "
+				 << Kernel::get_instance()->getFrameNum() << std::endl;
 #endif
 		}
 
-		return false;
+		return;
 	}
 
 	// CONSTANT!
@@ -68,11 +69,10 @@ bool SchedulerProcess::run(const uint32 framenum)
 		lastRun = currenthour;
 		nextActor = 1;
 #if 0
-		pout << "Scheduler:  " << framenum << std::endl;
+		pout << "Scheduler:  " << Kernel::get_instance()->getFrameNum()
+			 << std::endl;
 #endif
 	}
-
-	return false;
 }
 
 void SchedulerProcess::saveData(ODataSource* ods)

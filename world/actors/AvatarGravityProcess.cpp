@@ -46,12 +46,13 @@ AvatarGravityProcess::AvatarGravityProcess(MainActor* avatar, int gravity)
 
 }
 
-bool AvatarGravityProcess::run(uint32 framenum)
+void AvatarGravityProcess::run()
 {
 	if (!GUIApp::get_instance()->isMouseDown(BUTTON_RIGHT)) {
 		// right mouse button not down, so fall normally
 
-		return GravityProcess::run(framenum);
+		GravityProcess::run();
+		return;
 	}
 
 	// right mouse button down, so see if we can cling to a ledge
@@ -65,11 +66,12 @@ bool AvatarGravityProcess::run(uint32 framenum)
 		if (avatar->getLastAnim() != Animation::hang)
 			avatar->doAnim(Animation::hang, 8);
 
-		return false;
+		return;
 	} else {
 
 		// fall normally
-		return GravityProcess::run(framenum);
+		GravityProcess::run();
+		return;
 	}
 }
 

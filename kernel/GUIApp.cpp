@@ -752,19 +752,13 @@ void GUIApp::run()
 
 	sint32 next_ticks = SDL_GetTicks()*3;	// Next time is right now!
 	
-	// Ok, the theory is that if this is set to true then we must do a repaint
-	// At the moment only it's ignored
-	bool repaint;
-
 	SDL_Event event;
 	while (isRunning) {
 		inBetweenFrame = true;	// Will get set false if it's not an inBetweenFrame
 
-		if (!frameLimit) {
-			repaint = false;
-			
-			if (kernel->runProcesses()) repaint = true;
-			desktopGump->Run(kernel->getFrameNum());
+		if (!frameLimit) {			
+			kernel->runProcesses();
+			desktopGump->run();
 			inBetweenFrame = false;
 			next_ticks = animationRate + SDL_GetTicks()*3;
 			lerpFactor = 256;
@@ -773,12 +767,11 @@ void GUIApp::run()
 		{
 			sint32 ticks = SDL_GetTicks()*3;
 			sint32 diff = next_ticks - ticks;
-			repaint = false;
 
 			while (diff < 0) {
 				next_ticks += animationRate;
-				if (kernel->runProcesses()) repaint = true;
-				desktopGump->Run(kernel->getFrameNum());
+				kernel->runProcesses();
+				desktopGump->run();
 #if 0
 				perr << "--------------------------------------" << std::endl;
 				perr << "NEW FRAME" << std::endl;
@@ -802,9 +795,6 @@ void GUIApp::run()
 			if (!interpolate || kernel->isPaused() || lerpFactor > 256)
 				lerpFactor = 256;
 		}
-
-
-		repaint = true;
 
 		// get & handle all events in queue
 		while (isRunning && SDL_PollEvent(&event)) {

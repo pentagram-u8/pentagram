@@ -41,7 +41,7 @@ public:
 	PaletteFaderProcess(sint16 from[12], sint16 to[12], int priority, int frames);
 	virtual ~PaletteFaderProcess(void);
 
-	virtual bool run(const uint32 framenum);
+	virtual void run();
 
 	INTRINSIC(I_fadeToPaletteTransform);
 	INTRINSIC(I_fadeToBlack);

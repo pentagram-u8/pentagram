@@ -59,7 +59,7 @@ InverterProcess::~InverterProcess(void)
 		inverter = 0;
 }
 
-bool InverterProcess::run(const uint32)
+void InverterProcess::run()
 {
 	GUIApp* app = GUIApp::get_instance();
 
@@ -71,8 +71,6 @@ bool InverterProcess::run(const uint32)
 		while (states[i] <= state) i++;
 		app->setInversion(states[i]);
 	}
-
-	return false;
 }
 
 void InverterProcess::saveData(ODataSource* ods)

@@ -196,9 +196,10 @@ void PentagramMenuGump::ChildNotify(Gump *child, uint32 message)
 	}
 }
 
-bool PentagramMenuGump::Run(const uint32 framenum)
+void PentagramMenuGump::run()
 {
 	int oldpos = gameScrollPos;
+	ModalGump::run();
 
 	if (gameScrollPos != gameScrollTarget) {
 		int diff = gameScrollTarget - gameScrollPos;
@@ -210,8 +211,6 @@ bool PentagramMenuGump::Run(const uint32 framenum)
 	}
 
 	gameScrollLastDelta = gameScrollPos - oldpos;
-
-	return true;
 }
 
 

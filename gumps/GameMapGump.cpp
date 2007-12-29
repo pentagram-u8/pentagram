@@ -80,14 +80,6 @@ GameMapGump::~GameMapGump()
 	delete display_list;
 }
 
-bool GameMapGump::Run(const uint32 framenum)
-{
-	Gump::Run(framenum);
-
-	return true; // Always repaint, even though we really could just
-	             // try to detect it
-}
-
 void GameMapGump::GetCameraLocation(sint32& lx, sint32& ly, sint32& lz,
 									int lerp_factor)
 {
@@ -101,7 +93,6 @@ void GameMapGump::GetCameraLocation(sint32& lx, sint32& ly, sint32& lz,
 		camera->GetLerped(lx, ly, lz, lerp_factor);
 	}
 }
-
 
 void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor, bool scaled)
 {

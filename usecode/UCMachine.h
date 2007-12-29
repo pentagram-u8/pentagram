@@ -43,7 +43,7 @@ public:
 
 	void reset();
 
-	bool execProcess(UCProcess* proc);
+	void execProcess(UCProcess* proc);
 
 	std::string& getString(uint16 str);
 	UCList* getList(uint16 l);

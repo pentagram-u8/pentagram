@@ -87,7 +87,7 @@ PaletteFaderProcess::~PaletteFaderProcess(void)
 		fader = 0;
 }
 
-bool PaletteFaderProcess::run(const uint32)
+void PaletteFaderProcess::run()
 {
 	sint16	matrix[12];
 
@@ -103,7 +103,6 @@ bool PaletteFaderProcess::run(const uint32)
 			matrix);
 	
 	if (!counter--) terminate();
-	return true;
 }
 
 void PaletteFaderProcess::saveData(ODataSource* ods)

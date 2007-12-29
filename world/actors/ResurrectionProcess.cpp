@@ -41,20 +41,20 @@ ResurrectionProcess::ResurrectionProcess(Actor* actor_)
 	type = 0x229; // CONSTANT !
 }
 
-bool ResurrectionProcess::run(const uint32 /*framenum*/)
+void ResurrectionProcess::run()
 {
 	Actor *a = getActor(item_num);
 
 	if (!a) {
 		// actor gone... too late for resurrection now :-)
 		terminate();
-		return false;
+		return;
 	}
 
 	if (!a->isDead()) {
 		// not dead?
 		terminate();
-		return false;
+		return;
 	}
 
 	if (a->getFlags() & Item::FLG_GUMP_OPEN) {
@@ -77,8 +77,6 @@ bool ResurrectionProcess::run(const uint32 /*framenum*/)
 	// we should already be killed by going into combat mode.
 	if (!(flags & PROC_TERMINATED))
 		terminate();
-
-	return true;
 }
 
 void ResurrectionProcess::saveData(ODataSource* ods)

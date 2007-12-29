@@ -66,10 +66,11 @@ void CombatProcess::terminate()
 	Process::terminate();
 }
 
-bool CombatProcess::run(const uint32 /*framenum*/)
+void CombatProcess::run()
 {
 	Actor* a = getActor(item_num);
-	if (!(a->getFlags() & Item::FLG_FASTAREA)) return false;
+	if (!(a->getFlags() & Item::FLG_FASTAREA))
+		return;
 
 	Actor* t = getActor(target);
 
@@ -80,7 +81,7 @@ bool CombatProcess::run(const uint32 /*framenum*/)
 
 		if (!target) {
 			waitForTarget();
-			return false;
+			return;
 		}
 
 		pout << "[COMBAT " << item_num << "] target found: "
@@ -91,7 +92,7 @@ bool CombatProcess::run(const uint32 /*framenum*/)
 	int targetdir = getTargetDirection();
 	if (a->getDir() != targetdir) {
 		turnToDirection(targetdir);
-		return false;
+		return;
 	}
 
 	if (inAttackRange()) {
@@ -138,7 +139,7 @@ bool CombatProcess::run(const uint32 /*framenum*/)
 			}
 		}
 
-		return false;
+		return;
 	} else if (combatmode != CM_PATHFINDING) {
 		// not in range? See if we can get in range
 
@@ -146,12 +147,11 @@ bool CombatProcess::run(const uint32 /*framenum*/)
 		
 		waitFor(Kernel::get_instance()->addProcess(pfproc));
 		combatmode = CM_PATHFINDING;
-		return false;
+		return;
 	}
 
 	combatmode = CM_WAITING;
 	waitForTarget();
-	return false;
 }
 
 ObjId CombatProcess::getTarget()

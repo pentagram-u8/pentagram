@@ -32,13 +32,12 @@ class PentagramMenuGump : public ModalGump
 	public:
 		PentagramMenuCallbackProcess(ObjId id, std::string game_) : Process(id), game(game_) { flags |= PROC_RUNPAUSED; }
 
-		virtual bool run(const uint32 framenum)
+		virtual void run()
 		{
 			pout << "Gump returned: " << result << std::endl;
 			PentagramMenuGump *menu = p_dynamic_cast<PentagramMenuGump*>(ObjectManager::get_instance()->getObject(getItemNum()));
 			if (menu) menu->ProcessCallback(game, result);
 			terminate();
-			return true;
 		}
 	};
 
@@ -57,7 +56,7 @@ public:
 
 	virtual bool OnKeyDown(int key, int mod);
 
-	virtual bool Run(const uint32 framenum);
+	virtual void run();
 
 #if 0
 	virtual uint16 TraceObjId(int mx, int my);

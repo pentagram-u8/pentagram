@@ -57,26 +57,26 @@ FireballProcess::FireballProcess(Item* item, Item* target_)
 	type = 0x218; // CONSTANT!
 }
 
-bool FireballProcess::run(uint32 /*framenum*/)
+void FireballProcess::run()
 {
 	age++;
 
 	Item* item = getItem(item_num);
 	if (!item) {
 		terminate();
-		return false;
+		return;
 	}
 
 	Item* t = getItem(target);
 	if (!t) {
 		terminate();
-		return false;
+		return;
 	}
 
 	if (age > 300 && (std::rand() % 20 == 0)) {
 		// chance of 5% to disappear every frame after 10 seconds
 		terminate();
-		return false;
+		return;
 	}
 
 	// * accelerate a bit towards target
@@ -142,7 +142,7 @@ bool FireballProcess::run(uint32 /*framenum*/)
 			hit->receiveHit(0, 8 - targetdir, 5 + (std::rand()%5),
 							WeaponInfo::DMG_FIRE);
 			terminate();
-			return true;
+			return;
 
 		} else {
 			// hit an object: invert direction
@@ -151,8 +151,6 @@ bool FireballProcess::run(uint32 /*framenum*/)
 			yspeed = -yspeed;
 		}
 	}
-
-	return true;
 }
 
 void FireballProcess::terminate()

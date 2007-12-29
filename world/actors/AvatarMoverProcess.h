@@ -32,7 +32,7 @@ public:
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	virtual bool run(const uint32 framenum);
+	virtual void run();
 
 	void OnMouseDown(int button, int mx, int my);
 	void OnMouseUp(int button);
@@ -41,9 +41,9 @@ public:
 protected:
 	virtual void saveData(ODataSource* ods);
 
-	bool handleHangingMode(const uint32 framenum);
-	bool handleCombatMode(const uint32 framenum);
-	bool handleNormalMode(const uint32 framenum);
+	void handleHangingMode();
+	void handleCombatMode();
+	void handleNormalMode();
 
 	void step(Animation::Sequence action, int direction, bool adjusted=false);
 	void jump(Animation::Sequence action, int direction);

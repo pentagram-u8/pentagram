@@ -37,10 +37,10 @@ CompileProcess::~CompileProcess()
 {
 }
 
-bool CompileProcess::run(const uint32 /*framenum*/)
+void CompileProcess::run()
 {
 	if (flags & PROC_SUSPENDED)
-		return false;
+		return;
 
 	if(cu->state()!=CompileUnit::CSTATE_FINISHED)
 		cu->parse();
@@ -68,8 +68,5 @@ bool CompileProcess::run(const uint32 /*framenum*/)
 
 	//pout << "Countdown to Term...: " << termCounter << std::endl;
 	termCounter--;
-
-	// if we need to redraw the screen (aka, we've done something), we need to return true;
-	return false;
 }
 

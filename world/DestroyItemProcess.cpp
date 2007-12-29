@@ -43,7 +43,7 @@ DestroyItemProcess::DestroyItemProcess(Item* item_)
 	type = 0x232;
 }
 
-bool DestroyItemProcess::run(const uint32 /*framenum*/)
+void DestroyItemProcess::run()
 {
 	if (item_num == 0) {
 		// need to get ObjId to use from process result. (We were apparently
@@ -56,7 +56,7 @@ bool DestroyItemProcess::run(const uint32 /*framenum*/)
 	if (!it) {
 		// somebody did our work for us...
 		terminate();
-		return false;
+		return;
 	}
 
 	// FIXME: should probably prevent player from opening gump in the
@@ -71,8 +71,6 @@ bool DestroyItemProcess::run(const uint32 /*framenum*/)
 	it->destroy(true);
 
 	// NOTE: we're terminated here because this process belongs to the item
-
-	return true;
 }
 
 void DestroyItemProcess::saveData(ODataSource* ods)

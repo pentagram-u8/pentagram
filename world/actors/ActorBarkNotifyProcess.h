@@ -32,7 +32,7 @@ public:
 	ActorBarkNotifyProcess(uint16 it);
 	virtual ~ActorBarkNotifyProcess(void);
 
-	virtual bool run(const uint32 framenum);
+	virtual void run();
 
 	bool loadData(IDataSource* ids, uint32 version);
 protected:

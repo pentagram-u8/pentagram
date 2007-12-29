@@ -66,9 +66,8 @@ void GumpNotifyProcess::terminate()
 	}
 }
 
-bool GumpNotifyProcess::run(const uint32)
+void GumpNotifyProcess::run()
 {
-	return false;
 }
 
 void GumpNotifyProcess::dumpInfo()

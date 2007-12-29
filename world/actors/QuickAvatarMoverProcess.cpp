@@ -52,12 +52,12 @@ QuickAvatarMoverProcess::~QuickAvatarMoverProcess()
 {
 }
 
-bool QuickAvatarMoverProcess::run(const uint32 /*framenum*/)
+void QuickAvatarMoverProcess::run()
 {
 	if (GUIApp::get_instance()->isAvatarInStasis())
 	{
 		terminate();
-		return false;
+		return;
 	}
 
 	MainActor * avatar = getMainActor();
@@ -136,7 +136,6 @@ bool QuickAvatarMoverProcess::run(const uint32 /*framenum*/)
 
 	// Yes, i know, not entirely correct
 	avatar->collideMove(x+dx,y+dy,z+dz, false, true);
-	return true;
 }
 
 void QuickAvatarMoverProcess::terminate()

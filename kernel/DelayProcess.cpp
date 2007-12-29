@@ -37,11 +37,10 @@ DelayProcess::~DelayProcess()
 
 }
 
-bool DelayProcess::run(const uint32 /*framenum*/)
+void DelayProcess::run()
 {
 	if (--count == 0)
 		terminate();
-	return false;
 }
 
 void DelayProcess::dumpInfo()

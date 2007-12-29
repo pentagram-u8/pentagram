@@ -93,13 +93,6 @@ void BookGump::NextText()
 	widgetR->setupNextText();
 }
 
-bool BookGump::Run(const uint32 framenum)
-{
-	ModalGump::Run(framenum);
-
-	return true;
-}
-
 void BookGump::OnMouseClick(int button, int mx, int my)
 {
 	// Scroll to next text, if possible

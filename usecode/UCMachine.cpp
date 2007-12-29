@@ -154,7 +154,7 @@ void UCMachine::loadIntrinsics(Intrinsic *i, unsigned int icount)
 	intrinsiccount=icount;
 }
 
-bool UCMachine::execProcess(UCProcess* p)
+void UCMachine::execProcess(UCProcess* p)
 {
 	assert(p);
 
@@ -1947,9 +1947,6 @@ bool UCMachine::execProcess(UCProcess* p)
 
 		p->terminateDeferred();
 	}
-
-
-	return false;
 }
 
 

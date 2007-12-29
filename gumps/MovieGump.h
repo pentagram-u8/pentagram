@@ -38,7 +38,7 @@ public:
 
 	virtual void Close(bool no_del = false);
 
-	virtual bool Run(const uint32 framenum);
+	virtual void run();
 
 	// Paint the Gump
 	virtual void PaintThis(RenderSurface*, sint32 lerp_factor, bool scaled);

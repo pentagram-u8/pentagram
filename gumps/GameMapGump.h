@@ -37,8 +37,6 @@ public:
 	GameMapGump(int x, int y, int w, int h);
 	virtual ~GameMapGump();
 
-	virtual bool		Run(const uint32 framenum);
-
 	virtual void		PaintThis(RenderSurface *surf, sint32 lerp_factor, bool scaled);
 
 	void				GetCameraLocation(sint32& x, sint32& y, sint32& z,

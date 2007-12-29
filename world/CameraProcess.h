@@ -44,7 +44,7 @@ public:
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	virtual bool run(const uint32 framenum);
+	virtual void run();
 
 	// You will notice that this isn't the same as how Item::GetLerped works
 	void GetLerped(sint32 &x, sint32 &y, sint32 &z, sint32 factor, bool noupdate=false);

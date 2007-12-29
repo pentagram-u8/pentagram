@@ -37,14 +37,14 @@ HealProcess::HealProcess() : Process()
 	type = 0x222; // CONSTANT!
 }
 
-bool HealProcess::run(const uint32 /*framenum*/)
+void HealProcess::run()
 {
 	MainActor *avatar = getMainActor();
 
 	if (!avatar || avatar->isDead()) {
 		// dead?
 		terminate();
-		return false;
+		return;
 	}
 
 	// heal one hitpoint and one manapoint every minute (1800 frames)
@@ -70,8 +70,6 @@ bool HealProcess::run(const uint32 /*framenum*/)
 		if (hungerCounter < 200)
 			hungerCounter++;
 	}
-
-	return false;
 }
 
 void HealProcess::feedAvatar(uint16 food)

@@ -33,13 +33,11 @@ MainMenuProcess::MainMenuProcess() : Process()
 }
 
 
-bool MainMenuProcess::run(const uint32 /*framenum*/)
+void MainMenuProcess::run()
 {
 	MenuGump::showMenu();
 
 	terminate();
-
-	return false;
 }
 
 void MainMenuProcess::saveData(ODataSource* ods)

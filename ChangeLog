@@ -1,3 +1,9 @@
+2007-12-29  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* gumps/PentagramMenuGump.cpp: add call to ModalGump::run() to run method
+	* various: Refactor Gump::Run and Process::run to not pass in the framenum
+	  Refactor Gump::Run and Process::run to not return void
+	  Rename Gump::Run to Gump::run
+
 2007-12-27  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* gumps/ConsoleGump.*: Remove ConsoleGump::ConsoleFunction type - unused
 	  Reduce number of ConsoleScrollStates and use scroll_frame variable to

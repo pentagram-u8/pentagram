@@ -18,6 +18,7 @@
 
 #include "pent_include.h"
 #include "ConsoleGump.h"
+#include "Kernel.h"
 #include "RenderSurface.h"
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -188,11 +189,11 @@ bool ConsoleGump::ConsoleIsVisible()
 	return scroll_state != NOTIFY_OVERLAY;
 }
 
-bool ConsoleGump::Run(const uint32 framenum)
+void ConsoleGump::run()
 {
-	Gump::Run(framenum);
+	Gump::run();
 
-	con.setFrameNum(framenum);
+	con.setFrameNum(Kernel::get_instance()->getFrameNum());
 
 	switch (scroll_state)
 	{
@@ -229,8 +230,6 @@ bool ConsoleGump::Run(const uint32 framenum)
 	default:
 		break;
 	}
-
-	return true;	// Always repaint, even though we really could just try to detect it
 }
 
 void ConsoleGump::ConCmd_toggle(const Console::ArgvType &argv)

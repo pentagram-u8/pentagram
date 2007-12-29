@@ -28,8 +28,7 @@ public:
 
 	friend class Kernel;
 
-	// returns true if screen needs to be repainted
-	virtual bool run(const uint32 framenum) = 0;
+	virtual void run() = 0;
 
 	Process(ObjId item_num=0, uint16 type=0);
 	virtual ~Process() { }

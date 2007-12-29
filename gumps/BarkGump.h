@@ -39,7 +39,7 @@ public:
 	virtual ~BarkGump(void);
 
 	// Run the gump (decrement the counter)
-	virtual bool		Run(const uint32 framenum);
+	virtual void		run();
 
 	// Got to the next page on mouse click
 	virtual Gump *		OnMouseDown(int button, int mx, int my);

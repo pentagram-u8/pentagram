@@ -34,7 +34,7 @@ public:
 
 	void setTarget(unsigned int target) { targetstate = target; }
 
-	virtual bool run(const uint32 framenum);
+	virtual void run();
 
 	static ProcId invertScreen();
 	static void ConCmd_invertScreen(const Console::ArgvType &argv);

@@ -33,7 +33,7 @@ public:
 					  uint32 extendedflags, sint32 x, sint32 y, sint32 z);
 	virtual ~CreateItemProcess(void);
 
-	virtual bool run(const uint32 framenum);
+	virtual void run();
 
 	bool loadData(IDataSource* ids, uint32 version);
 protected:

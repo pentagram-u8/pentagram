@@ -66,16 +66,14 @@ void MovieGump::Close(bool no_del)
 	ModalGump::Close(no_del);
 }
 
-bool MovieGump::Run(const uint32 framenum)
+void MovieGump::run()
 {
-	ModalGump::Run(framenum);
+	ModalGump::run();
 
 	player->run();
 	if (!player->isPlaying()) {
 		Close();
 	}
-
-	return true;
 }
 
 void MovieGump::PaintThis(RenderSurface* surf, sint32 lerp_factor, bool scaled)

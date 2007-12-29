@@ -45,11 +45,11 @@ LoiterProcess::LoiterProcess(Actor* actor_, sint32 c)
 	type = 0x205; // CONSTANT!
 }
 
-bool LoiterProcess::run(const uint32 /*framenum*/)
+void LoiterProcess::run()
 {
 	if (!count) {
 		terminate();
-		return false;
+		return;
 	}
 	if (count > 0)
 		count--;
@@ -59,7 +59,7 @@ bool LoiterProcess::run(const uint32 /*framenum*/)
 	if (!a || a->isDead()) {
 		// dead?
 		terminate();
-		return false;
+		return;
 	}
 
 	sint32 x,y,z;
@@ -102,9 +102,6 @@ bool LoiterProcess::run(const uint32 /*framenum*/)
 
 		waitFor(dp);
 	}
-	
-
-	return false;
 }
 
 void LoiterProcess::saveData(ODataSource* ods)

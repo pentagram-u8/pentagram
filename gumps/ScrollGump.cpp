@@ -82,13 +82,6 @@ void ScrollGump::NextText()
 	}
 }
 
-bool ScrollGump::Run(const uint32 framenum)
-{
-	ModalGump::Run(framenum);
-
-	return true;	// Always repaint, even though we really could just try to detect it
-}
-
 void ScrollGump::OnMouseClick(int button, int mx, int my)
 {
 	// Scroll to next text, if possible

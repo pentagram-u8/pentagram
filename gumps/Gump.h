@@ -127,8 +127,7 @@ public:
 	virtual void		RenderSurfaceChanged();
 
 	//! Run the gump
-	//! \return true if repaint required
-	virtual bool		Run(const uint32 framenum);
+	virtual void		run();
 
 	//! Close item-dependent gumps (recursively).
 	//! Called when there is a map change (so the gumps can self terminate

@@ -75,7 +75,7 @@ public:
 	static void ConCmd_playSFX(const Console::ArgvType &argv);
 
 
-	virtual bool run(const uint32 framenum);
+	virtual void run();
 
 	void playSFX(int sfxnum, int priority, ObjId objid, int loops,
 				 bool no_duplicates=false, uint32 pitch_shift=0x10000,

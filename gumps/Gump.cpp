@@ -145,19 +145,19 @@ void Gump::RenderSurfaceChanged()
 	}
 }
 
-bool Gump::Run(const uint32 framenum)
+void Gump::run()
 {
 	// Iterate all children
 	std::list<Gump*>::iterator it = children.begin();
 	std::list<Gump*>::iterator end = children.end();
-	bool repaint = false;
 
 	while (it != end)
 	{
 		Gump *g = *it;
 
 		// Run the child if it's not closing
-		if (!(g->flags & FLAG_CLOSING)) if (g->Run(framenum)) repaint = true;
+		if (!(g->flags & FLAG_CLOSING))
+			g->run();
 
 		// If closing, we can kill it
 		if (g->flags & FLAG_CLOSING)
@@ -171,7 +171,6 @@ bool Gump::Run(const uint32 framenum)
 			++it;
 		}
 	}	
-	return repaint;
 }
 
 void Gump::CloseItemDependents()

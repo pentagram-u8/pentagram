@@ -41,7 +41,7 @@ public:
 
 	virtual void terminate();
 
-	virtual bool run(const uint32 framenum);
+	virtual void run();
 
 	virtual void dumpInfo();
 

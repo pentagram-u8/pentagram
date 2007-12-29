@@ -42,14 +42,14 @@ ClearFeignDeathProcess::ClearFeignDeathProcess(Actor* actor_)
 	type = 0x243; // constant !
 }
 
-bool ClearFeignDeathProcess::run(const uint32 /*framenum*/)
+void ClearFeignDeathProcess::run()
 {
 	Actor *a = getActor(item_num);
 
 	if (!a) {
 		// actor gone?
 		terminate();
-		return false;
+		return;
 	}
 
 	a->clearActorFlag(Actor::ACT_FEIGNDEATH);
@@ -59,8 +59,6 @@ bool ClearFeignDeathProcess::run(const uint32 /*framenum*/)
 
 	// done
 	terminate();
-
-	return true;
 }
 
 void ClearFeignDeathProcess::saveData(ODataSource* ods)

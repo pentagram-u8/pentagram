@@ -62,40 +62,45 @@ AvatarMoverProcess::~AvatarMoverProcess()
 
 }
 
-bool AvatarMoverProcess::run(const uint32 framenum)
+void AvatarMoverProcess::run()
 {
+	Kernel * kernel = Kernel::get_instance();
+	uint32 framenum = kernel->getFrameNum();
+
 	// only run once per frame
-	if (framenum == lastframe) return false;
+	if (framenum == lastframe)
+		return;
 	lastframe = framenum;
 
 
 	MainActor* avatar = getMainActor();
 
 	// busy, so don't move
-	if (Kernel::get_instance()->getNumProcesses(1, 0x00F0) > 0) {
+	if (kernel->getNumProcesses(1, 0x00F0) > 0) {
 		idleTime = 0;
-		return false;
+		return;
 	}
 	   
 
 	if (avatar->getLastAnim() == Animation::hang) {
-		return handleHangingMode(framenum);
+		handleHangingMode();
+		return;
 	}
 
 	// falling, so don't move
 	if (avatar->getGravityPID() != 0) {
 		idleTime = 0;
-		return false;
+		return;
 	}
 
 	bool combatRun = (avatar->getActorFlags() & Actor::ACT_COMBATRUN) != 0;
 	if (avatar->isInCombat() && !combatRun)
-		return handleCombatMode(framenum);
+		handleCombatMode();
 	else
-		return handleNormalMode(framenum);
+		handleNormalMode();
 }
 
-bool AvatarMoverProcess::handleHangingMode(const uint32 /*framenum*/)
+void AvatarMoverProcess::handleHangingMode()
 {
 	GUIApp* guiapp = GUIApp::get_instance();
 	MainActor* avatar = getMainActor();
@@ -104,7 +109,7 @@ bool AvatarMoverProcess::handleHangingMode(const uint32 /*framenum*/)
 
 	idleTime = 0;
 
-	if (stasis) return false;
+	if (stasis) return;
 
 	bool m0clicked = false;
 	bool m1clicked = false;
@@ -139,11 +144,9 @@ bool AvatarMoverProcess::handleHangingMode(const uint32 /*framenum*/)
 			waitFor(avatar->doAnim(Animation::climb40, 8));
 		}
 	}
-
-	return false;
 }
 
-bool AvatarMoverProcess::handleCombatMode(const uint32 framenum)
+void AvatarMoverProcess::handleCombatMode()
 {
 	GUIApp* guiapp = GUIApp::get_instance();
 	MainActor* avatar = getMainActor();
@@ -167,7 +170,7 @@ bool AvatarMoverProcess::handleCombatMode(const uint32 framenum)
 	if (lastanim == Animation::die || lastanim == Animation::fallBackwards) {
 		if (!stasis)
 			waitFor(avatar->doAnim(Animation::standUp, mousedir));
-		return false;
+		return;
 	}
 
 	// if we were blocking, and no longer holding the mouse, stop
@@ -176,12 +179,12 @@ bool AvatarMoverProcess::handleCombatMode(const uint32 framenum)
 	{
 //		pout << "AvatarMover: combat stop blocking" << std::endl;
 		waitFor(avatar->doAnim(Animation::stopBlock, direction));
-		return false;
+		return;
 	}
 
 	// can't do any new actions if in stasis
 	if (stasis)
-		return false;
+		return;
 
 	bool m0clicked = false;
 	bool m1clicked = false;
@@ -211,14 +214,14 @@ bool AvatarMoverProcess::handleCombatMode(const uint32 framenum)
 	{
 		// left click-and-hold = block
 		if (lastanim == Animation::startBlock)
-			return false;
+			return;
 
 //		pout << "AvatarMover: combat block" << std::endl;
 
-		if (checkTurn(mousedir, false)) return false;
+		if (checkTurn(mousedir, false)) return;
 
 		waitFor(avatar->doAnim(Animation::startBlock, mousedir));
-		return false;
+		return;
 	}
 
 	if ((mouseButton[0].state & MBS_DOWN) &&
@@ -232,17 +235,17 @@ bool AvatarMoverProcess::handleCombatMode(const uint32 framenum)
 			// double left click = attack
 //			pout << "AvatarMover: combat attack" << std::endl;
 
-			if (checkTurn(mousedir, true)) return false;
+			if (checkTurn(mousedir, true)) return;
 
 			waitFor(avatar->doAnim(Animation::attack, mousedir));
-			lastAttack = framenum;
+			lastAttack = lastframe;
 
 			// attacking gives str/dex
 			avatar->accumulateStr(1+(std::rand()%2));
 			avatar->accumulateDex(2+(std::rand()%2));
 		}
 
-		return false;
+		return;
 	}
 
 	if ((mouseButton[1].state & MBS_DOWN) &&
@@ -257,24 +260,24 @@ bool AvatarMoverProcess::handleCombatMode(const uint32 framenum)
 			// double right click on avatar = toggle combat mode
 			avatar->toggleInCombat();
 			waitFor(avatar->doAnim(Animation::unreadyWeapon, direction));
-			return false;
+			return;
 		}
 
 		if (canAttack()) {
 			// double right click = kick
 //			pout << "AvatarMover: combat kick" << std::endl;
 
-			if (checkTurn(mousedir, false)) return false;
+			if (checkTurn(mousedir, false)) return;
 			
 			waitFor(avatar->doAnim(Animation::kick, mousedir));
-			lastAttack = framenum;
+			lastAttack = lastframe;
 
 			// kicking gives str/dex
 			avatar->accumulateStr(1+(std::rand()%2));
 			avatar->accumulateDex(2+(std::rand()%2));
 		}
 
-		return false;
+		return;
 	}
 
 	if ((mouseButton[1].state & MBS_DOWN) &&
@@ -284,7 +287,7 @@ bool AvatarMoverProcess::handleCombatMode(const uint32 framenum)
 		// if facing right direction, walk
 		//!! TODO: check if you can actually take this step
 
-		if (checkTurn(mousedir, true)) return false;
+		if (checkTurn(mousedir, true)) return;
 
 		sint32 nextdir = mousedir;
 
@@ -309,12 +312,12 @@ bool AvatarMoverProcess::handleCombatMode(const uint32 framenum)
 
 		nextanim = Animation::checkWeapon(nextanim, lastanim);
 		waitFor(avatar->doAnim(nextanim, nextdir));
-		return false;
+		return;
 	}
 
 	// if clicked, turn in mouse direction
 	if (m0clicked || m1clicked)
-		if (checkTurn(mousedir, false)) return false;
+		if (checkTurn(mousedir, false)) return;
 
 	// not doing anything in particular? stand
 	// TODO: make sure falling works properly.
@@ -323,11 +326,9 @@ bool AvatarMoverProcess::handleCombatMode(const uint32 framenum)
 		nextanim = Animation::checkWeapon(nextanim, lastanim);
 		waitFor(avatar->doAnim(nextanim, direction));
 	}
-
-	return false;
 }
 
-bool AvatarMoverProcess::handleNormalMode(const uint32 /*framenum*/)
+void AvatarMoverProcess::handleNormalMode()
 {
 	GUIApp* guiapp = GUIApp::get_instance();
 	MainActor* avatar = getMainActor();
@@ -362,7 +363,7 @@ bool AvatarMoverProcess::handleNormalMode(const uint32 /*framenum*/)
 //			pout << "AvatarMover: standing up" << std::endl;
 			waitFor(avatar->doAnim(Animation::standUp, direction));
 		}
-		return false;
+		return;
 	}
 
 	// If still in combat stance, sheathe weapon
@@ -375,7 +376,7 @@ bool AvatarMoverProcess::handleNormalMode(const uint32 /*framenum*/)
 		anim2p->waitFor(anim1);
 		waitFor(anim2);
 
-		return false;
+		return;
 	}
 
 	bool m0clicked = false;
@@ -415,7 +416,7 @@ bool AvatarMoverProcess::handleNormalMode(const uint32 /*framenum*/)
 			Process* drawproc = Kernel::get_instance()->getProcess(drawpid);
 			drawproc->waitFor(walkpid);
 			waitFor(drawpid);
-			return false;
+			return;
 		}
 
 		// if we were running, slow to a walk before stopping
@@ -426,7 +427,7 @@ bool AvatarMoverProcess::handleNormalMode(const uint32 /*framenum*/)
 			Process* standproc = Kernel::get_instance()->getProcess(standpid);
 			standproc->waitFor(walkpid);
 			waitFor(standpid);
-			return false;
+			return;
 		}
 
 		// TODO: if we were hanging, fall
@@ -434,12 +435,12 @@ bool AvatarMoverProcess::handleNormalMode(const uint32 /*framenum*/)
 		// otherwise, stand
 		if (!stasis)
 			waitFor(avatar->doAnim(Animation::stand, direction));
-		return false;		
+		return;		
 	}
 
 	// can't do any new actions if in stasis
 	if (stasis)
-		return false;
+		return;
 
 	// both mouse buttons down
 	if (!(mouseButton[0].state & MBS_HANDLED) &&
@@ -463,7 +464,7 @@ bool AvatarMoverProcess::handleNormalMode(const uint32 /*framenum*/)
 			// We got a left mouse down.
 			// Note that this automatically means right was down too.
 
-			if (checkTurn(mousedir, false)) return false;
+			if (checkTurn(mousedir, false)) return;
 
 			nextanim = Animation::jumpUp;
 			if (mouselength > 0) {
@@ -485,7 +486,7 @@ bool AvatarMoverProcess::handleNormalMode(const uint32 /*framenum*/)
 			if (nextanim == Animation::jump || nextanim == Animation::jumpUp)
 			{
 				jump(nextanim, direction);
-				return false;
+				return;
 			}
 
 			// climbing gives str/dex
@@ -494,7 +495,7 @@ bool AvatarMoverProcess::handleNormalMode(const uint32 /*framenum*/)
 
 			nextanim = Animation::checkWeapon(nextanim, lastanim);
 			waitFor(avatar->doAnim(nextanim, direction));
-			return false;
+			return;
 		}
 	}
 
@@ -505,7 +506,7 @@ bool AvatarMoverProcess::handleNormalMode(const uint32 /*framenum*/)
 		// We got a left mouse down.
 		// Note that this automatically means right was down at the time too.
 
-		if (checkTurn(mousedir, false)) return false;
+		if (checkTurn(mousedir, false)) return;
 
 		nextanim = Animation::jumpUp;
 
@@ -514,15 +515,15 @@ bool AvatarMoverProcess::handleNormalMode(const uint32 /*framenum*/)
 			lastanim == Animation::runningJump) {
 			pout << "AvatarMover: running jump" << std::endl;
 			jump(Animation::runningJump, direction);
-			return false;
+			return;
 		} else if (mouselength > 0) {
 			pout << "AvatarMover: jump" << std::endl;
 			jump(Animation::jump, direction);
-			return false;
+			return;
 		}
 		nextanim = Animation::checkWeapon(nextanim, lastanim);
 		waitFor(avatar->doAnim(nextanim, direction));
-		return false;
+		return;
 
 		// CHECKME: check what needs to happen when keeping left pressed
 	}
@@ -539,7 +540,7 @@ bool AvatarMoverProcess::handleNormalMode(const uint32 /*framenum*/)
 
 			avatar->toggleInCombat();
 			waitFor(avatar->doAnim(Animation::readyWeapon, direction));
-			return false;
+			return;
 		}
 	}
 
@@ -565,15 +566,15 @@ bool AvatarMoverProcess::handleNormalMode(const uint32 /*framenum*/)
 		}
 
 		step(nextanim, mousedir);
-		return false;
+		return;
 	}
 
 	if (m1clicked)
-		if (checkTurn(mousedir, false)) return true;
+		if (checkTurn(mousedir, false)) return;
 
 	// doing another animation?
 	if (Kernel::get_instance()->getNumProcesses(1, 0x00F0))
-		return false;
+		return;
 
 	// idle
 	idleTime = currentIdleTime + 1;
@@ -584,7 +585,7 @@ bool AvatarMoverProcess::handleNormalMode(const uint32 /*framenum*/)
 			lastHeadShakeAnim = lastanim;
 			waitFor(avatar->doAnim(Animation::stand, direction));
 			idleTime = 0;
-			return false;
+			return;
 		}
 	} else {
 		if ((std::rand() % 3000) + 150 < idleTime) {
@@ -599,8 +600,6 @@ bool AvatarMoverProcess::handleNormalMode(const uint32 /*framenum*/)
 			idleTime = 0;
 		}
 	}
-
-	return false;
 }
 
 void AvatarMoverProcess::step(Animation::Sequence action, int direction,

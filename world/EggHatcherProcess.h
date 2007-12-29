@@ -34,7 +34,7 @@ public:
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	virtual bool run(const uint32 framenum);
+	virtual void run();
 
 	void addEgg(Egg* egg);
 	void addEgg(uint16 egg);

@@ -51,7 +51,7 @@ public:
 	//! Get the number of the current or wanted track
 	int getTrack() const { return wanted_track; }
 
-	virtual bool run(const uint32 framenum);
+	virtual void run();
 
 	bool loadData(IDataSource* ids, uint32 version);
 

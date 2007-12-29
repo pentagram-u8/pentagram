@@ -187,7 +187,7 @@ void MusicProcess::playMusic_internal(int track)
 	}
 }
 
-bool MusicProcess::run(const uint32)
+void MusicProcess::run()
 {
 	switch (state)
 	{
@@ -256,8 +256,6 @@ bool MusicProcess::run(const uint32)
 		}
 		break;
 	}
-
-	return false;
 }
 
 void MusicProcess::saveData(ODataSource* ods)

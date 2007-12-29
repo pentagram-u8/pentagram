@@ -40,14 +40,13 @@ TeleportToEggProcess::TeleportToEggProcess(int mapnum_, int teleport_id_)
 }
 
 
-bool TeleportToEggProcess::run(const uint32 /*framenum*/)
+void TeleportToEggProcess::run()
 {
 	MainActor *av = getMainActor();
 	
 	av->teleport(mapnum, teleport_id);
 	
 	terminate();
-	return true;
 }
 
 void TeleportToEggProcess::saveData(ODataSource* ods)

@@ -136,9 +136,9 @@ bool BarkGump::NextText()
 	return false;
 }
 
-bool BarkGump::Run(const uint32 framenum)
+void BarkGump::run()
 {
-	ItemRelativeGump::Run(framenum);
+	ItemRelativeGump::run();
 
 	// Auto close
 	if (!Kernel::get_instance()->isPaused()) {
@@ -163,7 +163,6 @@ bool BarkGump::Run(const uint32 framenum)
 			}
 		}
 	}
-	return true;	// Always repaint, even though we could try to detect it
 }
 
 Gump *BarkGump::OnMouseDown(int button, int mx, int my)

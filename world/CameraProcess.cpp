@@ -155,7 +155,7 @@ void CameraProcess::terminate()
 	Process::terminate();
 }
 
-bool CameraProcess::run(const uint32 /* framenum */)
+void CameraProcess::run()
 {
 	if (earthquake)
 	{
@@ -172,12 +172,10 @@ bool CameraProcess::run(const uint32 /* framenum */)
 	{
 		result = 0; // do we need this
 		CameraProcess::SetCameraProcess(0);	// This will terminate us
-		return false;
+		return;
 	}
 
 	elapsed++;
-
-	return true;
 }
 
 void CameraProcess::ItemMoved()

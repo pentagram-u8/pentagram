@@ -32,7 +32,7 @@ public:
 
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	virtual bool run(const uint32 framenum);
+	virtual void run();
 
 	virtual void dumpInfo();
 

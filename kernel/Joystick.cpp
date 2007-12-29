@@ -115,7 +115,7 @@ JoystickCursorProcess::~JoystickCursorProcess()
 #define AXIS_TOLERANCE 1000
 
 //! CONSTANTS - and a lot of guess work
-bool JoystickCursorProcess::run(const uint32 /*framenum*/)
+void JoystickCursorProcess::run()
 {
 	int dx = 0, dy = 0;
 	int now = SDL_GetTicks();
@@ -150,8 +150,6 @@ bool JoystickCursorProcess::run(const uint32 /*framenum*/)
 	{
 		accel = 0;
 	}
-
-	return false;
 }
 
 bool JoystickCursorProcess::loadData(IDataSource* ids, uint32 version)

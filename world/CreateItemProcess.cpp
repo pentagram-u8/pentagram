@@ -50,7 +50,7 @@ CreateItemProcess::~CreateItemProcess(void)
 
 }
 
-bool CreateItemProcess::run(const uint32)
+void CreateItemProcess::run()
 {
 	Item *item = ItemFactory::createItem(shape, frame, quality, flags,
 										 npcnum, mapnum, extendedflags, true);
@@ -59,8 +59,6 @@ bool CreateItemProcess::run(const uint32)
 	result = item->getObjId();
 
 	terminate();
-
-	return true;
 }
 
 void CreateItemProcess::saveData(ODataSource* ods)

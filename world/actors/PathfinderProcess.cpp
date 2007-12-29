@@ -128,12 +128,12 @@ void PathfinderProcess::terminate()
 	Process::terminate();
 }
 
-bool PathfinderProcess::run(const uint32 /*framenum*/)
+void PathfinderProcess::run()
 {
 	Actor* actor = getActor(item_num);
 	assert(actor);
 	// if not in the fastarea, do nothing
-	if (!(actor->getFlags() & Item::FLG_FASTAREA)) return false;
+	if (!(actor->getFlags() & Item::FLG_FASTAREA)) return;
 
 
 	bool ok = true;
@@ -145,7 +145,7 @@ bool PathfinderProcess::run(const uint32 /*framenum*/)
 			perr << "PathfinderProcess: target missing" << std::endl;
 			result = PATH_FAILED;
 			terminate();
-			return false;
+			return;
 		}
 
 		item->getLocation(curx, cury, curz);
@@ -164,7 +164,7 @@ bool PathfinderProcess::run(const uint32 /*framenum*/)
 #endif
 		result = PATH_OK;
 		terminate();
-		return false;
+		return;
 	}
 
 	// try to take the next step
@@ -179,7 +179,7 @@ bool PathfinderProcess::run(const uint32 /*framenum*/)
 	// the found path.
 	if (actor->getActorFlags() & Actor::ACT_ANIMLOCK) {
 		perr << "PathfinderProcess: ANIMLOCK, waiting" << std::endl;
-		return false;
+		return;
 	}
 
 	if (ok) {
@@ -222,7 +222,7 @@ bool PathfinderProcess::run(const uint32 /*framenum*/)
 			// can't get there anymore
 			result = PATH_FAILED;
 			terminate();
-			return false;
+			return;
 		}
 	}
 
@@ -233,7 +233,7 @@ bool PathfinderProcess::run(const uint32 /*framenum*/)
 		// done
 		result = PATH_OK;
 		terminate();
-		return false;
+		return;
 	}
 
 	uint16 animpid = actor->doAnim(path[currentstep].action,
@@ -247,7 +247,6 @@ bool PathfinderProcess::run(const uint32 /*framenum*/)
 	currentstep++;
 
 	waitFor(animpid);
-	return true;
 }
 
 void PathfinderProcess::saveData(ODataSource* ods)

@@ -127,7 +127,7 @@ ProcId Kernel::addProcessExec(Process* proc)
 	proc->flags |= Process::PROC_ACTIVE;
 
 	Process* oldrunning = runningprocess; runningprocess = proc;
-	proc->run(framenum);
+	proc->run( );
 	runningprocess = oldrunning;
 
 	return proc->pid;
@@ -159,20 +159,18 @@ void Kernel::removeProcess(Process* proc)
 }
 
 
-//Q: is returning a 'dirty' flag really useful?
-bool Kernel::runProcesses()
+void Kernel::runProcesses()
 {
 	if (!paused)
 		framenum++;
 
 	if (processes.size() == 0) {
-		return true;
+		return;
 		perr << "Process queue is empty?! Aborting.\n";
 
 		//! do this in a cleaner way
 		exit(0);
 	}
-	bool dirty = false;
 	current_process = processes.begin();
 	while (current_process != processes.end()) {
 		Process* p = *current_process;
@@ -187,13 +185,12 @@ bool Kernel::runProcesses()
 			(!paused || (p->flags & Process::PROC_RUNPAUSED)))
 		{
 			runningprocess = p;
-			bool ret = p->run(framenum);
+			p->run();
 
-			if (!runningprocess) return true; // If this happens then the list was reset so leave NOW!
+			if (!runningprocess)
+				return; // If this happens then the list was reset so leave NOW!
 
 			runningprocess = 0;
-			
-			if (ret) dirty = true;
 		}
 		if (!paused && (p->flags & Process::PROC_TERMINATED)) {
 			// process is killed, so remove it from the list
@@ -210,8 +207,6 @@ bool Kernel::runProcesses()
 	}
 
 	if (!paused && framebyframe) pause();
-
-	return dirty;
 }
 
 void Kernel::setNextProcess(Process* proc)

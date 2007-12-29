@@ -40,7 +40,7 @@ AvatarDeathProcess::AvatarDeathProcess() : Process()
 	type = 1; // CONSTANT !
 }
 
-bool AvatarDeathProcess::run(const uint32 /*framenum*/)
+void AvatarDeathProcess::run()
 {
 	MainActor *av = getMainActor();
 
@@ -48,14 +48,14 @@ bool AvatarDeathProcess::run(const uint32 /*framenum*/)
 		perr << "AvatarDeathProcess: MainActor object missing" << std::endl;
 		// avatar gone??
 		terminate();
-		return false;
+		return;
 	}
 
 	if (!(av->getActorFlags() & Actor::ACT_DEAD)) {
 		perr << "AvatarDeathProcess: MainActor not dead" << std::endl;
 		// avatar not dead?
 		terminate();
-		return false;
+		return;
 	}
 
 	ReadableGump *gump = new ReadableGump(1, 27, 11,
@@ -73,8 +73,6 @@ bool AvatarDeathProcess::run(const uint32 /*framenum*/)
 
 	// done
 	terminate();
-
-	return true;
 }
 
 void AvatarDeathProcess::saveData(ODataSource* ods)

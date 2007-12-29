@@ -136,20 +136,20 @@ bool ActorAnimProcess::init()
 }
 
 
-bool ActorAnimProcess::run(const uint32 /*framenum*/)
+void ActorAnimProcess::run()
 {
 	if (firstframe) {
 		bool ret = init();
 		if (!ret) {
 			// initialization failed
 			terminateDeferred();
-			return false;
+			return;
 		}
 	}
 
 	if (animAborted) {
 		terminate();
-		return false;
+		return;
 	}
 
 	assert(tracker);
@@ -163,7 +163,7 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 	if (!a) {
 		// actor gone
 		terminate();
-		return false;
+		return;
 	}
 
 	firstframe = false;
@@ -184,7 +184,7 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 				 << std::endl;
 #endif
 		terminate();
-		return true;
+		return;
 	}
 
 	bool result = true;
@@ -224,7 +224,7 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 				}
 
 				terminate();
-				return true;
+				return;
 			}
 
 
@@ -253,7 +253,7 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 
 
 				terminate();
-				return true;
+				return;
 			}
 		}
 
@@ -310,7 +310,7 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 				 << std::endl;
 #endif
 		terminate();
-		return true;
+		return;
 	}
 
 #ifdef WATCHACTOR
@@ -347,11 +347,9 @@ bool ActorAnimProcess::run(const uint32 /*framenum*/)
 			
 			// Note: do not wait for the fall to finish: this breaks
 			// the scene where Devon kills Mordea
-			return true;
+			return;
 		}
 	}
-
-	return true;
 }
 
 void ActorAnimProcess::doSpecial()

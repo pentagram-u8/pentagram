@@ -81,14 +81,13 @@ void UCProcess::load(uint16 classid_, uint16 offset_, uint32 this_ptr,
 	call(classid_, offset_);
 }
 
-bool UCProcess::run(const uint32 /*framenum*/)
+void UCProcess::run()
 {
 	if (flags & PROC_SUSPENDED)
-		return false;
+		return;
 
 	// pass to UCMachine for execution
-
-	return UCMachine::get_instance()->execProcess(this);
+	UCMachine::get_instance()->execProcess(this);
 }
 
 void UCProcess::call(uint16 classid_, uint16 offset_)

@@ -89,10 +89,6 @@ void ConApp::run()
 {
 	isRunning = true;
 
-	// Ok, the theory is that if this is set to true then we must do a repaint
-	// At the moment only it's ignored
-	bool repaint;
-
 	while (isRunning) {
 		// this needs some major changes, including possibly:
 		// - handling events in-between processes?
@@ -103,7 +99,7 @@ void ConApp::run()
 		//    ...
 		// ...
 
-		if (kernel->runProcesses()) repaint = true;
+		kernel->runProcesses();
 	
 		if (kernel->getNumProcesses(0, 6) == 0)
 			isRunning=false;

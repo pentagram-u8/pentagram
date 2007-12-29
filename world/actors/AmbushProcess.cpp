@@ -43,11 +43,11 @@ AmbushProcess::AmbushProcess(Actor* actor_)
 	delaycount = 0;
 }
 
-bool AmbushProcess::run(const uint32 /*framenum*/)
+void AmbushProcess::run()
 {
 	if (delaycount > 0) {
 		delaycount--;
-		return false;
+		return;
 	}
 	delaycount = 10;
 
@@ -56,7 +56,7 @@ bool AmbushProcess::run(const uint32 /*framenum*/)
 	if (!cp) {
 		// this shouldn't have happened
 		terminate();
-		return false;
+		return;
 	}
 
 	ObjId targetid = cp->seekTarget();
@@ -64,12 +64,10 @@ bool AmbushProcess::run(const uint32 /*framenum*/)
 
 	// no target in range yet, continue waiting
 	if (!target || a->getRange(*target) > 192)
-		return false;
+		return;
 
 	// target in range, so terminate and let parent take over
 	terminate();
-
-	return false;
 }
 
 void AmbushProcess::saveData(ODataSource* ods)

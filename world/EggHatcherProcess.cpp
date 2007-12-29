@@ -51,7 +51,7 @@ void EggHatcherProcess::addEgg(Egg* egg)
 	eggs.push_back(egg->getObjId());
 }
 
-bool EggHatcherProcess::run(const uint32 /*framenum*/)
+void EggHatcherProcess::run()
 {
 	bool nearteleporter = false;
 	MainActor* av = getMainActor();
@@ -94,8 +94,6 @@ bool EggHatcherProcess::run(const uint32 /*framenum*/)
 	}
 
 	if (!nearteleporter) av->setJustTeleported(false); // clear flag
-
-	return false;
 }
 
 void EggHatcherProcess::saveData(ODataSource* ods)

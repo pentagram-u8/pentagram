@@ -48,7 +48,7 @@ SplitItemProcess::SplitItemProcess(Item* original, Item* target_)
 	// type = TODO
 }
 
-bool SplitItemProcess::run(const uint32 /*framenum*/)
+void SplitItemProcess::run()
 {
 	Item* original = getItem(item_num);
 	Item* targetitem = getItem(target);
@@ -88,8 +88,6 @@ bool SplitItemProcess::run(const uint32 /*framenum*/)
 
 	if (!is_terminated())
 		terminate();
-
-	return true;
 }
 
 void SplitItemProcess::saveData(ODataSource* ods)

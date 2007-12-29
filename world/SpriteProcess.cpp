@@ -62,7 +62,7 @@ SpriteProcess::~SpriteProcess(void)
 	if (item) item->destroy();
 }
 
-bool SpriteProcess::run(const uint32)
+void SpriteProcess::run()
 {
 	if (!initialized) init();
 
@@ -71,13 +71,13 @@ bool SpriteProcess::run(const uint32)
 	if (!item || (frame > last_frame && repeats==1 && !delay_counter)) 
 	{
 		terminate();
-		return true;
+		return;
 	}
 
 	if (delay_counter)
 	{
 		delay_counter = (delay_counter+1)%delay;
-		return false;
+		return;
 	}
 
 	if (frame > last_frame ) 
@@ -89,7 +89,6 @@ bool SpriteProcess::run(const uint32)
 	item->setFrame(frame);
 	frame++;
 	delay_counter = (delay_counter+1)%delay;
-	return true;
 }
 
 // createSprite(shape, frame, end,               delay, x, y, z);

@@ -48,7 +48,7 @@ public:
 	ProcId addProcessExec(Process *proc); 
 
 	void removeProcess(Process *proc);
-	bool runProcesses();
+	void runProcesses();
 	Process* getProcess(ProcId pid);
 
 	ProcId assignPID(Process* proc);

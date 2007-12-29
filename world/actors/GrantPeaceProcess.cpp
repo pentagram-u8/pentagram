@@ -56,12 +56,12 @@ GrantPeaceProcess::GrantPeaceProcess(Actor* caster)
 	havetarget = false;
 }
 
-bool GrantPeaceProcess::run(const uint32 /*framenum*/)
+void GrantPeaceProcess::run()
 {
 	Actor* caster = getActor(item_num);
 	if (!caster) {
 		terminate();
-		return false;
+		return;
 	}
 
 	if (!havetarget) {
@@ -72,7 +72,7 @@ bool GrantPeaceProcess::run(const uint32 /*framenum*/)
 
 		havetarget = true;
 
-		return false;
+		return;
 	}
 
 	// get target result
@@ -82,7 +82,7 @@ bool GrantPeaceProcess::run(const uint32 /*framenum*/)
 	if (targetid == 1 || !target ) {
 		// targeting the avatar, no target or not an Actor
 		terminate();
-		return false;
+		return;
 	}
 
 	bool hit = false;
@@ -185,8 +185,6 @@ bool GrantPeaceProcess::run(const uint32 /*framenum*/)
 
 	// done
 	terminate();
-
-	return true;
 }
 
 uint32 GrantPeaceProcess::I_castGrantPeace(const uint8* args,

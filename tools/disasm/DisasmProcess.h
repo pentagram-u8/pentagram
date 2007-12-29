@@ -30,7 +30,7 @@ public:
 	// p_dynamic_cast stuff
 	ENABLE_RUNTIME_CLASSTYPE();
 
-	virtual bool run(const uint32 framenum);
+	virtual void run();
 
 protected:
 	// just a quick way to get it to run for a little before dying.

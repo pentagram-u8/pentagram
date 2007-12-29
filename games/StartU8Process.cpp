@@ -44,7 +44,7 @@ StartU8Process::StartU8Process(const std::string &savename_) : Process(), init(f
 }
 
 
-bool StartU8Process::run(const uint32 /*framenum*/)
+void StartU8Process::run()
 {
 	if (!skipstart && !init) {
 		init = true;
@@ -52,13 +52,13 @@ bool StartU8Process::run(const uint32 /*framenum*/)
 		Process* movieproc = Kernel::get_instance()->getProcess(moviepid);
 		if (movieproc) {
 			waitFor(movieproc);
-			return false;
+			return;
 		}
 	}
 
 	// Try to load the save game, if succeeded this pointer will no longer be valid
 	if (!savename.empty() && GUIApp::get_instance()->loadGame(savename)) {
-		return false;
+		return;
 	}
 
 	CurrentMap* currentmap = World::get_instance()->getCurrentMap();
@@ -70,7 +70,7 @@ bool StartU8Process::run(const uint32 /*framenum*/)
 							   0, 256, false, 16188, 7500);
 		if (uclist.getSize() < 1) {
 			perr << "Unable to find FIRST egg!" << std::endl;
-			return false;
+			return;
 		}
 	
 		uint16 objid = uclist.getuint16(0);
@@ -105,8 +105,6 @@ bool StartU8Process::run(const uint32 /*framenum*/)
 
 
 	terminate();
-
-	return false;
 }
 
 void StartU8Process::saveData(ODataSource* ods)
