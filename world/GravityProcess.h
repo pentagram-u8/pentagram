@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2005 The Pentagram team
+Copyright (C) 2003-2008 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -47,6 +47,7 @@ public:
 protected:
 	virtual void saveData(ODataSource* ods);
 
+	void fallStopped();
 
 	int gravity;
 	int xspeed, yspeed, zspeed;

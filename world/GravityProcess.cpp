@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2007 The Pentagram team
+Copyright (C) 2003-2008 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -249,6 +249,7 @@ void GravityProcess::run()
 		else {
 			item->setFlag(Item::FLG_BOUNCING);
 		}
+		fallStopped();
 	}
 	else 
 		zspeed -= gravity;
@@ -327,16 +328,15 @@ void GravityProcess::terminate()
 	}
 
 	Process::terminate();
+}
 
-	// Note: we need to terminate before calling receiveHit on actor.
-	// If we don't, receiveHit will try to terminate this GravityProcess,
-	// which will cause infinite recursion.
+void GravityProcess::fallStopped()
+{
+	// actors take a hit if they fall
+	// CHECKME: might need to do a 'die' animation even if actor is dead
 
-	Actor* actor = p_dynamic_cast<Actor*>(item);
+	Actor* actor = getActor(item_num);
 	if (actor && !actor->isDead()) {
-		// actors take a hit if they fall
-		// CHECKME: might need to do a 'die' animation even if actor is dead
-
 		int height = actor->getFallStart() - actor->getZ();
 
 		if (height >= 80) {
