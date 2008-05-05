@@ -158,7 +158,7 @@ void SonarcAudioSample::decode_LPC(int order, int nsamples,
 	dest -= order;
 
 	// basic linear predictive (de)coding
-	// the errors this produces are fixed by pass1
+	// the errors this produces are fixed by decode_EC
 
 	for (int i = 0; i < nsamples; ++i) {
 		uint8* loopdest = dest++;
