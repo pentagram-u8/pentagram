@@ -300,8 +300,11 @@ bool AnimationTracker::step()
 
 	if (!targetok || ((f.flags & AnimFrame::AFF_ONGROUND) && !support)) {
 
-		// If Avatar, and on ground, try to adjust properly
-		if (actor == 1 && (f.flags & AnimFrame::AFF_ONGROUND)) {
+		// If on ground, try to adjust properly
+		// TODO: Profile the effect of disabling this for pathfinding.
+		//       It shouldn't be necessary in that case, and may provide a
+		//       worthwhile speed-up.
+		if (f.flags & AnimFrame::AFF_ONGROUND) {
 			targetok = cm->scanForValidPosition(tx,ty,tz, a, dir,
 												true, tx,ty,tz);
 

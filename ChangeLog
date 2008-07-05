@@ -1,3 +1,7 @@
+2008-07-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/AnimationTracker.cpp: scan for valid position when
+	  animating any actor. (Fixes #2006549)
+
 2008-04-23  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/GravityProcess.*: don't handle falling damage in terminate()
 
