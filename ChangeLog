@@ -1,3 +1,6 @@
+2008-07-07  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* misc/pent_valgrind.h, various: update valgrind macros for newer valgrind
+
 2008-07-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AnimationTracker.cpp: scan for valid position when
 	  animating any actor. (Fixes #2006549)

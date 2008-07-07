@@ -27,12 +27,13 @@
 
 #else
 
-#define VALGRIND_MAKE_NOACCESS(_qzz_addr,_qzz_len)
-#define VALGRIND_MAKE_WRITABLE(_qzz_addr,_qzz_len)
-#define VALGRIND_MAKE_READABLE(_qzz_addr,_qzz_len)
+#define VALGRIND_MAKE_MEM_NOACCESS(_qzz_addr,_qzz_len)
+#define VALGRIND_MAKE_MEM_UNDEFINED(_qzz_addr,_qzz_len)
+#define VALGRIND_MAKE_MEM_DEFINED(_qzz_addr,_qzz_len)
 
-#define VALGRIND_CHECK_READABLE(_qzz_addr,_qzz_len)
-#define VALGRIND_CHECK_WRITABLE(_qzz_addr,_qzz_len)
+#define VALGRIND_CHECK_MEM_IS_DEFINED(_qzz_addr,_qzz_len)
+#define VALGRIND_CHECK_VALUE_IS_DEFINED(__lvalue)
+#define VALGRIND_CHECK_MEM_IS_ADDRESSABLE(_qzz_addr,_qzz_len)
 
 #define VALGRIND_CREATE_MEMPOOL(pool,rzB,is_zeroed)
 #define VALGRIND_DESTROY_MEMPOOL(pool)
@@ -40,7 +41,7 @@
 #define VALGRIND_MEMPOOL_FREE(pool,addr)
 
 #define VALGRIND_CREATE_BLOCK(_qzz_addr,_qzz_len,_qzz_desc) 0
-#define VALGRIND_DISCARD(_wzz_blkindex)
+#define VALGRIND_DISCARD(_qzz_blkindex)
 
 #endif
 
