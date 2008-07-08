@@ -77,6 +77,9 @@ void Container::clearObjId()
 
 	std::list<Item*>::iterator iter;
 	for (iter = contents.begin(); iter != contents.end(); ++iter) {
+		// make sure we don't clear the ObjId of an Actor
+		assert((*iter)->getObjId() >= 256);
+
 		(*iter)->clearObjId();
 	}
 }
@@ -86,6 +89,8 @@ bool Container::CanAddItem(Item* item, bool checkwghtvol)
 {
 	if (!item) return false;
 	if (item->getParent() == this->getObjId()) return true; // already in here
+
+	if (item->getObjId() < 256) return false; // actors don't fit in containers
 
 	Container *c = p_dynamic_cast<Container*>(item);
 	if (c) {

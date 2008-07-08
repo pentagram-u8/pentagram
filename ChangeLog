@@ -1,3 +1,6 @@
+2008-07-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Container.cpp: don't allow putting Actors in Containers
+
 2008-07-07  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* misc/pent_valgrind.h, various: update valgrind macros for newer valgrind
 
