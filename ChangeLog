@@ -1,5 +1,6 @@
 2008-07-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AvatarMoverProcess.cpp: fix jumping straight up
+	* world/actors/MainActor.cpp: reset avatar's mapnum on failed teleport
 
 2008-07-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Container.cpp: don't allow putting Actors in Containers

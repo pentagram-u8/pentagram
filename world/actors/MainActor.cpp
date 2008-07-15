@@ -149,6 +149,7 @@ void MainActor::teleport(int mapnum, int teleport_id)
 	// (attempt to) load the new map
 	if (!world->switchMap(mapnum)) {
 		perr << "MainActor::teleport(): switchMap() failed!" << std::endl;
+		setMapNum(oldmap);
 		return;
 	}
 
