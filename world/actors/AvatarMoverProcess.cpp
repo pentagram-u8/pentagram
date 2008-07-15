@@ -483,15 +483,17 @@ void AvatarMoverProcess::handleNormalMode()
 				climbanim = static_cast<Animation::Sequence>(climbanim-1);
 			}
 
-			if (nextanim == Animation::jump || nextanim == Animation::jumpUp)
+			if (nextanim == Animation::jump)
 			{
 				jump(nextanim, direction);
 				return;
 			}
 
-			// climbing gives str/dex
-			avatar->accumulateStr(2+nextanim-Animation::climb16);
-			avatar->accumulateDex(2*(2+nextanim-Animation::climb16));
+			if (nextanim != Animation::jumpUp) {
+				// climbing gives str/dex
+				avatar->accumulateStr(2+nextanim-Animation::climb16);
+				avatar->accumulateDex(2*(2+nextanim-Animation::climb16));
+			}
 
 			nextanim = Animation::checkWeapon(nextanim, lastanim);
 			waitFor(avatar->doAnim(nextanim, direction));

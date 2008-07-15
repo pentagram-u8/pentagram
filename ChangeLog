@@ -1,3 +1,6 @@
+2008-07-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/AvatarMoverProcess.cpp: fix jumping straight up
+
 2008-07-08  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Container.cpp: don't allow putting Actors in Containers
 
