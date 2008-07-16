@@ -1466,6 +1466,17 @@ bool GUIApp::LoadConsoleFont(std::string confontini)
 
 void GUIApp::enterTextMode(Gump *gump)
 {
+	uint16 key;
+	for (key=0; key < HID_LAST; ++key)
+	{
+		if (down[key])
+		{
+			down[key] = 0;
+			lastDown[key] = 0;
+			hidmanager->handleEvent((HID_Key) key, HID_EVENT_RELEASE);
+		}
+	}
+		
 	if (!textmodes.empty()) {
 		textmodes.remove(gump->getObjId());
 	} else {
