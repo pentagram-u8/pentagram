@@ -37,6 +37,8 @@ public:
 	void OnMouseDown(int button, int mx, int my);
 	void OnMouseUp(int button);
 
+	void resetIdleTime() { idleTime = 0; }
+
 	bool loadData(IDataSource* ids, uint32 version);
 protected:
 	virtual void saveData(ODataSource* ods);

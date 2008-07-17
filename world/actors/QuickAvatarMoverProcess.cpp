@@ -26,6 +26,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GUIApp.h"
 #include "ShapeInfo.h"
 #include "getObject.h"
+#include "AvatarMoverProcess.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -136,6 +137,10 @@ void QuickAvatarMoverProcess::run()
 
 	// Yes, i know, not entirely correct
 	avatar->collideMove(x+dx,y+dy,z+dz, false, true);
+
+
+	// Prevent avatar from running an idle animation while moving around
+	GUIApp::get_instance()->getAvatarMoverProcess()->resetIdleTime();
 }
 
 void QuickAvatarMoverProcess::terminate()

@@ -1,6 +1,7 @@
 2008-07-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/ContainerGump.cpp: add contents to fastarea when opening container.
 	  This code was (accidentally?) removed in r1546. (Fixes #2019042)
+	* world/actors/*AvatarMoverProcess: prevent idle anims while quickmoving
 
 2008-07-15  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* kernel/GUIApp.cpp: Send release events to all down keys when entering a
