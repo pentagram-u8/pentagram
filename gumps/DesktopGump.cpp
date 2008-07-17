@@ -24,6 +24,7 @@
 #include "ODataSource.h"
 #include "ConsoleGump.h"
 #include "ModalGump.h"
+#include "TargetGump.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(DesktopGump,Gump);
 
@@ -71,7 +72,8 @@ void DesktopGump::PaintChildren(RenderSurface *surf, sint32 lerp_factor, bool sc
 		{
 			// If background blanking on modal is enabled...
 			// Background is partially transparent
-			if (faded_modal && g->IsOfType<ModalGump>() && !g->IsHidden())
+			if (faded_modal && g->IsOfType<ModalGump>() &&
+					!g->IsOfType<TargetGump>() && !g->IsHidden())
 				surf->FillBlended(0x7F000000,0,0,dims.w,dims.h);
 
 			g->Paint(surf, lerp_factor, scaled);
