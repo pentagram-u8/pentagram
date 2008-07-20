@@ -1,3 +1,6 @@
+2008-07-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/ContainerGump.cpp: require entire item to be inside itemarea
+
 2008-07-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/ContainerGump.cpp: add contents to fastarea when opening container.
 	  This code was (accidentally?) removed in r1546. (Fixes #2019042)

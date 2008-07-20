@@ -419,8 +419,16 @@ bool ContainerGump::DraggingItem(Item* item, int mx, int my)
 	dragging_x = mx - itemarea.x - dox;
 	dragging_y = my - itemarea.y - doy;
 
-	if (dragging_x < 0 || dragging_x >= itemarea.w ||
-		dragging_y < 0 || dragging_y >= itemarea.h) {
+	Shape* sh = item->getShapeObject();
+	assert(sh);
+	ShapeFrame* fr = sh->getFrame(dragging_frame);
+	assert(fr);
+
+	if (dragging_x - fr->xoff < 0 ||
+		dragging_x - fr->xoff + fr->width > itemarea.w ||
+		dragging_y - fr->yoff < 0 ||
+		dragging_y - fr->yoff + fr->height > itemarea.h)
+	{
 		display_dragging = false;
 		return false;
 	}
