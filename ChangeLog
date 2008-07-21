@@ -1,3 +1,6 @@
+2008-07-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/AnimationTracker.cpp: don't adjust position for tiny actors
+
 2008-07-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/ContainerGump.cpp: require entire item to be inside itemarea
 

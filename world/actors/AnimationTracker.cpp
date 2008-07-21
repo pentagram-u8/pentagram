@@ -304,7 +304,7 @@ bool AnimationTracker::step()
 		// TODO: Profile the effect of disabling this for pathfinding.
 		//       It shouldn't be necessary in that case, and may provide a
 		//       worthwhile speed-up.
-		if (f.flags & AnimFrame::AFF_ONGROUND) {
+		if ((f.flags & AnimFrame::AFF_ONGROUND) && zd > 8) {
 			targetok = cm->scanForValidPosition(tx,ty,tz, a, dir,
 												true, tx,ty,tz);
 
