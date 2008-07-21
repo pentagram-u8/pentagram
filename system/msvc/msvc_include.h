@@ -153,7 +153,8 @@ using std::atoi;
 //
 #elif (_MSC_VER >= 1300) 
 
-#if (_MSC_VER != 1300) && (_MSC_VER != 1310) && (_MSC_VER != 1400)
+// TODO: Remove this warning perhaps?
+#if (_MSC_VER != 1300) && (_MSC_VER != 1310) && (_MSC_VER != 1400) && (_MSC_VER != 1500)
 // with line number
 #define MYSTRING2(x) #x
 #define MYSTRING(x) MYSTRING2(x)
@@ -183,7 +184,9 @@ using std::atoi;
 #endif
 
 #define snprintf _snprintf
+#if (_MSC_VER < 1500) // VS2008 doesn't need this
 #define vsnprintf _vsnprintf
+#endif
 
 // We've got snprintf
 #define HAVE_SNPRINTF
