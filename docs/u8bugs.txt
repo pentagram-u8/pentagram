@@ -77,6 +77,22 @@ unknown
 
 
 
+[German 2.12] Wrong sorcery candle placement not properly detected:
+
+Pentagram can crash when the sorcery candles are places incorrectly.
+This is a bug in the German 2.12 usecode, where it uses the strings
+" Irgendetwas stimmt nicht!" and " Irgendetwas stimmt nicht."
+(note the punctuation).
+
+FIX:
+Patch usecode to make the strings equal
+
+WORKAROUND:
+Serious hack in UCMachine changes the '!' to a '.' (only in the string
+" Irgendetwas stimmt nicht!" in usecode class 0x7C).
+
+
+
 TYPOS:
 -------
 
@@ -134,10 +150,11 @@ Lava at: (14975, 6399, 0), (14975, 6015, 0),(15103, 6015, 0)
 
 Map 25: (Lava river, after Carthax lake)
 
-Missing ground/wall tiles around (17547,30275) and (17715,30307)
+Missing ground/wall tiles around the entire southern wall, e.g.,
+(21920,29736,8).
 
 WORKAROUND:
-None yet
+None yet.
 
 
 

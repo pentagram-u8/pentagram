@@ -316,6 +316,17 @@ void UCMachine::execProcess(UCProcess* p)
 				char *str = new char[ui16a+1];
 				cs.read(str, ui16a);
 				str[ui16a] = 0;
+
+				// REALLY MAJOR HACK:
+				// see docs/u8bugs.txt and
+				// http://sourceforge.net/tracker/index.php?func=detail&aid=2025145&group_id=53819&atid=471706
+				if (GAME_IS_U8 && p->classid == 0x7C) {
+					if (!strcmp(str, " Irgendetwas stimmt nicht!")) {
+						str[25] = '.'; // ! to .
+					}
+				}
+
+
 				LOGPF(("push string\t\"%s\"\n", str));
 				ui16b = cs.read1();
 				if (ui16b != 0) error = true;
@@ -536,7 +547,7 @@ void UCMachine::execProcess(UCProcess* p)
 			freeStringList(ui16a);
 			p->stack.push2(ui16b);
 			LOGPF(("remove slist\t(%02X)\n", ui32a));
-			break;			
+			break;
 
 		case 0x1B:
 			// 1B xx

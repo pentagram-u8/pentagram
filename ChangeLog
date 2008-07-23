@@ -1,3 +1,6 @@
+2008-07-23  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/UCMachine.cpp, docs/u8bugs.txt: work around bug in german usecode
+
 2008-07-21  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AnimationTracker.cpp: don't adjust position for tiny actors
 
