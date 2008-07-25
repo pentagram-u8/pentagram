@@ -270,6 +270,9 @@ TIMIDITY = \
 	audio/midi/timidity/timidity_sdl_c.o \
 	audio/midi/timidity/timidity_tables.o
 
+SYSTEM_MACOSX = \
+	system/macosx/macosx_utils.o
+
 DATA_FILES = \
 	data/fixedfont.ini \
 	data/fixedfont.tga \

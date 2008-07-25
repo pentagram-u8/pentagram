@@ -13,6 +13,7 @@ flexpack_OBJ = \
 	$(CONF) \
 	$(GAMES) \
 	$(FILESYS) \
+	$(SYSTEM) \
 	kernel/CoreApp.o \
 	tools/flexpack/FlexWriter.o \
 	tools/flexpack/FlexPack.o

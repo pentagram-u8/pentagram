@@ -13,6 +13,7 @@ disasm_OBJ = \
 	$(CONF) \
 	$(GAMES) \
 	$(FILESYS) \
+	$(SYSTEM) \
 	kernel/CoreApp.o \
 	tools/disasm/Disasm.o \
 	tools/fold/Type.o \

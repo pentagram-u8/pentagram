@@ -26,6 +26,7 @@ pentagram_OBJ = \
 	$(AUDIO) \
 	$(MIDI) \
 	$(TIMIDITY) \
+	$(SYSTEM) \
 	kernel/GUIApp.o \
 	misc/version.o \
 	pentagram.o

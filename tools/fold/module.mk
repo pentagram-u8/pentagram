@@ -10,6 +10,7 @@ fold_OBJ = \
 	$(MISC) \
 	$(CONF) \
 	$(GAMES) \
+	$(SYSTEM) \
 	kernel/CoreApp.o \
 	filesys/FileSystem.o \
 	filesys/RawArchive.o \

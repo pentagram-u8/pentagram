@@ -1,3 +1,7 @@
+2008-07-24  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* system/macosx, */module.mk, objects.mk, bootstrap, configure.ac,
+	  Makefile.in: improve support for building on macosx using make
+
 2008-07-23  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCMachine.cpp, docs/u8bugs.txt: work around bug in german usecode
 

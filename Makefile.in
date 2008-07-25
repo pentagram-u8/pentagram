@@ -39,6 +39,7 @@ datapath := @DATAPATH@
 
 CP := cp
 CXX := @CXX@
+CC := @CC@
 MKDIR := @MKDIR@
 RM := @RM@
 EXEEXT := @EXEEXT@
@@ -50,6 +51,7 @@ DEPDIR := .deps
 SDL_CFLAGS := @SDL_CFLAGS@
 CPPFLAGS := @CPPFLAGS@ @DEFS@ -DDATA_PATH=\"@DATAPATH@\"
 CXXFLAGS := -g @CXXFLAGS@ @PROFILE@
+CFLAGS := -g @CFLAGS@ @PROFILE@
 LDFLAGS := @LDFLAGS@ @PROFILE@
 SYS_LIBS := @SYS_LIBS@
 CON_LIBS := @CON_LIBS@
@@ -66,6 +68,13 @@ GIMP_PLUGIN_PREFIX = @GIMP_PLUGIN_PREFIX@
 
 USE_BUILTIN_DATA := @USE_BUILTIN_DATA@
 
+SYSTEM :=
+SYSTEM_MODULES :=
+
+ifeq (@HOST_SYSTEM@,MACOSX)
+SYSTEM = ${SYSTEM_MACOSX}
+SYSTEM_MODULES := system/macosx
+endif
 
 # List of all submodules
 # The order is important, be careful if you change it
@@ -75,7 +84,7 @@ MODULES := tools/data2c convert convert/u8 convert/crusader misc \
 	tools/shapeconv $(GIMP_PLUGIN_MODULES)\
 	kernel games graphics graphics/fonts graphics/scalers audio \
 	audio/midi audio/midi/timidity usecode world world/actors gumps \
-	gumps/widgets conf .
+	gumps/widgets conf system ${SYSTEM_MODULES} .
 
 # Default target. The other dependencies are added by the module.mk files
 all: misc/config.h
@@ -123,6 +132,7 @@ LCONPRODUCTS :=
 
 # Include list of objects
 include $(top_srcdir)/objects.mk
+
 # Include additional rules for each module
 include $(patsubst %,$(top_srcdir)/%/module.mk,$(MODULES))
 
@@ -133,6 +143,14 @@ include $(patsubst %,$(top_srcdir)/%/module.mk,$(MODULES))
 %.o: %.cpp $(PCHEADER)
 	@$(MKDIR) $(*D)/$(DEPDIR)
 	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).d",-MQ,"$@",-MP $(WARNINGS) $(CPPFLAGS) $(CXXFLAGS) $(SDL_CFLAGS) -c -o $@ $<
+
+# cancel any built-in .m->.o rules
+%.o: %.m
+
+# custom compile rule which calculates dependencies
+%.o: %.m $(PCHEADER)
+	@$(MKDIR) $(*D)/$(DEPDIR)
+	$(CC) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).d",-MQ,"$@",-MP $(WARNINGS) $(CPPFLAGS) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $<
 
 # custom compile rule for the precompiled header
 %.h.gch: %.h
