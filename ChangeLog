@@ -1,3 +1,7 @@
+2008-07-30  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* system/macosx/archs.mk, system/macosx/deps.mk: improve building of
+	  dependencies
+
 2008-07-28  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* system/macosx/archs.mk: add makefile to help ease building of
 	  universal binaries of pentagram and dependencies

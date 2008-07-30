@@ -1,102 +1,71 @@
-TARGET_PREFIX=${realpath ./}
-ROOT_DIRECTORY=${realpath ../../}
+ROOT_DIRECTORY=${realpath ./}
 
-ADDITIONAL_CFLAGS=-I${TARGET_PREFIX}/${ARCH}/include
-ADDITIONAL_LDFLAGS=-L${TARGET_PREFIX}/${ARCH}/lib
-
-include ${TARGET_PREFIX}/archs.mk
+include ${ROOT_DIRECTORY}/archs.mk
 
 DEPS=zlib libpng SDL SDL_ttf
 
 all: extract configure build install
 distclean: clean
-	rm -fr ${ARCHS} build
+	rm -fr build
 
 define dep_template
 _dep_${1}_%: DEP=${1}
 _dep_${1}_%: %_${1};
 endef
 
-dep_targets=${foreach DEP,${DEPS},_dep_${DEP}_${1}}
-${foreach DEP,${DEPS},${eval ${call dep_template,${DEP}}}}
-${DEPS}: %: _dep_%_install;
+${foreach DEP,${DEPS},${eval ${call create_arch_targets,${DEP}}}}
+${DEPS}: %: dep_install_%
 
-extract: ${call dep_targets,extract};
-configure: ${call dep_targets,configure};
-build: ${call dep_targets,build};
-install: ${call dep_targets,install};
-clean: ${call dep_targets,clean};
+extract: ${foreach DEP,${DEPS},dep_extract_${DEP}};
+configure: ${foreach DEP,${DEPS},dep_configure_${DEP}};
+build: ${foreach DEP,${DEPS},dep_build_${DEP}};
+install: ${foreach DEP,${DEPS},dep_install_${DEP}};
+clean: ${foreach DEP,${DEPS},dep_clean_${DEP}};
 
-extract_%: ${call arch_targets,.extract_%};
-configure_%: extract_% ${call arch_targets,.configure_%};
-build_%: configure_% ${call arch_targets,.build_%};
-install_%: build_% ${call arch_targets,.install_%};
-clean_%: ${call arch_targets,.clean_%};
+dep_extract_%: ${call arch_targets,%,extract};
+dep_configure_%: dep_extract_% ${call arch_targets,%,configure};
+dep_build_%: dep_configure_% ${call arch_targets,%,build};
+dep_install_%: dep_build_% ${call arch_targets,%,install};
+dep_clean_%: ${call arch_targets,%,clean};
 
 # This seems to prevent my stub files from being deleted
 .SECONDARY:
 
-.extract_zlib_%: ${TARGET_PREFIX}/zlib-1.2.3.tar.gz
-	-mkdir build
-	-mkdir build/${ARCH}
-	-rm -fr build/${ARCH}/${DEP}
-	-mkdir build/${ARCH}/${DEP}
-	cd build/${ARCH}/${DEP} && tar --strip-components=1 -xzf $<
-	touch $@
+extract_zlib.%: ${ROOT_DIRECTORY}/zlib-1.2.3.tar.gz
+	cd ${BUILD_DIR} && tar --strip-components=1 -xzf $<
 
-.extract_libpng_%: ${TARGET_PREFIX}/libpng-1.2.29.tar.gz
-	-mkdir build
-	-mkdir build/${ARCH}
-	-rm -fr build/${ARCH}/${DEP}
-	-mkdir build/${ARCH}/${DEP}
-	cd build/${ARCH}/${DEP} && tar --strip-components=1 -xzf $<
-	touch $@
+extract_libpng.%: ${ROOT_DIRECTORY}/libpng-1.2.29.tar.gz
+	cd ${BUILD_DIR} && tar --strip-components=1 -xzf $<
 
-.extract_SDL_%: ${TARGET_PREFIX}/SDL-1.2.13.tar.gz
-	-mkdir build
-	-mkdir build/${ARCH}
-	-rm -fr build/${ARCH}/${DEP}
-	-mkdir build/${ARCH}/${DEP}
-	cd build/${ARCH}/${DEP} && tar --strip-components=1 -xzf $<
-	touch $@
+extract_SDL.%: ${ROOT_DIRECTORY}/SDL-1.2.13.tar.gz
+	cd ${BUILD_DIR} && tar --strip-components=1 -xzf $<
 
-.extract_SDL_ttf_%: ${TARGET_PREFIX}/SDL_ttf-2.0.9.tar.gz
-	-mkdir build
-	-mkdir build/${ARCH}
-	-rm -fr build/${ARCH}/${DEP}
-	-mkdir build/${ARCH}/${DEP}
-	cd build/${ARCH}/${DEP} && tar --strip-components=1 -xzf $<
-	touch $@
+extract_SDL_ttf.%: ${ROOT_DIRECTORY}/SDL_ttf-2.0.9.tar.gz
+	cd ${BUILD_DIR} && tar --strip-components=1 -xzf $<
 
-.configure_zlib_%:
-	cd build/${ARCH}/${DEP} && ./configure --prefix=${TARGET_PREFIX}/${ARCH}
-	touch $@
+configure_zlib.%:
+	cd ${BUILD_DIR} && ./configure --prefix=${PREFIX_DIR}
 
-.configure_libpng_%: zlib
-	cd build/${ARCH}/${DEP} && ./configure --prefix=${TARGET_PREFIX}/${ARCH} \
+configure_libpng.%: zlib
+	cd ${BUILD_DIR} && ./configure --prefix=${PREFIX_DIR} \
 		${ARCH_CONFIG} --disable-dependency-tracking
-	touch $@
 
-.configure_SDL_%: libpng
-	cd build/${ARCH}/${DEP} && ./configure --prefix=${TARGET_PREFIX}/${ARCH} \
+configure_SDL.%: libpng
+	cd ${BUILD_DIR} && ./configure --prefix=${PREFIX_DIR} \
 		${ARCH_CONFIG} --disable-dependency-tracking --enable-video-x11=no \
 		--enable-video-carbon=no --enable-video-cocoa=yes
-	touch $@
 
-.configure_SDL_ttf_%: SDL
-	cd build/${ARCH}/${DEP} && ./configure --prefix=${TARGET_PREFIX}/${ARCH} \
+configure_SDL_ttf.%: SDL
+	cd ${BUILD_DIR} && ./configure --prefix=${PREFIX_DIR} \
 		${ARCH_CONFIG} --disable-dependency-tracking
-	touch $@
 
-.build_%:
-	cd build/${ARCH}/${DEP} && make
-	@touch $@
+build_%:
+	cd ${BUILD_DIR} && make
 
-.install_%:
-	cd build/${ARCH}/${DEP} && make install
-	@touch $@
+install_%:
+	cd ${BUILD_DIR} && make install
 
-.clean_%:
-	rm -fr build/${ARCH}/${DEP}
-	rm -fr .*_${DEP}_${ARCH}
+clean_%:
+	rm -fr ${BUILD_DIR}
+	rm -fr build/${PROJECT}.build/${ARCH}_*.stamp 
 
