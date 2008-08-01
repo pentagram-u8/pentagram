@@ -1,6 +1,10 @@
 ARCHS=i386 ppc
 BUILD_HOST=${shell uname -p}-apple-darwin
-TARGET_PREFIX=${realpath ./}
+
+ifndef ROOT_DIRECTORY
+ROOT_DIRECTORY=${realpath ../../}
+endif
+
 
 CFLAGS_i386=-O2 -isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.4 -arch i386
 LDFLAGS_i386=-arch i386
@@ -25,28 +29,26 @@ CONFIG_ppc64=--build=${BUILD_HOST} --host=powerpc-apple-darwin
 #  matches to foo_% - see make manual 10.8 Implicit Rule Search Algorithm
 
 define arch_template
-build/${1}.build/${2}_%.stamp: ARCH=${2}
-build/${1}.build/${2}_%.stamp: PROJECT=${1}
-build/${1}.build/${2}_%.stamp: PREFIX_DIR=${TARGET_PREFIX}/build/${2}
-build/${1}.build/${2}_%.stamp: BUILD_DIR=${TARGET_PREFIX}/build/${1}.build/${2}
-build/${1}.build/${2}_%.stamp: export CFLAGS:=${CFLAGS_${2}} -I${TARGET_PREFIX}/build/${2}/include
-build/${1}.build/${2}_%.stamp: export LDFLAGS:=${LDFLAGS_${2}} -L${TARGET_PREFIX}/build/${2}/lib
-build/${1}.build/${2}_%.stamp: export CXXFLAGS:=${CFLAGS_${2}} -I${TARGET_PREFIX}/build/${2}/include
-build/${1}.build/${2}_%.stamp: ARCH_CONFIG:=${CONFIG_${2}}
-build/${1}.build/${2}_%.stamp: build/${1}.build/${2} %_${1}.${2}
+${ROOT_DIRECTORY}/build/${1}.build/${2}_%.stamp: ARCH=${2}
+${ROOT_DIRECTORY}/build/${1}.build/${2}_%.stamp: PROJECT=${1}
+${ROOT_DIRECTORY}/build/${1}.build/${2}_%.stamp: PREFIX_DIR=${ROOT_DIRECTORY}/build/${2}
+${ROOT_DIRECTORY}/build/${1}.build/${2}_%.stamp: BUILD_DIR=${ROOT_DIRECTORY}/build/${1}.build/${2}
+${ROOT_DIRECTORY}/build/${1}.build/${2}_%.stamp: export CFLAGS:=${CFLAGS_${2}} -I${ROOT_DIRECTORY}/build/${2}/include
+${ROOT_DIRECTORY}/build/${1}.build/${2}_%.stamp: export LDFLAGS:=${LDFLAGS_${2}} -L${ROOT_DIRECTORY}/build/${2}/lib
+${ROOT_DIRECTORY}/build/${1}.build/${2}_%.stamp: export CXXFLAGS:=${CFLAGS_${2}} -I${ROOT_DIRECTORY}/build/${2}/include
+${ROOT_DIRECTORY}/build/${1}.build/${2}_%.stamp: ARCH_CONFIG:=${CONFIG_${2}}
+${ROOT_DIRECTORY}/build/${1}.build/${2}_%.stamp: ${ROOT_DIRECTORY}/build/${1}.build/${2} %_${1}.${2}
 	@touch $$@
 
-build/${1}.build/${2}:
-	@-mkdir build
-	@-mkdir build/${1}.build
-	@-mkdir build/${1}.build/${2}
+${ROOT_DIRECTORY}/build/${1}.build/${2}:
+	@-mkdir -p ${ROOT_DIRECTORY}/build/${1}.build/${2}
 endef
 
 ifdef ARCH
-arch_targets=build/${1}.build/${ARCH}_${2}.stamp
+arch_targets=${ROOT_DIRECTORY}/build/${1}.build/${ARCH}_${2}.stamp
 create_arch_targets=${eval ${call arch_template,${1},${ARCH}}}
 else
-arch_targets=${foreach ARCH,${ARCHS},build/${1}.build/${ARCH}_${2}.stamp}
+arch_targets=${foreach ARCH,${ARCHS},${ROOT_DIRECTORY}/build/${1}.build/${ARCH}_${2}.stamp}
 create_arch_targets=${foreach ARCH,${ARCHS},${eval ${call arch_template,${1},${ARCH}}}}
 endif
 

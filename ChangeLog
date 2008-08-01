@@ -1,3 +1,11 @@
+2008-07-31  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* system/macosx/archs.mk, system/macosx/deps.mk: adjust makefiles to
+	  make builds occur at toplevel source directory
+	* Makefile.in: add datarootdir for autoconf 2.6x compatibility
+	* Makefile.macosx: add makefile to build pentagram for multiple
+	  architextures - uses normal configure/make builds in separate
+	  directories.
+
 2008-07-30  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* system/macosx/archs.mk, system/macosx/deps.mk: improve building of
 	  dependencies

@@ -1,17 +1,14 @@
-ROOT_DIRECTORY=${realpath ./}
+ifndef ROOT_DIRECTORY
+ROOT_DIRECTORY=${realpath ../../}
+endif
 
-include ${ROOT_DIRECTORY}/archs.mk
+include ${ROOT_DIRECTORY}/system/macosx/archs.mk
 
 DEPS=zlib libpng SDL SDL_ttf
 
 all: extract configure build install
 distclean: clean
 	rm -fr build
-
-define dep_template
-_dep_${1}_%: DEP=${1}
-_dep_${1}_%: %_${1};
-endef
 
 ${foreach DEP,${DEPS},${eval ${call create_arch_targets,${DEP}}}}
 ${DEPS}: %: dep_install_%
@@ -67,5 +64,5 @@ install_%:
 
 clean_%:
 	rm -fr ${BUILD_DIR}
-	rm -fr build/${PROJECT}.build/${ARCH}_*.stamp 
+	rm -fr ${ROOT_DIRECTORY}/build/${PROJECT}.build/${ARCH}_*.stamp 
 
