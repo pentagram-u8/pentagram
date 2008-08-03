@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleExecutable</key>
+	<string>pentagram</string>
+	<key>CFBundleGetInfoString</key>
+	<string>Pentagram @VERSION@; Copyright © 2008, The Pentagram Team</string>
+	<key>CFBundleIconFile</key>
+	<string>pentagram</string>
+	<key>CFBundleIdentifier</key>
+	<string>net.sourceforge.pentagram</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Pentagram</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleShortVersionString</key>
+	<string>@VER_MAJOR@.@VER_MINOR@</string>
+	<key>CFBundleSignature</key>
+	<string>????</string>
+	<key>CFBundleVersion</key>
+	<string>@VER_EXTRA@</string>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright © 2008, The Pentagram Team</string>
+	<key>NSMainNibFile</key>
+	<string>SDLMain</string>
+	<key>NSPrincipalClass</key>
+	<string>NSApplication</string>
+</dict>
+</plist>

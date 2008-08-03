@@ -1,3 +1,11 @@
+2008-08-02  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* system/macosx/README.rtf, system/macosx/pentagram.ini: copied files
+	  from xcode build for use in new mac builds
+	* system/macosx/Info.plist.in: used to generate Info.plist by configure
+	  script to contain version info for mac application bundle
+	* configure.ac: adjustments to handle building of Info.plist
+	* Makefile.macosx: improve building of application bundle and disk image
+
 2008-07-31  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* system/macosx/archs.mk, system/macosx/deps.mk: adjust makefiles to
 	  make builds occur at toplevel source directory

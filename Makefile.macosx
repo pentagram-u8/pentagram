@@ -3,6 +3,9 @@ BUNDLE_DIRECTORY=${ROOT_DIRECTORY}/build/Pentagram.app
 
 include ${ROOT_DIRECTORY}/system/macosx/archs.mk
 
+INSTALL := /usr/bin/install -c
+INSTALL_DATA := ${INSTALL} -m 644 -g admin
+
 all: configure build install
 
 deps:
@@ -40,12 +43,10 @@ bundle:
 	-rm -fr ${BUNDLE_DIRECTORY}
 	mkdir -p ${BUNDLE_DIRECTORY}/Contents/MacOS
 	mkdir -p ${BUNDLE_DIRECTORY}/Contents/Resources
-	mkdir -p ${BUNDLE_DIRECTORY}/Contents/Resources/English.lproj
 	echo "APPL????" > ${BUNDLE_DIRECTORY}/Contents/PkgInfo
-	install -c -m 644 -g admin ${ROOT_DIRECTORY}/system/macosx/Info.plist ${BUNDLE_DIRECTORY}/Contents/
-	install -c -m 644 -g admin ${ROOT_DIRECTORY}/system/macosx/English.lproj/* ${BUNDLE_DIRECTORY}/Contents/Resources/English.lproj/
-	install -c -m 644 -g admin ${ROOT_DIRECTORY}/system/desktop/pentagram.* ${BUNDLE_DIRECTORY}/Contents/Resources/
-	install -c -m 644 -g admin ${ROOT_DIRECTORY}/build/*/share/pentagram/* ${BUNDLE_DIRECTORY}/Contents/Resources/
+	${INSTALL_DATA} ${ROOT_DIRECTORY}/build/pentagram.build/*/system/macosx/Info.plist ${BUNDLE_DIRECTORY}/Contents/
+	${INSTALL_DATA} ${ROOT_DIRECTORY}/system/desktop/pentagram.* ${BUNDLE_DIRECTORY}/Contents/Resources/
+	${INSTALL_DATA} ${ROOT_DIRECTORY}/build/*/share/pentagram/* ${BUNDLE_DIRECTORY}/Contents/Resources/
 	lipo -create ${ROOT_DIRECTORY}/build/*/bin/pentagram -output ${BUNDLE_DIRECTORY}/Contents/MacOS/pentagram
 	chown :admin ${BUNDLE_DIRECTORY}/Contents/MacOS/pentagram
 #	strip ${BUNDLE_DIRECTORY}/Contents/MacOS/pentagram
@@ -57,8 +58,8 @@ image:
 	-rm -fr ${ROOT_DIRECTORY}/build/image
 	mkdir -p ${ROOT_DIRECTORY}/build/image
 	cp -R ${BUNDLE_DIRECTORY} ${ROOT_DIRECTORY}/build/image/
-	install -c -m 644 -g admin ${ROOT_DIRECTORY}/system/macosx/pentagram.ini ${ROOT_DIRECTORY}/build/image/
-	install -c -m 644 -g admin ${ROOT_DIRECTORY}/system/macosx/README.rtf ${ROOT_DIRECTORY}/build/image/
+	${INSTALL_DATA} ${ROOT_DIRECTORY}/system/macosx/pentagram.ini ${ROOT_DIRECTORY}/build/image/
+	${INSTALL_DATA} ${ROOT_DIRECTORY}/system/macosx/README.rtf ${ROOT_DIRECTORY}/build/image/
 	hdiutil create -ov -format UDZO -imagekey zlib-level=9 -fs HFS+ \
 		-srcfolder ${ROOT_DIRECTORY}/build/image \
 		-volname "Pentagram snapshot" ${ROOT_DIRECTORY}/build/Pentagram.dmg
