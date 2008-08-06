@@ -7,21 +7,21 @@ endif
 
 
 CFLAGS_i386=-O2 -isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.4 -arch i386
-LDFLAGS_i386=-arch i386
+LDFLAGS_i386=-O2 -isysroot /Developer/SDKs/MacOSX10.4u.sdk -mmacosx-version-min=10.4 -arch i386
 CONFIG_i386=--build=${BUILD_HOST} --host=i386-apple-darwin
 
 CFLAGS_ppc=-O2 -isysroot /Developer/SDKs/MacOSX10.3.9.sdk -mmacosx-version-min=10.3 -arch ppc
-LDFLAGS_ppc=-arch ppc
+LDFLAGS_ppc=-O2 -isysroot /Developer/SDKs/MacOSX10.3.9.sdk -mmacosx-version-min=10.3 -arch ppc
 CONFIG_ppc=--build=${BUILD_HOST} --host=powerpc-apple-darwin
 
 # These are off for the moment
 # 10.5 required to link Foundation in 64-bit
 CFLAGS_x86_64=-O2 -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5 -arch x86_64
-LDFLAGS_x86_64=-arch x86_64
+LDFLAGS_x86_64=-O2 -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5 -arch x86_64
 CONFIG_x86_64=--build=${BUILD_HOST} --host=i386-apple-darwin
 
 CFLAGS_ppc64=-O2 -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5 -arch ppc64
-LDFLAGS_ppc64=-arch ppc64
+LDFLAGS_ppc64=-O2 -isysroot /Developer/SDKs/MacOSX10.5.sdk -mmacosx-version-min=10.5 -arch ppc64
 CONFIG_ppc64=--build=${BUILD_HOST} --host=powerpc-apple-darwin
 
 

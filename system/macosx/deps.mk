@@ -4,7 +4,7 @@ endif
 
 include ${ROOT_DIRECTORY}/system/macosx/archs.mk
 
-DEPS=zlib libpng SDL SDL_ttf
+DEPS=zlib libpng SDL freetype SDL_ttf
 
 all: extract configure build install
 distclean: clean
@@ -37,6 +37,9 @@ extract_libpng.%: ${ROOT_DIRECTORY}/libpng-1.2.29.tar.gz
 extract_SDL.%: ${ROOT_DIRECTORY}/SDL-1.2.13.tar.gz
 	cd ${BUILD_DIR} && tar --strip-components=1 -xzf $<
 
+extract_freetype.%: ${ROOT_DIRECTORY}/freetype-2.3.7.tar.gz
+	cd ${BUILD_DIR} && tar --strip-components=1 -xzf $<
+
 extract_SDL_ttf.%: ${ROOT_DIRECTORY}/SDL_ttf-2.0.9.tar.gz
 	cd ${BUILD_DIR} && tar --strip-components=1 -xzf $<
 
@@ -52,7 +55,11 @@ configure_SDL.%: libpng
 		${ARCH_CONFIG} --disable-dependency-tracking --enable-video-x11=no \
 		--enable-video-carbon=no --enable-video-cocoa=yes
 
-configure_SDL_ttf.%: SDL
+configure_freetype.%: zlib
+	cd ${BUILD_DIR} && ./configure --prefix=${PREFIX_DIR} \
+		${ARCH_CONFIG} --with-old-mac-fonts
+
+configure_SDL_ttf.%: SDL freetype
 	cd ${BUILD_DIR} && ./configure --prefix=${PREFIX_DIR} \
 		${ARCH_CONFIG} --disable-dependency-tracking
 
