@@ -1,3 +1,6 @@
+2008-08-11  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* system/macosx/deps.mk: build zlib as shared lib instead of static
+
 2008-08-06  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* system/macosx/archs.mk, system/macosx/deps.mk: include freetype as a
 	  dependency

@@ -44,7 +44,10 @@ extract_SDL_ttf.%: ${ROOT_DIRECTORY}/SDL_ttf-2.0.9.tar.gz
 	cd ${BUILD_DIR} && tar --strip-components=1 -xzf $<
 
 configure_zlib.%:
-	cd ${BUILD_DIR} && ./configure --prefix=${PREFIX_DIR}
+	cd ${BUILD_DIR} && LDSHARED="gcc ${LDFLAGS} -dynamiclib \
+		-install_name ${PREFIX_DIR}/lib/libz.1.dylib \
+		-compatibility_version 1 -current_version 1.2.3" \
+		./configure --prefix=${PREFIX_DIR} --shared
 
 configure_libpng.%: zlib
 	cd ${BUILD_DIR} && ./configure --prefix=${PREFIX_DIR} \
