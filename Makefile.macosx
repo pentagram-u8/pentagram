@@ -1,10 +1,43 @@
 ROOT_DIRECTORY=${realpath ./}
-BUNDLE_DIRECTORY=${ROOT_DIRECTORY}/build/Pentagram.app
+BUNDLE_NAME=Pentagram.app
 
 include ${ROOT_DIRECTORY}/system/macosx/archs.mk
 
 INSTALL := /usr/bin/install -c
 INSTALL_DATA := ${INSTALL} -m 644 -g admin
+INSTALL_PROGRAM := ${INSTALL} -m 755 -g admin
+
+define BUNDLE_LIBRARY
+	${INSTALL_PROGRAM} ${PREFIX_DIR}/lib/lib${1}.dylib ${PREFIX_DIR}/${BUNDLE_NAME}/Contents/Libraries/
+	otool -L ${PREFIX_DIR}/${BUNDLE_NAME}/Contents/Libraries/lib${1}.dylib | \
+		awk '/${subst /,\/,${PREFIX_DIR}}\/lib\/lib${1}.*dylib/ \
+		{ lib = $$1; \
+			sub(/.*\/lib\//, "@executable_path/../Libraries/", lib); \
+			sub(/[^a-zA-Z]*.dylib/, ".dylib", lib); \
+			print lib, "${PREFIX_DIR}/${BUNDLE_NAME}/Contents/Libraries/lib${1}.dylib"; \
+		}' | \
+		xargs -n 3 install_name_tool -id
+	otool -L ${PREFIX_DIR}/${BUNDLE_NAME}/Contents/Libraries/lib${1}.dylib | \
+		awk '/${subst /,\/,${PREFIX_DIR}}\/lib\/lib.*dylib/ \
+		{ lib = $$1; \
+			sub(/.*\/lib\//, "@executable_path/../Libraries/", lib); \
+			sub(/[^a-zA-Z]*.dylib/, ".dylib", lib); \
+			print $$1, lib, "${PREFIX_DIR}/${BUNDLE_NAME}/Contents/Libraries/lib${1}.dylib"; \
+		}' | \
+		xargs -n 3 install_name_tool -change
+endef
+
+define BUNDLE_PROGRAM
+	${INSTALL_PROGRAM} ${PREFIX_DIR}/bin/${1} ${PREFIX_DIR}/${BUNDLE_NAME}/Contents/MacOS/
+	otool -L ${PREFIX_DIR}/${BUNDLE_NAME}/Contents/MacOS/${1} | \
+		awk '/${subst /,\/,${PREFIX_DIR}}\/lib\/lib.*dylib/ \
+			{ lib = $$1; \
+				sub(/.*\/lib\//, "@executable_path/../Libraries/", lib); \
+				sub(/[^a-zA-Z]*.dylib/, ".dylib", lib); \
+				print $$1, lib, "${PREFIX_DIR}/${BUNDLE_NAME}/Contents/MacOS/${1}"; \
+			}' | \
+		xargs -n 3 install_name_tool -change
+endef
 
 all: configure build install
 
@@ -16,9 +49,10 @@ ${eval ${call create_arch_targets,pentagram}}
 configure: ${call arch_targets,pentagram,configure};
 build: configure ${call arch_targets,pentagram,build};
 install: build ${call arch_targets,pentagram,install};
+bundle: install ${call arch_targets,pentagram,bundle}
+
 clean: ${call arch_targets,pentagram,clean}
-	-rm -fr ${BUNDLE_DIRECTORY}
-	-rm -f ${ROOT_DIRECTORY}/build/Pentagram.dmg
+	rm -f ${ROOT_DIRECTORY}/build/Pentagram.dmg
 
 configure_%:
 	cd ${BUILD_DIR} && ${ROOT_DIRECTORY}/configure \
@@ -34,34 +68,36 @@ build_%:
 install_%:
 	cd ${BUILD_DIR} && make install
 
+bundle_%:
+	rm -fr ${PREFIX_DIR}/${BUNDLE_NAME}
+	mkdir -p ${PREFIX_DIR}/${BUNDLE_NAME}/Contents/MacOS
+	mkdir -p ${PREFIX_DIR}/${BUNDLE_NAME}/Contents/Resources
+	mkdir -p ${PREFIX_DIR}/${BUNDLE_NAME}/Contents/Libraries
+	echo "APPL????" > ${PREFIX_DIR}/${BUNDLE_NAME}/Contents/PkgInfo
+	${INSTALL_DATA} ${BUILD_DIR}/system/macosx/Info.plist ${PREFIX_DIR}/${BUNDLE_NAME}/Contents/
+	${INSTALL_DATA} ${ROOT_DIRECTORY}/system/desktop/pentagram.* ${PREFIX_DIR}/${BUNDLE_NAME}/Contents/Resources/
+	${INSTALL_DATA} ${PREFIX_DIR}/share/pentagram/* ${PREFIX_DIR}/${BUNDLE_NAME}/Contents/Resources/
+	${call BUNDLE_LIBRARY,z}
+	${call BUNDLE_LIBRARY,png}
+	${call BUNDLE_LIBRARY,freetype}
+	${call BUNDLE_LIBRARY,SDL}
+	${call BUNDLE_LIBRARY,SDL_ttf}
+	${call BUNDLE_PROGRAM,pentagram}
+
 clean_%:
 	rm -fr ${BUILD_DIR}
 	rm -fr ${ROOT_DIRECTORY}/build/${PROJECT}.build/${ARCH}_*.stamp
+	rm -fr ${PREFIX_DIR}/${BUNDLE_NAME}
 
-# Still need InfoPlist.strings and menu nibs
-bundle:
-	-rm -fr ${BUNDLE_DIRECTORY}
-	mkdir -p ${BUNDLE_DIRECTORY}/Contents/MacOS
-	mkdir -p ${BUNDLE_DIRECTORY}/Contents/Resources
-	echo "APPL????" > ${BUNDLE_DIRECTORY}/Contents/PkgInfo
-	${INSTALL_DATA} ${ROOT_DIRECTORY}/build/pentagram.build/*/system/macosx/Info.plist ${BUNDLE_DIRECTORY}/Contents/
-	${INSTALL_DATA} ${ROOT_DIRECTORY}/system/desktop/pentagram.* ${BUNDLE_DIRECTORY}/Contents/Resources/
-	${INSTALL_DATA} ${ROOT_DIRECTORY}/build/*/share/pentagram/* ${BUNDLE_DIRECTORY}/Contents/Resources/
-	lipo -create ${ROOT_DIRECTORY}/build/*/bin/pentagram -output ${BUNDLE_DIRECTORY}/Contents/MacOS/pentagram
-	chown :admin ${BUNDLE_DIRECTORY}/Contents/MacOS/pentagram
-#	strip ${BUNDLE_DIRECTORY}/Contents/MacOS/pentagram
-	
-
-# Not ready yet - just copied out of xcode project
 image:
-	-rm -f ${ROOT_DIRECTORY}/build/Pentagram.dmg
-	-rm -fr ${ROOT_DIRECTORY}/build/image
+	rm -f ${ROOT_DIRECTORY}/build/Pentagram.dmg
+	rm -fr ${ROOT_DIRECTORY}/build/image
 	mkdir -p ${ROOT_DIRECTORY}/build/image
-	cp -R ${BUNDLE_DIRECTORY} ${ROOT_DIRECTORY}/build/image/
+	${ROOT_DIRECTORY}/system/macosx/uberlipo -create \
+		-output ${ROOT_DIRECTORY}/build/image/${BUNDLE_NAME} \
+		${foreach ARCH,${ARCHS},${ROOT_DIRECTORY}/build/${ARCH}/${BUNDLE_NAME}}
 	${INSTALL_DATA} ${ROOT_DIRECTORY}/system/macosx/pentagram.ini ${ROOT_DIRECTORY}/build/image/
 	${INSTALL_DATA} ${ROOT_DIRECTORY}/system/macosx/README.rtf ${ROOT_DIRECTORY}/build/image/
 	hdiutil create -ov -format UDZO -imagekey zlib-level=9 -fs HFS+ \
 		-srcfolder ${ROOT_DIRECTORY}/build/image \
 		-volname "Pentagram snapshot" ${ROOT_DIRECTORY}/build/Pentagram.dmg
-	-rm -fr ${ROOT_DIRECTORY}/build/image
-

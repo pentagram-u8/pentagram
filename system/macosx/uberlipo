@@ -1,0 +1,239 @@
+#!/bin/bash
+# uberlipo - create, manipulate, or inspect universal bundles.
+# Version 1.0
+
+# Copyright (C) 2008, Matthew Jimenez
+# All rights reserved.
+#
+# Redistribution and use, with or without modification, are permitted
+# provided that the following conditions are met:
+#     * Redistributions of source code must retain the above copyright
+#       notice, this list of conditions and the following disclaimer.
+#     * Redistributions in binary form must reproduce the above copyright
+#       notice, this list of conditions and the following disclaimer in the
+#       documentation and/or other materials provided with the distribution.
+#     * The names of contributors may be used to endorse or promote products
+#       derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS ''AS IS'' AND ANY
+# EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL COPYRIGHT HOLDERS BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+
+let verbose=1;
+
+# Options are limited to what I needed to accomplish my goal
+# I'll want to add other like those in lipo when I get the chance
+while test $# -ge 1; do
+  case "$1" in
+    -v | -version | --version)
+      echo "uberlipo 1.0"
+      echo "Copyright (C) 2008, Matthew Jimenez"
+      exit 0;
+      ;;
+    -h | -help | --help)
+      echo "Usage: `basename $0` [-info] [-detailed_info] [-create] [-output bundle] [bundle ...]";
+      echo "  -v, -version      Print the version information and exit.";
+      echo "  -h, -help         Print the usage information and exit.";
+      echo "  -n, -noisy        Increase the logging level.";
+      echo "  -q, -quiet        Decrease the logging level.";
+      echo "  -info             Show information for each input bundle.";
+      echo "  -detailed_info    Same as \"-info -noisy\"";
+      echo "  -create           Create a universal bundle from the input bundles.";
+      echo "  -output           Specify the name for the new bundle used by -create.";
+      exit 0;
+      ;;
+    -create) operation="$1"; shift;;
+    -output) output_bundle="$2"; shift; shift;;
+    -info) operation="$1"; shift;;
+    -detailed_info) operation="-info"; let verbose++; shift;;
+    -n | -noisy) let verbose++; shift;;    
+    -q | -quiet)
+      if test ${verbose} -gt 0; then
+        let verbose--;
+      fi
+      shift;;
+    *)
+      bundle="${1%/}";
+      if ! test -d "${bundle}"; then
+        echo "$1: input bundle not a directory";
+        exit 1;
+      fi
+      input_bundle[bundle_cnt++]=${bundle};
+      shift;
+    ;;
+  esac
+done
+
+if test ${#input_bundle[*]} -eq 0; then
+    echo "$0: no input bundles specified";
+    exit 1;
+fi
+
+case "${operation}" in
+  -create)
+    if test "${output_bundle}" == ""; then
+        echo "$0: no output bundle specified";
+        exit 1;
+    fi
+    rm -fr "${output_bundle}"
+    mkdir -p "${output_bundle}"
+    # get file lists into temp files
+    let i=0;
+    while test $i -lt ${#input_bundle[*]}; do
+      bundle=${input_bundle[i]};
+      find "${bundle}" | sed -e "s#^${bundle}/*##" > ${TMPDIR}/$$.files_$i;
+      let i++;
+    done
+    #build unique file list
+    awk '! /^$/ {print}' ${TMPDIR}/$$.files_* | sort | uniq > ${TMPDIR}/$$.files;
+
+    # create bundle
+    if test ${verbose} -gt 0; then
+      echo "Creating univeral bundle: ${output_bundle}"
+    fi
+    for file in `cat ${TMPDIR}/$$.files`; do
+      let i=0;
+      let merge=1;
+      merge_cmd="lipo -create -output ${output_bundle}/${file}";
+      unset first;
+
+      while test $i -lt ${#input_bundle[*]}; do
+        bundle=${input_bundle[i]};
+        if ! test -d "${output_bundle}/${file}" && test -d "${bundle}/${file}"; then
+          let merge=0;
+          if test ${verbose} -gt 0; then
+            echo "Creating directory: ${output_bundle}/${file}"
+          fi
+          mkdir -p "${output_bundle}/${file}";
+          let rc=$?;
+          if test ${rc} -ne 0; then
+            echo "$0: Failure";
+            exit ${rc};
+          fi
+        elif ! test -L "${output_bundle}/${file}" && test -L "${bundle}/${file}"; then
+          let merge=0;
+          realfile=`readlink "${bundle}/${file}"`;
+          if test ${verbose} -gt 0; then
+            echo "Creating symlink: ${output_bundle}/${file} -> ${realfile}"
+          fi
+          ln -s "${realfile}" "${output_bundle}/${file}";
+          let rc=$?;
+          if test ${rc} -ne 0; then
+            echo "$0: Failure";
+            exit ${rc};
+          fi
+        elif test -f "${bundle}/${file}"; then
+          if file -b "${bundle}/${file}" | grep -q "Mach-O"; then
+            merge_cmd="${merge_cmd} ${bundle}/${file}";
+          elif file -b "${bundle}/${file}" | grep -q "archive.*library"; then
+            merge_cmd="${merge_cmd} ${bundle}/${file}";
+          else
+            let merge=0;
+            if test "${first}" == ""; then
+              first="${bundle}/${file}";
+            fi
+
+            message=`diff -q "${first}" "${bundle}/${file}"`;
+            if test $? -ne 0; then
+              echo "WARNING: ${message}."
+              echo "  Choosing ${first} for universal bundle"
+            fi
+          fi
+        fi
+        let i++;
+      done
+
+      if test ${merge} -ne 0; then
+        if test ${verbose} -gt 0; then
+          echo "Creating uninversal binary: ${output_bundle}/${file}";
+        fi
+        ${merge_cmd};
+        let rc=$?;
+        if test ${rc} -ne 0; then
+          echo "$0: Failure";
+          exit ${rc};
+        fi
+      fi
+      
+      if test "${first}" != ""; then
+        if test ${verbose} -gt 0; then
+          echo "Adding file: ${output_bundle}/${file}";
+        fi
+        install -c "${first}" "${output_bundle}/${file}";
+        let rc=$?;
+        if test ${rc} -ne 0; then
+          echo "$0: Failure";
+          exit ${rc};
+        fi
+      fi
+    done
+    ;;
+  -info)
+    if test ${verbose} -eq 0; then
+      exit 0;
+    fi
+
+    let i=0;
+    while test $i -lt ${#input_bundle[*]}; do
+      bundle=${input_bundle[i]};
+      echo "Information for bundle: ${bundle}";
+
+      # get file lists into temp files
+      find "${bundle}" | sed -e "s#^${bundle}/*##" > ${TMPDIR}/$$.files_$i;
+
+      if test ${verbose} -gt 1; then
+        echo "  entries: `wc -l ${TMPDIR}/$$.files_$i | awk '{print $1}'`";
+        echo;
+      fi
+
+      for file in `cat ${TMPDIR}/$$.files_$i`; do
+        if test -d "${bundle}/${file}"; then
+          let entries=`ls -1 ${bundle}/${file} | wc -l | awk '{print $1}'`;
+          printf "%-32s\tdirectory (entries: ${entries})\n" "${file}:";
+        elif test -L "${bundle}/${file}"; then
+          realfile=`readlink "${bundle}/${file}"`;
+          basefile=`basename "${bundle}/${file}"`;
+          printf "%-32s\tsymbolic link (${basefile} -> ${realfile})\n" "${file}:";
+        elif test -f "${bundle}/${file}"; then
+          if file -b "${bundle}/${file}" | grep -q "Mach-O universal"; then
+            file_info=`file -b "${bundle}/${file}" | head -n 1`;
+            file_archs=`lipo -info "${bundle}/${file}" | sed -e 's/^.*: //' -e 's/ *$//'`;
+            printf "%-32s\t${file_info} (${file_archs})\n" "${file}:";
+            if test ${verbose} -gt 1; then
+              if file -b "${bundle}/${file}" | grep -q "Mach-O \(executable\|dynamically\)"; then
+                for arch in ${file_archs}; do
+                  echo " shared libraries (${arch}):";
+                  otool -arch ${arch} -L "${bundle}/${file}" | awk '! /:$/ {print}';
+                done
+                echo;
+              fi
+            fi
+          elif file -b "${bundle}/${file}" | grep -q "Mach-O"; then
+            file_info=`file -b "${bundle}/${file}" | head -n 1`;
+            printf "%-32s\t${file_info}\n" "${file}:";
+            if test ${verbose} -gt 1; then
+              if file -b "${bundle}/${file}" | grep -q "Mach-O \(executable\|dynamically\)"; then
+                echo " shared libraries:";
+                otool -L "${bundle}/${file}" | awk '! /:$/ {print}';
+                echo;
+              fi
+            fi
+          else
+            file_info=`file -b "${bundle}/${file}" | head -n 1`;
+            file_mime=`file -bI "${bundle}/${file}" | head -n 1`;
+            printf "%-32s\t${file_info} (${file_mime})\n" "${file}:";
+          fi
+        fi
+      done
+      let i++;
+    done
+    ;;
+esac

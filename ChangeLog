@@ -1,3 +1,10 @@
+2008-08-26  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* Makefile.macosx: complete building of application bundles
+	  and finish target to create disk image
+	* system/macosx/uberlipo: script added that creates universal
+	  application bundles from architecture-dependent application
+	  bundles
+
 2008-08-11  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* system/macosx/deps.mk: build zlib as shared lib instead of static
 
