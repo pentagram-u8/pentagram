@@ -131,6 +131,8 @@ extern void Timidity_GenerateSamples(void *stream, int samples);
    "The GUS does not SUCK!!!" -- a happy user :) */
 #define FRACTION_BITS 12
 
+#define MAX_SAMPLE_SIZE (1 << (32-FRACTION_BITS))
+
 /* For some reason the sample volume is always set to maximum in all
    patch files. Define this for a crude adjustment that may help
    equalize instrument volumes. */
