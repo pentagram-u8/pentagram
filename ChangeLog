@@ -1,3 +1,7 @@
+2008-09-04  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* system/macosx/deps.mk: dependency building now downloads the source
+	  tarballs from the appropriate sites.
+
 2008-08-30  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* audio/midi/timidity/: copy sanity checks from SDL_sound
 

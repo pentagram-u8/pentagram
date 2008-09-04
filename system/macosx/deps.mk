@@ -28,19 +28,34 @@ dep_clean_%: ${call arch_targets,%,clean};
 # This seems to prevent my stub files from being deleted
 .SECONDARY:
 
-extract_zlib.%: ${ROOT_DIRECTORY}/zlib-1.2.3.tar.gz
+${ROOT_DIRECTORY}/build/zlib.tar.gz:
+	curl -o $@ -L -S http://www.zlib.net/zlib-1.2.3.tar.gz
+
+${ROOT_DIRECTORY}/build/libpng.tar.gz:
+	curl -o $@ -L -S http://prdownloads.sourceforge.net/libpng/libpng-1.2.31.tar.gz
+
+${ROOT_DIRECTORY}/build/SDL.tar.gz:
+	curl -o $@ -L -S http://libsdl.org/release/SDL-1.2.13.tar.gz
+
+${ROOT_DIRECTORY}/build/freetype.tar.gz:
+	curl -o $@ -L -S http://prdownloads.sourceforge.net/freetype/freetype-2.3.7.tar.gz
+
+${ROOT_DIRECTORY}/build/SDL_ttf.tar.gz:
+	curl -o $@ -L -S http://www.libsdl.org/projects/SDL_ttf/release/SDL_ttf-2.0.9.tar.gz
+
+extract_zlib.%: ${ROOT_DIRECTORY}/build/zlib.tar.gz
 	cd ${BUILD_DIR} && tar --strip-components=1 -xzf $<
 
-extract_libpng.%: ${ROOT_DIRECTORY}/libpng-1.2.29.tar.gz
+extract_libpng.%: ${ROOT_DIRECTORY}/build/libpng.tar.gz
 	cd ${BUILD_DIR} && tar --strip-components=1 -xzf $<
 
-extract_SDL.%: ${ROOT_DIRECTORY}/SDL-1.2.13.tar.gz
+extract_SDL.%: ${ROOT_DIRECTORY}/build/SDL.tar.gz
 	cd ${BUILD_DIR} && tar --strip-components=1 -xzf $<
 
-extract_freetype.%: ${ROOT_DIRECTORY}/freetype-2.3.7.tar.gz
+extract_freetype.%: ${ROOT_DIRECTORY}/build/freetype.tar.gz
 	cd ${BUILD_DIR} && tar --strip-components=1 -xzf $<
 
-extract_SDL_ttf.%: ${ROOT_DIRECTORY}/SDL_ttf-2.0.9.tar.gz
+extract_SDL_ttf.%: ${ROOT_DIRECTORY}/build/SDL_ttf.tar.gz
 	cd ${BUILD_DIR} && tar --strip-components=1 -xzf $<
 
 configure_zlib.%:
