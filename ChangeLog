@@ -1,3 +1,6 @@
+2008-09-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* data/u8bindings.ini: move toggleStasis from S to F10
+
 2008-09-04  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* system/macosx/deps.mk: dependency building now downloads the source
 	  tarballs from the appropriate sites.
