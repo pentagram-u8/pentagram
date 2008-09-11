@@ -21,7 +21,7 @@
 			<header>Linux/Unix</header>
 			<body>
 				<ol>
-					<li> Run the "bootstrap" script to create the "configure" script:<br/>				
+					<li> Run the "bootstrap" script to create the "configure" script:<br/>
 						<kbd>./bootstrap</kbd></li>
 					<li>Now run configure:<br/>
 						<kbd>./configure</kbd></li>
@@ -38,17 +38,27 @@
 				</para>
 			</body>
 		</sub>
-		<sub name="building-macosx">
+		<sub name="building_macosx">
 			<header>Mac OS X</header>
 			<body>
 				<para>
-					Under OS X, the dependencies are built into the application bundle as embedded frameworks, with the exception of zlib, which is already provided by OS X. SDL.framwork and SDL_ttf.framework can be obtained from libsdl.org. libpng.framework can be obtained the download page or built from source using the Xcode project files also available on the download page.
+					Under OS X, the dependencies are built into the application bundle as embedded libraries.
+					Pentagram provides makefiles to build the dependencies appropriately.
+					Internally, the OS X specific makefiles use normal unix-style configure &amp; make to
+					build Pentagram and all dependencies.
 				</para>
 				<ol>
-					<li>Place all three frameworks in <kbd>system/xcode/Frameworks</kbd></li>
-					<li>Build from within Xcode using the Pentagram.xcodeproj project under <kbd>system/xcode/Pentagram</kbd> or from a terminal run xcodebuild:<br/>
-						<kbd>xcodebuild -configuration Release</kbd></li>
-					<li>The application bundle will be located at <kbd>system/xcode/Pentagram/build/Release/Pentagram.app</kbd></li>
+					<li> Run the "bootstrap" script to create the "configure" script:<br/>
+						<kbd>./bootstrap</kbd></li>
+					<li>Build all dependencies:<br/>
+						<kbd>make -f Makefile.macosx deps</kbd></li>
+					<li>Build Pentagram:<br/>
+						<kbd>make -f Makefile.macosx build</kbd></li>
+					<li>Build Pentagram.app:<br/>
+						<kbd>make -f Makefile.macosx bundle</kbd></li>
+					<li>Build disk image:<br/>
+						<kbd>make -f Makefile.macosx image</kbd></li>
+					<li>The disk image is located in the build directory and contains the universal binary</li>
 				</ol>
 			</body>
 		</sub>
@@ -284,6 +294,14 @@
 		</sub>
 	</section>
 	<section title="Changes to the Documentation">
+		<sub name="03082007">
+			<header>- 4 September 2008</header>
+			<body>
+				<para>
+					<ref1 target="building_macosx"/>: replaced old build instructions.<br/>
+				</para>
+			</body>
+		</sub>
 		<sub name="03082007">
 			<header>- 3 August 2007</header>
 			<body>
