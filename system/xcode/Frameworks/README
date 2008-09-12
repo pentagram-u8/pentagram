@@ -1,7 +1,0 @@
-When building pentagram, this directory should contain three frameworks:
-SDL.framework from http://www.libsdl.org/
-SDL_ttf.framework from http://www.libsdl.org/projects/SDL_ttf/
-libpng.framework from Pentagram website
-
-The xcode project for Pentagram will copy these frameworks into the application
-bundle before compiling sources 

@@ -1,3 +1,7 @@
+2008-09-12  Matthew Jimenez <mjimenez@users.sourceforge.net>
+	* system/xcode: removed XCode project, replaced by makefile
+	  system
+
 2008-09-10  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* README, docs/xml/readme.xml: update OS X build instructions
 
