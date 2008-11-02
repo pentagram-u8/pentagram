@@ -487,7 +487,7 @@ bool ConvertShape::Check(IDataSource *source, const ConvertShapeFormat *csf, uin
 		frame->xoff = source->readXS(csf->bytes_frame_xoff);
 		frame->yoff = source->readXS(csf->bytes_frame_yoff);
 
-		if (frame->compression != 0 && frame->compression != 1 || frame->width < 0 || frame->height < 0)
+		if ((frame->compression != 0 && frame->compression != 1) || frame->width < 0 || frame->height < 0)
 		{
 			frame->compression = 0;
 			frame->width = 0;
@@ -677,7 +677,7 @@ bool ConvertShape::CheckUnsafe(IDataSource *source, const ConvertShapeFormat *cs
 		frame->xoff = source->readXS(csf->bytes_frame_xoff);
 		frame->yoff = source->readXS(csf->bytes_frame_yoff);
 
-		if (frame->compression != 0 && frame->compression != 1 || frame->width < 0 || frame->height < 0)
+		if ((frame->compression != 0 && frame->compression != 1) || frame->width < 0 || frame->height < 0)
 		{
 			frame->compression = 0;
 			frame->width = 0;

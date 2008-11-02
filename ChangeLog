@@ -1,3 +1,6 @@
+2008-11-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* convert/ConvertShape.cpp: add parentheses
+
 2008-09-12  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* system/xcode: removed XCode project, replaced by makefile
 	  system
