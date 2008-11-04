@@ -65,6 +65,7 @@
 //
 #include <string>
 #include <cstring>
+#include <cstdlib>
 #include "istring.h"
 
 // Empty string
