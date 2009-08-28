@@ -348,7 +348,7 @@ void World::save(ODataSource* ods)
 
 	ods->write2(currentmap->egghatcher);
 
-	uint16 es = ethereal.size();
+	uint16 es = static_cast<uint16>(ethereal.size());
 	ods->write4(es);
 
 	// empty stack and refill it again
@@ -384,7 +384,7 @@ bool World::load(IDataSource* ids, uint32 version)
 
 void World::saveMaps(ODataSource* ods)
 {
-	ods->write4(maps.size());
+	ods->write4(static_cast<uint32>(maps.size()));
 	for (unsigned int i = 0; i < maps.size(); ++i) {
 		maps[i]->save(ods);
 	}

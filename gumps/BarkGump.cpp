@@ -190,7 +190,7 @@ void BarkGump::saveData(ODataSource* ods)
 	ods->write4(speechshapenum);
 	ods->write4(speechlength);
 	ods->write4(totaltextheight);
-	ods->write4(barked.size());
+	ods->write4(static_cast<uint32>(barked.size()));
 	ods->write(barked.c_str(), barked.size());
 }
 

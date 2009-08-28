@@ -320,7 +320,7 @@ void Container::dumpInfo()
 void Container::saveData(ODataSource* ods)
 {
 	Item::saveData(ods);
-	ods->write4(contents.size());
+	ods->write4(static_cast<uint32>(contents.size()));
 	std::list<Item*>::iterator iter;
 	for (iter = contents.begin(); iter != contents.end(); ++iter) {
 		(*iter)->save(ods);

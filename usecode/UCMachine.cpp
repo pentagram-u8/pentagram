@@ -2267,7 +2267,7 @@ void UCMachine::saveGlobals(ODataSource* ods)
 void UCMachine::saveStrings(ODataSource* ods)
 {
 	stringIDs->save(ods);
-	ods->write4(stringHeap.size());
+	ods->write4(static_cast<uint32>(stringHeap.size()));
 
 	std::map<uint16, std::string>::iterator iter;
 	for (iter = stringHeap.begin(); iter != stringHeap.end(); ++iter)

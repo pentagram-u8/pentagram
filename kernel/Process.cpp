@@ -142,7 +142,7 @@ void Process::saveData(ODataSource* ods)
 	ods->write2(item_num);
 	ods->write2(type);
 	ods->write4(result);
-	ods->write4(waiting.size());
+	ods->write4(static_cast<uint32>(waiting.size()));
 	for (unsigned int i = 0; i < waiting.size(); ++i)
 		ods->write2(waiting[i]);
 }

@@ -263,7 +263,7 @@ void Map::loadFixedFormatObjects(std::list<Item*>& itemlist, IDataSource* ds,
 
 void Map::save(ODataSource* ods)
 {
-	ods->write4(dynamicitems.size());
+	ods->write4(static_cast<uint32>(dynamicitems.size()));
 
 	std::list<Item*>::iterator iter;
 	for (iter = dynamicitems.begin(); iter != dynamicitems.end(); ++iter) {

@@ -173,7 +173,7 @@ void UCProcess::saveData(ODataSource* ods)
 	ods->write2(classid);
 	ods->write2(ip);
 	ods->write4(temp32);
-	ods->write4(freeonterminate.size());
+	ods->write4(static_cast<uint32>(freeonterminate.size()));
 	std::list<std::pair<uint16, int> >::iterator iter;
 	for (iter = freeonterminate.begin(); iter != freeonterminate.end(); ++iter)
 	{
