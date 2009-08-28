@@ -227,7 +227,7 @@ public:
 		//
 		else
 		{
-			uint32 pos_y, pos_x;
+			uint32 pos_y = 0, pos_x = 0;
 			uint32 end_y = dh;
 			uint32 dst_y = 0;
 			uint8* blockline_start = 0;
