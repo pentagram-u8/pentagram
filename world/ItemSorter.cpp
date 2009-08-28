@@ -1075,7 +1075,7 @@ bool ItemSorter::PaintSortItem(SortItem	*si)
 
 //	if (wire) si->info->draw_box_back(s, dispx, dispy, 255);
 
-	if (si->ext_flags & Item::EXT_HIGHLIGHT && (si->ext_flags & Item::EXT_TRANSPARENT || si->ext_flags & Item::EXT_TRANSPARENT))
+	if (si->ext_flags & Item::EXT_HIGHLIGHT && si->ext_flags & Item::EXT_TRANSPARENT)
 		surf->PaintHighlightInvis(si->shape, si->frame, si->sxbot, si->sybot, si->trans, (si->flags&Item::FLG_FLIPPED)!=0, 0x7F00007F);
 	if (si->ext_flags & Item::EXT_HIGHLIGHT)
 		surf->PaintHighlight(si->shape, si->frame, si->sxbot, si->sybot, si->trans, (si->flags&Item::FLG_FLIPPED)!=0, 0x7F00007F);
