@@ -172,7 +172,7 @@ void ObjectManager::ConCmd_objectInfo(const Console::ArgvType& argv)
 
 	ObjectManager* objman = ObjectManager::get_instance();
 
-	ObjId objid = strtol(argv[1].c_str(), 0, 0);
+	ObjId objid = static_cast<ObjId>(strtol(argv[1].c_str(), 0, 0));
 
 	Object* obj = objman->getObject(objid);
 	if (obj == 0) {

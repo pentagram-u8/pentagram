@@ -2430,7 +2430,7 @@ void UCMachine::ConCmd_tracePID(const Console::ArgvType &argv)
 		return;
 	}
 
-	uint16 pid = strtol(argv[1].c_str(), 0, 0);
+	uint16 pid = static_cast<uint16>(strtol(argv[1].c_str(), 0, 0));
 
 	UCMachine *uc = UCMachine::get_instance();
 	uc->tracing_enabled = true;
@@ -2446,7 +2446,7 @@ void UCMachine::ConCmd_traceObjID(const Console::ArgvType &argv)
 		return;
 	}
 
-	uint16 objid = strtol(argv[1].c_str(), 0, 0);
+	uint16 objid = static_cast<uint16>(strtol(argv[1].c_str(), 0, 0));
 
 	UCMachine *uc = UCMachine::get_instance();
 	uc->tracing_enabled = true;
@@ -2462,7 +2462,7 @@ void UCMachine::ConCmd_traceClass(const Console::ArgvType &argv)
 		return;
 	}
 
-	uint16 ucclass = strtol(argv[1].c_str(), 0, 0);
+	uint16 ucclass = static_cast<uint16>(strtol(argv[1].c_str(), 0, 0));
 
 	UCMachine *uc = UCMachine::get_instance();
 	uc->tracing_enabled = true;

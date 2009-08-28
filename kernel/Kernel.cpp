@@ -280,7 +280,7 @@ void Kernel::ConCmd_listProcesses(const Console::ArgvType &argv)
 	Kernel* kernel = Kernel::get_instance();
 	ObjId item = 0;
 	if (argv.size() == 2) {
-		item = strtol(argv[1].c_str(), 0, 0);
+		item = static_cast<ObjId>(strtol(argv[1].c_str(), 0, 0));
 		pout << "Processes for item " << item << ":" << std::endl;
 	} else {
 		pout << "Processes:" << std::endl;
@@ -304,7 +304,7 @@ void Kernel::ConCmd_processInfo(const Console::ArgvType& argv)
 
 	Kernel* kernel = Kernel::get_instance();
 
-	ProcId procid = strtol(argv[1].c_str(), 0, 0);
+	ProcId procid = static_cast<ProcId>(strtol(argv[1].c_str(), 0, 0));
 
 	Process* p = kernel->getProcess(procid);
 	if (p == 0) {

@@ -590,40 +590,41 @@ void AudioProcess::ConCmd_listSFX(const Console::ArgvType &argv)
 void AudioProcess::ConCmd_stopSFX(const Console::ArgvType &argv)
 {
 	AudioProcess *ap = AudioProcess::get_instance();
-	if (!ap) {
+	if (!ap) 
+	{
 		perr << "Error: No AudioProcess" << std::endl;
 		return;
 	}
 
-	switch (argv.size() - 1) {
-	case 1:
-		ap->stopSFX(strtol(argv[1].c_str(), 0, 0), 0);
-		break;
-	case 2:
-		ap->stopSFX(strtol(argv[1].c_str(), 0, 0),
-					strtol(argv[2].c_str(), 0, 0));
-		break;
-	default:
+	if (argv.size() < 2)
+	{
 		pout << "usage: stopSFX <sfxnum> [<objid>]" << std::endl;
-		break;
+		return;
 	}
+
+	int sfxnum = static_cast<int>(strtol(argv[1].c_str(), 0, 0));
+	ObjId objid = (argv.size() >= 3) ? static_cast<ObjId>(strtol(argv[2].c_str(), 0, 0)) : 0;
+
+	ap->stopSFX(sfxnum, objid);
 }
 
 // static
 void AudioProcess::ConCmd_playSFX(const Console::ArgvType &argv)
 {
 	AudioProcess *ap = AudioProcess::get_instance();
-	if (!ap) {
+	if (!ap) 
+	{
 		perr << "Error: No AudioProcess" << std::endl;
 		return;
 	}
 
-	switch (argv.size() - 1) {
-	case 1:
-		ap->playSFX(strtol(argv[1].c_str(), 0, 0), 0x60, 0, 0);
-		break;
-	default:
+	if (argv.size() < 2)
+	{
 		pout << "usage: playSFX <sfxnum>" << std::endl;
-		break;
+		return;
 	}
+
+	int sfxnum = static_cast<int>(strtol(argv[1].c_str(), 0, 0));
+
+	ap->playSFX(sfxnum, 0x60, 0, 0);
 }
