@@ -165,7 +165,7 @@ uint8* ZipFile::getObject(const std::string& name, uint32* sizep)
 
 	buf = new uint8[size];
 
-	if (PentZip::unzReadCurrentFile(unzfile, buf, size) < size) {
+	if (PentZip::unzReadCurrentFile(unzfile, buf, size) < static_cast<int>(size)) {
 		delete[] buf;
 		return 0;
 	}
