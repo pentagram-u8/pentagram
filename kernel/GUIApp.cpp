@@ -1058,7 +1058,7 @@ void GUIApp::paint()
         static long diff = 0;
         static long fps = 0;
         static long paint = 0;
-        char buf[256];
+		char buf[256] = {'\0'};
         FixedWidthFont *confont = con.GetConFont();
         int v_offset = 0;
         int char_w = confont->width;
