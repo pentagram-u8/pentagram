@@ -384,10 +384,10 @@ inline bool SortItem::operator<(const SortItem& si2) const
 	else if (si1.yfar >= (si2.y+si2.yfar)/2) return false;
 
 	// Partial in X + Y front
-	if (si1.x + si1.y != si1.x + si2.y) return (si1.x + si1.y < si2.x + si2.y);
+	if (si1.x + si1.y != si2.x + si2.y) return (si1.x + si1.y < si2.x + si2.y);
 
 	// Partial in X + Y back
-	if (si1.xleft + si1.yfar != si1.xleft + si2.yfar) return (si1.xleft + si1.yfar < si2.xleft + si2.yfar);
+	if (si1.xleft + si1.yfar != si2.xleft + si2.yfar) return (si1.xleft + si1.yfar < si2.xleft + si2.yfar);
 
 	// Partial in x?
 	if (si1.x != si2.x) return si1.x < si2.x;
@@ -540,7 +540,7 @@ inline bool SortItem::operator<<(const SortItem& si2) const
 	COMPARISON_RETURN_TF(si1.yfar,>=,si2.y,false,"\t");
 
 	// ZTops?
-	COMPARISON_RETURN_TF(si1.ztop,<,si2.z,true,"");
+	COMPARISON_RETURN_TF(si1.ztop,<,si2.ztop,true,"");
 	COMPARISON_RETURN_TF(si1.ztop,>,si2.ztop,false,"");
 
 	// Biased Clearly in z
@@ -563,11 +563,11 @@ inline bool SortItem::operator<<(const SortItem& si2) const
 
 	// Partial in X + Y front
 	//if (si1.x + si1.y != si1.x + si2.y) return (si1.x + si1.y < si2.x + si2.y);
-	COMPARISON_RETURN_EX(si1.x + si1.y,<,si1.x + si2.y,"");
+	COMPARISON_RETURN_EX(si1.x + si1.y,<,si2.x + si2.y,"");
 
 	// Partial in X + Y back
 	//if (si1.xleft + si1.yfar != si1.xleft + si2.yfar) return (si1.xleft + si1.yfar < si2.xleft + si2.yfar);
-	COMPARISON_RETURN_EX(si1.xleft + si1.yfar,<,si1.xleft + si2.yfar,"");
+	COMPARISON_RETURN_EX(si1.xleft + si1.yfar,<,si2.xleft + si2.yfar,"");
 
 	// Partial in x?
 	//if (si1.x != si2.x) return si1.x < si2.x;
