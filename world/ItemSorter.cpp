@@ -694,19 +694,19 @@ void ItemSorter::AddItem(sint32 x, sint32 y, sint32 z, uint32 shape_num, uint32 
 	si->ztop = si->z + zd;
 
 	// Screenspace bounding box left extent    (LNT x coord)
-	si->sxleft = (si->xleft - si->y)/4 - cam_sx;
+	si->sxleft = si->xleft/4 - si->y/4 - cam_sx;
 	// Screenspace bounding box right extent   (RFT x coord)
-	si->sxright= (si->x - si->yfar)/4 - cam_sx;
+	si->sxright= si->x/4 - si->yfar/4 - cam_sx;
 
 	// Screenspace bounding box top x coord    (LFT x coord)
-	si->sxtop = (si->xleft - si->yfar)/4 - cam_sx;
+	si->sxtop = si->xleft/4 - si->yfar/4 - cam_sx;
 	// Screenspace bounding box top extent     (LFT y coord)
-	si->sytop = (si->xleft + si->yfar)/8 - si->ztop - cam_sy;
+	si->sytop = si->xleft/8 + si->yfar/8 - si->ztop - cam_sy;
 
 	// Screenspace bounding box bottom x coord (RNB x coord)
-	si->sxbot = (si->x - si->y)/4 - cam_sx;
+	si->sxbot = si->x/4 - si->y/4 - cam_sx;
 	// Screenspace bounding box bottom extent  (RNB y coord)
-	si->sybot = (si->x + si->y)/8 - si->z - cam_sy;
+	si->sybot = si->x/8 + si->y/8 - si->z - cam_sy;
 
 //	si->sxleft += swo2;
 //	si->sxright += swo2;
@@ -881,19 +881,19 @@ void ItemSorter::AddItem(Item *add)
 	si->ztop = si->z + zd;
 
 	// Screenspace bounding box left extent    (LNT x coord)
-	si->sxleft = (si->xleft - si->y)/4 - cam_sx;
+	si->sxleft = si->xleft/4 - si->y/4 - cam_sx;
 	// Screenspace bounding box right extent   (RFT x coord)
-	si->sxright= (si->x - si->yfar)/4 - cam_sx;
+	si->sxright= si->x/4 - si->yfar/4 - cam_sx;
 
 	// Screenspace bounding box top x coord    (LFT x coord)
-	si->sxtop = (si->xleft - si->yfar)/4 - cam_sx;
+	si->sxtop = si->xleft/4 - si->yfar/4 - cam_sx;
 	// Screenspace bounding box top extent     (LFT y coord)
-	si->sytop = (si->xleft + si->yfar)/8 - si->ztop - cam_sy;
+	si->sytop = si->xleft/8 + si->yfar/8 - si->ztop - cam_sy;
 
 	// Screenspace bounding box bottom x coord (RNB x coord)
-	si->sxbot = (si->x - si->y)/4 - cam_sx;
+	si->sxbot = si->x/4 - si->y/4 - cam_sx;
 	// Screenspace bounding box bottom extent  (RNB y coord)
-	si->sybot = (si->x + si->y)/8 - si->z - cam_sy;
+	si->sybot = si->x/8 + si->y/8 - si->z - cam_sy;
 
 //	si->sxleft += swo2;
 //	si->sxright += swo2;
