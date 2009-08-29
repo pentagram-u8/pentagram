@@ -1,3 +1,22 @@
+2009-08-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/ItemSorter.cpp: Change screen coordinate computation slightly to
+	  fix glitches (bug #2655437)
+
+2009-08-28  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* various: minor whitespace/warning fixes
+
+2009-08-28  <shadowchaser@users.sourceforge.net>
+	* world/ItemSorter.cpp: removed redundant EXT_TRANSPARENT expression
+	  (patch #2655512)
+	* world/ItemSorter.cpp: fix typo in item sorter (patch #2532651)
+	* kernel/GUIApp.cpp: fix potential buffer overflow in render stats
+	  (patch #2655538)
+	* various: fix MSVC warnings
+
+2009-01-27  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/CameraProcess.cpp: revert r2386 since it was breaking more
+	  cutscenes than it was fixing
+
 2008-11-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* misc/pent_include.h: always include cstdlib
 	* world/CurrentMap.cpp: include climits for gcc 4.3
