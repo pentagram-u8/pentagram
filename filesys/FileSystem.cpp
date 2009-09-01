@@ -481,7 +481,7 @@ int FileSystem::MkDir(const string &path)
 	MultiByteToWideChar(CP_ACP, 0, n, -1, lpszT, nLen);
 	return CreateDirectory(lpszT, NULL);
 #elif defined(WIN32)
-	return mkdir(name.c_str());
+	return _mkdir(name.c_str());
 #else
 	return mkdir(name.c_str(), 0750); // Create dir. if not already there.
 #endif
