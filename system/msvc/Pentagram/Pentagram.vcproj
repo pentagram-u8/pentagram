@@ -73,9 +73,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib"
+				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib winmm.lib libpng.lib sdl.lib sdl_ttf.lib sdlmain.lib zlib_libcmt.lib"
 				OutputFile="$(OutDir)\$(ProjectName)D.exe"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)libs\sdl-1.2.9\lib&quot;;&quot;$(SolutionDir)libs\sdl_ttf-2.0.7\lib&quot;;&quot;$(SolutionDir)libs\lpng128&quot;;&quot;$(SolutionDir)libs\zlib-1.2.1&quot;"
 				GenerateManifest="false"
 				IgnoreDefaultLibraryNames="libc.lib;msvcrt.lib;libcmt.lib"
 				GenerateDebugInformation="true"
@@ -147,7 +148,7 @@
 				WarningLevel="3"
 				SuppressStartupBanner="true"
 				Detect64BitPortabilityProblems="true"
-				DebugInformationFormat="4"
+				DebugInformationFormat="3"
 			/>
 			<Tool
 				Name="VCManagedResourceCompilerTool"
@@ -162,10 +163,11 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib"
+				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib winmm.lib libpng64.lib sdl64.lib sdl_ttf64.lib sdlmain64.lib zlib_libcmt64.lib"
 				OutputFile="$(OutDir)\$(ProjectName)D.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)libs\sdl-1.2.9\lib&quot;;&quot;$(SolutionDir)libs\sdl_ttf-2.0.7\lib&quot;;&quot;$(SolutionDir)libs\lpng128&quot;;&quot;$(SolutionDir)libs\zlib-1.2.1&quot;"
 				GenerateManifest="false"
 				IgnoreDefaultLibraryNames="libc.lib;msvcrt.lib;libcmt.lib"
 				GenerateDebugInformation="true"
@@ -253,8 +255,9 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib"
+				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib libpng.lib sdl.lib sdl_ttf.lib sdlmain.lib zlib_libcmt.lib"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)libs\sdl-1.2.9\lib&quot;;&quot;$(SolutionDir)libs\sdl_ttf-2.0.7\lib&quot;;&quot;$(SolutionDir)libs\lpng128&quot;;&quot;$(SolutionDir)libs\zlib-1.2.1&quot;"
 				GenerateManifest="false"
 				IgnoreDefaultLibraryNames="libc.lib;msvcrt.lib"
 				GenerateDebugInformation="true"
@@ -345,9 +348,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib"
+				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib winmm.lib libpng64.lib sdl64.lib sdl_ttf64.lib sdlmain64.lib zlib_libcmt64.lib"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
+				AdditionalLibraryDirectories="&quot;$(SolutionDir)libs\sdl-1.2.9\lib&quot;;&quot;$(SolutionDir)libs\sdl_ttf-2.0.7\lib&quot;;&quot;$(SolutionDir)libs\lpng128&quot;;&quot;$(SolutionDir)libs\zlib-1.2.1&quot;"
 				GenerateManifest="false"
 				IgnoreDefaultLibraryNames="libc.lib;msvcrt.lib"
 				GenerateDebugInformation="true"
@@ -2765,6 +2769,14 @@
 				</File>
 			</Filter>
 		</Filter>
+		<Filter
+			Name="data"
+			>
+			<File
+				RelativePath="..\..\..\data\data.h"
+				>
+			</File>
+		</Filter>
 		<File
 			RelativePath="..\building_msvc.txt"
 			>
@@ -2774,15 +2786,7 @@
 			>
 		</File>
 		<File
-			RelativePath="..\..\..\data\data.h"
-			>
-		</File>
-		<File
 			RelativePath="..\..\..\FAQ"
-			>
-		</File>
-		<File
-			RelativePath="..\..\..\message.txt"
 			>
 		</File>
 		<File

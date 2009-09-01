@@ -2,6 +2,9 @@
 	* various: Upgraded solution and project files to Visual Studio 2008 format.
 	  New Visual C++ compilation environment.
 	  Added command-line build support.	  
+	* system/msvc/pentagram/pentagram.vcproj: Integrated libraries directly into 
+	  Pentagram project.	 
+	  Removed missing Message.txt file from project.
     * system/msvc/msvc_include.h: Fixed POSIX _mkdir warning.
     
 2009-08-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
