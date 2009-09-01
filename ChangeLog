@@ -1,3 +1,8 @@
+2009-08-31  <shadowchaser@users.sourceforge.net>
+	* various: Upgraded solution and project files to Visual Studio 2008 format.
+	  New Visual C++ compilation environment.
+	  Added command-line build support.	  
+
 2009-08-29  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/ItemSorter.cpp: Change screen coordinate computation slightly to
 	  fix glitches (bug #2655437)

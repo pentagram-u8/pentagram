@@ -1,7 +1,7 @@
 !include objects.mk
 
-data/data.h : "$(OutDir)\\data2c.exe" $(DATA_FILES)
-	"$(OutDir)\\data2c.exe" data\\data.h $(DATA_FILES)
+data/data.h : "$(data2c)" $(DATA_FILES)
+	"$(data2c)" data\\data.h $(DATA_FILES)
 
 build : data/data.h
 

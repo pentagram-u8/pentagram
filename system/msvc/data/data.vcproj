@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="9.00"
 	Name="data.h"
 	ProjectGUID="{0CE98989-F599-43D1-B950-3E4CB376552F}"
 	RootNamespace="data.h"
 	Keyword="MakeFileProj"
+	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -16,17 +17,17 @@
 	</ToolFiles>
 	<Configurations>
 		<Configuration
-			Name="Debug AMD64|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			Name="Debug|Win32"
+			OutputDirectory="&quot;$(ConfigurationName)\bin&quot;"
+			IntermediateDirectory="&quot;$(ConfigurationName)\obj&quot;"
 			ConfigurationType="0"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; build /NOLOGO"
-				ReBuildCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; rebuild /NOLOGO"
-				CleanCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; clean /NOLOGO"
+				BuildCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile data2c=&quot;$(SolutionDir)data2c\$(ConfigurationName)\bin\data2c.exe&quot; build /NOLOGO&#x0D;&#x0A;"
+				ReBuildCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile data2c=&quot;$(SolutionDir)data2c\$(ConfigurationName)\bin\data2c.exe&quot; rebuild /NOLOGO&#x0D;&#x0A;"
+				CleanCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile data2c=&quot;$(SolutionDir)data2c\$(ConfigurationName)\bin\data2c.exe&quot; clean /NOLOGO&#x0D;&#x0A;"
 				Output="../../../data/data.h"
 				PreprocessorDefinitions=""
 				IncludeSearchPath=""
@@ -37,59 +38,17 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release AMD64|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			Name="Release|Win32"
+			OutputDirectory="&quot;$(ConfigurationName)\bin&quot;"
+			IntermediateDirectory="&quot;$(ConfigurationName)\obj&quot;"
 			ConfigurationType="0"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			>
 			<Tool
 				Name="VCNMakeTool"
-				BuildCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; build /NOLOGO"
-				ReBuildCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; rebuild /NOLOGO"
-				CleanCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; clean /NOLOGO"
-				Output="../../../data/data.h"
-				PreprocessorDefinitions=""
-				IncludeSearchPath=""
-				ForcedIncludes=""
-				AssemblySearchPath=""
-				ForcedUsingAssemblies=""
-				CompileAsManaged=""
-			/>
-		</Configuration>
-		<Configuration
-			Name="Debug i386|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="0"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
-			>
-			<Tool
-				Name="VCNMakeTool"
-				BuildCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; build /NOLOGO"
-				ReBuildCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; rebuild /NOLOGO"
-				CleanCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; clean /NOLOGO"
-				Output="../../../data/data.h"
-				PreprocessorDefinitions=""
-				IncludeSearchPath=""
-				ForcedIncludes=""
-				AssemblySearchPath=""
-				ForcedUsingAssemblies=""
-				CompileAsManaged=""
-			/>
-		</Configuration>
-		<Configuration
-			Name="Release i386|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="0"
-			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
-			>
-			<Tool
-				Name="VCNMakeTool"
-				BuildCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; build /NOLOGO"
-				ReBuildCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; rebuild /NOLOGO"
-				CleanCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile OutDir=&quot;$(OutDir)&quot; clean /NOLOGO"
+				BuildCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile data2c=&quot;$(SolutionDir)data2c\$(ConfigurationName)\bin\data2c.exe&quot; build /NOLOGO&#x0D;&#x0A;"
+				ReBuildCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile data2c=&quot;$(SolutionDir)data2c\$(ConfigurationName)\bin\data2c.exe&quot; rebuild /NOLOGO&#x0D;&#x0A;"
+				CleanCommandLine="cd $(solutionDir)\..\..&#x0D;&#x0A;nmake /f $(InputDir)Makefile data2c=&quot;$(SolutionDir)data2c\$(ConfigurationName)\bin\data2c.exe&quot; clean /NOLOGO&#x0D;&#x0A;"
 				Output="../../../data/data.h"
 				PreprocessorDefinitions=""
 				IncludeSearchPath=""

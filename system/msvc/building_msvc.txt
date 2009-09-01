@@ -1,17 +1,21 @@
 General
 -------
-This MSVC Solution has been created in VC++ 2005 Express Edition. It should 
-work in the commercial editions too, but hasn't been tested. The solution can 
-compile for i386 or AMD64 (see section below for details).
+This MSVC Solution has been be compiled using Visual C++ 2005 Express, Visual Studio 2005, or
+the Windows SDK. Both x86 and x64 are supported as targeted platforms (see section below for details).
 
-Executable output files will be placed in the root Pentagram directory.
-AMD64 builds will have a '64' suffix. 
-Debug builds will have a 'D' suffix.
+Executable output files will be placed in a configuration of each project. 
+
+For example, Pentagram's main output is located in:
+.\system\msvc\Pentagram\Debug Win32\PentagramD.exe
+.\system\msvc\Pentagram\Debug x86\PentagramD.exe
+.\system\msvc\Pentagram\Release Win32\Pentagram.exe
+.\system\msvc\Pentagram\Release x86\Pentagram.exe
+
+Debug builds have a 'D' suffix.
 
 
 Libraries
 ---------
-
 Pentagram requires the following libraries:
 libpng
 SDL
@@ -26,12 +30,12 @@ Extract the zip file with directories into the libs directory to compile with
 the supplied libraries. Otherwise obtain your own versions and update the libs
 project to point to the correct versions. You'll end up with a directory 
 structure like so:
-msvc\libs\lpng128
-msvc\libs\SDL-1.2.9\include
-msvc\libs\SDL-1.2.9\lib
-msvc\libs\SDL_ttf-2.0.7\include
-msvc\libs\SDL_ttf-2.0.7\lib
-msvc\libs\zlib-1.2.1
+.\system\msvc\libs\lpng128
+.\system\msvc\libs\SDL-1.2.9\include
+.\system\msvc\libs\SDL-1.2.9\lib
+.\system\msvc\libs\SDL_ttf-2.0.7\include
+.\system\msvc\libs\SDL_ttf-2.0.7\lib
+.\system\msvc\libs\zlib-1.2.1
 
 The libs project will includ all the required library files for all the other
 projects. It is setup to select the correct library depending on the 
@@ -42,74 +46,101 @@ various interdependencies between the libraries. Rebuilding should be done in
 this order: zlib, libpng, SDL, freetype, SDL_ttf.
 
 
-AMD64 Building+Cross Compiling
-------------------------------
+Build Environment Configuration
+-------------------------------
 
-As Visual C++ 2005 Express Edition doesn't natively support compiling to AMD64,
-building requires the Platform SDK and a very specific setup to work. One 
-problem is you can not switch between targets on the fly. You need to quit and 
-reload Visual C++ 2005 Express Edition.
+Windows SDK:
+	Pentagram uses the official Windows SDK for compiling. Although using the 
+	latest SDK is generally recommended, the "Windows SDK for Windows 7 and .NET 
+	Framework 3.5 SP1" has been officially tested. Regardless of the version of 
+	Visual Studio used, we recommend downloading and install the SDK to ensure
+	the latest Windows libraries are used.
+	
+	Version 7.0 can be downloaded at:
+	http://www.microsoft.com/downloads/thankyou.aspx?familyId=c17ba869-9671-4330-a63e-1fd44e0e2505&displayLang=en
 
-Firstly, download the Windows Server 2003 SP1 Platform SDK 
-http://www.microsoft.com/downloads/details.aspx?FamilyID=a55b6b43-e24f-4ea3-a93e-40c0ec4f68e5&DisplayLang=en
-When installing make sure you have the 'AMD64 Build tools' selected for 
-installation. The AMD64 Build Tools support cross compiling so you can build
-AMD64 executables in 32Bit Windows. The instructions below are the same for 
-both.
+	At a minimum, install the following components:
+	* Windows Headers and Libraries
+	* Visual C++ Compilers
+	* Windows Development Tools
 
-Next step is to tell Visual C++ 2005 Express Edition to use the AMD64 compiler
-and libraries. This is done by opening a Platform SDK "Server 2003 X64 Build 
-environment" and running 'VCExpress' with the /useenv switch.
+Visual Studio:
+	Pentagram's solution and project files are in Visual Studio 2005 format. Since 
+	Microsoft Visual C++ 2005 Express (the free edition) is no longer publicly available, 
+	we recommend downloading Microsoft Visual C++ 2008 Express. It's completely free
+	and includes debugging and code editing tools. 
+	
+	Microsoft Visual C++ 2008 Express can be downloaded at:
+	http://www.microsoft.com/express/vc/
 
-WARNING: the /useenv switch is sticky! It will wipe out all of the directories
-you may have set for VC++ in the Options dialogbox if you are not careful.
+SDK Registration:
+	After both the Windows SDK and Visual C++ have been installed, you will need to
+	"register" the SDK with Visual Studio. Registering the SDK configures Visual
+	Studio to use the latest Libraries and Headers. 
+	
+	Warning! The Windows SDK 6.0 has a bug in the Visual Studio Registration Tool that
+	can cause it to crash or otherwise fail to work. We recommend using the latest
+	Windows SDK (7.0 as of writing) which contains a working version!
+	
+	* In the Start Menu, expand the "Microsoft Windows SDK v7.0" folder.
+	* Expand the "Visual Studio Registration" folder
+	* Run "Windows SDK Configuration Tool"
+	* Select "V7.0" under "Installed Windows SDK Versions:"
+	* Select the versions of Visual Studio you will be programming Pentagram in
+	* Click "Make Current"
+	* Restart Visual Studio if it is open.
+	
+	Remember, making these changes may affect other projects you compile on your machine.
+	In general, the Windows SDK is backwards compatible.	
 
-To automate this procedure I put a VCExpressEnv.cmd file in the 
-"\Program Files\Microsoft Visual Studio 8\Common7\IDE" directory and 
-run that. The contents of my VCExpressEnv.cmd :
-@echo off
-call "..\..\vc\vcvarsall.bat"
-set MSVCDir=%VCINSTALLDIR%	
-call "T:\Program Files\Microsoft Platform SDK\SetEnv" %1 %2
-call "%DXSDK_DIR%Utilities\Bin\dx_setenv"  
-set INCLUDE=%INCLUDE%;$(VCInstallDir)\Include
-start VCExpress.exe /useenv
 
-Just note that I also have the DirectX SDK installed and I setup the 
-envrionment for that too and you'll want to change the paths. Also if you need 
-to, you should add any extra INCLUDE or LIB paths to the environment variables
-before the 'start VCExpress.exe /useenv' line.
+Compiling using the Windows SDK
+-------------------------------
+It's possible to compile Pentagram at the command line without using Visual Studio. 
 
-After that, you then run VCExpressEnv.cmd with different arguements depending on
-what operating system and architechture you want to use.
+* In the Start Menu, expand the "Microsoft Windows SDK v7.0" folder.
+* Run "CMD Shell". This will open a Command Prompt and configure it for compilation
+* Change to the pentagram\system\msvc directory, where "pentagram" is wherever your source code is located.
 
-VCExpressEnv.cmd         - target Windows XP 32
-VCExpressEnv.cmd /2000   - target Windows 2000 and IE 5.0
-VCExpressEnv.cmd /XP32   - target Windows XP 32
-VCExpressEnv.cmd /XP64   - target Windows XP 64
-VCExpressEnv.cmd /SRV32  - target Windows Server 2003 32 bit
-VCExpressEnv.cmd /SRV64  - target Windows Server 2003 64 bit (IA64 - Itanium)
-VCExpressEnv.cmd /X64    - target Windows X64 (AMD64)
+Type the following depending on the platform you want to build:
+* To compile x86 debug: vcbuild Pentagram.sln "Debug|Win32"
+* To compile x64 debug: vcbuild Pentagram.sln "Debug|x64"
+* To compile x86 release: vcbuild Pentagram.sln "Release|Win32"
+* To compile x64 release: vcbuild Pentagram.sln "Release|x64"
+* To rebuild, add "/r" to the command.
+* To clean, add "/c" to the command.
 
-I have 2 shortcuts to VCExpressEnv.cmd in my QuickLaunch depending on what 
-architecture I want to build for. I recommend you do the same.
 
-Microsoft Visual C++ 2005 Express Edition AMD64 Build
-Target: "T:\Program Files (x86)\Microsoft Visual Studio 8\Common7\IDE\VCExpressENV.cmd" /X64
+Compiling using Visual Studio
+-----------------------------
+Compiling within Visual Studio uses the exact same compilation environment as the Windows SDK.
+Microsoft marketing material may say things like "Visual Studio contains a special optimizing compiler!"
+but it's complete B.S. - the SDK uses the *EXACT SAME COMPILER* :-)
 
-Microsoft Visual C++ 2005 Express Edition Win 2000 Build
-Target: "T:\Program Files (x86)\Microsoft Visual Studio 8\Common7\IDE\VCExpressENV.cmd" /2000
+The main reason for using Visual Studio for compilation is it's wonderful debugger. Obviously 
+debugging manually at the command line is less fun.
 
-If everything is done correctly, you should now be able to build Pentagram for 
-AMD64. Just a note because the project settings are different (and mutually 
-imcompatible) between the i386 and AMD64 builds, I have included a special 
-testarch.cmd in the MSVC directory to ensure that the build environment is 
-setup correctly. TestARCH is run in the Prebuild phase of each project and will
-return an error if something is wrong.
+* In the pentagram\system\msvc directory, open Pentagram.sln in Visual Studio.
+* Select the configuration (Debug or Release) and the platform (Win32 or x64) from the toolbar
+* Press F7 to build the solution or press F5 to debug the solution.
 
-I have NOT tried building Pentagram for IA64. I imagine that it should compile
-fine but you'll need to add an extra project configuration named 
-Debug IA64 and Release IA64
 
-I also have NOT tried building Pentagram with the Feburary 2006 CTP Platform 
-SDK either. 
+Troubleshooting
+---------------
+Q) I can't compile for 64-bit platforms in a Visual C++ Express edition.
+A) The Visual C++ Express editions do not come with 64-bit compilers. To enable support
+   for 64-bit, download the Windows SDK and run the Windows SDK Configuration Tool.
+   After restarting Visual C++ Express, the option to compile as 64-bit will be available.
+
+Q) The Windows SDK CMD Shell tells me it's configured for x86 debug!
+A) Just ignore it. You can specify the exact configuration and platform using command
+   switches when executing vcbuild.exe. See "Compiling using the Windows SDK" above.
+   
+Q) After calling vcbuild.exe, I receive the error: 'blah' is not recognized as an internal 
+   or external command, operable program or batch file.
+A) You're missing double quotes around the configuration. For example, "Debug|x86"
+
+Q) Pentagram.exe exits with an error.
+A) Make sure you copy the required files to the executable's directory. 
+   * For x86 builds: pentagram.ini, SDL.dll, SDL_ttf.dll
+   * For x64 builds: pentagram.ini, SDL64.dll, SDL_ttf64.dll
