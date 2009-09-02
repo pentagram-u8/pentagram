@@ -54,17 +54,6 @@
 template<class T> T &max(T &a, T &b) { return (((a) > (b)) ? (a) : (b)); }
 template<class T> T &min(T &a, T &b) { return (((a) < (b)) ? (a) : (b)); }
 
-
-// Disable some warnings
-#pragma warning (disable: 4786)	// Debug Len > 255
-#pragma warning (disable: 4355)	// 'this' : used in base member initializer list
-
-#ifndef ENABLE_EXTRA_WARNINGS
-#pragma warning (disable: 4101) // unreferenced local variable
-#pragma warning (disable: 4309) // truncation of constant value
-#pragma warning (disable: 4305) // truncation from 'const int' to 'char'
-#endif
-
 // We need this defined
 #define __STRING(x) #x
 #define yyFlexLexer llcFlexLexer

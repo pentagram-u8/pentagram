@@ -1,7 +1,9 @@
 2009-09-01  <shadowchaser@users.sourceforge.net>
-	* data2c.c: Replaced POSIX filesystem call with an STL version.
-	* FileSystem.h: Changed return value of MkDir to bool (fixed platform-dependant return value).
-	* FileSystem.cpp Changed return value of MkDir to bool, changed Windows call to use CreateDirectoryA.
+	* tools/data2c/data2c.c: Replaced POSIX filesystem call with an STL version.
+	* tools/compile/llclexer.cpp: Removed unused macro parameter.
+	* filesys/FileSystem.h: Changed return value of MkDir to bool (fixed platform-dependant return value).
+	* filesys/FileSystem.cpp: Changed return value of MkDir to bool, changed Windows call to use CreateDirectoryA.
+	* system/msvc/msvc_include.h: Removed unneeded #pragma warnings.
 
 2009-08-31  <shadowchaser@users.sourceforge.net>
 	* various: Upgraded solution and project files to Visual Studio 2008 format.
