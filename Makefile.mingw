@@ -7,7 +7,7 @@ U8PATH=C:/Ultima8
 # Base of the pentagram source
 SRC=.
 
-VERSION=0.1cvs
+VERSION=0.1svn
 
 # If this doesn't work, insert output of `pkg-config --cflags gtk+-win32-2.0` manually
 GTK_INCLUDES = `pkg-config --cflags gtk+-win32-2.0`
@@ -93,7 +93,10 @@ PENTAGRAM_OBJS = \
 	$(COMPILE) $(DISASM) $(AUDIO) $(MIDI) $(TIMIDITY) $(GAMES) $(GAMES2) \
 	$(FONTS) kernel/GUIApp.o misc/version.o pentagram.o
 
-pentagram.exe: $(PENTAGRAM_OBJS)
+pentagramico.o: system/win32/pentagramico.rc
+	windres --include-dir system/win32 system/win32/pentagramico.rc pentagramico.o
+
+pentagram.exe: $(PENTAGRAM_OBJS) pentagramico.o
 	$(CXX) $(LFLAGS) -o $@ $+ $(LIBS)
 
 tools: amf2mod.exe data2c.exe disasm.exe flexpack.exe fold.exe shapeconv.exe
