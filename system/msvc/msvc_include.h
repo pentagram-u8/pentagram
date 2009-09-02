@@ -17,7 +17,7 @@
 #endif
 
 #ifndef VERSION
-#define VERSION	"0.1cvs"
+#define VERSION	"0.1svn"
 #endif
 
 // Fisrtly some things that need to be defined
