@@ -1,3 +1,9 @@
+2009-09-02  <colourles@users.sourceforge.net>
+	* pentagram.cpp: Removed dependency of the SDLmain.lib file for windows 
+	  builds. The code in the supplied WinMain function will redirect stdout 
+	  and stderr to text files like SDL would normally do. This code needs to 
+	  be fixed so its multiuser aware for Vista/7
+
 2009-09-01  <shadowchaser@users.sourceforge.net>
 	* tools/data2c/data2c.c: Replaced POSIX filesystem call with an STL version.
 	* tools/compile/llclexer.cpp: Removed unused macro parameter.
