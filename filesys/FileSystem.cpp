@@ -462,7 +462,7 @@ bool FileSystem::IsDir(const string &path)
  *	Create a directory
  */
 
-int FileSystem::MkDir(const string &path)
+bool FileSystem::MkDir(const string &path)
 {
 	string name = path;
 	if(name[0]=='@')
@@ -474,17 +474,10 @@ int FileSystem::MkDir(const string &path)
 	if (pos != string::npos)
 	  name.resize(pos+1);
 #endif
-#if defined(WIN32) && defined(UNICODE)
-	const char *n = name.c_str();
-	int nLen = std::strlen(n)+1;
-	LPTSTR lpszT = (LPTSTR) alloca(nLen*2);
-	MultiByteToWideChar(CP_ACP, 0, n, -1, lpszT, nLen);
-	return CreateDirectory(lpszT, NULL);
-#elif defined(WIN32)
-	return _mkdir(name.c_str());
+
+#if defined(WIN32)
+	return CreateDirectoryA(name.c_str(), NULL) == TRUE;
 #else
-	return mkdir(name.c_str(), 0750); // Create dir. if not already there.
+	return mkdir(name.c_str(), 0750) == 0;
 #endif
 }
-
-

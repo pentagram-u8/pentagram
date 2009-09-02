@@ -1,3 +1,8 @@
+2009-09-01  <shadowchaser@users.sourceforge.net>
+	* data2c.c: Replaced POSIX filesystem call with an STL version.
+	* FileSystem.h: Changed return value of MkDir to bool (fixed platform-dependant return value).
+	* FileSystem.cpp Changed return value of MkDir to bool, changed Windows call to use CreateDirectoryA.
+
 2009-08-31  <shadowchaser@users.sourceforge.net>
 	* various: Upgraded solution and project files to Visual Studio 2008 format.
 	  New Visual C++ compilation environment.

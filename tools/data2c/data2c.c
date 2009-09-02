@@ -99,7 +99,7 @@ int main(int argc, char* argv[])
 		if (strlen(filename) == 0 || strlen(base) == 0 || !scanname(base)) {
 			fprintf(stderr, "Invalid filename.");
 			fclose(outfile);
-			unlink(outfilename);
+			remove(outfilename);
 			return 1;
 		}
 
@@ -107,7 +107,7 @@ int main(int argc, char* argv[])
 		if (!infile) {
 			fprintf(stderr, "Error opening input file: %s\n", filename);
 			fclose(outfile);
-			unlink(outfilename);
+			remove(outfilename);
 			return 1;
 		}
 

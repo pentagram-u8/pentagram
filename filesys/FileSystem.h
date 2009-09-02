@@ -67,8 +67,8 @@ class FileSystem
 
 	//! Create a directory
 	//! \param path the directory to create. (Can be virtual)
-	//! \return OS-specific (FIXME!)
-	int MkDir(const std::string& path); // can handle both paths and vpaths
+	//! \return true if successful; otherwise, false.
+	bool MkDir(const std::string& path); // can handle both paths and vpaths
 
 	typedef std::list<std::string> FileList;
 
