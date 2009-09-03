@@ -79,7 +79,7 @@
 				GenerateManifest="false"
 				IgnoreDefaultLibraryNames="libc.lib;msvcrt.lib;libcmt.lib"
 				GenerateDebugInformation="true"
-				SubSystem="1"
+				SubSystem="2"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -170,7 +170,7 @@
 				GenerateManifest="false"
 				IgnoreDefaultLibraryNames="libc.lib;msvcrt.lib;libcmt.lib"
 				GenerateDebugInformation="true"
-				SubSystem="1"
+				SubSystem="2"
 				TargetMachine="17"
 			/>
 			<Tool
@@ -259,7 +259,7 @@
 				GenerateManifest="false"
 				IgnoreDefaultLibraryNames="libc.lib;msvcrt.lib"
 				GenerateDebugInformation="true"
-				SubSystem="1"
+				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				TargetMachine="1"
@@ -353,7 +353,7 @@
 				GenerateManifest="false"
 				IgnoreDefaultLibraryNames="libc.lib;msvcrt.lib"
 				GenerateDebugInformation="true"
-				SubSystem="1"
+				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				TargetMachine="17"

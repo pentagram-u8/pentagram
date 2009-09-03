@@ -1,7 +1,8 @@
 2009-09-02  <shadowchaser@users.sourceforge.net>
 	* world/ItemSorter.cpp: Fixed an issue that was causing overlapping items of varying heights to
 	  be rendered in the wrong order.
-
+	* system/msvc/Pentagram/Pentagram.vcproj: Switched to Windows SubSystem.
+	
 2009-09-02  <colourles@users.sourceforge.net>
 	* pentagram.cpp: Removed dependency of the SDLmain.lib file for windows 
 	  builds. The code in the supplied WinMain function will redirect stdout 
