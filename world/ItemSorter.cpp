@@ -367,9 +367,12 @@ inline bool SortItem::operator<(const SortItem& si2) const
 
 	// Are overlapping in all 3 dimentions if we come here
 
-	// ZTops?
-	if (si1.ztop < si2.ztop) return true;
-	else if (si1.ztop > si2.ztop) return false;
+	// Overlapping z-bottom check
+	// If an object's base (z-bottom) is higher another's, it should be rendered after.
+	// This check must be on the z-bottom and not the z-top because two objects with the
+	// same z-position may have different heights (think of a mouse sorting vs the Avatar).
+	if (si1.z < si2.z) return true;
+	else if (si1.z > si2.z) return false;
 
 	// Biased Clearly in z
 	if ((si1.ztop+si1.z)/2 <= si2.z) return true;
@@ -539,9 +542,9 @@ inline bool SortItem::operator<<(const SortItem& si2) const
 	COMPARISON_RETURN_TF(si1.y,<=,si2.yfar,true,"\t");
 	COMPARISON_RETURN_TF(si1.yfar,>=,si2.y,false,"\t");
 
-	// ZTops?
-	COMPARISON_RETURN_TF(si1.ztop,<,si2.ztop,true,"");
-	COMPARISON_RETURN_TF(si1.ztop,>,si2.ztop,false,"");
+	// Z base
+	COMPARISON_RETURN_TF(si1.z,<,si2.z,true,"");
+	COMPARISON_RETURN_TF(si1.z,>,si2.z,false,"");
 
 	// Biased Clearly in z
 	//if ((si1.ztop+si1.z)/2 <= si2.z) return true;
