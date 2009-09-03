@@ -163,6 +163,8 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 		std::remove("pstderr.txt");
 	}
 
+	// FIXME - Memory leak here. Need to free memory allocated for argv.
+
 	return  res;
 }
 #endif
