@@ -24,7 +24,7 @@ LPRODUCTS := $(LGUIPRODUCTS) $(LCONPRODUCTS)
 
 # Transform LSRC to LOBJ (change each .cpp into .o, in the builddir)
 # (two steps to make sure no .cpp files will be left in LOBJ for make clean)
-LOBJ := $(patsubst $(srcdir)/%,$(top_builddir)/%,$(patsubst %.cpp,%.o,$(filter %.cpp,$(LSRC))))
+LOBJ := $(patsubst $(srcdir)/%,$(top_builddir)/%,$(patsubst %.cpp,%.o,$(filter %.cpp,$(LSRC))) $(patsubst %.m,%.o,$(filter %.m,$(LSRC))))
 
 # Transform LPRODUCTS to have full path information
 LPRODUCTS := $(patsubst %,$(LPATH)/%$(EXEEXT),$(LPRODUCTS))
