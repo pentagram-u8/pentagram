@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003  The Pentagram Team
+Copyright (C) 2003-2009  The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -76,16 +76,16 @@ int CoreAudioMidiDriver::open()
 		Component compid;
 	
 		// Open the Music Device
-		compdesc.componentType = kAudioUnitComponentType;
-		compdesc.componentSubType = kAudioUnitSubType_MusicDevice;
-		compdesc.componentManufacturer = kAudioUnitID_DLSSynth;
+		compdesc.componentType = kAudioUnitType_MusicDevice;
+		compdesc.componentSubType = kAudioUnitSubType_DLSSynth;
+		compdesc.componentManufacturer = kAudioUnitManufacturer_Apple;
 		compdesc.componentFlags = 0;
 		compdesc.componentFlagsMask = 0;
 		compid = FindNextComponent(NULL, &compdesc);
 		au_MusicDevice = static_cast<AudioUnit>(OpenComponent(compid));
 	
 		// open the output unit
-		au_output = static_cast<AudioUnit>(OpenDefaultComponent(kAudioUnitComponentType, kAudioUnitSubType_Output));
+		au_output = static_cast<AudioUnit>(OpenDefaultComponent(kAudioUnitType_Output, kAudioUnitSubType_DefaultOutput));
 	
 		// connect the units
 		auconnect.sourceAudioUnit = au_MusicDevice;
