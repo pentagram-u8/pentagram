@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2002-2004 The Pentagram team
+Copyright (C) 2002-2009 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -23,8 +23,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "MemoryManager.h"
 #include "version.h"
 
+#ifdef _WIN32
+// Disable SDLMain in Windows
 #ifdef main
 #undef main
+#endif
 #endif
 
 int main(int argc, char* argv[])

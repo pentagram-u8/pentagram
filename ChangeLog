@@ -1,3 +1,6 @@
+2009-09-20  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* pentagram.cpp: only disable SDLMain on Windows (regression in r2439)
+
 2009-09-02  <shadowchaser@users.sourceforge.net>
 	* world/ItemSorter.cpp: Fixed an issue that was causing overlapping items of varying heights to
 	  be rendered in the wrong order.
