@@ -36,7 +36,7 @@ class ControlEntryGump : public Gump
 {
 public:
 	ENABLE_RUNTIME_CLASSTYPE();
-	ControlEntryGump(int x, int y, int width, char * binding, char * name);
+	ControlEntryGump(int x, int y, int width, const char * binding, const char * name);
 	virtual ~ControlEntryGump(void);
 	virtual void InitGump(Gump* newparent, bool take_focus=true);
 	virtual void ChildNotify(Gump *child, uint32 message);
@@ -49,7 +49,7 @@ protected:
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(ControlEntryGump,Gump);
 
-ControlEntryGump::ControlEntryGump(int x, int y, int width, char * binding, char * name)
+ControlEntryGump::ControlEntryGump(int x, int y, int width, const char * binding, const char * name)
 	:Gump(x, y, width, 5), bindingName(binding), displayedName(name)
 {
 }
@@ -77,7 +77,6 @@ void ControlEntryGump::init()
 	}
 
 	std::vector<const char *> controls;
-	HIDManager * hidmanager = HIDManager::get_instance();
 
 	Pentagram::Rect rect;
 	button = new ButtonWidget(0, 0, displayedName, true, font, 0x80D000D0);
@@ -86,6 +85,7 @@ void ControlEntryGump::init()
 
 	dims.h = rect.h;
 
+	//HIDManager * hidmanager = HIDManager::get_instance();
 	//hidmanager->getBindings(bindingName, controls);
 /*	int x = 120;
 	std::vector<const char *>::iterator i;
@@ -141,7 +141,7 @@ void ControlsGump::InitGump(Gump* newparent, bool take_focus)
 	widget->InitGump(this, false);
 }
 
-void ControlsGump::addEntry(char * binding, char * name, int & x, int & y)
+void ControlsGump::addEntry(const char * binding, const char * name, int & x, int & y)
 {
 	Pentagram::Rect rect;
 	Gump * widget = new ControlEntryGump(x, y, dims.w - x, binding, name);

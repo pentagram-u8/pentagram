@@ -112,7 +112,11 @@ public:
 
 	inline void getFootpadWorld(sint32& X, sint32& Y, sint32& Z, uint16 flipped) const;
 
-	ShapeInfo() : weaponinfo(0), armourinfo(0), monsterinfo(0) { }
+	ShapeInfo() : 
+		flags(0), x(0), y(0), z(0),
+		family(0), equiptype(0), animtype(0), animdata(0),
+		unknown(0), weight(0), volume(0),
+		weaponinfo(0), armourinfo(0), monsterinfo(0) { }
 
 	~ShapeInfo() {
 		delete weaponinfo;

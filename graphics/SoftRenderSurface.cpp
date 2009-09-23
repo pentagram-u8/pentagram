@@ -198,7 +198,7 @@ template<class uintX> void SoftRenderSurface<uintX>::FillAlpha(uint8 alpha, sint
 	if (!w || !h || !RenderSurface::format.a_mask) return;
 
 	// An optimization.
-	if ((w*sizeof(uintX)) == pitch)
+	if ((int)(w*sizeof(uintX)) == pitch)
 	{
 		w *= h;
 		h = 1;
@@ -260,7 +260,7 @@ template<class uintX> void SoftRenderSurface<uintX>::FillBlended(uint32 rgba, si
 	if (!w || !h) return;
 
 	// An optimization.
-	if ((w*sizeof(uintX)) == pitch)
+	if ((int)(w*sizeof(uintX)) == pitch)
 	{
 		w *= h;
 		h = 1;

@@ -321,22 +321,22 @@ void CoreApp::killGame()
 }
 
 
-bool CoreApp::getGameInfo(Pentagram::istring& game, GameInfo* gameinfo)
+bool CoreApp::getGameInfo(Pentagram::istring& game, GameInfo* ginfo)
 {
 	// first try getting the information from the config file
 	// if that fails, try to autodetect it
 
-	gameinfo->name = game;
-	gameinfo->type = GameInfo::GAME_UNKNOWN;
-	gameinfo->version = 0;
-	gameinfo->language = GameInfo::GAMELANG_UNKNOWN;
+	ginfo->name = game;
+	ginfo->type = GameInfo::GAME_UNKNOWN;
+	ginfo->version = 0;
+	ginfo->language = GameInfo::GAMELANG_UNKNOWN;
 
 	Pentagram::istring gamekey = "settings/";
 	gamekey += game;
 
 	if (game == "pentagram") {
-		gameinfo->type = GameInfo::GAME_PENTAGRAM_MENU;
-		gameinfo->language = GameInfo::GAMELANG_ENGLISH;
+		ginfo->type = GameInfo::GAME_PENTAGRAM_MENU;
+		ginfo->language = GameInfo::GAMELANG_ENGLISH;
 	}
 	else {
 		std::string gametype;
@@ -345,9 +345,9 @@ bool CoreApp::getGameInfo(Pentagram::istring& game, GameInfo* gameinfo)
 		ToLower(gametype);
 
 		if (gametype == "u8") {
-			gameinfo->type = GameInfo::GAME_U8;
+			ginfo->type = GameInfo::GAME_U8;
 		} else if (gametype == "remorse") {
-			gameinfo->type = GameInfo::GAME_REMORSE;
+			ginfo->type = GameInfo::GAME_REMORSE;
 		}
 	}
 
@@ -364,31 +364,31 @@ bool CoreApp::getGameInfo(Pentagram::istring& game, GameInfo* gameinfo)
 	//!! TODO: version parsing
 
 	if (language == "english") {
-		gameinfo->language = GameInfo::GAMELANG_ENGLISH;
+		ginfo->language = GameInfo::GAMELANG_ENGLISH;
 	} else if (language == "french") {
-		gameinfo->language = GameInfo::GAMELANG_FRENCH;
+		ginfo->language = GameInfo::GAMELANG_FRENCH;
 	} else if (language == "german") {
-		gameinfo->language = GameInfo::GAMELANG_GERMAN;
+		ginfo->language = GameInfo::GAMELANG_GERMAN;
 	} else if (language == "spanish") {
-		gameinfo->language = GameInfo::GAMELANG_SPANISH;
+		ginfo->language = GameInfo::GAMELANG_SPANISH;
 	} else if (language == "japanese") {
-		gameinfo->language = GameInfo::GAMELANG_JAPANESE;
+		ginfo->language = GameInfo::GAMELANG_JAPANESE;
 	}
 
-	if (gameinfo->type == GameInfo::GAME_UNKNOWN ||
-		/* gameinfo->version == 0 || */
-		gameinfo->language == GameInfo::GAMELANG_UNKNOWN)
+	if (ginfo->type == GameInfo::GAME_UNKNOWN ||
+		/* ginfo->version == 0 || */
+		ginfo->language == GameInfo::GAMELANG_UNKNOWN)
 	{
 		std::string path;
 		if (!configfileman->get(gamekey+"/path", path)) return false;
 
-		return GameDetector::detect(path, gameinfo);
+		return GameDetector::detect(path, ginfo);
 	}
 
-	if (gameinfo->type == GameInfo::GAME_UNKNOWN) {
+	if (ginfo->type == GameInfo::GAME_UNKNOWN) {
 		return false;
 	}
-		
+
 	return true;
 }
 
@@ -444,9 +444,9 @@ void CoreApp::setupGamePaths(GameInfo* ginfo)
 	con.Printf(MM_INFO, "Savegame directory: %s\n", save.c_str());
 }
 
-void CoreApp::ParseArgs(const int argc, const char * const * const argv)
+void CoreApp::ParseArgs(const int argc_, const char * const * const argv_)
 {
-	parameters.process(argc, argv);
+	parameters.process(argc_, argv_);
 }
 
 void CoreApp::helpMe()

@@ -90,7 +90,7 @@ static sint32 getvl(void)
 
 /* Print a string from the file, followed by a newline. Any non-ASCII
    or unprintable characters will be converted to periods. */
-static int dumpstring(sint32 len, char *label)
+static int dumpstring(sint32 len, const char *label)
 {
   signed char *s=safe_Malloc<signed char>(len+1);
   if (len != (sint32)fread(s, 1, len, fp))
@@ -148,7 +148,7 @@ static MidiEventList *read_midi_event(void)
 	  len=getvl();
 	  if (type>0 && type<16)
 	    {
-	      static char *label[]={
+	      static const char *label[]={
 		"Text event: ", "Text: ", "Copyright: ", "Track name: ",
 		"Instrument: ", "Lyric: ", "Marker: ", "Cue point: "};
 	      dumpstring(len, label[(type>7) ? 0 : type]);

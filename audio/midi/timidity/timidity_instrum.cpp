@@ -190,7 +190,7 @@ static Instrument *load_instrument(char *name, int percussion,
   uint8 tmp[1024];
   int i,j,noluck=0;
 #ifdef PATCH_EXT_LIST
-  static char *patch_ext[] = PATCH_EXT_LIST;
+  static const char *patch_ext[] = PATCH_EXT_LIST;
 #endif
 
   if (!name) return 0;

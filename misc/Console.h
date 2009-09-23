@@ -84,7 +84,7 @@ class Console
 {
 	char		text[CON_TEXTSIZE];
 	sint32		current;				// line where next message will be printed
-	sint32		x;						// offset in current line for next print
+	sint32		xoff;					// offset in current line for next print
 	sint32		display;				// bottom of console displays this line
 
 	sint32		linewidth;				// characters across screen

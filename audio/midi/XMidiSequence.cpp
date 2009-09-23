@@ -267,7 +267,8 @@ sint32 XMidiSequence::timeTillNext()
 
 	// Time remaining on notes currently being played
 	XMidiEvent *note;
-	if (note = notes_on.GetNotes()) {
+	note = notes_on.GetNotes();
+	if (note) {
 		sint32 diff = note->ex.note_on.note_time - getRealTime();
 		if (diff < sixthoToNext) sixthoToNext = diff; 
 	}
@@ -355,7 +356,7 @@ void XMidiSequence::updateShadowForEvent(XMidiEvent *event)
 
 void XMidiSequence::sendEvent()
 {
-	unsigned int chan = event->status & 0xF;
+	//unsigned int chan = event->status & 0xF;
 	unsigned int type = event->status >> 4;
 	uint32 data = event->data[0] | (event->data[1] << 8);
 

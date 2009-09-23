@@ -25,8 +25,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "DisasmProcess.h"
 #include "CompileProcess.h"
 
-ConApp::ConApp(int argc, const char* const* argv)
-	: CoreApp(argc, argv), kernel(0),
+ConApp::ConApp(int argc_, const char* const* argv_)
+	: CoreApp(argc_, argv_), kernel(0),
 	  weAreDisasming(false), weAreCompiling(false)
 	// FIXME! Need a 'console' intrinsic set instead of the 0 above!
 {

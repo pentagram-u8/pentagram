@@ -48,7 +48,7 @@ int main(int argc, char **argv)
 	IDataSource *ids = 0;
 	ODataSource *ods = 0;
 	FlexWriter * fw;
-	char * ext = "fxo";
+	const char * ext = "fxo";
 	int i = 0;
 	uint32 index = 0;
 	program = argv[0];

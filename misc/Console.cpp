@@ -194,7 +194,7 @@ void Console::CheckResize (int scrwidth)
 //
 // Constructor
 //
-Console::Console () : current(0), x(0), display(0), linewidth(-1),
+Console::Console () : current(0), xoff(0), display(0), linewidth(-1),
 					 totallines(0), vislines(0), wordwrap(true), cr(false),
 					 putchar_count(0), std_output_enabled(0xFFFFFFFF),
 					 stdout_redir(0), stderr_redir(0), confont(0),
@@ -249,8 +249,8 @@ void Console::PrintInternal (const char *txt)
 					break;
 
 			// word wrap
-			if (l != linewidth && (x + l > linewidth) )
-				x = 0;
+			if (l != linewidth && (xoff + l > linewidth) )
+				xoff = 0;
 		}
 
 		txt++;
@@ -261,7 +261,7 @@ void Console::PrintInternal (const char *txt)
 			cr = false;
 		}
 		
-		if (!x) 
+		if (!xoff) 
 		{
 			Linefeed ();
 			// mark time for transparent overlay
@@ -271,19 +271,19 @@ void Console::PrintInternal (const char *txt)
 		switch (c)
 		{
 		case '\n':
-			x = 0;
+			xoff = 0;
 			break;
 
 		case '\r':
-			x = 0;
+			xoff = 0;
 			cr = true;
 			break;
 
 		default:	// display character and advance
 			y = current % totallines;
-			text[y*linewidth+x] = static_cast<char>(c);
-			x++;
-			if (x >= linewidth) x = 0;
+			text[y*linewidth+xoff] = static_cast<char>(c);
+			xoff++;
+			if (xoff >= linewidth) xoff = 0;
 			break;
 		}
 		
@@ -309,8 +309,8 @@ void Console::PrintRawInternal (const char *txt, int n)
 				if ( txt[l] <= ' ') break;
 
 			// word wrap
-			if (l != linewidth && (x + l > linewidth) )
-				x = 0;
+			if (l != linewidth && (xoff + l > linewidth) )
+				xoff = 0;
 		}
 
 		txt++;
@@ -321,7 +321,7 @@ void Console::PrintRawInternal (const char *txt, int n)
 			cr = false;
 		}
 		
-		if (!x) 
+		if (!xoff) 
 		{
 			Linefeed ();
 			// mark time for transparent overlay
@@ -331,19 +331,19 @@ void Console::PrintRawInternal (const char *txt, int n)
 		switch (c)
 		{
 		case '\n':
-			x = 0;
+			xoff = 0;
 			break;
 
 		case '\r':
-			x = 0;
+			xoff = 0;
 			cr = true;
 			break;
 
 		default:	// display character and advance
 			y = current % totallines;
-			text[y*linewidth+x] = static_cast<char>(c);
-			x++;
-			if (x >= linewidth) x = 0;
+			text[y*linewidth+xoff] = static_cast<char>(c);
+			xoff++;
+			if (xoff >= linewidth) xoff = 0;
 			break;
 		}
 		
@@ -353,7 +353,7 @@ void Console::PrintRawInternal (const char *txt, int n)
 // Add a linefeed to the buffer
 void Console::Linefeed (void)
 {
-	x = 0;
+	xoff = 0;
 	display++;
 	current++;
 	std::memset (&text[(current%totallines)*linewidth], ' ', linewidth);

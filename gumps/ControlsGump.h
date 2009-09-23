@@ -42,7 +42,7 @@ public:
 
 	static void showEngineMenu(PagedGump* pagedgump);
 	static void showU8Menu(PagedGump* pagedgump);
-	void addEntry(char * binding, char * name, int & x, int & y);
+	void addEntry(const char * binding, const char * name, int & x, int & y);
 
 	bool loadData(IDataSource* ids);
 protected:
