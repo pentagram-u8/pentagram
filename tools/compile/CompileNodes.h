@@ -31,6 +31,7 @@ class CompileNode
 {
 	public:
 		CompileNode(const uint32 _linenum) : linenum(_linenum) {};
+		virtual ~CompileNode() {}
 
 		virtual void print_unk(std::ostream &o)=0;
 		virtual bool isA(const LLCToken &tok)=0; // check if node is of particular type
@@ -44,10 +45,9 @@ class CStringNode : public CompileNode
 	public:
 		CStringNode(const char * const _str, const uint32 _linenum) :
 			CompileNode(_linenum), str(_str) {};
-		virtual ~CStringNode() {};
 
-		virtual void print_unk(std::ostream &o) { o << str; };
-		virtual bool isA(const LLCToken &tok) { return tok==LLC_STRING; };
+		virtual void print_unk(std::ostream &o) { o << str; }
+		virtual bool isA(const LLCToken &tok) { return tok==LLC_STRING; }
 		const std::string str;
 };
 
@@ -56,9 +56,8 @@ class VarIdentNode : public CStringNode
 	public:
 		VarIdentNode(const char * const _idname, const uint32 _linenum) :
 			CStringNode(_idname, _linenum) {};
-		virtual ~VarIdentNode() {};
 
-		virtual bool isA(const LLCToken &tok) { return tok==LLC_IDENT; };
+		virtual bool isA(const LLCToken &tok) { return tok==LLC_IDENT; }
 
 };
 
@@ -67,10 +66,10 @@ class VarIdentNode : public CStringNode
 class FuncNode : public CompileNode
 {
 	public:
-		FuncNode(const uint32 _linenum) : CompileNode(_linenum) {};
+		FuncNode(const uint32 _linenum) : CompileNode(_linenum) {}
 
-		void print_unk(std::ostream &o) {};
-		bool isA(const LLCToken &tok) { return false; }; //FIXME:!
+		void print_unk(std::ostream &o) {}
+		bool isA(const LLCToken &tok) { return false; } //FIXME:!
 
 };
 
@@ -78,7 +77,6 @@ class ClassNode : public CompileNode
 {
 	public:
 		ClassNode(const uint32 _linenum) : CompileNode(_linenum) {}
-		virtual ~ClassNode() {}
 
 		void print_unk(std::ostream &o)
 		{
@@ -87,7 +85,7 @@ class ClassNode : public CompileNode
 				o << name << ' ';
 		}
 
-		bool isA(const LLCToken &tok) { return tok==LLC_CLASS; };
+		bool isA(const LLCToken &tok) { return tok==LLC_CLASS; }
 
 		std::string name;
 		std::list<FuncNode *> functions;
@@ -102,7 +100,6 @@ class FencePostNode : public CompileNode
 	public:
 		FencePostNode(const LLCToken _tok, const uint32 _linenum) :
 			CompileNode(_linenum), iTok(_tok) {};
-		virtual ~FencePostNode() {};
 
 		virtual void print_unk(std::ostream &o)
 		{
@@ -113,7 +110,7 @@ class FencePostNode : public CompileNode
 				default:				assert(false);
 			}
 		};
-		virtual bool isA(const LLCToken &tok) { return tok==iTok; };
+		virtual bool isA(const LLCToken &tok) { return tok==iTok; }
 
 	private:
 		const LLCToken iTok;
