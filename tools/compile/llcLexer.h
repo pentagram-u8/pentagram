@@ -48,6 +48,7 @@
 // Never included before - need to define base class.
 #define __FLEX_LEXER_H
 
+#include <stdio.h>
 #include <iostream>
 #  ifndef FLEX_STD
 #    define FLEX_STD std::
