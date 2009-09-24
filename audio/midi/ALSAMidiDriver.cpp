@@ -188,7 +188,7 @@ int ALSAMidiDriver::parse_addr(std::string _arg, int *client, int *port) {
 	const char* arg = _arg.c_str();
 
 	if (isdigit(*arg)) {
-		const char *p = strpbrk(arg, ADDR_DELIM)
+		const char *p = strpbrk(arg, ADDR_DELIM);
 		if (p == NULL)
 			return -1;
 		*client = atoi(arg);
