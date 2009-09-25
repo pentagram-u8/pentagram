@@ -19,10 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef U8SAVEFILE_H
 #define U8SAVEFILE_H
 
-#include "NamedArchiveFile.h"
-class IDataSource;
-
 #include <vector>
+
+#include "NamedArchiveFile.h"
+
+class IDataSource;
 
 class U8SaveFile : public NamedArchiveFile {
 public:

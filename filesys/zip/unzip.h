@@ -44,13 +44,8 @@
 #ifndef _unz_H
 #define _unz_H
 
-#ifndef _ZLIB_H
-#include "zlib.h"
-#endif
-
-#ifndef _ZLIBIOAPI_H
+#include <zlib.h>
 #include "ioapi.h"
-#endif
 
 namespace PentZip {
 

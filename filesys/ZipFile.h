@@ -19,10 +19,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef ZIPFILE_H
 #define ZIPFILE_H
 
-#include "NamedArchiveFile.h"
-class IDataSource;
-
 #include <map>
+
+#include "NamedArchiveFile.h"
+
+class IDataSource;
 
 class ZipFile : public NamedArchiveFile {
 public:

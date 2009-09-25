@@ -17,22 +17,12 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
+#ifndef LISTFILES_H
+#define LISTFILES_H
+
 #include <vector>
 #include <string>
 #include <iostream>
-
-//using std::vector;
-//using pout;
-//using perr;
-//using std::endl;
-//using std::free;
-//using std::malloc;
-//using std::string;
-//using std::strcat;
-//using std::strcpy;
-//using std::strlen;
-
-//#include "utils.h"
 
 #if defined(MACOS) || defined(BEOS)
 #error "MatchString(): Port me, maties!"
@@ -438,3 +428,4 @@ int FileSystem::ListFiles(const std::string mask, FileList& files)
 
 #endif
 
+#endif

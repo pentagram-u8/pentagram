@@ -46,13 +46,8 @@
 #ifndef _zip_H
 #define _zip_H
 
-#ifndef _ZLIB_H
-#include "zlib.h"
-#endif
-
-#ifndef _ZLIBIOAPI_H
-#include "ioapi.h"
-#endif
+#include <zlib.h>
+#include "filesys/zip/ioapi.h"
 
 namespace PentZip {
 
