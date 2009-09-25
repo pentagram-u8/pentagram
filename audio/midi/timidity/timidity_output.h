@@ -65,7 +65,7 @@ extern void s32tou16x(void *dp, sint32 *lp, sint32 c);
 extern void s32toulaw(void *dp, sint32 *lp, sint32 c);
 
 /* little-endian and big-endian specific */
-#ifdef LITTLE_ENDIAN
+#ifdef TIMIDITY_LITTLE_ENDIAN
 #define s32tou16l s32tou16
 #define s32tou16b s32tou16x
 #define s32tos16l s32tos16

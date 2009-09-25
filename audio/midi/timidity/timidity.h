@@ -185,19 +185,11 @@ extern void Timidity_GenerateSamples(void *stream, int samples);
  */
 #include <endian.h>
 
-/*
- * We undef the two things to start with a clean situation
- * (oddly enough, <endian.h> defines under certain conditions
- * the two things below, as __LITTLE_ENDIAN and __BIG_ENDIAN, that
- * are useless for our plans)
- */
-#undef LITTLE_ENDIAN
-#undef BIG_ENDIAN
 
 # if __BYTE_ORDER == __LITTLE_ENDIAN
-#  define LITTLE_ENDIAN
+#  define TIMIDITY_LITTLE_ENDIAN
 # elif __BYTE_ORDER == __BIG_ENDIAN
-#  define BIG_ENDIAN
+#  define TIMIDITY_BIG_ENDIAN
 # else
 # error No byte sex defined
 # endif
@@ -205,11 +197,11 @@ extern void Timidity_GenerateSamples(void *stream, int samples);
 
 /* Win32 on Intel machines */
 #ifdef __WIN32__
-#  define LITTLE_ENDIAN
+#  define TIMIDITY_LITTLE_ENDIAN
 #endif
 
 #ifdef i386
-#define LITTLE_ENDIAN
+#define TIMIDITY_LITTLE_ENDIAN
 #endif
 
 /* Instrument files are little-endian, MIDI files big-endian, so we
@@ -221,7 +213,7 @@ extern void Timidity_GenerateSamples(void *stream, int samples);
 		      (((x)&0xFF0000)>>8) | \
 		      (((x)>>24)&0xFF))
 
-#ifdef LITTLE_ENDIAN
+#ifdef TIMIDITY_LITTLE_ENDIAN
 #define LE_SHORT(x) x
 #define LE_LONG(x) x
 #define BE_SHORT(x) XCHG_SHORT(x)

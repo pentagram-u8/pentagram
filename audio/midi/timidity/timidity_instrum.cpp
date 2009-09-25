@@ -439,7 +439,7 @@ static Instrument *load_instrument(char *name, int percussion,
 	  sp->loop_start *= 2;
 	  sp->loop_end *= 2;
 	}
-#ifndef LITTLE_ENDIAN
+#ifndef TIMIDITY_LITTLE_ENDIAN
       else
 	/* convert to machine byte order */
 	{
