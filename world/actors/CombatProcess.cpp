@@ -68,6 +68,11 @@ void CombatProcess::terminate()
 
 void CombatProcess::run()
 {
+	// TODO: handle invisible targets.
+	// Monsters should attack you only if you are standing directly
+	// next to them, or maybe only when you are attacking them.
+	// They should not try to approach.
+
 	Actor* a = getActor(item_num);
 	if (!(a->getFlags() & Item::FLG_FASTAREA))
 		return;
