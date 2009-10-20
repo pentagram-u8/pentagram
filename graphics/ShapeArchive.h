@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef SHAPEARCHIVE_H
 #define SHAPEARCHIVE_H
 
-#include "Archive.h"
+#include "filesys/Archive.h"
 
 class Shape;
 struct ConvertShapeFormat;

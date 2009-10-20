@@ -26,8 +26,8 @@
 #include <map>
 #include <list>
 
-#include "IDataSource.h"
-#include "ODataSource.h"
+#include "filesys/IDataSource.h"
+#include "filesys/ODataSource.h"
 
 class FileSystem
 {

@@ -18,9 +18,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 
-#include "RawArchive.h"
-#include "IDataSource.h"
-#include "ArchiveFile.h"
+#include "filesys/RawArchive.h"
+#include "filesys/IDataSource.h"
+#include "filesys/ArchiveFile.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(RawArchive,Pentagram::Archive);
 

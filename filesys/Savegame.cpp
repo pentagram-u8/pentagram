@@ -18,9 +18,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 
-#include "Savegame.h"
-#include "IDataSource.h"
-#include "ZipFile.h"
+#include "filesys/Savegame.h"
+#include "filesys/IDataSource.h"
+#include "filesys/ZipFile.h"
 
 Savegame::Savegame(IDataSource* ds)
 {

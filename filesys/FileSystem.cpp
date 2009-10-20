@@ -20,7 +20,7 @@
 
 #include "pent_include.h"
 
-#include "FileSystem.h"
+#include "filesys/FileSystem.h"
 
 #ifdef HAVE_SYS_STAT_H
 #include <sys/stat.h>
@@ -35,7 +35,7 @@
 #include <string>
 using	std::string;
 
-#include "ListFiles.h"
+#include "filesys/ListFiles.h"
 
 
 FileSystem* FileSystem::filesystem = 0;

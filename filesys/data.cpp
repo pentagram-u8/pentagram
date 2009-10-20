@@ -18,7 +18,7 @@
 
 #include "pent_include.h"
 
-#include "FileSystem.h"
+#include "filesys/FileSystem.h"
 
 #ifdef BUILTIN_DATA
 #include "data/data.h"

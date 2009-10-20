@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef DIRFILE_H
 #define DIRFILE_H
 
-#include "NamedArchiveFile.h"
+#include "filesys/NamedArchiveFile.h"
 
 class DirFile : public NamedArchiveFile {
 public:

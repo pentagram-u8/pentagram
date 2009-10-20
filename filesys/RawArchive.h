@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef RAWARCHIVE_H
 #define RAWARCHIVE_H
 
-#include "Archive.h"
+#include "filesys/Archive.h"
 
 class ArchiveFile;
 class IDataSource;

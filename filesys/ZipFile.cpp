@@ -18,9 +18,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 
-#include "ZipFile.h"
-#include "IDataSource.h"
-#include "FileSystem.h"
+#include "filesys/ZipFile.h"
+#include "filesys/IDataSource.h"
+#include "filesys/FileSystem.h"
 
 // unzip API
 #include "filesys/zip/unzip.h"

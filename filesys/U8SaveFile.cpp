@@ -18,8 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "pent_include.h"
 
-#include "U8SaveFile.h"
-#include "IDataSource.h"
+#include "filesys/U8SaveFile.h"
+#include "filesys/IDataSource.h"
 
 DEFINE_RUNTIME_CLASSTYPE_CODE(U8SaveFile,NamedArchiveFile);
 

@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef SOUNDFLEX_H_INCLUDED
 #define SOUNDFLEX_H_INCLUDED
 
-#include "Archive.h"
+#include "filesys/Archive.h"
 
 namespace Pentagram {
 	class AudioSample;

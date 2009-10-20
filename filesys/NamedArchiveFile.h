@@ -19,7 +19,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #ifndef NAMEDARCHIVEFILE_H
 #define NAMEDARCHIVEFILE_H
 
-#include "ArchiveFile.h"
+#include "filesys/ArchiveFile.h"
 
 class NamedArchiveFile : public ArchiveFile {
 public:
