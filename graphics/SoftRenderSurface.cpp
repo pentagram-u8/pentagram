@@ -273,7 +273,7 @@ template<class uintX> void SoftRenderSurface<uintX>::FillBlended(uint32 rgba, si
 	int diff = pitch - w*sizeof(uintX);
 
 	int alpha = TEX32_A(rgba)+1;
-	rgba = PACK_RGBA16(TEX32_R(rgba)*alpha, TEX32_G(rgba)*alpha, TEX32_B(rgba)*alpha,255*alpha);
+	rgba = TEX32_PACK_RGBA16(TEX32_R(rgba)*alpha, TEX32_G(rgba)*alpha, TEX32_B(rgba)*alpha,255*alpha);
 
 	while (pixel != end)
 	{

@@ -1,3 +1,7 @@
+2009-11-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* graphics/SoftRenderSurface.cpp: fix FillBlended when surface format and
+	  texture format are different
+
 2009-09-20  Dominik Reichardt <dominus@users.sourceforge.net>
 	* audio/midi/CoreAudioMidiDriver.cpp: applied patch #1905536 from the Exult tracker
 	* audio/midi/CoreAudioMidiDriver.h: added #include <CoreServices/CoreServices.h> to 
