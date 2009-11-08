@@ -1465,10 +1465,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\misc\exceptions.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\misc\idMan.cpp"
 				>
 			</File>

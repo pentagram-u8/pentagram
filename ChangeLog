@@ -1,3 +1,6 @@
+2009-11-08  <shadowchaser@users.sourceforge.net>
+	* Pentagram.vcproj, disasm.vcproj: Removed missing exceptions.h file from MSVC projects
+	
 2009-11-01  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* graphics/SoftRenderSurface.cpp: fix FillBlended when surface format and
 	  texture format are different

@@ -446,10 +446,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\misc\exceptions.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\..\tools\fold\FuncNodes.h"
 				>
 			</File>
