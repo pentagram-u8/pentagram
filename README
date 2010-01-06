@@ -24,12 +24,13 @@ The latest version of this document can be found at http://pentagram.sourceforge
 4.2. Supported games and versions
 
 5. Changes to the Documentation
-5.1. - 4 September 2008
-5.2. - 3 August 2007
-5.3. - 19 February 2006
-5.4. - 22 May 2005
-5.5. - 21 May 2005
-5.6. - 14 October 2004
+5.1. - 5 January 2010
+5.2. - 4 September 2008
+5.3. - 3 August 2007
+5.4. - 19 February 2006
+5.5. - 22 May 2005
+5.6. - 21 May 2005
+5.7. - 14 October 2004
 
 
 --------------------------------------------------------------------------------
@@ -58,6 +59,10 @@ nothing here yet
 
 1.4. Mac OS X
 Under OS X, the dependencies are built into the application bundle as embedded libraries. Pentagram provides makefiles to build the dependencies appropriately. Internally, the OS X specific makefiles use normal unix-style configure & make to build Pentagram and all dependencies.
+For the build, you should install XCode and the SDK for OS X 10.4 as it is currently the oldest supported version of OS X for the official builds. The build may still work on older versions or if the SDK is missing, but it will attempt target your version of OS X by default. Additional editing of system/macosx/archs.mk may be required for some configurations.
+You also should ensure /Developer/usr/bin is in you PATH environment variable. You can do this by adding the following to ~/.profile export PATH=$PATH:/Developer/usr/bin
+Lastly, you may need to add configuration for autoconf and associated tools to work correctly. The following is a sample version of this configuration is in system/macosx/autom4te.cfg. Copy the contents of that file to ~/.autom4te.cfg if the "bootstrap" script encounters problems.
+After completing the system configuration listed above, perform the following steps to build Pentagram.
 1. Run the "bootstrap" script to create the "configure" script: ./bootstrap
 2. Build all dependencies: make -f Makefile.macosx deps
 3. Build Pentagram: make -f Makefile.macosx build
@@ -211,27 +216,31 @@ At the moment we only support the English versions of Ultima 8, both pre-patch a
 --------------------------------------------------------------------------------
 
 5. Changes to the Documentation
-5.1. - 4 September 2008
+5.1. - 5 January 2010
+1.4. Mac OS X: added additional information for builds.
+
+
+5.2. - 4 September 2008
 1.4. Mac OS X: replaced old build instructions.
 
 
-5.2. - 3 August 2007
+5.3. - 3 August 2007
 4.1. Console commands: added (short) list of console commands.
 
 
-5.3. - 19 February 2006
+5.4. - 19 February 2006
 4.2. Supported games and versions: updated status of non-English U8.
 
 
-5.4. - 22 May 2005
+5.5. - 22 May 2005
 2.2. Advanced Configuration some more configurations added. 2.3. Optional MIDI settings for Linux added.
 
 
-5.5. - 21 May 2005
+5.6. - 21 May 2005
 cleaned up outdated sections
 
 
-5.6. - 14 October 2004
+5.7. - 14 October 2004
 2.2. Advanced Configuration enable font replacement.
 
 

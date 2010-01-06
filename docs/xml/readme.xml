@@ -43,9 +43,31 @@
 			<body>
 				<para>
 					Under OS X, the dependencies are built into the application bundle as embedded libraries.
-					Pentagram provides makefiles to build the dependencies appropriately.
+					<Pent/> provides makefiles to build the dependencies appropriately.
 					Internally, the OS X specific makefiles use normal unix-style configure &amp; make to
 					build Pentagram and all dependencies.
+				</para>
+				<para>
+					For the build, you should install XCode and the SDK for OS X 10.4 as it is currently the
+					oldest supported version of OS X for the official builds. The build may still work on
+					older versions or if the SDK is missing, but it will attempt target your version of OS X
+					by default. Additional editing of <kbd>system/macosx/archs.mk</kbd> may be required for
+					some configurations.
+				</para>
+				<para>
+					You also should ensure <kbd>/Developer/usr/bin</kbd> is in you <kbd>PATH</kbd> environment
+					variable. You can do this by adding the following to <kbd>~/.profile</kbd><br/>
+						<kbd>export PATH=$PATH:/Developer/usr/bin</kbd>
+				</para>
+				<para>
+					Lastly, you may need to add configuration for <kbd>autoconf</kbd> and associated tools to
+					work correctly. The following is a sample version of this configuration is in
+					<kbd>system/macosx/autom4te.cfg</kbd>. Copy the contents of that file to
+					<kbd>~/.autom4te.cfg</kbd> if the "bootstrap" script encounters problems.
+				</para>
+				<para>
+					After completing the system configuration listed above, perform the following steps to
+					build <Pent/>.
 				</para>
 				<ol>
 					<li> Run the "bootstrap" script to create the "configure" script:<br/>
@@ -294,7 +316,15 @@
 		</sub>
 	</section>
 	<section title="Changes to the Documentation">
-		<sub name="03082007">
+		<sub name="05012010">
+			<header>- 5 January 2010</header>
+			<body>
+				<para>
+					<ref1 target="building_macosx"/>: added additional information for builds.<br/>
+				</para>
+			</body>
+		</sub>
+		<sub name="04092008">
 			<header>- 4 September 2008</header>
 			<body>
 				<para>

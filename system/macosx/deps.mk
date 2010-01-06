@@ -32,10 +32,10 @@ ${ROOT_DIRECTORY}/build/zlib.tar.gz:
 	curl -o $@ -L -S http://www.zlib.net/zlib-1.2.3.tar.gz
 
 ${ROOT_DIRECTORY}/build/libpng.tar.gz:
-	curl -o $@ -L -S http://prdownloads.sourceforge.net/libpng/libpng-1.2.31.tar.gz
+	curl -o $@ -L -S http://prdownloads.sourceforge.net/libpng/libpng-1.2.41.tar.gz
 
 ${ROOT_DIRECTORY}/build/SDL.tar.gz:
-	curl -o $@ -L -S http://libsdl.org/release/SDL-1.2.13.tar.gz
+	curl -o $@ -L -S http://libsdl.org/release/SDL-1.2.14.tar.gz
 
 ${ROOT_DIRECTORY}/build/freetype.tar.gz:
 	curl -o $@ -L -S http://prdownloads.sourceforge.net/freetype/freetype-2.3.7.tar.gz
@@ -59,7 +59,7 @@ extract_SDL_ttf.%: ${ROOT_DIRECTORY}/build/SDL_ttf.tar.gz
 	cd ${BUILD_DIR} && tar --strip-components=1 -xzf $<
 
 configure_zlib.%:
-	cd ${BUILD_DIR} && LDSHARED="gcc ${LDFLAGS} -dynamiclib \
+	cd ${BUILD_DIR} && LDSHARED="${CC} ${LDFLAGS} -dynamiclib \
 		-install_name ${PREFIX_DIR}/lib/libz.1.dylib \
 		-compatibility_version 1 -current_version 1.2.3" \
 		./configure --prefix=${PREFIX_DIR} --shared
@@ -73,12 +73,16 @@ configure_SDL.%: libpng
 		${ARCH_CONFIG} --disable-dependency-tracking --enable-video-x11=no \
 		--enable-video-carbon=no --enable-video-cocoa=yes
 
+# Freetype's configure scripts attempt to figure out the cross compiler on
+# their own when the build != host instead of trusting ${CC}.
 configure_freetype.%: zlib
-	cd ${BUILD_DIR} && ./configure --prefix=${PREFIX_DIR} \
+	cd ${BUILD_DIR} && CC_BUILD="${CC}" \
+		./configure --prefix=${PREFIX_DIR} \
 		${ARCH_CONFIG} --with-old-mac-fonts
 
 configure_SDL_ttf.%: SDL freetype
 	cd ${BUILD_DIR} && ./configure --prefix=${PREFIX_DIR} \
+		--with-freetype-prefix=${PREFIX_DIR} \
 		${ARCH_CONFIG} --disable-dependency-tracking
 
 build_%:
