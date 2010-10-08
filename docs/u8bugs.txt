@@ -130,7 +130,7 @@ MAP BUGS:
 Map 62: (Ancient Necromancers)
 
 There are many missing ground/wall tiles in the region from
-around (16555,6075,48) to the lava in the west.
+around (16555,6075,48) to the lava in the west, and around (19999,6758,48)
 
 FIX:
 Add the tiles listed below to the map in fixed.dat after checking
@@ -141,7 +141,10 @@ Adding tiles to the map manually in Map::loadFixed.
 These seems to cover up the most easily reachable holes:
 Ground at: (16255,6143,48), (16639,6143,48), (16511,6143,48),
            (15999,6015,48), (15871,6015,48), (15743,6015,48), (15615,6015,48),
-           (15999,6143,48), (15871,6143,48), (15743,6143,48), (15615,6143,48)
+           (15999,6143,48), (15871,6143,48), (15743,6143,48), (15615,6143,48),
+           (20095,6911,48), (20223,6911,48), (20095,6783,48), (20223,6783,48),
+           (19839,6655,48), (19967,6655,48), (19839,6527,48), (19967,6527,48),
+           (20095,6527,48), (19967,6399,48), (19839,6399,48), (19711,6399,48)
 Walls at: (15487, 6271, 48), (15359, 6271, 48)
 Lava at: (14975, 6399, 0), (14975, 6015, 0),(15103, 6015, 0) 
 (Ground: shape 301/1, Wall: shape 497/0, Lava: shape 409/32)

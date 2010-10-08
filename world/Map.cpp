@@ -140,6 +140,66 @@ void Map::loadFixed(IDataSource* ds)
 		item->setLocation(15615, 6015, 48);
 		fixeditems.push_back(item);
 
+		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+									   Item::EXT_FIXED, false);
+		item->setLocation(20095, 6911, 48);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+									   Item::EXT_FIXED, false);
+		item->setLocation(20223,6911,48);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+									   Item::EXT_FIXED, false);
+		item->setLocation(20095,6783,48);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+									   Item::EXT_FIXED, false);
+		item->setLocation(20223,6783,48);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+									   Item::EXT_FIXED, false);
+		item->setLocation(19839,6655,48);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+									   Item::EXT_FIXED, false);
+		item->setLocation(19967,6655,48);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+									   Item::EXT_FIXED, false);
+		item->setLocation(19839,6527,48);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+									   Item::EXT_FIXED, false);
+		item->setLocation(19967,6527,48);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+									   Item::EXT_FIXED, false);
+		item->setLocation(20095,6527,48);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+									   Item::EXT_FIXED, false);
+		item->setLocation(19967,6399,48);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+									   Item::EXT_FIXED, false);
+		item->setLocation(19839,6399,48);
+		fixeditems.push_back(item);
+
+		item = ItemFactory::createItem(301, 1, 0, 0, 0, 0,
+									   Item::EXT_FIXED, false);
+		item->setLocation(19711,6399,48);
+		fixeditems.push_back(item);
+
 
 
 		item = ItemFactory::createItem(497, 0, 0, 0, 0, 0,

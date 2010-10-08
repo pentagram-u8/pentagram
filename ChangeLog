@@ -1,3 +1,6 @@
+2010-10-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/Map.cpp: fix more holes in the floor on map 62 (#3083865)
+
 2010-01-05  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* system/macosx/deps.mk, system/macosx/archs.mk: Updated to build properly
 	  on Snow Leopard.
