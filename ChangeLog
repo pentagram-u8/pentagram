@@ -2,6 +2,7 @@
 	* world/Map.cpp: fix more holes in the floor on map 62 (#3083865)
 	* world/ItemSorter.cpp: invisible and transparent items both don't occlude
 	* gumps/GameMapGump.cpp: draw invisible Avatar transparently (#3083834)
+	* gumps/U8SaveGump.cpp: display 96 savegame slots instead of 12
 
 2010-01-05  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* system/macosx/deps.mk, system/macosx/archs.mk: Updated to build properly

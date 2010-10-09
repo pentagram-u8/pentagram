@@ -211,6 +211,9 @@ public:
 	//! Get the dims
 	virtual void		GetDims(Pentagram::Rect &d) { d = dims; }
 
+	//! Set the dims
+	virtual void		SetDims(const Pentagram::Rect &d) { dims = d; }
+
 	//! Detect if a point is on the gump
 	virtual bool		PointOnGump(int mx, int my);
 

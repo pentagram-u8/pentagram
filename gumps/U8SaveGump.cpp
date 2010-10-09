@@ -79,8 +79,6 @@ void U8SaveGump::InitGump(Gump* newparent, bool take_focus)
 	for (int i = 0; i < 6; ++i) {
 		int index = page * 6 + i;
 
-		FrameID entrynum_id(GameData::GUMPS, 36, index);
-		entrynum_id = _TL_SHP_(entrynum_id);
 
 		int xbase = 3;
 		int yi = i;
@@ -92,9 +90,33 @@ void U8SaveGump::InitGump(Gump* newparent, bool take_focus)
 		Gump* gump = new Gump(xbase, 3+40*yi, 1, 1);
 		gump->SetShape(entry_id, true);
 		gump->InitGump(this, false);
-			
-		gump = new Gump(xbase+2+entrywidth, 3+40*yi, 1, 1);
+
+		int x = xbase+2+entrywidth;
+
+		if (index >= 9) { // index 9 is labelled "10"
+			FrameID entrynum1_id(GameData::GUMPS, 36, (index+1)/10 - 1);
+			entrynum1_id = _TL_SHP_(entrynum1_id);
+			entryShape = GameData::get_instance()->getShape(entrynum1_id);
+			sf = entryShape->getFrame(entrynum1_id.framenum);
+			x += 1 + sf->width;
+
+			gump = new Gump(xbase+2+entrywidth, 3+40*yi, 1, 1);
+			gump->SetShape(entrynum1_id, true);
+			gump->InitGump(this, false);
+		}
+
+		FrameID entrynum_id(GameData::GUMPS, 36, index % 10);
+		entrynum_id = _TL_SHP_(entrynum_id);
+
+		gump = new Gump(x, 3+40*yi, 1, 1);
 		gump->SetShape(entrynum_id, true);
+
+		if (index % 10 == 9) {
+			Pentagram::Rect dims;
+			gump->GetDims(dims);
+			dims.x += 6;
+			gump->SetDims(dims);
+		}
 		gump->InitGump(this, false);
 
 		if (index == 0) {
@@ -328,13 +350,14 @@ Gump *U8SaveGump::showLoadSaveGump(Gump *parent, bool save)
 	PagedGump * gump = new PagedGump(34, -38, 3, 35);
 	gump->InitGump(parent);
 
-	U8SaveGump* s = new U8SaveGump(save, 0);
-	s->InitGump(gump, false);
-	gump->addPage(s);
+	U8SaveGump* s;
 
-	s = new U8SaveGump(save, 1);
-	s->InitGump(gump, false);
-	gump->addPage(s);
+	for (int page = 0; page < 16; ++page) {
+		s = new U8SaveGump(save, page);
+		s->InitGump(gump, false);
+		gump->addPage(s);
+	}
+
 
 	gump->setRelativePosition(CENTER);
 
