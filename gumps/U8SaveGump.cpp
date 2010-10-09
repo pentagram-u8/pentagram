@@ -112,6 +112,8 @@ void U8SaveGump::InitGump(Gump* newparent, bool take_focus)
 		gump->SetShape(entrynum_id, true);
 
 		if (index % 10 == 9) {
+			// HACK: There is no frame for '0', so we re-use part of the
+			// frame for '10', cutting off the first 6 pixels.
 			Pentagram::Rect dims;
 			gump->GetDims(dims);
 			dims.x += 6;
