@@ -162,8 +162,22 @@ void GameMapGump::PaintThis(RenderSurface *surf, sint32 lerp_factor, bool scaled
 					continue;
 				if (!paintEditorItems && item->getShapeInfo()->is_editor())
 					continue;
-				if (item->getFlags() & Item::FLG_INVISIBLE)
+				if (item->getFlags() & Item::FLG_INVISIBLE) {
+					// special case: invisible avatar _is_ drawn
+					// HACK: unless EXT_TRANSPARENT is also set.
+					// (Used for hiding the avatar when drawing a full area map)
+
+					if (item->getObjId() == 1) {
+						if (item->getExtFlags() & Item::EXT_TRANSPARENT)
+							continue;
+
+						sint32 x, y, z;
+						item->getLerped(x, y, z);
+						display_list->AddItem(x,y,z,item->getShape(),item->getFrame(), item->getFlags() & ~Item::FLG_INVISIBLE, item->getExtFlags() | Item::EXT_TRANSPARENT, 1);
+					}
+
 					continue;
+				}
 				display_list->AddItem(item);
 			}
 		}
@@ -652,8 +666,14 @@ void GameMapGump::ConCmd_dumpMap(const Console::ArgvType &)
 
 
 	GameMapGump* g = new GameMapGump(0, 0, twidth, theight);
-	bool isInvisible = (getMainActor()->getFlags() & Item::FLG_INVISIBLE) != 0;
+
+	uint32 savedFlags = getMainActor()->getFlags();
+	uint32 savedExtFlags = getMainActor()->getExtFlags();
+
+	// HACK: Setting both INVISIBLE and TRANSPARENT flags on the Avatar
+	// will make him completely invisible.
 	getMainActor()->setFlag(Item::FLG_INVISIBLE);
+	getMainActor()->setExtFlag(Item::EXT_TRANSPARENT);
 	World::get_instance()->getCurrentMap()->setWholeMapFast();
 
 	RenderSurface* s = RenderSurface::CreateSecondaryRenderSurface(bwidth,
@@ -720,8 +740,10 @@ void GameMapGump::ConCmd_dumpMap(const Console::ArgvType &)
 	delete g;
 	delete s;
 
-	if (!isInvisible)
-		getMainActor()->clearFlag(Item::FLG_INVISIBLE);
+	// restore Avatar's flags
+	getMainActor()->clearFlag(~savedFlags);
+	getMainActor()->setFlag(savedFlags);
+	getMainActor()->setExtFlags(savedExtFlags);
 
 	CameraProcess::SetCameraProcess(new CameraProcess(1));
 
