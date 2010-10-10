@@ -107,6 +107,15 @@ class 0401 (AVATAR)
 "Restortation" (Restoration, 2x)
 "Etherial Travel" (Ethereal Travel, 2x)
 
+class 041D (BANE)
+"adress" (address)
+
+class 0420 (BEREN)
+"adress" (address, 4x)
+
+class 056F (VARDION2)
+"adress" (address)
+
 class 0572 (STEVBOOK)
 "it carried in it's arms", "driven to it's knees", "it begged for it's life"
 (s/it's/its/, three times)

@@ -1,4 +1,7 @@
 2010-10-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* docs/u8bugs.txt: collect more usecode typos (#3084670)
+
+2010-10-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/Map.cpp: fix more holes in the floor on map 62 (#3083865)
 	* world/ItemSorter.cpp: invisible and transparent items both don't occlude
 	* gumps/GameMapGump.cpp: draw invisible Avatar transparently (#3083834)
