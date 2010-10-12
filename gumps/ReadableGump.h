@@ -34,8 +34,9 @@ public:
 	ReadableGump(ObjId owner, uint16 shape, int font, std::string msg);
 	virtual ~ReadableGump();
 
-	// Got to the next page on mouse click
+	// Close on mouse click on key press
 	virtual Gump* OnMouseDown(int button, int mx, int my);
+	virtual bool OnKeyDown(int key, int mod);
 
 	// Init the gump, call after construction
 	virtual void InitGump(Gump* newparent, bool take_focus=true);

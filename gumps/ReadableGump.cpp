@@ -95,6 +95,13 @@ Gump *ReadableGump::OnMouseDown(int button, int mx, int my)
 	return this;
 }
 
+bool ReadableGump::OnKeyDown(int key, int mod)
+{
+	Close();
+	return true;
+}
+
+
 uint32 ReadableGump::I_readGrave(const uint8* args, unsigned int /*argsize*/)
 {
 	ARG_ITEM_FROM_PTR(item);
