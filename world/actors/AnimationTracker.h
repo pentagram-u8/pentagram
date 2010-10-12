@@ -111,7 +111,8 @@ private:
 	sint32 prevx,prevy,prevz;
 	sint32 x,y,z;
 	sint32 startx,starty,startz;
-	sint32 target_dx,target_dy;
+	sint32 target_dx,target_dy,target_dz;
+	sint32 target_offground_left;
 	bool firststep, flipped;
 	uint32 shapeframe;
 

@@ -208,8 +208,15 @@ bool AnimationTracker::step()
 
 	if (mode == TargetMode && !(f.flags & AnimFrame::AFF_ONGROUND))
 	{
-		dx += target_dx;
-		dy += target_dy;
+		dx += target_dx / target_offground_left;
+		dy += target_dy / target_offground_left;
+		dz += target_dz / target_offground_left;
+
+		target_dx -= target_dx / target_offground_left;
+		target_dy -= target_dy / target_offground_left;
+		target_dz -= target_dz / target_offground_left;
+
+		--target_offground_left;
 	}
 
 	// determine footpad
@@ -389,25 +396,30 @@ void AnimationTracker::setTargetedMode(sint32 x_, sint32 y_, sint32 z_)
 {
 	unsigned int i;
 	int totaldir = 0;
+	int totalz = 0;
 	int offGround = 0;
-	sint32 end_dx, end_dy;
+	sint32 end_dx, end_dy, end_dz;
 
 	for (i=startframe; i != endframe; i = getNextFrame(i))
 	{
 		AnimFrame& f = animaction->frames[dir][i];
 		totaldir += f.deltadir;  // This line sometimes seg faults.. ????
+		totalz += f.deltaz;
 		if (!(f.flags & AnimFrame::AFF_ONGROUND))
 			++offGround;
 	}
 
 	end_dx = 4 * x_fact[dir] * totaldir;
 	end_dy = 4 * y_fact[dir] * totaldir;
+	end_dz = totalz;
 
 	if (offGround)
 	{
 		mode = TargetMode;
-		target_dx = (x_ - x - end_dx) / offGround;
-		target_dy = (y_ - y - end_dy) / offGround;
+		target_offground_left = offGround;
+		target_dx = x_ - x - end_dx;
+		target_dy = y_ - y - end_dy;
+		target_dz = z_ - z - end_dz;
 	}
 
 }
@@ -558,6 +570,8 @@ void AnimationTracker::save(ODataSource* ods)
 	if (mode == TargetMode) {
 		ods->write4(static_cast<uint32>(target_dx));
 		ods->write4(static_cast<uint32>(target_dy));
+		ods->write4(static_cast<uint32>(target_dz));
+		ods->write4(static_cast<uint32>(target_offground_left));
 	}
 	uint8 fs = firststep ? 1 : 0;
 	ods->write1(fs);
@@ -605,6 +619,28 @@ bool AnimationTracker::load(IDataSource* ids, uint32 version)
 	if (mode == TargetMode) {
 		target_dx = ids->read4();
 		target_dy = ids->read4();
+		if (version >= 5) {
+			target_dz = ids->read4();
+			target_offground_left = ids->read4();
+		} else {
+			// Versions before 5 stored the only x,y adjustment
+			// to be made per frame. This is less accurate and ignores z.
+
+			target_offground_left = 0;
+			unsigned int i = currentframe;
+			if (!firstframe) i = getNextFrame(i);
+
+			for (; i != endframe; i = getNextFrame(i))
+			{
+				AnimFrame& f = animaction->frames[dir][i];
+				if (!(f.flags & AnimFrame::AFF_ONGROUND))
+					++target_offground_left;
+			}
+
+			target_dx *= target_offground_left;
+			target_dy *= target_offground_left;
+			target_dz = 0;
+		}
 	}
 
 	firststep = (ids->read1() != 0);

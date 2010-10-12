@@ -1,8 +1,11 @@
 2010-10-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/MainActor.cpp, world/actors/AvatarDeathProcess.cpp:
-	  start playing death music as soon as Avatar dies
+	  start playing death music as soon as Avatar dies (#3079381)
 	* gumps/MainMenuProcess.cpp: stop playing death music when opening menu
 	* gumps/ReadableGump.*: close plaque/grave/sign on keypress
+	* world/actors/AnimationTracker.*: make targeted jumps more accurate,
+	  and also adjust z (#3084088)
+	* kernel/GUIApp.h: increase save version to 5 for AnimationTracker changes
 
 2010-10-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* docs/u8bugs.txt: collect more usecode typos (#3084670)
