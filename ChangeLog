@@ -1,4 +1,9 @@
-2010-10-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+2010-10-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/actors/MainActor.cpp, world/actors/AvatarDeathProcess.cpp:
+	  start playing death music as soon as Avatar dies
+	* gumps/MainMenuProcess.cpp: stop playing death music when opening menu
+
+2010-10-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* docs/u8bugs.txt: collect more usecode typos (#3084670)
 
 2010-10-09  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>

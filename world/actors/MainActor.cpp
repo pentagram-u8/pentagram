@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2007 The Pentagram team
+Copyright (C) 2003-2010 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -344,7 +344,8 @@ ProcId MainActor::die(uint16 damageType)
 
 	deathproc->waitFor(delayproc);
 
-	// TODO: implement this properly: close gumps, play music, ...?
+	MusicProcess::get_instance()->unqueueMusic();
+	MusicProcess::get_instance()->playCombatMusic(44); // CONSTANT!!
 
 	return animprocid;
 }

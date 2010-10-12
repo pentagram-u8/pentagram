@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2007 The Pentagram team
+Copyright (C) 2004-2010 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -67,9 +67,6 @@ void AvatarDeathProcess::run()
 	Process* menuproc = new MainMenuProcess();
 	Kernel::get_instance()->addProcess(menuproc);
 	menuproc->waitFor(gumpproc);
-
-	MusicProcess::get_instance()->unqueueMusic();
-	MusicProcess::get_instance()->playCombatMusic(44); // CONSTANT!!
 
 	// done
 	terminate();

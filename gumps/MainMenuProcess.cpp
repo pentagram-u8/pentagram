@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2005 The Pentagram team
+Copyright (C) 2005-2010 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -20,6 +20,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include "MainMenuProcess.h"
 #include "MenuGump.h"
+#include "getObject.h"
+#include "MusicProcess.h"
+#include "MainActor.h"
 
 #include "IDataSource.h"
 #include "ODataSource.h"
@@ -35,6 +38,12 @@ MainMenuProcess::MainMenuProcess() : Process()
 
 void MainMenuProcess::run()
 {
+	MainActor* avatar = getMainActor();
+	if (avatar && avatar->isDead()) {
+		// stop death music
+		MusicProcess::get_instance()->playCombatMusic(0);
+	}
+
 	MenuGump::showMenu();
 
 	terminate();
