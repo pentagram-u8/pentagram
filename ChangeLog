@@ -6,6 +6,8 @@
 	* world/actors/AnimationTracker.*: make targeted jumps more accurate,
 	  and also adjust z (#3084088)
 	* kernel/GUIApp.h: increase save version to 5 for AnimationTracker changes
+	* misc/Direction.h, world/Item.cpp: small tweak to directions for
+	  better compatibility with U8 (#3084086)
 
 2010-10-10  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* docs/u8bugs.txt: collect more usecode typos (#3084670)

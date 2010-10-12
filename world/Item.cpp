@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2007 The Pentagram team
+Copyright (C) 2003-2010 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -2797,7 +2797,7 @@ uint32 Item::I_getDirFromItem(const uint8* args, unsigned int /*argsize*/)
 	sint32 i2x,i2y,i2z;
 	item2->getLocationAbsolute(i2x,i2y,i2z);
 
-	return Get_WorldDirection(iy - i2y, ix - i2x);
+	return (Get_WorldDirection(i2y - iy, i2x - ix) + 4) % 8;
 }
 
 uint32 Item::I_hurl(const uint8* args, unsigned int /*argsize*/)

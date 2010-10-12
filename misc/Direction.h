@@ -3,7 +3,7 @@
  *
  *  Copyright (C) 1998-1999  Jeffrey S. Freedman
  *  Copyright (C) 2000-2001  The Exult Team
- *  Copyright (C) 2002-2003  The Pentagram Team
+ *  Copyright (C) 2002-2010  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -77,8 +77,10 @@ inline Direction Get_direction (int deltay, int deltax)
 
 inline Direction Get_WorldDirection (int deltay, int deltax)
 {
-	if (deltax == 0)
+	if (deltax == 0) {
+		if (deltay == 0) return northeast; // for better compatibility with U8
 		return deltay > 0 ? south : north;
+	}
 	int dydx = (1024*deltay)/deltax;
 
 	if (dydx >= 0)
