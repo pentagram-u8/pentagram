@@ -299,17 +299,6 @@ int MainActor::getDamageAmount()
 	return damage;
 }
 
-void MainActor::receiveHit(uint16 other, int dir, int damage,
-						   uint16 damage_type)
-{
-	Actor::receiveHit(other, dir, damage, damage_type);
-
-	if (damage > 3 && other)
-	{
-		// TODO: spray blood
-	}
-}
-
 void MainActor::setInCombat()
 {
 	setActorFlag(ACT_INCOMBAT);

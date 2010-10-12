@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2003-2007 The Pentagram team
+Copyright (C) 2003-2010 The Pentagram team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -65,8 +65,6 @@ public:
 
 	virtual uint16 getDamageType();
 	virtual int getDamageAmount();
-
-	virtual void receiveHit(uint16 other, int dir, int damage, uint16 type);
 
 	virtual void setInCombat();
 	virtual void clearInCombat();
