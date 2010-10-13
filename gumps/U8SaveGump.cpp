@@ -260,7 +260,7 @@ void U8SaveGump::ChildNotify(Gump *child, uint32 message)
 
 		EditWidget* widget = p_dynamic_cast<EditWidget*>(child);
 		assert(widget);
-		widget->setText(descriptions[widget->GetIndex()]);
+		widget->setText(descriptions[widget->GetIndex()-1]);
 		
 		return;
 	}

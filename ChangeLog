@@ -1,3 +1,6 @@
+2010-10-13  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/U8SaveGump.cpp: fix off-by-one after cancelling edit (#3086696)
+
 2010-10-12  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/MainActor.cpp, world/actors/AvatarDeathProcess.cpp:
 	  start playing death music as soon as Avatar dies (#3079381)
