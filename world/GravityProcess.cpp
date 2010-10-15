@@ -254,65 +254,6 @@ void GravityProcess::run()
 	else 
 		zspeed -= gravity;
 
-#if 0
-
-	CurrentMap* cm = World::get_instance()->getCurrentMap();
-
-	// collision detection. Move in steps half the item's height
-	// (and corresponding amounts in x/y directions)
-	if (izd == 0) izd = 8; //!! cheating a little to prevent 0-height
-	                       //!! objects from falling through 0-height tiles
-
-	uint32 shapeflags = item->getShapeInfo()->flags;
-
-	bool valid = true;
-	int curz = iz;
-	int zstepsize = izd / 2;
-	if (tz < iz) zstepsize = -zstepsize;
-	if (tz == iz) {
-		valid = cm->isValidPosition(tx,ty,tz,ixd,iyd,izd,shapeflags,
-									item_num,0,0);
-	} else {
-		do {
-			curz += zstepsize;
-			int curx = ix + ((tx - ix) * (curz-iz))/(tz-iz);
-			int cury = iy + ((ty - iy) * (curz-iz))/(tz-iz);
-		
-			if ((zstepsize > 0 && curz > tz) || (zstepsize < 0 && curz < tz))
-				curz = tz;
-
-			valid &= cm->isValidPosition(curx, cury, curz, ixd, iyd, izd,
-										 shapeflags,item_num, 0, 0);
-		} while (valid && curz != tz);
-	}
-
-	if (valid) {
-		item->move(tx, ty, tz);
-
-		// apply gravity acceleration
-		zspeed -= gravity;
-	} else {
-		//!! bounce
-		if (tz != iz) {
-			curz -= zstepsize;
-			if ((zstepsize > 0 && curz < iz) || (zstepsize < 0 && curz > iz))
-				curz = iz;
-
-			int curx = ix + ((tx - ix) * (curz-iz))/(tz-iz);
-			int cury = iy + ((ty - iy) * (curz-iz))/(tz-iz);
-
-			if (cm->isValidPosition(curx, cury, curz, ixd, iyd, izd,
-									shapeflags, item_num, 0, 0))
-			{
-				item->move(curx, cury, curz);
-			}
-		}
-
-		//!! TODO...
-
-		terminate();
-	}
-#endif
 }
 
 
