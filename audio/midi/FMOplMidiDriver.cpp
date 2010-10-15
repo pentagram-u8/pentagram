@@ -292,7 +292,7 @@ void FMOplMidiDriver::close()
 void FMOplMidiDriver::lowLevelProduceSamples(sint16 *samples, uint32 num_samples)
 {
 	if (!opl)
-		memset(samples, 0, num_samples * sizeof(sint16) * stereo?2:1);
+		memset(samples, 0, num_samples * sizeof(sint16) * (stereo?2:1));
 	else if (stereo)
 		FMOpl_Pentagram::YM3812UpdateOne_Stereo(opl, samples, num_samples);
 	else
