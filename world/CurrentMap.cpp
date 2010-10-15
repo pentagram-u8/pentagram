@@ -1137,6 +1137,12 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 				if (u_1[1] < last) last = u_1[1];
 				if (u_1[2] < last) last = u_1[2];
 
+				// store directions in which we're being blocked
+				uint8 dirs = 0;
+				for (int i = 0; i <= 2; ++i)
+					if (first == u_0[i])
+						dirs |= (1 << i);
+
 				//they could have only collided if
 				//the first time of overlap occurred
 				//before the last time of overlap
@@ -1166,7 +1172,7 @@ bool CurrentMap::sweepTest(const sint32 start[3], const sint32 end[3],
 						if ((*sw_it).hit_time > first) break;
 
 					// Now add it
-					sw_it = hit->insert(sw_it, SweepItem(other_item->getObjId(),first,last,touch,touch_floor,blocking));
+					sw_it = hit->insert(sw_it, SweepItem(other_item->getObjId(),first,last,touch,touch_floor,blocking,dirs));
 //					pout << "Hit item " << other_item->getObjId() << " at (" << first << "," << last << ")" << std::endl;
 //					pout << "hit item      (" << other[0] << ", " << other[1] << ", " << other[2] << ")" << std::endl;
 //					pout << "hit item time (" << u_0[0] << "-" << u_1[0] << ") (" << u_0[1] << "-" << u_1[1] << ") ("

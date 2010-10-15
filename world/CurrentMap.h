@@ -122,9 +122,9 @@ public:
 
 	struct SweepItem {
 		SweepItem(ObjId it, sint32 ht, sint32 et, bool touch,
-				  bool touchfloor, bool block)
+				  bool touchfloor, bool block, uint8 dir)
 			: item(it), hit_time(ht), end_time(et), touching(touch),
-			  touching_floor(touchfloor), blocking(block) { }
+			  touching_floor(touchfloor), blocking(block), dirs(dir) { }
 
 		ObjId	item;		// Item that was hit
 
@@ -144,6 +144,9 @@ public:
 		bool	touching_floor; // touching and directly below the moving item
 
 		bool	blocking;	// This item blocks the moving item
+
+		uint8	dirs; // Directions in which the item is being hit.
+				      // Bitmask. Bit 0 is x, 1 is y, 2 is z.
 
 		// Use this func to get the interpolated location of the hit
 		void GetInterpolatedCoords(sint32 out[3], sint32 start[3], sint32 end[3])
