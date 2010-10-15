@@ -147,12 +147,34 @@ void GravityProcess::run()
 //#define BOUNCE_DIAG
 
 	ObjId hititemid;
-	sint32 dist = item->collideMove(tx,ty,tz, false, false, &hititemid);
+	uint8 dirs;
+	sint32 dist = item->collideMove(tx,ty,tz, false, false, &hititemid, &dirs);
+
+	if (dist == 0x4000 && !clipped) {
+		// normal move
+		zspeed -= gravity;
+		return;
+	}
+
+	// TODO: after doing a partial move we may still want to do another
+	// partial move in this ::run() call to move the full speed this frame.
+	// The effect might not be visible enough to be worth the trouble though.
 	
-	if (dist == 0 || clipped)
-	{
+	// Item was blocked
+
+
+	// We behave differently depending on which direction was blocked.
+	// We only consider stopping to bounce when blocked purely in the
+	// downward-Z direction. Other directions always bounce, reducing speed in
+	// the blocked directions
+
+
+	// only blocked going down?
+	if (dirs == 4 && zspeed < 0) {
+
 		// If it landed on top of hititem and hititem is not land, the item
-		// should bounce.
+		// should always bounce.
+
 		bool terminate = true;
 		Item* hititem = getItem(hititemid);
 		if(zspeed < -2 && !p_dynamic_cast<Actor*>(item))
@@ -163,19 +185,7 @@ void GravityProcess::run()
 				 << "]: hit " << hititem->getObjId() << std::endl;
 #endif
 
-			sint32 hitx,hity,hitz;
-			hititem->getLocation(hitx,hity,hitz);
-			sint32 hitdx,hitdy,hitdz;
-			hititem->getFootpadWorld(hitdx,hitdy,hitdz);
-			sint32 endx,endy,endz;
-			item->getLocation(endx,endy,endz);
-
-			// TODO: bounce off vertical surface impacts too?  This only
-			// deals with hitting an item from the top.
-
-			bool allow_land_bounce = ((0-zspeed) > 2*gravity);
-			if(endz == hitz + hitdz &&	// hit an item at the end position
-			   (allow_land_bounce || !hititem->getShapeInfo()->is_land()))
+			if (!hititem->getShapeInfo()->is_land() || zspeed < -2*gravity)
 			{
 				// Bounce!
 				terminate = false;
@@ -250,10 +260,37 @@ void GravityProcess::run()
 			item->setFlag(Item::FLG_BOUNCING);
 		}
 		fallStopped();
-	}
-	else 
-		zspeed -= gravity;
 
+	} else {
+
+		// blocked in some other direction than strictly downward
+
+		// invert and decrease speed in all blocked directions
+
+#ifdef BOUNCE_DIAG
+		int xspeedold = xspeed;
+		int yspeedold = yspeed;
+		int zspeedold = zspeed;
+#endif
+
+		if (dirs & 1)
+			xspeed = -xspeed/2;
+		if (dirs & 2)
+			yspeed = -yspeed/2;
+		if (dirs & 4)
+			zspeed = -zspeed/2;
+
+#ifdef BOUNCE_DIAG
+		pout << "item " << item_num << " bounce ["
+		     << Kernel::get_instance()->getFrameNum()
+		     << "]: speed was (" << xspeedold << ","
+		     << yspeedold << "," << zspeedold << ") new speed ("
+		     << xspeed << "," << yspeed << "," << zspeed << ")" << std::endl;
+#endif
+
+		item->setFlag(Item::FLG_BOUNCING);
+
+	}
 }
 
 
