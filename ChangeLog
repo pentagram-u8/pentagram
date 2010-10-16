@@ -1,3 +1,7 @@
+2010-10-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/PaperdollGump.cpp: move MiniStatsGump back on screen if
+	  necessary (#3088636)
+
 2010-10-15  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/CurrentMap.*, world/Item.*: keep track of blocked directions in
 	  sweepTest/collideMove

@@ -399,10 +399,25 @@ void PaperdollGump::ChildNotify(Gump *child, uint32 message)
 	{
 		// check if there already is an open MiniStatsGump
 		Gump* desktop = GUIApp::get_instance()->getDesktopGump();
-		if (!desktop->FindGump(MiniStatsGump::ClassType)) {
+		Gump* statsgump = desktop->FindGump(MiniStatsGump::ClassType);
+
+		if (!statsgump) {
 			Gump* gump = new MiniStatsGump(0, 0);
 			gump->InitGump(0);
 			gump->setRelativePosition(BOTTOM_RIGHT, -5, -5);
+		} else {
+			// check if it is off-screen. If so, move it back
+			Pentagram::Rect rect;
+			desktop->GetDims(rect);
+			Pentagram::Rect sr;
+			statsgump->GetDims(sr);
+			sr.x += 2;
+			sr.w -= 4;
+			sr.y += 2;
+			sr.h -= 4;
+			statsgump->GumpRectToScreenSpace(sr.x, sr.y, sr.w, sr.h);
+			if (!sr.Overlaps(rect))
+				statsgump->setRelativePosition(BOTTOM_RIGHT, -5, -5);
 		}
 	}
 }
