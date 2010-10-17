@@ -1,3 +1,6 @@
+2010-10-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* usecode/UCMachine.cpp: print more information on UCProcess errors
+
 2010-10-16  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/PaperdollGump.cpp: move MiniStatsGump back on screen if
 	  necessary (#3088636)

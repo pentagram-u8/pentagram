@@ -273,7 +273,11 @@ void UCMachine::execProcess(UCProcess* p)
 			if (si8b) { // slist?
 				// what special behaviour do we need here?
 				// probably just that the overwritten element has to be freed?
-				if (ui32a != 2) error = true; // um?
+				if (ui32a != 2) {
+					perr << "Unhandled operand " << ui32a << " to pop slist"
+					     << std::endl;
+					error = true; // um?
+				}
 				l->assign(ui16a, p->stack.access());
 				p->stack.pop2(); // advance SP
 			} else {
@@ -329,7 +333,11 @@ void UCMachine::execProcess(UCProcess* p)
 
 				LOGPF(("push string\t\"%s\"\n", str));
 				ui16b = cs.read1();
-				if (ui16b != 0) error = true;
+				if (ui16b != 0) {
+					perr << "Zero terminator missing in push string"
+					     << std::endl;
+					error = true;
+				}
 				p->stack.push2(assignString(str));
 				delete[] str;
 			}
@@ -525,7 +533,11 @@ void UCMachine::execProcess(UCProcess* p)
 			// 19 02
 			// add two stringlists, removing duplicates
 			ui32a = cs.read1();
-			if (ui32a != 2) error = true;
+			if (ui32a != 2) {
+				perr << "Unhandled operand " << ui32a << " to union slist"
+				     << std::endl;
+				error = true;
+			}
 			ui16a = p->stack.pop2();
 			ui16b = p->stack.pop2();
 			getList(ui16b)->unionStringList(*getList(ui16a));
@@ -918,7 +930,11 @@ void UCMachine::execProcess(UCProcess* p)
 			ui32a = cs.read1();
 			ui16b = p->stack.pop2();
 			if (ui32a) { // stringlist
-				if (ui16a != 2) error = true;
+				if (ui16a != 2) {
+					perr << "Unhandled operand " << ui16a << " to in slist"
+					     << std::endl;
+					error = true;
+				}
 				if (getList(ui16b)->stringInList(p->stack.pop2()))
 					p->stack.push2(1);
 				else
@@ -1944,8 +1960,9 @@ void UCMachine::execProcess(UCProcess* p)
 
 		} // switch(opcode)
 
-		// write back IP
-		p->ip = static_cast<uint16>(cs.getPos());	// TRUNCATES!
+		// write back IP (but preserve IP if there was an error)
+		if (!error)
+			p->ip = static_cast<uint16>(cs.getPos());	// TRUNCATES!
 
 		// check if we suspended ourselves
 		if((p->flags & Process::PROC_SUSPENDED)!=0)
@@ -1953,9 +1970,8 @@ void UCMachine::execProcess(UCProcess* p)
 	} // while(!cede && !error && !p->terminated && !p->terminate_deferred)
 
 	if (error) {
-		perr << "Process " << p->pid << " caused an error. Killing process."
-			 << std::endl;
-
+		perr.printf("Process %d caused an error at %04X:%04X. Killing process.\n",
+		            p->pid, p->classid, p->ip);
 		p->terminateDeferred();
 	}
 }
