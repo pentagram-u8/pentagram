@@ -159,7 +159,7 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 
 	if (!std::ftell(stdout)) {
 		std::fclose(stdout);
-		std::remove("pstdio.txt");
+		std::remove("pstdout.txt");
 	}
 	if (!std::ftell(stderr)) {
 		std::fclose(stderr);
