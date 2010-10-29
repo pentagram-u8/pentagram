@@ -215,23 +215,12 @@ else
     AC_MSG_RESULT(no)
 fi
 
-# ---------------------------------------------------------------------
-# Statically link libraries?
-# ---------------------------------------------------------------------
-
-AC_ARG_ENABLE(static-libraries, AS_HELP_STRING([--enable-static-libraries], [Enable static linking of libraries]),,enable_static_libs=no)
-AC_MSG_CHECKING([if we want to statically compile libraries])
-if test x$enable_static_libs != xno; then
-	AC_MSG_RESULT(yes)
-else
-	AC_MSG_RESULT(no)
-fi
 
 # ---------------------------------------------------------------------
 # SDL
 # ---------------------------------------------------------------------
 PENT_CHECK_SDL(:,AC_MSG_ERROR([[*** SDL version >= 1.2.0 not found!]]))
-if test x$enable_static_libs == xno -o x$HOST_SYSTEM != xMACOSX; then
+if test x$with_macosx_static_lib_path == x -o x$HOST_SYSTEM != xMACOSX; then
 		GUI_LIBS="$GUI_LIBS $SDL_LIBS"
 	fi
 
@@ -241,7 +230,7 @@ if test x$enable_static_libs == xno -o x$HOST_SYSTEM != xMACOSX; then
 
 AC_CHECK_HEADER(zlib.h,,AC_MSG_ERROR([*** zlib not found!]))
 AC_CHECK_LIB(z,deflate,,AC_MSG_ERROR([*** zlib not found!]))
-if test x$enable_static_libs == xno -o x$HOST_SYSTEM != xMACOSX; then
+if test x$with_macosx_static_lib_path == x -o x$HOST_SYSTEM != xMACOSX; then
 		SYS_LIBS="$SYS_LIBS -lz"
 	fi
 
@@ -250,7 +239,7 @@ if test x$enable_static_libs == xno -o x$HOST_SYSTEM != xMACOSX; then
 # --------
 
 PENT_CHECK_SDLTTF(:,AC_MSG_ERROR([*** SDL_ttf version >= 2.0.7 not found!]))
-if test x$enable_static_libs == xno -o x$HOST_SYSTEM != xMACOSX; then
+if test x$with_macosx_static_lib_path == x -o x$HOST_SYSTEM != xMACOSX; then
 		GUI_LIBS="$GUI_LIBS $SDLTTF_LIBS"
 	fi
 
@@ -260,7 +249,7 @@ if test x$enable_static_libs == xno -o x$HOST_SYSTEM != xMACOSX; then
 
 AC_CHECK_HEADER(png.h,,AC_MSG_ERROR([*** libpng not found!]))
 AC_CHECK_LIB(png,png_create_read_struct,,AC_MSG_ERROR([*** libpng not found!]))
-if test x$enable_static_libs == xno -o x$HOST_SYSTEM != xMACOSX; then
+if test x$with_macosx_static_lib_path == x -o x$HOST_SYSTEM != xMACOSX; then
 		GUI_LIBS="$GUI_LIBS -lpng"
 	fi
 
@@ -269,7 +258,8 @@ if test x$enable_static_libs == xno -o x$HOST_SYSTEM != xMACOSX; then
 # --------
 
 # only needs to be checked when static linking on OS X
-# so we check if the user also built freetype himself
+# since freetype itself is already checked in PENT_CHECK_SDLTTF
+# we check whether the user also built freetype himself
 # if not we link Apples freetype dynamically but warn 
 # that cross compiling might break with that
 
@@ -284,7 +274,7 @@ if test x$with_macosx_static_lib_path != x; then
 fi
 
 # ---------------------------------------------------------------------
-# Black magic for static linking.
+# Black magic for static linking on OS X
 # ---------------------------------------------------------------------
 if test x$HOST_SYSTEM == xMACOSX; then
 	AC_ARG_WITH(macosx-static-lib-path,
@@ -296,17 +286,7 @@ if test x$HOST_SYSTEM == xMACOSX; then
 			AC_MSG_ERROR([*** a directory is expected for --macosx-static-lib-path!])
 		fi
 		with_macosx_static_lib_path=`echo "$with_macosx_static_lib_path" | sed 's/\/*$//'`
-	else
-		enable_static_libs=no
-	fi
-fi
 
-if test x$enable_static_libs != xno; then
-	if test x$HOST_SYSTEM != xMACOSX; then
-		# Assuming GCC. This is probably not portable.
-		STATIC_LD="-static"
-		LDFLAGS="$LDFLAGS -static"
-	else
 		# Apple has done its best to prevent the above from working, so we
 		# need this stuff here.
 		# Using -static doesn't work because of system libraries that cannot be
@@ -607,6 +587,9 @@ echo "HQ2x scaler:			$pent_hq2x"
 echo "Gamma-correcting scalers:	$pent_gc_scalers"
 echo "All bilinear scaler variants:	$pent_all_bilinear"
 echo "Built-in data files:		$pent_nodata"
+if test x$with_macosx_static_lib_path != x; then
+echo "OS X static libs path:		$with_macosx_static_lib_path"
+fi
 echo ""
 echo "Optional libraries:"
 echo "ALSA midi:			$pent_alsa"
