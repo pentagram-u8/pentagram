@@ -69,4 +69,50 @@ install: install-bin install-data
 # Common rules
 include $(srcdir)/common.mk
 
+# Mac OS X rules
+ifneq ($(HOST_SYSTEM),MACOSX)
+
+bundle_name = pentagram.app
+
+bundle: pentagram$(EXEEXT)
+	mkdir -p $(bundle_name)/Contents/MacOS
+	mkdir -p $(bundle_name)/Contents/Resources/
+	echo "APPL????" > $(bundle_name)/Contents/PkgInfo
+	$(INSTALL_DATA) $(top_srcdir)/system/macosx/Info.plist $(bundle_name)/Contents/
+	$(INSTALL_PROGRAM) pentagram$(EXEEXT) $(bundle_name)/Contents/MacOS/
+	$(INSTALL_DATA) $(top_srcdir)/system/desktop/pentagram.* $(bundle_name)/Contents/Resources/
+	$(INSTALL_DATA) $(top_srcdir)/data/*.ini $(bundle_name)/Contents/Resources/
+	$(INSTALL_DATA) $(top_srcdir)/data/*.tga $(bundle_name)/Contents/Resources/
+	$(INSTALL_DATA) $(top_srcdir)/data/*.png $(bundle_name)/Contents/Resources/
+	$(INSTALL_DATA) $(top_srcdir)/data/*.ttf $(bundle_name)/Contents/Resources/
+	$(INSTALL_DATA) $(top_srcdir)/data/*.txt $(bundle_name)/Contents/Resources/
+	$(INSTALL_DATA) $(top_srcdir)/AUTHORS $(bundle_name)
+	$(INSTALL_DATA) $(top_srcdir)/COPYING $(bundle_name)
+	$(INSTALL_DATA) $(top_srcdir)/FAQ $(bundle_name)
+	$(INSTALL_DATA) $(top_srcdir)/README $(bundle_name)
+	
+install-exec-local: bundle
+	mkdir -p $(DESTDIR)/Applications/
+	cp -r $(bundle_name) $(DESTDIR)/Applications/
+
+image: bundle
+	mkdir pentagram-snapshot
+	cp $(top_srcdir)/AUTHORS ./pentagram-snapshot/Authors
+	cp $(top_srcdir)/COPYING ./pentagram-snapshot/License
+	cp $(top_srcdir)/README ./pentagram-snapshot/ReadMe
+	cp $(top_srcdir)/FAQ ./pentagram-snapshot/FAQ
+	/Developer/Tools/SetFile -t ttro -c ttxt ./pentagram-snapshot/*
+	/Developer/Tools/CpMac -r $(bundle_name) ./pentagram-snapshot/
+	hdiutil create -ov -format UDZO -imagekey zlib-level=9 -fs HFS+ \
+					-srcfolder pentagram-snapshot \
+					-volname "Pentagram snapshot" \
+					Pentagram.dmg
+	rm -rf pentagram-snapshot
+
+clean-local:
+	-rm -f Pentagram.dmg
+	-rm -rf $(bundle_name)
+
+endif
+	
 .PHONY: install install-bin install-data

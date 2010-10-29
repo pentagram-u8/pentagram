@@ -1,3 +1,8 @@
+2010-10-29  Dominik Reichardt <dominus@users.sourceforge.net>
+	* configure.ac: added possibility to built static on OS X and changed VER_EXTRA to svn
+	* module.mk: added rules for making bundle and snpashot image for OS X
+	* system/macosx/info.plist.in: use 64bit only on OS X 10.6
+	
 2010-10-17  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* usecode/UCMachine.cpp: print more information on UCProcess errors
 

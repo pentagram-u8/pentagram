@@ -11,7 +11,7 @@ AC_CONFIG_AUX_DIR(system/auto)
 PACKAGE=pentagram
 VER_MAJOR=0
 VER_MINOR=1
-VER_EXTRA=cvs
+VER_EXTRA=svn
 VERSION=$VER_MAJOR.$VER_MINOR$VER_EXTRA
 
 # check build/host/target systems
@@ -216,11 +216,24 @@ else
 fi
 
 # ---------------------------------------------------------------------
+# Statically link libraries?
+# ---------------------------------------------------------------------
+
+AC_ARG_ENABLE(static-libraries, AS_HELP_STRING([--enable-static-libraries], [Enable static linking of libraries]),,enable_static_libs=no)
+AC_MSG_CHECKING([if we want to statically compile libraries])
+if test x$enable_static_libs != xno; then
+	AC_MSG_RESULT(yes)
+else
+	AC_MSG_RESULT(no)
+fi
+
+# ---------------------------------------------------------------------
 # SDL
 # ---------------------------------------------------------------------
 PENT_CHECK_SDL(:,AC_MSG_ERROR([[*** SDL version >= 1.2.0 not found!]]))
-
-GUI_LIBS="$GUI_LIBS $SDL_LIBS"
+if test x$enable_static_libs == xno -o x$HOST_SYSTEM != xMACOSX; then
+		GUI_LIBS="$GUI_LIBS $SDL_LIBS"
+	fi
 
 # -----
 # zlib
@@ -228,14 +241,18 @@ GUI_LIBS="$GUI_LIBS $SDL_LIBS"
 
 AC_CHECK_HEADER(zlib.h,,AC_MSG_ERROR([*** zlib not found!]))
 AC_CHECK_LIB(z,deflate,,AC_MSG_ERROR([*** zlib not found!]))
-SYS_LIBS="$SYS_LIBS -lz"
+if test x$enable_static_libs == xno -o x$HOST_SYSTEM != xMACOSX; then
+		SYS_LIBS="$SYS_LIBS -lz"
+	fi
 
 # --------
 # SDL_ttf
 # --------
 
 PENT_CHECK_SDLTTF(:,AC_MSG_ERROR([*** SDL_ttf version >= 2.0.7 not found!]))
-GUI_LIBS="$GUI_LIBS $SDLTTF_LIBS"
+if test x$enable_static_libs == xno -o x$HOST_SYSTEM != xMACOSX; then
+		GUI_LIBS="$GUI_LIBS $SDLTTF_LIBS"
+	fi
 
 # --------
 # libpng
@@ -243,7 +260,73 @@ GUI_LIBS="$GUI_LIBS $SDLTTF_LIBS"
 
 AC_CHECK_HEADER(png.h,,AC_MSG_ERROR([*** libpng not found!]))
 AC_CHECK_LIB(png,png_create_read_struct,,AC_MSG_ERROR([*** libpng not found!]))
-GUI_LIBS="$GUI_LIBS -lpng"
+if test x$enable_static_libs == xno -o x$HOST_SYSTEM != xMACOSX; then
+		GUI_LIBS="$GUI_LIBS -lpng"
+	fi
+
+# --------
+# freetype
+# --------
+
+# only needs to be checked when static linking on OS X
+# so we check if the user also built freetype himself
+# if not we link Apples freetype dynamically but warn 
+# that cross compiling might break with that
+
+if test x$with_macosx_static_lib_path != x; then
+	AC_CHECK_LIB(freetype,FT_Init_FreeType,,AC_MSG_WARN([can't find libfreetype]))
+	if test -f $with_macosx_static_lib_path/libfreetype.a; then		
+		GUI_LIBS="$GUI_LIBS $with_macosx_static_lib_path/libfreetype.a"
+	else
+		AC_MSG_RESULT([no static freetype lib found, using Apple's dynamic lib, not suitable for cross compiling])
+		GUI_LIBS="$GUI_LIBS -lfreetype"
+	fi
+fi
+
+# ---------------------------------------------------------------------
+# Black magic for static linking.
+# ---------------------------------------------------------------------
+if test x$HOST_SYSTEM == xMACOSX; then
+	AC_ARG_WITH(macosx-static-lib-path,
+		AS_HELP_STRING([--with-macosx-static-lib-path=path], [path to location of static library files (Mac OS X bundles only)]),
+		[with_macosx_static_lib_path="$withval"],
+		[with_macosx_static_lib_path=""])
+	if test x$with_macosx_static_lib_path != x; then
+		if test ! -d $with_macosx_static_lib_path; then
+			AC_MSG_ERROR([*** a directory is expected for --macosx-static-lib-path!])
+		fi
+		with_macosx_static_lib_path=`echo "$with_macosx_static_lib_path" | sed 's/\/*$//'`
+	else
+		enable_static_libs=no
+	fi
+fi
+
+if test x$enable_static_libs != xno; then
+	if test x$HOST_SYSTEM != xMACOSX; then
+		# Assuming GCC. This is probably not portable.
+		STATIC_LD="-static"
+		LDFLAGS="$LDFLAGS -static"
+	else
+		# Apple has done its best to prevent the above from working, so we
+		# need this stuff here.
+		# Using -static doesn't work because of system libraries that cannot be
+		# linked statically; using the usual -Wl,-static -lvorbis -Wl,-dynamic
+		# also fails if there is a non-static version of libvorbis in the lib
+		# search path before or at the same location as the static lib because
+		# the linker tries to use these even with the flags. The only way to get
+		# reliable static compiles in Mac OS X is to hard-code the path to the
+		# static library and link to *that*.
+		# Damn you, Apple!
+
+		# SDL MacOS X readme lists this as needed.
+		# We should have sdl-config by this point, or we would have
+		# died in PENT_CHECK_SDL.
+		GUI_LIBS="$GUI_LIBS `$SDL_CONFIG $sdl_config_args --static-libs`"
+		GUI_LIBS="$GUI_LIBS $with_macosx_static_lib_path/libSDL_ttf.a"
+		GUI_LIBS="$GUI_LIBS $with_macosx_static_lib_path/libpng.a"
+		SYS_LIBS="$SYS_LIBS $with_macosx_static_lib_path/libz.a"
+	fi
+fi
 
 # ------------------
 # Warning level
