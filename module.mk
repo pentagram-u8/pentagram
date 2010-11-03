@@ -70,7 +70,7 @@ install: install-bin install-data
 include $(srcdir)/common.mk
 
 # Mac OS X rules
-ifneq ($(HOST_SYSTEM),MACOSX)
+ifeq ($(HOST_SYSTEM),MACOSX)
 
 bundle_name = pentagram.app
 
@@ -78,7 +78,7 @@ bundle: pentagram$(EXEEXT)
 	mkdir -p $(bundle_name)/Contents/MacOS
 	mkdir -p $(bundle_name)/Contents/Resources/
 	echo "APPL????" > $(bundle_name)/Contents/PkgInfo
-	$(INSTALL_DATA) $(top_srcdir)/system/macosx/Info.plist $(bundle_name)/Contents/
+	$(INSTALL_DATA) system/macosx/Info.plist $(bundle_name)/Contents/
 	$(INSTALL_PROGRAM) pentagram$(EXEEXT) $(bundle_name)/Contents/MacOS/
 	$(INSTALL_DATA) $(top_srcdir)/system/desktop/pentagram.* $(bundle_name)/Contents/Resources/
 	$(INSTALL_DATA) $(top_srcdir)/data/*.ini $(bundle_name)/Contents/Resources/

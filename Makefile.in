@@ -69,11 +69,13 @@ GIMP_PLUGIN_PREFIX = @GIMP_PLUGIN_PREFIX@
 
 USE_BUILTIN_DATA := @USE_BUILTIN_DATA@
 
+HOST_SYSTEM = @HOST_SYSTEM@
+
 SYSTEM :=
 SYSTEM_MODULES :=
 
-ifeq (@HOST_SYSTEM@,MACOSX)
-SYSTEM = ${SYSTEM_MACOSX}
+ifeq ($(HOST_SYSTEM),MACOSX)
+SYSTEM = $(SYSTEM_MACOSX)
 SYSTEM_MODULES := system/macosx
 endif
 
@@ -85,7 +87,7 @@ MODULES := tools/data2c convert convert/u8 convert/crusader misc \
 	tools/shapeconv $(GIMP_PLUGIN_MODULES)\
 	kernel games graphics graphics/fonts graphics/scalers audio \
 	audio/midi audio/midi/timidity usecode world world/actors gumps \
-	gumps/widgets conf system ${SYSTEM_MODULES} .
+	gumps/widgets conf system $(SYSTEM_MODULES) .
 
 # Default target. The other dependencies are added by the module.mk files
 all: misc/config.h
