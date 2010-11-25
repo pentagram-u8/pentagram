@@ -116,9 +116,10 @@ void ObjectManager::reset()
 	}
 
 
+	//!CONSTANTS
 	objects.clear();
 	objects.resize(65536);
-	objIDs->clearAll();
+	objIDs->clearAll(32766);
 	objIDs->reserveID(666);		// 666 is reserved for the Guardian Bark hack
 	actorIDs->clearAll();
 }

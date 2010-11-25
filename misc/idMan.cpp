@@ -42,8 +42,11 @@ idMan::~idMan()
 
 }
 
-void idMan::clearAll()
+void idMan::clearAll(uint16 new_max)
 {
+	if (new_max)
+		max_end = new_max;
+
 	end = begin + startcount - 1;
 	if (end > max_end) end = max_end;
 	ids.resize(end+1);

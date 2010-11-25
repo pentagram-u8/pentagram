@@ -56,8 +56,8 @@ public:
 	idMan(uint16 begin, uint16 max_end, uint16 startcount=0);
 	~idMan();
 
-	//! clear all IDs, reset size to the startcount
-	void		clearAll();
+	//! clear all IDs, reset size to the startcount, and set max_end to new_max
+	void		clearAll(uint16 new_max = 0);
 
 	//! get a free ID
 	//! \return a free ID, or 0 if none are available
