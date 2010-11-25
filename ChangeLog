@@ -1,5 +1,9 @@
 2010-11-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/GameMapGump.cpp: make dumpMap save/restore around dumping the map
+	* kernel/ObjectManager.cpp: restrict available object IDs to 32767
+	  (bug #3116767). The object arrays still have the same size because of
+	  bug #3117911.
+	* various: allow 64k object IDs in dumpMap as a workaround.
 
 2010-11-02  Matthew Jimenez <mjimenez@users.sourceforge.net>
 	* Makefile.in: exposed HOST_SYSTEM variable to makefiles

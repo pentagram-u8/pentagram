@@ -75,6 +75,13 @@ public:
 	bool		isIDUsed(uint16 id)
 		{ return id >= begin && id <= end && ids[id] == 0 && id != last; }
 
+	//! increase the maximum size
+	//! Note: this shouldn't be used in normal circumstances.
+	//!       It exists for dumpMap currently. If that is rewritten not
+	//!       to need more than 32768 object IDs, this function should be
+	//!       deleted.
+	void		setNewMax(uint16 max_end) { this->max_end = max_end; }
+
 	void save(ODataSource* ods);
 	bool load(IDataSource* ids, uint32 version);
 

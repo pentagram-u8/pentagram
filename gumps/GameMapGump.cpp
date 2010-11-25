@@ -43,6 +43,7 @@
 
 
 #include "GravityProcess.h" // hack...
+#include "ObjectManager.h" // hack...
 #include "PathfinderProcess.h"
 #include "UCList.h"
 #include "LoopScript.h"
@@ -606,6 +607,9 @@ void GameMapGump::ConCmd_dumpMap(const Console::ArgvType &)
 	// the fast area and available object IDs.
 	std::string savefile = "@save/dumpmap";
 	GUIApp::get_instance()->saveGame(savefile, "Pre-dumpMap save");
+
+	// Increase number of available object IDs.
+	ObjectManager::get_instance()->allow64kObjects();
 
 	// Actual size 
 	sint32 awidth = 8192;

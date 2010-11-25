@@ -47,6 +47,14 @@ public:
 	void clearObjId(ObjId objid);
 	Object* getObject(ObjId objid) const;
 
+	//! increase the maximum allowed object ID
+	//! Note: this shouldn't be used in normal circumstances.
+	//!       It exists for dumpMap currently. If that is rewritten not
+	//!       to need more than 32768 object IDs, this function should be
+	//!       deleted.
+	void allow64kObjects();
+
+
 	void objectStats();
 	void objectTypes();
 

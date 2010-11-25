@@ -79,7 +79,7 @@ ObjectManager::ObjectManager()
 	objects.resize(65536);
 
 	//!CONSTANTS
-	objIDs = new idMan(256,65534,8192);	// Want range of 256 to 65534
+	objIDs = new idMan(256,32766,8192);	// Want range of 256 to 32766
 	actorIDs = new idMan(1,255,255);
 }
 
@@ -139,7 +139,7 @@ void ObjectManager::objectStats()
 
 	pout << "Object memory stats:" << std::endl;
 	pout << "NPCs       : " << npccount << "/255" << std::endl;
-	pout << "Objects    : " << objcount << "/65279" << std::endl;
+	pout << "Objects    : " << objcount << "/32511" << std::endl;
 }
 
 void ObjectManager::objectTypes()
@@ -245,6 +245,12 @@ Object* ObjectManager::getObject(ObjId objid) const
 {
 	return objects[objid];
 }
+
+void ObjectManager::allow64kObjects()
+{
+	objIDs->setNewMax(65534);
+}
+
 
 void ObjectManager::save(ODataSource* ods)
 {

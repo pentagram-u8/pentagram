@@ -70,7 +70,7 @@ uint16 idMan::getNewID()
 	// Uh oh, what to do when there is none
 	if (!first) 
 	{
-		perr << "Unable to allocate id" << std::endl;
+		perr << "Unable to allocate id (max = " << max_end << ")" << std::endl;
 		return 0;
 	}
 
