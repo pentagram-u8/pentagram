@@ -602,6 +602,11 @@ void GameMapGump::ConCmd_dumpMap(const Console::ArgvType &)
 	// We only support 32 bits per pixel for now
 	if (RenderSurface::format.s_bpp != 32) return;
 
+	// Save because we're going to potentially break the game by enlarging
+	// the fast area and available object IDs.
+	std::string savefile = "@save/dumpmap";
+	GUIApp::get_instance()->saveGame(savefile, "Pre-dumpMap save");
+
 	// Actual size 
 	sint32 awidth = 8192;
 	sint32 aheight = 8192;
@@ -666,9 +671,6 @@ void GameMapGump::ConCmd_dumpMap(const Console::ArgvType &)
 
 
 	GameMapGump* g = new GameMapGump(0, 0, twidth, theight);
-
-	uint32 savedFlags = getMainActor()->getFlags();
-	uint32 savedExtFlags = getMainActor()->getExtFlags();
 
 	// HACK: Setting both INVISIBLE and TRANSPARENT flags on the Avatar
 	// will make him completely invisible.
@@ -740,12 +742,8 @@ void GameMapGump::ConCmd_dumpMap(const Console::ArgvType &)
 	delete g;
 	delete s;
 
-	// restore Avatar's flags
-	getMainActor()->clearFlag(~savedFlags);
-	getMainActor()->setFlag(savedFlags);
-	getMainActor()->setExtFlags(savedExtFlags);
-
-	CameraProcess::SetCameraProcess(new CameraProcess(1));
+	// Reload
+	GUIApp::get_instance()->loadGame(savefile);
 
 	pout << "Map stored in " << filename << "." << std::endl;
 }
