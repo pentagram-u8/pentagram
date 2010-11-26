@@ -41,15 +41,18 @@ class AudioProcess :
 		uint32		curspeech_start, curspeech_end;
 		uint32		pitch_shift;	// 0x10000 is normal
 		uint16		volume;			// 0-256
+		sint16		lvol;
+		sint16		rvol;
 		
 		SampleInfo() : sfxnum(-1) { }
-		SampleInfo(sint32 s,sint32 p,ObjId o,sint32 l,sint32 c,uint32 ps,uint16 v) : 
+		SampleInfo(sint32 s,sint32 p,ObjId o,sint32 l,sint32 c,uint32 ps,uint16 v, sint16 lv, sint16 rv) : 
 			sfxnum(s),priority(p),objid(o),loops(l),channel(c),
-			pitch_shift(ps), volume(v) { }
+			pitch_shift(ps), volume(v), lvol(lv), rvol(rv) { }
 		SampleInfo(std::string &b,sint32 shpnum,ObjId o,sint32 c,
-				   uint32 s,uint32 e,uint32 ps,uint16 v) : 
+				   uint32 s,uint32 e,uint32 ps,uint16 v, sint16 lv, sint16 rv) : 
 			sfxnum(-1),priority(shpnum),objid(o),loops(0),channel(c),barked(b),
-			curspeech_start(s), curspeech_end(e), pitch_shift(ps), volume(v) { }
+			curspeech_start(s), curspeech_end(e), pitch_shift(ps), volume(v), 
+			lvol(lv), rvol(rv) { }
 	};
 
 	std::list<SampleInfo>	sample_info;
@@ -78,8 +81,15 @@ public:
 	virtual void run();
 
 	void playSFX(int sfxnum, int priority, ObjId objid, int loops,
+				 bool no_duplicates, uint32 pitch_shift,
+				 uint16 volume, sint16 lvol, sint16 rvol);
+
+	void playSFX(int sfxnum, int priority, ObjId objid, int loops,
 				 bool no_duplicates=false, uint32 pitch_shift=0x10000,
-				 uint16 volume=0x80);
+				 uint16 volume=0x80) {
+		 playSFX(sfxnum, priority, objid, loops, no_duplicates, pitch_shift, volume, -1, -1);
+	}
+
 	void stopSFX(int sfxnum, ObjId objid);
 	bool isSFXPlaying(int sfxnum);
 	void setVolumeSFX(int sfxnum, uint8 volume);
@@ -95,7 +105,7 @@ public:
 	//! play a sample (without storing a SampleInfo)
 	//! returns channel sample is played on, or -1
 	int playSample(Pentagram::AudioSample* sample, int priority, int loops, 
-				   uint32 pitch_shift=0x10000, int lvol=256, int rvol=256);
+				   uint32 pitch_shift=0x10000, sint16 lvol=256, sint16 rvol=256);
 
 	//! pause all currently playing samples
 	void pauseAllSamples();
@@ -119,7 +129,7 @@ private:
 	//! returns true if there was speech left to play, or false if finished
 	bool continueSpeech(SampleInfo& si);
 
-	bool calculateSoundVolume(ObjId objid, int &lvol, int &rvol) const;
+	bool calculateSoundVolume(ObjId objid, sint16 &lvol, sint16 &rvol) const;
 
 	static AudioProcess	*	the_audio_process;
 };

@@ -1,3 +1,11 @@
+2010-11-26  Ryan Nunn <colourles@users.sourceforge.net>
+	* audio/AudioProcess.cpp, audio/AudioProcess.h : Changed things a little
+	  with the way the lvol and rvol values are handled. On savegame load now
+	  the values will be set to 0 (temporarily muting the sound) rather than 
+	  calculate the correct values based on the object position (bug #3117911).
+	  When AudioProcess::run() is first called after the savegame load, the 
+	  values will become correctly calculated and sound unmuted. 
+	  
 2010-11-25  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/GameMapGump.cpp: make dumpMap save/restore around dumping the map
 	* kernel/ObjectManager.cpp: restrict available object IDs to 32767

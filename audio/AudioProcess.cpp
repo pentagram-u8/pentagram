@@ -53,7 +53,7 @@ AudioProcess::~AudioProcess(void)
 	the_audio_process = 0;
 }
 
-bool AudioProcess::calculateSoundVolume(ObjId objid, int &lvol, int &rvol) const
+bool AudioProcess::calculateSoundVolume(ObjId objid, sint16 &lvol, sint16 &rvol) const
 {
 	Item *item = getItem(objid);
 	if (!item) return false;
@@ -117,9 +117,13 @@ void AudioProcess::run()
 			it = sample_info.erase(it);
 		else {
 
-			int lvol = 256, rvol = 256;
-			if (it->sfxnum != -1 && it->objid) calculateSoundVolume(it->objid, lvol,rvol);
-			mixer->setVolume(it->channel, (lvol*it->volume)/256,(rvol*it->volume)/256);
+			if (it->sfxnum != -1 && it->objid) 
+			{
+				it->lvol = 256;
+				it->rvol = 256;
+				calculateSoundVolume(it->objid, it->lvol,it->rvol);
+			}
+			mixer->setVolume(it->channel, (it->lvol*it->volume)/256,(it->rvol*it->volume)/256);
 
 			++it;
 		}
@@ -193,9 +197,15 @@ bool AudioProcess::loadData(IDataSource* ids, uint32 version)
 		uint32 pitch_shift = ids->read4();
 		uint16 volume = ids->read2();
 
-		if (sfxnum != -1)	// SFX
-			playSFX(sfxnum,priority,objid,loops,false,pitch_shift,volume);
-
+		if (sfxnum != -1) {	// SFX
+			sint16 lvol = 0;
+			sint16 rvol = 0;
+			if (objid != 0) {
+				lvol = 256;
+				rvol = 256;
+			}
+			playSFX(sfxnum,priority,objid,loops,false,pitch_shift,volume,lvol,rvol);
+		}
 		else {					// Speech
 			uint32 slen = ids->read4();
 
@@ -212,7 +222,7 @@ bool AudioProcess::loadData(IDataSource* ids, uint32 version)
 	return true;
 }
 
-int AudioProcess::playSample(AudioSample* sample, int priority, int loops, uint32 pitch_shift, int lvol, int rvol)
+int AudioProcess::playSample(AudioSample* sample, int priority, int loops, uint32 pitch_shift, sint16 lvol, sint16 rvol)
 {
 	AudioMixer *mixer = AudioMixer::get_instance();
 	int channel = mixer->playSample(sample,loops,priority,false,pitch_shift,lvol,rvol);
@@ -234,7 +244,8 @@ int AudioProcess::playSample(AudioSample* sample, int priority, int loops, uint3
 }
 
 void AudioProcess::playSFX(int sfxnum, int priority, ObjId objid, int loops,
-						   bool no_duplicates, uint32 pitch_shift, uint16 volume)
+						   bool no_duplicates, uint32 pitch_shift, uint16 volume,
+						   sint16 lvol, sint16 rvol)
 {
 	//con.Printf("playSFX(%i, %i, 0x%X, %i)\n", sfxnum, priority, objid, loops);
 
@@ -269,14 +280,18 @@ void AudioProcess::playSFX(int sfxnum, int priority, ObjId objid, int loops,
 	AudioSample *sample = soundflx->getSample(sfxnum);
 	if (!sample) return;
 
-	int lvol=256, rvol=256;
-	if (objid) calculateSoundVolume(objid, lvol, rvol);
+	if (lvol == -1 || rvol == -1)
+	{
+		lvol=256;
+		rvol=256;
+		if (objid) calculateSoundVolume(objid, lvol, rvol);
+	}
 
 	int channel = playSample(sample,priority,loops,pitch_shift,(lvol*volume)/256,(rvol*volume)/256);
 	if (channel == -1) return;
 
 	// Update list
-	sample_info.push_back(SampleInfo(sfxnum,priority,objid,loops,channel,pitch_shift,volume));
+	sample_info.push_back(SampleInfo(sfxnum,priority,objid,loops,channel,pitch_shift,volume,lvol,rvol));
 }
 
 void AudioProcess::stopSFX(int sfxnum, ObjId objid)
@@ -321,7 +336,7 @@ void AudioProcess::setVolumeSFX(int sfxnum, uint8 volume)
 			it->volume = volume; 
 
 			int lvol = 256, rvol = 256;
-			if (it->objid) calculateSoundVolume(it->objid, lvol,rvol);
+			if (it->objid) calculateSoundVolume(it->objid, it->lvol, it->rvol);
 			mixer->setVolume(it->channel, (lvol*it->volume)/256,(rvol*it->volume)/256);
 		}
 	}
@@ -372,7 +387,7 @@ bool AudioProcess::playSpeech(std::string &barked, int shapenum, ObjId objid, ui
 
 	// Update list
 	sample_info.push_back(SampleInfo(barked,shapenum,objid,channel,
-									 speech_start,speech_end,pitch_shift,volume));
+									 speech_start,speech_end,pitch_shift,volume,256,256));
 
 	return true;
 }
