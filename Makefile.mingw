@@ -131,6 +131,7 @@ dist:   install tools
 	cp SDL/README-SDL.txt $(U8PATH)
 	cp SDL/lib/SDL.dll $(U8PATH)
 	u2d $(U8PATH)/*.txt
+	cp win32/Pentagram.iss $(U8PATH)
 
 toolsdist: toolsinstall
 	cp docs/maps.txt $(U8PATH)/tools
