@@ -37,7 +37,7 @@ CXX=g++
 CFLAGS=-O2
 CC=gcc
 
-LFLAGS=-mwindows
+LFLAGS=-static-libgcc -static-libstdc++ -mwindows
 LIBS=-lmingw32 -lfluidsynth -ldsound -lwinmm -lz -lpng $(SDL_LIBS)
 
 include objects.mk
