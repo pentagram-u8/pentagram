@@ -1,15 +1,22 @@
 [Setup]
-OutputDir=C:\Ultima8
-OutputBaseFilename=Pentagramwin32
-SolidCompression=true
 AppCopyright=2011
 AppName=Pentagram
 AppVerName=Pentagram SVN
+AppPublisher=The Pentagram Team
+AppPublisherURL=http://pentagram.sourceforge.net/
+AppSupportURL=http://pentagram.sourceforge.net/
+AppUpdatesURL=http://pentagram.sourceforge.net/
 DefaultDirName={pf}\Pentagram
-DirExistsWarning=no
-AppendDefaultDirName=false
-AllowNoIcons=true
 DefaultGroupName=Pentagram
+AllowNoIcons=true
+AlwaysUsePersonalGroup=false
+EnableDirDoesntExistWarning=false
+OutputDir=C:\Ultima8
+OutputBaseFilename=Pentagramwin32
+DisableStartupPrompt=true
+AppendDefaultDirName=false    
+SolidCompression=true
+DirExistsWarning=no   
 
 [Icons]
 Name: {group}\{cm:UninstallProgram, Pentagram}; Filename: {uninstallexe}
