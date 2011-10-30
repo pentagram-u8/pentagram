@@ -40,7 +40,7 @@
 <!ELEMENT br (#PCDATA)>
 <!ELEMENT Pent (#PCDATA)>
 
-<!ELEMENT configdesc (configsec|configtag*)>
+<!ELEMENT configdesc (configsec*)>
 <!ELEMENT comment (#PCDATA|ref|key|q)*>
 <!ELEMENT configsec (#PCDATA|configtag|comment)*>
 <!ELEMENT configtag (#PCDATA|configtag|comment)*>

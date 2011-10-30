@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE faqs SYSTEM "docs.dtd">
-<faqs title="Pentagram" changed="19 February 2006 (GMT)">
+<faqs title="Pentagram" changed="30 October 2011 (GMT)">
 	<section title="Introduction">
 		<sub name="pent_is">
 			<header>What is <Pent/>?</header>
@@ -66,7 +66,7 @@
 		<sub name="dl_pent">
 			<header>Where can you download <Pent/>?</header>
 			<body><para>
-				Daily Windows CVS snapshots binaries (by Travis Howell) and the CVS 
+				Daily SVN snapshot binaries for Windows (by Travis Howell), Mac OS X (by Dominus) and the SVN 
 				snapshot source tree can be found at 
 				<extref target="http://pentagram.sourceforge.net/download.php"/>.
 			</para></body>
@@ -75,15 +75,16 @@
 			<header>Binary, snapshot, source tree - what are you talking about?</header>
 			<body><para>
 				First of all, if you are running Windows and you just want to run/play 
-				<Pent/>, download the CVS Snapshot binary called 
+				<Pent/>, download the SVN Snapshot binary called 
 				<strong>Windows Binary</strong>.
 			</para><para>
 				Source is the code of Pentagram and is only useful for programmers that 
 				want to look at it, compile it or, hopefully, want to contribute to the 
 				project. Once you compile the code you get a binary or in other words 
-				the actual program. CVS snapshots are the newest source code. Whenever
-				we change some code, Travis makes a new snapshot the next day. As we
-				currently have no releases, snapshots are the only way for you to
+				the actual program.<br/>
+				SVN snapshots are the newest source code. Whenever
+				we change some code, Travis and Dominus make a new snapshot the next day. 
+				As we currently have no releases, snapshots are the only way for you to
 				run <Pent/>.
 			</para></body>
 		</sub>
@@ -282,6 +283,13 @@
 		</sub>
 	</section>
 	<section title="Changes to the FAQ">
+		<sub name="30102011">
+			<header>- 30 October 2011</header>
+			<body><para>
+				<ref1 target="dl_pent"/>: changed to SVN and added OS X snapshot.<br/>
+				<ref1 target="snapshot"/>: same.<br/>
+			</para></body>
+		</sub>
 		<sub name="19022006">
 			<header>- 19 February 2006</header>
 			<body><para>

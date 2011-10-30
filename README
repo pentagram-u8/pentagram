@@ -1,83 +1,52 @@
 Pentagram Documentation
-last changed: 3 August 2007 (GMT)
+last changed: 30 October 2011 (GMT)
 
 The latest version of this document can be found at http://pentagram.sourceforge.net/docs.php
 
 
-1. Building CVS
-1.1. Build dependencies
-1.2. Linux/Unix
-1.3. Windows
-1.4. Mac OS X
+1. Configuration
+1.1. Quick guide
+1.2. Advanced Configuration
+1.3. Optional MIDI settings for Linux
 
-2. Configuration
-2.1. Quick guide
-2.2. Advanced Configuration
-2.3. Optional MIDI settings for Linux
+2. Movement and Keys
+2.1. Movement
+2.2. Keyboard commands
 
-3. Movement and Keys
-3.1. Movement
-3.2. Keyboard commands
+3. Other stuff
+3.1. Console commands
+3.2. Supported games and versions
 
-4. Other stuff
-4.1. Console commands
-4.2. Supported games and versions
+4. Building SVN
+4.1. Build dependencies
+4.2. Linux/Unix
+4.3. Windows
+4.4. Mac OS X
 
 5. Changes to the Documentation
-5.1. - 5 January 2010
-5.2. - 4 September 2008
-5.3. - 3 August 2007
-5.4. - 19 February 2006
-5.5. - 22 May 2005
-5.6. - 21 May 2005
-5.7. - 14 October 2004
+5.1. - 30 October 2011
+5.2. - 5 January 2010
+5.3. - 4 September 2008
+5.4. - 3 August 2007
+5.5. - 19 February 2006
+5.6. - 22 May 2005
+5.7. - 21 May 2005
+5.8. - 14 October 2004
 
 
 --------------------------------------------------------------------------------
 
-1. Building CVS
-1.1. Build dependencies
-Before you build Pentagram, make sure you have the following tools/libraries.
-* SDL;
-* SDL_ttf;
-* zlib;
-* libpng;
-* for Linux/Unix, you need autoconf and automake.
+1. Configuration
+1.1. Quick guide
+Pentagram needs a pentagram.ini file to point it to the game data files. The location of the file varies depending on the Operating System and in the case of Windows OS it also depends on the version of Windows.
+* On Linux, pentagram.ini has to be in the ~/.pentagram directory.
+* On Mac OS X, it has to be in the ~/Library/Application Support/Pentagram folder. Unfortunately ~/Library is hidden on OS X Lion, to open this folder click on the "Go" menu item of Finder while pressing 'Option/Alt'
+* Windows 95, 98, 98 SE and ME save the ini to the folder where you installed Pentagram to (by default C:\Program Files\Pentagram)
+* Windows 2000 and XP save pentagram.ini to APPDATA\Pentagram, which translates to C:\Documents and Settings\YourUsername\Application Data\Pentagram for an English version of Windows.
+* Windows Vista and Windows 7 also save pentagram.ini to APPDATA\Pentagram, but on these this translates to C:\Users\YourUsername\AppData\Roaming\Pentagram
+* On Windows 2000, XP, Vista and 7 you can quickly access this folder by executing shell:AppData\Pentagram in the "Run" entry of the Startmenu (or the "Run or Search" entry of the Windows Vista and 7 Startmenu)
 
-
-
-1.2. Linux/Unix
-1. Run the "bootstrap" script to create the "configure" script: ./bootstrap
-2. Now run configure: ./configure
-3. Finally, start the build as usual: make
-
-
-
-1.3. Windows
-nothing here yet
-
-
-1.4. Mac OS X
-Under OS X, the dependencies are built into the application bundle as embedded libraries. Pentagram provides makefiles to build the dependencies appropriately. Internally, the OS X specific makefiles use normal unix-style configure & make to build Pentagram and all dependencies.
-For the build, you should install XCode and the SDK for OS X 10.4 as it is currently the oldest supported version of OS X for the official builds. The build may still work on older versions or if the SDK is missing, but it will attempt target your version of OS X by default. Additional editing of system/macosx/archs.mk may be required for some configurations.
-You also should ensure /Developer/usr/bin is in you PATH environment variable. You can do this by adding the following to ~/.profile export PATH=$PATH:/Developer/usr/bin
-Lastly, you may need to add configuration for autoconf and associated tools to work correctly. The following is a sample version of this configuration is in system/macosx/autom4te.cfg. Copy the contents of that file to ~/.autom4te.cfg if the "bootstrap" script encounters problems.
-After completing the system configuration listed above, perform the following steps to build Pentagram.
-1. Run the "bootstrap" script to create the "configure" script: ./bootstrap
-2. Build all dependencies: make -f Makefile.macosx deps
-3. Build Pentagram: make -f Makefile.macosx build
-4. Build Pentagram.app: make -f Makefile.macosx bundle
-5. Build disk image: make -f Makefile.macosx image
-6. The disk image is located in the build directory and contains the universal binary
-
-
-
-
---------------------------------------------------------------------------------
-
-2. Configuration
-2.1. Quick guide
-Pentagram needs a pentagram.ini file to point it to the game data files. In Linux, pentagram.ini has to be in the ~/.pentagram directory. In Windows, it has to be in the current directory. In OS X, it has to be in the ~/Library/Application Support/Pentagram directory A sample pentagram.ini is included below (this is all that is needed at the moment to run Pentagram). Comments are marked with # and are above the ini-entries. You can copy/paste these settings with the comments to your ini file as Pentagram will ignore lines beginning with #.
+A sample pentagram.ini is included below (this is all that is needed at the moment to run Pentagram). Comments are marked with # and are above the ini-entries. You can copy/paste these settings with the comments to your ini file as Pentagram will ignore lines beginning with #.
 
 [u8]
 # replace 'path to U8 directory' with the directory containing 'u8.exe'
@@ -85,7 +54,7 @@ path=path to U8 directory
 
 
 
-2.2. Advanced Configuration
+1.2. Advanced Configuration
 Right now Pentagram assumes some default settings that don't need to be set to make Pentagram work. The settings below are these default settings.
 
 [pentagram]
@@ -110,9 +79,9 @@ ttf=no
 # (Note: Windows will only work on Windows. CoreAudio only on Mac OS X.
 # Alsa is Linux-only and UnixSeq will only work on Unix variants.)
 # See further down for more options on Linux.
-midi_driver=disabled/windows/fmopl/timidity/alsa/unixseq/coreaudio
-# Enable this to skip the intro of U8 and initial conversation with Devon.
-skipstart=no
+midi_driver=disabled/windows/fmopl/timidity/alsa/unixseq/coreaudio/fluidsynth
+# If Pentagram was compiled with Fluidsynth support enter the path to the soundfont.
+fluidsynth_soundfont=path to soundfont
 # Conversation speed. Higher is slower.
 textdelay=8
 [u8]
@@ -121,11 +90,23 @@ path=path to U8 directory
 # replace with the directory you want Pentagram to save games to.
 # (no, loading of the original's savegames is not supported)
 save=path to U8 savegames directory
+# Enable this to skip the intro of U8 and initial conversation with Devon.
+skipstart=no
+# Gives the option to see the endgame animation.
+endgame=no
+# Gives the option to see the quotes (without having to watch the credits).
+quotes=no
+# Footsteps are audible.
+footsteps=yes
+# Enables post patch targeted jumps.
+targetedjump=yes
+# Enables cheating by clicking on the Avatar - currently cannot be disabled.
+cheat=yes
 
 You may also override most settings under [pentagram] by writing them under [u8]. Except for defaultgame all can be overriden. Right now this is not necessary as we only support U8 but if we start to support other games it might come in handy.
 
 
-2.3. Optional MIDI settings for Linux
+1.3. Optional MIDI settings for Linux
 MIDI used on Linux might need some fine tuning in pentagram.ini to work correctly. Below are the settings you can configure.
 
 [pentagram]
@@ -145,43 +126,40 @@ unixseqdevice=/dev/sequencer
 
 --------------------------------------------------------------------------------
 
-3. Movement and Keys
-3.1. Movement
+2. Movement and Keys
+2.1. Movement
 * Double-click with the right mouse button will make the Avatar find a path to the selected spot.
 * Left-click on NPCs or objects to identify them.
 * Double-left-click on NPCs or objects to initiate conversations or use the item.
 * On pressing the right mouse button down the Avatar walks or runs (depending on distance between cursor and Avatar).
 * Pressing right and left mouse button, makes the Avatar jump or while running a running jump.
-* You can also move the Avatar with the keypad. Details are in the keycommands table below.
-
-Note that on Mac OS you have to hold down the 'Cmd' key and the mouse button to have the functionality of a right mouse button.
 
 
-3.2. Keyboard commands
-All key commands of Pentagram can be changed by editing u8bindings.ini or via the options menu in the game. 'KP' means keypad.
+
+2.2. Keyboard commands
+All key commands of Pentagram can be changed by editing u8bindings.ini or via the options menu in the game. We are distinguishing between default keyboard commands and debug keyboard commands that are used to help debugging the engine. At the moment you can't turn off the debug commands.
 
 Default keyboard commands
-~ : hides/restores console
-arrow keys : moves Avatar around the map (no walking)
-home,end : moves Avatar vertically 
-KP : Avatar walks (one animation cycle)
-Shift+KP : Avatar runs (one animation cycle)
-Ctrl+KP : Avatar makes a little step (one animation cycle)
-Alt+KP : Avatar jumps long (one animation cycle)
-s : toggles "avatarInStasis"
-t : outputs kernel/usecode/world/location stats to the console
-e : toggles editor items
-h : highlights any item you are "hitting", colliding with
 i : open backpack
 z : open paperdoll/status
 r : recall
 c : switches combat mode on/off
+m : show/hide minimap
 ESC : main menu
-alt+x : quit
 ctrl+q : quits without confirmation 
 backspace : close all open containers
-F7 : Quicksave (savegames are not yet stable!)
+F4 : toogle fullscreen
+F7 : Quicksave
 F8 : Quickload
+
+Debug keyboard commands
+~, F5 : hides/restores console
+arrow keys : moves Avatar around the map (no walking)
+home,end : moves Avatar vertically 
+t : outputs kernel/usecode/world/location stats to the console
+e : toggles editor items
+h : highlights any item you are "hitting", colliding with
+F10 : toggles "avatarInStasis"
 F11 : Shapeviewer
 F12 : toggles frame by frame
 shift : quarter speed mode. needs to be held down
@@ -192,8 +170,8 @@ shift : quarter speed mode. needs to be held down
 
 --------------------------------------------------------------------------------
 
-4. Other stuff
-4.1. Console commands
+3. Other stuff
+3.1. Console commands
 Pentagram has a debugging console with various useful commands. A selection is listed below.
 
 Console commands
@@ -208,39 +186,83 @@ MainActor::teleport <map> <x> <y> <z> : teleport to coordinates
 MiniMapGump::toggle : show/hide minimap
 
 
-4.2. Supported games and versions
+3.2. Supported games and versions
 At the moment we only support the English versions of Ultima 8, both pre-patch and post-patch. The German, French, Spanish versions should also work, but are less well-tested. The Japanese version has a chance of working, but has hardly been tested at all.
 
 
 
 --------------------------------------------------------------------------------
 
+4. Building SVN
+4.1. Build dependencies
+Before you build Pentagram, make sure you have the following tools/libraries.
+* SDL;
+* SDL_ttf;
+* zlib;
+* libpng;
+* for Linux/Unix, you need autoconf and automake.
+
+
+
+4.2. Linux/Unix
+1. Run the "bootstrap" script to create the "configure" script: ./bootstrap
+2. Now run configure: ./configure
+3. Finally, start the build as usual: make
+
+
+
+4.3. Windows
+nothing here yet
+
+
+4.4. Mac OS X
+Under OS X, the dependencies are built into the application bundle as embedded libraries. Pentagram provides makefiles to build the dependencies appropriately. Internally, the OS X specific makefiles use normal unix-style configure & make to build Pentagram and all dependencies.
+For the build, you should install XCode and the SDK for OS X 10.4 as it is currently the oldest supported version of OS X for the official builds. The build may still work on older versions or if the SDK is missing, but it will attempt target your version of OS X by default. Additional editing of system/macosx/archs.mk may be required for some configurations.
+You also should ensure /Developer/usr/bin is in you PATH environment variable. You can do this by adding the following to ~/.profile export PATH=$PATH:/Developer/usr/bin
+Lastly, you may need to add configuration for autoconf and associated tools to work correctly. The following is a sample version of this configuration is in system/macosx/autom4te.cfg. Copy the contents of that file to ~/.autom4te.cfg if the "bootstrap" script encounters problems.
+After completing the system configuration listed above, perform the following steps to build Pentagram.
+1. Run the "bootstrap" script to create the "configure" script: ./bootstrap
+2. Build all dependencies: make -f Makefile.macosx deps
+3. Build Pentagram: make -f Makefile.macosx build
+4. Build Pentagram.app: make -f Makefile.macosx bundle
+5. Build disk image: make -f Makefile.macosx image
+6. The disk image is located in the build directory and contains the universal binary
+
+
+
+
+--------------------------------------------------------------------------------
+
 5. Changes to the Documentation
-5.1. - 5 January 2010
-1.4. Mac OS X: added additional information for builds.
+5.1. - 30 October 2011
+1.2. Advanced Configuration: added a lot of settings. 2.1. Movement: no more keypad movement and the not for Mac OS is no longer needed. 2.2. Keyboard commands: updated and split in default and debug keys. Moved the Building SVN section to the bottom.
 
 
-5.2. - 4 September 2008
-1.4. Mac OS X: replaced old build instructions.
+5.2. - 5 January 2010
+4.4. Mac OS X: added additional information for builds.
 
 
-5.3. - 3 August 2007
-4.1. Console commands: added (short) list of console commands.
+5.3. - 4 September 2008
+4.4. Mac OS X: replaced old build instructions.
 
 
-5.4. - 19 February 2006
-4.2. Supported games and versions: updated status of non-English U8.
+5.4. - 3 August 2007
+3.1. Console commands: added (short) list of console commands.
 
 
-5.5. - 22 May 2005
-2.2. Advanced Configuration some more configurations added. 2.3. Optional MIDI settings for Linux added.
+5.5. - 19 February 2006
+3.2. Supported games and versions: updated status of non-English U8.
 
 
-5.6. - 21 May 2005
+5.6. - 22 May 2005
+1.2. Advanced Configuration some more configurations added. 1.3. Optional MIDI settings for Linux added.
+
+
+5.7. - 21 May 2005
 cleaned up outdated sections
 
 
-5.7. - 14 October 2004
-2.2. Advanced Configuration enable font replacement.
+5.8. - 14 October 2004
+1.2. Advanced Configuration enable font replacement.
 
 

@@ -1,3 +1,10 @@
+2011-10-30  Dominik Reichardt <dominus@users.sourceforge.net>
+	* data/u8bindings.ini : added shortcut 'm' for the minimap
+	* data/u8german.ini : fixed an umlaut typo
+	* docs/xml/* : updated the documentation with changes from the last couple 
+	  of years. Also prepared the docs for the upcoming APPDATA settings 
+	  location changes on Windows.
+	
 2010-11-26  Ryan Nunn <colourles@users.sourceforge.net>
 	* audio/AudioProcess.cpp, audio/AudioProcess.h : Changed things a little
 	  with the way the lvol and rvol values are handled. On savegame load now
