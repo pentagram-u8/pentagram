@@ -29,8 +29,9 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GameInfo.h"
 #include "GameDetector.h"
 
-#if defined(WIN32) && defined(WIN32_USE_MY_DOCUMENTS)
-#include <shlobj.h>
+#if defined(WIN32)
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
 #endif
 
 using std::string;
@@ -131,11 +132,43 @@ void CoreApp::setupVirtualPaths()
 #ifdef HAVE_HOME
 	home = getenv("HOME");
 	home += "/.pentagram";
-#elif defined(WIN32) && defined(WIN32_USE_MY_DOCUMENTS)
-	TCHAR MyDocumentsPath[MAX_PATH];
-	SHGetFolderPath(NULL, CSIDL_PERSONAL, NULL, SHGFP_TYPE_CURRENT, MyDocumentsPath);
-	home = MyDocumentsPath;
-	home += "\\Pentagram";
+#elif defined(WIN32)
+	// Use the Pentagram sub directory of Application Data, under Windows NT4 and later
+	char configFilePath[MAX_PATH];
+
+	OSVERSIONINFO win32OsVersion;
+	ZeroMemory(&win32OsVersion, sizeof(OSVERSIONINFO));
+	win32OsVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
+	GetVersionEx(&win32OsVersion);
+	// Check for non-9X version of Windows.
+	if (win32OsVersion.dwPlatformId != VER_PLATFORM_WIN32_WINDOWS) {
+		// Use the Application Data directory of the user profile.
+		if (win32OsVersion.dwMajorVersion >= 5) {
+			if (!GetEnvironmentVariable("APPDATA", configFilePath, sizeof(configFilePath)))
+				pout << "Unable to access application data directory" << std::endl;
+		} else {
+			if (!GetEnvironmentVariable("USERPROFILE", configFilePath, sizeof(configFilePath)))
+				pout << "Unable to access user profile directory" << std::endl;
+
+			strcat(configFilePath, "\\Application Data");
+
+			// If the directory already exists (as it should in most cases),
+			// we don't want to fail, but we need to stop on other errors (such as ERROR_PATH_NOT_FOUND)
+			if (!CreateDirectory(configFilePath, NULL)) {
+				if (GetLastError() != ERROR_ALREADY_EXISTS)
+					pout << "Cannot create Application data folder" << std::endl;
+			}
+		}
+
+		strcat(configFilePath, "\\Pentagram");
+		if (!CreateDirectory(configFilePath, NULL)) {
+			if (GetLastError() != ERROR_ALREADY_EXISTS)
+				pout << "Cannot create Pentagram application data folder" << std::endl;
+		}
+		home = configFilePath;
+	} else {
+		home = ".";
+	}
 //#elif defined(UNDER_CE)
 //	home = "\\\\Pierce\\Moo\\UC";
 #elif defined(MACOSX)

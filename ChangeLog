@@ -1,3 +1,8 @@
+2011-10-31  Travis Howell <kirben@users.sourceforge.net>
+	* kernel/CoreApp.cpp : Use APPDATA lcation for config file and save games
+	  under Windows NT4/2000/XP/Vista/7
+	* win32/Pentagram.iss : Update paths in Windows installer script
+	
 2011-10-30  Dominik Reichardt <dominus@users.sourceforge.net>
 	* data/u8bindings.ini : added shortcut 'm' for the minimap
 	* data/u8german.ini : fixed an umlaut typo

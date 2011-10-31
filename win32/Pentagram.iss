@@ -29,7 +29,6 @@ Name: {group}\README; Filename: {app}\README.txt; WorkingDir: {app}; Comment: RE
 
 [Dirs]
 Name: {app}\tools
-Name: {app}\u8-save
 
 [Files]
 Source: AUTHORS.txt; DestDir: {app}; Flags: ignoreversion
@@ -67,21 +66,35 @@ Source: tools\u8usecode.txt; DestDir: {app}\tools\; Flags: ignoreversion
 Source: tools\u8weapon.txt; DestDir: {app}\tools\; Flags: ignoreversion
 
 [INI]
-Filename: {app}\pentagram.ini; Section: pentagram; Key: defaultgame; String: u8; Flags: createkeyifdoesntexist
-Filename: {app}\pentagram.ini; Section: pentagram; Key: fullscreen; String: no; Flags: createkeyifdoesntexist
-Filename: {app}\pentagram.ini; Section: pentagram; Key: scalex; String: 320; Flags: createkeyifdoesntexist
-Filename: {app}\pentagram.ini; Section: pentagram; Key: scaley; String: 240; Flags: createkeyifdoesntexist
-Filename: {app}\pentagram.ini; Section: pentagram; Key: scaler; String: point; Flags: createkeyifdoesntexist
-Filename: {app}\pentagram.ini; Section: pentagram; Key: width; String: 640; Flags: createkeyifdoesntexist
-Filename: {app}\pentagram.ini; Section: pentagram; Key: height; String: 480; Flags: createkeyifdoesntexist
-Filename: {app}\pentagram.ini; Section: pentagram; Key: bpp; String: 32; Flags: createkeyifdoesntexist
-Filename: {app}\pentagram.ini; Section: pentagram; Key: tff; String: no; Flags: createkeyifdoesntexist
-Filename: {app}\pentagram.ini; Section: pentagram; Key: midi_driver; String: windows; Flags: createkeyifdoesntexist
-Filename: {app}\pentagram.ini; Section: pentagram; Key: skipstart; String: no; Flags: createkeyifdoesntexist
-Filename: {app}\pentagram.ini; Section: pentagram; Key: textdelay; String: 8; Flags: createkeyifdoesntexist
+//Windows 95/98/ME
+Filename: {app}\pentagram.ini; Section: pentagram; Key: defaultgame; String: u8; Flags: createkeyifdoesntexist; MinVersion: 1, 0
+Filename: {app}\pentagram.ini; Section: pentagram; Key: fullscreen; String: no; Flags: createkeyifdoesntexist; MinVersion: 1, 0
+Filename: {app}\pentagram.ini; Section: pentagram; Key: scalex; String: 320; Flags: createkeyifdoesntexist; MinVersion: 1, 0
+Filename: {app}\pentagram.ini; Section: pentagram; Key: scaley; String: 240; Flags: createkeyifdoesntexist; MinVersion: 1, 0
+Filename: {app}\pentagram.ini; Section: pentagram; Key: scaler; String: point; Flags: createkeyifdoesntexist; MinVersion: 1, 0
+Filename: {app}\pentagram.ini; Section: pentagram; Key: width; String: 640; Flags: createkeyifdoesntexist; MinVersion: 1, 0
+Filename: {app}\pentagram.ini; Section: pentagram; Key: height; String: 480; Flags: createkeyifdoesntexist; MinVersion: 1, 0
+Filename: {app}\pentagram.ini; Section: pentagram; Key: bpp; String: 32; Flags: createkeyifdoesntexist; MinVersion: 1, 0
+Filename: {app}\pentagram.ini; Section: pentagram; Key: tff; String: no; Flags: createkeyifdoesntexist; MinVersion: 1, 0
+Filename: {app}\pentagram.ini; Section: pentagram; Key: midi_driver; String: windows; Flags: createkeyifdoesntexist; MinVersion: 1, 0
+Filename: {app}\pentagram.ini; Section: pentagram; Key: skipstart; String: no; Flags: createkeyifdoesntexist; MinVersion: 1, 0
+Filename: {app}\pentagram.ini; Section: pentagram; Key: textdelay; String: 8; Flags: createkeyifdoesntexist; MinVersion: 1, 0
+Filename: {app}\pentagram.ini; Section: u8; Key: path; String: {code:GetDataDir}; MinVersion: 1, 0
 
-Filename: {app}\pentagram.ini; Section: u8; Key: path; String: {code:GetDataDir}
-Filename: {app}\pentagram.ini; Section: u8; Key: save; String: {app}\u8-save; Flags: createkeyifdoesntexist
+//WINDOWS NT4/2000/XP/7
+Filename: {userappdata}\Pentagram\pentagram.ini; Section: pentagram; Key: defaultgame; String: u8; Flags: createkeyifdoesntexist; MinVersion: 0, 1 
+Filename: {userappdata}\Pentagram\pentagram.ini; Section: pentagram; Key: fullscreen; String: no; Flags: createkeyifdoesntexist; MinVersion: 0, 1
+Filename: {userappdata}\Pentagram\pentagram.ini; Section: pentagram; Key: scalex; String: 320; Flags: createkeyifdoesntexist; MinVersion: 0, 1
+Filename: {userappdata}\Pentagram\pentagram.ini; Section: pentagram; Key: scaley; String: 240; Flags: createkeyifdoesntexist; MinVersion: 0, 1
+Filename: {userappdata}\Pentagram\pentagram.ini; Section: pentagram; Key: scaler; String: point; Flags: createkeyifdoesntexist; MinVersion: 0, 1
+Filename: {userappdata}\Pentagram\pentagram.ini; Section: pentagram; Key: width; String: 640; Flags: createkeyifdoesntexist; MinVersion: 0, 1
+Filename: {userappdata}\Pentagram\pentagram.ini; Section: pentagram; Key: height; String: 480; Flags: createkeyifdoesntexist; MinVersion: 0, 1
+Filename: {userappdata}\Pentagram\pentagram.ini; Section: pentagram; Key: bpp; String: 32; Flags: createkeyifdoesntexist; MinVersion: 0, 1
+Filename: {userappdata}\Pentagram\pentagram.ini; Section: pentagram; Key: tff; String: no; Flags: createkeyifdoesntexist; MinVersion: 0, 1
+Filename: {userappdata}\Pentagram\pentagram.ini; Section: pentagram; Key: midi_driver; String: windows; Flags: createkeyifdoesntexist; MinVersion: 0, 1
+Filename: {userappdata}\Pentagram\pentagram.ini; Section: pentagram; Key: skipstart; String: no; Flags: createkeyifdoesntexist; MinVersion: 0, 1
+Filename: {userappdata}\Pentagram\pentagram.ini; Section: pentagram; Key: textdelay; String: 8; Flags: createkeyifdoesntexist; MinVersion: 0, 1
+Filename: {userappdata}\Pentagram\pentagram.ini; Section: u8; Key: path; String: {code:GetDataDir}; MinVersion: 0, 1
 
 [Run]
 Filename: {app}\pentagram.exe; Flags: nowait skipifdoesntexist postinstall skipifsilent; Description: Launch Pentagram
