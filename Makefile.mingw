@@ -93,7 +93,7 @@ PENTAGRAM_OBJS = \
 	$(COMPILE) $(DISASM) $(AUDIO) $(MIDI) $(TIMIDITY) $(GAMES) $(GAMES2) \
 	$(FONTS) kernel/GUIApp.o misc/version.o pentagram.o
 
-pentagramico.o: system/win32/pentagram.rc
+pentagramico.o: system/win32/pentagram.rc system/win32/pentagram.rc
 	windres --include-dir system/win32 system/win32/pentagram.rc pentagramico.o
 
 pentagram.exe: $(PENTAGRAM_OBJS) pentagramico.o
