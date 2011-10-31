@@ -294,7 +294,7 @@ public:
 
 		for (j=0; j<Yres; j++)
 		{
-			if (j==0 || !clipY_Begin)   prevline = -tpitch; else prevline = 0;
+			if (j>0 || !clipY_Begin)    prevline = -tpitch; else prevline = 0;
 			if (j<Yres-1 || !clipY_End)	nextline =  tpitch; else nextline = 0;
 
 			// Read first 2 columns of pixels 
