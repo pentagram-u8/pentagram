@@ -264,9 +264,9 @@ template<class uintX, class Manip, class uintS=uintX> class hq3xScalerInternal {
 	{
 		YUV1 = RGBtoYUV[w1];
 		YUV2 = RGBtoYUV[w2];
-		return ( ( abs((YUV1 & Ymask) - (YUV2 & Ymask)) > trY ) ||
-			( abs((YUV1 & Umask) - (YUV2 & Umask)) > trU ) ||
-			( abs((YUV1 & Vmask) - (YUV2 & Vmask)) > trV ) );
+		return ( ( (unsigned int)abs((YUV1 & Ymask) - (YUV2 & Ymask)) > trY ) ||
+			( (unsigned int)abs((YUV1 & Umask) - (YUV2 & Umask)) > trU ) ||
+			( (unsigned int)abs((YUV1 & Vmask) - (YUV2 & Vmask)) > trV ) );
 	}
 
 public:
@@ -384,9 +384,9 @@ public:
 					if ( w16[k] != w16[5] )
 					{
 						YUV2 = RGBtoYUV[w16[k]];
-						if ( ( abs((YUV1 & Ymask) - (YUV2 & Ymask)) > trY ) ||
-							( abs((YUV1 & Umask) - (YUV2 & Umask)) > trU ) ||
-							( abs((YUV1 & Vmask) - (YUV2 & Vmask)) > trV ) )
+						if ( ( (unsigned int)abs((YUV1 & Ymask) - (YUV2 & Ymask)) > trY ) ||
+							( (unsigned int)abs((YUV1 & Umask) - (YUV2 & Umask)) > trU ) ||
+							( (unsigned int)abs((YUV1 & Vmask) - (YUV2 & Vmask)) > trV ) )
 							pattern |= flag;
 					}
 					flag <<= 1;
