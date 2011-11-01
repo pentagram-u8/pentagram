@@ -1,3 +1,6 @@
+2011-11-01  Dominik Reichardt <dominus@users.sourceforge.net>
+	* graphics/scalers/hq3xScaler.cpp/.h and various: added hq3x Scaler
+	
 2011-10-31  Travis Howell <kirben@users.sourceforge.net>
 	* kernel/CoreApp.cpp : Use APPDATA lcation for config file and save games
 	  under Windows NT4/2000/XP/Vista/7

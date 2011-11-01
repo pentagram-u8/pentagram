@@ -471,6 +471,16 @@ else
 fi
 AC_MSG_RESULT($pent_hq2x)
 
+# HQ3X scaler
+AC_ARG_ENABLE(hq3x, [[  --enable-hq3x           Enable hq3x scaler support [default no]]],,enable_hq3x=no)
+AC_MSG_CHECKING(if we should build the hq3x scaler)
+if test x$enable_hq3x = xyes; then
+	pent_hq3x=yes
+	AC_DEFINE(USE_HQ3X_SCALER, 1, [Build hq3x scaler])
+else
+	pent_hq3x=no
+fi
+AC_MSG_RESULT($pent_hq3x)
 
 # gamma-correcting scalers
 AC_ARG_ENABLE(gc_scalers, [[  --enable-gc-scalers     Enable gamma-correcting scalers [default no]]],,enable_gc_scalers=no)
@@ -584,6 +594,7 @@ echo "Extra valgrind support:		$pent_valgrind"
 echo "FMOPL midi:			$pent_fmopl"
 echo "Timidity midi:			$pent_timidity"
 echo "HQ2x scaler:			$pent_hq2x"
+echo "HQ3x scaler:			$pent_hq3x"
 echo "Gamma-correcting scalers:	$pent_gc_scalers"
 echo "All bilinear scaler variants:	$pent_all_bilinear"
 echo "Built-in data files:		$pent_nodata"

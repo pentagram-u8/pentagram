@@ -58,7 +58,7 @@ configure_%:
 	cd ${BUILD_DIR} && ${ROOT_DIRECTORY}/configure \
 		--prefix=${PREFIX_DIR} ${ARCH_CONFIG} \
 		--with-sdl-prefix=${PREFIX_DIR} \
-		--enable-hq2x=no --enable-gc-scalers=yes --enable-all-bilinear=yes \
+		--enable-hq2x=yes --enable-hq3x=yes --enable-gc-scalers=yes --enable-all-bilinear=yes \
 		--enable-timidity-midi=no --enable-fmopl-midi=no \
 		--enable-builtin-data=no
 

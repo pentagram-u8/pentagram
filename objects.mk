@@ -107,6 +107,7 @@ SCALERS = \
 	graphics/scalers/PointScaler.o \
 	graphics/scalers/Scale2xScaler.o \
 	graphics/scalers/hq2xScaler.o \
+	graphics/scalers/hq3xScaler.o \
 	graphics/scalers/2xSaIScalers.o
 
 FONTS = \
