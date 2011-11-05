@@ -1,3 +1,7 @@
+2011-11-05  Dominik Reichardt <dominus@users.sourceforge.net>
+	* graphics/scalers/hq4xScaler.cpp/.h and various: added hq4x Scaler
+	* configure.ac: added --enable-all-hq-scalers option
+	
 2011-11-01  Dominik Reichardt <dominus@users.sourceforge.net>
 	* graphics/scalers/hq3xScaler.cpp/.h and various: added hq3x Scaler
 	

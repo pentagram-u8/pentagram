@@ -1,5 +1,5 @@
 /*
-Copyright (C) 2004-2006 The Pentagram team
+Copyright (C) 2011 The Pentagram Team
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -16,45 +16,32 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 
-#include "pent_include.h"
+#ifndef HQ4XSCALER_H_INCLUDED
+#define HQ4XSCALER_H_INCLUDED
 
-namespace PentagramVersion {
-
-const char *version = VERSION;
-
-const char *features = ""
-#ifdef DEBUG
-  "debug "
-#endif
-#ifdef USE_VALGRIND
-  "valgrind "
-#endif
-#ifdef USE_TIMIDITY_MIDI
-  "Timidity "
-#endif
-#ifdef USE_FMOPL_MIDI
-  "FMOPL "
-#endif
-#ifdef USE_FLUIDSYNTH_MIDI
-  "FluidSynth "
-#endif
-#ifdef USE_ALSA_MIDI
-  "ALSA "
-#endif
-#ifdef USE_HQ2X_SCALER
-  "hq2x "
-#endif
-#ifdef USE_HQ3X_SCALER
-  "hq3x "
-#endif
 #ifdef USE_HQ4X_SCALER
-  "hq4x "
-#endif
-#ifdef BUILTIN_DATA
-  "nodata "
-#endif
-;
 
-const char *buildtime = __DATE__ " " __TIME__;
+#include "Scaler.h"
 
-}
+namespace Pentagram {
+
+class hq4xScaler : public Scaler
+{
+public:
+	hq4xScaler();
+
+	virtual const uint32	ScaleBits() const;			//< bits for supported integer scaling
+	virtual const bool		ScaleArbitrary() const;		//< supports arbitrary scaling of any degree 
+
+	virtual const char *	ScalerName() const;			//< Name Of the Scaler (1 word)
+	virtual const char *	ScalerDesc() const;			//< Desciption of the Scaler
+	virtual const char *	ScalerCopyright() const;	//< Scaler Copyright info
+};
+
+extern const hq4xScaler hq4x_scaler;
+
+};
+
+#endif
+
+#endif

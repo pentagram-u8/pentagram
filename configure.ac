@@ -460,6 +460,19 @@ else
 fi
 
 
+# HQnX scaler
+AC_ARG_ENABLE(all_hq_scalers, [[  --enable-all-hq-scalers           Enable hq2x, hq3x, hq4x scaler support [default no]]],,enable_all_hq_scalers=no)
+AC_MSG_CHECKING(if we should build all hq scaler)
+if test x$enable_all_hq_scalers = xyes; then
+	enable_hq2x=yes
+	enable_hq3x=yes
+	enable_hq4x=yes
+	pent_hqnx=yes
+else
+	pent_hqnx=no
+fi
+AC_MSG_RESULT($pent_hqnx)
+
 # HQ2X scaler
 AC_ARG_ENABLE(hq2x, [[  --enable-hq2x           Enable hq2x scaler support [default no]]],,enable_hq2x=no)
 AC_MSG_CHECKING(if we should build the hq2x scaler)
@@ -481,6 +494,17 @@ else
 	pent_hq3x=no
 fi
 AC_MSG_RESULT($pent_hq3x)
+
+# HQ4X scaler
+AC_ARG_ENABLE(hq4x, [[  --enable-hq4x           Enable hq4x scaler support [default no]]],,enable_hq4x=no)
+AC_MSG_CHECKING(if we should build the hq4x scaler)
+if test x$enable_hq4x = xyes; then
+	pent_hq4x=yes
+	AC_DEFINE(USE_HQ4X_SCALER, 1, [Build hq4x scaler])
+else
+	pent_hq4x=no
+fi
+AC_MSG_RESULT($pent_hq4x)
 
 # gamma-correcting scalers
 AC_ARG_ENABLE(gc_scalers, [[  --enable-gc-scalers     Enable gamma-correcting scalers [default no]]],,enable_gc_scalers=no)
@@ -595,6 +619,7 @@ echo "FMOPL midi:			$pent_fmopl"
 echo "Timidity midi:			$pent_timidity"
 echo "HQ2x scaler:			$pent_hq2x"
 echo "HQ3x scaler:			$pent_hq3x"
+echo "HQ4x scaler:			$pent_hq4x"
 echo "Gamma-correcting scalers:	$pent_gc_scalers"
 echo "All bilinear scaler variants:	$pent_all_bilinear"
 echo "Built-in data files:		$pent_nodata"
