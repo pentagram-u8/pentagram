@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="8.00"
 	Name="ShapeConv"
 	ProjectGUID="{578DDFFC-7DAF-4546-A62B-829ABEA3C060}"
 	RootNamespace="ShapeConv"
-	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -94,6 +93,9 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -175,6 +177,9 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -212,7 +217,6 @@
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)\..\..&quot;;&quot;$(SolutionDir)\..\..\filesys&quot;;&quot;$(SolutionDir)\..\..\misc&quot;;&quot;$(SolutionDir)\..\..\graphics&quot;;&quot;$(SolutionDir)\..\..\convert&quot;;&quot;$(SolutionDir)\..\..\kernel&quot;;&quot;$(SolutionDir)\..\..\usecode&quot;;&quot;$(SolutionDir)\..\..\conf&quot;;&quot;$(SolutionDir)\..\..\world&quot;;&quot;$(SolutionDir)\..\..\world\actors&quot;;&quot;$(SolutionDir)\..\..\tools\disasm&quot;;&quot;$(SolutionDir)\..\..\tools\compile&quot;;&quot;$(SolutionDir)\..\..\gumps&quot;;&quot;$(SolutionDir)\..\..\gumps\widgets&quot;;&quot;$(SolutionDir)\..\..\tools\fold&quot;;&quot;$(SolutionDir)\..\..\audio&quot;;&quot;$(SolutionDir)\..\..\audio\midi&quot;;&quot;$(SolutionDir)\..\..\audio\midi\timidity&quot;;&quot;$(SolutionDir)\..\..\games&quot;;&quot;$(SolutionDir)\..\..\graphics\fonts&quot;;&quot;$(SolutionDir)\..\..\filesys\zip&quot;;&quot;$(SolutionDir)\libs\SDL-1.2.9\include&quot;;&quot;$(SolutionDir)\libs\SDL_ttf-2.0.7\include&quot;;&quot;$(SolutionDir)\libs\zlib-1.2.1&quot;;&quot;$(SolutionDir)\libs\lpng128&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
-				BasicRuntimeChecks="3"
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="false"
 				FloatingPointModel="2"
@@ -255,6 +259,9 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -339,6 +346,9 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"

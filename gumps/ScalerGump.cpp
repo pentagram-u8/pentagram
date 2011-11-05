@@ -204,20 +204,40 @@ void ScalerGump::SetupScalers()
 	settingman->setDefault("scalex", 320);
 	settingman->setDefault("scaley", 200);
 	settingman->setDefault("scaler", "point");
+	settingman->setDefault("scalex2", 0);
+	settingman->setDefault("scaley2", 0);
+	settingman->setDefault("scaler2", "point");
 
 	std::string scaler1name;
+	std::string scaler2name;
 	settingman->get("scalex", swidth1);
 	settingman->get("scaley", sheight1);
 	settingman->get("scaler", scaler1name);
+	settingman->get("scaler2", scaler2name);
+	settingman->get("scalex2", swidth2);
+	settingman->get("scaley2", sheight2);
+
+	const Pentagram::Scaler	* point = ScalerManager::get_instance()->GetPointScaler();
 	
 	scaler1 = ScalerManager::get_instance()->GetScaler(scaler1name);
-	if (!scaler1) scaler1 = ScalerManager::get_instance()->GetPointScaler();
+	if (!scaler1) scaler1 = point ;
+	
+	scaler2 = ScalerManager::get_instance()->GetScaler(scaler2name);
+	if (!scaler2 || !scaler2->ScaleArbitrary()) scaler2 = point ;
 
 	if (swidth1 < 0) swidth1= -swidth1;
+	else if (swidth1 == 0) swidth1 = width;
 	else if (swidth1 < 100) swidth1 = width/swidth1;
 
 	if (sheight1 < 0) sheight1= -sheight1;
+	else if (sheight1 == 0) sheight1 = height;
 	else if (sheight1 < 100) sheight1 = height/sheight1;
+
+	if (swidth2 < 0) swidth2= -swidth2;
+	else if (swidth2 != 0 && swidth2 < 100) swidth2 = width/swidth2;
+
+	if (sheight2 < 0) sheight2= -sheight2;
+	else if (sheight2 != 0 && sheight2 < 100) sheight2 = height/sheight2;
 
 	dims.w = swidth1;
 	dims.h = sheight1;
@@ -227,6 +247,41 @@ void ScalerGump::SetupScalers()
 
 	buffer1 = RenderSurface::CreateSecondaryRenderSurface(swidth1, sheight1);
 	con.Printf(MM_INFO, "Using Scaler: %s. %s\n", scaler1->ScalerDesc(), scaler1->ScalerCopyright());
+
+	// scaler2's factor isn't set so auto detect
+	if (swidth2 == 0 || sheight2 == 0) {
+
+		// scaler 1 is arbitrary so scaler2 not required
+		if (scaler1->ScaleArbitrary()) return;
+
+		swidth2 = swidth1*32;
+		sheight2 = sheight1*32;
+		for (int i = 31; i >= 0; i--) {
+			if (scaler1->ScaleBits() & (1<<i)) {
+				if (swidth2 > width || sheight2 > height) {
+					swidth2 = swidth1*i;
+					sheight2 = sheight1*i;
+				}
+			}
+		}
+	}
+
+	// scaler2 is required
+	if (swidth2 != width || sheight2 != height)
+	{
+		// Well almost, in this situation we code in DoScalerBlit to do this for us
+		// scaler2 not required
+		if (width==640 && height==480 && 
+			swidth2==640 && sheight2==400 &&
+			swidth1==320 && sheight2==200 &&
+			scaler2 == point)
+		{
+			return;
+		}
+
+		buffer2 = RenderSurface::CreateSecondaryRenderSurface(swidth2, sheight2);
+		con.Printf(MM_INFO, "Using Secondary Scaler: %s. %s\n", scaler2->ScalerDesc(), scaler2->ScalerCopyright());
+	}
 }
 
 void ScalerGump::ConCmd_changeScaler(const Console::ArgvType &argv)

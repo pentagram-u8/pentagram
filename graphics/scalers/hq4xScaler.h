@@ -36,6 +36,8 @@ public:
 	virtual const char *	ScalerName() const;			//< Name Of the Scaler (1 word)
 	virtual const char *	ScalerDesc() const;			//< Desciption of the Scaler
 	virtual const char *	ScalerCopyright() const;	//< Scaler Copyright info
+private:
+	template<class uintX, class Manip, class uintS> ScalerFunc GetScaler();
 };
 
 extern const hq4xScaler hq4x_scaler;

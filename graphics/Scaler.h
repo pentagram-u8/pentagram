@@ -28,6 +28,8 @@ namespace Pentagram {
 /// Base Scaler class
 class Scaler
 {
+	friend class hqScaler;
+
 protected:
 	// Basic scaler function template
 	typedef bool (*ScalerFunc) ( Texture *tex, sint32 sx, sint32 sy, sint32 sw, sint32 sh, 

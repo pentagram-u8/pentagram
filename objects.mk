@@ -107,8 +107,27 @@ SCALERS = \
 	graphics/scalers/PointScaler.o \
 	graphics/scalers/Scale2xScaler.o \
 	graphics/scalers/hq2xScaler.o \
+	graphics/scalers/hq2xScaler_16Nat.o \
+	graphics/scalers/hq2xScaler_16Sta.o \
+	graphics/scalers/hq2xScaler_32Nat.o \
+	graphics/scalers/hq2xScaler_32Sta.o \
+	graphics/scalers/hq2xScaler_888A.o \
+	graphics/scalers/hq2xScaler_A888.o \
 	graphics/scalers/hq3xScaler.o \
+	graphics/scalers/hq3xScaler_16Nat.o \
+	graphics/scalers/hq3xScaler_16Sta.o \
+	graphics/scalers/hq3xScaler_32Nat.o \
+	graphics/scalers/hq3xScaler_32Sta.o \
+	graphics/scalers/hq3xScaler_888A.o \
+	graphics/scalers/hq3xScaler_A888.o \
 	graphics/scalers/hq4xScaler.o \
+	graphics/scalers/hq4xScaler_16Nat.o \
+	graphics/scalers/hq4xScaler_16Sta.o \
+	graphics/scalers/hq4xScaler_32Nat.o \
+	graphics/scalers/hq4xScaler_32Sta.o \
+	graphics/scalers/hq4xScaler_888A.o \
+	graphics/scalers/hq4xScaler_A888.o \
+	graphics/scalers/hqScaler.o \
 	graphics/scalers/2xSaIScalers.o
 
 FONTS = \

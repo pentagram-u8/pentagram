@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="9.00"
+	Version="8.00"
 	Name="Pentagram"
 	ProjectGUID="{DFF1F4A6-6F62-4F5F-9F45-45AA8F0E63BE}"
 	RootNamespace="Pentagram"
-	TargetFrameworkVersion="131072"
 	>
 	<Platforms>
 		<Platform
@@ -101,6 +100,9 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -192,6 +194,9 @@
 				Name="VCAppVerifierTool"
 			/>
 			<Tool
+				Name="VCWebDeploymentTool"
+			/>
+			<Tool
 				Name="VCPostBuildEventTool"
 			/>
 		</Configuration>
@@ -231,7 +236,6 @@
 				AdditionalIncludeDirectories="&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)\..\..&quot;;&quot;$(SolutionDir)\..\..\filesys&quot;;&quot;$(SolutionDir)\..\..\misc&quot;;&quot;$(SolutionDir)\..\..\graphics&quot;;&quot;$(SolutionDir)\..\..\convert&quot;;&quot;$(SolutionDir)\..\..\kernel&quot;;&quot;$(SolutionDir)\..\..\usecode&quot;;&quot;$(SolutionDir)\..\..\conf&quot;;&quot;$(SolutionDir)\..\..\world&quot;;&quot;$(SolutionDir)\..\..\world\actors&quot;;&quot;$(SolutionDir)\..\..\tools\disasm&quot;;&quot;$(SolutionDir)\..\..\tools\compile&quot;;&quot;$(SolutionDir)\..\..\gumps&quot;;&quot;$(SolutionDir)\..\..\gumps\widgets&quot;;&quot;$(SolutionDir)\..\..\tools\fold&quot;;&quot;$(SolutionDir)\..\..\audio&quot;;&quot;$(SolutionDir)\..\..\audio\midi&quot;;&quot;$(SolutionDir)\..\..\audio\midi\timidity&quot;;&quot;$(SolutionDir)\..\..\games&quot;;&quot;$(SolutionDir)\..\..\graphics\fonts&quot;;&quot;$(SolutionDir)\..\..\filesys\zip&quot;;&quot;$(SolutionDir)\libs\SDL-1.2.9\include&quot;;&quot;$(SolutionDir)\libs\SDL_ttf-2.0.7\include&quot;;&quot;$(SolutionDir)\libs\zlib-1.2.1&quot;;&quot;$(SolutionDir)\libs\lpng128&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
-				BasicRuntimeChecks="3"
 				RuntimeLibrary="0"
 				FloatingPointModel="2"
 				DefaultCharIsUnsigned="false"
@@ -253,7 +257,7 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib libpng.lib sdl.lib sdl_ttf.lib sdlmain.lib zlib_libcmt.lib"
+				AdditionalDependencies="kernel32.lib user32.lib gdi32.lib libpng.lib sdl.lib sdl_ttf.lib sdlmain.lib zlib_libcmt.lib winmm.lib"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="&quot;$(SolutionDir)libs\sdl-1.2.9\lib&quot;;&quot;$(SolutionDir)libs\sdl_ttf-2.0.7\lib&quot;;&quot;$(SolutionDir)libs\lpng128&quot;;&quot;$(SolutionDir)libs\zlib-1.2.1&quot;"
 				GenerateManifest="false"
@@ -281,6 +285,9 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -375,6 +382,9 @@
 			/>
 			<Tool
 				Name="VCAppVerifierTool"
+			/>
+			<Tool
+				Name="VCWebDeploymentTool"
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
@@ -2743,6 +2753,114 @@
 				</File>
 				<File
 					RelativePath="..\..\..\graphics\scalers\hq2xScaler.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq2xScaler.inc"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq2xScaler_16Nat.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq2xScaler_16Sta.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq2xScaler_32Nat.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq2xScaler_32Sta.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq2xScaler_888A.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq2xScaler_A888.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq3xScaler.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq3xScaler.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq3xScaler.inc"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq3xScaler_16Nat.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq3xScaler_16Sta.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq3xScaler_32Nat.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq3xScaler_32Sta.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq3xScaler_888A.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq3xScaler_A888.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq4xScaler.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq4xScaler.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq4xScaler.inc"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq4xScaler_16Nat.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq4xScaler_16Sta.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq4xScaler_32Nat.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq4xScaler_32Sta.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq4xScaler_888A.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hq4xScaler_A888.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hqScaler.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\..\graphics\scalers\hqScaler.h"
 					>
 				</File>
 				<File
