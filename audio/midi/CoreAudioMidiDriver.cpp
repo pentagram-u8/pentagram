@@ -75,7 +75,7 @@ int CoreAudioMidiDriver::open()
 		AudioUnitConnection auconnect;
 		ComponentDescription compdesc;
 		Component compid;
-	
+
 		// Open the Music Device
 		compdesc.componentType = kAudioUnitType_MusicDevice;
 		compdesc.componentSubType = kAudioUnitSubType_DLSSynth;
@@ -84,46 +84,48 @@ int CoreAudioMidiDriver::open()
 		compdesc.componentFlagsMask = 0;
 		compid = FindNextComponent(NULL, &compdesc);
 		au_MusicDevice = static_cast<AudioUnit>(OpenComponent(compid));
-	
+
 		// open the output unit
 		au_output = static_cast<AudioUnit>(OpenDefaultComponent(kAudioUnitType_Output, kAudioUnitSubType_DefaultOutput));
-	
+
 		// connect the units
 		auconnect.sourceAudioUnit = au_MusicDevice;
 		auconnect.sourceOutputNumber = 0;
 		auconnect.destInputNumber = 0;
 		err =
-			AudioUnitSetProperty(au_output, kAudioUnitProperty_MakeConnection, kAudioUnitScope_Input, 0,
-													 static_cast<void*>(&auconnect), sizeof(AudioUnitConnection));
-	
+		    AudioUnitSetProperty(au_output, kAudioUnitProperty_MakeConnection,
+		                         kAudioUnitScope_Input, 0,
+		                         static_cast<void*>(&auconnect),
+		                         sizeof(AudioUnitConnection));
+
 		// initialize the units
 		AudioUnitInitialize(au_MusicDevice);
 		AudioUnitInitialize(au_output);
-		
-                std::string soundfont = getConfigSetting("coreaudio_soundfont", "");
-                pout << "Loading CoreAudio SoundFont '" << soundfont << "'... ";
-                if (soundfont != "") {
-                  FSRef soundfontRef;
-                  err = FSPathMakeRef((const UInt8*)soundfont.c_str(), 
-                                      &soundfontRef, NULL);
-                  if (!err) {
-                    err = AudioUnitSetProperty(
-                                               au_MusicDevice,
-                                               kMusicDeviceProperty_SoundBankFSRef, 
-                                               kAudioUnitScope_Global,
-                                               0,
-                                               &soundfontRef,
-                                               sizeof(soundfontRef)
-                                               );
-                    if (!err) {
-                      pout << "Loaded CoreAudio SoundFont!" << std::endl;
-                    } else {
-                      pout << "Error loading CoreAudio SoundFont" << std::endl;
-                    }
-                  } else {
-                    pout << "CoreAudio SoundFont Path Error" << std::endl;
-                  }
-                }
+
+		std::string soundfont = getConfigSetting("coreaudio_soundfont", "");
+		pout << "Loading CoreAudio SoundFont '" << soundfont << "'... ";
+		if (soundfont != "") {
+			FSRef soundfontRef;
+			err = FSPathMakeRef((const UInt8*)soundfont.c_str(),
+			                    &soundfontRef, NULL);
+			if (!err) {
+				err = AudioUnitSetProperty(
+				                           au_MusicDevice,
+				                           kMusicDeviceProperty_SoundBankFSRef,
+				                           kAudioUnitScope_Global,
+				                           0,
+				                           &soundfontRef,
+				                           sizeof(soundfontRef)
+				                          );
+				if (!err) {
+					pout << "Loaded CoreAudio SoundFont!" << std::endl;
+				} else {
+					pout << "Error loading CoreAudio SoundFont" << std::endl;
+				}
+			} else {
+				pout << "CoreAudio SoundFont Path Error" << std::endl;
+			}
+		}
 		// start the output
 		AudioOutputUnitStart(au_output);
 	}
