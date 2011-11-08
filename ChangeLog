@@ -1,3 +1,7 @@
+2011-11-08  Dominik Reichardt <dominus@users.sourceforge.net>
+	* audio/midi/CoreAudioMidiDriver.cpp: merged Jason Penney's patch for Exult
+	  that allows loading of a soundfont file with CoreAudio MIDI driver
+
 2011-11-05  Dominik Reichardt <dominus@users.sourceforge.net>
 	* graphics/scalers/hq4xScaler.cpp/.h and various: added hq4x Scaler
 	* configure.ac: added --enable-all-hq-scalers option

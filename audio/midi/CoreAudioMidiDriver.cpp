@@ -23,6 +23,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #include <pthread.h>
 #include <sched.h>
+#include <iostream>
 
 
 // Enable the following switch to make ScummVM try to use native MIDI hardware
@@ -98,7 +99,31 @@ int CoreAudioMidiDriver::open()
 		// initialize the units
 		AudioUnitInitialize(au_MusicDevice);
 		AudioUnitInitialize(au_output);
-	
+		
+                std::string soundfont = getConfigSetting("coreaudio_soundfont", "");
+                pout << "Loading CoreAudio SoundFont '" << soundfont << "'... ";
+                if (soundfont != "") {
+                  FSRef soundfontRef;
+                  err = FSPathMakeRef((const UInt8*)soundfont.c_str(), 
+                                      &soundfontRef, NULL);
+                  if (!err) {
+                    err = AudioUnitSetProperty(
+                                               au_MusicDevice,
+                                               kMusicDeviceProperty_SoundBankFSRef, 
+                                               kAudioUnitScope_Global,
+                                               0,
+                                               &soundfontRef,
+                                               sizeof(soundfontRef)
+                                               );
+                    if (!err) {
+                      pout << "Loaded CoreAudio SoundFont!" << std::endl;
+                    } else {
+                      pout << "Error loading CoreAudio SoundFont" << std::endl;
+                    }
+                  } else {
+                    pout << "CoreAudio SoundFont Path Error" << std::endl;
+                  }
+                }
 		// start the output
 		AudioOutputUnitStart(au_output);
 	}
