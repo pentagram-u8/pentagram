@@ -101,8 +101,9 @@ int CoreAudioMidiDriver::open()
 		// initialize the units
 		AudioUnitInitialize(au_MusicDevice);
 		AudioUnitInitialize(au_output);
-
-		std::string soundfont = getConfigSetting("coreaudio_soundfont", "");
+		
+		// load a soundfont
+		std::string soundfont = getConfigSetting("soundfont", "");
 		pout << "Loading CoreAudio SoundFont '" << soundfont << "'... ";
 		if (soundfont != "") {
 			FSRef soundfontRef;
@@ -126,6 +127,7 @@ int CoreAudioMidiDriver::open()
 				pout << "CoreAudio SoundFont Path Error" << std::endl;
 			}
 		}
+		
 		// start the output
 		AudioOutputUnitStart(au_output);
 	}

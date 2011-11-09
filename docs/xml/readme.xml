@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE readme SYSTEM "docs.dtd">
-<readme title="Pentagram" changed="30 October 2011 (GMT)">		
+<readme title="Pentagram" changed="09 November 2011 (GMT)">		
 	<section title="Configuration">
 		<sub name="quick_ini">
 			<header>Quick guide</header>
@@ -47,11 +47,11 @@
 			<body>
 				<para>
 					Right now <Pent/> assumes some default settings that don't need to be set to
-					make <Pent/> work. The settings below are these default settings.
+					make <Pent/> work. The settings below are the default settings.
 				</para>
 				<configdesc>
 					<configsec name="pentagram">
-<!--						<configtag name="data">
+<!--					<configtag name="data">
 							path to pentagram data dir
 							<comment># replace 'path to pentagram data dir' with the pentagram data directory</comment>
 							<comment># (that's the directory that contains fixedfont.tga)</comment>
@@ -71,10 +71,27 @@
 							<comment># height of the game resolution.</comment>
 						</configtag>
 						<configtag name="scaler">
-							point
+							2xSaI
 							<comment># Select the scaler you want to use. Currently you can choose between</comment>
-							<comment># point, bilinear, scale2x, 2xSaI, hq2x.</comment>
+							<comment># point, bilinear, scale2x, 2xSaI, super2xSaI, supereagle, hq.</comment>
+							<comment># hq scaler will automatically decide whether to use HQ2x, HQ3x or HQ4x</comment>
+							<comment># depending on width and height.</comment>
 						</configtag>
+<!--					<configtag name="scaler2">
+							point
+							<comment># Secondary scaler, point or bilinear only,used for aspect correction.</comment>
+							<comment># Done automatically, so best not set.</comment>
+						</configtag> 
+						<configtag name="scalex2">
+							400
+							<comment># Width of the secondary scaler.</comment>
+							<comment># Done automatically, so best not set.</comment>
+						</configtag>
+						<configtag name="scaley2">
+							300
+							<comment># Height of secondary scaler.</comment>
+							<comment># Done automatically, so best not set.</comment>
+						</configtag> -->
 						<configtag name="width">
 							640
 							<comment># The game resolution is scaled to this width.</comment>
@@ -98,9 +115,9 @@
 							<comment># Alsa is Linux-only and UnixSeq will only work on Unix variants.)</comment>
 							<comment># See further down for more options on Linux.</comment>
 						</configtag>
-						<configtag name="fluidsynth_soundfont">
+						<configtag name="soundfont">
 							path to soundfont
-							<comment># If Pentagram was compiled with Fluidsynth support enter the path to the soundfont.</comment>
+							<comment>#  Enter the path to the SoundFont for CoreAudio (optional) and FluidSynth (required).</comment>
 						</configtag>						
 						<configtag name="textdelay">
 							8
@@ -352,6 +369,14 @@
 		</sub>
 	</section>
 	<section title="Changes to the Documentation">
+		<sub name="09112011">
+			<header>- 09 November 2011</header>
+			<body>
+				<para>
+					<ref1 target="advanced_ini"/>: More scalers and soundfont setting for FluidSynth and CoreAudio.<br/>
+				</para>
+			</body>
+		</sub>
 		<sub name="30102011">
 			<header>- 30 October 2011</header>
 			<body>

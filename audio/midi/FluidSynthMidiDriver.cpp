@@ -69,10 +69,10 @@ int FluidSynthMidiDriver::open() {
 		return -1;
 	}
 
-	std::string soundfont = getConfigSetting("fluidsynth_soundfont", "");
+	std::string soundfont = getConfigSetting("soundfont", "");
 
 	if (soundfont == "") {
-		perr << "FluidSynth requires a 'fluidsynth_soundfont' setting" << std::endl;
+		perr << "FluidSynth requires a 'soundfont' setting" << std::endl;
 		return -2;
 	}
 

@@ -1,5 +1,5 @@
 Pentagram Documentation
-last changed: 30 October 2011 (GMT)
+last changed: 09 November 2011 (GMT)
 
 The latest version of this document can be found at http://pentagram.sourceforge.net/docs.php
 
@@ -24,14 +24,15 @@ The latest version of this document can be found at http://pentagram.sourceforge
 4.4. Mac OS X
 
 5. Changes to the Documentation
-5.1. - 30 October 2011
-5.2. - 5 January 2010
-5.3. - 4 September 2008
-5.4. - 3 August 2007
-5.5. - 19 February 2006
-5.6. - 22 May 2005
-5.7. - 21 May 2005
-5.8. - 14 October 2004
+5.1. - 09 November 2011
+5.2. - 30 October 2011
+5.3. - 5 January 2010
+5.4. - 4 September 2008
+5.5. - 3 August 2007
+5.6. - 19 February 2006
+5.7. - 22 May 2005
+5.8. - 21 May 2005
+5.9. - 14 October 2004
 
 
 --------------------------------------------------------------------------------
@@ -55,7 +56,7 @@ path=path to U8 directory
 
 
 1.2. Advanced Configuration
-Right now Pentagram assumes some default settings that don't need to be set to make Pentagram work. The settings below are these default settings.
+Right now Pentagram assumes some default settings that don't need to be set to make Pentagram work. The settings below are the default settings.
 
 [pentagram]
 defaultgame=u8
@@ -65,8 +66,10 @@ scalex=320
 # height of the game resolution.
 scaley=240
 # Select the scaler you want to use. Currently you can choose between
-# point, bilinear, scale2x, 2xSaI, hq2x.
-scaler=point
+# point, bilinear, scale2x, 2xSaI, super2xSaI, supereagle, hq.
+# hq scaler will automatically decide whether to use HQ2x, HQ3x or HQ4x
+# depending on width and height.
+scaler=2xSaI
 # The game resolution is scaled to this width.
 width=640
 # The game resolution is scaled to this height.
@@ -80,8 +83,8 @@ ttf=no
 # Alsa is Linux-only and UnixSeq will only work on Unix variants.)
 # See further down for more options on Linux.
 midi_driver=disabled/windows/fmopl/timidity/alsa/unixseq/coreaudio/fluidsynth
-# If Pentagram was compiled with Fluidsynth support enter the path to the soundfont.
-fluidsynth_soundfont=path to soundfont
+#  Enter the path to the SoundFont for CoreAudio (optional) and FluidSynth (required).
+soundfont=path to soundfont
 # Conversation speed. Higher is slower.
 textdelay=8
 [u8]
@@ -234,35 +237,39 @@ After completing the system configuration listed above, perform the following st
 --------------------------------------------------------------------------------
 
 5. Changes to the Documentation
-5.1. - 30 October 2011
+5.1. - 09 November 2011
+1.2. Advanced Configuration: More scalers and soundfont setting for FluidSynth and CoreAudio.
+
+
+5.2. - 30 October 2011
 1.2. Advanced Configuration: added a lot of settings. 2.1. Movement: no more keypad movement and the not for Mac OS is no longer needed. 2.2. Keyboard commands: updated and split in default and debug keys. Moved the Building SVN section to the bottom.
 
 
-5.2. - 5 January 2010
+5.3. - 5 January 2010
 4.4. Mac OS X: added additional information for builds.
 
 
-5.3. - 4 September 2008
+5.4. - 4 September 2008
 4.4. Mac OS X: replaced old build instructions.
 
 
-5.4. - 3 August 2007
+5.5. - 3 August 2007
 3.1. Console commands: added (short) list of console commands.
 
 
-5.5. - 19 February 2006
+5.6. - 19 February 2006
 3.2. Supported games and versions: updated status of non-English U8.
 
 
-5.6. - 22 May 2005
+5.7. - 22 May 2005
 1.2. Advanced Configuration some more configurations added. 1.3. Optional MIDI settings for Linux added.
 
 
-5.7. - 21 May 2005
+5.8. - 21 May 2005
 cleaned up outdated sections
 
 
-5.8. - 14 October 2004
+5.9. - 14 October 2004
 1.2. Advanced Configuration enable font replacement.
 
 

@@ -1,3 +1,7 @@
+2011-11-09  Dominik Reichardt <dominus@users.sourceforge.net>
+	* audio/midi/CoreAudioMidiDriver.cpp & FluidSynthMidiDriver.cpp: both use the setting soundfont now.
+	* updated ReadMe with new scaler and SoundFont setting
+	
 2011-11-08  Dominik Reichardt <dominus@users.sourceforge.net>
 	* audio/midi/CoreAudioMidiDriver.cpp: merged Jason Penney's patch for Exult
 	  that allows loading of a soundfont file with CoreAudio MIDI driver
