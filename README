@@ -79,10 +79,10 @@ bpp=32
 ttf=no
 # If you don't specify midi_driver, Pentagram will automatically select one,
 # based on your platform.
-# (Note: Windows will only work on Windows. CoreAudio only on Mac OS X.
+# (Note: Windows will only work on Windows. CoreAudio and CoreMIDI only on Mac OS X.
 # Alsa is Linux-only and UnixSeq will only work on Unix variants.)
 # See further down for more options on Linux.
-midi_driver=disabled/windows/fmopl/timidity/alsa/unixseq/coreaudio/fluidsynth
+midi_driver=disabled/windows/fmopl/timidity/alsa/unixseq/coreaudio/coremidi/fluidsynth
 #  Enter the path to the SoundFont for CoreAudio (optional) and FluidSynth (required).
 soundfont=path to soundfont
 # Conversation speed. Higher is slower.

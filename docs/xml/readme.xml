@@ -108,10 +108,10 @@
 							<comment># Enable this to use the BitStream Vera font for conversations and object descriptions.</comment>
 						</configtag>
 						<configtag name="midi_driver">
-							disabled/windows/fmopl/timidity/alsa/unixseq/coreaudio/fluidsynth
+							disabled/windows/fmopl/timidity/alsa/unixseq/coreaudio/coremidi/fluidsynth
 							<comment># If you don't specify midi_driver, Pentagram will automatically select one,</comment>
 							<comment># based on your platform.</comment>
-							<comment># (Note: Windows will only work on Windows. CoreAudio only on Mac OS X.</comment>
+							<comment># (Note: Windows will only work on Windows. CoreAudio and CoreMIDI only on Mac OS X.</comment>
 							<comment># Alsa is Linux-only and UnixSeq will only work on Unix variants.)</comment>
 							<comment># See further down for more options on Linux.</comment>
 						</configtag>

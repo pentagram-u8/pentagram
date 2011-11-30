@@ -271,6 +271,7 @@ MIDI = \
 	audio/midi/FMOplMidiDriver.o \
 	audio/midi/ALSAMidiDriver.o \
 	audio/midi/CoreAudioMidiDriver.o \
+        audio/midi/CoreMidiDriver.o \
 	audio/midi/WindowsMidiDriver.o \
 	audio/midi/TimidityMidiDriver.o \
 	audio/midi/UnixSeqMidiDriver.o \
