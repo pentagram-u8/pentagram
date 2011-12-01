@@ -36,40 +36,40 @@
 
 namespace PentZip {
 
-voidpf ZCALLBACK fopen_file_func OF((
+voidpf ZCALLBACK fopen_file_func (
    voidpf opaque,
    const char* filename,
-   int mode));
+   int mode);
 
-uLong ZCALLBACK fread_file_func OF((
+uLong ZCALLBACK fread_file_func (
    voidpf opaque,
    voidpf stream,
    void* buf,
-   uLong size));
+   uLong size);
 
-uLong ZCALLBACK fwrite_file_func OF((
+uLong ZCALLBACK fwrite_file_func (
    voidpf opaque,
    voidpf stream,
    const void* buf,
-   uLong size));
+   uLong size);
 
-long ZCALLBACK ftell_file_func OF((
+long ZCALLBACK ftell_file_func (
    voidpf opaque,
-   voidpf stream));
+   voidpf stream);
 
-long ZCALLBACK fseek_file_func OF((
+long ZCALLBACK fseek_file_func (
    voidpf opaque,
    voidpf stream,
    uLong offset,
-   int origin));
+   int origin);
 
-int ZCALLBACK fclose_file_func OF((
+int ZCALLBACK fclose_file_func (
    voidpf opaque,
-   voidpf stream));
+   voidpf stream);
 
-int ZCALLBACK ferror_file_func OF((
+int ZCALLBACK ferror_file_func (
    voidpf opaque,
-   voidpf stream));
+   voidpf stream);
 
 
 voidpf ZCALLBACK fopen_file_func (voidpf opaque,const char* filename,int mode)

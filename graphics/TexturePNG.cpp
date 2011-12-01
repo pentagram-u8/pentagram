@@ -28,7 +28,7 @@
 static void idatasource_png_read_data(png_structp png_ptr,
 									  png_bytep data, png_size_t length)
 {
-	voidp read_io_ptr = png_get_io_ptr(png_ptr);
+	void* read_io_ptr = png_get_io_ptr(png_ptr);
 	IDataSource* ds = reinterpret_cast<IDataSource*>(read_io_ptr);
 	ds->read(data, length);
 }

@@ -68,7 +68,7 @@ public:
 	bool help()   const { return oHelp;   };
 	bool quiet()  const { return oQuiet;  };
 	bool vquiet() const { return oVQuiet; };
-	
+
 protected:
 
 	//! Declare commandline arguments.

@@ -27,7 +27,7 @@
 static void odatasource_png_write_data(png_structp png_ptr,
 									   png_bytep data, png_size_t length)
 {
-        voidp write_io_ptr = png_get_io_ptr(png_ptr);
+        void* write_io_ptr = png_get_io_ptr(png_ptr);
         ODataSource* ds = reinterpret_cast<ODataSource*>(write_io_ptr);
         ds->write(data, length);
 }

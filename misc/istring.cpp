@@ -57,6 +57,16 @@ int strcasecmp (const char *s1, const char *s2)
 	return strncasecmp (s1, s2, 2147483647);
 }
 
+void strcpy_s(char *dest, size_t size, const char *src) 
+{
+	if (size == 0) return;
+	char *end = dest+size;
+	do {
+		if (!(*dest++ = *src++)) return;
+	} while(dest != end);
+	dest[-1] = 0;
+}
+
 #ifndef UNDER_CE
 
 bool ichar_traits::eq(const char_type & c1, const char_type & c2)

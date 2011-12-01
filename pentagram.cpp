@@ -22,6 +22,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GUIApp.h"
 #include "MemoryManager.h"
 #include "version.h"
+#include "filesys/FileSystem.h"
+#include "filesys/OutputLogger.h"
 
 #ifdef _WIN32
 // Disable SDLMain in Windows
@@ -32,6 +34,11 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 int main(int argc, char* argv[])
 {
+	const std::string &home = FileSystem::getHomePath();
+
+	OutputLogger	stdoutLogger(stdout,home + "/pstdout.txt");
+	OutputLogger	stderrLogger(stderr,home + "/pstderr.txt");
+
 	// Initialize Memory Manager here to avoid extra tools depending on it
 	MemoryManager mm;
 	GUIApp app(argc, argv);
@@ -80,8 +87,7 @@ int main(int argc, char* argv[])
      len = strlen(CmdLine);
      i = ((len+2)/2)*sizeof(PVOID) + sizeof(PVOID);
 
-     argv = (PCHAR*)GlobalAlloc(GMEM_FIXED,
-         i + (len+2)*sizeof(CHAR));
+	 argv = (PCHAR*)LocalAlloc(LMEM_FIXED, i + (len+2)*sizeof(CHAR));
 
      _argv = (PCHAR)(((PUCHAR)argv)+i);
 
@@ -150,23 +156,10 @@ int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 	int argc;
 	char **argv = CommandLineToArgvA(GetCommandLineA(), &argc);
 
-	// FIXME - Multiuser aware please
-
-	std::freopen("pstdout.txt","wt", stdout);
-	std::freopen("pstderr.txt","wt", stderr);
-
 	int res = main(argc, argv);
 
-	if (!std::ftell(stdout)) {
-		std::fclose(stdout);
-		std::remove("pstdout.txt");
-	}
-	if (!std::ftell(stderr)) {
-		std::fclose(stderr);
-		std::remove("pstderr.txt");
-	}
-
-	// FIXME - Memory leak here. Need to free memory allocated for argv.
+	// Free memory
+	LocalFree((HLOCAL)argv);
 
 	return  res;
 }

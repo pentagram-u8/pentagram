@@ -128,56 +128,9 @@ void CoreApp::setupVirtualPaths()
 	//       this should be a default set by configure (or other build systems)
 
 	bool ok;
-	std::string home;
-#ifdef HAVE_HOME
-	home = getenv("HOME");
-	home += "/.pentagram";
-#elif defined(WIN32)
-	// Use the Pentagram sub directory of Application Data, under Windows NT4 and later
-	char configFilePath[MAX_PATH];
 
-	OSVERSIONINFO win32OsVersion;
-	ZeroMemory(&win32OsVersion, sizeof(OSVERSIONINFO));
-	win32OsVersion.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
-	GetVersionEx(&win32OsVersion);
-	// Check for non-9X version of Windows.
-	if (win32OsVersion.dwPlatformId != VER_PLATFORM_WIN32_WINDOWS) {
-		// Use the Application Data directory of the user profile.
-		if (win32OsVersion.dwMajorVersion >= 5) {
-			if (!GetEnvironmentVariable("APPDATA", configFilePath, sizeof(configFilePath)))
-				pout << "Unable to access application data directory" << std::endl;
-		} else {
-			if (!GetEnvironmentVariable("USERPROFILE", configFilePath, sizeof(configFilePath)))
-				pout << "Unable to access user profile directory" << std::endl;
+	const std::string &home = FileSystem::getHomePath();
 
-			strcat(configFilePath, "\\Application Data");
-
-			// If the directory already exists (as it should in most cases),
-			// we don't want to fail, but we need to stop on other errors (such as ERROR_PATH_NOT_FOUND)
-			if (!CreateDirectory(configFilePath, NULL)) {
-				if (GetLastError() != ERROR_ALREADY_EXISTS)
-					pout << "Cannot create Application data folder" << std::endl;
-			}
-		}
-
-		strcat(configFilePath, "\\Pentagram");
-		if (!CreateDirectory(configFilePath, NULL)) {
-			if (GetLastError() != ERROR_ALREADY_EXISTS)
-				pout << "Cannot create Pentagram application data folder" << std::endl;
-		}
-		home = configFilePath;
-	} else {
-		home = ".";
-	}
-//#elif defined(UNDER_CE)
-//	home = "\\\\Pierce\\Moo\\UC";
-#elif defined(MACOSX)
-	home = getenv("HOME");
-	home += "/Library/Application Support/Pentagram";
-#else
-	// TODO: what to do on systems without $HOME?
-	home = ".";
-#endif
 	ok = filesystem->AddVirtualPath("@home", home, true);
 	if (!ok) {
 		pout << "Error opening default home directory: " << home << std::endl;

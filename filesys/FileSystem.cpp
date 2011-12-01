@@ -37,6 +37,11 @@ using	std::string;
 
 #include "filesys/ListFiles.h"
 
+#if defined(WIN32)
+#define WIN32_LEAN_AND_MEAN
+#include <windows.h>
+#include <shlobj.h>
+#endif
 
 FileSystem* FileSystem::filesystem = 0;
 
@@ -481,3 +486,104 @@ bool FileSystem::MkDir(const string &path)
 	return mkdir(name.c_str(), 0750) == 0;
 #endif
 }
+
+/*
+ *	Get the current users pentagram home path
+ */
+
+const std::string& FileSystem::getHomePath()
+{
+	static std::string home;
+	if (!home.empty()) return home;
+
+#ifdef HAVE_HOME
+	home = getenv("HOME");
+	home += "/.pentagram";
+#elif defined(WIN32)
+	// Use the Pentagram sub directory of Application Data, under Windows NT4 and later
+	char configFilePath[MAX_PATH] = "";
+
+	HRESULT (WINAPI * SHGetFolderPath)(HWND hwndOwner, int nFolder, HANDLE hToken, DWORD dwFlags, LPSTR pszPath) = 0;
+
+	HMODULE shell32 = LoadLibrary("shell32.dll");
+	if (shell32) *(FARPROC*)&SHGetFolderPath = GetProcAddress(shell32,"SHGetFolderPathA");
+
+	// SHGetFolderPath
+	if (SHGetFolderPath) {
+		HRESULT hr = SHGetFolderPath(NULL,CSIDL_APPDATA,NULL,0,configFilePath);
+		if (hr == S_FALSE || hr == E_FAIL) {
+			if (FAILED(SHGetFolderPath(NULL,CSIDL_APPDATA|CSIDL_FLAG_CREATE,NULL,0,configFilePath))) {
+				configFilePath[0] = 0;
+			}
+		}
+
+	}
+
+	// HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders\AppData
+	if (!*configFilePath) {
+		HKEY regkey;
+
+		if (RegOpenKey(HKEY_CURRENT_USER,TEXT("Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Shell Folders"),&regkey) == ERROR_SUCCESS) {
+
+			DWORD type;
+			DWORD size = MAX_PATH;
+			if (RegQueryValueEx(regkey,TEXT("AppData"),NULL,&type,(LPBYTE)configFilePath,&size) == ERROR_SUCCESS)
+			{
+				if (type == REG_SZ || type == REG_EXPAND_SZ)
+					configFilePath[MAX_PATH-1] = 0;				
+				else
+					configFilePath[0] = 0;				
+			}
+			RegCloseKey(regkey);
+		}
+
+	}
+
+	// %APPDATA%
+	if (!*configFilePath) {
+		if (!GetEnvironmentVariable("APPDATA", configFilePath, sizeof(configFilePath))) {
+			configFilePath[0] = 0;
+		}
+	}
+	// %USERPROFILE%
+	if (!*configFilePath) {
+
+		if (!GetEnvironmentVariable("USERPROFILE", configFilePath, sizeof(configFilePath))) {
+			configFilePath[0] = 0;
+		}
+		else {
+			Pentagram::strcat_s(configFilePath, "\\Application Data");
+
+			if (!CreateDirectory(configFilePath, NULL)) {
+				if (GetLastError() != ERROR_ALREADY_EXISTS) {
+					configFilePath[0] = 0;
+					perr << "Cannot create application data folder" << std::endl;
+				}
+			}
+		}
+	}
+
+	if (*configFilePath) {
+
+		home = configFilePath;
+		if (*home.rbegin() != '\\' && *home.rbegin() != '/')
+			home += "\\";
+		
+		home += "Pentagram";
+	} else {
+		home = ".";
+	}
+
+//#elif defined(UNDER_CE)
+//	home = "\\\\Pierce\\Moo\\UC";
+#elif defined(MACOSX)
+	home = getenv("HOME");
+	home += "/Library/Application Support/Pentagram";
+#else
+	// TODO: what to do on systems without $HOME?
+	home = ".";
+#endif
+
+	return home;
+}
+

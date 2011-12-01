@@ -27,6 +27,7 @@ pentagram_OBJ = \
 	$(MIDI) \
 	$(TIMIDITY) \
 	$(SYSTEM) \
+	filesys/OutputLogger.o \
 	kernel/GUIApp.o \
 	misc/version.o \
 	pentagram.o

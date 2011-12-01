@@ -78,7 +78,7 @@
 				GenerateManifest="false"
 				IgnoreDefaultLibraryNames="libc.lib;msvcrt.lib;libcmt.lib"
 				GenerateDebugInformation="true"
-				SubSystem="2"
+				SubSystem="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -836,6 +836,14 @@
 			</File>
 			<File
 				RelativePath="..\..\..\filesys\ODataSource.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\filesys\OutputLogger.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\filesys\OutputLogger.h"
 				>
 			</File>
 			<File
@@ -2889,6 +2897,22 @@
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="system"
+			>
+			<Filter
+				Name="msvc"
+				>
+				<File
+					RelativePath="..\msvc_include.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="win32"
+				>
+			</Filter>
+		</Filter>
 		<File
 			RelativePath="..\building_msvc.txt"
 			>
@@ -2903,10 +2927,6 @@
 		</File>
 		<File
 			RelativePath="..\..\..\module.mk"
-			>
-		</File>
-		<File
-			RelativePath="..\msvc_include.h"
 			>
 		</File>
 		<File

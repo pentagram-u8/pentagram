@@ -1,5 +1,5 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2008
+# Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Pentagram", "Pentagram\Pentagram.vcproj", "{DFF1F4A6-6F62-4F5F-9F45-45AA8F0E63BE}"
 	ProjectSection(ProjectDependencies) = postProject
 		{0CE98989-F599-43D1-B950-3E4CB376552F} = {0CE98989-F599-43D1-B950-3E4CB376552F}

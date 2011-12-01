@@ -1,3 +1,18 @@
+2011-12-01  Ryan Nunn <colourles@users.sourceforge.net>
+	* filesys/FileSystem.* : Added new static FileSystem::getHomePath() 
+	  function to get the home path. Includes slight rewrite of the way that 
+	  getting home is handled on Windows.
+	* kernel/CoreApp.* : Changed to use FileSystem::getHomePath()
+	* filesys/OutputLogger.* : Class to handle duplicating output from stdout 
+	  and stderr into a log file
+	* pentagram.cpp : Use OutputLogger class to redirect stdout and stderr into
+	  @home/pstdout.txt and @home/pstderr.txt 
+	* misc/istring.* : Added 'safe' strcpy and strcat functions that check 
+	  buffer size of destination to avoid buffer overrun
+	* filesys/zip/*.* : Fixups for versions of zlib that don't have OF macro
+	* graphics/PNGWriter.cpp, graphics/TexturePNG.cpp: Fixups for version of
+	  LibPNG that don't have voidp defined
+
 2011-11-09  Dominik Reichardt <dominus@users.sourceforge.net>
 	* audio/midi/CoreAudioMidiDriver.cpp & FluidSynthMidiDriver.cpp: both use the setting soundfont now.
 	* updated ReadMe with new scaler and SoundFont setting
@@ -5,6 +20,26 @@
 2011-11-08  Dominik Reichardt <dominus@users.sourceforge.net>
 	* audio/midi/CoreAudioMidiDriver.cpp: merged Jason Penney's patch for Exult
 	  that allows loading of a soundfont file with CoreAudio MIDI driver
+
+2011-11-05  Ryan Nunn <colourles@users.sourceforge.net>
+	* graphics/scalers/* : Separating template instantiations for hq scalers 
+	  into multiple files. This is likely to improve compile times/memory usage
+	* graphics/scalers/hqScaler.* : Added new 'hq' scaler that will auto select
+	  between hq2x, hq3x and hq4x depending on which ones are compiled in and 
+	  the actual scale factor needed
+	* gumps/ScalerGump.cpp : Added support for secondary scaling. Adds config 
+	  setting scaler2 (point or bilinear only) as well as scalex2 and scaley2. 
+	  If scalex2 or scaley2 isn't set their values will be automatically 
+	  detected from the best values that are appropriate for the settings of 
+	  the first scaler. So in general its best not to set them at all. These
+	  changes will allow things like using Hq4x to scale from 320x200 to 
+	  1280x600 then aspect correcting to 1280x960.
+
+	Scaling works like this:
+	1) Gamemap is rendered at scalex x scaley resolution. 
+	2) Its scale by 'scaler' to scalex2 x scaley2 resolution. 
+	3) Then its scaled by 'scaler2' to width x height (the window/screen 
+	   resolution) for display.
 
 2011-11-05  Dominik Reichardt <dominus@users.sourceforge.net>
 	* graphics/scalers/hq4xScaler.cpp/.h and various: added hq4x Scaler

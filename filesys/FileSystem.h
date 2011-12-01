@@ -40,6 +40,10 @@ class FileSystem
 	void initBuiltinData(bool allowoverride);
 
 	static FileSystem* get_instance() { return filesystem; }
+	
+	//! Get the current users pentagram home path
+	//! \returns ~/.pentagram or equivilant
+	static const std::string& getHomePath();
 
 	//! Open a file as readable. Streamed.
 	//! \param vfn the (virtual) filename
