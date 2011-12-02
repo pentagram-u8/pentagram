@@ -1,3 +1,14 @@
+2011-12-02  Ryan Nunn <colourles@users.sourceforge.net>
+	* filesys/FileSystem.* : Made a few extra functions static (in particular 
+	  IsDir). Updated getHomePath() so it will create the home dir if it 
+	  doesn't exist. This fixes a crash in Windows 'subsystem windows' builds
+	  if the home dir doesn't exist and as such the log files can't be created.
+	* system/msvc/Pentagram/Win95Fix.cpp : Special file that allows me to make
+	  builds that work in Win95 using Visual Studio 2005. Defines the symbols
+	  _imp__IsDebuggerPresent@0 and _imp__InterlockedCompareExchange@12 that
+	  normally come from kernel32.lib. The Win95 kernel32.dll doesn't have the
+	  corresponding functions so this file defines them instead. 
+	  
 2011-12-01  Ryan Nunn <colourles@users.sourceforge.net>
 	* filesys/FileSystem.* : Added new static FileSystem::getHomePath() 
 	  function to get the home path. Includes slight rewrite of the way that 

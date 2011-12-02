@@ -1,4 +1,4 @@
-/*
+
  *	FileSystem.cpp - The Pentagram File System
  *
  *  Copyright (C) 2002-2005  The Pentagram Team
@@ -508,6 +508,11 @@ const std::string& FileSystem::getHomePath()
 	HMODULE shell32 = LoadLibrary("shell32.dll");
 	if (shell32) *(FARPROC*)&SHGetFolderPath = GetProcAddress(shell32,"SHGetFolderPathA");
 
+	if (!SHGetFolderPath) {
+		HMODULE shfolder = LoadLibrary("SHFolder.dll");
+		if (shfolder) *(FARPROC*)&SHGetFolderPath = GetProcAddress(shell32,"SHGetFolderPathA");		
+	}
+
 	// SHGetFolderPath
 	if (SHGetFolderPath) {
 		HRESULT hr = SHGetFolderPath(NULL,CSIDL_APPDATA,NULL,0,configFilePath);
@@ -545,7 +550,7 @@ const std::string& FileSystem::getHomePath()
 			configFilePath[0] = 0;
 		}
 	}
-	// %USERPROFILE%
+	// %USERPROFILE%\Application Data
 	if (!*configFilePath) {
 
 		if (!GetEnvironmentVariable("USERPROFILE", configFilePath, sizeof(configFilePath))) {
@@ -573,9 +578,6 @@ const std::string& FileSystem::getHomePath()
 	} else {
 		home = ".";
 	}
-
-//#elif defined(UNDER_CE)
-//	home = "\\\\Pierce\\Moo\\UC";
 #elif defined(MACOSX)
 	home = getenv("HOME");
 	home += "/Library/Application Support/Pentagram";
@@ -583,6 +585,31 @@ const std::string& FileSystem::getHomePath()
 	// TODO: what to do on systems without $HOME?
 	home = ".";
 #endif
+
+	// If its not a dir, make it
+	if (!IsDir(home)) {
+		bool succeeded = 
+	#if defined(WIN32)
+			CreateDirectoryA(home.c_str(), NULL) == TRUE;
+	#else
+			mkdir(home.c_str(), 0750) == 0;
+	#endif
+		// If home doesn't exist and we can't create it, chances are there
+		// will be some major issues. So we return . (current dir) as the 
+		// home path. We first clear the home variable because this 
+		// function is called more than once. The first time is before
+		// output logging has been enabled, the second time after. We want
+		// the error message to be logged so we need to make sure that the
+		// function can't use the cached value the second time its called.
+
+		if (!succeeded) {
+			perr << "Error creating home directory \""<< home << "\"" << std::endl;
+
+			home = std::string();
+			static std::string dot = ".";
+			return dot;
+		}
+	}
 
 	return home;
 }

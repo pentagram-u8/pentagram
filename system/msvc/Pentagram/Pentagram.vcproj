@@ -2907,6 +2907,10 @@
 					RelativePath="..\msvc_include.h"
 					>
 				</File>
+				<File
+					RelativePath=".\Win95Fix.cpp"
+					>
+				</File>
 			</Filter>
 			<Filter
 				Name="win32"

@@ -83,8 +83,8 @@ class FileSystem
 	int ListFiles(const std::string mask, FileList& files);
 
  private:
-	void switch_slashes(std::string &name);
-	bool base_to_uppercase(std::string& str, int count);
+	static void switch_slashes(std::string &name);
+	static bool base_to_uppercase(std::string& str, int count);
 
 	bool rawopen
 	(
@@ -100,7 +100,7 @@ class FileSystem
 	bool is_text = false		// Should the file be opened in text mode
 	);
 	
-	bool IsDir(const std::string& path);
+	static bool IsDir(const std::string& path);
 
 	static FileSystem* filesystem;
 
