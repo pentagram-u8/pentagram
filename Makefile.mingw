@@ -59,6 +59,11 @@ FLEXPACK_OBJCS = \
 	misc/Console.o misc/istring.o misc/pent_include.o misc/util.o tools/flexpack/FlexPack.o \
 	tools/flexpack/FlexWriter.o
 
+SHAPECONV_OBJS = \
+	filesys/FileSystem.o filesys/RawArchive.o filesys/Archive.o filesys/ArchiveFile.o filesys/FlexFile.o \
+	filesys/ZipFile.o filesys/U8SaveFile.o filesys/DirFile.o filesys/zip/ioapi.o filesys/zip/unzip.o \
+	tools/shapeconv/ShapeConv.o $(CONVERT) $(UNZIP) $(MISC) $(ARGS)
+
 data2c.exe : tools/data2c/data2c.o
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
@@ -71,7 +76,7 @@ flexpack.exe: $(FLEXPACK_OBJCS)
 fold.exe : tools/fold/Fold.o $(FOLD_OBJCS)
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
 
-shapeconv.exe : tools/shapeconv/ShapeConv.o $(CONVERT) $(FILESYS) $(UNZIP) $(MISC) $(ARGS)
+shapeconv.exe : $(SHAPECONV_OBJS)
 	$(CXX) $(LFLAGS) -o $@ $+ -lz -mconsole
 
 PENTSHP_OBJCS = \

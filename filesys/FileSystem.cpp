@@ -1,4 +1,4 @@
-
+/*
  *	FileSystem.cpp - The Pentagram File System
  *
  *  Copyright (C) 2002-2005  The Pentagram Team
