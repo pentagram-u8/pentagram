@@ -135,6 +135,7 @@ dist:   install tools
 	cp COPYING $(U8PATH)/COPYING.txt
 	cp SDL/README-SDL.txt $(U8PATH)
 	cp SDL/lib/SDL.dll $(U8PATH)
+	cp SDL/lib/SDL_ttf.dll $(U8PATH)
 	u2d $(U8PATH)/*.txt
 	cp win32/Pentagram.iss $(U8PATH)
 
