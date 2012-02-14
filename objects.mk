@@ -44,8 +44,6 @@ FILESYS = \
 	filesys/SavegameWriter.o \
 	filesys/ZipFile.o \
 	filesys/data.o \
-	filesys/OutputLogger.o \
-	\
 	filesys/zip/unzip.o \
 	filesys/zip/ioapi.o \
 	filesys/zip/zip.o
