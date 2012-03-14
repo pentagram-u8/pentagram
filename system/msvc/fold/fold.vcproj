@@ -19,8 +19,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="&quot;$(ConfigurationName) $(PlatformName)\bin&quot;"
-			IntermediateDirectory="&quot;$(ConfigurationName) $(PlatformName)\obj&quot;"
+			OutputDirectory="$(ConfigurationName) $(PlatformName)\bin"
+			IntermediateDirectory="$(ConfigurationName) $(PlatformName)\obj"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			UseOfMFC="0"
@@ -101,8 +101,8 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|x64"
-			OutputDirectory="&quot;$(ConfigurationName) $(PlatformName)\bin&quot;"
-			IntermediateDirectory="&quot;$(ConfigurationName) $(PlatformName)\obj&quot;"
+			OutputDirectory="$(ConfigurationName) $(PlatformName)\bin"
+			IntermediateDirectory="$(ConfigurationName) $(PlatformName)\obj"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			UseOfMFC="0"
@@ -185,8 +185,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="&quot;$(ConfigurationName) $(PlatformName)\bin&quot;"
-			IntermediateDirectory="&quot;$(ConfigurationName) $(PlatformName)\obj&quot;"
+			OutputDirectory="$(ConfigurationName) $(PlatformName)\bin"
+			IntermediateDirectory="$(ConfigurationName) $(PlatformName)\obj"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			UseOfMFC="0"
@@ -268,8 +268,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|x64"
-			OutputDirectory="&quot;$(ConfigurationName) $(PlatformName)\bin&quot;"
-			IntermediateDirectory="&quot;$(ConfigurationName) $(PlatformName)\obj&quot;"
+			OutputDirectory="$(ConfigurationName) $(PlatformName)\bin"
+			IntermediateDirectory="$(ConfigurationName) $(PlatformName)\obj"
 			ConfigurationType="1"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			UseOfMFC="0"

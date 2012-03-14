@@ -18,8 +18,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="&quot;$(ConfigurationName)\bin&quot;"
-			IntermediateDirectory="&quot;$(ConfigurationName)\obj&quot;"
+			OutputDirectory="$(ConfigurationName)\bin"
+			IntermediateDirectory="$(ConfigurationName)\obj"
 			ConfigurationType="0"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			>
@@ -39,8 +39,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="&quot;$(ConfigurationName)\bin&quot;"
-			IntermediateDirectory="&quot;$(ConfigurationName)\obj&quot;"
+			OutputDirectory="$(ConfigurationName)\bin"
+			IntermediateDirectory="$(ConfigurationName)\obj"
 			ConfigurationType="0"
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC70.vsprops"
 			>

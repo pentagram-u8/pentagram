@@ -1,3 +1,7 @@
+2009-11-08  <shadowchaser@users.sourceforge.net>
+	* *.vcproj : Fixed quoted project output paths to allow for Visual Studio 2010 
+	  project upgrades.
+
 2011-12-02  Ryan Nunn <colourles@users.sourceforge.net>
 	* filesys/FileSystem.* : Made a few extra functions static (in particular 
 	  IsDir). Updated getHomePath() so it will create the home dir if it 
