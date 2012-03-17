@@ -172,12 +172,12 @@ bool INIFile::readConfigString(string config)
 			config.clear();
 		}
 
-		if (line[0] == '#') {
+		if (line.length() > 0 && line[0] == '#') {
 			// Accumulate comments here. Once we encounter either the start
 			// of a new section, or a key-value-pair, we associate the value
 			// of the 'comment' variable with that entity.
 			comment += line + "\n";
-		} else if (line[0] == '[') {
+		} else if (line.length() > 0 && line[0] == '[') {
 			// It's a new section which begins here.
 			unsigned int p = 1;
 

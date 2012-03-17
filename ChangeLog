@@ -1,4 +1,8 @@
-2009-11-08  <shadowchaser@users.sourceforge.net>
+2012-03-17  <shadowchaser@users.sourceforge.net>
+	* conf/INIfile.cpp : Fixed references to line[0] that were crashing on blank 
+      lines in ini files.
+
+2012-03-14  <shadowchaser@users.sourceforge.net>
 	* *.vcproj : Fixed quoted project output paths to allow for Visual Studio 2010 
 	  project upgrades.
 
