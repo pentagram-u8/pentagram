@@ -163,37 +163,37 @@ public:
 
 	_Myt& operator=(const _Myt& _Right)
 		{	// assign _Right
-		assign(_Right);
+		this->assign(_Right);
 		return (*this);
 		}
 
 	_Myt& operator=(const _Elem *_Ptr)
 		{	// assign [_Ptr, <null>)
-		assign(_Ptr);
+		this->assign(_Ptr);
 		return (*this);
 		}
 
 	_Myt& operator=(_Elem _Ch)
 		{	// assign 1 * _Ch
-		assign(1, _Ch);
+		this->assign(1, _Ch);
 		return (*this);
 		}
 
 	_Myt& operator+=(const _Myt& _Right)
 		{	// append _Right
-		append(_Right);
+		this->append(_Right);
 		return (*this);
 		}
 
 	_Myt& operator+=(const _Elem *_Ptr)
 		{	// append [_Ptr, <null>)
-		append(_Ptr);
+		this->append(_Ptr);
 		return (*this);
 		}
 
 	_Myt& operator+=(_Elem _Ch)
 		{	// append 1 * _Ch
-		append(static_cast<size_type>(1), _Ch);
+		this->append(static_cast<size_type>(1), _Ch);
 		return (*this);
 		}
 
