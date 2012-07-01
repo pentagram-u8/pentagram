@@ -184,8 +184,6 @@ AC_DEFUN([PENT_CHECK_SDLTTF],[
 
 
 dnl Check if we have SDL (sdl-config, header and library) version >= 1.2.0
-dnl Input:
-dnl SDL_CFLAGS, SDL_LIBS are set correctly by AM_PATH_SDL
 dnl Output:
 dnl SDL_CFLAGS and SDL_LIBS are set and AC_SUBST-ed
 dnl HAVE_SDL_H is AC_DEFINE-d
