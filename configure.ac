@@ -308,6 +308,24 @@ if test x$HOST_SYSTEM == xMACOSX; then
 	fi
 fi
 
+# ---------------------------------------------------------------------
+# Mac OS X code signing
+# ---------------------------------------------------------------------
+
+AC_ARG_WITH(macosx-code-signature,
+	AS_HELP_STRING([--with-macosx-code-signature=identity], [identity for code signing (Mac OS X bundles only) @<:@default "Developer ID Application"@:>@]),
+	[with_macosx_code_signature="$withval"],
+	[with_macosx_code_signature=""])
+if test x$HOST_SYSTEM == xMACOSX; then
+	if test x"$with_macosx_code_signature" != x; then
+		if test x"$with_macosx_code_signature" = xyes; then
+			with_macosx_code_signature="Developer ID Application"
+		fi
+		OSX_CODE_SIGNATURE="$with_macosx_code_signature"
+		AC_SUBST(OSX_CODE_SIGNATURE)
+	fi
+fi
+
 # ------------------
 # Warning level
 # ------------------
@@ -626,6 +644,10 @@ echo "Built-in data files:		$pent_nodata"
 if test x$with_macosx_static_lib_path != x; then
 echo "OS X static libs path:		$with_macosx_static_lib_path"
 fi
+if test x"$with_macosx_code_signature" != x; then
+echo "OS X code sign ID:		$with_macosx_code_signature"
+fi
+
 echo ""
 echo "Optional libraries:"
 echo "ALSA midi:			$pent_alsa"

@@ -1,3 +1,8 @@
+2012-08-18 Dominik Reichardt <dominus@users.sourceforge.net>
+	* configure.ac, makefile.in, module.mk: added configure flag
+	  "--with-macosx-code-signature=identity" for using an ID to codesign the 
+	  Mac OS X bundle. The default identity is "Developer ID Application".
+	  
 2012-03-17  <shadowchaser@users.sourceforge.net>
 	* conf/INIfile.cpp : Fixed references to line[0] that were crashing on blank 
       lines in ini files.

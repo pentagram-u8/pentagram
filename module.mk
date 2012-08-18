@@ -91,6 +91,9 @@ bundle: pentagram$(EXEEXT)
 	$(INSTALL_DATA) $(top_srcdir)/COPYING $(bundle_name)
 	$(INSTALL_DATA) $(top_srcdir)/FAQ $(bundle_name)
 	$(INSTALL_DATA) $(top_srcdir)/README $(bundle_name)
+ifneq ($(OSX_CODE_SIGNATURE),)
+	codesign -f -s "$(OSX_CODE_SIGNATURE)" $(bundle_name)
+endif
 	
 install-exec-local: bundle
 	mkdir -p $(DESTDIR)/Applications/
