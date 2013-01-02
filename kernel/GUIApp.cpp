@@ -2124,7 +2124,9 @@ void GUIApp::resetEngine()
 	while (!cursors.empty()) cursors.pop();
 	pushMouseCursor();
 
-	kernel->addProcess(new JoystickCursorProcess(JOY1, 0, 1));
+	// FIXME: This breaks loading processes if this process gets an ID
+	//        also present in a savegame.
+	// kernel->addProcess(new JoystickCursorProcess(JOY1, 0, 1));
 
 	timeOffset = -(sint32)Kernel::get_instance()->getFrameNum();
 	inversion = 0;
