@@ -621,7 +621,7 @@ void FMOplMidiDriver::midi_fm_instrument(int voice, unsigned char *inst)
 		midi_write_adlib(0xbd, 0);
 
 		if (!inst[INDEX_PERC]) {
-			PERR("Tried setting an instruement that wasnt loaded");
+			PERR("Tried setting an instrument that wasn't loaded");
 		}
 	}
 }
