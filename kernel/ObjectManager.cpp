@@ -269,6 +269,7 @@ void ObjectManager::save(ODataSource* ods)
 
 		// don't save Gumps with DONT_SAVE and Gumps with parents, unless
 		// the parent is a core gump
+		// FIXME: This leaks objIDs. See comment in ObjectManager::load().
 		if (gump && !gump->mustSave(true)) continue;
 
 		object->save(ods);
@@ -304,6 +305,31 @@ bool ObjectManager::load(IDataSource* ids, uint32 version)
 		}
 
 	} while(true);
+
+	// ObjectManager::save() doesn't save Gumps with the DONT_SAVE flag, but
+	// their IDs are still marked in use in objIDs.
+	// As a workaround, we clear all IDs still in use without actual objects.
+	// We only do this with IDs >= 1024 because below there are truly reserved
+	// objIDs (up to 511 is reserved by U8Game, 666 is reserved for Guardian
+	// barks).
+	// FIXME: Properly fix this objID leak and increment the savegame number.
+	//        This check can then be turned into an savegame corruption check
+	//        for saves with the new savegame version.
+	// We also fail loading when we're out of objIDs since this could
+	// have caused serious issues when critical objects haven't been created.
+	if (objIDs->isFull()) {
+		perr << "Savegame has been corrupted by running out of objIDs."
+		     << std::endl;
+		return false;
+	}
+	unsigned int count = 0;
+	for (unsigned int i = 1024; i < objects.size(); i++) {
+		if (objects[i] == 0 && objIDs->isIDUsed(i)) {
+			objIDs->clearID(i);
+			count++;
+		}
+	}
+	pout << "Reclaimed " << count << " objIDs on load." << std::endl;
 
 	return true;
 }

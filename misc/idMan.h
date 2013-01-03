@@ -56,6 +56,10 @@ public:
 	idMan(uint16 begin, uint16 max_end, uint16 startcount=0);
 	~idMan();
 
+	//! check if this idMan is full
+	bool		isFull() const
+		{ return first == 0 && end >= max_end; }
+
 	//! clear all IDs, reset size to the startcount, and set max_end to new_max
 	void		clearAll(uint16 new_max = 0);
 
@@ -72,7 +76,7 @@ public:
 	void		clearID(uint16 id);
 
 	//! check if an ID is in use
-	bool		isIDUsed(uint16 id)
+	bool		isIDUsed(uint16 id) const
 		{ return id >= begin && id <= end && ids[id] == 0 && id != last; }
 
 	//! increase the maximum size
