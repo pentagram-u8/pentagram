@@ -169,6 +169,13 @@ WORKAROUND:
 None yet.
 
 
+Map 5: (East Road)
+
+Misplaced ground tiles around (9276,23672,48).
+
+WORKAROUND:
+None yet.
+
 
 MISC BUGS:
 -----------
