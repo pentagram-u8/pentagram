@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2004-2005  The Pentagram Team
+ *  Copyright (C) 2004-2013  The Pentagram Team
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -182,7 +182,7 @@ void ControlsGump::showEngineMenu(PagedGump* pagedgump)
 	int x = 4;
 	int y = 12;
 	gump->addEntry("quickSave", "Quick Save", x, y);
-	gump->addEntry("quickLoad", "Quick Save", x, y);
+	gump->addEntry("quickLoad", "Quick Load", x, y);
 	gump->addEntry("avatarInStasis", "Stasis Mode", x, y);
 	gump->addEntry("engineStats", "Engine Stats", x, y);
 	gump->addEntry("paintEditorItems", "View Editor Items", x, y);

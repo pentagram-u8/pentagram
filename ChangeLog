@@ -1,4 +1,7 @@
 2013-01-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* gumps/ControlGump.cpp: fix description of QuickLoad in control gump
+
+2013-01-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/ObjectManager.cpp: Fix objID leak caused by DONT_SAVE gumps.
 	  
 2013-01-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
