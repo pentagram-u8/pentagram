@@ -119,7 +119,7 @@ void CurrentMap::createEggHatcher()
 	if (ehp)
 		ehp->terminate();
 
-    ehp = new EggHatcherProcess();
+	ehp = new EggHatcherProcess();
 	egghatcher = Kernel::get_instance()->addProcess(ehp);
 }
 
