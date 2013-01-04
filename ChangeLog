@@ -1,3 +1,6 @@
+2013-01-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
+	* world/CurrentMap.cpp: fix touching object detection in sweepTest
+
 2013-01-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/ControlGump.cpp: fix description of QuickLoad in control gump
 
