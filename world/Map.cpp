@@ -75,8 +75,8 @@ static void shiftCoordsToZ(sint32& x, sint32& y, sint32& z, sint32 newz)
 {
 	sint32 zd = newz - z;
 
-	x += zd / 2;
-	y += zd / 2;
+	x += 4*zd;
+	y += 4*zd;
 
 	z = newz;
 }
@@ -254,6 +254,25 @@ void Map::loadFixed(IDataSource* ds)
 				    (x == 23135 && y == 21343) )
 				{
 					shiftCoordsToZ(x, y, z, 40);
+					(*iter)->setLocation(x, y, z);
+				}
+			}
+		}
+	}
+
+	if (GAME_IS_U8 && mapnum == 21) {
+		// Map 21 has some ground and wall tiles at the wrong z
+		std::list<Item*>::iterator iter;
+
+		for (iter = fixeditems.begin(); iter != fixeditems.end(); ++iter) {
+			sint32 z = (*iter)->getZ();
+			uint32 sh = (*iter)->getShape();
+			if (z == 8 && (sh == 301 || sh == 31 || sh == 32)) {
+				sint32 x, y;
+				(*iter)->getLocation(x, y, z);
+				if ((x == 6783 || x == 6655) && (y == 15743 || y == 15615))
+				{
+					shiftCoordsToZ(x, y, z, 16);
 					(*iter)->setLocation(x, y, z);
 				}
 			}

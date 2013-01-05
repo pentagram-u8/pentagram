@@ -179,6 +179,17 @@ WORKAROUND:
 None yet.
 
 
+Map 21: (Stone Cove)
+
+Two ground and two wall tiles have z == 8 instead of z == 16.
+Ground: shape 301 at (6783,15615,8), (6783,15743,8)
+Wall: shapes 31, 32 at resp. (6755,15615,8), (6755,15743,8)
+
+WORKAROUND:
+We manually shift them to z == 8 in Map::loadFixed while keeping them in
+the same on-screen position.
+
+
 Map 5: (East Road)
 
 Misplaced ground tiles around (9276,23672,48).
