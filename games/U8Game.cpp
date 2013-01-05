@@ -48,7 +48,6 @@ U8Game::U8Game() : Game()
 	settingman->setDefault("endgame", false);
 	settingman->setDefault("quotes", false);
 	settingman->setDefault("footsteps", true);
-	settingman->setDefault("cheat", true);
 	settingman->setDefault("targetedjump", true);
 
 	GameInfo* info = GUIApp::get_instance()->getGameInfo();

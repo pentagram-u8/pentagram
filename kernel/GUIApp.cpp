@@ -146,7 +146,8 @@ GUIApp::GUIApp(int argc, const char* const* argv)
 	  painting(false), showTouching(false), mouseX(0), mouseY(0),
 	  defMouse(0), flashingcursor(0), 
 	  mouseOverGump(0), dragging(DRAG_NOT), dragging_offsetX(0),
-	  dragging_offsetY(0), inversion(0), timeOffset(0), has_cheated(false),
+	  dragging_offsetY(0), inversion(0), timeOffset(0),
+	  has_cheated(false), cheats_enabled(false),
 	  drawRenderStats(false), ttfoverrides(false), audiomixer(0)
 {
 	application = this;
@@ -485,6 +486,7 @@ void GUIApp::startupGame()
 	con.AddConsoleCommand("Cheat::maxstats", MainActor::ConCmd_maxstats);
 	con.AddConsoleCommand("Cheat::heal", MainActor::ConCmd_heal);
 	con.AddConsoleCommand("Cheat::toggleInvincibility", MainActor::ConCmd_toggleInvincibility);
+	con.AddConsoleCommand("Cheat::toggle", GUIApp::ConCmd_toggleCheatMode);
 	con.AddConsoleCommand("MainActor::name", MainActor::ConCmd_name);
 	con.AddConsoleCommand("MovieGump::play", MovieGump::ConCmd_play);
 	con.AddConsoleCommand("MusicProcess::playMusic", MusicProcess::ConCmd_playMusic);
@@ -554,6 +556,9 @@ void GUIApp::startupGame()
 
 	settingman->setDefault("interpolate", true);
 	settingman->get("interpolate", interpolate);
+
+	settingman->setDefault("cheat", false);
+	settingman->get("cheat", cheats_enabled);
 
 	game->loadFiles();
 	gamedata->setupFontOverrides();
@@ -659,6 +664,7 @@ void GUIApp::shutdownGame(bool reloading)
 	con.RemoveConsoleCommand(MainActor::ConCmd_maxstats);
 	con.RemoveConsoleCommand(MainActor::ConCmd_heal);
 	con.RemoveConsoleCommand(MainActor::ConCmd_toggleInvincibility);
+	con.RemoveConsoleCommand(GUIApp::ConCmd_toggleCheatMode);
 	con.RemoveConsoleCommand(MainActor::ConCmd_name);
 	con.RemoveConsoleCommand(MovieGump::ConCmd_play);
 	con.RemoveConsoleCommand(MusicProcess::ConCmd_playMusic);
@@ -2634,6 +2640,13 @@ void GUIApp::ConCmd_closeItemGumps(const Console::ArgvType &argv)
 	g->getDesktopGump()->CloseItemDependents();
 }
 
+void GUIApp::ConCmd_toggleCheatMode(const Console::ArgvType &argv)
+{
+	GUIApp * g = GUIApp::get_instance();
+	g->setCheatMode(!g->areCheatsEnabled());
+	pout << "Cheats = " << g->areCheatsEnabled() << std::endl;
+}
+
 void GUIApp::ConCmd_memberVar(const Console::ArgvType &argv)
 {
 	if (argv.size() == 1) {
@@ -2700,6 +2713,13 @@ void GUIApp::ConCmd_memberVar(const Console::ArgvType &argv)
 //
 // Intrinsics
 //
+
+uint32 GUIApp::I_avatarCanCheat(const uint8* /*args*/,
+								unsigned int /*argsize*/)
+{
+	return GUIApp::get_instance()->areCheatsEnabled() ? 1 : 0;
+}
+
 
 uint32 GUIApp::I_makeAvatarACheater(const uint8* /*args*/,
 									unsigned int /*argsize*/)

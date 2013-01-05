@@ -317,7 +317,7 @@ Intrinsic U8Intrinsics[] = {
 	0, //U
 	0, //U
 	FireballProcess::I_TonysBalls,
-	UCMachine::I_true, // AvatarCanCheat
+	GUIApp::I_avatarCanCheat,
 	GUIApp::I_makeAvatarACheater,
 	UCMachine::I_true, // isGameRunning
 	0, //U

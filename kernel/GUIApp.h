@@ -103,6 +103,7 @@ public:
 	INTRINSIC(I_getTimeInMinutes);
 	INTRINSIC(I_getTimeInSeconds);
 	INTRINSIC(I_setTimeInGameHours);
+	INTRINSIC(I_avatarCanCheat);
 	INTRINSIC(I_makeAvatarACheater);
 	INTRINSIC(I_closeItemGumps);
 
@@ -328,8 +329,11 @@ private:
 
 	sint32 timeOffset;
 	bool has_cheated;
+	bool cheats_enabled;
 
 public:
+	bool areCheatsEnabled() const { return cheats_enabled; }
+	void setCheatMode(bool enabled) { cheats_enabled = enabled; }
 	bool hasCheated() const { return has_cheated; }
 	void makeCheater() { has_cheated = true; }
 
@@ -361,6 +365,8 @@ private:
 	static void			ConCmd_toggleShowTouchingItems(const Console::ArgvType &argv);	//!< "GUIApp::toggleShowTouchingItems" console command
 
 	static void			ConCmd_closeItemGumps(const Console::ArgvType &argv);	//!< "GUIApp::closeItemGumps" console command
+
+	static void			ConCmd_toggleCheatMode(const Console::ArgvType &argv);	//!< "Cheat::toggle" console command
 
 	static void			ConCmd_memberVar(const Console::ArgvType &argv);	//!< "GuiApp::memberVar <member> [newvalue] [updateini]" console command
 

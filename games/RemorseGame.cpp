@@ -40,7 +40,6 @@ RemorseGame::RemorseGame() : Game()
 	settingman->setDefault("skipstart", false);
 	settingman->setDefault("endgame", false);
 	settingman->setDefault("footsteps", true);
-	settingman->setDefault("cheat", true);
 	settingman->setDefault("textdelay", 5);
 }
 
