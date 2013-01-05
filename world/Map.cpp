@@ -68,6 +68,20 @@ void Map::loadNonFixed(IDataSource* ds)
 	loadFixedFormatObjects(dynamicitems, ds, 0);
 }
 
+
+// Utility function for fixing up map bugs: shift a coordinate to a
+// different z without changing its on-screen position.
+static void shiftCoordsToZ(sint32& x, sint32& y, sint32& z, sint32 newz)
+{
+	sint32 zd = newz - z;
+
+	x += zd / 2;
+	y += zd / 2;
+
+	z = newz;
+}
+
+
 void Map::loadFixed(IDataSource* ds)
 {
 	loadFixedFormatObjects(fixeditems, ds, Item::EXT_FIXED);
@@ -226,6 +240,24 @@ void Map::loadFixed(IDataSource* ds)
 									   Item::EXT_FIXED, false);
 		item->setLocation(15103, 6015, 0);
 		fixeditems.push_back(item);
+	}
+
+	if (GAME_IS_U8 && mapnum == 49) {
+		// Map 49 has some water tiles at the wrong z
+		std::list<Item*>::iterator iter;
+
+		for (iter = fixeditems.begin(); iter != fixeditems.end(); ++iter) {
+			if ((*iter)->getShape() == 347 && (*iter)->getZ() == 96) {
+				sint32 x, y, z;
+				(*iter)->getLocation(x, y, z);
+				if ((x == 23007 && y == 21343) || (x == 23135 && y == 21471) ||
+				    (x == 23135 && y == 21343) )
+				{
+					shiftCoordsToZ(x, y, z, 40);
+					(*iter)->setLocation(x, y, z);
+				}
+			}
+		}
 	}
 }
 
