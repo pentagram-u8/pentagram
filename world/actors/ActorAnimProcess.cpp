@@ -231,6 +231,10 @@ void ActorAnimProcess::run()
 			if (tracker->isBlocked() &&
 				!(tracker->getAnimAction()->flags&AnimAction::AAF_UNSTOPPABLE))
 			{
+				// FIXME: For blocked large steps we may still want to do
+				//        a partial move. (But how would that work with
+				//        repeated frames?)
+
 #ifdef WATCHACTOR
 				if (item_num == watchactor)
 					pout << "Animation ["
