@@ -261,6 +261,42 @@ bool AnimationTracker::step()
 	ty = y+dy;
 	tz = z+dz;
 
+	// Only for particularly large steps we do a full sweepTest
+	if (abs(dx) >= xd - 8 || abs(dy) >= yd - 8 || abs(dz) >= zd - 8) {
+
+		sint32 start[3] = { x, y, z };
+		sint32 end[3] = { tx, ty, tz };
+		sint32 dims[3] = { xd, yd, zd };
+
+		// Do the sweep test
+		std::list<CurrentMap::SweepItem> collisions;
+		std::list<CurrentMap::SweepItem>::iterator it;
+		cm->sweepTest(start, end, dims, a->getShapeInfo()->flags, a->getObjId(),
+		              false, &collisions);
+
+
+		for (it = collisions.begin(); it != collisions.end(); it++)
+		{
+			// hit something, can't move
+			if (!it->touching && it->blocking) {
+#ifdef WATCHACTOR
+				if (a->getObjId() == watchactor) {
+					pout << "AnimationTracker: did sweepTest for large step; "
+					     << "collision at time " << it->hit_time << std::endl;
+				}
+#endif
+				blocked = true;
+				it->GetInterpolatedCoords(end, start, end);
+				x = end[0];
+				y = end[1];
+				z = end[2];
+				return false;
+			}
+		}
+
+		// If it succeeded, we proceed as usual
+	}
+
 	Item* support;
 	bool targetok = cm->isValidPosition(tx,ty,tz,
 										startx,starty,startz,
