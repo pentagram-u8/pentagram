@@ -342,6 +342,10 @@ ProcId MainActor::die(uint16 damageType)
 
 void MainActor::ConCmd_teleport(const Console::ArgvType &argv)
 {
+	if (!GUIApp::get_instance()->areCheatsEnabled()) {
+		pout << "Cheats are disabled" << std::endl;
+		return;
+	}
 	MainActor* mainactor = getMainActor();
 	int curmap = mainactor->getMapNum();
 
@@ -401,6 +405,10 @@ void MainActor::ConCmd_mark(const Console::ArgvType &argv)
 
 void MainActor::ConCmd_recall(const Console::ArgvType &argv)
 {
+	if (!GUIApp::get_instance()->areCheatsEnabled()) {
+		pout << "Cheats are disabled" << std::endl;
+		return;
+	}
 	if (argv.size() == 1) {
 		pout << "Usage: recall <mark>: recall to named mark" << std::endl;
 		return;
@@ -439,6 +447,10 @@ void MainActor::ConCmd_listmarks(const Console::ArgvType &argv)
 
 void MainActor::ConCmd_maxstats(const Console::ArgvType &argv)
 {
+	if (!GUIApp::get_instance()->areCheatsEnabled()) {
+		pout << "Cheats are disabled" << std::endl;
+		return;
+	}
 	MainActor* mainactor = getMainActor();
 
 	// constants!!
@@ -454,6 +466,10 @@ void MainActor::ConCmd_maxstats(const Console::ArgvType &argv)
 
 void MainActor::ConCmd_heal(const Console::ArgvType &argv)
 {
+	if (!GUIApp::get_instance()->areCheatsEnabled()) {
+		pout << "Cheats are disabled" << std::endl;
+		return;
+	}
 	MainActor* mainactor = getMainActor();
 
 	mainactor->setHP(mainactor->getMaxHP());
@@ -716,6 +732,10 @@ void MainActor::ConCmd_toggleCombat(const Console::ArgvType &argv)
 
 void MainActor::ConCmd_toggleInvincibility(const Console::ArgvType &argv)
 {
+	if (!GUIApp::get_instance()->areCheatsEnabled()) {
+		pout << "Cheats are disabled" << std::endl;
+		return;
+	}
 	MainActor* av = getMainActor();
 
 	if (av->getActorFlags() & Actor::ACT_INVINCIBLE) {

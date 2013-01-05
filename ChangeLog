@@ -1,13 +1,13 @@
 2013-01-05  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/actors/AnimationTracker.cpp: Do a sweepTest for large steps
+	* audio/*: Try to reduce clipping
+	* *: Add 'cheat' config key to control cheat mode
 
 2013-01-04  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* world/CurrentMap.cpp: fix touching object detection in sweepTest
 
 2013-01-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* gumps/ControlGump.cpp: fix description of QuickLoad in control gump
-
-2013-01-03  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>
 	* kernel/ObjectManager.cpp: Fix objID leak caused by DONT_SAVE gumps.
 	  
 2013-01-02  Willem Jan Palenstijn <wjpalenstijn@users.sourceforge.net>

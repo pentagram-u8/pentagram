@@ -199,30 +199,36 @@ bool QuickAvatarMoverProcess::loadData(IDataSource* ids, uint32 version)
 
 void QuickAvatarMoverProcess::ConCmd_startMoveUp(const Console::ArgvType &argv)
 {
+	if (!GUIApp::get_instance()->areCheatsEnabled()) return;
 	QuickAvatarMoverProcess::startMover(-64,-64,0,0);
 }
 
 void QuickAvatarMoverProcess::ConCmd_startMoveDown(const Console::ArgvType &argv)
 {
+	if (!GUIApp::get_instance()->areCheatsEnabled()) return;
 	QuickAvatarMoverProcess::startMover(+64,+64,0,1);
 }
 
 void QuickAvatarMoverProcess::ConCmd_startMoveLeft(const Console::ArgvType &argv)
 {
+	if (!GUIApp::get_instance()->areCheatsEnabled()) return;
 	QuickAvatarMoverProcess::startMover(-64,+64,0,2);
 }
 
 void QuickAvatarMoverProcess::ConCmd_startMoveRight(const Console::ArgvType &argv)
 {
+	if (!GUIApp::get_instance()->areCheatsEnabled()) return;
 	QuickAvatarMoverProcess::startMover(+64,-64,0,3);
 }
 
 void QuickAvatarMoverProcess::ConCmd_startAscend(const Console::ArgvType &argv)
 {
+	if (!GUIApp::get_instance()->areCheatsEnabled()) return;
 	QuickAvatarMoverProcess::startMover(0,0,8,4);
 }
 
 void QuickAvatarMoverProcess::ConCmd_startDescend(const Console::ArgvType &argv){
+	if (!GUIApp::get_instance()->areCheatsEnabled()) return;
 	QuickAvatarMoverProcess::startMover(0,0,-8,5);
 }
 
@@ -262,6 +268,7 @@ void QuickAvatarMoverProcess::ConCmd_toggleQuarterSpeed(const Console::ArgvType 
 
 void QuickAvatarMoverProcess::ConCmd_toggleClipping(const Console::ArgvType &argv)
 {
+	if (!GUIApp::get_instance()->areCheatsEnabled()) return;
 	QuickAvatarMoverProcess::toggleClipping();
 	pout << "QuickAvatarMoverProcess::clipping = " << QuickAvatarMoverProcess::isClipping() << std::endl;
 }

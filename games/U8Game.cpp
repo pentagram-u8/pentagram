@@ -149,6 +149,10 @@ bool U8Game::startGame()
 
 void U8Game::ConCmd_cheatItems(const Console::ArgvType &argv)
 {
+	if (!GUIApp::get_instance()->areCheatsEnabled()) {
+		pout << "Cheats are disabled" << std::endl;
+		return;
+	}
 	MainActor* av = getMainActor();
 	if (!av) return;
 	Container* backpack = getContainer(av->getEquip(7)); // CONSTANT!
@@ -293,6 +297,10 @@ void U8Game::ConCmd_cheatItems(const Console::ArgvType &argv)
 
 void U8Game::ConCmd_cheatEquip(const Console::ArgvType &argv)
 {
+	if (!GUIApp::get_instance()->areCheatsEnabled()) {
+		pout << "Cheats are disabled" << std::endl;
+		return;
+	}
 	MainActor* av = getMainActor();
 	if (!av) return;
 	Container* backpack = getContainer(av->getEquip(7)); // CONSTANT!
