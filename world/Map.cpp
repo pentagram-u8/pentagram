@@ -278,6 +278,27 @@ void Map::loadFixed(IDataSource* ds)
 			}
 		}
 	}
+
+	if (GAME_IS_U8 && mapnum == 5) {
+		// Map 5 has some ground tiles at the wrong z
+		std::list<Item*>::iterator iter;
+
+		for (iter = fixeditems.begin(); iter != fixeditems.end(); ++iter) {
+			if ((*iter)->getShape() == 71 && (*iter)->getFrame() == 8 && (*iter)->getZ() == 0) {
+				sint32 x, y, z;
+				(*iter)->getLocation(x, y, z);
+				if ((x == 9151 && y == 24127) || (x == 9279 && y == 23999) ||
+				    (x == 9535 && y == 23615) || (x == 9151 && y == 23487) ||
+				    (x == 10303 && y == 23487) || (x == 9919 && y == 23487) ||
+				    (x == 10559 && y == 23487))
+				{
+					shiftCoordsToZ(x, y, z, 48);
+					(*iter)->setLocation(x, y, z);
+				}
+			}
+		}
+	}
+
 }
 
 void Map::unloadFixed()

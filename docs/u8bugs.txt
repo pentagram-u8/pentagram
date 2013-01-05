@@ -192,10 +192,14 @@ the same on-screen position.
 
 Map 5: (East Road)
 
-Misplaced ground tiles around (9276,23672,48).
+Misplaced ground tiles at z == 0 instead of z == 48:
+Shape 71/8 at (9151,24127,0), (9279,23999,0), (9535,23615,0), (9151,23487,0),
+(9919,23487,0), (10303,23487,0), (10559,23487,0)
+
 
 WORKAROUND:
-None yet.
+We manually shift them to z == 48 in Map::loadFixed while keeping them in
+the same on-screen position.
 
 
 MISC BUGS:
