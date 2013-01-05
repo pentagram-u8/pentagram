@@ -204,11 +204,11 @@ void AudioChannel::resampleFrameM8toS(sint16 *&stream, uint32 &bytes)
 			if (src+2 < src_end) {
 				int c = *(src+2);
 				c = (c|(c << 8))-32768;
-				interp_l.feedData(c);
+				interp_l.feedData(RANGE_REDUX(c));
 			} else if (src2 < src2_end) {
 				int c = *(src2);
 				c = (c|(c << 8))-32768;
-				interp_l.feedData(c);
+				interp_l.feedData(RANGE_REDUX(c));
 				src2++;
 			} else {
 				interp_l.feedData();
@@ -265,11 +265,11 @@ void AudioChannel::resampleFrameM8toM(sint16 *&stream, uint32 &bytes)
 			if (src+2 < src_end) {
 				int c = *(src+2);
 				c = (c|(c << 8))-32768;
-				interp_l.feedData(c);
+				interp_l.feedData(RANGE_REDUX(c));
 			} else if (src2 < src2_end) {
 				int c = *(src2);
 				c = (c|(c << 8))-32768;
-				interp_l.feedData(c);
+				interp_l.feedData(RANGE_REDUX(c));
 				src2++;
 			} else {
 				interp_l.feedData();

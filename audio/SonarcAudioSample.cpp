@@ -176,7 +176,6 @@ void SonarcAudioSample::decode_LPC(int order, int nsamples,
 	}
 }
 
-
 int SonarcAudioSample::audio_decode(const uint8* source, uint8* dest)
 {
 	int size = source[0] + (source[1] << 8);
@@ -196,6 +195,10 @@ int SonarcAudioSample::audio_decode(const uint8* source, uint8* dest)
 				source+8+2*order, size-8-2*order,
 				dest);
 	decode_LPC(order, samplecount, dest, source+8);
+
+	// Try to fix a number of clipped samples
+	for (int i = 1; i < samplecount; ++i)
+		if (dest[i] == 0 && dest[i-1] > 192) dest[i] = 0xFF;
 
 
 	return 0;
