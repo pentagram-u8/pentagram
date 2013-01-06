@@ -596,7 +596,7 @@ void Console::ExecuteConsoleCommand(const Console::ArgvType &argv)
 
 	it = ConsoleCommands.find(argv[0]);
 
-	if (it != ConsoleCommands.end())
+	if (it != ConsoleCommands.end() && it->second)
 		it->second(argv);
 	else
 		pout << "Unknown command: " << argv[0] << std::endl;
