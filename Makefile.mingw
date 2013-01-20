@@ -29,7 +29,7 @@ CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -DSIZEOF_INTP=4 -I$(SRC) -I$(SRC)/conf 
 	-I$(SRC)/tools/flexpack -I$(SRC)/tools/fold -I$(SRC)/usecode -I$(SRC)/world \
 	-I$(SRC)/world/actors -I$(SRC)/gumps/widgets -I$(SRC)/games \
 	-I$(SRC)/audio -I$(SRC)/audio/midi -I$(SRC)/audio/timidity \
-	$(SDL_CFLAGS) -DHAVE_SYS_STAT_H -DHAVE_SYS_TYPES_H -DHAVE_UNISTD_H  -DBUILTIN_DATA -DUSE_FLUIDSYNTH_MIDI -DUSE_FMOPL_MIDI \
+	$(SDL_CFLAGS) -DHAVE_SYS_STAT_H -DHAVE_SYS_TYPES_H -DHAVE_UNISTD_H -DBUILTIN_DATA -DUSE_FLUIDSYNTH_MIDI -DUSE_FMOPL_MIDI \
 	-DCOMPILE_ALL_BILINEAR_SCALERS -DCOMPILE_GAMMA_CORRECT_SCALERS -DUSE_HQ2X_SCALER -DUSE_HQ3X_SCALER -DUSE_HQ4X_SCALER \
 	-DVERSION=\"$(VERSION)\" $(GTK_INCLUDES) $(GIMP_INCLUDES) 
 CXXFLAGS=-O2
@@ -109,7 +109,7 @@ tools: amf2mod.exe data2c.exe disasm.exe flexpack.exe fold.exe shapeconv.exe
 gimp-plugin: pentshp.exe
 
 clean:
-	rm -f $(PENTAGRAM_OBJS) pentagram.o data/data.h tools/data2c/data2c.o
+	rm -f $(PENTAGRAM_OBJS) pentagram.o pentagramico.o data/data.h tools/data2c/data2c.o
 
 toolsclean:
 	rm -f tools/amf2mod/amf2mod.o tools/data2c/data2c.o tools/disasm/Disasm.o $(FLEXPACK_OBJCS) tools/fold/Fold.o $(FOLD_OBJCS) tools/shapeconv/ShapeConv.o *.exe $(PENTSHP_OBJCS) tools/gimp-plugin/pentshp.exe
