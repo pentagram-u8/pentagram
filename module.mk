@@ -105,8 +105,8 @@ image: bundle
 	cp $(top_srcdir)/COPYING ./pentagram-snapshot/License
 	cp $(top_srcdir)/README ./pentagram-snapshot/ReadMe
 	cp $(top_srcdir)/FAQ ./pentagram-snapshot/FAQ
-	/Developer/Tools/SetFile -t ttro -c ttxt ./pentagram-snapshot/*
-	/Developer/Tools/CpMac -r $(bundle_name) ./pentagram-snapshot/
+	SetFile -t ttro -c ttxt ./pentagram-snapshot/*
+	CpMac -r $(bundle_name) ./pentagram-snapshot/
 	hdiutil create -ov -format UDZO -imagekey zlib-level=9 -fs HFS+ \
 					-srcfolder pentagram-snapshot \
 					-volname "Pentagram snapshot" \
