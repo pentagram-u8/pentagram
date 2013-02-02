@@ -23,15 +23,16 @@ GIMP_LIBS = `pkg-config --libs gimpui-2.0`
 SDL_CFLAGS=-I$(SRC)/sdl/include
 SDL_LIBS=-L$(SRC)/sdl/lib -lSDLmain -lSDL -lSDL_ttf
 
-CPPFLAGS=-DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -DSIZEOF_INTP=4 -I$(SRC) -I$(SRC)/conf -I$(SRC)/convert -I$(SRC)/filesys \
-	-I$(SRC)/filesys/zip -I$(SRC)/graphics -I$(SRC)/graphics/fonts -I$(SRC)/graphics/scalers -I$(SRC)/gumps -I$(SRC)/kernel \
-	-I$(SRC)/misc -I$(SRC)/tools/compile -I$(SRC)/tools/disasm \
+CPPFLAGS=-DVERSION=\"$(VERSION)\" -DBUILTIN_DATA -DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -DSIZEOF_INTP=4   \
+	-DCOMPILE_ALL_BILINEAR_SCALERS -DCOMPILE_GAMMA_CORRECT_SCALERS  \
+	-DHAVE_SYS_STAT_H -DHAVE_SYS_TYPES_H -DHAVE_UNISTD_H \
+	-DUSE_FLUIDSYNTH_MIDI -DUSE_FMOPL_MIDI -DUSE_HQ2X_SCALER -DUSE_HQ3X_SCALER -DUSE_HQ4X_SCALER \
+	-I$(SRC) -I$(SRC)/audio -I$(SRC)/audio/midi -I$(SRC)/audio/timidity -I$(SRC)/conf \
+	-I$(SRC)/convert -I$(SRC)/filesys -I$(SRC)/filesys/zip -I$(SRC)/games -I$(SRC)/graphics \
+	-I$(SRC)/graphics/fonts -I$(SRC)/graphics/scalers -I$(SRC)/gumps -I$(SRC)/gumps/widgets  \
+	-I$(SRC)/kernel -I$(SRC)/misc -I$(SRC)/tools/compile -I$(SRC)/tools/disasm \
 	-I$(SRC)/tools/flexpack -I$(SRC)/tools/fold -I$(SRC)/usecode -I$(SRC)/world \
-	-I$(SRC)/world/actors -I$(SRC)/gumps/widgets -I$(SRC)/games \
-	-I$(SRC)/audio -I$(SRC)/audio/midi -I$(SRC)/audio/timidity \
-	$(SDL_CFLAGS) -DHAVE_SYS_STAT_H -DHAVE_SYS_TYPES_H -DHAVE_UNISTD_H -DBUILTIN_DATA -DUSE_FLUIDSYNTH_MIDI -DUSE_FMOPL_MIDI \
-	-DCOMPILE_ALL_BILINEAR_SCALERS -DCOMPILE_GAMMA_CORRECT_SCALERS -DUSE_HQ2X_SCALER -DUSE_HQ3X_SCALER -DUSE_HQ4X_SCALER \
-	-DVERSION=\"$(VERSION)\" $(GTK_INCLUDES) $(GIMP_INCLUDES) 
+	-I$(SRC)/world/actors $(SDL_CFLAGS) $(GTK_INCLUDES) $(GIMP_INCLUDES) 
 CXXFLAGS=-O2
 CXX=g++
 CFLAGS=-O2
