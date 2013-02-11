@@ -40,7 +40,11 @@ Offset   Size   Description
 
 --- Type chunk ---
 Offset   Size   Description
-     0      4   ??? Unknown ???
+     0      2   In u8fonts.flx and u8mouse.shp, contains the maximum frame width
+				   (in u8shapes.flx, appears to contain the shape number for shapes 842, 843, 844, and 845)
+				   (appears to be '1' in all other cases)
+     0      2   In u8fonts.flx and u8mouse.shp, contains the maximum frame height
+				   (appears to be '1' in all other cases)
      4      2   Number of frames in this type (f)
      6    f*6   Frame information chunks
 
