@@ -73,7 +73,8 @@ CoreAudioMidiDriver::CoreAudioMidiDriver() :
 
 int CoreAudioMidiDriver::open() {
 	OSStatus err = noErr;
-	SettingManager* setting = SettingManager::get_instance();
+	//getting the soundfont config entry
+	std::string soundfont = getConfigSetting("soundfont", "");
 	   
 	if (_auGraph)
 		return 1;
@@ -125,45 +126,43 @@ int CoreAudioMidiDriver::open() {
 #endif
 
 		// Load custom soundfont, if specified
-		if (setting->exists("soundfont")){
-			std::string soundfont = getConfigSetting("soundfont", "");
-			if (soundfont != "") {
-				pout << "Loading CoreAudio SoundFont '" << soundfont << "'" << std::endl;
-				OSErr err;
+		if (soundfont != "") {
+			pout << "Loading CoreAudio SoundFont '" << soundfont << "'" << std::endl;
+			OSErr err;
 #if USE_DEPRECATED_COREAUDIO_API
-				FSRef   fsref;
-				err = FSPathMakeRef(reinterpret_cast<const UInt8 *>(soundfont.c_str()), &fsref, NULL);
-				if (!err) {
-					err = AudioUnitSetProperty(
-							  _synth, kMusicDeviceProperty_SoundBankFSRef,
-							  kAudioUnitScope_Global, 0, &fsref, sizeof(fsref));
-				}
-#else
-				// kMusicDeviceProperty_SoundBankFSSpec is present on 10.6+, but broken
-				// kMusicDeviceProperty_SoundBankURL was added in 10.5 as a replacement
-				CFURLRef url = CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault,
-							   reinterpret_cast<const UInt8 *>(soundfont.c_str()),
-							   soundfont.size(), false);
-				if (url) {
-					err = AudioUnitSetProperty(
-				    		  _synth, kMusicDeviceProperty_SoundBankURL,
-							  kAudioUnitScope_Global, 0, &url, sizeof(url));
-					CFRelease(url);
-				} else {
-					pout << "Failed to allocate CFURLRef from '" << soundfont << "'" << std::endl;
-				}
-#endif
-				if (!err) {
-					pout << "Loaded CoreAudio SoundFont!" << std::endl;
-				} else {
-					pout << "Error loading CoreAudio SoundFont '" << soundfont << "'" << std::endl;
-					// after trying and failing to load a soundfont it's better
-					// to fail initializing the CoreAudio driver or it might crash
-					return 1;
-				}
-			} else {
-				pout << "CoreAudio SoundFont Path Error" << std::endl;
+			FSRef   fsref;
+			err = FSPathMakeRef(reinterpret_cast<const UInt8 *>(soundfont.c_str()), &fsref, NULL);
+			if (!err) {
+				err = AudioUnitSetProperty(
+						  _synth, kMusicDeviceProperty_SoundBankFSRef,
+						  kAudioUnitScope_Global, 0, &fsref, sizeof(fsref));
 			}
+#else
+			// kMusicDeviceProperty_SoundBankFSSpec is present on 10.6+, but broken
+			// kMusicDeviceProperty_SoundBankURL was added in 10.5 as a replacement
+			CFURLRef url = CFURLCreateFromFileSystemRepresentation(kCFAllocatorDefault,
+						   reinterpret_cast<const UInt8 *>(soundfont.c_str()),
+						   soundfont.size(), false);
+			if (url) {
+				err = AudioUnitSetProperty(
+			    		  _synth, kMusicDeviceProperty_SoundBankURL,
+						  kAudioUnitScope_Global, 0, &url, sizeof(url));
+				CFRelease(url);
+			} else {
+				pout << "Failed to allocate CFURLRef from '" << soundfont << "'" << std::endl;
+			}
+#endif
+			if (!err) {
+				pout << "Loaded CoreAudio SoundFont!" << std::endl;
+			} else {
+				pout << "Error loading CoreAudio SoundFont '" << soundfont << "'" << std::endl;
+				// after trying and failing to load a soundfont it's better
+				// to fail initializing the CoreAudio driver or it might crash
+				return 1;
+				}
+		} else {
+			pout << "No soundfont in the soundfont config entry!" << std::endl;
+			pout << "Continuing with CoreAudio default." << std::endl;
 		}
 
 		 // Finally: Start the graph!
