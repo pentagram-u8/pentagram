@@ -109,7 +109,7 @@ image: bundle
 	CpMac -r $(bundle_name) ./pentagram-snapshot/
 	hdiutil create -ov -format UDZO -imagekey zlib-level=9 -fs HFS+ \
 					-srcfolder pentagram-snapshot \
-					-volname "Pentagram snapshot" \
+					-volname "Pentagram snapshot$(REVISION)" \
 					Pentagram.dmg
 	rm -rf pentagram-snapshot
 
