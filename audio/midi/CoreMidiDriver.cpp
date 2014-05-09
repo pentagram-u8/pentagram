@@ -22,8 +22,6 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 #ifdef USE_CORE_MIDI
 
-//#include <pthread.h>
-//#include <sched.h>
 #include <iomanip>
 using namespace std;
 
@@ -53,10 +51,40 @@ int CoreMidiDriver::open() {
 	mOutPort = 0;
 
 	int dests = MIDIGetNumberOfDestinations();
-	if (dests > 0 && mClient) {
-		mDest = MIDIGetDestination(0);
+
+	// List device ID and names of CoreMidi destinations
+	// kMIDIPropertyDisplayName is not compatible with OS X SDK < 10.4
+	pout << "CoreMidi driver found " << dests << " destinations:" << std::endl;
+	for(int i = 0; i < dests; i++) {
+		MIDIEndpointRef dest = MIDIGetDestination(i);
+		std::string destname = "Unknown / Invalid";
+		if (dest) {
+			CFStringRef midiname = 0;
+			if(MIDIObjectGetStringProperty(dest, kMIDIPropertyDisplayName, &midiname) == noErr) {
+				const char *s = CFStringGetCStringPtr(midiname, kCFStringEncodingMacRoman);
+				if (s)
+					destname = std::string(s);
+			}
+		}
+		pout << i << ": " << destname.c_str() << endl;
+	}
+
+	std::string deviceIdStr;
+	deviceIdStr = getConfigSetting("coremidi_device", "");
+	int deviceId = 0;
+	deviceId = atoi(deviceIdStr.c_str());
+
+	// Default to the first CoreMidi device (ID 0) 
+	// when the device ID in the cfg isn't possible anymore
+	if (deviceId < 0 || deviceId >= dests ){
+		pout << "CoreMidi destination " << deviceId << " not available, trying destination 0 instead." << std::endl;
+		deviceId = 0;
+	}
+
+	if (dests > deviceId && mClient) {
+		mDest = MIDIGetDestination(deviceId);
 		err = MIDIOutputPortCreate( mClient,
-									CFSTR("exult_output_port"),
+									CFSTR("pentagram_output_port"),
 									&mOutPort);
 	} else {
 		return 3;

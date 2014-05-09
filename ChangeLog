@@ -1,3 +1,11 @@
+2014-05-10  Dominik Reichardt <dominus@users.sourceforge.net>
+	* audio/midi/CoreMidiDriver.cpp: On OS X if you have more than one 
+	  MIDI device (real as in more than one Roland device or software as 
+	  in MUNT) you can now tell Pentagram which one to use via setting 
+	  coremidi_device in pentagram.ini. Stdout prints the device IDs and 
+	  names when you use the CoreMidi midi driver. Thanks to Qbix of DOSBox 
+	  and Digitall of ScummVM for most of the code.
+
 2013-04-05  Dominik Reichardt <dominus@users.sourceforge.net>
 	* audio/midi/CoreAudioMidiDriver.*: backported changes from ScummVM 
 	  and Exult.
