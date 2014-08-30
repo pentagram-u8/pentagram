@@ -78,6 +78,7 @@ bundle_name = pentagram.app
 bundle: pentagram$(EXEEXT)
 	mkdir -p $(bundle_name)/Contents/MacOS
 	mkdir -p $(bundle_name)/Contents/Resources/
+	mkdir -p $(bundle_name)/Contents/Documents
 	echo "APPL????" > $(bundle_name)/Contents/PkgInfo
 	$(INSTALL_DATA) system/macosx/Info.plist $(bundle_name)/Contents/
 	$(INSTALL_PROGRAM) pentagram$(EXEEXT) $(bundle_name)/Contents/MacOS/
@@ -87,10 +88,10 @@ bundle: pentagram$(EXEEXT)
 	$(INSTALL_DATA) $(top_srcdir)/data/*.png $(bundle_name)/Contents/Resources/
 	$(INSTALL_DATA) $(top_srcdir)/data/*.ttf $(bundle_name)/Contents/Resources/
 	$(INSTALL_DATA) $(top_srcdir)/data/*.txt $(bundle_name)/Contents/Resources/
-	$(INSTALL_DATA) $(top_srcdir)/AUTHORS $(bundle_name)
-	$(INSTALL_DATA) $(top_srcdir)/COPYING $(bundle_name)
-	$(INSTALL_DATA) $(top_srcdir)/FAQ $(bundle_name)
-	$(INSTALL_DATA) $(top_srcdir)/README $(bundle_name)
+	$(INSTALL_DATA) $(top_srcdir)/AUTHORS $(bundle_name)/Contents/Documents
+	$(INSTALL_DATA) $(top_srcdir)/COPYING $(bundle_name)/Contents/Documents
+	$(INSTALL_DATA) $(top_srcdir)/FAQ $(bundle_name)/Contents/Documents
+	$(INSTALL_DATA) $(top_srcdir)/README $(bundle_name)/Contents/Documents
 ifneq ($(OSX_CODE_SIGNATURE),)
 	codesign -f -s "$(OSX_CODE_SIGNATURE)" $(bundle_name)
 endif
