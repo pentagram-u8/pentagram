@@ -146,7 +146,7 @@ include $(patsubst %,$(top_srcdir)/%/module.mk,$(MODULES))
 # custom compile rule which calculates dependencies
 %.o: %.cpp $(PCHEADER)
 	@$(MKDIR) $(*D)/$(DEPDIR)
-	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).d",-MQ,"$@",-MP $(WARNINGS) $(CPPFLAGS) $(CXXFLAGS) $(SDL_CFLAGS) -c -o $@ $<
+	$(CXX) -MMD -MF "$(*D)/$(DEPDIR)/$(*F).d" -MQ "$@" -MP $(WARNINGS) $(CPPFLAGS) $(CXXFLAGS) $(SDL_CFLAGS) -c -o $@ $<
 
 # cancel any built-in .m->.o rules
 %.o: %.m
@@ -154,12 +154,12 @@ include $(patsubst %,$(top_srcdir)/%/module.mk,$(MODULES))
 # custom compile rule which calculates dependencies
 %.o: %.m $(PCHEADER)
 	@$(MKDIR) $(*D)/$(DEPDIR)
-	$(CC) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).d",-MQ,"$@",-MP $(WARNINGS) $(CPPFLAGS) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $<
+	$(CC) -MMD -MF "$(*D)/$(DEPDIR)/$(*F).d" -MQ "$@" -MP $(WARNINGS) $(CPPFLAGS) $(CFLAGS) $(SDL_CFLAGS) -c -o $@ $<
 
 # custom compile rule for the precompiled header
 %.h.gch: %.h
 	@$(MKDIR) $(*D)/$(DEPDIR)
-	$(CXX) -Wp,-MMD,"$(*D)/$(DEPDIR)/$(*F).h.gch.d",-MQ,"$@",-MP $(WARNINGS) $(CPPFLAGS) $(CXXFLAGS) $(SDL_CFLAGS) -x c++-header -c -o $@ $<
+	$(CXX) -MMD -MF "$(*D)/$(DEPDIR)/$(*F).h.gch.d" -MQ "$@" -MP $(WARNINGS) $(CPPFLAGS) $(CXXFLAGS) $(SDL_CFLAGS) -x c++-header -c -o $@ $<
 
 
 # rule to rebuild Makefile if necessary
