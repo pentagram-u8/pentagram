@@ -83,7 +83,7 @@ int CoreAudioMidiDriver::open() {
 		RequireNoErr(NewAUGraph(&_auGraph));
 		AUNode outputNode, synthNode;
 		// OS X 10.5 SDK doesn't know AudioComponentDescription desc;
-#if USE_DEPRECATED_COREAUDIO_API || (MAC_OS_X_VERSION_MIN_REQUIRED <= 1050)
+#if USE_DEPRECATED_COREAUDIO_API || (MAC_OS_X_VERSION_MAX_ALLOWED <= 1050)
 		ComponentDescription desc;
 #else
 		AudioComponentDescription desc;
