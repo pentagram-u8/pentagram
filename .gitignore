@@ -1,0 +1,93 @@
+*~
+.*.swp
+.*.swo
+*.o
+lib*.a
+.deps
+Makefile
+
+/aclocal.m4
+/autom4te*.cache
+/confstat*
+/config.log
+/config.status
+/configure
+/pentagram
+/llc
+/cachegrind.out.*
+/pentagram.app
+/Pentagram.dmg
+
+/data/data.h
+
+/docs/xml/*.html
+/docs/xml/*.txt
+/docs/xml/*.dat
+
+/misc/config.h
+/misc/config.h.in
+/misc/config.h.stamp
+
+/system/macosx/Info.plist
+
+/system/msvc/Pentagram.ncb
+/system/msvc/Pentagram.suo
+
+/system/msvc/Pentagram/*.user
+/system/msvc/Pentagram/Debug Win32
+/system/msvc/Pentagram/Debug x64
+/system/msvc/Pentagram/Release Win32
+/system/msvc/Pentagram/Release x64
+
+/system/msvc/ShapeConv/*.user
+/system/msvc/ShapeConv/Debug Win32
+/system/msvc/ShapeConv/Debug x64
+/system/msvc/ShapeConv/Release Win32
+/system/msvc/ShapeConv/Release x64
+
+/system/msvc/amf2mod/*.user
+/system/msvc/amf2mod/Debug Win32
+/system/msvc/amf2mod/Debug x64
+/system/msvc/amf2mod/Release Win32
+/system/msvc/amf2mod/Release x64
+
+/system/msvc/data/*.user
+/system/msvc/data/Debug
+/system/msvc/data/Release
+
+/system/msvc/data2c/*.user
+/system/msvc/data2c/Debug
+/system/msvc/data2c/Release
+
+/system/msvc/disasm/*.user
+/system/msvc/disasm/Debug Win32
+/system/msvc/disasm/Debug x64
+/system/msvc/disasm/Release Win32
+/system/msvc/disasm/Release x64
+
+/system/msvc/fold/*.user
+/system/msvc/fold/Debug Win32
+/system/msvc/fold/Debug x64
+/system/msvc/fold/Release Win32
+/system/msvc/fold/Release x64
+
+/system/msvc/libs/lpng128
+/system/msvc/libs/SDL-1.2.9
+/system/msvc/libs/SDL_ttf-2.0.7
+/system/msvc/libs/zlib-1.2.1
+
+/system/win32/pentagram.aps
+
+/tools/data2c/data2c
+
+/tools/disasm/disasm
+/tools/disasm/disasm_output.txt
+
+/tools/flexpack/flexpack
+
+/tools/fold/fold
+/tools/fold/disasm_output.txt
+
+/tools/gimp-plugin/pentshp
+
+/tools/shapeconv/shapeconv
