@@ -75,7 +75,7 @@ Filename: {app}\pentagram.ini; Section: pentagram; Key: scaler; String: point; F
 Filename: {app}\pentagram.ini; Section: pentagram; Key: width; String: 640; Flags: createkeyifdoesntexist; MinVersion: 1, 0
 Filename: {app}\pentagram.ini; Section: pentagram; Key: height; String: 480; Flags: createkeyifdoesntexist; MinVersion: 1, 0
 Filename: {app}\pentagram.ini; Section: pentagram; Key: bpp; String: 32; Flags: createkeyifdoesntexist; MinVersion: 1, 0
-Filename: {app}\pentagram.ini; Section: pentagram; Key: tff; String: no; Flags: createkeyifdoesntexist; MinVersion: 1, 0
+Filename: {app}\pentagram.ini; Section: pentagram; Key: ttf; String: no; Flags: createkeyifdoesntexist; MinVersion: 1, 0
 Filename: {app}\pentagram.ini; Section: pentagram; Key: midi_driver; String: windows; Flags: createkeyifdoesntexist; MinVersion: 1, 0
 Filename: {app}\pentagram.ini; Section: pentagram; Key: skipstart; String: no; Flags: createkeyifdoesntexist; MinVersion: 1, 0
 Filename: {app}\pentagram.ini; Section: pentagram; Key: textdelay; String: 8; Flags: createkeyifdoesntexist; MinVersion: 1, 0
@@ -90,7 +90,7 @@ Filename: {userappdata}\Pentagram\pentagram.ini; Section: pentagram; Key: scaler
 Filename: {userappdata}\Pentagram\pentagram.ini; Section: pentagram; Key: width; String: 640; Flags: createkeyifdoesntexist; MinVersion: 0, 1
 Filename: {userappdata}\Pentagram\pentagram.ini; Section: pentagram; Key: height; String: 480; Flags: createkeyifdoesntexist; MinVersion: 0, 1
 Filename: {userappdata}\Pentagram\pentagram.ini; Section: pentagram; Key: bpp; String: 32; Flags: createkeyifdoesntexist; MinVersion: 0, 1
-Filename: {userappdata}\Pentagram\pentagram.ini; Section: pentagram; Key: tff; String: no; Flags: createkeyifdoesntexist; MinVersion: 0, 1
+Filename: {userappdata}\Pentagram\pentagram.ini; Section: pentagram; Key: ttf; String: no; Flags: createkeyifdoesntexist; MinVersion: 0, 1
 Filename: {userappdata}\Pentagram\pentagram.ini; Section: pentagram; Key: midi_driver; String: windows; Flags: createkeyifdoesntexist; MinVersion: 0, 1
 Filename: {userappdata}\Pentagram\pentagram.ini; Section: pentagram; Key: skipstart; String: no; Flags: createkeyifdoesntexist; MinVersion: 0, 1
 Filename: {userappdata}\Pentagram\pentagram.ini; Section: pentagram; Key: textdelay; String: 8; Flags: createkeyifdoesntexist; MinVersion: 0, 1

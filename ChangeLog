@@ -1,3 +1,6 @@
+2018-01-03  Dominik Reichardt <dominus@users.sourceforge.net>
+	* win32/Pentagram.iss: Wrong default key to enable ttf fixed.
+
 2014-05-10  Dominik Reichardt <dominus@users.sourceforge.net>
 	* audio/midi/CoreMidiDriver.cpp: On OS X if you have more than one 
 	  MIDI device (real as in more than one Roland device or software as 
