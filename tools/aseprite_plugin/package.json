@@ -1,0 +1,41 @@
+{
+  "name": "pent-shp",
+  "displayName": "Ultima VIII SHP Format",
+  "description": "Import and export Ultima VIII SHP files",
+  "version": "1.0git",
+  "author": {
+    "name": "The Pentagram Team"
+  },
+  "contributors": [],
+  "publisher": "The Pentagram Team",
+  "license": "GPL-2.0",
+  "categories": [
+    "Scripts"
+  ],
+  "contributes": {
+    "scripts": [
+        { "path": "./main.lua" }
+    ],
+    "formats": [
+      {
+        "id": "shp",
+        "extensions": ["shp"]
+      }
+    ],
+    "commands": [
+      {
+        "id": "ImportSHP",
+        "title": "Import SHP File"
+      },
+      {
+        "id": "ExportSHP",
+        "title": "Export SHP File"
+      },
+      {
+        "id": "OpenSHP",
+        "title": "Ultima VIII SHP",
+        "file_format": "shp"
+      }
+    ]
+  }
+}

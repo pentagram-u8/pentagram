@@ -27,7 +27,7 @@ autoconf || exit
 echo "Writing Makefiles:"
 
 # Note: do _NOT_ include '.' here
-MODULES="tools tools/disasm tools/compile tools/shapeconv tools/fold tools/flexpack tools/gimp-plugin tools/data2c misc convert convert/u8 convert/crusader filesys filesys/zip kernel games graphics graphics/fonts graphics/scalers audio audio/midi audio/midi/timidity world world/actors usecode gumps gumps/widgets conf system system/macosx"
+MODULES="tools tools/disasm tools/compile tools/shapeconv tools/fold tools/flexpack tools/aseprite_plugin tools/gimp-plugin tools/data2c misc convert convert/u8 convert/crusader filesys filesys/zip kernel games graphics graphics/fonts graphics/scalers audio audio/midi audio/midi/timidity world world/actors usecode gumps gumps/widgets conf system system/macosx"
 
 for subdir in $MODULES; do
   rm -f $subdir/Makefile
