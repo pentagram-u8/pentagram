@@ -662,30 +662,54 @@ namespace {
                 palette_for_png[i * 3 + 2] = gamePal->palette[i * 3 + 2];
             }
 
+            uint32_t output_file_index = 0; // Counter for actual output files
             for (uint32_t i = 0; i < shape.frameCount(); ++i) {
                 ShapeFrame* current_frame_to_export = shape.getFrame(i);
                 if (!current_frame_to_export) continue;
-
-                std::string frameFilename = outputDir + outputBaseName + "_" + baseFilenameForOutput + "_" + std::to_string(i) + ".png";
-                std::string metadataFilename = outputDir + outputBaseName + "_" + baseFilenameForOutput + "_" + std::to_string(i) + ".meta";
                 
-                std::vector<uint8_t> imageData(canvas_width * canvas_height, 255);
+                std::vector<uint8_t> imageData(canvas_width * canvas_height, 255); // Initialized to transparent
                 uint32_t pitch = canvas_width;
                 paintFrame(&shape, i, imageData.data(), pitch, 
                           current_frame_to_export->xoff - min_x, 
                           current_frame_to_export->yoff - min_y, 
                           canvas_width, canvas_height);
 
-                if (!saveFrameToPNG(frameFilename, imageData.data(), canvas_width, canvas_height, palette_for_png)) {
-                    std::cerr << "Error: Failed to save frame " << i << " to PNG" << std::endl;
+                // Check if the frame is entirely transparent (all pixels are index 255)
+                bool frameIsEmpty = true;
+                for (const auto& pixel_value : imageData) {
+                    if (pixel_value != 255) { // 255 is the transparency index used by memset in paintFrame
+                        frameIsEmpty = false;
+                        break;
+                    }
                 }
-                FILE* metaFile = fopen(metadataFilename.c_str(), "w");
-                if (metaFile) {
-                    fprintf(metaFile, "frame_width=%d\nframe_height=%d\n", current_frame_to_export->width, current_frame_to_export->height);
-                    fprintf(metaFile, "offset_x=%d\noffset_y=%d\n", current_frame_to_export->xoff - min_x, current_frame_to_export->yoff - min_y);
-                    fprintf(metaFile, "format=%s\n", read_format->name); 
-                    fprintf(metaFile, "canvas_width=%d\ncanvas_height=%d\n", canvas_width, canvas_height);
-                    fclose(metaFile);
+
+                // Construct filenames using the output_file_index for numbering if the frame is not empty
+                // The log message for skipped frames will still use 'i' to refer to the original frame index.
+                std::string frameFilenameForLog = outputDir + outputBaseName + "_" + baseFilenameForOutput + "_" + std::to_string(i) + ".png";
+
+                if (frameIsEmpty) {
+                    std::cout << "Frame " << i << " (" << frameFilenameForLog << ") is empty, skipping file creation." << std::endl;
+                } else {
+                    std::string frameFilename = outputDir + outputBaseName + "_" + baseFilenameForOutput + "_" + std::to_string(output_file_index) + ".png";
+                    std::string metadataFilename = outputDir + outputBaseName + "_" + baseFilenameForOutput + "_" + std::to_string(output_file_index) + ".meta";
+
+                    if (!saveFrameToPNG(frameFilename, imageData.data(), canvas_width, canvas_height, palette_for_png)) {
+                        std::cerr << "Error: Failed to save frame " << i << " (output index " << output_file_index << ") to PNG" << std::endl;
+                    } else {
+                        // Only create metafile if PNG was saved
+                        FILE* metaFile = fopen(metadataFilename.c_str(), "w");
+                        if (metaFile) {
+                            fprintf(metaFile, "frame_width=%d\nframe_height=%d\n", current_frame_to_export->width, current_frame_to_export->height);
+                            fprintf(metaFile, "offset_x=%d\noffset_y=%d\n", current_frame_to_export->xoff - min_x, current_frame_to_export->yoff - min_y);
+                            fprintf(metaFile, "format=%s\n", read_format->name); 
+                            fprintf(metaFile, "canvas_width=%d\ncanvas_height=%d\n", canvas_width, canvas_height);
+                            fprintf(metaFile, "original_frame_index=%u\n", i); // Add original index to metadata
+                            fclose(metaFile);
+                        } else {
+                            std::cerr << "Error: Failed to create metadata file for frame " << i << " (output index " << output_file_index << "): " << metadataFilename << std::endl;
+                        }
+                    }
+                    output_file_index++; // Increment for the next saved file
                 }
             }
             delete gamePal; 
