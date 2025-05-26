@@ -9,7 +9,7 @@ pent_shp_OBJ   = \
 	tools/aseprite_plugin/pent_shp.o \
 	$(CONVERT) \
 	$(MISC) \
-	filesys/FileSystem.o \
+	$(FILESYS) \
 	graphics/PaletteManager.o \
 	graphics/Palette.o \
 	graphics/XFormBlend.o \

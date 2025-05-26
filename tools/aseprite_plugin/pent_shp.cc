@@ -30,7 +30,8 @@
 #include "Palette.h"
 #include "RenderSurface.h"
 #include "u8/ConvertShapeU8.h"
-#include "crusader/ConvertShapeCrusader.h"  // Add this include
+#include "crusader/ConvertShapeCrusader.h"
+#include "filesys/RawArchive.h"
 
 //#include "SoftRenderSurface.inl"
 
@@ -49,6 +50,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <algorithm>
 #include <vector>
 
 using Palette_t = std::array<unsigned char, 768>;
@@ -554,218 +556,374 @@ namespace {
 
             IDataSource* ids = filesys->ReadFile(shpFilename);
             if (!ids) {
-                std::cerr << "Error: Could not open shape file: " << shpFilename << std::endl;
+                std::cerr << "Error: Could not open input file: " << shpFilename << std::endl;
                 return false;
             }
 
+            ids->seek(0); 
             uint32_t read_size = ids->getSize(); 
-            const ConvertShapeFormat* read_format = Shape::DetectShapeFormat(ids, read_size);
+            const ConvertShapeFormat* read_format = nullptr;
+            
+            // Check file extension first
+            std::string fn_lower = shpFilename;
+            // Convert filename to lowercase for case-insensitive extension check
+            std::transform(fn_lower.begin(), fn_lower.end(), fn_lower.begin(),
+                           [](unsigned char c){ return std::tolower(c); });
+            
+            if (fn_lower.length() >= 4 && fn_lower.substr(fn_lower.length() - 4) == ".skf") {
+                std::cout << "File extension is .skf, assuming U8SKFShapeFormat." << std::endl;
+                read_format = &U8SKFShapeFormat; 
+            }
+
             if (!read_format) {
-                delete ids;
-                std::cerr << "Error: Unknown or unsupported shape format" << std::endl;
-                return false;
+                std::cout << "Extension not .skf or initial check failed, using Shape::DetectShapeFormat." << std::endl;
+                ids->seek(0); // Ensure DetectShapeFormat starts from the beginning
+                read_format = Shape::DetectShapeFormat(ids, read_size);
             }
+            // Reset seek for subsequent use by Shape constructor or RawArchive,
+            // as DetectShapeFormat might have moved the read pointer.
+            ids->seek(0); 
 
-            Pentagram::Palette* gamePal = new Pentagram::Palette; 
+            std::cout << "Detected format for file: " << shpFilename << std::endl;
+            if (read_format == &U8SKFShapeFormat) std::cout << "  Format: U8SKFShapeFormat (SKF Archive)" << std::endl;
+            else if (read_format == &U8ShapeFormat) std::cout << "  Format: U8ShapeFormat" << std::endl;
+            else if (read_format == &U82DShapeFormat) std::cout << "  Format: U82DShapeFormat" << std::endl;
+            else if (read_format == &CrusaderShapeFormat) std::cout << "  Format: CrusaderShapeFormat" << std::endl;
+            else if (read_format == &Crusader2DShapeFormat) std::cout << "  Format: Crusader2DShapeFormat" << std::endl;
+            else if (read_format == &PentagramShapeFormat) std::cout << "  Format: PentagramShapeFormat" << std::endl;
+            else std::cout << "  Format: Unknown (pointer mismatch)" << std::endl;
 
-            Pentagram::Palette rawPal; 
-            if (!loadPalette(&rawPal, read_format)) { 
-                std::cerr << "Failed to load base palette" << std::endl;
-                delete ids;
-                delete gamePal;
-                return false;
-            }
 
-            // Apply format-specific transformations to gamePal
-            if (read_format == &U8SKFShapeFormat || 
-                read_format == &U8ShapeFormat || 
-                read_format == &U82DShapeFormat) {
-                std::cout << "Applying U8XFormPal for Ultima 8 format..." << std::endl;
-                IDataSource* pf_u8 = filesys->ReadFile("@game/static/u8pal.pal");
-                if (!pf_u8) { pf_u8 = filesys->ReadFile("static/u8pal.pal"); }
-                if (!pf_u8) { pf_u8 = filesys->ReadFile("/Users/Dominus/Library/Application Support/Aseprite/extensions/pent-shp/u8pal.pal"); }
-
-                if (!pf_u8) {
-                    std::cerr << "FATAL: Unable to load u8pal.pal for U8XFormPal transformation." << std::endl;
-                    delete ids; delete gamePal; return false;
-                }
-                pf_u8->seek(4); 
-                IBufferDataSource xfds_u8(U8XFormPal, sizeof(U8XFormPal)); 
-                try {
-                    gamePal->load(*pf_u8, xfds_u8);
-                } catch (const std::exception& e) {
-                    std::cerr << "Exception during U8 gamePal->load(): " << e.what() << std::endl;
-                    delete pf_u8; delete ids; delete gamePal; return false;
-                }
-                delete pf_u8;
-            } 
-            else if (read_format == &CrusaderShapeFormat || 
-                     read_format == &Crusader2DShapeFormat) {
-                // Crusader uses its own base palette (crusader.pal) but applies U8XFormPal for transformation
-                std::cout << "Applying U8XFormPal to crusader.pal for Crusader format..." << std::endl;
-                IDataSource* pf_crusader_base = filesys->ReadFile("@game/static/crusader.pal");
-                if (!pf_crusader_base) { pf_crusader_base = filesys->ReadFile("static/crusader.pal"); }
-                if (!pf_crusader_base) { pf_crusader_base = filesys->ReadFile("/Users/Dominus/Library/Application Support/Aseprite/extensions/pent-shp/crusader.pal"); }
-
-                if (!pf_crusader_base) {
-                    std::cerr << "FATAL: Unable to load crusader.pal as base for Crusader transformation." << std::endl;
-                    delete ids; delete gamePal; return false;
-                }
-                pf_crusader_base->seek(4); 
-                // Use U8XFormPal for the transformation data
-                IBufferDataSource xfds_crusader_transform(U8XFormPal, sizeof(U8XFormPal)); 
-                try {
-                    // Load gamePal using crusader.pal as the source palette and U8XFormPal as the transform
-                    gamePal->load(*pf_crusader_base, xfds_crusader_transform);
-                } catch (const std::exception& e) {
-                    std::cerr << "Exception during Crusader gamePal->load() with U8XFormPal: " << e.what() << std::endl;
-                    delete pf_crusader_base; delete ids; delete gamePal; return false;
-                }
-                delete pf_crusader_base;
-            }
-            else if (read_format == &PentagramShapeFormat) { 
-                 std::cout << "Using generated grayscale palette for Pentagram format." << std::endl;
-                 memcpy(gamePal->palette, rawPal.palette, sizeof(rawPal.palette));
-            }
-            else {
-                std::cout << "Using base palette from loadPalette() for format: ";
-                if (read_format == &U8SKFShapeFormat) std::cout << "U8SKF";
-                else if (read_format == &U8ShapeFormat) std::cout << "U8Shape";
-                else if (read_format == &U82DShapeFormat) std::cout << "U82DShape";
-                else if (read_format == &CrusaderShapeFormat) std::cout << "CrusaderShape";
-                else if (read_format == &Crusader2DShapeFormat) std::cout << "Crusader2DShape";
-                else if (read_format == &PentagramShapeFormat) std::cout << "PentagramShape";
-                else std::cout << "Unknown";
-                std::cout << std::endl;
-                memcpy(gamePal->palette, rawPal.palette, sizeof(rawPal.palette));
-            }
-
-            // DEBUG: Check what the transformation actually produced for gamePal
-            std::cout << "Palette in gamePal (after format-specific transform) - checking debug indices:" << std::endl;
-            int debugIndices[] = {0, 1, 2, 8, 9, 16, 27, 136, 148, 150, 199, 249};
-            for (int idx : debugIndices) {
-                if (idx < 0 || idx >= 256) continue;
-                std::cout << "  Index " << idx << ": RGB(" << (int)gamePal->palette[idx*3] << "," 
-                         << (int)gamePal->palette[idx*3+1] << "," << (int)gamePal->palette[idx*3+2] << ")" << std::endl;
-            }
-
-            // Create shape object AFTER gamePal is finalized
-            Shape shape(ids, read_format);
-            shape.setPalette(gamePal); 
-            std::cout << "Set format-specific transformed palette on shape" << std::endl;
-
-            // Convert the gamePal (now correctly transformed) to Palette_t for PNG - Declare once
-            Palette_t palette_for_png; // Renamed to avoid conflict if 'palette' is used elsewhere
-            for (int i = 0; i < 256; ++i) {
-                palette_for_png[i * 3    ] = gamePal->palette[i * 3    ];
-                palette_for_png[i * 3 + 1] = gamePal->palette[i * 3 + 1];
-                palette_for_png[i * 3 + 2] = gamePal->palette[i * 3 + 2];
-            }
-            
-            // The block starting with "=== APPLY U8XFORMPAL TRANSFORMS MANUALLY ==="
-            // and its re-declarations of fs, pf, xfds, gamePal, palette has been removed
-            // as it was redundant with the format-specific loading above.
-
-            // Calculate proper bounding box
-            sint32 min_x = 0, min_y = 0;
-            sint32 max_width = 0, max_height = 0;
-            
-            for (uint32_t i = 0; i < shape.frameCount(); ++i) { // Use uint32_t
-                ShapeFrame* current_frame = shape.getFrame(i); // Renamed to avoid conflict with 'frame' in paintFrame
-                if (current_frame) {
-                    if (current_frame->xoff < min_x) min_x = current_frame->xoff;
-                    if (current_frame->yoff < min_y) min_y = current_frame->yoff;
-                    if (current_frame->width + current_frame->xoff > max_width) 
-                        max_width = current_frame->width + current_frame->xoff;
-                    if (current_frame->height + current_frame->yoff > max_height) 
-                        max_height = current_frame->height + current_frame->yoff;
-                }
-            }
-
-            sint32 canvas_width = max_width - min_x;
-            sint32 canvas_height = max_height - min_y;
-
-            std::cout << "Canvas dimensions: " << canvas_width << "x" << canvas_height << std::endl;
-            std::cout << "Bounds: min_x=" << min_x << " min_y=" << min_y 
-                     << " max_width=" << max_width << " max_height=" << max_height << std::endl;
-
-            // Extract base filename
-            std::string baseFilename = shpFilename;
-            size_t lastSlash = baseFilename.find_last_of("/\\");
+            // Extract base filename for output naming
+            std::string baseFilenameForOutput = shpFilename;
+            size_t lastSlash = baseFilenameForOutput.find_last_of("/\\");
             if (lastSlash != std::string::npos) {
-                baseFilename = baseFilename.substr(lastSlash + 1);
+                baseFilenameForOutput = baseFilenameForOutput.substr(lastSlash + 1);
             }
-            size_t lastDot = baseFilename.find_last_of('.');
+            size_t lastDot = baseFilenameForOutput.find_last_of('.');
             if (lastDot != std::string::npos) {
-                baseFilename = baseFilename.substr(0, lastDot);
+                baseFilenameForOutput = baseFilenameForOutput.substr(0, lastDot);
             }
-            baseFilename = sanitizeFilename(baseFilename);
+            baseFilenameForOutput = sanitizeFilename(baseFilenameForOutput);
 
-            // Determine output directory
             std::string outputDir;
             size_t lastPathSep = outputPath.find_last_of("/\\");
             if (lastPathSep != std::string::npos) {
                 outputDir = outputPath.substr(0, lastPathSep + 1);
             }
-            
             std::string outputBaseName = outputPath.substr(lastPathSep + 1);
 
-            // Export each frame
-            for (uint32_t i = 0; i < shape.frameCount(); ++i) {
-                ShapeFrame* current_frame_to_export = shape.getFrame(i); // Use a different name
-                if (!current_frame_to_export) continue;
 
-                std::cout << "Processing frame " << i << ": " << current_frame_to_export->width << "x" << current_frame_to_export->height 
-                         << " offset(" << current_frame_to_export->xoff << "," << current_frame_to_export->yoff << ")" << std::endl;
+            if (read_format == &U8SKFShapeFormat) {
+                std::cout << "Processing SKF archive..." << std::endl;
+                RawArchive skf_archive(ids); // Use the single-argument constructor. skf_archive now owns ids.
+                Pentagram::Palette* skf_palette = new Pentagram::Palette(); // Uncommented and initialized
+                bool skf_palette_loaded = false;
 
-                // Create filenames matching what Lua expects
-                std::string frameFilename = outputDir + outputBaseName + "_" + baseFilename + "_" + std::to_string(i) + ".png";
-                std::string metadataFilename = outputDir + outputBaseName + "_" + baseFilename + "_" + std::to_string(i) + ".meta";
+                // Pass 1: Load SKF Palette
+                std::cout << "Searching for embedded palette in SKF..." << std::endl;
+                for (uint32 obj_idx = 0; obj_idx < skf_archive.getCount(); ++obj_idx) {
+                    IDataSource* obj_ds = skf_archive.get_datasource(obj_idx + 1); // SKF objects are 1-indexed
+                    if (!obj_ds) continue;
 
-                // Create image buffer for the full canvas - use uint8 directly
-                std::vector<uint8_t> imageData(canvas_width * canvas_height, 255);  // Fill with transparent color
+                    if (obj_ds->getSize() >= 2) { // Need at least 2 bytes for object type
+                        uint16 objecttype = obj_ds->read2();
+                        // obj_ds->seek(0); // Palette::load expects stream at start of palette data
 
-                // Use the paintFrame function with uint8 pixels directly
-                uint32_t pitch = canvas_width; // Use uint32_t
-                paintFrame(&shape, i, imageData.data(), pitch, 
-                          current_frame_to_export->xoff - min_x, current_frame_to_export->yoff - min_y, 
-                          canvas_width, canvas_height);
-
-                // Debug: Check some pixel values
-                bool hasNonTransparent = false;
-                for (size_t j = 0; j < std::min((size_t)100, imageData.size()); ++j) {
-                    if (imageData[j] != 255) {
-                        hasNonTransparent = true;
-                        break;
+                        if (objecttype == 1) { // Type 1 is a palette
+                            std::cout << "Found palette object (type 1) in SKF." << std::endl;
+                            obj_ds->seek(0); // Reset to start of object's data source
+                            skf_palette->load(*obj_ds); // Palette::load handles 6-bit to 8-bit conversion internally
+                            
+                            // DEBUG: Check values after Palette::load (should already be 8-bit)
+                            std::cout << "Palette values after Palette::load (first 16 colors):" << std::endl;
+                            for (int i = 0; i < 16; ++i) {
+                                std::cout << "Color " << i << ": RGB(" 
+                                         << (int)skf_palette->palette[i * 3 + 0] << "," 
+                                         << (int)skf_palette->palette[i * 3 + 1] << "," 
+                                         << (int)skf_palette->palette[i * 3 + 2] << ")" << std::endl;
+                            }
+                            
+                            // Also check some colors further in the palette
+                            std::cout << "Extended palette check (colors 240-255):" << std::endl;
+                            for (int i = 240; i < 256; ++i) {
+                                std::cout << "Color " << i << ": RGB(" 
+                                         << (int)skf_palette->palette[i * 3 + 0] << "," 
+                                         << (int)skf_palette->palette[i * 3 + 1] << "," 
+                                         << (int)skf_palette->palette[i * 3 + 2] << ")" << std::endl;
+                            }
+                            
+                            skf_palette_loaded = true;
+                            std::cout << "Successfully loaded embedded SKF palette (no manual scaling)." << std::endl;
+                            delete obj_ds;
+                            break; 
+                        }
                     }
+                    delete obj_ds; 
                 }
-                std::cout << "Frame " << i << " has non-transparent pixels: " << hasNonTransparent << std::endl;
 
-                // Save PNG directly with uint8 data
-                if (!saveFrameToPNG(frameFilename, imageData.data(), canvas_width, canvas_height, palette_for_png)) {
-                    std::cerr << "Error: Failed to save frame " << i << " to PNG" << std::endl;
-                    // Consider cleanup for ids, gamePal before returning false
-                    delete ids;
-                    delete gamePal;
+                if (!skf_palette_loaded) {
+                    std::cerr << "Error: SKF file does not contain an embedded palette (type 1 object)." << std::endl;
+                    delete skf_palette;
+                    delete ids; // Delete the main SKF IDataSource
                     return false;
                 }
 
-                // Save metadata with proper offsets
-                FILE* metaFile = fopen(metadataFilename.c_str(), "w");
-                if (metaFile) {
-                    fprintf(metaFile, "frame_width=%d\nframe_height=%d\n", current_frame_to_export->width, current_frame_to_export->height);
-                    fprintf(metaFile, "offset_x=%d\noffset_y=%d\n", current_frame_to_export->xoff - min_x, current_frame_to_export->yoff - min_y);
-                    fprintf(metaFile, "format=ultima8\n");
-                    fprintf(metaFile, "canvas_width=%d\ncanvas_height=%d\n", canvas_width, canvas_height);
-                    fclose(metaFile);
-                }
-            }
+                // Pass 2: Load Shapes and calculate overall bounding box
+                std::vector<Shape*> shapes_in_skf;
+                std::cout << "Searching for shape objects (type 2) in SKF..." << std::endl;
+                for (uint32 obj_idx = 0; obj_idx < skf_archive.getCount(); ++obj_idx) {
+                    IDataSource* obj_ds = skf_archive.get_datasource(obj_idx + 1);
+                    if (!obj_ds) continue;
 
-            delete ids;
-            delete gamePal;
-            return true;
+                    if (obj_ds->getSize() >= 2) {
+                        uint16 objecttype = obj_ds->read2();
+                        obj_ds->seek(0); // Reset for Shape constructor
+
+                        if (objecttype == 2) { // Type 2 is a shape
+                            std::cout << "Found shape object (type 2) in SKF, index " << obj_idx << std::endl;
+                            // Shape constructor takes ownership of obj_ds
+                            Shape* current_skf_shape = new Shape(obj_ds, &U8SKFShapeFormat);
+                            current_skf_shape->setPalette(skf_palette);
+                            shapes_in_skf.push_back(current_skf_shape);
+                            obj_ds = nullptr; // Mark as consumed
+                        }
+                    }
+                    if (obj_ds) delete obj_ds; // Delete if not a shape or not consumed
+                }
+
+                if (shapes_in_skf.empty()) {
+                    std::cerr << "Error: SKF file contains no shape objects (type 2)." << std::endl;
+                    delete skf_palette;
+                    delete ids;
+                    return false;
+                }
+                std::cout << "Found " << shapes_in_skf.size() << " shapes in SKF." << std::endl;
+
+                // Calculate overall bounding box for all frames in all shapes
+                sint32 min_x_overall = 0, min_y_overall = 0;
+                sint32 max_width_overall = 0, max_height_overall = 0;
+                bool first_frame_ever = true;
+
+                for (Shape* s : shapes_in_skf) {
+                    for (uint32_t i = 0; i < s->frameCount(); ++i) {
+                        ShapeFrame* current_frame = s->getFrame(i);
+                        if (current_frame) {
+                            if (first_frame_ever) {
+                                min_x_overall = current_frame->xoff;
+                                min_y_overall = current_frame->yoff;
+                                max_width_overall = current_frame->width + current_frame->xoff;
+                                max_height_overall = current_frame->height + current_frame->yoff;
+                                first_frame_ever = false;
+                            } else {
+                                if (current_frame->xoff < min_x_overall) min_x_overall = current_frame->xoff;
+                                if (current_frame->yoff < min_y_overall) min_y_overall = current_frame->yoff;
+                                if (current_frame->width + current_frame->xoff > max_width_overall)
+                                    max_width_overall = current_frame->width + current_frame->xoff;
+                                if (current_frame->height + current_frame->yoff > max_height_overall)
+                                    max_height_overall = current_frame->height + current_frame->yoff;
+                            }
+                        }
+                    }
+                }
+                
+                if (first_frame_ever) { // No frames found in any shape
+                    std::cerr << "Error: No frames found in any shapes within the SKF." << std::endl;
+                    for (Shape* s : shapes_in_skf) delete s;
+                    delete skf_palette;
+                    delete ids;
+                    return false;
+                }
+
+                sint32 canvas_width_overall = max_width_overall - min_x_overall;
+                sint32 canvas_height_overall = max_height_overall - min_y_overall;
+
+                if (canvas_width_overall <= 0 || canvas_height_overall <= 0) {
+                    std::cerr << "Error: Calculated SKF canvas dimensions are invalid (" << canvas_width_overall << "x" << canvas_height_overall << ")." << std::endl;
+                    for (Shape* s : shapes_in_skf) delete s;
+                    delete skf_palette;
+                    delete ids;
+                    return false;
+                }
+                std::cout << "Overall SKF Canvas dimensions: " << canvas_width_overall << "x" << canvas_height_overall << std::endl;
+                std::cout << "Overall SKF Bounds: min_x=" << min_x_overall << " min_y=" << min_y_overall << std::endl;
+
+
+                Palette_t palette_for_png;
+                for (int i = 0; i < 256; ++i) {
+                    palette_for_png[i * 3    ] = skf_palette->palette[i * 3    ];
+                    palette_for_png[i * 3 + 1] = skf_palette->palette[i * 3 + 1];
+                    palette_for_png[i * 3 + 2] = skf_palette->palette[i * 3 + 2];
+                }
+
+                // Export each frame of each shape
+                for (size_t shape_idx = 0; shape_idx < shapes_in_skf.size(); ++shape_idx) {
+                    Shape* current_shape = shapes_in_skf[shape_idx];
+                    for (uint32_t frame_idx = 0; frame_idx < current_shape->frameCount(); ++frame_idx) {
+                        ShapeFrame* current_frame_to_export = current_shape->getFrame(frame_idx);
+                        if (!current_frame_to_export) continue;
+
+                        std::cout << "Processing SKF Shape " << shape_idx << ", Frame " << frame_idx << ": " 
+                                  << current_frame_to_export->width << "x" << current_frame_to_export->height 
+                                  << " offset(" << current_frame_to_export->xoff << "," << current_frame_to_export->yoff << ")" << std::endl;
+
+                        std::string frameFilename = outputDir + outputBaseName + "_" + baseFilenameForOutput 
+                                                  + "_shape" + std::to_string(shape_idx) 
+                                                  + "_frame" + std::to_string(frame_idx) + ".png";
+                        std::string metadataFilename = outputDir + outputBaseName + "_" + baseFilenameForOutput
+                                                     + "_shape" + std::to_string(shape_idx)
+                                                     + "_frame" + std::to_string(frame_idx) + ".meta";
+                        
+                        std::vector<uint8_t> imageData(canvas_width_overall * canvas_height_overall, 255);
+                        uint32_t pitch = canvas_width_overall;
+                        paintFrame(current_shape, frame_idx, imageData.data(), pitch, 
+                                  current_frame_to_export->xoff - min_x_overall, 
+                                  current_frame_to_export->yoff - min_y_overall, 
+                                  canvas_width_overall, canvas_height_overall);
+
+                        if (!saveFrameToPNG(frameFilename, imageData.data(), canvas_width_overall, canvas_height_overall, palette_for_png)) {
+                            std::cerr << "Error: Failed to save SKF Shape " << shape_idx << " Frame " << frame_idx << " to PNG" << std::endl;
+                            // Consider more robust cleanup
+                        }
+
+                        FILE* metaFile = fopen(metadataFilename.c_str(), "w");
+                        if (metaFile) {
+                            fprintf(metaFile, "frame_width=%d\nframe_height=%d\n", current_frame_to_export->width, current_frame_to_export->height);
+                            fprintf(metaFile, "offset_x=%d\noffset_y=%d\n", current_frame_to_export->xoff - min_x_overall, current_frame_to_export->yoff - min_y_overall);
+                            fprintf(metaFile, "format=u8skf_extracted\n"); // Indicate origin
+                            fprintf(metaFile, "canvas_width=%d\ncanvas_height=%d\n", canvas_width_overall, canvas_height_overall);
+                            fprintf(metaFile, "skf_shape_index=%zu\n", shape_idx);
+                            fclose(metaFile);
+                        }
+                    }
+                }
+
+                // Cleanup SKF specific resources
+                for (Shape* s : shapes_in_skf) delete s;
+                delete skf_palette;
+                // delete ids; // REMOVE THIS LINE: skf_archive's destructor will delete ids.
+                return true;
+
+            } else { // Not U8SKFShapeFormat, handle as a single shape file
+                Shape shape(ids, read_format); // ids ownership transferred to Shape
+                Pentagram::Palette* gamePal = new Pentagram::Palette;
+
+                // Determine palette based on format (excluding SKF here)
+                if (read_format == &U8ShapeFormat || read_format == &U82DShapeFormat) {
+                    std::cout << "Palette path: Using raw u8pal.pal (scaled to 8-bit) for U8/U82D format..." << std::endl;
+                    Pentagram::Palette tempRawPal;
+                    if (!loadPalette(&tempRawPal, read_format)) { /* error */ delete gamePal; return false; }
+                    for (int i = 0; i < 256; ++i) {
+                        gamePal->palette[i*3+0] = (tempRawPal.palette[i*3+0] * 255 + 31) / 63;
+                        gamePal->palette[i*3+1] = (tempRawPal.palette[i*3+1] * 255 + 31) / 63;
+                        gamePal->palette[i*3+2] = (tempRawPal.palette[i*3+2] * 255 + 31) / 63;
+                    }
+                } else if (read_format == &CrusaderShapeFormat || read_format == &Crusader2DShapeFormat) {
+                    std::cout << "Palette path: Applying U8XFormPal to crusader.pal for Crusader format..." << std::endl;
+                    Pentagram::Palette tempRawPal;
+                    if (!loadPalette(&tempRawPal, read_format)) { /* error */ delete gamePal; return false; }
+                    IBufferDataSource dataSource(tempRawPal.palette, 768);
+                    IBufferDataSource xformSource(U8XFormPal, sizeof(U8XFormPal));
+                    try { gamePal->load(dataSource, xformSource); }
+                    catch (const std::exception& e) { /* error */ delete gamePal; return false; }
+                } else if (read_format == &PentagramShapeFormat) {
+                    std::cout << "Palette path: Pentagram format logic..." << std::endl;
+                    const Pentagram::Palette* shapeInternalPalette = shape.getPalette();
+                    if (shapeInternalPalette) {
+                        memcpy(gamePal->palette, shapeInternalPalette->palette, sizeof(gamePal->palette));
+                    } else {
+                        std::cout << "  Pentagram sub-path: Falling back to raw u8pal.pal (scaled to 8-bit)." << std::endl;
+                        Pentagram::Palette tempRawU8Pal;
+                        if (!loadPalette(&tempRawU8Pal, &U8ShapeFormat)) { /* error */ delete gamePal; return false; }
+                        for (int i = 0; i < 256; ++i) {
+                            gamePal->palette[i*3+0] = (tempRawU8Pal.palette[i*3+0] * 255 + 31) / 63;
+                            gamePal->palette[i*3+1] = (tempRawU8Pal.palette[i*3+1] * 255 + 31) / 63;
+                            gamePal->palette[i*3+2] = (tempRawU8Pal.palette[i*3+2] * 255 + 31) / 63;
+                        }
+                    }
+                } else {
+                    std::cout << "Palette path: Unknown non-SKF format. Using generated U8 grayscale palette." << std::endl;
+                    generateU8Palette(gamePal->palette);
+                }
+                
+                shape.setPalette(gamePal);
+                // ... (rest of the non-SKF import logic: bounding box, frame export, etc.)
+                // This part should be similar to your existing non-SKF logic
+                // Ensure 'ids' is not deleted here as Shape constructor took ownership.
+
+                // Calculate proper bounding box for the single shape
+                sint32 min_x = 0, min_y = 0;
+                sint32 max_width = 0, max_height = 0;
+                bool first_frame = true;
+                for (uint32_t i = 0; i < shape.frameCount(); ++i) {
+                    ShapeFrame* current_frame = shape.getFrame(i);
+                    if (current_frame) {
+                        if (first_frame) {
+                            min_x = current_frame->xoff; min_y = current_frame->yoff;
+                            max_width = current_frame->width + current_frame->xoff;
+                            max_height = current_frame->height + current_frame->yoff;
+                            first_frame = false;
+                        } else {
+                            if (current_frame->xoff < min_x) min_x = current_frame->xoff;
+                            if (current_frame->yoff < min_y) min_y = current_frame->yoff;
+                            if (current_frame->width + current_frame->xoff > max_width)
+                                max_width = current_frame->width + current_frame->xoff;
+                            if (current_frame->height + current_frame->yoff > max_height)
+                                max_height = current_frame->height + current_frame->yoff;
+                        }
+                    }
+                }
+                if (first_frame) { /* error, no frames */ delete gamePal; return false; }
+
+                sint32 canvas_width = max_width - min_x;
+                sint32 canvas_height = max_height - min_y;
+                if(canvas_width <=0 || canvas_height <=0) { /* error */ delete gamePal; return false; }
+
+                std::cout << "Canvas dimensions: " << canvas_width << "x" << canvas_height << std::endl;
+
+                Palette_t palette_for_png;
+                for (int i = 0; i < 256; ++i) {
+                    palette_for_png[i * 3    ] = gamePal->palette[i * 3    ];
+                    palette_for_png[i * 3 + 1] = gamePal->palette[i * 3 + 1];
+                    palette_for_png[i * 3 + 2] = gamePal->palette[i * 3 + 2];
+                }
+
+                for (uint32_t i = 0; i < shape.frameCount(); ++i) {
+                    ShapeFrame* current_frame_to_export = shape.getFrame(i);
+                    if (!current_frame_to_export) continue;
+
+                    std::string frameFilename = outputDir + outputBaseName + "_" + baseFilenameForOutput + "_" + std::to_string(i) + ".png";
+                    std::string metadataFilename = outputDir + outputBaseName + "_" + baseFilenameForOutput + "_" + std::to_string(i) + ".meta";
+                    
+                    std::vector<uint8_t> imageData(canvas_width * canvas_height, 255);
+                    uint32_t pitch = canvas_width;
+                    paintFrame(&shape, i, imageData.data(), pitch, 
+                              current_frame_to_export->xoff - min_x, 
+                              current_frame_to_export->yoff - min_y, 
+                              canvas_width, canvas_height);
+
+                    if (!saveFrameToPNG(frameFilename, imageData.data(), canvas_width, canvas_height, palette_for_png)) {
+                        std::cerr << "Error: Failed to save frame " << i << " to PNG" << std::endl;
+                    }
+                    // Save metadata...
+                    FILE* metaFile = fopen(metadataFilename.c_str(), "w");
+                    if (metaFile) {
+                        fprintf(metaFile, "frame_width=%d\nframe_height=%d\n", current_frame_to_export->width, current_frame_to_export->height);
+                        fprintf(metaFile, "offset_x=%d\noffset_y=%d\n", current_frame_to_export->xoff - min_x, current_frame_to_export->yoff - min_y);
+                        fprintf(metaFile, "format=%s\n", read_format->name); // Use actual format name
+                        fprintf(metaFile, "canvas_width=%d\ncanvas_height=%d\n", canvas_width, canvas_height);
+                        fclose(metaFile);
+                    }
+                }
+                delete gamePal; // Shape object handles its own IDataSource
+                return true;
+            }
         } catch (const std::exception& e) {
             std::cerr << "Error importing shape: " << e.what() << std::endl;
+            // Ensure ids is deleted if an exception occurs before ownership transfer
+            // This is tricky as ids might have been passed to Shape constructor.
+            // The Shape destructor should handle ids if it took ownership.
+            // If SKF, ids needs explicit deletion if RawArchive didn't take it.
             return false;
         }
     }
