@@ -25,7 +25,7 @@ local pluginDir = app.fs.joinPath(app.fs.userConfigPath, "extensions", pluginNam
 local converterPath = app.fs.joinPath(pluginDir, "pent_shp")
 
 -- Debug system with toggle
-local debugEnabled = true  -- toggle debug messages
+local debugEnabled = false  -- toggle debug messages
 
 local function debug(message)
   if debugEnabled then
@@ -333,14 +333,13 @@ function addFrameCel(sprite, layerIndex, frameImage, offsetX, offsetY, maxOffset
   return cel
 end
 
-function processImport(shpFile, paletteFile, outputBasePath, createSeparateFrames)
+function processImport(shpFile, outputBasePath, createSeparateFrames)
   if not converterExists then
     showError("SHP converter not found at: " .. converterPath)
     return false
   end
 
   debug("Importing SHP: " .. shpFile)
-  debug("Palette: " .. (paletteFile ~= "" and paletteFile or "default"))
   debug("Output: " .. outputBasePath)
 
   -- Check if file exists
@@ -489,11 +488,6 @@ function importSHP(filename)
     filetypes={"shp"},
     focus=true
   }
-  dlg:file{
-    id="paletteFile",
-    label="Palette File (optional):",
-    open=true
-  }
 
   -- Store dialog result in outer scope
   local dialogResult = false
@@ -505,7 +499,6 @@ function importSHP(filename)
     onclick=function()
       dialogResult = true
       importSettings.shpFile = dlg.data.shpFile
-      importSettings.paletteFile = dlg.data.paletteFile
       dlg:close()
     end
   }
@@ -538,14 +531,8 @@ function importSHP(filename)
   local outputBasePath = app.fs.joinPath(tempDir, "output")
   
   return processImport(importSettings.shpFile, 
-                      importSettings.paletteFile or "", 
                       outputBasePath, 
                       true)
-end
-
--- Export functionality disabled - show message to user
-function exportSHP()
-  showError("Export functionality is currently disabled.\nOnly import of Ultima 8 SHP files is supported.")
 end
 
 function init(plugin)
@@ -561,14 +548,6 @@ function init(plugin)
     title="Import U8 SHP...",
     group="file_import",
     onclick=function() importSHP() end
-  }
-
-  -- Register export command but show disabled message
-  plugin:newCommand{
-    id="ExportSHP",
-    title="Export U8 SHP... (Disabled)",
-    group="file_export",
-    onclick=exportSHP
   }
 end
 

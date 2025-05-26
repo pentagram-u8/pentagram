@@ -10,7 +10,6 @@ pent_shp_OBJ   = \
 	$(CONVERT) \
 	$(MISC) \
 	$(FILESYS) \
-	graphics/PaletteManager.o \
 	graphics/Palette.o \
 	graphics/XFormBlend.o \
 	graphics/Shape.o \
