@@ -25,7 +25,7 @@ local pluginDir = app.fs.joinPath(app.fs.userConfigPath, "extensions", pluginNam
 local converterPath = app.fs.joinPath(pluginDir, "pent_shp")
 
 -- Debug system with toggle
-local debugEnabled = true  -- toggle debug messages
+local debugEnabled = false  -- toggle debug messages
 
 local function debug(message)
   if debugEnabled then
@@ -287,23 +287,65 @@ function processImport(shpFile, outputBasePath, createSeparateFrames) -- createS
   -- First frame is already loaded, just name its layer.
   addFrameToSprite(sprite, 0, nil) -- Pass nil for image as it's already there
 
+  -- Track the current maximum canvas dimensions required by frames processed so far
+  -- These will be updated to become the final target canvas size.
+  local finalTargetCanvasWidth = sprite.width
+  local finalTargetCanvasHeight = sprite.height
+
   -- Load subsequent frames onto new layers
   for frameIndex = 1, framesInfo.frameCount - 1 do
     local framePath = framesInfo.paths[frameIndex + 1] -- Lua tables are 1-indexed
     if app.fs.isFile(framePath) then
       local frameImage = Image{fromFile=framePath}
       if frameImage then
-        if frameImage.width ~= sprite.width or frameImage.height ~= sprite.height then
-            logError("Warning: Frame " .. frameIndex .. " (" .. framePath .. ") dimensions (" .. frameImage.width .. "x" .. frameImage.height .. ") do not match sprite dimensions (" .. sprite.width .. "x" .. sprite.height .. "). Skipping.")
-        else
-            addFrameToSprite(sprite, frameIndex, frameImage)
+        -- Check if this frame's dimensions exceed our current tracked maximums
+        if frameImage.width > finalTargetCanvasWidth then
+          finalTargetCanvasWidth = frameImage.width
         end
+        if frameImage.height > finalTargetCanvasHeight then
+          finalTargetCanvasHeight = frameImage.height
+        end
+        
+        -- Add the frame; canvas will be resized later if needed
+        addFrameToSprite(sprite, frameIndex, frameImage)
       else
         logError("Failed to load image for frame: " .. framePath)
       end
     else
       logError("Frame PNG not found: " .. framePath)
     end
+  end
+
+  -- After processing all frames, resize the canvas once if needed
+  local initialWidth = sprite.width
+  local initialHeight = sprite.height
+
+  if finalTargetCanvasWidth > initialWidth or finalTargetCanvasHeight > initialHeight then
+    local addRight = 0
+    if finalTargetCanvasWidth > initialWidth then
+      addRight = finalTargetCanvasWidth - initialWidth
+    end
+
+    local addBottom = 0
+    if finalTargetCanvasHeight > initialHeight then
+      addBottom = finalTargetCanvasHeight - initialHeight
+    end
+
+    debug("Final canvas resize needed. Current: " .. initialWidth .. "x" .. initialHeight ..
+          ", Target: " .. finalTargetCanvasWidth .. "x" .. finalTargetCanvasHeight ..
+          ". Adding to borders: right=" .. addRight .. ", bottom=" .. addBottom)
+          
+    app.command.CanvasSize {
+      ui = false,
+      left = 0,      -- Do not change (shrink/expand) the left border relative to content
+      top = 0,       -- Do not change (shrink/expand) the top border relative to content
+      right = addRight,  -- Add this many pixels to the right border
+      bottom = addBottom -- Add this many pixels to the bottom border
+      -- When using left, top, right, bottom, do not use width, height, or anchor
+    }
+  else
+    debug("No final canvas resize needed. Canvas size: " .. initialWidth .. "x" .. initialHeight .. 
+          " (which is " .. finalTargetCanvasWidth .. "x" .. finalTargetCanvasHeight .. ")")
   end
 
   if app.preferences then

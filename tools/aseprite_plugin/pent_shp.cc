@@ -472,35 +472,27 @@ namespace {
         
         memset(pixels, 255, canvas_buf_width * canvas_buf_height);  // Fill with transparent (index 255)
 
-        // Variables for SoftRenderSurface.inl - matching names from its top section
-        // 's' and 'framenum' are parameters.
-        // 'pixels' is our target buffer.
-        // 'pitch' is the canvas pitch.
-        // 'x' and 'y' are the top-left coordinates for drawing the frame on the canvas.
-        sint32 x = x_offset_on_canvas;
-        sint32 y = y_offset_on_canvas;
+        sint32 x = x_offset_on_canvas; // This will be 0 when called from importU8SHP per-frame
+        sint32 y = y_offset_on_canvas; // This will be 0 when called from importU8SHP per-frame
 
-        // clip_window setup (if not using NO_CLIPPING)
-        // For simplicity here, assuming NO_CLIPPING. If you need clipping,
-        // clip_window must be properly defined.
-        // struct { int x, y, w, h; } clip_window = {0, 0, (int)canvas_buf_width, (int)canvas_buf_height};
+        // Define the clipping window to be the exact dimensions of the canvas buffer provided.
+        // These variables are typically used by the .inl file when NO_CLIPPING is not defined.
+        int clip_x = 0; // Clipping starts at the top-left of the buffer (x_offset_on_canvas is 0)
+        int clip_y = 0; // Clipping starts at the top-left of the buffer (y_offset_on_canvas is 0)
+        int clip_w = (int)canvas_buf_width;  // Clip to the width of the buffer
+        int clip_h = (int)canvas_buf_height; // Clip to the height of the buffer
+        // If pent_shp_rendersurface.inl uses a struct 'clip_window', ensure it's also set:
+        struct { int x, y, w, h; } clip_window = {clip_x, clip_y, clip_w, clip_h}; // UNCOMMENT THIS LINE
 
 
         // --- Preprocessor defines for pent_shp_rendersurface.inl ---
-        #define PENT_SHP_OUTPUT_8BIT_INDICES // Our new flag to write indices
-        #define uintX uint8_t                // Outputting 8-bit indices
-        #define NO_CLIPPING                  // Simplifies setup; remove if you implement clipping
-        // #undef XFORM_SHAPES               // Ensure XFORM_SHAPES is not defined, as gamePal is already transformed
-                                             // and PENT_SHP_OUTPUT_8BIT_INDICES bypasses xform_pal anyway.
-        // #undef FLIP_SHAPES                // Define or undefine as needed
-
-        // This variable is expected by the .inl file to choose between palette types.
-        // Since gamePal is already transformed and PENT_SHP_OUTPUT_8BIT_INDICES ignores
-        // the pal/xform_pal lookups, its value here is less critical but should be defined.
+        #define PENT_SHP_OUTPUT_8BIT_INDICES 
+        #define uintX uint8_t                
+        // #define NO_CLIPPING                  // CRITICAL: This MUST be COMMENTED OUT or REMOVED to enable clipping
+        
         bool untformed_pal = false; 
         
-        // Include the modified rendering logic
-        #include "pent_shp_rendersurface.inl" // Include your local, modified copy
+        #include "pent_shp_rendersurface.inl" 
 
         // --- Undefine to prevent conflicts elsewhere ---
         #undef PENT_SHP_OUTPUT_8BIT_INDICES
@@ -624,36 +616,7 @@ namespace {
             
             shape.setPalette(gamePal);
 
-            sint32 min_x = 0, min_y = 0;
-            sint32 max_width = 0, max_height = 0;
-            bool first_frame = true;
-            for (uint32_t i = 0; i < shape.frameCount(); ++i) {
-                ShapeFrame* current_frame = shape.getFrame(i);
-                if (current_frame) {
-                    if (first_frame) {
-                        min_x = current_frame->xoff; min_y = current_frame->yoff;
-                        max_width = current_frame->width + current_frame->xoff;
-                        max_height = current_frame->height + current_frame->yoff;
-                        first_frame = false;
-                    } else {
-                        if (current_frame->xoff < min_x) min_x = current_frame->xoff;
-                        if (current_frame->yoff < min_y) min_y = current_frame->yoff;
-                        if (current_frame->width + current_frame->xoff > max_width)
-                            max_width = current_frame->width + current_frame->xoff;
-                        if (current_frame->height + current_frame->yoff > max_height)
-                            max_height = current_frame->height + current_frame->yoff;
-                    }
-                }
-            }
-            if (first_frame && shape.frameCount() > 0) { /* error, no valid frames with dimensions */ delete gamePal; return false; }
             if (shape.frameCount() == 0) { /* no frames to process */ delete gamePal; return true; }
-
-
-            sint32 canvas_width = max_width - min_x;
-            sint32 canvas_height = max_height - min_y;
-            if(canvas_width <=0 || canvas_height <=0) { /* error */ delete gamePal; return false; }
-
-            std::cout << "Canvas dimensions: " << canvas_width << "x" << canvas_height << std::endl;
 
             Palette_t palette_for_png;
             for (int i = 0; i < 256; ++i) {
@@ -665,14 +628,37 @@ namespace {
             uint32_t output_file_index = 0; // Counter for actual output files
             for (uint32_t i = 0; i < shape.frameCount(); ++i) {
                 ShapeFrame* current_frame_to_export = shape.getFrame(i);
-                if (!current_frame_to_export) continue;
+                if (!current_frame_to_export) {
+                    std::cout << "Original frame " << i << " is null, skipping." << std::endl;
+                    continue;
+                }
+
+                // Use individual frame dimensions for its canvas
+                sint32 frame_canvas_width = current_frame_to_export->width;
+                sint32 frame_canvas_height = current_frame_to_export->height;
+
+                if (frame_canvas_width <= 0 || frame_canvas_height <= 0) {
+                    std::cout << "Original frame " << i << " has invalid dimensions (" 
+                              << frame_canvas_width << "x" << frame_canvas_height 
+                              << "), skipping." << std::endl;
+                    continue;
+                }
                 
-                std::vector<uint8_t> imageData(canvas_width * canvas_height, 255); // Initialized to transparent
-                uint32_t pitch = canvas_width;
+                std::cout << "Processing original frame " << i << " (output index " << output_file_index 
+                          << ") with dimensions: " << frame_canvas_width << "x" << frame_canvas_height << std::endl;
+                
+                // Size imageData to the current frame's dimensions
+                std::vector<uint8_t> imageData(frame_canvas_width * frame_canvas_height, 255); // Initialized to transparent
+                uint32_t pitch = frame_canvas_width; // Pitch is the width of the current frame's canvas
+                
+                // Paint the frame's RLE content. To make the RLE data, which is conceptually offset by
+                // current_frame_to_export->xoff and current_frame_to_export->yoff,
+                // render starting at (0,0) of our tightly-sized imageData buffer,
+                // we pass negated offsets to paintFrame.
                 paintFrame(&shape, i, imageData.data(), pitch, 
-                          current_frame_to_export->xoff - min_x, 
-                          current_frame_to_export->yoff - min_y, 
-                          canvas_width, canvas_height);
+                          +current_frame_to_export->xoff, // x_offset_on_canvas
+                          +current_frame_to_export->yoff, // y_offset_on_canvas
+                          frame_canvas_width, frame_canvas_height);
 
                 // Check if the frame is entirely transparent (all pixels are index 255)
                 bool frameIsEmpty = true;
@@ -683,33 +669,31 @@ namespace {
                     }
                 }
 
-                // Construct filenames using the output_file_index for numbering if the frame is not empty
-                // The log message for skipped frames will still use 'i' to refer to the original frame index.
                 std::string frameFilenameForLog = outputDir + outputBaseName + "_" + baseFilenameForOutput + "_" + std::to_string(i) + ".png";
 
                 if (frameIsEmpty) {
-                    std::cout << "Frame " << i << " (" << frameFilenameForLog << ") is empty, skipping file creation." << std::endl;
+                    std::cout << "Frame " << i << " (intended as " << frameFilenameForLog << ") is empty, skipping file creation." << std::endl;
                 } else {
                     std::string frameFilename = outputDir + outputBaseName + "_" + baseFilenameForOutput + "_" + std::to_string(output_file_index) + ".png";
                     std::string metadataFilename = outputDir + outputBaseName + "_" + baseFilenameForOutput + "_" + std::to_string(output_file_index) + ".meta";
 
-                    if (!saveFrameToPNG(frameFilename, imageData.data(), canvas_width, canvas_height, palette_for_png)) {
+                    // Save PNG using the frame's actual canvas dimensions
+                    if (!saveFrameToPNG(frameFilename, imageData.data(), frame_canvas_width, frame_canvas_height, palette_for_png)) {
                         std::cerr << "Error: Failed to save frame " << i << " (output index " << output_file_index << ") to PNG" << std::endl;
                     } else {
-                        // Only create metafile if PNG was saved
                         FILE* metaFile = fopen(metadataFilename.c_str(), "w");
                         if (metaFile) {
                             fprintf(metaFile, "frame_width=%d\nframe_height=%d\n", current_frame_to_export->width, current_frame_to_export->height);
-                            // fprintf(metaFile, "offset_x=%d\noffset_y=%d\n", current_frame_to_export->xoff - min_x, current_frame_to_export->yoff - min_y); // Removed
                             fprintf(metaFile, "format=%s\n", read_format->name); 
-                            fprintf(metaFile, "canvas_width=%d\ncanvas_height=%d\n", canvas_width, canvas_height);
-                            fprintf(metaFile, "original_frame_index=%u\n", i); // Add original index to metadata
+                            // Use frame's canvas size for metadata
+                            fprintf(metaFile, "canvas_width=%d\ncanvas_height=%d\n", frame_canvas_width, frame_canvas_height); 
+                            fprintf(metaFile, "original_frame_index=%u\n", i);
                             fclose(metaFile);
                         } else {
                             std::cerr << "Error: Failed to create metadata file for frame " << i << " (output index " << output_file_index << "): " << metadataFilename << std::endl;
                         }
                     }
-                    output_file_index++; // Increment for the next saved file
+                    output_file_index++; 
                 }
             }
             delete gamePal; 
