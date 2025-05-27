@@ -38,6 +38,9 @@
 #include <mach-o/dyld.h>
 #include <limits.h>
 #endif
+#ifdef _WIN32 // Add this
+#include <windows.h> // Add this for GetModuleFileNameA
+#endif // Add this
 
 #include <array>
 #include <cstring>
@@ -61,18 +64,18 @@ namespace {
 	// Get the directory where the converter executable is located
 	std::string getExecutableDirectory() {
 		char path[1024];
-		ssize_t len = readlink("/proc/self/exe", path, sizeof(path) - 1);
-		if (len != -1) {
+#if defined(_WIN32) || defined(_WIN64)
+		DWORD len = GetModuleFileNameA(NULL, path, sizeof(path));
+		if (len > 0 && len < sizeof(path)) {
 			path[len] = '\0';
 			std::string execPath(path);
-			size_t lastSlash = execPath.find_last_of('/');
+			size_t lastSlash = execPath.find_last_of("\\/"); // Check for both backslash and forward slash
 			if (lastSlash != std::string::npos) {
 				return execPath.substr(0, lastSlash + 1);
 			}
 		}
-
+#elif defined(__APPLE__)
 		// Fallback for macOS - use _NSGetExecutablePath
-#ifdef __APPLE__
 		uint32_t size = sizeof(path);
 		if (_NSGetExecutablePath(path, &size) == 0) {
 			std::string execPath(path);
@@ -86,9 +89,20 @@ namespace {
 				return execPath.substr(0, lastSlash + 1);
 			}
 		}
+#else 
+		// Linux/POSIX implementation
+		ssize_t len = readlink("/proc/self/exe", path, sizeof(path) - 1);
+		if (len != -1) {
+			path[len] = '\0';
+			std::string execPath(path);
+			size_t lastSlash = execPath.find_last_of('/');
+			if (lastSlash != std::string::npos) {
+				return execPath.substr(0, lastSlash + 1);
+			}
+		}
 #endif
 
-		// Fallback to current directory
+		// Fallback to current directory if other methods fail
 		return "./";
 	}
 
@@ -137,46 +151,6 @@ namespace {
 
 		if (!hasColor) {
 			std::cout << "WARNING: Palette appears to be entirely grayscale!" << std::endl;
-		}
-
-		return true;
-	}
-
-	// Alternative: Try loading without skipping the header
-	bool loadPaletteFromFileNoHeader(Pentagram::Palette* pal, const std::string& filename) {
-		std::ifstream file(filename, std::ios::binary);
-		if (!file) {
-			return false;
-		}
-
-		// Check file size
-		file.seekg(0, std::ios::end);
-		size_t fileSize = file.tellg();
-		file.seekg(0, std::ios::beg);
-
-		if (fileSize < 768) {
-			std::cerr << "Palette file too small (no header): " << fileSize << " bytes" << std::endl;
-			return false;
-		}
-
-		// Read 768 bytes directly without skipping header
-		file.read(reinterpret_cast<char*>(pal->palette), 768);
-
-		if (!file) {
-			std::cerr << "Failed to read palette data (no header)" << std::endl;
-			return false;
-		}
-
-		file.close();
-		std::cout << "Successfully loaded palette (no header) from: " << filename << std::endl;
-
-		// Debug: Print first few colors
-		std::cout << "No-header palette - first 4 colors:" << std::endl;
-		for (int i = 0; i < 4; ++i) {
-			std::cout << "Color " << i << ": RGB(" 
-				<< (int)pal->palette[i*3] << "," 
-					<< (int)pal->palette[i*3+1] << "," 
-						<< (int)pal->palette[i*3+2] << ")" << std::endl;
 		}
 
 		return true;
@@ -335,30 +309,6 @@ std::string sanitizeFilename(const std::string& input) {
 	return sanitized;
 }
 
-// Sanitize a file path to prevent directory traversal attacks
-std::string sanitizeFilePath(const std::string& path) {
-	if (path.empty()) {
-		return "";
-	}
-
-	std::string sanitized;
-	std::string filename;
-
-	// Extract the path and filename
-	size_t lastSlash = path.find_last_of("/\\");
-	if (lastSlash != std::string::npos) {
-		sanitized = path.substr(0, lastSlash + 1);
-		filename  = path.substr(lastSlash + 1);
-	} else {
-		filename = path;
-	}
-
-	// Sanitize just the filename part
-	sanitized += sanitizeFilename(filename);
-
-	return sanitized;
-}
-
 // Save a frame to a PNG file
 bool saveFrameToPNG(
 	const std::string& filename, const unsigned char* data,
@@ -490,7 +440,7 @@ uint32 canvas_buf_width, uint32 canvas_buf_height) {
 #define uintX uint8_t
 	// #define NO_CLIPPING  // CRITICAL: This MUST be COMMENTED OUT or REMOVED to enable clipping
 
-	bool untformed_pal = false; 
+	//bool untformed_pal = false; 
 
 #include "pent_shp_rendersurface.inl" 
 
@@ -700,15 +650,6 @@ bool importU8SHP(const std::string& shpFilename, const std::string& outputPath) 
 		std::cerr << "Error importing shape: " << e.what() << std::endl;
 		return false;
 	}
-}
-
-// Export is not implemented for Ultima 8 shapes
-bool exportU8SHP(
-	const std::string& basePath, 
-const std::string& outputShpFilename,
-const std::string& metadataFile) {
-	std::cerr << "Error: Export to Ultima 8 SHP format is not currently supported" << std::endl;
-	return false;
 }
 
 }    // namespace

@@ -173,7 +173,7 @@ sint32				dlen;
 uintX				*pixptr;
 uintX				*endrun;
 uintX				*line_start;
-uint32				pix;
+//uint32				pix;
 
 // Sanity check
 if (framenum >= s->frameCount()) return;
@@ -182,9 +182,9 @@ if (s->getPalette() == 0) return;
 // ShapeFrame		*frame			= s->getFrame(framenum); // <-- REMOVE THIS LINE
 const uint8		*rle_data		= frame->rle_data; // 'frame' is now from pent_shp.cc
 const uint32	*line_offsets	= frame->line_offsets; // 'frame' is now from pent_shp.cc
-const uint32	*pal			= untformed_pal?
+/*const uint32	*pal			= untformed_pal?
 	&(s->getPalette()->native_untransformed[0]):
-&(s->getPalette()->native[0]);
+&(s->getPalette()->native[0]);*/
 
     
 #ifdef XFORM_SHAPES
