@@ -2,7 +2,7 @@
 # includes us, since that has to know our path anyway.
 LPATH := tools/aseprite_plugin
 
-LSRC := $(wildcard $(srcdir)/$(LPATH)/*.cc)
+LSRC := $(wildcard $(srcdir)/$(LPATH)/*.cpp)
 LCONPRODUCTS := pent_shp
 
 pent_shp_OBJ   = \
