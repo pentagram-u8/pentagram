@@ -700,7 +700,7 @@ namespace {
                         FILE* metaFile = fopen(metadataFilename.c_str(), "w");
                         if (metaFile) {
                             fprintf(metaFile, "frame_width=%d\nframe_height=%d\n", current_frame_to_export->width, current_frame_to_export->height);
-                            fprintf(metaFile, "offset_x=%d\noffset_y=%d\n", current_frame_to_export->xoff - min_x, current_frame_to_export->yoff - min_y);
+                            // fprintf(metaFile, "offset_x=%d\noffset_y=%d\n", current_frame_to_export->xoff - min_x, current_frame_to_export->yoff - min_y); // Removed
                             fprintf(metaFile, "format=%s\n", read_format->name); 
                             fprintf(metaFile, "canvas_width=%d\ncanvas_height=%d\n", canvas_width, canvas_height);
                             fprintf(metaFile, "original_frame_index=%u\n", i); // Add original index to metadata

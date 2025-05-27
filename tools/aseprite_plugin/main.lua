@@ -25,7 +25,7 @@ local pluginDir = app.fs.joinPath(app.fs.userConfigPath, "extensions", pluginNam
 local converterPath = app.fs.joinPath(pluginDir, "pent_shp")
 
 -- Debug system with toggle
-local debugEnabled = false  -- toggle debug messages
+local debugEnabled = true  -- toggle debug messages
 
 local function debug(message)
   if debugEnabled then
@@ -176,164 +176,54 @@ function registerSHPFormat()
   return true
 end
 
-function getCelOffsetData(cel)
-  if not cel then return nil end
-
-  -- Only extract from cel's user data
-  if cel.data and cel.data:match("offset:") then
-    local x, y = cel.data:match("offset:(%d+),(%d+)")
-    if x and y then
-      return {
-        offsetX = tonumber(x),
-        offsetY = tonumber(y)
-      }
-    end
-  end
-
-  return nil
-end
-
-function setCelOffsetData(cel, offsetX, offsetY)
-  if not cel then return end
-
-  -- Store offset directly in the cel's user data only
-  cel.data = string.format("offset:%d,%d", offsetX or 0, offsetY or 0)
-  debug("Stored offset data in cel user data: " .. cel.data)
-end
-
--- Check for offset tags
-function spriteHasCelOffsetData(sprite)
-  -- Check if any cel has offset data stored
-  for i, layer in ipairs(sprite.layers) do
-    local cel = layer:cel(1)
-    if cel and cel.data and cel.data:match("offset:") then
-      return true
-    end
-  end
-  return false
-end
-
--- Read offset data from a metadata file
-function readFrameMetadata(metaPath)
-  local offsetX, offsetY = 0, 0
-
-  if app.fs.isFile(metaPath) then
-    local meta = io.open(metaPath, "r")
-    if meta then
-      for line in meta:lines() do
-        local key, value = line:match("(.+)=(.+)")
-        if key == "offset_x" then offsetX = tonumber(value) end
-        if key == "offset_y" then offsetY = tonumber(value) end
-      end
-      meta:close()
-    end
-  end
-
-  return offsetX, offsetY
-end
-
--- Scan frames and return dimensions and metadata
-function scanFramesForDimensions(basePath)
-  local maxWidth = 0
-  local maxHeight = 0
-  local maxOffsetX = 0
-  local maxOffsetY = 0
-  local maxRightEdge = -999999
-  local maxBottomEdge = -999999
+-- Scan frames and return paths and count
+function scanFrames(basePath)
   local frameIndex = 0
-  local frameData = {}
+  local framePaths = {}
 
   while true do
     local framePath = basePath .. "_" .. frameIndex .. ".png"
-    local metaPath = basePath .. "_" .. frameIndex .. ".meta"
+    -- local metaPath = basePath .. "_" .. frameIndex .. ".meta" -- Meta not needed for dimensions anymore
 
     if not app.fs.isFile(framePath) then break end
 
-    local image = Image{fromFile=framePath}
-    local offsetX, offsetY = readFrameMetadata(metaPath)
-
-    -- Store frame data
-    frameData[frameIndex] = {
-      path = framePath,
-      width = image.width,
-      height = image.height,
-      offsetX = offsetX,
-      offsetY = offsetY
-    }
-
-    -- Track maximums
-    maxOffsetX = math.max(maxOffsetX, offsetX)
-    maxOffsetY = math.max(maxOffsetY, offsetY)
-
-    -- Track extents
-    local rightEdge = offsetX + image.width
-    local bottomEdge = offsetY + image.height
-    maxRightEdge = math.max(maxRightEdge, rightEdge)
-    maxBottomEdge = math.max(maxBottomEdge, bottomEdge)
-
+    table.insert(framePaths, framePath)
     frameIndex = frameIndex + 1
   end
 
   return {
     frameCount = frameIndex,
-    frameData = frameData,
-    maxWidth = maxRightEdge,
-    maxHeight = maxBottomEdge,
-    maxOffsetX = maxOffsetX,
-    maxOffsetY = maxOffsetY
+    paths = framePaths
   }
 end
 
--- Position a cel based on offset
-function positionCelWithOffset(cel, offsetX, offsetY, maxOffsetX, maxOffsetY)
-  if not cel then return end
-
-  -- Calculate position based on offset from top-left
-  local adjustedX = maxOffsetX - offsetX
-  local adjustedY = maxOffsetY - offsetY
-
-  -- Set position
-  cel.position = Point(adjustedX, adjustedY)
-
-  -- Store offset data
-  setCelOffsetData(cel, offsetX, offsetY)
-
-  return adjustedX, adjustedY
-end
-
--- Create and position a frame cel with proper metadata
-function addFrameCel(sprite, layerIndex, frameImage, offsetX, offsetY, maxOffsetX, maxOffsetY)
-  -- Create layer if needed (first layer already exists)
+-- Create and position a frame cel (always at 0,0 now)
+function addFrameToSprite(sprite, layerIndex, frameImage)
   local layer
   if layerIndex == 0 then
+    -- This is the first frame, which is already loaded when sprite was opened.
+    -- We just ensure the layer name is set.
     layer = sprite.layers[1]
-    layer.name = "Frame 0"
-    -- Delete existing cel if present
-    if layer:cel(1) then
-      sprite:deleteCel(layer, 1)
-    end
+    layer.name = "Frame 1" -- Aseprite is 1-indexed for frames/layers in UI
+    -- The cel is already there from app.open()
   else
+    -- For subsequent frames, create a new layer and a new frame (cel)
     layer = sprite:newLayer()
-    layer.name = "Frame " .. layerIndex
+    layer.name = "Frame " .. (layerIndex + 1) -- User-facing layer name
+    -- Create new cel at frame (layerIndex + 1) because Aseprite frames are 1-indexed
+    -- Cel position is (0,0) by default for new cels on new layers if image matches sprite size.
+    -- If we are adding to existing layers, ensure we are on the correct Aseprite frame.
+    -- For simplicity, assuming one layer per SHP frame, and one Aseprite frame.
+    -- To put each SHP frame on a new Aseprite frame on the *same* layer:
+    -- local cel = sprite:newCel(sprite.layers[1], layerIndex + 1, frameImage, Point(0,0))
+    -- To put each SHP frame on a new *layer* (simplest for visual separation):
+    sprite:newCel(layer, 1, frameImage, Point(0,0))
   end
 
-  -- Calculate position
-  local adjustedX = maxOffsetX - offsetX
-  local adjustedY = maxOffsetY - offsetY
-
-  -- Create new cel with correct position
-  local cel = sprite:newCel(layer, 1, frameImage, Point(adjustedX, adjustedY))
-
-  -- Store offset data
-  setCelOffsetData(cel, offsetX, offsetY)
-
-  debug("Positioned frame " .. layerIndex .. " at (" .. adjustedX .. "," .. adjustedY .. ") with dimensions " .. 
-        frameImage.width .. "x" .. frameImage.height)
-        
-  return cel
+  debug("Added/updated layer " .. layer.name .. " for SHP frame " .. layerIndex)
 end
 
-function processImport(shpFile, outputBasePath, createSeparateFrames)
+function processImport(shpFile, outputBasePath, createSeparateFrames) -- createSeparateFrames is not used anymore with this model
   if not converterExists then
     showError("SHP converter not found at: " .. converterPath)
     return false
@@ -342,127 +232,81 @@ function processImport(shpFile, outputBasePath, createSeparateFrames)
   debug("Importing SHP: " .. shpFile)
   debug("Output: " .. outputBasePath)
 
-  -- Check if file exists
   if not app.fs.isFile(shpFile) then
     showError("SHP file not found: " .. shpFile)
     return false
   end
 
-  -- Extract base filename from the SHP file (without path and extension)
   local shpBaseName = shpFile:match("([^/\\]+)%.[^.]*$") or "output"
   shpBaseName = shpBaseName:gsub("%.shp$", "")
   debug("Extracted SHP base name: " .. shpBaseName)
 
-  -- Extract output directory from outputBasePath
   local outputDir = outputBasePath:match("(.*[/\\])") or ""
-
-  -- The C++ converter creates files with pattern: outputPath_shpBaseName_number.png
-  -- So if outputBasePath is "/tmp/output" and SHP is "avatar.shp", 
-  -- it creates: "/tmp/output_avatar_0.png", "/tmp/output_avatar_1.png", etc.
-  local outputBaseName = outputBasePath:match("([^/\\]+)$") or "output"
-  local actualOutputBase = outputDir .. outputBaseName .. "_" .. shpBaseName
+  local outputBaseNameFromPath = outputBasePath:match("([^/\\]+)$") or "output"
+  local actualOutputBase = outputDir .. outputBaseNameFromPath .. "_" .. shpBaseName
   debug("Expected output base: " .. actualOutputBase)
 
-  -- Create command - simplified for import only
   local cmd = quoteIfNeeded(converterPath) .. " import " .. quoteIfNeeded(shpFile) .. " " .. quoteIfNeeded(outputBasePath)
-
   debug("Executing: " .. cmd)
 
-  -- Execute command
   local success = executeHidden(cmd)
 
-  -- Check for output files - look for the pattern the C++ converter actually creates
-  local firstFrame = actualOutputBase .. "_0.png"
+  local firstFramePath = actualOutputBase .. "_0.png"
+  debug("Looking for first frame at: " .. firstFramePath)
+  debug("File exists: " .. tostring(app.fs.isFile(firstFramePath)))
 
-  debug("Looking for first frame at: " .. firstFrame)
-  debug("File exists: " .. tostring(app.fs.isFile(firstFrame)))
-
-  if not app.fs.isFile(firstFrame) then
-    debug("ERROR: Failed to convert SHP file")
+  if not app.fs.isFile(firstFramePath) then
+    debug("ERROR: Failed to convert SHP file or first frame not found.")
+    showError("Conversion failed or no output frames were generated.\nCheck console for C++ tool errors if debug is enabled.")
     return false
   end
 
-  -- Continue with loading the frames using the correct output base
   debug("Loading output files into Aseprite")
 
-  -- Scan all frames once to get dimensions and metadata
-  local framesInfo = scanFramesForDimensions(actualOutputBase)
+  local framesInfo = scanFrames(actualOutputBase)
   
   if framesInfo.frameCount == 0 then
-    debug("ERROR: No frames found after conversion")
+    debug("ERROR: No frames found after conversion (scanFrames).")
+    showError("No frames found after conversion, though first frame was present.")
     return false
   end
   
-  debug("Found " .. framesInfo.frameCount .. " frames, canvas size: " 
-        .. framesInfo.maxWidth .. "x" .. framesInfo.maxHeight)
+  debug("Found " .. framesInfo.frameCount .. " frames.")
 
-  -- Open and setup the sprite
-  debug("Opening first frame: " .. framesInfo.frameData[0].path)
-
-  -- Disable animation detection before opening
   disableAnimationDetection()
-  local sprite = app.open(framesInfo.frameData[0].path)
+  local sprite = app.open(framesInfo.paths[1]) -- Open the first frame
   restoreAnimationDetection()
 
   if not sprite then
-    showError("Failed to open first frame")
+    showError("Failed to open first frame: " .. framesInfo.paths[1])
     return false
   end
 
-  -- Set filename
-  sprite.filename = shpFile
+  sprite.filename = shpFile -- Set sprite filename to the original SHP
+  
+  -- First frame is already loaded, just name its layer.
+  addFrameToSprite(sprite, 0, nil) -- Pass nil for image as it's already there
 
-  -- Save original first frame dimensions and image before resizing
-  local frame0 = framesInfo.frameData[0]
-  local originalImage = Image(sprite.cels[1].image)
-  debug("Saved original first frame image: " .. originalImage.width .. "x" .. originalImage.height)
-
-  -- Resize the sprite to the calculated dimensions
-  if sprite.width ~= framesInfo.maxWidth or sprite.height ~= framesInfo.maxHeight then
-    debug("Resizing from " .. sprite.width .. "x" .. sprite.height .. 
-          " to " .. framesInfo.maxWidth .. "x" .. framesInfo.maxHeight)
-    sprite:resize(framesInfo.maxWidth, framesInfo.maxHeight, 0, 0)
-  end
-
-  -- Rename the first layer
-  local firstLayer = sprite.layers[1]
-  firstLayer.name = "Frame 1"
-
-  -- Replace the first cel with the original image
-  -- or the offset is lost
-  sprite:deleteCel(firstLayer, 1)
-
-  -- Create a new cel with the original image
-  local adjustedX = framesInfo.maxOffsetX - frame0.offsetX
-  local adjustedY = framesInfo.maxOffsetY - frame0.offsetY
-  local firstCel = sprite:newCel(firstLayer, 1, originalImage, Point(adjustedX, adjustedY))
-
-  -- Store offset data
-  setCelOffsetData(firstCel, frame0.offsetX, frame0.offsetY)
-
-  debug("Positioned first cel at (" .. adjustedX .. "," .. adjustedY .. ") with dimensions " .. 
-        originalImage.width .. "x" .. originalImage.height)
-
-  -- Process each frame
-  for frameIndex = 0, framesInfo.frameCount - 1 do
-    local frame = framesInfo.frameData[frameIndex]
-    local frameImage
-
-    -- For first frame, use the saved original image
-    if frameIndex == 0 then
-      frameImage = originalImage
+  -- Load subsequent frames onto new layers
+  for frameIndex = 1, framesInfo.frameCount - 1 do
+    local framePath = framesInfo.paths[frameIndex + 1] -- Lua tables are 1-indexed
+    if app.fs.isFile(framePath) then
+      local frameImage = Image{fromFile=framePath}
+      if frameImage then
+        if frameImage.width ~= sprite.width or frameImage.height ~= sprite.height then
+            logError("Warning: Frame " .. frameIndex .. " (" .. framePath .. ") dimensions (" .. frameImage.width .. "x" .. frameImage.height .. ") do not match sprite dimensions (" .. sprite.width .. "x" .. sprite.height .. "). Skipping.")
+        else
+            addFrameToSprite(sprite, frameIndex, frameImage)
+        end
+      else
+        logError("Failed to load image for frame: " .. framePath)
+      end
     else
-      frameImage = Image{fromFile=frame.path}
+      logError("Frame PNG not found: " .. framePath)
     end
-
-    -- Add as layer/cel with proper positioning
-    addFrameCel(sprite, frameIndex, frameImage, frame.offsetX, frame.offsetY,
-                framesInfo.maxOffsetX, framesInfo.maxOffsetY)
   end
 
-  -- Set layer edges to be visible after import
   if app.preferences then
-    -- Use the correct document preferences API
     local docPref = app.preferences.document(sprite)
     if docPref and docPref.show then
       docPref.show.layer_edges = true
@@ -474,11 +318,11 @@ function processImport(shpFile, outputBasePath, createSeparateFrames)
     debug("Could not set layer_edges preference (preferences not available)")
   end
 
+  app.refresh()
   return true, sprite
 end
 
 function importSHP(filename)
-  -- Normal dialog flow for manual import
   local dlg = Dialog("Import U8 SHP File")
   dlg:file{
     id="shpFile",
