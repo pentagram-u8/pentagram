@@ -31,7 +31,7 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 void usage();
 
-enum Arch_mode { NONE, LIST, EXTRACT, CREATE, ADD, REPLACE, RESPONSE, EXTRACT_SHAPES }; // Added EXTRACT_SHAPES
+enum Arch_mode { NONE, LIST, EXTRACT, CREATE, ADD, REPLACE, RESPONSE };
 
 void set_mode(Arch_mode &mode, Arch_mode new_mode)
 {
@@ -68,16 +68,7 @@ int main(int argc, char **argv)
 
 	FileSystem filesys(true);
 
-	if (opt_str == "-xs") {
-		set_mode(mode, EXTRACT_SHAPES);
-		if (argc > 2) {
-			flexfile = argv[2];
-		} else {
-			perr << "Error: Missing <flexfile> for -xs option." << std::endl << std::endl;
-			usage();
-			return 1;
-		}
-	} else if (opt_str.length() == 2 && opt_str[0] == '-') {
+	if (opt_str.length() == 2 && opt_str[0] == '-') {
 		if (argc < 3 && opt_str != "-l" && opt_str != "-x") { // -l and -x might take only flexfile
 			perr << "Error: Missing arguments for " << opt_str << " option." << std::endl << std::endl;
 			usage();
@@ -180,7 +171,7 @@ int main(int argc, char **argv)
 			}
 			break;
 			default:
-				mode = NONE;
+			mode = NONE;
 		};
 	} else {
 		mode = NONE;
@@ -213,6 +204,8 @@ switch (mode)
 			return 1;
 		}
 		FlexFile * flex = new FlexFile(ids); // ids ownership transferred
+		pout << "Extracting objects from: " << flexfile << std::endl;
+
 		for(index=0; index < flex->getIndexCount(); index++)
 		{
 			uint32 size;
@@ -221,14 +214,39 @@ switch (mode)
 				if(data) delete[] data;
 				continue;
 			}
+
+			// Shape detection logic integrated here
+			IBufferDataSource* obj_ids = new IBufferDataSource(data, size, false);
+			const ConvertShapeFormat* detected_format = Shape::DetectShapeFormat(obj_ids, size);
+			delete obj_ids; // Clean up the temporary IBufferDataSource
+
+			bool is_shape = false;
+			const char* current_ext = fxo_ext; // Default to .fxo
+
+			if (detected_format) {
+				if (detected_format == &U8ShapeFormat ||
+					detected_format == &U82DShapeFormat ||
+						detected_format == &CrusaderShapeFormat ||
+							detected_format == &Crusader2DShapeFormat ||
+				detected_format == &PentagramShapeFormat) {
+					is_shape = true;
+					current_ext = "shp"; // Change extension to .shp if it's a shape
+				}
+			}
+
 			char outfile[32];
-			snprintf(outfile,32,"%04u.%s", index, fxo_ext); // Changed %04X to %04u
+			snprintf(outfile,32,"%04u.%s", index, current_ext); // Use current_ext
+			
+			if (is_shape) {
+				//pout << "  Object " << index << " is a SHP file (" << detected_format->name << "). Extracting as " << outfile << std::endl;
+			} else {
+				//pout << "  Object " << index << " is not a recognized SHP file. Extracting as " << outfile << std::endl;
+			}
+
 			ods = filesys.WriteFile(outfile);
 			if (!ods)
 			{
 				perr << "Could not create file: " << outfile << std::endl;
-				delete flex;
-				return 1;
 			} else {
 				ods->write(data, size);
 				FORGET_OBJECT(ods);
@@ -236,74 +254,6 @@ switch (mode)
 			delete[] data;
 		}
 		delete flex;
-	}
-	break;
-	case EXTRACT_SHAPES:
-	{
-		ids = filesys.ReadFile(flexfile);
-		if (!ids) {
-			perr << "Flex file not found: " << flexfile << std::endl;
-			return 1;
-		}
-		if (!FlexFile::isFlexFile(ids)) {
-			perr << "File is not a Flex: " << flexfile << std::endl;
-			delete ids;
-			return 1;
-		}
-
-		FlexFile* flex = new FlexFile(ids); // ids ownership transferred
-		pout << "Extracting SHP files from: " << flexfile << std::endl;
-
-		for (uint32 idx = 0; idx < flex->getIndexCount(); idx++) { // Use different variable name for loop
-			uint32 size;
-			uint8* data = flex->getObject(idx, &size);
-
-			if (!data || size == 0) {
-				if (data) delete[] data;
-				continue;
-			}
-
-			// Create an IDataSource from the object's data buffer to detect format
-			// false means IBufferDataSource does not take ownership of 'data'
-			// IBufferDataSource is in global namespace
-			IBufferDataSource* obj_ids = new IBufferDataSource(data, size, false); 
-                
-			// Assuming DetectShapeFormat is a static method of Shape class, and ConvertShapeFormat is in global/Pentagram namespace
-			const ConvertShapeFormat* detected_format = Shape::DetectShapeFormat(obj_ids, size);
-			// obj_ids->seek(0); // Reset seek pointer if DetectShapeFormat modifies it
-
-			delete obj_ids; // Clean up the temporary IBufferDataSource
-
-			bool is_shape = false;
-			if (detected_format) {
-				// Remove Pentagram:: namespace prefix for format constants
-				if (detected_format == &U8ShapeFormat ||
-					detected_format == &U82DShapeFormat ||
-						detected_format == &CrusaderShapeFormat ||
-							detected_format == &Crusader2DShapeFormat ||
-				detected_format == &PentagramShapeFormat) { // PentagramShapeFormat is also global/Pentagram
-					is_shape = true;
-				}
-			}
-                
-			if (is_shape) {
-				pout << "  Object " << idx << " is a SHP file (" << detected_format->name << "). Extracting..." << std::endl;
-				char outfile[32];
-				snprintf(outfile, 32, "%04u.shp", idx); // Changed %04X to %04u
-				ods = filesys.WriteFile(outfile);
-				if (!ods) {
-					perr << "Could not create file: " << outfile << std::endl;
-				} else {
-					ods->write(data, size);
-					FORGET_OBJECT(ods); // This macro likely handles deletion of ods
-					pout << "    Extracted to " << outfile << std::endl;
-				}
-			} else {
-				// Optional: pout << "  Object " << idx << " is not a recognized SHP file. Skipping." << std::endl;
-			}
-			delete[] data; // Clean up the object data buffer
-		}
-		delete flex; // This will delete the initial ids for the flexfile
 	}
 	break;
 	case LIST:
@@ -454,17 +404,15 @@ void usage()
 {
 	perr << "Usage: " << program << " [-a|-c] <flexfile> <file>..." << std::endl;
 	perr << "or" << std::endl;
-	perr << "Usage: " << program << " [-x|-xs|-l] <flexfile>" << std::endl; // Added -xs
+	perr << "Usage: " << program << " [-x|-l] <flexfile>" << std::endl;
 	perr << "or" << std::endl;
 	perr << "Usage: " << program << " -r <flexfile> <object_number> <file>" << std::endl;
 	perr << "or" << std::endl;
-	perr << "Usage: " << program << " -i <manifestfile>" << std::endl << std::endl; // Clarified MANIFEST
-
+	perr << "Usage: " << program << " -i <manifestfile>" << std::endl << std::endl;
 	perr << "Modes:" << std::endl;
 	perr << "  -a : Add <file>(s) to <flexfile>" << std::endl;
 	perr << "  -c : Create <flexfile> with <file>(s)" << std::endl;
-	perr << "  -x : Extract all objects from <flexfile> (as .fxo)" << std::endl;
-	perr << "  -xs: Extract SHAPE objects only from <flexfile> (as .shp)" << std::endl; // New mode
+	perr << "  -x : Extract all objects from <flexfile>" << std::endl;
 	perr << "  -l : List contents of <flexfile>" << std::endl;
 	perr << "  -r : Replace <object_number> in <flexfile> with <file>" << std::endl;
 	perr << "  -i : Process commands from <manifestfile>. Manifest format:" << std::endl;
