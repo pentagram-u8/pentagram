@@ -24,11 +24,15 @@
 
 #include <cstring>
 
-//#define COMP_SHAPENUM 39
+// Helper to check if 'bytes_to_read' can be safely read/skipped from the current position.
+// 'real_len' is the total size of the data source content.
+static bool can_read_or_skip_bytes(IDataSource *source, uint32 bytes_to_process, uint32 real_len) {
+	if (bytes_to_process == 0) return true; // Processing 0 bytes is always safe.
+	if (source->eof()) return false;        // Already at or past EOF.
+	// Check if current position + bytes_to_process would exceed the total length.
+	return (source->getPos() + bytes_to_process <= real_len);
+}
 
-#ifdef COMP_SHAPENUM
-extern int shapenum;
-#endif
 
 void ConvertShape::Read(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len)
 {
@@ -375,36 +379,65 @@ void ConvertShapeFrame::GetPixels(uint8 *buf, sint32 count, sint32 x, sint32 y)
 	} while (xpos < width);
 }
 
-int ConvertShape::CalcNumFrames(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len, uint32 start_pos)
+int ConvertShape::CalcNumFrames(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len, uint32 start_pos_param) // Renamed start_pos to avoid conflict
 {
 	int f=0;
 	uint32 first_offset = 0xFFFFFFFF;
-
 	uint32 save_pos = source->getPos();
 
-	for (f=0;;f++) {
+	const int MAX_CALC_FRAMES = 2048; // Safety limit
 
-		// Seek to initial pos
-		source->seek(start_pos + csf->len_header + (csf->len_frameheader*f));
+	for (f=0; f < MAX_CALC_FRAMES ;f++) { // Added safety limit to loop
+		uint32 frame_header_abs_pos = start_pos_param + csf->len_header + (csf->len_frameheader*f);
 
-		if ((source->getPos()-start_pos) >= first_offset) break;
+		if (frame_header_abs_pos > real_len || (frame_header_abs_pos == real_len && (csf->bytes_frame_offset > 0 || csf->bytes_frameheader_unk > 0 || csf->bytes_frame_length > 0))) {
+			break; 
+		}
+		source->seek(frame_header_abs_pos);
+		// After seek, check if we are at EOF unexpectedly (e.g. if real_len was smaller than seek target)
+		if (source->getPos() >= real_len && (csf->bytes_frame_offset > 0 || csf->bytes_frameheader_unk > 0 || csf->bytes_frame_length > 0)) {
+			break;
+		}
 
-		// Read the offset
-		uint32 frame_offset = csf->len_header + (csf->len_frameheader*f);
-		if (csf->bytes_frame_offset) frame_offset = source->readX(csf->bytes_frame_offset) + csf->bytes_special;
 
-		if (frame_offset < first_offset) first_offset = frame_offset;
+		if ((source->getPos()-start_pos_param) >= first_offset && first_offset != 0xFFFFFFFF) {
+			// This condition implies we've looped back to an already seen offset or past it.
+			// However, ensure we are not already at EOF due to a short file.
+			if (source->eof() && source->getPos() >= real_len) break;
+			// The original logic: if ((source->getPos()-start_pos) >= first_offset) break;
+			// This check is tricky. If first_offset was from a very short frame at the end,
+			// and now we are calculating a header position that is *before* it but still valid,
+			// we might break prematurely. The primary safety is can_read_or_skip_bytes.
+			// For now, let's keep the original logic but ensure reads are safe.
+			if (source->getPos() >= (start_pos_param + first_offset) && first_offset != 0xFFFFFFFF) break;
+		}
 
-		// Read the unknown
-		if (csf->bytes_frameheader_unk) source->skip(csf->bytes_frameheader_unk);
+		uint32 frame_offset_val = csf->len_header + (csf->len_frameheader*f);
+		if (csf->bytes_frame_offset) {
+			if (!can_read_or_skip_bytes(source, csf->bytes_frame_offset, real_len)) { break; }
+			frame_offset_val = source->readX(csf->bytes_frame_offset) + csf->bytes_special;
+		}
 
-		// Read frame_length
-		uint32 frame_length = real_len-frame_offset;
-		if (csf->bytes_frame_length) frame_length = source->readX(csf->bytes_frame_length) + csf->bytes_frame_length_kludge;
+		if (frame_offset_val < first_offset) {
+			first_offset = frame_offset_val;
+		}
+		if (start_pos_param + frame_offset_val > real_len) { // Offset points beyond file
+			break;
+		}
+
+		if (csf->bytes_frameheader_unk) {
+			if (!can_read_or_skip_bytes(source, csf->bytes_frameheader_unk, real_len)) { break; }
+			source->skip(csf->bytes_frameheader_unk);
+		}
+
+		// uint32 frame_length_val = real_len - frame_offset_val; // Not strictly needed for CalcNumFrames loop logic
+		if (csf->bytes_frame_length) {
+			if (!can_read_or_skip_bytes(source, csf->bytes_frame_length, real_len)) { break; }
+			/* frame_length_val = */ source->readX(csf->bytes_frame_length); // Value not used here
+		}
 	}
 
 	source->seek(save_pos);
-
 	return f;
 }
 
@@ -600,115 +633,176 @@ bool ConvertShape::Check(IDataSource *source, const ConvertShapeFormat *csf, uin
 
 bool ConvertShape::CheckUnsafe(IDataSource *source, const ConvertShapeFormat *csf, uint32 real_len)
 {
-#if 0
-	pout << "Testing " << csf->name << "..." << std::endl;
-#endif
 	bool result = true;
-
-	// Just to be safe
-	int start_pos = source->getPos();
+	uint32 start_pos = source->getPos(); // getPos() is uint32
 
 	// Read the ident
 	if (csf->bytes_ident)
 	{
-		char ident[5];
+		if (!can_read_or_skip_bytes(source, csf->bytes_ident, real_len)) {
+			source->seek(start_pos); return false;
+		}
+		char ident[5]; // Max 4 bytes + null
+		if (csf->bytes_ident > 4) { /* Should not happen based on struct, but defensive */ source->seek(start_pos); return false; }
 		ident[csf->bytes_ident] = 0;
-		source->read(ident, csf->bytes_ident);
+		sint32 bytes_read = source->read(ident, csf->bytes_ident);
+		if (bytes_read < static_cast<sint32>(csf->bytes_ident)) { // Short read
+			source->seek(start_pos); return false;
+		}
 
 		if (std::memcmp (ident, csf->ident, csf->bytes_ident))
 		{
-			// Return to start position
 			source->seek(start_pos);
 			return false;
 		}
 	}
 
-	// Read the header special colour
-	if (csf->bytes_special) source->skip(csf->bytes_special);
-
-	// Read the header unknown
-	if (csf->bytes_header_unk) source->skip(csf->bytes_header_unk);
-
-	// Now read num_frames
-	int num_frames = 1;
-	if (csf->bytes_num_frames) num_frames = source->readX(csf->bytes_num_frames);
-	if (num_frames == 0) num_frames = CalcNumFrames(source,csf,real_len,start_pos);
-
-	// Create frames array
-	ConvertShapeFrame oneframe;
-	std::memset (&oneframe, 0, sizeof(ConvertShapeFrame));
-
-	// Now read the frames
-	for (int f = 0; f < num_frames; f++) 
-	{
-		ConvertShapeFrame *frame = &oneframe;
-
-		// Seek to initial pos
-		source->seek(start_pos + csf->len_header + (csf->len_frameheader*f));
-
-		// Read the offset
-		uint32 frame_offset = csf->len_header + (csf->len_frameheader*f);
-		if (csf->bytes_frame_offset) frame_offset = source->readX(csf->bytes_frame_offset) + csf->bytes_special;
-
-		// Read the unknown
-		if (csf->bytes_frameheader_unk) source->read(frame->header_unknown, csf->bytes_frameheader_unk);
-
-		// Read frame_length
-		uint32 frame_length = real_len-frame_offset;
-		if (csf->bytes_frame_length) frame_length = source->readX(csf->bytes_frame_length) + csf->bytes_frame_length_kludge;
-
-		// Invalid frame length
-		if ((frame_length + frame_offset) > real_len)
-		{
-			result = false;
-			break;
+	if (csf->bytes_special) {
+		if (!can_read_or_skip_bytes(source, csf->bytes_special, real_len)) {
+			source->seek(start_pos); return false;
 		}
-
-		// Seek to start of frame
-		source->seek(start_pos + frame_offset);
-
-		// Read unknown
-		if (csf->bytes_frame_unknown) source->read(frame->unknown, csf->bytes_frame_unknown);
-
-		// Frame details
-		frame->compression = source->readX(csf->bytes_frame_compression);
-		frame->width = source->readXS(csf->bytes_frame_width);
-		frame->height = source->readXS(csf->bytes_frame_height);
-		frame->xoff = source->readXS(csf->bytes_frame_xoff);
-		frame->yoff = source->readXS(csf->bytes_frame_yoff);
-
-		if ((frame->compression != 0 && frame->compression != 1) || frame->width < 0 || frame->height < 0)
-		{
-			frame->compression = 0;
-			frame->width = 0;
-			frame->height = 0;
-			frame->xoff = 0;
-			frame->yoff = 0;
-			result = false;
-			break;
-		}
-
-		if (frame->height)
-		{
-			// Calculate the number of bytes of RLE data (may not be accurate but we don't care)
-			frame->bytes_rle = frame_length - (csf->len_frameheader2+(frame->height*csf->bytes_line_offset));
-
-			// Totally invalid shape
-			if (frame->bytes_rle < 0)
-			{
-				result = false;
-				break;
-			}
-		}
+		source->skip(csf->bytes_special);
 	}
 
-	// Free frames
-	oneframe.Free();
-	num_frames = 0;
+	if (csf->bytes_header_unk) {
+		if (!can_read_or_skip_bytes(source, csf->bytes_header_unk, real_len)) {
+			source->seek(start_pos); return false;
+		}
+		source->skip(csf->bytes_header_unk);
+	}
 
-	// Return to start position
+	int num_frames = 1; // Default
+	if (csf->bytes_num_frames) {
+		if (!can_read_or_skip_bytes(source, csf->bytes_num_frames, real_len)) {
+			source->seek(start_pos); return false;
+		}
+		num_frames = source->readX(csf->bytes_num_frames);
+	}
+
+	if (num_frames == 0 && csf->bytes_num_frames > 0) { // If num_frames was explicitly read as 0
+		// Call CalcNumFrames only if num_frames was read as 0 from a field that exists.
+		// Ensure CalcNumFrames is safe. The version above has some safety.
+		num_frames = CalcNumFrames(source,csf,real_len,start_pos);
+	} else if (num_frames == 0 && csf->bytes_num_frames == 0) {
+		num_frames = 1; // Default if bytes_num_frames is 0
+	}
+
+
+	// Sanity check for num_frames to prevent excessive loops or large allocations
+	const int MAX_FRAMES_TO_CHECK = 2048; // Limit for CheckUnsafe
+	if (num_frames < 0 || num_frames > MAX_FRAMES_TO_CHECK) {
+		// If num_frames is negative (possible if readXS was used and bytes_num_frames was large, though readX is used here)
+		// or excessively large, consider it corrupt.
+		source->seek(start_pos);
+		return false;
+	}
+    
+	// ConvertShapeFrame oneframe; // Not used for reading in CheckUnsafe, only for its members if needed
+	// std::memset (&oneframe, 0, sizeof(ConvertShapeFrame)); // Not needed
+
+	for (int f = 0; f < num_frames; f++) 
+	{
+		// ConvertShapeFrame *frame = &oneframe; // Not needed for CheckUnsafe's direct reads
+
+		uint32 frame_header_abs_pos = start_pos + csf->len_header + (csf->len_frameheader*f);
+		if (frame_header_abs_pos > real_len || (frame_header_abs_pos == real_len && (csf->bytes_frame_offset > 0 || csf->bytes_frameheader_unk > 0 || csf->bytes_frame_length > 0))) {
+			result = false; break;
+		}
+		source->seek(frame_header_abs_pos);
+		if (source->getPos() >= real_len && (csf->bytes_frame_offset > 0 || csf->bytes_frameheader_unk > 0 || csf->bytes_frame_length > 0)) {
+			result = false; break; // Seek put us at EOF, cannot read frame header fields
+		}
+
+
+		uint32 frame_offset_val = csf->len_header + (csf->len_frameheader*f);
+		if (csf->bytes_frame_offset) {
+			if (!can_read_or_skip_bytes(source, csf->bytes_frame_offset, real_len)) { result = false; break; }
+			frame_offset_val = source->readX(csf->bytes_frame_offset) + csf->bytes_special;
+		}
+
+		if (csf->bytes_frameheader_unk) {
+			if (!can_read_or_skip_bytes(source, csf->bytes_frameheader_unk, real_len)) { result = false; break; }
+			source->skip(csf->bytes_frameheader_unk); // CheckUnsafe doesn't need to store this
+		}
+
+		uint32 frame_length_val = real_len - frame_offset_val; // Default assumption
+		if (frame_offset_val > real_len) { result = false; break; } // frame_offset itself is out of bounds
+
+		if (csf->bytes_frame_length) {
+			if (!can_read_or_skip_bytes(source, csf->bytes_frame_length, real_len)) { result = false; break; }
+			frame_length_val = source->readX(csf->bytes_frame_length) + csf->bytes_frame_length_kludge;
+		}
+
+		if ((start_pos + frame_offset_val + frame_length_val) > real_len) { // Check combined offset + length
+			result = false; break;
+		}
+		if (start_pos + frame_offset_val > real_len) { // Check offset itself again after potential read
+			result = false; break;
+		}
+
+
+		uint32 frame_data_abs_pos = start_pos + frame_offset_val;
+		if (frame_data_abs_pos > real_len || (frame_data_abs_pos == real_len && (csf->bytes_frame_unknown > 0 || csf->bytes_frame_compression > 0 /*etc*/))) {
+			result = false; break;
+		}
+		source->seek(frame_data_abs_pos);
+		if (source->getPos() >= real_len && (csf->bytes_frame_unknown > 0 || csf->bytes_frame_compression > 0 /*etc*/)) {
+			result = false; break;
+		}
+
+
+		if (csf->bytes_frame_unknown) {
+			if (!can_read_or_skip_bytes(source, csf->bytes_frame_unknown, real_len)) { result = false; break; }
+			source->skip(csf->bytes_frame_unknown);
+		}
+
+		sint32 compression_val, width_val, height_val; // xoff, yoff not strictly needed for CheckUnsafe logic after this
+		if (!can_read_or_skip_bytes(source, csf->bytes_frame_compression, real_len)) { result = false; break; }
+		compression_val = source->readX(csf->bytes_frame_compression);
+		if (!can_read_or_skip_bytes(source, csf->bytes_frame_width, real_len)) { result = false; break; }
+		width_val = source->readXS(csf->bytes_frame_width);
+		if (!can_read_or_skip_bytes(source, csf->bytes_frame_height, real_len)) { result = false; break; }
+		height_val = source->readXS(csf->bytes_frame_height);
+        
+		// xoff, yoff are read in original CheckUnsafe, so we should read them to advance pointer correctly, even if not used for logic
+		if (csf->bytes_frame_xoff > 0) {
+			if (!can_read_or_skip_bytes(source, csf->bytes_frame_xoff, real_len)) { result = false; break; }
+			/* sxoff_val = */ source->readXS(csf->bytes_frame_xoff);
+		}
+		if (csf->bytes_frame_yoff > 0) {
+			if (!can_read_or_skip_bytes(source, csf->bytes_frame_yoff, real_len)) { result = false; break; }
+			/* syoff_val = */ source->readXS(csf->bytes_frame_yoff);
+		}
+
+
+		if ((compression_val != 0 && compression_val != 1) || width_val < 0 || height_val < 0) {
+			result = false; break;
+		}
+
+		if (height_val > 0) {
+			sint32 header2_size = static_cast<sint32>(csf->len_frameheader2);
+			sint32 line_offsets_total_bytes = height_val * static_cast<sint32>(csf->bytes_line_offset);
+
+			if (line_offsets_total_bytes < 0) { result = false; break; } // Overflow
+
+			sint32 min_frame_data_needed = header2_size + line_offsets_total_bytes;
+			if (min_frame_data_needed < 0) { result = false; break; } // Overflow
+
+			// frame_length_val is the length of the data starting from frame_data_abs_pos
+			// Check if frame_length_val is sufficient for len_frameheader2 and all line_offsets
+			if (static_cast<sint32>(frame_length_val) < min_frame_data_needed && csf->bytes_line_offset > 0) { // only if line offsets exist
+				result = false; break;
+			}
+			// The original CheckUnsafe calculates bytes_rle and checks if it's < 0.
+			// frame->bytes_rle = frame_length - (csf->len_frameheader2+(frame->height*csf->bytes_line_offset));
+			// if (frame->bytes_rle < 0) { result = false; break; }
+			// This is equivalent to the check above.
+		}
+		if (!result) break; // If any check failed in the loop
+	}
+
+	// oneframe.Free(); // Not allocated
 	source->seek(start_pos);
-
 	return result;
 }
 

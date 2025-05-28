@@ -214,23 +214,28 @@ const ConvertShapeFormat *Shape::DetectShapeFormat(const uint8* data, uint32 siz
 
 const ConvertShapeFormat *Shape::DetectShapeFormat(IDataSource * ds, uint32 size)
 {
-	const ConvertShapeFormat *ret = 0;
+	const ConvertShapeFormat *ret = nullptr; 
+	uint32 original_pos = ds->getPos(); 
 
-	if (ConvertShape::CheckUnsafe(ds, &PentagramShapeFormat, size))
-		ret = &PentagramShapeFormat;
-	else if (ConvertShape::CheckUnsafe(ds, &U8SKFShapeFormat, size))
-		ret = &U8SKFShapeFormat;
-	else if (ConvertShape::CheckUnsafe(ds, &U8ShapeFormat, size))
-		ret = &U8ShapeFormat;
-	else if (ConvertShape::CheckUnsafe(ds, &U82DShapeFormat, size))
-		ret = &U82DShapeFormat;
-	else if (ConvertShape::CheckUnsafe(ds, &CrusaderShapeFormat, size))
-		ret = &CrusaderShapeFormat;
-	else if (ConvertShape::CheckUnsafe(ds, &Crusader2DShapeFormat, size))
-		ret = &Crusader2DShapeFormat;
-	else if (ConvertShape::CheckUnsafe(ds, &U8CMPShapeFormat, size))
-		ret = &U8CMPShapeFormat;
+	const ConvertShapeFormat* formats_to_check[] = {
+		&PentagramShapeFormat,
+		&U8SKFShapeFormat,
+		&U8ShapeFormat,
+		&U82DShapeFormat,
+		&CrusaderShapeFormat,
+		&Crusader2DShapeFormat,
+		&U8CMPShapeFormat
+	};
 
+	for (const ConvertShapeFormat* current_format_ptr : formats_to_check) {
+		ds->seek(original_pos); // Correctly resets stream for each check
+		if (ConvertShape::CheckUnsafe(ds, current_format_ptr, size)) {
+			ret = current_format_ptr;
+			break; 
+		}
+	}
+
+	ds->seek(original_pos); // Correctly resets stream before returning
 	return ret;
 }
 
