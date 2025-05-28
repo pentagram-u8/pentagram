@@ -313,7 +313,7 @@ function init(plugin)
   debug("Attempting to register command...")
   plugin:newCommand{
     id = pluginName .. "ImportSHP",
-    title = "Import U8 SHP (" .. pluginName .. ")...",
+    title = "Import U8 SHP...",
     group = "file_import",
     onclick = function() 
       debug("Import command clicked!")
