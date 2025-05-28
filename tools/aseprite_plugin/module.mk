@@ -10,11 +10,6 @@ pent_shp_OBJ   = \
 	$(CONVERT) \
 	$(MISC) \
 	filesys/FileSystem.o \
-	filesys/ArchiveFile.o \
-	filesys/FlexFile.o \
-	filesys/ZipFile.o \
-	filesys/zip/ioapi.o \
-	filesys/zip/unzip.o \
 	graphics/Palette.o \
 	graphics/XFormBlend.o \
 	graphics/Shape.o \
