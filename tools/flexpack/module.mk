@@ -9,11 +9,14 @@ include $(srcdir)/objects.mk
 
 flexpack_OBJ = \
 	$(ARGS) \
+	$(CONVERT) \
 	$(MISC) \
 	$(CONF) \
 	$(GAMES) \
 	$(FILESYS) \
 	$(SYSTEM) \
+	graphics/Shape.o \
+	graphics/ShapeFrame.o \
 	kernel/CoreApp.o \
 	tools/flexpack/FlexWriter.o \
 	tools/flexpack/FlexPack.o
