@@ -85,7 +85,7 @@ endif
 MODULES := tools/data2c convert convert/u8 convert/crusader misc \
 	data filesys filesys/zip \
 	tools tools/disasm tools/compile tools/flexpack tools/fold \
-	tools/shapeconv $(GIMP_PLUGIN_MODULES)\
+	tools/shapeconv tools/aseprite_plugin $(GIMP_PLUGIN_MODULES)\
 	kernel games graphics graphics/fonts graphics/scalers audio \
 	audio/midi audio/midi/timidity usecode world world/actors gumps \
 	gumps/widgets conf system $(SYSTEM_MODULES) .
