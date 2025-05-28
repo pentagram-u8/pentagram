@@ -25,7 +25,7 @@ local pluginDir = app.fs.joinPath(app.fs.userConfigPath, "extensions", pluginNam
 local converterPath = app.fs.joinPath(pluginDir, "pent_shp")
 
 -- Debug system with toggle
-local debugEnabled = false  -- toggle debug messages
+local debugEnabled = true  -- toggle debug messages
 
 local function debug(message)
   if debugEnabled then
@@ -38,8 +38,8 @@ local function logError(message)
   print("[Pentagram SHP ERROR] " .. message)
 end
 
--- Global utility function for quoting paths with spaces
-function quoteIfNeeded(path)
+-- Utility function for quoting paths with spaces (now local)
+local function quoteIfNeeded(path)
   if path:find(" ") then
     return '"' .. path .. '"'
   else
@@ -47,27 +47,19 @@ function quoteIfNeeded(path)
   end
 end
 
--- Helper to run commands with hidden output
-function executeHidden(cmd)
+-- Helper to run commands with hidden output (now local)
+local function executeHidden(cmd)
   -- For debugging, run raw command instead with output captured
   if debugEnabled then
     debug("Executing with output capture: " .. cmd)
     local tmpFile = app.fs.joinPath(app.fs.tempPath, "pent-shp-output-" .. os.time() .. ".txt")
-
-    -- Add output redirection to file
     local redirectCmd
     if app.fs.pathSeparator == "\\" then
-      -- Windows
       redirectCmd = cmd .. " > " .. quoteIfNeeded(tmpFile) .. " 2>&1"
     else
-      -- Unix-like (macOS, Linux)
       redirectCmd = cmd .. " > " .. quoteIfNeeded(tmpFile) .. " 2>&1"
     end
-
-    -- Execute the command
     local success = os.execute(redirectCmd)
-
-    -- Read and log the output
     if app.fs.isFile(tmpFile) then
       local file = io.open(tmpFile, "r")
       if file then
@@ -77,19 +69,14 @@ function executeHidden(cmd)
         file:close()
       end
     end
-
     return success
   else
-    -- Check operating system and add appropriate redirection
     local redirectCmd
     if app.fs.pathSeparator == "\\" then
-      -- Windows
       redirectCmd = cmd .. " > NUL 2>&1"
     else
-      -- Unix-like (macOS, Linux)
       redirectCmd = cmd .. " > /dev/null 2>&1"
     end
-
     return os.execute(redirectCmd)
   end
 end
@@ -111,64 +98,48 @@ if not app.fs.isFile(converterPath) then
   end
 end
 
--- Verify converter exists at startup
+-- Verify converter exists at startup (now local)
 local converterExists = app.fs.isFile(converterPath)
 debug("Converter exists: " .. tostring(converterExists))
 
--- Check if converter is executable and only chmod if needed (Unix-like systems only)
--- Installing the plug-in might unset the executable bit
+-- Check if converter is executable (Unix-like systems only)
 if converterExists and app.fs.pathSeparator == "/" then
-  -- Check if a file is executable
-  local function isExecutable(path)
+  local function isExecutable(path) -- local to this block
     local cmd = "test -x " .. quoteIfNeeded(path)
     local result = os.execute(cmd)
-    -- os.execute returns different values based on Lua version
-    -- In Lua 5.2+, it returns success, exit_type, code
-    -- In Lua 5.1, it returns the exit code
-    if type(result) == "boolean" then
-      return result
-    else
-      return result == 0
-    end
+    if type(result) == "boolean" then return result else return result == 0 end
   end
-
-  -- Only chmod if the file exists but isn't executable
   if not isExecutable(converterPath) then
     debug("Converter found but not executable, setting permissions")
     local chmodCmd = "chmod +x " .. quoteIfNeeded(converterPath)
-    executeHidden(chmodCmd)
+    executeHidden(chmodCmd) -- executeHidden is defined above
   end
 end
 
--- Error display helper
-function showError(message)
-  logError(message)
-  app.alert{
-    title="Pentagram SHP Error",
-    text=message
-  }
+-- Error display helper (now local)
+local function showError(message)
+  logError(message) -- logError is defined above
+  app.alert{ title="Pentagram SHP Error", text=message }
 end
 
--- Don't detect Animation sequences when opening files
-function disableAnimationDetection()
-  -- Store the original preference value if it exists
+-- Animation detection preferences (now local)
+local function disableAnimationDetection()
   if app.preferences and app.preferences.open_file and app.preferences.open_file.open_sequence ~= nil then
-    _G._originalSeqPref = app.preferences.open_file.open_sequence
-    -- Set to 2 which means "skip the prompt without loading as animation"
+    _G["_originalSeqPref_" .. pluginName] = app.preferences.open_file.open_sequence
     app.preferences.open_file.open_sequence = 2
   end
 end
 
-function restoreAnimationDetection()
-  -- Restore the original preference if we saved it
-  if app.preferences and app.preferences.open_file and _G._originalSeqPref ~= nil then
-    app.preferences.open_file.open_sequence = _G._originalSeqPref
+local function restoreAnimationDetection()
+  if app.preferences and app.preferences.open_file and _G["_originalSeqPref_" .. pluginName] ~= nil then
+    app.preferences.open_file.open_sequence = _G["_originalSeqPref_" .. pluginName]
+    _G["_originalSeqPref_" .. pluginName] = nil
   end
 end
 
--- File format registration function
-function registerSHPFormat()
-  if not converterExists then
+-- File format registration function (now local)
+local function registerSHPFormat()
+  if not converterExists then -- converterExists is defined above
     showError("SHP converter tool not found at:\n" .. converterPath .. 
               "\nSHP files cannot be opened until this is fixed.")
     return false
@@ -176,178 +147,148 @@ function registerSHPFormat()
   return true
 end
 
--- Scan frames and return paths and count
-function scanFrames(basePath)
+-- Scan frames and return paths and count (now local)
+local function scanFrames(basePath)
   local frameIndex = 0
   local framePaths = {}
-
   while true do
     local framePath = basePath .. "_" .. frameIndex .. ".png"
-    -- local metaPath = basePath .. "_" .. frameIndex .. ".meta" -- Meta not needed for dimensions anymore
-
     if not app.fs.isFile(framePath) then break end
-
     table.insert(framePaths, framePath)
     frameIndex = frameIndex + 1
   end
-
-  return {
-    frameCount = frameIndex,
-    paths = framePaths
-  }
+  return { frameCount = frameIndex, paths = framePaths }
 end
 
--- Create and position a frame cel (always at 0,0 now)
-function addFrameToSprite(sprite, layerIndex, frameImage)
+-- Create and position a frame cel (now local)
+local function addFrameToSprite(sprite, layerIndex, frameImage)
   local layer
   if layerIndex == 0 then
-    -- This is the first frame, which is already loaded when sprite was opened.
-    -- We just ensure the layer name is set.
     layer = sprite.layers[1]
-    layer.name = "Frame 1" -- Aseprite is 1-indexed for frames/layers in UI
-    -- The cel is already there from app.open()
+    layer.name = "Frame 1"
   else
-    -- For subsequent frames, create a new layer and a new frame (cel)
     layer = sprite:newLayer()
-    layer.name = "Frame " .. (layerIndex + 1) -- User-facing layer name
-    -- Create new cel at frame (layerIndex + 1) because Aseprite frames are 1-indexed
-    -- Cel position is (0,0) by default for new cels on new layers if image matches sprite size.
-    -- If we are adding to existing layers, ensure we are on the correct Aseprite frame.
-    -- For simplicity, assuming one layer per SHP frame, and one Aseprite frame.
-    -- To put each SHP frame on a new Aseprite frame on the *same* layer:
-    -- local cel = sprite:newCel(sprite.layers[1], layerIndex + 1, frameImage, Point(0,0))
-    -- To put each SHP frame on a new *layer* (simplest for visual separation):
+    layer.name = "Frame " .. (layerIndex + 1)
     sprite:newCel(layer, 1, frameImage, Point(0,0))
   end
-
   debug("Added/updated layer " .. layer.name .. " for SHP frame " .. layerIndex)
 end
 
-function processImport(shpFile, outputBasePath, createSeparateFrames) -- createSeparateFrames is not used anymore with this model
+-- Forward declaration for processImport as it's called by importPentagramSHP
+local processImport
+
+-- Main import function called by the command (already local)
+local function importPentagramSHP() 
+  local dlg = Dialog("Import U8 SHP File")
+  dlg:file{ id="shpFile", label="SHP File:", title="Select SHP File", open=true, filetypes={"shp"}, focus=true }
+  local dialogResult = false
+  local importSettings = {}
+  dlg:button{ id="import", text="Import", onclick=function()
+      dialogResult = true
+      importSettings.shpFile = dlg.data.shpFile
+      dlg:close()
+    end
+  }
+  dlg:button{ id="cancel", text="Cancel", onclick=function()
+      dialogResult = false
+      dlg:close()
+    end
+  }
+  dlg:show()
+  if not dialogResult then return end
+  if not importSettings.shpFile or importSettings.shpFile == "" then
+    showError("Please select an SHP file to import") -- showError is defined above
+    return
+  end
+  local tempDir = app.fs.joinPath(app.fs.tempPath, "pent-shp-" .. os.time())
+  app.fs.makeDirectory(tempDir)
+  local outputBasePath = app.fs.joinPath(tempDir, "output")
+  
+  -- Call processImport (which will be defined below)
+  return processImport(importSettings.shpFile, outputBasePath, true) 
+end
+
+-- Core import processing logic (now local)
+processImport = function(shpFile, outputBasePath, createSeparateFrames)
   if not converterExists then
-    showError("SHP converter not found at: " .. converterPath)
+    showError("SHP converter not found at: " .. converterPath) -- showError is defined above
     return false
   end
-
   debug("Importing SHP: " .. shpFile)
   debug("Output: " .. outputBasePath)
-
   if not app.fs.isFile(shpFile) then
-    showError("SHP file not found: " .. shpFile)
+    showError("SHP file not found: " .. shpFile) -- showError is defined above
     return false
   end
-
   local shpBaseName = shpFile:match("([^/\\]+)%.[^.]*$") or "output"
   shpBaseName = shpBaseName:gsub("%.shp$", "")
   debug("Extracted SHP base name: " .. shpBaseName)
-
   local outputDir = outputBasePath:match("(.*[/\\])") or ""
   local outputBaseNameFromPath = outputBasePath:match("([^/\\]+)$") or "output"
   local actualOutputBase = outputDir .. outputBaseNameFromPath .. "_" .. shpBaseName
   debug("Expected output base: " .. actualOutputBase)
-
   local cmd = quoteIfNeeded(converterPath) .. " import " .. quoteIfNeeded(shpFile) .. " " .. quoteIfNeeded(outputBasePath)
   debug("Executing: " .. cmd)
-
-  local success = executeHidden(cmd)
-
+  local success = executeHidden(cmd) -- executeHidden is defined above
   local firstFramePath = actualOutputBase .. "_0.png"
   debug("Looking for first frame at: " .. firstFramePath)
   debug("File exists: " .. tostring(app.fs.isFile(firstFramePath)))
-
   if not app.fs.isFile(firstFramePath) then
     debug("ERROR: Failed to convert SHP file or first frame not found.")
-    showError("Conversion failed or no output frames were generated.\nCheck console for C++ tool errors if debug is enabled.")
+    showError("Conversion failed or no output frames were generated.\nCheck console for C++ tool errors if debug is enabled") -- showError is defined above
     return false
   end
-
   debug("Loading output files into Aseprite")
-
-  local framesInfo = scanFrames(actualOutputBase)
-  
+  local framesInfo = scanFrames(actualOutputBase) -- scanFrames is defined above
   if framesInfo.frameCount == 0 then
     debug("ERROR: No frames found after conversion (scanFrames).")
-    showError("No frames found after conversion, though first frame was present.")
+    showError("No frames found after conversion, though first frame was present.") -- showError is defined above
     return false
   end
-  
   debug("Found " .. framesInfo.frameCount .. " frames.")
-
-  disableAnimationDetection()
-  local sprite = app.open(framesInfo.paths[1]) -- Open the first frame
-  restoreAnimationDetection()
-
+  disableAnimationDetection() -- defined above
+  local sprite = app.open(framesInfo.paths[1])
+  restoreAnimationDetection() -- defined above
   if not sprite then
-    showError("Failed to open first frame: " .. framesInfo.paths[1])
+    showError("Failed to open first frame: " .. framesInfo.paths[1]) -- showError is defined above
     return false
   end
-
-  sprite.filename = shpFile -- Set sprite filename to the original SHP
-  
-  -- First frame is already loaded, just name its layer.
-  addFrameToSprite(sprite, 0, nil) -- Pass nil for image as it's already there
-
-  -- Track the current maximum canvas dimensions required by frames processed so far
-  -- These will be updated to become the final target canvas size.
+  sprite.filename = shpFile
+  addFrameToSprite(sprite, 0, nil) -- addFrameToSprite is defined above
   local finalTargetCanvasWidth = sprite.width
   local finalTargetCanvasHeight = sprite.height
-
-  -- Load subsequent frames onto new layers
   for frameIndex = 1, framesInfo.frameCount - 1 do
-    local framePath = framesInfo.paths[frameIndex + 1] -- Lua tables are 1-indexed
+    local framePath = framesInfo.paths[frameIndex + 1]
     if app.fs.isFile(framePath) then
       local frameImage = Image{fromFile=framePath}
       if frameImage then
-        -- Check if this frame's dimensions exceed our current tracked maximums
-        if frameImage.width > finalTargetCanvasWidth then
-          finalTargetCanvasWidth = frameImage.width
-        end
-        if frameImage.height > finalTargetCanvasHeight then
-          finalTargetCanvasHeight = frameImage.height
-        end
-        
-        -- Add the frame; canvas will be resized later if needed
-        addFrameToSprite(sprite, frameIndex, frameImage)
+        if frameImage.width > finalTargetCanvasWidth then finalTargetCanvasWidth = frameImage.width end
+        if frameImage.height > finalTargetCanvasHeight then finalTargetCanvasHeight = frameImage.height end
+        addFrameToSprite(sprite, frameIndex, frameImage) -- addFrameToSprite is defined above
       else
-        logError("Failed to load image for frame: " .. framePath)
+        logError("Failed to load image for frame: " .. framePath) -- logError is defined above
       end
     else
-      logError("Frame PNG not found: " .. framePath)
+      logError("Frame PNG not found: " .. framePath) -- logError is defined above
     end
   end
-
-  -- After processing all frames, resize the canvas once if needed
   local initialWidth = sprite.width
   local initialHeight = sprite.height
-
   if finalTargetCanvasWidth > initialWidth or finalTargetCanvasHeight > initialHeight then
     local addRight = 0
-    if finalTargetCanvasWidth > initialWidth then
-      addRight = finalTargetCanvasWidth - initialWidth
-    end
-
+    if finalTargetCanvasWidth > initialWidth then addRight = finalTargetCanvasWidth - initialWidth end
     local addBottom = 0
-    if finalTargetCanvasHeight > initialHeight then
-      addBottom = finalTargetCanvasHeight - initialHeight
-    end
-
+    if finalTargetCanvasHeight > initialHeight then addBottom = finalTargetCanvasHeight - initialHeight end
     debug("Final canvas resize needed. Current: " .. initialWidth .. "x" .. initialHeight ..
           ", Target: " .. finalTargetCanvasWidth .. "x" .. finalTargetCanvasHeight ..
           ". Adding to borders: right=" .. addRight .. ", bottom=" .. addBottom)
-          
     app.command.CanvasSize {
-      ui = false,
-      left = 0,      -- Do not change (shrink/expand) the left border relative to content
-      top = 0,       -- Do not change (shrink/expand) the top border relative to content
-      right = addRight,  -- Add this many pixels to the right border
-      bottom = addBottom -- Add this many pixels to the bottom border
-      -- When using left, top, right, bottom, do not use width, height, or anchor
+      ui = false, left = 0, top = 0, right = addRight, bottom = addBottom
     }
   else
     debug("No final canvas resize needed. Canvas size: " .. initialWidth .. "x" .. initialHeight .. 
           " (which is " .. finalTargetCanvasWidth .. "x" .. finalTargetCanvasHeight .. ")")
   end
-
   if app.preferences then
     local docPref = app.preferences.document(sprite)
     if docPref and docPref.show then
@@ -359,82 +300,27 @@ function processImport(shpFile, outputBasePath, createSeparateFrames) -- createS
   else
     debug("Could not set layer_edges preference (preferences not available)")
   end
-
   app.refresh()
   return true, sprite
 end
 
-function importSHP(filename)
-  local dlg = Dialog("Import U8 SHP File")
-  dlg:file{
-    id="shpFile",
-    label="SHP File:",
-    title="Select SHP File",
-    open=true,
-    filetypes={"shp"},
-    focus=true
-  }
-
-  -- Store dialog result in outer scope
-  local dialogResult = false
-  local importSettings = {}
-
-  dlg:button{
-    id="import",
-    text="Import",
-    onclick=function()
-      dialogResult = true
-      importSettings.shpFile = dlg.data.shpFile
-      dlg:close()
-    end
-  }
-
-  dlg:button{
-    id="cancel",
-    text="Cancel",
-    onclick=function()
-      dialogResult = false
-      dlg:close()
-    end
-  }
-
-  -- Show dialog
-  dlg:show()
-
-  -- Handle result
-  if not dialogResult then return end
-
-  if not importSettings.shpFile or importSettings.shpFile == "" then
-    showError("Please select an SHP file to import")
-    return
-  end
-
-  -- Create temp directory for files
-  local tempDir = app.fs.joinPath(app.fs.tempPath, "pent-shp-" .. os.time())
-  app.fs.makeDirectory(tempDir)
-
-  -- Prepare output file path
-  local outputBasePath = app.fs.joinPath(tempDir, "output")
-  
-  return processImport(importSettings.shpFile, 
-                      outputBasePath, 
-                      true)
-end
-
+-- Plugin initialization function
 function init(plugin)
-  debug("Initializing plugin...")
-
-  -- Register file format first
+  debug("Initializing plugin (inside init function)...")
   local formatRegistered = registerSHPFormat()
-  debug("SHP format registered: " .. tostring(formatRegistered))
-
-  -- Register import command only
+  debug("SHP format registered (from init): " .. tostring(formatRegistered))
+  
+  debug("Attempting to register command...")
   plugin:newCommand{
-    id="ImportSHP",
-    title="Import U8 SHP...",
-    group="file_import",
-    onclick=function() importSHP() end
+    id = pluginName .. "ImportSHP",
+    title = "Import U8 SHP (" .. pluginName .. ")...",
+    group = "file_import",
+    onclick = function() 
+      debug("Import command clicked!")
+      importPentagramSHP() 
+    end
   }
+  debug("Command registration attempted in init")
 end
 
 return { init=init }
