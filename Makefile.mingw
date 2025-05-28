@@ -1,13 +1,77 @@
 # Pentagram makefile for use in Windows with mingw using GCC 3.2 and msys shell
 # It may require a little tweaking. (paths)
+VERSION=0.1svn
 
 # Where is Ultima 8 installed
 U8PATH=C:/Ultima8
 
+# msys2 changed the location of system includes to avoid having to ship duplicates for
+# 32- and 64-bit systems. This unfortunately broke anything relying on pkg-config if it
+# has a -I$(MSYSTEM_PREFIX)/include on it. This function removes such entries from
+# the input and return the stripped output.
+MSYSTEM_WPREFIX := $(shell cygpath -m $(MSYSTEM_PREFIX))
+S := $() $()
+
+define clean_includes
+$(subst -I$(MSYSTEM_WPREFIX)/include$(S),,$(subst -I$(MSYSTEM_PREFIX)/include$(S),,$(1)))
+endef
+
+# Includes under $(MSYSTEM_PREFIX) are not considered "system" headers, and will print
+# tons of warnings. This functions turns "-IXXX" into "-isystem XXX" to counteract that.
+define make_system
+$(subst -I, -isystem$(S), $(1))
+endef
+
 # Base of the pentagram source
 SRC=.
 
-VERSION=0.1svn
+# Choose Architecture and Compiler based on $(MSYSTEM), use 64 bits GCC by default.
+ifeq ($(MSYSTEM),MINGW64)
+	ARCHTYPE:=-march=x86-64
+	ARCHFLAGS:=-m64
+	CC:=gcc
+	CXX:=g++
+else ifeq ($(MSYSTEM),MINGW32)
+	ARCHTYPE:=-march=i686
+	ARCHFLAGS:=-m32
+	CC:=gcc
+	CXX:=g++
+else ifeq ($(MSYSTEM),CLANG64)
+	ARCHTYPE:=-march=x86-64
+	ARCHFLAGS:=-m64
+	CC:=clang
+	CXX:=clang++
+else ifeq ($(MSYSTEM),CLANG32)
+	ARCHTYPE:=-march=i686
+	ARCHFLAGS:=-m32
+	CC:=clang
+	CXX:=clang++
+else ifeq ($(MSYSTEM),UCRT64)
+	ARCHTYPE:=-march=x86-64
+	ARCHFLAGS:=-m64
+	CC:=gcc
+	CXX:=g++
+else ifeq ($(MSYSTEM),CLANGARM64)
+# march=native should not be used when building official releases
+# so if we start making official ARM build this needs to be changed
+	ARCHTYPE:=-march=native
+	ARCHFLAGS:=-m64
+	CC:=clang
+	CXX:=clang++
+else
+	ARCHTYPE:=-march=x86-64
+	ARCHFLAGS:=-m64
+	CC:=gcc
+	CXX:=g++
+endif
+
+ifdef USE_CONSOLE
+	SUBSYSTEM:=-mconsole
+	SYSFLAGS:=-DUSE_CONSOLE
+else
+	SUBSYSTEM:=-mwindows
+	SYSFLAGS:=
+endif
 
 # If this doesn't work, insert output of `pkg-config --cflags gtk+-win32-2.0` manually
 GTK_INCLUDES = `pkg-config --cflags gtk+-win32-2.0`
@@ -20,8 +84,8 @@ GIMP_INCLUDES = `pkg-config --cflags gimpui-2.0`
 GIMP_LIBS = `pkg-config --libs gimpui-2.0`
 
 ### Modify these paths
-SDL_CFLAGS=-I$(SRC)/sdl/include
-SDL_LIBS=-L$(SRC)/sdl/lib -lSDLmain -lSDL -lSDL_ttf
+SDL_CFLAGS:=$(shell pkg-config --cflags-only-I sdl)
+SDL_LIBS:=$(shell pkg-config --libs sdl)
 
 CPPFLAGS=-DVERSION=\"$(VERSION)\" -DBUILTIN_DATA -DSIZEOF_SHORT=2 -DSIZEOF_INT=4 -DSIZEOF_INTP=4   \
 	-DCOMPILE_ALL_BILINEAR_SCALERS -DCOMPILE_GAMMA_CORRECT_SCALERS  \
@@ -66,10 +130,9 @@ SHAPECONV_OBJS = \
 	tools/shapeconv/ShapeConv.o $(CONVERT) $(UNZIP) $(MISC) $(ARGS)
 
 ASEPRITE_OBJS = \
-	filesys/FileSystem.o filesys/ArchiveFile.o filesys/FlexFile.o filesys/ZipFile.o \
-	filesys/zip/ioapi.o filesys/zip/unzip.o graphics/Palette.o graphics/XFormBlend.o \
+	filesys/FileSystem.o graphics/Palette.o graphics/XFormBlend.o \
 	graphics/Shape.o graphics/ShapeFrame.o \
-	tools/aseprite_plugin/pent_shp.o $(CONVERT) $(FILESYS) $(MISC) $(ARGS)
+	tools/aseprite_plugin/pent_shp.o $(CONVERT) $(MISC) $(ARGS)
 
 data2c.exe : tools/data2c/data2c.o
 	$(CXX) $(LFLAGS) -o $@ $+ -mconsole
