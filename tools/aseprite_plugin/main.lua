@@ -25,7 +25,7 @@ local pluginDir = app.fs.joinPath(app.fs.userConfigPath, "extensions", pluginNam
 local converterPath = app.fs.joinPath(pluginDir, "pent_shp")
 
 -- Debug system with toggle
-local debugEnabled = true  -- toggle debug messages
+local debugEnabled = false  -- toggle debug messages
 
 local function debug(message)
   if debugEnabled then
@@ -304,23 +304,122 @@ processImport = function(shpFile, outputBasePath, createSeparateFrames)
   return true, sprite
 end
 
+-- Function to convert active sprite's palette to U7 style (transparent index 255)
+local function convertPaletteToU7()
+  debug("Convert U8 to U7 palette command initiated.")
+  local sprite = app.sprite
+  if not sprite then
+    showError("No active sprite to convert.")
+    return
+  end
+
+  if sprite.colorMode ~= ColorMode.INDEXED then
+    showError("Sprite is not in Indexed color mode. Cannot convert palette.")
+    return
+  end
+
+  app.transaction( "Convert to U7 Palette", function()
+    debug("Changing pixel format to RGB...")
+    app.command.ChangePixelFormat {
+      ui = false,
+      format = "rgb"
+    }
+    debug("Pixel format changed to RGB.")
+
+    -- Step 2: Load u7.pal from the extension folder
+    local u7PalettePath = app.fs.joinPath(pluginDir, "u7.pal")
+    debug("Attempting to load U7 palette from: " .. u7PalettePath)
+
+    if not app.fs.isFile(u7PalettePath) then
+      showError("u7.pal not found in the extension folder: " .. u7PalettePath)
+      return -- Abort transaction
+    end
+
+    local u7Palette = Palette{ fromFile = u7PalettePath }
+    if not u7Palette then
+      showError("Failed to load u7.pal from: " .. u7PalettePath)
+      return -- Abort transaction
+    end
+    debug("u7.pal loaded successfully.")
+
+    sprite:setPalette(u7Palette)
+    debug("Sprite's active palette has been set to the loaded u7.pal.")
+
+    debug("Changing pixel format back to Indexed (should use current sprite palette), with transparent index 255...")
+    app.command.ChangePixelFormat {
+      ui = false,
+      format = "indexed",
+      dithering = "",             -- Set to empty for no dithering
+      rgmap = "default"           -- Still relevant for how RGB colors are mapped to the new active palette
+    }
+    debug("Pixel format changed back to Indexed. Transparent index set to 255 using u7.pal.")
+
+    debug("Replacing color indices 0->255 and 87->0...")
+    if sprite.spec.colorMode == ColorMode.INDEXED then -- Ensure we are in indexed mode
+      for _, cel in ipairs(sprite.cels) do
+        if cel then
+          local image = cel.image
+          -- Create a new image for modification to avoid modifying a shared image if cel.image is shared
+          local newImage = Image(image.spec) 
+          newImage:drawImage(image, 0, 0) 
+          for y = 0, newImage.height - 1 do
+            for x = 0, newImage.width - 1 do
+              local currentPixel = newImage:getPixel(x, y)
+              if currentPixel == 0 then
+                newImage:putPixel(x, y, 255)
+              elseif currentPixel == 87 then 
+                newImage:putPixel(x, y, 0)
+              end
+            end
+          end
+          cel.image = newImage -- Assign the modified image back to the cel
+        end
+      end
+      debug("Color index 0 replaced with 255, and index 87 replaced with 0, across all cels.")
+      debug("Setting sprite palette's transparentColor to 255.")
+      sprite.transparentColor = 255
+    else
+      debug("Sprite is not in Indexed mode after conversion, skipping color replacement.")
+    end
+
+    app.refresh()
+    app.alert("Sprite palette converted to U7 style (using u7.pal, transparent index 255).")
+  end)
+end
+
 -- Plugin initialization function
 function init(plugin)
   debug("Initializing plugin (inside init function)...")
   local formatRegistered = registerSHPFormat()
   debug("SHP format registered (from init): " .. tostring(formatRegistered))
   
-  debug("Attempting to register command...")
+  debug("Attempting to register U8 SHP import command...")
   plugin:newCommand{
     id = pluginName .. "ImportSHP",
     title = "Import U8 SHP...",
     group = "file_import",
     onclick = function() 
-      debug("Import command clicked!")
+      debug("Import SHP command clicked!")
       importPentagramSHP() 
     end
   }
-  debug("Command registration attempted in init")
+  debug("U8 SHP Import command registration attempted in init")
+
+  debug("Attempting to register U7 Palette conversion command...")
+  plugin:newCommand{
+    id = pluginName .. "ConvertU7Palette",
+    title = "Convert U8 to U7 palette...",
+    group = "sprite_properties", -- Or another suitable group like "sprite_modify"
+    onclick = function()
+      debug("Convert U7 Palette command clicked!")
+      convertPaletteToU7()
+    end,
+    onenabled = function()
+      -- Enable only if there is an active sprite and it's in Indexed mode
+      return app.sprite and app.sprite.colorMode == ColorMode.INDEXED
+    end
+  }
+  debug("U7 Palette conversion command registration attempted in init")
 end
 
 return { init=init }
