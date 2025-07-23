@@ -35,6 +35,11 @@
 #include "RenderedText.h"
 
 #include "SDL.h"
+#include <fstream>
+#include <sstream>
+#include <iomanip>
+#include <cstring>
+#include <png.h>
 
 
 enum SKFAction {
@@ -65,7 +70,7 @@ SKFPlayer::SKFPlayer(RawArchive* movie, int width_, int height_, bool introMusic
 	: width(width_), height(height_), skf(movie),
 	  curframe(0), curobject(0), curaction(0), curevent(0), playing(false),
 	  timer(0), framerate(15), fadecolour(0), fadelevel(0), buffer(0), subs(0),
-	  introMusicHack(introMusicHack_)
+	  introMusicHack(introMusicHack_), pngFrameCounter(0)
 {
 	IDataSource* eventlist = skf->get_datasource(0);
 	if (!eventlist)
@@ -113,6 +118,8 @@ void SKFPlayer::start()
 	if (musicproc) musicproc->playMusic(0);
 	playing = true;
 	lastupdate = SDL_GetTicks();
+	
+	pout << "SKFPlayer: PNG export enabled - frames will be saved as skf_frame_XXXXXX.png" << std::endl;
 }
 
 void SKFPlayer::stop()
@@ -311,10 +318,103 @@ void SKFPlayer::run()
 		buffer->Paint(shape, 0, 0, 0);
 		buffer->EndPainting();
 		delete shape;
+		
+		// Save frame as PNG - but do it safely after all painting is done
+		// Add a small delay to ensure all rendering operations are complete
+		try {
+			savePNGFrame();
+		} catch (...) {
+			perr << "Exception occurred while saving PNG frame " << pngFrameCounter << std::endl;
+		}
 	
 		delete object;
 	}
 
 	timer = 1; // HACK! timing is rather broken currently...
+}
+
+// PNG Export Functionality
+// This method saves the current frame buffer as a PNG file to disk
+// Files are saved as skf_frame_XXXXXX.png where XXXXXX is a 6-digit frame counter
+void SKFPlayer::savePNGFrame()
+{
+	if (!buffer) return;
+
+	// Generate filename with frame number
+	std::ostringstream filename;
+	filename << "skf_frame_" << std::setfill('0') << std::setw(6) << pngFrameCounter << ".png";
+	
+	pout << "Saving frame " << pngFrameCounter << " to " << filename.str() << std::endl;
+	
+	// Get the surface texture - this is managed by the RenderSurface, don't delete it
+	Texture* tex = buffer->GetSurfaceAsTexture();
+	if (!tex) {
+		perr << "Failed to get surface texture for PNG output" << std::endl;
+		return;
+	}
+
+	// Validate texture properties
+	if (!tex->buffer || tex->width <= 0 || tex->height <= 0) {
+		perr << "Invalid texture properties for PNG output" << std::endl;
+		return;
+	}
+
+	// Create a simple PNG export without using the problematic ODataSource/PNGWriter chain
+	FILE* fp = fopen(filename.str().c_str(), "wb");
+	if (!fp) {
+		perr << "Failed to create PNG file: " << filename.str() << std::endl;
+		return;
+	}
+	
+	png_structp png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	if (!png_ptr) {
+		perr << "Failed to create PNG write struct" << std::endl;
+		fclose(fp);
+		return;
+	}
+	
+	png_infop info_ptr = png_create_info_struct(png_ptr);
+	if (!info_ptr) {
+		perr << "Failed to create PNG info struct" << std::endl;
+		png_destroy_write_struct(&png_ptr, NULL);
+		fclose(fp);
+		return;
+	}
+	
+	// Set up error handling
+	if (setjmp(png_jmpbuf(png_ptr))) {
+		perr << "PNG write error occurred" << std::endl;
+		png_destroy_write_struct(&png_ptr, &info_ptr);
+		fclose(fp);
+		return;
+	}
+	
+	// Initialize PNG output
+	png_init_io(png_ptr, fp);
+	
+	// Set image properties - use RGB format to avoid alpha channel issues for now
+	int width = tex->width;
+	int height = tex->height;
+	png_set_IHDR(png_ptr, info_ptr, width, height, 8, PNG_COLOR_TYPE_RGB,
+				 PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_DEFAULT, PNG_FILTER_TYPE_DEFAULT);
+	
+	// Write PNG header
+	png_write_info(png_ptr, info_ptr);
+	
+	// Configure PNG to handle our 32-bit ARGB data properly
+	png_set_filler(png_ptr, 0, PNG_FILLER_AFTER);  // Ignore alpha channel 
+	png_set_bgr(png_ptr);  // Handle BGR/RGB conversion
+	
+	// Write image data row by row, using the original texture data
+	for (int y = 0; y < height; y++) {
+		png_write_row(png_ptr, reinterpret_cast<png_bytep>(&tex->buffer[y * width]));
+	}
+	
+	// Finish PNG
+	png_write_end(png_ptr, info_ptr);
+	png_destroy_write_struct(&png_ptr, &info_ptr);
+	fclose(fp);
+	
+	pngFrameCounter++;
 }
 

@@ -40,9 +40,12 @@ public:
 	void stop();
 	bool isPlaying() const { return playing; }
 
+	// PNG Export: Automatically saves each frame as a PNG file during playback
+
 private:
 
 	void parseEventList(IDataSource* eventlist);
+	void savePNGFrame();  // Saves current frame buffer as PNG file to disk
 
 	int width, height;
 	RawArchive* skf;
@@ -59,6 +62,7 @@ private:
 	RenderedText* subs;
 	int subtitley;
 	bool introMusicHack;
+	unsigned int pngFrameCounter;
 };
 
 #endif
