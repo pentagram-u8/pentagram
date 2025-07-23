@@ -58,7 +58,8 @@ FLEXPACK_OBJCS = \
 	filesys/FileSystem.o filesys/RawArchive.o filesys/Archive.o filesys/ArchiveFile.o filesys/FlexFile.o \
 	filesys/ZipFile.o filesys/U8SaveFile.o filesys/DirFile.o filesys/zip/ioapi.o filesys/zip/unzip.o \
 	misc/Console.o misc/istring.o misc/pent_include.o misc/util.o tools/flexpack/FlexPack.o \
-	tools/flexpack/FlexWriter.o
+	graphics/Shape.o graphics/ShapeFrame.o \
+	tools/flexpack/FlexWriter.o $(CONVERT)
 
 SHAPECONV_OBJS = \
 	filesys/FileSystem.o filesys/RawArchive.o filesys/Archive.o filesys/ArchiveFile.o filesys/FlexFile.o \

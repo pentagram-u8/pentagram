@@ -110,7 +110,7 @@ case "$host_os" in
 		dnl For now I am lazy and do not add proper detection code.
 		AC_DEFINE(MACOSX, 1, [Mac OS X])
 		AC_MSG_RESULT(Mac OS X)
-		GUI_LIBS="$GUI_LIBS -framework Cocoa -framework AudioUnit -framework CoreMIDI"
+		GUI_LIBS="$GUI_LIBS -framework Cocoa -framework AudioUnit -framework AudioToolbox -framework CoreMIDI"
 		CON_LIBS="$CON_LIBS -framework Cocoa"
 		HOST_SYSTEM=MACOSX
 		ADDITIONAL_CONFIG_FILES=system/macosx/Info.plist

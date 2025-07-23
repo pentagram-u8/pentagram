@@ -199,7 +199,7 @@ RenderedText* TTFont::renderText(const std::string& text,
 		}
 		else 
 		{
-			SDL_Color colour = { TEX32_R(rgb) , TEX32_G(rgb), TEX32_B(rgb), 0 };
+			SDL_Color colour = { static_cast<Uint8>(TEX32_R(rgb)), static_cast<Uint8>(TEX32_G(rgb)), static_cast<Uint8>(TEX32_B(rgb)), 0 };
 			SDL_Color black = { 0x00 , 0x00 , 0x00, 0 };
 			textsurf = TTF_RenderUNICODE_Shaded(ttf_font, unicodetext, colour, black);
 		}
