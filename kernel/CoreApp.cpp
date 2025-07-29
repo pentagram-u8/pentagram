@@ -29,6 +29,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 #include "GameInfo.h"
 #include "GameDetector.h"
 
+#include <sstream>
+
 #if defined(WIN32)
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -90,6 +92,30 @@ void CoreApp::startup()
 		exit(0);
 	}
 
+	// Parse log_skf_audio string into vector
+	pout << "CoreApp: oLogSKFAudio flag = " << (oLogSKFAudio ? "true" : "false") << std::endl;
+	pout << "CoreApp: oLogSKFAudioString = \"" << oLogSKFAudioString << "\"" << std::endl;
+	
+	if (!oLogSKFAudioString.empty()) {
+		pout << "CoreApp: Parsing log_skf_audio string: \"" << oLogSKFAudioString << "\"" << std::endl;
+		std::stringstream ss(oLogSKFAudioString);
+		std::string frame;
+		while (std::getline(ss, frame, ',')) {
+			try {
+				unsigned int frameNum = std::stoul(frame);
+				oLogSKFAudioFrames.push_back(frameNum);
+				pout << "CoreApp: Added frame number: " << frameNum << std::endl;
+			} catch (...) {
+				// Ignore invalid frame numbers
+				pout << "CoreApp: Ignoring invalid frame number: \"" << frame << "\"" << std::endl;
+			}
+		}
+		pout << "CoreApp: Final oLogSKFAudioFrames.size() = " << oLogSKFAudioFrames.size() << std::endl;
+	} else if (oLogSKFAudio) {
+		pout << "CoreApp: --log_skf_audio used without parameters, will log all audio from start" << std::endl;
+	} else {
+		pout << "CoreApp: --log_skf_audio not used" << std::endl;
+	}
 
 	sysInit();
 
@@ -104,6 +130,12 @@ void CoreApp::DeclareArgs()
 	parameters.declare("--help",	&oHelp,		true);
 	parameters.declare("-q", 		&oQuiet,	true);
 	parameters.declare("-qq",		&oVQuiet,	true);	
+	// SKF extraction/logging options
+	parameters.declare("--extract_skf_audio", &oExtractSKFAudio, true);
+	parameters.declare("--extract_skf_frames", &oExtractSKFFrames, true);
+	parameters.declare("--log_skf_frames", &oLogSKFFrames, true);
+	parameters.declare("--log_skf_audio", &oLogSKFAudio, true);  // Boolean flag for option detection
+	parameters.declare("--log_skf_audio", &oLogSKFAudioString, "");  // String for parameters
 }
 
 void CoreApp::sysInit()
@@ -142,7 +174,7 @@ void CoreApp::setupVirtualPaths()
 #ifdef DATA_PATH
 	data = DATA_PATH;
 #elif defined(MACOSX)
-    data = macosxResourcePath();
+	data = macosxResourcePath();
 #else
 	data = "data";
 #endif
@@ -441,6 +473,10 @@ void CoreApp::helpMe()
 	con.Print("\t-q\t\t- silence general logging messages\n");
 	con.Print("\t-qq\t\t- silence general logging messages and\n\t\t\t  non-critical warnings/errors\n");
 	con.Print("\t--game {name}\t- select a game\n");
+	con.Print("\t--extract_skf_frames\t- extract SKF movie frames as PNG files\n");
+	con.Print("\t--extract_skf_audio\t- extract SKF embedded and external audio as WAV files\n");
+	con.Print("\t--log_skf_frames\t- log SKF frame display times\n");
+	con.Print("\t--log_skf_audio \"frame1,frame2,frame3\"\t- log audio events starting from specified frames\n");
 }
 
 GameInfo* CoreApp::getGameInfo(Pentagram::istring game) const
