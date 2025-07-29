@@ -69,6 +69,14 @@ public:
 	bool quiet()  const { return oQuiet;  };
 	bool vquiet() const { return oVQuiet; };
 
+	// SKF extraction/logging options (public for access from SKFPlayer)
+	bool oExtractSKFFrames = false;
+	bool oExtractSKFAudio = false;
+	bool oLogSKFFrames = false;
+	bool oLogSKFAudio = false;  // Flag to track when --log_skf_audio option was used
+	std::vector<unsigned int> oLogSKFAudioFrames;
+	std::string oLogSKFAudioString;  // String version for Args parsing
+
 protected:
 
 	//! Declare commandline arguments.
